@@ -97,6 +97,7 @@ export const headings: Tariff[] = [
       "Articles the product of any country, as provided for in subdivision (aa)(ii) of U.S. note 2 to subchapter III of chapter 99 of the HTSUS.",
     scope: {
       countries: "all",
+      // TODO(list): "9903.03.03" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.03.03" }],
     },
     rate: { kind: "free" },

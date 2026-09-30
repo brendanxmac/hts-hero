@@ -12,6 +12,7 @@ export const headings: Tariff[] = [
       "Except as provided in headings 9903.88.05, 9903.88.06, 9903.88.07, 9903.88.08, 9903.88.10, 9903.88.11, 9903.88.14, 9903.88.19, 9903.88.50, 9903.88.52, 9903.88.58, 9903.88.60, 9903.88.62, 9903.88.66, 9903.88.67, 9903.88.68, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(a) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(b) [to this subchapter]",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.88.01" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.88.01" }],
     },
     exceptions: ["9903.88.69"],
@@ -31,6 +32,7 @@ export const headings: Tariff[] = [
       "Except as provided in headings 9903.88.12, 9903.88.17, 9903.88.20, 9903.88.54, 9903.88.59, 9903.88.61, 9903.88.63, 9903.88.66, 9903.88.67, 9903.88.68, 9903.88.69, or 9903.88.70, articles the product of China, as provided for in U.S. note 20(c) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(d)",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.88.02" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.88.02" }],
     },
     exceptions: ["9903.88.69", "9903.88.70"],
@@ -50,6 +52,7 @@ export const headings: Tariff[] = [
       "Except as provided in headings 9903.88.13, 9903.88.18, 9903.88.33, 9903.88.34, 9903.88.35, 9903.88.36, 9903.88.37, 9903.88.38, 9903.88.40, 9903.88.41, 9903.88.43, 9903.88.45, 9903.88.46, 9903.88.48, 9903.88.56, 9903.88.64, 9903.88.66, 9903.88.67, 9903.88.68, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(e) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(f)",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.88.03" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.88.03" }],
     },
     exceptions: ["9903.88.69"],
@@ -69,7 +72,9 @@ export const headings: Tariff[] = [
       "Except as provided in headings 9903.88.33, 9903.88.34, 9903.88.36, 9903.88.37, 9903.88.38, 9903.88.40, 9903.88.46, 9903.88.48, 9903.88.56, 9903.88.64, 9903.88.66, 9903.88.67, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(g) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(g)",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.88.04" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.88.04" }],
+      // TODO(list): "9903.88.04:excluded" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       excludeCodes: [{ list: "9903.88.04:excluded" }],
     },
     exceptions: ["9903.88.69"],
@@ -89,7 +94,9 @@ export const headings: Tariff[] = [
       "Except as provided in headings 9903.88.39, 9903.88.42, 9903.88.44, 9903.88.47, 9903.88.49, 9903.88.51, 9903.88.53, 9903.88.55, 9903.88.57, 9903.88.65, 9903.88.66, 9903.88.67, 9903.88.68, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(r) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(s)",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.88.15" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.88.15" }],
+      // TODO(list): "9903.88.15:excluded" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       excludeCodes: [{ list: "9903.88.15:excluded" }],
     },
     exceptions: ["9903.88.69"],
@@ -109,6 +116,7 @@ export const headings: Tariff[] = [
       "Effective with respect to entries on or after June 15, 2024 and through November 29, 2025, articles the product of China, as provided for in U.S. note 20(vvv) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.88.69" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.88.69" }],
     },
     rate: { kind: "free" },
@@ -126,6 +134,7 @@ export const headings: Tariff[] = [
       "Effective with respect to entries on or after January 1, 2024, and through November 29, 2025, articles the product of China, as provided in U.S. note 20(www) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.88.70" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.88.70" }],
     },
     rate: { kind: "free" },
@@ -143,7 +152,7 @@ export const headings: Tariff[] = [
       "Effective with respect to entries on or after September 27, 2024, articles the product of China, as provided for in subdivision (b) of U.S. note 31 to this subchapter",
     scope: {
       countries: ["CN"],
-      codes: [{ list: "9903.91.01" }],
+      codes: [{ list: "china31b" }],
     },
     rate: { kind: "adValorem", pct: 25 },
     rateByColumn: {
@@ -161,7 +170,7 @@ export const headings: Tariff[] = [
       "Effective with respect to entries on or after September 27, 2024, articles the product of China, as provided for in subdivision (c) of U.S. note 31 to this subchapter",
     scope: {
       countries: ["CN"],
-      codes: [{ list: "9903.91.02" }],
+      codes: [{ list: "china31c" }],
     },
     rate: { kind: "adValorem", pct: 50 },
     rateByColumn: {
@@ -179,7 +188,7 @@ export const headings: Tariff[] = [
       "Except as provided in heading 9903.91.10, effective with respect to entries on or after September 27, 2024, articles the product of China, as provided for in subdivision (d) of U.S. note 31 to this subchapter",
     scope: {
       countries: ["CN"],
-      codes: [{ list: "9903.91.03" }],
+      codes: [{ list: "china31d" }],
     },
     rate: { kind: "adValorem", pct: 100 },
     rateByColumn: {
@@ -197,7 +206,7 @@ export const headings: Tariff[] = [
       "Effective with respect to entries on or after January 1, 2025, and before January 1, 2026, articles the product of China, as provided for in subdivision (e) of U.S. note 31 to this subchapter",
     scope: {
       countries: ["CN"],
-      codes: [{ list: "9903.91.04" }],
+      codes: [{ list: "china31e" }],
     },
     rate: { kind: "adValorem", pct: 25 },
     rateByColumn: {
@@ -296,6 +305,7 @@ export const headings: Tariff[] = [
       "Effective with respect to entries on or after January 1, 2025, articles the product of China, as provided for in subdivision (j) of U.S. note 31 to this subchapter",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.91.11" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.91.11" }],
     },
     rate: { kind: "adValorem", pct: 25 },
@@ -314,6 +324,7 @@ export const headings: Tariff[] = [
       "Notwithstanding subheading 9903.92.10, effective with respect to entries, on or after September 27, 2024, of ship-to-shore gantry cranes, configured as a high- or low-profile steel superstructure and designed to unload intermodal containers from vessels with coupling devices for containers, including spreaders or twist-locks, articles the product of China (provided for in subheading 8426.19.00), that are fulfilling in whole or in part an executed contract for sale dated prior to May 14, 2024 for goods that are entered for consumption, or withdrawn from warehouse for consumption, in the United States prior to May 14, 2026",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.92.09" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.92.09" }],
     },
     requires: [confirm("9903.92.09")],
@@ -329,6 +340,7 @@ export const headings: Tariff[] = [
       "Except as provided in heading 9903.91.09, ship-to-shore gantry cranes, configured as a high- or low-profile steel superstructure and designed to unload intermodal containers from vessels with coupling devices for containers, including spreaders or twist-locks (provided for in subheading 8426.19.00)",
     scope: {
       countries: ["CN"],
+      // TODO(list): "9903.92.10" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.92.10" }],
     },
     exceptions: ["9903.92.09"],

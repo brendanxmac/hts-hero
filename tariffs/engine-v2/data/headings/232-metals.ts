@@ -68,6 +68,7 @@ export const headings: Tariff[] = [
     scope: {
       countries: "all",
       codes: "all",
+      // TODO(list): "9903.82.03:excluded" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       excludeCodes: [{ list: "9903.82.03:excluded" }],
     },
     exceptions: ["9903.82.01"],
@@ -415,6 +416,7 @@ export const headings: Tariff[] = [
       "Aluminum articles that are the product of Russia, or where any amount of primary aluminum used in the manufacture of the aluminum articles is smelted in Russia, or where the aluminum articles are cast in Russia, the foregoing under the terms of note 19(a)(vii)(A) to this subchapter, or note 19(m)(A) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
     scope: {
       countries: ["RU"],
+      // TODO(list): "9903.85.67" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.85.67" }],
     },
     rate: { kind: "adValorem", pct: 200 },
@@ -429,6 +431,7 @@ export const headings: Tariff[] = [
       "Derivative aluminum articles that are products of Russia, or where any amount of primary aluminum used in the manufacture of the derivative articles is smelted in Russia, or where the derivative aluminum articles are cast in Russia, when such derivative articles are provided for in the headings or subheadings enumerated in note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
     scope: {
       countries: ["RU"],
+      // TODO(list): "9903.85.68" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.85.68" }],
     },
     requires: [confirm("9903.85.68")],

@@ -115,7 +115,7 @@ Hand edits:
 - The 5 failing tests in `testing/tariffs.test.ts` fail on `master` too (see Issue L1).
 
 ### 4. Legacy vs v2 comparison
-Full run: 23,193 HTS lines × 14 countries = **324,702 calculations**. **99.5% have identical total duty.** The 1,747 differences fall into 3 kinds (D2, D4, D6) below. D1, D3 and D5 were fixed in the legacy calculator on Sep 30. See [COMPARISON.md](COMPARISON.md).
+Full run: 23,193 HTS lines × 14 countries = **324,702 calculations**. **99.5% have identical total duty.** The 1,752 differences fall into 4 kinds (D2, D4, D6, D7) below. D1, D3 and D5 were fixed in the legacy calculator on Sep 30. See [COMPARISON.md](COMPARISON.md).
 
 ## Differences from the legacy engine
 
@@ -129,6 +129,7 @@ D1, D3 and D5 are resolved. D2, D4 and D6 remain in the legacy calculator by you
 | D4 | 6307.90.98.70 CN: v2 lower; **kept in legacy by decision** | 1 | 9903.91.04's text says it applies before January 1, 2026. Legacy still applies it at Rev 5. |
 | D5 | ~~9401.69.60.31 CN: v2 lower~~ **Resolved:** legacy data fixed | 1 | Same as D3: `9401.69.6031` in 9903.88.15's exclusions. |
 | D6 | 4015.12.10 CN (medical gloves): v2 lower; **kept in legacy** | 3 | Gloves were 50% under 31(f) in 2025 and 100% under 31(i) from Jan 1, 2026. v2 removes them from the 31(f) list on that date (a dated list version); legacy charges both 9903.91.05 and 9903.91.08. |
+| D7 | 5 respirator/face-mask/EV-battery codes, CN: v2 lower | 5 | `china31b` (Sep 30) leaves out the four items 89 FR 76581 removed from 31(b): 6307.90.98.42/.44/.50/.75 and 8507.60.00.10. Legacy's 9903.91.01 list still has them. See Q13 on when the removal took effect. |
 
 Other intended differences that the comparison doesn't exercise (they only show up after the user answers questions):
 - **9903.94.44** (EU auto parts, 33(r)): the legacy record says "<15%" and charges 15%, identical to .45. By the pairing pattern it's the "≥15%" heading at 0%, and v2 does that. See Q5.
@@ -175,6 +176,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
 10. **Stale legacy tests (L1).** Update them for the full-value 232 structure, or delete them?
 11. **9903.03.06 and "no metal" articles.** Legacy lists 9903.82.01 ("contains no aluminum, steel or copper") among the headings that trigger the Section 122 exemption. So confirming "no metal" removes 232 **and** keeps Section 122 off. Is a note 16(c) article with no metal still exempt from 122?
 12. **Rolling this out.** Answered: don't make it the default for now.
+13. **When were the four items removed from 31(b)?** `china31b` currently has one version from 2024-09-27 without them, so they were never charged under 9903.91.01. 89 FR 76581 is the four-year review notice itself (FR Doc. 2024-21217), and CBP's guidance (CSMS #62411889) doesn't list them. If they were in 31(b) for a while (e.g. from Sep 27, 2024 until they moved to 31(h) on Jan 1, 2026), `china31b` needs a second, dated version.
 
 ## Sep 30: Section 301 China 2026 increases (both calculators)
 
@@ -184,6 +186,27 @@ Other intended differences that the comparison doesn't exercise (they only show 
 - **v2's 31(f) list is now `china31f`** with two dated versions. Medical gloves (4015.12.10) leave it on Jan 1, 2026, when 31(i) takes over. Legacy is unchanged, so it charges both (D6).
 - **`china31g` uses 8507.60.00 as provided.** That also covers EV batteries (8507.60.00.10), which already pay 25% under 9903.91.01, so both engines charge them twice. USTR's description of 31(g) and CBP rulings point to non-EV batteries only (8507.60.00.20); kept as provided by decision (Sep 30).
 - **9903.91.04 stays in legacy** by decision, so Chinese face masks pay .04 (25%) + .07 (50%) there (D4). v2 ended .04 on Jan 1, 2026.
+
+## Sep 30: named lists for 9903.91.01–.04, and a list audit
+
+- **9903.91.01–.04 now use `china31b`–`china31e`** (added by you in `lists/china-301.ts`), and the migrated stand-ins `9903.91.01`–`.04` were removed from `lists.generated.json`. Checked against the old lists:
+  - c, d, e are identical
+  - b is identical except for the 5 removed codes
+  - no duplicates or odd-length codes
+- **29 `TODO(list)` comments** mark headings still using a migrated stand-in list named after their heading (e.g. `"9903.88.03"`) instead of a U.S. note list:
+  - 301 lists 20(a)–(s)
+  - exclusions (vvv)/(www)
+  - 9903.91.11
+  - cranes
+  - 9903.82.03's exclusions
+  - 9903.85.67/.68
+  - 122's 9903.03.03
+  - 9903.94.31
+  - wood
+  - the ended EU exemption lists
+- **10 more `TODO(list)` comments** mark headings that cover every code except an exclusion list, while their text points to a specific note subdivision (L9): 9903.94.07/.33/.44/.45/.54/.55/.64/.65 and 9903.74.09/.10.
+- **The validator now warns** for every list whose id starts with `9903.`, so the stand-ins stay visible until they're replaced.
+- **"All codes" is correct as-is** for the Section 122 family, the country deals, and 9903.82.03 ("except chapters 72, 73, 74 or 76").
 
 ## Sep 30 changes to the legacy calculator
 

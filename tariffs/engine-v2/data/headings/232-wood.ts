@@ -11,6 +11,7 @@ export const headings: Tariff[] = [
     description: "TODO",
     scope: {
       countries: "all",
+      // TODO(list): "9903.76.01" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.76.01" }],
     },
     exceptions: [
@@ -41,6 +42,7 @@ export const headings: Tariff[] = [
     description: "TODO",
     scope: {
       countries: "all",
+      // TODO(list): "9903.76.02" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.76.02" }],
       excludeCountries: ["GB", "JP", "KR", { list: "eu-members" }],
     },
@@ -72,6 +74,7 @@ export const headings: Tariff[] = [
     description: "TODO",
     scope: {
       countries: "all",
+      // TODO(list): "9903.76.03" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.76.03" }],
       excludeCountries: ["GB", "JP", "KR", { list: "eu-members" }],
     },
@@ -104,6 +107,7 @@ export const headings: Tariff[] = [
     description: "TODO",
     scope: {
       countries: "all",
+      // TODO(list): "9903.76.04" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.76.04" }],
     },
     requires: [confirm("9903.76.04")],
@@ -118,6 +122,7 @@ export const headings: Tariff[] = [
     description: "TODO",
     scope: {
       countries: ["GB"],
+      // TODO(list): "9903.76.20" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.76.20" }],
     },
     exceptions: ["9903.94.01", "9903.94.03", "9903.76.04", "9903.94.05"],
@@ -135,6 +140,7 @@ export const headings: Tariff[] = [
     description: "TODO",
     scope: {
       countries: ["JP"],
+      // TODO(list): "9903.76.21" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.76.21" }],
     },
     exceptions: ["9903.94.01", "9903.94.03", "9903.76.04", "9903.94.05"],
@@ -156,6 +162,7 @@ export const headings: Tariff[] = [
     description: "TODO",
     scope: {
       countries: [{ list: "eu-members" }],
+      // TODO(list): "9903.76.22" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.76.22" }],
     },
     exceptions: ["9903.94.01", "9903.94.03", "9903.76.04", "9903.94.05"],
@@ -178,6 +185,7 @@ export const headings: Tariff[] = [
       "Wood products of South Korea as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
     scope: {
       countries: ["KR"],
+      // TODO(list): "9903.76.23" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.76.23" }],
     },
     exceptions: [

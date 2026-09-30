@@ -217,6 +217,7 @@ export const headings: Tariff[] = [
       "Articles the product of the European Union, as provided for in subdivision (v)(xvi) of U.S. note 2 to this subchapter",
     scope: {
       countries: [{ list: "eu-members" }],
+      // TODO(list): "9903.02.74" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.02.74" }],
     },
     rate: { kind: "free" },
@@ -235,6 +236,7 @@ export const headings: Tariff[] = [
       "Articles the product of the European Union, as provided for in subdivision (v)(xvii) of U.S. note 2 to this subchapter",
     scope: {
       countries: [{ list: "eu-members" }],
+      // TODO(list): "9903.02.75" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.02.75" }],
     },
     rate: { kind: "free" },
@@ -253,6 +255,7 @@ export const headings: Tariff[] = [
       "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the European Union, excluding unmanned aircraft, provided for in subdivision (v)(xviii) of U.S. note 2 to this subchapter",
     scope: {
       countries: [{ list: "eu-members" }],
+      // TODO(list): "9903.02.76" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.02.76" }],
     },
     requires: [confirm("9903.02.76")],
@@ -272,6 +275,7 @@ export const headings: Tariff[] = [
       "Articles the product of the European Union that are non-patented articles for use in pharmaceutical applications, provided for in subdivision (v)(xix) of U.S. note 2 to this subchapter",
     scope: {
       countries: [{ list: "eu-members" }],
+      // TODO(list): "9903.02.77" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.02.77" }],
     },
     requires: [confirm("9903.02.77")],

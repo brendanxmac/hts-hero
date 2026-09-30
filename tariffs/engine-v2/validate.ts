@@ -181,6 +181,13 @@ export const validateRules = (
     snapshot.tariffs.forEach((t) => visit(t.code, [t.code]))
   })
 
+  // Stand-in lists from the legacy migration, named after a heading instead of a U.S. note
+  rules.lists
+    .filter((l) => /^9903\./.test(l.id))
+    .forEach((l) =>
+      warnings.push(`List ${l.id} is named after a heading; replace it with a list named after its U.S. note subdivision`),
+    )
+
   cycles.forEach((cycle) =>
     warnings.push(`Exception cycle: ${cycle} (resolved at calculation time; see calculate.ts)`),
   )

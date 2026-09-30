@@ -86,6 +86,7 @@ export const headings: Tariff[] = [
       "Effective with respect to entries on or after [ ], passenger vehicles that are products of the United Kingdom as specified in subdivision (i) of U.S. note 33 to this subchapter, when entered under the terms of subdivision (i) of U.S. note 33 to this subchapter. [Compilers note: This heading is effective on or after June 30, 2025. For more information, see 90 Fed. Reg. 27851.]",
     scope: {
       countries: ["GB"],
+      // TODO(list): "9903.94.31" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.94.31" }],
     },
     exceptions: ["9903.94.07", "9903.94.01"],
@@ -153,6 +154,7 @@ export const headings: Tariff[] = [
       "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54, 9903.94.55, 9903.94.64, and 9903.94.65, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter.",
     scope: {
       countries: "all",
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },
@@ -190,6 +192,7 @@ export const headings: Tariff[] = [
       "Automobile parts the product of the United Kingdom as provided for in subdivision (q) of U.S. note 33 to this subchapter",
     scope: {
       countries: ["GB"],
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "autoPartsOfUK33J" },
@@ -215,6 +218,7 @@ export const headings: Tariff[] = [
       "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
       countries: [{ list: "eu-members" }],
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },
@@ -240,6 +244,7 @@ export const headings: Tariff[] = [
       "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
       countries: [{ list: "eu-members" }],
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },
@@ -265,6 +270,7 @@ export const headings: Tariff[] = [
       "Automobile parts the product of Japan with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
       countries: ["JP"],
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },
@@ -287,6 +293,7 @@ export const headings: Tariff[] = [
       "Automobile parts the product of Japan with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
       countries: ["JP"],
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },
@@ -312,6 +319,7 @@ export const headings: Tariff[] = [
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (r) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
       countries: ["KR"],
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },
@@ -334,6 +342,7 @@ export const headings: Tariff[] = [
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (r) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
       countries: ["KR"],
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },

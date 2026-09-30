@@ -127,6 +127,7 @@ export const headings: Tariff[] = [
       "Medium- and heavy-duty vehicle parts, as provided for in subdivision (j) of U.S. note 38 to this subchapter.",
     scope: {
       countries: "all",
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },
@@ -150,6 +151,7 @@ export const headings: Tariff[] = [
       "Articles as provided for in subdivision (k) of U.S. note 38 to this subchapter",
     scope: {
       countries: ["MX", "CA"],
+      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },
