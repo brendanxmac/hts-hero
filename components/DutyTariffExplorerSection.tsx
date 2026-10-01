@@ -18,8 +18,6 @@ export function DutyTariffExplorerSection({
   element,
   tariffElement,
 }: DutyTariffExplorerSectionProps) {
-  const calculatorHref = `/duty-calculator?code=${encodeURIComponent(element.htsno)}`;
-
   return (
     <ExplorerDetailSection
       title="Duty & Tariffs"
@@ -44,22 +42,6 @@ export function DutyTariffExplorerSection({
           by country of origin and customs value.
         </>
       }
-      footer={
-        <>
-          <div>
-            <p className="text-sm font-semibold text-base-content">
-              See Duty Rates for any HTS Code
-            </p>
-            <p className="text-xs text-base-content/50">
-              Open the dedicated duty simulator to explore duty rates for any HTS Code.
-            </p>
-          </div>
-          <Link href={calculatorHref} className="btn btn-primary">
-            Launch duty simulator
-            <span aria-hidden="true">&rarr;</span>
-          </Link>
-        </>
-      }
     >
       <div className="flex flex-col gap-4">
         <DutyEstimateEmbed
@@ -67,6 +49,7 @@ export function DutyTariffExplorerSection({
           tariffElement={tariffElement}
           initialCountry={CHINA}
           surface="explorer"
+          variant="simple"
         />
 
         <p className="text-xs text-base-content/40">

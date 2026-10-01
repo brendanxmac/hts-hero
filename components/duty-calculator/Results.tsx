@@ -497,7 +497,8 @@ export const SimpleSummary = ({
   result: CalculationResult;
   customsValue: number;
   openQuestions: number;
-  onShowDetails: () => void;
+  // Leave out to hide the "questions could change this" button (the page has its own)
+  onShowDetails?: () => void;
 }) => {
   const dutyAndFees = result.totalDuty + result.totalFees;
   const effectiveRate =
@@ -555,7 +556,7 @@ export const SimpleSummary = ({
         ))}
       </dl>
 
-      {openQuestions > 0 && (
+      {openQuestions > 0 && onShowDetails && (
         <button type="button" className={styles.button} onClick={onShowDetails}>
           <InformationCircleIcon className="w-4 h-4 text-[var(--dc-accent)]" />
           {openQuestions === 1
