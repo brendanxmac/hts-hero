@@ -16,6 +16,7 @@ import { pollConversion, submitConversion } from "./datalab"
 import { diffCodes, diffNotes } from "./diff"
 import { parseCh99Json } from "./parse-ch99-json"
 import { parseCh99NotesMarkdown } from "./parse-ch99-notes"
+import { detectRevision } from "./text"
 import { attemptFolder, downloadBlob, downloadJson, downloadText, markdownPath, sourcePath, uploadFile } from "./storage"
 import { fetchCh99Export, getCurrentReleaseName } from "./usitc"
 import { HtsRevisions } from "../../tariffs/engine-v2/revisions"
@@ -160,6 +161,10 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
     const folder = attemptFolder(revision.name, attempt.attempt_number)
     const markdown = await downloadText(db, notesDoc.markdown_path)
     const notes = parseCh99NotesMarkdown(markdown)
+    const changeRecordDoc = documents.find((d) => d.kind === "change_record")
+    const changeRecordDetected = changeRecordDoc?.markdown_path
+      ? detectRevision(await downloadText(db, changeRecordDoc.markdown_path))
+      : { name: null, previous: null }
     // The Chapter 99 JSON is optional
     const { rows, warnings: rowWarnings } = jsonDoc
       ? parseCh99Json(JSON.parse(await downloadText(db, jsonDoc.storage_path)))
@@ -193,6 +198,13 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
       htsRows: rows.length,
       htsRowsWithCode: rows.filter((r) => r.htsno).length,
       warnings: warnings.length,
+      detectedRevision: {
+        ch99Pdf: detectRevision(markdown).name,
+        changeRecord: changeRecordDetected.name,
+        previous: changeRecordDetected.previous,
+      },
+      // Reading the change record isn't redone on re-parse, so keep its cost
+      changeRecordUsage: attempt.parse_stats?.changeRecordUsage ?? null,
     }
 
     await updateAttempt(db, attemptId, {
@@ -255,13 +267,25 @@ export const ensureChangeRecordItems = async (db: RevisionDb, attemptId: string,
   const doc = documents.find((d) => d.kind === "change_record")
   if (!doc?.markdown_path) throw new Error("The change record hasn't been converted")
   const markdown = await downloadText(db, doc.markdown_path)
-  const { items, model } = await extractChangeRecord(markdown, revision.name)
+  const { items, model, usage } = await extractChangeRecord(markdown, revision.name)
   await updateAttempt(db, attemptId, {
     change_record_items: items,
     change_record_model: `${model} (${CHANGE_RECORD_PROMPT_VERSION})`,
     change_record_extracted_at: new Date().toISOString(),
+    ...(attempt.parse_stats ? { parse_stats: { ...attempt.parse_stats, changeRecordUsage: usage } } : {}),
   })
   return items
+}
+
+// ---------- Revision names ----------
+
+// A message when the documents' titles name a different revision than the
+// one they were uploaded as (e.g. uploaded as 2025HTSRev6, PDF says 2026 Revision 6)
+export const revisionNameProblem = (attempt: AttemptRow, revisionName: string) => {
+  const detected = attempt.parse_stats?.detectedRevision
+  const named = detected?.ch99Pdf ?? detected?.changeRecord
+  if (!named || named === revisionName) return null
+  return `This revision is named ${revisionName}, but its documents say ${named}. Rename it before comparing.`
 }
 
 // ---------- Comparisons ----------
@@ -291,6 +315,10 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
     const to = await loadAttempt(db, comparison.to_attempt_id)
     if (from.attempt.status !== "parsed" || to.attempt.status !== "parsed") {
       throw new Error("Both revisions must be parsed before comparing")
+    }
+    for (const side of [from, to]) {
+      const problem = revisionNameProblem(side.attempt, side.revision.name)
+      if (problem) throw new Error(problem)
     }
 
     await updateComparison(db, comparisonId, { status: "extracting_change_record", error: null })
@@ -358,12 +386,17 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       if (error) throw new Error(`Save changes: ${error.message}`)
     }
 
+    const changeRecordFollows = toAttempt.parse_stats?.detectedRevision?.previous ?? null
     const count = <K extends string>(keys: K[], values: K[]) =>
       Object.fromEntries(keys.map((k) => [k, values.filter((v) => v === k).length])) as Record<K, number>
     const stats: ComparisonStats = {
       fromRevision: from.revision.name,
       toRevision: to.revision.name,
-      consecutive: areConsecutive(from.revision.name, to.revision.name),
+      // The change record says which revision it follows; USITC's list is the fallback
+      consecutive: changeRecordFollows
+        ? changeRecordFollows === from.revision.name
+        : areConsecutive(from.revision.name, to.revision.name),
+      changeRecordFollows,
       changeRecordItems: items.length,
       changeRecordItemsInCh99: items.filter((i) => i.in_chapter_99).length,
       noteDiffs: count(["added", "removed", "modified", "renumbered"], noteDiffs.map((d) => d.status)),

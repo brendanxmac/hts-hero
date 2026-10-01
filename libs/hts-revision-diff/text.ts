@@ -110,3 +110,29 @@ export const slugify = (text: string) =>
 
 export const truncate = (text: string, max: number) =>
   text.length <= max ? text : `${text.slice(0, max)}\n… [truncated, ${text.length - max} more characters]`
+
+const revisionName = (year: string, revision: string | undefined) =>
+  revision ? `${year}HTSRev${Number(revision)}` : `${year}HTSBasic`
+
+// The revision a converted PDF says it is: "Revision 6 (2026)",
+// "(2026 Revision 6)", "Basic Edition (2026)"…, and for a change record, the
+// revision it follows ("updates made to the HTS after 2026 Revision 5")
+export const detectRevision = (markdown: string) => {
+  const head = markdown.slice(0, 6000)
+  const patterns: [RegExp, (m: RegExpMatchArray) => string][] = [
+    [/Revision\s+(\d+)\s*\((\d{4})\)/i, (m) => revisionName(m[2], m[1])],
+    [/\((\d{4})\s+Revision\s+(\d+)\)/i, (m) => revisionName(m[1], m[2])],
+    [/Basic\s+Edition\s*\((\d{4})\)/i, (m) => revisionName(m[1], undefined)],
+    [/\((\d{4})\s+Basic\s+Edition\)/i, (m) => revisionName(m[1], undefined)],
+  ]
+  let name: string | null = null
+  for (const [pattern, toName] of patterns) {
+    const m = head.match(pattern)
+    if (m) {
+      name = toName(m)
+      break
+    }
+  }
+  const after = head.match(/after\s+(?:the\s+)?(\d{4})\s+(?:HTS\s+)?(?:Revision\s+(\d+)|Basic\s+Edition)/i)
+  return { name, previous: after ? revisionName(after[1], after[2]) : null }
+}

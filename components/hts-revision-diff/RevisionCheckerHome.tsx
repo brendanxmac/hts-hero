@@ -174,6 +174,34 @@ export default function RevisionCheckerHome() {
               <h3 className="font-mono text-lg font-semibold">{revision.name}</h3>
               {revision.title && <span className="text-base-content/60">{revision.title}</span>}
             </div>
+            {(() => {
+              // The documents' titles name a different revision than this one
+              const active = data.attempts.find((a) => a.id === revision.active_attempt_id) ?? attemptsByRevision(revision.id)[0]
+              const detected = active?.parse_stats?.detectedRevision
+              const named = detected?.ch99Pdf ?? detected?.changeRecord
+              if (!named || named === revision.name) return null
+              return (
+                <div className="alert alert-error mb-3 flex flex-wrap items-center gap-3 text-sm">
+                  <span className="flex-1">
+                    This revision is named <b>{revision.name}</b>, but its documents say <b>{named}</b>. Comparisons are
+                    blocked until it&apos;s renamed.
+                  </span>
+                  <button
+                    className="btn btn-sm"
+                    disabled={!!busy}
+                    onClick={() =>
+                      run(
+                        `rename-${revision.id}`,
+                        () => api(`/revisions/${revision.id}/rename`, { method: "POST", body: JSON.stringify({ name: named }) }),
+                        `Renamed to ${named}. Re-run any comparisons that used the old name.`
+                      )
+                    }
+                  >
+                    Rename to {named}
+                  </button>
+                </div>
+              )
+            })()}
             <div className="flex flex-col gap-3">
               {attemptsByRevision(revision.id).map((attempt) => {
                 const docs = docsByAttempt(attempt.id)
@@ -341,7 +369,9 @@ function UploadCard({
             ))}
           </datalist>
           <span className="label-text-alt mt-1 text-base-content/60">
-            {known ? `${known.title}, in effect from ${known.from}` : "USITC name, e.g. 2026HTSRev5. Uploading again creates a new attempt."}
+            {known
+              ? `${known.title}, in effect from ${known.from}. Check the year: the documents' titles are compared with this name after conversion.`
+              : "USITC name, e.g. 2026HTSRev5. Uploading again creates a new attempt."}
           </span>
         </label>
         {DOCUMENT_KINDS.map((kind) => (

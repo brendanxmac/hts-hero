@@ -3,7 +3,7 @@ import { requireRevisionTool } from "@/libs/hts-revision-diff/access"
 import { summarizeChange } from "@/libs/hts-revision-diff/claude"
 import { RevisionDiffTables as T, SUMMARY_PROMPT_VERSION } from "@/libs/hts-revision-diff/constants"
 import { loadAttempt } from "@/libs/hts-revision-diff/pipeline"
-import { renderChangeMaterial } from "@/libs/hts-revision-diff/render"
+import { renderSummaryMaterial } from "@/libs/hts-revision-diff/render"
 import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 import type { ChangeRow } from "@/libs/hts-revision-diff/types"
 
@@ -29,7 +29,7 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     const from = await loadAttempt(db, comparison.data.from_attempt_id)
     const to = await loadAttempt(db, comparison.data.to_attempt_id)
 
-    const material = renderChangeMaterial(change.title, change.payload, from.revision.name, to.revision.name)
+    const material = renderSummaryMaterial(change.title, change.payload, from.revision.name, to.revision.name)
     try {
       const { summary, model } = await summarizeChange(material)
       const updated = await db

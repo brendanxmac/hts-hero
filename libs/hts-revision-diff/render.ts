@@ -153,7 +153,11 @@ export const renderSummary = (summary: ChangeSummary) => {
     out.push("", `Affected codes: ${summary.affected_hts_codes.join(", ")}`)
   }
   out.push("", `Engine impact: ${summary.engine_impact}`)
-  out.push("", `Change record consistency: ${summary.change_record_consistency}`)
+  if (summary.matches_change_record) {
+    out.push("", `Matches change record: ${summary.matches_change_record.status}. ${summary.matches_change_record.note}`)
+  } else if (summary.change_record_consistency) {
+    out.push("", `Change record consistency: ${summary.change_record_consistency}`)
+  }
   if (summary.open_questions.length) {
     out.push("", "Open questions:", ...summary.open_questions.map((q) => `- ${q}`))
   }
@@ -188,5 +192,115 @@ export const renderChangeForExport = (
     "",
     renderChangeMaterial(change.title, change.payload, fromName, toName).replace(/^# .*\n/, ""),
   ]
+  return out.join("\n")
+}
+
+// ---------- Compact material for Claude summaries ----------
+
+const SUMMARY_LIMITS = {
+  total: 45_000, // characters, roughly 11k tokens
+  addedText: 3_000,
+  removedText: 1_500,
+  afterText: 1_500, // full new text of a modified subdivision, when short enough to quote from
+  contextBlock: 1_500,
+  contextTotal: 8_000,
+  codes: 40,
+}
+
+const clip = (text: string, max: number) => (text.length <= max ? text : `${text.slice(0, max)} … [${text.length - max} more characters]`)
+
+const codeList = (codes: string[]) =>
+  codes.length <= SUMMARY_LIMITS.codes
+    ? codes.join(", ")
+    : `${codes.slice(0, SUMMARY_LIMITS.codes).join(", ")} … and ${codes.length - SUMMARY_LIMITS.codes} more`
+
+// What a summary needs and no more: change record entries, word diffs, cited
+// headings and a little newer-revision context, capped in size. The full
+// before/after text stays in the review screen and the pulled package.
+export const renderSummaryMaterial = (
+  title: string,
+  payload: ChangePayload,
+  fromName: string,
+  toName: string
+) => {
+  const out: string[] = [`# ${title}`, `Comparing ${fromName} (older) to ${toName} (newer).`]
+  let length = 0
+  const push = (...lines: string[]) => {
+    for (const line of lines) {
+      out.push(line)
+      length += line.length + 1
+    }
+  }
+
+  push("", "## Change record entries")
+  if (payload.changeRecordItems.length) {
+    for (const item of payload.changeRecordItems) {
+      push(
+        `- ${item.id} (${item.action}): ${item.source_text}`,
+        `  Effective: ${item.effective_date ?? "not stated"}. Authority: ${item.authority ?? "not stated"}.`
+      )
+    }
+  } else {
+    push("None: the diff found these differences but the change record doesn't mention them.")
+  }
+  if (payload.warnings.length) push("", "## Warnings", ...payload.warnings.map((w) => `- ${w}`))
+
+  const diffs = payload.noteDiffs
+  if (diffs.length) {
+    push("", "## Note differences")
+    let shown = 0
+    for (const d of diffs) {
+      if (length > SUMMARY_LIMITS.total) break
+      shown++
+      const key = d.toKey ?? d.fromKey
+      if (d.status === "renumbered") {
+        push("", `### Renumbered: ${d.fromLabel} → ${d.label} (text unchanged)`)
+        continue
+      }
+      push("", `### ${d.status}: ${d.label} [${key}]`)
+      if (d.status === "modified" && d.words) {
+        push(renderWordDiff(d.words, 25))
+        if (d.after && d.after.length <= SUMMARY_LIMITS.afterText) push(`New text: ${d.after}`)
+      }
+      if (d.status === "added") push(clip(d.after ?? "", SUMMARY_LIMITS.addedText))
+      if (d.status === "removed") push(clip(d.before ?? "", SUMMARY_LIMITS.removedText))
+      if (d.codesAdded.length) push(`Codes now listed: ${codeList(d.codesAdded)}`)
+      if (d.codesRemoved.length) push(`Codes no longer listed: ${codeList(d.codesRemoved)}`)
+    }
+    if (shown < diffs.length) push("", `[${diffs.length - shown} more differences not shown here]`)
+  }
+
+  if (payload.codeDiffs.length) {
+    push("", "## Heading differences (Chapter 99 JSON)")
+    for (const d of payload.codeDiffs) {
+      if (length > SUMMARY_LIMITS.total) break
+      push(`### ${d.status}: ${d.htsno || "(text row)"}`)
+      if (d.status === "modified") {
+        for (const f of d.fields) push(`${f.field}: ${f.words ? renderWordDiff(f.words, 15) : `${f.before} → ${f.after}`}`)
+      } else {
+        push(rowText(d.after ?? d.before))
+      }
+    }
+  }
+
+  if (payload.citedHeadings?.length) {
+    push("", `## Headings cited by the change record (${toName})`)
+    for (const c of payload.citedHeadings) {
+      if (c.status === "found" && c.row) push(`- ${c.code}: ${c.row.description} | General: ${c.row.general || "—"}`)
+      else push(`- ${c.code}: ${c.status === "not_found" ? `not in ${toName}'s Chapter 99 data` : "not checked (no JSON)"}`)
+    }
+  }
+
+  const context = payload.context.filter((c) => c.revision === "to")
+  if (context.length && length < SUMMARY_LIMITS.total) {
+    push("", "## Surrounding text (newer revision, shortened)")
+    let used = 0
+    for (const c of context) {
+      if (used > SUMMARY_LIMITS.contextTotal) break
+      const text = clip(c.text, SUMMARY_LIMITS.contextBlock)
+      used += text.length
+      push(`### ${c.label} (${c.reason})`, text)
+    }
+  }
   return out.join("\n")
 }

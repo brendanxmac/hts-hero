@@ -29,6 +29,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
         revision: to.revision,
         attemptNumber: to.attempt.attempt_number,
         changeRecordModel: to.attempt.change_record_model,
+        changeRecordUsage: to.attempt.parse_stats?.changeRecordUsage ?? null,
       },
     })
   } catch (error) {

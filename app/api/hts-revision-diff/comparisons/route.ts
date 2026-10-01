@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireRevisionTool } from "@/libs/hts-revision-diff/access"
 import { RevisionDiffTables as T } from "@/libs/hts-revision-diff/constants"
-import { loadAttempt, runComparison } from "@/libs/hts-revision-diff/pipeline"
+import { loadAttempt, revisionNameProblem, runComparison } from "@/libs/hts-revision-diff/pipeline"
 import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 
 export const dynamic = "force-dynamic"
@@ -23,6 +23,10 @@ export async function POST(req: NextRequest) {
     }
     if (from.attempt.status !== "parsed" || to.attempt.status !== "parsed") {
       return errorResponse(new Error("Both revisions must be parsed first"), 400)
+    }
+    for (const side of [from, to]) {
+      const problem = revisionNameProblem(side.attempt, side.revision.name)
+      if (problem) return errorResponse(new Error(problem), 400)
     }
 
     const created = await db

@@ -166,6 +166,20 @@ export interface ParseStats {
   htsRows: number
   htsRowsWithCode: number
   warnings: number
+  // The revision the documents say they are (from their titles), and the one
+  // the change record says it follows
+  detectedRevision?: { ch99Pdf: string | null; changeRecord: string | null; previous: string | null }
+  // What reading the change record with Claude cost (kept across re-parses)
+  changeRecordUsage?: ClaudeUsage | null
+}
+
+export interface ClaudeUsage {
+  model: string
+  input_tokens: number
+  output_tokens: number // includes thinking
+  cache_read_input_tokens: number
+  cache_creation_input_tokens: number
+  cost_usd: number
 }
 
 export interface ParsedNotes {
@@ -288,6 +302,8 @@ export interface ComparisonStats {
   headingSource?: "revision_json" | "none"
   changes: Record<ChangeSource, number>
   carriedOverReviews: number
+  // From the newer revision's change record ("after 2026 Revision 5")
+  changeRecordFollows?: string | null
 }
 
 // ---------- AI summary ----------
@@ -308,6 +324,10 @@ export interface ChangeSummary {
   effective_dates: { date: string; applies_to: string }[]
   affected_hts_codes: string[]
   engine_impact: string
-  change_record_consistency: string
+  // summary-2 and later
+  matches_change_record?: { status: "yes" | "partly" | "no" | "not_applicable"; note: string }
+  // summary-1 only
+  change_record_consistency?: string
   open_questions: string[]
+  usage?: ClaudeUsage
 }

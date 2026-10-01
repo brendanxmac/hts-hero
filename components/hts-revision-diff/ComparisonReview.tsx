@@ -8,6 +8,7 @@ import type {
   Category,
   ChangeRow,
   ChangeSource,
+  ClaudeUsage,
   CodeDiff,
   ComparisonRow,
   Decision,
@@ -20,7 +21,7 @@ interface ComparisonData {
   comparison: ComparisonRow
   changes: ChangeRow[]
   from: { revision: RevisionRow; attemptNumber: number }
-  to: { revision: RevisionRow; attemptNumber: number; changeRecordModel: string | null }
+  to: { revision: RevisionRow; attemptNumber: number; changeRecordModel: string | null; changeRecordUsage: ClaudeUsage | null }
 }
 
 const SOURCE_LABELS: Record<ChangeSource, string> = {
@@ -39,6 +40,9 @@ const DECISIONS: { value: Decision; label: string; style: string }[] = [
   { value: "skip", label: "Skip", style: "btn-neutral" },
 ]
 const SUMMARY_CONCURRENCY = 3
+
+const formatUsd = (usd: number) => (usd < 0.01 ? "<$0.01" : `$${usd.toFixed(2)}`)
+const formatTokens = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n))
 
 export default function ComparisonReview({ comparisonId }: { comparisonId: string }) {
   const router = useRouter()
@@ -141,6 +145,12 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
   const decided = changes.filter((c) => c.decision !== "pending").length
   const unsummarized = changes.filter((c) => !c.summary).length
   const allDecided = changes.length > 0 && decided === changes.length
+  // Claude cost so far: the change record reading plus every summary
+  const usages = [to.changeRecordUsage, ...changes.map((c) => c.summary?.usage)].filter(Boolean) as ClaudeUsage[]
+  const claudeCost = usages.reduce((sum, u) => sum + u.cost_usd, 0)
+  const claudeIn = usages.reduce((sum, u) => sum + u.input_tokens, 0)
+  const claudeOut = usages.reduce((sum, u) => sum + u.output_tokens, 0)
+  const untracked = changes.filter((c) => c.summary && !c.summary.usage).length
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8">
@@ -230,6 +240,15 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
               )}
             </div>
           </div>
+
+          {usages.length > 0 && (
+            <p className="text-sm text-base-content/60">
+              Claude so far: {formatUsd(claudeCost)} ({formatTokens(claudeIn)} input, {formatTokens(claudeOut)} output tokens
+              including thinking)
+              {to.changeRecordUsage ? `, of which reading the change record was ${formatUsd(to.changeRecordUsage.cost_usd)}` : ""}.
+              {untracked > 0 && ` ${untracked} older summaries weren't tracked.`}
+            </p>
+          )}
 
           {stats.carriedOverReviews > 0 && (
             <p className="text-sm text-base-content/60">
@@ -502,6 +521,12 @@ function SummaryBlock({
       <p className="mb-2 text-base-content/70">
         Suggested category: <span className="font-semibold">{summary.category}</span>. {summary.category_reason}
       </p>
+      {summary.matches_change_record && (
+        <p className="mb-2">
+          <span className="font-semibold">Matches change record:</span> {summary.matches_change_record.status.replace("_", " ")}.{" "}
+          {summary.matches_change_record.note}
+        </p>
+      )}
       {summary.what_changed.length > 0 && (
         <ul className="mb-2 flex flex-col gap-2">
           {summary.what_changed.map((c, i) => (
@@ -533,9 +558,11 @@ function SummaryBlock({
       <p className="mb-1">
         <span className="font-semibold">Engine impact:</span> {summary.engine_impact}
       </p>
-      <p className="mb-1">
-        <span className="font-semibold">Change record:</span> {summary.change_record_consistency}
-      </p>
+      {summary.change_record_consistency && (
+        <p className="mb-1">
+          <span className="font-semibold">Change record:</span> {summary.change_record_consistency}
+        </p>
+      )}
       {summary.open_questions.length > 0 && (
         <div>
           <span className="font-semibold">Open questions:</span>
@@ -548,6 +575,8 @@ function SummaryBlock({
       )}
       <p className="mt-2 text-xs text-base-content/50">
         {change.summary_model} · {change.summary_prompt_version}
+        {summary.usage &&
+          ` · ${formatTokens(summary.usage.input_tokens)} in / ${formatTokens(summary.usage.output_tokens)} out · ${formatUsd(summary.usage.cost_usd)}`}
       </p>
     </div>
   )

@@ -20,11 +20,17 @@ export const isRevisionToolEnabled = () =>
 
 export const CLAUDE_MODEL = "claude-opus-5-5"
 
+// US$ per million tokens, for showing what each Claude call cost. A fallback
+// model (used only if Opus declines) is priced as Opus as an estimate.
+export const CLAUDE_PRICES: Record<string, { input: number; output: number; cacheRead: number; cacheWrite: number }> = {
+  "claude-opus-5-5": { input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
+}
+
 // Bump when parsing or diffing output changes shape, so stored results show
 // which version produced them
 export const PARSER_VERSION = "ch99-notes-4"
 export const DIFF_VERSION = "diff-1"
-export const SUMMARY_PROMPT_VERSION = "summary-1"
+export const SUMMARY_PROMPT_VERSION = "summary-2"
 export const CHANGE_RECORD_PROMPT_VERSION = "change-record-1"
 
 // "2026HTSRev5", "2026HTSBasic", "2025HTSRev32"

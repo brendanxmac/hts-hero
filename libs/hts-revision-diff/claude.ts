@@ -3,8 +3,8 @@
 
 import Anthropic from "@anthropic-ai/sdk"
 import type { BetaMessage } from "@anthropic-ai/sdk/resources/beta/messages/messages"
-import { CLAUDE_MODEL } from "./constants"
-import type { ChangeRecordItem, ChangeSummary } from "./types"
+import { CLAUDE_MODEL, CLAUDE_PRICES } from "./constants"
+import type { ChangeRecordItem, ChangeSummary, ClaudeUsage } from "./types"
 import { normalizeForCompare } from "./text"
 
 const client = () => {
@@ -18,12 +18,32 @@ const client = () => {
 // so a safety-classifier decline is retried on a fallback model instead of
 // failing; if the API rejects the fallback option, the call is retried once
 // without it.
+const usageOf = (message: BetaMessage): ClaudeUsage => {
+  const u = message.usage
+  const price = CLAUDE_PRICES[message.model] ?? CLAUDE_PRICES[CLAUDE_MODEL]
+  const input = u.input_tokens ?? 0
+  const output = u.output_tokens ?? 0
+  const cacheRead = u.cache_read_input_tokens ?? 0
+  const cacheWrite = u.cache_creation_input_tokens ?? 0
+  const cost =
+    (input * price.input + output * price.output + cacheRead * price.cacheRead + cacheWrite * price.cacheWrite) / 1_000_000
+  return {
+    model: message.model,
+    input_tokens: input,
+    output_tokens: output,
+    cache_read_input_tokens: cacheRead,
+    cache_creation_input_tokens: cacheWrite,
+    cost_usd: Math.round(cost * 10_000) / 10_000,
+  }
+}
+
 const callJson = async <T>(params: {
   system: string
   user: string
   schema: Record<string, unknown>
   maxTokens: number
-}): Promise<{ data: T; model: string }> => {
+  effort: "low" | "medium" | "high"
+}): Promise<{ data: T; model: string; usage: ClaudeUsage }> => {
   const anthropic = client()
   const request = (withFallback: boolean) =>
     anthropic.beta.messages
@@ -32,7 +52,7 @@ const callJson = async <T>(params: {
         max_tokens: params.maxTokens,
         thinking: { type: "adaptive" },
         output_config: {
-          effort: "high",
+          effort: params.effort,
           format: { type: "json_schema", schema: params.schema },
         },
         system: params.system,
@@ -66,7 +86,7 @@ const callJson = async <T>(params: {
     .map((block) => (block.type === "text" ? block.text : ""))
     .join("")
   try {
-    return { data: JSON.parse(text) as T, model: message.model }
+    return { data: JSON.parse(text) as T, model: message.model, usage: usageOf(message) }
   } catch {
     throw new Error("Claude returned output that isn't valid JSON")
   }
@@ -154,13 +174,15 @@ Rules:
 - Never invent items, citations, codes or dates that aren't in the change record.`
 
 export const extractChangeRecord = async (markdown: string, revisionName: string) => {
-  const { data, model } = await callJson<{ items: ChangeRecordItem[] }>({
+  // Everything downstream depends on this reading, so it gets effort "high"
+  const { data, model, usage } = await callJson<{ items: ChangeRecordItem[] }>({
     system: CHANGE_RECORD_SYSTEM,
     user: `Change record for HTS ${revisionName}, converted from PDF to markdown:\n\n<change_record>\n${markdown}\n</change_record>`,
     schema: CHANGE_RECORD_SCHEMA,
     maxTokens: 64000,
+    effort: "high",
   })
-  return { items: data.items, model }
+  return { items: data.items, model, usage }
 }
 
 // ---------- Change summaries ----------
@@ -177,7 +199,7 @@ const SUMMARY_SCHEMA = {
     "effective_dates",
     "affected_hts_codes",
     "engine_impact",
-    "change_record_consistency",
+    "matches_change_record",
     "open_questions",
   ],
   properties: {
@@ -209,40 +231,54 @@ const SUMMARY_SCHEMA = {
     },
     affected_hts_codes: { type: "array", items: { type: "string" } },
     engine_impact: { type: "string" },
-    change_record_consistency: { type: "string" },
+    matches_change_record: {
+      type: "object",
+      additionalProperties: false,
+      required: ["status", "note"],
+      properties: {
+        status: { type: "string", enum: ["yes", "partly", "no", "not_applicable"] },
+        note: { type: "string" },
+      },
+    },
     open_questions: { type: "array", items: { type: "string" } },
   },
 }
 
-const SUMMARY_SYSTEM = `You explain changes between two revisions of chapter 99 of the U.S. Harmonized Tariff Schedule to the developer of a tariff calculator. Chapter 99 holds temporary and additional duties (Section 232, Section 301, IEEPA and similar programs). Its notes define which goods are covered, exclusions, how duties stack, and effective dates.
+const MAX_CLAIMS = 5
+const MAX_QUESTIONS = 3
 
-You get the change record entries (if any), the differences in the parsed note text and headings, and surrounding context. The text was extracted from PDF, so it can contain extraction errors; say so if something looks garbled rather than interpreting it.
+const SUMMARY_SYSTEM = `You summarize one change between two revisions of chapter 99 of the U.S. Harmonized Tariff Schedule for the developer of a tariff calculator. Chapter 99 holds temporary and additional duties (Section 232, Section 301, IEEPA and similar); its notes define coverage, exclusions, stacking and effective dates.
 
-Write for someone who will update the calculator's data and logic:
-- headline: one line.
-- summary: 2-6 plain-English sentences on what changed and what it means for duties owed.
-- what_changed: each specific change as a statement, with citation (note key or HTS number as given in the material) and quote, an exact excerpt of the new (or removed) text that supports it. Copy quotes exactly; never paraphrase inside a quote.
-- category: "data" when only lists, codes, rates or dates change; "logic" when how duties apply changes (scope conditions, stacking or exclusion rules, country carve-outs, content or value rules); "mixed" for both; "none" when the difference is only formatting or extraction noise.
-- effective_dates: dates stated in the text and what they apply to.
-- affected_hts_codes: codes whose duty treatment changes.
-- engine_impact: what the calculator likely needs to change.
-- change_record_consistency: whether the differences match what the change record says, and anything the change record mentions that the differences don't show (or the reverse).
-- open_questions: anything ambiguous that the developer should check.
+You get the change record entry (if any), word diffs of the changed note text ([-removed-] {+added+}), cited headings, and a little surrounding text. The text came from a PDF and may contain extraction errors; if something looks garbled, say so instead of interpreting it.
 
-Only state what the material supports. If the differences look like renumbering or extraction noise rather than a real change, say that.`
+Be brief. The developer reads many of these.
+- headline: one line, under 15 words.
+- summary: 2-3 short sentences on what changed and what it means for duties owed.
+- what_changed: at most ${MAX_CLAIMS} items, most important first. Each has a statement (one sentence), a citation (the note key or HTS number as given), and a quote: an exact excerpt of under 25 words copied from the material. Never paraphrase inside a quote.
+- category: "data" when only lists, codes, rates or dates change; "logic" when how duties apply changes (coverage conditions, stacking or exclusion rules, country carve-outs, content or value rules); "mixed" for both; "none" for formatting or extraction noise. category_reason: one short sentence.
+- effective_dates: only dates stated in the text.
+- affected_hts_codes: codes whose duty treatment changes; empty if none are stated.
+- engine_impact: one sentence on what the calculator likely needs to change.
+- matches_change_record: whether the differences match the change record entry ("not_applicable" when there is none), with a one-sentence note.
+- open_questions: at most ${MAX_QUESTIONS}, only real ambiguities.
+
+Only state what the material supports. If the differences look like renumbering or extraction noise, say that in the summary and use category "none".`
 
 export const summarizeChange = async (material: string) => {
-  const { data, model } = await callJson<ChangeSummary>({
+  const { data, usage } = await callJson<ChangeSummary>({
     system: SUMMARY_SYSTEM,
     user: material,
     schema: SUMMARY_SCHEMA,
-    maxTokens: 32000,
+    maxTokens: 16000,
+    effort: "medium",
   })
   // Mark which quotes actually appear in the material we sent
   const haystack = normalizeForCompare(material).toLowerCase()
-  data.what_changed = data.what_changed.map((claim) => ({
+  data.what_changed = data.what_changed.slice(0, MAX_CLAIMS).map((claim) => ({
     ...claim,
     verified: haystack.includes(normalizeForCompare(claim.quote).toLowerCase()),
   }))
-  return { summary: data, model }
+  data.open_questions = data.open_questions.slice(0, MAX_QUESTIONS)
+  data.usage = usage
+  return { summary: data, model: usage.model, usage }
 }
