@@ -322,8 +322,8 @@ const MobileRow = ({
       className={`${styles.num} text-[13px] text-[var(--dc-text-2)] flex flex-col`}
     >
       {rateText &&
-      basisText &&
-      rateText.split(" + ").length === basisText.split(" · ").length ? (
+        basisText &&
+        rateText.split(" + ").length === basisText.split(" · ").length ? (
         // One line per part, e.g. "4.5% on the case of $2,000.00"
         rateText.split(" + ").map((part, i) => (
           <span key={i}>
@@ -358,9 +358,8 @@ const MobileTotal = ({
   strong?: boolean;
 }) => (
   <li
-    className={`border-t border-[var(--dc-border-strong)] px-5 py-3.5 flex items-baseline justify-between gap-4 ${
-      strong ? "bg-[var(--dc-surface-2)]" : ""
-    }`}
+    className={`border-t border-[var(--dc-border-strong)] px-5 py-3.5 flex items-baseline justify-between gap-4 ${strong ? "bg-[var(--dc-surface-2)]" : ""
+      }`}
   >
     <span className="text-[14px] font-semibold">{label}</span>
     <span
@@ -599,7 +598,7 @@ export const QuestionsPanel = ({
 
   return (
     <Panel
-      title="Additional Options"
+      title="Possible Adjustments"
       badge={open > 0 ? `${open} could change the total` : undefined}
       description="Unanswered questions count as “no”, so an exemption isn’t applied until you confirm it."
     >
@@ -643,11 +642,10 @@ const Impact = ({ amount }: { amount?: number }) => {
   const lower = amount < 0;
   return (
     <span
-      className={`${styles.num} inline-flex items-center rounded-md px-1.5 py-0.5 text-[12px] font-semibold ${
-        lower
-          ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)]"
-          : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
-      }`}
+      className={`${styles.num} inline-flex items-center rounded-md px-1.5 py-0.5 text-[12px] font-semibold ${lower
+        ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)]"
+        : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
+        }`}
     >
       {lower ? "−" : "+"}
       {formatMoney(Math.abs(amount))}
@@ -796,11 +794,10 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`inline-flex rounded-md px-1.5 py-0.5 text-[11.5px] font-semibold ${
-                    line.status === "needsAnswer"
-                      ? "bg-[var(--dc-warning-soft)] text-[var(--dc-warning)] border border-[var(--dc-warning-border)]"
-                      : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
-                  }`}
+                  className={`inline-flex rounded-md px-1.5 py-0.5 text-[11.5px] font-semibold ${line.status === "needsAnswer"
+                    ? "bg-[var(--dc-warning-soft)] text-[var(--dc-warning)] border border-[var(--dc-warning-border)]"
+                    : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
+                    }`}
                 >
                   {STATUS[line.status]}
                 </span>
@@ -857,7 +854,7 @@ export const BasisPanel = ({
     [
       "Rate column",
       COLUMN_LABEL[result.column] +
-        (result.claimedPreference ? ` (${result.claimedPreference})` : ""),
+      (result.claimedPreference ? ` (${result.claimedPreference})` : ""),
     ],
     ["Transport", TRANSPORT_MODES.find((m) => m.id === transportMode)?.label],
   ];
