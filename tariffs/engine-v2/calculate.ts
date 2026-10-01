@@ -516,6 +516,11 @@ const interactionsFor = (snapshot: RuleSnapshot, input: CalculationInput) =>
         codeMatches(i.appliesTo.codes, input.htsCode, snapshot)),
   )
 
+const USMCA_SYMBOLS = ["S", "S+"]
+
+const isFreeWithNoSpecialColumn = (baseRates: CalculationInput["baseRates"]) =>
+  baseRates.general?.trim().toLowerCase() === "free" && !baseRates.special?.trim()
+
 const getAvailablePreferences = (
   snapshot: RuleSnapshot,
   input: CalculationInput,
@@ -523,6 +528,12 @@ const getAvailablePreferences = (
   const symbols = new Set(
     parseRateColumn(input.baseRates.special).flatMap((t) => t.programs ?? []),
   )
+  // A line that's free under General lists no special programs, but USMCA-originating goods
+  // can still be entered under USMCA there. Chapter 99 headings such as 9903.82.18/.19 and
+  // 9903.03.07/.08 depend on that claim.
+  if (isFreeWithNoSpecialColumn(input.baseRates)) {
+    USMCA_SYMBOLS.forEach((symbol) => symbols.add(symbol))
+  }
   return snapshot.preferences.filter(
     (p: TradePreference) =>
       symbols.has(p.symbol) &&

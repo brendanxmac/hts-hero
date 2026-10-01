@@ -329,6 +329,20 @@ describe("engine-v2: columns and preferences", () => {
     expect(result.column).toBe("general")
     expect(result.warnings.length).toBe(1)
   })
+  it("allows a USMCA claim on a line that's free under General with no special column", () => {
+    const freeLine = { general: "Free", special: null, other: "20%" }
+    const claimed = calculate(set, input({ country: "MX", claimedPreference: "S", baseRates: freeLine }))
+    expect(claimed.column).toBe("special")
+    expect(claimed.base.amount).toBe(0)
+    expect(claimed.availablePreferences.map((p) => p.symbol)).toEqual(["S"])
+    // Still only for USMCA countries
+    expect(calculate(set, input({ country: "CN", claimedPreference: "S", baseRates: freeLine })).column).toBe("general")
+  })
+  it("doesn't add USMCA to a special column that lists other programs only", () => {
+    const result = calculate(set, input({ country: "MX", claimedPreference: "S", baseRates: { general: "Free", special: "Free (KR)", other: "20%" } }))
+    expect(result.column).toBe("general")
+    expect(result.warnings.length).toBe(1)
+  })
   it("charges HMF only on ocean shipments", () => {
     const withHmf = rules({
       fees: [

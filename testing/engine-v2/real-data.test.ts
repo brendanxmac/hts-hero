@@ -28,6 +28,9 @@ const RATES: Record<string, HtsLine> = {
   "9401.61.40.11": { htsno: "9401.61.40", general: "Free", special: "", other: "40%" },
   "9401.69.60.31": { htsno: "9401.69.60", general: "Free", special: "", other: "40%" },
   "0402.10.10.00": { htsno: "0402.10.10.00", general: "3.3¢/kg", special: "Free (A+,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "6.6¢/kg" },
+  "7601.10.30.00": { htsno: "7601.10.30.00", general: "2.6%", special: "Free (A,AU,BH,CL,CO,D,E,IL,JO,KR,MA, OM,P,PA,PE,S,SG)", other: "18.5%" },
+  "7612.10.00.00": { htsno: "7612.10.00.00", general: "2.4%", special: "Free (A,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "45%" },
+  "8708.10.30.50": { htsno: "8708.10.30", general: "2.5%", special: "Free (A,AU,B,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "25%" },
 }
 
 const run = (htsCode: string, country: string) => {
@@ -199,5 +202,111 @@ describe("engine-v2 real data", () => {
       baseRates: { general: rates.general, special: rates.special, other: rates.other },
     })
     expect(v2.lines.some((l) => l.code === "9903.03.01")).toBe(false)
+  })
+})
+
+// ============================================================
+// 2026 Rev 6: 9903.82.18/.19 (U.S. note 16(h)/(i)) and the extended 9903.82 ranges
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 6", () => {
+  const REV6 = "2026-04-24"
+  const STEEL = "7206.90.00.00" // note 16(c)(iii); free under General, no special column
+  const ALUMINUM = "7601.10.30.00" // note 16(c)(i)
+
+  const runAt = (
+    htsCode: string,
+    country: string,
+    asOf: string,
+    extra: Partial<Parameters<typeof calculate>[1]> = {},
+  ) => {
+    const rates = RATES[htsCode]
+    return calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: rates.general, special: rates.special, other: rates.other },
+      ...extra,
+    })
+  }
+  const status = (result: CalculationResult, code: string) =>
+    result.lines.find((l) => l.code === code)?.status
+
+  it("Canadian steel under USMCA, authorized by Commerce: 9903.82.18 at 25% replaces 9903.82.02", () => {
+    const v2 = runAt(STEEL, "CA", REV6, { claimedPreference: "S", answers: { "confirm:9903.82.18": true } })
+    expect(v2.column).toBe("special")
+    expect(v2.totalDuty).toBe(2500)
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.03.07", "9903.82.18"])
+    expect(status(v2, "9903.82.02")).toBe("excluded")
+  })
+
+  it("9903.82.18 needs the Commerce authorization confirmed; until then 9903.82.02 applies at 50%", () => {
+    const v2 = runAt(STEEL, "CA", REV6, { claimedPreference: "S" })
+    expect(status(v2, "9903.82.18")).toBe("needsAnswer")
+    expect(applying(v2)).toContain("9903.82.02")
+    expect(v2.totalDuty).toBe(5000)
+  })
+
+  it("9903.82.18 applies only with a USMCA claim (its rate is in the Special column only)", () => {
+    const v2 = runAt(STEEL, "CA", REV6, { answers: { "confirm:9903.82.18": true } })
+    expect(v2.column).toBe("general")
+    expect(status(v2, "9903.82.18")).toBe("notApplicable")
+    expect(v2.totalDuty).toBe(5000)
+  })
+
+  it("9903.82.18 starts on April 23, 2026", () => {
+    const v2 = runAt(STEEL, "CA", "2026-04-22", { claimedPreference: "S", answers: { "confirm:9903.82.18": true } })
+    expect(status(v2, "9903.82.18")).toBeUndefined()
+    expect(v2.totalDuty).toBe(5000)
+  })
+
+  it("9903.82.18 covers only goods of Canada or Mexico", () => {
+    const v2 = runAt(STEEL, "CN", REV6, { answers: { "confirm:9903.82.18": true } })
+    expect(status(v2, "9903.82.18")).toBeUndefined()
+    expect(applying(v2)).toContain("9903.82.02")
+  })
+
+  it("Mexican aluminum under USMCA, authorized by Commerce: 9903.82.19 at 25% replaces 9903.82.02", () => {
+    const v2 = runAt(ALUMINUM, "MX", REV6, { claimedPreference: "S", answers: { "confirm:9903.82.19": true } })
+    expect(v2.totalDuty).toBe(2500) // Free under USMCA + 25%
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.03.08", "9903.82.19"])
+    expect(status(v2, "9903.82.02")).toBe("excluded")
+  })
+
+  it("7612.10.00 is a derivative aluminum article in note 16(c)(ii) (technical correction, PP 11021)", () => {
+    const v2 = runAt("7612.10.00.00", "VN", AS_OF)
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.82.02"])
+    expect(v2.totalDuty).toBe(5240) // 2.4% base + 50%
+  })
+})
+
+// ============================================================
+// Section 232 metals don't stack on autos, MHDVs and semiconductors (notes 33, 38, 39).
+// Not modeled before 2026 Rev 6; the correction applies from the start of the data.
+// ============================================================
+describe("engine-v2 real data: metals non-stacking", () => {
+  const PART = "8708.10.30.50" // auto part (33(g)) and derivative steel (16(c)(vii))
+
+  it("a confirmed Japanese auto part pays 9903.94.43 and not 9903.82.09 (note 33(l)(1))", () => {
+    const rates = RATES[PART]
+    const v2 = calculate(AllRules, {
+      htsCode: PART, country: "JP", asOf: AS_OF, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: rates.general, special: rates.special, other: rates.other },
+      answers: { "confirm:9903.94.43": true },
+    })
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.94.43"])
+    expect(v2.lines.find((l) => l.code === "9903.82.09").status).toBe("excluded")
+    expect(v2.totalDuty).toBe(1500) // 2.5% base topped up to 15%
+  })
+
+  it("an unconfirmed auto part still pays the 232 metals duty", () => {
+    expect(applying(run(PART, "JP"))).toContain("9903.82.09")
+  })
+
+  it("a heavy-duty tractor pays 9903.74.01 and not 9903.82.09 (note 38(a)(1))", () => {
+    const v2 = calculate(AllRules, {
+      htsCode: "8701.21.00.80", country: "DE", asOf: "2026-04-24", customsValue: VALUE, quantity: 1,
+      baseRates: { general: "4%", special: null, other: null },
+    })
+    expect(applying(v2)).toContain("9903.74.01")
+    expect(v2.lines.find((l) => l.code === "9903.82.09").status).toBe("excluded")
+    expect(v2.totalDuty).toBe(2900)
   })
 })

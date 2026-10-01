@@ -1,0 +1,42 @@
+{
+  "revision": "2026HTSRev6",
+  "revisionTitle": "Revision 6 (2026)",
+  "fromRevision": "2026HTSRev5",
+  "comparisonId": "666dc8af-2bbc-4d25-9182-68ab0450eecb",
+  "attempts": {
+    "from": 1,
+    "to": 1
+  },
+  "exportedAt": "2026-10-01T16:43:14.203Z",
+  "parserVersion": "ch99-notes-4",
+  "diffVersion": "diff-2",
+  "changeRecordModel": "claude-opus-5-5 (change-record-1)",
+  "consecutive": true,
+  "headingDiff": "change_record_only",
+  "headingSource": "revision_pdf",
+  "counts": {
+    "total": 11,
+    "approve": 8,
+    "defer": 3,
+    "skip": 0
+  },
+  "allDecided": true,
+  "contentHash": "717e54a716590b983e31321572cc6bb32b48a046893dd59d9fbe931049932f47",
+  "sourceFiles": [
+    {
+      "kind": "ch99_headings_pdf",
+      "filename": "Chapter 99_new_headings.pdf",
+      "storagePath": "2026HTSRev6/attempt-1/source/ch99_headings_pdf.pdf"
+    },
+    {
+      "kind": "ch99_pdf",
+      "filename": "Chapter 99_2026HTSRev6 (1).pdf",
+      "storagePath": "2025HTSRev6/attempt-1/source/ch99_pdf.pdf"
+    },
+    {
+      "kind": "change_record",
+      "filename": "Change Record_2026HTSRev6 (2).pdf",
+      "storagePath": "2025HTSRev6/attempt-1/source/change_record.pdf"
+    }
+  ]
+}

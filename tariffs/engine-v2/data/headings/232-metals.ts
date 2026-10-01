@@ -2,6 +2,7 @@
 // was removed on Oct 1, 2026; this file is now the source. See HowTariffsWork.md §6.
 import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
+import { tariffVersions } from "../../versioning"
 
 export const headings: Tariff[] = [
   {
@@ -30,35 +31,60 @@ export const headings: Tariff[] = [
     effective: {},
     source: { revision: "2026HTSRev5" },
   },
-  {
-    code: "9903.82.02",
-    program: "232-metals",
-    name: "Section 232 Metals",
-    description:
-      "Except as provided for in headings 9903.82.14, 9903.85.67 and 9903.85.68, articles of aluminum, of steel or of copper and derivative aluminum or steel articles, as provided for in subdivisions (c)(i)–(v) of U.S. note 16 to this subchapter",
-    scope: {
-      countries: "all",
-      codes: [
-        { list: "aluminum16ci" },
-        { list: "aluminumDerivatives16cii" },
-        { list: "copper16cv" },
-        { list: "steel16ciii" },
-        { list: "steelDerivatives16civ" },
+  ...tariffVersions(
+    {
+      code: "9903.82.02",
+      program: "232-metals",
+      name: "Section 232 Metals",
+      description:
+        "Except as provided for in headings 9903.82.14, 9903.85.67 and 9903.85.68, articles of aluminum, of steel or of copper and derivative aluminum or steel articles, as provided for in subdivisions (c)(i)–(v) of U.S. note 16 to this subchapter",
+      scope: {
+        countries: "all",
+        codes: [
+          { list: "aluminum16ci" },
+          { list: "aluminumDerivatives16cii" },
+          { list: "copper16cv" },
+          { list: "steel16ciii" },
+          { list: "steelDerivatives16civ" },
+        ],
+      },
+      exceptions: [
+        "9903.82.01",
+        "9903.82.14",
+        "9903.85.67",
+        "9903.85.68",
+        "9903.82.03",
+        "9903.82.04",
+        "9903.82.06",
       ],
+      rate: { kind: "adValorem", pct: 50 },
+      effective: {},
+      source: { revision: "2026HTSRev5" },
     },
-    exceptions: [
-      "9903.82.01",
-      "9903.82.14",
-      "9903.85.67",
-      "9903.85.68",
-      "9903.82.03",
-      "9903.82.04",
-      "9903.82.06",
+    [
+      {
+        // Note 16(a): headings 9903.82.02–9903.82.19 are mutually exclusive
+        from: "2026-04-23",
+        set: {
+          exceptions: [
+            "9903.82.01",
+            "9903.82.14",
+            "9903.85.67",
+            "9903.85.68",
+            "9903.82.03",
+            "9903.82.04",
+            "9903.82.06",
+            "9903.82.18",
+            "9903.82.19",
+          ],
+        },
+        source: {
+          revision: "2026HTSRev6",
+          note: "U.S. note 16(a) range extended to 9903.82.19; effective date from the change record",
+        },
+      },
     ],
-    rate: { kind: "adValorem", pct: 50 },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
-  },
+  ),
   {
     code: "9903.82.03",
     program: "232-metals",
@@ -407,6 +433,56 @@ export const headings: Tariff[] = [
     rate: { kind: "adValorem", pct: 25 },
     effective: {},
     source: { revision: "2026HTSRev5" },
+  },
+  // Rate is in the Special column only ("no change" under General and Column 2), so these
+  // apply only when USMCA is claimed. The confirmation covers the other conditions of
+  // note 16(h)/(i): melted and poured (smelted and cast) in Canada or Mexico, and a
+  // Commerce-authorized limited quantity under clause 13 of Proclamation 10984.
+  {
+    code: "9903.82.18",
+    program: "232-metals",
+    name: "Section 232 Steel of Canada or Mexico Authorized by Commerce for a Reduced Rate (USMCA)",
+    description:
+      "Certain articles of steel, as provided for in subdivisions (c)(iii) and (h) of U.S. note 16 to this subchapter",
+    scope: {
+      countries: ["CA", "MX"],
+      codes: [{ list: "steel16ciii" }],
+    },
+    requires: [
+      { kind: "preferenceClaimed", symbols: ["S", "S+"] },
+      confirm("9903.82.18"),
+    ],
+    exceptions: ["9903.82.01"],
+    rate: { kind: "adValorem", pct: 25 },
+    effective: { from: "2026-04-23" },
+    source: {
+      revision: "2026HTSRev6",
+      citation: "Proclamation 10984, clause 13",
+      note: "U.S. note 16(h). Effective date from the change record (Notice)",
+    },
+  },
+  {
+    code: "9903.82.19",
+    program: "232-metals",
+    name: "Section 232 Aluminum of Canada or Mexico Authorized by Commerce for a Reduced Rate (USMCA)",
+    description:
+      "Certain articles of aluminum, as provided for in subdivision (c)(i) and subdivision (i) of U.S. note 16 to this subchapter",
+    scope: {
+      countries: ["CA", "MX"],
+      codes: [{ list: "aluminum16ci" }],
+    },
+    requires: [
+      { kind: "preferenceClaimed", symbols: ["S", "S+"] },
+      confirm("9903.82.19"),
+    ],
+    exceptions: ["9903.82.01"],
+    rate: { kind: "adValorem", pct: 25 },
+    effective: { from: "2026-04-23" },
+    source: {
+      revision: "2026HTSRev6",
+      citation: "Proclamation 10984, clause 13",
+      note: "U.S. note 16(i). Effective date from the change record (Notice)",
+    },
   },
   {
     code: "9903.85.67",

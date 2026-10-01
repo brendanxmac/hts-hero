@@ -1,7 +1,7 @@
 # Engine v2: progress log
 
 Implementation of the design in [HowTariffsWork.md](../../HowTariffsWork.md), running alongside the legacy engine.
-Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 5** (Apr 8 – Apr 23, 2026).
+Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 6** (Apr 8 – Apr 29, 2026: Revisions 5 and 6).
 
 ## Status
 
@@ -240,6 +240,14 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 2: 2026 Rev 6 applied (branch `revision/2026HTSRev6`)
+
+See `tariffs/revision-diffs/2026HTSRev6/PLAN.md` for the full plan.
+- **New headings** 9903.82.18 (steel of CA/MX) and 9903.82.19 (aluminum of CA/MX): 25% in the Special column only, so they need a USMCA claim plus a Commerce-authorization confirmation. From 2026-04-23.
+- **New versions** of 9903.82.02 (new exceptions .18 and .19, note 16(a)) and 9903.03.06 (.18 and .19 trigger the Section 122 exemption, note 2(aa)(v)(1)).
+- **Metals non-stacking (notes 33, 38, 39)** is now modeled as a `noStack` interaction: when a listed auto, MHDV or semiconductor heading applies, 9903.82.02 and .04–.17 are dropped, plus .18 and .19 from 2026-04-23. This wasn't modeled before, so it **changes Rev 5 results** for confirmed auto, MHDV and semiconductor goods.
+- **USMCA on Free lines (engine change):** a line that's free under General with no special column now offers S/S+ for CA/MX. Before, a claim there was refused, so 9903.82.18 could never apply and 9903.03.07/.08 couldn't exempt Free USMCA goods from Section 122.
+
 ## Oct 1: legacy engine removed
 
 Every duty estimate on the site now comes from engine-v2.
@@ -270,7 +278,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 5), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 6), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.
