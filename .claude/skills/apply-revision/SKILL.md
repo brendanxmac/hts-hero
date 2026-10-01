@@ -23,6 +23,8 @@ The argument is a revision name such as `2026HTSRev6`. The reviewed changes are 
    4. The AI summary. Treat it as a pointer only. Claims marked "quote not found in the source text" are unverified.
 
    If the text looks garbled (a PDF extraction error), say so instead of interpreting it.
+
+   **Headings:** the "before" for a heading is the engine's own record (search `tariffs/engine-v2/data/headings/` and `tariffs/engine-v2/data/lists/` for the code), not old USITC data. The "after" is the heading row in the change file's "Headings cited by the change record" section, taken from the revision's Chapter 99 JSON. Unless `manifest.json` says `headingDiff: "full"`, heading changes come only from the change record, so don't assume headings not listed there are unchanged. When a cited heading is marked "not checked" (no JSON for that revision), its new wording and rate aren't in the package: list it under open questions and ask the user for the text instead of guessing.
 5. **Write `tariffs/revision-diffs/<revision>/PLAN.md`** with:
    - For each approved change: what changes legally (cite the note key or heading and quote the text), the §17 recipe it follows, the exact records and files to edit, the **legal effective date** and its source (often not the revision's start date), and the tests or pinned cases to add.
    - Changes to engine logic (category `logic` or `mixed`), called out separately, since they need the most scrutiny.

@@ -160,6 +160,8 @@ const main = async () => {
     diffVersion: comparison.diff_version,
     changeRecordModel: toAttempt.change_record_model,
     consecutive: comparison.stats?.consecutive ?? null,
+    headingDiff: comparison.stats?.headingDiff ?? "full",
+    headingSource: comparison.stats?.headingSource ?? "revision_json",
     counts: { total: changes.length, approve: count("approve"), defer: count("defer"), skip: count("skip") },
     allDecided: true,
     contentHash: createHash("sha256").update(changesJson).digest("hex"),
@@ -179,6 +181,13 @@ const main = async () => {
       `- Compared: **${fromName} → ${toName}**${manifest.consecutive === false ? " (not consecutive revisions)" : ""}`,
       `- Comparison: \`${comparison.id}\``,
       `- Decisions: ${manifest.counts.approve} approved, ${manifest.counts.defer} deferred, ${manifest.counts.skip} skipped`,
+      `- Headings: ${
+        manifest.headingDiff === "full"
+          ? "every Chapter 99 heading diffed between the two revisions"
+          : manifest.headingSource === "revision_json"
+            ? `changes come from the change record; cited headings are shown as they read in ${toName}'s Chapter 99 JSON`
+            : `changes come from the change record; ${toName} has no Chapter 99 JSON, so cited headings' new text isn't included`
+      }`,
       "",
       "To plan and implement the approved changes, run `/apply-revision " + toName + "` in Claude Code.",
       "",

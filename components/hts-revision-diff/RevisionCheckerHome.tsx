@@ -8,6 +8,7 @@ import { HtsRevisions } from "@/tariffs/engine-v2/revisions"
 import {
   DOCUMENT_KINDS,
   DOCUMENT_LABELS,
+  REQUIRED_DOCUMENT_KINDS,
   type AttemptRow,
   type ComparisonRow,
   type DocumentKind,
@@ -255,7 +256,8 @@ export default function RevisionCheckerHome() {
                     {attempt.parse_stats && (
                       <p className="mt-2 text-xs text-base-content/70">
                         {attempt.parse_stats.topLevelNotes} notes · {attempt.parse_stats.nodes} subdivisions ·{" "}
-                        {attempt.parse_stats.subchapters.length} subchapters · {attempt.parse_stats.htsRowsWithCode} headings in JSON ·{" "}
+                        {attempt.parse_stats.subchapters.length} subchapters ·{" "}
+                        {attempt.parse_stats.htsRows ? `${attempt.parse_stats.htsRowsWithCode} headings in JSON` : "no Chapter 99 JSON"} ·{" "}
                         <span className={attempt.parse_stats.warnings ? "text-warning" : ""}>
                           {attempt.parse_stats.warnings} parse warnings
                         </span>
@@ -283,21 +285,27 @@ function UploadCard({
   const [files, setFiles] = useState<Partial<Record<DocumentKind, File>>>({})
   const [formKey, setFormKey] = useState(0)
   const known = HtsRevisions.find((r) => r.name === name)
-  const ready = /^\d{4}HTS(Basic|Rev\d+)$/.test(name) && DOCUMENT_KINDS.every((k) => files[k])
+  const ready = /^\d{4}HTS(Basic|Rev\d+)$/.test(name) && REQUIRED_DOCUMENT_KINDS.every((k) => files[k])
 
   const upload = () =>
-    run(
-      "upload",
-      async () => {
-        const form = new FormData()
-        form.append("revisionName", name)
-        for (const kind of DOCUMENT_KINDS) form.append(kind, files[kind]!)
-        await api("/attempts", { method: "POST", body: form })
-        setFiles({})
-        setFormKey((k) => k + 1)
-      },
-      `Uploaded ${name}. Click "Convert with datalab" to start.`
-    )
+    run("upload", async () => {
+      const form = new FormData()
+      form.append("revisionName", name)
+      for (const kind of DOCUMENT_KINDS) if (files[kind]) form.append(kind, files[kind]!)
+      const { ch99Json } = await api<{ ch99Json: string }>("/attempts", { method: "POST", body: form })
+      setFiles({})
+      setFormKey((k) => k + 1)
+      toast.success(
+        `Uploaded ${name}. ${
+          ch99Json === "saved"
+            ? "It's the current revision, so USITC's Chapter 99 JSON was saved too. "
+            : ch99Json === "failed"
+              ? "Saving USITC's Chapter 99 JSON failed; it will be retried when compared. "
+              : ""
+        }Click "Convert with datalab" to start.`,
+        { duration: 8000 }
+      )
+    })
 
   return (
     <section className="rounded-lg border border-base-300 p-4">
@@ -325,13 +333,22 @@ function UploadCard({
         </label>
         {DOCUMENT_KINDS.map((kind) => (
           <label key={kind} className="form-control">
-            <span className="label-text mb-1">{DOCUMENT_LABELS[kind]}</span>
+            <span className="label-text mb-1">
+              {DOCUMENT_LABELS[kind]}
+              {!REQUIRED_DOCUMENT_KINDS.includes(kind) && " (optional)"}
+            </span>
             <input
               type="file"
               accept={kind === "ch99_json" ? ".json,application/json" : ".pdf,application/pdf"}
               className="file-input file-input-sm file-input-bordered"
               onChange={(e) => setFiles((f) => ({ ...f, [kind]: e.target.files?.[0] }))}
             />
+            {kind === "ch99_json" && (
+              <span className="label-text-alt mt-1 text-base-content/60">
+                Leave empty: if this is the current revision, USITC&apos;s export is saved automatically. Older revisions
+                can&apos;t be exported.
+              </span>
+            )}
           </label>
         ))}
       </div>

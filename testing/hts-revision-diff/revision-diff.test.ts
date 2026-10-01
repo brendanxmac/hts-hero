@@ -218,6 +218,8 @@ describe("Grouping into changes", () => {
     fromNodes: a.nodes,
     toNodes: b.nodes,
     toRows: rowsB,
+    fullHeadingDiff: true,
+    toRevisionName: "Rev B",
   })
   const get = (key: string) => changes.find((c) => c.change_key === key)
 
@@ -258,7 +260,53 @@ describe("Grouping into changes", () => {
       fromNodes: a.nodes,
       toNodes: b.nodes,
       toRows: rowsB,
+      fullHeadingDiff: true,
+      toRevisionName: "Rev B",
     })
     expect(again[0].payload.hash).toBe(get("cr:CR-1")?.payload.hash)
+  })
+})
+
+describe("Heading changes without a full heading diff", () => {
+  const headingItem = item({
+    id: "CR-H",
+    kind: "hts_code",
+    note_type: null,
+    hts_codes: ["9903.01.31", "9903.01.99"],
+    hts_code_ranges: [{ from: "9903.01.25", to: "9903.01.30" }],
+    description: "Headings added and modified",
+  })
+  const build = (toRows: typeof rowsB | null) =>
+    buildChanges({
+      changeRecordItems: [headingItem],
+      noteDiffs: [],
+      codeDiffs: [],
+      fromNodes: a.nodes,
+      toNodes: b.nodes,
+      toRows,
+      fullHeadingDiff: false,
+      toRevisionName: "Rev B",
+    })[0]
+
+  it("treats a cited heading as the change itself", () => {
+    expect(build(rowsB).source).toBe("change_record")
+    expect(build(null).source).toBe("change_record")
+  })
+
+  it("looks up cited codes and ranges in the newer revision's rows", () => {
+    const cited = build(rowsB).payload.citedHeadings ?? []
+    expect(cited.map((c) => `${c.code}:${c.status}`)).toEqual([
+      "9903.01.31:found",
+      "9903.01.99:not_found",
+      "9903.01.25:found",
+      "9903.01.30:found",
+    ])
+    expect(build(rowsB).payload.warnings.some((w) => w.includes("9903.01.99"))).toBe(true)
+  })
+
+  it("marks codes unverified when the newer revision has no JSON", () => {
+    const change = build(null)
+    expect((change.payload.citedHeadings ?? []).every((c) => c.status === "unverified")).toBe(true)
+    expect(change.payload.warnings.some((w) => w.includes("isn't available"))).toBe(true)
   })
 })

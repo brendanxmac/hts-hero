@@ -14,6 +14,11 @@ export const DOCUMENT_LABELS: Record<DocumentKind, string> = {
   ch99_json: "Chapter 99 (JSON)",
 }
 
+// The Chapter 99 JSON is optional: USITC only exports the current revision.
+// When a revision is uploaded while it's current, a copy is saved
+// automatically.
+export const REQUIRED_DOCUMENT_KINDS: DocumentKind[] = ["change_record", "ch99_pdf"]
+
 export type ConversionStatus =
   | "not_needed"
   | "pending"
@@ -250,11 +255,20 @@ export interface ContextBlock {
   text: string
 }
 
+// A heading the change record cites, looked up in the newer revision's
+// Chapter 99 JSON (when there is one)
+export interface CitedHeading {
+  code: string
+  status: "found" | "not_found" | "unverified"
+  row: HtsRow | null
+}
+
 export interface ChangePayload {
   hash: string
   changeRecordItems: ChangeRecordItem[]
   noteDiffs: NoteDiff[]
   codeDiffs: CodeDiff[]
+  citedHeadings?: CitedHeading[]
   context: ContextBlock[]
   warnings: string[]
 }
@@ -267,6 +281,11 @@ export interface ComparisonStats {
   changeRecordItemsInCh99: number
   noteDiffs: Record<NoteDiff["status"], number>
   codeDiffs: Record<CodeDiff["status"], number>
+  // "full": both revisions have Chapter 99 JSON, so every heading is diffed.
+  // Otherwise heading changes come from the change record only.
+  headingDiff?: "full" | "change_record_only"
+  // Where cited headings were looked up: the newer revision's JSON, or nowhere
+  headingSource?: "revision_json" | "none"
   changes: Record<ChangeSource, number>
   carriedOverReviews: number
 }

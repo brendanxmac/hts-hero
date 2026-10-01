@@ -16,7 +16,8 @@ import { pollConversion, submitConversion } from "./datalab"
 import { diffCodes, diffNotes } from "./diff"
 import { parseCh99Json } from "./parse-ch99-json"
 import { parseCh99NotesMarkdown } from "./parse-ch99-notes"
-import { attemptFolder, downloadBlob, downloadJson, downloadText, markdownPath, uploadFile } from "./storage"
+import { attemptFolder, downloadBlob, downloadJson, downloadText, markdownPath, sourcePath, uploadFile } from "./storage"
+import { fetchCh99Export, getCurrentReleaseName } from "./usitc"
 import { HtsRevisions } from "../../tariffs/engine-v2/revisions"
 import type {
   AttemptRow,
@@ -142,7 +143,7 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
   const { attempt, revision, documents } = await loadAttempt(db, attemptId)
   const notesDoc = documents.find((d) => d.kind === "ch99_pdf")
   const jsonDoc = documents.find((d) => d.kind === "ch99_json")
-  if (!notesDoc?.markdown_path || !jsonDoc) {
+  if (!notesDoc?.markdown_path) {
     throw new Error("The Chapter 99 PDF must be converted before parsing")
   }
 
@@ -159,13 +160,15 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
     const folder = attemptFolder(revision.name, attempt.attempt_number)
     const markdown = await downloadText(db, notesDoc.markdown_path)
     const notes = parseCh99NotesMarkdown(markdown)
-    const json = JSON.parse(await downloadText(db, jsonDoc.storage_path))
-    const { rows, warnings: rowWarnings } = parseCh99Json(json)
+    // The Chapter 99 JSON is optional
+    const { rows, warnings: rowWarnings } = jsonDoc
+      ? parseCh99Json(JSON.parse(await downloadText(db, jsonDoc.storage_path)))
+      : { rows: [] as HtsRow[], warnings: [] }
 
     const notesPath = `${folder}/parsed/notes.json`
-    const rowsPath = `${folder}/parsed/hts-rows.json`
+    const rowsPath = jsonDoc ? `${folder}/parsed/hts-rows.json` : null
     await uploadFile(db, notesPath, JSON.stringify(notes), "application/json")
-    await uploadFile(db, rowsPath, JSON.stringify(rows), "application/json")
+    if (rowsPath) await uploadFile(db, rowsPath, JSON.stringify(rows), "application/json")
 
     const groups = new Map<string, ParseStats["groups"][number]>()
     for (const node of notes.nodes) {
@@ -210,6 +213,38 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
   } catch (error) {
     await updateAttempt(db, attemptId, { status: "failed", error: `Parsing failed: ${(error as Error).message}` })
   }
+}
+
+// ---------- USITC snapshot ----------
+
+// Saves USITC's Chapter 99 export as this attempt's JSON when the attempt's
+// revision is the current one (USITC can't export older revisions). Parses
+// it right away if the attempt is already parsed.
+export const saveCurrentCh99Snapshot = async (
+  db: RevisionDb,
+  attemptId: string
+): Promise<"saved" | "exists" | "not_current"> => {
+  const { attempt, revision, documents } = await loadAttempt(db, attemptId)
+  if (documents.some((d) => d.kind === "ch99_json")) return "exists"
+  if ((await getCurrentReleaseName()) !== revision.name) return "not_current"
+
+  const rows = await fetchCh99Export()
+  const folder = attemptFolder(revision.name, attempt.attempt_number)
+  const path = sourcePath(folder, "ch99_json", "usitc-export.json")
+  const body = JSON.stringify(rows)
+  await uploadFile(db, path, body, "application/json")
+  const { error } = await db.from(T.DOCUMENTS).insert({
+    attempt_id: attemptId,
+    kind: "ch99_json",
+    original_filename: `USITC export, fetched ${new Date().toISOString().slice(0, 10)}`,
+    storage_path: path,
+    size_bytes: body.length,
+    conversion_status: "not_needed",
+  })
+  if (error) throw new Error(`Save USITC snapshot: ${error.message}`)
+
+  if (attempt.status === "parsed") await parseAttempt(db, attemptId)
+  return "saved"
 }
 
 // ---------- Change record ----------
@@ -262,14 +297,24 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
     const items = await ensureChangeRecordItems(db, to.attempt.id)
 
     await updateComparison(db, comparisonId, { status: "diffing" })
+    // If the newer revision is current and has no JSON yet, save USITC's
+    if (!to.attempt.hts_rows_path) {
+      await saveCurrentCh99Snapshot(db, to.attempt.id).catch(() => null)
+    }
+    const toAttempt = (await loadAttempt(db, to.attempt.id)).attempt
+    const rowsOf = (path: string | null) =>
+      path ? downloadJson<HtsRow[]>(db, path) : Promise.resolve(null)
     const [fromNotes, toNotes, fromRows, toRows] = await Promise.all([
       downloadJson<ParsedNotes>(db, from.attempt.notes_path!),
-      downloadJson<ParsedNotes>(db, to.attempt.notes_path!),
-      downloadJson<HtsRow[]>(db, from.attempt.hts_rows_path!),
-      downloadJson<HtsRow[]>(db, to.attempt.hts_rows_path!),
+      downloadJson<ParsedNotes>(db, toAttempt.notes_path!),
+      rowsOf(from.attempt.hts_rows_path),
+      rowsOf(toAttempt.hts_rows_path),
     ])
     const noteDiffs = diffNotes(fromNotes.nodes, toNotes.nodes)
-    const codeDiffs = diffCodes(fromRows, toRows)
+    // Every heading is diffed only when both revisions have Chapter 99 JSON;
+    // otherwise heading changes come from the change record
+    const fullHeadingDiff = !!fromRows && !!toRows
+    const codeDiffs = fullHeadingDiff ? diffCodes(fromRows, toRows) : []
     const changes = buildChanges({
       changeRecordItems: items,
       noteDiffs,
@@ -277,6 +322,8 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       fromNodes: fromNotes.nodes,
       toNodes: toNotes.nodes,
       toRows,
+      fullHeadingDiff,
+      toRevisionName: to.revision.name,
     })
 
     // Carry reviews over from the latest earlier comparison of the same two
@@ -326,6 +373,8 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
         changes.map((c) => c.source)
       ),
       carriedOverReviews: carried,
+      headingDiff: fullHeadingDiff ? "full" : "change_record_only",
+      headingSource: toRows ? "revision_json" : "none",
     }
     await updateComparison(db, comparisonId, { status: "ready", stats, diff_version: DIFF_VERSION })
   } catch (error) {

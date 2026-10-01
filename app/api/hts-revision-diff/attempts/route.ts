@@ -4,14 +4,17 @@ import { REVISION_NAME_PATTERN, RevisionDiffTables as T } from "@/libs/hts-revis
 import { assertHtsJson } from "@/libs/hts-revision-diff/parse-ch99-json"
 import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 import { attemptFolder, sourcePath, uploadFile } from "@/libs/hts-revision-diff/storage"
-import { DOCUMENT_KINDS, DocumentKind } from "@/libs/hts-revision-diff/types"
+import { saveCurrentCh99Snapshot } from "@/libs/hts-revision-diff/pipeline"
+import { DOCUMENT_KINDS, DocumentKind, REQUIRED_DOCUMENT_KINDS } from "@/libs/hts-revision-diff/types"
 import { getRevision } from "@/tariffs/engine-v2/revisions"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 300
 
-// Uploads a revision's three files as a new attempt. Multipart fields:
-// revisionName, change_record (PDF), ch99_pdf (PDF), ch99_json (JSON)
+// Uploads a revision's files as a new attempt. Multipart fields:
+// revisionName, change_record (PDF), ch99_pdf (PDF), and optionally
+// ch99_json (JSON). Without a JSON file, a copy of USITC's Chapter 99 export
+// is saved if the revision is the current one.
 export async function POST(req: NextRequest) {
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
@@ -23,11 +26,14 @@ export async function POST(req: NextRequest) {
       return errorResponse(new Error('Revision name must look like "2026HTSRev5" or "2026HTSBasic"'), 400)
     }
 
-    const files = {} as Record<DocumentKind, File>
+    const files: Partial<Record<DocumentKind, File>> = {}
     for (const kind of DOCUMENT_KINDS) {
       const file = form.get(kind)
       if (!(file instanceof File) || !file.size) {
-        return errorResponse(new Error(`Missing file: ${kind}`), 400)
+        if (REQUIRED_DOCUMENT_KINDS.includes(kind)) {
+          return errorResponse(new Error(`Missing file: ${kind}`), 400)
+        }
+        continue
       }
       const isJson = kind === "ch99_json"
       if (isJson ? !file.name.toLowerCase().endsWith(".json") : !file.name.toLowerCase().endsWith(".pdf")) {
@@ -37,10 +43,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Reject a JSON file that isn't an HTS export before storing anything
-    try {
-      assertHtsJson(JSON.parse(await files.ch99_json.text()))
-    } catch (error) {
-      return errorResponse(error, 400)
+    if (files.ch99_json) {
+      try {
+        assertHtsJson(JSON.parse(await files.ch99_json.text()))
+      } catch (error) {
+        return errorResponse(error, 400)
+      }
     }
 
     // Revision row (created on first upload)
@@ -68,6 +76,7 @@ export async function POST(req: NextRequest) {
     const stored: { kind: DocumentKind; path: string; file: File }[] = []
     for (const kind of DOCUMENT_KINDS) {
       const file = files[kind]
+      if (!file) continue
       const path = sourcePath(folder, kind, file.name)
       await uploadFile(db, path, file, kind === "ch99_json" ? "application/json" : "application/pdf")
       stored.push({ kind, path, file })
@@ -92,7 +101,12 @@ export async function POST(req: NextRequest) {
     )
     if (docs.error) throw new Error(docs.error.message)
 
-    return NextResponse.json({ attemptId: attempt.data.id })
+    // Best effort: a failed USITC fetch doesn't fail the upload
+    const snapshot = files.ch99_json
+      ? "uploaded"
+      : await saveCurrentCh99Snapshot(db, attempt.data.id).catch(() => "failed" as const)
+
+    return NextResponse.json({ attemptId: attempt.data.id, ch99Json: snapshot })
   } catch (error) {
     return errorResponse(error)
   }

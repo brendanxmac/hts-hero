@@ -103,6 +103,14 @@ export const renderChangeMaterial = (
     out.push("", "## Note differences")
     for (const d of payload.noteDiffs) out.push("", renderNoteDiff(d, fromName, toName))
   }
+  if (payload.citedHeadings?.length) {
+    out.push("", `## Headings cited by the change record, as they read in ${toName}`)
+    for (const c of payload.citedHeadings) {
+      if (c.status === "found" && c.row) out.push("", `#### ${c.code}`, fence(rowText(c.row)))
+      else if (c.status === "not_found") out.push("", `#### ${c.code}`, `Not in ${toName}'s Chapter 99 data.`)
+      else out.push("", `#### ${c.code}`, `Not checked: no Chapter 99 JSON for ${toName}.`)
+    }
+  }
   if (payload.codeDiffs.length) {
     out.push("", "## Chapter 99 heading differences (from the JSON)")
     for (const d of payload.codeDiffs) out.push("", renderCodeDiff(d, fromName, toName))

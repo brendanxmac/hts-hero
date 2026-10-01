@@ -211,10 +211,23 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
             </div>
             <div className="stat">
               <div className="stat-title">Heading differences</div>
-              <div className="stat-value text-2xl">{Object.values(stats.codeDiffs).reduce((a, b) => a + b, 0)}</div>
-              <div className="stat-desc">
-                {stats.codeDiffs.modified} changed · {stats.codeDiffs.added} added · {stats.codeDiffs.removed} removed
-              </div>
+              {stats.headingDiff === "change_record_only" ? (
+                <>
+                  <div className="stat-value text-lg">From change record</div>
+                  <div className="stat-desc whitespace-normal">
+                    {stats.headingSource === "revision_json"
+                      ? `Cited headings checked against ${to.revision.name}'s JSON`
+                      : `No JSON for ${to.revision.name}; check cited headings in the PDF`}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="stat-value text-2xl">{Object.values(stats.codeDiffs).reduce((a, b) => a + b, 0)}</div>
+                  <div className="stat-desc">
+                    {stats.codeDiffs.modified} changed · {stats.codeDiffs.added} added · {stats.codeDiffs.removed} removed
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -329,7 +342,7 @@ function ChangeCard({
         <span className={`badge badge-sm ${SOURCE_STYLES[change.source]}`}>{SOURCE_LABELS[change.source]}</span>
         {change.category && <span className="badge badge-outline badge-sm">{change.category}</span>}
         <span className="text-xs text-base-content/60">
-          {payload.noteDiffs.length} note · {payload.codeDiffs.length} heading
+          {payload.noteDiffs.length} note · {payload.codeDiffs.length || payload.citedHeadings?.length || 0} heading
         </span>
         <StatusBadge status={change.decision} />
       </button>
@@ -361,6 +374,30 @@ function ChangeCard({
               <h4 className="font-semibold">Note differences</h4>
               {payload.noteDiffs.map((d) => (
                 <NoteDiffView key={`${d.fromKey}-${d.toKey}`} diff={d} fromName={fromName} toName={toName} />
+              ))}
+            </div>
+          )}
+
+          {(payload.citedHeadings?.length ?? 0) > 0 && (
+            <div className="flex flex-col gap-2">
+              <h4 className="font-semibold">Headings cited by the change record ({toName})</h4>
+              {payload.citedHeadings!.map((c) => (
+                <div key={c.code} className="rounded-md border border-base-300 p-3 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono font-semibold">{c.code}</span>
+                    <StatusBadge
+                      status={c.status === "found" ? "complete" : c.status === "not_found" ? "failed" : "pending"}
+                      label={c.status === "found" ? "found" : c.status === "not_found" ? "not in JSON" : "not checked"}
+                    />
+                    {c.row && <span className="text-base-content/70">{c.row.description}</span>}
+                  </div>
+                  {c.row && (
+                    <p className="mt-1 text-xs text-base-content/70">
+                      General: {c.row.general || "—"} · Special: {c.row.special || "—"} · Other: {c.row.other || "—"}
+                      {c.row.footnotes.length > 0 && ` · Footnotes: ${c.row.footnotes.join(" | ")}`}
+                    </p>
+                  )}
+                </div>
               ))}
             </div>
           )}
