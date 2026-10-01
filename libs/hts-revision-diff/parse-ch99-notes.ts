@@ -2,18 +2,22 @@
 // note subdivisions, so each piece of a note can be addressed by its citation
 // ("Subchapter III, U.S. note 2(v)(xi)(B)") and diffed on its own.
 //
-// Hierarchy detection follows hts-data-processing's parse-hts-markdown.ts
-// (type-based: same type = sibling, an ancestor's next value = back up,
-// otherwise a new child), with changes for Chapter 99:
-// - roman/letter ambiguity ("(v)", "(C)") is resolved by which reading
-//   continues a sequence, instead of fixed exclusions
-// - tokens out of sequence are kept as text and reported as warnings, so a
-//   sentence that wraps onto a line starting "(a) of this note" doesn't
-//   become a subdivision
-// - "U.S. Notes (con.)" style continuation headings don't reset the tree
-// - the tariff table that follows each subchapter's notes is skipped (the
-//   headings themselves come from the Chapter 99 JSON)
-// - PDF page numbers are tracked from datalab's paginated output
+// Hierarchy comes from the numbering alone (datalab flattens indentation).
+// It follows hts-data-processing's parse-hts-markdown.ts (same type =
+// sibling, an ancestor's later value = back up, a first value = new child),
+// adjusted for how Chapter 99 is actually written:
+// - Deleted subdivisions and notes leave gaps ("(c)" then "(j)", note 7 then
+//   note 13), so any forward step continues a sequence.
+// - "(i)", "(v)" and "(x)" can be letters or roman numerals. The tokens that
+//   follow decide: "(ii)" next means roman, "(j)" next means a letter.
+// - Numbered lists inside a note ("1. Other seats…", "2. …") restart at 1 and
+//   are kept inside the note as list items ("20(b)[3]"), not read as notes.
+// - "[U.S. note 8 deleted]" lines count as notes 8, so numbering continues.
+// - Tokens that fit nowhere are kept as text and reported as warnings, as is
+//   a wrapped sentence starting "(a) of this note".
+// - "U.S. Notes (con.)" headings don't reset the tree, the tariff table that
+//   follows a subchapter's notes is skipped, and PDF pages are tracked from
+//   datalab's paginated output.
 
 import { PARSER_VERSION } from "./constants"
 import type { NoteNode, ParsedNotes, ParseWarning } from "./types"
@@ -21,6 +25,7 @@ import { extractHtsCodes, isRoman, romanToInt, slugify } from "./text"
 
 type TokenType =
   | "number"
+  | "list_item"
   | "letter"
   | "roman"
   | "numeric"
@@ -37,6 +42,7 @@ interface StackEntry {
 
 const FIRST_VALUE: Record<TokenType, string> = {
   number: "1",
+  list_item: "1",
   letter: "a",
   roman: "i",
   numeric: "1",
@@ -46,35 +52,44 @@ const FIRST_VALUE: Record<TokenType, string> = {
   double_upper: "AA",
 }
 
-// HTS writes the letter i as "(ij)" so that "(i)" is always a roman numeral
-const LOWER_LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h", "ij", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+const LOWER_LETTERS = "abcdefghijklmnopqrstuvwxyz".split("")
 const UPPER_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
 
-const isNextInSequence = (type: TokenType, prev: string, next: string) => {
+// "(ij)" is an older way of writing the letter i
+const letterIndex = (value: string) => LOWER_LETTERS.indexOf(value === "ij" ? "i" : value)
+
+// The same letter repeated: "aa", "bbb"
+const isLetterRun = (value: string) => /^([a-zA-Z])\1{0,2}$/.test(value)
+
+// Letters continue past z as aa, bb, … zz, then aaa, bbb, …
+const letterOrdinal = (value: string, alphabet: string[]) => {
+  if (value === "ij") return letterIndex("i") + 1
+  if (!isLetterRun(value)) return NaN
+  const index = alphabet.indexOf(value[0])
+  return index < 0 ? NaN : (value.length - 1) * 26 + index + 1
+}
+
+// Position of a value within its sequence (1-based)
+const ordinal = (type: TokenType, value: string) => {
   switch (type) {
     case "number":
+    case "list_item":
     case "numeric":
-      return Number(next) === Number(prev) + 1
-    case "letter": {
-      const p = LOWER_LETTERS.indexOf(prev)
-      return p >= 0 && LOWER_LETTERS.indexOf(next) === p + 1
-    }
-    case "upper_letter": {
-      const p = UPPER_LETTERS.indexOf(prev)
-      return p >= 0 && UPPER_LETTERS.indexOf(next) === p + 1
-    }
+      return Number(value)
+    case "letter":
+      return letterOrdinal(value, LOWER_LETTERS)
+    case "upper_letter":
+      return letterOrdinal(value, UPPER_LETTERS)
     case "roman":
     case "upper_roman":
-      return romanToInt(next) === romanToInt(prev) + 1
+      return romanToInt(value)
     case "double_lower":
     case "double_upper": {
-      if (prev.length !== 2 || next.length !== 2) return false
-      const a = prev.toLowerCase()
-      const b = next.toLowerCase()
-      // aa -> ab
-      if (a[0] === b[0] && b.charCodeAt(1) === a.charCodeAt(1) + 1) return true
-      // aa -> bb
-      return a[0] === a[1] && b[0] === b[1] && b.charCodeAt(0) === a.charCodeAt(0) + 1
+      // A deeper level lettered aa, bb, cc… (or aa, ab, ac…)
+      const v = value.toLowerCase()
+      if (v.length !== 2) return NaN
+      if (v[0] === v[1]) return v.charCodeAt(0) - 96
+      return 26 + (v.charCodeAt(0) - 97) * 26 + (v.charCodeAt(1) - 96)
     }
   }
 }
@@ -82,99 +97,87 @@ const isNextInSequence = (type: TokenType, prev: string, next: string) => {
 // Possible readings of a parenthesized token, most likely first
 const classifyParenToken = (value: string): TokenType[] => {
   if (/^\d{1,3}$/.test(value)) return ["numeric"]
-  if (/^[a-z]+$/.test(value)) {
-    if (value === "ij") return ["letter"]
-    if (value.length === 1) {
-      if ("ivx".includes(value)) {
-        return value === "i" ? ["roman"] : ["roman", "letter"]
-      }
-      return "lcdm".includes(value) ? ["letter", "roman"] : ["letter"]
-    }
-    if (/^[ivx]+$/.test(value) && isRoman(value)) return ["roman"]
-    if (value.length === 2) return ["double_lower"]
-    return []
+  const lower = /^[a-z]+$/.test(value)
+  if (!lower && !/^[A-Z]+$/.test(value)) return []
+  const [letter, roman, double]: TokenType[] = lower
+    ? ["letter", "roman", "double_lower"]
+    : ["upper_letter", "upper_roman", "double_upper"]
+  const romanLike = /^[ivx]+$/i.test(value) && isRoman(value)
+  if (value === "ij") return [letter]
+  if (value.length === 1) {
+    if (romanLike) return [roman, letter]
+    return /^[lcdm]$/i.test(value) ? [letter, roman] : [letter]
   }
-  if (/^[A-Z]+$/.test(value)) {
-    if (value.length === 1) {
-      if ("IVX".includes(value)) return ["upper_roman", "upper_letter"]
-      return "LCDM".includes(value)
-        ? ["upper_letter", "upper_roman"]
-        : ["upper_letter"]
-    }
-    if (/^[IVX]+$/.test(value) && isRoman(value)) return ["upper_roman"]
-    if (value.length === 2) return ["double_upper"]
-    return []
+  if (isLetterRun(value)) {
+    // "aa" continues the alphabet after "z", or starts a deeper level;
+    // "ii", "xx", "iii" may also be roman numerals
+    const readings: TokenType[] = value.length === 2 ? [letter, double] : [letter]
+    return romanLike ? [roman, ...readings] : readings
   }
+  if (romanLike) return [roman]
+  if (value.length === 2) return [double]
   return []
+}
+
+// For "(i)", "(v)", "(x)" (and upper case): reads the tokens that follow to
+// decide between letter and roman numeral. Returns the candidates reordered.
+const resolveAmbiguity = (value: string, candidates: TokenType[], upcoming: string[]): TokenType[] => {
+  const romanType = candidates.find((t) => t === "roman" || t === "upper_roman")
+  const letterType = candidates.find((t) => t === "letter" || t === "upper_letter")
+  if (!romanType || !letterType) return candidates
+  const others = candidates.filter((t) => t !== romanType && t !== letterType)
+  const upper = value === value.toUpperCase()
+  for (const next of upcoming) {
+    if ((next === next.toUpperCase()) !== upper || /^\d+$/.test(next)) continue // other levels
+    // The same value again right away: a roman list starting under this letter
+    if (next === value) return [letterType, ...others, romanType]
+    if (isRoman(next) && romanToInt(next) === romanToInt(value) + 1) return [romanType, letterType, ...others]
+    if (isLetterRun(next) && ordinal(letterType, next) > ordinal(letterType, value)) {
+      return [letterType, ...others, romanType]
+    }
+  }
+  return candidates
 }
 
 interface Placement {
   type: TokenType
   depth: number // index in the stack the new entry takes
-  skipped?: boolean // continues a sequence but skips values
+  unexpectedStart?: boolean // a new level that doesn't start at its first value
 }
 
-// Position of a value within its sequence (1-based), for gap checks
-const ordinal = (type: TokenType, value: string) => {
-  switch (type) {
-    case "number":
-    case "numeric":
-      return Number(value)
-    case "letter":
-      return LOWER_LETTERS.indexOf(value) + 1
-    case "upper_letter":
-      return UPPER_LETTERS.indexOf(value) + 1
-    case "roman":
-    case "upper_roman":
-      return romanToInt(value)
-    default:
-      return NaN
-  }
-}
-
-// Subdivisions the PDF extraction may have dropped: allow skipping up to
-// this many values, with a warning
-const MAX_SKIPPED_VALUES = 2
-
-const continuesWithGap = (type: TokenType, prev: string, next: string) => {
-  const step = ordinal(type, next) - ordinal(type, prev)
-  return step > 1 && step <= MAX_SKIPPED_VALUES + 1
-}
-
-// Where a parenthesized token fits in the current stack, or null if it
-// doesn't continue any sequence or start a new level
-const placeParenToken = (
-  stack: StackEntry[],
-  value: string,
-  candidates: TokenType[]
-): Placement | null => {
+// Where a parenthesized token fits in the current stack, or null if nowhere
+const placeParenToken = (stack: StackEntry[], value: string, candidates: TokenType[]): Placement | null => {
   const top = stack[stack.length - 1]
-  // 1. Next sibling of the deepest entry
+  const step = (entry: StackEntry, type: TokenType) =>
+    entry.type === type ? ordinal(type, value) - ordinal(type, entry.value) : NaN
+  // 1. The next item of a sequence in the stack (deepest first)
   for (const type of candidates) {
-    if (top && top.type === type && isNextInSequence(type, top.value, value)) {
-      return { type, depth: stack.length - 1 }
+    for (let i = stack.length - 1; i >= 0; i--) {
+      if (step(stack[i], type) === 1) return { type, depth: i }
     }
   }
-  // 2. Next item of an ancestor's sequence (going back up)
-  for (let i = stack.length - 2; i >= 0; i--) {
-    for (const type of candidates) {
-      if (stack[i].type === type && isNextInSequence(type, stack[i].value, value)) {
-        return { type, depth: i }
-      }
-    }
-  }
-  // 3. First item of a new, deeper level
+  // 2. First item of a new, deeper level. The same kind of numbering can nest
+  //    again further down ("2(v)(iii)(a)", "2(z)(xiv)(aa)(i)").
   for (const type of candidates) {
-    if (value === FIRST_VALUE[type] && !stack.some((e) => e.type === type)) {
+    if (value === FIRST_VALUE[type] && !(top && top.type === type)) {
       return { type, depth: stack.length }
     }
   }
-  // 4. Same as 1 and 2, allowing a small gap
-  for (let i = stack.length - 1; i >= 0; i--) {
-    for (const type of candidates) {
-      if (stack[i].type === type && continuesWithGap(type, stack[i].value, value)) {
-        return { type, depth: i, skipped: true }
-      }
+  // 3. A later item of a sequence in the stack, after deleted ones. When the
+  //    same kind of numbering appears at several depths, the closest value
+  //    wins: "(x)" after "(v)…(b)" continues "(v)", not "(b)".
+  let best: (Placement & { gap: number }) | null = null
+  for (const type of candidates) {
+    for (let i = stack.length - 1; i >= 0; i--) {
+      const gap = step(stack[i], type)
+      if (gap > 1 && (!best || gap < best.gap)) best = { type, depth: i, gap }
+    }
+  }
+  if (best) return { type: best.type, depth: best.depth }
+  // 4. A new level whose first items were deleted ("(b)" with no "(a)")
+  for (const type of candidates) {
+    if (!stack.some((e) => e.type === type)) {
+      return { type, depth: stack.length, unexpectedStart: true }
     }
   }
   return null
@@ -182,7 +185,9 @@ const placeParenToken = (
 
 const buildCitation = (stack: StackEntry[]) =>
   stack
-    .map((e, i) => (i === 0 && e.type === "number" ? e.value : `(${e.value})`))
+    .map((e, i) =>
+      i === 0 && e.type === "number" ? e.value : e.type === "list_item" ? `[${e.value}]` : `(${e.value})`
+    )
     .join("")
 
 // ---------- Line cleanup ----------
@@ -217,7 +222,7 @@ const stripStructure = (line: string) => {
 const isPageFurniture = (text: string) =>
   /^Harmonized Tariff Schedule of the United States/i.test(text) ||
   /^Annotated for Statistical Reporting Purposes/i.test(text) ||
-  /^\d{2}-[IVXLC]+-\d+$/.test(text) ||
+  /^\d{2}\s*-\s*[IVXLC]+\s*-\s*\d+$/.test(text) || // "99 - III - 2"
   /^XXII$/.test(text) ||
   /^!\[.*\]\(.*\)$/.test(text)
 
@@ -259,6 +264,23 @@ const PAREN_TOKEN = /^\(([A-Za-z]{1,6}|\d{1,3})\)\s*:?\s*/
 // a capital or with a term ("the rates of duty...") that isn't in this list.
 const CONTINUATION_AFTER_TOKEN =
   /^(of|to|and|or|above|below|in|for|through|thereof|hereof|herein|as|is|are|shall|which|that)\b/
+
+const DELETED_NOTES =
+  /^\[(?:U\.\s?S\.\s+)?notes?\s+(\d{1,3})(?:\s*(?:through|to|and|-|–)\s*(\d{1,3}))?\s+(?:(?:is|are|was|were|have been|has been)\s+)?deleted\.?\]$/i
+
+// How many following tokens to read when deciding "(i)" letter vs roman
+const LOOKAHEAD_TOKENS = 12
+
+// Values of the parenthesized tokens at the start of a line: "(v) (i) Except" -> ["v", "i"]
+const leadingParenTokens = (text: string) => {
+  const values: string[] = []
+  let rest = text.replace(NUMBER_TOKEN, "")
+  for (let m = rest.match(PAREN_TOKEN); m; m = rest.match(PAREN_TOKEN)) {
+    values.push(m[1])
+    rest = rest.slice(m[0].length)
+  }
+  return values
+}
 
 // ---------- Parser ----------
 
@@ -362,32 +384,36 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
     currentParts.push(isTable ? `\n${text}\n` : text)
   }
 
-  // Handles the citation tokens at the start of a line; returns leftover text
-  const handleTokens = (text: string): string => {
+  // Handles the citation tokens at the start of a line; returns leftover
+  // text. `upcoming` lists the parenthesized tokens on the lines that follow.
+  const handleTokens = (text: string, upcomingAfterLine: string[]): string => {
     let rest = text
     for (;;) {
       const numberMatch = rest.match(NUMBER_TOKEN)
       if (numberMatch) {
         const n = Number(numberMatch[1])
         const after = rest.slice(numberMatch[0].length)
-        const fits =
-          lastTopNumber === null ? true : n > lastTopNumber && n <= lastTopNumber + 5
-        if (!fits) {
-          warn("number_out_of_sequence", `"${n}." after note ${lastTopNumber} was kept as text`, current?.key)
-          return rest
-        }
-        if (lastTopNumber === null && n !== 1) {
-          warn("numbering_gap", `First note in ${groupLabel()} is ${n}, not 1`)
-        } else if (lastTopNumber !== null && n !== lastTopNumber + 1) {
-          warn("numbering_gap", `Note ${n} follows note ${lastTopNumber} in ${groupLabel()}`)
-        }
         if (!group) {
           warn("note_without_group", `Note ${n} appears before any "Notes" heading; filed under Notes`)
           group = { slug: "notes", label: "Notes" }
         }
-        lastTopNumber = n
-        const key = startNode(String(n), null, 0, String(n))
-        stack = [{ type: "number", value: String(n), key }]
+        // A numbered list inside a note continues before anything else
+        const listDepth = stack.map((e) => e.type).lastIndexOf("list_item")
+        if (listDepth >= 0 && n === Number(stack[listDepth].value) + 1) {
+          pushEntry("list_item", String(n), listDepth)
+        } else if (lastTopNumber === null || n > lastTopNumber) {
+          if (lastTopNumber === null && n !== 1) {
+            warn("numbering_gap", `First note in ${groupLabel()} is ${n}, not 1`)
+          }
+          lastTopNumber = n
+          pushEntry("number", String(n), 0)
+        } else if (n === 1 && stack.length) {
+          // "1." inside a note starts a numbered list
+          pushEntry("list_item", "1", stack.length)
+        } else {
+          warn("number_out_of_sequence", `"${n}." after note ${lastTopNumber} was kept as text`, current?.key)
+          return rest
+        }
         rest = after
         continue
       }
@@ -395,38 +421,29 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
       const parenMatch = rest.match(PAREN_TOKEN)
       if (parenMatch) {
         const value = parenMatch[1]
-        const candidates = classifyParenToken(value)
+        let candidates = classifyParenToken(value)
         if (!candidates.length) return rest
         const after = rest.slice(parenMatch[0].length)
         if (CONTINUATION_AFTER_TOKEN.test(after)) return rest
         if (!group) return rest
+        candidates = resolveAmbiguity(value, candidates, [...leadingParenTokens(after), ...upcomingAfterLine])
         const placement = placeParenToken(stack, value, candidates)
         if (!placement) {
-          if (stack.length) {
-            warn(
-              "token_out_of_sequence",
-              `"(${value})" doesn't continue the numbering under ${buildCitation(stack)}; kept as text`,
-              current?.key
-            )
-            return rest
-          }
-          // Lettered items with no numbered note above them
-          warn("token_out_of_sequence", `"(${value})" starts ${groupLabel()} without a numbered note`)
-        }
-        if (placement?.skipped) {
           warn(
-            "numbering_gap",
-            `"(${value})" skips values after ${buildCitation(stack.slice(0, placement.depth + 1))}; a subdivision may be missing`,
+            "token_out_of_sequence",
+            `"(${value})" doesn't fit under ${buildCitation(stack) || groupLabel()}; kept as text`,
+            current?.key
+          )
+          return rest
+        }
+        if (placement.unexpectedStart) {
+          warn(
+            "unexpected_start",
+            `"(${value})" starts a new level under ${buildCitation(stack) || groupLabel()} without "(${FIRST_VALUE[placement.type]})"`,
             current?.key
           )
         }
-        const type = placement?.type ?? candidates[0]
-        const depth = placement?.depth ?? 0
-        const entry = { type, value, key: "" }
-        stack = [...stack.slice(0, depth), entry]
-        const citation = buildCitation(stack)
-        const parentKey = depth > 0 ? stack[depth - 1].key : null
-        entry.key = startNode(citation, parentKey, depth, stack[0].type === "number" ? stack[0].value : null)
+        pushEntry(placement.type, value, placement.depth)
         rest = after
         continue
       }
@@ -434,8 +451,41 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
     }
   }
 
+  // Puts a new entry at `depth` in the stack and starts its node
+  const pushEntry = (type: TokenType, value: string, depth: number) => {
+    const entry: StackEntry = { type, value, key: "" }
+    stack = [...stack.slice(0, depth), entry]
+    const citation = buildCitation(stack)
+    const parentKey = depth > 0 ? stack[depth - 1].key : null
+    entry.key = startNode(citation, parentKey, depth, stack[0].type === "number" ? stack[0].value : null)
+  }
+
+  // "[U.S. note 8 deleted]", "[U.S. notes 8 through 12 deleted]"
+  const handleDeletedNotes = (text: string) => {
+    const m = text.match(DELETED_NOTES)
+    if (!m || !group) return false
+    const from = Number(m[1])
+    const to = m[2] ? Number(m[2]) : from
+    if (lastTopNumber !== null && from <= lastTopNumber) return false
+    for (let n = from; n <= Math.min(to, from + 50); n++) {
+      lastTopNumber = n
+      pushEntry("number", String(n), 0)
+      currentParts.push("[Deleted]")
+    }
+    return true
+  }
+
   const lines = markdown.split("\n")
-  for (const rawLine of lines) {
+  const cleanedLines = lines.map((l) => stripStructure(stripMarkdown(l)))
+  const lineTokens = cleanedLines.map((l) => leadingParenTokens(l.text))
+  const upcomingFrom = (index: number) => {
+    const out: string[] = []
+    for (let j = index + 1; j < lines.length && out.length < LOOKAHEAD_TOKENS; j++) out.push(...lineTokens[j])
+    return out
+  }
+
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    const rawLine = lines[lineIndex]
     // Page separators from datalab's paginate option
     const pageMatch = rawLine.trim().match(PAGE_SEPARATOR)
     if (pageMatch) {
@@ -463,8 +513,7 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
       continue
     }
 
-    const cleaned = stripMarkdown(rawLine)
-    const { text, isHeading } = stripStructure(cleaned)
+    const { text, isHeading } = cleanedLines[lineIndex]
     if (!text) continue
     if (isPageFurniture(text)) continue
 
@@ -509,7 +558,8 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
 
     if (inTariffTable) continue
 
-    const rest = handleTokens(text)
+    if (handleDeletedNotes(text)) continue
+    const rest = handleTokens(text, upcomingFrom(lineIndex))
     appendText(rest.trim())
   }
   flush()

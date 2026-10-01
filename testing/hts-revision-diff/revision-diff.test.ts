@@ -6,6 +6,8 @@ import { buildChanges } from "../../libs/hts-revision-diff/build-changes"
 import { wordDiff, renderWordDiff } from "../../libs/hts-revision-diff/word-diff"
 import { extractHtsCodes } from "../../libs/hts-revision-diff/text"
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
+import { readFileSync } from "fs"
+import { join } from "path"
 import { CH99_JSON_A, CH99_JSON_B, CH99_REV_A, CH99_REV_B } from "./fixtures"
 
 const a = parseCh99NotesMarkdown(CH99_REV_A)
@@ -51,12 +53,12 @@ describe("Chapter 99 notes parser", () => {
     expect(parsed.nodes.map((n) => n.citation)).toEqual(["1", "1(a)", "1(a)(A)", "1(a)(B)", "1(a)(C)", "1(a)(C)(I)", "1(a)(C)(II)", "1(a)(D)"])
   })
 
-  it("accepts a small gap in lettering with a warning", () => {
+  it("accepts gaps left by deleted subdivisions without warnings", () => {
     const parsed = parseCh99NotesMarkdown(
-      ["## SUBCHAPTER III", "### U.S. Notes", "1. (a) A.", "(b) B.", "(d) D.", "(e) E."].join("\n\n")
+      ["## SUBCHAPTER III", "### U.S. Notes", "1. (a) A.", "(b) B.", "(c) C.", "(j) J.", "(k) K.", "(s) S."].join("\n\n")
     )
-    expect(parsed.nodes.map((n) => n.citation)).toEqual(["1", "1(a)", "1(b)", "1(d)", "1(e)"])
-    expect(parsed.warnings.filter((w) => w.kind === "numbering_gap").length).toBe(1)
+    expect(parsed.nodes.map((n) => n.citation)).toEqual(["1", "1(a)", "1(b)", "1(c)", "1(j)", "1(k)", "1(s)"])
+    expect(parsed.warnings.length).toBe(0)
   })
 
   it("reads (A), (B) as upper-case letters", () => {
@@ -91,8 +93,9 @@ describe("Chapter 99 notes parser", () => {
     expect(node("sub-III/us-notes/6(a)")?.page).toBe(3)
   })
 
-  it("warns about the jump from note 4 to note 6", () => {
-    expect(a.warnings.some((w) => w.kind === "numbering_gap" && w.message.includes("Note 6 follows note 4"))).toBe(true)
+  it("continues after a jump in note numbers", () => {
+    expect(keysA.includes("sub-III/us-notes/6(a)")).toBe(true)
+    expect(a.warnings.length).toBe(0)
   })
 
   it("keeps a wrapped '(a) of this note' line as text", () => {
@@ -308,5 +311,78 @@ describe("Heading changes without a full heading diff", () => {
     const change = build(null)
     expect((change.payload.citedHeadings ?? []).every((c) => c.status === "unverified")).toBe(true)
     expect(change.payload.warnings.some((w) => w.includes("isn't available"))).toBe(true)
+  })
+})
+
+// Pages 1-86 of the 2026 HTS Revision 5 Chapter 99 PDF as converted by
+// datalab (subchapters I and II and the tariff tables removed before upload)
+describe("Real Chapter 99 text (2026HTSRev5, pages 1-86)", () => {
+  const real = parseCh99NotesMarkdown(
+    readFileSync(join("testing", "hts-revision-diff", "fixtures", "ch99-2026HTSRev5-pages-1-86.md"), "utf8")
+  )
+  const keys = new Set(real.nodes.map((n) => n.key))
+  const childrenOf = (key: string) => real.nodes.filter((n) => n.parentKey === key).map((n) => n.citation)
+
+  it("parses without warnings", () => {
+    expect(real.warnings.length).toBe(0)
+  })
+
+  it("finds every note, including deleted ones written as [U.S. note 8 deleted]", () => {
+    const top = real.nodes.filter((n) => !n.parentKey && n.groupKey === "sub-III/us-notes").map((n) => n.citation)
+    expect(top).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"])
+    expect(real.nodes.find((n) => n.key === "sub-III/us-notes/8")?.text).toBe("[Deleted]")
+  })
+
+  it("follows lettering with gaps from deleted subdivisions", () => {
+    expect(childrenOf("sub-III/us-notes/2")).toEqual(["2(a)", "2(b)", "2(c)", "2(j)", "2(k)", "2(l)", "2(m)", "2(s)", "2(t)", "2(u)", "2(v)", "2(x)", "2(y)", "2(z)", "2(aa)"])
+  })
+
+  it("nests a letter list under a roman numeral under a letter", () => {
+    expect(childrenOf("sub-III/us-notes/2(v)(iii)")).toEqual(["2(v)(iii)(a)", "2(v)(iii)(b)"])
+    expect(keys.has("sub-III/us-notes/2(v)(xxv)")).toBe(true)
+  })
+
+  it("strips page headers and footers", () => {
+    expect(real.nodes.some((n) => /99 - III -|Annotated for Statistical/.test(n.text))).toBe(false)
+  })
+
+  it("keeps every subdivision a sensible size", () => {
+    expect(real.nodes.every((n) => n.text.length < 40_000)).toBe(true)
+  })
+})
+
+describe("Numbering patterns found in Chapter 99", () => {
+  const parse = (lines: string[]) =>
+    parseCh99NotesMarkdown(["## SUBCHAPTER III", "### U.S. Notes", ...lines].join("\n\n"))
+
+  it("continues the alphabet past (z) with (aa) and (aaa)", () => {
+    const p = parse(["1. (a) A.", "(x) X.", "(y) Y.", "(z) Z.", "(aa) AA.", "(bb) BB.", "(zz) ZZ.", "(aaa) AAA.", "(1) 0713.33.1040", "(2) 0713.50.1000", "(bbb) BBB."])
+    expect(p.nodes.filter((n) => n.parentKey === "sub-III/us-notes/1").map((n) => n.citation)).toEqual([
+      "1(a)", "1(x)", "1(y)", "1(z)", "1(aa)", "1(bb)", "1(zz)", "1(aaa)", "1(bbb)",
+    ])
+    expect(p.nodes.find((n) => n.citation === "1(aaa)(2)")?.text).toBe("0713.50.1000")
+    expect(p.warnings.length).toBe(0)
+  })
+
+  it("starts a deeper (aa) level under a roman numeral", () => {
+    const p = parse(["7. (a) A.", "(i) One.", "(ii) Two.", "(aa) Deeper.", "(bb) Deeper.", "(iii) Three."])
+    expect(p.nodes.map((n) => n.citation)).toEqual(["7", "7(a)", "7(a)(i)", "7(a)(ii)", "7(a)(ii)(aa)", "7(a)(ii)(bb)", "7(a)(iii)"])
+  })
+
+  it("reads (i) after (h) as a letter when (j) follows", () => {
+    const p = parse(["1. (g) G.", "(h) H.", "(i) I.", "(j) J."])
+    expect(p.nodes.map((n) => n.citation)).toEqual(["1", "1(g)", "1(h)", "1(i)", "1(j)"])
+  })
+
+  it("keeps numbered lists inside a note as list items", () => {
+    const p = parse(["20. (a) The following:", "1. Other seats.", "2. Furniture.", "(b) Next.", "21. Next note."])
+    expect(p.nodes.map((n) => n.citation)).toEqual(["20", "20(a)", "20(a)[1]", "20(a)[2]", "20(b)", "21"])
+  })
+
+  it("continues the closest matching sequence after nested letters", () => {
+    const p = parse(["1. Intro.", "2. (a) A.", "(v) V.", "(i) One.", "(ii) Two.", "(iii) Three.", "(a) A.", "(b) B.", "(x) X."])
+    expect(p.nodes.find((n) => n.citation === "2(v)(iii)(b)")?.parentKey).toBe("sub-III/us-notes/2(v)(iii)")
+    expect(p.nodes.find((n) => n.citation === "2(x)")?.parentKey).toBe("sub-III/us-notes/2")
+    expect(p.warnings.length).toBe(0)
   })
 })
