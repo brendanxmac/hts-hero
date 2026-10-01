@@ -53,7 +53,7 @@ export const buildTariffSheet = (rows: WatchRow[], asOf: string): Sheet => {
     { header: "Base rate (HTS)", kind: "text", width: 22 },
     { header: "Base duty", kind: "pct", width: 11 },
     ...types.flatMap((t): Column[] => [
-      { header: t.label, kind: "pct", width: 12 },
+      { header: `${t.label} Rate`, kind: "pct", width: 13 },
       { header: `${t.label} Tariffs`, kind: "text", width: 34 },
     ]),
     { header: "Total duty rate", kind: "pct", width: 13 },

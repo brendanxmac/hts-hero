@@ -78,20 +78,20 @@ describe("Tariff Watcher: exporting the report", () => {
   })
 
   it("has a rate and a tariffs column for each type of tariff that applies, and no others", () => {
-    expect(headers.includes("Section 122")).toBe(true)
+    expect(headers.includes("Section 122 Rate")).toBe(true)
     expect(headers.includes("Section 232 Tariffs")).toBe(true)
-    expect(headers.includes("Section 301")).toBe(true)
-    expect(headers.includes("IEEPA")).toBe(false)
-    expect(headers.includes("Trade agreements")).toBe(false)
+    expect(headers.includes("Section 301 Rate")).toBe(true)
+    expect(headers.includes("IEEPA Rate")).toBe(false)
+    expect(headers.includes("Trade agreements Rate")).toBe(false)
   })
 
   it("puts each tariff's rate in its column, and leaves types that don't apply empty", () => {
     expect(cell(0, "Base duty")).toBe(2.9)
-    expect(cell(0, "Section 232")).toBe(50)
-    expect(cell(0, "Section 301")).toBe(25)
+    expect(cell(0, "Section 232 Rate")).toBe(50)
+    expect(cell(0, "Section 301 Rate")).toBe(25)
     expect(cell(0, "Total duty rate")).toBe(77.9)
-    expect(cell(1, "Section 232")).toBe(null)
-    expect(cell(1, "Section 122")).toBe(10)
+    expect(cell(1, "Section 232 Rate")).toBe(null)
+    expect(cell(1, "Section 122 Rate")).toBe(10)
   })
 
   it("lists the heading and rate behind each tariff, without its description", () => {
@@ -105,7 +105,7 @@ describe("Tariff Watcher: exporting the report", () => {
 
   it("marks percentage columns in the CSV header", () => {
     const header = toCsv(sheet).split("\r\n")[0]
-    expect(header.includes("Section 232 (%)")).toBe(true)
+    expect(header.includes("Section 232 Rate (%)")).toBe(true)
     expect(header.includes("Section 232 Tariffs,")).toBe(true)
   })
 
