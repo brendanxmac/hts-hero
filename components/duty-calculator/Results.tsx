@@ -188,12 +188,8 @@ export const Statement = ({
     const color = row.slice ? sliceColors?.[row.slice] : undefined;
     return {
       color,
-      // Lines without a slice (e.g. a $0 exemption) fade with the rest
-      state: !highlight
-        ? "idle"
-        : color && highlight === row.slice
-          ? "active"
-          : "faded",
+      // Only the hovered line changes; the others stay as they are
+      active: Boolean(color && highlight && highlight === row.slice),
       onHover:
         color && onHighlight
           ? (on: boolean) => onHighlight(on ? (row.slice ?? null) : null)
@@ -277,16 +273,12 @@ interface RowProps {
 
 interface RowLink {
   color?: string;
-  state: "idle" | "active" | "faded";
+  active: boolean;
   onHover?: (on: boolean) => void;
 }
 
 const linkClass = (link?: RowLink) =>
-  link?.state === "active"
-    ? "bg-[var(--dc-accent-soft)]"
-    : link?.state === "faded"
-      ? "opacity-45"
-      : "";
+  link?.active ? "bg-[var(--dc-accent-soft)]" : "";
 
 // The line's chart color
 const Swatch = ({ color }: { color?: string }) =>
@@ -311,7 +303,7 @@ const MobileRow = ({
   link,
 }: RowProps & { link?: RowLink }) => (
   <li
-    className={`border-t border-[var(--dc-border)] px-5 py-4 flex flex-col gap-1.5 transition-[opacity,background-color] ${linkClass(link)}`}
+    className={`border-t border-[var(--dc-border)] px-5 py-4 flex flex-col gap-1.5 transition-colors ${linkClass(link)}`}
   >
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
@@ -423,7 +415,7 @@ const StatementRow = ({
   link,
 }: RowProps & { link?: RowLink }) => (
   <tr
-    className={`border-t border-[var(--dc-border)] align-top transition-[opacity,background-color] ${linkClass(link)}`}
+    className={`border-t border-[var(--dc-border)] align-top transition-colors ${linkClass(link)}`}
     onMouseEnter={link?.onHover && (() => link.onHover?.(true))}
     onMouseLeave={link?.onHover && (() => link.onHover?.(false))}
   >
