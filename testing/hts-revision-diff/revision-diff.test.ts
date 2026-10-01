@@ -385,10 +385,43 @@ describe("Numbering patterns found in Chapter 99", () => {
     expect(p.warnings.map((w) => w.kind)).toEqual(["ocr_correction"])
   })
 
+  // Capital I and lowercase l look alike in the PDF font
+  const citations = (lines: string[]) => parse(["1. Intro.", ...lines]).nodes.map((n) => n.citation)
+
+  it("reads (II) after (gg) as (ll), at the same level as (gg), even with a roman (I) open below", () => {
+    const p = parse(["1. Intro.", "20. (a) A.", "(gg) GG.", "(1) Item.", "(I) Roman one.", "(II) LL.", "(1) Item.", "(mm) MM."])
+    expect(p.nodes.find((n) => n.citation === "20(ll)")?.parentKey).toBe("sub-III/us-notes/20")
+    expect(p.nodes.find((n) => n.citation === "20(mm)")?.parentKey).toBe("sub-III/us-notes/20")
+    expect(p.warnings.filter((w) => w.kind === "ocr_correction").length).toBe(1)
+  })
+
+  it("keeps a real roman list (I), (II), (III)", () => {
+    expect(citations(["2. (a) A.", "(I) One.", "(II) Two.", "(III) Three.", "(b) B."])).toEqual([
+      "1", "2", "2(a)", "2(a)(I)", "2(a)(II)", "2(a)(III)", "2(b)",
+    ])
+  })
+
+  it("reads (I) between (k) and (m) as the letter l", () => {
+    expect(citations(["2. (a) A.", "(k) K.", "(I) L.", "(m) M."])).toEqual(["1", "2", "2(a)", "2(k)", "2(l)", "2(m)"])
+  })
+
+  it("reads (ll) as roman II when (III) follows", () => {
+    expect(citations(["2. (a) A.", "(I) One.", "(ll) Two.", "(III) Three."])).toEqual([
+      "1", "2", "2(a)", "2(a)(I)", "2(a)(II)", "2(a)(III)",
+    ])
+  })
+
+  it("keeps (I) as the capital letter I between (H) and (J)", () => {
+    expect(citations(["2. (a) A.", "(A) A.", "(H) H.", "(I) I.", "(J) J."])).toEqual([
+      "1", "2", "2(a)", "2(a)(A)", "2(a)(H)", "2(a)(I)", "2(a)(J)",
+    ])
+  })
+
   it("keeps items the PDF numbers alike as separate items", () => {
     const p = parse(["20. (a) A.", "(1) One.", "(2) Two.", "(2) Two again.", "(3) Three."])
     expect(p.nodes.map((n) => n.key.replace("sub-III/us-notes/", ""))).toEqual(["20", "20(a)", "20(a)(1)", "20(a)(2)", "20(a)(2)#2", "20(a)(3)"])
     expect(p.nodes.find((n) => n.key.endsWith("(2)#2"))?.text).toBe("Two again.")
+    expect(p.warnings.filter((w) => w.kind !== "numbering_gap").map((w) => w.kind)).toEqual(["duplicate_number"])
   })
 
   it("continues the closest matching sequence after nested letters", () => {

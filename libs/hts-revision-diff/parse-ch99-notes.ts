@@ -142,8 +142,14 @@ const resolveAmbiguity = (value: string, candidates: TokenType[], upcoming: stri
 interface Placement {
   type: TokenType
   depth: number // index in the stack the new entry takes
+  // How well it fits, best first: the next value of a sequence, a repeated
+  // value, the first value of a new level, a later value after deleted ones,
+  // a new level missing its first values
+  fit: "next" | "repeat" | "first" | "later" | "unexpected"
   unexpectedStart?: boolean // a new level that doesn't start at its first value
 }
+
+const FIT_RANK: Record<Placement["fit"], number> = { next: 5, repeat: 4, first: 3, later: 2, unexpected: 1 }
 
 // Where a parenthesized token fits in the current stack, or null if nowhere
 const placeParenToken = (stack: StackEntry[], value: string, candidates: TokenType[]): Placement | null => {
@@ -153,39 +159,87 @@ const placeParenToken = (stack: StackEntry[], value: string, candidates: TokenTy
   // 1. The next item of a sequence in the stack (deepest first)
   for (const type of candidates) {
     for (let i = stack.length - 1; i >= 0; i--) {
-      if (step(stack[i], type) === 1) return { type, depth: i }
+      if (step(stack[i], type) === 1) return { type, depth: i, fit: "next" }
     }
   }
   // 1b. The same value again as the deepest entry: the PDF numbers two items
   //     alike ("(62)", "(62)"). Kept as separate items (the key gets "#2").
   for (const type of candidates) {
-    if (top && step(top, type) === 0) return { type, depth: stack.length - 1 }
+    if (top && step(top, type) === 0) return { type, depth: stack.length - 1, fit: "repeat" }
   }
   // 2. First item of a new, deeper level. The same kind of numbering can nest
   //    again further down ("2(v)(iii)(a)", "2(z)(xiv)(aa)(i)").
   for (const type of candidates) {
     if (value === FIRST_VALUE[type] && !(top && top.type === type)) {
-      return { type, depth: stack.length }
+      return { type, depth: stack.length, fit: "first" }
     }
   }
   // 3. A later item of a sequence in the stack, after deleted ones. When the
   //    same kind of numbering appears at several depths, the closest value
   //    wins: "(x)" after "(v)…(b)" continues "(v)", not "(b)".
-  let best: (Placement & { gap: number }) | null = null
+  let best: { type: TokenType; depth: number; gap: number } | null = null
   for (const type of candidates) {
     for (let i = stack.length - 1; i >= 0; i--) {
       const gap = step(stack[i], type)
       if (gap > 1 && (!best || gap < best.gap)) best = { type, depth: i, gap }
     }
   }
-  if (best) return { type: best.type, depth: best.depth }
+  if (best) return { type: best.type, depth: best.depth, fit: "later" }
   // 4. A new level whose first items were deleted ("(b)" with no "(a)")
   for (const type of candidates) {
     if (!stack.some((e) => e.type === type)) {
-      return { type, depth: stack.length, unexpectedStart: true }
+      return { type, depth: stack.length, fit: "unexpected", unexpectedStart: true }
     }
   }
   return null
+}
+
+// In the PDF's font, capital I and lowercase l look the same, so "(II)" may
+// be the letters (ll) and "(ll)" may be roman II. Tries both readings (and
+// the capital letter I for a single "I") and picks one by the tokens that
+// follow, else by which fits the structure better, else as printed.
+const placeIOrL = (
+  stack: StackEntry[],
+  printed: string,
+  upcoming: string[]
+): { value: string; placement: Placement } | null => {
+  const asLetters = "l".repeat(printed.length)
+  const asRoman = "I".repeat(printed.length)
+  const readings: { value: string; types: TokenType[] }[] = [
+    { value: asLetters, types: ["letter"] },
+    { value: asRoman, types: printed.length === 1 ? ["upper_roman", "upper_letter"] : ["upper_roman"] },
+  ]
+
+  // What follows: "(mm)" after "(ll)" means letters; "(III)" after "(II)" means roman
+  let verdict: string | null = null
+  for (const next of upcoming) {
+    if (/^\d+$/.test(next)) continue
+    if (/^[IVX]+$/.test(next) && isRoman(next) && romanToInt(next) === printed.length + 1) {
+      verdict = asRoman
+      break
+    }
+    if (/^[a-z]+$/.test(next) && !/^l+$/.test(next) && isLetterRun(next)) {
+      if (letterOrdinal(next, LOWER_LETTERS) > letterOrdinal(asLetters, LOWER_LETTERS)) verdict = asLetters
+      break
+    }
+    if (/^[A-Z]$/.test(next) && printed.length === 1 && next > "I") {
+      verdict = asRoman // the capital letter I, followed by (J), (K)…
+      break
+    }
+  }
+
+  const options = readings
+    .map((r) => ({ value: r.value, placement: placeParenToken(stack, r.value, r.types) }))
+    .filter((o): o is { value: string; placement: Placement } => !!o.placement)
+  if (!options.length) return null
+  const decided = verdict ? options.find((o) => o.value === verdict) : undefined
+  if (decided) return decided
+  const asPrinted = /^l+$/.test(printed) ? asLetters : asRoman
+  return options.sort(
+    (a, b) =>
+      FIT_RANK[b.placement.fit] - FIT_RANK[a.placement.fit] ||
+      (a.value === asPrinted ? -1 : b.value === asPrinted ? 1 : 0)
+  )[0]
 }
 
 const buildCitation = (stack: StackEntry[]) =>
@@ -294,6 +348,8 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
   const warnings: ParseWarning[] = []
   const subchapterTitles: Record<string, string> = {}
   const keyCounts = new Map<string, number>()
+  // Values already used under each parent, for duplicate messages
+  const childValues = new Map<string, Set<string>>()
 
   let page: number | null = null
   let subchapter: string | null = null
@@ -338,17 +394,24 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
     currentParts = []
   }
 
-  const uniqueKey = (base: string) => {
+  const uniqueKey = (base: string, alreadyReported = false) => {
     const count = (keyCounts.get(base) ?? 0) + 1
     keyCounts.set(base, count)
     if (count === 1) return base
+    if (alreadyReported) return `${base}#${count}`
     warn("duplicate_citation", `Citation appears more than once; kept as "${base}#${count}"`, base)
     return `${base}#${count}`
   }
 
-  const startNode = (citation: string, parentKey: string | null, depth: number, topNote: string | null) => {
+  const startNode = (
+    citation: string,
+    parentKey: string | null,
+    depth: number,
+    topNote: string | null,
+    knownDuplicate = false
+  ) => {
     flush()
-    const key = uniqueKey(`${groupKey()}/${citation || "_intro"}`)
+    const key = uniqueKey(`${groupKey()}/${citation || "_intro"}`, knownDuplicate)
     current = {
       key,
       groupKey: groupKey(),
@@ -432,17 +495,21 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
         if (CONTINUATION_AFTER_TOKEN.test(after)) return rest
         if (!group) return rest
         candidates = resolveAmbiguity(value, candidates, [...leadingParenTokens(after), ...upcomingAfterLine])
-        let placement = placeParenToken(stack, value, candidates)
-        // OCR reads "(ll)" and "(lll)" as "(II)" and "(III)". When the roman
-        // reading doesn't fit, try the letters.
-        if ((!placement || placement.unexpectedStart) && /^I{2,3}$/.test(value)) {
-          const asLetters = value.toLowerCase().replace(/i/g, "l")
-          const letterPlacement = placeParenToken(stack, asLetters, ["letter"])
-          if (letterPlacement && !letterPlacement.unexpectedStart) {
-            warn("ocr_correction", `Read "(${value})" as "(${asLetters})", which continues the lettering`, current?.key)
-            value = asLetters
-            placement = letterPlacement
+        const upcoming = [...leadingParenTokens(after), ...upcomingAfterLine]
+        let placement: Placement | null
+        if (/^(I{1,3}|l{1,3})$/.test(value)) {
+          const chosen = placeIOrL(stack, value, upcoming)
+          placement = chosen?.placement ?? null
+          if (chosen && chosen.value !== value) {
+            warn(
+              "ocr_correction",
+              `Read "(${value})" as "(${chosen.value})": capital I and lowercase l look alike, and "(${chosen.value})" fits the numbering`,
+              current?.key
+            )
+            value = chosen.value
           }
+        } else {
+          placement = placeParenToken(stack, value, candidates)
         }
         if (!placement) {
           warn(
@@ -459,7 +526,20 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
             current?.key
           )
         }
-        pushEntry(placement.type, value, placement.depth)
+        if (placement.fit === "repeat") {
+          const previous = stack[placement.depth]
+          const below = String(ordinal(placement.type, value) - 1)
+          const missing =
+            /^\d+$/.test(value) && !(childValues.get(stack[placement.depth - 1]?.key ?? "") ?? new Set()).has(below)
+          warn(
+            "duplicate_number",
+            `The PDF numbers two items "(${value})" under ${buildCitation(stack.slice(0, placement.depth)) || groupLabel()}${
+              missing ? ` and has no "(${below})"` : ""
+            }. Both are kept; the second is keyed "#2".`,
+            previous.key
+          )
+        }
+        pushEntry(placement.type, value, placement.depth, placement.fit === "repeat")
         rest = after
         continue
       }
@@ -468,12 +548,15 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
   }
 
   // Puts a new entry at `depth` in the stack and starts its node
-  const pushEntry = (type: TokenType, value: string, depth: number) => {
+  const pushEntry = (type: TokenType, value: string, depth: number, knownDuplicate = false) => {
     const entry: StackEntry = { type, value, key: "" }
     stack = [...stack.slice(0, depth), entry]
     const citation = buildCitation(stack)
     const parentKey = depth > 0 ? stack[depth - 1].key : null
-    entry.key = startNode(citation, parentKey, depth, stack[0].type === "number" ? stack[0].value : null)
+    entry.key = startNode(citation, parentKey, depth, stack[0].type === "number" ? stack[0].value : null, knownDuplicate)
+    const siblings = childValues.get(parentKey ?? "") ?? new Set<string>()
+    siblings.add(value)
+    childValues.set(parentKey ?? "", siblings)
   }
 
   // "[U.S. note 8 deleted]", "[U.S. notes 8 through 12 deleted]"
