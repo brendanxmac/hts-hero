@@ -12,9 +12,12 @@
     "lint": "next lint",
     "tests": "APP_ENV=test npx tsx testing/run-tests.ts",
     "knip": "knip",
-    "sync-revisions": "npx tsx scripts/engine-v2/sync-hts-revisions.ts"
+    "sync-revisions": "npx tsx scripts/engine-v2/sync-hts-revisions.ts",
+    "pull-revision": "npx tsx scripts/hts-revision-diff/pull-revision.ts",
+    "test:revision-diff": "npx tsx testing/hts-revision-diff/run.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.2.0",
     "@javascript-packages/roman-numerals": "^1.0.14",
