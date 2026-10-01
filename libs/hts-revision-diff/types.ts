@@ -240,8 +240,17 @@ export interface NoteDiff {
   words: WordOp[] | null
   codesAdded: string[]
   codesRemoved: string[]
+  // Code ranges whose ends moved ("9903.82.02–9903.82.17" -> "…–9903.82.19"),
+  // and ranges that appear or disappear outright (diff-2 and later)
+  rangeChanges?: RangeChange[]
   fromPage: number | null
   toPage: number | null
+}
+
+export interface RangeChange {
+  before: string | null // "9903.82.02–9903.82.17"
+  after: string | null
+  description: string // "extended at the end: now runs to 9903.82.19"
 }
 
 export interface CodeFieldChange {

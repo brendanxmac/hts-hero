@@ -25,6 +25,9 @@ const renderNoteDiff = (d: NoteDiff, fromName: string, toName: string) => {
   if (d.after !== null) {
     lines.push("", `${d.status === "renumbered" ? "Text (unchanged)" : `After (${toName})`}:`, fence(d.after || "(no text of its own)"))
   }
+  for (const r of d.rangeChanges ?? []) {
+    lines.push("", `Code range ${r.before ?? "(none)"} → ${r.after ?? "(none)"}: ${r.description}`)
+  }
   if (d.codesAdded.length) lines.push("", `HTS codes now mentioned: ${d.codesAdded.join(", ")}`)
   if (d.codesRemoved.length) lines.push("", `HTS codes no longer mentioned: ${d.codesRemoved.join(", ")}`)
   return lines.join("\n")
@@ -264,6 +267,7 @@ export const renderSummaryMaterial = (
       }
       if (d.status === "added") push(clip(d.after ?? "", SUMMARY_LIMITS.addedText))
       if (d.status === "removed") push(clip(d.before ?? "", SUMMARY_LIMITS.removedText))
+      for (const r of d.rangeChanges ?? []) push(`Code range ${r.before ?? "(none)"} → ${r.after ?? "(none)"}: ${r.description}`)
       if (d.codesAdded.length) push(`Codes now listed: ${codeList(d.codesAdded)}`)
       if (d.codesRemoved.length) push(`Codes no longer listed: ${codeList(d.codesRemoved)}`)
     }

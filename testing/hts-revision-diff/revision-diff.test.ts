@@ -1,10 +1,10 @@
 import { describe, expect, it } from "../test-runner"
 import { parseCh99NotesMarkdown } from "../../libs/hts-revision-diff/parse-ch99-notes"
 import { parseCh99Json } from "../../libs/hts-revision-diff/parse-ch99-json"
-import { diffCodes, diffNotes } from "../../libs/hts-revision-diff/diff"
+import { codeChanges, diffCodes, diffNotes } from "../../libs/hts-revision-diff/diff"
 import { buildChanges } from "../../libs/hts-revision-diff/build-changes"
 import { wordDiff, renderWordDiff } from "../../libs/hts-revision-diff/word-diff"
-import { extractHtsCodes } from "../../libs/hts-revision-diff/text"
+import { extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/text"
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
 import { readFileSync } from "fs"
 import { join } from "path"
@@ -429,5 +429,47 @@ describe("Numbering patterns found in Chapter 99", () => {
     expect(p.nodes.find((n) => n.citation === "2(v)(iii)(b)")?.parentKey).toBe("sub-III/us-notes/2(v)(iii)")
     expect(p.nodes.find((n) => n.citation === "2(x)")?.parentKey).toBe("sub-III/us-notes/2")
     expect(p.warnings.length).toBe(0)
+  })
+})
+
+describe("Code ranges", () => {
+  const changes = (before: string, after: string) =>
+    codeChanges(before, after, extractHtsCodes(before), extractHtsCodes(after))
+
+  it("reads ranges written with dashes, through and to", () => {
+    expect(extractHtsRanges("headings 9903.82.02–9903.82.17, 9903.45.01-9903.45.06, 9903.01.25 through 9903.01.30 and 9903.88.01 to 9903.88.04").map((r) => `${r.from}..${r.to}`)).toEqual([
+      "9903.82.02..9903.82.17",
+      "9903.45.01..9903.45.06",
+      "9903.01.25..9903.01.30",
+      "9903.88.01..9903.88.04",
+    ])
+  })
+
+  it("ignores pairs that aren't ranges", () => {
+    expect(extractHtsRanges("subheadings 7208.10.15 - 7225.30.30 and 9903.01.30-9903.01.25").length).toBe(0)
+  })
+
+  it("reports a range extended at the end, not a code removed", () => {
+    const c = changes("headings 9903.82.02–9903.82.17 provide", "headings 9903.82.02–9903.82.19 provide")
+    expect(c.removed).toEqual([])
+    expect(c.added).toEqual([])
+    expect(c.rangeChanges.map((r) => r.description)).toEqual(["extended at the end: now runs to 9903.82.19"])
+  })
+
+  it("reports a range shortened at the start", () => {
+    const c = changes("9903.01.25 through 9903.01.30", "9903.01.26 through 9903.01.30")
+    expect(c.rangeChanges.map((r) => r.description)).toEqual(["shortened at the start: now starts at 9903.01.26"])
+  })
+
+  it("reports new ranges and plain list changes", () => {
+    const c = changes("9903.45.01-9903.45.06; 0101.21.00, 0101.29.00", "9903.45.01-9903.45.06 and 9903.45.21-9903.45.29; 0101.21.00, 0101.30.00")
+    expect(c.rangeChanges.map((r) => `${r.after} ${r.description}`)).toEqual(["9903.45.21–9903.45.29 new range"])
+    expect(c.added).toEqual(["0101.30.00"])
+    expect(c.removed).toEqual(["0101.29.00"])
+  })
+
+  it("doesn't report a code as removed when a range now covers it", () => {
+    const c = changes("headings 9903.82.05 and 9903.82.10", "headings 9903.82.04–9903.82.19")
+    expect(c.removed).toEqual([])
   })
 })

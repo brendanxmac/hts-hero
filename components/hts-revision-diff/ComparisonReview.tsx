@@ -617,8 +617,17 @@ function NoteDiffView({ diff, fromName, toName }: { diff: NoteDiff; fromName: st
       {diff.status === "added" && <TextBlock text={diff.after ?? ""} tone="add" />}
       {diff.status === "removed" && <TextBlock text={diff.before ?? ""} tone="del" />}
       {diff.status === "renumbered" && <TextBlock text={diff.after ?? ""} />}
-      {(diff.codesAdded.length > 0 || diff.codesRemoved.length > 0) && (
+      {(diff.codesAdded.length > 0 || diff.codesRemoved.length > 0 || (diff.rangeChanges?.length ?? 0) > 0) && (
         <div className="mt-2 flex flex-col gap-1 text-xs">
+          {diff.rangeChanges?.map((r, i) => (
+            <p key={i} className="break-words">
+              <span className="font-semibold text-info">Range:</span>{" "}
+              <span className="font-mono">
+                {r.before ?? "(none)"} → {r.after ?? "(none)"}
+              </span>{" "}
+              <span className="text-base-content/70">({r.description})</span>
+            </p>
+          ))}
           {diff.codesAdded.length > 0 && (
             <p className="break-words">
               <span className="font-semibold text-success">+ {diff.codesAdded.length} codes:</span> {diff.codesAdded.join(", ")}

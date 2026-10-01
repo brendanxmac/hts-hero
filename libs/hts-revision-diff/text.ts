@@ -136,3 +136,38 @@ export const detectRevision = (markdown: string) => {
   const after = head.match(/after\s+(?:the\s+)?(\d{4})\s+(?:HTS\s+)?(?:Revision\s+(\d+)|Basic\s+Edition)/i)
   return { name, previous: after ? revisionName(after[1], after[2]) : null }
 }
+
+// ---------- Code ranges ----------
+
+export interface HtsRange {
+  from: string
+  to: string
+}
+
+const CODE = String.raw`\d{4}\.\d{2}(?:\.\d{4}|\.\d{2}(?:\.\d{2})?)?`
+// "9903.82.02–9903.82.17", "9903.01.25 - 9903.01.30", "9903.45.01 through 9903.45.06", "… to …"
+const RANGE_PATTERN = new RegExp(String.raw`(?<![\d.])(${CODE})\s*(?:[-‐-―−]|\bthrough\b|\bto\b)\s*(${CODE})(?![\d])`, "g")
+
+export const extractHtsRanges = (text: string): HtsRange[] => {
+  const seen = new Set<string>()
+  const ranges: HtsRange[] = []
+  for (const m of text.matchAll(RANGE_PATTERN)) {
+    const from = normalizeHtsCode(m[1])
+    const to = normalizeHtsCode(m[2])
+    // Only a real range: same heading, and "to" after "from"
+    if (from.slice(0, 4) !== to.slice(0, 4) || htsSortKey(to) <= htsSortKey(from)) continue
+    const key = `${from}–${to}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    ranges.push({ from, to })
+  }
+  return ranges
+}
+
+export const formatRange = (r: HtsRange) => `${r.from}–${r.to}`
+
+// Whether a code falls inside a range (9903.82.17 covers 9903.82.17.xx too)
+export const inRange = (code: string, r: HtsRange) => {
+  const k = htsSortKey(code)
+  return k >= htsSortKey(r.from) && k <= r.to.replace(/\D/g, "").padEnd(10, "9")
+}

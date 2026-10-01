@@ -1,8 +1,8 @@
 // Diffs two parsed revisions: Chapter 99 note subdivisions and Chapter 99
 // JSON rows
 
-import type { CodeDiff, CodeFieldChange, HtsRow, NoteDiff, NoteNode } from "./types"
-import { normalizeForCompare } from "./text"
+import type { CodeDiff, CodeFieldChange, HtsRow, NoteDiff, NoteNode, RangeChange } from "./types"
+import { extractHtsRanges, formatRange, htsSortKey, inRange, normalizeForCompare, type HtsRange } from "./text"
 import { wordDiff } from "./word-diff"
 
 // Texts this long are distinctive enough to detect renumbering. Shorter ones
@@ -14,12 +14,63 @@ const MIN_UNIQUE_RENUMBER_TEXT = 15
 export const topNoteKeyFor = (node: NoteNode) =>
   `${node.groupKey}/${node.topNote ?? "_intro"}`
 
-const setDiff = (before: string[], after: string[]) => {
-  const a = new Set(before)
-  const b = new Set(after)
+// How a range changed, in words
+const describeRangeChange = (before: HtsRange, after: HtsRange) => {
+  const later = (a: string, b: string) => htsSortKey(a) > htsSortKey(b)
+  if (before.from === after.from) {
+    return later(after.to, before.to)
+      ? `extended at the end: now runs to ${after.to}`
+      : `shortened at the end: now ends at ${after.to}`
+  }
+  if (before.to === after.to) {
+    return later(before.from, after.from)
+      ? `extended at the start: now starts at ${after.from}`
+      : `shortened at the start: now starts at ${after.from}`
+  }
+  return `changed from ${formatRange(before)} to ${formatRange(after)}`
+}
+
+const overlaps = (a: HtsRange, b: HtsRange) => inRange(a.from, b) || inRange(a.to, b) || inRange(b.from, a)
+
+// Codes and ranges mentioned in a subdivision's old and new text. A code that
+// is still covered by a range ("9903.82.17" inside "…02–9903.82.19"), or is
+// just the end of a range that moved, isn't reported as added or removed;
+// the range change says what happened instead.
+export const codeChanges = (beforeText: string, afterText: string, beforeCodes: string[], afterCodes: string[]) => {
+  const beforeRanges = extractHtsRanges(beforeText)
+  const afterRanges = extractHtsRanges(afterText)
+  const key = (r: HtsRange) => formatRange(r)
+  const beforeKeys = new Set(beforeRanges.map(key))
+  const afterKeys = new Set(afterRanges.map(key))
+  const gone = beforeRanges.filter((r) => !afterKeys.has(key(r)))
+  const fresh = afterRanges.filter((r) => !beforeKeys.has(key(r)))
+
+  const rangeChanges: RangeChange[] = []
+  const paired = new Set<HtsRange>()
+  for (const b of gone) {
+    const a =
+      fresh.find((r) => !paired.has(r) && (r.from === b.from || r.to === b.to)) ??
+      fresh.find((r) => !paired.has(r) && overlaps(r, b))
+    if (a) {
+      paired.add(a)
+      rangeChanges.push({ before: formatRange(b), after: formatRange(a), description: describeRangeChange(b, a) })
+    } else {
+      rangeChanges.push({ before: formatRange(b), after: null, description: "range no longer listed" })
+    }
+  }
+  for (const a of fresh) {
+    if (!paired.has(a)) rangeChanges.push({ before: null, after: formatRange(a), description: "new range" })
+  }
+
+  const endpoints = (ranges: HtsRange[]) => new Set(ranges.flatMap((r) => [r.from, r.to]))
+  const goneEnds = endpoints(gone)
+  const freshEnds = endpoints(fresh)
+  const beforeSet = new Set(beforeCodes)
+  const afterSet = new Set(afterCodes)
   return {
-    added: after.filter((c) => !a.has(c)),
-    removed: before.filter((c) => !b.has(c)),
+    added: afterCodes.filter((c) => !beforeSet.has(c) && !freshEnds.has(c) && !beforeRanges.some((r) => inRange(c, r))),
+    removed: beforeCodes.filter((c) => !afterSet.has(c) && !goneEnds.has(c) && !afterRanges.some((r) => inRange(c, r))),
+    rangeChanges,
   }
 }
 
@@ -87,7 +138,7 @@ export const diffNotes = (fromNodes: NoteNode[], toNodes: NoteNode[]): NoteDiff[
     const to = toByKey.get(from.key)
     if (to && !usedTo.has(to.key)) {
       usedTo.add(to.key)
-      const codes = setDiff(from.htsCodes, to.htsCodes)
+      const codes = codeChanges(from.text, to.text, from.htsCodes, to.htsCodes)
       diffs.push({
         status: "modified",
         key: to.key,
@@ -101,6 +152,7 @@ export const diffNotes = (fromNodes: NoteNode[], toNodes: NoteNode[]): NoteDiff[
         words: wordDiff(from.text, to.text),
         codesAdded: codes.added,
         codesRemoved: codes.removed,
+        rangeChanges: codes.rangeChanges,
         fromPage: from.page,
         toPage: to.page,
       })
