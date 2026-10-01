@@ -156,6 +156,11 @@ const placeParenToken = (stack: StackEntry[], value: string, candidates: TokenTy
       if (step(stack[i], type) === 1) return { type, depth: i }
     }
   }
+  // 1b. The same value again as the deepest entry: the PDF numbers two items
+  //     alike ("(62)", "(62)"). Kept as separate items (the key gets "#2").
+  for (const type of candidates) {
+    if (top && step(top, type) === 0) return { type, depth: stack.length - 1 }
+  }
   // 2. First item of a new, deeper level. The same kind of numbering can nest
   //    again further down ("2(v)(iii)(a)", "2(z)(xiv)(aa)(i)").
   for (const type of candidates) {
@@ -420,14 +425,25 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
 
       const parenMatch = rest.match(PAREN_TOKEN)
       if (parenMatch) {
-        const value = parenMatch[1]
+        let value = parenMatch[1]
         let candidates = classifyParenToken(value)
         if (!candidates.length) return rest
         const after = rest.slice(parenMatch[0].length)
         if (CONTINUATION_AFTER_TOKEN.test(after)) return rest
         if (!group) return rest
         candidates = resolveAmbiguity(value, candidates, [...leadingParenTokens(after), ...upcomingAfterLine])
-        const placement = placeParenToken(stack, value, candidates)
+        let placement = placeParenToken(stack, value, candidates)
+        // OCR reads "(ll)" and "(lll)" as "(II)" and "(III)". When the roman
+        // reading doesn't fit, try the letters.
+        if ((!placement || placement.unexpectedStart) && /^I{2,3}$/.test(value)) {
+          const asLetters = value.toLowerCase().replace(/i/g, "l")
+          const letterPlacement = placeParenToken(stack, asLetters, ["letter"])
+          if (letterPlacement && !letterPlacement.unexpectedStart) {
+            warn("ocr_correction", `Read "(${value})" as "(${asLetters})", which continues the lettering`, current?.key)
+            value = asLetters
+            placement = letterPlacement
+          }
+        }
         if (!placement) {
           warn(
             "token_out_of_sequence",

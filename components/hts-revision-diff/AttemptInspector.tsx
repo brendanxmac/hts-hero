@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import type { AttemptRow, DocumentRow, ParsedNotes, RevisionRow } from "@/libs/hts-revision-diff/types"
+import NotesBrowser from "./NotesBrowser"
 import { api, formatTime, StatusBadge } from "./shared"
 
 interface InspectData {
@@ -15,15 +16,11 @@ interface InspectData {
   links: { label: string; url: string }[]
 }
 
-const PAGE_SIZE = 300
-
 export default function AttemptInspector({ attemptId }: { attemptId: string }) {
   const [data, setData] = useState<InspectData | null>(null)
   const [tab, setTab] = useState<"notes" | "warnings" | "change-record">("notes")
-  const [group, setGroup] = useState("all")
-  const [search, setSearch] = useState("")
   const [warningKind, setWarningKind] = useState("all")
-  const [limit, setLimit] = useState(PAGE_SIZE)
+  const [focusKey, setFocusKey] = useState<string | null>(null)
   const [extracting, setExtracting] = useState(false)
 
   const load = useCallback(async () => {
@@ -39,15 +36,6 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
   }, [load])
 
   const nodes = data?.notes?.nodes ?? []
-  const groups = useMemo(() => Array.from(new Set(nodes.map((n) => n.groupKey))), [nodes])
-  const filtered = useMemo(() => {
-    const term = search.trim().toLowerCase()
-    return nodes.filter(
-      (n) =>
-        (group === "all" || n.groupKey === group) &&
-        (!term || n.key.toLowerCase().includes(term) || n.text.toLowerCase().includes(term))
-    )
-  }, [nodes, group, search])
   const warnings = data?.attempt.parse_warnings ?? []
   const warningKinds = Array.from(new Set(warnings.map((w) => w.kind)))
 
@@ -141,47 +129,12 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
         </button>
       </div>
 
-      {tab === "notes" && (
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap gap-2">
-            <select className="select select-sm select-bordered" value={group} onChange={(e) => { setGroup(e.target.value); setLimit(PAGE_SIZE) }}>
-              <option value="all">All groups</option>
-              {groups.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-            <input
-              className="input input-sm input-bordered w-72"
-              placeholder="Search citation or text (e.g. 2(v) or 9903.01.25)"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setLimit(PAGE_SIZE) }}
-            />
-            <span className="self-center text-sm text-base-content/60">{filtered.length} subdivisions</span>
-          </div>
-          <div className="flex flex-col divide-y divide-base-200 rounded-lg border border-base-300">
-            {filtered.slice(0, limit).map((n) => (
-              <div key={n.key} className="p-2 text-sm" style={{ paddingLeft: `${0.5 + n.depth * 1.25}rem` }}>
-                <div className="flex flex-wrap items-baseline gap-2">
-                  <span className="font-mono font-semibold">{n.citation || "(intro)"}</span>
-                  <span className="font-mono text-xs text-base-content/40">{n.key}</span>
-                  {n.page && <span className="text-xs text-base-content/40">p.{n.page}</span>}
-                  {n.htsCodes.length > 0 && (
-                    <span className="text-xs text-base-content/50">{n.htsCodes.length} codes</span>
-                  )}
-                </div>
-                <p className="whitespace-pre-wrap break-words text-base-content/80">{n.text || <em className="text-base-content/40">no text of its own</em>}</p>
-              </div>
-            ))}
-          </div>
-          {filtered.length > limit && (
-            <button className="btn btn-sm w-fit" onClick={() => setLimit(limit + PAGE_SIZE)}>
-              Show more
-            </button>
-          )}
-        </div>
-      )}
+      {tab === "notes" &&
+        (data.notes ? (
+          <NotesBrowser notes={data.notes} warnings={warnings} focusKey={focusKey} />
+        ) : (
+          <p className="text-base-content/60">Not parsed yet.</p>
+        ))}
 
       {tab === "warnings" && (
         <div className="flex flex-col gap-3">
@@ -214,7 +167,22 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
                     <tr key={i}>
                       <td className="text-xs">{w.kind}</td>
                       <td>{w.message}</td>
-                      <td className="font-mono text-xs">{w.key ?? ""}</td>
+                      <td className="font-mono text-xs">
+                        {w.key ? (
+                          <button
+                            className="link text-left"
+                            onClick={() => {
+                              setFocusKey(null)
+                              setTimeout(() => setFocusKey(w.key!), 0)
+                              setTab("notes")
+                            }}
+                          >
+                            {w.key}
+                          </button>
+                        ) : (
+                          ""
+                        )}
+                      </td>
                       <td>{w.page ?? ""}</td>
                     </tr>
                   ))}

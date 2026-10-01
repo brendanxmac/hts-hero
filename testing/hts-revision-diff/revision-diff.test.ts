@@ -379,6 +379,18 @@ describe("Numbering patterns found in Chapter 99", () => {
     expect(p.nodes.map((n) => n.citation)).toEqual(["20", "20(a)", "20(a)[1]", "20(a)[2]", "20(b)", "21"])
   })
 
+  it("reads OCR's (II) as (ll) when it continues the lettering", () => {
+    const p = parse(["1. Intro.", "20. (a) A.", "(gg) GG.", "(II) LL.", "(1) One.", "(mm) MM."])
+    expect(p.nodes.filter((n) => n.parentKey === "sub-III/us-notes/20").map((n) => n.citation)).toEqual(["20(a)", "20(gg)", "20(ll)", "20(mm)"])
+    expect(p.warnings.map((w) => w.kind)).toEqual(["ocr_correction"])
+  })
+
+  it("keeps items the PDF numbers alike as separate items", () => {
+    const p = parse(["20. (a) A.", "(1) One.", "(2) Two.", "(2) Two again.", "(3) Three."])
+    expect(p.nodes.map((n) => n.key.replace("sub-III/us-notes/", ""))).toEqual(["20", "20(a)", "20(a)(1)", "20(a)(2)", "20(a)(2)#2", "20(a)(3)"])
+    expect(p.nodes.find((n) => n.key.endsWith("(2)#2"))?.text).toBe("Two again.")
+  })
+
   it("continues the closest matching sequence after nested letters", () => {
     const p = parse(["1. Intro.", "2. (a) A.", "(v) V.", "(i) One.", "(ii) Two.", "(iii) Three.", "(a) A.", "(b) B.", "(x) X."])
     expect(p.nodes.find((n) => n.citation === "2(v)(iii)(b)")?.parentKey).toBe("sub-III/us-notes/2(v)(iii)")
