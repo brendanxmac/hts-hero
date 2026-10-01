@@ -71,9 +71,15 @@ describe("Tariff Watcher: exporting the report", () => {
   const headers = sheet.columns.map((c) => c.header)
   const cell = (row: number, header: string) => sheet.rows[row][headers.indexOf(header)]
 
-  it("has a rate and a headings column for each type of tariff that applies, and no others", () => {
+  it("starts with the HTS code and country code, without the description", () => {
+    expect(headers.slice(0, 3)).toEqual(["HTS code", "Country code", "Country of origin"])
+    expect(headers.includes("Description")).toBe(false)
+    expect(sheet.rows[0].slice(0, 2)).toEqual(["7326.90.86.88", "CN"])
+  })
+
+  it("has a rate and a tariffs column for each type of tariff that applies, and no others", () => {
     expect(headers.includes("Section 122")).toBe(true)
-    expect(headers.includes("Section 232 headings")).toBe(true)
+    expect(headers.includes("Section 232 Tariffs")).toBe(true)
     expect(headers.includes("Section 301")).toBe(true)
     expect(headers.includes("IEEPA")).toBe(false)
     expect(headers.includes("Trade agreements")).toBe(false)
@@ -89,7 +95,7 @@ describe("Tariff Watcher: exporting the report", () => {
   })
 
   it("lists the headings behind each tariff", () => {
-    expect(String(cell(0, "Section 232 headings")).startsWith("9903.82.02")).toBe(true)
+    expect(String(cell(0, "Section 232 Tariffs")).startsWith("9903.82.02")).toBe(true)
   })
 
   it("explains per-unit rates in the notes", () => {
@@ -99,7 +105,7 @@ describe("Tariff Watcher: exporting the report", () => {
   it("marks percentage columns in the CSV header", () => {
     const header = toCsv(sheet).split("\r\n")[0]
     expect(header.includes("Section 232 (%)")).toBe(true)
-    expect(header.includes("Section 232 headings,")).toBe(true)
+    expect(header.includes("Section 232 Tariffs,")).toBe(true)
   })
 
   it("writes an Excel file (a zip starting with PK)", () => {

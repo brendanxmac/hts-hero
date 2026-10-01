@@ -2,7 +2,8 @@ import { Authority } from "../../tariffs/engine-v2/types";
 import { programAuthority, UNITS, VALUE, WatchRow } from "./report";
 
 // The Tariff Watcher report as a spreadsheet: one row per product (HTS code + country of
-// origin), with a rate column and a headings column for each type of tariff that appears.
+// origin), with a rate column and a column listing the tariffs (Chapter 99 headings) for
+// each type of tariff that appears.
 // The same sheet is written as CSV or as an Excel workbook.
 
 type Kind = "text" | "pct" | "int";
@@ -47,14 +48,13 @@ export const buildTariffSheet = (rows: WatchRow[], asOf: string): Sheet => {
 
   const columns: Column[] = [
     { header: "HTS code", kind: "text", width: 15 },
-    { header: "Description", kind: "text", width: 44 },
-    { header: "Country of origin", kind: "text", width: 18 },
     { header: "Country code", kind: "text", width: 9 },
+    { header: "Country of origin", kind: "text", width: 18 },
     { header: "Base rate (HTS)", kind: "text", width: 22 },
     { header: "Base duty", kind: "pct", width: 11 },
     ...types.flatMap((t): Column[] => [
       { header: t.label, kind: "pct", width: 12 },
-      { header: `${t.label} headings`, kind: "text", width: 34 },
+      { header: `${t.label} Tariffs`, kind: "text", width: 34 },
     ]),
     { header: "Total duty rate", kind: "pct", width: 13 },
     { header: "Open questions", kind: "int", width: 10 },
@@ -86,9 +86,8 @@ export const buildTariffSheet = (rows: WatchRow[], asOf: string): Sheet => {
     ];
     return [
       r.entry.element.htsno,
-      r.description,
-      r.entry.country.name,
       r.entry.country.code,
+      r.entry.country.name,
       result.base.reasons[0] ?? "Free",
       round((result.base.amount / VALUE) * 100),
       ...typeCells,
@@ -258,8 +257,8 @@ export const toXlsx = (sheet: Sheet, asOf: string): Uint8Array => {
       "Each tariff is shown as a percentage of the customs value. The total is the sum of the base duty and every additional tariff that applies.",
     ],
     [
-      "Headings",
-      "The Chapter 99 headings behind each tariff, with the rate each one sets.",
+      "Tariffs",
+      "The Chapter 99 headings behind each type of tariff, with the rate each one sets.",
     ],
     [
       "Per-unit rates",
