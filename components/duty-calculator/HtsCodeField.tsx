@@ -12,7 +12,7 @@ import {
   isValidEightOrTenDigitDigits,
   normalizeHtsCode,
 } from "../../libs/hts-code";
-import { mono } from "./format";
+import { mono } from "./font";
 import styles from "./theme.module.css";
 
 interface Props {

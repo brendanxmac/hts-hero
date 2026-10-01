@@ -15,13 +15,8 @@ import {
   TransportMode,
 } from "../../tariffs/engine-v2/types";
 import { HtsRevision } from "../../tariffs/engine-v2/revisions";
-import {
-  formatDate,
-  formatMoney,
-  formatPct,
-  mono,
-  TRANSPORT_MODES,
-} from "./format";
+import { formatDate, formatMoney, formatPct, TRANSPORT_MODES } from "./format";
+import { mono } from "./font";
 import styles from "./theme.module.css";
 
 export const programName = (id?: string) =>

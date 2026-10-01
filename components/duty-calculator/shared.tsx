@@ -8,9 +8,11 @@ import {
   LinkIcon,
 } from "@heroicons/react/20/solid";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
+import { getLatestVerifiedRevision, isVerifiedDate } from "../../tariffs/engine-v2/revisions";
 import { Explore } from "../Explore";
 import { Segmented } from "./controls";
-import { formatDate, mono } from "./format";
+import { formatDate } from "./format";
+import { mono } from "./font";
 import { EXAMPLES, Example, MAX_COMPARE, TariffFinder, View } from "./useTariffFinder";
 import styles from "./theme.module.css";
 
@@ -58,9 +60,16 @@ export const ShareButtons = ({ f }: { f: TariffFinder }) => (
 
 // ── Entry date outside verified data ──
 
-export const VerifiedNotice = ({ f }: { f: TariffFinder }) => {
-  if (f.verified) return null;
-  const { latestVerified } = f;
+// For any entry date; the Tariff Finder's version is VerifiedNotice below
+export const DateNotice = ({
+  entryDate,
+  onUseVerified,
+}: {
+  entryDate: string;
+  onUseVerified: (date: string) => void;
+}) => {
+  if (isVerifiedDate(entryDate)) return null;
+  const latestVerified = getLatestVerifiedRevision();
   return (
     <div
       role="status"
@@ -68,21 +77,21 @@ export const VerifiedNotice = ({ f }: { f: TariffFinder }) => {
     >
       <ExclamationTriangleIcon className="w-5 h-5 shrink-0 text-[var(--dc-warning)]" aria-hidden />
       <p className="flex-1 text-[14px] leading-snug text-[var(--dc-warning)]">
-        <span className="font-semibold">Tariff rules for {formatDate(f.entryDate)} aren&apos;t verified yet.</span>{" "}
+        <span className="font-semibold">Tariff rules for {formatDate(entryDate)} aren&apos;t verified yet.</span>{" "}
         Our data is verified for HTS {latestVerified.title} ({formatDate(latestVerified.from)} –{" "}
         {latestVerified.to ? formatDate(latestVerified.to) : "present"}). Changes outside that window may be missing.
       </p>
-      <button
-        type="button"
-        className={`${styles.button} shrink-0`}
-        onClick={() => f.setEntryDate(latestVerified.from, "verified_notice")}
-      >
+      <button type="button" className={`${styles.button} shrink-0`} onClick={() => onUseVerified(latestVerified.from)}>
         Use {formatDate(latestVerified.from)}
         <ArrowRightIcon className="w-4 h-4" />
       </button>
     </div>
   );
 };
+
+export const VerifiedNotice = ({ f }: { f: TariffFinder }) => (
+  <DateNotice entryDate={f.entryDate} onUseVerified={(date) => f.setEntryDate(date, "verified_notice")} />
+);
 
 // ── Trade preference ──
 

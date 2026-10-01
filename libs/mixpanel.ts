@@ -68,6 +68,8 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_RESULTS_COPIED = "Duty Calculator Results Copied",
   DUTY_CALCULATOR_EXAMPLE_SELECTED = "Duty Calculator Example Selected",
   DUTY_CALCULATOR_COMPARE_CHANGED = "Duty Calculator Compare Countries Changed",
+  /** Duty estimate embedded in the explorer or a classification, opened in the calculator */
+  DUTY_ESTIMATE_OPENED_IN_CALCULATOR = "Duty Estimate Opened in Calculator",
   /** Tariff Watcher tab on the duty calculator page */
   TARIFF_TOOL_CHANGED = "Tariff Tool Changed",
   TARIFF_WATCHER_LIST_CHANGED = "Tariff Watcher List Changed",

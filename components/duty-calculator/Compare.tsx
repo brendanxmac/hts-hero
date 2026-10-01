@@ -11,7 +11,8 @@ import { Country } from "../../constants/countries";
 import { AllRules } from "../../tariffs/engine-v2/data";
 import { CalculationResult } from "../../tariffs/engine-v2/types";
 import { CountryField } from "./CountryField";
-import { formatMoney, formatPct, mono } from "./format";
+import { formatMoney, formatPct } from "./format";
+import { mono } from "./font";
 import styles from "./theme.module.css";
 
 export interface CompareEntry {

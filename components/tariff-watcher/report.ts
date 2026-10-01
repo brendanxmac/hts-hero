@@ -1,9 +1,9 @@
 import { HtsElement } from "../../interfaces/hts";
 import { getHtsElementParents } from "../../libs/hts";
-import { findTariffElement } from "../../tariffs/tariff-calculations";
 import { calculate } from "../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../tariffs/engine-v2/data";
 import { Authority, CalculationInput, CalculationResult } from "../../tariffs/engine-v2/types";
+import { findTariffElement } from "../duty-calculator/estimate";
 import { countOpenQuestions, questionImpacts } from "../duty-calculator/questions";
 import { WatchEntry } from "./parse";
 

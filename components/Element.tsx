@@ -383,7 +383,6 @@ export const Element = ({
             <DutyTariffExplorerSection
               element={element}
               tariffElement={tariffElement}
-              htsElements={htsElements}
             />
           )}
 

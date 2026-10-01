@@ -3,20 +3,20 @@
 import Link from "next/link";
 import { ChartBarIcon, QuestionMarkCircleIcon } from "@heroicons/react/16/solid";
 import type { HtsElement } from "../interfaces/hts";
-import { SingleCountryDutyTariffCard } from "./SingleCountryDutyTariffCard";
+import { DutyEstimateEmbed } from "./duty-calculator/DutyEstimateEmbed";
 import { Countries } from "../constants/countries";
 import { ExplorerDetailSection } from "./ExplorerDetailSection";
 
 export interface DutyTariffExplorerSectionProps {
   element: HtsElement;
   tariffElement: HtsElement;
-  htsElements: HtsElement[];
 }
+
+const CHINA = Countries.find((c) => c.code === "CN") ?? null;
 
 export function DutyTariffExplorerSection({
   element,
   tariffElement,
-  htsElements,
 }: DutyTariffExplorerSectionProps) {
   const calculatorHref = `/duty-calculator?code=${encodeURIComponent(element.htsno)}`;
 
@@ -62,11 +62,11 @@ export function DutyTariffExplorerSection({
       }
     >
       <div className="flex flex-col gap-4">
-        <SingleCountryDutyTariffCard
+        <DutyEstimateEmbed
           element={element}
-          htsElements={htsElements}
-          tariffElementOverride={tariffElement}
-          initialSelectedCountry={Countries.find((c) => c.code === "CN")}
+          tariffElement={tariffElement}
+          initialCountry={CHINA}
+          surface="explorer"
         />
 
         <p className="text-xs text-base-content/40">

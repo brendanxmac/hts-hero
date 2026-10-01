@@ -15,14 +15,14 @@ import {
 import { htsCodeDigitsOnly, htsCodesEqual, normalizeHtsCode } from "../../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { copyToClipboard } from "../../utilities/data";
-import { findTariffElement } from "../../tariffs/tariff-calculations";
 import { calculate } from "../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../tariffs/engine-v2/data";
 import { getLatestVerifiedRevision, getRevisionForDate, isVerifiedDate } from "../../tariffs/engine-v2/revisions";
 import { Answers, CalculationResult, TransportMode } from "../../tariffs/engine-v2/types";
 import { CompareEntry } from "./Compare";
+import { buildEstimateInput, calculatorUrl, estimateSummaryText, findTariffElement } from "./estimate";
 import { countOpenQuestions, questionImpacts } from "./questions";
-import { formatDate, formatMoney, formatPct, todayIso, TRANSPORT_MODES } from "./format";
+import { formatDate, formatMoney, todayIso, TRANSPORT_MODES } from "./format";
 
 // Everything the Tariff Finder knows and can do; the page only lays it out.
 
@@ -197,20 +197,16 @@ export const useTariffFinder = () => {
   const baseInput = useMemo(
     () =>
       selectedElement && country && tariffElement
-        ? {
-            htsCode: selectedElement.htsno,
-            country: country.code,
+        ? buildEstimateInput({
+            element: selectedElement,
+            tariffElement,
+            country,
             asOf: ISO_DATE.test(entryDate) ? entryDate : todayIso(),
             customsValue,
             quantity,
-            baseRates: {
-              general: tariffElement.general,
-              special: tariffElement.special,
-              other: tariffElement.other,
-            },
-            claimedPreference: claimedPreference || undefined,
             transportMode,
-          }
+            claimedPreference,
+          })
         : null,
     [selectedElement, country, tariffElement, entryDate, customsValue, quantity, claimedPreference, transportMode]
   );
@@ -330,19 +326,18 @@ export const useTariffFinder = () => {
     }
   };
 
-  const shareUrl = () => {
-    const params = new URLSearchParams();
-    if (selectedElement) params.set("code", selectedElement.htsno);
-    if (country) params.set("country", country.code);
-    params.set("value", String(customsValue));
-    if (result?.requiresQuantity) params.set("units", String(quantity));
-    params.set("date", entryDate);
-    params.set("mode", transportMode);
-    if (claimedPreference) params.set("pref", claimedPreference);
-    if (compareCountries.length) params.set("compare", compareCountries.map((c) => c.code).join(","));
-    if (view === "compare") params.set("view", "compare");
-    return `${window.location.origin}/duty-calculator?${params.toString()}`;
-  };
+  const shareUrl = () =>
+    calculatorUrl({
+      code: selectedElement?.htsno,
+      country: country?.code,
+      value: customsValue,
+      units: result?.requiresQuantity ? quantity : undefined,
+      date: entryDate,
+      mode: transportMode,
+      pref: claimedPreference,
+      compare: compareCountries.map((c) => c.code),
+      view: view === "compare" ? "compare" : undefined,
+    });
 
   const comparing = view === "compare" && compareEntries.length > 0;
   const transportLabel = TRANSPORT_MODES.find((m) => m.id === transportMode)?.label ?? "";
@@ -366,21 +361,14 @@ export const useTariffFinder = () => {
         shareUrl(),
       ].join("\n");
     }
-    return [
-      `Duty estimate · HTS ${selectedElement.htsno} from ${country.name}`,
-      `Entry ${formatDate(result.asOf)} · ${transportLabel} · Customs value ${formatMoney(customsValue)}`,
-      "",
-      `Base duty (${result.base.reasons[0] ?? "Free"})`.padEnd(48) + formatMoney(result.base.amount),
-      ...result.lines
-        .filter((l) => l.status === "applies")
-        .map((l) => `${l.code} ${l.name} (${formatPct(l.ratePct ?? 0)})`.slice(0, 46).padEnd(48) + formatMoney(l.amount)),
-      "Total duty".padEnd(48) + formatMoney(result.totalDuty),
-      ...result.fees.map((f) => `${f.name} (${formatPct(f.ratePct)})`.padEnd(48) + formatMoney(f.amount)),
-      "Total duty and fees".padEnd(48) + formatMoney(result.totalDuty + result.totalFees),
-      "Landed cost".padEnd(48) + formatMoney(customsValue + result.totalDuty + result.totalFees),
-      "",
-      shareUrl(),
-    ].join("\n");
+    return estimateSummaryText({
+      result,
+      htsno: selectedElement.htsno,
+      country,
+      customsValue,
+      transportLabel,
+      link: shareUrl(),
+    });
   };
 
   const copy = async (kind: "link" | "summary") => {

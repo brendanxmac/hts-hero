@@ -13,7 +13,8 @@ import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import { TariffWatcher } from "./tariff-watcher/TariffWatcher";
 import { CompareView } from "./duty-calculator/Compare";
 import { EntryRail } from "./duty-calculator/EntryRail";
-import { formatDate, mono } from "./duty-calculator/format";
+import { formatDate } from "./duty-calculator/format";
+import { mono } from "./duty-calculator/font";
 import { BreakdownCard, slices } from "./duty-calculator/MoneyBreakdown";
 import {
   NotAppliedPanel,

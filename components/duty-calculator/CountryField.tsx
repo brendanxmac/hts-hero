@@ -20,7 +20,9 @@ const ORIGIN_COUNTRIES = Countries.filter((c) => c.code !== "US");
 export const CountryField = ({ id, selected, onChange, max }: Props) => {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const full = selected.length >= max;
+  // With room for one country, picking another replaces it
+  const single = max === 1;
+  const full = !single && selected.length >= max;
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -53,6 +55,12 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
       by="code"
       multiple
       onChange={(next: Country[]) => {
+        if (single) {
+          onChange(next.slice(-1));
+          setQuery("");
+          inputRef.current?.blur();
+          return;
+        }
         if (next.length > max) return;
         onChange(next);
         setQuery("");

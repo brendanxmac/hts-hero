@@ -108,6 +108,11 @@
   }
 }
 
+/* Inside another page (explorer, classification): keep that page's background */
+.embedded {
+  background: transparent;
+}
+
 /* Numbers line up in columns everywhere */
 .num {
   font-variant-numeric: tabular-nums;
