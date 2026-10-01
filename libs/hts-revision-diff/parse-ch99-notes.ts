@@ -497,15 +497,12 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
         candidates = resolveAmbiguity(value, candidates, [...leadingParenTokens(after), ...upcomingAfterLine])
         const upcoming = [...leadingParenTokens(after), ...upcomingAfterLine]
         let placement: Placement | null
+        let correction: string | null = null
         if (/^(I{1,3}|l{1,3})$/.test(value)) {
           const chosen = placeIOrL(stack, value, upcoming)
           placement = chosen?.placement ?? null
           if (chosen && chosen.value !== value) {
-            warn(
-              "ocr_correction",
-              `Read "(${value})" as "(${chosen.value})": capital I and lowercase l look alike, and "(${chosen.value})" fits the numbering`,
-              current?.key
-            )
+            correction = `Read "(${value})" as "(${chosen.value})": capital I and lowercase l look alike, and "(${chosen.value})" fits the numbering`
             value = chosen.value
           }
         } else {
@@ -526,20 +523,19 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
             current?.key
           )
         }
+        let duplicate: string | null = null
         if (placement.fit === "repeat") {
-          const previous = stack[placement.depth]
           const below = String(ordinal(placement.type, value) - 1)
           const missing =
             /^\d+$/.test(value) && !(childValues.get(stack[placement.depth - 1]?.key ?? "") ?? new Set()).has(below)
-          warn(
-            "duplicate_number",
-            `The PDF numbers two items "(${value})" under ${buildCitation(stack.slice(0, placement.depth)) || groupLabel()}${
-              missing ? ` and has no "(${below})"` : ""
-            }. Both are kept; the second is keyed "#2".`,
-            previous.key
-          )
+          duplicate = `The PDF numbers two items "(${value})" under ${buildCitation(stack.slice(0, placement.depth)) || groupLabel()}${
+            missing ? ` and has no "(${below})"` : ""
+          }. Both are kept; this second one is keyed "#2".`
         }
         pushEntry(placement.type, value, placement.depth, placement.fit === "repeat")
+        // Reported on the subdivision just created
+        if (correction) warn("ocr_correction", correction, current?.key)
+        if (duplicate) warn("duplicate_number", duplicate, current?.key)
         rest = after
         continue
       }

@@ -22,7 +22,7 @@ export const CLAUDE_MODEL = "claude-opus-5-5"
 
 // Bump when parsing or diffing output changes shape, so stored results show
 // which version produced them
-export const PARSER_VERSION = "ch99-notes-3"
+export const PARSER_VERSION = "ch99-notes-4"
 export const DIFF_VERSION = "diff-1"
 export const SUMMARY_PROMPT_VERSION = "summary-1"
 export const CHANGE_RECORD_PROMPT_VERSION = "change-record-1"

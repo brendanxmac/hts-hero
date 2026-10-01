@@ -173,9 +173,9 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[18rem_1fr]">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
       {/* Outline */}
-      <aside className="flex flex-col gap-2 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]">
+      <aside className="flex min-w-0 flex-col gap-2 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]">
         <input
           className="input input-sm input-bordered"
           placeholder="Filter notes"
@@ -241,7 +241,10 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
                     className="block w-full border-b border-base-200 px-3 py-1.5 text-left text-sm hover:bg-base-200"
                     onClick={() => go(n.key)}
                   >
-                    <span className="font-mono font-semibold">{n.citation || "(intro)"}</span>
+                    <span className="font-mono font-semibold">
+                      {n.citation || "(intro)"}
+                      {n.key.match(/#\d+$/)?.[0]}
+                    </span>
                     {n.page && <span className="ml-2 text-xs text-base-content/40">p.{n.page}</span>}
                     <span className="ml-2 text-base-content/70">
                       <Highlight text={snippet(n.text, results.term)} term={results.term} />
@@ -286,6 +289,8 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
                     <div className="flex flex-wrap items-baseline gap-2">
                       <button className="font-mono font-semibold hover:underline" onClick={() => go(n.key)}>
                         {n.citation || "(intro)"}
+                        {/* Second of two items the PDF numbers alike */}
+                        {n.key.match(/#\d+$/)?.[0]}
                       </button>
                       {n.page && <span className="text-xs text-base-content/40">p.{n.page}</span>}
                       {n.htsCodes.length > 0 && (
