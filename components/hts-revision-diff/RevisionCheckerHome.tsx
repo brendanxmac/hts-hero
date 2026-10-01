@@ -274,6 +274,13 @@ export default function RevisionCheckerHome() {
   )
 }
 
+// "2026htsrev5", "2026 HTS Rev 5" -> "2026HTSRev5"; null if it isn't a revision name
+const normalizeRevisionName = (input: string) => {
+  const m = input.replace(/\s+/g, "").match(/^(\d{4})hts(basic|rev(\d+))$/i)
+  if (!m) return null
+  return `${m[1]}HTS${m[3] ? `Rev${Number(m[3])}` : "Basic"}`
+}
+
 function UploadCard({
   busy,
   run,
@@ -281,11 +288,17 @@ function UploadCard({
   busy: string | null
   run: (label: string, fn: () => Promise<unknown>, success?: string) => Promise<void>
 }) {
-  const [name, setName] = useState("")
+  const [rawName, setRawName] = useState("")
   const [files, setFiles] = useState<Partial<Record<DocumentKind, File>>>({})
   const [formKey, setFormKey] = useState(0)
-  const known = HtsRevisions.find((r) => r.name === name)
-  const ready = /^\d{4}HTS(Basic|Rev\d+)$/.test(name) && REQUIRED_DOCUMENT_KINDS.every((k) => files[k])
+  const name = normalizeRevisionName(rawName)
+  const known = name ? HtsRevisions.find((r) => r.name === name) : undefined
+  const missing = REQUIRED_DOCUMENT_KINDS.filter((k) => !files[k]).map((k) => DOCUMENT_LABELS[k])
+  const problems = [
+    !rawName.trim() ? "Enter a revision name" : !name ? `"${rawName.trim()}" isn't a revision name like 2026HTSRev5` : null,
+    missing.length ? `Choose the ${missing.join(" and ")}` : null,
+  ].filter(Boolean)
+  const ready = problems.length === 0
 
   const upload = () =>
     run("upload", async () => {
@@ -317,8 +330,8 @@ function UploadCard({
             className="input input-sm input-bordered font-mono"
             placeholder="2026HTSRev5"
             list="hts-revision-names"
-            value={name}
-            onChange={(e) => setName(e.target.value.trim())}
+            value={rawName}
+            onChange={(e) => setRawName(e.target.value)}
           />
           <datalist id="hts-revision-names">
             {HtsRevisions.map((r) => (
@@ -352,10 +365,13 @@ function UploadCard({
           </label>
         ))}
       </div>
-      <button className="btn btn-primary btn-sm mt-4" disabled={!ready || !!busy} onClick={upload}>
-        {busy === "upload" && <span className="loading loading-spinner loading-xs" />}
-        Upload
-      </button>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button className="btn btn-primary btn-sm" disabled={!ready || !!busy} onClick={upload}>
+          {busy === "upload" && <span className="loading loading-spinner loading-xs" />}
+          Upload{name ? ` ${name}` : ""}
+        </button>
+        {!ready && <span className="text-sm text-base-content/60">{problems.join(". ")}.</span>}
+      </div>
     </section>
   )
 }
