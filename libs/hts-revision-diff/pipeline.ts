@@ -16,6 +16,7 @@ import { pollConversion, submitConversion } from "./datalab"
 import { diffCodes, diffNotes } from "./diff"
 import { parseCh99Json } from "./parse-ch99-json"
 import { parseCh99NotesMarkdown } from "./parse-ch99-notes"
+import { checkHeadingRowsWithClaude, extractHeadingRows, headingRowsAsHtsRows, loadHeadingRows, saveHeadingPagesInfo } from "./headings"
 import { detectRevision } from "./text"
 import { attemptFolder, downloadBlob, downloadJson, downloadText, markdownPath, sourcePath, uploadFile } from "./storage"
 import { fetchCh99Export, getCurrentReleaseName } from "./usitc"
@@ -66,6 +67,24 @@ const updateDocument = async (db: RevisionDb, id: string, values: Partial<Docume
 
 // ---------- Conversion ----------
 
+// Sends one PDF to datalab; records a failure on the document instead of throwing
+export const submitDocument = async (db: RevisionDb, doc: DocumentRow) => {
+  try {
+    const file = await downloadBlob(db, doc.storage_path)
+    const { requestId, checkUrl } = await submitConversion(file, doc.original_filename)
+    await updateDocument(db, doc.id, {
+      conversion_status: "processing",
+      datalab_request_id: requestId,
+      datalab_check_url: checkUrl,
+      error: null,
+      submitted_at: new Date().toISOString(),
+      completed_at: null,
+    })
+  } catch (error) {
+    await updateDocument(db, doc.id, { conversion_status: "failed", error: (error as Error).message })
+  }
+}
+
 // Sends the PDFs that haven't converted yet (or failed) to datalab
 export const submitConversions = async (db: RevisionDb, attemptId: string) => {
   const { attempt, documents } = await loadAttempt(db, attemptId)
@@ -74,25 +93,7 @@ export const submitConversions = async (db: RevisionDb, attemptId: string) => {
   const toSubmit = documents.filter(
     (d) => d.kind !== "ch99_json" && (d.conversion_status === "pending" || d.conversion_status === "failed")
   )
-  for (const doc of toSubmit) {
-    try {
-      const file = await downloadBlob(db, doc.storage_path)
-      const { requestId, checkUrl } = await submitConversion(file, doc.original_filename)
-      await updateDocument(db, doc.id, {
-        conversion_status: "processing",
-        datalab_request_id: requestId,
-        datalab_check_url: checkUrl,
-        error: null,
-        submitted_at: new Date().toISOString(),
-        completed_at: null,
-      })
-    } catch (error) {
-      await updateDocument(db, doc.id, {
-        conversion_status: "failed",
-        error: (error as Error).message,
-      })
-    }
-  }
+  for (const doc of toSubmit) await submitDocument(db, doc)
   await updateAttempt(db, attemptId, { status: "converting", error: null })
   return advanceAttempt(db, attemptId)
 }
@@ -114,6 +115,16 @@ export const advanceAttempt = async (db: RevisionDb, attemptId: string) => {
         error: null,
         completed_at: new Date().toISOString(),
       })
+      if (doc.kind === "ch99_headings_pdf") {
+        // Read the table rows, then have Claude check them against the pages
+        try {
+          if (await extractHeadingRows(db, attemptId)) {
+            void checkHeadingRowsWithClaude(db, attemptId).catch(() => null)
+          }
+        } catch (error) {
+          await saveHeadingPagesInfo(db, attemptId, { error: (error as Error).message })
+        }
+      }
     } else if (result.state === "failed") {
       await updateDocument(db, doc.id, { conversion_status: "failed", error: result.error })
     }
@@ -206,6 +217,8 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
       // Reading the change record isn't redone on re-parse, so keep its cost
       changeRecordUsage: attempt.parse_stats?.changeRecordUsage ?? null,
     }
+    const headingPages = (attempt.parse_stats as { headingPages?: unknown } | null)?.headingPages
+    if (headingPages) Object.assign(stats, { headingPages })
 
     await updateAttempt(db, attemptId, {
       status: "parsed",
@@ -343,15 +356,23 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
     // otherwise heading changes come from the change record
     const fullHeadingDiff = !!fromRows && !!toRows
     const codeDiffs = fullHeadingDiff ? diffCodes(fromRows, toRows) : []
+    // Without JSON, cited headings are looked up in the reviewed rows from the
+    // revision's own heading pages
+    const headingRows = await loadHeadingRows(db, toAttempt.id)
+    const unreviewedHeadingRows = headingRows.filter((r) => !r.reviewed).length
+    const pdfRows = headingRowsAsHtsRows(headingRows)
+    const lookupRows = toRows ?? (pdfRows.length ? pdfRows : null)
+    const headingSource = toRows ? "revision_json" : pdfRows.length ? "revision_pdf" : "none"
     const changes = buildChanges({
       changeRecordItems: items,
       noteDiffs,
       codeDiffs,
       fromNodes: fromNotes.nodes,
       toNodes: toNotes.nodes,
-      toRows,
+      toRows: lookupRows,
       fullHeadingDiff,
       toRevisionName: to.revision.name,
+      headingSource,
     })
 
     // Carry reviews over from the latest earlier comparison of the same two
@@ -407,7 +428,8 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       ),
       carriedOverReviews: carried,
       headingDiff: fullHeadingDiff ? "full" : "change_record_only",
-      headingSource: toRows ? "revision_json" : "none",
+      headingSource,
+      unreviewedHeadingRows,
     }
     await updateComparison(db, comparisonId, { status: "ready", stats, diff_version: DIFF_VERSION })
   } catch (error) {

@@ -7,6 +7,9 @@ import { wordDiff, renderWordDiff } from "../../libs/hts-revision-diff/word-diff
 import { extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/text"
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
 import { readFileSync } from "fs"
+import { parseCh99HeadingTables } from "../../libs/hts-revision-diff/parse-ch99-tables"
+import { headingRowsAsHtsRows, reconcileHeadingRows } from "../../libs/hts-revision-diff/headings"
+import type { HeadingRow } from "../../libs/hts-revision-diff/types"
 import { join } from "path"
 import { CH99_JSON_A, CH99_JSON_B, CH99_REV_A, CH99_REV_B } from "./fixtures"
 
@@ -471,5 +474,85 @@ describe("Code ranges", () => {
   it("doesn't report a code as removed when a range now covers it", () => {
     const c = changes("headings 9903.82.05 and 9903.82.10", "headings 9903.82.04–9903.82.19")
     expect(c.removed).toEqual([])
+  })
+})
+
+const TABLE_MD = `{0}------------------------------------------------
+
+| Heading/ Subheading | Stat. Suf- fix | Article Description | Unit of Quantity | Rates of Duty |  |  |
+|  |  |  |  | 1 General | Special | 2 |
+|---|---|---|---|---|---|---|
+| 9903.82.18 |  | Derivative articles of copper, as provided for in subdivision (h) of U.S. note 16 to this subchapter .......... |  | The duty provided in the applicable subheading + 50% <sup>1/</sup> | No change | No change |
+|  |  | Articles of aluminum: |  |  |  |  |
+| 9903.82.19 |  | Other, as provided for in subdivision (i) of U.S. note 16 | No. | 25% | Free (A) | 35% |
+
+<sup>1/</sup> See chapter 99 statistical note 1.
+`
+
+describe("Heading tables", () => {
+  const { rows, warnings } = parseCh99HeadingTables(TABLE_MD)
+
+  it("reads coded rows, description-only rows and rates", () => {
+    expect(rows.map((r) => r.htsno)).toEqual(["9903.82.18", "", "9903.82.19"])
+    expect(rows[1].description).toBe("Articles of aluminum:")
+    expect([rows[2].general, rows[2].special, rows[2].other, rows[2].units]).toEqual(["25%", "Free (A)", "35%", "No."])
+    expect(warnings.length).toBe(0)
+  })
+
+  it("strips dot leaders and attaches footnotes", () => {
+    expect(rows[0].description.endsWith("subchapter")).toBe(true)
+    expect(rows[0].footnotes).toEqual(["1/ See chapter 99 statistical note 1."])
+  })
+
+  it("warns when there are no tables", () => {
+    expect(parseCh99HeadingTables("Just text").warnings.map((w) => w.kind)).toEqual(["no_tables"])
+  })
+})
+
+const headingRow = (over: Partial<HeadingRow>): HeadingRow => ({
+  id: "x", attempt_id: "a", sort_order: 0, htsno: "", stat_suffix: "", indent: 0, description: "", general: "", special: "",
+  other: "", units: "", footnotes: [], page: 1, source: "pdf", claude_status: "pending", claude_notes: null, parser_original: null,
+  reviewed: false, reviewed_at: null, created_at: "", updated_at: "", ...over,
+})
+
+describe("Claude check of heading rows", () => {
+  const parsed = [
+    headingRow({ id: "r1", htsno: "9903.82.18", description: "Derivative articles of copper", general: "+ 50%" }),
+    headingRow({ id: "r2", htsno: "9903.82.19", description: "Other", general: "26%" }),
+    headingRow({ id: "r3", htsno: "9903.82.99", description: "Garbled row" }),
+  ]
+  const fields = (over: Partial<HeadingRow>) => {
+    const r = headingRow(over)
+    return { htsno: r.htsno, stat_suffix: r.stat_suffix, indent: r.indent, description: r.description, general: r.general, special: r.special, other: r.other, units: r.units, footnotes: r.footnotes, page: r.page }
+  }
+  const { updates, inserts } = reconcileHeadingRows(parsed, [
+    fields({ htsno: "9903.82.18", indent: 1, description: "Derivative articles of copper", general: "+ 50%" }),
+    fields({ description: "Articles of aluminum:" }),
+    fields({ htsno: "9903.82.19", indent: 2, description: "Other", general: "25%" }),
+  ])
+  const update = (id: string) => updates.find((u) => u.id === id)!.values
+
+  it("confirms matching rows, counting a new indent as no correction", () => {
+    expect(update("r1").claude_status).toBe("ok")
+    expect(update("r1").indent).toBe(1)
+  })
+
+  it("corrects differing fields and keeps the parser's values", () => {
+    expect(update("r2").claude_status).toBe("corrected")
+    expect(update("r2").general).toBe("25%")
+    expect(update("r2").parser_original).toEqual({ general: "26%" })
+  })
+
+  it("adds rows the parser missed and flags rows Claude didn't find", () => {
+    expect(inserts.map((r) => [r.description, r.claude_status])).toEqual([["Articles of aluminum:", "added"]])
+    expect(update("r3").claude_status).toBe("flagged")
+  })
+
+  it("only hands reviewed rows to comparisons", () => {
+    const rows = headingRowsAsHtsRows([
+      headingRow({ htsno: "9903.82.18", general: "+ 50%", reviewed: true }),
+      headingRow({ htsno: "9903.82.19", general: "25%", reviewed: false }),
+    ])
+    expect(rows.map((r) => r.htsno)).toEqual(["9903.82.18"])
   })
 })

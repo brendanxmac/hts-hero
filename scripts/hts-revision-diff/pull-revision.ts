@@ -21,6 +21,7 @@ import type {
   ChangeRow,
   ComparisonRow,
   DocumentRow,
+  HeadingRow,
   ParsedNotes,
   RevisionRow,
 } from "../../libs/hts-revision-diff/types"
@@ -101,6 +102,17 @@ const main = async () => {
   }
 
   const toAttempt = attempts.find((a) => a.id === comparison.to_attempt_id)!
+  const headingRows = await one<HeadingRow[]>(
+    db.from(T.HEADING_ROWS).select("*").eq("attempt_id", toAttempt.id).order("sort_order"),
+    "Heading rows"
+  )
+  const unreviewed = headingRows.filter((r) => !r.reviewed)
+  if (unreviewed.length) {
+    fail(
+      `${unreviewed.length} heading rows for ${revisionName} aren't reviewed. Review them on the attempt page's Headings tab:\n` +
+        unreviewed.slice(0, 10).map((r) => `  - ${r.htsno || r.description.slice(0, 60)}`).join("\n")
+    )
+  }
   const fromAttempt = await one<AttemptRow>(db.from(T.ATTEMPTS).select("*").eq("id", comparison.from_attempt_id).single(), "From attempt")
   const fromRevision = await one<RevisionRow>(db.from(T.REVISIONS).select("*").eq("id", fromAttempt.revision_id).single(), "From revision")
   const toDocs = await one<DocumentRow[]>(db.from(T.DOCUMENTS).select("*").eq("attempt_id", toAttempt.id), "Documents")
@@ -145,6 +157,25 @@ const main = async () => {
   )
   writeFileSync(join(outDir, "changes.json"), changesJson)
   if (changeRecordMarkdown) writeFileSync(join(outDir, "change-record.md"), changeRecordMarkdown)
+  if (headingRows.length) {
+    const cell = (s: string) => s.replace(/\|/g, "\\|")
+    writeFileSync(
+      join(outDir, "headings.md"),
+      [
+        `# Chapter 99 headings: ${revision.name}`,
+        "",
+        `Read from ${revision.name}'s own tariff-table pages (or entered by hand) and reviewed. This is the authoritative text and rates for these headings in this revision.`,
+        "",
+        "| Heading | Stat. | Description | General | Special | Column 2 | Footnotes | Source |",
+        "|---|---|---|---|---|---|---|---|",
+        ...headingRows.map(
+          (r) =>
+            `| ${r.htsno} | ${r.stat_suffix} | ${"&nbsp;&nbsp;".repeat(r.indent)}${cell(r.description)} | ${cell(r.general)} | ${cell(r.special)} | ${cell(r.other)} | ${cell(r.footnotes.join(" "))} | ${r.source === "manual" ? "manual" : `PDF p.${r.page ?? "?"}`} |`
+        ),
+        "",
+      ].join("\n")
+    )
+  }
   writeFileSync(join(outDir, "reference", `ch99-notes-${toName}.md`), renderNotesMarkdown(toNotes, toName))
   writeFileSync(join(outDir, "reference", `ch99-notes-${fromName}.md`), renderNotesMarkdown(fromNotes, fromName))
 
@@ -204,6 +235,7 @@ const main = async () => {
       "- `changes/` one file per change: decision, your notes, the AI summary, change record entry, note and heading diffs, and context",
       "- `changes.json` the same data, machine-readable",
       "- `change-record.md` the full change record (converted from PDF)",
+      ...(headingRows.length ? ["- `headings.md` new and changed Chapter 99 headings with their text and rates, from the revision's own PDF pages (reviewed)"] : []),
       `- \`reference/ch99-notes-${toName}.md\` and \`reference/ch99-notes-${fromName}.md\` every parsed Chapter 99 note, for lookups`,
       "- `manifest.json` revisions, comparison, versions, and a hash of `changes.json`",
       "",

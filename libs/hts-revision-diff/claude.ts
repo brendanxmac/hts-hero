@@ -40,6 +40,8 @@ const usageOf = (message: BetaMessage): ClaudeUsage => {
 const callJson = async <T>(params: {
   system: string
   user: string
+  // A PDF to read alongside the text (base64)
+  pdfBase64?: string
   schema: Record<string, unknown>
   maxTokens: number
   effort: "low" | "medium" | "high"
@@ -56,7 +58,20 @@ const callJson = async <T>(params: {
           format: { type: "json_schema", schema: params.schema },
         },
         system: params.system,
-        messages: [{ role: "user", content: params.user }],
+        messages: [
+          {
+            role: "user",
+            content: params.pdfBase64
+              ? [
+                  {
+                    type: "document",
+                    source: { type: "base64", media_type: "application/pdf", data: params.pdfBase64 },
+                  },
+                  { type: "text", text: params.user },
+                ]
+              : params.user,
+          },
+        ],
         ...(withFallback
           ? { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const }
           : {}),
@@ -281,4 +296,65 @@ export const summarizeChange = async (material: string) => {
   data.open_questions = data.open_questions.slice(0, MAX_QUESTIONS)
   data.usage = usage
   return { summary: data, model: usage.model, usage }
+}
+
+// ---------- Heading pages check ----------
+
+const HEADING_ROW_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["htsno", "stat_suffix", "indent", "description", "general", "special", "other", "units", "footnotes", "page"],
+  properties: {
+    htsno: { type: "string" },
+    stat_suffix: { type: "string" },
+    indent: { type: "integer" },
+    description: { type: "string" },
+    general: { type: "string" },
+    special: { type: "string" },
+    other: { type: "string" },
+    units: { type: "string" },
+    footnotes: { type: "array", items: { type: "string" } },
+    page: { type: ["integer", "null"] },
+  },
+}
+
+const HEADING_CHECK_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["rows", "issues"],
+  properties: {
+    rows: { type: "array", items: HEADING_ROW_SCHEMA },
+    issues: { type: "array", items: { type: "string" } },
+  },
+}
+
+const HEADING_CHECK_SYSTEM = `You check Chapter 99 heading rows that a program extracted from tariff-table pages of the U.S. Harmonized Tariff Schedule. You get the PDF pages and the extracted rows. The extraction can drop or merge rows, split cells, misread digits and loses the indentation of descriptions.
+
+Return the complete, correct list of rows as printed on the pages, in page order:
+- One row per line of the table, including description-only rows (a heading's parent text such as "Articles of aluminum:"), which have htsno "".
+- htsno: the heading or subheading number exactly as printed (e.g. "9903.82.18"); stat_suffix: the two-digit statistical suffix or "".
+- indent: 0 for a description at the left edge of the description column, 1 for one indentation step in, and so on.
+- description, general (rates of duty column 1 General), special, other (column 2), units: the text exactly as printed, without dot leaders. Use "" for empty cells.
+- footnotes: each footnote that applies to the row, written as "1/ See chapter 99 statistical note 1.", taking the text from the footnotes printed on the page.
+- page: the 1-based page of the PDF the row is on.
+Copy text exactly; never invent rows or values that aren't on the pages.
+
+issues: one short sentence for each difference between the extracted rows and the pages (a wrong rate, a missing or extra row, a split description). Empty if they match.`
+
+export const checkHeadingRows = async (
+  pdf: Buffer,
+  parsedRows: unknown[],
+  citedCodes: string[]
+) => {
+  const { data, usage } = await callJson<{ rows: import("./types").HeadingFields[]; issues: string[] }>({
+    system: HEADING_CHECK_SYSTEM,
+    pdfBase64: pdf.toString("base64"),
+    user: `Extracted rows (JSON):\n${JSON.stringify(parsedRows, null, 1)}${
+      citedCodes.length ? `\n\nThe change record for this revision cites these headings: ${citedCodes.join(", ")}` : ""
+    }`,
+    schema: HEADING_CHECK_SCHEMA,
+    maxTokens: 32000,
+    effort: "high",
+  })
+  return { ...data, usage }
 }

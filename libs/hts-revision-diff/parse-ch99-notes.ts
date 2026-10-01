@@ -713,7 +713,7 @@ const joinParts = (parts: string[]) =>
     .replace(/([a-z])- ([a-z])/g, "$1$2")
     .trim()
 
-const htmlTableToText = (html: string) =>
+export const htmlTableToText = (html: string) =>
   html
     .replace(/<\/t[dh]>\s*<t[dh][^>]*>/gi, " | ")
     .replace(/<\/tr>/gi, "\n")

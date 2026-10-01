@@ -6,6 +6,7 @@ export const RevisionDiffTables = {
   DOCUMENTS: "hts_revision_diff_documents",
   COMPARISONS: "hts_revision_diff_comparisons",
   CHANGES: "hts_revision_diff_changes",
+  HEADING_ROWS: "hts_revision_diff_heading_rows",
 } as const
 
 export const REVISION_DIFF_BUCKET = "hts-revision-diff-parsing"

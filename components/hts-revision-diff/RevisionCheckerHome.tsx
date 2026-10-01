@@ -386,6 +386,12 @@ function UploadCard({
               className="file-input file-input-sm file-input-bordered"
               onChange={(e) => setFiles((f) => ({ ...f, [kind]: e.target.files?.[0] }))}
             />
+            {kind === "ch99_headings_pdf" && (
+              <span className="label-text-alt mt-1 text-base-content/60">
+                The tariff-table pages for the headings the change record cites, trimmed from the Chapter 99 PDF. Can also be
+                added later on the attempt page.
+              </span>
+            )}
             {kind === "ch99_json" && (
               <span className="label-text-alt mt-1 text-base-content/60">
                 Leave empty: if this is the current revision, USITC&apos;s export is saved automatically. Older revisions

@@ -45,6 +45,8 @@ interface BuildInput {
   // Whether codeDiffs covers every heading (both revisions had JSON)
   fullHeadingDiff: boolean
   toRevisionName: string
+  // Where toRows came from
+  headingSource?: "revision_json" | "revision_pdf" | "none"
 }
 
 // "2 (v) (xi)" / "note 2(v)(xi)" -> "2(v)(xi)"
@@ -150,6 +152,8 @@ const hashPayload = (payload: Omit<ChangePayload, "hash">) =>
 
 export const buildChanges = (input: BuildInput): ChangeInsert[] => {
   const { changeRecordItems, noteDiffs, codeDiffs, fromNodes, toNodes, toRows, fullHeadingDiff, toRevisionName } = input
+  const headingData =
+    input.headingSource === "revision_pdf" ? `${toRevisionName}'s reviewed heading pages` : `${toRevisionName}'s Chapter 99 data`
   const fromByKey = new Map(fromNodes.map((n) => [n.key, n]))
   const toByKey = new Map(toNodes.map((n) => [n.key, n]))
   const fromChildren = childrenByParent(fromNodes)
@@ -318,15 +322,19 @@ export const buildChanges = (input: BuildInput): ChangeInsert[] => {
     }
     if (citesHeadings && !toRows) {
       warnings.push(
-        `Heading text for ${toRevisionName} isn't available: USITC only exports the current revision's JSON, and ${toRevisionName} wasn't current when it was processed. Check these headings in the Chapter 99 PDF.`
+        `Heading text for ${toRevisionName} isn't available: there's no Chapter 99 JSON for it and no reviewed heading pages. Upload the heading pages on the revision's attempt page, or check these headings in the PDF.`
       )
     }
     const missing = cited.filter((c) => c.status === "not_found").map((c) => c.code)
     if (missing.length) {
       warnings.push(
         item.action === "deleted"
-          ? `Not in ${toRevisionName}'s Chapter 99 data, as expected for a deletion: ${missing.join(", ")}`
-          : `Cited but not in ${toRevisionName}'s Chapter 99 data: ${missing.join(", ")}. Check the citation; this is expected only if the heading was deleted.`
+          ? `Not in ${headingData}, as expected for a deletion: ${missing.join(", ")}`
+          : `Cited but not in ${headingData}: ${missing.join(", ")}. ${
+              input.headingSource === "revision_pdf"
+                ? "Add its page to the heading pages, or enter it by hand."
+                : "Check the citation; this is expected only if the heading was deleted."
+            }`
       )
     }
 

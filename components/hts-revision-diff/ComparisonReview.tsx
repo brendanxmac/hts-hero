@@ -227,7 +227,10 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                   <div className="stat-desc whitespace-normal">
                     {stats.headingSource === "revision_json"
                       ? `Cited headings checked against ${to.revision.name}'s JSON`
-                      : `No JSON for ${to.revision.name}; check cited headings in the PDF`}
+                      : stats.headingSource === "revision_pdf"
+                        ? `Cited headings from ${to.revision.name}'s reviewed heading pages`
+                        : `No heading data for ${to.revision.name}; add its heading pages on the attempt page`}
+                    {(stats.unreviewedHeadingRows ?? 0) > 0 && ` · ${stats.unreviewedHeadingRows} heading rows not reviewed (not used)`}
                   </div>
                 </>
               ) : (

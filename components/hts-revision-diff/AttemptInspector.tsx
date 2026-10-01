@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import type { AttemptRow, DocumentRow, ParsedNotes, RevisionRow } from "@/libs/hts-revision-diff/types"
+import HeadingsPanel from "./HeadingsPanel"
 import NotesBrowser from "./NotesBrowser"
 import { api, formatTime, StatusBadge } from "./shared"
 
@@ -18,7 +19,7 @@ interface InspectData {
 
 export default function AttemptInspector({ attemptId }: { attemptId: string }) {
   const [data, setData] = useState<InspectData | null>(null)
-  const [tab, setTab] = useState<"notes" | "warnings" | "change-record">("notes")
+  const [tab, setTab] = useState<"notes" | "warnings" | "change-record" | "headings">("notes")
   const [warningKind, setWarningKind] = useState("all")
   const [focusKey, setFocusKey] = useState<string | null>(null)
   const [extracting, setExtracting] = useState(false)
@@ -124,6 +125,9 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
         <button role="tab" className={`tab ${tab === "warnings" ? "tab-active" : ""}`} onClick={() => setTab("warnings")}>
           Warnings ({warnings.length})
         </button>
+        <button role="tab" className={`tab ${tab === "headings" ? "tab-active" : ""}`} onClick={() => setTab("headings")}>
+          Headings
+        </button>
         <button role="tab" className={`tab ${tab === "change-record" ? "tab-active" : ""}`} onClick={() => setTab("change-record")}>
           Change record ({items.length})
         </button>
@@ -135,6 +139,8 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
         ) : (
           <p className="text-base-content/60">Not parsed yet.</p>
         ))}
+
+      {tab === "headings" && <HeadingsPanel attemptId={attemptId} />}
 
       {tab === "warnings" && (
         <div className="flex flex-col gap-3">

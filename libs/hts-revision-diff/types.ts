@@ -1,16 +1,18 @@
 // Shared types for the revision checker (/revision-checker)
 
-export type DocumentKind = "change_record" | "ch99_pdf" | "ch99_json"
+export type DocumentKind = "change_record" | "ch99_pdf" | "ch99_json" | "ch99_headings_pdf"
 
 export const DOCUMENT_KINDS: DocumentKind[] = [
   "change_record",
   "ch99_pdf",
+  "ch99_headings_pdf",
   "ch99_json",
 ]
 
 export const DOCUMENT_LABELS: Record<DocumentKind, string> = {
   change_record: "Change record (PDF)",
-  ch99_pdf: "Chapter 99 (PDF)",
+  ch99_pdf: "Chapter 99 notes (PDF)",
+  ch99_headings_pdf: "Chapter 99 heading pages (PDF)",
   ch99_json: "Chapter 99 (JSON)",
 }
 
@@ -96,6 +98,37 @@ export interface DocumentRow {
   created_at: string
   updated_at: string
 }
+
+// A Chapter 99 heading row read from a revision's tariff-table pages (or
+// entered by hand), with Claude's check and the reviewer's sign-off
+export interface HeadingRow {
+  id: string
+  attempt_id: string
+  sort_order: number
+  htsno: string // "" for description-only rows
+  stat_suffix: string
+  indent: number
+  description: string
+  general: string
+  special: string
+  other: string // column 2
+  units: string
+  footnotes: string[]
+  page: number | null
+  source: "pdf" | "manual"
+  claude_status: "pending" | "ok" | "corrected" | "added" | "flagged" | null
+  claude_notes: string | null
+  parser_original: Partial<HeadingRow> | null
+  reviewed: boolean
+  reviewed_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type HeadingFields = Pick<
+  HeadingRow,
+  "htsno" | "stat_suffix" | "indent" | "description" | "general" | "special" | "other" | "units" | "footnotes" | "page"
+>
 
 export interface ComparisonRow {
   id: string
@@ -307,8 +340,10 @@ export interface ComparisonStats {
   // "full": both revisions have Chapter 99 JSON, so every heading is diffed.
   // Otherwise heading changes come from the change record only.
   headingDiff?: "full" | "change_record_only"
-  // Where cited headings were looked up: the newer revision's JSON, or nowhere
-  headingSource?: "revision_json" | "none"
+  // Where cited headings were looked up: the newer revision's JSON, its
+  // reviewed heading pages, or nowhere
+  headingSource?: "revision_json" | "revision_pdf" | "none"
+  unreviewedHeadingRows?: number
   changes: Record<ChangeSource, number>
   carriedOverReviews: number
   // From the newer revision's change record ("after 2026 Revision 5")
