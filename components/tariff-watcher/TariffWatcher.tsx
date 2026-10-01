@@ -5,36 +5,33 @@ import {
   ArrowDownTrayIcon,
   ArrowRightIcon,
   ChevronDownIcon,
+  DocumentTextIcon,
   ExclamationTriangleIcon,
   SparklesIcon,
+  TableCellsIcon,
 } from "@heroicons/react/20/solid";
 import { Country } from "../../constants/countries";
 import { HtsElement } from "../../interfaces/hts";
+import { Menu } from "@headlessui/react";
 import { useHts } from "../../contexts/HtsContext";
-import { getHtsElementParents } from "../../libs/hts";
 import { htsCodeDigitsOnly } from "../../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
-import { findTariffElement } from "../../tariffs/tariff-calculations";
-import { calculate } from "../../tariffs/engine-v2/calculate";
-import { AllRules } from "../../tariffs/engine-v2/data";
-import { CalculationInput, CalculationResult } from "../../tariffs/engine-v2/types";
 import { Segmented } from "../duty-calculator/controls";
 import { formatDate, formatMoney, formatPct, mono } from "../duty-calculator/format";
-import { BASE_SLICE, COLUMN_LABEL, programName } from "../duty-calculator/Results";
+import { COLUMN_LABEL } from "../duty-calculator/Results";
 import { VerifiedNotice } from "../duty-calculator/shared";
-import { countOpenQuestions, questionImpacts, TariffFinder } from "../duty-calculator/useTariffFinder";
+import { TariffFinder } from "../duty-calculator/useTariffFinder";
 import styles from "../duty-calculator/theme.module.css";
-import { parseWatchList, WatchEntry, WatchError } from "./parse";
+import { downloadReport, ExportFormat } from "./export";
+import { parseWatchList, WatchError } from "./parse";
+import { BASE_PART, programName, shortProgram, UNITS, VALUE, watchProduct, WatchRow } from "./report";
 
 // Tariff Watcher: the current duty rate for every product on a list, one after another.
 // The list is "HTS code, country" per line; the report updates as it's edited.
 
-export const EXAMPLE_LIST = ["8413919015,BR", "8409999190,AR", "8483308089,AT", "8708801690,AU"].join("\n");
+const pct = (value: number) => formatPct(Math.round(value * 100) / 100);
 
-// Rates are shown as a percentage of the customs value. Rates with per-unit parts (e.g. 24¢
-// each) depend on the shipment, so they're worked out for this value and quantity.
-const VALUE = 10000;
-const UNITS = 1000;
+export const EXAMPLE_LIST = ["8413919015,BR", "8409999190,AR", "8483308089,AT", "8708801690,AU"].join("\n");
 
 // Same series as the calculator's Cost Breakdown
 const CHART = ["var(--dc-chart-1)", "var(--dc-chart-2)", "var(--dc-chart-3)", "var(--dc-chart-4)", "var(--dc-chart-5)"];
@@ -45,73 +42,6 @@ const SORTS: { id: Sort; label: string }[] = [
   { id: "highest", label: "Highest rate" },
   { id: "country", label: "Country" },
 ];
-
-interface RatePart {
-  key: string; // BASE_SLICE or a program name
-  pct: number;
-}
-
-interface WatchRow {
-  entry: WatchEntry<HtsElement>;
-  result: CalculationResult;
-  description: string;
-  totalPct: number;
-  parts: RatePart[];
-  openQuestions: number;
-  // The most one answer could lower the rate by, in percentage points (0 if none)
-  bestSavingPct: number;
-}
-
-const pct = (value: number) => formatPct(Math.round(value * 100) / 100);
-
-const plain = (text: string) => text.replace(/<[^>]+>/g, "").replace(/:\s*$/, "").trim();
-
-// The nearest two levels that say what the product is; "Other" levels say nothing on their own
-const describe = (element: HtsElement, htsElements: HtsElement[]) => {
-  const levels = [...getHtsElementParents(element, htsElements), element]
-    .map((el) => plain(el.description))
-    .filter((text) => text && !/^other\b[\s.,]*$/i.test(text));
-  return levels.slice(-2).join(" › ") || "Other";
-};
-
-// "Section 232 – Steel, Aluminum & Copper" → "Section 232"
-const shortProgram = (name: string) => name.split(" – ")[0];
-
-const watch = (entry: WatchEntry<HtsElement>, htsElements: HtsElement[], asOf: string): WatchRow => {
-  const tariffElement = findTariffElement(entry.element, htsElements);
-  const input: CalculationInput = {
-    htsCode: entry.element.htsno,
-    country: entry.country.code,
-    asOf,
-    customsValue: VALUE,
-    quantity: UNITS,
-    baseRates: { general: tariffElement.general, special: tariffElement.special, other: tariffElement.other },
-    transportMode: "ocean",
-  };
-  const result = calculate(AllRules, { ...input, answers: {} });
-  const impacts = questionImpacts(input, result, {});
-
-  const byProgram = new Map<string, number>();
-  result.lines
-    .filter((l) => l.status === "applies" && l.amount > 0)
-    .forEach((l) => {
-      const key = programName(l.program);
-      byProgram.set(key, (byProgram.get(key) ?? 0) + (l.amount / VALUE) * 100);
-    });
-
-  return {
-    entry,
-    result,
-    description: describe(entry.element, htsElements),
-    totalPct: (result.totalDuty / VALUE) * 100,
-    parts: [
-      { key: BASE_SLICE, pct: (result.base.amount / VALUE) * 100 },
-      ...Array.from(byProgram).map(([key, value]) => ({ key, pct: value })),
-    ].filter((p) => p.pct > 0),
-    openQuestions: countOpenQuestions(result, impacts),
-    bestSavingPct: Math.max(0, ...Object.values(impacts).map((d) => (-d / VALUE) * 100)),
-  };
-};
 
 export const TariffWatcher = ({
   f,
@@ -143,7 +73,7 @@ export const TariffWatcher = ({
   );
 
   const rows = useMemo(
-    () => parsed.entries.map((entry) => watch(entry, htsElements, f.entryDate)),
+    () => parsed.entries.map((entry) => watchProduct(entry, htsElements, f.entryDate)),
     [parsed, htsElements, f.entryDate]
   );
 
@@ -358,7 +288,7 @@ const Report = ({
 
   // One color per program across the whole report, in order of first appearance
   const colors = useMemo(() => {
-    const map: Record<string, string> = { [BASE_SLICE]: CHART[0] };
+    const map: Record<string, string> = { [BASE_PART]: CHART[0] };
     let next = 1;
     rows.forEach((r) =>
       r.parts.forEach((p) => {
@@ -408,14 +338,12 @@ const Report = ({
               compact
             />
           </div>
-          <button
-            type="button"
-            className={`${styles.button} flex-1 sm:flex-none justify-center`}
-            onClick={() => downloadCsv(sorted, f.entryDate)}
-          >
-            <ArrowDownTrayIcon className="w-4 h-4" />
-            Export
-          </button>
+          <ExportMenu
+            onExport={(format) => {
+              downloadReport(sorted, f.entryDate, format);
+              trackEvent(MixpanelEvent.TARIFF_WATCHER_EXPORTED, { products: sorted.length, format });
+            }}
+          />
         </div>
       </div>
 
@@ -593,7 +521,7 @@ const RowView = ({
               row.parts.map((p) => (
                 <span key={p.key} className="inline-flex items-center gap-1.5 whitespace-nowrap" title={p.key}>
                   <span className="h-2 w-2 rounded-[2px]" style={{ background: colors[p.key] }} aria-hidden />
-                  {p.key === BASE_SLICE ? "Base" : shortProgram(p.key)}
+                  {p.key === BASE_PART ? "Base" : shortProgram(p.key)}
                   <span className={`${styles.num} font-semibold text-[var(--dc-text)]`}>{pct(p.pct)}</span>
                 </span>
               ))
@@ -706,49 +634,38 @@ const RowDetails = ({ row, onOpenInCalculator }: { row: WatchRow; onOpenInCalcul
 
 // ── Export ──
 
-const csvCell = (value: string | number) => {
-  const text = String(value);
-  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-};
+const EXPORTS: { format: ExportFormat; label: string; note: string; Icon: typeof TableCellsIcon }[] = [
+  { format: "xlsx", label: "Excel (.xlsx)", note: "Formatted, with a notes sheet", Icon: TableCellsIcon },
+  { format: "csv", label: "CSV (.csv)", note: "For any spreadsheet or system", Icon: DocumentTextIcon },
+];
 
-const downloadCsv = (rows: WatchRow[], asOf: string) => {
-  const header = [
-    "HTS code",
-    "Description",
-    "Country",
-    "Country code",
-    "Base rate",
-    "Additional tariffs",
-    "Total duty rate (%)",
-    "Open questions",
-    "Rates as of",
-  ];
-  const lines = rows.map((r) =>
-    [
-      r.entry.element.htsno,
-      r.description,
-      r.entry.country.name,
-      r.entry.country.code,
-      r.result.base.reasons[0] ?? "Free",
-      r.result.lines
-        .filter((l) => l.status === "applies")
-        .map((l) => `${l.code} ${shortProgram(programName(l.program))} ${l.ratePct !== undefined ? pct(l.ratePct) : ""}`.trim())
-        .join("; "),
-      Math.round(r.totalPct * 100) / 100,
-      r.openQuestions,
-      asOf,
-    ]
-      .map(csvCell)
-      .join(",")
-  );
-  // The byte order mark tells Excel it's UTF-8, so "›" and "¢" survive
-  const blob = new Blob(["\uFEFF" + [header.join(","), ...lines].join("\n")], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `tariff-report-${asOf}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
-  trackEvent(MixpanelEvent.TARIFF_WATCHER_EXPORTED, { products: rows.length });
-};
-
+const ExportMenu = ({ onExport }: { onExport: (format: ExportFormat) => void }) => (
+  <Menu as="div" className="relative flex-1 sm:flex-none">
+    <Menu.Button className={`${styles.button} w-full justify-center`}>
+      <ArrowDownTrayIcon className="w-4 h-4" />
+      Export
+      <ChevronDownIcon className="w-4 h-4 -mr-1 text-[var(--dc-text-3)]" />
+    </Menu.Button>
+    <Menu.Items className="absolute right-0 z-30 mt-2 w-[250px] rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none">
+      {EXPORTS.map(({ format, label, note, Icon }) => (
+        <Menu.Item key={format}>
+          {({ active }) => (
+            <button
+              type="button"
+              className={`w-full flex items-start gap-3 rounded-lg px-3 py-2.5 text-left text-[var(--dc-text)] ${
+                active ? "bg-[var(--dc-accent-soft)]" : ""
+              }`}
+              onClick={() => onExport(format)}
+            >
+              <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--dc-accent)]" aria-hidden />
+              <span className="flex flex-col">
+                <span className="text-[14px] font-semibold">{label}</span>
+                <span className="text-[12.5px] text-[var(--dc-text-3)]">{note}</span>
+              </span>
+            </button>
+          )}
+        </Menu.Item>
+      ))}
+    </Menu.Items>
+  </Menu>
+);
