@@ -94,8 +94,9 @@ describe("Tariff Watcher: exporting the report", () => {
     expect(cell(1, "Section 122")).toBe(10)
   })
 
-  it("lists the headings behind each tariff", () => {
-    expect(String(cell(0, "Section 232 Tariffs")).startsWith("9903.82.02")).toBe(true)
+  it("lists the heading and rate behind each tariff, without its description", () => {
+    expect(cell(0, "Section 232 Tariffs")).toBe("9903.82.02 (50%)")
+    expect(cell(1, "Section 122 Tariffs")).toBe("9903.03.01 (10%)")
   })
 
   it("explains per-unit rates in the notes", () => {

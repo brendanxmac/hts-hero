@@ -72,7 +72,7 @@ export const buildTariffSheet = (rows: WatchRow[], asOf: string): Sheet => {
       return [
         round(lines.reduce((sum, l) => sum + (l.amount / VALUE) * 100, 0)),
         lines
-          .map((l) => `${l.code} ${l.name} (${round(l.ratePct ?? 0)}%)`)
+          .map((l) => `${l.code} (${round(l.ratePct ?? 0)}%)`)
           .join("; "),
       ];
     });
