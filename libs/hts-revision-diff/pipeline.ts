@@ -383,21 +383,19 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       const prior = previous.get(c.change_key)
       const same = prior && prior.payload.hash === c.payload.hash
       if (same) carried++
+      // Every row gets every review column: in a batch insert, a column some
+      // rows leave out is stored as null for them, not as its default
       return {
         comparison_id: comparisonId,
         ...c,
-        ...(same
-          ? {
-              summary: prior.summary,
-              summary_model: prior.summary_model,
-              summary_prompt_version: prior.summary_prompt_version,
-              summarized_at: prior.summarized_at,
-              category: prior.category,
-              decision: prior.decision,
-              reviewer_notes: prior.reviewer_notes,
-              reviewed_at: prior.reviewed_at,
-            }
-          : {}),
+        summary: same ? prior.summary : null,
+        summary_model: same ? prior.summary_model : null,
+        summary_prompt_version: same ? prior.summary_prompt_version : null,
+        summarized_at: same ? prior.summarized_at : null,
+        category: same ? prior.category : null,
+        decision: same ? prior.decision : "pending",
+        reviewer_notes: same ? prior.reviewer_notes : null,
+        reviewed_at: same ? prior.reviewed_at : null,
       }
     })
 
