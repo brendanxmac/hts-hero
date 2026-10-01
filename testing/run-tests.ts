@@ -1,9 +1,8 @@
 import { printResults } from "./test-runner"
 
 // Import all test suites — add new test files here
-import "./tariffs.test"
 import "./engine-v2/engine.test"
-import "./engine-v2/dual.test"
+import "./engine-v2/real-data.test"
 import "./tariff-watcher.test"
 import "../libs/classification-helpers.test"
 import "../libs/classification-from-hts-code.test"

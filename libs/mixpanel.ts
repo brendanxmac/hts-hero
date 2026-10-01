@@ -77,7 +77,7 @@ export enum MixpanelEvent {
   TARIFF_WATCHER_SORTED = "Tariff Watcher Sorted",
   TARIFF_WATCHER_EXPORTED = "Tariff Watcher Exported",
   TARIFF_WATCHER_OPENED_IN_CALCULATOR = "Tariff Watcher Opened in Calculator",
-  /** User copied the shareable duty-calculator URL from CountryTariff */
+  /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** HTS Explorer (/explore and embedded Explore) */
   EXPLORER_FINISHED_LOADING = "Explorer Finished Loading",

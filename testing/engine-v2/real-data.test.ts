@@ -1,13 +1,13 @@
-// Runs real HTS codes through both engines. Cases in "agree" must give the same total and
-// headings; cases in "known differences" pin each deliberate change (see PROGRESS.md).
-// Base rates are copied from the USITC export so these tests run offline.
+// Engine-v2 on real HTS codes and rules. Base rates are copied from the USITC export so these
+// tests run offline. The expected results were cross-checked against the legacy engine before
+// it was removed (Oct 2026); where the two differed, v2's result is the corrected one.
 import { describe, it, expect } from "../test-runner"
 import { calculate } from "../../tariffs/engine-v2/calculate"
 import { AllRules } from "../../tariffs/engine-v2/data"
 import { CalculationResult } from "../../tariffs/engine-v2/types"
 import { validateRules } from "../../tariffs/engine-v2/validate"
 import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions"
-import { HtsLine, legacyCalculate } from "./legacy-adapter"
+import { HtsLine } from "./hts-fixture"
 
 const AS_OF = "2026-04-10" // 2026 Rev 5
 const VALUE = 10_000
@@ -30,10 +30,9 @@ const RATES: Record<string, HtsLine> = {
   "0402.10.10.00": { htsno: "0402.10.10.00", general: "3.3¢/kg", special: "Free (A+,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "6.6¢/kg" },
 }
 
-const both = (htsCode: string, country: string) => {
+const run = (htsCode: string, country: string) => {
   const rates = RATES[htsCode]
-  const legacy = legacyCalculate(htsCode, rates, country, VALUE, UNITS)
-  const v2 = calculate(AllRules, {
+  return calculate(AllRules, {
     htsCode,
     country,
     asOf: AS_OF,
@@ -41,7 +40,6 @@ const both = (htsCode: string, country: string) => {
     quantity: UNITS,
     baseRates: { general: rates.general, special: rates.special, other: rates.other },
   })
-  return { legacy, v2 }
 }
 
 const applying = (result: CalculationResult) =>
@@ -50,59 +48,55 @@ const applying = (result: CalculationResult) =>
 const round = (n: number) => Math.round(n * 100) / 100
 
 // ============================================================
-// Cases where both engines must agree
+// Totals and headings at 2026 Rev 5
 // ============================================================
-describe("engine-v2 vs legacy: agree", () => {
-  const cases: [string, string, string][] = [
-    ["7326.90.86.88", "CN", "China steel derivative: 301 + 232, 122 exempt via 9903.03.06"],
-    ["7326.90.86.88", "VN", "Vietnam steel derivative: 232 only"],
-    ["8703.23.01.90", "CN", "Chinese car: 232 autos + 301 (31(d)) + 301 list"],
-    ["6109.10.00.12", "VN", "Vietnam T-shirt: Section 122"],
-    ["6109.10.00.12", "CN", "Chinese T-shirt: 122 + 301 list 4A"],
-    ["6109.10.00.12", "DE", "German T-shirt: Section 122 only (EU deal headings ended Feb 24, 2026)"],
-    ["0711.90.30.00", "DE", "German vegetables keep their 8% base duty, plus Section 122"],
-    ["8703.23.01.90", "DE", "German car: base duty + 232 autos (EU deal needs confirming)"],
-    ["8708.99.81.80", "JP", "Japanese auto part: base duty + 232 metals derivative"],
-    ["9401.61.40.11", "DE", "German upholstered furniture: 232 wood capped at 15% including base"],
-    ["8505.11.00.70", "CN", "Chinese permanent magnets: 9903.91.06 (31(g), 25%)"],
-    ["0101.21.00.10", "MX", "Mexican horse without a USMCA claim: 122"],
-    ["8708.99.81.80", "VN", "Vietnamese auto part, unconfirmed: 232 metals derivative"],
-    ["0402.10.10.00", "CN", "Specific base rate (3.3¢/kg)"],
-    ["9401.69.60.31", "CN", "301 exclusion 9401.69.60.31 (legacy data fixed Sep 30, 2026)"],
+describe("engine-v2 real data: totals at Rev 5", () => {
+  const cases: [string, string, number, string[], string][] = [
+    ["7326.90.86.88", "CN", 7790, ["9903.03.06", "9903.82.02", "9903.88.03"], "China steel derivative: 301 + 232, 122 exempt via 9903.03.06"],
+    ["7326.90.86.88", "VN", 5290, ["9903.03.06", "9903.82.02"], "Vietnam steel derivative: 232 only"],
+    ["8703.23.01.90", "CN", 5250, ["9903.03.06", "9903.88.01", "9903.94.01"], "Chinese car: 232 autos + 301"],
+    ["6109.10.00.12", "VN", 2650, ["9903.03.01"], "Vietnam T-shirt: Section 122"],
+    ["6109.10.00.12", "CN", 3400, ["9903.03.01", "9903.88.15"], "Chinese T-shirt: 122 + 301 list 4A"],
+    ["6109.10.00.12", "DE", 2650, ["9903.03.01"], "German T-shirt: Section 122 only (EU deal headings ended Feb 24, 2026)"],
+    ["0711.90.30.00", "DE", 800, ["9903.03.03"], "German vegetables: 8% base duty, exempt from Section 122 via 9903.03.03"],
+    ["8703.23.01.90", "DE", 2750, ["9903.03.06", "9903.94.01"], "German car: base duty + 232 autos (EU deal needs confirming)"],
+    ["8708.99.81.80", "JP", 2750, ["9903.03.06", "9903.82.09"], "Japanese auto part: base duty + 232 metals derivative"],
+    ["9401.61.40.11", "DE", 1500, ["9903.03.06", "9903.76.22"], "German upholstered furniture: 232 wood topped up to 15% including base"],
+    ["8505.11.00.70", "CN", 2710, ["9903.03.03", "9903.91.06"], "Chinese permanent magnets: 9903.91.06 (31(g), 25%)"],
+    ["0101.21.00.10", "MX", 1000, ["9903.03.01"], "Mexican horse without a USMCA claim: 122"],
+    ["8708.99.81.80", "VN", 2750, ["9903.03.06", "9903.82.09"], "Vietnamese auto part, unconfirmed: 232 metals derivative"],
+    ["0402.10.10.00", "CN", 1753.3, ["9903.03.01", "9903.88.15"], "Specific base rate (3.3¢/kg)"],
+    ["9401.69.60.31", "CN", 3500, ["9903.03.01", "9903.88.04"], "301 exclusion 9401.69.60.31"],
   ]
 
-  for (const [htsCode, country, label] of cases) {
+  for (const [htsCode, country, total, headings, label] of cases) {
     it(label, () => {
-      const { legacy, v2 } = both(htsCode, country)
-      expect(round(v2.totalDuty)).toBe(round(legacy.totalDuty))
-      expect(applying(v2)).toEqual([...legacy.activeCodes].sort())
+      const v2 = run(htsCode, country)
+      expect(round(v2.totalDuty)).toBe(total)
+      expect(applying(v2)).toEqual(headings)
     })
   }
 })
 
 // ============================================================
-// Known differences (each is a legacy bug or a correction, see PROGRESS.md)
+// Corrections over the legacy engine
 // ============================================================
-describe("engine-v2 vs legacy: known differences", () => {
+describe("engine-v2 real data: corrections over the legacy engine", () => {
   it("Russian steel is exempt from Section 122 via 9903.03.06 (legacy charged 122 too)", () => {
-    const { legacy, v2 } = both("7206.90.00.00", "RU")
-    expect(legacy.activeCodes).toContain("9903.03.01")
+    const v2 = run("7206.90.00.00", "RU")
     expect(applying(v2)).toContain("9903.03.06")
+    expect(applying(v2).includes("9903.03.01")).toBe(false)
     expect(v2.totalDuty).toBe(7000) // 20% Column 2 base + 50% 232
   })
 
-  it("face masks: 9903.91.04 ended Jan 1, 2026 and 9903.91.07 took over (legacy keeps .04 too)", () => {
-    const { legacy, v2 } = both("6307.90.98.70", "CN")
-    expect(legacy.activeCodes).toContain("9903.91.04")
-    expect(legacy.activeCodes).toContain("9903.91.07")
+  it("face masks: 9903.91.04 ended Jan 1, 2026 and 9903.91.07 took over (legacy kept .04 too)", () => {
+    const v2 = run("6307.90.98.70", "CN")
     expect(applying(v2).includes("9903.91.04")).toBe(false)
     expect(applying(v2)).toContain("9903.91.07")
   })
 
-  it("medical gloves: 9903.91.08 (100%) replaces 9903.91.05 (50%) on Jan 1, 2026 (legacy charges both)", () => {
-    const { legacy, v2 } = both("4015.12.10.10", "CN")
-    expect(legacy.activeCodes).toContain("9903.91.05")
-    expect(legacy.activeCodes).toContain("9903.91.08")
+  it("medical gloves: 9903.91.08 (100%) replaces 9903.91.05 (50%) on Jan 1, 2026 (legacy charged both)", () => {
+    const v2 = run("4015.12.10.10", "CN")
     expect(applying(v2).includes("9903.91.05")).toBe(false)
     expect(applying(v2)).toContain("9903.91.08")
   })
@@ -119,7 +113,7 @@ describe("engine-v2 real data", () => {
   })
 
   it("a Japanese good pays Section 122 at Rev 5 (the IEEPA deal headings ended Feb 24, 2026)", () => {
-    const { v2 } = both("0101.21.00.10", "JP")
+    const v2 = run("0101.21.00.10", "JP")
     expect(applying(v2).includes("9903.02.73")).toBe(false)
     expect(v2.totalDuty).toBe(1000) // Free base + 10% Section 122
   })

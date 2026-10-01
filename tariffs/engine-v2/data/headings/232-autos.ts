@@ -1,5 +1,5 @@
-// Migrated from the legacy tariff data (2026HTSRev5) by scripts/engine-v2/migrate-legacy.ts,
-// then reviewed by hand. See HowTariffsWork.md §6.
+// Migrated from the legacy tariff data (2026HTSRev5), then reviewed by hand. The legacy engine
+// was removed on Oct 1, 2026; this file is now the source. See HowTariffsWork.md §6.
 import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
 

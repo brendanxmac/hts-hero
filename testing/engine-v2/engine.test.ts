@@ -1,5 +1,5 @@
 // Engine-v2 mechanics, tested with small synthetic rule sets so each capability is
-// checked in isolation. Real-data tests are in dual.test.ts.
+// checked in isolation. Real-data tests are in real-data.test.ts.
 import { describe, it, expect } from "../test-runner"
 import { calculate } from "../../tariffs/engine-v2/calculate"
 import { codeListVersions, tariffVersions } from "../../tariffs/engine-v2/versioning"

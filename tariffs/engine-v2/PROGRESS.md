@@ -9,16 +9,14 @@ Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 5** (Apr 8 �
 |---|---|
 | Engine (types, snapshots, handlers, pipeline, validator) | Done |
 | Legacy data migrated (106 headings, 59 lists) | Done, hand-reviewed |
-| Tests: 29 mechanics + 20 real-data (both engines) | All passing |
-| Full comparison, every HTS line × 14 countries | Done: 99.5% identical totals, every difference explained |
+| Tests: mechanics, real data, partial-value rates, Tariff Watcher | All passing |
+| Full comparison, every HTS line × 14 countries | Done: 99.5% identical totals, every difference explained (before the legacy engine was removed) |
 | Tariff Finder toggle + new results panel | Done, checked in the browser (desktop and phone width) |
 
 ## How to run
 
 ```bash
-npm run tests              # all tests, including engine-v2 and legacy-vs-v2
-npm run compare-engines    # sample comparison → tariffs/engine-v2/COMPARISON.md (~35s)
-npm run compare-engines -- --all   # every HTS line (~3 min)
+npm run tests              # all tests, including engine-v2 mechanics and real-data cases
 npm run sync-revisions     # refresh HTS revision dates from USITC
 ```
 
@@ -57,11 +55,10 @@ Checked in the browser:
 | `tariffs/engine-v2/versioning.ts` | `tariffVersions`, `codeListVersions` |
 | `tariffs/engine-v2/revisions.ts` | HTS revision dates, verified revisions |
 | `tariffs/engine-v2/data/` | Programs, headings, lists, inputs, columns, preferences, fees |
-| `scripts/engine-v2/migrate-legacy.ts` | One-time migration from the legacy data (already run) |
-| `scripts/engine-v2/compare-engines.ts` | Legacy vs v2 comparison report |
-| `testing/engine-v2/` | Tests, legacy adapter, HTS fixture loader |
-| `components/tariff-engine-v2/TariffResultsV2.tsx` | The new results panel |
-| `components/TariffFinderPage.tsx` | Engine toggle (`?engine=v2`) |
+| `testing/engine-v2/` | Mechanics and real-data tests, HTS fixture loader (every USITC line with its base rates) |
+| `components/TariffFinderPage.tsx` | Tariff Calculator and Tariff Watcher |
+| `components/duty-calculator/` | Calculator UI, `DutyEstimateEmbed` (explorer, classification pages), shared estimate helpers |
+| `components/tariff-watcher/` | Watch list parsing, report, CSV/Excel export |
 
 ## Completed work
 
@@ -242,6 +239,19 @@ Made alongside the v2 changes so both calculators agree:
 - **The 15% filter removes 9903.76.21/.22** when the base rate is 15% or more.
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
+
+## Oct 1: legacy engine removed
+
+Every duty estimate on the site now comes from engine-v2.
+- **Moved to v2 first:** the HTS explorer's Duty & Tariffs card and the classification Duty & Tariffs tab (both `DutyEstimateEmbed`), and the classification overview's Tariff Summary.
+- **Removed:**
+  - The legacy engine: `tariffs/*.ts` (country files, lists, exclusion lists, `tariffs.ts`, `tariff-calculations.ts`, `tariff-columns.ts`).
+  - Its UI: `CountryTariff`, `SingleCountryDutyTariffCard`, `Tariff`, `Tariffs`, `SideBySideTariffs`, `EstimatedCostsDisplay`, `BaseTariff`, and the inputs and popover only they used.
+  - Its tests (`testing/tariffs.test.ts`, the legacy adapter).
+  - The migration and comparison scripts.
+- **Kept:** `tariffs/announcements` (Tariff Impact Checker data, not part of the calculator) and `public/trade-programs` (used by engine-v2's preferences).
+- **Tests:** `dual.test.ts` became `real-data.test.ts`. The cases where both engines agreed are pinned to those totals and headings, and the known differences now assert only v2's corrected behavior.
+- **History:** the sections below describe the work while both engines existed. COMPARISON.md and the D-numbered differences refer to that period.
 
 ## Sep 30: rates on part of the goods (engine-v2 only)
 

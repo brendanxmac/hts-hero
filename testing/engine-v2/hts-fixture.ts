@@ -4,7 +4,14 @@
 import { existsSync, readFileSync, writeFileSync } from "fs"
 import { tmpdir } from "os"
 import { join } from "path"
-import { HtsLine } from "./legacy-adapter"
+
+// An HTS line's base rates, as the USITC export gives them
+export interface HtsLine {
+  htsno: string
+  general: string | null
+  special: string | null
+  other: string | null
+}
 
 const EXPORT_URL =
   "https://hts.usitc.gov/reststop/exportList?from=0101&to=9799&format=JSON&styles=false"
