@@ -30,6 +30,8 @@ const RATES: Record<string, HtsLine> = {
   "0402.10.10.00": { htsno: "0402.10.10.00", general: "3.3¢/kg", special: "Free (A+,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "6.6¢/kg" },
   "7601.10.30.00": { htsno: "7601.10.30.00", general: "2.6%", special: "Free (A,AU,BH,CL,CO,D,E,IL,JO,KR,MA, OM,P,PA,PE,S,SG)", other: "18.5%" },
   "7612.10.00.00": { htsno: "7612.10.00.00", general: "2.4%", special: "Free (A,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "45%" },
+  "7323.93.00.80": { htsno: "7323.93.00", general: "2%", special: "Free (A*,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "40%" },
+  "7615.10.71.80": { htsno: "7615.10.71", general: "3.1%", special: "Free (A*,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "45.5%" },
   "8708.10.30.50": { htsno: "8708.10.30", general: "2.5%", special: "Free (A,AU,B,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "25%" },
 }
 
@@ -443,5 +445,37 @@ describe("engine-v2 real data: note 16 precedence and notes 33/38/39 non-stackin
         .filter((c) => !known.has(c) && !/^9903\.0[12]\./.test(c)),
     )
     expect(Array.from(unknown)).toEqual([])
+  })
+})
+
+// ============================================================
+// Note 16(c)(vi) and (vii) lists rebuilt from the note text (Oct 2, 2026). The migrated lists
+// were missing 15 and 40 codes, which then got no Section 232 duty at all.
+// ============================================================
+describe("engine-v2 real data: note 16(c)(vi)/(vii) list corrections", () => {
+  it("Vietnamese steel kitchenware (7323.93, 16(c)(vii)) pays 9903.82.09 at 25%", () => {
+    const v2 = run("7323.93.00.80", "VN")
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.82.09"])
+    expect(v2.totalDuty).toBe(2700) // 2% base + 25%
+  })
+
+  it("Vietnamese aluminum kitchenware (7615.10.71, 16(c)(vi)) pays 9903.82.09 at 25%", () => {
+    const v2 = run("7615.10.71.80", "VN")
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.82.09"])
+    expect(v2.totalDuty).toBe(2810) // 3.1% base + 25%
+  })
+
+  it("UK steel kitchenware, 95% UK-melted: 9903.82.05 at 15% (note 16(d))", () => {
+    const rates = RATES["7323.93.00.80"]
+    const v2 = calculate(AllRules, {
+      htsCode: "7323.93.00.80", country: "GB", asOf: AS_OF, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: rates.general, special: rates.special, other: rates.other },
+      answers: { "confirm:9903.82.05": true },
+    })
+    expect(applying(v2).filter((c) => c.startsWith("9903.82"))).toEqual(["9903.82.05"])
+  })
+
+  it("the 15% metal-weight exemption (9903.82.03) isn't offered for these chapter 73/76 codes", () => {
+    expect(run("7323.93.00.80", "VN").lines.some((l) => l.code === "9903.82.03")).toBe(false)
   })
 })
