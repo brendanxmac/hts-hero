@@ -276,6 +276,26 @@ describe("Grouping into changes", () => {
     expect(cr.payload.warnings[0].includes("subchapter III")).toBe(true)
   })
 
+  it("gives a new note's empty headers to the item citing its subdivisions", () => {
+    const doc = (lines: string[]) => parseCh99NotesMarkdown(["## SUBCHAPTER III", "### U.S. Notes", ...lines].join("\n\n")).nodes
+    const before = doc(["1. (a) A."])
+    const after = doc(["1. (a) A.", "2. (a) (i) New one.", "(ii) New two."])
+    const changes = buildChanges({
+      changeRecordItems: [item({ id: "CR-9", note_citations: ["2(a)(i)", "2(a)(ii)"] })],
+      noteDiffs: diffNotes(before, after),
+      codeDiffs: [],
+      fromNodes: before,
+      toNodes: after,
+      toRows: null,
+      fullHeadingDiff: false,
+      toRevisionName: "Rev B",
+    })
+    expect(changes.length).toBe(1)
+    expect(changes[0].payload.noteDiffs.map((d) => d.key)).toEqual([
+      "sub-III/us-notes/2", "sub-III/us-notes/2(a)", "sub-III/us-notes/2(a)(i)", "sub-III/us-notes/2(a)(ii)",
+    ])
+  })
+
   it("keeps chapter-level notes for a citation without a subchapter that exists there", () => {
     const [cr] = buildChanges({
       changeRecordItems: [item({ id: "CR-9", subchapter: null, note_type: null, note_citations: ["1"] })],
@@ -403,6 +423,38 @@ describe("Numbering patterns found in Chapter 99", () => {
   it("starts a deeper (aa) level under a roman numeral", () => {
     const p = parse(["7. (a) A.", "(i) One.", "(ii) Two.", "(aa) Deeper.", "(bb) Deeper.", "(iii) Three."])
     expect(p.nodes.map((n) => n.citation)).toEqual(["7", "7(a)", "7(a)(i)", "7(a)(ii)", "7(a)(ii)(aa)", "7(a)(ii)(bb)", "7(a)(iii)"])
+  })
+
+  // 2026HTSRev12: the conversion dropped "50. (a)" before "(i) Except…", after note 39
+  const droppedNote = [
+    "39. (a) Semiconductors.",
+    "(b) B.",
+    "(c) C.",
+    "(d) D.",
+    "(i) Heading 9903.79.03.",
+    "(ii) Heading 9903.79.04.",
+    "(i) Except as provided in headings 9903.05.02–9903.05.09 and in subdivisions (a)(ii) through (a)(vi) of this note.",
+    "(ii) As provided in heading 9903.05.03.",
+    "(1) Etrogs.",
+    "(iii) As provided in heading 9903.05.04.",
+  ]
+
+  it("puts back a note number the conversion dropped, from the change record's citations", () => {
+    const expectedCitations = ["50(a)(i)", "50(a)(ii)", "50(a)(iii)"].map((citation) => ({ subchapter: "III", slug: "us-notes", citation }))
+    const p = parseCh99NotesMarkdown(["## SUBCHAPTER III", "### U.S. Notes", ...droppedNote].join("\n\n"), { expectedCitations })
+    expect(p.nodes.map((n) => n.citation)).toEqual([
+      "39", "39(a)", "39(b)", "39(c)", "39(d)", "39(d)(i)", "39(d)(ii)",
+      "50", "50(a)", "50(a)(i)", "50(a)(ii)", "50(a)(ii)(1)", "50(a)(iii)",
+    ])
+    // (numbering_gap: this excerpt starts at note 39)
+    expect(p.warnings.map((w) => w.kind)).toEqual(["numbering_gap", "recovered_note_marker"])
+  })
+
+  it("warns once when a note number seems dropped and the change record doesn't say which", () => {
+    const p = parse(droppedNote)
+    const missing = p.warnings.filter((w) => w.kind === "possible_missing_note")
+    expect(missing.length).toBe(1)
+    expect(missing[0].message.includes("under 39")).toBe(true)
   })
 
   it("reads (i) after (h) as a letter when (j) follows", () => {

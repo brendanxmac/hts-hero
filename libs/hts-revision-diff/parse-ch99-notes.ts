@@ -15,6 +15,10 @@
 // - "[U.S. note 8 deleted]" lines count as notes 8, so numbering continues.
 // - Tokens that fit nowhere are kept as text and reported as warnings, as is
 //   a wrapped sentence starting "(a) of this note".
+// - A note number dropped in conversion ("50. (a)" lost before "(i) Except…")
+//   shows up as a token that fits nowhere, or a roman "(i)" that only fits as a
+//   letter after a gap. The change record's citations ("50(a)(i)") are used to
+//   put the missing levels back; without one, it's reported as a warning.
 // - "U.S. Notes (con.)" headings don't reset the tree, the tariff table that
 //   follows a subchapter's notes is skipped, and PDF pages are tracked from
 //   datalab's paginated output.
@@ -126,17 +130,29 @@ const resolveAmbiguity = (value: string, candidates: TokenType[], upcoming: stri
   const letterType = candidates.find((t) => t === "letter" || t === "upper_letter")
   if (!romanType || !letterType) return candidates
   const others = candidates.filter((t) => t !== romanType && t !== letterType)
+  const verdict = ambiguityVerdict(value, letterType, upcoming)
+  if (verdict === "roman") return [romanType, letterType, ...others]
+  if (verdict === "letter") return [letterType, ...others, romanType]
+  return candidates
+}
+
+// What the following tokens say "(i)", "(v)" or "(x)" is, if anything
+const ambiguityVerdict = (value: string, letterType: TokenType, upcoming: string[]): "roman" | "letter" | null => {
   const upper = value === value.toUpperCase()
   for (const next of upcoming) {
     if ((next === next.toUpperCase()) !== upper || /^\d+$/.test(next)) continue // other levels
     // The same value again right away: a roman list starting under this letter
-    if (next === value) return [letterType, ...others, romanType]
-    if (isRoman(next) && romanToInt(next) === romanToInt(value) + 1) return [romanType, letterType, ...others]
-    if (isLetterRun(next) && ordinal(letterType, next) > ordinal(letterType, value)) {
-      return [letterType, ...others, romanType]
-    }
+    if (next === value) return "letter"
+    if (isRoman(next) && romanToInt(next) === romanToInt(value) + 1) return "roman"
+    if (isLetterRun(next) && ordinal(letterType, next) > ordinal(letterType, value)) return "letter"
   }
-  return candidates
+  return null
+}
+
+// "(i)" -> "ii", for messages
+const romanNext = (value: string) => {
+  const next = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi"][romanToInt(value)] ?? "next"
+  return value === value.toUpperCase() ? next.toUpperCase() : next
 }
 
 interface Placement {
@@ -341,9 +357,23 @@ const leadingParenTokens = (text: string) => {
   return values
 }
 
+// A note subdivision the change record names, used to recover note numbers
+// lost in conversion. Without a subchapter or note group, it matches any.
+export interface ExpectedCitation {
+  subchapter: string | null // "III"
+  slug: string | null // "us-notes"
+  citation: string // "50(a)(i)"
+}
+
+// First values of a level, allowed as levels put back above the recovered token
+const FIRST_VALUES = new Set(["a", "A", "1", "i", "I"])
+
 // ---------- Parser ----------
 
-export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
+export const parseCh99NotesMarkdown = (
+  markdown: string,
+  options: { expectedCitations?: ExpectedCitation[] } = {}
+): ParsedNotes => {
   const nodes: NoteNode[] = []
   const warnings: ParseWarning[] = []
   const subchapterTitles: Record<string, string> = {}
@@ -361,6 +391,8 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
   let inTariffTable = false
   let htmlTable: string[] | null = null
   let seenChapter = false
+  // Notes already reported as possibly missing a note number before them
+  const missingNoteReported = new Set<string | undefined>()
 
   const warn = (kind: string, message: string, key?: string) =>
     warnings.push({ kind, message, key, page })
@@ -452,6 +484,38 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
     currentParts.push(isTable ? `\n${text}\n` : text)
   }
 
+  // Puts back a note number (and first levels) the conversion dropped, using a
+  // change record citation that ends in this token: "(i)" with "50(a)(i)"
+  // named starts note 50 and its "(a)". Returns whether it did.
+  const recoverDroppedNote = (value: string) => {
+    let best: { n: number; between: string[]; citation: string } | null = null
+    for (const expected of options.expectedCitations ?? []) {
+      if (expected.subchapter && expected.subchapter !== subchapter) continue
+      if (expected.slug && expected.slug !== group?.slug) continue
+      const m = expected.citation.replace(/\s+/g, "").match(/^(\d{1,3})((?:\([A-Za-z0-9]{1,6}\))+)$/)
+      if (!m) continue
+      const n = Number(m[1])
+      const tokens = Array.from(m[2].matchAll(/\(([^)]+)\)/g), (t) => t[1])
+      if (n <= (lastTopNumber ?? 0) || tokens[tokens.length - 1] !== value) continue
+      const between = tokens.slice(0, -1)
+      if (!between.every((t) => FIRST_VALUES.has(t))) continue
+      if (!best || n < best.n || (n === best.n && between.length < best.between.length)) {
+        best = { n, between, citation: expected.citation }
+      }
+    }
+    if (!best) return false
+    const { n, between, citation } = best
+    lastTopNumber = n
+    pushEntry("number", String(n), 0)
+    for (const t of between) pushEntry(classifyParenToken(t)[0], t, stack.length)
+    warn(
+      "recovered_note_marker",
+      `Added "${n}.${between.map((t) => ` (${t})`).join("")}" before "(${value})": the PDF conversion seems to have dropped it, and the change record names note ${citation}`,
+      current?.key
+    )
+    return true
+  }
+
   // Handles the citation tokens at the start of a line; returns leftover
   // text. `upcoming` lists the parenthesized tokens on the lines that follow.
   const handleTokens = (text: string, upcomingAfterLine: string[]): string => {
@@ -498,7 +562,8 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
         const upcoming = [...leadingParenTokens(after), ...upcomingAfterLine]
         let placement: Placement | null
         let correction: string | null = null
-        if (/^(I{1,3}|l{1,3})$/.test(value)) {
+        const iOrL = /^(I{1,3}|l{1,3})$/.test(value)
+        if (iOrL) {
           const chosen = placeIOrL(stack, value, upcoming)
           placement = chosen?.placement ?? null
           if (chosen && chosen.value !== value) {
@@ -507,6 +572,24 @@ export const parseCh99NotesMarkdown = (markdown: string): ParsedNotes => {
           }
         } else {
           placement = placeParenToken(stack, value, candidates)
+        }
+        // The tokens that follow say roman ("(ii)" next), but it only fits as a
+        // letter after a gap, or it fits nowhere: a note number may be missing
+        const saysRoman =
+          candidates.length > 1 &&
+          ambiguityVerdict(value, value === value.toUpperCase() ? "upper_letter" : "letter", upcoming) === "roman"
+        const misread =
+          !iOrL && saysRoman && placement?.fit === "later" && (placement.type === "letter" || placement.type === "upper_letter")
+        if ((!placement || misread) && !iOrL && recoverDroppedNote(value)) {
+          placement = placeParenToken(stack, value, candidates)
+        } else if (misread && placement && !missingNoteReported.has(stack[0]?.key)) {
+          // Once per note: the items after a dropped number all misfit the same way
+          missingNoteReported.add(stack[0]?.key)
+          warn(
+            "possible_missing_note",
+            `"(${value})" reads as a roman numeral (the next token is "(${romanNext(value)})") but only fits as the letter (${value}) under ${buildCitation(stack.slice(0, placement.depth)) || groupLabel()}. A note number may have been dropped in conversion; check the PDF.`,
+            current?.key
+          )
         }
         if (!placement) {
           warn(

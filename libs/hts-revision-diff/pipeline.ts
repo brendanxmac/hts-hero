@@ -3,7 +3,7 @@
 // whatever is ready, so closing the page and coming back picks up where it was.
 
 import type { RevisionDb } from "./access"
-import { buildChanges } from "./build-changes"
+import { buildChanges, normalizeCitation } from "./build-changes"
 import { extractChangeRecord } from "./claude"
 import {
   CHANGE_RECORD_PROMPT_VERSION,
@@ -15,7 +15,7 @@ import {
 import { pollConversion, submitConversion } from "./datalab"
 import { diffCodes, diffNotes } from "./diff"
 import { parseCh99Json } from "./parse-ch99-json"
-import { parseCh99NotesMarkdown } from "./parse-ch99-notes"
+import { groupSlugForNoteType, parseCh99NotesMarkdown, type ExpectedCitation } from "./parse-ch99-notes"
 import {
   checkHeadingRowsWithClaude,
   extractHeadingRows,
@@ -30,6 +30,7 @@ import { fetchCh99Export, getCurrentReleaseName } from "./usitc"
 import { HtsRevisions } from "../../tariffs/engine-v2/revisions"
 import type {
   AttemptRow,
+  ChangeRecordItem,
   ChangeRow,
   ComparisonRow,
   ComparisonStats,
@@ -158,6 +159,19 @@ export const advanceAttempt = async (db: RevisionDb, attemptId: string) => {
 
 // ---------- Parsing ----------
 
+// Note citations from the change record, so the parser can put back note
+// numbers the PDF conversion dropped
+const expectedCitationsFrom = (items: ChangeRecordItem[] | null): ExpectedCitation[] =>
+  (items ?? [])
+    .filter((i) => i.in_chapter_99)
+    .flatMap((i) =>
+      i.note_citations.map((c) => ({
+        subchapter: i.subchapter ? i.subchapter.toUpperCase() : null,
+        slug: groupSlugForNoteType(i.note_type),
+        citation: normalizeCitation(c),
+      }))
+    )
+
 export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
   const { attempt, revision, documents } = await loadAttempt(db, attemptId)
   const notesDoc = documents.find((d) => d.kind === "ch99_pdf")
@@ -178,7 +192,9 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
   try {
     const folder = attemptFolder(revision.name, attempt.attempt_number)
     const markdown = await downloadText(db, notesDoc.markdown_path)
-    const notes = parseCh99NotesMarkdown(markdown)
+    const notes = parseCh99NotesMarkdown(markdown, {
+      expectedCitations: expectedCitationsFrom(attempt.change_record_items),
+    })
     const changeRecordDoc = documents.find((d) => d.kind === "change_record")
     const changeRecordDetected = changeRecordDoc?.markdown_path
       ? detectRevision(await downloadText(db, changeRecordDoc.markdown_path))
@@ -223,6 +239,8 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
       },
       // Reading the change record isn't redone on re-parse, so keep its cost
       changeRecordUsage: attempt.parse_stats?.changeRecordUsage ?? null,
+      // Which change record reading the parse used for citations
+      changeRecordHintsFrom: attempt.change_record_extracted_at ?? null,
     }
     const headingPages = (attempt.parse_stats as { headingPages?: unknown } | null)?.headingPages
     if (headingPages) Object.assign(stats, { headingPages })
@@ -343,6 +361,14 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
 
     await updateComparison(db, comparisonId, { status: "extracting_change_record", error: null })
     const items = await ensureChangeRecordItems(db, to.attempt.id)
+    // Re-parse if the change record was read after the last parse, so its
+    // citations can recover note numbers the conversion dropped
+    const extracted = (await loadAttempt(db, to.attempt.id)).attempt
+    if (extracted.change_record_extracted_at && extracted.parse_stats?.changeRecordHintsFrom !== extracted.change_record_extracted_at) {
+      await parseAttempt(db, to.attempt.id)
+      const reparsed = (await loadAttempt(db, to.attempt.id)).attempt
+      if (reparsed.status !== "parsed") throw new Error(reparsed.error ?? "Re-parsing the newer revision failed")
+    }
 
     await updateComparison(db, comparisonId, { status: "diffing" })
     // If the newer revision is current and has no JSON yet, save USITC's

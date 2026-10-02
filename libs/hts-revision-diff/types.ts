@@ -224,6 +224,8 @@ export interface ParseStats {
   detectedRevision?: { ch99Pdf: string | null; changeRecord: string | null; previous: string | null }
   // What reading the change record with Claude cost (kept across re-parses)
   changeRecordUsage?: ClaudeUsage | null
+  // change_record_extracted_at of the reading whose citations the parse used
+  changeRecordHintsFrom?: string | null
 }
 
 // parse_stats can hold heading-page state (headingPages) before the notes are parsed,

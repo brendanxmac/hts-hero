@@ -304,9 +304,19 @@ export const buildChanges = (input: BuildInput): ChangeInsert[] => {
   // 1. Change record items
   for (const item of changeRecordItems.filter((i) => i.in_chapter_99)) {
     const { prefixes, inferred } = notePrefixes(item, knownNoteKeys)
-    const notes = noteDiffs.filter((d) =>
+    const citedNotes = noteDiffs.filter((d) =>
       prefixes.some((p) => keyMatchesPrefix(d.toKey, p) || keyMatchesPrefix(d.fromKey, p))
     )
+    // Plus the empty headers above them ("50", "50(a)" when "50(a)(i)" is
+    // cited), so a new note isn't split across two changes
+    const headers = noteDiffs.filter(
+      (d) =>
+        !citedNotes.includes(d) &&
+        !claimedNotes.has(d) &&
+        !(d.after ?? d.before ?? "").trim() &&
+        citedNotes.some((c) => keyMatchesPrefix(c.toKey ?? c.fromKey, (d.toKey ?? d.fromKey)!))
+    )
+    const notes = noteDiffs.filter((d) => citedNotes.includes(d) || headers.includes(d))
     const codes = codeDiffs.filter(
       (d) => codeMatches(item, d.htsno) || codeMatches(item, d.after?.parentHtsno ?? d.before?.parentHtsno ?? "")
     )
