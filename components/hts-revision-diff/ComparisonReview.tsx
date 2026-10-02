@@ -40,6 +40,8 @@ import {
 } from "./ui"
 
 interface ComparisonData {
+  // The newer attempt's reviewed heading rows changed after this comparison was built
+  headingRowsChanged?: boolean
   comparison: ComparisonRow
   changes: ChangeRow[]
   from: { revision: RevisionRow; attemptNumber: number }
@@ -297,6 +299,21 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
 
       {comparison.status === "ready" && stats && (
         <>
+          {data.headingRowsChanged && (
+            <Callout
+              tone="warning"
+              title="Heading rows changed since this comparison was built"
+              action={
+                <button className={btn.xsSecondary} disabled={rerunning} onClick={rerun}>
+                  {rerunning && <Spinner />}
+                  Re-run
+                </button>
+              }
+            >
+              {to.revision.name}&apos;s reviewed heading rows were added, edited or un-reviewed after this comparison ran, so the
+              cited headings below don&apos;t reflect them. Re-run to use them; decisions on unchanged changes carry over.
+            </Callout>
+          )}
           {stats.consecutive === false && (
             <Callout tone="warning" title="These revisions aren't consecutive">
               The change record doesn&apos;t cover the revisions in between, so some differences show as “not in change record”.

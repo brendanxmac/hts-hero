@@ -16,7 +16,14 @@ import { pollConversion, submitConversion } from "./datalab"
 import { diffCodes, diffNotes } from "./diff"
 import { parseCh99Json } from "./parse-ch99-json"
 import { parseCh99NotesMarkdown } from "./parse-ch99-notes"
-import { checkHeadingRowsWithClaude, extractHeadingRows, headingRowsAsHtsRows, loadHeadingRows, saveHeadingPagesInfo } from "./headings"
+import {
+  checkHeadingRowsWithClaude,
+  extractHeadingRows,
+  headingRowsAsHtsRows,
+  headingRowsFingerprint,
+  loadHeadingRows,
+  saveHeadingPagesInfo,
+} from "./headings"
 import { detectRevision } from "./text"
 import { attemptFolder, downloadBlob, downloadJson, downloadText, markdownPath, sourcePath, uploadFile } from "./storage"
 import { fetchCh99Export, getCurrentReleaseName } from "./usitc"
@@ -428,6 +435,7 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       headingDiff: fullHeadingDiff ? "full" : "change_record_only",
       headingSource,
       unreviewedHeadingRows,
+      headingRowsFingerprint: headingRowsFingerprint(headingRows),
     }
     await updateComparison(db, comparisonId, { status: "ready", stats, diff_version: DIFF_VERSION })
   } catch (error) {

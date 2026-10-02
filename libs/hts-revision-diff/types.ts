@@ -369,6 +369,8 @@ export interface ComparisonStats {
   // reviewed heading pages, or nowhere
   headingSource?: "revision_json" | "revision_pdf" | "none"
   unreviewedHeadingRows?: number
+  // headingRowsFingerprint() of the newer attempt's rows when this was built
+  headingRowsFingerprint?: string
   changes: Record<ChangeSource, number>
   carriedOverReviews: number
   // From the newer revision's change record ("after 2026 Revision 5")
