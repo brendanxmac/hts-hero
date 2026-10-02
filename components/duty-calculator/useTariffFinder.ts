@@ -176,6 +176,9 @@ export const useTariffFinder = () => {
     if (!codeParam || htsElements.length === 0) return;
     const normalized = normalizeHtsCode(codeParam.trim());
     const match = htsElements.find((el) => htsCodesEqual(el.htsno, normalized));
+    // The address bar follows the inputs (see below), so ?code= often names the code that's
+    // already selected: nothing to do, and not a deep link
+    if (match && selectedElement && htsCodesEqual(selectedElement.htsno, match.htsno)) return;
     if (match) {
       setShowExplore(false);
       selectElement(match, "url");
@@ -368,6 +371,29 @@ export const useTariffFinder = () => {
       compare: compareCountries.map((c) => c.code),
       view: view === "compare" ? "compare" : undefined,
     });
+
+  // Keep the address bar in step with the inputs, so the URL always matches what's on screen
+  // (and a copied address works like Share). replaceState changes the URL without navigating
+  // or reloading; Next.js keeps useSearchParams in sync. Debounced for typing.
+  useEffect(() => {
+    if (loading) return;
+    // Don't drop a linked code from the address before it has loaded
+    if (codeParam && !selectedElement) return;
+    const timer = setTimeout(() => {
+      const next = new URL(shareUrl());
+      const current = new URL(window.location.href);
+      if (next.pathname !== current.pathname) return;
+      const tool = current.searchParams.get("tool");
+      if (tool) next.searchParams.set("tool", tool);
+      const target = `${next.pathname}?${next.searchParams.toString()}${current.hash}`;
+      if (target !== `${current.pathname}${current.search}${current.hash}`) {
+        window.history.replaceState(window.history.state, "", target);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+    // Every input that goes into the URL
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, selectedElement, countries, customsValue, quantity, entryDate, transportMode, claimedPreference, answers, view, result?.requiresQuantity]);
 
   const comparing = view === "compare" && compareEntries.length > 0;
   const transportLabel = TRANSPORT_MODES.find((m) => m.id === transportMode)?.label ?? "";
