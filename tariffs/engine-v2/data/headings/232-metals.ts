@@ -750,7 +750,12 @@ export const headings: Tariff[] = [
     },
     exceptions: ["9903.82.01", "9903.82.03", "9903.82.06", "9903.82.13"],
     requires: [{ kind: "preferenceClaimed", symbols: ["S", "S+"] }],
-    basis: { kind: "usContentShare", cap: 40, part: "rest" },
+    basis: {
+      kind: "usContentShare",
+      cap: 40,
+      part: "rest",
+      citation: "U.S. note 16(j)",
+    },
     rate: { kind: "adValorem", pct: 25 },
     effective: { from: "2026-06-08" },
     source: {
@@ -771,7 +776,12 @@ export const headings: Tariff[] = [
     },
     exceptions: ["9903.82.01", "9903.82.03", "9903.82.06", "9903.82.13"],
     requires: [{ kind: "preferenceClaimed", symbols: ["S", "S+"] }],
-    basis: { kind: "usContentShare", cap: 40, part: "upToCap" },
+    basis: {
+      kind: "usContentShare",
+      cap: 40,
+      part: "upToCap",
+      citation: "U.S. note 16(j)",
+    },
     rate: { kind: "free" },
     effective: { from: "2026-06-08" },
     source: {

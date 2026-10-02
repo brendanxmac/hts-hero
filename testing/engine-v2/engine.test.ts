@@ -151,6 +151,10 @@ describe("engine-v2: usContentShare basis (U.S. note 16(j))", () => {
     expect(line(split(60), "CAPPED").basisValue).toBe(4000)
     expect(line(split(60), "REST").amount).toBe(1500) // 25% of 6,000
   })
+  it("explains on each line which share of the value it covers", () => {
+    expect(line(split(30), "CAPPED").reasons).toContain("Covers $3,000: U.S. content up to 40% of the value has no added duty. U.S. content is 30%")
+    expect(line(split(30), "REST").reasons).toContain("Covers $7,000: everything except U.S. content up to 40% of the value. U.S. content is 30%")
+  })
   it("needs an answer when U.S. content isn't given", () => {
     expect(line(split(), "REST").status).toBe("needsAnswer")
     expect(line(split(), "CAPPED").status).toBe("needsAnswer")

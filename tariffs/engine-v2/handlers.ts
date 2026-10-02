@@ -30,6 +30,9 @@ export interface BasisHandler {
   // "coveredBy" needs the other lines' bases, so it's resolved by the pipeline itself
   value: (params: Params, ctx: HandlerContext) => number | "unknown"
   describe: (params: Params) => string
+  // Optional plain-English reason for the line, given the value it ended up covering.
+  // Text only: it never affects amounts.
+  explain?: (params: Params, ctx: HandlerContext, basisValue: number) => string
 }
 
 export interface RateResult {
@@ -156,6 +159,14 @@ register(basisHandlers, "usContentShare", {
     p.part === "upToCap"
       ? `U.S. content up to ${String(p.cap)}% of the value`
       : `value other than U.S. content up to ${String(p.cap)}%`,
+  explain: (p, ctx, basisValue) => {
+    const pct = Math.min(Math.max(Number(ctx.answers.usContentPct), 0), 100)
+    const money = (n: number) => `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`
+    const cite = p.citation ? ` (${String(p.citation)})` : ""
+    return p.part === "upToCap"
+      ? `Covers ${money(basisValue)}: U.S. content up to ${String(p.cap)}% of the value has no added duty${cite}. U.S. content is ${pct}%`
+      : `Covers ${money(basisValue)}: everything except U.S. content up to ${String(p.cap)}% of the value${cite}. U.S. content is ${pct}%`
+  },
 })
 
 register(basisHandlers, "coveredBy", {

@@ -235,9 +235,9 @@ export const calculate = (
       continue
     }
     // Unknown bases were switched off in step 4
-    evaluation.basisValue = basisHandlers
-      .get(basis.kind)
-      .value(basis, ctx) as number
+    const basisHandler = basisHandlers.get(basis.kind)
+    evaluation.basisValue = basisHandler.value(basis, ctx) as number
+    if (basisHandler.explain) evaluation.reasons.push(basisHandler.explain(basis, ctx, evaluation.basisValue))
   }
 
   for (const evaluation of coveredBy) {
