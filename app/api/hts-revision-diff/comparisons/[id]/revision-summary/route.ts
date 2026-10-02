@@ -10,8 +10,9 @@ import type { ChangeRow } from "@/libs/hts-revision-diff/types"
 export const dynamic = "force-dynamic"
 export const maxDuration = 300
 
-// Asks Claude for a high-level overview of the comparison's approved changes and
-// saves it on the comparison. Replaces any earlier one.
+// Asks Claude for a high-level overview of the changes listed in the change record
+// (whatever their review decision; differences outside the change record are left
+// out) and saves it on the comparison. Replaces any earlier one.
 export async function POST(_req: Request, { params }: { params: { id: string } }) {
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
@@ -22,16 +23,16 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
       .from(T.CHANGES)
       .select("*")
       .eq("comparison_id", params.id)
-      .eq("decision", "approve")
+      .in("source", ["change_record", "change_record_no_diff"])
       .order("sort_order", { ascending: true })
     if (changes.error) throw new Error(changes.error.message)
-    const approved = (changes.data ?? []) as ChangeRow[]
-    if (!approved.length) return errorResponse(new Error("Approve at least one change first"), 400)
+    const listed = (changes.data ?? []) as ChangeRow[]
+    if (!listed.length) return errorResponse(new Error("The change record doesn't list any Chapter 99 changes"), 400)
 
     const from = await loadAttempt(db, comparison.data.from_attempt_id)
     const to = await loadAttempt(db, comparison.data.to_attempt_id)
-    const material = renderRevisionSummaryMaterial(approved, from.revision.name, to.revision.name)
-    const summary = await summarizeRevision(material, approved.length)
+    const material = renderRevisionSummaryMaterial(listed, from.revision.name, to.revision.name)
+    const summary = await summarizeRevision(material, listed.length)
 
     const updated = await db
       .from(T.COMPARISONS)

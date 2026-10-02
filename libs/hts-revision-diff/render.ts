@@ -309,13 +309,14 @@ export const renderSummaryMaterial = (
   return out.join("\n")
 }
 
-// Material for the revision summary: a short brief per approved change. Uses the
+// Material for the revision summary: a short brief per change listed in the change
+// record (whatever its review decision). Uses the
 // change's own Claude summary when there is one (cheaper and already distilled),
 // otherwise the start of its summary material.
 export const renderRevisionSummaryMaterial = (changes: ChangeRow[], fromName: string, toName: string) => {
   const PER_CHANGE = 1800
   const TOTAL = 30_000
-  const out = [`# Approved changes: ${fromName} → ${toName}`, ""]
+  const out = [`# Changes listed in the change record: ${fromName} → ${toName}`, ""]
   let length = 0
   for (let i = 0; i < changes.length; i++) {
     const change = changes[i]
@@ -332,7 +333,7 @@ export const renderRevisionSummaryMaterial = (changes: ChangeRow[], fromName: st
     }
     const text = brief.join("\n")
     if (length + text.length > TOTAL) {
-      out.push(`[${changes.length - i} more approved changes not shown: input limit reached]`)
+      out.push(`[${changes.length - i} more changes not shown: input limit reached]`)
       break
     }
     out.push(text, "")
