@@ -533,3 +533,27 @@ describe("engine-v2 real data: 2026 Rev 7", () => {
     expect(status(v2, "9903.82.13")).toBe("excluded")
   })
 })
+
+// ============================================================
+// 2026 Rev 8: note 38(i) makes 9903.74.08 subject to a manufacturer's Commerce offset.
+// Offsets aren't modeled (by decision): the heading needs confirming, then charges in full.
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 8", () => {
+  const run = (answers: Record<string, unknown>) =>
+    calculate(AllRules, {
+      htsCode: "8708.99.68.00", country: "DE", asOf: "2026-05-25", customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "2.5%", special: null, other: null },
+      answers,
+    })
+  const line = (result: CalculationResult) => result.lines.find((l) => l.code === "9903.74.08")
+
+  it("MHDV parts heading 9903.74.08 needs confirming before it's charged", () => {
+    expect(line(run({})).status).toBe("needsAnswer")
+  })
+
+  it("once confirmed, 9903.74.08 charges its full 25% (no offset applied)", () => {
+    const confirmed = line(run({ "confirm:9903.74.08": true }))
+    expect(confirmed.status).toBe("applies")
+    expect(confirmed.amount).toBe(2500)
+  })
+})

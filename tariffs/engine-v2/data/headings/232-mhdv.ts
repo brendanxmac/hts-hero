@@ -117,7 +117,11 @@ export const headings: Tariff[] = [
     requires: [confirm("9903.74.08")],
     rate: { kind: "adValorem", pct: 25 },
     effective: {},
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev8",
+      citation: "Proclamation 10984",
+      note: "U.S. note 38(i): the duty is subject to a manufacturer's import adjustment offset set by Commerce (Notice, effective 2025-11-01). Offsets aren't modeled; the heading needs confirming before it's charged, as for the note 33(g) auto parts headings",
+    },
   },
   {
     code: "9903.74.09",
