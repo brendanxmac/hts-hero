@@ -1,7 +1,8 @@
 import { Country } from "../../constants/countries";
 import { HtsElement } from "../../interfaces/hts";
 import { getHtsElementParents } from "../../libs/hts";
-import { CalculationInput, CalculationResult, TransportMode } from "../../tariffs/engine-v2/types";
+import { AllRules } from "../../tariffs/engine-v2/data";
+import { Answers, CalculationInput, CalculationResult, TransportMode } from "../../tariffs/engine-v2/types";
 import { formatDate, formatMoney, formatPct } from "./format";
 
 // Pieces of a duty estimate shared by the Tariff Finder page and the estimates embedded
@@ -51,6 +52,33 @@ export const buildEstimateInput = ({
   transportMode,
 });
 
+// Answers in a link: "confirm:9903.82.18,steelContentPct=40,loadingDate=2026-02-20".
+// A yes is just the question's id; other answers are id=value.
+export const encodeAnswers = (answers: Answers) =>
+  Object.entries(answers)
+    .filter(([, value]) => value !== undefined && value !== "" && value !== false)
+    .map(([id, value]) => (value === true ? id : `${id}=${String(value)}`))
+    .join(",");
+
+// Reads answers from a link, keeping only known questions with a valid value for their type
+export const parseAnswers = (raw: string | null): Answers => {
+  const answers: Answers = {};
+  (raw ?? "").split(",").forEach((part) => {
+    const [id, value] = part.split("=");
+    const input = AllRules.inputs.find((i) => i.id === id);
+    if (!input) return;
+    if (input.type === "boolean") {
+      if (value === undefined || value === "true") answers[id] = true;
+    } else if (input.type === "date") {
+      if (value && /^\d{4}-\d{2}-\d{2}$/.test(value)) answers[id] = value;
+    } else {
+      const number = value ? parseFloat(value) : NaN;
+      if (Number.isFinite(number)) answers[id] = number;
+    }
+  });
+  return answers;
+};
+
 // A link that opens the Tariff Calculator with these inputs
 export const calculatorUrl = (params: {
   code?: string;
@@ -60,6 +88,7 @@ export const calculatorUrl = (params: {
   date: string;
   mode: TransportMode;
   pref?: string;
+  answers?: Answers;
   compare?: string[];
   view?: "compare";
 }) => {
@@ -71,6 +100,8 @@ export const calculatorUrl = (params: {
   search.set("date", params.date);
   search.set("mode", params.mode);
   if (params.pref) search.set("pref", params.pref);
+  const answers = params.answers ? encodeAnswers(params.answers) : "";
+  if (answers) search.set("answers", answers);
   if (params.compare?.length) search.set("compare", params.compare.join(","));
   if (params.view) search.set("view", params.view);
   return `${window.location.origin}/duty-calculator?${search.toString()}`;

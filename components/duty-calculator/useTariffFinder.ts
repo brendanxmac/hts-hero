@@ -17,10 +17,22 @@ import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { copyToClipboard } from "../../utilities/data";
 import { calculate } from "../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../tariffs/engine-v2/data";
-import { getLatestVerifiedRevision, getRevisionForDate, isVerifiedDate } from "../../tariffs/engine-v2/revisions";
+import { addDays, calculateHistory } from "../../tariffs/engine-v2/history";
+import {
+  getLatestVerifiedRevision,
+  getRevisionForDate,
+  getVerifiedRevisions,
+  isVerifiedDate,
+} from "../../tariffs/engine-v2/revisions";
 import { Answers, CalculationResult, TransportMode } from "../../tariffs/engine-v2/types";
 import { CompareEntry } from "./Compare";
-import { buildEstimateInput, calculatorUrl, estimateSummaryText, findTariffElement } from "./estimate";
+import {
+  buildEstimateInput,
+  calculatorUrl,
+  estimateSummaryText,
+  findTariffElement,
+  parseAnswers,
+} from "./estimate";
 import { countOpenQuestions, questionImpacts } from "./questions";
 import { formatDate, formatMoney, todayIso, TRANSPORT_MODES } from "./format";
 
@@ -86,7 +98,7 @@ export const useTariffFinder = () => {
     return pref && main ? { [main.code]: pref } : {};
   });
   const claimedPreference = (country && preferences[country.code]) || "";
-  const [answers, setAnswers] = useState<Answers>({});
+  const [answers, setAnswers] = useState<Answers>(() => parseAnswers(searchParams.get("answers")));
   const [view, setView] = useState<View>(() => {
     const param = searchParams.get("view");
     return param === "simple" || param === "compare" ? param : "detailed";
@@ -183,7 +195,10 @@ export const useTariffFinder = () => {
   const previousCodeKey = useRef(codeKey);
   useEffect(() => {
     if (previousCodeKey.current === codeKey) return;
+    // The first code (from a link, say) keeps the preference the link claimed
+    const hadCode = previousCodeKey.current !== "";
     previousCodeKey.current = codeKey;
+    if (!hadCode) return;
     setAnswers({});
     setPreferences({});
   }, [codeKey]);
@@ -214,6 +229,20 @@ export const useTariffFinder = () => {
   const result: CalculationResult | null = useMemo(
     () => (baseInput ? calculate(AllRules, { ...baseInput, answers }) : null),
     [baseInput, answers]
+  );
+
+  // The same entry on every verified date, to show how its duty has changed
+  const historyRange = useMemo(() => {
+    const verified = getVerifiedRevisions();
+    const last = verified[verified.length - 1];
+    return { from: verified[0].from, to: last.to ?? addDays(todayIso(), 1) };
+  }, []);
+  const history = useMemo(
+    () =>
+      baseInput && historyRange.from < historyRange.to
+        ? calculateHistory(AllRules, { ...baseInput, answers }, historyRange.from, historyRange.to)
+        : [],
+    [baseInput, answers, historyRange]
   );
 
   // What each unanswered yes/no question would change, so users know which ones matter
@@ -335,6 +364,7 @@ export const useTariffFinder = () => {
       date: entryDate,
       mode: transportMode,
       pref: claimedPreference,
+      answers,
       compare: compareCountries.map((c) => c.code),
       view: view === "compare" ? "compare" : undefined,
     });
@@ -463,6 +493,8 @@ export const useTariffFinder = () => {
     // Results
     result,
     impacts,
+    history,
+    historyRange,
     openQuestions: result ? countOpenQuestions(result, impacts) : 0,
     compareCountries,
     compareEntries,

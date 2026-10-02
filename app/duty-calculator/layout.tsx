@@ -17,11 +17,11 @@ export default async function LayoutPrivate({
 
   return (
     <div className="flex flex-col max-h-svh bg-base-100 overflow-y-auto">
-      <CTABanner
+      {/* <CTABanner
         message="Your duty rate is only correct if your HTS code is correct."
         ctaText="Verify Your Classifications"
         href="/classify"
-      />
+      /> */}
       {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       {children}
     </div>

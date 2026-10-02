@@ -7,6 +7,7 @@ import { AllRules } from "../../tariffs/engine-v2/data"
 import { CalculationResult } from "../../tariffs/engine-v2/types"
 import { validateRules } from "../../tariffs/engine-v2/validate"
 import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions"
+import { calculateHistory, ruleChangeDates } from "../../tariffs/engine-v2/history"
 import { HtsLine } from "./hts-fixture"
 
 const AS_OF = "2026-04-10" // 2026 Rev 5
@@ -33,6 +34,7 @@ const RATES: Record<string, HtsLine> = {
   "7323.93.00.80": { htsno: "7323.93.00", general: "2%", special: "Free (A*,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "40%" },
   "7615.10.71.80": { htsno: "7615.10.71", general: "3.1%", special: "Free (A*,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "45.5%" },
   "8544.42.90.90": { htsno: "8544.42.90", general: "2.6%", special: "Free (A,AU,B,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "35%" },
+  "7208.51.00.30": { htsno: "7208.51.00.30", general: "Free", special: "", other: "20%" },
   "8708.10.30.50": { htsno: "8708.10.30", general: "2.5%", special: "Free (A,AU,B,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "25%" },
 }
 
@@ -618,5 +620,70 @@ describe("engine-v2 real data: 2026 Rev 9 (Taiwan)", () => {
     expect(applying(confirmed)).toEqual(["9903.03.06", "9903.96.03"])
     expect(confirmed.totalDuty).toBe(0)
     expect(applying(calc("7304.31.30.00", "TW", BEFORE, "Free", { "confirm:9903.96.03": true }))).toContain("9903.82.02")
+  })
+})
+
+// ============================================================
+// Duty over time (the calculator's "Duty Over Time" card)
+// ============================================================
+describe("engine-v2 real data: duty history across Rev 5 – Rev 9", () => {
+  const FROM = "2026-04-08" // Rev 5
+  const TO = "2026-06-08" // after Rev 9
+  const history = (htsCode: string, country: string, extra: { claimedPreference?: string; answers?: Record<string, unknown> } = {}) => {
+    const rates = RATES[htsCode]
+    return calculateHistory(
+      AllRules,
+      {
+        htsCode,
+        country,
+        asOf: FROM,
+        customsValue: VALUE,
+        quantity: UNITS,
+        baseRates: { general: rates.general, special: rates.special, other: rates.other },
+        ...extra,
+      },
+      FROM,
+      TO,
+    )
+  }
+
+  it("finds every date a rule starts or stops, starting with the first", () => {
+    const dates = ruleChangeDates(AllRules, FROM, TO)
+    expect(dates[0]).toBe(FROM)
+    expect(dates).toContain("2026-04-23")
+    expect(dates).toContain("2026-05-01")
+    expect(dates.every((d) => d >= FROM && d < TO)).toBe(true)
+  })
+
+  it("Taiwan upholstered seats: 25% wood duty replaced by the 15% deal on May 1", () => {
+    const segments = history("9401.61.40.11", "TW")
+    expect(segments.map((s) => [s.from, s.to, round(s.result.totalDuty)])).toEqual([
+      ["2026-04-08", "2026-05-01", 2500],
+      ["2026-05-01", TO, 1500],
+    ])
+    expect(segments[1].revision?.name).toBe("2026HTSRev7")
+    expect(segments[1].changes.map((c) => [c.kind, c.code, round(c.delta)])).toEqual([
+      ["removed", "9903.76.02", -2500],
+      ["added", "9903.76.24", 1500],
+    ])
+  })
+
+  it("Mexico steel under USMCA with Commerce authorization: 50% to 25% on Apr 23", () => {
+    const segments = history("7208.51.00.30", "MX", {
+      claimedPreference: "S",
+      answers: { "confirm:9903.82.18": true },
+    })
+    expect(segments.map((s) => [s.from, round(s.result.totalDuty)])).toEqual([
+      ["2026-04-08", 5000],
+      ["2026-04-23", 2500],
+    ])
+  })
+
+  it("merges dates with the same duty into one stretch", () => {
+    const segments = history("7326.90.86.88", "CN")
+    expect(segments.length).toBe(1)
+    expect(segments[0].from).toBe(FROM)
+    expect(segments[0].to).toBe(TO)
+    expect(segments[0].changes).toEqual([])
   })
 })

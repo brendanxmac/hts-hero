@@ -52,7 +52,8 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
   );
 
   useEffect(() => {
-    if (autoFocus) inputRef.current?.focus();
+    // Without scrolling, so a phone still lands on the top of the page
+    if (autoFocus) inputRef.current?.focus({ preventScroll: true });
   }, [autoFocus]);
 
   useEffect(() => {
@@ -78,6 +79,9 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
     if (!match) return false;
     onSelect(match);
     setQuery("");
+    // Headless UI treats any keydown (including Cmd+V) as typing and then leaves the input's
+    // text alone until blur, so a selected code wouldn't show. Show it ourselves.
+    if (inputRef.current) inputRef.current.value = match.htsno;
     return true;
   };
 
@@ -129,6 +133,8 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
               onClick={() => {
                 onSelect(null);
                 setQuery("");
+                // Same reason as in tryExactMatch: Headless UI may not clear it while focused
+                if (inputRef.current) inputRef.current.value = "";
                 inputRef.current?.focus();
               }}
             >

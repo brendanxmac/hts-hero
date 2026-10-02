@@ -152,6 +152,7 @@ export const DutyEstimateEmbed = ({
       date: entryDate,
       mode: transportMode,
       pref: preference,
+      answers,
     });
 
   const copy = async () => {

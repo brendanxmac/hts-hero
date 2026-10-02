@@ -16,6 +16,7 @@ import { EntryRail } from "./duty-calculator/EntryRail";
 import { formatDate } from "./duty-calculator/format";
 import { mono } from "./duty-calculator/font";
 import { BreakdownCard, slices } from "./duty-calculator/MoneyBreakdown";
+import { RateHistoryCard } from "./duty-calculator/RateHistory";
 import {
   NotAppliedPanel,
   QuestionsPanel,
@@ -56,6 +57,12 @@ export const TariffFinderPage = () => {
     searchParams.get("tool") === "watcher" ? "watcher" : "calculator",
   );
   const [watchList, setWatchList] = useState("");
+
+  // Follow ?tool= when it changes, e.g. from the links in the hero
+  const toolParam = searchParams.get("tool");
+  useEffect(() => {
+    setTool(toolParam === "watcher" ? "watcher" : "calculator");
+  }, [toolParam]);
 
   useEffect(() => {
     try {
@@ -99,7 +106,7 @@ export const TariffFinderPage = () => {
   };
 
   return (
-    <div className={`${styles.root} w-full pb-20`}>
+    <div className={`${styles.root} w-full pt-8 pb-20`}>
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 flex flex-col gap-6">
         <ToolTabs tool={tool} onChange={changeTool} />
         <div role="tabpanel" id={`tool-panel-${tool}`} aria-labelledby={`tool-tab-${tool}`}>
@@ -258,7 +265,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                 />
               </div>
             ) : (
-              // Questions get their own column only when there's room beside the rail
+              // Charts get their own column only when there's room beside the rail
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
                 <div className="xl:col-span-8 flex flex-col gap-4 min-w-0">
                   <div className={`${styles.card} overflow-hidden`}>
@@ -291,15 +298,6 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                       ))}
                     </ul>
                   )}
-                  <NotAppliedPanel lines={result.lines} />
-                </div>
-                <aside className="xl:col-span-4 flex flex-col gap-4">
-                  <BreakdownCard
-                    f={f}
-                    result={result}
-                    highlight={highlight}
-                    onHighlight={setHighlight}
-                  />
                   {result.questions.length > 0 && (
                     <QuestionsPanel
                       questions={result.questions}
@@ -309,6 +307,21 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                       onAnswer={f.answer}
                     />
                   )}
+                  <NotAppliedPanel lines={result.lines} />
+                </div>
+                <aside className="xl:col-span-4 flex flex-col gap-4">
+                  <BreakdownCard
+                    f={f}
+                    result={result}
+                    highlight={highlight}
+                    onHighlight={setHighlight}
+                  />
+                  <RateHistoryCard
+                    f={f}
+                    sliceColors={sliceColors}
+                    highlight={highlight}
+                    onHighlight={setHighlight}
+                  />
                 </aside>
               </div>
             )}

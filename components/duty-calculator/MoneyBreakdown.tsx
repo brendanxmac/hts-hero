@@ -9,7 +9,7 @@ import styles from "./theme.module.css";
 
 // "Cost Breakdown": duty and fees as a donut, one slice per program
 
-const CHART = [
+export const CHART = [
   "var(--dc-chart-1)",
   "var(--dc-chart-2)",
   "var(--dc-chart-3)",

@@ -1,13 +1,12 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
-import Link from "next/link";
 import { TariffFinderPage } from "../../components/TariffFinderPage";
 import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
 import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions";
 import styles from "../../components/duty-calculator/theme.module.css";
-import { ChangelogCard } from "../../components/duty-calculator/Changelog";
+import { Hero } from "../../components/duty-calculator/Hero";
 import { createClient } from "@/app/api/supabase/server";
 import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
 
@@ -144,45 +143,12 @@ export default async function DutyCalculatorPage() {
       })}
 
       {/* Hero — server-rendered, immediately visible to crawlers */}
-      <header className="mx-auto grid w-full max-w-[1200px] gap-8 px-4 sm:px-6 pt-10 pb-8 md:pt-14 md:pb-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center lg:gap-12">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--dc-border)] bg-[var(--dc-surface)] px-3 py-1.5 text-[12.5px] font-medium text-[var(--dc-text-2)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--dc-positive)]" aria-hidden />
-            Tariff data verified through HTS {latestVerified.title}
-          </div>
-          <h1 className="mt-5 max-w-3xl text-[34px] leading-[1.1] sm:text-[44px] md:text-[52px] font-semibold tracking-[-0.025em] text-[var(--dc-text)]">
-            Every U.S. import duty, calculated and explained.
-          </h1>
-          <p className="mt-5 max-w-2xl text-[16px] sm:text-[17px] leading-relaxed text-[var(--dc-text-2)]">
-            Enter an{" "}
-            <Link href="/explore" className="font-semibold text-[var(--dc-accent)] underline-offset-4 hover:underline">
-              HTS code
-            </Link>{" "}
-            and country of origin. We apply the base rate, every Section 232, 301 and 122 tariff and exemption in effect on
-            your entry date, and customs fees, then show you why each line applies.
-          </p>
-          <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[14px] text-[var(--dc-text-2)]">
-            {["Line-by-line reasons", "Dated to your entry", "Legal sources cited", "Free, no sign-up"].map((point) => (
-              <li key={point} className="flex items-center gap-2">
-                <svg viewBox="0 0 20 20" className="h-4 w-4 text-[var(--dc-accent)]" fill="currentColor" aria-hidden>
-                  <path
-                    fillRule="evenodd"
-                    d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.8 3.8 6.8-6.8a1 1 0 0 1 1.4 0Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                {point}
-              </li>
-            ))}
-          </ul>
-        </div>
-        {latestUpdates.length > 0 && <ChangelogCard entries={latestUpdates} />}
-      </header>
+      <Hero latestVerified={latestVerified} latestUpdates={latestUpdates} />
 
       {/* Calculator */}
       <BreadcrumbsProvider>
         <Suspense
-          fallback={<div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6"><div className="h-64 rounded-2xl border border-[var(--dc-border)] bg-[var(--dc-surface)]" /></div>}
+          fallback={<div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 pt-8"><div className="h-64 rounded-2xl border border-[var(--dc-border)] bg-[var(--dc-surface)]" /></div>}
         >
           <TariffFinderPage />
         </Suspense>
