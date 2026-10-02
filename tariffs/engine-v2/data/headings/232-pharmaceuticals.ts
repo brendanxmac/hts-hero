@@ -95,10 +95,16 @@ export const headings: Tariff[] = [
       codes: SCOPE_CODES,
     },
     exceptions: OVER_COUNTRY,
-    rate: { kind: "adValorem", pct: 10 },
-    rateByColumn: COLUMN2_FREE,
+    // "The duty provided in the applicable subheading +0%" (2026HTSRev15, Notice effective
+    // 2026-07-31, the heading's start, so edited in place; it was "+ 10%" in 2026HTSRev14). Still
+    // filed as a $0 line, and a confirmed onshoring plan (.64) still takes precedence, by decision.
+    rate: { kind: "free" },
     effective: { from: FROM },
-    source: { ...SOURCE, note: "U.S. note 40(g)" },
+    source: {
+      revision: "2026HTSRev14",
+      citation: "Proclamation 11020",
+      note: "U.S. note 40(g); rate changed to +0% from 2026-07-31 in 2026HTSRev15 (Notice)",
+    },
   },
   {
     code: "9903.04.64",

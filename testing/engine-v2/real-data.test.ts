@@ -981,7 +981,8 @@ describe("engine-v2 real data: 2026 Rev 14 (Section 232 – Pharmaceuticals)", (
     expect(pharma(calc("LI", AFTER, "Free"))).toEqual(["9903.04.62"])
     const gb = calc("GB", AFTER, "Free")
     expect(pharma(gb)).toEqual(["9903.04.63"])
-    expect(gb.totalDuty).toBe(1000)
+    // 2026HTSRev15 set 9903.04.63 to +0% from July 31 (was +10%, $1,000)
+    expect(gb.totalDuty).toBe(0)
   })
 
   it("a confirmed onshoring plan (+20%) takes precedence over the country headings", () => {
@@ -989,7 +990,10 @@ describe("engine-v2 real data: 2026 Rev 14 (Section 232 – Pharmaceuticals)", (
     const jp = calc("JP", AFTER, "Free", yes("9903.04.64"))
     expect(pharma(jp)).toEqual(["9903.04.64"])
     expect(jp.totalDuty).toBe(2000)
-    expect(pharma(calc("GB", AFTER, "Free", yes("9903.04.64")))).toEqual(["9903.04.64"])
+    // Also for the UK, even though .63 is now +0% (decision, Rev 15): $0 → $2,000 once confirmed
+    const gbOnshoring = calc("GB", AFTER, "Free", yes("9903.04.64"))
+    expect(pharma(gbOnshoring)).toEqual(["9903.04.64"])
+    expect(gbOnshoring.totalDuty).toBe(2000)
   })
 
   it("exempts onshoring with MFN pricing, specialty products and identified companies", () => {
