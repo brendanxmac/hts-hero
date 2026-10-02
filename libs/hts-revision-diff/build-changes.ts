@@ -56,14 +56,23 @@ export const normalizeCitation = (citation: string) =>
     .replace(/\s+/g, "")
     .replace(/\.$/, "")
 
-const notePrefixes = (item: ChangeRecordItem) => {
-  const scope = item.subchapter ? `sub-${item.subchapter.toUpperCase()}` : "ch99"
+// Note keys a change record item cites. Without a subchapter (the change
+// record row is sometimes cut off: "U.S. note 2(aa)(v)(1), ch"), chapter-level
+// notes are used if the citation exists there, otherwise every subchapter
+// where it does. `inferred` lists those subchapters, for a warning.
+const notePrefixes = (item: ChangeRecordItem, knownKeys: Set<string>) => {
   const slug = groupSlugForNoteType(item.note_type)
   const slugs = slug ? [slug] : ALL_GROUP_SLUGS
-  return item.note_citations
-    .map(normalizeCitation)
-    .filter(Boolean)
-    .flatMap((citation) => slugs.map((s) => `${scope}/${s}/${citation}`))
+  const citations = item.note_citations.map(normalizeCitation).filter(Boolean)
+  const prefixesIn = (scope: string) => citations.flatMap((citation) => slugs.map((s) => `${scope}/${s}/${citation}`))
+  if (item.subchapter) return { prefixes: prefixesIn(`sub-${item.subchapter.toUpperCase()}`), inferred: [] }
+
+  const chapterLevel = prefixesIn("ch99")
+  if (!chapterLevel.length || chapterLevel.some((p) => knownKeys.has(p))) return { prefixes: chapterLevel, inferred: [] }
+  const scopes = Array.from(new Set(Array.from(knownKeys, (k) => k.split("/")[0]))).filter((s) => s.startsWith("sub-"))
+  const inferred = scopes.filter((scope) => prefixesIn(scope).some((p) => knownKeys.has(p)))
+  if (!inferred.length) return { prefixes: chapterLevel, inferred: [] }
+  return { prefixes: inferred.flatMap(prefixesIn), inferred: inferred.map((s) => s.replace(/^sub-/, "")) }
 }
 
 const keyMatchesPrefix = (key: string | null, prefix: string) =>
@@ -159,6 +168,7 @@ export const buildChanges = (input: BuildInput): ChangeInsert[] => {
   const fromChildren = childrenByParent(fromNodes)
   const toChildren = childrenByParent(toNodes)
   const rowsByCode = new Map((toRows ?? []).filter((r) => r.htsno).map((r) => [r.htsno, r]))
+  const knownNoteKeys = new Set([...Array.from(fromByKey.keys()), ...Array.from(toByKey.keys())])
 
   const claimedNotes = new Set<NoteDiff>()
   const claimedCodes = new Set<CodeDiff>()
@@ -293,7 +303,7 @@ export const buildChanges = (input: BuildInput): ChangeInsert[] => {
 
   // 1. Change record items
   for (const item of changeRecordItems.filter((i) => i.in_chapter_99)) {
-    const prefixes = notePrefixes(item)
+    const { prefixes, inferred } = notePrefixes(item, knownNoteKeys)
     const notes = noteDiffs.filter((d) =>
       prefixes.some((p) => keyMatchesPrefix(d.toKey, p) || keyMatchesPrefix(d.fromKey, p))
     )
@@ -304,6 +314,11 @@ export const buildChanges = (input: BuildInput): ChangeInsert[] => {
     codes.forEach((d) => claimedCodes.add(d))
 
     const warnings: string[] = []
+    if (inferred.length) {
+      warnings.push(
+        `The change record doesn't say which subchapter, so the cited notes were matched in subchapter ${inferred.join(" and ")}, where they exist. Check that's the right note.`
+      )
+    }
     const namedKeys = prefixes.filter((p) => toByKey.has(p) || fromByKey.has(p))
     if (prefixes.length && !namedKeys.length && !notes.length) {
       warnings.push(

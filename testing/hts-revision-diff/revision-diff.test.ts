@@ -258,6 +258,39 @@ describe("Grouping into changes", () => {
     expect(context.includes("sub-III/us-notes/6(a)")).toBe(true)
   })
 
+  it("finds a note when the change record leaves out the subchapter", () => {
+    // A cut-off row ("U.S. note 2(aa)(v)(1), ch") gives no subchapter; the
+    // note exists only in subchapter III
+    const [cr] = buildChanges({
+      changeRecordItems: [item({ id: "CR-9", subchapter: null, note_citations: ["6(a)"] })],
+      noteDiffs,
+      codeDiffs,
+      fromNodes: a.nodes,
+      toNodes: b.nodes,
+      toRows: rowsB,
+      fullHeadingDiff: true,
+      toRevisionName: "Rev B",
+    })
+    expect(cr.source).toBe("change_record")
+    expect(cr.payload.noteDiffs.length > 0).toBe(true)
+    expect(cr.payload.warnings[0].includes("subchapter III")).toBe(true)
+  })
+
+  it("keeps chapter-level notes for a citation without a subchapter that exists there", () => {
+    const [cr] = buildChanges({
+      changeRecordItems: [item({ id: "CR-9", subchapter: null, note_type: null, note_citations: ["1"] })],
+      noteDiffs,
+      codeDiffs,
+      fromNodes: a.nodes,
+      toNodes: b.nodes,
+      toRows: rowsB,
+      fullHeadingDiff: true,
+      toRevisionName: "Rev B",
+    })
+    expect(cr.payload.noteDiffs.every((d) => d.key.startsWith("ch99/"))).toBe(true)
+    expect(cr.payload.warnings.some((w) => w.includes("doesn't say which subchapter"))).toBe(false)
+  })
+
   it("hashes payloads stably", () => {
     const again = buildChanges({
       changeRecordItems: [item({ id: "CR-1", note_citations: ["2"] })],
