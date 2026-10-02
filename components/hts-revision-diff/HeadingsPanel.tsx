@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import type { DocumentRow, HeadingRow } from "@/libs/hts-revision-diff/types"
 import { api, formatBytes, formatTime, StatusBadge } from "./shared"
@@ -69,6 +69,8 @@ const CHECK_TONES: Record<string, Tone> = {
 export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
   const [data, setData] = useState<HeadingsData | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
+  const [savingRows, setSavingRows] = useState<Record<string, number>>({}) // row id → review saves in flight
+  const reviewSeq = useRef<Record<string, number>>({})
   const [editing, setEditing] = useState<string | null>(null)
   const [draft, setDraft] = useState<Editable>(EMPTY)
   const [adding, setAdding] = useState(false)
@@ -160,6 +162,31 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
 
   const patch = (row: HeadingRow, values: Record<string, unknown>) =>
     run(`row-${row.id}`, () => api(`/heading-rows/${row.id}`, { method: "PATCH", body: JSON.stringify(values) }))
+
+  // Ticking "reviewed" doesn't block anything else: the row updates at once and saves
+  // in the background. Only the latest save for a row applies its response; a failed
+  // save puts the row back.
+  const setRow = (row: HeadingRow) =>
+    setData((d) => (d ? { ...d, rows: d.rows.map((r) => (r.id === row.id ? row : r)) } : d))
+  const toggleReviewed = async (row: HeadingRow, reviewed: boolean) => {
+    const seq = (reviewSeq.current[row.id] ?? 0) + 1
+    reviewSeq.current[row.id] = seq
+    const bump = (by: number) => setSavingRows((s) => ({ ...s, [row.id]: Math.max(0, (s[row.id] ?? 0) + by) }))
+    setRow({ ...row, reviewed })
+    bump(1)
+    try {
+      const { row: saved } = await api<{ row: HeadingRow }>(`/heading-rows/${row.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ reviewed }),
+      })
+      if (reviewSeq.current[row.id] === seq) setRow(saved)
+    } catch (error) {
+      if (reviewSeq.current[row.id] === seq) setRow(row)
+      toast.error(`${row.htsno || "Row"}: ${(error as Error).message}`)
+    } finally {
+      bump(-1)
+    }
+  }
 
   if (!data) return <PageSpinner />
 
@@ -513,17 +540,17 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                         />
                       </td>
                       <td className={td}>
-                        {busy === `row-${row.id}` ? (
-                          <Spinner />
-                        ) : (
+                        <span className="flex items-center gap-1.5">
                           <input
                             type="checkbox"
                             className="checkbox checkbox-xs mt-0.5 rounded"
                             checked={row.reviewed}
-                            disabled={!!busy}
-                            onChange={(e) => patch(row, { reviewed: e.target.checked })}
+                            // Only operations that replace or delete rows lock the checkboxes
+                            disabled={!!busy && !busy.startsWith("row-")}
+                            onChange={(e) => toggleReviewed(row, e.target.checked)}
                           />
-                        )}
+                          {((savingRows[row.id] ?? 0) > 0 || busy === `row-${row.id}`) && <Spinner className="h-3 w-3" />}
+                        </span>
                       </td>
                       <td className={`${td} whitespace-nowrap font-mono text-[13px]`}>
                         {row.htsno || <span className="text-base-content/30">—</span>}
