@@ -29,7 +29,7 @@ export const CLAUDE_PRICES: Record<string, { input: number; output: number; cach
 
 // Bump when parsing or diffing output changes shape, so stored results show
 // which version produced them
-export const PARSER_VERSION = "ch99-notes-5"
+export const PARSER_VERSION = "ch99-notes-6"
 export const DIFF_VERSION = "diff-3"
 export const SUMMARY_PROMPT_VERSION = "summary-2"
 export const CHANGE_RECORD_PROMPT_VERSION = "change-record-1"

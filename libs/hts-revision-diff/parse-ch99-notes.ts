@@ -570,14 +570,26 @@ export const parseCh99NotesMarkdown = (
             correction = `Read "(${value})" as "(${chosen.value})": capital I and lowercase l look alike, and "(${chosen.value})" fits the numbering`
             value = chosen.value
           }
-        } else {
-          placement = placeParenToken(stack, value, candidates)
         }
-        // The tokens that follow say roman ("(ii)" next), but it only fits as a
-        // letter after a gap, or it fits nowhere: a note number may be missing
+        // The tokens that follow say roman ("(ii)" next)
         const saysRoman =
+          !iOrL &&
           candidates.length > 1 &&
           ambiguityVerdict(value, value === value.toUpperCase() ? "upper_letter" : "letter", upcoming) === "roman"
+        if (!iOrL) {
+          // Then the roman reading goes first, even over a letter that would be
+          // the next in sequence: "(h)" then "(i) … (ii)" is (h)(i), not a
+          // sibling (i). Unless a roman (i) is already open above, so "(ii)"
+          // may continue that list instead. The letter reading stays as the
+          // fallback when the roman one fits nowhere.
+          const romanType = candidates.find((t) => t === "roman" || t === "upper_roman")
+          const outerRoman = stack.some((e) => e.type === romanType && romanToInt(e.value) === romanToInt(value))
+          const romanPlacement =
+            saysRoman && romanType && !outerRoman ? placeParenToken(stack, value, [romanType]) : null
+          placement = romanPlacement ?? placeParenToken(stack, value, candidates)
+        }
+        // It only fits as a letter after a gap, or it fits nowhere: a note
+        // number may be missing
         const misread =
           !iOrL && saysRoman && placement?.fit === "later" && (placement.type === "letter" || placement.type === "upper_letter")
         if ((!placement || misread) && !iOrL && recoverDroppedNote(value)) {

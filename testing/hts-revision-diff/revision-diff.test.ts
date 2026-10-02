@@ -457,6 +457,26 @@ describe("Numbering patterns found in Chapter 99", () => {
     expect(missing[0].message.includes("under 39")).toBe(true)
   })
 
+  it("reads (i) after (h) as roman under (h) when (ii) follows, even though letter (i) would be next", () => {
+    // 2026HTSRev14 note 40(h): three roman subdivisions, then the letter (i)
+    const p = parse([
+      "40. (g) G.",
+      "(h) Headings 9903.04.64–9903.04.66 apply to patented pharmaceutical articles.",
+      "(i) Heading 9903.04.64 applies to onshoring plans.",
+      "(ii) Heading 9903.04.65 applies to pricing agreements.",
+      "(iii) Heading 9903.04.66 applies to orphan drugs.",
+      "(i) Heading 9903.04.69 applies to other articles.",
+    ])
+    expect(p.nodes.map((n) => n.citation)).toEqual(["40", "40(g)", "40(h)", "40(h)(i)", "40(h)(ii)", "40(h)(iii)", "40(i)"])
+    // (the excerpt starting at 40(g) raises numbering_gap and unexpected_start)
+    expect(p.warnings.some((w) => /missing_note|out_of_sequence|duplicate/.test(w.kind))).toBe(false)
+  })
+
+  it("keeps a letter (i) when (ii) continues a roman list already open above it", () => {
+    const p = parse(["2. (i) One:", "(a) A.", "(b) B.", "(c) C.", "(d) D.", "(e) E.", "(f) F.", "(g) G.", "(h) H.", "(i) I.", "(ii) Two."])
+    expect(p.nodes.map((n) => n.citation).slice(-3)).toEqual(["2(i)(h)", "2(i)(i)", "2(ii)"])
+  })
+
   it("reads (i) after (h) as a letter when (j) follows", () => {
     const p = parse(["1. (g) G.", "(h) H.", "(i) I.", "(j) J."])
     expect(p.nodes.map((n) => n.citation)).toEqual(["1", "1(g)", "1(h)", "1(i)", "1(j)"])
