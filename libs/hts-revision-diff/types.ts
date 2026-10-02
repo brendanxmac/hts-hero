@@ -142,7 +142,7 @@ export interface ComparisonRow {
   stats: ComparisonStats | null
   diff_version: string | null
   exported_at: string | null
-  // Claude's high-level overview of the approved changes (Generate revision summary)
+  // Claude's high-level overview of the change record's changes (Generate revision summary)
   revision_summary?: RevisionSummary | null
   created_at: string
   updated_at: string
@@ -157,7 +157,8 @@ export interface RevisionSummary {
   calculation_impact: string
   effective_dates: { date: string; applies_to: string }[]
   watch_for: string[]
-  approved_changes: number
+  changes_covered?: number // change record changes it was generated from
+  approved_changes?: number // older summaries: generated from approved changes
   generated_at: string
   usage?: ClaudeUsage
 }

@@ -369,7 +369,7 @@ const REVISION_SUMMARY_SCHEMA = {
 
 const REVISION_SUMMARY_SYSTEM = `You give a trade compliance professional a high-level overview of one revision of chapter 99 of the U.S. Harmonized Tariff Schedule, so they can sanity-check what it's about before it's applied to a tariff calculator. Chapter 99 holds additional duties: Section 232 (steel, aluminum, copper, autos, trucks, wood, semiconductors), Section 301 (China), Section 122, IEEPA, and country deals.
 
-You get a short brief for each change the reviewer approved: the change record entry, the reviewer's notes, and a summary or an excerpt of the note differences. Reviewer notes are the reviewer's instructions; follow them.
+You get a short brief for each change listed in the revision's change record: the change record entry, any reviewer notes, and a summary or an excerpt of the note differences. Cover only what the change record lists. Reviewer notes are the reviewer's instructions; follow them.
 
 Be concise and concrete. Only state what the briefs support.
 - headline: one line, under 15 words: what this revision is about.
@@ -381,8 +381,8 @@ Be concise and concrete. Only state what the briefs support.
 - effective_dates: legal effective dates and what they apply to, including retroactive ones.
 - watch_for: at most 3 things worth double-checking (retroactive dates, new conditions, unclear text). Empty if nothing stands out.`
 
-export const summarizeRevision = async (material: string, approvedChanges: number) => {
-  const { data, usage } = await callJson<Omit<RevisionSummary, "approved_changes" | "generated_at" | "usage">>({
+export const summarizeRevision = async (material: string, changesCovered: number) => {
+  const { data, usage } = await callJson<Omit<RevisionSummary, "changes_covered" | "approved_changes" | "generated_at" | "usage">>({
     system: REVISION_SUMMARY_SYSTEM,
     user: material,
     schema: REVISION_SUMMARY_SCHEMA,
@@ -393,7 +393,7 @@ export const summarizeRevision = async (material: string, approvedChanges: numbe
     ...data,
     key_changes: data.key_changes.slice(0, 6),
     watch_for: data.watch_for.slice(0, 3),
-    approved_changes: approvedChanges,
+    changes_covered: changesCovered,
     generated_at: new Date().toISOString(),
     usage,
   }

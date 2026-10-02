@@ -468,8 +468,7 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
           <RevisionSummaryPanel
             comparisonId={comparison.id}
             summary={comparison.revision_summary ?? null}
-            approved={count("approve")}
-            pending={changes.length - decided}
+            listed={changes.filter((c) => c.source !== "not_in_change_record").length}
             onUpdated={(updated) => setData((d) => (d ? { ...d, comparison: updated } : d))}
           />
         </>
@@ -787,18 +786,17 @@ function ChangeDetail({
   )
 }
 
-// Claude's high-level overview of the approved changes, for a quick sanity check
+// Claude's high-level overview of the change record's changes, for a quick sanity
+// check. Available before any decisions; differences outside the change record are left out.
 function RevisionSummaryPanel({
   comparisonId,
   summary,
-  approved,
-  pending,
+  listed,
   onUpdated,
 }: {
   comparisonId: string
   summary: RevisionSummary | null
-  approved: number
-  pending: number
+  listed: number
   onUpdated: (comparison: ComparisonRow) => void
 }) {
   const [generating, setGenerating] = useState(false)
@@ -813,7 +811,9 @@ function RevisionSummaryPanel({
       setGenerating(false)
     }
   }
-  const stale = summary && summary.approved_changes !== approved
+  // Older summaries were built from approved changes only
+  const covered = summary ? summary.changes_covered ?? null : null
+  const stale = summary && covered !== listed
 
   return (
     <Panel
@@ -822,11 +822,12 @@ function RevisionSummaryPanel({
         <div className="ml-auto flex items-center gap-2">
           {summary && (
             <span className="text-xs text-base-content/45">
-              {formatTime(summary.generated_at)} · {summary.approved_changes} approved
+              {formatTime(summary.generated_at)}
+              {covered !== null ? ` · ${covered} change record item${covered === 1 ? "" : "s"}` : ""}
               {summary.usage ? ` · ${formatUsd(summary.usage.cost_usd)}` : ""}
             </span>
           )}
-          <button className={summary ? btn.xsSecondary : btn.xsPrimary} disabled={generating || approved === 0} onClick={generate}>
+          <button className={summary ? btn.xsSecondary : btn.xsPrimary} disabled={generating || listed === 0} onClick={generate}>
             {generating && <Spinner />}
             {generating ? "Generating…" : summary ? "Regenerate" : "Generate revision summary"}
           </button>
@@ -836,15 +837,17 @@ function RevisionSummaryPanel({
       <div className="flex flex-col gap-4 px-4 py-4 text-sm">
         {!summary ? (
           <p className="text-base-content/55">
-            {approved === 0
-              ? "Approve changes first. Claude reads the approved ones and gives a short overview of the revision."
-              : `Claude reads the ${approved} approved change${approved === 1 ? "" : "s"} and gives a short overview: what the revision is about, which programs and countries it touches, and what changes in the calculation.${pending ? ` ${pending} change${pending === 1 ? " is" : "s are"} still undecided.` : ""}`}
+            {listed === 0
+              ? "The change record doesn't list any Chapter 99 changes, so there's nothing to summarize."
+              : `Claude reads the ${listed} change${listed === 1 ? "" : "s"} listed in the change record (differences outside it are left out) and gives a short overview: what the revision is about, which programs and countries it touches, and what changes in the calculation. Works before you've made any decisions.`}
           </p>
         ) : (
           <>
             {stale && (
               <Callout tone="warning">
-                Generated from {summary.approved_changes} approved change{summary.approved_changes === 1 ? "" : "s"}; {approved} are approved now. Regenerate to include the latest decisions.
+                {covered === null
+                  ? "Generated from approved changes only (older version). Regenerate to cover everything in the change record."
+                  : `Generated from ${covered} change record item${covered === 1 ? "" : "s"}; this comparison has ${listed} now. Regenerate to include them.`}
               </Callout>
             )}
             <div>
