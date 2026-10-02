@@ -21,6 +21,12 @@ export const namedInputs: InputDefinition[] = [
     type: "boolean",
   },
   {
+    id: "quartzQuotaFilled",
+    label: "Has the quarterly quota for quartz surface products been filled?",
+    help: "Section 201 quartz surface products pay the in-quota rate until the quarter's quota (U.S. note 41(d)) is used up, and the over-quota rate after that. CBP publishes quota status.",
+    type: "boolean",
+  },
+  {
     id: "usContentPct",
     label: "U.S. content (% of the article's value)",
     help: "The value of the article attributable to parts produced in the United States, as a percent of its total value.",

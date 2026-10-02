@@ -240,6 +240,13 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 3: 2026 Rev 16 applied (branch `revision/2026HTSRev16`)
+
+Section 201 – Quartz Surface Products (Proclamation 11051), from 2026-08-15. See `tariffs/revision-diffs/2026HTSRev16/PLAN.md`.
+- **New program `201-quartz`** and headings 9903.45.30 (in quota) and 9903.45.31 (over quota) in `headings/201-quartz.ts`, for 6810.99.00.20, 6810.99.00.40 and 7020.00.60.00. Rates step down each August 15 (25/50%, 23/49%, 21/48%, 19/47%) and end after August 14, 2030. They stack with other duties.
+- **Exempt countries** (note 41(c)) in the country list `quartzSafeguardExempt41c` (`lists/quartz.ts`), used as `excludeCountries`. Kosovo and Congo (Kinshasa) aren't in the calculator's country list yet.
+- **Quota:** new input `quartzQuotaFilled`. Unanswered means in quota (decision); yes means .31.
+
 ## Oct 2: 2026 Rev 15 applied (branch `revision/2026HTSRev15`)
 
 One change, see `tariffs/revision-diffs/2026HTSRev15/PLAN.md`: 9903.04.63 (UK patented pharmaceuticals) is +0% instead of +10%, from July 31, 2026 (the heading's start, so edited in place). By decision, a confirmed onshoring plan (.64, +20%) still takes precedence over it.
@@ -344,7 +351,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 15), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 16), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.

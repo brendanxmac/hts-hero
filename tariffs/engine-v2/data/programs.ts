@@ -27,6 +27,12 @@ export const programs: Program[] = [
     legalBasis: ["Proclamation 11020"],
   },
   { id: "301-china", name: "Section 301 – China", authority: "301" },
+  {
+    id: "201-quartz",
+    name: "Section 201 – Quartz Surface Products",
+    authority: "201",
+    legalBasis: ["Proclamation 11051"],
+  },
   { id: "301-brazil", name: "Section 301 – Brazil", authority: "301" },
   { id: "301-forced-labor", name: "Section 301 – Forced Labor", authority: "301" },
   {

@@ -1033,3 +1033,57 @@ describe("engine-v2 real data: 2026 Rev 14 (Section 232 – Pharmaceuticals)", (
     }
   })
 })
+
+// ============================================================
+// 2026 Rev 16: Section 201 – Quartz Surface Products, U.S. note 41 and 9903.45.30/.31
+// (Proclamation 11051, effective August 15, 2026)
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 16 (Section 201 – Quartz Surface Products)", () => {
+  const QUARTZ = "6810.99.00.20"
+  const AFTER = "2026-08-20"
+  const calc = (country: string, asOf: string, answers: Record<string, unknown> = {}, htsCode = QUARTZ) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: "", other: "Free" },
+      answers,
+    })
+  const quartz = (result: CalculationResult) => applying(result).filter((c) => c.startsWith("9903.45"))
+
+  it("adds 25% in quota from August 15, stacking with the note 52 country rate", () => {
+    expect(quartz(calc("VN", "2026-08-14"))).toEqual([])
+    const vn = calc("VN", AFTER)
+    expect(applying(vn)).toEqual(["9903.05.84", "9903.45.30"])
+    expect(vn.totalDuty).toBe(3750) // 25% + 12.5%
+    expect(quartz(calc("IN", AFTER))).toEqual(["9903.45.30"]) // India isn't exempt
+    expect(quartz(calc("VN", AFTER, {}, "7020.00.60.00"))).toEqual(["9903.45.30"])
+    expect(quartz(calc("VN", AFTER, {}, "6802.93.00.10"))).toEqual([]) // granite isn't covered
+  })
+
+  it("uses the over-quota heading (50%) only when the quota is filled", () => {
+    const over = calc("VN", AFTER, { quartzQuotaFilled: true })
+    expect(quartz(over)).toEqual(["9903.45.31"])
+    expect(over.totalDuty).toBe(6250) // 50% + 12.5%
+    expect(quartz(calc("VN", AFTER, { quartzQuotaFilled: false }))).toEqual(["9903.45.30"])
+  })
+
+  it("steps the rates down each year (41(e)) and ends after August 14, 2030", () => {
+    const rate = (asOf: string, filled: boolean) =>
+      calc("VN", asOf, { quartzQuotaFilled: filled }).lines.find((l) => l.code.startsWith("9903.45") && l.status === "applies")?.ratePct
+    expect([rate("2027-08-20", false), rate("2027-08-20", true)]).toEqual([23, 49])
+    expect([rate("2028-08-20", false), rate("2028-08-20", true)]).toEqual([21, 48])
+    expect([rate("2030-08-14", false), rate("2030-08-14", true)]).toEqual([19, 47])
+    expect(quartz(calc("VN", "2030-08-15"))).toEqual([])
+  })
+
+  it("exempts the 41(c) countries: USMCA, FTA partners, developing and Caribbean Basin countries", () => {
+    for (const country of ["CA", "MX", "KR", "AU", "BR", "ZA", "BS", "TT"]) {
+      expect(quartz(calc(country, AFTER))).toEqual([])
+    }
+  })
+
+  it("stacks with Section 301 China", () => {
+    const cn = applying(calc("CN", AFTER))
+    expect(cn.includes("9903.45.30")).toBe(true)
+    expect(cn.some((c) => c.startsWith("9903.88"))).toBe(true)
+  })
+})
