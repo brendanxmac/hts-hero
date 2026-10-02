@@ -398,15 +398,16 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
               </button>
             )}
             {rows.length > 0 && (
-              <span className="mr-1 text-xs text-base-content/50">
+              <span className="mr-1 text-xs tabular-nums text-base-content/50">
                 {reviewed} reviewed
                 {rows.length > reviewed && <span className="text-warning"> · {rows.length - reviewed} to review</span>}
               </span>
             )}
-            {okUnreviewed.length > 0 && (
+            {/* Stays mounted once there are Claude-confirmed rows, so the header doesn't reflow as you tick */}
+            {rows.some((r) => r.claude_status === "ok") && (
               <button
-                className={btn.xsSecondary}
-                disabled={!!busy}
+                className={`${btn.xsSecondary} tabular-nums`}
+                disabled={!!busy || okUnreviewed.length === 0}
                 onClick={() =>
                   run(
                     "bulk",
@@ -418,7 +419,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                 }
               >
                 {busy === "bulk" && <Spinner />}
-                Mark {okUnreviewed.length} confirmed by Claude as reviewed
+                {okUnreviewed.length ? `Mark ${okUnreviewed.length} confirmed by Claude as reviewed` : "Claude-confirmed rows reviewed"}
               </button>
             )}
             <button className={btn.xsSecondary} onClick={() => setAdding(!adding)}>
@@ -479,7 +480,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                       }}
                     />
                   </th>
-                  <th className={`${th} w-10`} title="Reviewed">
+                  <th className={`${th} w-16`} title="Reviewed">
                     ✓
                   </th>
                   <th className={th}>Heading</th>
@@ -520,7 +521,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                   ) : (
                     <tr
                       key={row.id}
-                      className={`group ${
+                      className={`group transition-colors duration-150 ${
                         selected.has(row.id)
                           ? "bg-info/[0.07]"
                           : row.claude_status === "flagged"
@@ -549,7 +550,12 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                             disabled={!!busy && !busy.startsWith("row-")}
                             onChange={(e) => toggleReviewed(row, e.target.checked)}
                           />
-                          {((savingRows[row.id] ?? 0) > 0 || busy === `row-${row.id}`) && <Spinner className="h-3 w-3" />}
+                          {/* Fixed slot: the spinner never changes the column's width */}
+                          <span className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center" aria-hidden>
+                            {((savingRows[row.id] ?? 0) > 0 || busy === `row-${row.id}`) && (
+                              <span className="loading loading-spinner h-3 w-3 text-base-content/40" />
+                            )}
+                          </span>
                         </span>
                       </td>
                       <td className={`${td} whitespace-nowrap font-mono text-[13px]`}>
