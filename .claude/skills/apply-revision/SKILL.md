@@ -15,10 +15,10 @@ The argument is a revision name such as `2026HTSRev6`. The reviewed changes are 
    - `fromRevision` is the latest revision in `VerifiedTariffRevisions` in `tariffs/engine-v2/revisions.ts`. If the engine is on a different revision, revisions would be skipped or applied twice. Say which revision the engine is on and stop.
    - If `consecutive` is false, warn that the change record doesn't cover the revisions in between.
 2. **Read `HowTariffsWork.md`** in full, especially §6 (Tariffs), §7 (lists), §8 (interactions), §14 (versioning) and §17 (recipes). Follow it for every change.
-3. **Read the package:** `README.md`, then every file in `changes/` whose decision is `approve`. Read the `defer` and `skip` files only far enough to list them.
+3. **Read the package:** `README.md`, then `context.md` if it exists (the user's background on the revision), then every file in `changes/` whose decision is `approve`. Read the `defer` and `skip` files only far enough to list them.
 4. **How to weigh the sources**, from most to least authoritative:
    1. The note text and heading rows in each change file (from the PDF and JSON). Check anything important against `reference/ch99-notes-<revision>.md`.
-   2. The reviewer notes in each change. These are the user's interpretation and instructions, and they override the AI summary.
+   2. The reviewer notes in each change, then `context.md`. These are the user's interpretation and instructions, and they override the AI summary. Reviewer notes are specific to a change; `context.md` is background on the whole revision (why it happened, what it's aimed at). Neither overrides the note text: if they conflict with it, list the conflict under open questions.
    3. The change record entry.
    4. The AI summary. Treat it as a pointer only. Claims marked "quote not found in the source text" are unverified.
 
