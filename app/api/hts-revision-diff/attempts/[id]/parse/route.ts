@@ -12,7 +12,12 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {
-    await parseAttempt(db, params.id)
+    if (!(await parseAttempt(db, params.id))) {
+      const { attempt } = await loadAttempt(db, params.id)
+      throw new Error(
+        attempt.status === "parsing" ? "This attempt is already being parsed. Try again in a moment." : `Can't parse while the attempt is ${attempt.status}`
+      )
+    }
     const { attempt } = await loadAttempt(db, params.id)
     return NextResponse.json({ attempt })
   } catch (error) {

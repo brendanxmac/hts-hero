@@ -5,6 +5,7 @@ import toast from "react-hot-toast"
 import type { AttemptRow, DocumentRow, ParsedNotes, RevisionRow } from "@/libs/hts-revision-diff/types"
 import { hasParseResults } from "@/libs/hts-revision-diff/types"
 import HeadingsPanel from "./HeadingsPanel"
+import MarkdownEditor from "./MarkdownEditor"
 import NotesBrowser from "./NotesBrowser"
 import { api, formatTime, StatusBadge } from "./shared"
 import {
@@ -35,10 +36,19 @@ interface InspectData {
 
 export default function AttemptInspector({ attemptId }: { attemptId: string }) {
   const [data, setData] = useState<InspectData | null>(null)
-  const [tab, setTab] = useState<"notes" | "warnings" | "change-record" | "headings">("notes")
+  const [tab, setTab] = useState<"notes" | "warnings" | "change-record" | "headings" | "markdown">("notes")
   const [warningKind, setWarningKind] = useState("all")
   const [focusKey, setFocusKey] = useState<string | null>(null)
   const [extracting, setExtracting] = useState(false)
+  const [parsing, setParsing] = useState(false)
+  // A page to open in the markdown tab; a new object each time so the same
+  // page can be opened again
+  const [markdownPage, setMarkdownPage] = useState<{ page: number } | null>(null)
+  // The editor stays mounted once opened, so switching tabs keeps unsaved edits
+  const [markdownOpened, setMarkdownOpened] = useState(false)
+  useEffect(() => {
+    if (tab === "markdown") setMarkdownOpened(true)
+  }, [tab])
 
   const load = useCallback(async () => {
     try {
@@ -69,11 +79,31 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
     }
   }
 
+  const reparse = async () => {
+    setParsing(true)
+    try {
+      const { attempt } = await api<{ attempt: AttemptRow }>(`/attempts/${attemptId}/parse`, { method: "POST" })
+      const before = data?.attempt.parse_stats
+      const after = attempt.parse_stats
+      if (attempt.status === "failed") toast.error(attempt.error ?? "Parsing failed")
+      else if (hasParseResults(after)) {
+        const was = hasParseResults(before) ? ` (was ${before.topLevelNotes})` : ""
+        toast.success(`Parsed: ${after.topLevelNotes} top-level notes${was}, ${after.warnings} warnings`, { duration: 6000 })
+      }
+      await load()
+    } catch (error) {
+      toast.error((error as Error).message)
+    } finally {
+      setParsing(false)
+    }
+  }
+
   if (!data) return <PageSpinner />
 
   const { attempt, revision } = data
   const stats = hasParseResults(attempt.parse_stats) ? attempt.parse_stats : null
   const items = attempt.change_record_items ?? []
+  const chapter99Doc = data.documents.find((d) => d.kind === "ch99_pdf")
   const inCh99 = items.filter((i) => i.in_chapter_99).length
   const subchapterTitle = (groupKey: string) => data.notes?.subchapterTitles[groupKey.match(/^sub-([IVXLC]+)/)?.[1] ?? ""]
 
@@ -93,15 +123,17 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
         }
         meta={attempt.parsed_at ? `Parsed ${formatTime(attempt.parsed_at)} with ${attempt.parser_version}` : "Not parsed yet"}
         actions={
-          data.links.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {data.links.map((l) => (
-                <a key={l.label} className={btn.xsSecondary} href={l.url} target="_blank" rel="noreferrer">
-                  {l.label} <span className="text-base-content/40">↗</span>
-                </a>
-              ))}
-            </div>
-          )
+          <div className="flex flex-wrap gap-1.5">
+            <button className={btn.xsSecondary} disabled={parsing || !chapter99Doc?.markdown_path} onClick={reparse}>
+              {parsing && <Spinner />}
+              Re-parse
+            </button>
+            {data.links.map((l) => (
+              <a key={l.label} className={btn.xsSecondary} href={l.url} target="_blank" rel="noreferrer">
+                {l.label} <span className="text-base-content/40">↗</span>
+              </a>
+            ))}
+          </div>
         }
       />
 
@@ -163,6 +195,7 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
           { value: "warnings", label: "Warnings", count: warnings.length, tone: "warning" },
           { value: "headings", label: "Headings" },
           { value: "change-record", label: "Change record", count: items.length },
+          { value: "markdown", label: "Markdown" },
         ]}
       />
 
@@ -176,6 +209,23 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
         ))}
 
       {tab === "headings" && <HeadingsPanel attemptId={attemptId} />}
+
+      {markdownOpened && chapter99Doc?.markdown_path && (
+        <div className={tab === "markdown" ? "" : "hidden"}>
+          <MarkdownEditor
+            attemptId={attemptId}
+            pageCount={chapter99Doc.page_count}
+            visible={tab === "markdown"}
+            openPage={markdownPage}
+            onReparse={reparse}
+          />
+        </div>
+      )}
+      {tab === "markdown" && !chapter99Doc?.markdown_path && (
+        <div className="rounded-lg border border-dashed border-base-content/15">
+          <EmptyState title="Not converted yet">The Chapter 99 markdown appears here once datalab has converted the PDF.</EmptyState>
+        </div>
+      )}
 
       {tab === "warnings" && (
         <Panel
@@ -236,7 +286,20 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
                             </button>
                           )}
                         </td>
-                        <td className={`${td} text-right text-xs tabular-nums text-base-content/55`}>{w.page ?? ""}</td>
+                        <td className={`${td} text-right text-xs tabular-nums text-base-content/55`}>
+                          {w.page && (
+                            <button
+                              className="underline decoration-base-content/30 underline-offset-2 hover:decoration-base-content"
+                              title="Open this page's markdown"
+                              onClick={() => {
+                                setMarkdownPage({ page: w.page! })
+                                setTab("markdown")
+                              }}
+                            >
+                              {w.page}
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                 </tbody>

@@ -79,7 +79,9 @@ const updateDocument = async (db: RevisionDb, id: string, values: Partial<Docume
 export const submitDocument = async (db: RevisionDb, doc: DocumentRow) => {
   try {
     const file = await downloadBlob(db, doc.storage_path)
-    const { requestId, checkUrl } = await submitConversion(file, doc.original_filename)
+    const { requestId, checkUrl } = await submitConversion(file, doc.original_filename, {
+      keepPageFooters: doc.kind === "ch99_pdf",
+    })
     await updateDocument(db, doc.id, {
       conversion_status: "processing",
       datalab_request_id: requestId,
@@ -172,6 +174,8 @@ const expectedCitationsFrom = (items: ChangeRecordItem[] | null): ExpectedCitati
       }))
     )
 
+// Returns false when it didn't parse: the attempt is already being parsed, or
+// isn't converted yet
 export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
   const { attempt, revision, documents } = await loadAttempt(db, attemptId)
   const notesDoc = documents.find((d) => d.kind === "ch99_pdf")
@@ -187,7 +191,7 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
     .eq("id", attemptId)
     .in("status", ["converted", "parsed", "failed"])
     .select("id")
-  if (!claimed?.length) return
+  if (!claimed?.length) return false
 
   try {
     const folder = attemptFolder(revision.name, attempt.attempt_number)
@@ -263,6 +267,7 @@ export const parseAttempt = async (db: RevisionDb, attemptId: string) => {
   } catch (error) {
     await updateAttempt(db, attemptId, { status: "failed", error: `Parsing failed: ${(error as Error).message}` })
   }
+  return true
 }
 
 // ---------- USITC snapshot ----------

@@ -16,7 +16,8 @@ export interface DatalabSubmission {
 
 export const submitConversion = async (
   file: Blob,
-  filename: string
+  filename: string,
+  options: { keepPageFooters?: boolean } = {}
 ): Promise<DatalabSubmission> => {
   const form = new FormData()
   form.append("file", file, filename)
@@ -25,6 +26,12 @@ export const submitConversion = async (
   // Page separators let the parser record which PDF page each note is on
   form.append("paginate", "true")
   form.append("disable_image_extraction", "true")
+  // datalab tags short lines near the bottom of a page as page footers and
+  // drops them. Chapter 99 has no real footers, so all that loses is body
+  // text, like a note's "50." and "(a)" alone at the bottom of a page.
+  if (options.keepPageFooters) {
+    form.append("additional_config", JSON.stringify({ keep_pagefooter_in_output: true }))
+  }
 
   const response = await fetch(CONVERT_URL, {
     method: "POST",
