@@ -52,6 +52,12 @@ const revisionOrder = (name: string) => {
   return i < 0 ? Number.MAX_SAFE_INTEGER : i
 }
 
+// Newest first: by the known revision order, then by name with numbers
+// compared as numbers ("Rev11" after "Rev9"). Unknown names count as newest.
+const newestRevisionFirst = (a: { name: string }, b: { name: string }) =>
+  revisionOrder(b.name) - revisionOrder(a.name) ||
+  b.name.localeCompare(a.name, undefined, { numeric: true })
+
 export default function RevisionCheckerHome() {
   const router = useRouter()
   const [data, setData] = useState<Overview | null>(null)
@@ -224,7 +230,7 @@ export default function RevisionCheckerHome() {
       <Panel title="Revisions" count={data.revisions.length}>
         {data.revisions.length === 0 && <EmptyState title="No revisions uploaded yet">Start with “Upload revision”.</EmptyState>}
         <div className="divide-y divide-base-content/10">
-          {data.revisions.map((revision) => {
+          {[...data.revisions].sort(newestRevisionFirst).map((revision) => {
             // The documents' titles name a different revision than this one
             const active = data.attempts.find((a) => a.id === revision.active_attempt_id) ?? attemptsByRevision(revision.id)[0]
             const detected = active?.parse_stats?.detectedRevision
