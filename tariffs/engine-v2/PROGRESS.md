@@ -240,6 +240,13 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 2: 2026 Rev 12 applied (branch `revision/2026HTSRev12`)
+
+Section 301 – Brazil, all from 2026-07-22 (Notice). See `tariffs/revision-diffs/2026HTSRev12/PLAN.md`.
+- **New program `301-brazil`** and headings 9903.05.01–.09 in `headings/301-brazil.ts`, from U.S. note 50. 9903.05.01 adds 25% to all products of Brazil, stacks with other duties (including Section 122 until July 24) and applies even with a preference claim.
+- **Exemptions** copy Section 122's: in transit (.02), listed products (.03, new list `brazilExempt50aii`), particular articles (.04) and civil aircraft (.05, confirmed) as lists that include the identical Section 122 lists, pharmaceuticals (.06, new list `brazilPharma50av`, confirmed), Section 232 articles (.07, the same trigger list as 9903.03.06, now shared as `section232ArticleHeadingsFromJune8`), donations (.08) and informational materials (.09).
+- **Not modeled:** the chapter 98 rule in 50(a)(i), as with Section 122.
+
 ## Oct 2: 2026 Rev 11 applied (branch `revision/2026HTSRev11`)
 
 One chapter 99 change. See `tariffs/revision-diffs/2026HTSRev11/PLAN.md`.
@@ -318,7 +325,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 11), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 12), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.

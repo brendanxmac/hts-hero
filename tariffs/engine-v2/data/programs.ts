@@ -21,6 +21,7 @@ export const programs: Program[] = [
   },
   { id: "232-semiconductors", name: "Section 232 – Semiconductors", authority: "232" },
   { id: "301-china", name: "Section 301 – China", authority: "301" },
+  { id: "301-brazil", name: "Section 301 – Brazil", authority: "301" },
   {
     id: "aircraft-agreements",
     name: "Civil Aircraft Agreements (UK, Japan)",

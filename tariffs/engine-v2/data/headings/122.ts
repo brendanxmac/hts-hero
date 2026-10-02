@@ -68,6 +68,26 @@ const section232ArticleHeadings = [
   "9903.76.23",
 ]
 
+// The note 2(aa)(v) list from 2026-06-08 (2026HTSRev10, with Rev 11's correction restoring
+// 9903.82.02). U.S. note 50(a)(vi) (Brazil, 9903.05.07) lists the same headings word for word.
+export const section232ArticleHeadingsFromJune8 = [
+  ...section232ArticleHeadings,
+  "9903.82.18",
+  "9903.82.19",
+  "9903.82.20",
+  "9903.82.21",
+  "9903.82.22",
+  "9903.82.23",
+  "9903.82.24",
+  "9903.82.25",
+  "9903.82.26",
+  "9903.94.66",
+  "9903.94.67",
+  "9903.94.68",
+  "9903.94.69",
+  "9903.76.24",
+]
+
 export const headings: Tariff[] = [
   {
     code: "9903.03.01",
@@ -271,23 +291,7 @@ export const headings: Tariff[] = [
             countries: "all",
             codes: "all",
             whenApplies: {
-              codes: [
-                ...section232ArticleHeadings,
-                "9903.82.18",
-                "9903.82.19",
-                "9903.82.20",
-                "9903.82.21",
-                "9903.82.22",
-                "9903.82.23",
-                "9903.82.24",
-                "9903.82.25",
-                "9903.82.26",
-                "9903.94.66",
-                "9903.94.67",
-                "9903.94.68",
-                "9903.94.69",
-                "9903.76.24",
-              ],
+              codes: section232ArticleHeadingsFromJune8,
             },
           },
         },

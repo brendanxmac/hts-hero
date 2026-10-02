@@ -789,3 +789,63 @@ describe("engine-v2 real data: 2026 Rev 11", () => {
     expect(v2.totalDuty).toBe(1260)
   })
 })
+
+// ============================================================
+// 2026 Rev 12: Section 301 – Brazil, U.S. note 50 and 9903.05.01–.09 (Notice effective
+// July 22, 2026)
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 12 (Section 301 – Brazil)", () => {
+  const TSHIRT = "6109.10.00.04" // not in any note 50 list
+  const COFFEE = "0901.11.00.15" // 50(a)(ii)
+  const PHARMA = "2933.49.08.00" // 50(a)(v)
+  const AIRCRAFT_PART = "8411.91.90.80" // 50(a)(iv)
+  const STEEL = "7206.90.00.00" // 16(c)(iii), 9903.82.02
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: "", other: "45%" },
+      answers,
+    })
+  const brazil = (result: CalculationResult) => applying(result).filter((c) => c.startsWith("9903.05"))
+
+  it("adds 25% from July 22, stacking with Section 122 until it ends July 24", () => {
+    expect(brazil(calc(TSHIRT, "BR", "2026-07-21", "16.5%"))).toEqual([])
+    const both = calc(TSHIRT, "BR", "2026-07-22", "16.5%")
+    expect(applying(both)).toEqual(["9903.03.01", "9903.05.01"])
+    expect(both.totalDuty).toBe(5150) // 16.5% base + 25% + 10% Section 122
+    const after = calc(TSHIRT, "BR", "2026-07-25", "16.5%")
+    expect(applying(after)).toEqual(["9903.05.01"])
+    expect(after.totalDuty).toBe(4150)
+    expect(brazil(calc(TSHIRT, "VN", "2026-07-25", "16.5%"))).toEqual([])
+  })
+
+  it("exempts 50(a)(ii) products under 9903.05.03", () => {
+    expect(brazil(calc(COFFEE, "BR", "2026-07-25", "Free"))).toEqual(["9903.05.03"])
+  })
+
+  it("exempts civil aircraft parts (9903.05.05) and pharmaceuticals (9903.05.06) once confirmed", () => {
+    expect(brazil(calc(AIRCRAFT_PART, "BR", "2026-07-25", "Free"))).toEqual(["9903.05.01"])
+    expect(brazil(calc(AIRCRAFT_PART, "BR", "2026-07-25", "Free", { "confirm:9903.05.05": true }))).toEqual(["9903.05.05"])
+    expect(brazil(calc(PHARMA, "BR", "2026-07-25", "Free"))).toEqual(["9903.05.01"])
+    expect(brazil(calc(PHARMA, "BR", "2026-07-25", "Free", { "confirm:9903.05.06": true }))).toEqual(["9903.05.06"])
+  })
+
+  it("exempts Section 232 articles (9903.05.07), but not ones under 9903.82.01, which (a)(vi) doesn't list", () => {
+    const steel = calc(STEEL, "BR", "2026-07-25", "Free")
+    expect(applying(steel)).toEqual(["9903.05.07", "9903.82.02"])
+    expect(steel.totalDuty).toBe(5000)
+    const noMetal = calc(STEEL, "BR", "2026-07-25", "Free", { "confirm:9903.82.01": true })
+    expect(applying(noMetal)).toEqual(["9903.05.01", "9903.82.01"])
+    expect(noMetal.totalDuty).toBe(2500)
+  })
+
+  it("exempts goods loaded before July 22 and entered before July 29 (9903.05.02)", () => {
+    expect(brazil(calc(TSHIRT, "BR", "2026-07-25", "16.5%", { loadingDate: "2026-07-20" }))).toEqual(["9903.05.02"])
+    expect(brazil(calc(TSHIRT, "BR", "2026-07-29", "16.5%", { loadingDate: "2026-07-20" }))).toEqual(["9903.05.01"])
+  })
+
+  it("exempts donations (9903.05.08) and informational materials (9903.05.09)", () => {
+    expect(brazil(calc(TSHIRT, "BR", "2026-07-25", "16.5%", { isDonation: true }))).toEqual(["9903.05.08"])
+    expect(brazil(calc(TSHIRT, "BR", "2026-07-25", "16.5%", { isInformationalMaterial: true }))).toEqual(["9903.05.09"])
+  })
+})
