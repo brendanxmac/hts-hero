@@ -945,3 +945,87 @@ describe("engine-v2 real data: 2026 Rev 13 (Section 301 – Forced Labor)", () =
     expect(note52(calc(TSHIRT, "GT", AFTER, "16.5%", { special: "Free (P)", claimedPreference: "P" }))).toEqual(["9903.06.06"])
   })
 })
+
+// ============================================================
+// 2026 Rev 14: Section 232 – Pharmaceuticals, U.S. note 40 and 9903.04.60–.69 (Proclamation
+// 11020, effective July 31, 2026)
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 14 (Section 232 – Pharmaceuticals)", () => {
+  // An ingredient in 40(c) that isn't on note 52(b)'s or 50(a)(ii)'s automatic exemption lists
+  // (most 40(c) codes are), so the country rates apply unless something else exempts it
+  const DRUG = "2918.99.30.00"
+  const AFTER = "2026-08-01"
+  const calc = (country: string, asOf: string, general: string, answers: Record<string, unknown> = {}, htsCode = DRUG) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: "", other: "45%" },
+      answers,
+    })
+  const pharma = (result: CalculationResult) => applying(result).filter((c) => c.startsWith("9903.04.6"))
+  const yes = (...codes: string[]) => Object.fromEntries(codes.map((c) => [`confirm:${c}`, true]))
+
+  it("patented pharmaceuticals pay 100% in total from July 31, instead of the country rate (52(f)(8))", () => {
+    const before = calc("IN", "2026-07-30", "Free")
+    expect(applying(before)).toEqual(["9903.05.44"])
+    const after = calc("IN", AFTER, "Free")
+    expect(applying(after)).toEqual(["9903.04.60", "9903.05.90"])
+    expect(after.totalDuty).toBe(10000)
+    expect(calc("IN", AFTER, "5%").totalDuty).toBe(10000) // 5% base topped up to 100%
+    expect(pharma(calc("IN", AFTER, "Free", {}, "3006.10.01.00"))).toEqual([]) // not in 40(c)
+  })
+
+  it("Japan, the EU, Korea, Switzerland and Liechtenstein pay 15% in total; the UK +10%", () => {
+    const de = calc("DE", AFTER, "Free")
+    expect(pharma(de)).toEqual(["9903.04.62"])
+    expect(de.totalDuty).toBe(1500)
+    expect(pharma(calc("LI", AFTER, "Free"))).toEqual(["9903.04.62"])
+    const gb = calc("GB", AFTER, "Free")
+    expect(pharma(gb)).toEqual(["9903.04.63"])
+    expect(gb.totalDuty).toBe(1000)
+  })
+
+  it("a confirmed onshoring plan (+20%) takes precedence over the country headings", () => {
+    expect(calc("IN", AFTER, "Free", yes("9903.04.64")).totalDuty).toBe(2000)
+    const jp = calc("JP", AFTER, "Free", yes("9903.04.64"))
+    expect(pharma(jp)).toEqual(["9903.04.64"])
+    expect(jp.totalDuty).toBe(2000)
+    expect(pharma(calc("GB", AFTER, "Free", yes("9903.04.64")))).toEqual(["9903.04.64"])
+  })
+
+  it("exempts onshoring with MFN pricing, specialty products and identified companies", () => {
+    expect(pharma(calc("IN", AFTER, "Free", yes("9903.04.64", "9903.04.65")))).toEqual(["9903.04.65"])
+    expect(calc("IN", AFTER, "Free", yes("9903.04.65")).totalDuty).toBe(0)
+    expect(pharma(calc("DE", AFTER, "Free", yes("9903.04.66")))).toEqual(["9903.04.66"])
+    expect(pharma(calc("IN", AFTER, "Free", yes("9903.04.61")))).toEqual(["9903.04.61"])
+    // .61 ends September 29, 2026
+    expect(pharma(calc("IN", "2026-09-29", "Free", yes("9903.04.61")))).toEqual(["9903.04.60"])
+  })
+
+  it("generics and non-pharmaceutical articles get no pharma duty, but do pay the country rate", () => {
+    const generic = calc("IN", AFTER, "Free", yes("9903.04.67"))
+    expect(applying(generic)).toEqual(["9903.04.67", "9903.05.44"])
+    expect(generic.totalDuty).toBe(1000)
+    expect(pharma(calc("IN", AFTER, "Free", yes("9903.04.69")))).toEqual(["9903.04.69"])
+    expect(pharma(calc("IN", AFTER, "Free", yes("9903.04.68")))).toEqual(["9903.04.68"])
+  })
+
+  it("replaces Brazil's 25% for patented pharmaceuticals (50(a)(vi)(8)) but stacks with Section 301 China", () => {
+    const br = calc("BR", AFTER, "Free")
+    expect(applying(br)).toEqual(["9903.04.60", "9903.05.07", "9903.05.90"])
+    expect(br.totalDuty).toBe(10000)
+    const cn = applying(calc("CN", AFTER, "Free"))
+    expect(cn.includes("9903.04.60")).toBe(true)
+    expect(cn.includes("9903.05.31")).toBe(false)
+  })
+
+  it("never applies more than one of 9903.04.60–.69 (note 40(a)), for any combination of answers", () => {
+    const codes = ["9903.04.61", "9903.04.64", "9903.04.65", "9903.04.66", "9903.04.67", "9903.04.68", "9903.04.69"]
+    for (const country of ["IN", "DE", "JP", "LI", "GB", "BR", "CN"]) {
+      for (let mask = 0; mask < 1 << codes.length; mask++) {
+        const answers = yes(...codes.filter((_, i) => mask & (1 << i)))
+        const applied = pharma(calc(country, AFTER, "Free", answers))
+        if (applied.length !== 1) throw new Error(`${country} ${JSON.stringify(answers)}: ${applied.join(", ") || "none"}`)
+      }
+    }
+  })
+})

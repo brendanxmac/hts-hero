@@ -88,6 +88,20 @@ export const section232ArticleHeadingsFromJune8 = [
   "9903.76.24",
 ]
 
+// From 2026-07-31 (2026HTSRev14), notes 50(a)(vi)(8) and 52(f)(8) add "patented pharmaceutical
+// articles provided for in headings 9903.04.60–9903.04.66" to the Brazil and forced-labor
+// exemptions. 9903.03.06 had ended by then, so it keeps the June 8 list.
+export const section232ArticleHeadingsFromJuly31 = [
+  ...section232ArticleHeadingsFromJune8,
+  "9903.04.60",
+  "9903.04.61",
+  "9903.04.62",
+  "9903.04.63",
+  "9903.04.64",
+  "9903.04.65",
+  "9903.04.66",
+]
+
 export const headings: Tariff[] = [
   {
     code: "9903.03.01",

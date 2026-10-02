@@ -240,6 +240,13 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 2: 2026 Rev 14 applied (branch `revision/2026HTSRev14`)
+
+Section 232 – Pharmaceuticals (Proclamation 11020), from 2026-07-31. See `tariffs/revision-diffs/2026HTSRev14/PLAN.md`.
+- **New program `232-pharmaceuticals`** and headings 9903.04.60–.69 in `headings/232-pharmaceuticals.ts`, scoped to the 131 provisions of note 40(c) (`lists/pharmaceuticals.ts`). .60 tops up to 100% including the base rate; .62 (JP, EU, KR, CH, LI) to 15%; .63 UK +10%; .64 onshoring +20% (confirmed, and then it takes precedence over .62/.63, by decision); .61, .65–.69 free and confirmed. Mutually exclusive per 40(a) through `exceptions`; a brute-force test checks it.
+- **Brazil and forced-labor exemptions:** 9903.05.07 and 9903.05.90 have July 31 versions adding 9903.04.60–.66 (notes 50(a)(vi)(8), 52(f)(8)), via `section232ArticleHeadingsFromJuly31` in `122.ts`.
+- Note 2(aa)(v)'s new pharma item (added after Section 122 expired) changes nothing.
+
 ## Oct 2: 2026 Rev 13 applied (branch `revision/2026HTSRev13`)
 
 Section 122 ended at the close of July 23 (already modeled); Section 301 – Forced Labor from 2026-07-24 (Notice). See `tariffs/revision-diffs/2026HTSRev13/PLAN.md`.
@@ -333,7 +340,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 13), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 14), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.

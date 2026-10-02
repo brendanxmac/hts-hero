@@ -20,6 +20,12 @@ export const programs: Program[] = [
     authority: "232",
   },
   { id: "232-semiconductors", name: "Section 232 – Semiconductors", authority: "232" },
+  {
+    id: "232-pharmaceuticals",
+    name: "Section 232 – Pharmaceuticals",
+    authority: "232",
+    legalBasis: ["Proclamation 11020"],
+  },
   { id: "301-china", name: "Section 301 – China", authority: "301" },
   { id: "301-brazil", name: "Section 301 – Brazil", authority: "301" },
   { id: "301-forced-labor", name: "Section 301 – Forced Labor", authority: "301" },

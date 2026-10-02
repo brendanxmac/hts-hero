@@ -2,8 +2,9 @@
 // 2026HTSRev12 (Notice effective 2026-07-22). The structure copies Section 122's note 2(aa) and
 // headings 9903.03.01–.11. See HowTariffsWork.md §6.
 import { Tariff } from "../../types"
+import { tariffVersions } from "../../versioning"
 import { confirm } from "../confirmations"
-import { section232ArticleHeadingsFromJune8 } from "./122"
+import { section232ArticleHeadingsFromJuly31, section232ArticleHeadingsFromJune8 } from "./122"
 
 const FROM = "2026-07-22"
 const SOURCE = { revision: "2026HTSRev12", citation: "Notice" }
@@ -111,6 +112,7 @@ export const headings: Tariff[] = [
     effective: { from: FROM },
     source: { ...SOURCE, note: "U.S. note 50(a)(v)" },
   },
+  ...tariffVersions(
   {
     code: "9903.05.07",
     program: "301-brazil",
@@ -127,6 +129,23 @@ export const headings: Tariff[] = [
     effective: { from: FROM },
     source: { ...SOURCE, note: "U.S. note 50(a)(vi)" },
   },
+    [
+      {
+        from: "2026-07-31",
+        set: {
+          description:
+            "Articles of aluminum, of steel, or of copper or derivative aluminum or steel articles; passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks; parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks; medium- and heavy-duty vehicles; parts of medium- and heavy-duty vehicles; wood products; patented pharmaceutical articles; and semiconductor articles, of Brazil, as provided in subdivision (a)(vi) of U.S. note 50 to this subchapter",
+          scope: {
+            countries: ["BR"],
+            codes: "all",
+            // Note 50(a)(vi)(1)–(8): (8) adds patented pharmaceuticals, 9903.04.60–.66
+            whenApplies: { codes: section232ArticleHeadingsFromJuly31 },
+          },
+        },
+        source: { revision: "2026HTSRev14", citation: "Notice", note: "U.S. note 50(a)(vi)(8)" },
+      },
+    ],
+  ),
   {
     code: "9903.05.08",
     program: "301-brazil",

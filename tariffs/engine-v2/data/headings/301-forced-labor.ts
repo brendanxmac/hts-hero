@@ -8,8 +8,12 @@
 // column 1 rate (note 52(k)). The ad valorem equivalent of a specific or compound rate is the duty
 // payable divided by the customs value, which is what baseRate compares (§9.3).
 import { Tariff } from "../../types";
+import { tariffVersions } from "../../versioning";
 import { confirm } from "../confirmations";
-import { section232ArticleHeadingsFromJune8 } from "./122";
+import {
+  section232ArticleHeadingsFromJuly31,
+  section232ArticleHeadingsFromJune8,
+} from "./122";
 
 const PROGRAM = "301-forced-labor";
 const FROM = "2026-07-24";
@@ -1830,22 +1834,44 @@ export const headings: Tariff[] = [
       note: "U.S. note 52(e); an end-use test, so it's confirmed",
     },
   },
-  {
-    code: "9903.05.90",
-    program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Section 232 Articles",
-    description:
-      "Articles of aluminum, of steel or of copper or derivative aluminum or steel articles; passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks; parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks; medium- and heavy-duty vehicles; parts of medium- and heavy-duty vehicles; wood products; and semiconductor articles, as provided in subdivision (f) of U.S. note 52 to this subchapter",
-    scope: {
-      countries: "all",
-      codes: "all",
-      // Note 52(f)(1)–(7): the same headings as note 2(aa)(v)
-      whenApplies: { codes: section232ArticleHeadingsFromJune8 },
+  ...tariffVersions(
+    {
+      code: "9903.05.90",
+      program: PROGRAM,
+      name: "Section 301 Forced Labor Exemption: Section 232 Articles",
+      description:
+        "Articles of aluminum, of steel or of copper or derivative aluminum or steel articles; passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks; parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks; medium- and heavy-duty vehicles; parts of medium- and heavy-duty vehicles; wood products; and semiconductor articles, as provided in subdivision (f) of U.S. note 52 to this subchapter",
+      scope: {
+        countries: "all",
+        codes: "all",
+        // Note 52(f)(1)–(7): the same headings as note 2(aa)(v)
+        whenApplies: { codes: section232ArticleHeadingsFromJune8 },
+      },
+      rate: { kind: "free" },
+      effective: { from: FROM },
+      source: { ...SOURCE, note: "U.S. note 52(f)" },
     },
-    rate: { kind: "free" },
-    effective: { from: FROM },
-    source: { ...SOURCE, note: "U.S. note 52(f)" },
-  },
+    [
+      {
+        from: "2026-07-31",
+        set: {
+          description:
+            "Articles of aluminum, of steel or of copper or derivative aluminum or steel articles; passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks; parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks; medium- and heavy-duty vehicles; parts of medium- and heavy-duty vehicles; wood products; patented pharmaceutical articles; and semiconductor articles, as provided in subdivision (f) of U.S. note 52 to this subchapter",
+          scope: {
+            countries: "all",
+            codes: "all",
+            // Note 52(f)(1)–(8): (8) adds patented pharmaceuticals, 9903.04.60–.66
+            whenApplies: { codes: section232ArticleHeadingsFromJuly31 },
+          },
+        },
+        source: {
+          revision: "2026HTSRev14",
+          citation: "Notice",
+          note: "U.S. note 52(f)(8)",
+        },
+      },
+    ],
+  ),
   {
     code: "9903.05.91",
     program: PROGRAM,
