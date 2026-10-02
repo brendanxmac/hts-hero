@@ -171,7 +171,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
 8. **Done Sep 30:** FY2027 MPF values added to both calculators, switching on Oct 1 (see E2).
 9. **Broad "needs review" headings (L9).** Should these be narrowed to specific lists?
 10. **Stale legacy tests (L1).** Update them for the full-value 232 structure, or delete them?
-11. **9903.03.06 and "no metal" articles.** Legacy lists 9903.82.01 ("contains no aluminum, steel or copper") among the headings that trigger the Section 122 exemption. So confirming "no metal" removes 232 **and** keeps Section 122 off. Is a note 16(c) article with no metal still exempt from 122?
+11. **Answered (Oct 2): 9903.03.06 and "no metal" articles.** No. Note 2(aa)(v)(1) lists only "9903.82.02 and 9903.82.04–…", so 9903.82.01 (no metal) and 9903.82.03 (metal under 15% of the weight) don't trigger the exemption and pay Section 122. Corrected for all dates in Rev 11.
 12. **Rolling this out.** Answered: don't make it the default for now.
 13. **Answered (Sep 30), from USITC's archived Chapter 99 PDFs.** Note 31(b) first appears in 2024 HTS Rev 9 (not in Rev 8), effective for entries on or after Sep 27, 2024, with items (1)–(4) plus 348 subheadings. The items are present through 2025 Rev 32. They're gone in the 2026 Basic Edition, whose compiler's note says "Numbers (1) through (4) have been deleted. See 89 Fed. Reg. 76581". That's effective Jan 1, 2026, the date the 31(g)–(i) texts use. The 348 other codes are identical in every revision checked and match `china31b`. `china31b` now has two versions: 2024-09-27 (353 codes) and 2026-01-01 (348 codes).
 
@@ -240,6 +240,12 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 2: 2026 Rev 11 applied (branch `revision/2026HTSRev11`)
+
+One chapter 99 change. See `tariffs/revision-diffs/2026HTSRev11/PLAN.md`.
+- **Note 2(aa)(v)(1) technical correction** (PP 11021, effective 2026-04-06): 9903.82.02 is back in the Section 122 exemption (9903.03.06). Retroactive, so the June 8 version is corrected in place and June 8–30 entries no longer pay Section 122 on 9903.82.02 goods.
+- **Correction, all dates:** 9903.82.01 and 9903.82.03 no longer trigger 9903.03.06. The note has never listed them (legacy data did), so those articles pay Section 122 from Feb 24 to July 24, 2026.
+
 ## Oct 2: 2026 Rev 10 applied (branch `revision/2026HTSRev10`)
 
 Section 232 metals restructuring, Proclamation 11032, all from 2026-06-08 (dated versions). See `tariffs/revision-diffs/2026HTSRev10/PLAN.md`.
@@ -247,7 +253,7 @@ Section 232 metals restructuring, Proclamation 11032, all from 2026-06-08 (dated
 - **New headings 9903.82.20–.26:** USMCA (xi) content split at 40% (.20/.21), partner-country (xi) at 15% total (.22, `TODO(review)`), and (k) parts for equipment (.23–.26, topped up to 10%/15%).
 - **Engine (new handler):** basis `usContentShare` and input `usContentPct`, for .20/.21.
 - **Existing headings** .01/.05/.06/.07/.08/.09/.13/.15/.16 have June 8 versions ((xi) scope, 85% U.S.-content names, precedence for the new headings). The legacy motorcycle list is dropped from .06/.09 from June 8 (it still held codes that moved out of (vi)–(viii)); .13 uses the 16(k) parts list plus (xi), matching 16(g).
-- **Section 122, kept as written:** note 2(aa)(v)(1) in Rev 10 omits 9903.82.02 ("headings 9903.82.04 and 9903.82.04–9903.82.26"), a drafting slip fixed in the next revision. Applied literally by decision, so 9903.82.02 goods pay Section 122 from June 8 to July 24, 2026. The record of the gap matters for refund claims.
+- **Section 122:** note 2(aa)(v)(1) in Rev 10 omits 9903.82.02 ("headings 9903.82.04 and 9903.82.04–9903.82.26"). It was first applied as written; Rev 11's technical correction (effective April 6) restores it retroactively, so the gap is gone.
 - The note 16(a) exclusivity test now covers .02–.26 (the .20/.21 split counts as one treatment).
 
 ## Oct 2: 2026 Rev 9 applied (branch `revision/2026HTSRev9`)
@@ -312,7 +318,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 10), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 11), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.

@@ -4,11 +4,12 @@ import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
 import { tariffVersions } from "../../versioning"
 
-// Headings that trigger the 9903.03.06 exemption, per U.S. note 2(aa)(v)
+// Headings that trigger the 9903.03.06 exemption, per U.S. note 2(aa)(v). Metals are
+// "9903.82.02 and 9903.82.04–…" (note 2(aa)(v)(1)): 9903.82.01 (no aluminum, steel or copper)
+// and 9903.82.03 (metal under 15% of the weight) aren't listed, so those articles pay Section 122.
+// Corrected for all dates in 2026HTSRev11; the legacy list had included them.
 const section232ArticleHeadings = [
-  "9903.82.01",
   "9903.82.02",
-  "9903.82.03",
   "9903.82.04",
   "9903.82.05",
   "9903.82.06",
@@ -213,7 +214,10 @@ export const headings: Tariff[] = [
       },
       rate: { kind: "free" },
       effective: { from: "2026-02-24" },
-      source: { revision: "2026HTSRev5" },
+      source: {
+        revision: "2026HTSRev5",
+        note: "Triggers corrected in 2026HTSRev11 to match U.S. note 2(aa)(v): 9903.82.01 and 9903.82.03 removed (data-entry correction, all dates)",
+      },
     },
     [
       {
@@ -258,9 +262,9 @@ export const headings: Tariff[] = [
         },
       },
       {
-        // Note 2(aa)(v)(1) in 2026HTSRev10 reads "headings 9903.82.04 and 9903.82.04–9903.82.26":
-        // 9903.82.02 is left out (a drafting slip fixed in the next revision). Applied as written,
-        // on purpose: the gap is part of the legal record for entries in this window.
+        // Note 2(aa)(v)(1) in 2026HTSRev10 as published reads "headings 9903.82.04 and
+        // 9903.82.04–9903.82.26", leaving out 9903.82.02. The 2026HTSRev11 technical correction
+        // (PP 11021, effective 2026-04-06) restores 9903.82.02 retroactively, so it's included here.
         from: "2026-06-08",
         set: {
           scope: {
@@ -268,9 +272,7 @@ export const headings: Tariff[] = [
             codes: "all",
             whenApplies: {
               codes: [
-                ...section232ArticleHeadings.filter(
-                  (code) => code !== "9903.82.02",
-                ),
+                ...section232ArticleHeadings,
                 "9903.82.18",
                 "9903.82.19",
                 "9903.82.20",
@@ -292,7 +294,7 @@ export const headings: Tariff[] = [
         source: {
           revision: "2026HTSRev10",
           citation: "Proclamation 11032",
-          note: 'U.S. note 2(aa)(v)(1) extends to 9903.82.26 and, as written, omits 9903.82.02 ("headings 9903.82.04 and 9903.82.04–9903.82.26"); applied literally. Effective 2026-06-08',
+          note: "U.S. note 2(aa)(v)(1) extends to 9903.82.26, effective 2026-06-08. Rev 10 as published omitted 9903.82.02; the 2026HTSRev11 technical correction (PP 11021, effective 2026-04-06) restores it",
         },
       },
       { from: "2026-07-24", ends: true },

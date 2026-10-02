@@ -525,8 +525,10 @@ describe("engine-v2 real data: 2026 Rev 7", () => {
 
   it("copper cable with no metal content is exempt under 9903.82.01 (heading covers all of 16(c))", () => {
     const v2 = runAt(CABLE, "VN", "2026-05-01", { "confirm:9903.82.01": true })
-    expect(applying(v2)).toEqual(["9903.03.06", "9903.82.01"])
-    expect(v2.totalDuty).toBe(260) // base only
+    // Corrected in 2026HTSRev11: 9903.82.01 isn't in note 2(aa)(v)(1), so Section 122 applies
+    // (was 9903.03.06 and $260)
+    expect(applying(v2)).toEqual(["9903.03.01", "9903.82.01"])
+    expect(v2.totalDuty).toBe(1260) // 2.6% base + 10% Section 122
   })
 
   it("Russian U.S.-smelted copper cable uses 9903.82.15, not .06 or .16", () => {
@@ -741,10 +743,49 @@ describe("engine-v2 real data: 2026 Rev 10 (Proclamation 11032)", () => {
     expect(metals(calc("8431.43.80.90", "RU", AFTER, "2.5%", { "confirm:9903.82.25": true }))).toEqual(["9903.82.16"])
   })
 
-  it("note 2(aa)(v)(1) as written leaves 9903.82.02 out of the Section 122 exemption from June 8 (kept on purpose)", () => {
+  it("9903.82.02 keeps the Section 122 exemption from June 8 (Rev 10's omission, corrected retroactively in Rev 11)", () => {
+    // Was pinned at $6,000 with 9903.03.01 (Rev 10's note as published). The 2026HTSRev11
+    // technical correction, effective 2026-04-06, restores 9903.82.02 to note 2(aa)(v)(1).
     expect(applying(calc("7206.90.00.00", "VN", BEFORE, "Free"))).toEqual(["9903.03.06", "9903.82.02"])
     const window = calc("7206.90.00.00", "VN", AFTER, "Free")
-    expect(applying(window)).toEqual(["9903.03.01", "9903.82.02"])
-    expect(window.totalDuty).toBe(6000) // 50% + 10% Section 122
+    expect(applying(window)).toEqual(["9903.03.06", "9903.82.02"])
+    expect(window.totalDuty).toBe(5000) // 50%, no Section 122
+  })
+})
+
+// ============================================================
+// 2026 Rev 11: note 2(aa)(v)(1) technical correction (PP 11021, effective April 6, 2026), and
+// the Section 122 triggers corrected to the note's list
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 11", () => {
+  const STEEL = "7206.90.00.00" // note 16(c)(iii), 9903.82.02
+  const CABLE = "8544.42.90.90" // note 16(c)(viii)
+  const calc = (htsCode: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country: "VN", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: "", other: "35%" },
+      answers,
+    })
+
+  it("9903.82.02 steel is exempt from Section 122 before, during and after Rev 10", () => {
+    for (const asOf of ["2026-04-10", "2026-06-15", "2026-07-01"]) {
+      const v2 = calc(STEEL, asOf, "Free")
+      expect(applying(v2)).toEqual(["9903.03.06", "9903.82.02"])
+      expect(v2.totalDuty).toBe(5000)
+    }
+  })
+
+  it("articles under 9903.82.03 (metal under 15% of the weight) pay Section 122: not in note 2(aa)(v)(1)", () => {
+    for (const asOf of ["2026-04-10", "2026-07-01"]) {
+      const v2 = calc(CABLE, asOf, "2.6%", { "confirm:9903.82.03": true })
+      expect(applying(v2)).toEqual(["9903.03.01", "9903.82.03"])
+      expect(v2.totalDuty).toBe(1260) // 2.6% base + 10% Section 122
+    }
+  })
+
+  it("articles under 9903.82.01 (no aluminum, steel or copper) pay Section 122 too", () => {
+    const v2 = calc(CABLE, "2026-07-01", "2.6%", { "confirm:9903.82.01": true })
+    expect(applying(v2)).toEqual(["9903.03.01", "9903.82.01"])
+    expect(v2.totalDuty).toBe(1260)
   })
 })
