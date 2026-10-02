@@ -13,8 +13,9 @@ import type {
   Decision,
   NoteDiff,
   RevisionRow,
+  RevisionSummary,
 } from "@/libs/hts-revision-diff/types"
-import { api, BUSY_STATUSES, StatusBadge, TextBlock, WordDiffView } from "./shared"
+import { api, BUSY_STATUSES, formatTime, StatusBadge, TextBlock, WordDiffView } from "./shared"
 import {
   btn,
   Callout,
@@ -218,7 +219,7 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
   const unsummarized = changes.filter((c) => !c.summary).length
   const allDecided = changes.length > 0 && decided === changes.length
   // Claude cost so far: the change record reading plus every summary
-  const usages = [to.changeRecordUsage, ...changes.map((c) => c.summary?.usage)].filter(Boolean) as ClaudeUsage[]
+  const usages = [to.changeRecordUsage, comparison.revision_summary?.usage, ...changes.map((c) => c.summary?.usage)].filter(Boolean) as ClaudeUsage[]
   const claudeCost = usages.reduce((sum, u) => sum + u.cost_usd, 0)
   const claudeIn = usages.reduce((sum, u) => sum + u.input_tokens, 0)
   const claudeOut = usages.reduce((sum, u) => sum + u.output_tokens, 0)
@@ -463,6 +464,14 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
               )}
             </div>
           </div>
+
+          <RevisionSummaryPanel
+            comparisonId={comparison.id}
+            summary={comparison.revision_summary ?? null}
+            approved={count("approve")}
+            pending={changes.length - decided}
+            onUpdated={(updated) => setData((d) => (d ? { ...d, comparison: updated } : d))}
+          />
         </>
       )}
     </div>
@@ -775,6 +784,120 @@ function ChangeDetail({
         </section>
       </div>
     </article>
+  )
+}
+
+// Claude's high-level overview of the approved changes, for a quick sanity check
+function RevisionSummaryPanel({
+  comparisonId,
+  summary,
+  approved,
+  pending,
+  onUpdated,
+}: {
+  comparisonId: string
+  summary: RevisionSummary | null
+  approved: number
+  pending: number
+  onUpdated: (comparison: ComparisonRow) => void
+}) {
+  const [generating, setGenerating] = useState(false)
+  const generate = async () => {
+    setGenerating(true)
+    try {
+      const { comparison } = await api<{ comparison: ComparisonRow }>(`/comparisons/${comparisonId}/revision-summary`, { method: "POST" })
+      onUpdated(comparison)
+    } catch (error) {
+      toast.error((error as Error).message)
+    } finally {
+      setGenerating(false)
+    }
+  }
+  const stale = summary && summary.approved_changes !== approved
+
+  return (
+    <Panel
+      title="Revision summary"
+      actions={
+        <div className="ml-auto flex items-center gap-2">
+          {summary && (
+            <span className="text-xs text-base-content/45">
+              {formatTime(summary.generated_at)} · {summary.approved_changes} approved
+              {summary.usage ? ` · ${formatUsd(summary.usage.cost_usd)}` : ""}
+            </span>
+          )}
+          <button className={summary ? btn.xsSecondary : btn.xsPrimary} disabled={generating || approved === 0} onClick={generate}>
+            {generating && <Spinner />}
+            {generating ? "Generating…" : summary ? "Regenerate" : "Generate revision summary"}
+          </button>
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-4 px-4 py-4 text-sm">
+        {!summary ? (
+          <p className="text-base-content/55">
+            {approved === 0
+              ? "Approve changes first. Claude reads the approved ones and gives a short overview of the revision."
+              : `Claude reads the ${approved} approved change${approved === 1 ? "" : "s"} and gives a short overview: what the revision is about, which programs and countries it touches, and what changes in the calculation.${pending ? ` ${pending} change${pending === 1 ? " is" : "s are"} still undecided.` : ""}`}
+          </p>
+        ) : (
+          <>
+            {stale && (
+              <Callout tone="warning">
+                Generated from {summary.approved_changes} approved change{summary.approved_changes === 1 ? "" : "s"}; {approved} are approved now. Regenerate to include the latest decisions.
+              </Callout>
+            )}
+            <div>
+              <p className="font-semibold">{summary.headline}</p>
+              <p className="mt-1 leading-relaxed text-base-content/75">{summary.overview}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {summary.programs.map((p) => (
+                <Pill key={p} tone="info">{p}</Pill>
+              ))}
+              {summary.countries.map((c) => (
+                <Pill key={c}>{c}</Pill>
+              ))}
+            </div>
+            {summary.key_changes.length > 0 && (
+              <section>
+                <SectionLabel>Key changes</SectionLabel>
+                <ul className="mt-1.5 list-disc space-y-1 pl-5 text-base-content/80">
+                  {summary.key_changes.map((k, i) => (
+                    <li key={i}>{k}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            <section>
+              <SectionLabel>Calculation impact</SectionLabel>
+              <p className="mt-1.5 text-base-content/80">{summary.calculation_impact}</p>
+            </section>
+            {summary.effective_dates.length > 0 && (
+              <section>
+                <SectionLabel>Effective dates</SectionLabel>
+                <ul className="mt-1.5 space-y-0.5 text-base-content/80">
+                  {summary.effective_dates.map((d, i) => (
+                    <li key={i}>
+                      <span className="font-mono text-xs">{d.date}</span> <Dot /> {d.applies_to}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            {summary.watch_for.length > 0 && (
+              <Callout tone="warning" title="Worth double-checking">
+                <ul className="list-disc space-y-0.5 pl-4">
+                  {summary.watch_for.map((w, i) => (
+                    <li key={i}>{w}</li>
+                  ))}
+                </ul>
+              </Callout>
+            )}
+          </>
+        )}
+      </div>
+    </Panel>
   )
 }
 
