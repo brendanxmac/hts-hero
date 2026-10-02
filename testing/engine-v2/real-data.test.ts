@@ -1081,6 +1081,16 @@ describe("engine-v2 real data: 2026 Rev 16 (Section 201 – Quartz Surface Produ
     }
   })
 
+  it("applies unless the importer says the goods aren't quartz surface products (41(a))", () => {
+    expect(quartz(calc("VN", AFTER, { isQuartzSurfaceProduct: true }))).toEqual(["9903.45.30"])
+    const glass = calc("VN", AFTER, { isQuartzSurfaceProduct: false }, "7020.00.60.00")
+    expect(quartz(glass)).toEqual([])
+    expect(glass.totalDuty).toBe(1250) // only the 12.5% country rate
+    expect(quartz(calc("VN", AFTER, { isQuartzSurfaceProduct: false, quartzQuotaFilled: true }))).toEqual([])
+    // The unanswered question is listed, since it changes the total
+    expect(calc("VN", AFTER).unansweredInputs.some((u) => u.input.id === "isQuartzSurfaceProduct")).toBe(true)
+  })
+
   it("stacks with Section 301 China", () => {
     const cn = applying(calc("CN", AFTER))
     expect(cn.includes("9903.45.30")).toBe(true)

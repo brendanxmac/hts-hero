@@ -21,6 +21,12 @@ export const namedInputs: InputDefinition[] = [
     type: "boolean",
   },
   {
+    id: "isQuartzSurfaceProduct",
+    label: "Is this a quartz surface product?",
+    help: "Slabs, countertops, tiles and other surfaces made mostly of silica (e.g. quartz) with a resin binder, where silica is the largest single material by weight. Quarried stone such as granite, marble, soapstone or quartzite isn't included (U.S. note 41(a)).",
+    type: "boolean",
+  },
+  {
     id: "quartzQuotaFilled",
     label: "Has the quarterly quota for quartz surface products been filled?",
     help: "Section 201 quartz surface products pay the in-quota rate until the quarter's quota (U.S. note 41(d)) is used up, and the over-quota rate after that. CBP publishes quota status.",

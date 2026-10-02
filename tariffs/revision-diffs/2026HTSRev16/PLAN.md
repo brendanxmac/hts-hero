@@ -148,3 +148,13 @@ Not modeled: the quota quantities, quarters and carry-forward (only the in/over 
 ## Corrections
 
 - 41(c)(iii) lists **100** developing countries, not 107. Eight countries are in both (iii) and (iv).
+
+## Follow-up decision (Oct 3, 2026): "is it a quartz surface product?"
+
+41(a) defines QSP by what the goods are ("predominately silica … as well as a resin binder";
+"the silica content is greater than any other single material, by actual weight"; not quarried
+stone). The three codes are where QSP is classified, but not everything under them is QSP,
+especially 7020.00.60.00 (other articles of glass). New input `isQuartzSurfaceProduct` is required
+by both headings with `assume: true`: the duty applies unless the importer answers no, and the
+question is listed with its effect. Tests: answered no → no 201 duty (also with the quota filled).
+Not modeled: 41(a)'s "only the QSP is covered" for quartz imported with sinks, vanities or cabinets.
