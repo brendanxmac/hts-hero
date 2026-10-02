@@ -8,7 +8,7 @@ import { extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
 import { readFileSync } from "fs"
 import { parseCh99HeadingTables } from "../../libs/hts-revision-diff/parse-ch99-tables"
-import { headingRowsAsHtsRows, reconcileHeadingRows } from "../../libs/hts-revision-diff/headings"
+import { headingRowsAsHtsRows, reconcileHeadingRows, uncitedHeadingRowIds } from "../../libs/hts-revision-diff/headings"
 import type { HeadingRow } from "../../libs/hts-revision-diff/types"
 import { join } from "path"
 import { CH99_JSON_A, CH99_JSON_B, CH99_REV_A, CH99_REV_B } from "./fixtures"
@@ -554,5 +554,34 @@ describe("Claude check of heading rows", () => {
       headingRow({ htsno: "9903.82.19", general: "25%", reviewed: false }),
     ])
     expect(rows.map((r) => r.htsno)).toEqual(["9903.82.18"])
+  })
+})
+
+describe("uncitedHeadingRowIds", () => {
+  const row = (id: string, htsno: string, indent = 0, source: HeadingRow["source"] = "pdf") =>
+    ({ id, htsno, indent, source }) as HeadingRow
+  const item = (in_chapter_99: boolean, hts_codes: string[], hts_code_ranges: { from: string; to: string }[] = []) =>
+    ({ in_chapter_99, hts_codes, hts_code_ranges }) as ChangeRecordItem
+
+  it("keeps cited headings (by code or range), their parents and continuations, and manual rows", () => {
+    const rows = [
+      row("parent", "", 0),
+      row("c18", "9903.82.18", 1),
+      row("c18-cont", "", 2),
+      row("nested-other", "9903.82.30", 2),
+      row("u17", "9903.82.17", 0),
+      row("u17-cont", "", 1),
+      row("r41", "9903.94.41", 0),
+      row("r65", "9903.94.65", 0),
+      row("r66", "9903.94.66", 0),
+      row("manual", "9903.99.99", 0, "manual"),
+      row("not-ch99", "9903.01.25", 0),
+    ]
+    const items = [
+      item(true, ["9903.82.18"]),
+      item(true, [], [{ from: "9903.94.40", to: "9903.94.65" }]),
+      item(false, ["9903.01.25"]),
+    ]
+    expect(uncitedHeadingRowIds(rows, items)).toEqual(["nested-other", "u17", "u17-cont", "r66", "not-ch99"])
   })
 })

@@ -206,6 +206,11 @@ export interface ParseStats {
   changeRecordUsage?: ClaudeUsage | null
 }
 
+// parse_stats can hold heading-page state (headingPages) before the notes are parsed,
+// so only treat it as parse results once the counts are there
+export const hasParseResults = (stats: ParseStats | null | undefined): stats is ParseStats =>
+  typeof stats?.nodes === "number"
+
 export interface ClaudeUsage {
   model: string
   input_tokens: number

@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react"
 import type { NoteNode, ParsedNotes, ParseWarning } from "@/libs/hts-revision-diff/types"
+import { btn, inputCls, Kbd, Pill } from "./ui"
 
 const MAX_RESULTS = 200
 
@@ -175,14 +176,14 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
       {/* Outline */}
-      <aside className="flex min-w-0 flex-col gap-2 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]">
+      <aside className="flex min-w-0 flex-col gap-2 lg:sticky lg:top-[4.25rem] lg:max-h-[calc(100vh-5.5rem)]">
         <input
-          className="input input-sm input-bordered"
+          className={`${inputCls} w-full`}
           placeholder="Filter notes"
           value={outlineFilter}
           onChange={(e) => setOutlineFilter(e.target.value)}
         />
-        <nav className="max-h-80 overflow-y-auto rounded-lg border border-base-300 lg:max-h-none lg:flex-1">
+        <nav className="max-h-80 overflow-y-auto rounded-lg border border-base-content/10 bg-base-100 shadow-sm lg:max-h-none lg:flex-1">
           {outline.map((top, i) => {
             const newGroup = i === 0 || outline[i - 1].groupKey !== top.groupKey
             const count = descendants.get(top.key)?.length ?? 1
@@ -191,22 +192,22 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
             return (
               <Fragment key={top.key}>
                 {newGroup && (
-                  <div className="sticky top-0 z-10 border-b border-base-300 bg-base-200 px-3 py-1 text-xs font-semibold">
+                  <div className="sticky top-0 z-10 border-b border-base-content/10 bg-base-100/95 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-base-content/50 backdrop-blur">
                     {groupTitle(top)}
                   </div>
                 )}
                 <button
-                  className={`flex w-full items-baseline gap-2 px-3 py-1.5 text-left text-sm hover:bg-base-200 ${
-                    top.key === selectedTop ? "bg-primary/15 font-semibold" : ""
+                  className={`flex w-full items-baseline gap-2 border-l-2 px-3 py-1.5 text-left text-sm transition-colors ${
+                    top.key === selectedTop ? "border-l-base-content bg-base-content/[0.06] font-medium" : "border-l-transparent hover:bg-base-content/[0.03]"
                   } ${deleted ? "text-base-content/40" : ""}`}
                   onClick={() => go(top.key, false)}
                 >
                   <span className="w-12 shrink-0 font-mono">{top.citation || "intro"}</span>
-                  <span className="min-w-0 flex-1 truncate text-xs text-base-content/60">
+                  <span className="min-w-0 flex-1 truncate text-xs font-normal text-base-content/50">
                     {deleted ? "deleted" : top.text || descendants.get(top.key)?.[1]?.text || ""}
                   </span>
-                  {warningCount > 0 && <span className="badge badge-warning badge-xs">{warningCount}</span>}
-                  <span className="text-xs text-base-content/40">{count}</span>
+                  {warningCount > 0 && <Pill tone="warning">{warningCount}</Pill>}
+                  <span className="text-[11px] tabular-nums text-base-content/35">{count}</span>
                 </button>
               </Fragment>
             )
@@ -218,19 +219,19 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
       <section className="flex min-w-0 flex-col gap-4">
         <div className="flex flex-col gap-1">
           <input
-            className="input input-bordered"
+            className="input input-bordered border-base-content/15 bg-base-100 shadow-sm"
             placeholder='Search: a citation like "20(gg)" or "note 2(v)(iii)", any text, or an HTS code'
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           {results && (
-            <div className="rounded-lg border border-base-300">
-              <div className="flex items-center justify-between border-b border-base-300 px-3 py-1 text-xs text-base-content/60">
+            <div className="overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-sm">
+              <div className="flex items-center justify-between border-b border-base-content/10 px-3 py-1.5 text-xs text-base-content/50">
                 <span>
                   {results.matches.length} match{results.matches.length === 1 ? "" : "es"}
                   {results.matches.length > MAX_RESULTS ? `, first ${MAX_RESULTS} shown` : ""}
                 </span>
-                <button className="link" onClick={() => setQuery("")}>
+                <button className="font-medium hover:text-base-content" onClick={() => setQuery("")}>
                   Clear
                 </button>
               </div>
@@ -238,7 +239,7 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
                 {results.matches.slice(0, MAX_RESULTS).map((n) => (
                   <button
                     key={n.key}
-                    className="block w-full border-b border-base-200 px-3 py-1.5 text-left text-sm hover:bg-base-200"
+                    className="block w-full border-b border-base-content/[0.06] px-3 py-2 text-left text-sm hover:bg-base-content/[0.03]"
                     onClick={() => go(n.key)}
                   >
                     <span className="font-mono font-semibold">
@@ -257,23 +258,23 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
         </div>
 
         {selected && (
-          <div className="rounded-lg border border-base-300">
-            <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-base-300 bg-base-100 px-4 py-2">
-              <button className="btn btn-xs" disabled={topIndex <= 0} onClick={() => step(-1)} title="Previous note ([)">
+          <div className="rounded-lg border border-base-content/10 bg-base-100 shadow-sm">
+            <div className="sticky top-12 z-10 flex flex-wrap items-center gap-3 rounded-t-lg border-b border-base-content/10 bg-base-100/95 px-4 py-2.5 backdrop-blur">
+              <button className={btn.xsSecondary} disabled={topIndex <= 0} onClick={() => step(-1)} title="Previous note ([)">
                 ← Prev
               </button>
               <div className="min-w-0 flex-1">
                 <div className="font-semibold">{selected.label}</div>
-                <div className="text-xs text-base-content/60">
+                <div className="text-xs text-base-content/50">
                   {groupTitle(selected)} · {shown.length} subdivision{shown.length === 1 ? "" : "s"}
                   {selected.page ? ` · starts on PDF page ${selected.page}` : ""}
                 </div>
               </div>
-              <button className="btn btn-xs" disabled={topIndex >= tops.length - 1} onClick={() => step(1)} title="Next note (])">
+              <button className={btn.xsSecondary} disabled={topIndex >= tops.length - 1} onClick={() => step(1)} title="Next note (])">
                 Next →
               </button>
             </div>
-            <div className="divide-y divide-base-200">
+            <div className="divide-y divide-base-content/[0.06]">
               {shown.map((n) => {
                 const nodeWarnings = warningsByKey.get(n.key) ?? []
                 return (
@@ -283,11 +284,11 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
                       if (el) nodeRefs.current.set(n.key, el)
                       else nodeRefs.current.delete(n.key)
                     }}
-                    className={`p-2 text-sm ${n.key === highlightKey ? "bg-warning/15 ring-2 ring-inset ring-warning" : ""}`}
-                    style={{ paddingLeft: `${0.75 + (n.depth - selected.depth) * 1.25}rem` }}
+                    className={`py-2.5 pr-4 text-sm ${n.key === highlightKey ? "bg-warning/10 shadow-[inset_3px_0_0] shadow-warning" : ""}`}
+                    style={{ paddingLeft: `${1 + (n.depth - selected.depth) * 1.25}rem` }}
                   >
                     <div className="flex flex-wrap items-baseline gap-2">
-                      <button className="font-mono font-semibold hover:underline" onClick={() => go(n.key)}>
+                      <button className="font-mono text-[13px] font-semibold hover:underline" onClick={() => go(n.key)}>
                         {n.citation || "(intro)"}
                         {/* Second of two items the PDF numbers alike */}
                         {n.key.match(/#\d+$/)?.[0]}
@@ -299,12 +300,12 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
                         </span>
                       )}
                       {nodeWarnings.map((w, i) => (
-                        <span key={i} className="badge badge-warning badge-sm" title={w.message}>
+                        <Pill key={i} tone="warning" title={w.message}>
                           {w.kind.replace(/_/g, " ")}
-                        </span>
+                        </Pill>
                       ))}
                     </div>
-                    <p className="whitespace-pre-wrap break-words text-base-content/80">
+                    <p className="mt-0.5 whitespace-pre-wrap break-words leading-relaxed text-base-content/80">
                       {n.text ? (
                         <Highlight text={n.text} term={results?.term ?? ""} />
                       ) : (
@@ -317,9 +318,9 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
             </div>
           </div>
         )}
-        <p className="text-xs text-base-content/50">
-          Tip: press <kbd className="kbd kbd-xs">[</kbd> and <kbd className="kbd kbd-xs">]</kbd> to move between notes. The URL
-          keeps the selected subdivision, so you can link to it.
+        <p className="flex items-center gap-1 text-[11px] text-base-content/45">
+          <Kbd>[</Kbd>
+          <Kbd>]</Kbd> move between notes. The URL keeps the selected subdivision, so you can link to it.
         </p>
       </section>
     </div>

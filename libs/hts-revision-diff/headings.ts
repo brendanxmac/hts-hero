@@ -4,12 +4,13 @@
 // rows are used by comparisons and the pull script.
 
 import type { RevisionDb } from "./access"
+import { codeMatches } from "./build-changes"
 import { checkHeadingRows } from "./claude"
 import { RevisionDiffTables as T } from "./constants"
 import { parseCh99HeadingTables } from "./parse-ch99-tables"
 import { downloadBlob, downloadText } from "./storage"
 import { normalizeForCompare, normalizeHtsCode } from "./text"
-import type { AttemptRow, ClaudeUsage, DocumentRow, HeadingFields, HeadingRow, HtsRow, ParseStats, ParseWarning } from "./types"
+import type { AttemptRow, ChangeRecordItem, ClaudeUsage, DocumentRow, HeadingFields, HeadingRow, HtsRow, ParseStats, ParseWarning } from "./types"
 
 export interface HeadingPagesInfo {
   parsedAt: string | null
@@ -36,6 +37,30 @@ export const loadHeadingRows = async (db: RevisionDb, attemptId: string) => {
   const { data, error } = await db.from(T.HEADING_ROWS).select("*").eq("attempt_id", attemptId).order("sort_order")
   if (error) throw new Error(`Load heading rows: ${error.message}`)
   return (data ?? []) as HeadingRow[]
+}
+
+// Rows the change record doesn't cite, for "Remove uncited rows". A row is kept if a
+// Chapter 99 change record item cites it (by code or range), if it's the parent of a cited
+// row (a shallower row above it), or if it's a description-only row under a cited row. Rows
+// entered by hand are always kept.
+export const uncitedHeadingRowIds = (rows: HeadingRow[], items: ChangeRecordItem[]): string[] => {
+  const ch99 = items.filter((i) => i.in_chapter_99)
+  const cited = rows.map((r) => ch99.some((item) => codeMatches(item, r.htsno)))
+  const keep = rows.map((r, i) => cited[i] || r.source === "manual")
+  rows.forEach((row, i) => {
+    if (!cited[i]) return
+    // Parents: walk back to each shallower row above
+    let indent = row.indent
+    for (let j = i - 1; j >= 0 && indent > 0; j--) {
+      if (rows[j].indent < indent) {
+        keep[j] = true
+        indent = rows[j].indent
+      }
+    }
+    // Description-only rows under it (a nested row with its own heading number stands alone)
+    for (let j = i + 1; j < rows.length && rows[j].indent > row.indent; j++) if (!rows[j].htsno) keep[j] = true
+  })
+  return rows.filter((_, i) => !keep[i]).map((r) => r.id)
 }
 
 const loadAttemptRow = async (db: RevisionDb, attemptId: string) => {

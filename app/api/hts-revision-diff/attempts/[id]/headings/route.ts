@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireRevisionTool } from "@/libs/hts-revision-diff/access"
 import { RevisionDiffTables as T } from "@/libs/hts-revision-diff/constants"
-import { headingPagesInfo, loadHeadingRows } from "@/libs/hts-revision-diff/headings"
+import { headingPagesInfo, loadHeadingRows, uncitedHeadingRowIds } from "@/libs/hts-revision-diff/headings"
 import { loadAttempt } from "@/libs/hts-revision-diff/pipeline"
 import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 import { signedUrl } from "@/libs/hts-revision-diff/storage"
@@ -20,12 +20,15 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     const cited = Array.from(
       new Set((attempt.change_record_items ?? []).filter((i) => i.in_chapter_99).flatMap((i) => i.hts_codes.map(normalizeHtsCode)))
     ).sort()
+    const rows = await loadHeadingRows(db, params.id)
     return NextResponse.json({
       document,
       pdfUrl: document ? await signedUrl(db, document.storage_path) : null,
       info: headingPagesInfo(attempt),
-      rows: await loadHeadingRows(db, params.id),
+      rows,
       cited,
+      // Rows "Remove uncited rows" would delete (empty until the change record is read)
+      uncited: attempt.change_record_items ? uncitedHeadingRowIds(rows, attempt.change_record_items) : [],
       changeRecordRead: !!attempt.change_record_items,
     })
   } catch (error) {
@@ -66,6 +69,26 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       .single()
     if (error) throw new Error(error.message)
     return NextResponse.json({ row: data })
+  } catch (error) {
+    return errorResponse(error)
+  }
+}
+
+// Deletes several rows at once: { ids: string[] }
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const { db, denied } = await requireRevisionTool()
+  if (denied) return denied
+  try {
+    const body = await req.json()
+    const ids = Array.isArray(body.ids) ? body.ids.filter((id: unknown): id is string => typeof id === "string") : []
+    if (!ids.length) return errorResponse(new Error("Select rows to delete"), 400)
+    const { error, count } = await db
+      .from(T.HEADING_ROWS)
+      .delete({ count: "exact" })
+      .eq("attempt_id", params.id)
+      .in("id", ids)
+    if (error) throw new Error(error.message)
+    return NextResponse.json({ deleted: count ?? 0 })
   } catch (error) {
     return errorResponse(error)
   }

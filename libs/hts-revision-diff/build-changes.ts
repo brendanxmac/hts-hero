@@ -95,7 +95,7 @@ const citedHeadingsFor = (item: ChangeRecordItem, rows: HtsRow[] | null): CitedH
   return cited
 }
 
-const codeMatches = (item: ChangeRecordItem, htsno: string) => {
+export const codeMatches = (item: ChangeRecordItem, htsno: string) => {
   if (!htsno) return false
   for (const raw of item.hts_codes) {
     const code = normalizeHtsCode(raw)
