@@ -142,8 +142,24 @@ export interface ComparisonRow {
   stats: ComparisonStats | null
   diff_version: string | null
   exported_at: string | null
+  // Claude's high-level overview of the approved changes (Generate revision summary)
+  revision_summary?: RevisionSummary | null
   created_at: string
   updated_at: string
+}
+
+export interface RevisionSummary {
+  headline: string
+  overview: string
+  programs: string[] // e.g. "Section 232: steel and aluminum"
+  countries: string[] // ["All countries"] when not country-specific
+  key_changes: string[]
+  calculation_impact: string
+  effective_dates: { date: string; applies_to: string }[]
+  watch_for: string[]
+  approved_changes: number
+  generated_at: string
+  usage?: ClaudeUsage
 }
 
 export interface ChangeRow {

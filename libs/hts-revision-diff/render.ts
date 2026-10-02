@@ -308,3 +308,35 @@ export const renderSummaryMaterial = (
   }
   return out.join("\n")
 }
+
+// Material for the revision summary: a short brief per approved change. Uses the
+// change's own Claude summary when there is one (cheaper and already distilled),
+// otherwise the start of its summary material.
+export const renderRevisionSummaryMaterial = (changes: ChangeRow[], fromName: string, toName: string) => {
+  const PER_CHANGE = 1800
+  const TOTAL = 30_000
+  const out = [`# Approved changes: ${fromName} → ${toName}`, ""]
+  let length = 0
+  for (let i = 0; i < changes.length; i++) {
+    const change = changes[i]
+    const brief: string[] = [`## ${i + 1}. ${change.title}`]
+    for (const item of change.payload.changeRecordItems) {
+      brief.push(`- Change record ${item.id} (${item.action}), effective ${item.effective_date ?? "not stated"}: ${item.source_text}`)
+    }
+    if (change.reviewer_notes?.trim()) brief.push(`- Reviewer notes: ${change.reviewer_notes.trim()}`)
+    if (change.summary) {
+      brief.push(`- Summary: ${change.summary.headline}. ${change.summary.summary}`, `- Calculator impact: ${change.summary.engine_impact}`)
+    } else {
+      const material = renderSummaryMaterial(change.title, change.payload, fromName, toName)
+      brief.push(material.length > PER_CHANGE ? `${material.slice(0, PER_CHANGE)}\n[…truncated]` : material)
+    }
+    const text = brief.join("\n")
+    if (length + text.length > TOTAL) {
+      out.push(`[${changes.length - i} more approved changes not shown: input limit reached]`)
+      break
+    }
+    out.push(text, "")
+    length += text.length
+  }
+  return out.join("\n")
+}

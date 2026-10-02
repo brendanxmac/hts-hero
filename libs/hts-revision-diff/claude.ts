@@ -4,7 +4,7 @@
 import Anthropic from "@anthropic-ai/sdk"
 import type { BetaMessage } from "@anthropic-ai/sdk/resources/beta/messages/messages"
 import { CLAUDE_MODEL, CLAUDE_PRICES } from "./constants"
-import type { ChangeRecordItem, ChangeSummary, ClaudeUsage } from "./types"
+import type { ChangeRecordItem, ChangeSummary, ClaudeUsage, RevisionSummary } from "./types"
 import { normalizeForCompare } from "./text"
 
 const client = () => {
@@ -340,6 +340,65 @@ Return the complete, correct list of rows as printed on the pages, in page order
 Copy text exactly; never invent rows or values that aren't on the pages.
 
 issues: one short sentence for each difference between the extracted rows and the pages (a wrong rate, a missing or extra row, a split description). Empty if they match.`
+
+// ---------- Revision summary ----------
+
+const REVISION_SUMMARY_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["headline", "overview", "programs", "countries", "key_changes", "calculation_impact", "effective_dates", "watch_for"],
+  properties: {
+    headline: { type: "string" },
+    overview: { type: "string" },
+    programs: { type: "array", items: { type: "string" } },
+    countries: { type: "array", items: { type: "string" } },
+    key_changes: { type: "array", items: { type: "string" } },
+    calculation_impact: { type: "string" },
+    effective_dates: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["date", "applies_to"],
+        properties: { date: { type: "string" }, applies_to: { type: "string" } },
+      },
+    },
+    watch_for: { type: "array", items: { type: "string" } },
+  },
+}
+
+const REVISION_SUMMARY_SYSTEM = `You give a trade compliance professional a high-level overview of one revision of chapter 99 of the U.S. Harmonized Tariff Schedule, so they can sanity-check what it's about before it's applied to a tariff calculator. Chapter 99 holds additional duties: Section 232 (steel, aluminum, copper, autos, trucks, wood, semiconductors), Section 301 (China), Section 122, IEEPA, and country deals.
+
+You get a short brief for each change the reviewer approved: the change record entry, the reviewer's notes, and a summary or an excerpt of the note differences. Reviewer notes are the reviewer's instructions; follow them.
+
+Be concise and concrete. Only state what the briefs support.
+- headline: one line, under 15 words: what this revision is about.
+- overview: 2-3 sentences.
+- programs: the programs involved, e.g. "Section 232: steel and aluminum", "Section 301: China". Empty if none.
+- countries: countries specifically affected; ["All countries"] when it isn't country-specific.
+- key_changes: at most 6, most important first, one sentence each, citing the note or heading.
+- calculation_impact: one or two sentences: what changes in how duties are calculated (rates, coverage, stacking, exemptions), or "No change to how duties are calculated."
+- effective_dates: legal effective dates and what they apply to, including retroactive ones.
+- watch_for: at most 3 things worth double-checking (retroactive dates, new conditions, unclear text). Empty if nothing stands out.`
+
+export const summarizeRevision = async (material: string, approvedChanges: number) => {
+  const { data, usage } = await callJson<Omit<RevisionSummary, "approved_changes" | "generated_at" | "usage">>({
+    system: REVISION_SUMMARY_SYSTEM,
+    user: material,
+    schema: REVISION_SUMMARY_SCHEMA,
+    maxTokens: 8000,
+    effort: "low",
+  })
+  const summary: RevisionSummary = {
+    ...data,
+    key_changes: data.key_changes.slice(0, 6),
+    watch_for: data.watch_for.slice(0, 3),
+    approved_changes: approvedChanges,
+    generated_at: new Date().toISOString(),
+    usage,
+  }
+  return summary
+}
 
 export const checkHeadingRows = async (
   pdf: Buffer,
