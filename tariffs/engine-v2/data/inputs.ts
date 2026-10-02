@@ -21,9 +21,11 @@ export const namedInputs: InputDefinition[] = [
     type: "boolean",
   },
   {
-    id: "isQuartzSurfaceProduct",
-    label: "Is this a quartz surface product?",
-    help: "Slabs, countertops, tiles and other surfaces made mostly of silica (e.g. quartz) with a resin binder, where silica is the largest single material by weight. Quarried stone such as granite, marble, soapstone or quartzite isn't included (U.S. note 41(a)).",
+    // Asked as "not": yes/no questions are checkboxes, and an unchecked box is unanswered, so the
+    // box has to be the one that removes the duty
+    id: "notQuartzSurfaceProduct",
+    label: "These goods aren't quartz surface products",
+    help: "Section 201 covers only quartz surface products: slabs, countertops, tiles and other surfaces made mostly of silica (e.g. quartz) with a resin binder, where silica is the largest single material by weight. Quarried stone such as granite, marble, soapstone or quartzite isn't included, nor are other goods under these codes, such as other glass articles (U.S. note 41(a)).",
     type: "boolean",
   },
   {

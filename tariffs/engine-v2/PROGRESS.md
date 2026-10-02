@@ -246,7 +246,7 @@ Section 201 – Quartz Surface Products (Proclamation 11051), from 2026-08-15. S
 - **New program `201-quartz`** and headings 9903.45.30 (in quota) and 9903.45.31 (over quota) in `headings/201-quartz.ts`, for 6810.99.00.20, 6810.99.00.40 and 7020.00.60.00. Rates step down each August 15 (25/50%, 23/49%, 21/48%, 19/47%) and end after August 14, 2030. They stack with other duties.
 - **Exempt countries** (note 41(c)) in the country list `quartzSafeguardExempt41c` (`lists/quartz.ts`), used as `excludeCountries`. Kosovo and Congo (Kinshasa) aren't in the calculator's country list yet.
 - **Quota:** new input `quartzQuotaFilled`. Unanswered means in quota (decision); yes means .31.
-- **Is it QSP?** New input `isQuartzSurfaceProduct` (assumed yes): answering no removes the 201 duty, for goods under the three codes that aren't quartz surface products per 41(a), e.g. other glass articles under 7020.00.60.00.
+- **Is it QSP?** New input `notQuartzSurfaceProduct` ("These goods aren't quartz surface products"): checking it removes the 201 duty, for goods under the three codes that aren't QSP per 41(a), e.g. other glass articles under 7020.00.60.00. Asked as "not" because an unchecked box is unanswered, not "no".
 
 ## Oct 2: 2026 Rev 15 applied (branch `revision/2026HTSRev15`)
 

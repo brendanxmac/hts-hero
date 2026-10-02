@@ -5,9 +5,9 @@
 // 41(a) defines quartz surface products by what they are (predominantly silica with a resin
 // binder; silica greater than any other single material by weight; not quarried stone), and the
 // three codes are where they're classified. Some goods under these codes, especially the
-// catch-all 7020.00.60.00 (other articles of glass), aren't QSP, so both headings ask
-// `isQuartzSurfaceProduct`, assumed yes: the duty applies unless the importer says it isn't QSP
-// (decision, Oct 3, 2026).
+// catch-all 7020.00.60.00 (other articles of glass), aren't QSP, so both headings check
+// `notQuartzSurfaceProduct`: the duty applies unless the importer checks that the goods aren't QSP
+// (decision, Oct 3, 2026). It's asked as "not" because an unchecked yes/no box is unanswered.
 //
 // 41(b): the duties are "cumulative and imposed in addition to the rate of duty established … in
 // chapters 68 or 70", so they stack with everything else. 41(c): exempt countries. 41(d): the
@@ -21,8 +21,8 @@ import { tariffVersions } from "../../versioning"
 const PROGRAM = "201-quartz"
 const SOURCE = { revision: "2026HTSRev16", citation: "Proclamation 11051" }
 
-// Applies unless the importer answers that the goods aren't QSP
-const IS_QSP = { kind: "answer", input: "isQuartzSurfaceProduct", equals: true, assume: true }
+// Applies unless the importer says the goods aren't QSP
+const IS_QSP = { kind: "answer", input: "notQuartzSurfaceProduct", equals: false, assume: true }
 
 // 41(a): "The scope covers imported products provided for under HTSUS subheadings 6810.99.0020,
 // 6810.99.0040, and 7020.00.6000."

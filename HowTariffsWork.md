@@ -713,6 +713,7 @@ requires: [{ kind: "answer", input: "usedInUsProduction", equals: false, assume:
 
 - With the default, a heading that needs an answer **doesn't apply until answered** and gets the status **needs an answer**. For an exemption that's the conservative choice: the importer pays the duty the exemption would have removed. It matches the legacy `requiresReview` behavior, which applied it to duty-imposing headings too (e.g. 9903.94.05 auto parts isn't charged until confirmed).
 - Set `assume: true` on a condition where the safer default is that it holds, so a duty applies until the user says otherwise.
+- **Word yes/no questions so that "yes" is the answer that changes the default.** The calculator shows them as checkboxes, and an unchecked box is *unanswered*, not "no"; links don't carry "no" either. So a condition like `equals: true, assume: true` could never be turned off. Ask the opposite instead: `notQuartzSurfaceProduct` with `equals: false, assume: true`, where checking the box removes the duty.
 - The result lists every question the entry depends on (`questions`), and which of them are unanswered (`unansweredInputs`), with the headings each one affects.
 
 > **Implemented in `tariffs/engine-v2`.** A later improvement: show what each answer would change ("If loaded before Feb 24, 2026: −$1,000") by running the calculation both ways.
