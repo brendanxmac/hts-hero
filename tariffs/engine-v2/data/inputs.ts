@@ -20,4 +20,10 @@ export const namedInputs: InputDefinition[] = [
       "Are the goods informational materials (publications, films, recordings, artworks, news wire feeds)?",
     type: "boolean",
   },
+  {
+    id: "usContentPct",
+    label: "U.S. content (% of the article's value)",
+    help: "The value of the article attributable to parts produced in the United States, as a percent of its total value.",
+    type: "percent",
+  },
 ]

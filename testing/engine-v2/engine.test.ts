@@ -131,6 +131,32 @@ describe("engine-v2: scope matching", () => {
 // ============================================================
 // Conditions and inputs
 // ============================================================
+describe("engine-v2: usContentShare basis (U.S. note 16(j))", () => {
+  const split = (usContentPct?: number) => {
+    const set = rules({
+      inputs: [{ id: "usContentPct", label: "U.S. content", type: "percent" }],
+      tariffs: [
+        tariff({ code: "REST", basis: { kind: "usContentShare", cap: 40, part: "rest" }, rate: { kind: "adValorem", pct: 25 } }),
+        tariff({ code: "CAPPED", basis: { kind: "usContentShare", cap: 40, part: "upToCap" }, rate: { kind: "free" } }),
+      ],
+    })
+    return calculate(set, input({ answers: usContentPct === undefined ? {} : { usContentPct } }))
+  }
+  it("puts U.S. content below the cap in the capped share", () => {
+    expect(line(split(20), "CAPPED").basisValue).toBe(2000)
+    expect(line(split(20), "REST").amount).toBe(2000) // 25% of 8,000
+  })
+  it("caps the capped share at 40% of the value; the rest takes the remainder", () => {
+    expect(line(split(40), "CAPPED").basisValue).toBe(4000)
+    expect(line(split(60), "CAPPED").basisValue).toBe(4000)
+    expect(line(split(60), "REST").amount).toBe(1500) // 25% of 6,000
+  })
+  it("needs an answer when U.S. content isn't given", () => {
+    expect(line(split(), "REST").status).toBe("needsAnswer")
+    expect(line(split(), "CAPPED").status).toBe("needsAnswer")
+  })
+})
+
 describe("engine-v2: conditions", () => {
   const set = rules({
     tariffs: [

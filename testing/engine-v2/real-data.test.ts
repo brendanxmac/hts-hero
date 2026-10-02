@@ -324,12 +324,13 @@ describe("engine-v2 real data: metals non-stacking", () => {
 // combination of answers to the metals questions, at a Rev 5 and a Rev 6 date.
 // ============================================================
 describe("engine-v2 real data: note 16(a) mutual exclusivity", () => {
-  it("never applies more than one of 9903.82.02–9903.82.19 to an article", () => {
-    const range = Array.from({ length: 18 }, (_, i) => `9903.82.${String(i + 2).padStart(2, "0")}`)
+  it("never applies more than one of 9903.82.02–9903.82.26 to an article", () => {
+    const range = Array.from({ length: 25 }, (_, i) => `9903.82.${String(i + 2).padStart(2, "0")}`)
     const memberLists = [
       "aluminum16ci", "aluminumDerivatives16cii", "aluminumDerivatives16cix", "aluminumDerivatives16cvi",
       "copper16cv", "copperArticles16cviii", "motorcycleParts16cg", "steel16ciii", "steelDerivatives16civ",
-      "steelDerivatives16cvii", "steelDerivatives16cx", "9903.82.03:excluded", "9903.85.67", "9903.85.68",
+      "steelDerivatives16cvii", "steelDerivatives16cx", "steelDerivatives16cxi", "metalsPartsForEquipment16k",
+      "9903.82.03:excluded", "9903.85.67", "9903.85.68",
     ]
     const digits = (c: string) => c.replace(/\./g, "")
     const codesOf = (id: string) =>
@@ -337,7 +338,7 @@ describe("engine-v2 real data: note 16(a) mutual exclusivity", () => {
     const listCodes = new Map(memberLists.map((id) => [id, codesOf(id)]))
 
     const representatives = new Map<string, string>()
-    for (const code of Array.from(new Set(memberLists.slice(0, 11).flatMap((id) => listCodes.get(id))))) {
+    for (const code of Array.from(new Set(memberLists.slice(0, 13).flatMap((id) => listCodes.get(id))))) {
       const signature = memberLists
         .filter((id) => listCodes.get(id).some((c) => code.startsWith(c) || c.startsWith(code)))
         .join("+")
@@ -345,7 +346,7 @@ describe("engine-v2 real data: note 16(a) mutual exclusivity", () => {
     }
     const dotted = (c: string) => `${c.slice(0, 4)}.${c.slice(4, 6)}.${c.slice(6, 8)}.${c.slice(8, 10)}`
 
-    const countries = ["CA", "MX", "GB", "RU", "BY", "KP", "CU", "CN", "DE", "JP", "VN"]
+    const countries = ["CA", "MX", "GB", "RU", "BY", "KP", "CU", "CN", "DE", "JP", "TW", "VN"]
     const baseRates = [
       { general: "Free", special: "", other: "Free" },
       { general: "5%", special: "Free (S)", other: "5%" },
@@ -354,33 +355,41 @@ describe("engine-v2 real data: note 16(a) mutual exclusivity", () => {
     ]
     const violations: string[] = []
     let applied18or19 = 0
+    const appliedFrom20 = new Set<string>()
 
     for (const code of Array.from(representatives.values()))
       for (const country of countries)
         for (const rates of baseRates)
           for (const claimedPreference of [undefined, "S"])
-            for (const asOf of ["2026-04-10", "2026-04-24"]) {
+            for (const asOf of ["2026-04-10", "2026-04-24", "2026-06-10"])
+              // U.S. content only matters for 9903.82.20/.21 (USMCA, from June 8, 2026)
+              for (const usContentPct of ["CA", "MX"].includes(country) && asOf >= "2026-06-08" ? [undefined, 20, 60] : [undefined]) {
               const base = {
                 htsCode: dotted(code), country, asOf, customsValue: VALUE, quantity: UNITS,
                 baseRates: rates, claimedPreference,
               }
-              const inputs = calculate(AllRules, base).questions
+              const fixed = usContentPct === undefined ? {} : { usContentPct }
+              const inputs = calculate(AllRules, { ...base, answers: fixed }).questions
                 .map((q) => q.input.id)
                 .filter((id) => id.startsWith("confirm:9903.82") || id.startsWith("confirm:9903.85"))
               for (let mask = 0; mask < 1 << inputs.length; mask++) {
-                const answers = Object.fromEntries(inputs.map((id, i) => [id, Boolean(mask & (1 << i))]))
+                const answers = { ...fixed, ...Object.fromEntries(inputs.map((id, i) => [id, Boolean(mask & (1 << i))])) }
                 const headings = calculate(AllRules, { ...base, answers })
                   .lines.filter((l) => l.status === "applies" && range.includes(l.code))
                   .map((l) => l.code)
                 if (headings.some((c) => c === "9903.82.18" || c === "9903.82.19")) applied18or19++
-                if (headings.length > 1)
+                headings.filter((c) => c >= "9903.82.20").forEach((c) => appliedFrom20.add(c))
+                // Note 16(j) splits one article's value between 9903.82.20 and .21: one treatment
+                const treatments = headings.filter((c) => c !== "9903.82.21" || !headings.includes("9903.82.20"))
+                if (treatments.length > 1)
                   violations.push(`${headings.join(" + ")}: ${dotted(code)} ${country} ${asOf} base ${rates.general} ${JSON.stringify(answers)}`)
               }
             }
 
     if (violations.length) console.log(violations.slice(0, 10).join("\n"))
     expect(violations).toHaveLength(0)
-    expect(applied18or19 > 0).toBe(true) // the new headings were actually exercised
+    expect(applied18or19 > 0).toBe(true) // the newer headings were actually exercised
+    expect(Array.from(appliedFrom20).sort()).toEqual(range.slice(18)) // .20–.26 each applied somewhere
   })
 })
 
@@ -685,5 +694,57 @@ describe("engine-v2 real data: duty history across Rev 5 – Rev 9", () => {
     expect(segments[0].from).toBe(FROM)
     expect(segments[0].to).toBe(TO)
     expect(segments[0].changes).toEqual([])
+  })
+})
+
+// ============================================================
+// 2026 Rev 10: Section 232 metals restructuring (Proclamation 11032), effective June 8, 2026
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 10 (Proclamation 11032)", () => {
+  const BEFORE = "2026-06-05"
+  const AFTER = "2026-06-10"
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}, claimedPreference?: string) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: general === "Free" ? "" : "Free (S)", other: "35%" },
+      answers, claimedPreference,
+    })
+  const metals = (result: CalculationResult) => applying(result).filter((c) => c.startsWith("9903.82"))
+  const EARTHMOVER = "8429.51.10.00" // moves from 16(c)(vii) to the new (xi)
+
+  it("A/C parts move from (vii) (9903.82.09, 25%) to (x) (topped up to 15% under 9903.82.10)", () => {
+    expect(metals(calc("8415.10.60.00", "VN", BEFORE, "1.4%"))).toEqual(["9903.82.09"])
+    const after = calc("8415.10.60.00", "VN", AFTER, "1.4%", { "confirm:9903.82.10": true })
+    expect(metals(after)).toEqual(["9903.82.10"])
+    expect(after.totalDuty).toBe(1500)
+  })
+
+  it("(xi) equipment from partner countries pays 15% including base under 9903.82.22", () => {
+    const v2 = calc(EARTHMOVER, "DE", AFTER, "Free")
+    expect(metals(v2)).toEqual(["9903.82.22"])
+    expect(v2.totalDuty).toBe(1500)
+    expect(metals(calc(EARTHMOVER, "VN", AFTER, "Free"))).toEqual(["9903.82.09"])
+  })
+
+  it("USMCA (xi) equipment splits at 40% U.S. content: 9903.82.20 on the rest, .21 free (note 16(j))", () => {
+    const low = calc(EARTHMOVER, "CA", AFTER, "Free", { usContentPct: 20 }, "S")
+    expect(metals(low)).toEqual(["9903.82.20", "9903.82.21"])
+    expect(low.totalDuty).toBe(2000) // 25% of the 80% that isn't U.S. content
+    expect(calc(EARTHMOVER, "CA", AFTER, "Free", { usContentPct: 60 }, "S").totalDuty).toBe(1500) // 25% of 60%
+    expect(metals(calc(EARTHMOVER, "CA", AFTER, "Free", {}, "S"))).toEqual(["9903.82.09"]) // unanswered: full 25%
+  })
+
+  it("parts for agricultural/industrial equipment (16(k)): 15% under .25, or 10% under .23 if 85% U.S.-melted", () => {
+    expect(calc("8431.43.80.90", "VN", AFTER, "2.5%", { "confirm:9903.82.25": true }).totalDuty).toBe(1500)
+    expect(calc("8431.43.80.90", "VN", AFTER, "2.5%", { "confirm:9903.82.23": true }).totalDuty).toBe(1000)
+    // Not for Column 2 countries
+    expect(metals(calc("8431.43.80.90", "RU", AFTER, "2.5%", { "confirm:9903.82.25": true }))).toEqual(["9903.82.16"])
+  })
+
+  it("note 2(aa)(v)(1) as written leaves 9903.82.02 out of the Section 122 exemption from June 8 (kept on purpose)", () => {
+    expect(applying(calc("7206.90.00.00", "VN", BEFORE, "Free"))).toEqual(["9903.03.06", "9903.82.02"])
+    const window = calc("7206.90.00.00", "VN", AFTER, "Free")
+    expect(applying(window)).toEqual(["9903.03.01", "9903.82.02"])
+    expect(window.totalDuty).toBe(6000) // 50% + 10% Section 122
   })
 })

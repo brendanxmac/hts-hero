@@ -257,6 +257,44 @@ export const headings: Tariff[] = [
           note: "U.S. note 2(aa)(v)(3) and (4) add the Taiwan auto parts (9903.94.66–.69) and wood (9903.76.24) headings; Notice effective 2026-05-01",
         },
       },
+      {
+        // Note 2(aa)(v)(1) in 2026HTSRev10 reads "headings 9903.82.04 and 9903.82.04–9903.82.26":
+        // 9903.82.02 is left out (a drafting slip fixed in the next revision). Applied as written,
+        // on purpose: the gap is part of the legal record for entries in this window.
+        from: "2026-06-08",
+        set: {
+          scope: {
+            countries: "all",
+            codes: "all",
+            whenApplies: {
+              codes: [
+                ...section232ArticleHeadings.filter(
+                  (code) => code !== "9903.82.02",
+                ),
+                "9903.82.18",
+                "9903.82.19",
+                "9903.82.20",
+                "9903.82.21",
+                "9903.82.22",
+                "9903.82.23",
+                "9903.82.24",
+                "9903.82.25",
+                "9903.82.26",
+                "9903.94.66",
+                "9903.94.67",
+                "9903.94.68",
+                "9903.94.69",
+                "9903.76.24",
+              ],
+            },
+          },
+        },
+        source: {
+          revision: "2026HTSRev10",
+          citation: "Proclamation 11032",
+          note: 'U.S. note 2(aa)(v)(1) extends to 9903.82.26 and, as written, omits 9903.82.02 ("headings 9903.82.04 and 9903.82.04–9903.82.26"); applied literally. Effective 2026-06-08',
+        },
+      },
       { from: "2026-07-24", ends: true },
     ],
   ),

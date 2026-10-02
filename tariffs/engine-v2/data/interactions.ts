@@ -112,6 +112,8 @@ const woodExcludedFor = [
 // Taiwan auto parts (U.S. note 33(u), Notice effective 2026-05-01)
 const taiwanParts = headingRange("9903.94.66", "9903.94.69")
 const TAIWAN_FROM = "2026-05-01"
+// Proclamation 11032 (Section 232 metals restructuring, U.S. note 16 and cross-references)
+const PP_11032_FROM = "2026-06-08"
 const taiwanSource = (notes: string) => ({
   revision: "2026HTSRev9",
   note: `${notes}; Notice effective ${TAIWAN_FROM}`,
@@ -172,10 +174,28 @@ export const interactions: Interaction[] = [
       { codes: [...metalsExcludedFor, ...taiwanParts] },
       { codes: [...metalsHeadingsThrough17, "9903.82.18", "9903.82.19"] },
     ],
-    effective: { from: TAIWAN_FROM },
+    effective: { from: TAIWAN_FROM, to: PP_11032_FROM },
     source: taiwanSource(
       "U.S. note 33(u)(1): Taiwan auto parts (9903.94.66–.69) not subject to metals duties",
     ),
+  },
+  {
+    ...metalsNoStack,
+    order: [
+      { codes: [...metalsExcludedFor, ...taiwanParts] },
+      {
+        codes: [
+          ...metalsHeadingsThrough17,
+          ...headingRange("9903.82.18", "9903.82.26"),
+        ],
+      },
+    ],
+    effective: { from: PP_11032_FROM },
+    source: {
+      revision: "2026HTSRev10",
+      citation: "Proclamation 11032",
+      note: "U.S. notes 33, 38(a)(1)/(h)(1) and 39(a)(5) ranges extended to 9903.82.26; effective 2026-06-08",
+    },
   },
   {
     id: "232-metals-not-on-taiwan-civil-aircraft",

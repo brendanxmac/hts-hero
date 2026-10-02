@@ -140,6 +140,24 @@ register(basisHandlers, "metalContent", {
 })
 
 // Resolved by the pipeline: the value covered by other applying tariffs matching `selector`
+// A share of the value split at a cap on U.S. content, from a percent-of-value answer
+// (U.S. note 16(j)): "upToCap" is the U.S. content up to `cap` percent of the value;
+// "rest" is everything else (non-U.S. content plus U.S. content above the cap).
+register(basisHandlers, "usContentShare", {
+  inputs: () => ["usContentPct"],
+  value: (p, ctx) => {
+    const answer = ctx.answers.usContentPct
+    if (answer === undefined || answer === null || answer === "") return "unknown"
+    const pct = Math.min(Math.max(Number(answer), 0), 100)
+    const upToCap = (ctx.customsValue * Math.min(pct, Number(p.cap))) / 100
+    return p.part === "upToCap" ? upToCap : ctx.customsValue - upToCap
+  },
+  describe: (p) =>
+    p.part === "upToCap"
+      ? `U.S. content up to ${String(p.cap)}% of the value`
+      : `value other than U.S. content up to ${String(p.cap)}%`,
+})
+
 register(basisHandlers, "coveredBy", {
   inputs: none,
   value: () => {

@@ -1,7 +1,7 @@
 # Engine v2: progress log
 
 Implementation of the design in [HowTariffsWork.md](../../HowTariffsWork.md), running alongside the legacy engine.
-Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 9** (Apr 8 – Jun 7, 2026: Revisions 5 to 9).
+Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 10** (Apr 8 – Jun 30, 2026: Revisions 5 to 10).
 
 ## Status
 
@@ -240,6 +240,16 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 2: 2026 Rev 10 applied (branch `revision/2026HTSRev10`)
+
+Section 232 metals restructuring, Proclamation 11032, all from 2026-06-08 (dated versions). See `tariffs/revision-diffs/2026HTSRev10/PLAN.md`.
+- **Lists:** 16(c)(vi), (vii), (ix), (x) have a second version from June 8; 62 codes leave (vii) for (x) and the new **(xi)** `steelDerivatives16cxi` (mobile industrial equipment). New `metalsPartsForEquipment16k` ((vi)–(viii) parts in chapters 84/85/87).
+- **New headings 9903.82.20–.26:** USMCA (xi) content split at 40% (.20/.21), partner-country (xi) at 15% total (.22, `TODO(review)`), and (k) parts for equipment (.23–.26, topped up to 10%/15%).
+- **Engine (new handler):** basis `usContentShare` and input `usContentPct`, for .20/.21.
+- **Existing headings** .01/.05/.06/.07/.08/.09/.13/.15/.16 have June 8 versions ((xi) scope, 85% U.S.-content names, precedence for the new headings). The legacy motorcycle list is dropped from .06/.09 from June 8 (it still held codes that moved out of (vi)–(viii)); .13 uses the 16(k) parts list plus (xi), matching 16(g).
+- **Section 122, kept as written:** note 2(aa)(v)(1) in Rev 10 omits 9903.82.02 ("headings 9903.82.04 and 9903.82.04–9903.82.26"), a drafting slip fixed in the next revision. Applied literally by decision, so 9903.82.02 goods pay Section 122 from June 8 to July 24, 2026. The record of the gap matters for refund claims.
+- The note 16(a) exclusivity test now covers .02–.26 (the .20/.21 split counts as one treatment).
+
 ## Oct 2: 2026 Rev 9 applied (branch `revision/2026HTSRev9`)
 
 Taiwan joins the Japan/EU/Korea deal structure, all from 2026-05-01 (dated versions, so earlier dates are unchanged). See `tariffs/revision-diffs/2026HTSRev9/PLAN.md`.
@@ -302,7 +312,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 9), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 10), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.

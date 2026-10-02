@@ -2,7 +2,7 @@
 
 This document describes the versioned tariff system for HTS Hero: how tariff rules are stored, how they change over time, and how the engine turns them into a duty calculation for a given HTS code, country of origin and date.
 
-> **Status: implemented as `tariffs/engine-v2`** on branch `feat/tariff-engine-v2`, alongside the legacy engine, with data as of 2026 HTS Revision 9. It's reachable on the Tariff Finder with `?engine=v2`.
+> **Status: implemented as `tariffs/engine-v2`** on branch `feat/tariff-engine-v2`, alongside the legacy engine, with data as of 2026 HTS Revision 10. It's reachable on the Tariff Finder with `?engine=v2`.
 > See [tariffs/engine-v2/PROGRESS.md](tariffs/engine-v2/PROGRESS.md) for what's done, differences from the legacy engine, and open questions.
 > Not implemented yet: `recordedAt` (§14.7) and fee rules by transport mode.
 > Section [18. Migrating from the current model](#18-migrating-from-the-current-model) maps today's `TariffI` onto this design.
@@ -329,6 +329,7 @@ type ValueBasis = { kind: string; [param: string]: unknown }
 | `metalContent` | The value of the named metal's content (`metal: "steel" \| "aluminum" \| "copper"`) |
 | `nonUsContent` | The value that isn't U.S. content (e.g. auto 232 for vehicles with U.S. parts) |
 | `coveredBy` | The value covered by other tariffs that apply (`selector`), e.g. "the part subject to Section 232". Used by partial exemption headings ([§6.5](#65-exceptions-except-as-provided-in-heading-x)) |
+| `usContentShare` | A share of the value split at a cap on U.S. content (`cap`, `part: "upToCap" \| "rest"`), from the `usContentPct` answer. Used by 9903.82.20/.21 (U.S. note 16(j)) |
 
 ```ts
 basis: { kind: "metalContent", metal: "steel" }
