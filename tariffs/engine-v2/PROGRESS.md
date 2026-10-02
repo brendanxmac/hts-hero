@@ -1,7 +1,7 @@
 # Engine v2: progress log
 
 Implementation of the design in [HowTariffsWork.md](../../HowTariffsWork.md), running alongside the legacy engine.
-Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 6** (Apr 8 – Apr 29, 2026: Revisions 5 and 6).
+Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 7** (Apr 8 – May 21, 2026: Revisions 5 to 7).
 
 ## Status
 
@@ -240,6 +240,14 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 2: 2026 Rev 7 applied (branch `revision/2026HTSRev7`)
+
+See `tariffs/revision-diffs/2026HTSRev7/PLAN.md`. Every change is by Notice effective 2026-04-06, the start of the 9903.82 family, so the edits are in place and Rev 5/6 results change too.
+- **9903.82.01** (no aluminum, steel or copper) now covers all of note 16(c), adding (c)(viii) copper articles.
+- **9903.82.06** (95% U.S.-melted/smelted) covers (c)(viii) too, after note 16(e) dropped the sentence limiting it to (c)(ii), (iv), (vi), (vii). U.S.-smelted copper cable pays 10% instead of 25%.
+- **9903.82.13** now gives way to 9903.82.01 (note 16(a)).
+- Note 20's 20(qqq) → 20(yyy) swap needs no change: neither list (nor 9903.88.64) is modeled.
+
 ## Oct 2: 2026 Rev 6 applied (branch `revision/2026HTSRev6`)
 
 See `tariffs/revision-diffs/2026HTSRev6/PLAN.md` for the full plan.
@@ -281,7 +289,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 6), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 7), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.

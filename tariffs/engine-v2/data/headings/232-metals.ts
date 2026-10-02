@@ -19,6 +19,7 @@ export const headings: Tariff[] = [
         { list: "aluminumDerivatives16cix" },
         { list: "aluminumDerivatives16cvi" },
         { list: "copper16cv" },
+        { list: "copperArticles16cviii" },
         { list: "motorcycleParts16cg" },
         { list: "steel16ciii" },
         { list: "steelDerivatives16civ" },
@@ -29,7 +30,10 @@ export const headings: Tariff[] = [
     requires: [confirm("9903.82.01")],
     rate: { kind: "free" },
     effective: {},
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev7",
+      note: "Added to the HTS by Notice effective 2026-04-06 (retroactive); listed from 2026HTSRev7. Scope now includes subdivision (c)(viii), per the heading text",
+    },
   },
   ...tariffVersions(
     {
@@ -162,6 +166,7 @@ export const headings: Tariff[] = [
       codes: [
         { list: "aluminumDerivatives16cii" },
         { list: "aluminumDerivatives16cvi" },
+        { list: "copperArticles16cviii" },
         { list: "motorcycleParts16cg" },
         { list: "steelDerivatives16civ" },
         { list: "steelDerivatives16cvii" },
@@ -177,7 +182,10 @@ export const headings: Tariff[] = [
     requires: [confirm("9903.82.06")],
     rate: { kind: "adValorem", pct: 10 },
     effective: {},
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev7",
+      note: "U.S. note 16(e) sentence limiting this heading to (c)(ii), (iv), (vi) and (vii) removed by Notice effective 2026-04-06 (retroactive); scope follows the heading text, adding (c)(viii)",
+    },
   },
   {
     code: "9903.82.07",
@@ -355,11 +363,14 @@ export const headings: Tariff[] = [
       countries: "all",
       codes: [{ list: "motorcycleParts16cg" }],
     },
-    exceptions: ["9903.82.03"],
+    exceptions: ["9903.82.01", "9903.82.03"],
     requires: [confirm("9903.82.13")],
     rate: { kind: "free" },
     effective: {},
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev7",
+      note: "9903.82.01 added as an exception: U.S. note 16(a) as modified by Notice effective 2026-04-06 (retroactive)",
+    },
   },
   {
     code: "9903.82.14",

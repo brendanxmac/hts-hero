@@ -32,6 +32,7 @@ const RATES: Record<string, HtsLine> = {
   "7612.10.00.00": { htsno: "7612.10.00.00", general: "2.4%", special: "Free (A,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "45%" },
   "7323.93.00.80": { htsno: "7323.93.00", general: "2%", special: "Free (A*,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "40%" },
   "7615.10.71.80": { htsno: "7615.10.71", general: "3.1%", special: "Free (A*,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "45.5%" },
+  "8544.42.90.90": { htsno: "8544.42.90", general: "2.6%", special: "Free (A,AU,B,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "35%" },
   "8708.10.30.50": { htsno: "8708.10.30", general: "2.5%", special: "Free (A,AU,B,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "25%" },
 }
 
@@ -477,5 +478,58 @@ describe("engine-v2 real data: note 16(c)(vi)/(vii) list corrections", () => {
 
   it("the 15% metal-weight exemption (9903.82.03) isn't offered for these chapter 73/76 codes", () => {
     expect(run("7323.93.00.80", "VN").lines.some((l) => l.code === "9903.82.03")).toBe(false)
+  })
+})
+
+// ============================================================
+// 2026 Rev 7: notes 16(a) and 16(e) and heading 9903.82.01, all by Notice effective
+// April 6, 2026 (retroactive, so Rev 5 and Rev 6 dates change too)
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 7", () => {
+  const CABLE = "8544.42.90.90" // note 16(c)(viii), articles of copper
+  const runAt = (htsCode: string, country: string, asOf: string, answers: Record<string, unknown> = {}) => {
+    const rates = RATES[htsCode]
+    return calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: rates.general, special: rates.special, other: rates.other },
+      answers,
+    })
+  }
+  const status = (result: CalculationResult, code: string) => result.lines.find((l) => l.code === code)?.status
+
+  it("copper cable (16(c)(viii)) pays 9903.82.09 at 25% unless an exemption is confirmed", () => {
+    const v2 = runAt(CABLE, "VN", "2026-05-01")
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.82.09"])
+    expect(v2.totalDuty).toBe(2760) // 2.6% base + 25%
+  })
+
+  it("95% U.S.-smelted copper cable gets 9903.82.06 at 10% (note 16(e)), back to April 6, 2026", () => {
+    for (const asOf of ["2026-05-01", "2026-04-10"]) {
+      const v2 = runAt(CABLE, "VN", asOf, { "confirm:9903.82.06": true })
+      expect(applying(v2)).toEqual(["9903.03.06", "9903.82.06"])
+      expect(status(v2, "9903.82.09")).toBe("excluded")
+      expect(v2.totalDuty).toBe(1260) // 2.6% base + 10%
+    }
+  })
+
+  it("copper cable with no metal content is exempt under 9903.82.01 (heading covers all of 16(c))", () => {
+    const v2 = runAt(CABLE, "VN", "2026-05-01", { "confirm:9903.82.01": true })
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.82.01"])
+    expect(v2.totalDuty).toBe(260) // base only
+  })
+
+  it("Russian U.S.-smelted copper cable uses 9903.82.15, not .06 or .16", () => {
+    const v2 = runAt(CABLE, "RU", "2026-05-01", { "confirm:9903.82.15": true })
+    expect(applying(v2).filter((c) => c.startsWith("9903.82"))).toEqual(["9903.82.15"])
+  })
+
+  it("9903.82.01 displaces the motorcycle-parts exemption 9903.82.13 (note 16(a))", () => {
+    const v2 = calculate(AllRules, {
+      htsCode: "8412.90.90.70", country: "VN", asOf: "2026-05-01", customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: null, other: "Free" },
+      answers: { "confirm:9903.82.01": true, "confirm:9903.82.13": true },
+    })
+    expect(applying(v2).filter((c) => c.startsWith("9903.82"))).toEqual(["9903.82.01"])
+    expect(status(v2, "9903.82.13")).toBe("excluded")
   })
 })
