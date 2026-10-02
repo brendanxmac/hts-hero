@@ -9,7 +9,7 @@ export const headings: Tariff[] = [
     program: "aircraft-agreements",
     name: "U.K. Civil Aircraft, Engines, Parts, Components, & Subassemblies",
     description:
-      "Effective with respect to entries on or after [ ], articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the United Kingdom, classified in the subheadings enumerated in subdivision (a) of U.S. note 35 to this subchapter. [Compilers note: This heading is effective on or after June 30, 2025. For more information, see 90 Fed. Reg. 27851.]",
+      "Effective with respect to entries on or after June 30, 2025, articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the United Kingdom, classified in the subheadings enumerated in subdivision (a) of U.S. note 35 to this subchapter",
     scope: {
       countries: ["GB"],
       codes: [
@@ -20,7 +20,11 @@ export const headings: Tariff[] = [
     requires: [confirm("9903.96.01")],
     rate: { kind: "free" },
     effective: { from: "2025-06-30" },
-    source: { revision: "2026HTSRev5", citation: "90 FR 27851" },
+    source: {
+      revision: "2026HTSRev9",
+      citation: "90 FR 27851",
+      note: "Description from 2026HTSRev9 (effective date filled in); unchanged otherwise",
+    },
   },
   {
     code: "9903.02.72",
@@ -208,6 +212,25 @@ export const headings: Tariff[] = [
     rate: { kind: "free" },
     effective: {},
     source: { revision: "2026HTSRev5" },
+  },
+  {
+    code: "9903.96.03",
+    program: "aircraft-agreements",
+    name: "Taiwan Civil Aircraft Components (Exempt from Section 232 Metals)",
+    description:
+      "Civil aircraft (all aircraft other than military aircraft and unmanned aircraft) components that are products of Taiwan, provided for in subdivision (c) of U.S. note 35 to this subchapter",
+    scope: {
+      countries: ["TW"],
+      codes: [{ list: "civilAircraftComponents35c" }],
+    },
+    // Components must meet General Note 6 criteria, which the calculator can't check
+    requires: [confirm("9903.96.03")],
+    rate: { kind: "free" },
+    effective: { from: "2026-05-01" },
+    source: {
+      revision: "2026HTSRev9",
+      note: "U.S. note 35(c); Notice effective 2026-05-01. Removes the metals duties via a noStack interaction",
+    },
   },
   {
     code: "9903.02.74",

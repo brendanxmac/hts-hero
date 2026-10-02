@@ -2,6 +2,7 @@
 // was removed on Oct 1, 2026; this file is now the source. See HowTariffsWork.md §6.
 import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
+import { tariffVersions } from "../../versioning"
 
 export const headings: Tariff[] = [
   {
@@ -83,7 +84,7 @@ export const headings: Tariff[] = [
     program: "232-autos",
     name: "Passenger Vehicles from the United Kingdom",
     description:
-      "Effective with respect to entries on or after [ ], passenger vehicles that are products of the United Kingdom as specified in subdivision (i) of U.S. note 33 to this subchapter, when entered under the terms of subdivision (i) of U.S. note 33 to this subchapter. [Compilers note: This heading is effective on or after June 30, 2025. For more information, see 90 Fed. Reg. 27851.]",
+      "Effective with respect to entries on or after June 30, 2025, passenger vehicles that are products of the United Kingdom as specified in subdivision (i) of U.S. note 33 to this subchapter, when entered under the terms of subdivision (i) of U.S. note 33 to this subchapter",
     scope: {
       countries: ["GB"],
       // TODO(list): "9903.94.31" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -97,40 +98,78 @@ export const headings: Tariff[] = [
       column2: { kind: "free" },
     },
     effective: { from: "2025-06-30" },
-    source: { revision: "2026HTSRev5", citation: "90 FR 27851" },
-  },
-  {
-    code: "9903.94.05",
-    program: "232-autos",
-    name: "Section 232 Auto Parts",
-    description:
-      "Except for products described in headings 9903.94.06, 9903.94.32, 9903.94.33, 9903.94.42, 9903.94.43, 9903.94.44, 9903.94.45, 9903.94.52, 9903.94.53, 9903.94.54, 9903.94.55, 9903.94.62, and 9903.94.63, automobile parts, as provided for in subdivision (g) of U.S. note 33 to this subchapter",
-    scope: {
-      countries: "all",
-      codes: [{ list: "automobileParts33G" }],
+    source: {
+      revision: "2026HTSRev9",
+      citation: "90 FR 27851",
+      note: "Description from 2026HTSRev9 (effective date filled in); rate unchanged",
     },
-    exceptions: [
-      "9903.94.06",
-      "9903.94.32",
-      "9903.94.33",
-      "9903.94.42",
-      "9903.94.43",
-      "9903.94.44",
-      "9903.94.45",
-      "9903.94.52",
-      "9903.94.53",
-      "9903.94.54",
-      "9903.94.55",
-      "9903.94.62",
-      "9903.94.63",
-      "9903.74.08",
-      "9903.74.09",
-    ],
-    requires: [confirm("9903.94.05")],
-    rate: { kind: "adValorem", pct: 25 },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
   },
+  ...tariffVersions(
+    {
+      code: "9903.94.05",
+      program: "232-autos",
+      name: "Section 232 Auto Parts",
+      description:
+        "Except for products described in headings 9903.94.06, 9903.94.32, 9903.94.33, 9903.94.42, 9903.94.43, 9903.94.44, 9903.94.45, 9903.94.52, 9903.94.53, 9903.94.54, 9903.94.55, 9903.94.62, and 9903.94.63, automobile parts, as provided for in subdivision (g) of U.S. note 33 to this subchapter",
+      scope: {
+        countries: "all",
+        codes: [{ list: "automobileParts33G" }],
+      },
+      exceptions: [
+        "9903.94.06",
+        "9903.94.32",
+        "9903.94.33",
+        "9903.94.42",
+        "9903.94.43",
+        "9903.94.44",
+        "9903.94.45",
+        "9903.94.52",
+        "9903.94.53",
+        "9903.94.54",
+        "9903.94.55",
+        "9903.94.62",
+        "9903.94.63",
+        "9903.74.08",
+        "9903.74.09",
+      ],
+      requires: [confirm("9903.94.05")],
+      rate: { kind: "adValorem", pct: 25 },
+      effective: {},
+      source: { revision: "2026HTSRev5" },
+    },
+    [
+      {
+        from: "2026-05-01",
+        set: {
+          description:
+            "Except for products described in headings 9903.94.06, 9903.94.32, 9903.94.33, 9903.94.42, 9903.94.43, 9903.94.44, 9903.94.45, 9903.94.52, 9903.94.53, 9903.94.54, 9903.94.55, 9903.94.62, 9903.94.63, 9903.94.66 and 9903.94.67, automobile parts, as provided for in subdivision (g) of U.S. note 33 to this subchapter",
+          exceptions: [
+            "9903.94.06",
+            "9903.94.32",
+            "9903.94.33",
+            "9903.94.42",
+            "9903.94.43",
+            "9903.94.44",
+            "9903.94.45",
+            "9903.94.52",
+            "9903.94.53",
+            "9903.94.54",
+            "9903.94.55",
+            "9903.94.62",
+            "9903.94.63",
+            "9903.74.08",
+            "9903.74.09",
+            "9903.94.66",
+            "9903.94.67",
+          ],
+        },
+        source: {
+          revision: "2026HTSRev9",
+          note: "Taiwan headings 9903.94.66/67 added as exceptions (U.S. note 33(u)); Notice effective 2026-05-01",
+        },
+      },
+    ],
+  ),
   {
     code: "9903.94.06",
     program: "232-autos",
@@ -146,44 +185,76 @@ export const headings: Tariff[] = [
     effective: { from: "2025-05-03" },
     source: { revision: "2026HTSRev5" },
   },
-  {
-    code: "9903.94.07",
-    program: "232-autos",
-    name: "Parts for Production or Repair of Automobiles in the US",
-    description:
-      "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54, 9903.94.55, 9903.94.64, and 9903.94.65, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter.",
-    scope: {
-      countries: "all",
-      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
-      codes: "all",
-      excludeCodes: [
-        { list: "automobileParts33G" },
-        { list: "ch72Headings" },
-        { list: "ch73Headings" },
-        { list: "ch76Headings" },
-        { list: "partsOfMHDVs38i" },
+  ...tariffVersions(
+    {
+      code: "9903.94.07",
+      program: "232-autos",
+      name: "Parts for Production or Repair of Automobiles in the US",
+      description:
+        "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54, 9903.94.55, 9903.94.64, and 9903.94.65, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter.",
+      scope: {
+        countries: "all",
+        // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
+        codes: "all",
+        excludeCodes: [
+          { list: "automobileParts33G" },
+          { list: "ch72Headings" },
+          { list: "ch73Headings" },
+          { list: "ch76Headings" },
+          { list: "partsOfMHDVs38i" },
+        ],
+      },
+      exceptions: [
+        "9903.94.33",
+        "9903.94.44",
+        "9903.94.45",
+        "9903.94.54",
+        "9903.94.55",
+        "9903.94.06",
+        "9903.94.32",
+        "9903.94.52",
+        "9903.94.53",
+        "9903.94.42",
+        "9903.94.43",
+        "9903.94.64",
+        "9903.94.65",
       ],
+      requires: [confirm("9903.94.07")],
+      rate: { kind: "adValorem", pct: 25 },
+      effective: {},
+      source: { revision: "2026HTSRev5" },
     },
-    exceptions: [
-      "9903.94.33",
-      "9903.94.44",
-      "9903.94.45",
-      "9903.94.54",
-      "9903.94.55",
-      "9903.94.06",
-      "9903.94.32",
-      "9903.94.52",
-      "9903.94.53",
-      "9903.94.42",
-      "9903.94.43",
-      "9903.94.64",
-      "9903.94.65",
+    [
+      {
+        from: "2026-05-01",
+        set: {
+          description:
+            "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54, 9903.94.55, 9903.94.64, 9903.94.65, 9903.94.68, and 9903.94.69, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter",
+          exceptions: [
+            "9903.94.33",
+            "9903.94.44",
+            "9903.94.45",
+            "9903.94.54",
+            "9903.94.55",
+            "9903.94.06",
+            "9903.94.32",
+            "9903.94.52",
+            "9903.94.53",
+            "9903.94.42",
+            "9903.94.43",
+            "9903.94.64",
+            "9903.94.65",
+            "9903.94.68",
+            "9903.94.69",
+          ],
+        },
+        source: {
+          revision: "2026HTSRev9",
+          note: "Taiwan headings 9903.94.68/69 added as exceptions (U.S. note 33(u)); Notice effective 2026-05-01",
+        },
+      },
     ],
-    requires: [confirm("9903.94.07")],
-    rate: { kind: "adValorem", pct: 25 },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
-  },
+  ),
   {
     code: "9903.94.33",
     program: "232-autos",
@@ -365,7 +436,7 @@ export const headings: Tariff[] = [
     program: "232-autos",
     name: "Parts of Vehicles & Light Trucks of the United Kingdom",
     description:
-      "Effective with respect to entries on or after [ ], parts of passenger vehicles and light trucks of the United Kingdom, classified in the subheadings enumerated in subdivision (j) of U.S. note 33 to this subchapter. [Compilers note: This heading is effective on or after June 30, 2025. For more information, see 90 Fed. Reg. 27851.]",
+      "Effective with respect to entries on or after June 30, 2025, parts of passenger vehicles and light trucks of the United Kingdom, classified in the subheadings enumerated in subdivision (j) of U.S. note 33 to this subchapter",
     scope: {
       countries: ["GB"],
       codes: [{ list: "autoPartsOfUK33J" }],
@@ -376,7 +447,11 @@ export const headings: Tariff[] = [
       column2: { kind: "free" },
     },
     effective: { from: "2025-06-30" },
-    source: { revision: "2026HTSRev5", citation: "90 FR 27851" },
+    source: {
+      revision: "2026HTSRev9",
+      citation: "90 FR 27851",
+      note: "Description from 2026HTSRev9 (effective date filled in); rate unchanged",
+    },
   },
   {
     code: "9903.94.40",
@@ -583,5 +658,99 @@ export const headings: Tariff[] = [
     },
     effective: {},
     source: { revision: "2026HTSRev5" },
+  },
+  {
+    code: "9903.94.66",
+    program: "232-autos",
+    name: "Parts of Vehicles & Light Trucks of Taiwan (33(g) & 33(u)), Duty >=15%",
+    description:
+      "Parts of passenger vehicles and light trucks that are products of Taiwan as provided for in subdivisions (g) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
+    scope: {
+      countries: ["TW"],
+      codes: [{ list: "automobileParts33G" }],
+    },
+    exceptions: ["9903.94.06"],
+    requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.94.66")],
+    rate: { kind: "free" },
+    effective: { from: "2026-05-01" },
+    source: {
+      revision: "2026HTSRev9",
+      note: "U.S. note 33(u); Notice effective 2026-05-01",
+    },
+  },
+  {
+    code: "9903.94.67",
+    program: "232-autos",
+    name: "Parts of Vehicles & Light Trucks of Taiwan (33(g) & 33(u)), Duty <15% (Topped Up to 15%)",
+    description:
+      "Parts of passenger vehicles and light trucks that are products of Taiwan as provided for in subdivisions (g) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
+    scope: {
+      countries: ["TW"],
+      codes: [{ list: "automobileParts33G" }],
+    },
+    exceptions: ["9903.94.06"],
+    requires: [{ kind: "baseRate", op: "<", pct: 15 }, confirm("9903.94.67")],
+    rate: { kind: "topUpTo", pct: 15 },
+    rateByColumn: {
+      column2: { kind: "free" },
+    },
+    effective: { from: "2026-05-01" },
+    source: {
+      revision: "2026HTSRev9",
+      note: "U.S. note 33(u); Notice effective 2026-05-01",
+    },
+  },
+  {
+    code: "9903.94.68",
+    program: "232-autos",
+    name: "Parts of Vehicles & Light Trucks of Taiwan from 33(r) & 33(u), with Column 1 Duty >=15%",
+    description:
+      "Parts of passenger vehicles and light trucks that are products of Taiwan as specified in subdivisions (r) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
+    scope: {
+      countries: ["TW"],
+      codes: "all",
+      excludeCodes: [
+        { list: "automobileParts33G" },
+        { list: "ch72Headings" },
+        { list: "ch73Headings" },
+        { list: "ch76Headings" },
+        { list: "partsOfMHDVs38i" },
+      ],
+    },
+    requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.94.68")],
+    rate: { kind: "free" },
+    effective: { from: "2026-05-01" },
+    source: {
+      revision: "2026HTSRev9",
+      note: "U.S. note 33(u); Notice effective 2026-05-01",
+    },
+  },
+  {
+    code: "9903.94.69",
+    program: "232-autos",
+    name: "Parts of Vehicles & Light Trucks of Taiwan from 33(r) & 33(u), with Column 1 Duty <15% (Topped Up to 15%)",
+    description:
+      "Parts of passenger vehicles and light trucks that are products of Taiwan as provided for in subdivisions (r) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
+    scope: {
+      countries: ["TW"],
+      codes: "all",
+      excludeCodes: [
+        { list: "automobileParts33G" },
+        { list: "ch72Headings" },
+        { list: "ch73Headings" },
+        { list: "ch76Headings" },
+        { list: "partsOfMHDVs38i" },
+      ],
+    },
+    requires: [{ kind: "baseRate", op: "<", pct: 15 }, confirm("9903.94.69")],
+    rate: { kind: "topUpTo", pct: 15 },
+    rateByColumn: {
+      column2: { kind: "free" },
+    },
+    effective: { from: "2026-05-01" },
+    source: {
+      revision: "2026HTSRev9",
+      note: "U.S. note 33(u); Notice effective 2026-05-01",
+    },
   },
 ]

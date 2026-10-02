@@ -232,6 +232,31 @@ export const headings: Tariff[] = [
           note: "U.S. note 2(aa)(v)(1) range extended to 9903.82.19; effective date from the change record",
         },
       },
+      {
+        from: "2026-05-01",
+        set: {
+          scope: {
+            countries: "all",
+            codes: "all",
+            whenApplies: {
+              codes: [
+                ...section232ArticleHeadings,
+                "9903.82.18",
+                "9903.82.19",
+                "9903.94.66",
+                "9903.94.67",
+                "9903.94.68",
+                "9903.94.69",
+                "9903.76.24",
+              ],
+            },
+          },
+        },
+        source: {
+          revision: "2026HTSRev9",
+          note: "U.S. note 2(aa)(v)(3) and (4) add the Taiwan auto parts (9903.94.66–.69) and wood (9903.76.24) headings; Notice effective 2026-05-01",
+        },
+      },
       { from: "2026-07-24", ends: true },
     ],
   ),

@@ -14,7 +14,7 @@ export const HtsRevisions: HtsRevision[] = revisionsJson
 
 // Revisions whose Chapter 99 data has been entered with dates and checked. Only these are
 // offered in the UI. Add a revision once its changes are recorded (HowTariffsWork.md §17.13).
-export const VerifiedTariffRevisions: string[] = ["2026HTSRev5", "2026HTSRev6", "2026HTSRev7", "2026HTSRev8"]
+export const VerifiedTariffRevisions: string[] = ["2026HTSRev5", "2026HTSRev6", "2026HTSRev7", "2026HTSRev8", "2026HTSRev9"]
 
 export const getRevision = (name: string) => HtsRevisions.find((r) => r.name === name)
 

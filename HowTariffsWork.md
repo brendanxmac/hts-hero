@@ -2,7 +2,7 @@
 
 This document describes the versioned tariff system for HTS Hero: how tariff rules are stored, how they change over time, and how the engine turns them into a duty calculation for a given HTS code, country of origin and date.
 
-> **Status: implemented as `tariffs/engine-v2`** on branch `feat/tariff-engine-v2`, alongside the legacy engine, with data as of 2026 HTS Revision 8. It's reachable on the Tariff Finder with `?engine=v2`.
+> **Status: implemented as `tariffs/engine-v2`** on branch `feat/tariff-engine-v2`, alongside the legacy engine, with data as of 2026 HTS Revision 9. It's reachable on the Tariff Finder with `?engine=v2`.
 > See [tariffs/engine-v2/PROGRESS.md](tariffs/engine-v2/PROGRESS.md) for what's done, differences from the legacy engine, and open questions.
 > Not implemented yet: `recordedAt` (§14.7) and fee rules by transport mode.
 > Section [18. Migrating from the current model](#18-migrating-from-the-current-model) maps today's `TariffI` onto this design.

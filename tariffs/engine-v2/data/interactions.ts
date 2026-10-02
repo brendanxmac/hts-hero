@@ -109,6 +109,14 @@ const woodExcludedFor = [
   ...["9903.74.08", "9903.74.09"],
 ]
 
+// Taiwan auto parts (U.S. note 33(u), Notice effective 2026-05-01)
+const taiwanParts = headingRange("9903.94.66", "9903.94.69")
+const TAIWAN_FROM = "2026-05-01"
+const taiwanSource = (notes: string) => ({
+  revision: "2026HTSRev9",
+  note: `${notes}; Notice effective ${TAIWAN_FROM}`,
+})
+
 const correction = (notes: string) => ({
   revision: "2026HTSRev6",
   note: `${notes}. Not modeled before; added as a correction, so it applies from the start of the data`,
@@ -122,8 +130,20 @@ export const interactions: Interaction[] = [
     description:
       "Auto, MHDV and IEEPA duties don't apply to semiconductor articles under 9903.79.01 (U.S. note 39(a))",
     order: [{ codes: ["9903.79.01"] }, { codes: notOnSemiconductors }],
-    effective: {},
+    effective: { to: TAIWAN_FROM },
     source: correction("U.S. note 39(a)(1)–(4) and (8)"),
+  },
+  {
+    id: "232-autos-mhdv-ieepa-not-on-semiconductors",
+    kind: "noStack",
+    description:
+      "Auto, MHDV and IEEPA duties don't apply to semiconductor articles under 9903.79.01 (U.S. note 39(a))",
+    order: [
+      { codes: ["9903.79.01"] },
+      { codes: [...notOnSemiconductors, ...taiwanParts] },
+    ],
+    effective: { from: TAIWAN_FROM },
+    source: taiwanSource("U.S. note 39(a)(2) adds 9903.94.66–.69"),
   },
   {
     ...metalsNoStack,
@@ -140,11 +160,34 @@ export const interactions: Interaction[] = [
       { codes: metalsExcludedFor },
       { codes: [...metalsHeadingsThrough17, "9903.82.18", "9903.82.19"] },
     ],
-    effective: { from: "2026-04-23" },
+    effective: { from: "2026-04-23", to: TAIWAN_FROM },
     source: {
       revision: "2026HTSRev6",
       note: "U.S. notes 33, 38 and 39(a) ranges extended to 9903.82.19; effective date from the change record",
     },
+  },
+  {
+    ...metalsNoStack,
+    order: [
+      { codes: [...metalsExcludedFor, ...taiwanParts] },
+      { codes: [...metalsHeadingsThrough17, "9903.82.18", "9903.82.19"] },
+    ],
+    effective: { from: TAIWAN_FROM },
+    source: taiwanSource(
+      "U.S. note 33(u)(1): Taiwan auto parts (9903.94.66–.69) not subject to metals duties",
+    ),
+  },
+  {
+    id: "232-metals-not-on-taiwan-civil-aircraft",
+    kind: "noStack",
+    description:
+      "Section 232 metals duties don't apply to Taiwan civil aircraft components under 9903.96.03 (U.S. note 35(c))",
+    order: [
+      { codes: ["9903.96.03"] },
+      { codes: [...metalsHeadingsThrough17, "9903.82.18", "9903.82.19"] },
+    ],
+    effective: { from: TAIWAN_FROM },
+    source: taiwanSource("U.S. note 35(c)"),
   },
   {
     id: "ieepa-ca-mx-not-on-autos-mhdv-semiconductors",
@@ -169,9 +212,23 @@ export const interactions: Interaction[] = [
       { codes: woodExcludedFor },
       { codes: ["9903.76.01", "9903.76.02", "9903.76.03"] },
     ],
-    effective: {},
+    effective: { to: TAIWAN_FROM },
     source: correction(
       "U.S. notes 33(f), (j), (l), (o), (p)(iii), (q)(iii), (r)(iii), (t) and 38(h)(4)",
+    ),
+  },
+  {
+    id: "232-wood-not-on-auto-mhdv-parts",
+    kind: "noStack",
+    description:
+      "Section 232 wood duties (9903.76.01–9903.76.03) don't apply to auto and MHDV parts under their Section 232 headings (U.S. notes 33 and 38(h))",
+    order: [
+      { codes: [...woodExcludedFor, ...taiwanParts] },
+      { codes: ["9903.76.01", "9903.76.02", "9903.76.03"] },
+    ],
+    effective: { from: TAIWAN_FROM },
+    source: taiwanSource(
+      "U.S. note 33(u)(2): Taiwan auto parts (9903.94.66–.69) not subject to wood duties",
     ),
   },
   {
@@ -185,5 +242,14 @@ export const interactions: Interaction[] = [
     ],
     effective: {},
     source: correction("U.S. note 33(t)(2)"),
+  },
+  {
+    id: "232-wood-9903.76.24-not-on-taiwan-auto-parts",
+    kind: "noStack",
+    description:
+      "9903.76.24 doesn't apply to Taiwan auto parts under 9903.94.66–9903.94.69 (U.S. note 33(u)(2))",
+    order: [{ codes: taiwanParts }, { codes: ["9903.76.24"] }],
+    effective: { from: TAIWAN_FROM },
+    source: taiwanSource("U.S. note 33(u)(2)"),
   },
 ]

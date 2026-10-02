@@ -557,3 +557,66 @@ describe("engine-v2 real data: 2026 Rev 8", () => {
     expect(confirmed.amount).toBe(2500)
   })
 })
+
+// ============================================================
+// 2026 Rev 9: Taiwan (auto parts, wood, civil aircraft components), Notice effective
+// May 1, 2026. Dates before May 1 keep the earlier treatment.
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 9 (Taiwan)", () => {
+  const BEFORE = "2026-04-28"
+  const AFTER = "2026-05-05"
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null },
+      answers,
+    })
+  const PART = { "confirm:9903.94.05": true, "confirm:9903.94.66": true, "confirm:9903.94.67": true }
+
+  it("Taiwan auto part (33(g)): 25% under 9903.94.05 before May 1, topped up to 15% under 9903.94.67 after", () => {
+    expect(applying(calc("8708.10.30.50", "TW", BEFORE, "2.5%", PART))).toEqual(["9903.03.06", "9903.94.05"])
+    const after = calc("8708.10.30.50", "TW", AFTER, "2.5%", PART)
+    expect(applying(after)).toEqual(["9903.03.06", "9903.94.67"])
+    expect(after.totalDuty).toBe(1500) // 2.5% base + 12.5% = 15%
+  })
+
+  it("Taiwan auto part with a base rate of 15% or more: 9903.94.66, no extra duty", () => {
+    const v2 = calc("8708.10.30.50", "TW", AFTER, "20%", PART)
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.94.66"])
+    expect(v2.totalDuty).toBe(2000)
+  })
+
+  it("Taiwan auto parts drop the metals duty once confirmed (note 33(u)(1)); unconfirmed, metals still apply", () => {
+    expect(applying(calc("8708.10.30.50", "TW", AFTER, "2.5%", PART)).includes("9903.82.09")).toBe(false)
+    expect(applying(calc("8708.10.30.50", "TW", AFTER, "2.5%"))).toContain("9903.82.09")
+  })
+
+  it("Taiwan (r) parts for U.S. production: 9903.94.07 before May 1, 9903.94.69 after", () => {
+    const answers = { "confirm:9903.94.07": true, "confirm:9903.94.68": true, "confirm:9903.94.69": true }
+    expect(applying(calc("8536.50.90.65", "TW", BEFORE, "2.7%", answers))).toEqual(["9903.03.06", "9903.94.07"])
+    const after = calc("8536.50.90.65", "TW", AFTER, "2.7%", answers)
+    expect(applying(after)).toEqual(["9903.03.06", "9903.94.69"])
+    expect(after.totalDuty).toBe(1500)
+  })
+
+  it("Taiwan upholstered furniture: 25% under 9903.76.02 before May 1, 15% under 9903.76.24 after", () => {
+    expect(applying(calc("9401.61.40.11", "TW", BEFORE, "Free"))).toEqual(["9903.03.06", "9903.76.02"])
+    const after = calc("9401.61.40.11", "TW", AFTER, "Free")
+    expect(applying(after)).toEqual(["9903.03.06", "9903.76.24"])
+    expect(after.totalDuty).toBe(1500)
+  })
+
+  it("Korean wood (9903.76.23) now tops up to 15% including the base rate, like Japan, the EU and Taiwan", () => {
+    const v2 = calc("9401.61.40.11", "KR", AFTER, "4%")
+    expect(v2.lines.find((l) => l.code === "9903.76.23").amount).toBe(1100)
+    expect(v2.totalDuty).toBe(1500) // was 1,900 (4% + a flat 15%)
+  })
+
+  it("Taiwan civil aircraft components (35(c)) are exempt from Section 232 metals once confirmed, from May 1", () => {
+    expect(applying(calc("7304.31.30.00", "TW", AFTER, "Free"))).toContain("9903.82.02")
+    const confirmed = calc("7304.31.30.00", "TW", AFTER, "Free", { "confirm:9903.96.03": true })
+    expect(applying(confirmed)).toEqual(["9903.03.06", "9903.96.03"])
+    expect(confirmed.totalDuty).toBe(0)
+    expect(applying(calc("7304.31.30.00", "TW", BEFORE, "Free", { "confirm:9903.96.03": true }))).toContain("9903.82.02")
+  })
+})

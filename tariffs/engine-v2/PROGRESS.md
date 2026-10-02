@@ -1,7 +1,7 @@
 # Engine v2: progress log
 
 Implementation of the design in [HowTariffsWork.md](../../HowTariffsWork.md), running alongside the legacy engine.
-Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 8** (Apr 8 – May 27, 2026: Revisions 5 to 8).
+Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 9** (Apr 8 – Jun 7, 2026: Revisions 5 to 9).
 
 ## Status
 
@@ -240,6 +240,15 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 2: 2026 Rev 9 applied (branch `revision/2026HTSRev9`)
+
+Taiwan joins the Japan/EU/Korea deal structure, all from 2026-05-01 (dated versions, so earlier dates are unchanged). See `tariffs/revision-diffs/2026HTSRev9/PLAN.md`.
+- **Auto parts:** new 9903.94.66–.69 (copies of Korea's .62–.65 for TW); 9903.94.05/.07 give way to them from May 1.
+- **Wood:** new 9903.76.24 (TW, 15% including the base rate); Taiwan excluded from 9903.76.02/.03 from May 1.
+- **Civil aircraft components:** new 9903.96.03 and list `civilAircraftComponents35c` (note 35(c)); a `noStack` rule drops the metals duties once confirmed.
+- **Cross-references:** 9903.03.06 (Section 122 exemption), and the metals, wood and semiconductor non-stacking rules, include the Taiwan headings from May 1.
+- **Correction:** Korea's wood heading 9903.76.23 now tops up to 15% including the base rate (it added a flat 15%), matching Japan, the EU and Taiwan under the same note wording.
+
 ## Oct 2: 2026 Rev 8 applied (branch `revision/2026HTSRev8`)
 
 No duty changes. U.S. note 38(i) now says the 9903.74.08 duty is subject to a manufacturer's import adjustment offset set by Commerce (Proclamation 10984); note 33(g) says the same for auto parts (Proclamation 10925). **Offsets aren't modeled, by decision:** the offset is per manufacturer, so those headings keep requiring the user's confirmation before they're charged, at the full rate.
@@ -293,7 +302,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 8), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 9), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.
