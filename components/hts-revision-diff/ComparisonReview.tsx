@@ -71,6 +71,9 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
   const [decisionFilter, setDecisionFilter] = useState<Decision | "all">("all")
   const [search, setSearch] = useState("")
   const [summarizing, setSummarizing] = useState<Set<string>>(new Set())
+  const [saving, setSaving] = useState<Record<string, number>>({}) // change id → saves in flight
+  const [rerunning, setRerunning] = useState(false)
+  const saveSeq = useRef<Record<string, number>>({})
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -95,15 +98,26 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
   const replaceChange = (change: ChangeRow) =>
     setData((d) => (d ? { ...d, changes: d.changes.map((c) => (c.id === change.id ? change : c)) } : d))
 
+  // Shows the new values right away, then saves. Only the latest save for a change applies
+  // its response, so quick a/d/s presses can't land out of order; a failed save puts the
+  // change back as it was.
   const save = async (change: ChangeRow, values: Partial<Pick<ChangeRow, "decision" | "category" | "reviewer_notes">>) => {
+    const seq = (saveSeq.current[change.id] ?? 0) + 1
+    saveSeq.current[change.id] = seq
+    const bump = (by: number) => setSaving((s) => ({ ...s, [change.id]: Math.max(0, (s[change.id] ?? 0) + by) }))
+    replaceChange({ ...change, ...values })
+    bump(1)
     try {
       const { change: updated } = await api<{ change: ChangeRow }>(`/changes/${change.id}`, {
         method: "PATCH",
         body: JSON.stringify(values),
       })
-      replaceChange(updated)
+      if (saveSeq.current[change.id] === seq) replaceChange(updated)
     } catch (error) {
-      toast.error((error as Error).message)
+      if (saveSeq.current[change.id] === seq) replaceChange(change)
+      toast.error(`Couldn't save: ${(error as Error).message}`)
+    } finally {
+      bump(-1)
     }
   }
 
@@ -133,12 +147,15 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
   }
 
   const rerun = async () => {
+    setRerunning(true)
     try {
       const { comparisonId: id } = await api<{ comparisonId: string }>(`/comparisons/${comparisonId}/rerun`, { method: "POST" })
       toast.success("Started a new comparison. Reviews of unchanged changes carry over.")
       router.push(`/revision-checker/comparisons/${id}`)
+      // Stays "Starting…" until the new comparison's page replaces this one
     } catch (error) {
       toast.error((error as Error).message)
+      setRerunning(false)
     }
   }
 
@@ -241,8 +258,9 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
         actions={
           comparison.status === "ready" && (
             <>
-              <button className={btn.secondary} onClick={rerun} title="After re-parsing or re-reading the change record">
-                Re-run
+              <button className={btn.secondary} disabled={rerunning} onClick={rerun} title="After re-parsing or re-reading the change record">
+                {rerunning && <Spinner />}
+                {rerunning ? "Starting…" : "Re-run"}
               </button>
               <button className={btn.primary} disabled={!unsummarized || summarizing.size > 0} onClick={summarizeAll}>
                 {summarizing.size > 0 && <Spinner />}
@@ -265,7 +283,8 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
           tone="error"
           title="Comparison failed"
           action={
-            <button className={btn.xsSecondary} onClick={rerun}>
+            <button className={btn.xsSecondary} disabled={rerunning} onClick={rerun}>
+              {rerunning && <Spinner />}
               Try again
             </button>
           }
@@ -425,6 +444,7 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                   fromName={from.revision.name}
                   toName={to.revision.name}
                   summarizing={summarizing.has(selected.id)}
+                  saving={(saving[selected.id] ?? 0) > 0}
                   onSummarize={() => summarize(selected)}
                   onSave={(values) => save(selected, values)}
                 />
@@ -528,6 +548,7 @@ function ChangeDetail({
   fromName,
   toName,
   summarizing,
+  saving,
   onSummarize,
   onSave,
 }: {
@@ -539,6 +560,7 @@ function ChangeDetail({
   fromName: string
   toName: string
   summarizing: boolean
+  saving: boolean
   onSummarize: () => void
   onSave: (values: Partial<Pick<ChangeRow, "decision" | "category" | "reviewer_notes">>) => void
 }) {
@@ -603,6 +625,11 @@ function ChangeDetail({
               <option value="none">None (noise)</option>
             </select>
           </label>
+          {saving && (
+            <span className="flex items-center gap-1.5 text-xs text-base-content/50" role="status">
+              <Spinner /> Saving…
+            </span>
+          )}
           <button
             className="ml-auto text-xs text-base-content/50 hover:text-base-content"
             onClick={() => {

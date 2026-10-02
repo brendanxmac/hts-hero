@@ -254,6 +254,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                       run("extract", () => api(`/attempts/${attemptId}/headings/extract`, { method: "POST" }), "Rows read again")
                     }
                   >
+                    {busy === "extract" && <Spinner />}
                     Re-read rows
                   </button>
                   <button
@@ -389,6 +390,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                   )
                 }
               >
+                {busy === "bulk" && <Spinner />}
                 Mark {okUnreviewed.length} confirmed by Claude as reviewed
               </button>
             )}
@@ -421,6 +423,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                   )
                 }
               >
+                {busy === "add" && <Spinner />}
                 Add heading
               </button>
             </div>
@@ -481,6 +484,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                               setEditing(null)
                             }}
                           >
+                            {busy === `row-${row.id}` && <Spinner />}
                             Save and mark reviewed
                           </button>
                         </div>
@@ -509,13 +513,17 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                         />
                       </td>
                       <td className={td}>
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-xs mt-0.5 rounded"
-                          checked={row.reviewed}
-                          disabled={!!busy}
-                          onChange={(e) => patch(row, { reviewed: e.target.checked })}
-                        />
+                        {busy === `row-${row.id}` ? (
+                          <Spinner />
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="checkbox checkbox-xs mt-0.5 rounded"
+                            checked={row.reviewed}
+                            disabled={!!busy}
+                            onChange={(e) => patch(row, { reviewed: e.target.checked })}
+                          />
+                        )}
                       </td>
                       <td className={`${td} whitespace-nowrap font-mono text-[13px]`}>
                         {row.htsno || <span className="text-base-content/30">—</span>}
@@ -576,6 +584,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                             run(`del-${row.id}`, () => api(`/heading-rows/${row.id}`, { method: "DELETE" }))
                           }
                         >
+                          {busy === `del-${row.id}` && <Spinner />}
                           Delete
                         </button>
                       </td>

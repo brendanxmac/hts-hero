@@ -257,6 +257,7 @@ export default function RevisionCheckerHome() {
                             )
                           }
                         >
+                          {busy === `rename-${revision.id}` && <Spinner />}
                           Rename to {misnamed}
                         </button>
                       }
@@ -402,6 +403,7 @@ function AttemptRowView({
               disabled={!!busy}
               onClick={() => run(`activate-${attempt.id}`, () => api(`/attempts/${attempt.id}/activate`, { method: "POST" }))}
             >
+              {busy === `activate-${attempt.id}` && <Spinner />}
               Make active
             </button>
           )}
