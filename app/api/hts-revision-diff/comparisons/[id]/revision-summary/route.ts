@@ -17,8 +17,16 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {
-    const comparison = await db.from(T.COMPARISONS).select("*").eq("id", params.id).single()
-    if (comparison.error) throw new Error(comparison.error.message)
+    // Naming revision_summary fails here, before paying for a Claude call, if the
+    // column's migration hasn't been run
+    const comparison = await db.from(T.COMPARISONS).select("*, revision_summary").eq("id", params.id).single()
+    if (comparison.error) {
+      throw new Error(
+        /revision_summary/.test(comparison.error.message)
+          ? "The revision_summary column is missing. Run supabase/migrations/hts_revision_diff_parsing_004_revision_summary.sql on the dev-hts-hero project."
+          : comparison.error.message
+      )
+    }
     const changes = await db
       .from(T.CHANGES)
       .select("*")
