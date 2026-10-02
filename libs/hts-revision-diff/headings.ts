@@ -3,6 +3,7 @@
 // corrected or added by hand, and signed off by the reviewer. Only reviewed
 // rows are used by comparisons and the pull script.
 
+import { createHash } from "crypto"
 import type { RevisionDb } from "./access"
 import { codeMatches } from "./build-changes"
 import { checkHeadingRows } from "./claude"
@@ -207,6 +208,11 @@ export const checkHeadingRowsWithClaude = async (db: RevisionDb, attemptId: stri
 }
 
 // Reviewed rows in the shape comparisons use
+// Fingerprint of exactly what a comparison reads from the heading rows (the reviewed
+// ones). Saved with each comparison so the page can tell when rows changed afterwards.
+export const headingRowsFingerprint = (rows: HeadingRow[]) =>
+  createHash("sha256").update(JSON.stringify(headingRowsAsHtsRows(rows))).digest("hex").slice(0, 16)
+
 export const headingRowsAsHtsRows = (rows: HeadingRow[]): HtsRow[] => {
   let lastCode: string | null = null
   return rows

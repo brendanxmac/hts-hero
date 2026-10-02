@@ -8,7 +8,7 @@ import { extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
 import { readFileSync } from "fs"
 import { parseCh99HeadingTables } from "../../libs/hts-revision-diff/parse-ch99-tables"
-import { headingRowsAsHtsRows, reconcileHeadingRows, uncitedHeadingRowIds } from "../../libs/hts-revision-diff/headings"
+import { headingRowsAsHtsRows, headingRowsFingerprint, reconcileHeadingRows, uncitedHeadingRowIds } from "../../libs/hts-revision-diff/headings"
 import type { HeadingRow } from "../../libs/hts-revision-diff/types"
 import { join } from "path"
 import { CH99_JSON_A, CH99_JSON_B, CH99_REV_A, CH99_REV_B } from "./fixtures"
@@ -583,5 +583,28 @@ describe("uncitedHeadingRowIds", () => {
       item(false, ["9903.01.25"]),
     ]
     expect(uncitedHeadingRowIds(rows, items)).toEqual(["nested-other", "u17", "u17-cont", "r66", "not-ch99"])
+  })
+})
+
+describe("headingRowsFingerprint", () => {
+  const base = {
+    stat_suffix: "", indent: 0, description: "Steel", general: "", special: "+25%", other: "", units: "",
+    footnotes: [] as string[], source: "pdf", reviewed: true,
+  }
+  const rows = [
+    { ...base, id: "a", htsno: "9903.82.18" },
+    { ...base, id: "b", htsno: "9903.82.19", reviewed: false },
+  ] as unknown as HeadingRow[]
+  const fp = headingRowsFingerprint(rows)
+
+  it("changes when a reviewed row's text changes or a row is (un)reviewed", () => {
+    expect(headingRowsFingerprint([{ ...rows[0], special: "+50%" }, rows[1]]) !== fp).toBe(true)
+    expect(headingRowsFingerprint([rows[0], { ...rows[1], reviewed: true }]) !== fp).toBe(true)
+    expect(headingRowsFingerprint([{ ...rows[0], reviewed: false }, rows[1]]) !== fp).toBe(true)
+  })
+
+  it("ignores unreviewed rows, which comparisons don't use", () => {
+    expect(headingRowsFingerprint([rows[0], { ...rows[1], special: "anything" }])).toBe(fp)
+    expect(headingRowsFingerprint([rows[0]])).toBe(fp)
   })
 })
