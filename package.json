@@ -14,6 +14,7 @@
     "knip": "knip",
     "sync-revisions": "npx tsx scripts/engine-v2/sync-hts-revisions.ts",
     "pull-revision": "npx tsx scripts/hts-revision-diff/pull-revision.ts",
+    "changelog:draft": "npx tsx scripts/changelog-draft.ts",
     "test:revision-diff": "npx tsx testing/hts-revision-diff/run.ts"
   },
   "dependencies": {

@@ -39,7 +39,15 @@ The argument is a revision name such as `2026HTSRev6`. The reviewed changes are 
 2. Make the changes from the approved plan, following HowTariffsWork.md. Fill in `source` on every record you touch.
 3. Add pinned cases for anything new, then run `npm run tests` and fix any failures.
 4. Add the revision to `VerifiedTariffRevisions` only if every approved change is implemented and no deferred change affects duties in this revision. Otherwise, leave it out and say why.
-5. Commit with `PLAN.md` and the package included, push, and open a PR. The PR description has:
+5. **Add draft changelog entries** for the customer-facing changelog at `/duty-calculator/changelog`:
+   - One `revision` entry for the revision itself:
+     `npm run changelog:draft -- --type revision --revision <revision> --title "HTS Revision N (YYYY)" --summary "…"`
+   - One `fix` or `improvement` entry for each other change a customer would notice, such as a correction that changes duties for past dates. Skip internal-only changes like refactors, tests and docs.
+   - Write for importers, not engineers. The title is one line saying what changed. The summary is one to three short sentences: what it means for an estimate, with the heading or note only when it helps. Lead with the effect, e.g. "Steel and aluminum housewares now get Section 232 duties". No internal names (list ids, file names, "engine"), and no hedging.
+   - The revision summary starts with the dates it covers ("Verified tariff data now covers entries through <revision's last day>."), then the one or two changes that matter most.
+   - Entries are saved as **drafts**. List them in the PR description under "Changelog drafts" and remind the user to publish them at `/duty-calculator/changelog` once the PR is deployed.
+6. Commit with `PLAN.md` and the package included, push, and open a PR. The PR description has:
    - For each change: note or heading citation → what changed in the data or code → tests or pinned cases covering it.
    - Not addressed: deferred and skipped changes, and anything you couldn't resolve.
    - Assumptions: anything you interpreted that the plan or the reviewer notes didn't settle.
+   - Changelog drafts: the entries from step 5, to publish after deploy.
