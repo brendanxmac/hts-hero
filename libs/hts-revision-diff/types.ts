@@ -57,6 +57,9 @@ export interface RevisionRow {
   name: string
   title: string | null
   active_attempt_id: string | null
+  // Optional background from the reviewer, exported as context.md for /apply-revision
+  context_notes?: string | null
+  context_notes_updated_at?: string | null
   created_at: string
   updated_at: string
 }

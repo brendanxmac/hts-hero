@@ -26,6 +26,7 @@ import {
   Kbd,
   PageHeader,
   PageSpinner,
+  Panel,
   Pill,
   ProgressBar,
   SectionLabel,
@@ -356,6 +357,11 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
               }
             />
           </StatGrid>
+
+          <RevisionContext
+            revision={to.revision}
+            onSaved={(revision) => setData((d) => (d ? { ...d, to: { ...d.to, revision } } : d))}
+          />
 
           <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[22rem_minmax(0,1fr)]">
             {/* Change list */}
@@ -769,6 +775,73 @@ function ChangeDetail({
         </section>
       </div>
     </article>
+  )
+}
+
+// Optional background on the revision as a whole, saved on the revision itself so it
+// survives re-runs. Exported as context.md for /apply-revision.
+function RevisionContext({ revision, onSaved }: { revision: RevisionRow; onSaved: (revision: RevisionRow) => void }) {
+  const saved = revision.context_notes ?? ""
+  const [text, setText] = useState(saved)
+  const [state, setState] = useState<"idle" | "saving" | "saved">("idle")
+  useEffect(() => setText(revision.context_notes ?? ""), [revision.context_notes])
+
+  const save = async () => {
+    if (text.trim() === saved.trim()) return
+    setState("saving")
+    try {
+      const { revision: updated } = await api<{ revision: RevisionRow }>(`/revisions/${revision.id}/context`, {
+        method: "PATCH",
+        body: JSON.stringify({ context_notes: text }),
+      })
+      onSaved(updated)
+      setState("saved")
+    } catch (error) {
+      toast.error(`Couldn't save the context: ${(error as Error).message}`)
+      setState("idle")
+    }
+  }
+
+  return (
+    <Panel
+      title={
+        <>
+          Revision context <span className="font-normal text-base-content/45">· optional</span>
+        </>
+      }
+      actions={
+        <span className="ml-auto flex items-center gap-1.5 text-xs text-base-content/50" role="status">
+          {state === "saving" ? (
+            <>
+              <Spinner /> Saving…
+            </>
+          ) : state === "saved" ? (
+            "Saved"
+          ) : revision.context_notes_updated_at ? (
+            `Saved ${new Date(revision.context_notes_updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+          ) : null}
+        </span>
+      }
+    >
+      <div className="flex flex-col gap-2 px-4 py-3">
+        <p className="text-xs leading-relaxed text-base-content/55">
+          Background on {revision.name} that isn&apos;t obvious from the HTS text: what prompted it, which goods or
+          countries it&apos;s aimed at, how it fits with earlier changes. Claude Code reads this when applying the revision and
+          when writing the changelog.
+        </p>
+        <textarea
+          className="textarea textarea-bordered border-base-content/15 text-sm leading-relaxed"
+          rows={3}
+          placeholder="e.g. Implements the Oct 17, 2025 proclamation's quota for Canadian and Mexican auto-supply steel. Saved when you click away."
+          value={text}
+          onChange={(e) => {
+            setText(e.target.value)
+            if (state === "saved") setState("idle")
+          }}
+          onBlur={save}
+        />
+      </div>
+    </Panel>
   )
 }
 

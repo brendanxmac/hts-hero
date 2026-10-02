@@ -176,6 +176,20 @@ const main = async () => {
       ].join("\n")
     )
   }
+  const context = revision.context_notes?.trim() ?? ""
+  if (context) {
+    writeFileSync(
+      join(outDir, "context.md"),
+      [
+        `# Reviewer context: ${revision.name}`,
+        "",
+        "Background the reviewer wrote about this revision in the revision checker: what isn't obvious from the HTS text. Use it to understand the changes and to word the changelog. It doesn't override the note text, headings or change record.",
+        "",
+        context,
+        "",
+      ].join("\n")
+    )
+  }
   writeFileSync(join(outDir, "reference", `ch99-notes-${toName}.md`), renderNotesMarkdown(toNotes, toName))
   writeFileSync(join(outDir, "reference", `ch99-notes-${fromName}.md`), renderNotesMarkdown(fromNotes, fromName))
 
@@ -193,6 +207,7 @@ const main = async () => {
     consecutive: comparison.stats?.consecutive ?? null,
     headingDiff: comparison.stats?.headingDiff ?? "full",
     headingSource: comparison.stats?.headingSource ?? "revision_json",
+    hasContext: !!context,
     counts: { total: changes.length, approve: count("approve"), defer: count("defer"), skip: count("skip") },
     allDecided: true,
     contentHash: createHash("sha256").update(changesJson).digest("hex"),
@@ -235,6 +250,7 @@ const main = async () => {
       "- `changes/` one file per change: decision, your notes, the AI summary, change record entry, note and heading diffs, and context",
       "- `changes.json` the same data, machine-readable",
       "- `change-record.md` the full change record (converted from PDF)",
+      ...(context ? ["- `context.md` your background on this revision (what isn't obvious from the HTS text)"] : []),
       ...(headingRows.length ? ["- `headings.md` new and changed Chapter 99 headings with their text and rates, from the revision's own PDF pages (reviewed)"] : []),
       `- \`reference/ch99-notes-${toName}.md\` and \`reference/ch99-notes-${fromName}.md\` every parsed Chapter 99 note, for lookups`,
       "- `manifest.json` revisions, comparison, versions, and a hash of `changes.json`",
