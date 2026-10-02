@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   CalculatorIcon,
@@ -9,6 +9,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { Country } from "../constants/countries";
 import { HtsElement } from "../interfaces/hts";
+import { htsCodesEqual, normalizeHtsCode } from "../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import { TariffWatcher } from "./tariff-watcher/TariffWatcher";
 import { CompareView } from "./duty-calculator/Compare";
@@ -63,6 +64,21 @@ export const TariffFinderPage = () => {
   useEffect(() => {
     setTool(toolParam === "watcher" ? "watcher" : "calculator");
   }, [toolParam]);
+
+  // A link that opens with a code (?code=) goes straight to its results, past the hero.
+  // Read once on arrival: the address bar follows the inputs afterwards.
+  const linkedCode = useRef(tool === "calculator" ? searchParams.get("code") : null);
+  const resultCode = f.result && f.country && !f.loading ? f.selectedElement?.htsno : undefined;
+  useEffect(() => {
+    if (!resultCode || !linkedCode.current) return;
+    // Only the linked code's results; a code picked by hand afterwards stays put
+    const matches = htsCodesEqual(resultCode, normalizeHtsCode(linkedCode.current.trim()));
+    linkedCode.current = null;
+    // Instant: a smooth scroll doesn't run in a background tab (a link opened with ⌘-click)
+    if (matches) {
+      document.getElementById("duty-results")?.scrollIntoView({ block: "start" });
+    }
+  }, [resultCode]);
 
   useEffect(() => {
     try {
@@ -203,7 +219,8 @@ const Layout = ({ f }: { f: TariffFinder }) => {
           <EmptyState f={f} />
         ) : (
           <section
-            className="flex flex-col gap-4"
+            id="duty-results"
+            className="flex flex-col gap-4 scroll-mt-4"
             aria-labelledby="results-heading"
             aria-live="polite"
           >

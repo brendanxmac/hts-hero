@@ -15,6 +15,7 @@ import {
   TransportMode,
 } from "../../tariffs/engine-v2/types";
 import { HtsRevision } from "../../tariffs/engine-v2/revisions";
+import { isEffectiveOn } from "../../tariffs/engine-v2/dates";
 import { formatDate, formatMoney, formatPct, TRANSPORT_MODES } from "./format";
 import { mono } from "./font";
 import styles from "./theme.module.css";
@@ -32,6 +33,20 @@ export const describeHtsRevision = (name: string | null) => {
   const match = name?.match(/^(\d{4})(?:-|HTSRev)(\d+)$/);
   if (match) return `${match[1]} Rev ${match[2]}`;
   return name ?? "latest revision";
+};
+
+// When a heading started applying: the start of the unbroken run of its versions in effect on
+// `asOf`, so a later rate or scope change doesn't reset it
+export const tariffStartDate = (code: string, asOf: string) => {
+  const versions = AllRules.tariffs.filter((t) => t.code === code);
+  let current = versions.find((t) => isEffectiveOn(t.effective, asOf));
+  while (current?.effective.from) {
+    const from = current.effective.from;
+    const previous = versions.find((t) => t.effective.to === from);
+    if (!previous) break;
+    current = previous;
+  }
+  return current?.effective.from;
 };
 
 export const COLUMN_LABEL = {
@@ -162,6 +177,7 @@ export const Statement = ({
       slice: sliceForProgram(line.program),
       name: line.name,
       program: programName(line.program),
+      effectiveFrom: tariffStartDate(line.code, result.asOf),
       detail: line.reasons.join(" · "),
       basis: line.basisValue,
       rate: line.ratePct,
@@ -258,6 +274,7 @@ interface RowProps {
   slice?: string;
   name: string;
   program?: string;
+  effectiveFrom?: string;
   detail?: string;
   basis: number;
   basisText?: string;
@@ -275,6 +292,14 @@ interface RowLink {
 const linkClass = (link?: RowLink) =>
   link?.active ? "bg-[var(--dc-accent-soft)]" : "";
 
+// Tiny "Effective Mar 4, 2025" after the program name
+const EffectiveDate = ({ from }: { from?: string }) =>
+  from ? (
+    <span className="text-[11px] text-[var(--dc-text-3)]">
+      {" · "}Effective {formatDate(from)}
+    </span>
+  ) : null;
+
 // The line's chart color
 const Swatch = ({ color }: { color?: string }) =>
   color ? (
@@ -289,6 +314,7 @@ const MobileRow = ({
   code,
   name,
   program,
+  effectiveFrom,
   detail,
   basis,
   basisText,
@@ -337,8 +363,11 @@ const MobileRow = ({
         </span>
       )}
     </div>
-    {program && (
-      <div className="text-[12.5px] text-[var(--dc-text-3)]">{program}</div>
+    {(program || effectiveFrom) && (
+      <div className="text-[12.5px] text-[var(--dc-text-3)]">
+        {program}
+        <EffectiveDate from={effectiveFrom} />
+      </div>
     )}
     {detail && (
       <div className="text-[13px] leading-snug text-[var(--dc-text-2)]">
@@ -400,6 +429,7 @@ const StatementRow = ({
   code,
   name,
   program,
+  effectiveFrom,
   detail,
   basis,
   basisText,
@@ -426,9 +456,10 @@ const StatementRow = ({
             {name}
           </span>
         </div>
-        {program && (
+        {(program || effectiveFrom) && (
           <span className="text-[12.5px] text-[var(--dc-text-3)]">
             {program}
+            <EffectiveDate from={effectiveFrom} />
           </span>
         )}
         {detail && (
@@ -601,7 +632,7 @@ export const QuestionsPanel = ({
     <Panel
       title="Possible Adjustments"
       badge={open > 0 ? `${open} could change the total` : undefined}
-      description="Unanswered questions count as “no”, so an exemption isn’t applied until you confirm it."
+      description="Unanswered questions count as “no”, so adjustments aren't applied until you confirm them."
     >
       {visible.length > 0 ? (
         <ul className="flex flex-col divide-y divide-[var(--dc-border)]">
