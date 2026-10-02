@@ -310,3 +310,138 @@ describe("engine-v2 real data: metals non-stacking", () => {
     expect(v2.totalDuty).toBe(2900)
   })
 })
+
+// ============================================================
+// U.S. note 16(a): "These headings [9903.82.02–9903.82.19] are mutually exclusive, such that an
+// imported article will be subject to no more than one of these headings."
+// Brute force: one code per combination of note 16 list memberships, every relevant country,
+// base rates either side of the 10% and 15% thresholds, with and without a USMCA claim, every
+// combination of answers to the metals questions, at a Rev 5 and a Rev 6 date.
+// ============================================================
+describe("engine-v2 real data: note 16(a) mutual exclusivity", () => {
+  it("never applies more than one of 9903.82.02–9903.82.19 to an article", () => {
+    const range = Array.from({ length: 18 }, (_, i) => `9903.82.${String(i + 2).padStart(2, "0")}`)
+    const memberLists = [
+      "aluminum16ci", "aluminumDerivatives16cii", "aluminumDerivatives16cix", "aluminumDerivatives16cvi",
+      "copper16cv", "copperArticles16cviii", "motorcycleParts16cg", "steel16ciii", "steelDerivatives16civ",
+      "steelDerivatives16cvii", "steelDerivatives16cx", "9903.82.03:excluded", "9903.85.67", "9903.85.68",
+    ]
+    const digits = (c: string) => c.replace(/\./g, "")
+    const codesOf = (id: string) =>
+      AllRules.lists.find((l) => l.id === id).versions.flatMap((v) => v.codes ?? []).map(digits)
+    const listCodes = new Map(memberLists.map((id) => [id, codesOf(id)]))
+
+    const representatives = new Map<string, string>()
+    for (const code of Array.from(new Set(memberLists.slice(0, 11).flatMap((id) => listCodes.get(id))))) {
+      const signature = memberLists
+        .filter((id) => listCodes.get(id).some((c) => code.startsWith(c) || c.startsWith(code)))
+        .join("+")
+      if (!representatives.has(signature)) representatives.set(signature, code.padEnd(10, "0"))
+    }
+    const dotted = (c: string) => `${c.slice(0, 4)}.${c.slice(4, 6)}.${c.slice(6, 8)}.${c.slice(8, 10)}`
+
+    const countries = ["CA", "MX", "GB", "RU", "BY", "KP", "CU", "CN", "DE", "JP", "VN"]
+    const baseRates = [
+      { general: "Free", special: "", other: "Free" },
+      { general: "5%", special: "Free (S)", other: "5%" },
+      { general: "12%", special: "Free (S)", other: "12%" },
+      { general: "20%", special: "Free (S)", other: "20%" },
+    ]
+    const violations: string[] = []
+    let applied18or19 = 0
+
+    for (const code of Array.from(representatives.values()))
+      for (const country of countries)
+        for (const rates of baseRates)
+          for (const claimedPreference of [undefined, "S"])
+            for (const asOf of ["2026-04-10", "2026-04-24"]) {
+              const base = {
+                htsCode: dotted(code), country, asOf, customsValue: VALUE, quantity: UNITS,
+                baseRates: rates, claimedPreference,
+              }
+              const inputs = calculate(AllRules, base).questions
+                .map((q) => q.input.id)
+                .filter((id) => id.startsWith("confirm:9903.82") || id.startsWith("confirm:9903.85"))
+              for (let mask = 0; mask < 1 << inputs.length; mask++) {
+                const answers = Object.fromEntries(inputs.map((id, i) => [id, Boolean(mask & (1 << i))]))
+                const headings = calculate(AllRules, { ...base, answers })
+                  .lines.filter((l) => l.status === "applies" && range.includes(l.code))
+                  .map((l) => l.code)
+                if (headings.some((c) => c === "9903.82.18" || c === "9903.82.19")) applied18or19++
+                if (headings.length > 1)
+                  violations.push(`${headings.join(" + ")}: ${dotted(code)} ${country} ${asOf} base ${rates.general} ${JSON.stringify(answers)}`)
+              }
+            }
+
+    if (violations.length) console.log(violations.slice(0, 10).join("\n"))
+    expect(violations).toHaveLength(0)
+    expect(applied18or19 > 0).toBe(true) // the new headings were actually exercised
+  })
+})
+
+// ============================================================
+// Note 16 precedence between alternative 9903.82 headings, and the other note 33/38/39
+// non-stacking rules. Corrections made with 2026 Rev 6; they apply from the start of the data.
+// ============================================================
+describe("engine-v2 real data: note 16 precedence and notes 33/38/39 non-stacking", () => {
+  const calc = (htsCode: string, country: string, answers: Record<string, unknown> = {}, rates = { general: "Free", special: null as string | null, other: "Free" }) =>
+    calculate(AllRules, { htsCode, country, asOf: "2026-04-24", customsValue: VALUE, quantity: UNITS, baseRates: rates, answers })
+  const metals = (result: CalculationResult) =>
+    applying(result).filter((c) => c.startsWith("9903.82"))
+
+  it("Russian (c)(iii)–(v) goods use 9903.82.14, whatever the Column 2 rate (not 9903.82.02)", () => {
+    expect(metals(calc("7206.90.00.00", "RU"))).toEqual(["9903.82.14"])
+    expect(metals(calc("7206.90.00.00", "RU", {}, { general: "Free", special: null, other: "20%" }))).toEqual(["9903.82.14"])
+  })
+
+  it("Russian goods 95% U.S.-melted use 9903.82.15 (note 16(e)), not 9903.82.14 or .16", () => {
+    expect(metals(calc("7326.20.00.90", "RU", { "confirm:9903.82.15": true }))).toEqual(["9903.82.15"])
+    expect(metals(calc("8302.10.60.00", "RU", { "confirm:9903.82.15": true }))).toEqual(["9903.82.15"])
+  })
+
+  it("U.S.-melted (9903.82.06) wins over UK (9903.82.04) when both are confirmed", () => {
+    expect(metals(calc("7308.20.00.35", "GB", { "confirm:9903.82.04": true, "confirm:9903.82.06": true }))).toEqual(["9903.82.06"])
+  })
+
+  it("note 16(e) heading 9903.82.08 wins over 16(f) heading 9903.82.11 (16(f) covers goods not meeting (e))", () => {
+    const rates = { general: "20%", special: null as string | null, other: "45%" }
+    expect(metals(calc("8424.89.90.00", "DE", { "confirm:9903.82.08": true, "confirm:9903.82.11": true }, rates))).toEqual(["9903.82.08"])
+  })
+
+  it("Column 2 countries' (c)(ix)–(x) goods use 9903.82.12 over 9903.82.07/.08/.10/.11", () => {
+    const rates = { general: "12%", special: null as string | null, other: "12%" }
+    expect(metals(calc("8424.89.90.00", "BY", { "confirm:9903.82.08": true, "confirm:9903.82.10": true }, rates))).toEqual(["9903.82.12"])
+  })
+
+  it("the motorcycle-parts exemption 9903.82.13 displaces the (c)(vi)–(viii) duty headings (note 16(g))", () => {
+    expect(metals(calc("8412.90.90.70", "GB", { "confirm:9903.82.05": true, "confirm:9903.82.13": true }))).toEqual(["9903.82.13"])
+    expect(metals(calc("8412.90.90.70", "RU", { "confirm:9903.82.13": true }))).toEqual(["9903.82.13"])
+  })
+
+  it("a confirmed semiconductor article pays 9903.79.01, not the auto-parts duty (note 39(a)(2))", () => {
+    const v2 = calc("8471.50.01.50", "JP", { "confirm:9903.79.01": true, "confirm:9903.94.43": true })
+    expect(applying(v2)).toContain("9903.79.01")
+    expect(v2.lines.find((l) => l.code === "9903.94.43").status).toBe("excluded")
+    expect(v2.totalDuty).toBe(2500)
+  })
+
+  it("wood auto parts: 9903.94.07 removes 9903.76.03 (note 33(f)(4)); 9903.94.65 removes 9903.76.23 (33(t)(2))", () => {
+    const vn = calc("9403.91.00.80", "VN", { "confirm:9903.94.07": true })
+    expect(applying(vn)).toContain("9903.94.07")
+    expect(vn.lines.find((l) => l.code === "9903.76.03").status).toBe("excluded")
+    expect(applying(calc("9403.91.00.80", "VN"))).toContain("9903.76.03")
+
+    const kr = calc("9403.91.00.80", "KR", { "confirm:9903.94.65": true })
+    expect(applying(kr)).toContain("9903.94.65")
+    expect(kr.lines.find((l) => l.code === "9903.76.23").status).toBe("excluded")
+  })
+
+  it("has no unknown codes in the non-stacking interactions beyond the not-yet-backfilled IEEPA headings", () => {
+    const known = new Set(AllRules.tariffs.map((t) => t.code))
+    const unknown = new Set(
+      AllRules.interactions.flatMap((i) => (i.kind === "noStack" ? i.order.flatMap((s) => s.codes ?? []) : []))
+        .filter((c) => !known.has(c) && !/^9903\.0[12]\./.test(c)),
+    )
+    expect(Array.from(unknown)).toEqual([])
+  })
+})

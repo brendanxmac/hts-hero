@@ -164,7 +164,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
    - **Legacy:** they're marked `suppressesBaseDuty` and removed by the base-rate filter at or above 15%.
    - **Still open:** Korea's 9903.76.23 isn't confirmed.
 3. **9903.88.69/.70 end date.** The heading text says "through November 29, 2025"; your legacy name says "Expires November 9, 2026". I used Nov 10, 2026 (i.e. through Nov 9). Correct?
-4. **9903.82.14/.15.** The names say "base ≥10%" / "<10%", but the descriptions say note 16 subdivisions (c)(iii)–(v) vs (c)(iv),(vii),(viii),(e). I kept legacy's base-rate split. Is that the real distinction?
+4. **Answered Oct 2 (Rev 6):** note 16(e) makes .15 the Russia U.S.-content heading. **9903.82.14/.15.** The names said "base ≥10%" / "<10%", but the descriptions say note 16 subdivisions (c)(iii)–(v) vs (c)(iv),(vii),(viii),(e). I kept legacy's base-rate split. Is that the real distinction?
 5. **Answered:** 9903.94.44 is 0% in every column. The legacy data was updated Sep 30, and v2 already had it.
 6. **9903.03.01 exceptions** `8471.50`/`8471.80`/`8473.30`: meant to exclude semiconductors from Section 122?
 7. **9903.92.10's exception.** The HTS text says 9903.91.09; I used 9903.92.09. OK?
@@ -246,6 +246,8 @@ See `tariffs/revision-diffs/2026HTSRev6/PLAN.md` for the full plan.
 - **New headings** 9903.82.18 (steel of CA/MX) and 9903.82.19 (aluminum of CA/MX): 25% in the Special column only, so they need a USMCA claim plus a Commerce-authorization confirmation. From 2026-04-23.
 - **New versions** of 9903.82.02 (new exceptions .18 and .19, note 16(a)) and 9903.03.06 (.18 and .19 trigger the Section 122 exemption, note 2(aa)(v)(1)).
 - **Metals non-stacking (notes 33, 38, 39)** is now modeled as a `noStack` interaction: when a listed auto, MHDV or semiconductor heading applies, 9903.82.02 and .04–.17 are dropped, plus .18 and .19 from 2026-04-23. This wasn't modeled before, so it **changes Rev 5 results** for confirmed auto, MHDV and semiconductor goods.
+- **Note 16(a) mutual exclusivity enforced** (corrections, in place): .06 wins over .04 (no textual order; the facts contradict); .08 over .11 (16(f) covers goods "that do not meet" (e)); .12 over .07/.08/.10/.11 for Column 2 countries (16(e)/(f) "except as provided for in 9903.82.12 and 9903.82.17"); .13 over every (c)(vi)–(viii) heading (16(g)). **9903.82.14/.15 corrected (answers Q4):** 16(e) names .15 among the 95%-U.S.-content headings, so .15 now needs that confirmation instead of "base < 10%", and .14 no longer needs "base ≥ 10%". A brute-force test checks that at most one of .02–.19 ever applies.
+- **More non-stacking from notes 33/38/39:** semiconductors (9903.79.01) over auto, MHDV and IEEPA headings (39(a)(1)–(4), (8)); no wood 9903.76.01–.03 on auto and MHDV parts, and no 9903.76.23 on Korean parts (33(t)(2)); no Canada/Mexico IEEPA (9903.01.10/.01.01) on vehicles, parts and semiconductors. The last one has no effect until those IEEPA headings are backfilled.
 - **USMCA on Free lines (engine change):** a line that's free under General with no special column now offers S/S+ for CA/MX. Before, a claim there was refused, so 9903.82.18 could never apply and 9903.03.07/.08 couldn't exempt Free USMCA goods from Section 122.
 
 ## Oct 1: legacy engine removed

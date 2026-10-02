@@ -330,7 +330,7 @@ describe("engine-v2: columns and preferences", () => {
     expect(result.warnings.length).toBe(1)
   })
   it("allows a USMCA claim on a line that's free under General with no special column", () => {
-    const freeLine = { general: "Free", special: null, other: "20%" }
+    const freeLine: CalculationInput["baseRates"] = { general: "Free", special: null, other: "20%" }
     const claimed = calculate(set, input({ country: "MX", claimedPreference: "S", baseRates: freeLine }))
     expect(claimed.column).toBe("special")
     expect(claimed.base.amount).toBe(0)

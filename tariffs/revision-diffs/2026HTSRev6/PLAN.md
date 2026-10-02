@@ -238,3 +238,30 @@ duties in this revision.
    confirmed auto, MHDV and semiconductor goods.
 4. **Verified:** 2026HTSRev6 added to `VerifiedTariffRevisions`.
 5. **Manifest `2025HTSRev6` paths:** a typo for 2026; nothing to change here.
+
+## Follow-up fixes (Oct 2, 2026, after the note 16(a) check)
+
+6. **Note 16(a) mutual exclusivity.** A brute force over the real engine (one code per list
+   combination × 11 countries × 4 base rates × USMCA claim on/off × every answer combination ×
+   Rev 5 and Rev 6 dates) found existing headings applying together. Fixed in place as
+   corrections, since the text settles each case:
+   - 9903.82.08 over .10/.11: 16(f) applies to articles "that do not meet the requirements
+     described in subdivision (e)".
+   - 9903.82.12 over .07/.08/.10/.11: 16(e)/(f): "Except as provided for in headings
+     9903.82.12 and 9903.82.17".
+   - 9903.82.13 over .05/.06/.09/.15/.16: 16(g) covers articles "that otherwise meet the criteria
+     of subdivisions (c)(vi)–(viii)".
+   - 9903.82.15 over .02/.09/.14/.16: 16(e) lists .15 among the U.S.-content headings. Its
+     legacy "base < 10%" condition became a 95%-U.S.-content confirmation, and .14 lost its
+     "base ≥ 10%" condition (PROGRESS Q4).
+   - **Assumption:** 9903.82.06 over .04 (UK). The text gives no order and the facts contradict;
+     this matches the existing .05 vs .06 resolution.
+   - A permanent brute-force test (`note 16(a) mutual exclusivity`) checks it.
+7. **Other notes 33/38/39 exclusions**, as `noStack` interactions (corrections, undated):
+   - 39(a)(1)–(4) and (8): 9903.79.01 over auto, MHDV and IEEPA (9903.01.24–.76, 9903.02.01–.71)
+     headings.
+   - Wood: 33(f), (j), (l), (o), (p)(iii), (q)(iii), (r)(iii), (t) and 38(h)(4) remove
+     9903.76.01–.03; 33(t)(2) also removes 9903.76.23 for 9903.94.62–.65.
+   - Canada 9903.01.10 / Mexico 9903.01.01: 33(a), (f), (p)(iii), (r)(iii), 38(a), (h) and
+     39(a)(6)–(7). Those IEEPA headings aren't in the data (they ended Feb 24, 2026), so this
+     has no effect until they're backfilled.
