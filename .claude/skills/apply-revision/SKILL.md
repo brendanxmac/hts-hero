@@ -43,6 +43,7 @@ The argument is a revision name such as `2026HTSRev6`. The reviewed changes are 
    - One `revision` entry for the revision itself:
      `npm run changelog:draft -- --type revision --revision <revision> --title "HTS Revision N (YYYY)" --summary "…"`
    - One `fix` or `improvement` entry for each other change a customer would notice, such as a correction that changes duties for past dates. Skip internal-only changes like refactors, tests and docs.
+   - If `context.md` exists, use it to explain why the change matters, in plain words, where that helps an importer.
    - Write for importers, not engineers. The title is one line saying what changed. The summary is one to three short sentences: what it means for an estimate, with the heading or note only when it helps. Lead with the effect, e.g. "Steel and aluminum housewares now get Section 232 duties". No internal names (list ids, file names, "engine"), and no hedging.
    - The revision summary starts with the dates it covers ("Verified tariff data now covers entries through <revision's last day>."), then the one or two changes that matter most.
    - Entries are saved as **drafts**. List them in the PR description under "Changelog drafts" and remind the user to publish them at `/duty-calculator/changelog` once the PR is deployed.
