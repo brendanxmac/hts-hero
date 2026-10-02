@@ -10,6 +10,7 @@ import { headings as section232Semiconductors } from "./headings/232-semiconduct
 import { headings as section232Wood } from "./headings/232-wood"
 import { headings as section301Brazil } from "./headings/301-brazil"
 import { headings as section301China } from "./headings/301-china"
+import { headings as section301ForcedLabor } from "./headings/301-forced-labor"
 import { headings as deals } from "./headings/deals"
 import { namedInputs } from "./inputs"
 import { interactions } from "./interactions"
@@ -17,6 +18,7 @@ import generatedLists from "./lists.generated.json"
 import { aircraftLists } from "./lists/aircraft"
 import { brazilLists } from "./lists/brazil"
 import { china301Lists } from "./lists/china-301"
+import { forcedLaborLists } from "./lists/forced-labor-301"
 import { metalsLists } from "./lists/metals"
 import { preferences } from "./preferences"
 import { programs } from "./programs"
@@ -30,6 +32,7 @@ const tariffs = [
   ...section232Semiconductors,
   ...section301China,
   ...section301Brazil,
+  ...section301ForcedLabor,
   ...deals,
 ]
 
@@ -37,7 +40,7 @@ const tariffs = [
 export const AllRules: RuleSet = {
   programs,
   tariffs,
-  lists: [...(generatedLists as CodeList[]), ...china301Lists, ...aircraftLists, ...metalsLists, ...brazilLists],
+  lists: [...(generatedLists as CodeList[]), ...china301Lists, ...aircraftLists, ...metalsLists, ...brazilLists, ...forcedLaborLists],
   interactions,
   columnAssignments,
   preferences,

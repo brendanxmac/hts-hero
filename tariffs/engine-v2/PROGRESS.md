@@ -240,6 +240,14 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 2: 2026 Rev 13 applied (branch `revision/2026HTSRev13`)
+
+Section 122 ended at the close of July 23 (already modeled); Section 301 – Forced Labor from 2026-07-24 (Notice). See `tariffs/revision-diffs/2026HTSRev13/PLAN.md`.
+- **New program `301-forced-labor`** and 101 headings in `headings/301-forced-labor.ts` (U.S. note 52), generated from the revision's reviewed heading text. 9903.05.20–.84: +10% or +12.5% for 59 countries, and pairs totaling 10% (EU, Taiwan) or 12.5% (Japan, South Korea, Switzerland) including the base rate. They stack with everything else, including Section 301 Brazil and China, and apply with FTA claims.
+- **Column 2:** every country heading's Column 2 is "the duty provided in the applicable subheading" (no additional duty) except Russia's, which is "+ 12.5%", so Russia pays it.
+- **Exemptions** 9903.05.85–9903.06.21: in transit, listed and particular articles, civil aircraft and pharmaceuticals (confirmed), Section 232 articles (shared trigger list), donations, informational materials, USMCA (CA/MX, claimed), CAFTA-DR textiles (claimed and confirmed), and country lists for the UK, EU, Switzerland and 10 more countries (29 lists in `lists/forced-labor-301.ts`).
+- **Rev 12 tests:** from July 24, the Brazil cases also get 9903.05.27's 12.5% and note 52's matching exemptions (law change within Rev 12's window).
+
 ## Oct 2: 2026 Rev 12 applied (branch `revision/2026HTSRev12`)
 
 Section 301 – Brazil, all from 2026-07-22 (Notice). See `tariffs/revision-diffs/2026HTSRev12/PLAN.md`.
@@ -325,7 +333,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 12), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 13), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.

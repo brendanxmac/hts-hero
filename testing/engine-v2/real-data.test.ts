@@ -806,7 +806,8 @@ describe("engine-v2 real data: 2026 Rev 12 (Section 301 – Brazil)", () => {
       baseRates: { general, special: "", other: "45%" },
       answers,
     })
-  const brazil = (result: CalculationResult) => applying(result).filter((c) => c.startsWith("9903.05"))
+  // Note 50's headings only (note 52's country rates, 9903.05.20 on, also start "9903.05")
+  const brazil = (result: CalculationResult) => applying(result).filter((c) => /^9903\.05\.0\d$/.test(c))
 
   it("adds 25% from July 22, stacking with Section 122 until it ends July 24", () => {
     expect(brazil(calc(TSHIRT, "BR", "2026-07-21", "16.5%"))).toEqual([])
@@ -814,8 +815,10 @@ describe("engine-v2 real data: 2026 Rev 12 (Section 301 – Brazil)", () => {
     expect(applying(both)).toEqual(["9903.03.01", "9903.05.01"])
     expect(both.totalDuty).toBe(5150) // 16.5% base + 25% + 10% Section 122
     const after = calc(TSHIRT, "BR", "2026-07-25", "16.5%")
-    expect(applying(after)).toEqual(["9903.05.01"])
-    expect(after.totalDuty).toBe(4150)
+    // From July 24, note 52's 12.5% for Brazil (9903.05.27, Rev 13) stacks too (was $4,150
+    // with 9903.05.01 alone)
+    expect(applying(after)).toEqual(["9903.05.01", "9903.05.27"])
+    expect(after.totalDuty).toBe(5400)
     expect(brazil(calc(TSHIRT, "VN", "2026-07-25", "16.5%"))).toEqual([])
   })
 
@@ -832,11 +835,13 @@ describe("engine-v2 real data: 2026 Rev 12 (Section 301 – Brazil)", () => {
 
   it("exempts Section 232 articles (9903.05.07), but not ones under 9903.82.01, which (a)(vi) doesn't list", () => {
     const steel = calc(STEEL, "BR", "2026-07-25", "Free")
-    expect(applying(steel)).toEqual(["9903.05.07", "9903.82.02"])
+    // 9903.05.90 is note 52's matching exemption (Rev 13, from July 24)
+    expect(applying(steel)).toEqual(["9903.05.07", "9903.05.90", "9903.82.02"])
     expect(steel.totalDuty).toBe(5000)
     const noMetal = calc(STEEL, "BR", "2026-07-25", "Free", { "confirm:9903.82.01": true })
-    expect(applying(noMetal)).toEqual(["9903.05.01", "9903.82.01"])
-    expect(noMetal.totalDuty).toBe(2500)
+    // Plus note 52's 12.5% from July 24 (was $2,500)
+    expect(applying(noMetal)).toEqual(["9903.05.01", "9903.05.27", "9903.82.01"])
+    expect(noMetal.totalDuty).toBe(3750)
   })
 
   it("exempts goods loaded before July 22 and entered before July 29 (9903.05.02)", () => {
@@ -847,5 +852,96 @@ describe("engine-v2 real data: 2026 Rev 12 (Section 301 – Brazil)", () => {
   it("exempts donations (9903.05.08) and informational materials (9903.05.09)", () => {
     expect(brazil(calc(TSHIRT, "BR", "2026-07-25", "16.5%", { isDonation: true }))).toEqual(["9903.05.08"])
     expect(brazil(calc(TSHIRT, "BR", "2026-07-25", "16.5%", { isInformationalMaterial: true }))).toEqual(["9903.05.09"])
+  })
+})
+
+// ============================================================
+// 2026 Rev 13: Section 122 ends at the close of July 23; Section 301 – Forced Labor (U.S. note 52,
+// 9903.05.20–9903.06.21) from July 24, 2026
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 13 (Section 301 – Forced Labor)", () => {
+  const TSHIRT = "6109.10.00.04"
+  const AFTER = "2026-07-29"
+  const calc = (
+    htsCode: string,
+    country: string,
+    asOf: string,
+    general: string,
+    opts: { answers?: Record<string, unknown>; special?: string; other?: string; claimedPreference?: string; customsValue?: number } = {},
+  ) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: opts.customsValue ?? VALUE, quantity: UNITS,
+      baseRates: { general, special: opts.special ?? "", other: opts.other ?? "45%" },
+      answers: opts.answers ?? {}, claimedPreference: opts.claimedPreference,
+    })
+  // Note 52's headings only
+  const note52 = (result: CalculationResult) =>
+    applying(result).filter((c) => /^9903\.0(5\.([2-9]\d)|6\.\d\d)$/.test(c))
+
+  it("replaces Section 122 (to July 23) with the country rate from July 24", () => {
+    expect(applying(calc(TSHIRT, "VN", "2026-07-23", "16.5%"))).toEqual(["9903.03.01"])
+    const v2 = calc(TSHIRT, "VN", "2026-07-24", "16.5%")
+    expect(applying(v2)).toEqual(["9903.05.84"])
+    expect(v2.totalDuty).toBe(2900) // 16.5% base + 12.5%
+    expect(calc(TSHIRT, "GB", AFTER, "16.5%").totalDuty).toBe(2650) // UK +10%
+    expect(note52(calc(TSHIRT, "KE", AFTER, "16.5%"))).toEqual([]) // not listed
+  })
+
+  it("EU, Japan, Korea, Switzerland and Taiwan total 10% or 12.5% including the base rate (note 52(k))", () => {
+    const low = calc("8481.80.90.50", "DE", AFTER, "4%")
+    expect(note52(low)).toEqual(["9903.05.39"])
+    expect(low.totalDuty).toBe(1000)
+    const high = calc("8481.80.90.50", "DE", AFTER, "12%")
+    expect(note52(high)).toEqual(["9903.05.38"])
+    expect(high.totalDuty).toBe(1200)
+    expect(calc("8481.80.90.50", "JP", AFTER, "2%").totalDuty).toBe(1250)
+    expect(note52(calc("8481.80.90.50", "TW", AFTER, "2%"))).toEqual(["9903.05.76"])
+  })
+
+  it("uses the ad valorem equivalent of a specific rate: duty payable ÷ customs value", () => {
+    // 50¢/kg × 100 kg = $50 on $1,000 → 5%, so 9903.05.49 adds 7.5% ($75)
+    const v2 = calc("0402.10.10.00", "JP", AFTER, "50¢/kg", { customsValue: 1000 })
+    expect(note52(v2)).toEqual(["9903.05.49"])
+    expect(v2.totalDuty).toBe(125)
+  })
+
+  it("stacks with Section 301 Brazil and Section 301 China", () => {
+    const br = calc(TSHIRT, "BR", AFTER, "16.5%")
+    expect(applying(br)).toEqual(["9903.05.01", "9903.05.27"])
+    expect(br.totalDuty).toBe(5400) // 16.5% + 25% + 12.5%
+    const cn = applying(calc(TSHIRT, "CN", AFTER, "16.5%"))
+    expect(cn.includes("9903.05.31")).toBe(true)
+    expect(cn.some((c) => c.startsWith("9903.88"))).toBe(true)
+  })
+
+  it("follows each heading's Column 2 rate: Russia's 12.5% applies in Column 2 (its heading says '+ 12.5%')", () => {
+    const ru = calc(TSHIRT, "RU", AFTER, "16.5%", { other: "90%" })
+    expect(note52(ru)).toEqual(["9903.05.66"])
+    expect(ru.totalDuty).toBe(10250) // 90% column 2 + 12.5%
+  })
+
+  it("exempts USMCA goods of Canada and Mexico (9903.05.93/.94) only when claimed", () => {
+    expect(note52(calc(TSHIRT, "CA", AFTER, "16.5%"))).toEqual(["9903.05.29"])
+    expect(note52(calc(TSHIRT, "CA", AFTER, "16.5%", { special: "Free (S)", claimedPreference: "S" }))).toEqual(["9903.05.93"])
+    expect(note52(calc(TSHIRT, "MX", AFTER, "16.5%", { special: "Free (S)", claimedPreference: "S" }))).toEqual(["9903.05.94"])
+  })
+
+  it("applies the shared exemptions (9903.05.85–.92)", () => {
+    expect(note52(calc("0901.11.00.15", "VN", AFTER, "Free"))).toEqual(["9903.05.86"])
+    expect(note52(calc("2933.11.00.00", "VN", AFTER, "Free"))).toEqual(["9903.05.84"])
+    expect(note52(calc("2933.11.00.00", "VN", AFTER, "Free", { answers: { "confirm:9903.05.89": true } }))).toEqual(["9903.05.89"])
+    expect(note52(calc("8411.91.90.80", "VN", AFTER, "Free", { answers: { "confirm:9903.05.88": true } }))).toEqual(["9903.05.88"])
+    expect(note52(calc("7206.90.00.00", "VN", AFTER, "Free"))).toEqual(["9903.05.90"])
+    expect(note52(calc(TSHIRT, "VN", "2026-07-26", "16.5%", { answers: { loadingDate: "2026-07-22" } }))).toEqual(["9903.05.85"])
+    expect(note52(calc(TSHIRT, "VN", "2026-07-28", "16.5%", { answers: { loadingDate: "2026-07-22" } }))).toEqual(["9903.05.84"])
+    expect(note52(calc(TSHIRT, "VN", AFTER, "16.5%", { answers: { isDonation: true } }))).toEqual(["9903.05.91"])
+  })
+
+  it("applies the country-specific exemptions in (i) and (j)", () => {
+    expect(note52(calc("2208.30.30.00", "GB", AFTER, "Free"))).toEqual(["9903.05.96"])
+    expect(note52(calc("1515.90.81.00", "MY", AFTER, "Free"))).toEqual(["9903.06.01"]) // argan oil
+    // Guatemalan T-shirt: CAFTA-DR claim → (j)(6)(iii) 9903.06.06 (and the textile exemption .95 once confirmed)
+    expect(note52(calc(TSHIRT, "GT", AFTER, "16.5%"))).toEqual(["9903.05.40"])
+    expect(note52(calc(TSHIRT, "GT", AFTER, "16.5%", { special: "Free (P)", claimedPreference: "P" }))).toEqual(["9903.06.06"])
   })
 })
