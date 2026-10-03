@@ -1,0 +1,48 @@
+{
+  "revision": "2026HTSRev20",
+  "revisionTitle": "Revision 20 (2026)",
+  "fromRevision": "2026HTSRev19",
+  "comparisonId": "2bb78550-1276-4723-859e-145d0574c335",
+  "attempts": {
+    "from": 1,
+    "to": 1
+  },
+  "exportedAt": "2026-10-03T07:20:05.959Z",
+  "parserVersion": "ch99-notes-6",
+  "diffVersion": "diff-3",
+  "changeRecordModel": "claude-opus-5-5 (change-record-1)",
+  "consecutive": true,
+  "headingDiff": "change_record_only",
+  "headingSource": "revision_json",
+  "hasContext": false,
+  "counts": {
+    "total": 15,
+    "approve": 6,
+    "defer": 0,
+    "skip": 9
+  },
+  "allDecided": true,
+  "contentHash": "36f0eae158d901e4b89402b7ce0d026aa02a6b20f52f840984339ad3d302c908",
+  "sourceFiles": [
+    {
+      "kind": "ch99_headings_pdf",
+      "filename": "2026-R20-New-Headings.pdf",
+      "storagePath": "2026HTSRev20/attempt-1/source/ch99_headings_pdf.pdf"
+    },
+    {
+      "kind": "ch99_json",
+      "filename": "USITC export, fetched 2026-10-03",
+      "storagePath": "2026HTSRev20/attempt-1/source/ch99_json.json"
+    },
+    {
+      "kind": "ch99_pdf",
+      "filename": "Chapter 99_2026HTSRev20.pdf",
+      "storagePath": "2026HTSRev20/attempt-1/source/ch99_pdf.pdf"
+    },
+    {
+      "kind": "change_record",
+      "filename": "Change Record_2026HTSRev20.pdf",
+      "storagePath": "2026HTSRev20/attempt-1/source/change_record.pdf"
+    }
+  ]
+}

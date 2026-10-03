@@ -17,22 +17,28 @@
 // whichever wins; the order only decides which line shows.
 //
 // 40(b): the duties apply in addition to any special rate, so preference claims don't remove them.
-import { Tariff } from "../../types"
-import { confirm } from "../confirmations"
+import { Tariff } from "../../types";
+import { confirm } from "../confirmations";
+import { tariffVersions } from "../../versioning";
 
-const PROGRAM = "232-pharmaceuticals"
-const FROM = "2026-07-31"
-const SOURCE = { revision: "2026HTSRev14", citation: "Proclamation 11020" }
-const SCOPE_CODES = [{ list: "pharmaceuticals40c" }]
+const PROGRAM = "232-pharmaceuticals";
+const FROM = "2026-07-31";
+const SOURCE = { revision: "2026HTSRev14", citation: "Proclamation 11020" };
+const SCOPE_CODES = [{ list: "pharmaceuticals40c" }];
 // Column 2: "The duty provided in the applicable subheading" (no additional duty)
-const COLUMN2_FREE = { column2: { kind: "free" } }
+const COLUMN2_FREE = { column2: { kind: "free" } };
 
 // Headings that win over each level (see the order above)
-const NOT_PATENTED = ["9903.04.69", "9903.04.67", "9903.04.68"]
-const OVER_ONSHORING = [...NOT_PATENTED, "9903.04.61", "9903.04.66", "9903.04.65"]
-const OVER_COUNTRY = [...OVER_ONSHORING, "9903.04.64"]
+const NOT_PATENTED = ["9903.04.69", "9903.04.67", "9903.04.68"];
+const OVER_ONSHORING = [
+  ...NOT_PATENTED,
+  "9903.04.61",
+  "9903.04.66",
+  "9903.04.65",
+];
+const OVER_COUNTRY = [...OVER_ONSHORING, "9903.04.64"];
 
-export const headings: Tariff[] = [
+const base: Tariff[] = [
   {
     code: "9903.04.60",
     program: PROGRAM,
@@ -193,7 +199,8 @@ export const headings: Tariff[] = [
     code: "9903.04.69",
     program: PROGRAM,
     name: "Section 232 Pharmaceuticals: Not a Pharmaceutical Article",
-    description: "Articles as provided for in subdivision (i) of U.S. note 40 to this subchapter",
+    description:
+      "Articles as provided for in subdivision (i) of U.S. note 40 to this subchapter",
     scope: {
       countries: "all",
       codes: SCOPE_CODES,
@@ -203,4 +210,53 @@ export const headings: Tariff[] = [
     effective: { from: FROM },
     source: { ...SOURCE, note: "U.S. note 40(i)" },
   },
-]
+];
+
+// 2026HTSRev20 (Notice effective 2026-09-29): 40(a) now reads "Headings 9903.04.60–9903.04.70 …
+// are mutually exclusive". 9903.04.70, articles solely for clinical trials, research and
+// development or other non-commercial use, is a "not a patented pharmaceutical" exemption, so it
+// wins over the patented headings .60–.66 (after .69, .67 and .68; all are free).
+// (9903.04.61 ends on 2026-09-29, the day .70 starts, so it never overlaps .70)
+const PATENTED = [
+  "9903.04.60",
+  "9903.04.62",
+  "9903.04.63",
+  "9903.04.64",
+  "9903.04.65",
+  "9903.04.66",
+];
+const REV20 = { revision: "2026HTSRev20", citation: "Notice" };
+
+export const headings: Tariff[] = [
+  ...base.flatMap((tariff) =>
+    PATENTED.includes(tariff.code)
+      ? tariffVersions(tariff, [
+          {
+            from: "2026-09-29",
+            set: { exceptions: [...(tariff.exceptions ?? []), "9903.04.70"] },
+            source: {
+              ...REV20,
+              note: "U.S. note 40(a): 9903.04.70 added to the mutually exclusive headings",
+            },
+          },
+        ])
+      : [tariff],
+  ),
+  {
+    code: "9903.04.70",
+    program: PROGRAM,
+    name: "Section 232 Pharmaceuticals: Clinical Trials, R&D and Non-Commercial Use",
+    description:
+      "Pharmaceutical articles and associated ingredients provided for in subdivision (c) of U.S. note 40 to this subchapter that are solely for use in clinical trials, research and development, or other non-commercial applications",
+    scope: {
+      countries: "all",
+      codes: SCOPE_CODES,
+    },
+    exceptions: NOT_PATENTED,
+    requires: [confirm("9903.04.70")],
+    // "The duty provided in the applicable subheading + 0%"
+    rate: { kind: "free" },
+    effective: { from: "2026-09-29" },
+    source: { ...REV20, note: "U.S. note 40(a), (c)" },
+  },
+];

@@ -240,6 +240,13 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 3: 2026 Rev 20 applied (branch `revision/2026HTSRev20`)
+
+Section 232 – Pharmaceuticals changes from 2026-09-29 (Notice). See `tariffs/revision-diffs/2026HTSRev20/PLAN.md`.
+- `pharmaceuticals40c` has a second version (131 → 149: finer statistical numbers, some chapter 30 numbers added or removed).
+- New 9903.04.70 (clinical trials, R&D, non-commercial use; free, confirmed). .60 and .62–.66 have September 29 versions listing it among their exceptions; the exclusivity brute force covers .60–.70.
+- The narrower definitions (40(c)(i), (iii), (i)) need no data change; they show through Referenced notes.
+
 ## Oct 3: 2026 Rev 19 applied (branch `revision/2026HTSRev19`)
 
 Section 338 – Canada changes from 2026-09-15 (PP 11064, 11065). See `tariffs/revision-diffs/2026HTSRev19/PLAN.md`.
@@ -372,7 +379,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 19), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 20), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.

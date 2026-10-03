@@ -1338,3 +1338,47 @@ describe("engine-v2 real data: 2026 Rev 19 (Section 338 – Canada changes)", ()
     expect(exceptions("9903.03.13")).toEqual(["9903.03.15", "9903.03.16"])
   })
 })
+
+// ============================================================
+// 2026 Rev 20: Section 232 – Pharmaceuticals, note 40 list re-split, new 9903.04.70 (clinical
+// trials, R&D, non-commercial use), September 29, 2026
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 20 (Section 232 – Pharmaceuticals changes)", () => {
+  const DRUG = "2918.99.30.00"
+  const BEFORE = "2026-09-28"
+  const AFTER = "2026-09-30"
+  const calc = (htsCode: string, country: string, asOf: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: "", other: "45%" }, answers,
+    })
+  const pharma = (result: CalculationResult) => applying(result).filter((c) => /^9903\.04\.(6\d|70)$/.test(c))
+  const yes = (...codes: string[]) => Object.fromEntries(codes.map((c) => [`confirm:${c}`, true]))
+
+  it("exempts articles solely for clinical trials, R&D or non-commercial use from September 29 (9903.04.70)", () => {
+    expect(pharma(calc(DRUG, "IN", BEFORE, yes("9903.04.70")))).toEqual(["9903.04.60"])
+    const exempt = calc(DRUG, "IN", AFTER, yes("9903.04.70"))
+    expect(applying(exempt)).toEqual(["9903.04.70", "9903.05.44"]) // the country rate still applies
+    expect(exempt.totalDuty).toBe(1000)
+    // It also wins over the country headings
+    expect(pharma(calc(DRUG, "DE", AFTER, yes("9903.04.70")))).toEqual(["9903.04.70"])
+  })
+
+  it("follows the Rev 20 list: split, added and removed statistical numbers", () => {
+    expect(pharma(calc("2922.19.09.10", "IN", AFTER))).toEqual(["9903.04.60"]) // split from .0900
+    expect(pharma(calc("3004.20.00.42", "IN", BEFORE))).toEqual([])
+    expect(pharma(calc("3004.20.00.42", "IN", AFTER))).toEqual(["9903.04.60"])
+    expect(pharma(calc("3004.20.00.83", "IN", BEFORE))).toEqual(["9903.04.60"])
+    expect(pharma(calc("3004.20.00.83", "IN", AFTER))).toEqual([])
+  })
+
+  it("applies exactly one of 9903.04.60–.70 (note 40(a)) for every combination of answers", () => {
+    const codes = ["9903.04.64", "9903.04.65", "9903.04.66", "9903.04.67", "9903.04.68", "9903.04.69", "9903.04.70"]
+    for (const country of ["IN", "DE", "GB", "JP"]) {
+      for (let mask = 0; mask < 1 << codes.length; mask++) {
+        const applied = pharma(calc(DRUG, country, AFTER, yes(...codes.filter((_, i) => mask & (1 << i)))))
+        if (applied.length !== 1) throw new Error(`${country} ${mask}: ${applied.join(", ") || "none"}`)
+      }
+    }
+  })
+})
