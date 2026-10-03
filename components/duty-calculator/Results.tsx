@@ -287,38 +287,51 @@ export const Statement = ({
   );
 };
 
-// A line item's legal text: the heading's description and the notes it cites, behind a toggle
-const LineLegalText = ({
+// "Legal text" / "Hide legal text"
+const LegalToggle = ({
+  open,
+  onToggle,
+}: {
+  open: boolean;
+  onToggle: () => void;
+}) => (
+  <button
+    type="button"
+    className="self-start text-[12.5px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)] underline-offset-2 hover:underline"
+    onClick={(e) => {
+      e.preventDefault();
+      onToggle();
+    }}
+    aria-expanded={open}
+  >
+    {open ? "Hide legal text" : "Legal text"}
+  </button>
+);
+
+// The legal text and the notes it cites, shared by line items and questions
+const LegalPanel = ({
   text,
-  asOf,
-  htsCode,
+  citations,
+  notesFor,
 }: {
   text: string;
-  asOf: string;
-  htsCode: string;
-}) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="flex flex-col gap-2">
-      <button
-        type="button"
-        className="self-start text-[12.5px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)] underline-offset-2 hover:underline"
-        onClick={() => setOpen((x) => !x)}
-        aria-expanded={open}
-      >
-        {open ? "Hide legal text" : "Legal text"}
-      </button>
-      {open && (
-        <div className="flex flex-col gap-3 bg-[var(--dc-surface-2)] rounded-lg p-3">
-          <p className="text-[12.5px] leading-relaxed text-[var(--dc-text-2)]">
-            {text}
-          </p>
-          <ReferencedNotes texts={[text]} asOf={asOf} htsCode={htsCode} />
-        </div>
-      )}
-    </div>
-  );
-};
+  citations?: string[];
+  notesFor?: { asOf: string; htsCode: string };
+}) => (
+  <div className="flex flex-col gap-4 rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-sm">
+    <p className="text-[13.5px] leading-relaxed text-[var(--dc-text)]">
+      {text}
+    </p>
+    {notesFor && (
+      <ReferencedNotes
+        texts={[text]}
+        citations={citations}
+        asOf={notesFor.asOf}
+        htsCode={notesFor.htsCode}
+      />
+    )}
+  </div>
+);
 
 interface RowProps {
   code: string;
@@ -376,61 +389,70 @@ const MobileRow = ({
   rateText,
   amount,
   link,
-}: RowProps & { link?: RowLink }) => (
-  <li
-    className={`border-t border-[var(--dc-border)] px-5 py-4 flex flex-col gap-1.5 transition-colors ${linkClass(link)}`}
-  >
-    <div className="flex items-start justify-between gap-4">
-      <div className="min-w-0">
-        <div
-          className={`${mono.className} flex items-center gap-1.5 text-[13px] font-semibold text-[var(--dc-accent)]`}
-        >
-          <Swatch color={link?.color} />
-          {code}
+}: RowProps & { link?: RowLink }) => {
+  const [legalOpen, setLegalOpen] = useState(false);
+  return (
+    <li
+      className={`border-t border-[var(--dc-border)] px-5 py-4 flex flex-col gap-1.5 transition-colors ${linkClass(link)}`}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div
+            className={`${mono.className} flex items-center gap-1.5 text-[13px] font-semibold text-[var(--dc-accent)]`}
+          >
+            <Swatch color={link?.color} />
+            {code}
+          </div>
+          <div className="text-[14.5px] font-medium leading-snug text-[var(--dc-text)]">
+            {name}
+          </div>
         </div>
-        <div className="text-[14.5px] font-medium leading-snug text-[var(--dc-text)]">
-          {name}
+        <div
+          className={`${styles.num} text-[15px] font-semibold whitespace-nowrap`}
+        >
+          {formatMoney(amount)}
         </div>
       </div>
       <div
-        className={`${styles.num} text-[15px] font-semibold whitespace-nowrap`}
+        className={`${styles.num} text-[13px] text-[var(--dc-text-2)] flex flex-col`}
       >
-        {formatMoney(amount)}
-      </div>
-    </div>
-    <div
-      className={`${styles.num} text-[13px] text-[var(--dc-text-2)] flex flex-col`}
-    >
-      {rateText &&
-      basisText &&
-      rateText.split(" + ").length === basisText.split(" · ").length ? (
-        // One line per part, e.g. "4.5% on the case of $2,000.00"
-        rateText.split(" + ").map((part, i) => (
-          <span key={i}>
-            {part} of {basisText.split(" · ")[i]}
+        {rateText &&
+        basisText &&
+        rateText.split(" + ").length === basisText.split(" · ").length ? (
+          // One line per part, e.g. "4.5% on the case of $2,000.00"
+          rateText.split(" + ").map((part, i) => (
+            <span key={i}>
+              {part} of {basisText.split(" · ")[i]}
+            </span>
+          ))
+        ) : (
+          <span>
+            {rateText ?? (rate === undefined ? "—" : formatPct(rate))} of{" "}
+            {basisText ?? formatMoney(basis)}
           </span>
-        ))
-      ) : (
-        <span>
-          {rateText ?? (rate === undefined ? "—" : formatPct(rate))} of{" "}
-          {basisText ?? formatMoney(basis)}
-        </span>
+        )}
+      </div>
+      {(program || effectiveFrom) && (
+        <div className="text-[12.5px] text-[var(--dc-text-3)]">
+          {program}
+          <EffectiveDate from={effectiveFrom} />
+        </div>
       )}
-    </div>
-    {(program || effectiveFrom) && (
-      <div className="text-[12.5px] text-[var(--dc-text-3)]">
-        {program}
-        <EffectiveDate from={effectiveFrom} />
-      </div>
-    )}
-    {detail && (
-      <div className="text-[13px] leading-snug text-[var(--dc-text-2)]">
-        {detail}
-      </div>
-    )}
-    {legal && <LineLegalText {...legal} />}
-  </li>
-);
+      {detail && (
+        <div className="text-[13px] leading-snug text-[var(--dc-text-2)]">
+          {detail}
+        </div>
+      )}
+      {legal && (
+        <LegalToggle
+          open={legalOpen}
+          onToggle={() => setLegalOpen((x) => !x)}
+        />
+      )}
+      {legal && legalOpen && <LegalPanel text={legal.text} notesFor={legal} />}
+    </li>
+  );
+};
 
 const MobileTotal = ({
   label,
@@ -494,60 +516,77 @@ const StatementRow = ({
   rateText,
   amount,
   link,
-}: RowProps & { link?: RowLink }) => (
-  <tr
-    className={`border-t border-[var(--dc-border)] align-top transition-colors ${linkClass(link)}`}
-    onMouseEnter={link?.onHover && (() => link.onHover?.(true))}
-    onMouseLeave={link?.onHover && (() => link.onHover?.(false))}
-  >
-    <td className="py-4 pl-5 sm:pl-6 pr-3">
-      <div className="flex flex-col gap-1">
-        <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
-          <span
-            className={`${mono.className} inline-flex items-center gap-2 text-[13.5px] font-semibold text-[var(--dc-accent)]`}
-          >
-            <Swatch color={link?.color} />
-            {code}
-          </span>
-          <span className="text-[14.5px] font-medium text-[var(--dc-text)]">
-            {name}
-          </span>
-        </div>
-        {(program || effectiveFrom) && (
-          <span className="text-[12.5px] text-[var(--dc-text-3)]">
-            {program}
-            <EffectiveDate from={effectiveFrom} />
-          </span>
-        )}
-        {detail && (
-          <span className="text-[13px] leading-snug text-[var(--dc-text-2)]">
-            {detail}
-          </span>
-        )}
-        {legal && <LineLegalText {...legal} />}
-      </div>
-    </td>
-    <td
-      className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)]`}
-    >
-      <Stacked text={basisText ?? formatMoney(basis)} separator=" · " />
-    </td>
-    <td
-      className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)] text-right`}
-    >
-      <Stacked
-        text={rateText ?? (rate === undefined ? "—" : formatPct(rate))}
-        separator=" + "
-        align="right"
-      />
-    </td>
-    <td
-      className={`${styles.num} py-4 pl-3 pr-5 sm:pr-6 text-[14.5px] font-semibold text-right whitespace-nowrap`}
-    >
-      {formatMoney(amount)}
-    </td>
-  </tr>
-);
+}: RowProps & { link?: RowLink }) => {
+  const [legalOpen, setLegalOpen] = useState(false);
+  return (
+    <>
+      <tr
+        className={`border-t border-[var(--dc-border)] align-top transition-colors ${linkClass(link)}`}
+        onMouseEnter={link?.onHover && (() => link.onHover?.(true))}
+        onMouseLeave={link?.onHover && (() => link.onHover?.(false))}
+      >
+        <td className="py-4 pl-5 sm:pl-6 pr-3">
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
+              <span
+                className={`${mono.className} inline-flex items-center gap-2 text-[13.5px] font-semibold text-[var(--dc-accent)]`}
+              >
+                <Swatch color={link?.color} />
+                {code}
+              </span>
+              <span className="text-[14.5px] font-medium text-[var(--dc-text)]">
+                {name}
+              </span>
+            </div>
+            {(program || effectiveFrom) && (
+              <span className="text-[12.5px] text-[var(--dc-text-3)]">
+                {program}
+                <EffectiveDate from={effectiveFrom} />
+              </span>
+            )}
+            {detail && (
+              <span className="text-[13px] leading-snug text-[var(--dc-text-2)]">
+                {detail}
+              </span>
+            )}
+            {legal && (
+              <LegalToggle
+                open={legalOpen}
+                onToggle={() => setLegalOpen((x) => !x)}
+              />
+            )}
+          </div>
+        </td>
+        <td
+          className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)]`}
+        >
+          <Stacked text={basisText ?? formatMoney(basis)} separator=" · " />
+        </td>
+        <td
+          className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)] text-right`}
+        >
+          <Stacked
+            text={rateText ?? (rate === undefined ? "—" : formatPct(rate))}
+            separator=" + "
+            align="right"
+          />
+        </td>
+        <td
+          className={`${styles.num} py-4 pl-3 pr-5 sm:pr-6 text-[14.5px] font-semibold text-right whitespace-nowrap`}
+        >
+          {formatMoney(amount)}
+        </td>
+      </tr>
+      {legal && legalOpen && (
+        <tr>
+          <td colSpan={4} className="px-5 sm:px-6 pb-5 pt-1">
+            <LegalPanel text={legal.text} notesFor={legal} />
+          </td>
+        </tr>
+      )}
+    </>
+  );
+};
 
 const TotalRow = ({
   label,
@@ -894,35 +933,18 @@ const CheckRow = ({
                 </span>
               )}
               {help && (
-                <button
-                  type="button"
-                  className="text-[12.5px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)] underline-offset-2 hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setExpanded((x) => !x);
-                  }}
-                  aria-expanded={expanded}
-                >
-                  {expanded ? "Hide legal text" : "Legal text"}
-                </button>
+                <LegalToggle
+                  open={expanded}
+                  onToggle={() => setExpanded((x) => !x)}
+                />
               )}
             </span>
           ) : null}
         </span>
       </label>
       {expanded && help && (
-        <div className="ml-[30px] flex flex-col gap-3 bg-[var(--dc-surface-2)] rounded-lg p-3">
-          <p className="text-[12.5px] leading-relaxed text-[var(--dc-text-2)]">
-            {help}
-          </p>
-          {notesFor && (
-            <ReferencedNotes
-              texts={[help]}
-              citations={citations}
-              asOf={notesFor.asOf}
-              htsCode={notesFor.htsCode}
-            />
-          )}
+        <div className="ml-[30px]">
+          <LegalPanel text={help} citations={citations} notesFor={notesFor} />
         </div>
       )}
     </div>

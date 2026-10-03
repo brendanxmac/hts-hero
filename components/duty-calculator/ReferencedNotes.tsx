@@ -100,7 +100,10 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
   // Collapsed, the entered code's matches come first so they're always visible
   const shown = all
     ? codes
-    : [...matches, ...codes.filter((c) => !covers(c, htsCode))].slice(0, COLLAPSED);
+    : [...matches, ...codes.filter((c) => !covers(c, htsCode))].slice(
+        0,
+        COLLAPSED,
+      );
   return (
     <div className="flex flex-col gap-2">
       <p className="text-[12.5px] text-[var(--dc-text-2)]">
@@ -121,7 +124,7 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
             className={`${mono.className} rounded px-1.5 py-0.5 text-[12px] ${
               covers(code, htsCode)
                 ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)] font-semibold ring-1 ring-[var(--dc-positive)]"
-                : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
+                : "bg-[var(--dc-surface)] text-[var(--dc-text-2)] ring-1 ring-[var(--dc-border)]"
             }`}
           >
             {code}
@@ -144,7 +147,7 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
 const Table = ({ rows }: { rows: string[][] }) => {
   const [head, ...body] = rows;
   return (
-    <div className="overflow-x-auto rounded-lg border border-[var(--dc-border)]">
+    <div className="overflow-x-auto rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface)]">
       <table className="w-full text-[12px] leading-snug">
         <thead className="bg-[var(--dc-surface-3)]">
           <tr>
@@ -209,7 +212,7 @@ const NoteNode = ({ node, htsCode }: { node: CitedNode; htsCode: string }) => {
         block.kind === "text" ? (
           <p
             key={i}
-            className="text-[12.5px] leading-relaxed text-[var(--dc-text-2)]"
+            className="text-[13px] leading-relaxed text-[var(--dc-text-2)]"
           >
             {i === 0 && (
               <span className="font-semibold text-[var(--dc-text)] mr-1.5">
@@ -247,7 +250,7 @@ const Citation = ({
   const versions = file?.[citation.key];
   const version = versions ? versionOn(versions, asOf) : undefined;
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface)] p-3">
+    <div className="flex flex-col gap-2.5 rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-3.5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <span className="text-[12.5px] font-semibold text-[var(--dc-text)]">
           {citation.label}
