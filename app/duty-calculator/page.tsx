@@ -70,7 +70,7 @@ export const metadata: Metadata = {
 
 export default async function DutyCalculatorPage() {
   const latestVerified = getLatestVerifiedRevision();
-  const latestUpdates = await getChangelogEntries(createClient(), { limit: 3 });
+  const latestUpdates = await getChangelogEntries(createClient(), { limit: 2 });
   // <main> grows with its content and fills the rest of the window (flex-1, no shrinking), so
   // the layout's scroll container, which has a different background, never shows around the page
   return (

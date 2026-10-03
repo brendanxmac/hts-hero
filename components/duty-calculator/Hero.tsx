@@ -10,7 +10,6 @@ import { AllRules } from "../../tariffs/engine-v2/data";
 import { HtsRevision } from "../../tariffs/engine-v2/revisions";
 import { ChangelogEntry } from "@/libs/supabase/tariff-changelog";
 import { ChangelogCard } from "./Changelog";
-import styles from "./theme.module.css";
 
 // The top of /duty-calculator. Server-rendered so crawlers see the copy; the tools follow.
 
@@ -63,7 +62,7 @@ export const Hero = ({
 
   return (
     <div
-      className="w-full border-b border-[var(--dc-border)]"
+      className="w-full"
       style={{
         background:
           "radial-gradient(70% 90% at 0% 0%, var(--dc-accent-soft), transparent 70%)",
@@ -71,19 +70,11 @@ export const Hero = ({
     >
       <header className="mx-auto grid w-full max-w-[1440px] gap-8 px-4 sm:px-6 pt-10 pb-10 md:pt-14 md:pb-12 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12 xl:gap-16">
         <div className="min-w-0">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--dc-border)] bg-[var(--dc-surface)] px-3 py-1.5 text-[12.5px] font-medium text-[var(--dc-text-2)]">
-            <span className="relative flex h-2 w-2" aria-hidden>
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--dc-positive)] opacity-40 motion-reduce:hidden" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--dc-positive)]" />
-            </span>
-            Tariff data verified through HTS {latestVerified.title}
-          </div>
-
           <h1 className="mt-5">
             <span className="block text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.12em] text-[var(--dc-accent)]">
               US Import Duty &amp; Tariff Calculator
             </span>
-            <span className="mt-3 block max-w-[17ch] text-[36px] leading-[1.05] sm:text-[48px] lg:text-[56px] font-semibold tracking-[-0.03em] text-[var(--dc-text)]">
+            <span className="mt-3 block max-w-[20ch] text-[36px] leading-[1.05] sm:text-[48px] lg:text-[56px] font-semibold tracking-[-0.03em] text-[var(--dc-text)]">
               Know exactly what you owe on every import.{" "}
               <span className="text-[var(--dc-accent)]">And why.</span>
             </span>
@@ -102,7 +93,7 @@ export const Hero = ({
             source, and kept current with every HTS revision.
           </p>
 
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          {/* <div className="mt-7 flex flex-wrap items-center gap-3">
             <Link
               href={CALCULATOR_HREF}
               className={`${styles.buttonPrimary} !h-11 !px-5 !text-[15px]`}
@@ -119,9 +110,9 @@ export const Hero = ({
             <span className="text-[13.5px] text-[var(--dc-text-3)]">
               Free. No sign-up.
             </span>
-          </div>
+          </div> */}
 
-          <ul className="mt-9 grid gap-3 sm:grid-cols-3">
+          {/* <ul className="mt-9 grid gap-3 sm:grid-cols-3">
             {CAPABILITIES.map(({ Icon, title, text, href }) => (
               <li key={title}>
                 <Link
@@ -149,9 +140,9 @@ export const Hero = ({
                 </Link>
               </li>
             ))}
-          </ul>
+          </ul> */}
 
-          <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+          {/* <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
             {stats.map((s) => (
               <div
                 key={s.label}
@@ -168,11 +159,11 @@ export const Hero = ({
                 </dd>
               </div>
             ))}
-          </dl>
+          </dl> */}
         </div>
 
         {latestUpdates.length > 0 && (
-          <div className="lg:pt-12">
+          <div className="lg:pt-4">
             <ChangelogCard entries={latestUpdates} />
           </div>
         )}

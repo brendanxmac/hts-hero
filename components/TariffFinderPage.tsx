@@ -123,7 +123,7 @@ export const TariffFinderPage = () => {
   };
 
   return (
-    <div className={`${styles.root} w-full pt-8 pb-20`}>
+    <div className={`${styles.root} w-full pb-20`}>
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 flex flex-col gap-6">
         <ToolTabs tool={tool} onChange={changeTool} />
         <div role="tabpanel" id={`tool-panel-${tool}`} aria-labelledby={`tool-tab-${tool}`}>
@@ -163,18 +163,16 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
           aria-selected={active}
           aria-controls={`tool-panel-${id}`}
           onClick={() => onChange(id)}
-          className={`flex items-center gap-3 rounded-xl px-3 sm:px-4 py-2.5 text-left transition-[background-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${
-            active
+          className={`flex items-center gap-3 rounded-xl px-3 sm:px-4 py-2.5 text-left transition-[background-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${active
               ? "bg-[var(--dc-surface)] shadow-[0_1px_2px_rgba(15,18,23,0.12),0_0_0_1px_var(--dc-border)]"
               : "hover:bg-[var(--dc-surface-3)]"
-          }`}
+            }`}
         >
           <span
-            className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-              active
+            className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${active
                 ? "bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
                 : "bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]"
-            }`}
+              }`}
             aria-hidden
           >
             <Icon className="w-[18px] h-[18px]" />
@@ -198,11 +196,11 @@ const Layout = ({ f }: { f: TariffFinder }) => {
   const [highlight, setHighlight] = useState<string | null>(null);
   const sliceColors = result
     ? slices(result)
-        .filter((s) => s.amount > 0)
-        .reduce<Record<string, string>>(
-          (colors, s) => ({ ...colors, [s.label]: s.color }),
-          {},
-        )
+      .filter((s) => s.amount > 0)
+      .reduce<Record<string, string>>(
+        (colors, s) => ({ ...colors, [s.label]: s.color }),
+        {},
+      )
     : {};
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[292px_minmax(0,1fr)] gap-5 items-start">
@@ -242,8 +240,8 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                   {" · "}
                   {f.comparing
                     ? f.compareEntries
-                        .map((e) => `${e.country.flag} ${e.country.name}`)
-                        .join(" vs ")
+                      .map((e) => `${e.country.flag} ${e.country.name}`)
+                      .join(" vs ")
                     : `${country.flag} ${country.name}`}
                   {" · "}
                   {formatDate(result.asOf)}
