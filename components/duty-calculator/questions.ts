@@ -1,6 +1,14 @@
 import { calculate } from "../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../tariffs/engine-v2/data";
-import { Answers, CalculationInput, CalculationResult } from "../../tariffs/engine-v2/types";
+import { isEffectiveOn } from "../../tariffs/engine-v2/dates";
+import {
+  Answers,
+  CalculationInput,
+  CalculationResult,
+  ListRef,
+  Question,
+  Scope,
+} from "../../tariffs/engine-v2/types";
 
 // Which questions matter for a result, shared by the calculator and the Tariff Watcher
 
@@ -30,3 +38,50 @@ export const countOpenQuestions = (result: CalculationResult, impacts: Record<st
   result.questions.filter(
     (q) => !q.answered && (q.input.type !== "boolean" || Math.abs(impacts[q.input.id] ?? 0) >= 0.005)
   ).length;
+
+// ── Specificity ──
+
+// How many entries a list holds on a date, counting lists it includes
+const listSize = (id: string, asOf: string, seen = new Set<string>()): number => {
+  if (seen.has(id)) return 0;
+  seen.add(id);
+  const list = AllRules.lists.find((l) => l.id === id);
+  const version = list?.versions.find((v) => isEffectiveOn(v.effective, asOf)) ?? list?.versions[list.versions.length - 1];
+  if (!version) return 0;
+  return (version.codes?.length ?? 0) + (version.includes ?? []).reduce((n, ref) => n + listSize(ref.list, asOf, seen), 0);
+};
+
+const selectorSize = (selector: (string | ListRef)[], asOf: string) =>
+  selector.reduce((n, item) => n + (typeof item === "string" ? 1 : listSize(item.list, asOf)), 0);
+
+// [tier, size], lower is more specific: 0 = listed products (fewer codes first), 1 = all goods
+// of some countries (fewer countries first), 2 = everything
+const scopeSpecificity = (scope: Scope, asOf: string): [number, number] => {
+  if (scope.codes !== "all") return [0, selectorSize(scope.codes, asOf)];
+  if (scope.countries !== "all") return [1, selectorSize(scope.countries, asOf)];
+  return [2, 0];
+};
+
+const compareRank = (a: [number, number], b: [number, number]) => a[0] - b[0] || a[1] - b[1];
+
+// A question ranks by the most specific heading it affects, on the entry's date
+export const questionSpecificity = (question: Question, asOf: string): [number, number] => {
+  let best: [number, number] = [3, 0];
+  for (const code of question.headings) {
+    const versions = AllRules.tariffs.filter((t) => t.code === code);
+    const tariff = versions.find((t) => isEffectiveOn(t.effective, asOf)) ?? versions[0];
+    if (!tariff) continue;
+    const rank = scopeSpecificity(tariff.scope, asOf);
+    if (compareRank(rank, best) < 0) best = rank;
+  }
+  return best;
+};
+
+// Questions about specific products first, then a country's goods, then ones that apply to
+// everything. Depends only on the headings, so answering a question never reorders the list;
+// ties keep the engine's order.
+export const sortBySpecificity = (questions: Question[], asOf: string) =>
+  questions
+    .map((q, index) => ({ q, index, rank: questionSpecificity(q, asOf) }))
+    .sort((a, b) => compareRank(a.rank, b.rank) || a.index - b.index)
+    .map(({ q }) => q);

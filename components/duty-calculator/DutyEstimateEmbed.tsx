@@ -31,6 +31,7 @@ import { formatDate, formatMoney, todayIso, TRANSPORT_MODES } from "./format";
 import { countOpenQuestions, questionImpacts } from "./questions";
 import {
   NotAppliedPanel,
+  PreferenceClaim,
   QuestionsPanel,
   SimpleSummary,
   Statement,
@@ -286,28 +287,6 @@ export const DutyEstimateEmbed = ({
             />
           </Field>
         )}
-        {!simple && result && result.availablePreferences.length > 0 && (
-          <Field
-            label="Trade preference"
-            htmlFor={`${ids}-pref`}
-            className="lg:col-span-4"
-            hint="Only if the goods qualify under the program's rules of origin"
-          >
-            <select
-              id={`${ids}-pref`}
-              className={`${styles.input} appearance-none`}
-              value={preference}
-              onChange={(e) => setPreference(e.target.value)}
-            >
-              <option value="">None claimed</option>
-              {result.availablePreferences.map((p) => (
-                <option key={p.symbol} value={p.symbol}>
-                  {p.symbol} · {p.name}
-                </option>
-              ))}
-            </select>
-          </Field>
-        )}
       </div>
 
       {!country || !result ? (
@@ -365,13 +344,24 @@ export const DutyEstimateEmbed = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-            {result.questions.length > 0 && (
+            {(result.questions.length > 0 || (!simple && result.availablePreferences.length > 0)) && (
               <QuestionsPanel
                 questions={result.questions}
                 answers={answers}
                 impacts={impacts}
                 lines={result.lines}
                 onAnswer={answer}
+                asOf={result.asOf}
+                preference={
+                  !simple && result.availablePreferences.length > 0 ? (
+                    <PreferenceClaim
+                      id={`${ids}-pref`}
+                      options={result.availablePreferences}
+                      value={preference}
+                      onChange={setPreference}
+                    />
+                  ) : undefined
+                }
               />
             )}
             <NotAppliedPanel lines={result.lines} />

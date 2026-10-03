@@ -18,6 +18,7 @@ import { HtsRevision } from "../../tariffs/engine-v2/revisions";
 import { isEffectiveOn } from "../../tariffs/engine-v2/dates";
 import { formatDate, formatMoney, formatPct, TRANSPORT_MODES } from "./format";
 import { mono } from "./font";
+import { sortBySpecificity } from "./questions";
 import styles from "./theme.module.css";
 
 export const programName = (id?: string) =>
@@ -601,30 +602,72 @@ export const SimpleSummary = ({
 
 // ── Questions ──
 
+// The trade preference (FTA or preference program) to claim, shown at the top of the adjustments
+export const PreferenceClaim = ({
+  id,
+  options,
+  value,
+  onChange,
+}: {
+  id: string;
+  options: { symbol: string; name: string }[];
+  value: string;
+  onChange: (symbol: string) => void;
+}) => (
+  <div className="flex flex-col gap-1.5">
+    <label htmlFor={id} className="text-[14px] leading-snug text-[var(--dc-text)]">
+      Special tariff treatment program
+    </label>
+    <p className="text-[12.5px] leading-snug text-[var(--dc-text-3)]">
+      Claim a free trade agreement or preference program only if the goods qualify under its rules of origin.
+    </p>
+    <select
+      id={id}
+      className={`${styles.input} appearance-none`}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      <option value="">None claimed</option>
+      {options.map((p) => (
+        <option key={p.symbol} value={p.symbol}>
+          {p.symbol} · {p.name}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
 export const QuestionsPanel = ({
   questions,
   answers,
   impacts,
   onAnswer,
   lines,
+  asOf,
+  preference,
 }: {
   questions: Question[];
   answers: Record<string, unknown>;
   impacts: Record<string, number>;
   onAnswer: (id: string, value: unknown) => void;
   lines: DutyLine[];
+  asOf: string;
+  // The trade preference control, when the entry has preferences to claim
+  preference?: ReactNode;
 }) => {
   const [showAll, setShowAll] = useState(false);
   // Questions that change the amount (or are already answered) come first; the rest
-  // wouldn't change this entry's total, so they're tucked away. Original order is kept
-  // within each group so answering one doesn't reshuffle the list.
+  // wouldn't change this entry's total, so they're tucked away. Within each group, questions
+  // about specific products come before ones that apply to a country's goods or to everything
+  // (the order depends only on the headings, so answering one doesn't reshuffle the list).
   const matters = (q: Question) =>
     q.answered ||
     answers[q.input.id] !== undefined ||
     q.input.type !== "boolean" ||
     Math.abs(impacts[q.input.id] ?? 0) >= 0.005;
-  const primary = questions.filter(matters);
-  const secondary = questions.filter((q) => !matters(q));
+  const sorted = sortBySpecificity(questions, asOf);
+  const primary = sorted.filter(matters);
+  const secondary = sorted.filter((q) => !matters(q));
   const visible = showAll ? [...primary, ...secondary] : primary;
   const open = primary.filter((q) => !q.answered).length;
 
@@ -632,8 +675,13 @@ export const QuestionsPanel = ({
     <Panel
       title="Possible Adjustments"
       badge={open > 0 ? `${open} could change the total` : undefined}
-      description="Unanswered questions count as “no”, so adjustments aren't applied until you confirm them."
+      description="Leaving a question unanswered keeps the default shown in the estimate. Answer the ones that apply to your goods."
     >
+      {preference && (
+        <div className={visible.length > 0 ? "pb-3.5 mb-3.5 border-b border-[var(--dc-border)]" : ""}>
+          {preference}
+        </div>
+      )}
       {visible.length > 0 ? (
         <ul className="flex flex-col divide-y divide-[var(--dc-border)]">
           {visible.map((q) => (
@@ -648,7 +696,7 @@ export const QuestionsPanel = ({
             </li>
           ))}
         </ul>
-      ) : (
+      ) : preference ? null : (
         <p className="text-[13.5px] text-[var(--dc-text-2)]">
           No answer would change the total for this entry.
         </p>

@@ -9,6 +9,7 @@ import { validateRules } from "../../tariffs/engine-v2/validate"
 import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions"
 import { calculateHistory, ruleChangeDates } from "../../tariffs/engine-v2/history"
 import { HtsLine } from "./hts-fixture"
+import { questionSpecificity, sortBySpecificity } from "../../components/duty-calculator/questions"
 
 const AS_OF = "2026-04-10" // 2026 Rev 5
 const VALUE = 10_000
@@ -1096,5 +1097,36 @@ describe("engine-v2 real data: 2026 Rev 16 (Section 201 – Quartz Surface Produ
     const cn = applying(calc("CN", AFTER))
     expect(cn.includes("9903.45.30")).toBe(true)
     expect(cn.some((c) => c.startsWith("9903.88"))).toBe(true)
+  })
+})
+
+// ============================================================
+// Possible Adjustments order: questions about specific products before ones about a country's
+// goods or everything
+// ============================================================
+describe("Possible Adjustments: sorted by specificity", () => {
+  it("puts the quartz questions above donation and informational-materials questions", () => {
+    const result = calculate(AllRules, {
+      htsCode: "6810.99.00.20", country: "VN", asOf: "2026-08-20", customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: "", other: "Free" }, answers: {},
+    })
+    const order = sortBySpecificity(result.questions, result.asOf).map((q) => q.input.id)
+    const pos = (id: string) => order.indexOf(id)
+    expect(pos("notQuartzSurfaceProduct") >= 0 && pos("quartzQuotaFilled") >= 0).toBe(true)
+    expect(pos("isDonation") >= 0).toBe(true)
+    expect(Math.max(pos("notQuartzSurfaceProduct"), pos("quartzQuotaFilled")) < pos("isDonation")).toBe(true)
+    expect(pos("quartzQuotaFilled") < pos("isInformationalMaterial")).toBe(true)
+  })
+
+  it("ranks listed products, then country-wide, then everything; ties keep their order", () => {
+    // Canadian earthmover: 9903.82.20/.21 questions (a code list) before USMCA-only ones
+    const result = calculate(AllRules, {
+      htsCode: "8429.51.10.00", country: "CA", asOf: "2026-08-20", customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: "Free (S)", other: "Free" }, answers: {}, claimedPreference: "S",
+    })
+    const ranks = sortBySpecificity(result.questions, result.asOf).map((q) => questionSpecificity(q, result.asOf))
+    for (let i = 1; i < ranks.length; i++) {
+      expect(ranks[i - 1][0] < ranks[i][0] || (ranks[i - 1][0] === ranks[i][0] && ranks[i - 1][1] <= ranks[i][1])).toBe(true)
+    }
   })
 })

@@ -7,7 +7,6 @@ import { NumberField, Segmented } from "./controls";
 import { TRANSPORT_MODES } from "./format";
 import { HtsCodeField } from "./HtsCodeField";
 import { COLUMN_LABEL, describeHtsRevision } from "./Results";
-import { PreferenceSelect } from "./shared";
 import { MAX_COMPARE, TariffFinder } from "./useTariffFinder";
 import styles from "./theme.module.css";
 
@@ -160,13 +159,6 @@ export const EntryRail = ({
                 compact
               />
             </RailField>
-            {result &&
-              result.availablePreferences.length > 0 &&
-              !f.comparing && (
-                <RailField label="Preference" htmlFor="dc-pref">
-                  <PreferenceSelect f={f} id="dc-pref" />
-                </RailField>
-              )}
 
             {result && (
               <dl className="mt-1 pt-3 border-t border-[var(--dc-border)] grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[12px]">

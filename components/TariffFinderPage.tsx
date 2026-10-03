@@ -20,6 +20,7 @@ import { BreakdownCard, slices } from "./duty-calculator/MoneyBreakdown";
 import { RateHistoryCard } from "./duty-calculator/RateHistory";
 import {
   NotAppliedPanel,
+  PreferenceClaim,
   QuestionsPanel,
   SimpleSummary,
   Statement,
@@ -315,13 +316,24 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                       ))}
                     </ul>
                   )}
-                  {result.questions.length > 0 && (
+                  {(result.questions.length > 0 || result.availablePreferences.length > 0) && (
                     <QuestionsPanel
                       questions={result.questions}
                       answers={f.answers}
                       impacts={f.impacts}
                       lines={result.lines}
                       onAnswer={f.answer}
+                      asOf={result.asOf}
+                      preference={
+                        f.country && result.availablePreferences.length > 0 ? (
+                          <PreferenceClaim
+                            id="dc-pref"
+                            options={result.availablePreferences}
+                            value={f.preferences[f.country.code] ?? ""}
+                            onChange={(symbol) => f.setPreference(f.country!.code, symbol)}
+                          />
+                        ) : undefined
+                      }
                     />
                   )}
                   <NotAppliedPanel lines={result.lines} />

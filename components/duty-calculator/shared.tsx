@@ -93,31 +93,6 @@ export const VerifiedNotice = ({ f }: { f: TariffFinder }) => (
   <DateNotice entryDate={f.entryDate} onUseVerified={(date) => f.setEntryDate(date, "verified_notice")} />
 );
 
-// ── Trade preference ──
-
-// For the main country; compared countries have their own on their cards
-export const PreferenceSelect = ({ f, id }: { f: TariffFinder; id?: string }) => {
-  const code = f.country?.code;
-  const { result } = f;
-  if (!code || !result || result.availablePreferences.length === 0) return null;
-  return (
-    <select
-      id={id}
-      className={`${styles.input} appearance-none`}
-      value={f.preferences[code] ?? ""}
-      onChange={(e) => f.setPreference(code, e.target.value)}
-      aria-label="Trade preference"
-    >
-      <option value="">None claimed</option>
-      {result.availablePreferences.map((p) => (
-        <option key={p.symbol} value={p.symbol}>
-          {p.symbol} · {p.name}
-        </option>
-      ))}
-    </select>
-  );
-};
-
 // ── Before a code is chosen ──
 
 export const ExampleButtons = ({ onExample }: { onExample: (e: Example) => void }) => (
