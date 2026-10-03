@@ -240,6 +240,13 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 3: 2026 Rev 17 applied (branch `revision/2026HTSRev17`)
+
+Section 338 – Canada (Proclamations 11046–11048, 11056), from 2026-08-22. See `tariffs/revision-diffs/2026HTSRev17/PLAN.md`.
+- **New program `338-canada`** (new authority `"338"`) with 9903.03.12/.13/.14 at +50% for the products in note 51(b)(1)/(2)/(3) (lists in `lists/canada-338.ts`). They stack with other duties and apply with a USMCA claim.
+- **Exemptions:** 9903.03.15 for Section 232 goods (`section232ArticleHeadingsFromJuly31`), 9903.03.16 for confirmed civil aircraft articles (the existing `civilAircraftAndPartsOf` list).
+- The context mentions a temporary suspension, but the HTS text has none; applied as written (decision).
+
 ## Oct 3: 2026 Rev 16 applied (branch `revision/2026HTSRev16`)
 
 Section 201 – Quartz Surface Products (Proclamation 11051), from 2026-08-15. See `tariffs/revision-diffs/2026HTSRev16/PLAN.md`.
@@ -352,7 +359,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 16), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 17), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.

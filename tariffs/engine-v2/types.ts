@@ -28,6 +28,7 @@ export type Authority =
   | "301"
   | "122"
   | "201"
+  | "338"
   | "IEEPA"
   | "ADCVD"
   | "deal"

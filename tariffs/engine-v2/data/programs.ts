@@ -28,6 +28,12 @@ export const programs: Program[] = [
   },
   { id: "301-china", name: "Section 301 – China", authority: "301" },
   {
+    id: "338-canada",
+    name: "Section 338 – Canada",
+    authority: "338",
+    legalBasis: ["Proclamation 11046", "Proclamation 11047", "Proclamation 11048", "Proclamation 11056"],
+  },
+  {
     id: "201-quartz",
     name: "Section 201 – Quartz Surface Products",
     authority: "201",

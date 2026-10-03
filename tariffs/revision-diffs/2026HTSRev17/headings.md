@@ -1,0 +1,11 @@
+# Chapter 99 headings: 2026HTSRev17
+
+Read from 2026HTSRev17's own tariff-table pages (or entered by hand) and reviewed. This is the authoritative text and rates for these headings in this revision.
+
+| Heading | Stat. | Description | General | Special | Column 2 | Footnotes | Source |
+|---|---|---|---|---|---|---|---|
+| 9903.03.12 |  | Articles the product of Canada as provided in subdivision (b)(1) of U.S. note 51 to this subchapter | The duty provided in the applicable subheading + 50% | The duty provided in the applicable subheading + 50% | No change | 1/ See chapter 99 statistical note 1. | PDF p.1 |
+| 9903.03.13 |  | Articles the product of Canada as provided in subdivision (b)(2) of U.S. note 51 to this subchapter | The duty provided in the applicable subheading + 50% | The duty provided in the applicable subheading + 50% | No change | 1/ See chapter 99 statistical note 1. | PDF p.1 |
+| 9903.03.14 |  | Articles the product of Canada as provided in subdivision (b)(3) of U.S. note 51 to this subchapter | The duty provided in the applicable subheading + 50% | The duty provided in the applicable subheading + 50% | No change | 1/ See chapter 99 statistical note 1. | PDF p.1 |
+| 9903.03.15 |  | Articles of aluminum, of steel or of copper or derivative aluminum or steel articles; passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks; parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks; medium- and heavy-duty vehicles; parts of medium- and heavy-duty vehicles; wood products; semiconductor articles; and patented pharmaceutical articles, as provided in subdivision (c) of U.S. note 51 to this subchapter | No change | No change | No change | 1/ See chapter 99 statistical note 1. | PDF p.1 |
+| 9903.03.16 |  | Articles of civil aircraft (all aircraft other than military aircraft and unmanned aircraft); their engines, parts and components; their other parts, components and subassemblies; and ground flight simulators and their parts and components the product of Canada, as provided for in subdivision (d) of U.S. note 51 to this subchapter | No change | No change | No change | 1/ See chapter 99 statistical note 1. | PDF p.2 |

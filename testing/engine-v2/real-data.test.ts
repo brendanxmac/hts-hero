@@ -1168,3 +1168,47 @@ describe("note citations in legal text", () => {
     expect(findNoteCitations("subdivision (b) of U.S. note 3 to subchapter IV")[0].key).toBe("sub-IV/us-notes/3(b)")
   })
 })
+
+// ============================================================
+// 2026 Rev 17: Section 338 – Canada, U.S. note 51 and 9903.03.12–.16 (Proclamations 11046–11048,
+// 11056, effective August 22, 2026)
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 17 (Section 338 – Canada)", () => {
+  const WINE = "2204.21.20.00" // 51(b)(1)
+  const AFTER = "2026-08-26"
+  const calc = (htsCode: string, country: string, asOf: string, opts: { answers?: Record<string, unknown>; pref?: string } = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: "Free (S)", other: "Free" },
+      answers: opts.answers ?? {}, claimedPreference: opts.pref,
+    })
+  const s338 = (result: CalculationResult) => applying(result).filter((c) => /^9903\.03\.1[2-6]$/.test(c))
+
+  it("adds 50% to listed Canadian products from August 22, on top of the country rate", () => {
+    expect(s338(calc(WINE, "CA", "2026-08-21"))).toEqual([])
+    const wine = calc(WINE, "CA", AFTER)
+    expect(applying(wine)).toEqual(["9903.03.12", "9903.05.29"])
+    expect(wine.totalDuty).toBe(6000) // 50% + 10%
+    expect(s338(calc(WINE, "FR", AFTER))).toEqual([])
+  })
+
+  it("still applies with a USMCA claim (51(a)), while the country rate drops", () => {
+    const usmca = calc(WINE, "CA", AFTER, { pref: "S" })
+    expect(applying(usmca)).toEqual(["9903.03.12", "9903.05.93"])
+    expect(usmca.totalDuty).toBe(5000)
+  })
+
+  it("uses 9903.03.13 for (b)(2) and 9903.03.14 for (b)(3)", () => {
+    expect(s338(calc("0402.10.05.00", "CA", AFTER))).toEqual(["9903.03.13"])
+    expect(s338(calc("3926.90.99.90", "CA", AFTER))).toEqual(["9903.03.14"])
+  })
+
+  it("exempts Section 232 articles (9903.03.15) and confirmed civil aircraft articles (9903.03.16)", () => {
+    // Steel furniture: on (b)(3) and paying Section 232 metals
+    const furniture = applying(calc("9403.20.00.82", "CA", AFTER))
+    expect(furniture.includes("9903.03.15")).toBe(true)
+    expect(furniture.includes("9903.03.14")).toBe(false)
+    // Plastic aircraft part on (b)(3) and the (d) list
+    expect(s338(calc("3926.90.99.90", "CA", AFTER, { answers: { "confirm:9903.03.16": true } }))).toEqual(["9903.03.16"])
+  })
+})
