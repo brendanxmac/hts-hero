@@ -45,12 +45,27 @@ const CODE = /^\d{4}\.\d{2}(?:\.\d{2,4})?(?:\.\d{2})?$/;
 const covers = (listed: string, htsCode: string) =>
   digits(htsCode).startsWith(digits(listed));
 
-// The version in force on the date; after the last verified revision, the latest one
-const versionOn = (versions: CitedVersion[], asOf: string) =>
-  versions.find((v) => v.from <= asOf && (!v.to || asOf < v.to)) ??
-  (asOf >= versions[versions.length - 1].from
-    ? versions[versions.length - 1]
-    : undefined);
+// The version in force on the date. After the last verified revision, the latest one. Before the
+// first, the earliest: the text is versioned by HTS revision, so a law that took effect before the
+// revision publishing it (note 51 on August 22, Revision 17 on August 24) would otherwise show
+// nothing for those days. `early` says the text shown was published later than the date.
+const versionOn = (
+  versions: CitedVersion[],
+  asOf: string,
+): { version: CitedVersion; early: boolean } => {
+  const found = versions.find((v) => v.from <= asOf && (!v.to || asOf < v.to));
+  if (found) return { version: found, early: false };
+  const first = versions[0];
+  if (asOf < first.from) return { version: first, early: true };
+  return { version: versions[versions.length - 1], early: false };
+};
+
+// The last day of a version ("to" is the first day it's no longer in force)
+const lastDay = (to: string) => {
+  const d = new Date(`${to}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - 1);
+  return d.toISOString().slice(0, 10);
+};
 
 type Block =
   | { kind: "text"; text: string }
@@ -248,18 +263,27 @@ const Citation = ({
   htsCode: string;
 }) => {
   const versions = file?.[citation.key];
-  const version = versions ? versionOn(versions, asOf) : undefined;
+  const picked = versions?.length ? versionOn(versions, asOf) : undefined;
+  const version = picked?.version;
   return (
     <div className="flex flex-col gap-2.5 rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-3.5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <span className="text-[12.5px] font-semibold text-[var(--dc-text)]">
           {citation.label}
         </span>
-        {version && versions && versions.length > 1 && (
+        {version && picked?.early ? (
           <span className="text-[11.5px] text-[var(--dc-text-3)]">
-            Text in force {formatDate(version.from)}
-            {version.to ? ` – ${formatDate(version.to)}` : " onward"}
+            As first published in the HTS on {formatDate(version.from)}
           </span>
+        ) : (
+          version &&
+          versions &&
+          versions.length > 1 && (
+            <span className="text-[11.5px] text-[var(--dc-text-3)]">
+              Text in force {formatDate(version.from)}
+              {version.to ? ` – ${formatDate(lastDay(version.to))}` : " onward"}
+            </span>
+          )
         )}
       </div>
       {file === undefined ? (
@@ -268,10 +292,6 @@ const Citation = ({
         version.nodes.map((node, i) => (
           <NoteNode key={i} node={node} htsCode={htsCode} />
         ))
-      ) : versions ? (
-        <p className="text-[12.5px] text-[var(--dc-text-3)]">
-          Not in the HTS on this date.
-        </p>
       ) : (
         <p className="text-[12.5px] text-[var(--dc-text-3)]">
           Text not available for this revision.
