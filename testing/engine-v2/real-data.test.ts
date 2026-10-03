@@ -1212,3 +1212,79 @@ describe("engine-v2 real data: 2026 Rev 17 (Section 338 – Canada)", () => {
     expect(s338(calc("3926.90.99.90", "CA", AFTER, { answers: { "confirm:9903.03.16": true } }))).toEqual(["9903.03.16"])
   })
 })
+
+// ============================================================
+// 2026 Rev 18: Section 232 – Unmanned Aircraft Systems (note 43, 9903.08.20–.26, September 3,
+// 2026); note 20(vvv) exclusions on the July 1 statistical numbers; lean beef trimmings quota
+// (note 7(c), 9903.54.02)
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 18", () => {
+  const DRONE = "8806.22.00.00" // 43(c)(3)/(4): thermal imaging decides
+  const BIG_DRONE = "8806.24.00.00" // 43(c)(1): always 9903.08.21
+  const CONTROL_PANEL = "8537.10.91.70" // 43(c)(1) docking stations, a general-purpose code
+  const AFTER = "2026-09-05"
+  const calc = (htsCode: string, country: string, asOf: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: "", other: "Free" },
+      answers,
+    })
+  const uas = (result: CalculationResult) => applying(result).filter((c) => c.startsWith("9903.08.2"))
+  const yes = (...ids: string[]) => Object.fromEntries(ids.map((id) => [id.startsWith("9903") ? `confirm:${id}` : id, true]))
+
+  it("drones pay 25% from September 3, or 100% with thermal imaging", () => {
+    expect(uas(calc(DRONE, "VN", "2026-09-02"))).toEqual([])
+    const drone = calc(DRONE, "VN", AFTER)
+    expect(uas(drone)).toEqual(["9903.08.22"])
+    expect(drone.totalDuty).toBe(3750) // 25% + Vietnam's 12.5% country rate (stacks)
+    expect(uas(calc(DRONE, "VN", AFTER, yes("uasThermalImaging")))).toEqual(["9903.08.21"])
+    expect(uas(calc(BIG_DRONE, "VN", AFTER))).toEqual(["9903.08.21"])
+  })
+
+  it("general-purpose codes are 9903.08.20 ($0) unless the goods are for unmanned aircraft", () => {
+    expect(uas(calc(CONTROL_PANEL, "VN", AFTER))).toEqual(["9903.08.20"])
+    expect(uas(calc(CONTROL_PANEL, "VN", AFTER, yes("uasForUse")))).toEqual(["9903.08.21"])
+    expect(uas(calc("8807.30.00.60", "VN", AFTER, yes("uasForUse")))).toEqual(["9903.08.21"])
+  })
+
+  it("allied-made systems pay 15% in total (9903.08.24) or +10% for the UK (.23) once confirmed", () => {
+    expect(uas(calc(DRONE, "DE", AFTER))).toEqual(["9903.08.22"])
+    const de = calc(DRONE, "DE", AFTER, yes("9903.08.24"))
+    expect(uas(de)).toEqual(["9903.08.24"])
+    expect(de.lines.find((l) => l.code === "9903.08.24")?.amount).toBe(1500)
+    expect(uas(calc(DRONE, "GB", AFTER, yes("9903.08.23", "uasThermalImaging")))).toEqual(["9903.08.23"])
+    // Confirming .24 does nothing for a country it doesn't cover
+    expect(uas(calc(DRONE, "VN", AFTER, yes("9903.08.24")))).toEqual(["9903.08.22"])
+  })
+
+  it("approved onshoring plans exempt the duty (9903.08.25/.26)", () => {
+    expect(uas(calc(DRONE, "VN", AFTER, yes("9903.08.25")))).toEqual(["9903.08.25"])
+    expect(uas(calc(BIG_DRONE, "DE", AFTER, yes("9903.08.24", "9903.08.26")))).toEqual(["9903.08.26"])
+  })
+
+  it("applies exactly one of 9903.08.20–.26 (note 43(a)) for every combination of answers", () => {
+    const ids = ["uasThermalImaging", "uasForUse", "9903.08.23", "9903.08.24", "9903.08.25", "9903.08.26"]
+    for (const code of [DRONE, BIG_DRONE, CONTROL_PANEL]) {
+      for (const country of ["VN", "DE", "GB", "JP", "CN"]) {
+        for (let mask = 0; mask < 1 << ids.length; mask++) {
+          const applied = uas(calc(code, country, AFTER, yes(...ids.filter((_, i) => mask & (1 << i)))))
+          if (applied.length !== 1) throw new Error(`${code} ${country} ${mask}: ${applied.join(", ") || "none"}`)
+        }
+      }
+    }
+  })
+
+  it("recognizes the 20(vvv) exclusions under the July 1, 2026 statistical numbers", () => {
+    expect(applying(calc("8413.91.90.39", "CN", "2026-07-15")).includes("9903.88.69")).toBe(true)
+    expect(applying(calc("3926.90.99.15", "CN", "2026-07-15")).includes("9903.88.69")).toBe(true)
+    expect(applying(calc("8413.91.90.39", "CN", "2026-06-15")).includes("9903.88.69")).toBe(false)
+  })
+
+  it("files lean beef trimmings under the additional quota (9903.54.02) when confirmed, at $0", () => {
+    const beef = calc("0201.30.50.91", "AU", "2026-10-01", yes("9903.54.02"))
+    expect(applying(beef).includes("9903.54.02")).toBe(true)
+    expect(beef.lines.find((l) => l.code === "9903.54.02")?.amount).toBe(0)
+    expect(applying(calc("0201.30.50.91", "AR", "2026-10-01", yes("9903.54.02"))).includes("9903.54.02")).toBe(false)
+    expect(applying(calc("0201.30.50.91", "AU", "2026-12-01", yes("9903.54.02"))).includes("9903.54.02")).toBe(false)
+  })
+})

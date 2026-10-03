@@ -30,6 +30,20 @@ export const namedInputs: InputDefinition[] = [
     citations: ["U.S. note 41(a)"],
   },
   {
+    id: "uasForUse",
+    label: "These goods are for use in or with unmanned aircraft",
+    help: "Section 232 on unmanned aircraft systems covers power supplies and control panels only as docking stations (or their parts) for unmanned aircraft, and aircraft parts only for unmanned aircraft systems over 25 kg maximum take-off weight that aren't for retail delivery, agricultural use or sale to the Department of War (U.S. note 43(c)(1)–(2)).",
+    type: "boolean",
+    citations: ["U.S. note 43(c)(1)", "U.S. note 43(c)(2)"],
+  },
+  {
+    id: "uasThermalImaging",
+    label: "This unmanned aircraft has thermal imaging",
+    help: "Unmanned aircraft with thermal imaging pay 100% under Section 232; without it, 25% (U.S. note 43(c)(3)–(4)).",
+    type: "boolean",
+    citations: ["U.S. note 43(c)(3)", "U.S. note 43(c)(4)"],
+  },
+  {
     id: "quartzQuotaFilled",
     label: "Has the quarterly quota for quartz surface products been filled?",
     help: "Section 201 quartz surface products pay the in-quota rate until the quarter's quota (U.S. note 41(d)) is used up, and the over-quota rate after that. CBP publishes quota status.",

@@ -21,6 +21,13 @@ export const programs: Program[] = [
   },
   { id: "232-semiconductors", name: "Section 232 – Semiconductors", authority: "232" },
   {
+    id: "232-uas",
+    name: "Section 232 – Unmanned Aircraft Systems",
+    authority: "232",
+    legalBasis: ["Proclamation 11055"],
+  },
+  { id: "quotas", name: "Tariff-Rate Quotas", authority: "other" },
+  {
     id: "232-pharmaceuticals",
     name: "Section 232 – Pharmaceuticals",
     authority: "232",

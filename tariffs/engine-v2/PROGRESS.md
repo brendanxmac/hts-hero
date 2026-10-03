@@ -240,6 +240,13 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 3: 2026 Rev 18 applied (branch `revision/2026HTSRev18`)
+
+See `tariffs/revision-diffs/2026HTSRev18/PLAN.md`.
+- **Section 232 – Unmanned Aircraft Systems** (`232-uas`, Proclamation 11055, from 2026-09-03): 9903.08.20–.26 in `headings/232-uas.ts`, lists in `lists/uas.ts`. Drones +25% (.22), or +100% (.21) with thermal imaging (`uasThermalImaging`) or in (c)(1); general-purpose codes (power supplies, control panels, aircraft parts) are .20 at $0 unless `uasForUse` is checked (decisions). UK +10% (.23) and JP/LI/KR/CH/TW/EU 15% total (.24) when the critical components test is confirmed; onshoring plans (.25/.26) free. Mutually exclusive (brute-force test). Stacks with the country programs.
+- **20(vvv) exclusions:** 9903.88.69's list has a 2026-07-01 version adding the new statistical numbers for the pump parts and plastic articles.
+- **Lean beef trimmings quota** 9903.54.02 (`headings/quotas.ts`, program `quotas`): a confirmed $0 line, Sep 1 – Nov 30, 2026, not for Argentina.
+
 ## Oct 3: 2026 Rev 17 applied (branch `revision/2026HTSRev17`)
 
 Section 338 – Canada (Proclamations 11046–11048, 11056), from 2026-08-22. See `tariffs/revision-diffs/2026HTSRev17/PLAN.md`.
@@ -359,7 +366,7 @@ Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4
 
 ## Decisions I made (easy to change)
 
-- **Default date in the v2 panel** is the latest verified revision (2026 Rev 17), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
+- **Default date in the v2 panel** is the latest verified revision (2026 Rev 18), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.
 - **Confirmation questions default to "no"**, matching legacy. An exemption doesn't apply, and a confirm-to-apply duty (e.g. 9903.94.05 auto parts) isn't charged, until answered. Each condition can set `assume: true` to flip that.
 - **Dates only from heading text.** Headings without a stated date are undated ("in effect throughout"). They get dates as revisions are backfilled.
 - **Lists keep legacy names.** New lists are named after their heading (`9903.88.03`) until renamed to note citations.
