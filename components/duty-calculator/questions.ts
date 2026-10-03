@@ -33,6 +33,19 @@ export const questionImpacts = (input: CalculationInput, result: CalculationResu
   return out;
 };
 
+// How much claiming each available trade preference would change duty and fees, compared with
+// the current result. The one already claimed has no entry.
+export const preferenceImpacts = (input: CalculationInput, result: CalculationResult, answers: Answers) => {
+  const current = result.totalDuty + result.totalFees;
+  const out: Record<string, number> = {};
+  result.availablePreferences.forEach((p) => {
+    if (p.symbol === result.claimedPreference) return;
+    const alt = calculate(AllRules, { ...input, answers, claimedPreference: p.symbol });
+    out[p.symbol] = alt.totalDuty + alt.totalFees - current;
+  });
+  return out;
+};
+
 // Open questions whose answer would change the amount
 export const countOpenQuestions = (result: CalculationResult, impacts: Record<string, number>) =>
   result.questions.filter(

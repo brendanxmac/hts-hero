@@ -28,7 +28,7 @@ import {
   findTariffElement,
 } from "./estimate";
 import { formatDate, formatMoney, todayIso, TRANSPORT_MODES } from "./format";
-import { countOpenQuestions, questionImpacts } from "./questions";
+import { countOpenQuestions, preferenceImpacts, questionImpacts } from "./questions";
 import {
   NotAppliedPanel,
   PreferenceClaim,
@@ -124,6 +124,10 @@ export const DutyEstimateEmbed = ({
   const impacts = useMemo(
     () => (input && result ? questionImpacts(input, result, answers) : {}),
     [input, result, answers],
+  );
+  const preferenceChanges = useMemo(
+    () => (input && result ? preferenceImpacts(input, result, answers) : {}),
+    [input, result, answers]
   );
 
   const simple = variant === "simple";
@@ -355,10 +359,10 @@ export const DutyEstimateEmbed = ({
                 preference={
                   !simple && result.availablePreferences.length > 0 ? (
                     <PreferenceClaim
-                      id={`${ids}-pref`}
                       options={result.availablePreferences}
                       value={preference}
                       onChange={setPreference}
+                      impacts={preferenceChanges}
                     />
                   ) : undefined
                 }

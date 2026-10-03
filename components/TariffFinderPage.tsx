@@ -327,10 +327,10 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                       preference={
                         f.country && result.availablePreferences.length > 0 ? (
                           <PreferenceClaim
-                            id="dc-pref"
                             options={result.availablePreferences}
                             value={f.preferences[f.country.code] ?? ""}
                             onChange={(symbol) => f.setPreference(f.country!.code, symbol)}
+                            impacts={f.preferenceChanges}
                           />
                         ) : undefined
                       }

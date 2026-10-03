@@ -33,7 +33,7 @@ import {
   findTariffElement,
   parseAnswers,
 } from "./estimate";
-import { countOpenQuestions, questionImpacts } from "./questions";
+import { countOpenQuestions, preferenceImpacts, questionImpacts } from "./questions";
 import { formatDate, formatMoney, todayIso, TRANSPORT_MODES } from "./format";
 
 // Everything the Tariff Finder knows and can do; the page only lays it out.
@@ -251,6 +251,11 @@ export const useTariffFinder = () => {
   // What each unanswered yes/no question would change, so users know which ones matter
   const impacts = useMemo(
     () => (baseInput && result ? questionImpacts(baseInput, result, answers) : {}),
+    [baseInput, result, answers]
+  );
+  // And what claiming each trade preference would change
+  const preferenceChanges = useMemo(
+    () => (baseInput && result ? preferenceImpacts(baseInput, result, answers) : {}),
     [baseInput, result, answers]
   );
 
@@ -519,6 +524,7 @@ export const useTariffFinder = () => {
     // Results
     result,
     impacts,
+    preferenceChanges,
     history,
     historyRange,
     openQuestions: result ? countOpenQuestions(result, impacts) : 0,

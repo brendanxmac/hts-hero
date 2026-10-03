@@ -349,8 +349,8 @@ const MobileRow = ({
       className={`${styles.num} text-[13px] text-[var(--dc-text-2)] flex flex-col`}
     >
       {rateText &&
-        basisText &&
-        rateText.split(" + ").length === basisText.split(" · ").length ? (
+      basisText &&
+      rateText.split(" + ").length === basisText.split(" · ").length ? (
         // One line per part, e.g. "4.5% on the case of $2,000.00"
         rateText.split(" + ").map((part, i) => (
           <span key={i}>
@@ -388,8 +388,9 @@ const MobileTotal = ({
   strong?: boolean;
 }) => (
   <li
-    className={`border-t border-[var(--dc-border-strong)] px-5 py-3.5 flex items-baseline justify-between gap-4 ${strong ? "bg-[var(--dc-surface-2)]" : ""
-      }`}
+    className={`border-t border-[var(--dc-border-strong)] px-5 py-3.5 flex items-baseline justify-between gap-4 ${
+      strong ? "bg-[var(--dc-surface-2)]" : ""
+    }`}
   >
     <span className="text-[14px] font-semibold">{label}</span>
     <span
@@ -602,39 +603,55 @@ export const SimpleSummary = ({
 
 // ── Questions ──
 
-// The trade preference (FTA or preference program) to claim, shown at the top of the adjustments
+// The trade preferences (FTAs and preference programs) the entry could claim, as checkboxes of
+// which at most one is checked, each with what claiming it would change
 export const PreferenceClaim = ({
-  id,
   options,
   value,
   onChange,
+  impacts = {},
 }: {
-  id: string;
   options: { symbol: string; name: string }[];
   value: string;
   onChange: (symbol: string) => void;
+  impacts?: Record<string, number>;
 }) => (
-  <div className="flex flex-col gap-1.5">
-    <label htmlFor={id} className="text-[14px] leading-snug text-[var(--dc-text)]">
-      Special tariff treatment program
-    </label>
-    <p className="text-[12.5px] leading-snug text-[var(--dc-text-3)]">
-      Claim a free trade agreement or preference program only if the goods qualify under its rules of origin.
-    </p>
-    <select
-      id={id}
-      className={`${styles.input} appearance-none`}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    >
-      <option value="">None claimed</option>
-      {options.map((p) => (
-        <option key={p.symbol} value={p.symbol}>
-          {p.symbol} · {p.name}
-        </option>
-      ))}
-    </select>
-  </div>
+  <ul className="flex flex-col divide-y divide-[var(--dc-border)]">
+    {options.map((p) => (
+      <li key={p.symbol} className="py-3.5 first:pt-0 last:pb-0">
+        <CheckRow
+          checked={value === p.symbol}
+          onChange={(checked) => onChange(checked ? p.symbol : "")}
+          code={p.symbol}
+          label={p.name}
+          impact={impacts[p.symbol]}
+        />
+      </li>
+    ))}
+  </ul>
+);
+
+// A titled group inside the adjustments panel
+const AdjustmentSection = ({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+}) => (
+  <section className="flex flex-col gap-3">
+    <div>
+      <h4 className="text-[14px] font-semibold text-[var(--dc-text)]">
+        {title}
+      </h4>
+      <p className="text-[12.5px] leading-snug text-[var(--dc-text-3)]">
+        {description}
+      </p>
+    </div>
+    {children}
+  </section>
 );
 
 export const QuestionsPanel = ({
@@ -675,44 +692,63 @@ export const QuestionsPanel = ({
     <Panel
       title="Possible Adjustments"
       badge={open > 0 ? `${open} could change the total` : undefined}
-      description="Leaving a question unanswered keeps the default shown in the estimate. Answer the ones that apply to your goods."
+      description="Review the conditions below to get a more accurate duty calculation for your import"
     >
-      {preference && (
-        <div className={visible.length > 0 ? "pb-3.5 mb-3.5 border-b border-[var(--dc-border)]" : ""}>
-          {preference}
-        </div>
-      )}
-      {visible.length > 0 ? (
-        <ul className="flex flex-col divide-y divide-[var(--dc-border)]">
-          {visible.map((q) => (
-            <li key={q.input.id} className="py-3.5 first:pt-0 last:pb-0">
-              <QuestionControl
-                question={q}
-                value={answers[q.input.id]}
-                impact={impacts[q.input.id]}
-                heading={lines.find((l) => `confirm:${l.code}` === q.input.id)}
-                onChange={(v) => onAnswer(q.input.id, v)}
-              />
-            </li>
-          ))}
-        </ul>
-      ) : preference ? null : (
-        <p className="text-[13.5px] text-[var(--dc-text-2)]">
-          No answer would change the total for this entry.
-        </p>
-      )}
-      {secondary.length > 0 && (
-        <button
-          type="button"
-          className={`${styles.link} mt-4 text-[13px]`}
-          onClick={() => setShowAll((x) => !x)}
-          aria-expanded={showAll}
-        >
-          {showAll
-            ? "Hide questions that don't change the total"
-            : `Show ${secondary.length} more ${secondary.length === 1 ? "question" : "questions"} that don't change the total`}
-        </button>
-      )}
+      <div className="flex flex-col gap-6">
+        {preference && (
+          <AdjustmentSection
+            title="Special Tariff Programs"
+            description="Free trade agreement or preference programs your goods may qualify for."
+          >
+            {preference}
+          </AdjustmentSection>
+        )}
+        {questions.length > 0 && (
+          <AdjustmentSection
+            title="Special Tariff Provisions"
+            description="Tariffs and conditions that may apply to your goods."
+          >
+            <div>
+              {visible.length > 0 ? (
+                <ul className="flex flex-col divide-y divide-[var(--dc-border)]">
+                  {visible.map((q) => (
+                    <li
+                      key={q.input.id}
+                      className="py-3.5 first:pt-0 last:pb-0"
+                    >
+                      <QuestionControl
+                        question={q}
+                        value={answers[q.input.id]}
+                        impact={impacts[q.input.id]}
+                        heading={lines.find(
+                          (l) => `confirm:${l.code}` === q.input.id,
+                        )}
+                        onChange={(v) => onAnswer(q.input.id, v)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              ) : preference ? null : (
+                <p className="text-[13.5px] text-[var(--dc-text-2)]">
+                  No answer would change the total for this entry.
+                </p>
+              )}
+              {secondary.length > 0 && (
+                <button
+                  type="button"
+                  className={`${styles.link} mt-4 text-[13px]`}
+                  onClick={() => setShowAll((x) => !x)}
+                  aria-expanded={showAll}
+                >
+                  {showAll
+                    ? "Hide questions that don't change the total"
+                    : `Show ${secondary.length} more ${secondary.length === 1 ? "question" : "questions"} that don't change the total`}
+                </button>
+              )}
+            </div>
+          </AdjustmentSection>
+        )}
+      </div>
     </Panel>
   );
 };
@@ -722,14 +758,83 @@ const Impact = ({ amount }: { amount?: number }) => {
   const lower = amount < 0;
   return (
     <span
-      className={`${styles.num} inline-flex items-center rounded-md px-1.5 py-0.5 text-[12px] font-semibold ${lower
-        ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)]"
-        : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
-        }`}
+      className={`${styles.num} inline-flex items-center rounded-md px-1.5 py-0.5 text-[12px] font-semibold ${
+        lower
+          ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)]"
+          : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
+      }`}
     >
       {lower ? "−" : "+"}
       {formatMoney(Math.abs(amount))}
     </span>
+  );
+};
+
+// One checkbox row, shared by the questions and the trade preferences: label, the amount checking
+// it would change the total by, and optional legal text
+const CheckRow = ({
+  checked,
+  onChange,
+  code,
+  label,
+  impact,
+  help,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  code?: string;
+  label: ReactNode;
+  impact?: number;
+  help?: string;
+}) => {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="flex items-start gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          className={styles.checkbox}
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+        />
+        <span className="flex flex-col gap-1 min-w-0">
+          <span className="text-[14px] leading-snug text-[var(--dc-text)]">
+            {code && (
+              <span
+                className={`${mono.className} mr-1.5 text-[12.5px] font-semibold text-[var(--dc-accent)]`}
+              >
+                {code}
+              </span>
+            )}
+            {label}
+          </span>
+          {(!checked && impact !== undefined && Math.abs(impact) >= 0.005) ||
+          help ? (
+            <span className="flex flex-wrap items-center gap-2">
+              {!checked && <Impact amount={impact} />}
+              {help && (
+                <button
+                  type="button"
+                  className="text-[12.5px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)] underline-offset-2 hover:underline"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setExpanded((x) => !x);
+                  }}
+                  aria-expanded={expanded}
+                >
+                  {expanded ? "Hide legal text" : "Legal text"}
+                </button>
+              )}
+            </span>
+          ) : null}
+        </span>
+      </label>
+      {expanded && help && (
+        <p className="ml-[30px] text-[12.5px] leading-relaxed text-[var(--dc-text-2)] bg-[var(--dc-surface-2)] rounded-lg p-3">
+          {help}
+        </p>
+      )}
+    </div>
   );
 };
 
@@ -747,55 +852,19 @@ const QuestionControl = ({
   onChange: (value: unknown) => void;
 }) => {
   const { input } = question;
-  const [expanded, setExpanded] = useState(false);
   const code = heading?.code;
   const label = code ? heading.name : input.label;
 
   if (input.type === "boolean") {
     return (
-      <div className="flex flex-col gap-1.5">
-        <label className="flex items-start gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            className={styles.checkbox}
-            checked={value === true}
-            onChange={(e) => onChange(e.target.checked || undefined)}
-          />
-          <span className="flex flex-col gap-1 min-w-0">
-            <span className="text-[14px] leading-snug text-[var(--dc-text)]">
-              {code && (
-                <span
-                  className={`${mono.className} mr-1.5 text-[12.5px] font-semibold text-[var(--dc-accent)]`}
-                >
-                  {code}
-                </span>
-              )}
-              {label}
-            </span>
-            <span className="flex flex-wrap items-center gap-2">
-              {value !== true && <Impact amount={impact} />}
-              {input.help && (
-                <button
-                  type="button"
-                  className="text-[12.5px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)] underline-offset-2 hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setExpanded((x) => !x);
-                  }}
-                  aria-expanded={expanded}
-                >
-                  {expanded ? "Hide legal text" : "Legal text"}
-                </button>
-              )}
-            </span>
-          </span>
-        </label>
-        {expanded && input.help && (
-          <p className="ml-[30px] text-[12.5px] leading-relaxed text-[var(--dc-text-2)] bg-[var(--dc-surface-2)] rounded-lg p-3">
-            {input.help}
-          </p>
-        )}
-      </div>
+      <CheckRow
+        checked={value === true}
+        onChange={(checked) => onChange(checked || undefined)}
+        code={code}
+        label={label}
+        impact={impact}
+        help={input.help}
+      />
     );
   }
 
@@ -874,10 +943,11 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`inline-flex rounded-md px-1.5 py-0.5 text-[11.5px] font-semibold ${line.status === "needsAnswer"
-                    ? "bg-[var(--dc-warning-soft)] text-[var(--dc-warning)] border border-[var(--dc-warning-border)]"
-                    : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
-                    }`}
+                  className={`inline-flex rounded-md px-1.5 py-0.5 text-[11.5px] font-semibold ${
+                    line.status === "needsAnswer"
+                      ? "bg-[var(--dc-warning-soft)] text-[var(--dc-warning)] border border-[var(--dc-warning-border)]"
+                      : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
+                  }`}
                 >
                   {STATUS[line.status]}
                 </span>
@@ -934,7 +1004,7 @@ export const BasisPanel = ({
     [
       "Rate column",
       COLUMN_LABEL[result.column] +
-      (result.claimedPreference ? ` (${result.claimedPreference})` : ""),
+        (result.claimedPreference ? ` (${result.claimedPreference})` : ""),
     ],
     ["Transport", TRANSPORT_MODES.find((m) => m.id === transportMode)?.label],
   ];
@@ -988,7 +1058,7 @@ export const Panel = ({
 }) => (
   <section className={`${styles.card} p-5`}>
     <div className="flex items-center justify-between gap-3">
-      <h3 className="text-[15px] font-semibold">{title}</h3>
+      <h3 className="text-[15px] md:text-[18px] font-semibold">{title}</h3>
       {badge && (
         <span className="rounded-full bg-[var(--dc-accent-soft)] border border-[var(--dc-accent-border)] px-2 py-0.5 text-[12px] font-semibold text-[var(--dc-accent)]">
           {badge}
