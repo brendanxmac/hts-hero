@@ -292,26 +292,39 @@ export const ReferencedNotes = ({
   asOf: string;
   htsCode: string;
 }) => {
+  // Keyed on the text itself: callers pass new arrays on every render ([text]), and depending on
+  // the arrays would re-run the effect below on every render, an endless loop once the file is
+  // cached
+  const sources = JSON.stringify([...texts, ...citations]);
   const found = useMemo(() => {
     const seen = new Set<string>();
-    return [...texts, ...citations]
+    return (JSON.parse(sources) as string[])
       .flatMap((t) => findNoteCitations(t))
       .filter((c) => (seen.has(c.key) ? false : (seen.add(c.key), true)));
-  }, [texts, citations]);
+  }, [sources]);
+  const fileList = Array.from(new Set(found.map((c) => c.file))).join(",");
   const [loaded, setLoaded] = useState<Record<string, NoteFile | null>>({});
 
   useEffect(() => {
     let live = true;
-    Array.from(new Set(found.map((c) => c.file))).forEach((file) =>
-      loadFile(file).then(
-        (content) =>
-          live && setLoaded((prev) => ({ ...prev, [file]: content })),
-      ),
-    );
+    fileList
+      .split(",")
+      .filter(Boolean)
+      .forEach((file) =>
+        loadFile(file).then((content) => {
+          if (!live) return;
+          // Only a change of state re-renders
+          setLoaded((prev) =>
+            file in prev && prev[file] === content
+              ? prev
+              : { ...prev, [file]: content },
+          );
+        }),
+      );
     return () => {
       live = false;
     };
-  }, [found]);
+  }, [fileList]);
 
   if (!found.length) return null;
   return (
