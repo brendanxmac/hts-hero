@@ -625,6 +625,7 @@ export const PreferenceClaim = ({
           code={p.symbol}
           label={p.name}
           impact={impacts[p.symbol]}
+          showNoChange
         />
       </li>
     ))}
@@ -779,6 +780,7 @@ const CheckRow = ({
   label,
   impact,
   help,
+  showNoChange = false,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
@@ -786,8 +788,15 @@ const CheckRow = ({
   label: ReactNode;
   impact?: number;
   help?: string;
+  // Say "No change" when checking it wouldn't change the total (otherwise nothing is shown)
+  showNoChange?: boolean;
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const noChange =
+    showNoChange &&
+    !checked &&
+    impact !== undefined &&
+    Math.abs(impact) < 0.005;
   return (
     <div className="flex flex-col gap-1.5">
       <label className="flex items-start gap-3 cursor-pointer">
@@ -809,9 +818,15 @@ const CheckRow = ({
             {label}
           </span>
           {(!checked && impact !== undefined && Math.abs(impact) >= 0.005) ||
+          noChange ||
           help ? (
             <span className="flex flex-wrap items-center gap-2">
               {!checked && <Impact amount={impact} />}
+              {noChange && (
+                <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-[12px] font-medium bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]">
+                  No change to the total
+                </span>
+              )}
               {help && (
                 <button
                   type="button"
