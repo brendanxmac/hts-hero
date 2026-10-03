@@ -303,6 +303,7 @@ export const calculate = (
     const handler = rateHandlers.get(rule.kind)
     if (!handler) throw new Error(`No rate handler "${rule.kind}"`)
     const result = handler.compute(rule, ctx, evaluation.basisValue)
+    if (handler.explain) evaluation.reasons.push(handler.explain(rule, ctx, result))
     evaluation.ratePct = result.pct
     evaluation.amount =
       (evaluation.basisValue * (result.pct ?? 0)) / 100 + (result.amount ?? 0)

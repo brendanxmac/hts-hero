@@ -1130,3 +1130,19 @@ describe("Possible Adjustments: sorted by specificity", () => {
     }
   })
 })
+
+describe("engine-v2 real data: top-up lines explain their rate", () => {
+  const line = (country: string, general: string, code: string) =>
+    calculate(AllRules, {
+      htsCode: "2918.99.30.00", country, asOf: "2026-08-01", customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: "", other: "45%" }, answers: {},
+    }).lines.find((l) => l.code === code)
+
+  it("says how much it adds on top of the regular duty", () => {
+    expect(line("IN", "6.5%", "9903.04.60")?.reasons.includes("Tops up to 100% including the regular duty (6.5%), so 93.5% here")).toBe(true)
+  })
+
+  it("says when the regular duty already reaches the total", () => {
+    expect(line("DE", "20%", "9903.04.62")?.reasons.includes("Tops up to 15% including the regular duty, which is already 20%, so nothing is added")).toBe(true)
+  })
+})

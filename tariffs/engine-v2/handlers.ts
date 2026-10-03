@@ -44,6 +44,9 @@ export interface RateHandler {
   inputs: (params: Params) => string[]
   compute: (params: Params, ctx: HandlerContext, basisValue: number) => RateResult
   describe: (params: Params) => string
+  // Optional plain-English reason for the line, given the rate it worked out to.
+  // Text only: it never affects amounts.
+  explain?: (params: Params, ctx: HandlerContext, result: RateResult) => string
 }
 
 export const conditionHandlers = new Map<string, ConditionHandler>()
@@ -191,6 +194,9 @@ register(rateHandlers, "perUnit", {
   describe: (p) => `$${String(p.amount)}/${String(p.per ?? "unit")}`,
 })
 
+// "12.5", "93.5", "6.53": at most two decimals, no trailing zeros
+const pctText = (pct: number) => `${Number(pct.toFixed(2))}%`
+
 // Tops the base rate up to `pct`: max(0, pct − base rate equivalent). See §19.2.
 register(rateHandlers, "topUpTo", {
   inputs: none,
@@ -198,6 +204,13 @@ register(rateHandlers, "topUpTo", {
     pct: Math.max(0, (p.pct as number) - ctx.baseRateEquivalentPct),
   }),
   describe: (p) => `${String(p.pct)}% minus the base rate`,
+  explain: (p, ctx, result) => {
+    const total = pctText(p.pct as number)
+    const regular = ctx.baseRateEquivalentPct > 0 ? pctText(ctx.baseRateEquivalentPct) : "free"
+    return (result.pct ?? 0) > 0
+      ? `Tops up to ${total} including the regular duty (${regular}), so ${pctText(result.pct ?? 0)} here`
+      : `Tops up to ${total} including the regular duty, which is already ${regular}, so nothing is added`
+  },
 })
 
 register(rateHandlers, "free", {

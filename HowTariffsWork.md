@@ -768,6 +768,7 @@ interface ConditionHandler {
 interface BasisHandler {
   inputs?: string[]
   value(args: { params: Record<string, unknown>; ctx: CalculationContext }): number | "unknown"
+  explain?(params, ctx, basisValue): string // optional reason shown on the line
 }
 
 interface RateHandler {
@@ -777,8 +778,11 @@ interface RateHandler {
     ctx: CalculationContext
     basisValue: number
   }): { pct?: number; amount?: number } // pct is of basisValue; amount is dollars
+  explain?(params, ctx, result): string // optional reason shown on the line
 }
 ```
+
+`explain` is text only and never affects amounts. `usContentShare` uses it to say how the value was split, and `topUpTo` to say what it adds ("Tops up to 100% including the regular duty (6.5%), so 93.5% here").
 
 ### 11.3 Built-in handlers
 
