@@ -762,7 +762,7 @@ const Impact = ({ amount }: { amount?: number }) => {
       className={`${styles.num} inline-flex items-center rounded-md px-1.5 py-0.5 text-[12px] font-semibold ${
         lower
           ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)]"
-          : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
+          : "bg-[var(--dc-negative-soft)] text-[var(--dc-negative)]"
       }`}
     >
       {lower ? "−" : "+"}
