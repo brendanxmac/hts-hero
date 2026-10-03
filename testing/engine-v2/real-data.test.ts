@@ -9,6 +9,7 @@ import { validateRules } from "../../tariffs/engine-v2/validate"
 import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions"
 import { calculateHistory, ruleChangeDates } from "../../tariffs/engine-v2/history"
 import { HtsLine } from "./hts-fixture"
+import { findNoteCitations } from "../../tariffs/engine-v2/citations"
 import { questionSpecificity, sortBySpecificity } from "../../components/duty-calculator/questions"
 
 const AS_OF = "2026-04-10" // 2026 Rev 5
@@ -1144,5 +1145,26 @@ describe("engine-v2 real data: top-up lines explain their rate", () => {
 
   it("says when the regular duty already reaches the total", () => {
     expect(line("DE", "20%", "9903.04.62")?.reasons.includes("Tops up to 15% including the regular duty, which is already 20%, so nothing is added")).toBe(true)
+  })
+})
+
+describe("note citations in legal text", () => {
+  const keys = (text: string) => findNoteCitations(text).map((c) => c.key.replace("sub-III/us-notes/", ""))
+  it("reads subdivisions, lists, ranges and inherited prefixes", () => {
+    expect(keys("as provided for in subdivision (a)(iv) of U.S. note 50 to this subchapter")).toEqual(["50(a)(iv)"])
+    expect(keys("as provided for in subdivisions (c) and (d) of U.S. note 40 to this subchapter")).toEqual(["40(c)", "40(d)"])
+    expect(keys("subdivisions (c)(vi)–(viii) and (xi) of U.S. note 16")).toEqual(["16(c)(vi)", "16(c)(vii)", "16(c)(viii)", "16(c)(xi)"])
+    // A letter after roman numerals is its own subdivision, even after a range ending in (x)
+    expect(keys("subdivisions (c)(ii), (iv), (vi)–(viii), (xi) and (e) of U.S. note 16")).toEqual(["16(c)(ii)", "16(c)(iv)", "16(c)(vi)", "16(c)(vii)", "16(c)(viii)", "16(c)(xi)", "16(e)"])
+    expect(keys("subdivisions (c)(ix)–(x) and (e) of U.S. note 16")).toEqual(["16(c)(ix)", "16(c)(x)", "16(e)"])
+  })
+  it("reads direct citations and ignores general, statistical and unnumbered notes", () => {
+    expect(keys("as defined in U.S. note 41(a) to this subchapter … defined in note 41(d) to this subchapter")).toEqual(["41(a)", "41(d)"])
+    expect(keys("articles the product of Algeria, as provided for in U.S. note 52 to this subchapter")).toEqual(["52"])
+    expect(keys("special tariff treatment under general note 3(c)(i); see statistical note 1")).toEqual([])
+    expect(keys("Except as provided in subdivisions (a)(ii) through (a)(vi) of this note")).toEqual([])
+  })
+  it("names another subchapter when the text does", () => {
+    expect(findNoteCitations("subdivision (b) of U.S. note 3 to subchapter IV")[0].key).toBe("sub-IV/us-notes/3(b)")
   })
 })

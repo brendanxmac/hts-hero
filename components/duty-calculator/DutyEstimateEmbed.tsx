@@ -356,6 +356,7 @@ export const DutyEstimateEmbed = ({
                 lines={result.lines}
                 onAnswer={answer}
                 asOf={result.asOf}
+                htsCode={result.htsCode}
                 preference={
                   !simple && result.availablePreferences.length > 0 ? (
                     <PreferenceClaim

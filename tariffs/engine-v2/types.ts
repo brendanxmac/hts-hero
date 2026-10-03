@@ -153,6 +153,9 @@ export interface InputDefinition {
   help?: string
   type: InputType
   unit?: string
+  // Note subdivisions to show with the help text, when it doesn't cite them itself
+  // ("U.S. note 41(d)"); see citations.ts
+  citations?: string[]
 }
 
 export type Answers = Record<string, unknown>

@@ -27,12 +27,14 @@ export const namedInputs: InputDefinition[] = [
     label: "These goods aren't quartz surface products",
     help: "Section 201 covers only quartz surface products: slabs, countertops, tiles and other surfaces made mostly of silica (e.g. quartz) with a resin binder, where silica is the largest single material by weight. Quarried stone such as granite, marble, soapstone or quartzite isn't included, nor are other goods under these codes, such as other glass articles (U.S. note 41(a)).",
     type: "boolean",
+    citations: ["U.S. note 41(a)"],
   },
   {
     id: "quartzQuotaFilled",
     label: "Has the quarterly quota for quartz surface products been filled?",
     help: "Section 201 quartz surface products pay the in-quota rate until the quarter's quota (U.S. note 41(d)) is used up, and the over-quota rate after that. CBP publishes quota status.",
     type: "boolean",
+    citations: ["U.S. note 41(d)"],
   },
   {
     id: "usContentPct",

@@ -1155,6 +1155,7 @@ While families are being moved over, run both engines on the same inputs (every 
 6. Run the tests: validation, handler tests, pinned cases.
 7. Add pinned cases for anything new.
 8. Add the revision to `VerifiedTariffRevisions`.
+9. `npm run notes:cited` to refresh the note text the calculator shows under "Referenced notes" (`public/data/notes`). It finds citations in heading descriptions and question help with `tariffs/engine-v2/citations.ts`, plus any `citations` on an input, and reads the text from each verified revision's parsed notes in the revision checker.
 
 ### 17.2 A new heading appears
 

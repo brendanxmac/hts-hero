@@ -19,6 +19,7 @@ import { isEffectiveOn } from "../../tariffs/engine-v2/dates";
 import { formatDate, formatMoney, formatPct, TRANSPORT_MODES } from "./format";
 import { mono } from "./font";
 import { sortBySpecificity } from "./questions";
+import { ReferencedNotes } from "./ReferencedNotes";
 import styles from "./theme.module.css";
 
 export const programName = (id?: string) =>
@@ -48,6 +49,21 @@ export const tariffStartDate = (code: string, asOf: string) => {
     current = previous;
   }
   return current?.effective.from;
+};
+
+// The legal text of the heading version in effect on the entry's date
+const legalText = (code: string, result: CalculationResult) => {
+  const versions = AllRules.tariffs.filter((t) => t.code === code);
+  const tariff =
+    versions.find((t) => isEffectiveOn(t.effective, result.asOf)) ??
+    versions[0];
+  return tariff?.description?.trim()
+    ? {
+        text: tariff.description.trim(),
+        asOf: result.asOf,
+        htsCode: result.htsCode,
+      }
+    : undefined;
 };
 
 export const COLUMN_LABEL = {
@@ -180,6 +196,7 @@ export const Statement = ({
       program: programName(line.program),
       effectiveFrom: tariffStartDate(line.code, result.asOf),
       detail: line.reasons.join(" · "),
+      legal: legalText(line.code, result),
       basis: line.basisValue,
       rate: line.ratePct,
       amount: line.amount,
@@ -270,6 +287,39 @@ export const Statement = ({
   );
 };
 
+// A line item's legal text: the heading's description and the notes it cites, behind a toggle
+const LineLegalText = ({
+  text,
+  asOf,
+  htsCode,
+}: {
+  text: string;
+  asOf: string;
+  htsCode: string;
+}) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        className="self-start text-[12.5px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)] underline-offset-2 hover:underline"
+        onClick={() => setOpen((x) => !x)}
+        aria-expanded={open}
+      >
+        {open ? "Hide legal text" : "Legal text"}
+      </button>
+      {open && (
+        <div className="flex flex-col gap-3 bg-[var(--dc-surface-2)] rounded-lg p-3">
+          <p className="text-[12.5px] leading-relaxed text-[var(--dc-text-2)]">
+            {text}
+          </p>
+          <ReferencedNotes texts={[text]} asOf={asOf} htsCode={htsCode} />
+        </div>
+      )}
+    </div>
+  );
+};
+
 interface RowProps {
   code: string;
   slice?: string;
@@ -277,6 +327,8 @@ interface RowProps {
   program?: string;
   effectiveFrom?: string;
   detail?: string;
+  // The heading's legal text, for Chapter 99 lines
+  legal?: { text: string; asOf: string; htsCode: string };
   basis: number;
   basisText?: string;
   rate?: number;
@@ -317,6 +369,7 @@ const MobileRow = ({
   program,
   effectiveFrom,
   detail,
+  legal,
   basis,
   basisText,
   rate,
@@ -375,6 +428,7 @@ const MobileRow = ({
         {detail}
       </div>
     )}
+    {legal && <LineLegalText {...legal} />}
   </li>
 );
 
@@ -433,6 +487,7 @@ const StatementRow = ({
   program,
   effectiveFrom,
   detail,
+  legal,
   basis,
   basisText,
   rate,
@@ -469,6 +524,7 @@ const StatementRow = ({
             {detail}
           </span>
         )}
+        {legal && <LineLegalText {...legal} />}
       </div>
     </td>
     <td
@@ -662,6 +718,7 @@ export const QuestionsPanel = ({
   onAnswer,
   lines,
   asOf,
+  htsCode,
   preference,
 }: {
   questions: Question[];
@@ -670,6 +727,8 @@ export const QuestionsPanel = ({
   onAnswer: (id: string, value: unknown) => void;
   lines: DutyLine[];
   asOf: string;
+  // The entered code, to highlight it in referenced code lists
+  htsCode?: string;
   // The trade preference control, when the entry has preferences to claim
   preference?: ReactNode;
 }) => {
@@ -725,6 +784,7 @@ export const QuestionsPanel = ({
                           (l) => `confirm:${l.code}` === q.input.id,
                         )}
                         onChange={(v) => onAnswer(q.input.id, v)}
+                        notesFor={htsCode ? { asOf, htsCode } : undefined}
                       />
                     </li>
                   ))}
@@ -781,6 +841,8 @@ const CheckRow = ({
   impact,
   help,
   showNoChange = false,
+  citations,
+  notesFor,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
@@ -788,6 +850,10 @@ const CheckRow = ({
   label: ReactNode;
   impact?: number;
   help?: string;
+  // Extra note citations to show with the legal text, beyond those the text itself cites
+  citations?: string[];
+  // The entry the referenced notes are shown for (date and code); without it, no notes
+  notesFor?: { asOf: string; htsCode: string };
   // Say "No change" when checking it wouldn't change the total (otherwise nothing is shown)
   showNoChange?: boolean;
 }) => {
@@ -845,9 +911,19 @@ const CheckRow = ({
         </span>
       </label>
       {expanded && help && (
-        <p className="ml-[30px] text-[12.5px] leading-relaxed text-[var(--dc-text-2)] bg-[var(--dc-surface-2)] rounded-lg p-3">
-          {help}
-        </p>
+        <div className="ml-[30px] flex flex-col gap-3 bg-[var(--dc-surface-2)] rounded-lg p-3">
+          <p className="text-[12.5px] leading-relaxed text-[var(--dc-text-2)]">
+            {help}
+          </p>
+          {notesFor && (
+            <ReferencedNotes
+              texts={[help]}
+              citations={citations}
+              asOf={notesFor.asOf}
+              htsCode={notesFor.htsCode}
+            />
+          )}
+        </div>
       )}
     </div>
   );
@@ -859,12 +935,14 @@ const QuestionControl = ({
   impact,
   heading,
   onChange,
+  notesFor,
 }: {
   question: Question;
   value: unknown;
   impact?: number;
   heading?: DutyLine;
   onChange: (value: unknown) => void;
+  notesFor?: { asOf: string; htsCode: string };
 }) => {
   const { input } = question;
   const code = heading?.code;
@@ -879,6 +957,8 @@ const QuestionControl = ({
         label={label}
         impact={impact}
         help={input.help}
+        citations={input.citations}
+        notesFor={notesFor}
       />
     );
   }

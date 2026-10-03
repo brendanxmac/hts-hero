@@ -38,7 +38,7 @@ The argument is a revision name such as `2026HTSRev6`. The reviewed changes are 
 1. Create a branch `revision/<revision>` from the current branch.
 2. Make the changes from the approved plan, following HowTariffsWork.md. Fill in `source` on every record you touch.
 3. Add pinned cases for anything new, then run `npm run tests` and fix any failures.
-4. Add the revision to `VerifiedTariffRevisions` only if every approved change is implemented and no deferred change affects duties in this revision. Otherwise, leave it out and say why.
+4. Add the revision to `VerifiedTariffRevisions` only if every approved change is implemented and no deferred change affects duties in this revision. Otherwise, leave it out and say why. Then run `npm run notes:cited` to refresh the cited note text the calculator shows ("Referenced notes"), and commit `public/data/notes`. Report any citations it says it couldn't find.
 5. **Add draft changelog entries** for the customer-facing changelog at `/duty-calculator/changelog`:
    - One `revision` entry for the revision itself:
      `npm run changelog:draft -- --type revision --revision <revision> --title "HTS Revision N (YYYY)" --summary "…"`

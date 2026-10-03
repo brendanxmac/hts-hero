@@ -324,6 +324,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                       lines={result.lines}
                       onAnswer={f.answer}
                       asOf={result.asOf}
+                      htsCode={result.htsCode}
                       preference={
                         f.country && result.availablePreferences.length > 0 ? (
                           <PreferenceClaim
