@@ -1288,3 +1288,53 @@ describe("engine-v2 real data: 2026 Rev 18", () => {
     expect(applying(calc("0201.30.50.91", "AU", "2026-12-01", yes("9903.54.02"))).includes("9903.54.02")).toBe(false)
   })
 })
+
+// ============================================================
+// 2026 Rev 19: Section 338 – Canada lists (b)(1)/(b)(3) expanded and the Section 232 exemption
+// limited to 9903.03.13 (note 51(c)), from September 15, 2026
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 19 (Section 338 – Canada changes)", () => {
+  const BEFORE = "2026-09-10"
+  const AFTER = "2026-09-20"
+  const calc = (htsCode: string, asOf: string, general = "Free") =>
+    calculate(AllRules, {
+      htsCode, country: "CA", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: "", other: "Free" }, answers: {},
+    })
+  const s338 = (result: CalculationResult) => applying(result).filter((c) => /^9903\.03\.1[2-6]$/.test(c))
+
+  it("Section 232 goods on (b)(3) pay the 50% on top from September 15 (51(c) now covers only .13)", () => {
+    const before = calc("9403.20.00.82", BEFORE) // steel furniture, Section 232 metals
+    expect(s338(before)).toEqual(["9903.03.15"])
+    expect(before.totalDuty).toBe(2500)
+    const after = calc("9403.20.00.82", AFTER)
+    expect(s338(after)).toEqual(["9903.03.14", "9903.03.15"])
+    expect(after.totalDuty).toBe(7500) // 25% Section 232 + 50%
+    // Wood cabinets (Section 232 wood) jump the same way
+    expect(s338(calc("9403.60.80.93", AFTER)).includes("9903.03.14")).toBe(true)
+  })
+
+  it("adds cheese, hides and boats to (b)(1)", () => {
+    expect(s338(calc("0406.10.64.00", BEFORE))).toEqual([])
+    expect(s338(calc("0406.10.64.00", AFTER))).toEqual(["9903.03.12"])
+    expect(s338(calc("8903.31.00.00", AFTER))).toEqual(["9903.03.12"])
+    expect(s338(calc("4101.50.10.00", AFTER))).toEqual(["9903.03.12"])
+  })
+
+  it("narrows provisions to the statistical numbers the note lists", () => {
+    expect(s338(calc("2208.30.60.80", BEFORE))).toEqual(["9903.03.12"])
+    expect(s338(calc("2208.30.60.80", AFTER))).toEqual([])
+    expect(s338(calc("2208.30.60.20", AFTER))).toEqual(["9903.03.12"])
+    expect(s338(calc("4818.90.00.10", BEFORE))).toEqual(["9903.03.14"])
+    expect(s338(calc("4818.90.00.10", AFTER))).toEqual([])
+    expect(s338(calc("4818.90.00.20", AFTER))).toEqual(["9903.03.14"])
+    expect(s338(calc("2501.00.00.00", AFTER))).toEqual([]) // salt, removed
+  })
+
+  it("leaves the dairy list (b)(2) and its Section 232 exemption unchanged", () => {
+    expect(s338(calc("0402.10.05.00", AFTER))).toEqual(["9903.03.13"])
+    const exceptions = (code: string) =>
+      AllRules.tariffs.find((t) => t.code === code && t.effective.from === "2026-08-22")?.exceptions
+    expect(exceptions("9903.03.13")).toEqual(["9903.03.15", "9903.03.16"])
+  })
+})

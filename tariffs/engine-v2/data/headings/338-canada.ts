@@ -8,6 +8,7 @@
 // temporary suspension, but the HTS text has none; applied as written (decision, Oct 3, 2026).
 import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
+import { tariffVersions } from "../../versioning"
 import { section232ArticleHeadingsFromJuly31 } from "./122"
 
 const PROGRAM = "338-canada"
@@ -33,10 +34,19 @@ const duty = (code: string, subdivision: string, list: string, proclamation: str
   source: { revision: "2026HTSRev17", citation: `${proclamation}, Proclamation 11056`, note: `U.S. note 51(a), ${subdivision}` },
 })
 
+// 2026HTSRev19, 51(c): "the additional duties imposed by heading 9903.03.13 shall not apply to"
+// Section 232 goods (was headings 9903.03.12–9903.03.14), from September 15, 2026 (PP 11064, PP
+// 11065). So .12 and .14 stack with Section 232 from then; only .13 keeps the .15 exemption.
+const without232Exemption = (proclamation: string) => ({
+  from: "2026-09-15",
+  set: { exceptions: ["9903.03.16"] },
+  source: { revision: "2026HTSRev19", citation: proclamation, note: "U.S. note 51(c): the Section 232 exemption (9903.03.15) now covers only 9903.03.13" },
+})
+
 export const headings: Tariff[] = [
-  duty("9903.03.12", "(b)(1)", "canada338b1", "Proclamation 11046"),
+  ...tariffVersions(duty("9903.03.12", "(b)(1)", "canada338b1", "Proclamation 11046"), [without232Exemption("Proclamation 11064")]),
   duty("9903.03.13", "(b)(2)", "canada338b2", "Proclamation 11047"),
-  duty("9903.03.14", "(b)(3)", "canada338b3", "Proclamation 11048"),
+  ...tariffVersions(duty("9903.03.14", "(b)(3)", "canada338b3", "Proclamation 11048"), [without232Exemption("Proclamation 11065")]),
   {
     code: "9903.03.15",
     program: PROGRAM,
