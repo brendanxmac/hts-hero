@@ -16,6 +16,7 @@
     "notes:cited": "npx tsx scripts/engine-v2/cited-notes.ts",
     "ch99:coverage": "npx tsx scripts/engine-v2/ch99-coverage.ts",
     "pull-revision": "npx tsx scripts/hts-revision-diff/pull-revision.ts",
+    "pull-batch": "npx tsx scripts/hts-coverage/pull-batch.ts",
     "changelog:draft": "npx tsx scripts/changelog-draft.ts",
     "test:revision-diff": "npx tsx testing/hts-revision-diff/run.ts"
   },

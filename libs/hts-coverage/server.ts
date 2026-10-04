@@ -144,7 +144,7 @@ export const loadDashboard = async (db: RevisionDb) => {
 
 // The revision checker's parsed notes for the newest revision that has them, cached per file
 const notesCache = new Map<string, Promise<ParsedNotes>>()
-const latestParsedNotes = async (db: RevisionDb) => {
+export const latestParsedNotes = async (db: RevisionDb) => {
   const revisions = must<{ name: string; active_attempt_id: string | null }[]>(
     await db.from(RevisionDiffTables.REVISIONS).select("name, active_attempt_id"),
     "Load revisions"
