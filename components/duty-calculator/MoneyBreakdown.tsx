@@ -73,7 +73,7 @@ export const CostBar = ({
       onMouseLeave={() => onHighlight?.(null)}
     >
       <div
-        className="flex h-5 w-full gap-0.5 overflow-hidden rounded-md bg-[var(--dc-surface-3)]"
+        className="flex h-5 w-full gap-0.5 overflow-hidden rounded-[5px] bg-[var(--dc-surface-3)]"
         aria-hidden
       >
         {shown.map((s) => (

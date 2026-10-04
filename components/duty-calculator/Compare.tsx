@@ -121,7 +121,7 @@ export const CompareView = ({
                 {!single && (
                   <button
                     type="button"
-                    className="-mr-1.5 rounded-lg p-1.5 text-[var(--dc-text-3)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+                    className="-mr-1.5 rounded-md p-1.5 text-[var(--dc-text-3)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
                     aria-label={`Remove ${country.name} from the comparison`}
                     title="Remove from comparison"
                     onClick={() => onRemove(country.code)}
@@ -301,7 +301,7 @@ const AddCountryCard = ({
   }, [searching]);
 
   return (
-    <div className="flex min-h-[280px] flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-[var(--dc-border-strong)] p-6 text-center">
+    <div className="flex min-h-[280px] flex-col items-center justify-center gap-4 rounded-[10px] border-2 border-dashed border-[var(--dc-border-strong)] p-6 text-center">
       {searching ? (
         <div className="w-full max-w-[300px] flex flex-col gap-2 text-left">
           <label htmlFor="dc-compare-add" className={styles.label}>

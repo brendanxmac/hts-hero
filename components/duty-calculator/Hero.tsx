@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out hero sections
   ArrowRightIcon,
   CalculatorIcon,
   ClockIcon,
@@ -18,6 +19,7 @@ const TOOLS_ANCHOR = "#tariff-tools";
 const CALCULATOR_HREF = `/duty-calculator${TOOLS_ANCHOR}`;
 const WATCHER_HREF = `/duty-calculator?tool=watcher${TOOLS_ANCHOR}`;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out capability cards
 const CAPABILITIES = [
   {
     Icon: CalculatorIcon,
@@ -47,6 +49,7 @@ export const Hero = ({
   latestUpdates: ChangelogEntry[];
 }) => {
   const headings = new Set(AllRules.tariffs.map((t) => t.code)).size;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out stats
   const stats = [
     { value: "23,000+", label: "HTS codes" },
     { value: String(Countries.length), label: "countries of origin" },
@@ -117,10 +120,10 @@ export const Hero = ({
               <li key={title}>
                 <Link
                   href={href}
-                  className="group flex h-full gap-3 sm:flex-col sm:gap-2 rounded-2xl border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-[var(--dc-shadow)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--dc-accent-border)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+                  className="group flex h-full gap-3 sm:flex-col sm:gap-2 rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-[var(--dc-shadow)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--dc-accent-border)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
                 >
                   <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
                     aria-hidden
                   >
                     <Icon className="h-5 w-5" />

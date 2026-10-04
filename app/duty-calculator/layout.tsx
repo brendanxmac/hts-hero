@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { createClient } from "@/app/api/supabase/server";
 import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
 import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out banner
 import { CTABanner } from "../../components/CTABanner";
 
 export default async function LayoutPrivate({

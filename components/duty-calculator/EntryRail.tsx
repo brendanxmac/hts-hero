@@ -6,7 +6,6 @@ import { CountryField } from "./CountryField";
 import { NumberField, Segmented } from "./controls";
 import { TRANSPORT_MODES } from "./format";
 import { HtsCodeField } from "./HtsCodeField";
-import { COLUMN_LABEL, describeHtsRevision } from "./Results";
 import { MAX_COMPARE, TariffFinder } from "./useTariffFinder";
 import styles from "./theme.module.css";
 
@@ -57,16 +56,16 @@ export const EntryRail = ({
   const { result } = f;
   return (
     <aside
-      className={`${styles.card} h-full p-4 flex flex-col gap-4`}
+      className={`${styles.card} h-full p-5 flex flex-col gap-4`}
       aria-label="Entry details"
       // Tighter fields than the other designs
-      style={{ borderRadius: 12 }}
+      style={{ borderRadius: 10 }}
     >
       {title && (
         <div>
-          <h2 className="text-[15px] md:text-[18px] font-semibold">{title}</h2>
+          <h2 className="text-[16px] font-semibold">{title}</h2>
           {description && (
-            <p className="mt-1 text-[12.5px] leading-snug text-[var(--dc-text-3)]">
+            <p className="mt-0.5 text-[12.5px] leading-snug text-[var(--dc-text-3)]">
               {description}
             </p>
           )}

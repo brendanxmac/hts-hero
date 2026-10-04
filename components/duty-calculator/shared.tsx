@@ -73,7 +73,7 @@ export const DateNotice = ({
   return (
     <div
       role="status"
-      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3.5"
+      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-lg border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3.5"
     >
       <ExclamationTriangleIcon className="w-5 h-5 shrink-0 text-[var(--dc-warning)]" aria-hidden />
       <p className="flex-1 text-[14px] leading-snug text-[var(--dc-warning)]">
@@ -102,7 +102,7 @@ export const ExampleButtons = ({ onExample }: { onExample: (e: Example) => void 
         key={example.code}
         type="button"
         onClick={() => onExample(example)}
-        className="group flex items-center justify-between gap-4 rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-4 py-3.5 text-left transition-colors hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+        className="group flex items-center justify-between gap-4 rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-4 py-3.5 text-left transition-colors hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
       >
         <span className="flex flex-col">
           <span className="text-[14.5px] font-semibold text-[var(--dc-text)]">
@@ -117,9 +117,9 @@ export const ExampleButtons = ({ onExample }: { onExample: (e: Example) => void 
 );
 
 export const EMPTY_STEPS = [
-  "Enter the 8- or 10-digit HTS code, or search by description",
+  "Enter an 8 or 10 digit HTS code, or search by description",
   `Choose the country of origin (or up to ${MAX_COMPARE} to compare), value and entry date`,
-  "Answer any questions that could lower your duty",
+  "Select any adjustments that apply to your product or entry to see the final estimate ",
 ];
 
 export const emptyTitle = (f: TariffFinder) =>
@@ -128,9 +128,8 @@ export const emptyTitle = (f: TariffFinder) =>
 // ── Around the page ──
 
 export const Disclaimer = () => (
-  <p className="mt-4 text-center text-[12.5px] leading-relaxed text-[var(--dc-text-3)] max-w-2xl mx-auto">
-    Estimates are based on the HTS and Chapter 99 rules in effect on the entry date and your answers. They don&apos;t
-    include antidumping or countervailing duties. Spot something wrong?{" "}
+  <p className="text-center text-[12.5px] leading-relaxed text-[var(--dc-text-3)] max-w-2xl mx-auto">
+    All figures shown are estimates based on the details provided and may not be complete nor correct. <br /> Spot something wrong?{" "}
     <a
       href="mailto:support@htshero.com"
       className={styles.link}

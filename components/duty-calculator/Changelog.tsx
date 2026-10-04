@@ -26,7 +26,7 @@ export const ChangelogTypeBadge = ({ type }: { type: ChangelogType }) => (
 export const ChangelogCard = ({ entries }: { entries: ChangelogEntry[] }) => (
   <section
     aria-labelledby="changelog-card-title"
-    className="w-full rounded-2xl border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 shadow-[var(--dc-shadow)]"
+    className="w-full rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 shadow-[var(--dc-shadow)]"
   >
     <h2 id="changelog-card-title" className="text-[15px] font-semibold text-[var(--dc-text)]">
       Latest updates

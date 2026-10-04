@@ -162,7 +162,7 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
 const Table = ({ rows }: { rows: string[][] }) => {
   const [head, ...body] = rows;
   return (
-    <div className="overflow-x-auto rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface)]">
+    <div className="overflow-x-auto rounded-md border border-[var(--dc-border)] bg-[var(--dc-surface)]">
       <table className="w-full text-[12px] leading-snug">
         <thead className="bg-[var(--dc-surface-3)]">
           <tr>
@@ -213,7 +213,7 @@ const NoteNode = ({ node, htsCode }: { node: CitedNode; htsCode: string }) => {
   const hit = !isTable && mentioned.some((c) => covers(c, htsCode));
   return (
     <div
-      className={`flex flex-col gap-2 ${hit ? "rounded-md bg-[var(--dc-positive-soft)] px-2 py-1 -mx-2" : ""}`}
+      className={`flex flex-col gap-2 ${hit ? "rounded-[5px] bg-[var(--dc-positive-soft)] px-2 py-1 -mx-2" : ""}`}
       style={{ marginLeft: node.depth * 16 }}
     >
       {parsed.length === 0 && (
@@ -266,7 +266,7 @@ const Citation = ({
   const picked = versions?.length ? versionOn(versions, asOf) : undefined;
   const version = picked?.version;
   return (
-    <div className="flex flex-col gap-2.5 rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-3.5">
+    <div className="flex flex-col gap-2.5 rounded-md border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-3.5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <span className="text-[12.5px] font-semibold text-[var(--dc-text)]">
           {citation.label}

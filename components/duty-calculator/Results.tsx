@@ -346,7 +346,7 @@ const LegalPanel = ({
   citations?: string[];
   notesFor?: { asOf: string; htsCode: string };
 }) => (
-  <div className="flex flex-col gap-4 rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-sm">
+  <div className="flex flex-col gap-4 rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-sm">
     <p className="text-[13.5px] leading-relaxed text-[var(--dc-text)]">
       {text}
     </p>
@@ -394,15 +394,14 @@ const EffectiveDate = ({ from }: { from?: string }) =>
     </span>
   ) : null;
 
-// The line's chart color
-const Swatch = ({ color }: { color?: string }) =>
-  color ? (
-    <span
-      className="inline-block h-2.5 w-2.5 shrink-0 rounded-[3px] self-center"
-      style={{ background: color }}
-      aria-hidden
-    />
-  ) : null;
+// The line's chart color; lines without one keep the space, so the codes line up
+const Swatch = ({ color }: { color?: string }) => (
+  <span
+    className="inline-block h-2.5 w-2.5 shrink-0 rounded-[3px] self-center"
+    style={color ? { background: color } : undefined}
+    aria-hidden
+  />
+);
 
 const MobileRow = ({
   code,
@@ -678,7 +677,7 @@ export const SimpleSummary = ({
       ),
     );
   const rows: [string, number][] = [
-    ["Standard duty", result.base.amount],
+    ["Base duty", result.base.amount],
     ...Array.from(byProgram),
     ["Customs fees (MPF, HMF)", result.totalFees],
   ];
@@ -893,7 +892,7 @@ const Impact = ({ amount }: { amount?: number }) => {
   const lower = amount < 0;
   return (
     <span
-      className={`${styles.num} inline-flex items-center rounded-md px-1.5 py-0.5 text-[12px] font-semibold ${
+      className={`${styles.num} inline-flex items-center rounded-[5px] px-1.5 py-0.5 text-[12px] font-semibold ${
         lower
           ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)]"
           : "bg-[var(--dc-negative-soft)] text-[var(--dc-negative)]"
@@ -963,7 +962,7 @@ const CheckRow = ({
             <span className="flex flex-wrap items-center gap-2">
               {!checked && <Impact amount={impact} />}
               {noChange && (
-                <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-[12px] font-medium bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]">
+                <span className="inline-flex items-center rounded-[5px] px-1.5 py-0.5 text-[12px] font-medium bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]">
                   No change to the total
                 </span>
               )}
@@ -1063,15 +1062,15 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
     <div className={styles.card}>
       <button
         type="button"
-        className="w-full flex items-center justify-between gap-3 p-5 text-left"
+        className="w-full flex items-center justify-between gap-3 p-5 sm:px-6 text-left"
         onClick={() => setOpen((x) => !x)}
         aria-expanded={open}
       >
         <span>
-          <span className="block text-[15px] font-semibold">
+          <span className="block text-[16px] font-semibold">
             Checked but not applied
           </span>
-          <span className="block mt-0.5 text-[13px] text-[var(--dc-text-3)]">
+          <span className="block mt-0.5 text-[12.5px] text-[var(--dc-text-3)]">
             {notApplied.length} other headings match this code and country
           </span>
         </span>
@@ -1082,7 +1081,7 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
       {open && (
         <ul className="border-t border-[var(--dc-border)] divide-y divide-[var(--dc-border)]">
           {notApplied.map((line) => (
-            <li key={line.code} className="px-5 py-3.5 flex flex-col gap-1">
+            <li key={line.code} className="px-5 sm:px-6 py-3.5 flex flex-col gap-1">
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <span
                   className={`${mono.className} text-[12.5px] font-semibold text-[var(--dc-text-2)]`}
@@ -1095,7 +1094,7 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`inline-flex rounded-md px-1.5 py-0.5 text-[11.5px] font-semibold ${
+                  className={`inline-flex rounded-[5px] px-1.5 py-0.5 text-[11.5px] font-semibold ${
                     line.status === "needsAnswer"
                       ? "bg-[var(--dc-warning-soft)] text-[var(--dc-warning)] border border-[var(--dc-warning-border)]"
                       : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
@@ -1208,10 +1207,10 @@ export const Panel = ({
   description?: string;
   children: ReactNode;
 }) => (
-  <section className={`${styles.card} p-5`}>
+  <section className={`${styles.card} p-5 sm:p-6`}>
     {/* The badge drops under the title when they don't fit side by side */}
     <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
-      <h3 className="text-[15px] md:text-[18px] font-semibold">{title}</h3>
+      <h3 className="text-[16px] font-semibold">{title}</h3>
       {badge && (
         <span className="whitespace-nowrap rounded-full bg-[var(--dc-accent-soft)] border border-[var(--dc-accent-border)] px-2 py-0.5 text-[12px] font-semibold text-[var(--dc-accent)]">
           {badge}
@@ -1219,7 +1218,7 @@ export const Panel = ({
       )}
     </div>
     {description && (
-      <p className="mt-1 text-[12.5px] leading-snug text-[var(--dc-text-3)]">
+      <p className="mt-0.5 text-[12.5px] leading-snug text-[var(--dc-text-3)]">
         {description}
       </p>
     )}
