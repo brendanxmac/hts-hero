@@ -88,7 +88,7 @@ export const Hero = ({
             >
               HTS code
             </Link>{" "}
-            and country of origin. We apply every tariff, exemption and fee in
+            and country of origin. We find every tariff, exemption and fee in
             effect on your entry date, itemized line by line with its legal
             source, and kept current with every HTS revision.
           </p>
