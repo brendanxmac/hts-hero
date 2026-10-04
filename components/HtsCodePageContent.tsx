@@ -8,11 +8,23 @@ import { CTABanner } from "./CTABanner";
 import { ClassificationHierarchy, HierarchyItem } from "./classification-detail/ClassificationHierarchy";
 import { SectionChapterNotesSection } from "./SectionChapterNotesSection";
 import { RelatedCrossRulingsSection } from "./RelatedCrossRulingsSection";
+import { DutyByCountry } from "./hts-page/DutyByCountry";
+import {
+  dutyAnswerSentence,
+  findRateElement,
+  HtsDutySummary,
+  inSentence,
+  lowestTotal,
+} from "../libs/hts-duty-summary";
 
 const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content`;
 
 interface HtsCodePageContentProps {
   element: HtsElement;
+  // Readable name for the line, from its parents when its own description is a fragment
+  productName: string;
+  // Duties from the largest sources of US imports; null when the line has no rates
+  summary: HtsDutySummary | null;
   parentElements: HtsElement[];
   childrenElements: HtsElement[];
   siblingElements: HtsElement[];
@@ -25,23 +37,19 @@ interface HtsCodePageContentProps {
 
 export function HtsCodePageContent({
   element,
+  productName,
+  summary,
   parentElements: parents,
   childrenElements: children,
   siblingElements: siblings,
   sectionChapter,
 }: HtsCodePageContentProps) {
-  const tariffElement = (() => {
-    if (element.general || element.special || element.other || element.additionalDuties) return element;
-    for (let i = parents.length - 1; i >= 0; i--) {
-      if (parents[i].general || parents[i].special || parents[i].other) return parents[i];
-    }
-    return element;
-  })();
+  const tariffElement = findRateElement(element, parents);
   const hasDutyData = tariffElement.general || tariffElement.special || tariffElement.other;
 
   return (
     <>
-      <StructuredData element={element} tariffElement={tariffElement} parentElements={parents} childrenElements={children} sectionChapter={sectionChapter} />
+      <StructuredData element={element} productName={productName} summary={summary} tariffElement={tariffElement} parentElements={parents} childrenElements={children} sectionChapter={sectionChapter} />
 
       {/* CTA banner + navigation */}
       <header className="">
@@ -126,15 +134,14 @@ export function HtsCodePageContent({
           {/* <div className="absolute bottom-0 left-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl pointer-events-none" /> */}
 
           <div className="relative z-10 flex flex-col gap-3">
-            <div>
-              <h1 className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
+            <h1 className="flex flex-col gap-1.5">
+              <span className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
                 {element.htsno}
-              </h1>
-            </div>
-
-            <h2 className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug">
-              {element.description}
-            </h2>
+              </span>
+              <span className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug">
+                {productName}
+              </span>
+            </h1>
 
 
             <h3 className="text-sm text-base-content/80 leading-relaxed">
@@ -248,6 +255,24 @@ export function HtsCodePageContent({
         /> */}
 
 
+
+        {/* === Duty by country of origin === */}
+        {summary && (
+          <DutyByCountry htsno={element.htsno} productName={productName} summary={summary} />
+        )}
+
+        {/* No rates on this line (e.g. a heading above the rate lines): still offer the calculator */}
+        {!summary && !hasDutyData && element.htsno && !element.htsno.startsWith("99") && (
+          <section className="rounded-2xl border border-base-content/20 bg-base-100 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <p className="text-sm font-semibold text-base-content">Importing under {element.htsno}?</p>
+              <p className="text-xs text-base-content/50">Pick the full HTS code in the calculator to see every duty, tariff and exemption for your country of origin.</p>
+            </div>
+            <Link href={`/duty-calculator?code=${element.htsno}`} className="btn btn-primary">
+              Calculate Total Duty <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </section>
+        )}
 
         {/* === Duty Rates & Details === */}
         {(hasDutyData || element.units.length > 0 || element.quotaQuantity || element.additionalDuties) && (
@@ -513,20 +538,18 @@ function DutyRateRow({
   );
 }
 
-const GENERIC_DESC_RE = /^(other|parts|thereof|mixtures|the foregoing|articles|not elsewhere)/i;
-
-function isShortProductName(description: string) {
-  return description.length <= 40 && !GENERIC_DESC_RE.test(description.trim());
-}
-
 function StructuredData({
   element,
+  productName,
+  summary,
   tariffElement,
   parentElements: parents,
   childrenElements: children,
   sectionChapter,
 }: {
   element: HtsElement;
+  productName: string;
+  summary: HtsDutySummary | null;
   tariffElement: HtsElement;
   parentElements: HtsElement[];
   childrenElements: HtsElement[];
@@ -536,8 +559,14 @@ function StructuredData({
     { name: "HTS Explorer", url: `https://${config.domainName}/explore` },
     ...(sectionChapter
       ? [
-        { name: `Section ${sectionChapter.sectionNumber}: ${sectionChapter.sectionDescription}`, url: "" },
-        { name: `Chapter ${element.chapter}: ${sectionChapter.chapterDescription}`, url: "" },
+        {
+          name: `Section ${sectionChapter.sectionNumber}: ${sectionChapter.sectionDescription}`,
+          url: `https://${config.domainName}/section/${sectionChapter.sectionNumber}`,
+        },
+        {
+          name: `Chapter ${element.chapter}: ${sectionChapter.chapterDescription}`,
+          url: `https://${config.domainName}/chapter/${element.chapter}`,
+        },
       ]
       : []),
     ...parents
@@ -563,45 +592,51 @@ function StructuredData({
     })),
   };
 
-  const descLower = element.description.toLowerCase();
   const chapterCtx = sectionChapter
     ? `, classified under Chapter ${element.chapter} (${sectionChapter.chapterDescription})`
     : "";
   const dutyCtx = tariffElement.general ? ` The general duty rate is ${tariffElement.general}.` : "";
-  const shortName = isShortProductName(element.description);
+  const subCodesCtx = children.length > 0
+    ? ` There are ${children.length} more specific sub-classifications under this code.`
+    : "";
 
-  const faqQuestion = shortName
-    ? `What is the HTS code for ${descLower}?`
-    : `What does HTS code ${element.htsno} cover?`;
+  const faqQuestion = `What does HTS code ${element.htsno} cover?`;
+  const faqAnswer = `HTS code ${element.htsno} covers ${inSentence(productName)}${productName === element.description ? "" : ` (${element.description})`}${chapterCtx} in the US Harmonized Tariff Schedule.${dutyCtx}${subCodesCtx}`;
 
-  const faqAnswer = shortName
-    ? `The HTS code for ${descLower} is ${element.htsno}${chapterCtx} in the US Harmonized Tariff Schedule.${dutyCtx}${children.length > 0 ? ` There are ${children.length} more specific sub-classifications under this code.` : ""}`
-    : `HTS code ${element.htsno} covers ${descLower}${chapterCtx} in the US Harmonized Tariff Schedule.${dutyCtx}${children.length > 0 ? ` There are ${children.length} more specific sub-classifications under this code.` : ""}`;
+  const china = summary?.rows.find((r) => r.country.code === "CN");
+  const lowest = summary ? lowestTotal(summary.rows) : null;
+  const faqs: [string, string][] = [
+    [faqQuestion, faqAnswer],
+    ...(summary && china
+      ? [[
+        `What is the US tariff on ${inSentence(productName)} (HTS ${element.htsno}) from China?`,
+        dutyAnswerSentence({ productName, htsno: element.htsno, row: china, asOf: summary.asOf }),
+      ] as [string, string]]
+      : []),
+    ...(summary && lowest
+      ? [[
+        `Which country has the lowest US duty on HTS ${element.htsno}?`,
+        `Of the ${summary.rows.length} largest sources of US imports, the lowest total duty on HTS ${element.htsno} is ${lowest.label}, as of the tariffs in effect on ${summary.asOf}.`,
+      ] as [string, string]]
+      : []),
+  ];
 
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: faqQuestion,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: faqAnswer,
-        },
-      },
-    ],
+    mainEntity: faqs.map(([name, text]) => ({
+      "@type": "Question",
+      name,
+      acceptedAnswer: { "@type": "Answer", text },
+    })),
   };
 
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: shortName
-      ? `HTS Code for ${element.description} – ${element.htsno}`
-      : `HTS ${element.htsno} – ${element.description}`,
-    description: shortName
-      ? `The HTS code for ${descLower} is ${element.htsno}.${dutyCtx}`
-      : `HTS code ${element.htsno}: ${element.description}.${dutyCtx}`,
+    name: `HTS ${element.htsno}: ${productName} – Duty Rates & Tariffs`,
+    ...(summary ? { dateModified: summary.asOf } : {}),
+    description: `HTS code ${element.htsno}: ${productName}.${dutyCtx}`,
     url: `https://${config.domainName}/hts/${element.htsno}`,
     isPartOf: {
       "@type": "WebSite",

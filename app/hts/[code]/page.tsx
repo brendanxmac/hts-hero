@@ -10,6 +10,15 @@ import {
 import { HtsElement } from "../../../interfaces/hts";
 import { HtsCodePageContent } from "@/components/HtsCodePageContent";
 import config from "@/config";
+import {
+  describeTotal,
+  findRateElement,
+  formatSummaryDate,
+  getHtsDutySummary,
+  HtsDutySummary,
+  htsProductName,
+  inSentence,
+} from "@/libs/hts-duty-summary";
 
 interface HtsCodePageProps {
   params: { code: string };
@@ -21,85 +30,109 @@ export async function generateStaticParams(): Promise<{ code: string }[]> {
   return [];
 }
 
-const GENERIC_DESC_RE = /^(other|parts|thereof|mixtures|the foregoing|articles|not elsewhere)/i;
+// Everything the page and its metadata need, computed once per render
+async function loadHtsPage(code: string) {
+  const elements = await getHtsElementsServer();
+  const element = getHtsElementByCode(code, elements);
+  if (!element) return null;
+
+  const sections = await getHtsSectionsServer();
+  const parents = getHtsElementParentsServer(element, elements);
+  const rateElement = findRateElement(element, parents);
+  return {
+    elements,
+    element,
+    parents,
+    rateElement,
+    sectionChapter: getSectionAndChapterForElement(sections, element.chapter),
+    productName: htsProductName(element, parents),
+    summary: getHtsDutySummary(element, rateElement),
+  };
+}
+
+const SITE_SUFFIX = " | HTS Hero";
+
+// "HTS 6109.10.00: T-shirts, singlets… of cotton – Duty Rates & Tariffs | HTS Hero",
+// shortened to stay close to what search results show
+function pageTitle(htsno: string, name: string, shortName: string) {
+  const full = `HTS ${htsno}: ${name} – Duty Rates & Tariffs`;
+  if (full.length + SITE_SUFFIX.length <= 70) return full + SITE_SUFFIX;
+  if (full.length <= 75) return full;
+  return `HTS ${htsno}: ${shortName} – Duty Rates & Tariffs`;
+}
+
+// The totals from the largest suppliers, trimmed to fit a search result snippet
+function pageDescription(
+  htsno: string,
+  name: string,
+  shortName: string,
+  general: string | null,
+  summary: HtsDutySummary | null,
+) {
+  // Chapter 99 lines carry sentences in the rate column, too long for a snippet
+  const generalCtx = general && general.length <= 20 ? ` General rate ${general}.` : "";
+  if (!summary) {
+    for (const productName of [name, shortName]) {
+      const text = `HTS code ${htsno} covers ${inSentence(productName)}.${generalCtx} Look up US duty rates, tariffs and trade programs for this code.`;
+      if (text.length <= 160) return text;
+    }
+    return `HTS code ${htsno} covers ${inSentence(shortName)}.${generalCtx}`;
+  }
+  const totals = ["CN", "MX", "VN", "DE"]
+    .map((code) => summary.rows.find((r) => r.country.code === code))
+    .filter((r): r is NonNullable<typeof r> => !!r)
+    .map((r) => `${describeTotal(r)} from ${r.country.name}`);
+  const updated = ` Updated ${formatSummaryDate(summary.asOf)}.`;
+  for (const productName of [name, shortName]) {
+    for (let n = totals.length; n >= 1; n--) {
+      const text = `US duty on ${inSentence(productName)} (HTS ${htsno}): ${totals.slice(0, n).join(", ")}.${generalCtx}${updated}`;
+      if (text.length <= 160) return text;
+    }
+  }
+  return `US duty on HTS ${htsno}: ${totals[0]}.${updated}`;
+}
 
 export async function generateMetadata({
   params,
 }: HtsCodePageProps): Promise<Metadata> {
-  const elements = await getHtsElementsServer();
-  const sections = await getHtsSectionsServer();
-  const element = getHtsElementByCode(params.code, elements);
-
-  if (!element) {
+  const page = await loadHtsPage(params.code);
+  if (!page) {
     return { title: "HTS Code Not Found | HTS Hero" };
   }
 
-  const sectionChapter = getSectionAndChapterForElement(
-    sections,
-    element.chapter
-  );
-
-  const truncDesc = element.description.length > 120
-    ? element.description.slice(0, 117) + "..."
-    : element.description;
-
-  const descLower = element.description.toLowerCase();
-
-  const dutySnippet = element.general
-    ? ` General duty rate: ${element.general}.`
-    : "";
-
-  const chapterSnippet = sectionChapter
-    ? ` Chapter ${element.chapter} (${sectionChapter.chapterDescription}).`
-    : "";
-
+  const { element, parents, rateElement, productName, summary } = page;
+  const shortName = htsProductName(element, parents, 40);
+  const title = pageTitle(element.htsno, productName, shortName);
+  const description = pageDescription(element.htsno, productName, shortName, rateElement.general, summary);
+  const nameLower = productName.toLowerCase();
   const codeWithoutDots = element.htsno.replace(/\./g, "");
-
-  const shortName = element.description.length <= 40
-    && !GENERIC_DESC_RE.test(element.description.trim());
-
-  const title = shortName
-    ? `HTS Code for ${element.description} – ${element.htsno} | HTS Hero`
-    : `HTS ${element.htsno}: ${truncDesc} | US Tariff Classification`;
-
-  const description = shortName
-    ? `The HTS code for ${descLower} is ${element.htsno}.${chapterSnippet}${dutySnippet} Look up tariff classification, duty rates, and trade programs.`
-    : `HTS code ${element.htsno} covers ${truncDesc.toLowerCase()}.${chapterSnippet}${dutySnippet} Look up tariff classification, duty rates, and trade programs.`;
-
-  const ogTitle = shortName
-    ? `HTS Code for ${element.description} – ${element.htsno}`
-    : `HTS ${element.htsno}: ${truncDesc}`;
 
   return {
     title,
     description,
     keywords: [
-      `HTS code for ${descLower}`,
-      `${descLower} HTS code`,
-      `${descLower} tariff code`,
-      `${descLower} tariff classification`,
-      `${descLower} import code`,
       `HTS ${element.htsno}`,
       `HTS code ${element.htsno}`,
-      `HTSUS ${element.htsno}`,
+      `${element.htsno} duty rate`,
+      `${element.htsno} tariff`,
       codeWithoutDots,
-      `${element.htsno} classification`,
-      element.description,
+      `${nameLower} HTS code`,
+      `${nameLower} tariff`,
+      `${nameLower} import duty`,
       "harmonized tariff schedule",
-      "HTS classification",
       "US tariff code lookup",
     ],
     openGraph: {
-      title: ogTitle,
-      description: `Look up HTS code ${element.htsno}: ${truncDesc.toLowerCase()}.${dutySnippet} Find tariff classification and duty rates on HTS Hero.`,
+      title: title.replace(SITE_SUFFIX, ""),
+      description,
       url: `https://${config.domainName}/hts/${element.htsno}`,
       siteName: "HTS Hero",
       type: "website",
     },
     twitter: {
       card: "summary",
-      title: ogTitle,
-      description: `Look up HTS ${element.htsno}: ${truncDesc.toLowerCase()}.${dutySnippet}`,
+      title: title.replace(SITE_SUFFIX, ""),
+      description,
     },
     alternates: {
       canonical: `/hts/${element.htsno}`,
@@ -108,29 +141,24 @@ export async function generateMetadata({
 }
 
 export default async function HtsCodePage({ params }: HtsCodePageProps) {
-  const elements = await getHtsElementsServer();
-  const sections = await getHtsSectionsServer();
-  const element = getHtsElementByCode(params.code, elements);
-
-  if (!element) {
+  const page = await loadHtsPage(params.code);
+  if (!page) {
     notFound();
   }
 
-  const parents = getHtsElementParentsServer(element, elements);
+  const { elements, element, parents, sectionChapter, productName, summary } = page;
   const children = getDirectChildren(element, elements);
   const nearestParent = parents[parents.length - 1];
   const siblings = nearestParent
     ? getDirectChildren(nearestParent, elements).filter((e) => e.uuid !== element.uuid)
     : [];
-  const sectionChapter = getSectionAndChapterForElement(
-    sections,
-    element.chapter
-  );
 
   return (
     <main className="w-full min-h-screen bg-base-100">
       <HtsCodePageContent
         element={element}
+        productName={productName}
+        summary={summary}
         parentElements={parents}
         childrenElements={children}
         siblingElements={siblings}
