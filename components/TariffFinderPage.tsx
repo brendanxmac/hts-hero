@@ -16,7 +16,7 @@ import { CompareView } from "./duty-calculator/Compare";
 import { EntryRail } from "./duty-calculator/EntryRail";
 import { formatDate } from "./duty-calculator/format";
 import { mono } from "./duty-calculator/font";
-import { BreakdownCard, slices } from "./duty-calculator/MoneyBreakdown";
+import { CostBar, slices } from "./duty-calculator/MoneyBreakdown";
 import { RateHistoryCard } from "./duty-calculator/RateHistory";
 import {
   NotAppliedPanel,
@@ -49,15 +49,19 @@ const TOOLS: { id: Tool; label: string; note: string; Icon: typeof CalculatorIco
   { id: "watcher", label: "Tariff Watcher", note: "Rates for all your products", Icon: EyeIcon },
 ];
 
+// The Tariff Watcher tab is hidden while it moves to a page of its own; the calculator shows alone
+const SHOW_TOOL_TABS = false;
+
 // Kept on this device until watch lists are saved to accounts
 const WATCH_LIST_KEY = "hts-hero-tariff-watch-list";
 
 export const TariffFinderPage = () => {
   const f = useTariffFinder();
   const searchParams = useSearchParams();
-  const [tool, setTool] = useState<Tool>(() =>
+  const [selectedTool, setTool] = useState<Tool>(() =>
     searchParams.get("tool") === "watcher" ? "watcher" : "calculator",
   );
+  const tool: Tool = SHOW_TOOL_TABS ? selectedTool : "calculator";
   const [watchList, setWatchList] = useState("");
 
   // Follow ?tool= when it changes, e.g. from the links in the hero
@@ -125,8 +129,16 @@ export const TariffFinderPage = () => {
   return (
     <div className={`${styles.root} w-full pb-20`}>
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 flex flex-col gap-6">
-        <ToolTabs tool={tool} onChange={changeTool} />
-        <div role="tabpanel" id={`tool-panel-${tool}`} aria-labelledby={`tool-tab-${tool}`}>
+        {SHOW_TOOL_TABS && <ToolTabs tool={tool} onChange={changeTool} />}
+        <div
+          {...(SHOW_TOOL_TABS
+            ? {
+              role: "tabpanel",
+              id: `tool-panel-${tool}`,
+              "aria-labelledby": `tool-tab-${tool}`,
+            }
+            : {})}
+        >
           {tool === "watcher" ? (
             <TariffWatcher
               f={f}
@@ -164,14 +176,14 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
           aria-controls={`tool-panel-${id}`}
           onClick={() => onChange(id)}
           className={`flex items-center gap-3 rounded-xl px-3 sm:px-4 py-2.5 text-left transition-[background-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${active
-              ? "bg-[var(--dc-surface)] shadow-[0_1px_2px_rgba(15,18,23,0.12),0_0_0_1px_var(--dc-border)]"
-              : "hover:bg-[var(--dc-surface-3)]"
+            ? "bg-[var(--dc-surface)] shadow-[0_1px_2px_rgba(15,18,23,0.12),0_0_0_1px_var(--dc-border)]"
+            : "hover:bg-[var(--dc-surface-3)]"
             }`}
         >
           <span
             className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${active
-                ? "bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
-                : "bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]"
+              ? "bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
+              : "bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]"
               }`}
             aria-hidden
           >
@@ -189,11 +201,44 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
   </div>
 );
 
-// Entry details in a rail on the left; the statement, chart and questions beside it
+// A column that moves with the page: one that fits below the gap stays there; a taller one scrolls
+// until its end is in view, the gap below it, and stays there, so all of it can be reached without
+// scrolling it on its own. Returns the ref setter and the sticky offset for the column.
+const STICKY_GAP = 16;
+const useStickyColumn = () => {
+  const [el, setEl] = useState<HTMLElement | null>(null);
+  const [top, setTop] = useState(STICKY_GAP);
+  useEffect(() => {
+    if (!el) return;
+    const update = () =>
+      setTop(
+        el.offsetHeight + STICKY_GAP <= window.innerHeight
+          ? STICKY_GAP
+          : window.innerHeight - el.offsetHeight - STICKY_GAP,
+      );
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [el]);
+  return [setEl, top] as const;
+};
+
+// Two columns, 40/60: the entry details with, in the detailed view, the possible adjustments and
+// the duty over time below them; and the results, which move with the page while the left column
+// is taller, so toggling an adjustment shows its effect on the total without scrolling. Phones
+// get one column: entry details, results, adjustments, duty over time.
 const Layout = ({ f }: { f: TariffFinder }) => {
   const { result, selectedElement, country } = f;
   // The "Where the money goes" slice being hovered, in the chart or the statement
   const [highlight, setHighlight] = useState<string | null>(null);
+  // The duty lines as one tight row each, or with their program, dates and legal text
+  const [linesDetail, setLinesDetail] = useState<"compact" | "full">("compact");
+  const [resultsRef, resultsTop] = useStickyColumn();
   const sliceColors = result
     ? slices(result)
       .filter((s) => s.amount > 0)
@@ -202,34 +247,44 @@ const Layout = ({ f }: { f: TariffFinder }) => {
         {},
       )
     : {};
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-[292px_minmax(0,1fr)] gap-5 items-start">
-      <EntryRail
-        f={f}
-        title="Entry details"
-        description="Results update as you type"
-      />
+  const ready = Boolean(result && selectedElement && country && !f.loading);
+  const detailed = ready && !f.comparing && f.view === "detailed";
+  const hasAdjustments =
+    detailed &&
+    result !== null &&
+    (result.questions.length > 0 || result.availablePreferences.length > 0);
 
-      {/* Results */}
-      <div className="min-w-0">
-        {f.loading ? (
-          <ResultsSkeleton />
-        ) : !result || !selectedElement || !country ? (
-          <EmptyState f={f} />
-        ) : (
-          <section
-            id="duty-results"
-            className="flex flex-col gap-4 scroll-mt-4"
-            aria-labelledby="results-heading"
-            aria-live="polite"
-          >
-            <div className="flex flex-wrap items-end justify-between gap-4">
+  return (
+    <div
+      className="grid grid-cols-1 gap-5 items-start lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-rows-[auto_auto_1fr]"
+    >
+      {/* Stretches to the prompt beside it when there are no results yet */}
+      <div className="min-w-0 lg:col-start-1 lg:row-start-1 lg:self-stretch">
+        <EntryRail
+          f={f}
+          title="Entry Details"
+          description="Enter the details of your import to get a duty estimate"
+        />
+      </div>
+
+      {/* Results, with their heading. They move with the page; before there are any, the prompt
+          matches the entry details' height */}
+      <div
+        ref={resultsRef}
+        className={`min-w-0 flex flex-col gap-4 lg:col-start-2 lg:row-start-1 ${ready ? "lg:row-span-3 lg:sticky" : "lg:self-stretch"}`}
+        style={{ top: resultsTop }}
+      >
+          {ready && result && selectedElement && country && (
+            <div
+              id="duty-results"
+              className="flex flex-wrap items-end justify-between gap-4 scroll-mt-4"
+            >
               <div className="min-w-0">
                 <h2
                   id="results-heading"
                   className="text-[22px] font-semibold tracking-tight"
                 >
-                  Duty estimate
+                  Duty Estimate
                 </h2>
                 <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
                   <span
@@ -250,14 +305,21 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                 </p>
               </div>
               <div className="flex flex-wrap sm:flex-nowrap w-full sm:w-auto items-center gap-2">
-                <ViewSwitch
-                  f={f}
-                  className="basis-full sm:basis-auto"
-                />
+                <ViewSwitch f={f} className="basis-full sm:basis-auto" />
                 <ShareButtons f={f} />
               </div>
             </div>
-
+          )}
+        {f.loading ? (
+          <ResultsSkeleton />
+        ) : !ready || !result ? (
+          <EmptyState f={f} />
+        ) : (
+          <section
+            className="flex flex-col gap-4"
+            aria-labelledby="results-heading"
+            aria-live="polite"
+          >
             <VerifiedNotice f={f} />
 
             {f.comparing ? (
@@ -281,81 +343,131 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                 />
               </div>
             ) : (
-              // Charts get their own column only when there's room beside the rail
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
-                <div className="xl:col-span-8 flex flex-col gap-4 min-w-0">
-                  <div className={`${styles.card} overflow-hidden`}>
-                    <SummaryStats
-                      result={result}
-                      customsValue={f.customsValue}
-                    />
-                    <Statement
-                      result={result}
-                      customsValue={f.customsValue}
-                      unitLabel={f.unitLabel}
-                      sliceColors={sliceColors}
-                      highlight={highlight}
-                      onHighlight={setHighlight}
-                    />
-                  </div>
-                  {result.warnings.length > 0 && (
-                    <ul className="flex flex-col gap-1.5 rounded-xl border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3">
-                      {result.warnings.map((w) => (
-                        <li
-                          key={w}
-                          className="flex gap-2 text-[13px] leading-snug text-[var(--dc-warning)]"
-                        >
-                          <ExclamationTriangleIcon
-                            className="w-4 h-4 shrink-0 mt-px"
-                            aria-hidden
-                          />
-                          {w}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {(result.questions.length > 0 || result.availablePreferences.length > 0) && (
-                    <QuestionsPanel
-                      questions={result.questions}
-                      answers={f.answers}
-                      impacts={f.impacts}
-                      lines={result.lines}
-                      onAnswer={f.answer}
-                      asOf={result.asOf}
-                      htsCode={result.htsCode}
-                      preference={
-                        f.country && result.availablePreferences.length > 0 ? (
-                          <PreferenceClaim
-                            options={result.availablePreferences}
-                            value={f.preferences[f.country.code] ?? ""}
-                            onChange={(symbol) => f.setPreference(f.country!.code, symbol)}
-                            impacts={f.preferenceChanges}
-                          />
-                        ) : undefined
-                      }
-                    />
-                  )}
-                  <NotAppliedPanel lines={result.lines} />
-                </div>
-                <aside className="xl:col-span-4 flex flex-col gap-4">
-                  <BreakdownCard
-                    f={f}
+              <>
+                <div className={`${styles.card} overflow-hidden`}>
+                  <SummaryStats
+                    result={result}
+                    customsValue={f.customsValue}
+                    standalone
+                  />
+                  <CostBar
                     result={result}
                     highlight={highlight}
                     onHighlight={setHighlight}
+                    className="px-5 sm:px-6 py-4 border-t border-[var(--dc-border)]"
                   />
-                  <RateHistoryCard
-                    f={f}
+                </div>
+                <section
+                  className={`${styles.card} overflow-hidden`}
+                  aria-labelledby="duty-breakdown-title"
+                >
+                  <div className="px-5 sm:px-6 pt-5 pb-3 sm:pb-1 border-b border-[var(--dc-border)] sm:border-b-0 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 id="duty-breakdown-title" className="text-[15px] font-semibold">
+                        Duty Breakdown
+                      </h3>
+                      <p className="mt-0.5 text-[12.5px] text-[var(--dc-text-3)]">
+                        Each duty and fee on this entry for {formatDate(result.asOf)}
+                        {linesDetail === "full"
+                          ? ", with the reason it applies and its legal text"
+                          : ""}
+                      </p>
+                    </div>
+                    <div
+                      className={`${styles.segmented} !h-8 shrink-0`}
+                      role="radiogroup"
+                      aria-label="Line detail"
+                    >
+                      {(
+                        [
+                          ["compact", "Compact"],
+                          ["full", "Full"],
+                        ] as const
+                      ).map(([id, label]) => (
+                        <button
+                          key={id}
+                          type="button"
+                          role="radio"
+                          aria-checked={linesDetail === id}
+                          onClick={() => setLinesDetail(id)}
+                          className={`${styles.segment} !text-[13px] px-2.5 ${linesDetail === id ? styles.segmentActive : ""}`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <Statement
+                    result={result}
+                    customsValue={f.customsValue}
+                    unitLabel={f.unitLabel}
                     sliceColors={sliceColors}
                     highlight={highlight}
                     onHighlight={setHighlight}
+                    compact={linesDetail === "compact"}
                   />
-                </aside>
-              </div>
+                </section>
+                {result.warnings.length > 0 && (
+                  <ul className="flex flex-col gap-1.5 rounded-xl border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3">
+                    {result.warnings.map((w) => (
+                      <li
+                        key={w}
+                        className="flex gap-2 text-[13px] leading-snug text-[var(--dc-warning)]"
+                      >
+                        <ExclamationTriangleIcon
+                          className="w-4 h-4 shrink-0 mt-px"
+                          aria-hidden
+                        />
+                        {w}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <NotAppliedPanel lines={result.lines} />
+              </>
             )}
           </section>
         )}
       </div>
+
+      {hasAdjustments && result && country && (
+        // Placed in the left column, below the entry details
+        <aside
+          className="min-w-0 lg:col-start-1"
+          aria-label="Possible adjustments"
+        >
+          <QuestionsPanel
+            questions={result.questions}
+            answers={f.answers}
+            impacts={f.impacts}
+            lines={result.lines}
+            onAnswer={f.answer}
+            asOf={result.asOf}
+            htsCode={result.htsCode}
+            preference={
+              result.availablePreferences.length > 0 ? (
+                <PreferenceClaim
+                  options={result.availablePreferences}
+                  value={f.preferences[country.code] ?? ""}
+                  onChange={(symbol) => f.setPreference(country.code, symbol)}
+                  impacts={f.preferenceChanges}
+                />
+              ) : undefined
+            }
+          />
+        </aside>
+      )}
+
+      {detailed && (
+        <div className="min-w-0 lg:col-start-1">
+          <RateHistoryCard
+            f={f}
+            sliceColors={sliceColors}
+            highlight={highlight}
+            onHighlight={setHighlight}
+          />
+        </div>
+      )}
     </div>
   );
 };
@@ -375,7 +487,7 @@ const ResultsSkeleton = () => (
 );
 
 const EmptyState = ({ f }: { f: TariffFinder }) => (
-  <section className={`${styles.card} p-6 sm:p-10`}>
+  <section className={`${styles.card} p-6 sm:p-10 h-full flex flex-col justify-center`}>
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-10 items-center">
       <div>
         <h2 className="text-[20px] font-semibold tracking-tight">

@@ -18,11 +18,11 @@ import styles from "./theme.module.css";
 
 // Smaller pieces of the Tariff Finder page
 
-// ── Detailed / Simple / Compare ──
+// ── Simple / Detailed / Compare ──
 
 const VIEWS: { id: View; label: string }[] = [
-  { id: "detailed", label: "Detailed" },
   { id: "simple", label: "Simple" },
+  { id: "detailed", label: "Detailed" },
   { id: "compare", label: "Compare" },
 ];
 
@@ -52,7 +52,7 @@ export const ShareButtons = ({ f }: { f: TariffFinder }) => (
       aria-label="Copy share link"
     >
       {f.copied === "link" ? <CheckIcon className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
-      <span className="hidden sm:inline">{f.copied === "link" ? "Link copied" : "Share link"}</span>
+      <span className="hidden sm:inline">{f.copied === "link" ? "Link copied" : "Share"}</span>
       <span className="sm:hidden">{f.copied === "link" ? "Copied" : "Share"}</span>
     </button>
   </div>

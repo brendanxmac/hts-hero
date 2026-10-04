@@ -10,7 +10,7 @@ import { COLUMN_LABEL, describeHtsRevision } from "./Results";
 import { MAX_COMPARE, TariffFinder } from "./useTariffFinder";
 import styles from "./theme.module.css";
 
-// Entry details as a compact rail that stays beside the results
+// Entry details as a compact rail beside the results
 
 const RailField = ({
   label,
@@ -50,147 +50,144 @@ export const EntryRail = ({
   description,
 }: {
   f: TariffFinder;
-  // A heading above the rail, styled like the results heading beside it
+  // A heading at the top of the rail, styled like the other panels' titles
   title?: string;
   description?: ReactNode;
 }) => {
   const { result } = f;
   return (
-    // The heading and rail stay in view together; the rail scrolls if it's taller than the window
-    <div className="flex flex-col gap-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]">
+    <aside
+      className={`${styles.card} h-full p-4 flex flex-col gap-4`}
+      aria-label="Entry details"
+      // Tighter fields than the other designs
+      style={{ borderRadius: 12 }}
+    >
       {title && (
         <div>
-          <h2 className="text-[22px] font-semibold tracking-tight">{title}</h2>
+          <h2 className="text-[15px] md:text-[18px] font-semibold">{title}</h2>
           {description && (
-            <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
+            <p className="mt-1 text-[12.5px] leading-snug text-[var(--dc-text-3)]">
               {description}
             </p>
           )}
         </div>
       )}
-      <aside
-        className={`${styles.card} p-4 flex flex-col gap-4 lg:min-h-0 lg:overflow-y-auto`}
-        aria-label="Entry details"
-        // Tighter fields than the other designs
-        style={{ borderRadius: 12 }}
-      >
-        {f.loading ? (
-          Array.from({ length: 6 }, (_, i) => (
-            <div key={i} className={`${styles.skeleton} h-12 w-full`} />
-          ))
-        ) : (
-          <div
-            className="flex flex-col gap-4 [&_input]:text-[14px]"
-            data-density="compact"
+      {f.loading ? (
+        Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className={`${styles.skeleton} h-12 w-full`} />
+        ))
+      ) : (
+        <div
+          className="flex flex-col gap-4 [&_input]:text-[14px]"
+          data-density="compact"
+        >
+          <RailField
+            label="HTS code"
+            htmlFor="dc-hts"
+            action={
+              <button
+                type="button"
+                className={`${styles.link} inline-flex items-center gap-1 text-[12px]`}
+                onClick={() => f.openExplore()}
+              >
+                <MagnifyingGlassIcon className="w-3 h-3" />
+                Search
+              </button>
+            }
           >
-            <RailField
-              label="HTS code"
-              htmlFor="dc-hts"
-              action={
-                <button
-                  type="button"
-                  className={`${styles.link} inline-flex items-center gap-1 text-[12px]`}
-                  onClick={() => f.openExplore()}
-                >
-                  <MagnifyingGlassIcon className="w-3 h-3" />
-                  Search
-                </button>
-              }
-            >
-              <HtsCodeField
-                id="dc-hts"
-                selectedElement={f.selectedElement}
-                onSelect={(el) => f.selectElement(el, "hts_selector")}
-                autoFocus={!f.codeParam}
-                hidePath
+            <HtsCodeField
+              id="dc-hts"
+              selectedElement={f.selectedElement}
+              onSelect={(el) => f.selectElement(el, "hts_selector")}
+              autoFocus={!f.codeParam}
+              hidePath
+            />
+          </RailField>
+          <RailField
+            label={f.countries.length > 1 ? "Origins" : "Origin"}
+            htmlFor="dc-country"
+          >
+            <CountryField
+              id="dc-country"
+              selected={f.countries}
+              onChange={f.changeCountries}
+              max={MAX_COMPARE}
+            />
+          </RailField>
+          <div
+            className={
+              result?.requiresQuantity ? "grid grid-cols-2 gap-3" : ""
+            }
+          >
+            <RailField label="Value" htmlFor="dc-value">
+              <NumberField
+                id="dc-value"
+                prefix="$"
+                suffix={result?.requiresQuantity ? undefined : "USD"}
+                value={f.customsValue}
+                onChange={f.setCustomsValue}
               />
             </RailField>
-            <RailField
-              label={f.countries.length > 1 ? "Origins" : "Origin"}
-              htmlFor="dc-country"
-            >
-              <CountryField
-                id="dc-country"
-                selected={f.countries}
-                onChange={f.changeCountries}
-                max={MAX_COMPARE}
-              />
-            </RailField>
-            <div
-              className={
-                result?.requiresQuantity ? "grid grid-cols-2 gap-3" : ""
-              }
-            >
-              <RailField label="Value" htmlFor="dc-value">
+            {result?.requiresQuantity && (
+              <RailField label="Quantity" htmlFor="dc-qty">
                 <NumberField
-                  id="dc-value"
-                  prefix="$"
-                  suffix={result?.requiresQuantity ? undefined : "USD"}
-                  value={f.customsValue}
-                  onChange={f.setCustomsValue}
+                  id="dc-qty"
+                  suffix={f.unitLabel}
+                  value={f.quantity}
+                  onChange={f.setQuantity}
                 />
               </RailField>
-              {result?.requiresQuantity && (
-                <RailField label="Quantity" htmlFor="dc-qty">
-                  <NumberField
-                    id="dc-qty"
-                    suffix={f.unitLabel}
-                    value={f.quantity}
-                    onChange={f.setQuantity}
-                  />
-                </RailField>
-              )}
-            </div>
-            <RailField label="Entry date" htmlFor="dc-date">
-              <input
-                id="dc-date"
-                type="date"
-                className={`${styles.input} ${styles.num}`}
-                value={f.entryDate}
-                onChange={(e) => f.setEntryDate(e.target.value)}
-              />
-            </RailField>
-            <RailField label="Transport">
-              <Segmented
-                label="Mode of transport"
-                options={TRANSPORT_MODES}
-                value={f.transportMode}
-                onChange={f.setTransportMode}
-                compact
-              />
-            </RailField>
-
-            {result && (
-              <dl className="mt-1 pt-3 border-t border-[var(--dc-border)] grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[12px]">
-                <dt className="text-[var(--dc-text-3)]">Rules</dt>
-                <dd className="text-right font-medium">
-                  HTS {f.revisionForDate?.title ?? "—"}
-                  <span
-                    className={
-                      f.verified
-                        ? "text-[var(--dc-positive)]"
-                        : "text-[var(--dc-warning)]"
-                    }
-                  >
-                    {f.verified ? " ✓" : " ⚠"}
-                  </span>
-                </dd>
-                <dt className="text-[var(--dc-text-3)]">Base rates</dt>
-                <dd className="text-right font-medium">
-                  HTS {describeHtsRevision(f.htsRevisionName)}
-                </dd>
-                <dt className="text-[var(--dc-text-3)]">Column</dt>
-                <dd className="text-right font-medium">
-                  {COLUMN_LABEL[result.column]}
-                  {result.claimedPreference
-                    ? ` (${result.claimedPreference})`
-                    : ""}
-                </dd>
-              </dl>
             )}
           </div>
-        )}
-      </aside>
-    </div>
+          <RailField label="Entry date" htmlFor="dc-date">
+            <input
+              id="dc-date"
+              type="date"
+              className={`${styles.input} ${styles.num}`}
+              value={f.entryDate}
+              onChange={(e) => f.setEntryDate(e.target.value)}
+            />
+          </RailField>
+          <RailField label="Transport">
+            <Segmented
+              label="Mode of transport"
+              options={TRANSPORT_MODES}
+              value={f.transportMode}
+              onChange={f.setTransportMode}
+              compact
+            />
+          </RailField>
+
+          {/* {result && (
+            <dl className="mt-1 pt-3 border-t border-[var(--dc-border)] grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[12px]">
+              <dt className="text-[var(--dc-text-3)]">Rules</dt>
+              <dd className="text-right font-medium">
+                HTS {f.revisionForDate?.title ?? "—"}
+                <span
+                  className={
+                    f.verified
+                      ? "text-[var(--dc-positive)]"
+                      : "text-[var(--dc-warning)]"
+                  }
+                >
+                  {f.verified ? " ✓" : " ⚠"}
+                </span>
+              </dd>
+              <dt className="text-[var(--dc-text-3)]">Base rates</dt>
+              <dd className="text-right font-medium">
+                HTS {describeHtsRevision(f.htsRevisionName)}
+              </dd>
+              <dt className="text-[var(--dc-text-3)]">Column</dt>
+              <dd className="text-right font-medium">
+                {COLUMN_LABEL[result.column]}
+                {result.claimedPreference
+                  ? ` (${result.claimedPreference})`
+                  : ""}
+              </dd>
+            </dl>
+          )} */}
+        </div>
+      )}
+    </aside>
   );
 };

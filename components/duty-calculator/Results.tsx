@@ -77,16 +77,21 @@ export const COLUMN_LABEL = {
 export const SummaryStats = ({
   result,
   customsValue,
+  standalone,
 }: {
   result: CalculationResult;
   customsValue: number;
+  // In a card of its own, rather than above the statement
+  standalone?: boolean;
 }) => {
   const effectiveRate =
     customsValue > 0 ? (result.totalDuty / customsValue) * 100 : 0;
   const dutyAndFees = result.totalDuty + result.totalFees;
   return (
     // 1px gaps over the border color draw the dividers at every breakpoint
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr] gap-px bg-[var(--dc-border)] border-b border-[var(--dc-border)]">
+    <div
+      className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr] gap-px bg-[var(--dc-border)] ${standalone ? "" : "border-b border-[var(--dc-border)]"}`}
+    >
       <div className="col-span-2 sm:col-span-3 lg:col-span-1 p-5 sm:p-6 bg-[var(--dc-surface)]">
         <div className={styles.eyebrow}>Total duty</div>
         <div
@@ -149,6 +154,7 @@ export const Statement = ({
   sliceColors,
   highlight,
   onHighlight,
+  compact,
 }: {
   result: CalculationResult;
   customsValue: number;
@@ -158,6 +164,8 @@ export const Statement = ({
   // The slice being hovered, here or in the chart
   highlight?: string | null;
   onHighlight?: (slice: string | null) => void;
+  // One tight line per row: no program, effective date, reasons or legal text
+  compact?: boolean;
 }) => {
   // Per-unit and compound base rates are shown as written in the HTS
   // Rates with several parts, per-unit amounts, or parts that apply to a component
@@ -231,11 +239,21 @@ export const Statement = ({
       {/* Phones: stacked lines */}
       <ul className="sm:hidden">
         {rows.map((row) => (
-          <MobileRow key={row.code} {...row} link={linked(row)} />
+          <MobileRow
+            key={row.code}
+            {...row}
+            link={linked(row)}
+            compact={compact}
+          />
         ))}
         <MobileTotal label="Total duty" amount={result.totalDuty} />
         {feeRows.map((row) => (
-          <MobileRow key={row.code} {...row} link={linked(row)} />
+          <MobileRow
+            key={row.code}
+            {...row}
+            link={linked(row)}
+            compact={compact}
+          />
         ))}
         <MobileTotal label="Total duty and fees" amount={dutyAndFees} strong />
       </ul>
@@ -273,11 +291,21 @@ export const Statement = ({
           </thead>
           <tbody>
             {rows.map((row) => (
-              <StatementRow key={row.code} {...row} link={linked(row)} />
+              <StatementRow
+                key={row.code}
+                {...row}
+                link={linked(row)}
+                compact={compact}
+              />
             ))}
             <TotalRow label="Total duty" amount={result.totalDuty} />
             {feeRows.map((row) => (
-              <StatementRow key={row.code} {...row} link={linked(row)} />
+              <StatementRow
+                key={row.code}
+                {...row}
+                link={linked(row)}
+                compact={compact}
+              />
             ))}
             <TotalRow label="Total duty and fees" amount={dutyAndFees} strong />
           </tbody>
@@ -389,11 +417,13 @@ const MobileRow = ({
   rateText,
   amount,
   link,
-}: RowProps & { link?: RowLink }) => {
+  compact,
+}: RowProps & { link?: RowLink; compact?: boolean }) => {
   const [legalOpen, setLegalOpen] = useState(false);
+  const full = !compact;
   return (
     <li
-      className={`border-t border-[var(--dc-border)] px-5 py-4 flex flex-col gap-1.5 transition-colors ${linkClass(link)}`}
+      className={`border-t border-[var(--dc-border)] px-5 ${full ? "py-4" : "py-3"} flex flex-col gap-1.5 transition-colors ${linkClass(link)}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
@@ -432,24 +462,26 @@ const MobileRow = ({
           </span>
         )}
       </div>
-      {(program || effectiveFrom) && (
+      {full && (program || effectiveFrom) && (
         <div className="text-[12.5px] text-[var(--dc-text-3)]">
           {program}
           <EffectiveDate from={effectiveFrom} />
         </div>
       )}
-      {detail && (
+      {full && detail && (
         <div className="text-[13px] leading-snug text-[var(--dc-text-2)]">
           {detail}
         </div>
       )}
-      {legal && (
+      {full && legal && (
         <LegalToggle
           open={legalOpen}
           onToggle={() => setLegalOpen((x) => !x)}
         />
       )}
-      {legal && legalOpen && <LegalPanel text={legal.text} notesFor={legal} />}
+      {full && legal && legalOpen && (
+        <LegalPanel text={legal.text} notesFor={legal} />
+      )}
     </li>
   );
 };
@@ -516,8 +548,11 @@ const StatementRow = ({
   rateText,
   amount,
   link,
-}: RowProps & { link?: RowLink }) => {
+  compact,
+}: RowProps & { link?: RowLink; compact?: boolean }) => {
   const [legalOpen, setLegalOpen] = useState(false);
+  const full = !compact;
+  const pad = full ? "py-4" : "py-2.5";
   return (
     <>
       <tr
@@ -525,7 +560,7 @@ const StatementRow = ({
         onMouseEnter={link?.onHover && (() => link.onHover?.(true))}
         onMouseLeave={link?.onHover && (() => link.onHover?.(false))}
       >
-        <td className="py-4 pl-5 sm:pl-6 pr-3">
+        <td className={`${pad} pl-5 sm:pl-6 pr-3`}>
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
               <span
@@ -538,18 +573,18 @@ const StatementRow = ({
                 {name}
               </span>
             </div>
-            {(program || effectiveFrom) && (
+            {full && (program || effectiveFrom) && (
               <span className="text-[12.5px] text-[var(--dc-text-3)]">
                 {program}
                 <EffectiveDate from={effectiveFrom} />
               </span>
             )}
-            {detail && (
+            {full && detail && (
               <span className="text-[13px] leading-snug text-[var(--dc-text-2)]">
                 {detail}
               </span>
             )}
-            {legal && (
+            {full && legal && (
               <LegalToggle
                 open={legalOpen}
                 onToggle={() => setLegalOpen((x) => !x)}
@@ -558,12 +593,12 @@ const StatementRow = ({
           </div>
         </td>
         <td
-          className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)]`}
+          className={`${styles.num} ${pad} px-3 text-[14px] text-[var(--dc-text-2)]`}
         >
           <Stacked text={basisText ?? formatMoney(basis)} separator=" · " />
         </td>
         <td
-          className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)] text-right`}
+          className={`${styles.num} ${pad} px-3 text-[14px] text-[var(--dc-text-2)] text-right`}
         >
           <Stacked
             text={rateText ?? (rate === undefined ? "—" : formatPct(rate))}
@@ -572,12 +607,12 @@ const StatementRow = ({
           />
         </td>
         <td
-          className={`${styles.num} py-4 pl-3 pr-5 sm:pr-6 text-[14.5px] font-semibold text-right whitespace-nowrap`}
+          className={`${styles.num} ${pad} pl-3 pr-5 sm:pr-6 text-[14.5px] font-semibold text-right whitespace-nowrap`}
         >
           {formatMoney(amount)}
         </td>
       </tr>
-      {legal && legalOpen && (
+      {full && legal && legalOpen && (
         <tr>
           <td colSpan={4} className="px-5 sm:px-6 pb-5 pt-1">
             <LegalPanel text={legal.text} notesFor={legal} />
@@ -1174,10 +1209,11 @@ export const Panel = ({
   children: ReactNode;
 }) => (
   <section className={`${styles.card} p-5`}>
-    <div className="flex items-center justify-between gap-3">
+    {/* The badge drops under the title when they don't fit side by side */}
+    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
       <h3 className="text-[15px] md:text-[18px] font-semibold">{title}</h3>
       {badge && (
-        <span className="rounded-full bg-[var(--dc-accent-soft)] border border-[var(--dc-accent-border)] px-2 py-0.5 text-[12px] font-semibold text-[var(--dc-accent)]">
+        <span className="whitespace-nowrap rounded-full bg-[var(--dc-accent-soft)] border border-[var(--dc-accent-border)] px-2 py-0.5 text-[12px] font-semibold text-[var(--dc-accent)]">
           {badge}
         </span>
       )}

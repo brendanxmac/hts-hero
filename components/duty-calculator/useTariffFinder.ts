@@ -47,6 +47,8 @@ export const EXAMPLES = [
   { code: "7326.90.86.88", country: "CN", label: "Steel hardware", origin: "China" },
   { code: "8703.23.01.90", country: "DE", label: "Passenger car", origin: "Germany" },
   { code: "6109.10.00.12", country: "VN", label: "Cotton T-shirts", origin: "Vietnam" },
+  { code: "9504.50.00.00", country: "JP", label: "Video game consoles", origin: "Japan" },
+  { code: "9506.62.40.80", country: "PK", label: "Soccer balls", origin: "Pakistan" },
 ];
 export type Example = (typeof EXAMPLES)[number];
 

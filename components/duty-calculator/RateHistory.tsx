@@ -21,7 +21,7 @@ import {
   lastDay,
   LineChange,
 } from "../../tariffs/engine-v2/history";
-import { getVerifiedRevisions, HtsRevision } from "../../tariffs/engine-v2/revisions";
+import { getVerifiedRevisions } from "../../tariffs/engine-v2/revisions";
 import { formatDate, formatMoney, formatPct } from "./format";
 import { mono } from "./font";
 import { CHART } from "./MoneyBreakdown";
@@ -45,12 +45,6 @@ const COLLAPSED_CHANGES = 3;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const dayNumber = (iso: string) => Date.parse(`${iso}T00:00:00Z`) / DAY_MS;
 
-// "2026HTSRev7" -> "Rev 7"
-const shortRevision = (revision?: HtsRevision) => {
-  const number = revision?.name.match(/Rev(\d+)$/)?.[1];
-  return number ? `Rev ${number}` : revision?.title ?? "";
-};
-
 // "Apr 8", or "Apr 8, 2026" when asked
 const shortDate = (iso: string, withYear = false) =>
   new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", {
@@ -64,15 +58,6 @@ const dateRange = (segment: HistorySegment) => {
   return end === segment.from
     ? formatDate(segment.from)
     : `${shortDate(segment.from)} – ${formatDate(end)}`;
-};
-
-// Revisions in force at any point in the segment
-const revisionsIn = (segment: HistorySegment) => {
-  const revisions = getVerifiedRevisions().filter(
-    (r) => r.from < segment.to && (!r.to || r.to > segment.from),
-  );
-  if (revisions.length <= 1) return shortRevision(revisions[0] ?? segment.revision);
-  return `${shortRevision(revisions[0])} – ${shortRevision(revisions[revisions.length - 1])}`;
 };
 
 // Amount per layer: base duty, then each program, the way the Cost Breakdown groups them
@@ -188,7 +173,8 @@ export const RateHistoryCard = ({
     ? history.findIndex((s) => s.from <= entryDate && entryDate < s.to)
     : -1;
   const current = history[entryIndex >= 0 ? entryIndex : history.length - 1];
-  const lastRevision = getVerifiedRevisions().slice(-1)[0];
+  // The last day there's data for
+  const lastDate = addDays(historyRange.to, -1);
   const first = history[0];
   const latest = history[history.length - 1];
   // Compared with the start; or, when the entry date is at the start, with the latest revision
@@ -198,7 +184,7 @@ export const RateHistoryCard = ({
   const deltaPct =
     first.result.totalDuty > 0 ? (delta / first.result.totalDuty) * 100 : null;
   const deltaWhen = looksAhead
-    ? `by ${shortRevision(lastRevision)}`
+    ? `by ${shortDate(latest.from)}`
     : `since ${shortDate(first.from)}`;
   const totals = history.map((s) => s.result.totalDuty);
   const changes = history.length - 1;
@@ -216,8 +202,7 @@ export const RateHistoryCard = ({
             Duty Over Time
           </h3>
           <p className="mt-0.5 text-[12.5px] text-[var(--dc-text-3)]">
-            {shortRevision(first.revision)} – {shortRevision(lastRevision)} ·{" "}
-            {shortDate(historyRange.from)} – {formatDate(addDays(historyRange.to, -1))}
+            {shortDate(historyRange.from)} – {formatDate(lastDate)}
           </p>
         </div>
         <div
@@ -249,7 +234,7 @@ export const RateHistoryCard = ({
       {/* Headline: duty on the entry date, and how it compares with the start */}
       <div>
         <div className={styles.eyebrow}>
-          {entryIndex >= 0 ? "Duty on your entry date" : `Duty at ${shortRevision(lastRevision)}`}
+          {entryIndex >= 0 ? "Duty on your entry date" : `Duty on ${formatDate(lastDate)}`}
         </div>
         <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1.5">
           <span
@@ -341,8 +326,8 @@ export const RateHistoryCard = ({
         <p className="flex gap-2 rounded-xl bg-[var(--dc-surface-2)] px-3.5 py-3 text-[13px] leading-snug text-[var(--dc-text-2)]">
           <CheckCircleIcon className="w-4 h-4 shrink-0 mt-px text-[var(--dc-positive)]" aria-hidden />
           <span>
-            No tariff changes affected this entry from {shortRevision(first.revision)} to{" "}
-            {shortRevision(lastRevision)}.
+            No tariff changes affected this entry from {shortDate(first.from)} to{" "}
+            {formatDate(lastDate)}.
           </span>
         </p>
       ) : (
@@ -372,7 +357,7 @@ export const RateHistoryCard = ({
               />
               <div className="flex items-baseline justify-between gap-3 text-[12.5px] text-[var(--dc-text-3)]">
                 <span>
-                  {formatDate(first.from)} · {shortRevision(first.revision)} · Starting point
+                  {formatDate(first.from)} · Starting point
                 </span>
                 <span className={`${styles.num} font-semibold text-[var(--dc-text-2)]`}>
                   {show(first.result.totalDuty)}
@@ -398,8 +383,8 @@ export const RateHistoryCard = ({
         {!inRange && entryDate >= historyRange.to && (
           <>
             {" "}
-            Revisions after {shortRevision(lastRevision)} aren&apos;t entered yet, so changes after{" "}
-            {formatDate(addDays(historyRange.to, -1))} aren&apos;t shown.
+            Tariff changes after {formatDate(lastDate)} aren&apos;t entered yet, so they
+            aren&apos;t shown.
           </>
         )}
       </p>
@@ -411,6 +396,29 @@ export const RateHistoryCard = ({
 
 const HEIGHT = 176;
 const PAD = { top: 14, right: 6, bottom: 24, left: 42 };
+// Room each month label needs
+const MONTH_LABEL_WIDTH = 44;
+
+// The first of each month after `from` and before `to`, thinned to at most `max` evenly spaced
+// ones. "Jan" months, and the first label, carry the year: "Jan '27".
+const monthTicks = (from: string, to: string, max: number) => {
+  const months: string[] = [];
+  const [year, month] = from.split("-").map(Number);
+  for (let i = 1; ; i++) {
+    const d = new Date(Date.UTC(year, month - 1 + i, 1)).toISOString().slice(0, 10);
+    if (d >= to) break;
+    months.push(d);
+  }
+  const every = Math.ceil(months.length / max);
+  return months
+    .filter((_, i) => i % every === 0)
+    .map((date, i) => {
+      const d = new Date(`${date}T00:00:00`);
+      const name = d.toLocaleDateString("en-US", { month: "short" });
+      const withYear = i === 0 || d.getMonth() === 0;
+      return { date, label: withYear ? `${name} '${String(d.getFullYear()).slice(2)}` : name };
+    });
+};
 
 const HistoryChart = ({
   history,
@@ -546,37 +554,41 @@ const HistoryChart = ({
             </g>
           ))}
 
-          {/* Revision boundaries, labeled along the bottom */}
+          {/* Where the rules changed: a faint line at each HTS revision */}
           {getVerifiedRevisions()
-            .filter((r) => r.from >= from && r.from < to)
-            .map((r, i, all) => {
-              const left = x(r.from);
-              const right = x(all[i + 1]?.from ?? to);
-              return (
-                <g key={r.name}>
-                  {i > 0 && (
-                    <line
-                      x1={left}
-                      x2={left}
-                      y1={PAD.top}
-                      y2={PAD.top + plotH}
-                      stroke="var(--dc-border)"
-                    />
-                  )}
-                  {right - left >= 22 && (
-                    <text
-                      x={(left + right) / 2}
-                      y={HEIGHT - 8}
-                      textAnchor="middle"
-                      fontSize={10.5}
-                      fill="var(--dc-text-3)"
-                    >
-                      {right - left >= 44 ? shortRevision(r) : `R${r.name.match(/Rev(\d+)$/)?.[1] ?? ""}`}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
+            .filter((r) => r.from > from && r.from < to)
+            .map((r) => (
+              <line
+                key={r.name}
+                x1={x(r.from)}
+                x2={x(r.from)}
+                y1={PAD.top}
+                y2={PAD.top + plotH}
+                stroke="var(--dc-border)"
+              />
+            ))}
+
+          {/* Months along the bottom, as many as fit */}
+          {monthTicks(from, to, Math.max(Math.floor(plotW / MONTH_LABEL_WIDTH), 1)).map((month) => (
+            <g key={month.date}>
+              <line
+                x1={x(month.date)}
+                x2={x(month.date)}
+                y1={PAD.top + plotH}
+                y2={PAD.top + plotH + 4}
+                stroke="var(--dc-border-strong)"
+              />
+              <text
+                x={x(month.date)}
+                y={HEIGHT - 8}
+                textAnchor="middle"
+                fontSize={10.5}
+                fill="var(--dc-text-3)"
+              >
+                {month.label}
+              </text>
+            </g>
+          ))}
 
           {/* Stacked layers, one rectangle per segment */}
           {history.map((s, i) => {
@@ -708,7 +720,6 @@ const HistoryChart = ({
         >
           <div className="text-[11.5px] leading-snug text-[var(--dc-text-3)]">
             <div className="font-medium text-[var(--dc-text-2)]">{dateRange(tooltip)}</div>
-            <div>{revisionsIn(tooltip)}</div>
           </div>
           <div className={`${styles.num} mt-1 text-[16px] font-semibold leading-none`}>
             {show(tooltip.result.totalDuty)}
@@ -787,7 +798,6 @@ const ChangeItem = ({
       <div className="flex items-baseline justify-between gap-3">
         <div className="min-w-0 text-[13px]">
           <span className="font-semibold text-[var(--dc-text)]">{formatDate(segment.from)}</span>
-          <span className="text-[var(--dc-text-3)]"> · {shortRevision(segment.revision)}</span>
         </div>
         <span
           className={`${styles.num} shrink-0 text-[13px] font-semibold`}
