@@ -2,6 +2,7 @@
 // dashboard, and the detail for one heading. Every caller has passed requireRevisionTool().
 
 import { AllRules } from "../../tariffs/engine-v2/data"
+import type { NoteCitation } from "../../tariffs/engine-v2/citations"
 import { todayIsoDate } from "../../tariffs/engine-v2/dates"
 import { HtsRevisions } from "../../tariffs/engine-v2/revisions"
 import type { Tariff } from "../../tariffs/engine-v2/types"
@@ -12,25 +13,11 @@ import type { NoteNode, ParsedNotes } from "../hts-revision-diff/types"
 import { fetchCh99Export, getCurrentReleaseName } from "../hts-revision-diff/usitc"
 import { analyzeCoverage, type HtsExportRow, noteKey, suggestNotePrograms } from "./analyze"
 import { CoverageTables as T, EXCLUDED_STATUSES } from "./constants"
+import { listBatches } from "./batches"
+import { must, selectAll } from "./db"
 import type { CoverageCounts, CoverageItem, CoverageSnapshot } from "./types"
 
 const CHUNK = 500
-
-const must = <R>(result: { data: R | null; error: { message: string } | null }, what: string): R => {
-  if (result.error) throw new Error(`${what}: ${result.error.message}`)
-  return result.data as R
-}
-
-// PostgREST returns at most 1,000 rows per request
-const selectAll = async <R>(db: RevisionDb, table: string, columns = "*"): Promise<R[]> => {
-  const out: R[] = []
-  for (let from = 0; ; from += 1000) {
-    const result = await db.from(table).select(columns).order("htsno").range(from, from + 999)
-    const page = must(result as unknown as { data: R[] | null; error: { message: string } | null }, `Load ${table}`)
-    out.push(...page)
-    if (page.length < 1000) return out
-  }
-}
 
 export const countCoverage = (items: Pick<CoverageItem, "htsno" | "subchapter" | "status" | "in_hts" | "engine_modeled">[]): CoverageCounts => {
   const counts: CoverageCounts = { total: 0, excluded: 0, inEffect: 0, modeled: 0, missing: 0, bySubchapter: {} }
@@ -120,10 +107,15 @@ export const refreshCoverage = async (db: RevisionDb) => {
 
 // Everything the dashboard shows
 export const loadDashboard = async (db: RevisionDb) => {
-  const [items, snapshots, overrides] = await Promise.all([
+  const [items, snapshots, overrides, batches] = await Promise.all([
     selectAll<CoverageItem>(db, T.ITEMS),
     db.from(T.SNAPSHOTS).select("*").order("created_at"),
     db.from(T.NOTE_PROGRAMS).select("note_key, program"),
+    // Batches arrive with part 2 of the migration; until it's applied the dashboard still works
+    listBatches(db).catch((error: Error): null => {
+      if (/hts_coverage_batch/.test(error.message)) return null
+      throw error
+    }),
   ])
   // Suggested from the items' own engine data (what the modeled headings citing each note are)
   const suggested = suggestNotePrograms(
@@ -142,6 +134,9 @@ export const loadDashboard = async (db: RevisionDb) => {
     },
     programs,
     stale,
+    batches: batches?.batches ?? [],
+    memberships: batches?.memberships ?? {},
+    pendingMigration: batches ? null : "supabase/migrations/hts_coverage_002_batches.sql",
   }
 }
 
@@ -206,8 +201,10 @@ const parentKey = (key: string) => {
   return trimmed === key ? null : trimmed
 }
 
+export const recordsFor = (htsno: string) => AllRules.tariffs.filter((t) => t.code === htsno)
+
 // Where else the engine names this heading
-const referencesTo = (htsno: string) => {
+export const referencesTo = (htsno: string) => {
   const out: { kind: string; id: string; label: string }[] = []
   const has = (value: unknown) => JSON.stringify(value).includes(`"${htsno}"`)
   for (const t of AllRules.tariffs) if (t.code !== htsno && has(t)) out.push({ kind: "tariff", id: t.code, label: t.name })
@@ -220,7 +217,7 @@ const referencesTo = (htsno: string) => {
 }
 
 // Modeled headings that are likely the closest examples: same heading group, else same cited note
-const examplesFor = (item: CoverageItem): Tariff[] => {
+export const examplesFor = (item: CoverageItem): Tariff[] => {
   const latest = new Map<string, Tariff>()
   for (const t of AllRules.tariffs) {
     if (t.code === item.htsno) continue
@@ -237,28 +234,30 @@ const examplesFor = (item: CoverageItem): Tariff[] => {
     .slice(0, 3)
 }
 
+// The text of each cited note subdivision, from the newest parsed notes in the revision checker
+export const citedNotesFor = async (db: RevisionDb, citations: NoteCitation[]) => {
+  const parsed = citations.length ? await latestParsedNotes(db) : null
+  if (!parsed) return { revision: null, notes: [] as CitedNote[] }
+  const nodes = parsed.notes.nodes
+  const children = new Map<string, NoteNode[]>()
+  for (const n of nodes) if (n.parentKey) children.set(n.parentKey, [...(children.get(n.parentKey) ?? []), n])
+  const keys = new Set(nodes.map((n) => n.key))
+  const notes = citations.map((c) => {
+    let key: string | null = c.key
+    while (key && !keys.has(key)) key = parentKey(key)
+    return { key: c.key, label: c.label, foundKey: key, nodes: key ? subtree(nodes, children, key) : [] }
+  })
+  return { revision: parsed.revision, notes }
+}
+
 export const loadHeadingDetail = async (db: RevisionDb, htsno: string) => {
   const item = must<CoverageItem>(await db.from(T.ITEMS).select("*").eq("htsno", htsno).single(), `Load ${htsno}`)
-
-  const parsed = item.note_citations.length ? await latestParsedNotes(db) : null
-  let notes: CitedNote[] = []
-  if (parsed) {
-    const nodes = parsed.notes.nodes
-    const children = new Map<string, NoteNode[]>()
-    for (const n of nodes) if (n.parentKey) children.set(n.parentKey, [...(children.get(n.parentKey) ?? []), n])
-    const keys = new Set(nodes.map((n) => n.key))
-    notes = item.note_citations.map((c) => {
-      let key: string | null = c.key
-      while (key && !keys.has(key)) key = parentKey(key)
-      return { key: c.key, label: c.label, foundKey: key, nodes: key ? subtree(nodes, children, key) : [] }
-    })
-  }
-
+  const { revision, notes } = await citedNotesFor(db, item.note_citations)
   return {
     item,
-    notesRevision: parsed?.revision ?? null,
+    notesRevision: revision,
     notes,
-    records: AllRules.tariffs.filter((t) => t.code === htsno),
+    records: recordsFor(htsno),
     references: referencesTo(htsno),
     examples: examplesFor(item),
     asOf: todayIsoDate(),

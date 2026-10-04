@@ -7,6 +7,7 @@ import {
   PRIORITIES,
   STATUS_LABELS,
   STATUSES,
+  SUGGEST_CHUNK,
   subchapterLabel,
   type Category,
   type CoverageStatus,
@@ -33,6 +34,7 @@ import {
   selectCls,
 } from "../hts-revision-diff/ui"
 import { coverageApi } from "./api"
+import { BatchesPanel, BatchModal } from "./batch-ui"
 import {
   categoryLabel,
   displayStatus,
@@ -49,11 +51,12 @@ import ProgressChart from "./ProgressChart"
 
 // ---------- Filters ----------
 
-type View = "remaining" | "all" | DisplayStatus | "excluded"
+type View = "remaining" | "all" | "excluded" | "missing" | "queued" | "needs_review" | "modeled"
 
 const VIEWS: { value: View; label: string; title: string }[] = [
-  { value: "remaining", label: "Remaining", title: "Missing and needs review" },
-  { value: "missing", label: "Missing", title: "In effect, not modeled" },
+  { value: "remaining", label: "Remaining", title: "Not modeled yet: missing, needs review, or in a batch" },
+  { value: "missing", label: "Missing", title: "In effect, not modeled, not in a batch" },
+  { value: "queued", label: "In a batch", title: "Queued or in progress in an open batch" },
   { value: "needs_review", label: "Review", title: "Needs review" },
   { value: "modeled", label: "Modeled", title: "In effect and modeled" },
   { value: "excluded", label: "Excluded", title: "Expired, FTZ-suspended, out of scope" },
@@ -87,14 +90,17 @@ const PAGE = 100
 const STORAGE_KEY = "coverage-checker:filters"
 const UNMAPPED = "__none__"
 
+const EXCLUDED: DisplayStatus[] = ["expired", "ftz_suspended", "out_of_scope"]
 const inView = (status: DisplayStatus, view: View) =>
   view === "all"
     ? true
     : view === "remaining"
-      ? status === "missing" || status === "needs_review"
+      ? status !== "modeled" && !EXCLUDED.includes(status)
       : view === "excluded"
-        ? ["expired", "ftz_suspended", "out_of_scope"].includes(status)
-        : status === view
+        ? EXCLUDED.includes(status)
+        : view === "queued"
+          ? status === "queued" || status === "in_progress"
+          : status === view
 
 // ---------- Small pieces ----------
 
@@ -128,15 +134,35 @@ const BulkBar = ({
   onApply,
   onClear,
   busy,
+  batchesEnabled,
+  onAddToBatch,
+  onSuggest,
+  suggesting,
 }: {
   count: number
   programs: { id: string; name: string }[]
   onApply: (patch: CoveragePatch) => void
   onClear: () => void
   busy: boolean
+  batchesEnabled: boolean
+  onAddToBatch: () => void
+  onSuggest: () => void
+  suggesting: { done: number; total: number } | null
 }) => (
   <div className="sticky top-12 z-30 flex flex-wrap items-center gap-2 border-b border-base-content/10 bg-base-200/95 px-4 py-2 backdrop-blur">
     <span className="text-sm font-medium tabular-nums">{count} selected</span>
+    <button className={btn.xsPrimary} onClick={onAddToBatch} disabled={!batchesEnabled}>
+      Add to batch…
+    </button>
+    <button
+      className={btn.xsSecondary}
+      onClick={onSuggest}
+      disabled={!batchesEnabled || !!suggesting}
+      title="Claude suggests a category, program and what modeling each heading takes"
+    >
+      {suggesting && <Spinner />}
+      {suggesting ? `Suggesting ${suggesting.done}/${suggesting.total}…` : "Suggest with Claude"}
+    </button>
     <select className={`${selectCls} select-xs`} value="" onChange={(e) => e.target.value && onApply({ status: e.target.value as CoverageStatus })}>
       <option value="">Set status…</option>
       {STATUSES.map((s) => (
@@ -204,6 +230,8 @@ export default function CoverageDashboard() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [open, setOpen] = useState<string | null>(null)
   const [bulkBusy, setBulkBusy] = useState(false)
+  const [batchModal, setBatchModal] = useState<"new" | "add" | null>(null)
+  const [suggesting, setSuggesting] = useState<{ done: number; total: number } | null>(null)
   const today = useMemo(localToday, [])
 
   const load = useCallback(async () => {
@@ -252,7 +280,12 @@ export default function CoverageDashboard() {
     }
   }
 
-  const programName = useCallback((id: string | null) => (id ? data?.programs.find((p) => p.id === id)?.name ?? id : "Unmapped"), [data])
+  // "new:<name>" is a program Claude suggested creating
+  const programName = useCallback(
+    (id: string | null) =>
+      !id ? "Unmapped" : id.startsWith("new:") ? `New: ${id.slice(4)}` : data?.programs.find((p) => p.id === id)?.name ?? id,
+    [data]
+  )
 
   // Every item with what the table shows, computed once per data change
   const rows = useMemo(() => {
@@ -261,9 +294,12 @@ export default function CoverageDashboard() {
       .filter((i) => i.in_hts)
       .map((item) => ({
         item,
-        status: displayStatus(item),
+        status: displayStatus(item, data.memberships[item.htsno]),
+        membership: data.memberships[item.htsno],
         category: resolvedCategory(item),
-        program: resolvedProgram(item, data.notePrograms),
+        program:
+          resolvedProgram(item, data.notePrograms) ??
+          (item.claude_suggestion?.new_program ? `new:${item.claude_suggestion.new_program}` : null),
         starts: upcomingStart(item, today),
       }))
   }, [data, today])
@@ -305,9 +341,9 @@ export default function CoverageDashboard() {
   }, [rows, filters, sort, programName])
 
   const counts = useMemo(() => {
-    const c = { total: rows.length, inEffect: 0, modeled: 0, missing: 0, review: 0, excluded: 0, referencedMissing: 0, upcoming: 0 }
+    const c = { total: rows.length, inEffect: 0, modeled: 0, missing: 0, review: 0, queued: 0, excluded: 0, referencedMissing: 0, upcoming: 0 }
     for (const r of rows) {
-      if (["expired", "ftz_suspended", "out_of_scope"].includes(r.status)) {
+      if (EXCLUDED.includes(r.status)) {
         c.excluded++
         continue
       }
@@ -316,6 +352,7 @@ export default function CoverageDashboard() {
       else {
         c.missing++
         if (r.status === "needs_review") c.review++
+        if (r.status === "queued" || r.status === "in_progress") c.queued++
         if (r.item.engine_referenced) c.referencedMissing++
         if (r.starts) c.upcoming++
       }
@@ -328,7 +365,7 @@ export default function CoverageDashboard() {
     const bySub = new Map<string, { inEffect: number; modeled: number }>()
     const byProgram = new Map<string, { inEffect: number; modeled: number }>()
     for (const r of rows) {
-      if (["expired", "ftz_suspended", "out_of_scope"].includes(r.status)) continue
+      if (EXCLUDED.includes(r.status)) continue
       for (const [map, key] of [
         [bySub, r.item.subchapter],
         [byProgram, r.program ?? UNMAPPED],
@@ -368,6 +405,29 @@ export default function CoverageDashboard() {
     } finally {
       setBulkBusy(false)
     }
+  }
+
+  // Claude suggestions for the selected headings, a few per call, two calls at a time
+  const suggestSelected = async () => {
+    const codes = Array.from(selected)
+    const chunks: string[][] = []
+    for (let i = 0; i < codes.length; i += SUGGEST_CHUNK) chunks.push(codes.slice(i, i + SUGGEST_CHUNK))
+    setSuggesting({ done: 0, total: codes.length })
+    let next = 0
+    const worker = async () => {
+      while (next < chunks.length) {
+        const chunk = chunks[next++]
+        try {
+          const { items } = await coverageApi<{ items: CoverageItem[] }>("/suggest", { method: "POST", body: JSON.stringify({ htsnos: chunk }) })
+          applyItems(items)
+        } catch (e) {
+          setError(`Suggestions for ${chunk[0]}…: ${(e as Error).message}`)
+        }
+        setSuggesting((p) => (p ? { ...p, done: p.done + chunk.length } : p))
+      }
+    }
+    await Promise.all([worker(), worker()])
+    setSuggesting(null)
   }
 
   const setNoteProgram = async (noteKey: string, program: string | null) => {
@@ -456,6 +516,11 @@ export default function CoverageDashboard() {
         </Callout>
       )}
       {error && !missingTable && <Callout tone="error">{error}</Callout>}
+      {data?.pendingMigration && (
+        <Callout tone="warning" title="Batches need part 2 of the migration">
+          Paste <code>{data.pendingMigration}</code> into the dev project&apos;s SQL editor, then reload.
+        </Callout>
+      )}
       {refreshResult && <Callout tone="success">{refreshResult}</Callout>}
 
       {data && !data.items.length && !missingTable && (
@@ -482,7 +547,8 @@ export default function CoverageDashboard() {
             >
               <ProgressBar value={counts.modeled} max={counts.inEffect} />
             </Stat>
-            <Stat label="Missing" value={counts.missing} hint={`${counts.referencedMissing} already referenced in the engine`} />
+            <Stat label="Not modeled" value={counts.missing} hint={`${counts.referencedMissing} already referenced in the engine`} />
+            <Stat label="In a batch" value={counts.queued} hint={`${data.batches.filter((b) => ["draft", "ready", "pulled"].includes(b.status)).length} open batches`} />
             <Stat label="Needs review" value={counts.review} hint={counts.upcoming ? `${counts.upcoming} start after today` : undefined} />
           </StatGrid>
 
@@ -537,6 +603,8 @@ export default function CoverageDashboard() {
               </ul>
             </Panel>
           </div>
+
+          <BatchesPanel batches={data.batches} disabled={!!data.pendingMigration} onNew={() => setBatchModal("new")} />
 
           <Panel
             title="Headings"
@@ -612,7 +680,17 @@ export default function CoverageDashboard() {
             </div>
 
             {selected.size > 0 && (
-              <BulkBar count={selected.size} programs={data.programs} onApply={bulkApply} onClear={() => setSelected(new Set())} busy={bulkBusy} />
+              <BulkBar
+                count={selected.size}
+                programs={data.programs}
+                onApply={bulkApply}
+                onClear={() => setSelected(new Set())}
+                busy={bulkBusy}
+                batchesEnabled={!data.pendingMigration}
+                onAddToBatch={() => setBatchModal("add")}
+                onSuggest={suggestSelected}
+                suggesting={suggesting}
+              />
             )}
 
             {filtered.length === 0 ? (
@@ -678,9 +756,15 @@ export default function CoverageDashboard() {
                           <span className="line-clamp-2">{r.item.general || "—"}</span>
                         </td>
                         <td className="whitespace-nowrap px-3 py-2">
-                          <Pill tone={STATUS_TONES[r.status]} title={r.item.status_note ?? undefined}>
+                          <Pill tone={STATUS_TONES[r.status]} title={r.membership ? `In ${r.membership.title} (${r.membership.decision})` : r.item.status_note ?? undefined}>
                             {STATUS_LABELS[r.status]}
                           </Pill>
+                          {r.membership && (
+                            <div className="mt-1 max-w-[9rem] truncate text-[11px] text-base-content/50" title={r.membership.title}>
+                              {r.membership.title}
+                              {r.membership.decision === "skip" && " (skipped)"}
+                            </div>
+                          )}
                         </td>
                         <td className={`whitespace-nowrap px-3 py-2 text-xs ${r.item.category ? "" : "italic text-base-content/50"}`}>
                           {categoryLabel(r.category)}
@@ -709,6 +793,19 @@ export default function CoverageDashboard() {
             )}
           </Panel>
         </>
+      )}
+
+      {batchModal && data && (
+        <BatchModal
+          mode={batchModal}
+          htsnos={batchModal === "add" ? Array.from(selected) : []}
+          batches={data.batches.filter((b) => b.status === "draft")}
+          onClose={() => setBatchModal(null)}
+          onDone={async () => {
+            setSelected(new Set())
+            await load()
+          }}
+        />
       )}
 
       {open && data && (

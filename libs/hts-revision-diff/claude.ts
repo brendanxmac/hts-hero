@@ -37,7 +37,7 @@ const usageOf = (message: BetaMessage): ClaudeUsage => {
   }
 }
 
-const callJson = async <T>(params: {
+export const callJson = async <T>(params: {
   system: string
   user: string
   // A PDF to read alongside the text (base64)

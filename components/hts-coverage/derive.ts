@@ -1,6 +1,6 @@
-import { noteKey } from "@/libs/hts-coverage/analyze"
+import { noteKeys } from "@/libs/hts-coverage/analyze"
 import { CATEGORY_LABELS, EXCLUDED_STATUSES, type Category, type DisplayStatus } from "@/libs/hts-coverage/constants"
-import type { CoverageItem, CoverageSnapshot } from "@/libs/hts-coverage/types"
+import type { BatchMembership, BatchSummary, CoverageItem, CoverageSnapshot } from "@/libs/hts-coverage/types"
 import type { Tone } from "../hts-revision-diff/ui"
 
 export interface NotePrograms {
@@ -14,16 +14,24 @@ export interface DashboardData {
   notePrograms: NotePrograms
   programs: { id: string; name: string }[]
   stale: string[]
+  batches: BatchSummary[]
+  memberships: Record<string, BatchMembership>
+  pendingMigration: string | null
 }
 
-export const displayStatus = (item: CoverageItem): DisplayStatus => {
+// A heading in an open batch is queued (draft or ready) or in progress (pulled into the repo),
+// unless it's skipped there
+export const displayStatus = (item: CoverageItem, membership?: BatchMembership): DisplayStatus => {
   if (EXCLUDED_STATUSES.includes(item.status)) return item.status as DisplayStatus
   if (item.engine_modeled) return "modeled"
+  if (membership && membership.decision !== "skip") return membership.status === "pulled" ? "in_progress" : "queued"
   return item.status === "needs_review" ? "needs_review" : "missing"
 }
 
 export const STATUS_TONES: Record<DisplayStatus, Tone> = {
   missing: "warning",
+  queued: "info",
+  in_progress: "info",
   modeled: "success",
   needs_review: "info",
   expired: "neutral",
@@ -32,22 +40,26 @@ export const STATUS_TONES: Record<DisplayStatus, Tone> = {
 }
 
 // The heading's U.S. notes, as note-program keys ("III:20")
-export const noteKeysOf = (item: CoverageItem) =>
-  Array.from(new Set(item.note_citations.map(noteKey).filter((k): k is string => !!k)))
+export const noteKeysOf = (item: CoverageItem) => Array.from(new Set(item.note_citations.flatMap(noteKeys)))
 
+// Your mappings first (most specific note first), then the suggestions
 export const programFromNotes = (item: CoverageItem, notePrograms: NotePrograms) => {
-  for (const key of noteKeysOf(item)) {
-    const program = notePrograms.overrides[key] ?? notePrograms.suggested[key]
-    if (program) return program
+  const keys = noteKeysOf(item)
+  for (const map of [notePrograms.overrides, notePrograms.suggested]) {
+    const key = keys.find((k) => map[k])
+    if (key) return map[key]
   }
   return null
 }
 
-// The program shown: set on the heading, else what the engine models it as, else from its notes
+// The program shown: set on the heading, else what the engine models it as, else from its notes,
+// else Claude's suggestion
 export const resolvedProgram = (item: CoverageItem, notePrograms: NotePrograms) =>
-  item.program ?? item.engine_programs[0] ?? programFromNotes(item, notePrograms)
+  item.program ?? item.engine_programs[0] ?? programFromNotes(item, notePrograms) ?? item.claude_suggestion?.program ?? null
 
-export const resolvedCategory = (item: CoverageItem): Category | null => item.category ?? item.category_suggested
+// Set on the heading, else Claude's suggestion, else the guess from the rate and wording
+export const resolvedCategory = (item: CoverageItem): Category | null =>
+  item.category ?? item.claude_suggestion?.category ?? item.category_suggested
 
 export const categoryLabel = (category: Category | null) => (category ? CATEGORY_LABELS[category] : "—")
 

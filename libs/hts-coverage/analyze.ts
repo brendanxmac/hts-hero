@@ -102,29 +102,33 @@ export const suggestCategory = (htsno: string, description: string, general: str
   return "other"
 }
 
-// The note-program suggestions: which engine program each cited U.S. note belongs to, by the most
-// common program among modeled headings citing it. Key "III:20".
-export const noteKey = (citation: NoteCitation) => {
-  const m = citation.key.match(/^sub-([IVXL]+)\/us-notes\/(\d+)/)
-  return m ? `${m[1]}:${m[2]}` : null
+// Which engine program each cited U.S. note belongs to. Keys are the note ("III:20") and its first
+// subdivision ("III:20(h)"), most specific first, since one note can serve several programs
+// (note 2 covers IEEPA and Section 122 headings).
+export const noteKeys = (citation: NoteCitation): string[] => {
+  const m = citation.key.match(/^sub-([IVXL]+)\/us-notes\/(\d+)(\([A-Za-z0-9]+\))?/)
+  if (!m) return []
+  const top = `${m[1]}:${m[2]}`
+  return m[3] ? [`${top}${m[3]}`, top] : [top]
 }
 
+// The top-level note key ("III:20"), for grouping
+export const noteKey = (citation: NoteCitation) => noteKeys(citation).at(-1) ?? null
+
+// Suggested only where every modeled heading citing the note (or subdivision) is the same program
 export const suggestNotePrograms = (headings: Pick<HeadingAnalysis, "modeled" | "programs" | "noteCitations">[]) => {
-  const votes = new Map<string, Map<string, number>>()
+  const votes = new Map<string, Set<string>>()
   for (const h of headings) {
     if (!h.modeled) continue
-    for (const c of h.noteCitations) {
-      const key = noteKey(c)
-      if (!key) continue
-      const counts = votes.get(key) ?? new Map<string, number>()
-      for (const p of h.programs) counts.set(p, (counts.get(p) ?? 0) + 1)
-      votes.set(key, counts)
+    for (const key of new Set(h.noteCitations.flatMap(noteKeys))) {
+      const programs = votes.get(key) ?? new Set<string>()
+      h.programs.forEach((p) => programs.add(p))
+      votes.set(key, programs)
     }
   }
   const out: Record<string, string> = {}
-  votes.forEach((counts, key) => {
-    const best = Array.from(counts).sort((a, b) => b[1] - a[1])[0]
-    if (best) out[key] = best[0]
+  votes.forEach((programs, key) => {
+    if (programs.size === 1) out[key] = Array.from(programs)[0]
   })
   return out
 }

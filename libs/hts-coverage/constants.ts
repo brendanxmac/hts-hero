@@ -3,6 +3,8 @@
 
 export const CoverageTables = {
   ITEMS: "hts_coverage_items",
+  BATCHES: "hts_coverage_batches",
+  BATCH_ITEMS: "hts_coverage_batch_items",
   NOTE_PROGRAMS: "hts_coverage_note_programs",
   SNAPSHOTS: "hts_coverage_snapshots",
 } as const
@@ -11,12 +13,14 @@ export const CoverageTables = {
 export const STATUSES = ["open", "needs_review", "expired", "ftz_suspended", "out_of_scope"] as const
 export type CoverageStatus = (typeof STATUSES)[number]
 
-// What the dashboard shows: the set status, or for open headings, modeled / missing
-export const DISPLAY_STATUSES = ["missing", "modeled", "needs_review", "expired", "ftz_suspended", "out_of_scope"] as const
+// What the dashboard shows: the set status, or for open headings, modeled / in a batch / missing
+export const DISPLAY_STATUSES = ["missing", "queued", "in_progress", "modeled", "needs_review", "expired", "ftz_suspended", "out_of_scope"] as const
 export type DisplayStatus = (typeof DISPLAY_STATUSES)[number]
 
 export const STATUS_LABELS: Record<DisplayStatus, string> = {
   missing: "Missing",
+  queued: "Queued",
+  in_progress: "In progress",
   modeled: "Modeled",
   needs_review: "Needs review",
   expired: "Expired",
@@ -73,3 +77,36 @@ export const subchapterLabel = (prefix: string) => {
   const name = SUBCHAPTER_NAMES[prefix]
   return `Subchapter ${subchapterRoman(prefix)}${name ? ` – ${name}` : ""}`
 }
+
+// ---------- Batches ----------
+
+export const BATCH_STATUSES = ["draft", "ready", "pulled", "applied", "archived"] as const
+export type BatchStatus = (typeof BATCH_STATUSES)[number]
+
+// A heading can be in only one open batch at a time
+export const OPEN_BATCH_STATUSES: BatchStatus[] = ["draft", "ready", "pulled"]
+
+export const BATCH_DECISIONS = ["pending", "include", "skip"] as const
+export type BatchDecision = (typeof BATCH_DECISIONS)[number]
+
+export const DATES_MODES = ["earliest_verified", "backfill"] as const
+export type DatesMode = (typeof DATES_MODES)[number]
+
+export const DATES_MODE_LABELS: Record<DatesMode, string> = {
+  earliest_verified: "From the earliest verified revision",
+  backfill: "Research and backfill real history",
+}
+
+// Batch names become a folder (tariffs/coverage-batches/<name>) and a branch (coverage/<name>)
+export const BATCH_NAME_PATTERN = /^[a-z0-9][a-z0-9-]{1,59}$/
+
+export const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60)
+
+export const SUGGESTION_PROMPT_VERSION = "coverage-suggest-1"
+// Headings per "Suggest with Claude" call
+export const SUGGEST_CHUNK = 8
