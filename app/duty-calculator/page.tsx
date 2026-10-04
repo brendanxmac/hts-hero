@@ -9,6 +9,9 @@ import styles from "../../components/duty-calculator/theme.module.css";
 import { Hero } from "../../components/duty-calculator/Hero";
 import { createClient } from "@/app/api/supabase/server";
 import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
+import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
+import { TariffGuide } from "../../components/duty-calculator/TariffGuide";
+import { dutyCalculatorFaqs } from "../../components/duty-calculator/faq";
 
 export const metadata: Metadata = {
   title:
@@ -70,7 +73,11 @@ export const metadata: Metadata = {
 
 export default async function DutyCalculatorPage() {
   const latestVerified = getLatestVerifiedRevision();
-  const latestUpdates = await getChangelogEntries(createClient(), { limit: 2 });
+  const [latestUpdates, content] = await Promise.all([
+    getChangelogEntries(createClient(), { limit: 2 }),
+    getDutyCalculatorContent(),
+  ]);
+  const faqs = dutyCalculatorFaqs(content.revisionTitle);
   // <main> grows with its content and fills the rest of the window (flex-1, no shrinking), so
   // the layout's scroll container, which has a different background, never shows around the page
   return (
@@ -80,6 +87,7 @@ export default async function DutyCalculatorPage() {
         name: "US Import Duty & Tariff Calculator",
         url: `https://${config.domainName}/duty-calculator`,
         applicationCategory: "BusinessApplication",
+        dateModified: content.asOf,
         operatingSystem: "All",
         browserRequirements: "Requires JavaScript",
         offers: {
@@ -98,48 +106,11 @@ export default async function DutyCalculatorPage() {
 
       {renderSchemaJsonLd({
         "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: "How are US import duties calculated?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "US import duties depend on the product's HTS (Harmonized Tariff Schedule) code, its country of origin and the date it's entered. The base rate comes from the HTS: Column 1 General for most countries, Column 1 Special when the goods qualify for a trade agreement or preference program such as USMCA, and Column 2 for Cuba, North Korea, Russia and Belarus. Additional Chapter 99 duties are then added, such as Section 232 tariffs on steel, aluminum, copper, autos and wood, and Section 301 tariffs on goods from China, unless an exemption applies. Duties are applied to the customs value (or per unit for specific rates), and customs fees are added: the Merchandise Processing Fee (0.3464%, with a minimum and maximum) and, for ocean shipments, the Harbor Maintenance Fee (0.125%). Antidumping and countervailing duties are set case by case and aren't included in this calculator.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "What are Section 301 tariffs?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Section 301 tariffs are additional duties on goods from China, ranging from 7.5% to 100% depending on the product and, for recent increases, the entry date. They're applied on top of the standard HTS duty rate and were imposed to address China's trade practices. The HTS Hero duty calculator applies the Section 301 lists and product exclusions in effect on your entry date.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Is this US tariff calculator free?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Yes, the HTS Hero duty and tariff calculator is completely free, with no sign-up required. Enter an HTS code, country of origin and entry date to see the full duty breakdown, including the base rate, Section 232, 301 and 122 tariffs, trade preferences, and customs fees.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "How do I find the tariff rate for imports from a specific country?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Enter the product's HTS code, then select the country of origin. The calculator shows the rates that apply to goods from that country on your entry date, including additional tariffs (like Section 301 for China) and preferential rates you can claim (like USMCA for goods from Mexico and Canada that meet its rules of origin).",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Does the calculator include antidumping and countervailing duties?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "No. Antidumping and countervailing duties (AD/CVD) are set case by case for specific producers and exporters, so they aren't included. If your product is covered by an AD/CVD order, check the order's rates with CBP or your customs broker and add them to the estimate.",
-            },
-          },
-        ],
+        mainEntity: faqs.map(({ question, answer }) => ({
+          "@type": "Question",
+          name: question,
+          acceptedAnswer: { "@type": "Answer", text: answer },
+        })),
       })}
 
       {/* Hero — server-rendered, immediately visible to crawlers */}
@@ -153,6 +124,9 @@ export default async function DutyCalculatorPage() {
           <TariffFinderPage />
         </Suspense>
       </BreadcrumbsProvider>
+
+      {/* Rates, a worked example, lookups, sources and FAQ — server-rendered for crawlers */}
+      <TariffGuide content={content} faqs={faqs} />
 
       {/* Interactive Classification CTA */}
       {/* <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-12">
