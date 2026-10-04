@@ -194,7 +194,9 @@ export const headings: Tariff[] = [
         "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54, 9903.94.55, 9903.94.64, and 9903.94.65, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter.",
       scope: {
         countries: "all",
-        // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
+        // U.S. note 33(p) lists no codes: it covers automobile parts certified for U.S. production or
+        // repair, outside chapters 72, 73 and 76 and the 33(g) and 38(i) lists. Chapters that can't hold
+        // vehicle parts are left out too (an engine judgment; see lists/vehicle-parts.ts). PROGRESS.md L9.
         codes: "all",
         excludeCodes: [
           { list: "automobileParts33G" },
@@ -202,6 +204,7 @@ export const headings: Tariff[] = [
           { list: "ch73Headings" },
           { list: "ch76Headings" },
           { list: "partsOfMHDVs38i" },
+          { list: "notVehiclePartChapters" },
         ],
       },
       exceptions: [

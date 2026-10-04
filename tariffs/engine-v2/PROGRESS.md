@@ -146,6 +146,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
 - **L7. 9903.03.01's `exceptions` contains HTS codes** `8471.50`, `8471.80`, `8473.30` (the semiconductor list). They have no effect in either engine; v2 dropped them. Were they meant as `excludeCodes`? See Q6.
 - **L8. 27 exception cycles**, mostly among the 232 metals alternatives (e.g. 9903.82.04 ↔ .06, .08 ↔ .11 ↔ .12, .09 ↔ .13, 9903.94.01 ↔ .31). Both engines currently resolve them through the "needs confirmation" defaults. The validator lists them as warnings.
 - **L9. Very broad "needs review" headings.** 9903.94.07, 9903.94.33, 9903.94.44/.45/.54/.55/.64/.65, 9903.74.09, 9903.74.10 and 9903.82.03 cover *all codes except a list*. So nearly every product from those countries gets their questions. The v2 panel groups them, but the scopes look broader than the notes intend. See Q9.
+  - **Oct 4: 9903.94.07 and 9903.74.09 narrowed.** U.S. notes 33(p) and 38(j) (Rev 20) list no codes: they cover vehicle parts certified for U.S. production or repair, outside chapters 72, 73 and 76 and the 33(g) and 38(i) lists. Both now also exclude `notVehiclePartChapters` (`data/lists/vehicle-parts.ts`), the chapters that can't hold vehicle parts (food, apparel, toys and so on). That list is an engine judgment, not note text.
 - **L10. The base-rate parser can't read some rates** (`$1.13/m3`, "less 0.020668¢/kg for each degree…"). Both engines count those as 0; v2 shows a warning.
 
 ### Engine v2
@@ -169,7 +170,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
 6. **9903.03.01 exceptions** `8471.50`/`8471.80`/`8473.30`: meant to exclude semiconductors from Section 122?
 7. **9903.92.10's exception.** The HTS text says 9903.91.09; I used 9903.92.09. OK?
 8. **Done Sep 30:** FY2027 MPF values added to both calculators, switching on Oct 1 (see E2).
-9. **Broad "needs review" headings (L9).** Should these be narrowed to specific lists?
+9. **Broad "needs review" headings (L9).** Should these be narrowed to specific lists? Partly answered (Oct 4): 9903.94.07 and 9903.74.09 have no list in their notes, so they now skip chapters that can't hold vehicle parts. The rest are still open.
 10. **Stale legacy tests (L1).** Update them for the full-value 232 structure, or delete them?
 11. **Answered (Oct 2): 9903.03.06 and "no metal" articles.** No. Note 2(aa)(v)(1) lists only "9903.82.02 and 9903.82.04–…", so 9903.82.01 (no metal) and 9903.82.03 (metal under 15% of the weight) don't trigger the exemption and pay Section 122. Corrected for all dates in Rev 11.
 12. **Rolling this out.** Answered: don't make it the default for now.
@@ -226,7 +227,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
   - 9903.94.31
   - wood
   - the ended EU exemption lists
-- **10 more `TODO(list)` comments** mark headings that cover every code except an exclusion list, while their text points to a specific note subdivision (L9): 9903.94.07/.33/.44/.45/.54/.55/.64/.65 and 9903.74.09/.10.
+- **8 more `TODO(list)` comments** mark headings that cover every code except an exclusion list, while their text points to a specific note subdivision (L9): 9903.94.33/.44/.45/.54/.55/.64/.65 and 9903.74.10. (9903.94.07 and 9903.74.09 were resolved Oct 4: their notes list no codes.)
 - **The validator now warns** for every list whose id starts with `9903.`, so the stand-ins stay visible until they're replaced.
 - **"All codes" is correct as-is** for the Section 122 family, the country deals, and 9903.82.03 ("except chapters 72, 73, 74 or 76").
 

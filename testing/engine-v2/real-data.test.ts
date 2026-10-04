@@ -452,6 +452,17 @@ describe("engine-v2 real data: note 16 precedence and notes 33/38/39 non-stackin
     expect(kr.lines.find((l) => l.code === "9903.76.23").status).toBe("excluded")
   })
 
+  it("parts certified for U.S. production or repair (9903.94.07, 9903.74.09) skip chapters that can't hold vehicle parts", () => {
+    const asked = (htsCode: string) =>
+      run(htsCode, "VN").questions.map((q) => q.input.id).filter((id) => /9903\.(94\.07|74\.09)/.test(id))
+    // Apparel, vegetables, live animals
+    for (const code of ["6109.10.00.12", "0711.90.30.00", "0101.21.00.10"]) expect(asked(code)).toEqual([])
+    // Insulated wire, rubber, made-up textiles, seats, vehicle parts outside 33(g)
+    for (const code of ["8544.42.90.90", "4015.12.10.10", "6307.90.98.70", "9401.69.60.31", "8708.99.81.80"]) {
+      expect(asked(code)).toEqual(["confirm:9903.94.07", "confirm:9903.74.09"])
+    }
+  })
+
   it("has no unknown codes in the non-stacking interactions beyond the not-yet-backfilled IEEPA headings", () => {
     const known = new Set(AllRules.tariffs.map((t) => t.code))
     const unknown = new Set(

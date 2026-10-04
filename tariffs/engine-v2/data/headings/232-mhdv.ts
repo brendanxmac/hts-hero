@@ -131,7 +131,10 @@ export const headings: Tariff[] = [
       "Medium- and heavy-duty vehicle parts, as provided for in subdivision (j) of U.S. note 38 to this subchapter.",
     scope: {
       countries: "all",
-      // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
+      // U.S. note 38(j) lists no codes: it covers parts of medium- and heavy-duty vehicles certified
+      // for U.S. production or repair, outside chapters 72, 73 and 76 and the 38(i) and 33(g) lists.
+      // Chapters that can't hold vehicle parts are left out too (an engine judgment; see
+      // lists/vehicle-parts.ts). PROGRESS.md L9.
       codes: "all",
       excludeCodes: [
         { list: "automobileParts33G" },
@@ -139,6 +142,7 @@ export const headings: Tariff[] = [
         { list: "ch73Headings" },
         { list: "ch76Headings" },
         { list: "partsOfMHDVs38i" },
+        { list: "notVehiclePartChapters" },
       ],
     },
     exceptions: ["9903.74.10", "9903.74.11"],
