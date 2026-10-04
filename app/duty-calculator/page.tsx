@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title:
     "US Import Duty & Tariff Calculator — Free HTS Code Lookup | HTS Hero",
   description:
-    "Free US import duty calculator. Enter an HTS code, country of origin and entry date to see every duty that applies: the base rate, Section 232, 301 and 122 tariffs and their exemptions, trade preferences like USMCA, and MPF and HMF fees, with the reason for each line.",
+    "Free US tariff calculator. Enter an HTS code and country of origin to see every import duty: base rate, Section 232, 301 and 122 tariffs, exemptions and fees.",
   keywords: [
     "US import duty calculator",
     "usa import duty calculator",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Free US Import Duty & Tariff Calculator | HTS Hero",
     description:
-      "Calculate US import duties for any HTS code, country of origin and entry date, including Section 232, 301 and 122 tariffs, exemptions, USMCA and other trade preferences, and customs fees.",
+      "Calculate US import duty for any HTS code and country of origin: base rate, Section 232, 301 and 122 tariffs, exemptions, trade preferences and fees.",
     url: `https://${config.domainName}/duty-calculator`,
     siteName: "HTS Hero",
     type: "website",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Free US Import Duty & Tariff Calculator | HTS Hero",
     description:
-      "Enter an HTS code, country of origin and entry date to see the full duty breakdown: base rate, Section 232, 301 and 122 tariffs, exemptions and customs fees.",
+      "Enter an HTS code and country of origin to see the full duty breakdown: base rate, Section 232, 301 and 122 tariffs, exemptions and customs fees.",
     images: [`https://${config.domainName}/hero-tariffs.png`],
   },
   alternates: {
