@@ -3,7 +3,8 @@
 //   npm run ch99:coverage
 //   npm run ch99:coverage -- --file ../hts-data-processing/2026-20.json   (use a saved export)
 //
-// Expired, terminated and FTZ-suspended headings are listed in ch99-status.ts and are kept
+// Expired, terminated and FTZ-suspended headings are listed in libs/hts-coverage/initial-status.ts
+// and are kept
 // out of "missing". Coverage is measured against the headings still in effect.
 //
 // Output: tariffs/ch99-coverage/ (replaced on each run)
@@ -17,40 +18,17 @@
 
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs"
 import { join } from "path"
+import { analyzeCoverage, type HeadingAnalysis, type HtsExportRow } from "../../libs/hts-coverage/analyze"
+import { subchapterLabel } from "../../libs/hts-coverage/constants"
 import { fetchCh99Export, getCurrentReleaseName } from "../../libs/hts-revision-diff/usitc"
 import { AllRules } from "../../tariffs/engine-v2/data"
-import { isEffectiveOn, todayIsoDate } from "../../tariffs/engine-v2/dates"
-import type { Tariff } from "../../tariffs/engine-v2/types"
-import { expired, ftzSuspended, matches, Matcher, needsReview, parseEntry } from "./ch99-status"
+import { todayIsoDate } from "../../tariffs/engine-v2/dates"
 
 const OUTPUT_DIR = join("tariffs", "ch99-coverage")
-const HEADING = /^99\d\d\.\d\d\.\d\d$/
-const HEADING_ANYWHERE = /\b99\d\d\.\d\d\.\d\d\b/g
-
-interface HtsRow {
-  htsno?: string | null
-  description?: string | null
-  general?: string | null
-}
-
-// Heading 99NN is in subchapter NN of chapter 99. Only the subchapters the calculator works
-// with are described; the rest are labeled by number.
-const SUBCHAPTER_NAMES: Record<string, string> = {
-  "9902": "Temporary duty reductions (MTB)",
-  "9903": "Temporary modifications (232, 301, 122, IEEPA, 201, 338, …)",
-  "9904": "Section 22 quantitative limitations",
-}
-const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII"]
-const subchapterLabel = (prefix: string) => {
-  const name = SUBCHAPTER_NAMES[prefix]
-  return `Subchapter ${ROMAN[Number(prefix.slice(2))] ?? prefix.slice(2)}${name ? ` – ${name}` : ""}`
-}
 
 const csvCell = (value: string) => (/[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value)
 const toCsv = (header: string[], rows: string[][]) =>
   [header, ...rows].map((r) => r.map((c) => csvCell(c ?? "")).join(",")).join("\n") + "\n"
-
-const clean = (text: string | null | undefined) => (text ?? "").replace(/\s+/g, " ").trim()
 
 const parseArgs = () => {
   const args = process.argv.slice(2)
@@ -60,11 +38,11 @@ const parseArgs = () => {
 
 const loadHts = async (file: string | null) => {
   if (file) {
-    const rows = JSON.parse(readFileSync(file, "utf8")) as HtsRow[]
+    const rows = JSON.parse(readFileSync(file, "utf8")) as HtsExportRow[]
     return { source: file, rows }
   }
   const [release, rows] = await Promise.all([getCurrentReleaseName(), fetchCh99Export()])
-  return { source: `USITC export (${release ?? "current release"})`, rows: rows as HtsRow[] }
+  return { source: `USITC export (${release ?? "current release"})`, rows: rows as HtsExportRow[] }
 }
 
 type Status = "active" | "expired" | "ftz-suspended"
@@ -88,50 +66,13 @@ const main = async () => {
   const today = todayIsoDate()
   const { source, rows } = await loadHts(file)
 
-  // HTS headings, first row wins (the export has no duplicates, but a saved file might)
-  const hts = new Map<string, HtsRow>()
-  for (const row of rows) {
-    const code = clean(row.htsno)
-    if (HEADING.test(code) && !hts.has(code)) hts.set(code, row)
-  }
-  const codes = [...hts.keys()].sort((a, b) => a.localeCompare(b))
-
-  // Status lists. Every entry must match at least one heading, so a typo can't hide.
-  const expiredMatchers = expired.map(parseEntry)
-  const ftzMatchers = ftzSuspended.map(parseEntry)
-  const reviewMatchers = needsReview.map(parseEntry)
-  const entryChecks = [
-    ...expiredMatchers.map((m) => ({ list: "expired", m })),
-    ...ftzMatchers.map((m) => ({ list: "FTZ-suspended", m })),
-    ...reviewMatchers.map((m) => ({ list: "needs review", m })),
-  ].map(({ list, m }) => ({
-    list,
-    codes: m.entry.codes,
-    listed: "prefix" in m ? "prefix" : String(m.exact.length),
-    inHts: codes.filter((c) => matches(m, c)).length,
-  }))
+  const { headings, stale: staleRecords, statusChecks: entryChecks } = analyzeCoverage(rows, AllRules, today)
   const unmatched = entryChecks.filter((e) => e.inHts === 0)
   for (const e of unmatched) console.warn(`⚠ ${e.list} entry ${e.codes} matches no heading in the HTS`)
 
-  const firstMatch = (matchers: Matcher[], code: string) => matchers.find((m) => matches(m, code))
-  const statusOf = new Map<string, { status: Status; note: string }>()
-  for (const code of codes) {
-    const exp = firstMatch(expiredMatchers, code)
-    const ftz = firstMatch(ftzMatchers, code)
-    if (exp && ftz) throw new Error(`${code} is on both the expired (${exp.entry.codes}) and FTZ-suspended lists`)
-    if (exp) statusOf.set(code, { status: "expired", note: exp.entry.note })
-    else if (ftz) statusOf.set(code, { status: "ftz-suspended", note: ftz.entry.note })
-    else statusOf.set(code, { status: "active", note: firstMatch(reviewMatchers, code)?.entry.note ?? "" })
-  }
-
-  // Engine tariff records, grouped by heading (one heading can have several dated versions)
-  const tariffsByCode = new Map<string, Tariff[]>()
-  for (const t of AllRules.tariffs) {
-    tariffsByCode.set(t.code, [...(tariffsByCode.get(t.code) ?? []), t])
-  }
-
-  // Headings named anywhere in the engine data (exceptions, interactions, conditions, …)
-  const referenced = new Set(JSON.stringify(AllRules).match(HEADING_ANYWHERE) ?? [])
+  // Needs-review headings are still in effect; the note goes in the review column
+  const statusOf = (h: HeadingAnalysis): Status =>
+    h.initialStatus === "expired" ? "expired" : h.initialStatus === "ftz_suspended" ? "ftz-suspended" : "active"
 
   const covered: string[][] = []
   const missing: string[][] = []
@@ -143,14 +84,15 @@ const main = async () => {
   let modeledActiveToday = 0
   let modeledExpired = 0
 
-  for (const code of codes) {
-    const row = hts.get(code)!
-    const { status, note } = statusOf.get(code)!
-    const sub = code.slice(0, 4)
+  for (const h of headings) {
+    const code = h.htsno
+    const status = statusOf(h)
+    const note = h.initialStatusNote ?? ""
+    const sub = h.subchapter
     const group = code.slice(0, 7) // "9903.88"
     const g = groupCounts.get(group) ?? emptyCounts()
     const s = subchapterCounts.get(sub) ?? emptyCounts()
-    const records = tariffsByCode.get(code)
+    const records = h.modeled ? h.records : null
     const modeled = records ? "yes" : "no"
 
     for (const c of [g, s, totals]) {
@@ -164,49 +106,38 @@ const main = async () => {
     }
 
     if (records) {
-      const activeToday = records.some((t) => isEffectiveOn(t.effective, today))
-      if (status === "active" && activeToday) modeledActiveToday++
+      if (status === "active" && h.activeOn) modeledActiveToday++
       if (status === "expired") modeledExpired++
       covered.push([
         code,
         STATUS_LABEL[status],
         note,
-        [...new Set(records.map((t) => t.program))].join("; "),
-        [...new Set(records.map((t) => t.name))].join("; "),
+        h.programs.join("; "),
+        Array.from(new Set(records.map((t) => t.name))).join("; "),
         String(records.length),
-        activeToday ? "yes" : "no",
-        clean(row.general),
-        clean(row.description),
+        h.activeOn ? "yes" : "no",
+        h.general,
+        h.description,
       ])
     } else if (status === "active") {
-      missing.push([
-        code,
-        subchapterLabel(sub),
-        referenced.has(code) ? "yes" : "no",
-        note,
-        clean(row.general),
-        clean(row.description),
-      ])
+      missing.push([code, subchapterLabel(sub), h.referenced ? "yes" : "no", note, h.general, h.description])
     }
-    if (status === "expired") expiredRows.push([code, note, modeled, clean(row.general), clean(row.description)])
-    if (status === "ftz-suspended") ftzRows.push([code, note, modeled, clean(row.general), clean(row.description)])
+    if (status === "expired") expiredRows.push([code, note, modeled, h.general, h.description])
+    if (status === "ftz-suspended") ftzRows.push([code, note, modeled, h.general, h.description])
 
     groupCounts.set(group, g)
     subchapterCounts.set(sub, s)
   }
 
-  const stale = [...tariffsByCode]
-    .filter(([code]) => !hts.has(code))
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([code, records]) => {
-      const last = records.map((t) => t.effective.to ?? "").sort().at(-1)
-      return [
-        code,
-        [...new Set(records.map((t) => t.program))].join("; "),
-        [...new Set(records.map((t) => t.name))].join("; "),
-        records.some((t) => !t.effective.to) ? "open-ended" : last ?? "",
-      ]
-    })
+  const stale = staleRecords.map(({ code, records }) => {
+    const last = records.map((t) => t.effective.to ?? "").sort().at(-1)
+    return [
+      code,
+      Array.from(new Set(records.map((t) => t.program))).join("; "),
+      Array.from(new Set(records.map((t) => t.name))).join("; "),
+      records.some((t) => !t.effective.to) ? "open-ended" : last ?? "",
+    ]
+  })
 
   if (existsSync(OUTPUT_DIR)) rmSync(OUTPUT_DIR, { recursive: true })
   mkdirSync(join(OUTPUT_DIR, "missing"), { recursive: true })
@@ -234,7 +165,7 @@ const main = async () => {
     `# Chapter 99 coverage`,
     ``,
     `Generated ${today} by \`npm run ch99:coverage\`. HTS source: ${source}.`,
-    `Expired and FTZ-suspended headings come from scripts/engine-v2/ch99-status.ts. ` +
+    `Expired and FTZ-suspended headings come from libs/hts-coverage/initial-status.ts. ` +
       `Coverage is modeled ÷ in effect.`,
     ``,
     `| | Headings |`,
@@ -284,7 +215,7 @@ const main = async () => {
     ``,
     `## Status list check`,
     ``,
-    `Headings each entry in ch99-status.ts lists, and how many of them are in the HTS.`,
+    `Headings each entry in initial-status.ts lists, and how many of them are in the HTS.`,
     ``,
     `| List | Entry | Listed | In HTS |`,
     `|---|---|---:|---:|`,

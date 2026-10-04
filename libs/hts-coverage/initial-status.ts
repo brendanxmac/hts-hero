@@ -1,5 +1,6 @@
-// Chapter 99 headings that are still printed in the HTS but no longer apply, for
-// `npm run ch99:coverage`. Each entry's `codes` is one of:
+// Chapter 99 headings that are still printed in the HTS but no longer apply. Used by
+// `npm run ch99:coverage`, and as the starting status of new rows in /coverage-checker (after
+// that, statuses are edited there). Each entry's `codes` is one of:
 //   "9922"            a prefix: every heading that starts with it (any code under 10 digits)
 //   "9903.02.30"      one heading
 //   "9903.01.43-76"   a range of the last two digits, inclusive (9903.01.43 … 9903.01.76)
