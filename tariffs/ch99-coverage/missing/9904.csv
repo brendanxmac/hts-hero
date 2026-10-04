@@ -1,0 +1,513 @@
+heading,subchapter,referenced_in_engine,review,rate,description
+9904.02.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 25¢/kg
+9904.02.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 45¢/kg
+9904.02.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 45¢/kg or more but less than 65¢/kg
+9904.02.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 65¢/kg or more but less than 85¢/kg
+9904.02.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 85¢/kg or more but less than $1.05/kg
+9904.02.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.05/kg or more but less than $1.25/kg
+9904.02.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.25/kg or more but less than $1.45/kg
+9904.02.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.45/kg or more
+9904.02.09,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 15¢/kg
+9904.02.10,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 35¢/kg
+9904.02.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more but less than 55¢/kg
+9904.02.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 55¢/kg or more but less than 75¢/kg
+9904.02.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 75¢/kg or more but less than 95¢/kg
+9904.02.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 95¢/kg or more but less than $1.15/kg
+9904.02.15,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.15/kg or more but less than $1.35/kg
+9904.02.16,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.35/kg or more but less than $1.55/kg
+9904.02.17,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.55/kg or more
+9904.02.27,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 30¢/kg
+9904.02.28,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 50¢/kg
+9904.02.29,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 70¢/kg
+9904.02.30,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 90¢/kg
+9904.02.31,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1.10/kg
+9904.02.32,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.10/kg or more but less than $1.30/kg
+9904.02.33,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.30/kg or more but less than $1.50/kg
+9904.02.34,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.50/kg or more but less than $1.70/kg
+9904.02.35,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.70/kg or more
+9904.02.37,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.02.60,Subchapter IV – Section 22 quantitative limitations,no,,,"Sheep meat, provided for in subheadings 0204.21.00, 0204.22.40, 0204.23.40, 0204.41.00, 0204.42.40 or 0204.43.40, if entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture"
+9904.04.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 20¢/liter
+9904.04.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/liter or more but less than 40¢/liter
+9904.04.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/liter or more but less than 60¢/liter
+9904.04.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/liter or more but less than 80¢/liter
+9904.04.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/liter or more but less than $1/liter
+9904.04.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1/liter or more but less than $1.20/liter
+9904.04.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.20/liter or more
+9904.04.08,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.04.09,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 60¢/kg
+9904.04.10,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 80¢/kg
+9904.04.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more but less than $1/kg
+9904.04.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1/kg or more but less than $1.20/kg
+9904.04.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.20/kg or more but less than $1.40/kg
+9904.04.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.40/kg or more but less than $1.60/kg
+9904.04.15,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.60/kg or more but less than $1.80/kg
+9904.04.16,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.80/kg or more but less than $2/kg
+9904.04.17,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2/kg or more but less than $2.20/kg
+9904.04.18,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.20/kg or more but less than $2.40/kg
+9904.04.19,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.40/kg or more
+9904.04.20,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 0401.50.75 or 0403.90.78
+9904.04.21,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 0405.10.20
+9904.04.22,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 20¢/kg
+9904.04.23,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 30¢/kg
+9904.04.24,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 40¢/kg
+9904.04.25,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 50¢/kg
+9904.04.26,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 60¢/kg
+9904.04.27,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 70¢/kg
+9904.04.28,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 80¢/kg
+9904.04.29,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more
+9904.04.30,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.04.31,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 15¢/kg
+9904.04.32,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 25¢/kg
+9904.04.33,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 35¢/kg
+9904.04.34,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more but less than 45¢/kg
+9904.04.35,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 45¢/kg or more but less than 55¢/kg
+9904.04.36,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 55¢/kg or more but less than 65¢/kg
+9904.04.37,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 65¢/kg or more but less than 75¢/kg
+9904.04.38,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 75¢/kg or more
+9904.04.39,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.04.40,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 60¢/kg
+9904.04.41,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 80¢/kg
+9904.04.42,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more but less than $1/kg
+9904.04.43,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1/kg or more but less than $1.20/kg
+9904.04.44,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.20/kg or more but less than $1.40/kg
+9904.04.45,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.40/kg or more but less than $1.60/kg
+9904.04.46,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.60/kg or more but less than $1.80/kg
+9904.04.47,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.80/kg or more but less than $2/kg
+9904.04.48,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2/kg or more
+9904.04.49,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.04.50,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 65¢/kg
+9904.04.51,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 65¢/kg or more but less than 95¢/kg
+9904.04.52,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 95¢/kg or more but less than $1.25/kg
+9904.04.53,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.25/kg or more but less than $1.55/kg
+9904.04.54,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.55/kg or more but less than $1.85/kg
+9904.04.55,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.85/kg or more but less than $2.05/kg
+9904.04.56,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.05/kg or more but less than $2.25/kg
+9904.04.58,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.25/kg or more
+9904.04.59,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 30¢/kg
+9904.04.60,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 50¢/kg
+9904.04.61,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 70¢/kg
+9904.04.62,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 90¢/kg
+9904.04.63,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1.10/kg
+9904.04.64,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.10/kg or more but less than $1.30/kg
+9904.04.65,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.30/kg or more but less than $1.50/kg
+9904.04.66,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.50/kg or more
+9904.04.67,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 30¢/kg
+9904.04.68,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 50¢/kg
+9904.04.69,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 70¢/kg
+9904.04.70,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 90¢/kg
+9904.04.71,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1.10/kg
+9904.04.72,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.10/kg or more but less than $1.30/kg
+9904.04.73,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.30/kg or more but less than $1.50/kg
+9904.04.74,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.50/kg or more
+9904.04.75,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 90¢/kg
+9904.04.76,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1.20/kg
+9904.04.77,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.20/kg or more but less than $1.50/kg
+9904.04.78,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.50/kg or more but less than $1.80/kg
+9904.04.79,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.80/kg or more but less than $2.10/kg
+9904.04.80,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.10/kg or more but less than $2.30/kg
+9904.04.81,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.30/kg or more but less than $2.50/kg
+9904.04.82,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.50/kg or more
+9904.04.83,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 0402.29.50
+9904.04.84,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 0402.99.90
+9904.04.85,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 0403.20.50 or 0403.90.95
+9904.04.86,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 0404.10.15
+9904.04.87,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 0404.90.50
+9904.04.88,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1517.90.60
+9904.04.89,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1704.90.58
+9904.04.90,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.20.82
+9904.04.91,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.20.83
+9904.04.92,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1806.32.70 or 1806.90.08
+9904.04.93,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1806.32.80 or 1806.90.10
+9904.04.94,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1901.10.26 or 1901.10.44
+9904.04.95,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1901.20.15 or 1901.20.50
+9904.04.96,Subchapter IV – Section 22 quantitative limitations,no,,,"Provided for in subheadings 1901.10.56, 1901.10.66, 1901.90.62 or 1901.90.65"
+9904.04.97,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2105.00.40
+9904.04.98,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2106.90.09
+9904.04.99,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 0405.20.70 or 2106.90.66
+9904.05.00,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2106.90.87
+9904.05.01,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2202.99.28
+9904.05.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 15¢/kg
+9904.05.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 20¢/kg
+9904.05.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 25¢/kg
+9904.05.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 30¢/kg
+9904.05.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 40¢/kg
+9904.05.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 50¢/kg
+9904.05.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more
+9904.05.09,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 30¢/kg
+9904.05.10,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 40¢/kg
+9904.05.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 50¢/kg
+9904.05.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 60¢/kg
+9904.05.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 70¢/kg
+9904.05.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 80¢/kg
+9904.05.15,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more but less than 90¢/kg
+9904.05.16,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1/kg
+9904.05.17,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1/kg or more
+9904.05.18,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 0402.91.70 or 0402.91.90
+9904.05.19,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 0402.99.45 or 0402.99.55
+9904.05.20,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 20¢/kg
+9904.05.21,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 30¢/kg
+9904.05.22,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 40¢/kg
+9904.05.23,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 50¢/kg
+9904.05.24,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 60¢/kg
+9904.05.25,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 70¢/kg
+9904.05.26,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more
+9904.05.28,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 7¢/kg
+9904.05.29,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 7¢/kg or more but less than 10¢/kg
+9904.05.30,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 15¢/kg
+9904.05.31,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 20¢/kg
+9904.05.32,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 25¢/kg
+9904.05.33,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 30¢/kg
+9904.05.34,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 35¢/kg
+9904.05.35,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more
+9904.05.36,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.05.37,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 60¢/kg
+9904.05.38,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 80¢/kg
+9904.05.39,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more but less than $1/kg
+9904.05.40,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1/kg or more but less than $1.20/kg
+9904.05.41,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.20/kg or more but less than $1.40/kg
+9904.05.42,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.40/kg or more but less than $1.60/kg
+9904.05.43,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.60/kg or more but less than $1.80/kg
+9904.05.44,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.80/kg or more but less than $2/kg
+9904.05.45,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2/kg or more
+9904.05.46,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 0405.90.20
+9904.05.47,Subchapter IV – Section 22 quantitative limitations,no,,,"Provided for in subheadings 0405.20.30, 2106.90.26 or 2106.90.36"
+9904.05.48,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than $1.20/kg
+9904.05.49,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.20/kg or more but less than $1.50/kg
+9904.05.50,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.50/kg or more but less than $1.80/kg
+9904.05.51,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.80/kg or more but less than $2.10/kg
+9904.05.52,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.10/kg or more but less than $2.40/kg
+9904.05.53,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.40/kg or more but less than $2.70/kg
+9904.05.54,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.70/kg or more but less than $3/kg
+9904.05.55,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $3/kg or more but less than $3.30/kg
+9904.05.56,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $3.30/kg or more but less than $3.50/kg
+9904.05.57,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $3.50/kg or more
+9904.05.58,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.05.59,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 65¢/kg
+9904.05.60,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 65¢/kg or more but less than 75¢/kg
+9904.05.61,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 75¢/kg or more but less than 85¢/kg
+9904.05.62,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 85¢/kg or more but less than 95¢/kg
+9904.05.63,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 95¢/kg or more but less than $1.05/kg
+9904.05.64,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.05/kg or more but less than $1.15/kg
+9904.05.65,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.15/kg or more but less than $1.25/kg
+9904.05.66,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.25/kg or more but less than $1.35/kg
+9904.05.67,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.35/kg or more but less than $1.45/kg
+9904.05.68,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.45/kg or more but less than $1.55/kg
+9904.05.69,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.55/kg or more but less than $1.65/kg
+9904.05.70,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.65/kg or more but less than $1.75/kg
+9904.05.71,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.75/kg or more but less than $1.85/kg
+9904.05.72,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.85/kg or more
+9904.05.73,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.05.74,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 50¢/kg
+9904.05.75,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 70¢/kg
+9904.05.76,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 90¢/kg
+9904.05.77,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1.10/kg
+9904.05.78,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.10/kg or more but less than $1.20/kg
+9904.05.79,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.20/kg or more but less than $1.40/kg
+9904.05.80,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.40/kg or more but less than $1.60/kg
+9904.05.81,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.60/kg or more
+9904.05.82,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.05.83,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than $1.05/kg
+9904.05.84,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.05/kg or more but less than $1.25/kg
+9904.05.85,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.25/kg or more but less than $1.45/kg
+9904.05.86,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.45/kg or more but less than $1.65/kg
+9904.05.87,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.65/kg or more but less than $1.85/kg
+9904.05.88,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.85/kg or more but less than $2.05/kg
+9904.05.89,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.05/kg or more but less than $2.25/kg
+9904.05.90,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.25/kg or more but less than $2.45/kg
+9904.05.91,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.45/kg or more but less than $2.65/kg
+9904.05.92,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.65/kg or more but less than $2.75/kg
+9904.05.93,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.75/kg or more
+9904.05.94,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.05.95,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than $1.15/kg
+9904.05.96,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.15/kg or more but less than $1.45/kg
+9904.05.97,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.45/kg or more but less than $1.75/kg
+9904.05.98,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.75/kg or more but less than $2.05/kg
+9904.05.99,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.05/kg or more but less than $2.35/kg
+9904.06.00,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.35/kg or more but less than $2.65/kg
+9904.06.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.65/kg or more but less than $2.95/kg
+9904.06.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.95/kg or more but less than $3.15/kg
+9904.06.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $3.15/kg or more but less than $3.35/kg
+9904.06.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $3.35/kg or more
+9904.06.05,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.06.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 90¢/kg
+9904.06.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1.10/kg
+9904.06.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.10/kg or more but less than $1.30/kg
+9904.06.09,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.30/kg or more but less than $1.50/kg
+9904.06.10,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.50/kg or more but less than $1.70/kg
+9904.06.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.70/kg or more but less than $1.90/kg
+9904.06.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.90/kg or more but less than $2.10/kg
+9904.06.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.10/kg or more but less than $2.30/kg
+9904.06.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.30/kg or more but less than $2.50/kg
+9904.06.15,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.50/kg or more but less than $2.70/kg
+9904.06.16,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.70/kg or more but less than $2.90/kg
+9904.06.17,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.90/kg or more
+9904.06.18,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.06.19,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 70¢/kg
+9904.06.20,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 90¢/kg
+9904.06.21,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1.10/kg
+9904.06.22,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.10/kg or more but less than $1.30/kg
+9904.06.23,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.30/kg or more but less than $1.50/kg
+9904.06.24,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.50/kg or more but less than $1.70/kg
+9904.06.25,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.70/kg or more but less than $1.90/kg
+9904.06.26,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.90/kg or more but less than $2.10/kg
+9904.06.27,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.10/kg or more
+9904.06.28,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.06.29,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 50¢/kg
+9904.06.30,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 70¢/kg
+9904.06.31,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 90¢/kg
+9904.06.32,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1.10/kg
+9904.06.33,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.10/kg or more but less than $1.30/kg
+9904.06.34,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.30/kg or more but less than $1.50/kg
+9904.06.35,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.50/kg or more but less than $1.70/kg
+9904.06.36,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.70/kg or more
+9904.06.37,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.06.38,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 50¢/kg
+9904.06.39,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 70¢/kg
+9904.06.40,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 90¢/kg
+9904.06.41,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1.10/kg
+9904.06.42,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.10/kg or more but less than $1.30/kg
+9904.06.43,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.30/kg or more but less than $1.50/kg
+9904.06.44,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.50/kg or more but less than $1.70/kg
+9904.06.45,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.70/kg or more but less than $1.90/kg
+9904.06.46,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.90/kg or more but less than $2.10/kg
+9904.06.47,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.10/kg or more but less than $2.30/kg
+9904.06.48,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.30/kg or more
+9904.06.49,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.12.01,Subchapter IV – Section 22 quantitative limitations,no,,13.3¢/kg,Valued less than 5¢/kg
+9904.12.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 10¢/kg
+9904.12.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 15¢/kg
+9904.12.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 20¢/kg
+9904.12.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 25¢/kg
+9904.12.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more
+9904.12.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 10¢/kg
+9904.12.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 20¢/kg
+9904.12.09,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 30¢/kg
+9904.12.10,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 40¢/kg
+9904.12.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 50¢/kg
+9904.12.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 60¢/kg
+9904.12.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 70¢/kg
+9904.12.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 80¢/kg
+9904.12.15,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more but less than 90¢/kg
+9904.12.16,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more but less than $1/kg
+9904.12.17,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1/kg or more
+9904.12.18,Subchapter IV – Section 22 quantitative limitations,no,,,"In shell, provided for in subheading 1202.41.80"
+9904.12.19,Subchapter IV – Section 22 quantitative limitations,no,,,"Other, provided for in subheadings 1202.30.80, 1202.42.20, 1202.42.90 or 2008.11.61"
+9904.17.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 5¢/kg
+9904.17.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 10¢/kg
+9904.17.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 15¢/kg
+9904.17.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 20¢/kg
+9904.17.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 25¢/kg
+9904.17.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more
+9904.17.07,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.17.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 5¢/kg
+9904.17.09,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 10¢/kg
+9904.17.10,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 15¢/kg
+9904.17.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 20¢/kg
+9904.17.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 25¢/kg
+9904.17.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 30¢/kg
+9904.17.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 35¢/kg
+9904.17.15,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more
+9904.17.16,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.17.17,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 5¢/kg
+9904.17.18,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 15¢/kg
+9904.17.19,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 25¢/kg
+9904.17.20,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 35¢/kg
+9904.17.21,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more but less than 45¢/kg
+9904.17.22,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 45¢/kg or more
+9904.17.23,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 10¢/kg
+9904.17.24,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 20¢/kg
+9904.17.25,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 30¢/kg
+9904.17.26,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 40¢/kg
+9904.17.27,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 50¢/kg
+9904.17.28,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 60¢/kg
+9904.17.29,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 70¢/kg
+9904.17.30,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more
+9904.17.31,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 5¢/kg
+9904.17.32,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 10¢/kg
+9904.17.33,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 15¢/kg
+9904.17.34,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 20¢/kg
+9904.17.35,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 25¢/kg
+9904.17.36,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 30¢/kg
+9904.17.37,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 35¢/kg
+9904.17.38,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more
+9904.17.39,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1701.91.48 or 1702.90.68
+9904.17.40,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1704.90.68
+9904.17.41,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1806.10.28 or 1806.10.55
+9904.17.42,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.20.73
+9904.17.43,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.90.49
+9904.17.44,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1901.20.25 or 1901.20.60
+9904.17.45,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1901.90.54
+9904.17.46,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 2101.12.48 or 2101.20.48
+9904.17.47,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2106.90.76
+9904.17.48,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2106.90.94
+9904.17.49,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 5¢/kg
+9904.17.50,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 10¢/kg
+9904.17.51,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 15¢/kg
+9904.17.52,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 20¢/kg
+9904.17.53,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 25¢/kg
+9904.17.54,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 30¢/kg
+9904.17.55,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 35¢/kg
+9904.17.56,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more
+9904.17.57,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1701.91.58
+9904.17.58,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1704.90.78 or 3006.93.20
+9904.17.59,Subchapter IV – Section 22 quantitative limitations,no,,,"Provided for in subheadings 1806.20.77, 2101.12.58 or 2101.20.58"
+9904.17.60,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.20.98
+9904.17.62,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.90.59
+9904.17.63,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1901.10.76 [or] 1901.90.71
+9904.17.64,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2106.90.80
+9904.17.65,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2106.90.97
+9904.17.66,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 5¢/kg
+9904.17.67,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 10¢/kg
+9904.17.68,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 15¢/kg
+9904.17.69,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 20¢/kg
+9904.17.70,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 25¢/kg
+9904.17.71,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 30¢/kg
+9904.17.72,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more
+9904.17.73,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1702.20.28
+9904.17.74,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1702.30.28
+9904.17.75,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1702.40.28
+9904.17.76,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1702.60.28
+9904.17.77,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1702.90.58
+9904.17.78,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.20.94
+9904.17.80,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.90.39
+9904.17.81,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2101.12.38
+9904.17.82,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2101.20.38
+9904.17.83,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2106.90.72
+9904.17.84,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 2106.90.91
+9904.18.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 5¢/kg
+9904.18.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 15¢/kg
+9904.18.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 25¢/kg
+9904.18.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 35¢/kg
+9904.18.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more but less than 45¢/kg
+9904.18.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 45¢/kg or more
+9904.18.07,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.10.15
+9904.18.08,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1806.10.38 or 1806.10.75
+9904.18.09,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 20¢/kg
+9904.18.10,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 40¢/kg
+9904.18.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 60¢/kg
+9904.18.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 80¢/kg
+9904.18.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more but less than $1/kg
+9904.18.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1/kg or more
+9904.18.15,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1806.20.26 or 1806.32.06
+9904.18.16,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1806.20.28 or 1806.32.08
+9904.18.17,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1806.90.18
+9904.18.18,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.90.20
+9904.18.19,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 20¢/kg
+9904.18.20,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 40¢/kg
+9904.18.21,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 60¢/kg
+9904.18.22,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 80¢/kg
+9904.18.23,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more but less than $1/kg
+9904.18.24,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1/kg or more
+9904.18.25,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1806.20.36 or 1806.32.16
+9904.18.26,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheadings 1806.20.38 or 1806.32.18
+9904.18.27,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.20.87
+9904.18.28,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.20.89
+9904.18.29,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.90.28
+9904.18.30,Subchapter IV – Section 22 quantitative limitations,no,,,Provided for in subheading 1806.90.30
+9904.19.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 65¢/kg
+9904.19.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 65¢/kg or more but less than 85¢/kg
+9904.19.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 85¢/kg or more but less than $1.05¢/kg
+9904.19.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.05/kg or more but less than $1.25/kg
+9904.19.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.25/kg or more but less than $1.55/kg
+9904.19.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.55/kg or more but less than $1.85/kg
+9904.19.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.85/kg or more but less than $2.05/kg
+9904.19.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.05/kg or more but less than $2.25/kg
+9904.19.09,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.25/kg or more
+9904.19.10,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.19.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 10¢/kg
+9904.19.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 20¢/kg
+9904.19.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 30¢/kg
+9904.19.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 40¢/kg
+9904.19.15,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 50¢/kg
+9904.19.16,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 60¢/kg
+9904.19.17,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 70¢/kg
+9904.19.18,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more
+9904.19.19,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.20.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 5¢/kg
+9904.20.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 15¢/kg
+9904.20.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 25¢/kg
+9904.20.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 35¢/kg
+9904.20.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more but less than 45¢/kg
+9904.20.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 45¢/kg or more but less than 55¢/kg
+9904.20.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 55¢/kg or more but less than 65¢/kg
+9904.20.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 65¢/kg or more but less than 75¢/kg
+9904.20.09,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 75¢/kg or more
+9904.20.10,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.21.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 5¢/kg
+9904.21.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 5¢/kg or more but less than 10¢/kg
+9904.21.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 15¢/kg
+9904.21.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 15¢/kg or more but less than 20¢/kg
+9904.21.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 25¢/kg
+9904.21.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 30¢/kg
+9904.21.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 35¢/kg
+9904.21.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more
+9904.21.09,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.21.10,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 20¢/liter
+9904.21.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/liter or more but less than 30¢/liter
+9904.21.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/liter or more but less than 40¢/liter
+9904.21.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/liter or more but less than 50¢/liter
+9904.21.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/liter or more but less than 60¢/liter
+9904.21.15,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/liter or more but less than 70¢/liter
+9904.21.16,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/liter or more but less than 80¢/liter
+9904.21.17,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/liter or more
+9904.21.18,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.23.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 25¢/kg
+9904.23.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 25¢/kg or more but less than 35¢/kg
+9904.23.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more but less than 45¢/kg
+9904.23.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 45¢/kg or more but less than 55¢/kg
+9904.23.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 55¢/kg or more but less than 65¢/kg
+9904.23.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 65¢/kg or more but less than 75¢/kg
+9904.23.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 75¢/kg or more but less than 85¢/kg
+9904.23.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 85¢/kg or more
+9904.23.09,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.52.01,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 35¢/kg
+9904.52.02,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 35¢/kg or more but less than 55¢/kg
+9904.52.03,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 55¢/kg or more but less than 75¢/kg
+9904.52.04,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 75¢/kg or more but less than 95¢/kg
+9904.52.05,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 95¢/kg or more but less than $1.15/kg
+9904.52.06,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.15/kg or more but less than $1.25/kg
+9904.52.07,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.25/kg or more but less than $1.35/kg
+9904.52.08,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.35/kg or more
+9904.52.09,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.52.10,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 10¢/kg
+9904.52.11,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 30¢/kg
+9904.52.12,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 50¢/kg
+9904.52.13,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 70¢/kg
+9904.52.14,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 70¢/kg or more but less than 90¢/kg
+9904.52.15,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 90¢/kg or more
+9904.52.16,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.52.17,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 20¢/kg
+9904.52.18,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 40¢/kg
+9904.52.19,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 60¢/kg
+9904.52.20,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 60¢/kg or more but less than 80¢/kg
+9904.52.21,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more but less than $1/kg
+9904.52.22,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1/kg or more
+9904.52.23,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.52.24,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 50¢/kg
+9904.52.25,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more but less than 80¢/kg
+9904.52.26,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 80¢/kg or more but less than $1.10/kg
+9904.52.27,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.10/kg or more but less than $1.40/kg
+9904.52.28,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.40/kg or more but less than $1.70/kg
+9904.52.29,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.70/kg or more but less than $2/kg
+9904.52.30,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2/kg or more but less than $2.20/kg
+9904.52.31,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.20/kg or more but less than $2.30/kg
+9904.52.32,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.30/kg or more but less than $2.40/kg
+9904.52.33,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.40/kg or more
+9904.52.34,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.52.35,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than $1.20/kg
+9904.52.36,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $1.20/kg or more but less than $2.20/kg
+9904.52.37,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $2.20/kg or more but less than $3.20/kg
+9904.52.38,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $3.20/kg or more but less than $4.20/kg
+9904.52.39,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $4.20/kg or more but less than $5.20/kg
+9904.52.40,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $5.20/kg or more but less than $6.20/kg
+9904.52.41,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $6.20/kg or more but less than $7.20/kg
+9904.52.42,Subchapter IV – Section 22 quantitative limitations,no,,,Valued $7.20/kg or more
+9904.52.43,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
+9904.52.44,Subchapter IV – Section 22 quantitative limitations,no,,,Valued less than 10¢/kg
+9904.52.45,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 10¢/kg or more but less than 20¢/kg
+9904.52.46,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 20¢/kg or more but less than 30¢/kg
+9904.52.47,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 30¢/kg or more but less than 40¢/kg
+9904.52.48,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 40¢/kg or more but less than 50¢/kg
+9904.52.49,Subchapter IV – Section 22 quantitative limitations,no,,,Valued 50¢/kg or more
+9904.52.50,Subchapter IV – Section 22 quantitative limitations,no,,,If entered during the effective period of safeguards based upon quantity announced by the Secretary of Agriculture
