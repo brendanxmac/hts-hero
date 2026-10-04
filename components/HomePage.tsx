@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react"
+import { ReactNode, Suspense, useState } from "react"
 import LetsTalkModal from "../components/LetsTalkModal";
 import { useUser } from "../contexts/UserContext";
 import { AboutPage } from "../enums/classify";
@@ -37,7 +37,8 @@ function YouTubeEmbed({
   );
 }
 
-export function HomePage() {
+// children: server-rendered content shown above the footer
+export function HomePage({ children }: { children?: ReactNode }) {
   const { user } = useUser();
   const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
 
@@ -292,6 +293,7 @@ export function HomePage() {
       <ClassifyPricing customerType={AboutPage.CLASSIFIER} />
 
       <FAQ faqItems={bundleFaqList} />
+      {children}
       <Footer />
 
       <LetsTalkModal
