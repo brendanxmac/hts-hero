@@ -43,3 +43,8 @@ public/sitemap.xml
 public/sitemap-*.xml
 # Search Console exports (private)
 seo-data/
+# Local working notes
+PR_DESCRIPTION*.md
+SEO_AUDIT*.md
+# HTS revision pulls (npm run pull-revision), kept locally
+tariffs/revision-diffs/
