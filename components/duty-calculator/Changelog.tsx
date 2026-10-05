@@ -5,19 +5,18 @@ import {
   ChangelogTypeLabels,
   formatChangelogDate,
 } from "@/libs/supabase/tariff-changelog"
-import styles from "../ui/theme.module.css"
 
 export const CHANGELOG_PATH = "/duty-calculator/changelog"
 
 const typeStyles: Record<ChangelogType, string> = {
-  revision: "bg-[var(--dc-accent-soft)] text-[var(--dc-accent)] border-[var(--dc-accent-border)]",
-  fix: "bg-[var(--dc-surface-2)] text-[var(--dc-text-2)] border-[var(--dc-border)]",
-  improvement: "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)] border-transparent",
+  revision: "border-primary/30 bg-primary/10 text-primary",
+  fix: "border-base-300 bg-base-200 text-base-content/70",
+  improvement: "border-transparent bg-success/10 text-success",
 }
 
 export const ChangelogTypeBadge = ({ type }: { type: ChangelogType }) => (
   <span
-    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${typeStyles[type]}`}
+    className={`badge badge-sm font-medium ${typeStyles[type]}`}
   >
     {ChangelogTypeLabels[type]}
   </span>
@@ -27,25 +26,25 @@ export const ChangelogTypeBadge = ({ type }: { type: ChangelogType }) => (
 export const ChangelogCard = ({ entries }: { entries: ChangelogEntry[] }) => (
   <section
     aria-labelledby="changelog-card-title"
-    className={`${styles.card} w-full p-5`}
+    className="w-full rounded-lg border border-base-300 bg-base-100 p-5 shadow-sm"
   >
-    <h2 id="changelog-card-title" className={styles.h3}>
+    <h2 id="changelog-card-title" className="text-base font-semibold text-base-content">
       Latest updates
     </h2>
-    <ol className="mt-4 divide-y divide-[var(--dc-border)]">
+    <ol className="mt-4 divide-y divide-base-300">
       {entries.map((entry) => (
         <li key={entry.id} className="py-3 first:pt-0">
-          <div className="flex items-center gap-2 text-[12px] text-[var(--dc-text-3)]">
+          <div className="flex items-center gap-2 text-xs text-base-content/60">
             <time dateTime={entry.entry_date}>{formatChangelogDate(entry.entry_date)}</time>
             <ChangelogTypeBadge type={entry.type} />
           </div>
-          <p className="mt-1.5 text-[14px] font-medium leading-snug text-[var(--dc-text)]">{entry.title}</p>
+          <p className="mt-1.5 text-sm font-medium leading-snug text-base-content">{entry.title}</p>
         </li>
       ))}
     </ol>
     <Link
       href={CHANGELOG_PATH}
-      className="mt-1 inline-flex items-center gap-1 text-[14px] font-semibold text-[var(--dc-accent)] underline-offset-4 hover:underline"
+      className="link link-primary link-hover mt-1 inline-flex items-center gap-1 text-sm font-semibold"
     >
       View full changelog
       <span aria-hidden>→</span>

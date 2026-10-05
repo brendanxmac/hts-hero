@@ -14,7 +14,6 @@ import { Segmented } from "./controls";
 import { formatDate } from "./format";
 import { mono } from "../ui/font";
 import { EXAMPLES, Example, MAX_COMPARE, TariffFinder, View } from "./useTariffFinder";
-import styles from "../ui/theme.module.css";
 
 // Smaller pieces of the Tariff Finder page
 
@@ -27,7 +26,7 @@ const VIEWS: { id: View; label: string }[] = [
 ];
 
 export const ViewSwitch = ({ f, className = "" }: { f: TariffFinder; className?: string }) => (
-  <div className={`min-w-0 w-full sm:w-[280px] ${className}`}>
+  <div className={`min-w-0 w-full sm:w-72 ${className}`}>
     <Segmented label="View" options={VIEWS} value={f.view} onChange={f.changeView} compact />
   </div>
 );
@@ -38,7 +37,7 @@ export const ShareButtons = ({ f }: { f: TariffFinder }) => (
   <div className="flex items-center gap-2">
     <button
       type="button"
-      className={styles.button}
+      className="btn btn-sm"
       onClick={() => f.copy("summary")}
       aria-label="Copy summary"
     >
@@ -47,7 +46,7 @@ export const ShareButtons = ({ f }: { f: TariffFinder }) => (
     </button>
     <button
       type="button"
-      className={styles.buttonPrimary}
+      className="btn btn-sm btn-primary"
       onClick={() => f.copy("link")}
       aria-label="Copy share link"
     >
@@ -73,15 +72,15 @@ export const DateNotice = ({
   return (
     <div
       role="status"
-      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-[6px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3.5"
+      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-md border border-warning/40 bg-warning/10 px-4 py-3.5"
     >
-      <ExclamationTriangleIcon className="w-5 h-5 shrink-0 text-[var(--dc-warning)]" aria-hidden />
-      <p className="flex-1 text-[14px] leading-snug text-[var(--dc-warning)]">
+      <ExclamationTriangleIcon className="w-5 h-5 shrink-0 text-warning" aria-hidden />
+      <p className="flex-1 text-sm leading-snug text-warning">
         <span className="font-semibold">Tariff rules for {formatDate(entryDate)} aren&apos;t verified yet.</span>{" "}
         Our data is verified for HTS {latestVerified.title} ({formatDate(latestVerified.from)} –{" "}
         {latestVerified.to ? formatDate(latestVerified.to) : "present"}). Changes outside that window may be missing.
       </p>
-      <button type="button" className={`${styles.button} shrink-0`} onClick={() => onUseVerified(latestVerified.from)}>
+      <button type="button" className="btn btn-sm shrink-0" onClick={() => onUseVerified(latestVerified.from)}>
         Use {formatDate(latestVerified.from)}
         <ArrowRightIcon className="w-4 h-4" />
       </button>
@@ -102,15 +101,15 @@ export const ExampleButtons = ({ onExample }: { onExample: (e: Example) => void 
         key={example.code}
         type="button"
         onClick={() => onExample(example)}
-        className="group flex items-center justify-between gap-4 rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-4 py-3.5 text-left transition-colors hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+        className="group flex items-center justify-between gap-4 rounded-md border border-base-300 bg-base-200 px-4 py-3.5 text-left transition-colors hover:border-primary/30 hover:bg-primary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
       >
         <span className="flex flex-col">
-          <span className="text-[15px] font-semibold text-[var(--dc-text)]">
+          <span className="text-base font-semibold text-base-content">
             {example.label} from {example.origin}
           </span>
-          <span className={`${mono.className} text-[13px] text-[var(--dc-text-2)]`}>{example.code}</span>
+          <span className={`${mono.className} text-sm text-base-content/70`}>{example.code}</span>
         </span>
-        <ArrowRightIcon className="w-4 h-4 text-[var(--dc-text-3)] group-hover:text-[var(--dc-accent)]" />
+        <ArrowRightIcon className="w-4 h-4 text-base-content/60 group-hover:text-primary" />
       </button>
     ))}
   </div>
@@ -128,11 +127,11 @@ export const emptyTitle = (f: TariffFinder) =>
 // ── Around the page ──
 
 export const Disclaimer = () => (
-  <p className="text-center text-[12px] leading-relaxed text-[var(--dc-text-3)] max-w-2xl mx-auto">
+  <p className="text-center text-xs leading-relaxed text-base-content/60 max-w-2xl mx-auto">
     All figures shown are estimates based on the details provided and may not be complete nor correct. <br /> Spot something wrong?{" "}
     <a
       href="mailto:support@htshero.com"
-      className={styles.link}
+      className="link link-primary font-semibold"
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => trackEvent(MixpanelEvent.DUTY_CALCULATOR_SUPPORT_CLICKED)}
@@ -147,7 +146,7 @@ export const ExploreModal = ({ f }: { f: TariffFinder }) =>
   f.showExplore ? (
     <dialog className="modal modal-open" aria-label="Search HTS by description">
       <div className="modal-box w-11/12 max-w-6xl h-[85vh] p-0 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-base-content/10">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-base-300">
           <span className="font-semibold">Find your HTS code</span>
           <button type="button" className="btn btn-sm btn-ghost" onClick={f.closeExplore}>
             Close

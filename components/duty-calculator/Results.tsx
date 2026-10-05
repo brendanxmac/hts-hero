@@ -20,7 +20,6 @@ import { formatDate, formatMoney, formatPct, TRANSPORT_MODES } from "./format";
 import { mono } from "../ui/font";
 import { sortBySpecificity } from "./questions";
 import { ReferencedNotes } from "./ReferencedNotes";
-import styles from "../ui/theme.module.css";
 
 export const programName = (id?: string) =>
   AllRules.programs.find((p) => p.id === id)?.name ?? "Other";
@@ -90,16 +89,16 @@ export const SummaryStats = ({
   return (
     // 1px gaps over the border color draw the dividers at every breakpoint
     <div
-      className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr] gap-px bg-[var(--dc-border)] ${standalone ? "" : "border-b border-[var(--dc-border)]"}`}
+      className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr] gap-px bg-base-300 ${standalone ? "" : "border-b border-base-300"}`}
     >
-      <div className="col-span-2 sm:col-span-3 lg:col-span-1 p-5 sm:p-6 bg-[var(--dc-surface)]">
-        <div className={styles.eyebrow}>Total duty</div>
-        <div
-          className={`${styles.num} mt-2 text-[36px] leading-none font-semibold tracking-tight text-[var(--dc-text)]`}
-        >
+      <div className="col-span-2 sm:col-span-3 lg:col-span-1 p-5 sm:p-6 bg-base-100">
+        <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+          Total duty
+        </div>
+        <div className="tabular-nums mt-2 text-4xl leading-none font-semibold tracking-tight text-base-content">
           {formatMoney(result.totalDuty)}
         </div>
-        <div className={`${styles.num} mt-2 text-sm text-[var(--dc-text-2)]`}>
+        <div className="tabular-nums mt-2 text-sm text-base-content/70">
           {formatPct(Math.round(effectiveRate * 100) / 100)} effective rate
         </div>
       </div>
@@ -134,14 +133,14 @@ const Stat = ({
   note: string;
   className?: string;
 }) => (
-  <div className={`p-5 sm:p-6 bg-[var(--dc-surface)] ${className}`}>
-    <div className={styles.eyebrow}>{label}</div>
-    <div
-      className={`${styles.num} mt-2 text-[24px] leading-none font-semibold tracking-tight text-[var(--dc-text)]`}
-    >
+  <div className={`p-5 sm:p-6 bg-base-100 ${className}`}>
+    <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+      {label}
+    </div>
+    <div className="tabular-nums mt-2 text-2xl leading-none font-semibold tracking-tight text-base-content">
       {value}
     </div>
-    <div className="mt-2 text-[13px] text-[var(--dc-text-3)]">{note}</div>
+    <div className="mt-2 text-sm text-base-content/60">{note}</div>
   </div>
 );
 
@@ -262,28 +261,28 @@ export const Statement = ({
         <table className="w-full text-left border-collapse">
           <caption className="sr-only">Duty statement</caption>
           <thead>
-            <tr className="text-[var(--dc-text-3)]">
+            <tr className="bg-base-200 text-base-content/60">
               <th
                 scope="col"
-                className={`${styles.eyebrow} py-3 pl-5 sm:pl-6 pr-3 font-semibold`}
+                className="text-xs font-semibold uppercase tracking-wider text-base-content/60 py-3 pl-5 sm:pl-6 pr-3 font-semibold"
               >
                 Line
               </th>
               <th
                 scope="col"
-                className={`${styles.eyebrow} py-3 px-3 font-semibold`}
+                className="text-xs font-semibold uppercase tracking-wider text-base-content/60 py-3 px-3 font-semibold"
               >
                 Applies to
               </th>
               <th
                 scope="col"
-                className={`${styles.eyebrow} py-3 px-3 font-semibold text-right`}
+                className="text-xs font-semibold uppercase tracking-wider text-base-content/60 py-3 px-3 font-semibold text-right"
               >
                 Rate
               </th>
               <th
                 scope="col"
-                className={`${styles.eyebrow} py-3 pl-3 pr-5 sm:pr-6 font-semibold text-right`}
+                className="text-xs font-semibold uppercase tracking-wider text-base-content/60 py-3 pl-3 pr-5 sm:pr-6 font-semibold text-right"
               >
                 Amount
               </th>
@@ -325,7 +324,7 @@ const LegalToggle = ({
 }) => (
   <button
     type="button"
-    className="self-start text-[13px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)] underline-offset-2 hover:underline"
+    className="self-start text-sm font-medium text-base-content/60 hover:text-base-content underline-offset-2 hover:underline"
     onClick={(e) => {
       e.preventDefault();
       onToggle();
@@ -346,10 +345,8 @@ const LegalPanel = ({
   citations?: string[];
   notesFor?: { asOf: string; htsCode: string };
 }) => (
-  <div className="flex flex-col gap-4 rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-sm">
-    <p className="text-[14px] leading-relaxed text-[var(--dc-text)]">
-      {text}
-    </p>
+  <div className="flex flex-col gap-4 rounded-md border border-base-300 bg-base-100 p-4 shadow-sm">
+    <p className="text-sm leading-relaxed text-base-content">{text}</p>
     {notesFor && (
       <ReferencedNotes
         texts={[text]}
@@ -383,13 +380,12 @@ interface RowLink {
   onHover?: (on: boolean) => void;
 }
 
-const linkClass = (link?: RowLink) =>
-  link?.active ? "bg-[var(--dc-accent-soft)]" : "";
+const linkClass = (link?: RowLink) => (link?.active ? "bg-primary/10" : "");
 
 // Tiny "Effective Mar 4, 2025" after the program name
 const EffectiveDate = ({ from }: { from?: string }) =>
   from ? (
-    <span className="text-[11px] text-[var(--dc-text-3)]">
+    <span className="text-xs text-base-content/60">
       {" · "}Effective {formatDate(from)}
     </span>
   ) : null;
@@ -422,29 +418,25 @@ const MobileRow = ({
   const full = !compact;
   return (
     <li
-      className={`border-t border-[var(--dc-border)] px-5 ${full ? "py-4" : "py-3"} flex flex-col gap-1.5 transition-colors ${linkClass(link)}`}
+      className={`border-t border-base-300 px-5 ${full ? "py-4" : "py-3"} flex flex-col gap-1.5 transition-colors ${linkClass(link)}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div
-            className={`${mono.className} flex items-center gap-1.5 text-[13px] font-semibold text-[var(--dc-accent)]`}
+            className={`${mono.className} flex items-center gap-1.5 text-sm font-semibold text-primary`}
           >
             <Swatch color={link?.color} />
             {code}
           </div>
-          <div className="text-[15px] font-medium leading-snug text-[var(--dc-text)]">
+          <div className="text-base font-medium leading-snug text-base-content">
             {name}
           </div>
         </div>
-        <div
-          className={`${styles.num} text-[15px] font-semibold whitespace-nowrap`}
-        >
+        <div className="tabular-nums text-base font-semibold whitespace-nowrap">
           {formatMoney(amount)}
         </div>
       </div>
-      <div
-        className={`${styles.num} text-[13px] text-[var(--dc-text-2)] flex flex-col`}
-      >
+      <div className="tabular-nums text-sm text-base-content/70 flex flex-col">
         {rateText &&
         basisText &&
         rateText.split(" + ").length === basisText.split(" · ").length ? (
@@ -462,13 +454,13 @@ const MobileRow = ({
         )}
       </div>
       {full && (program || effectiveFrom) && (
-        <div className="text-[12px] text-[var(--dc-text-3)]">
+        <div className="text-xs text-base-content/60">
           {program}
           <EffectiveDate from={effectiveFrom} />
         </div>
       )}
       {full && detail && (
-        <div className="text-[13px] leading-snug text-[var(--dc-text-2)]">
+        <div className="text-sm leading-snug text-base-content/70">
           {detail}
         </div>
       )}
@@ -495,13 +487,13 @@ const MobileTotal = ({
   strong?: boolean;
 }) => (
   <li
-    className={`border-t border-[var(--dc-border-strong)] px-5 py-3.5 flex items-baseline justify-between gap-4 ${
-      strong ? "bg-[var(--dc-surface-2)]" : ""
+    className={`border-t border-base-content/20 px-5 py-3.5 flex items-baseline justify-between gap-4 ${
+      strong ? "bg-base-200" : ""
     }`}
   >
-    <span className="text-[14px] font-semibold">{label}</span>
+    <span className="text-sm font-semibold">{label}</span>
     <span
-      className={`${styles.num} ${strong ? "text-[16px] font-bold" : "text-[15px] font-semibold"}`}
+      className={`tabular-nums ${strong ? "text-base font-semibold" : "text-base font-semibold"}`}
     >
       {formatMoney(amount)}
     </span>
@@ -522,7 +514,7 @@ const Stacked = ({
   const parts = text.split(separator);
   return (
     <span
-      className={`flex flex-col max-w-[190px] ${align === "right" ? "items-end ml-auto text-right" : ""}`}
+      className={`flex flex-col max-w-48 ${align === "right" ? "items-end ml-auto text-right" : ""}`}
     >
       {parts.map((part, i) => (
         <span key={i} className={part.length > 22 ? "" : "whitespace-nowrap"}>
@@ -555,7 +547,7 @@ const StatementRow = ({
   return (
     <>
       <tr
-        className={`border-t border-[var(--dc-border)] align-top transition-colors ${linkClass(link)}`}
+        className={`border-t border-base-300 align-top transition-colors ${linkClass(link)}`}
         onMouseEnter={link?.onHover && (() => link.onHover?.(true))}
         onMouseLeave={link?.onHover && (() => link.onHover?.(false))}
       >
@@ -563,23 +555,23 @@ const StatementRow = ({
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
               <span
-                className={`${mono.className} inline-flex items-center gap-2 text-[14px] font-semibold text-[var(--dc-accent)]`}
+                className={`${mono.className} inline-flex items-center gap-2 text-sm font-semibold text-primary`}
               >
                 <Swatch color={link?.color} />
                 {code}
               </span>
-              <span className="text-[15px] font-medium text-[var(--dc-text)]">
+              <span className="text-base font-medium text-base-content">
                 {name}
               </span>
             </div>
             {full && (program || effectiveFrom) && (
-              <span className="text-[12px] text-[var(--dc-text-3)]">
+              <span className="text-xs text-base-content/60">
                 {program}
                 <EffectiveDate from={effectiveFrom} />
               </span>
             )}
             {full && detail && (
-              <span className="text-[13px] leading-snug text-[var(--dc-text-2)]">
+              <span className="text-sm leading-snug text-base-content/70">
                 {detail}
               </span>
             )}
@@ -591,13 +583,11 @@ const StatementRow = ({
             )}
           </div>
         </td>
-        <td
-          className={`${styles.num} ${pad} px-3 text-[14px] text-[var(--dc-text-2)]`}
-        >
+        <td className={`tabular-nums ${pad} px-3 text-sm text-base-content/70`}>
           <Stacked text={basisText ?? formatMoney(basis)} separator=" · " />
         </td>
         <td
-          className={`${styles.num} ${pad} px-3 text-[14px] text-[var(--dc-text-2)] text-right`}
+          className={`tabular-nums ${pad} px-3 text-sm text-base-content/70 text-right`}
         >
           <Stacked
             text={rateText ?? (rate === undefined ? "—" : formatPct(rate))}
@@ -606,7 +596,7 @@ const StatementRow = ({
           />
         </td>
         <td
-          className={`${styles.num} ${pad} pl-3 pr-5 sm:pr-6 text-[15px] font-semibold text-right whitespace-nowrap`}
+          className={`tabular-nums ${pad} pl-3 pr-5 sm:pr-6 text-base font-semibold text-right whitespace-nowrap`}
         >
           {formatMoney(amount)}
         </td>
@@ -632,16 +622,16 @@ const TotalRow = ({
   strong?: boolean;
 }) => (
   <tr
-    className={`border-t ${strong ? "border-[var(--dc-border-strong)] bg-[var(--dc-surface-2)]" : "border-[var(--dc-border-strong)]"}`}
+    className={`border-t ${strong ? "border-base-content/20 bg-base-200" : "border-base-content/20"}`}
   >
     <td
       colSpan={3}
-      className={`py-3.5 pl-5 sm:pl-6 pr-3 text-[14px] ${strong ? "font-semibold" : "font-semibold text-[var(--dc-text-2)]"}`}
+      className={`py-3.5 pl-5 sm:pl-6 pr-3 text-sm ${strong ? "font-semibold" : "font-semibold text-base-content/70"}`}
     >
       {label}
     </td>
     <td
-      className={`${styles.num} py-3.5 pl-3 pr-5 sm:pr-6 text-right whitespace-nowrap ${strong ? "text-[16px] font-bold" : "text-[15px] font-semibold"}`}
+      className={`tabular-nums py-3.5 pl-3 pr-5 sm:pr-6 text-right whitespace-nowrap ${strong ? "text-base font-semibold" : "text-base font-semibold"}`}
     >
       {formatMoney(amount)}
     </td>
@@ -685,33 +675,33 @@ export const SimpleSummary = ({
   return (
     <div className="p-6 sm:p-10 flex flex-col items-center text-center gap-8">
       <div className="flex flex-col items-center gap-3">
-        <div className={styles.eyebrow}>You&apos;ll pay about</div>
-        <div
-          className={`${styles.num} text-[56px] sm:text-[64px] leading-none font-semibold tracking-tight`}
-        >
+        <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+          You&apos;ll pay about
+        </div>
+        <div className="tabular-nums text-5xl sm:text-6xl leading-none font-semibold tracking-tight">
           {formatMoney(dutyAndFees)}
         </div>
-        <p className="text-[15px] text-[var(--dc-text-2)] max-w-md">
+        <p className="text-base text-base-content/70 max-w-md">
           in duties and fees on {formatMoney(customsValue)} of goods,{" "}
-          <span className={`${styles.num} font-semibold text-[var(--dc-text)]`}>
+          <span className="tabular-nums font-semibold text-base-content">
             {formatPct(Math.round(effectiveRate * 100) / 100)}
           </span>{" "}
           of their value. Landed cost{" "}
-          <span className={`${styles.num} font-semibold text-[var(--dc-text)]`}>
+          <span className="tabular-nums font-semibold text-base-content">
             {formatMoney(customsValue + dutyAndFees)}
           </span>
           .
         </p>
       </div>
 
-      <dl className="w-full max-w-md divide-y divide-[var(--dc-border)] border-y border-[var(--dc-border)] text-left">
+      <dl className="w-full max-w-md divide-y divide-base-300 border-y border-base-300 text-left">
         {rows.map(([label, amount]) => (
           <div
             key={label}
             className="flex items-baseline justify-between gap-4 py-3"
           >
-            <dt className="text-[15px] text-[var(--dc-text-2)]">{label}</dt>
-            <dd className={`${styles.num} text-[15px] font-semibold`}>
+            <dt className="text-base text-base-content/70">{label}</dt>
+            <dd className="tabular-nums text-base font-semibold">
               {formatMoney(amount)}
             </dd>
           </div>
@@ -719,8 +709,8 @@ export const SimpleSummary = ({
       </dl>
 
       {openQuestions > 0 && onShowDetails && (
-        <button type="button" className={styles.button} onClick={onShowDetails}>
-          <InformationCircleIcon className="w-4 h-4 text-[var(--dc-accent)]" />
+        <button type="button" className="btn btn-sm" onClick={onShowDetails}>
+          <InformationCircleIcon className="w-4 h-4 text-primary" />
           {openQuestions === 1
             ? "1 question could change this amount"
             : `${openQuestions} questions could change this amount`}
@@ -745,7 +735,7 @@ export const PreferenceClaim = ({
   onChange: (symbol: string) => void;
   impacts?: Record<string, number>;
 }) => (
-  <ul className="flex flex-col divide-y divide-[var(--dc-border)]">
+  <ul className="flex flex-col divide-y divide-base-300">
     {options.map((p) => (
       <li key={p.symbol} className="py-3.5 first:pt-0 last:pb-0">
         <CheckRow
@@ -773,12 +763,8 @@ const AdjustmentSection = ({
 }) => (
   <section className="flex flex-col gap-3">
     <div>
-      <h4 className="text-[14px] font-semibold text-[var(--dc-text)]">
-        {title}
-      </h4>
-      <p className="text-[12px] leading-snug text-[var(--dc-text-3)]">
-        {description}
-      </p>
+      <h4 className="text-sm font-semibold text-base-content">{title}</h4>
+      <p className="text-xs leading-snug text-base-content/60">{description}</p>
     </div>
     {children}
   </section>
@@ -843,7 +829,7 @@ export const QuestionsPanel = ({
           >
             <div>
               {visible.length > 0 ? (
-                <ul className="flex flex-col divide-y divide-[var(--dc-border)]">
+                <ul className="flex flex-col divide-y divide-base-300">
                   {visible.map((q) => (
                     <li
                       key={q.input.id}
@@ -863,14 +849,14 @@ export const QuestionsPanel = ({
                   ))}
                 </ul>
               ) : preference ? null : (
-                <p className="text-[14px] text-[var(--dc-text-2)]">
+                <p className="text-sm text-base-content/70">
                   No answer would change the total for this entry.
                 </p>
               )}
               {secondary.length > 0 && (
                 <button
                   type="button"
-                  className={`${styles.link} mt-4 text-[13px]`}
+                  className="link link-primary link-hover font-semibold mt-4 text-sm"
                   onClick={() => setShowAll((x) => !x)}
                   aria-expanded={showAll}
                 >
@@ -892,10 +878,8 @@ const Impact = ({ amount }: { amount?: number }) => {
   const lower = amount < 0;
   return (
     <span
-      className={`${styles.num} inline-flex items-center rounded-[6px] px-1.5 py-0.5 text-[12px] font-semibold ${
-        lower
-          ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)]"
-          : "bg-[var(--dc-negative-soft)] text-[var(--dc-negative)]"
+      className={`tabular-nums inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-semibold ${
+        lower ? "bg-success/10 text-success" : "bg-error/10 text-error"
       }`}
     >
       {lower ? "−" : "+"}
@@ -941,15 +925,15 @@ const CheckRow = ({
       <label className="flex items-start gap-3 cursor-pointer">
         <input
           type="checkbox"
-          className={styles.checkbox}
+          className="checkbox checkbox-primary checkbox-sm"
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
         />
         <span className="flex flex-col gap-1 min-w-0">
-          <span className="text-[14px] leading-snug text-[var(--dc-text)]">
+          <span className="text-sm leading-snug text-base-content">
             {code && (
               <span
-                className={`${mono.className} mr-1.5 text-[13px] font-semibold text-[var(--dc-accent)]`}
+                className={`${mono.className} mr-1.5 text-sm font-semibold text-primary`}
               >
                 {code}
               </span>
@@ -962,7 +946,7 @@ const CheckRow = ({
             <span className="flex flex-wrap items-center gap-2">
               {!checked && <Impact amount={impact} />}
               {noChange && (
-                <span className="inline-flex items-center rounded-[6px] px-1.5 py-0.5 text-[12px] font-medium bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]">
+                <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium bg-base-300 text-base-content/60">
                   No change to the total
                 </span>
               )}
@@ -977,7 +961,7 @@ const CheckRow = ({
         </span>
       </label>
       {expanded && help && (
-        <div className="ml-[30px]">
+        <div className="ml-8">
           <LegalPanel text={help} citations={citations} notesFor={notesFor} />
         </div>
       )}
@@ -1021,12 +1005,12 @@ const QuestionControl = ({
 
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-[14px] leading-snug text-[var(--dc-text)]">
+      <span className="text-sm leading-snug text-base-content">
         {input.label}
       </span>
       <input
         type={input.type === "date" ? "date" : "number"}
-        className={`${styles.input} h-[40px] text-[14px]`}
+        className="input input-bordered input-sm w-full"
         value={(value as string | number) ?? ""}
         onChange={(e) =>
           onChange(
@@ -1037,9 +1021,7 @@ const QuestionControl = ({
         }
       />
       {input.help && (
-        <span className="text-[12px] text-[var(--dc-text-3)]">
-          {input.help}
-        </span>
+        <span className="text-xs text-base-content/60">{input.help}</span>
       )}
     </label>
   );
@@ -1059,7 +1041,7 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
   const notApplied = lines.filter((l) => l.status !== "applies");
   if (notApplied.length === 0) return null;
   return (
-    <div className={styles.card}>
+    <div className="rounded-lg border border-base-300 bg-base-100 shadow-sm">
       <button
         type="button"
         className="w-full flex items-center justify-between gap-3 p-5 sm:px-6 text-left"
@@ -1067,43 +1049,44 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
         aria-expanded={open}
       >
         <span>
-          <span className="block text-[16px] font-semibold">
+          <span className="block text-base font-semibold">
             Checked but not applied
           </span>
-          <span className="block mt-0.5 text-[12px] text-[var(--dc-text-3)]">
+          <span className="block mt-0.5 text-xs text-base-content/60">
             {notApplied.length} other headings match this code and country
           </span>
         </span>
         <ChevronDownIcon
-          className={`w-5 h-5 shrink-0 text-[var(--dc-text-3)] transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-5 h-5 shrink-0 text-base-content/60 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
       {open && (
-        <ul className="border-t border-[var(--dc-border)] divide-y divide-[var(--dc-border)]">
+        <ul className="border-t border-base-300 divide-y divide-base-300">
           {notApplied.map((line) => (
-            <li key={line.code} className="px-5 sm:px-6 py-3.5 flex flex-col gap-1">
+            <li
+              key={line.code}
+              className="px-5 sm:px-6 py-3.5 flex flex-col gap-1"
+            >
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <span
-                  className={`${mono.className} text-[13px] font-semibold text-[var(--dc-text-2)]`}
+                  className={`${mono.className} text-sm font-semibold text-base-content/70`}
                 >
                   {line.code}
                 </span>
-                <span className="text-[14px] text-[var(--dc-text)]">
-                  {line.name}
-                </span>
+                <span className="text-sm text-base-content">{line.name}</span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`inline-flex rounded-[6px] px-1.5 py-0.5 text-[11px] font-semibold ${
+                  className={`inline-flex rounded-md px-1.5 py-0.5 text-xs font-semibold ${
                     line.status === "needsAnswer"
-                      ? "bg-[var(--dc-warning-soft)] text-[var(--dc-warning)] border border-[var(--dc-warning-border)]"
-                      : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
+                      ? "bg-warning/10 text-warning border border-warning/40"
+                      : "bg-base-300 text-base-content/70"
                   }`}
                 >
                   {STATUS[line.status]}
                 </span>
                 {line.reasons[0] && (
-                  <span className="text-[12px] text-[var(--dc-text-3)]">
+                  <span className="text-xs text-base-content/60">
                     {line.reasons.join(" · ")}
                   </span>
                 )}
@@ -1137,13 +1120,10 @@ export const BasisPanel = ({
       "Tariff rules",
       <span key="rules" className="inline-flex items-center gap-1.5">
         {verified ? (
-          <CheckCircleIcon
-            className="w-4 h-4 text-[var(--dc-positive)]"
-            aria-hidden
-          />
+          <CheckCircleIcon className="w-4 h-4 text-success" aria-hidden />
         ) : (
           <ExclamationTriangleIcon
-            className="w-4 h-4 text-[var(--dc-warning)]"
+            className="w-4 h-4 text-warning"
             aria-hidden
           />
         )}
@@ -1165,10 +1145,10 @@ export const BasisPanel = ({
         {rows.map(([label, value]) => (
           <div
             key={label}
-            className="flex items-baseline justify-between gap-4 text-[14px]"
+            className="flex items-baseline justify-between gap-4 text-sm"
           >
-            <dt className="text-[var(--dc-text-3)] shrink-0">{label}</dt>
-            <dd className="text-right text-[var(--dc-text)] font-medium">
+            <dt className="text-base-content/60 shrink-0">{label}</dt>
+            <dd className="text-right text-base-content font-medium">
               {value}
             </dd>
           </div>
@@ -1179,7 +1159,7 @@ export const BasisPanel = ({
           {result.warnings.map((w) => (
             <li
               key={w}
-              className="flex gap-2 text-[13px] leading-snug text-[var(--dc-warning)]"
+              className="flex gap-2 text-sm leading-snug text-warning"
             >
               <ExclamationTriangleIcon
                 className="w-4 h-4 shrink-0 mt-px"
@@ -1207,18 +1187,18 @@ export const Panel = ({
   description?: string;
   children: ReactNode;
 }) => (
-  <section className={`${styles.card} p-5 sm:p-6`}>
+  <section className="rounded-lg border border-base-300 bg-base-100 shadow-sm p-5 sm:p-6">
     {/* The badge drops under the title when they don't fit side by side */}
     <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
-      <h3 className="text-[16px] font-semibold">{title}</h3>
+      <h3 className="text-base font-semibold">{title}</h3>
       {badge && (
-        <span className="whitespace-nowrap rounded-full bg-[var(--dc-accent-soft)] border border-[var(--dc-accent-border)] px-2 py-0.5 text-[12px] font-semibold text-[var(--dc-accent)]">
+        <span className="whitespace-nowrap rounded-full bg-primary/10 border border-primary/30 px-2 py-0.5 text-xs font-semibold text-primary">
           {badge}
         </span>
       )}
     </div>
     {description && (
-      <p className="mt-0.5 text-[12px] leading-snug text-[var(--dc-text-3)]">
+      <p className="mt-0.5 text-xs leading-snug text-base-content/60">
         {description}
       </p>
     )}

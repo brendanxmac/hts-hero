@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { ScaleIcon } from "@heroicons/react/16/solid";
 import type { CrossRuling, CrossRulingDetail } from "../interfaces/cross-rulings";
 import {
@@ -16,7 +15,6 @@ import { ErrorBanner } from "./cross-rulings/ErrorBanner";
 import { RulingCard } from "./cross-rulings/RulingCard";
 import { RulingDetailView } from "./cross-rulings/RulingDetailView";
 import { ExplorerDetailSection } from "./ExplorerDetailSection";
-import styles from "./ui/theme.module.css";
 
 interface RelatedCrossRulingsSectionProps {
   htsno: string;
@@ -131,8 +129,8 @@ export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }
                 <button
                   type="button"
                   onClick={() => setShowAll(true)}
-                  // Bare, the section sits on a page with the analytical theme's tokens
-                  className={bare ? `${styles.button} justify-self-center md:col-span-2` : "btn btn-outline btn-sm self-center"}
+                  // Bare, the section sits on a page with the analytical theme
+                  className={bare ? "btn btn-sm justify-self-center md:col-span-2" : "btn btn-outline btn-sm self-center"}
                 >
                   Show all {rulings.length} rulings
                 </button>

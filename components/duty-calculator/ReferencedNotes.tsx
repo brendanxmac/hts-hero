@@ -7,7 +7,6 @@ import {
 } from "../../tariffs/engine-v2/citations";
 import { formatDate } from "./format";
 import { mono } from "../ui/font";
-import styles from "../ui/theme.module.css";
 
 // The text of the note subdivisions a piece of legal text cites, for the entry's date, from
 // public/data/notes (written by `npm run notes:cited`). Code lists are shown as a grid with the
@@ -122,25 +121,25 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
       );
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[13px] text-[var(--dc-text-2)]">
+      <p className="text-sm text-base-content/70">
         {codes.length} {codes.length === 1 ? "provision" : "provisions"}
         {" · "}
         {matches.length ? (
-          <span className="font-semibold text-[var(--dc-positive)]">
+          <span className="font-semibold text-success">
             {htsCode} is on this list ({matches.join(", ")})
           </span>
         ) : (
           <span>{htsCode} isn&apos;t on this list</span>
         )}
       </p>
-      <ul className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-1">
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-1">
         {shown.map((code, i) => (
           <li
             key={`${code}-${i}`}
-            className={`${mono.className} rounded px-1.5 py-0.5 text-[12px] ${
+            className={`${mono.className} rounded px-1.5 py-0.5 text-xs ${
               covers(code, htsCode)
-                ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)] font-semibold ring-1 ring-[var(--dc-positive)]"
-                : "bg-[var(--dc-surface)] text-[var(--dc-text-2)] ring-1 ring-[var(--dc-border)]"
+                ? "bg-success/10 text-success font-semibold ring-1 ring-success"
+                : "bg-base-100 text-base-content/70 ring-1 ring-base-300"
             }`}
           >
             {code}
@@ -150,7 +149,7 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
       {codes.length > COLLAPSED && (
         <button
           type="button"
-          className="self-start text-[13px] font-medium text-[var(--dc-accent)] hover:underline"
+          className="link link-primary link-hover self-start text-sm font-medium"
           onClick={() => setAll((x) => !x)}
         >
           {all ? "Show fewer" : `Show all ${codes.length}`}
@@ -163,14 +162,14 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
 const Table = ({ rows }: { rows: string[][] }) => {
   const [head, ...body] = rows;
   return (
-    <div className="overflow-x-auto rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)]">
-      <table className="w-full text-[12px] leading-snug">
-        <thead className="bg-[var(--dc-surface-3)]">
+    <div className="overflow-x-auto rounded-md border border-base-300 bg-base-100">
+      <table className="w-full text-xs leading-snug">
+        <thead className="bg-base-200">
           <tr>
             {head.map((cell, i) => (
               <th
                 key={i}
-                className="px-2.5 py-1.5 text-left font-semibold text-[var(--dc-text)] align-bottom"
+                className="px-2.5 py-1.5 text-left font-semibold text-base-content align-bottom"
               >
                 {cell}
               </th>
@@ -179,11 +178,11 @@ const Table = ({ rows }: { rows: string[][] }) => {
         </thead>
         <tbody>
           {body.map((row, r) => (
-            <tr key={r} className="border-t border-[var(--dc-border)]">
+            <tr key={r} className="border-t border-base-300">
               {row.map((cell, i) => (
                 <td
                   key={i}
-                  className="px-2.5 py-1.5 text-[var(--dc-text-2)] align-top"
+                  className="px-2.5 py-1.5 text-base-content/70 align-top"
                 >
                   {cell}
                 </td>
@@ -214,12 +213,12 @@ const NoteNode = ({ node, htsCode }: { node: CitedNode; htsCode: string }) => {
   const hit = !isTable && mentioned.some((c) => covers(c, htsCode));
   return (
     <div
-      className={`flex flex-col gap-2 ${hit ? "rounded-[6px] bg-[var(--dc-positive-soft)] px-2 py-1 -mx-2" : ""}`}
+      className={`flex flex-col gap-2 ${hit ? "rounded-md bg-success/10 px-2 py-1 -mx-2" : ""}`}
       style={{ marginLeft: node.depth * 16 }}
     >
       {parsed.length === 0 && (
-        <p className="text-[13px] text-[var(--dc-text-2)]">
-          <span className="font-semibold text-[var(--dc-text)]">
+        <p className="text-sm text-base-content/70">
+          <span className="font-semibold text-base-content">
             {marker(node.citation)}
           </span>
         </p>
@@ -228,16 +227,16 @@ const NoteNode = ({ node, htsCode }: { node: CitedNode; htsCode: string }) => {
         block.kind === "text" ? (
           <p
             key={i}
-            className="text-[13px] leading-relaxed text-[var(--dc-text-2)]"
+            className="text-sm leading-relaxed text-base-content/70"
           >
             {i === 0 && (
-              <span className="font-semibold text-[var(--dc-text)] mr-1.5">
+              <span className="font-semibold text-base-content mr-1.5">
                 {marker(node.citation)}
               </span>
             )}
             {block.text}
             {hit && i === 0 && (
-              <span className="ml-1.5 font-semibold text-[var(--dc-positive)]">
+              <span className="ml-1.5 font-semibold text-success">
                 ← {htsCode}
               </span>
             )}
@@ -267,20 +266,20 @@ const Citation = ({
   const picked = versions?.length ? versionOn(versions, asOf) : undefined;
   const version = picked?.version;
   return (
-    <div className="flex flex-col gap-2.5 rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-3.5">
+    <div className="flex flex-col gap-2.5 rounded-md border border-base-300 bg-base-200 p-3.5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <span className="text-[13px] font-semibold text-[var(--dc-text)]">
+        <span className="text-sm font-semibold text-base-content">
           {citation.label}
         </span>
         {version && picked?.early ? (
-          <span className="text-[11px] text-[var(--dc-text-3)]">
+          <span className="text-xs text-base-content/60">
             As first published in the HTS on {formatDate(version.from)}
           </span>
         ) : (
           version &&
           versions &&
           versions.length > 1 && (
-            <span className="text-[11px] text-[var(--dc-text-3)]">
+            <span className="text-xs text-base-content/60">
               Text in force {formatDate(version.from)}
               {version.to ? ` – ${formatDate(lastDay(version.to))}` : " onward"}
             </span>
@@ -288,13 +287,13 @@ const Citation = ({
         )}
       </div>
       {file === undefined ? (
-        <p className="text-[12px] text-[var(--dc-text-3)]">Loading…</p>
+        <p className="text-xs text-base-content/60">Loading…</p>
       ) : version ? (
         version.nodes.map((node, i) => (
           <NoteNode key={i} node={node} htsCode={htsCode} />
         ))
       ) : (
-        <p className="text-[12px] text-[var(--dc-text-3)]">
+        <p className="text-xs text-base-content/60">
           Text not available for this revision.
         </p>
       )}
@@ -350,7 +349,7 @@ export const ReferencedNotes = ({
   if (!found.length) return null;
   return (
     <div className="flex flex-col gap-2">
-      <div className={styles.eyebrow}>
+      <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
         Referenced notes
       </div>
       {found.map((citation) => (

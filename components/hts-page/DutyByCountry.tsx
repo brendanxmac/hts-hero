@@ -11,7 +11,6 @@ import {
 import { mono } from "../ui/font";
 import { heat } from "../ui/heat";
 import { SectionHeader } from "../ui/SectionHeader";
-import styles from "../ui/theme.module.css";
 
 // What an import under an HTS code pays from the largest sources of US imports, on the
 // /hts/[code] page. Server-rendered from the Tariff Calculator's engine.
@@ -20,12 +19,12 @@ const calculatorHref = (htsno: string, country?: string) =>
   `/duty-calculator?code=${htsno}${country ? `&country=${country}` : ""}`;
 
 const Fact = ({ label, value, note }: { label: string; value: string; note: string }) => (
-  <div className={`${styles.card} px-5 py-4`}>
-    <div className={styles.eyebrow}>{label}</div>
-    <div className={`${styles.num} mt-1.5 text-[24px] font-semibold tracking-tight text-[var(--dc-text)]`}>
+  <div className="rounded-lg border border-base-300 bg-base-100 px-5 py-4 shadow-sm">
+    <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">{label}</div>
+    <div className="mt-1.5 text-2xl font-semibold leading-none tracking-tight tabular-nums text-base-content">
       {value}
     </div>
-    <div className="mt-0.5 text-[13px] leading-snug text-[var(--dc-text-2)]">{note}</div>
+    <div className="mt-1.5 text-sm leading-snug text-base-content/70">{note}</div>
   </div>
 );
 
@@ -84,11 +83,11 @@ export function DutyByCountry({
         />
       </div>
 
-      <div className={`${styles.card} overflow-hidden`}>
+      <div className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm">
         <div className="overflow-x-auto">
-          <table className={`w-full text-[14px] ${styles.num}`}>
+          <table className="table rounded-none tabular-nums">
             <thead>
-              <tr className={`${styles.eyebrow} text-left bg-[var(--dc-surface-2)]`}>
+              <tr className="border-base-300 bg-base-200 text-xs font-semibold uppercase tracking-wider text-base-content/60">
                 <th scope="col" className="px-5 sm:px-6 py-3">Country of origin</th>
                 <th scope="col" className="px-4 py-3">Base rate</th>
                 <th scope="col" className="px-4 py-3">Additional tariffs</th>
@@ -97,48 +96,48 @@ export function DutyByCountry({
             </thead>
             <tbody>
               {summary.rows.map((row) => (
-                <tr key={row.country.code} className="border-t border-[var(--dc-border)] align-top hover:bg-[var(--dc-surface-2)]/60">
-                  <th scope="row" className="px-5 sm:px-6 py-3 text-left font-medium text-[var(--dc-text)] whitespace-nowrap">
+                <tr key={row.country.code} className="border-base-300 *:align-top hover:bg-base-200/60">
+                  <th scope="row" className="px-5 sm:px-6 py-3 text-left font-medium text-base-content whitespace-nowrap">
                     {/* nofollow: calculator links with parameters all canonicalize to /duty-calculator */}
                     <Link
                       href={calculatorHref(htsno, row.country.code)}
                       rel="nofollow"
-                      className="hover:text-[var(--dc-accent)] hover:underline underline-offset-4"
+                      className="link-hover hover:text-primary"
                     >
                       <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
                       {row.country.name}
                     </Link>
                   </th>
-                  <td className="px-4 py-3 text-[var(--dc-text-2)] whitespace-nowrap">
+                  <td className="px-4 py-3 text-base-content/70 whitespace-nowrap">
                     {row.baseRate}
                     {row.column === "column2" && (
-                      <span className="block text-[12px] text-[var(--dc-text-3)]">Column 2</span>
+                      <span className="block text-xs text-base-content/60">Column 2</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-[var(--dc-text-2)]">
+                  <td className="px-4 py-3 text-base-content/70">
                     {row.additional.length ? (
                       <ul className="flex flex-col gap-1">
                         {row.additional.map((a) => (
                           <li key={a.code} className="flex flex-wrap items-baseline gap-x-2">
                             <span>{a.program}</span>
-                            <span className="font-semibold text-[var(--dc-text)]">{formatDutyPct(a.ratePct)}</span>
-                            <span className={`${mono.className} text-[11px] text-[var(--dc-text-3)]`}>{a.code}</span>
+                            <span className="font-semibold text-base-content">{formatDutyPct(a.ratePct)}</span>
+                            <span className={`${mono.className} text-xs text-base-content/60`}>{a.code}</span>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <span className="text-[var(--dc-text-3)]">None</span>
+                      <span className="text-base-content/60">None</span>
                     )}
                   </td>
                   <td className="px-5 sm:px-6 py-2 text-right whitespace-nowrap">
                     <span
-                      className="inline-block rounded px-2.5 py-1 font-semibold text-[var(--dc-text)]"
+                      className="inline-block rounded px-2.5 py-1 font-semibold text-base-content"
                       style={{ background: heat(row.totalPct) }}
                     >
                       {describeTotal(row)}
                     </span>
                     {row.preference && (
-                      <span className="block mt-0.5 text-[12px] text-[var(--dc-positive)]">
+                      <span className="block mt-1 text-xs font-medium text-success">
                         {row.preference.totalPct !== null
                           ? `${formatDutyPct(row.preference.totalPct)} with ${row.preference.name}`
                           : `Lower with ${row.preference.name}`}
@@ -151,15 +150,15 @@ export function DutyByCountry({
           </table>
         </div>
 
-        <div className="border-t border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-5 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <p className={`${styles.caption} max-w-3xl`}>
+        <div className="border-t border-base-300 bg-base-200 px-5 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <p className="max-w-3xl text-xs leading-relaxed text-base-content/60">
             Duties on goods entered {formatSummaryDate(summary.asOf)} at the general rate (Column 2 where it
             applies), with tariff data verified through {summary.revision.title.replace(/^Revision (\d+) \((\d{4})\)$/, "$2 HTS Revision $1")}.
             Totals are before customs fees (MPF, HMF) and any antidumping or countervailing duties.
             Some tariffs and exemptions depend on details such as metal content or end use, which the
             calculator asks about.
           </p>
-          <Link href={calculatorHref(htsno)} className={`${styles.buttonPrimary} shrink-0 justify-center`}>
+          <Link href={calculatorHref(htsno)} className="btn btn-sm btn-primary shrink-0">
             Calculate Duty for Your Shipment
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>

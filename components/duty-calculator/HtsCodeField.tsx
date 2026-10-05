@@ -13,7 +13,6 @@ import {
   normalizeHtsCode,
 } from "../../libs/hts-code";
 import { mono } from "../ui/font";
-import styles from "../ui/theme.module.css";
 
 interface Props {
   id: string;
@@ -108,8 +107,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
           <Combobox.Input
             id={id}
             ref={inputRef}
-            className={`${styles.input} ${mono.className} text-[16px] tracking-tight`}
-            style={{ paddingRight: 40 }}
+            className={`input input-bordered w-full pr-10 ${mono.className} text-base tracking-tight`}
             placeholder="e.g. 7326.90.86.88"
             autoComplete="off"
             spellCheck={false}
@@ -129,7 +127,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
             <button
               type="button"
               aria-label="Clear HTS code"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-[6px] text-[var(--dc-text-3)] hover:text-[var(--dc-text)] hover:bg-[var(--dc-surface-2)]"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md text-base-content/60 hover:text-base-content hover:bg-base-200"
               onClick={() => {
                 onSelect(null);
                 setQuery("");
@@ -146,10 +144,10 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
           {query.trim() && !selectedElement && (results.length > 0 || debouncedQuery === query) && (
             <Combobox.Options
               static
-              className="absolute z-30 mt-2 w-full min-w-[320px] max-h-80 overflow-auto rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none"
+              className="absolute z-30 mt-2 w-full min-w-80 max-h-80 overflow-auto rounded-lg border border-base-300 bg-base-100 p-1.5 shadow-lg focus:outline-none"
             >
               {results.length === 0 && debouncedQuery === query ? (
-                <div className="px-3 py-3 text-sm text-[var(--dc-text-3)]">
+                <div className="px-3 py-3 text-sm text-base-content/60">
                   No HTS codes match &ldquo;{query.trim()}&rdquo;
                 </div>
               ) : (
@@ -158,15 +156,15 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
                     key={el.uuid}
                     value={el}
                     className={({ active }) =>
-                      `flex flex-col gap-0.5 rounded-[6px] px-3 py-2 cursor-pointer ${
-                        active ? "bg-[var(--dc-accent-soft)]" : ""
+                      `flex flex-col gap-0.5 rounded-md px-3 py-2 cursor-pointer ${
+                        active ? "bg-primary/10" : ""
                       }`
                     }
                   >
-                    <span className={`${mono.className} text-sm font-semibold text-[var(--dc-text)]`}>
+                    <span className={`${mono.className} text-sm font-semibold text-base-content`}>
                       {el.htsno}
                     </span>
-                    <span className="text-[13px] leading-snug text-[var(--dc-text-2)] line-clamp-2">
+                    <span className="text-sm leading-snug text-base-content/70 line-clamp-2">
                       {plain(el.description)}
                     </span>
                   </Combobox.Option>
@@ -178,7 +176,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
       </Combobox>
 
       {path && !hidePath && (
-        <p className="text-[13px] leading-snug text-[var(--dc-text-2)] line-clamp-2" title={path}>
+        <p className="text-sm leading-snug text-base-content/70 line-clamp-2" title={path}>
           {path}
         </p>
       )}

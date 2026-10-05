@@ -13,7 +13,6 @@ import { CalculationResult } from "../../tariffs/engine-v2/types";
 import { CountryField } from "./CountryField";
 import { formatMoney, formatPct } from "./format";
 import { mono } from "../ui/font";
-import styles from "../ui/theme.module.css";
 
 export interface CompareEntry {
   country: Country;
@@ -83,26 +82,25 @@ export const CompareView = ({
         return (
           <article
             key={country.code}
-            className={`${styles.card} flex flex-col overflow-hidden`}
             // An outline, because the card's shadow would override a Tailwind ring
-            style={
+            className={`rounded-lg border border-base-300 bg-base-100 shadow-sm flex flex-col overflow-hidden ${
               isLowest
-                ? { outline: "2px solid var(--dc-positive)", outlineOffset: -1 }
-                : undefined
-            }
+                ? "outline outline-2 -outline-offset-1 outline-success"
+                : ""
+            }`}
             aria-label={`Duty estimate for ${country.name}`}
           >
             {/* Header */}
-            <div className="flex items-start justify-between gap-3 p-5 pb-4 border-b border-[var(--dc-border)]">
+            <div className="flex items-start justify-between gap-3 p-5 pb-4 border-b border-base-300">
               <div className="flex items-center gap-2.5 min-w-0">
                 <span className="text-2xl leading-none" aria-hidden>
                   {country.flag}
                 </span>
                 <div className="min-w-0">
-                  <h3 className="text-[16px] font-semibold truncate">
+                  <h3 className="text-base font-semibold truncate">
                     {country.name}
                   </h3>
-                  <p className="text-[12px] text-[var(--dc-text-3)]">
+                  <p className="text-xs text-base-content/60">
                     {COLUMN_LABEL[result.column]}
                     {result.claimedPreference
                       ? ` (${result.claimedPreference})`
@@ -112,7 +110,7 @@ export const CompareView = ({
               </div>
               <div className="flex shrink-0 items-center gap-1.5">
                 {isLowest && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--dc-positive-soft)] px-2.5 py-1 text-[12px] font-semibold text-[var(--dc-positive)]">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
                     <TrophyIcon className="w-3.5 h-3.5" aria-hidden />
                     Lowest cost
                   </span>
@@ -121,7 +119,7 @@ export const CompareView = ({
                 {!single && (
                   <button
                     type="button"
-                    className="-mr-1.5 rounded-[6px] p-1.5 text-[var(--dc-text-3)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+                    className="btn btn-ghost btn-sm btn-square -mr-1.5 text-base-content/60 hover:text-base-content"
                     aria-label={`Remove ${country.name} from the comparison`}
                     title="Remove from comparison"
                     onClick={() => onRemove(country.code)}
@@ -133,45 +131,39 @@ export const CompareView = ({
             </div>
 
             {/* Figures, in the same positions on every card */}
-            <div className="p-5 flex flex-col gap-4 border-b border-[var(--dc-border)]">
+            <div className="p-5 flex flex-col gap-4 border-b border-base-300">
               <div>
-                <div className={styles.eyebrow}>Total duty</div>
-                <div
-                  className={`${styles.num} mt-1.5 text-[28px] leading-none font-semibold tracking-tight`}
-                >
+                <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+                  Total duty
+                </div>
+                <div className="tabular-nums mt-1.5 text-3xl leading-none font-semibold tracking-tight">
                   {formatMoney(result.totalDuty)}
                 </div>
-                <div
-                  className={`${styles.num} mt-1.5 text-[14px] text-[var(--dc-text-2)]`}
-                >
+                <div className="tabular-nums mt-1.5 text-sm text-base-content/70">
                   {formatPct(Math.round(effectiveRate * 100) / 100)} effective
                   rate
                 </div>
               </div>
               <dl className="grid grid-cols-2 gap-3">
                 <div>
-                  <dt className="text-[12px] text-[var(--dc-text-3)]">
-                    Fees
-                  </dt>
-                  <dd className={`${styles.num} text-[15px] font-semibold`}>
+                  <dt className="text-xs text-base-content/60">Fees</dt>
+                  <dd className="tabular-nums text-base font-semibold">
                     {formatMoney(result.totalFees)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-[12px] text-[var(--dc-text-3)]">
-                    Landed cost
-                  </dt>
-                  <dd className={`${styles.num} text-[15px] font-semibold`}>
+                  <dt className="text-xs text-base-content/60">Landed cost</dt>
+                  <dd className="tabular-nums text-base font-semibold">
                     {formatMoney(landed(entry))}
                   </dd>
                 </div>
               </dl>
               {!single && (
                 <div
-                  className={`${styles.num} text-[13px] font-medium ${
+                  className={`tabular-nums text-sm font-medium ${
                     allTied || isLowest
-                      ? "text-[var(--dc-positive)]"
-                      : "text-[var(--dc-text-2)]"
+                      ? "text-success"
+                      : "text-base-content/70"
                   }`}
                 >
                   {allTied
@@ -186,21 +178,19 @@ export const CompareView = ({
             </div>
 
             {/* Lines */}
-            <ul className="flex-1 divide-y divide-[var(--dc-border)]">
+            <ul className="flex-1 divide-y divide-base-300">
               <li className="flex items-baseline justify-between gap-3 px-5 py-3">
                 <span className="min-w-0">
                   <span
-                    className={`${mono.className} text-[13px] font-semibold text-[var(--dc-accent)] mr-1.5`}
+                    className={`${mono.className} text-sm font-semibold text-primary mr-1.5`}
                   >
                     Base
                   </span>
-                  <span className="text-[14px] text-[var(--dc-text)]">
+                  <span className="text-sm text-base-content">
                     {result.base.reasons[0] ?? "Free"}
                   </span>
                 </span>
-                <span
-                  className={`${styles.num} text-[14px] font-semibold whitespace-nowrap`}
-                >
+                <span className="tabular-nums text-sm font-semibold whitespace-nowrap">
                   {formatMoney(result.base.amount)}
                 </span>
               </li>
@@ -212,25 +202,21 @@ export const CompareView = ({
                   <span className="min-w-0 flex flex-col">
                     <span>
                       <span
-                        className={`${mono.className} text-[13px] font-semibold text-[var(--dc-accent)] mr-1.5`}
+                        className={`${mono.className} text-sm font-semibold text-primary mr-1.5`}
                       >
                         {line.code}
                       </span>
-                      <span
-                        className={`${styles.num} text-[12px] text-[var(--dc-text-3)]`}
-                      >
+                      <span className="tabular-nums text-xs text-base-content/60">
                         {line.ratePct !== undefined
                           ? formatPct(line.ratePct)
                           : ""}
                       </span>
                     </span>
-                    <span className="text-[13px] leading-snug text-[var(--dc-text-2)]">
+                    <span className="text-sm leading-snug text-base-content/70">
                       {programName(line.program)}
                     </span>
                   </span>
-                  <span
-                    className={`${styles.num} text-[14px] font-semibold whitespace-nowrap`}
-                  >
+                  <span className="tabular-nums text-sm font-semibold whitespace-nowrap">
                     {formatMoney(line.amount)}
                   </span>
                 </li>
@@ -238,15 +224,14 @@ export const CompareView = ({
             </ul>
 
             {/* Footer */}
-            <div className="p-5 pt-4 flex flex-col gap-3 border-t border-[var(--dc-border)] bg-[var(--dc-surface-2)]">
+            <div className="p-5 pt-4 flex flex-col gap-3 border-t border-base-300 bg-base-200">
               {result.availablePreferences.length > 0 && (
                 <label className="flex flex-col gap-1.5">
-                  <span className="text-[13px] font-semibold text-[var(--dc-text-2)]">
+                  <span className="text-sm font-semibold text-base-content/70">
                     Trade preference
                   </span>
                   <select
-                    className={`${styles.input} appearance-none`}
-                    style={{ height: 38, fontSize: 13.5 }}
+                    className="select select-bordered select-sm w-full"
                     value={entry.claimedPreference}
                     onChange={(e) =>
                       onPreferenceChange(country.code, e.target.value)
@@ -262,14 +247,14 @@ export const CompareView = ({
                 </label>
               )}
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[12px] text-[var(--dc-text-3)]">
+                <span className="text-xs text-base-content/60">
                   {entry.openQuestions > 0
                     ? `${entry.openQuestions} ${entry.openQuestions === 1 ? "question" : "questions"} could change this`
                     : "No open questions"}
                 </span>
                 <button
                   type="button"
-                  className={`${styles.link} inline-flex items-center gap-1 text-[13px] shrink-0`}
+                  className="link link-primary link-hover font-semibold inline-flex items-center gap-1 text-sm shrink-0"
                   onClick={() => onViewDetails(country)}
                 >
                   View details
@@ -301,10 +286,13 @@ const AddCountryCard = ({
   }, [searching]);
 
   return (
-    <div className="flex min-h-[280px] flex-col items-center justify-center gap-4 rounded-[8px] border-2 border-dashed border-[var(--dc-border-strong)] p-6 text-center">
+    <div className="flex min-h-72 flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-base-content/20 p-6 text-center">
       {searching ? (
-        <div className="w-full max-w-[300px] flex flex-col gap-2 text-left">
-          <label htmlFor="dc-compare-add" className={styles.label}>
+        <div className="w-full max-w-xs flex flex-col gap-2 text-left">
+          <label
+            htmlFor="dc-compare-add"
+            className="text-sm font-semibold text-base-content/70"
+          >
             Compare with
           </label>
           <CountryField
@@ -321,7 +309,7 @@ const AddCountryCard = ({
           />
           <button
             type="button"
-            className="self-start text-[13px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)]"
+            className="self-start text-sm font-medium text-base-content/60 hover:text-base-content"
             onClick={() => setSearching(false)}
           >
             Cancel
@@ -330,18 +318,18 @@ const AddCountryCard = ({
       ) : (
         <>
           <div>
-            <div className="text-[15px] font-semibold">
+            <div className="text-base font-semibold">
               {countries.length === 1
                 ? "Compare with another country"
                 : "Add another country"}
             </div>
-            <p className="mt-1 text-[13px] text-[var(--dc-text-3)]">
+            <p className="mt-1 text-sm text-base-content/60">
               See the duty, fees and landed cost side by side
             </p>
           </div>
           <button
             type="button"
-            className={styles.buttonPrimary}
+            className="btn btn-sm btn-primary"
             onClick={() => setSearching(true)}
           >
             <PlusIcon className="w-4 h-4" />

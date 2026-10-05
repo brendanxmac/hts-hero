@@ -27,7 +27,6 @@ import { mono } from "../ui/font";
 import { CHART } from "./MoneyBreakdown";
 import { BASE_SLICE, sliceForProgram } from "./Results";
 import { TariffFinder } from "./useTariffFinder";
-import styles from "../ui/theme.module.css";
 
 // "Duty Over Time": the selected entry's duty on every verified revision, as a stacked step
 // chart with one layer per program (colored like the Cost Breakdown), and what changed when.
@@ -95,19 +94,31 @@ const signedMoney = (amount: number) =>
 const signedPct = (pct: number) =>
   `${pct > 0 ? "+" : pct < 0 ? "−" : ""}${formatPct(Math.abs(Math.round(pct * 100) / 100))}`;
 
-const trendColor = (delta: number) =>
-  delta > 0.005
-    ? "var(--dc-negative)"
-    : delta < -0.005
-      ? "var(--dc-positive)"
-      : "var(--dc-text-3)";
+// An increase reads as an error, a decrease as a saving
+type Trend = "up" | "down" | "flat";
+const trendOf = (delta: number): Trend =>
+  delta > 0.005 ? "up" : delta < -0.005 ? "down" : "flat";
 
-const trendSoft = (delta: number) =>
-  delta > 0.005
-    ? "var(--dc-negative-soft)"
-    : delta < -0.005
-      ? "var(--dc-positive-soft)"
-      : "var(--dc-surface-2)";
+const TREND_TEXT: Record<Trend, string> = {
+  up: "text-error",
+  down: "text-success",
+  flat: "text-base-content/60",
+};
+const TREND_PILL: Record<Trend, string> = {
+  up: "bg-error/10 text-error",
+  down: "bg-success/10 text-success",
+  flat: "bg-base-200 text-base-content/60",
+};
+const TREND_DOT: Record<Trend, string> = {
+  up: "bg-error ring-error/15",
+  down: "bg-success ring-success/15",
+  flat: "bg-base-content/60 ring-base-200",
+};
+const TREND_STROKE: Record<Trend, string> = {
+  up: "stroke-error",
+  down: "stroke-success",
+  flat: "stroke-base-content/60",
+};
 
 // The width of an element, kept up to date
 const useWidth = () => {
@@ -193,20 +204,20 @@ export const RateHistoryCard = ({
 
   return (
     <section
-      className={`${styles.card} p-5 flex flex-col gap-4`}
+      className="rounded-lg border border-base-300 bg-base-100 p-5 shadow-sm flex flex-col gap-4"
       aria-labelledby="rate-history-title"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 id="rate-history-title" className="text-[16px] font-semibold">
+          <h3 id="rate-history-title" className="text-base font-semibold text-base-content">
             Duty Over Time
           </h3>
-          <p className="mt-0.5 text-[12px] text-[var(--dc-text-3)]">
+          <p className="mt-0.5 text-xs text-base-content/60">
             {shortDate(historyRange.from)} – {formatDate(lastDate)}
           </p>
         </div>
         <div
-          className={`${styles.segmented} ${styles.segmentedSm} shrink-0`}
+          className="join shrink-0"
           role="radiogroup"
           aria-label="Show duty as"
         >
@@ -223,7 +234,7 @@ export const RateHistoryCard = ({
               aria-checked={metric === id}
               title={title}
               onClick={() => setMetric(id)}
-              className={`${styles.segment} ${styles.segmentSm} ${metric === id ? styles.segmentActive : ""}`}
+              className={`btn btn-sm join-item ${metric === id ? "btn-active" : ""}`}
             >
               {label}
             </button>
@@ -233,18 +244,17 @@ export const RateHistoryCard = ({
 
       {/* Headline: duty on the entry date, and how it compares with the start */}
       <div>
-        <div className={styles.eyebrow}>
+        <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
           {entryIndex >= 0 ? "Duty on your entry date" : `Duty on ${formatDate(lastDate)}`}
         </div>
         <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1.5">
           <span
-            className={`${styles.num} text-[28px] font-semibold tracking-tight leading-none`}
+            className="text-3xl font-semibold tracking-tight leading-none tabular-nums text-base-content"
           >
             {show(current.result.totalDuty)}
           </span>
           <span
-            className={`${styles.num} inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-semibold`}
-            style={{ color: trendColor(delta), background: trendSoft(delta) }}
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${TREND_PILL[trendOf(delta)]}`}
           >
             {Math.abs(delta) < 0.005 ? (
               <>No change since {shortDate(first.from)}</>
@@ -263,7 +273,7 @@ export const RateHistoryCard = ({
           </span>
         </div>
         {changes > 0 && (
-          <dl className="mt-3 grid grid-cols-3 gap-2 text-[12px]">
+          <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
             {[
               ["Low", show(Math.min(...totals))],
               ["High", show(Math.max(...totals))],
@@ -271,10 +281,10 @@ export const RateHistoryCard = ({
             ].map(([term, detail]) => (
               <div
                 key={term}
-                className="rounded-[6px] bg-[var(--dc-surface-2)] px-2.5 py-1.5"
+                className="rounded-md bg-base-200 px-2.5 py-1.5"
               >
-                <dt className="text-[var(--dc-text-3)]">{term}</dt>
-                <dd className={`${styles.num} font-semibold text-[var(--dc-text)]`}>
+                <dt className="text-base-content/60">{term}</dt>
+                <dd className="font-semibold tabular-nums text-base-content">
                   {detail}
                 </dd>
               </div>
@@ -302,11 +312,9 @@ export const RateHistoryCard = ({
           {layers.map((layer) => (
             <li
               key={layer.label}
-              className="flex items-center gap-1.5 text-[12px] text-[var(--dc-text-2)] cursor-default"
-              style={{
-                opacity: highlight && highlight !== layer.label ? 0.45 : 1,
-                transition: "opacity 150ms ease",
-              }}
+              className={`flex items-center gap-1.5 text-xs text-base-content/70 cursor-default transition-opacity ${
+                highlight && highlight !== layer.label ? "opacity-40" : ""
+              }`}
               onMouseEnter={() => onHighlight?.(layer.label)}
               onMouseLeave={() => onHighlight?.(null)}
             >
@@ -323,8 +331,8 @@ export const RateHistoryCard = ({
 
       {/* What changed, latest first */}
       {changes === 0 ? (
-        <p className="flex gap-2 rounded-[6px] bg-[var(--dc-surface-2)] px-3.5 py-3 text-[13px] leading-snug text-[var(--dc-text-2)]">
-          <CheckCircleIcon className="w-4 h-4 shrink-0 mt-px text-[var(--dc-positive)]" aria-hidden />
+        <p className="flex gap-2 rounded-md bg-base-200 px-3.5 py-3 text-sm leading-snug text-base-content/70">
+          <CheckCircleIcon className="w-4 h-4 shrink-0 mt-0.5 text-success" aria-hidden />
           <span>
             No tariff changes affected this entry from {shortDate(first.from)} to{" "}
             {formatDate(lastDate)}.
@@ -332,7 +340,7 @@ export const RateHistoryCard = ({
         </p>
       ) : (
         <div className="flex flex-col gap-2">
-          <h4 className={styles.eyebrow}>What changed</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-base-content/60">What changed</h4>
           <ol className="flex flex-col">
             {history
               .map((segment, i) => ({ segment, i }))
@@ -352,14 +360,14 @@ export const RateHistoryCard = ({
               ))}
             <li className="relative pl-5 pt-1">
               <span
-                className="absolute left-[3px] top-[9px] h-2 w-2 rounded-full border-2 border-[var(--dc-border-strong)] bg-[var(--dc-surface)]"
+                className="absolute left-0.5 top-2 h-2 w-2 rounded-full border-2 border-base-content/20 bg-base-100"
                 aria-hidden
               />
-              <div className="flex items-baseline justify-between gap-3 text-[12px] text-[var(--dc-text-3)]">
+              <div className="flex items-baseline justify-between gap-3 text-xs text-base-content/60">
                 <span>
                   {formatDate(first.from)} · Starting point
                 </span>
-                <span className={`${styles.num} font-semibold text-[var(--dc-text-2)]`}>
+                <span className="font-semibold tabular-nums text-base-content/70">
                   {show(first.result.totalDuty)}
                 </span>
               </div>
@@ -368,7 +376,7 @@ export const RateHistoryCard = ({
           {changes > COLLAPSED_CHANGES && (
             <button
               type="button"
-              className={`${styles.link} self-start text-[13px] font-semibold`}
+              className="link link-primary link-hover self-start text-sm font-semibold"
               onClick={() => setShowAll(!showAll)}
             >
               {showAll ? "Show fewer" : `Show all ${changes} changes`}
@@ -377,7 +385,7 @@ export const RateHistoryCard = ({
         </div>
       )}
 
-      <p className="text-[11px] leading-snug text-[var(--dc-text-3)] border-t border-[var(--dc-border)] pt-3">
+      <p className="text-xs leading-snug text-base-content/60 border-t border-base-300 pt-3">
         Your value, quantity, trade preference and answers, on every date. Base rates are from the
         current HTS; customs fees aren&apos;t included.
         {!inRange && entryDate >= historyRange.to && (
@@ -395,9 +403,11 @@ export const RateHistoryCard = ({
 // ── Chart ──
 
 const HEIGHT = 176;
-const PAD = { top: 14, right: 6, bottom: 24, left: 42 };
+const PAD = { top: 14, right: 6, bottom: 24, left: 48 };
 // Room each month label needs
-const MONTH_LABEL_WIDTH = 44;
+const MONTH_LABEL_WIDTH = 48;
+// Tooltip width, w-52
+const TOOLTIP_WIDTH = 208;
 
 // The first of each month after `from` and before `to`, thinned to at most `max` evenly spaced
 // ones. "Jan" months, and the first label, carry the year: "Jan '27".
@@ -507,7 +517,7 @@ const HistoryChart = ({
   return (
     <div
       ref={ref}
-      className="relative select-none outline-none rounded-[6px] focus-visible:ring-2 focus-visible:ring-[var(--dc-accent)]"
+      className="relative select-none outline-none rounded-md focus-visible:ring-2 focus-visible:ring-primary"
       style={{ height: HEIGHT, cursor: finePointer ? "crosshair" : undefined, touchAction: "pan-y" }}
       tabIndex={0}
       role="group"
@@ -525,7 +535,7 @@ const HistoryChart = ({
         <svg width={width} height={HEIGHT} className="block overflow-visible" aria-hidden>
           <defs>
             <pattern id="rate-history-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="6" stroke="var(--dc-border-strong)" strokeWidth="1" />
+              <line x1="0" y1="0" x2="0" y2="6" className="stroke-base-content/20" strokeWidth="1" />
             </pattern>
           </defs>
 
@@ -537,7 +547,7 @@ const HistoryChart = ({
                 x2={width - PAD.right}
                 y1={y(t)}
                 y2={y(t)}
-                stroke="var(--dc-border)"
+                className="stroke-base-300"
                 strokeDasharray={t === 0 ? undefined : "2 3"}
               />
               <text
@@ -545,9 +555,7 @@ const HistoryChart = ({
                 y={y(t)}
                 dy="0.32em"
                 textAnchor="end"
-                className={styles.num}
-                fontSize={10.5}
-                fill="var(--dc-text-3)"
+                className="fill-base-content/60 text-xs tabular-nums"
               >
                 {tickLabel(t)}
               </text>
@@ -564,7 +572,7 @@ const HistoryChart = ({
                 x2={x(r.from)}
                 y1={PAD.top}
                 y2={PAD.top + plotH}
-                stroke="var(--dc-border)"
+                className="stroke-base-300"
               />
             ))}
 
@@ -576,14 +584,13 @@ const HistoryChart = ({
                 x2={x(month.date)}
                 y1={PAD.top + plotH}
                 y2={PAD.top + plotH + 4}
-                stroke="var(--dc-border-strong)"
+                className="stroke-base-content/20"
               />
               <text
                 x={x(month.date)}
                 y={HEIGHT - 8}
                 textAnchor="middle"
-                fontSize={10.5}
-                fill="var(--dc-text-3)"
+                className="fill-base-content/60 text-xs"
               >
                 {month.label}
               </text>
@@ -656,7 +663,7 @@ const HistoryChart = ({
               })
               .join(" ")}
             fill="none"
-            stroke="var(--dc-text)"
+            className="stroke-base-content"
             strokeWidth={2}
             strokeLinejoin="round"
           />
@@ -670,8 +677,7 @@ const HistoryChart = ({
                 cx={x(s.from)}
                 cy={y(value(s.result.totalDuty))}
                 r={4}
-                fill="var(--dc-surface)"
-                stroke={trendColor(change)}
+                className={`fill-base-100 ${TREND_STROKE[trendOf(change)]}`}
                 strokeWidth={2}
               />
             );
@@ -685,11 +691,11 @@ const HistoryChart = ({
                 x2={x(entryDate)}
                 y1={PAD.top - 4}
                 y2={PAD.top + plotH}
-                stroke="var(--dc-accent)"
+                className="stroke-primary"
                 strokeWidth={1.5}
                 strokeDasharray="3 3"
               />
-              <circle cx={x(entryDate)} cy={PAD.top - 4} r={3} fill="var(--dc-accent)" />
+              <circle cx={x(entryDate)} cy={PAD.top - 4} r={3} className="fill-primary" />
             </g>
           )}
 
@@ -700,7 +706,7 @@ const HistoryChart = ({
               x2={x(hoverDay)}
               y1={PAD.top}
               y2={PAD.top + plotH}
-              stroke="var(--dc-text-2)"
+              className="stroke-base-content/70"
               strokeWidth={1}
             />
           )}
@@ -709,19 +715,19 @@ const HistoryChart = ({
 
       {tooltip && (
         <div
-          className="pointer-events-none absolute z-10 w-[200px] rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-3 py-2.5 shadow-[var(--dc-shadow-pop)]"
+          className="pointer-events-none absolute z-10 w-52 rounded-md border border-base-300 bg-base-100 px-3 py-2.5 shadow-lg"
           style={{
             top: PAD.top - 6,
             ...(tooltipOnRight
-              ? { left: Math.min(crosshairX + 10, Math.max(width - 200, 0)) }
-              : { right: Math.min(width - crosshairX + 10, Math.max(width - 200, 0)) }),
+              ? { left: Math.min(crosshairX + 10, Math.max(width - TOOLTIP_WIDTH, 0)) }
+              : { right: Math.min(width - crosshairX + 10, Math.max(width - TOOLTIP_WIDTH, 0)) }),
           }}
           role="status"
         >
-          <div className="text-[11px] leading-snug text-[var(--dc-text-3)]">
-            <div className="font-medium text-[var(--dc-text-2)]">{dateRange(tooltip)}</div>
+          <div className="text-xs leading-snug text-base-content/60">
+            <div className="font-medium text-base-content/70">{dateRange(tooltip)}</div>
           </div>
-          <div className={`${styles.num} mt-1 text-[16px] font-semibold leading-none`}>
+          <div className="mt-1 text-base font-semibold leading-none tabular-nums text-base-content">
             {show(tooltip.result.totalDuty)}
           </div>
           <ul className="mt-2 flex flex-col gap-1.5">
@@ -729,17 +735,17 @@ const HistoryChart = ({
               .filter((l) => (stacks[hovered].get(l.label) ?? 0) > 0)
               .reverse()
               .map((l) => (
-                <li key={l.label} className="grid grid-cols-[8px_1fr] gap-x-1.5 text-[11px] leading-tight">
-                  <span className="mt-[3px] h-2 w-2 rounded" style={{ background: l.color }} aria-hidden />
-                  <span className="text-[var(--dc-text-2)]">{l.label}</span>
-                  <span className={`${styles.num} col-start-2 font-semibold text-[var(--dc-text)]`}>
+                <li key={l.label} className="grid grid-cols-[0.5rem_minmax(0,1fr)] gap-x-1.5 text-xs leading-tight">
+                  <span className="mt-1 h-2 w-2 rounded" style={{ background: l.color }} aria-hidden />
+                  <span className="text-base-content/70">{l.label}</span>
+                  <span className="col-start-2 font-semibold tabular-nums text-base-content">
                     {show(stacks[hovered].get(l.label) ?? 0)}
                   </span>
                 </li>
               ))}
           </ul>
           {finePointer && hoverDay && (
-            <div className="mt-2 border-t border-[var(--dc-border)] pt-1.5 text-[11px] text-[var(--dc-accent)] font-medium">
+            <div className="mt-2 border-t border-base-300 pt-1.5 text-xs text-primary font-medium">
               Click to use {shortDate(hoverDay)} as the entry date
             </div>
           )}
@@ -789,19 +795,17 @@ const ChangeItem = ({
   return (
     <li className="relative pl-5 pb-4">
       {/* The timeline */}
-      <span className="absolute left-[6px] top-[14px] bottom-0 w-px bg-[var(--dc-border)]" aria-hidden />
+      <span className="absolute left-1.5 top-3.5 bottom-0 w-px bg-base-300" aria-hidden />
       <span
-        className="absolute left-[2px] top-[5px] h-[9px] w-[9px] rounded-full"
-        style={{ background: trendColor(delta), boxShadow: `0 0 0 3px ${trendSoft(delta)}` }}
+        className={`absolute left-0.5 top-1 h-2.5 w-2.5 rounded-full ring ${TREND_DOT[trendOf(delta)]}`}
         aria-hidden
       />
       <div className="flex items-baseline justify-between gap-3">
-        <div className="min-w-0 text-[13px]">
-          <span className="font-semibold text-[var(--dc-text)]">{formatDate(segment.from)}</span>
+        <div className="min-w-0 text-sm">
+          <span className="font-semibold text-base-content">{formatDate(segment.from)}</span>
         </div>
         <span
-          className={`${styles.num} shrink-0 text-[13px] font-semibold`}
-          style={{ color: trendColor(delta) }}
+          className={`shrink-0 text-sm font-semibold tabular-nums ${TREND_TEXT[trendOf(delta)]}`}
         >
           {shown(delta)}
         </span>
@@ -810,27 +814,27 @@ const ChangeItem = ({
         {segment.changes.map((c) => (
           <li
             key={`${c.kind}-${c.code}`}
-            className="rounded-[6px] bg-[var(--dc-surface-2)] px-2.5 py-1.5 text-[12px] leading-snug"
+            className="rounded-md bg-base-200 px-2.5 py-1.5 text-xs leading-snug"
           >
             <div className="flex items-baseline justify-between gap-2">
-              <span className="min-w-0 text-[var(--dc-text-3)]">
+              <span className="min-w-0 text-base-content/60">
                 <span className="font-medium">{KIND_LABEL[c.kind]}</span>{" "}
                 {c.code !== "BASE" && (
-                  <span className={`${mono.className} text-[11px] text-[var(--dc-text-2)]`}>
+                  <span className={`${mono.className} text-xs text-base-content/70`}>
                     {c.code}
                   </span>
                 )}
               </span>
-              <span className={`${styles.num} shrink-0`} style={{ color: trendColor(c.delta) }}>
+              <span className={`shrink-0 tabular-nums ${TREND_TEXT[trendOf(c.delta)]}`}>
                 {shown(c.delta)}
               </span>
             </div>
             <div className="mt-0.5 flex items-baseline justify-between gap-2">
-              <span className="min-w-0 text-[var(--dc-text)]">
+              <span className="min-w-0 text-base-content">
                 {c.code === "BASE" ? "Base duty" : c.name}
               </span>
               {rateText(c) && (
-                <span className={`${styles.num} shrink-0 text-[var(--dc-text-3)]`}>{rateText(c)}</span>
+                <span className="shrink-0 tabular-nums text-base-content/60">{rateText(c)}</span>
               )}
             </div>
           </li>
@@ -838,13 +842,13 @@ const ChangeItem = ({
       </ul>
       <div className="mt-2">
         {isEntry ? (
-          <span className="inline-flex items-center rounded-full border border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] px-2 py-0.5 text-[11px] font-medium text-[var(--dc-accent)]">
+          <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
             Your entry date is in this period
           </span>
         ) : (
           <button
             type="button"
-            className={`${styles.link} inline-flex items-center gap-1 text-[13px] font-semibold`}
+            className="link link-primary link-hover inline-flex items-center gap-1 text-sm font-semibold"
             onClick={onPick}
           >
             See the duty from {shortDate(segment.from)}

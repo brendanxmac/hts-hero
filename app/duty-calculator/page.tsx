@@ -119,7 +119,7 @@ export default async function DutyCalculatorPage() {
       {/* Calculator */}
       <BreadcrumbsProvider>
         <Suspense
-          fallback={<div className={`${styles.container} pt-8`}><div className={`${styles.card} h-64`} /></div>}
+          fallback={<div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8 pt-8"><div className="h-64 rounded-lg border border-base-300 bg-base-100 shadow-sm" /></div>}
         >
           <TariffFinderPage />
         </Suspense>

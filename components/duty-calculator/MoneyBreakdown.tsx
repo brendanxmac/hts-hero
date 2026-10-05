@@ -3,7 +3,6 @@
 import { CalculationResult } from "../../tariffs/engine-v2/types";
 import { formatMoney } from "./format";
 import { BASE_SLICE, FEES_SLICE, sliceForProgram } from "./Results";
-import styles from "../ui/theme.module.css";
 
 // Where the money goes: duty and fees as one stacked bar, one slice per program
 
@@ -73,13 +72,13 @@ export const CostBar = ({
       onMouseLeave={() => onHighlight?.(null)}
     >
       <div
-        className="flex h-5 w-full gap-0.5 overflow-hidden rounded-[6px] bg-[var(--dc-surface-3)]"
+        className="flex h-5 w-full gap-0.5 overflow-hidden rounded-md bg-base-300"
         aria-hidden
       >
         {shown.map((s) => (
           <div
             key={s.label}
-            className="h-full min-w-[3px]"
+            className="h-full min-w-1"
             style={{
               width: `${(s.amount / total) * 100}%`,
               background: s.color,
@@ -89,7 +88,7 @@ export const CostBar = ({
           />
         ))}
       </div>
-      <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-[13px]">
+      <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
         {shown.map((s) => (
           <li
             key={s.label}
@@ -102,11 +101,11 @@ export const CostBar = ({
               style={{ background: s.color }}
               aria-hidden
             />
-            <span className="text-[var(--dc-text-2)]">{s.label}</span>
-            <span className={`${styles.num} font-semibold`}>
+            <span className="text-base-content/70">{s.label}</span>
+            <span className="tabular-nums font-semibold">
               {formatMoney(s.amount)}
             </span>
-            <span className={`${styles.num} text-[var(--dc-text-3)]`}>
+            <span className="tabular-nums text-base-content/60">
               {share(s.amount)}
             </span>
           </li>

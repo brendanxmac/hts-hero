@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
-import styles from "../ui/theme.module.css";
+import { mono } from "../ui/font";
 
 // The rates-by-country charts and table on /duty-calculator: the products' total duty for up to
 // five chosen countries side by side, every country's average, and every rate. Choosing a country
@@ -32,10 +32,10 @@ const SERIES = [
 ];
 const DEFAULT_COUNTRIES = ["CN", "MX", "VN", "DE", "JP"];
 // Bars for countries that aren't chosen
-const MUTED_BAR = "color-mix(in srgb, var(--dc-text-3) 30%, transparent)";
+const MUTED_BAR = "oklch(var(--bc) / 0.18)";
 
 // <figure> comes with a margin
-const cardClass = `${styles.card} m-0 p-5 sm:p-6`;
+const cardClass = "m-0 rounded-lg border border-base-300 bg-base-100 p-5 shadow-sm sm:p-6";
 
 // A round axis maximum, with four or five gridlines
 const axis = (max: number) => {
@@ -54,8 +54,8 @@ const pct = (v: number) => `${Math.round(v * 10) / 10}%`;
 const Caption = ({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) => (
   <figcaption className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
     <div className="min-w-0">
-      <h3 className={styles.h3}>{title}</h3>
-      <p className={`${styles.caption} mt-0.5`}>{children}</p>
+      <h3 className="text-base font-semibold text-base-content">{title}</h3>
+      <p className="mt-0.5 text-xs text-base-content/60">{children}</p>
     </div>
     {action}
   </figcaption>
@@ -106,8 +106,8 @@ export const CountryRateCharts = ({
     const i = slots.indexOf(code);
     return i >= 0 ? SERIES[i] : undefined;
   };
-  // A chosen country's bars: its own color, or with flags marking it, the accent
-  const barOf = (code: string) => (colorOf(code) ? (flags ? "var(--dc-accent)" : colorOf(code)) : MUTED_BAR);
+  // A chosen country's bars: its own color, or with flags marking it, the primary
+  const barOf = (code: string) => (colorOf(code) ? (flags ? "oklch(var(--p))" : colorOf(code)) : MUTED_BAR);
   const toggle = (code: string) =>
     setChoice((current) => {
       const i = current.slots.indexOf(code);
@@ -144,19 +144,19 @@ export const CountryRateCharts = ({
   // The marker for a chosen country: a colored dot, or its flag
   const marker = (row: CountryRates, size: "chip" | "plot") =>
     flags ? (
-      <span aria-hidden className={size === "plot" ? "text-[18px] leading-none" : "leading-none"}>
+      <span aria-hidden className={size === "plot" ? "text-lg leading-none" : "leading-none"}>
         {row.flag}
       </span>
     ) : (
       <span
         aria-hidden
-        className={`block rounded-full ${size === "plot" ? "h-3 w-3" : "h-2.5 w-2.5"}`}
-        style={{ background: colorOf(row.code), boxShadow: size === "plot" ? "0 0 0 2px var(--dc-surface)" : undefined }}
+        className={`block rounded-full ${size === "plot" ? "h-3 w-3 ring-2 ring-base-100" : "h-2.5 w-2.5"}`}
+        style={{ background: colorOf(row.code) }}
       />
     );
 
   const markerSwitch = (
-    <div className={`${styles.segmented} ${styles.segmentedSm} shrink-0`} role="radiogroup" aria-label="Show countries as">
+    <div className="join shrink-0" role="radiogroup" aria-label="Show countries as">
       {(
         [
           ["colors", "Colors"],
@@ -169,7 +169,7 @@ export const CountryRateCharts = ({
           role="radio"
           aria-checked={markers === id}
           onClick={() => setMarkers(id)}
-          className={`${styles.segment} ${styles.segmentSm} ${markers === id ? styles.segmentActive : ""}`}
+          className={`btn btn-sm join-item ${markers === id ? "btn-active" : ""}`}
         >
           {label}
         </button>
@@ -185,10 +185,10 @@ export const CountryRateCharts = ({
         type="button"
         onClick={() => toggle(row.code)}
         aria-pressed={Boolean(color)}
-        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[13px] transition-colors ${
+        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-sm transition-colors ${
           color
-            ? "border-[var(--dc-border-strong)] bg-[var(--dc-surface)] font-semibold text-[var(--dc-text)]"
-            : "border-[var(--dc-border)] bg-[var(--dc-bg)] text-[var(--dc-text-3)] hover:border-[var(--dc-border-strong)] hover:text-[var(--dc-text)]"
+            ? "border-base-content/20 bg-base-100 font-semibold text-base-content"
+            : "border-base-300 bg-base-200 text-base-content/60 hover:border-base-content/20 hover:text-base-content"
         }`}
       >
         {color ? marker(row, "chip") : <span aria-hidden>{row.flag}</span>}
@@ -210,21 +210,21 @@ export const CountryRateCharts = ({
             {rows.map(chip)}
           </div>
 
-          <div className={`${styles.num} mt-5 flex flex-col`}>
+          <div className="mt-5 flex flex-col tabular-nums">
             {products.map((product, p) => (
               <div
                 key={product.code}
-                className="grid grid-cols-1 gap-x-4 gap-y-1 border-t border-[var(--dc-border)] py-3 sm:grid-cols-[150px_minmax(0,1fr)] sm:items-center"
+                className="grid grid-cols-1 gap-x-4 gap-y-1 border-t border-base-300 py-3 sm:grid-cols-[9.5rem_minmax(0,1fr)] sm:items-center"
               >
-                <div className="min-w-0 truncate text-[13px] font-medium text-[var(--dc-text)]" title={product.label}>
+                <div className="min-w-0 truncate text-sm font-medium text-base-content" title={product.label}>
                   {product.label}
                 </div>
                 <div className="relative mx-2 h-12">
                   {ticks.map((t) => (
                     <span
                       key={t}
-                      className="absolute top-0 bottom-0 w-px"
-                      style={{ left: x(t), background: t === 0 ? "var(--dc-border-strong)" : "var(--dc-border)" }}
+                      className={`absolute top-0 bottom-0 w-px ${t === 0 ? "bg-base-content/20" : "bg-base-300"}`}
+                      style={{ left: x(t) }}
                       aria-hidden
                     />
                   ))}
@@ -240,7 +240,7 @@ export const CountryRateCharts = ({
                       <button
                         key={row.code}
                         type="button"
-                        className="absolute top-1/2 flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+                        className="absolute top-1/2 flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
                         style={{ left: x(value), marginTop: offset, zIndex: active ? 20 : 10 }}
                         onMouseEnter={() => setHover({ product: p, code: row.code })}
                         onMouseLeave={() => setHover(null)}
@@ -248,14 +248,13 @@ export const CountryRateCharts = ({
                         onBlur={() => setHover(null)}
                         aria-label={`${row.name}, ${product.label}: ${row.labels[p]}`}
                       >
-                        <span className="transition-transform" style={{ transform: active ? "scale(1.35)" : undefined }}>
+                        <span className={`transition-transform ${active ? "scale-125" : ""}`}>
                           {marker(row, "plot")}
                         </span>
                         {active && (
                           <span
                             role="tooltip"
-                            className="pointer-events-none absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-2 py-1 text-[12px] text-[var(--dc-text)]"
-                            style={{ boxShadow: "var(--dc-shadow-pop)" }}
+                            className="pointer-events-none absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md border border-base-300 bg-base-100 px-2 py-1 text-xs text-base-content shadow-lg"
                           >
                             {row.flag} {row.name} · <span className="font-semibold">{row.labels[p]}</span>
                           </span>
@@ -267,11 +266,11 @@ export const CountryRateCharts = ({
               </div>
             ))}
             {/* The scale */}
-            <div className="grid grid-cols-1 gap-x-4 border-t border-[var(--dc-border)] pt-1.5 sm:grid-cols-[150px_minmax(0,1fr)]">
+            <div className="grid grid-cols-1 gap-x-4 border-t border-base-300 pt-1.5 sm:grid-cols-[9.5rem_minmax(0,1fr)]">
               <span className="hidden sm:block" />
               <div className="relative mx-2 h-4">
                 {ticks.map((t) => (
-                  <span key={t} className="absolute -translate-x-1/2 text-[11px] text-[var(--dc-text-3)]" style={{ left: x(t) }}>
+                  <span key={t} className="absolute -translate-x-1/2 text-xs text-base-content/60" style={{ left: x(t) }}>
                     {t}%
                   </span>
                 ))}
@@ -285,7 +284,7 @@ export const CountryRateCharts = ({
           <Caption title="Average total duty by country">
             Across the {products.length} products. Select a country to compare it.
           </Caption>
-          <ol className={`${styles.num} mt-4 flex flex-col`}>
+          <ol className="mt-4 flex flex-col tabular-nums">
             {averages.map(({ row, average }) => {
               const chosenRow = Boolean(colorOf(row.code));
               return (
@@ -294,20 +293,20 @@ export const CountryRateCharts = ({
                     type="button"
                     onClick={() => toggle(row.code)}
                     aria-pressed={chosenRow}
-                    className="grid w-full grid-cols-[112px_minmax(0,1fr)_48px] items-center gap-3 rounded-[6px] px-1.5 py-[3px] text-left hover:bg-[var(--dc-surface-2)]"
+                    className="grid w-full grid-cols-[7rem_minmax(0,1fr)_3rem] items-center gap-3 rounded-md px-1.5 py-1 text-left hover:bg-base-200"
                     aria-label={`${row.name}: ${pct(average)} average`}
                   >
-                    <span className={`truncate text-[13px] ${chosenRow ? "font-semibold text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
+                    <span className={`truncate text-sm ${chosenRow ? "font-semibold text-base-content" : "text-base-content/70"}`}>
                       <span aria-hidden className="mr-1.5">{row.flag}</span>
                       {row.name}
                     </span>
                     <span className="relative h-2.5">
                       <span
-                        className="absolute inset-y-0 left-0 rounded-r-[4px]"
+                        className="absolute inset-y-0 left-0 rounded-r"
                         style={{ width: `${(average / maxAverage) * 100}%`, background: barOf(row.code) }}
                       />
                     </span>
-                    <span className={`text-right text-[13px] ${chosenRow ? "font-semibold text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
+                    <span className={`text-right text-sm ${chosenRow ? "font-semibold text-base-content" : "text-base-content/70"}`}>
                       {pct(average)}
                     </span>
                   </button>
@@ -319,7 +318,7 @@ export const CountryRateCharts = ({
       </div>
 
       {/* Every rate, in the same style: the total and a bar on the charts' scale */}
-      <figure className={`${styles.card} m-0 overflow-hidden`}>
+      <figure className="m-0 overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm">
         <div className="px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
           <Caption title="All rates">
             Total duty by country and product, on the same scale as the chart above. Select a
@@ -327,24 +326,24 @@ export const CountryRateCharts = ({
           </Caption>
         </div>
         <div className="overflow-x-auto">
-          <table className={`w-full text-[13px] ${styles.num}`}>
+          <table className="w-full text-sm tabular-nums">
             <thead>
-              <tr className="border-b border-[var(--dc-border)] text-left">
+              <tr className="border-b border-base-300 text-left">
                 <th
                   scope="col"
-                  className={`${styles.eyebrow} sticky left-0 z-10 bg-[var(--dc-surface)] px-5 sm:px-6 py-2 align-bottom`}
+                  className="sticky left-0 z-10 bg-base-100 px-5 sm:px-6 py-2 align-bottom text-xs font-semibold uppercase tracking-wider text-base-content/60"
                 >
                   Country
                 </th>
                 {products.map((p) => (
-                  <th key={p.code} scope="col" className="min-w-[132px] px-3 py-2 align-bottom font-normal">
+                  <th key={p.code} scope="col" className="min-w-32 px-3 py-2 align-bottom font-normal">
                     <Link
                       href={`/hts/${p.code}`}
-                      className="block text-[13px] font-medium leading-tight text-[var(--dc-text)] hover:text-[var(--dc-accent)] hover:underline"
+                      className="block text-sm font-medium leading-tight text-base-content hover:text-primary hover:underline"
                     >
                       {p.label}
                     </Link>
-                    <span className="block font-mono text-[11px] text-[var(--dc-text-3)]">{p.code}</span>
+                    <span className={`${mono.className} block text-xs text-base-content/60`}>{p.code}</span>
                   </th>
                 ))}
               </tr>
@@ -353,18 +352,18 @@ export const CountryRateCharts = ({
               {rows.map((row) => {
                 const chosenRow = Boolean(colorOf(row.code));
                 return (
-                  <tr key={row.code} className="group border-t border-[var(--dc-border)] first:border-t-0">
+                  <tr key={row.code} className="group border-t border-base-300 first:border-t-0">
                     {/* Pinned so the country stays in view while the products scroll on small screens */}
                     <th
                       scope="row"
-                      className="sticky left-0 z-10 bg-[var(--dc-surface)] group-hover:bg-[var(--dc-surface-2)] px-5 sm:px-6 py-2 text-left font-normal whitespace-nowrap"
+                      className="sticky left-0 z-10 bg-base-100 group-hover:bg-base-200 px-5 sm:px-6 py-2 text-left font-normal whitespace-nowrap"
                     >
                       <button
                         type="button"
                         onClick={() => toggle(row.code)}
                         aria-pressed={chosenRow}
-                        className={`inline-flex items-center gap-2 text-[13px] hover:text-[var(--dc-accent)] ${
-                          chosenRow ? "font-semibold text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"
+                        className={`inline-flex items-center gap-2 text-sm hover:text-primary ${
+                          chosenRow ? "font-semibold text-base-content" : "text-base-content/70"
                         }`}
                       >
                         <span aria-hidden>{row.flag}</span>
@@ -375,15 +374,15 @@ export const CountryRateCharts = ({
                     {row.labels.map((label, i) => {
                       const value = row.values[i];
                       return (
-                        <td key={products[i].code} className="px-3 py-2 align-top group-hover:bg-[var(--dc-surface-2)]">
+                        <td key={products[i].code} className="px-3 py-2 align-top group-hover:bg-base-200">
                           {/* The total, with any trade preference beside it, then its bar */}
                           <span className="flex items-baseline justify-between gap-2">
-                            <span className={`whitespace-nowrap text-[var(--dc-text)] ${chosenRow ? "font-semibold" : ""}`}>
+                            <span className={`whitespace-nowrap text-base-content ${chosenRow ? "font-semibold" : ""}`}>
                               {label}
                             </span>
                             {row.preferences[i] && (
                               <span
-                                className="min-w-0 truncate text-[11px] text-[var(--dc-positive)]"
+                                className="min-w-0 truncate text-xs text-success"
                                 title={row.preferences[i]}
                               >
                                 {row.preferences[i]}
@@ -391,7 +390,7 @@ export const CountryRateCharts = ({
                             )}
                           </span>
                           {value !== null && (
-                            <span className="mt-1 block h-1.5 rounded-full bg-[var(--dc-surface-3)]" aria-hidden>
+                            <span className="mt-1 block h-1.5 rounded-full bg-base-300" aria-hidden>
                               <span className="block h-full rounded-full" style={{ width: x(value), background: barOf(row.code) }} />
                             </span>
                           )}
@@ -405,7 +404,7 @@ export const CountryRateCharts = ({
           </table>
         </div>
         {footnote && (
-          <div className="px-5 sm:px-6 py-4 border-t border-[var(--dc-border)] text-[12px] leading-relaxed text-[var(--dc-text-3)]">
+          <div className="px-5 sm:px-6 py-4 border-t border-base-300 bg-base-200 text-xs leading-relaxed text-base-content/60">
             {footnote}
           </div>
         )}

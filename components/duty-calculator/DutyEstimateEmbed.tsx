@@ -210,7 +210,7 @@ export const DutyEstimateEmbed = ({
             countryOfOrigin && country?.code !== countryOfOrigin.code ? (
               <button
                 type="button"
-                className={`${styles.link} inline-flex items-center gap-1 text-[13px]`}
+                className="link link-primary link-hover inline-flex items-center gap-1 text-sm font-semibold"
                 onClick={() => setCountry(countryOfOrigin)}
               >
                 <ArrowPathIcon className="w-3.5 h-3.5" />
@@ -248,7 +248,7 @@ export const DutyEstimateEmbed = ({
             <input
               id={`${ids}-date`}
               type="date"
-              className={`${styles.input} ${styles.num}`}
+              className="input input-bordered w-full tabular-nums"
               value={entryDate}
               onChange={(e) => setEntryDate(e.target.value)}
             />
@@ -262,7 +262,7 @@ export const DutyEstimateEmbed = ({
           >
             <select
               id={`${ids}-mode`}
-              className={`${styles.input} appearance-none`}
+              className="select select-bordered w-full"
               value={transportMode}
               onChange={(e) =>
                 setTransportMode(e.target.value as TransportMode)
@@ -294,18 +294,18 @@ export const DutyEstimateEmbed = ({
       </div>
 
       {!country || !result ? (
-        <div className="rounded-[6px] border border-dashed border-[var(--dc-border-strong)] px-6 py-10 text-center">
-          <div className="text-[15px] font-semibold">
+        <div className="rounded-lg border border-dashed border-base-content/20 px-6 py-10 text-center">
+          <div className="text-base font-semibold text-base-content">
             Choose a country of origin
           </div>
-          <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
+          <p className="mt-1 text-sm text-base-content/70">
             You&apos;ll see every duty and tariff that applies, line by line,
             and why.
           </p>
         </div>
       ) : simple ? (
         <>
-          <div className={styles.card}>
+          <div className="rounded-lg border border-base-300 bg-base-100 shadow-sm">
             <SimpleSummary
               result={result}
               customsValue={customsValue}
@@ -326,7 +326,7 @@ export const DutyEstimateEmbed = ({
               })
             }
           />
-          <p className="text-[12px] text-[var(--dc-text-3)]">
+          <p className="text-xs text-base-content/60">
             Rates as of {formatDate(entryDate)}
             {isVerifiedDate(entryDate)
               ? ""
@@ -338,7 +338,7 @@ export const DutyEstimateEmbed = ({
         <>
           <DateNotice entryDate={entryDate} onUseVerified={setEntryDate} />
 
-          <div className={`${styles.card} overflow-hidden`}>
+          <div className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm">
             <SummaryStats result={result} customsValue={customsValue} />
             <Statement
               result={result}
@@ -373,13 +373,13 @@ export const DutyEstimateEmbed = ({
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="text-[12px] text-[var(--dc-text-3)]">
+            <span className="text-xs text-base-content/60">
               {openQuestions > 0
                 ? "Answer the questions above to refine this estimate."
                 : "Estimates don't include antidumping or countervailing duties."}
             </span>
             <div className="flex items-center gap-2">
-              <button type="button" className={styles.button} onClick={copy}>
+              <button type="button" className="btn btn-sm" onClick={copy}>
                 {copied ? (
                   <CheckIcon className="w-4 h-4" />
                 ) : (
@@ -389,7 +389,7 @@ export const DutyEstimateEmbed = ({
               </button>
               <a
                 href={link()}
-                className={styles.buttonPrimary}
+                className="btn btn-sm btn-primary"
                 onClick={() =>
                   trackEvent(MixpanelEvent.DUTY_ESTIMATE_OPENED_IN_CALCULATOR, {
                     hts_code: element.htsno,
@@ -436,27 +436,27 @@ const CalculatorCta = ({
     "Any entry date, transport mode and trade preference",
   ];
   return (
-    <div className={`${styles.callout} p-5 sm:p-6`}>
+    <div className="rounded-lg border border-primary/30 bg-primary/5 p-5 sm:p-6">
       <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-5 md:items-center">
         <div>
-          <div className={`${styles.kicker} inline-flex items-center gap-1.5`}>
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
             <SparklesIcon className="w-4 h-4" aria-hidden />
             Full analysis
           </div>
-          <h4 className="mt-1.5 text-[20px] sm:text-[24px] font-semibold tracking-tight text-[var(--dc-text)]">
+          <h4 className="mt-1.5 text-xl sm:text-2xl font-semibold tracking-tight text-base-content">
             {headline}
           </h4>
-          <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
+          <p className="mt-1 text-sm text-base-content/70">
             Open this estimate in the Tariff Calculator to get:
           </p>
           <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2">
             {benefits.map((b) => (
               <li
                 key={b}
-                className="flex items-start gap-2 text-[14px] leading-snug text-[var(--dc-text)]"
+                className="flex items-start gap-2 text-sm leading-snug text-base-content"
               >
                 <CheckCircleIcon
-                  className="mt-0.5 w-4 h-4 shrink-0 text-[var(--dc-accent)]"
+                  className="mt-0.5 w-4 h-4 shrink-0 text-primary"
                   aria-hidden
                 />
                 {b}
@@ -467,13 +467,7 @@ const CalculatorCta = ({
         <a
           href={href}
           onClick={onOpen}
-          className={`${styles.buttonPrimary} justify-center whitespace-nowrap`}
-          style={{
-            height: 48,
-            padding: "0 22px",
-            fontSize: 15,
-            borderRadius: 10,
-          }}
+          className="btn btn-primary whitespace-nowrap"
         >
           Open full analysis
           <ArrowRightIcon className="w-4 h-4" />

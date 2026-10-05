@@ -1,89 +1,100 @@
-/* Design tokens and primitives for HTS Hero's analytical UI (see DESIGN_SYSTEM.md).
-   Follows the site theme: <html data-theme="dark|light">, which the site sets from the header
-   toggle or, until the user picks one, from the operating system. Falls back to the OS setting
-   if the attribute is missing. Text colors meet WCAG AA (most exceed AAA) in both themes. */
+/* HTS Hero's analytical theme (see DESIGN_SYSTEM.md).
+
+   The palette is set as daisyUI theme variables, scoped to .root, so inside a page that opts
+   in, daisyUI and Tailwind's semantic classes (btn-primary, bg-base-100, text-base-content/70,
+   text-success, border-base-300...) use it. Follows <html data-theme="dark|light">, falling
+   back to the OS setting. When the whole app moves over, these values become the daisyUI
+   themes in tailwind.config.js and .root goes away.
+
+   Light: navy primary, teal-green secondary, orange accent on cool neutrals.
+   Dark: the same hues, lightened: navy itself is 1.8:1 on the dark page, so the primary
+   becomes a lighter blue from the same family (6.5:1). */
 
 .root {
-  --dc-bg: #f6f6f3;
-  --dc-surface: #ffffff;
-  --dc-surface-2: #f3f3ef;
-  --dc-surface-3: #e9e9e3;
-  --dc-border: #e3e3dd;
-  --dc-border-strong: #c8c8c0;
-  --dc-text: #0f1217;
-  --dc-text-2: #43484f;
-  --dc-text-3: #62676f;
-  --dc-accent: #1b3a8c;
-  --dc-accent-hover: #142d6f;
-  --dc-accent-contrast: #ffffff;
-  --dc-accent-soft: #edf1fb;
-  --dc-accent-border: #c9d4f2;
-  --dc-focus: rgba(27, 58, 140, 0.3);
-  --dc-positive: #0b7045;
-  --dc-positive-soft: #e7f4ec;
-  --dc-negative: #a3262a;
-  --dc-negative-soft: #fbebea;
-  --dc-warning: #7a4700;
-  --dc-warning-soft: #fff5e1;
-  --dc-warning-border: #eec16a;
-  --dc-shadow: 0 1px 2px rgba(15, 18, 23, 0.05), 0 2px 6px -2px rgba(15, 18, 23, 0.06);
-  --dc-shadow-pop: 0 10px 28px -10px rgba(15, 18, 23, 0.22), 0 2px 4px rgba(15, 18, 23, 0.06);
-  /* Chart series (Dashboard design) */
-  --dc-chart-1: #1b3a8c;
+  /* daisyUI theme colors, as oklch channels (hex in the comment) */
+  --p: 37.96% 0.1414 264.70; /* primary #1b3a8c */
+  --pc: 100.00% 0.0000 89.88; /* primary-content #ffffff */
+  --s: 52.32% 0.0874 183.50; /* secondary #167a6f */
+  --sc: 100.00% 0.0000 89.88; /* secondary-content #ffffff */
+  --a: 57.55% 0.1328 53.02; /* accent #b45f1d */
+  --ac: 100.00% 0.0000 89.88; /* accent-content #ffffff */
+  --n: 27.95% 0.0368 260.03; /* neutral #1e293b */
+  --nc: 98.42% 0.0034 247.86; /* neutral-content #f8fafc */
+  --b1: 100.00% 0.0000 89.88; /* base-100 #ffffff */
+  --b2: 97.29% 0.0029 264.54; /* base-200 #f5f6f8 */
+  --b3: 92.41% 0.0075 260.73; /* base-300 #e3e6eb */
+  --bc: 20.77% 0.0398 265.75; /* base-content #0f172a */
+  --in: 54.61% 0.2152 262.88; /* info #2563eb */
+  --inc: 100.00% 0.0000 89.88; /* info-content #ffffff */
+  --su: 48.16% 0.1096 157.71; /* success #0b7045 */
+  --suc: 100.00% 0.0000 89.88; /* success-content #ffffff */
+  --wa: 55.53% 0.1455 49.00; /* warning #b45309 */
+  --wac: 100.00% 0.0000 89.88; /* warning-content #ffffff */
+  --er: 50.03% 0.1821 29.51; /* error #b42318 */
+  --erc: 100.00% 0.0000 89.88; /* error-content #ffffff */
+  /* Data visualization: parts of a whole (chart) and compared entities (series) */
+  --dc-chart-1: var(--dc-primary);
   --dc-chart-2: #c7702a;
   --dc-chart-3: #1f8a7e;
-  --dc-chart-4: #b0406a;
-  --dc-chart-5: #6b52b8;
-  --dc-chart-6: #9a9ea6;
-  /* Countries compared side by side: a colorblind-checked categorical set, in slot order */
+  --dc-chart-4: #a37b12;
+  --dc-chart-5: #64748b;
+  --dc-chart-6: #a1a7b0;
   --dc-series-1: #2a78d6;
   --dc-series-2: #eb6834;
   --dc-series-3: #1baf7a;
   --dc-series-4: #eda100;
-  --dc-series-5: #e87ba4;
+  --dc-series-5: #64748b;
+
+  /* Shapes: tighter than daisyUI's defaults */
+  --rounded-box: 0.5rem;
+  --rounded-btn: 0.375rem;
+  --rounded-badge: 0.25rem;
+  --tab-radius: 0.375rem;
+  --animation-btn: 0;
+  --animation-input: 0;
+  --btn-focus-scale: 1;
+  --border-btn: 1px;
 
   color-scheme: light;
-  background: var(--dc-bg);
-  color: var(--dc-text);
+  background-color: oklch(var(--b2));
+  color: oklch(var(--bc));
   -webkit-font-smoothing: antialiased;
 }
 
 :global(html[data-theme="dark"]) .root {
-  --dc-bg: #0a0c0f;
-  --dc-surface: #111419;
-  --dc-surface-2: #171b21;
-  --dc-surface-3: #1e232b;
-  --dc-border: #252a32;
-  --dc-border-strong: #353c47;
-  --dc-text: #f1f3f6;
-  --dc-text-2: #b8bec8;
-  --dc-text-3: #8d94a0;
-  --dc-accent: #8ea6ff;
-  --dc-accent-hover: #a9bbff;
-  --dc-accent-contrast: #0a0c0f;
-  --dc-accent-soft: rgba(142, 166, 255, 0.1);
-  --dc-accent-border: rgba(142, 166, 255, 0.32);
-  --dc-focus: rgba(142, 166, 255, 0.35);
-  --dc-positive: #5bd79c;
-  --dc-positive-soft: rgba(91, 215, 156, 0.1);
-  --dc-negative: #ff8f8a;
-  --dc-negative-soft: rgba(255, 143, 138, 0.1);
-  --dc-warning: #f3c56b;
-  --dc-warning-soft: rgba(243, 197, 107, 0.08);
-  --dc-warning-border: rgba(243, 197, 107, 0.35);
-  --dc-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 6px -2px rgba(0, 0, 0, 0.5);
-  --dc-shadow-pop: 0 10px 28px -10px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.4);
-  --dc-chart-1: #8ea6ff;
+  /* daisyUI theme colors, as oklch channels (hex in the comment) */
+  --p: 70.07% 0.1561 263.53; /* primary #6b9bff */
+  --pc: 16.83% 0.0181 263.90; /* primary-content #0b0f17 */
+  --s: 74.27% 0.1138 175.35; /* secondary #4cc3a8 */
+  --sc: 16.83% 0.0181 263.90; /* secondary-content #0b0f17 */
+  --a: 78.67% 0.1228 64.35; /* accent #f0a860 */
+  --ac: 16.83% 0.0181 263.90; /* accent-content #0b0f17 */
+  --n: 31.12% 0.0221 259.38; /* neutral #2a313c */
+  --nc: 93.35% 0.0087 264.52; /* neutral-content #e6e9ef */
+  --b1: 21.64% 0.0175 259.74; /* base-100 #151a22 */
+  --b2: 17.63% 0.0140 258.36; /* base-200 #0d1117 */
+  --b3: 31.12% 0.0221 259.38; /* base-300 #2a313c */
+  --bc: 93.35% 0.0087 264.52; /* base-content #e6e9ef */
+  --in: 71.37% 0.1434 254.62; /* info #60a5fa */
+  --inc: 16.83% 0.0181 263.90; /* info-content #0b0f17 */
+  --su: 79.35% 0.1405 159.89; /* success #5bd79c */
+  --suc: 16.83% 0.0181 263.90; /* success-content #0b0f17 */
+  --wa: 84.60% 0.1204 82.64; /* warning #f3c56b */
+  --wac: 16.83% 0.0181 263.90; /* warning-content #0b0f17 */
+  --er: 76.92% 0.1362 23.42; /* error #ff8f8a */
+  --erc: 16.83% 0.0181 263.90; /* error-content #0b0f17 */
+  /* Data visualization: parts of a whole (chart) and compared entities (series) */
+  --dc-chart-1: var(--dc-primary);
   --dc-chart-2: #f0a860;
-  --dc-chart-3: #5cc8b8;
-  --dc-chart-4: #e58aad;
-  --dc-chart-5: #b3a2f0;
-  --dc-chart-6: #6b7280;
+  --dc-chart-3: #4cc3a8;
+  --dc-chart-4: #e0b84a;
+  --dc-chart-5: #94a3b8;
+  --dc-chart-6: #5b6472;
   --dc-series-1: #3987e5;
   --dc-series-2: #d95926;
   --dc-series-3: #199e70;
   --dc-series-4: #c98500;
-  --dc-series-5: #d55181;
+  --dc-series-5: #94a3b8;
 
   color-scheme: dark;
 }
@@ -91,44 +102,73 @@
 /* Same values as the block above: keep the two in sync */
 @media (prefers-color-scheme: dark) {
   :global(html:not([data-theme])) .root {
-    --dc-bg: #0a0c0f;
-    --dc-surface: #111419;
-    --dc-surface-2: #171b21;
-    --dc-surface-3: #1e232b;
-    --dc-border: #252a32;
-    --dc-border-strong: #353c47;
-    --dc-text: #f1f3f6;
-    --dc-text-2: #b8bec8;
-    --dc-text-3: #8d94a0;
-    --dc-accent: #8ea6ff;
-    --dc-accent-hover: #a9bbff;
-    --dc-accent-contrast: #0a0c0f;
-    --dc-accent-soft: rgba(142, 166, 255, 0.1);
-    --dc-accent-border: rgba(142, 166, 255, 0.32);
-    --dc-focus: rgba(142, 166, 255, 0.35);
-    --dc-positive: #5bd79c;
-    --dc-positive-soft: rgba(91, 215, 156, 0.1);
-    --dc-negative: #ff8f8a;
-    --dc-negative-soft: rgba(255, 143, 138, 0.1);
-    --dc-warning: #f3c56b;
-    --dc-warning-soft: rgba(243, 197, 107, 0.08);
-    --dc-warning-border: rgba(243, 197, 107, 0.35);
-    --dc-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 6px -2px rgba(0, 0, 0, 0.5);
-    --dc-shadow-pop: 0 10px 28px -10px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.4);
-    --dc-chart-1: #8ea6ff;
+    /* daisyUI theme colors, as oklch channels (hex in the comment) */
+    --p: 70.07% 0.1561 263.53; /* primary #6b9bff */
+    --pc: 16.83% 0.0181 263.90; /* primary-content #0b0f17 */
+    --s: 74.27% 0.1138 175.35; /* secondary #4cc3a8 */
+    --sc: 16.83% 0.0181 263.90; /* secondary-content #0b0f17 */
+    --a: 78.67% 0.1228 64.35; /* accent #f0a860 */
+    --ac: 16.83% 0.0181 263.90; /* accent-content #0b0f17 */
+    --n: 31.12% 0.0221 259.38; /* neutral #2a313c */
+    --nc: 93.35% 0.0087 264.52; /* neutral-content #e6e9ef */
+    --b1: 21.64% 0.0175 259.74; /* base-100 #151a22 */
+    --b2: 17.63% 0.0140 258.36; /* base-200 #0d1117 */
+    --b3: 31.12% 0.0221 259.38; /* base-300 #2a313c */
+    --bc: 93.35% 0.0087 264.52; /* base-content #e6e9ef */
+    --in: 71.37% 0.1434 254.62; /* info #60a5fa */
+    --inc: 16.83% 0.0181 263.90; /* info-content #0b0f17 */
+    --su: 79.35% 0.1405 159.89; /* success #5bd79c */
+    --suc: 16.83% 0.0181 263.90; /* success-content #0b0f17 */
+    --wa: 84.60% 0.1204 82.64; /* warning #f3c56b */
+    --wac: 16.83% 0.0181 263.90; /* warning-content #0b0f17 */
+    --er: 76.92% 0.1362 23.42; /* error #ff8f8a */
+    --erc: 16.83% 0.0181 263.90; /* error-content #0b0f17 */
+    /* Data visualization: parts of a whole (chart) and compared entities (series) */
+    --dc-chart-1: var(--dc-primary);
     --dc-chart-2: #f0a860;
-    --dc-chart-3: #5cc8b8;
-    --dc-chart-4: #e58aad;
-    --dc-chart-5: #b3a2f0;
-    --dc-chart-6: #6b7280;
+    --dc-chart-3: #4cc3a8;
+    --dc-chart-4: #e0b84a;
+    --dc-chart-5: #94a3b8;
+    --dc-chart-6: #5b6472;
     --dc-series-1: #3987e5;
     --dc-series-2: #d95926;
     --dc-series-3: #199e70;
     --dc-series-4: #c98500;
-    --dc-series-5: #d55181;
+    --dc-series-5: #94a3b8;
 
     color-scheme: dark;
   }
+}
+
+/* Legacy tokens, from before the palette moved to daisyUI variables. Still used by
+   components shared with pages that aren't on the theme yet (classification, tariff
+   watcher). Don't use them in new code: use the daisyUI/Tailwind classes. */
+.root {
+  --dc-primary: oklch(var(--p));
+  --dc-bg: oklch(var(--b2));
+  --dc-surface: oklch(var(--b1));
+  --dc-surface-2: oklch(var(--b2));
+  --dc-surface-3: oklch(var(--b3));
+  --dc-border: oklch(var(--b3));
+  --dc-border-strong: oklch(var(--bc) / 0.2);
+  --dc-text: oklch(var(--bc));
+  --dc-text-2: oklch(var(--bc) / 0.75);
+  --dc-text-3: oklch(var(--bc) / 0.6);
+  --dc-accent: oklch(var(--p));
+  --dc-accent-hover: color-mix(in oklab, oklch(var(--p)) 88%, oklch(var(--bc)));
+  --dc-accent-contrast: oklch(var(--pc));
+  --dc-accent-soft: oklch(var(--p) / 0.08);
+  --dc-accent-border: oklch(var(--p) / 0.3);
+  --dc-focus: oklch(var(--p) / 0.3);
+  --dc-positive: oklch(var(--su));
+  --dc-positive-soft: oklch(var(--su) / 0.1);
+  --dc-negative: oklch(var(--er));
+  --dc-negative-soft: oklch(var(--er) / 0.1);
+  --dc-warning: oklch(var(--wa));
+  --dc-warning-soft: oklch(var(--wa) / 0.1);
+  --dc-warning-border: oklch(var(--wa) / 0.4);
+  --dc-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  --dc-shadow-pop: 0 10px 28px -10px rgb(0 0 0 / 0.3), 0 2px 4px rgb(0 0 0 / 0.08);
 }
 
 /* Inside another page (explorer, classification): keep that page's background */

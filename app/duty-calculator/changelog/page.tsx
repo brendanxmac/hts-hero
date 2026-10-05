@@ -33,21 +33,21 @@ export default async function TariffChangelogPage() {
 
   return (
     <main className={`${styles.root} w-full flex-1 shrink-0 flex flex-col`}>
-      <div className="mx-auto w-full max-w-[760px] px-4 sm:px-6 pt-10 pb-16 md:pt-14">
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 pt-10 pb-16 md:pt-14">
         <Link
           href="/duty-calculator"
-          className="inline-flex items-center gap-1 text-[13.5px] font-medium text-[var(--dc-text-2)] hover:text-[var(--dc-text)]"
+          className="inline-flex items-center gap-1 text-sm font-medium text-base-content/70 transition-colors hover:text-base-content"
         >
           <span aria-hidden>←</span> Tariff calculator
         </Link>
-        <h1 className="mt-4 text-[32px] leading-[1.15] sm:text-[40px] font-semibold tracking-[-0.025em] text-[var(--dc-text)]">
+        <h1 className="mt-4 text-3xl lg:text-4xl font-semibold leading-tight tracking-tight text-base-content">
           Changelog
         </h1>
-        <p className="mt-3 max-w-xl text-[16px] leading-relaxed text-[var(--dc-text-2)]">
+        <p className="mt-3 max-w-xl text-lg leading-relaxed text-base-content/70">
           Every change to the tariff calculator: new HTS revisions, corrections and improvements.
         </p>
-        <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--dc-border)] bg-[var(--dc-surface)] px-3 py-1.5 text-[12.5px] font-medium text-[var(--dc-text-2)]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[var(--dc-positive)]" aria-hidden />
+        <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs font-medium text-base-content/70">
+          <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
           Tariff data verified through HTS {latestVerified.title}
         </div>
 

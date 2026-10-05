@@ -7,7 +7,6 @@ import { NumberField, Segmented } from "./controls";
 import { TRANSPORT_MODES } from "./format";
 import { HtsCodeField } from "./HtsCodeField";
 import { MAX_COMPARE, TariffFinder } from "./useTariffFinder";
-import styles from "../ui/theme.module.css";
 
 // Entry details as a compact rail beside the results
 
@@ -28,7 +27,7 @@ const RailField = ({
     <div className="flex items-baseline justify-between gap-2">
       <label
         htmlFor={htmlFor}
-        className={styles.eyebrow}
+        className="text-xs font-semibold uppercase tracking-wider text-base-content/60"
       >
         {label}
       </label>
@@ -36,7 +35,7 @@ const RailField = ({
     </div>
     {children}
     {hint && (
-      <p className="text-[11px] leading-snug text-[var(--dc-text-3)]">
+      <p className="text-xs leading-snug text-base-content/60">
         {hint}
       </p>
     )}
@@ -56,16 +55,14 @@ export const EntryRail = ({
   const { result } = f;
   return (
     <aside
-      className={`${styles.card} h-full p-5 flex flex-col gap-4`}
+      className="h-full p-5 flex flex-col gap-4 rounded-lg border border-base-300 bg-base-100 shadow-sm"
       aria-label="Entry details"
-      // Tighter fields than the other designs
-      style={{ borderRadius: 10 }}
     >
       {title && (
         <div>
-          <h2 className="text-[16px] font-semibold">{title}</h2>
+          <h2 className="text-base font-semibold text-base-content">{title}</h2>
           {description && (
-            <p className="mt-0.5 text-[12px] leading-snug text-[var(--dc-text-3)]">
+            <p className="mt-0.5 text-xs leading-snug text-base-content/60">
               {description}
             </p>
           )}
@@ -73,11 +70,11 @@ export const EntryRail = ({
       )}
       {f.loading ? (
         Array.from({ length: 6 }, (_, i) => (
-          <div key={i} className={`${styles.skeleton} h-12 w-full`} />
+          <div key={i} className="skeleton h-12 w-full" />
         ))
       ) : (
         <div
-          className="flex flex-col gap-4 [&_input]:text-[14px]"
+          className="flex flex-col gap-4 [&_input]:text-sm"
           data-density="compact"
         >
           <RailField
@@ -86,7 +83,7 @@ export const EntryRail = ({
             action={
               <button
                 type="button"
-                className={`${styles.link} inline-flex items-center gap-1 text-[12px]`}
+                className="link link-primary link-hover inline-flex items-center gap-1 text-xs font-semibold"
                 onClick={() => f.openExplore()}
               >
                 <MagnifyingGlassIcon className="w-3 h-3" />
@@ -142,7 +139,7 @@ export const EntryRail = ({
             <input
               id="dc-date"
               type="date"
-              className={`${styles.input} ${styles.num}`}
+              className="input input-bordered w-full tabular-nums"
               value={f.entryDate}
               onChange={(e) => f.setEntryDate(e.target.value)}
             />

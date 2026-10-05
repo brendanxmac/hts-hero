@@ -113,7 +113,7 @@ export const TariffFinderPage = () => {
 
   return (
     <div className={`${styles.root} w-full pb-20`}>
-      <div className={`${styles.container} flex flex-col gap-4`}>
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4 px-4 sm:px-6 lg:px-8">
         {SHOW_TOOL_TABS && <ToolTabs tool={tool} onChange={changeTool} />}
         <div
           {...(SHOW_TOOL_TABS
@@ -147,7 +147,7 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
     id="tariff-tools"
     role="tablist"
     aria-label="Tariff tools"
-    className="grid grid-cols-2 gap-1 self-start w-full sm:w-auto rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-1.5 scroll-mt-4"
+    className="grid grid-cols-2 gap-1 self-start w-full sm:w-auto rounded-lg border border-base-300 bg-base-200 p-1.5 scroll-mt-4"
   >
     {TOOLS.map(({ id, label, note, Icon }) => {
       const active = id === tool;
@@ -160,25 +160,25 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
           aria-selected={active}
           aria-controls={`tool-panel-${id}`}
           onClick={() => onChange(id)}
-          className={`flex items-center gap-3 rounded-[6px] px-3 sm:px-4 py-2.5 text-left transition-[background-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${active
-            ? "bg-[var(--dc-surface)] shadow-[var(--dc-shadow)] ring-1 ring-[var(--dc-border)]"
-            : "hover:bg-[var(--dc-surface-3)]"
+          className={`flex items-center gap-3 rounded-md px-3 sm:px-4 py-2.5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${active
+            ? "bg-base-100 shadow-sm ring-1 ring-base-300"
+            : "hover:bg-base-300"
             }`}
         >
           <span
-            className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] ${active
-              ? "bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
-              : "bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]"
+            className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${active
+              ? "bg-primary/10 text-primary"
+              : "bg-base-300 text-base-content/60"
               }`}
             aria-hidden
           >
-            <Icon className="w-[18px] h-[18px]" />
+            <Icon className="w-5 h-5" />
           </span>
           <span className="flex flex-col min-w-0">
-            <span className={`text-[15px] font-semibold ${active ? "text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
+            <span className={`text-base font-semibold ${active ? "text-base-content" : "text-base-content/70"}`}>
               {label}
             </span>
-            <span className="text-[12px] text-[var(--dc-text-3)] truncate">{note}</span>
+            <span className="text-xs text-base-content/60 truncate">{note}</span>
           </span>
         </button>
       );
@@ -269,13 +269,13 @@ const Layout = ({ f }: { f: TariffFinder }) => {
               <div className="min-w-0">
                 <h2
                   id="results-heading"
-                  className="text-[24px] font-semibold tracking-tight"
+                  className="text-2xl font-semibold tracking-tight text-base-content"
                 >
                   Duty Estimate
                 </h2>
-                <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
+                <p className="mt-1 text-sm text-base-content/70">
                   <span
-                    className={`${mono.className} font-semibold text-[var(--dc-text)]`}
+                    className={`${mono.className} font-semibold text-base-content`}
                   >
                     {selectedElement.htsno}
                   </span>
@@ -321,7 +321,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                   onViewDetails={f.viewCountryDetails}
                 />
               ) : f.view === "simple" ? (
-                <div className={styles.card}>
+                <div className="rounded-lg border border-base-300 bg-base-100 shadow-sm">
                   <SimpleSummary
                     result={result}
                     customsValue={f.customsValue}
@@ -331,7 +331,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                 </div>
               ) : (
                 <>
-                  <div className={`${styles.card} overflow-hidden`}>
+                  <div className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm">
                     <SummaryStats
                       result={result}
                       customsValue={f.customsValue}
@@ -341,20 +341,20 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                       result={result}
                       highlight={highlight}
                       onHighlight={setHighlight}
-                      className="px-5 sm:px-6 py-4 border-t border-[var(--dc-border)]"
+                      className="px-5 sm:px-6 py-4 border-t border-base-300"
                     />
                   </div>
                   <section
-                    className={`${styles.card} overflow-hidden`}
+                    className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm"
                     aria-labelledby="duty-breakdown-title"
                   >
-                    <div className="px-5 sm:px-6 pt-5 pb-3 sm:pb-1 border-b border-[var(--dc-border)] sm:border-b-0">
+                    <div className="px-5 sm:px-6 pt-5 pb-3 sm:pb-1 border-b border-base-300 sm:border-b-0">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <h3 id="duty-breakdown-title" className="text-[16px] font-semibold">
+                          <h3 id="duty-breakdown-title" className="text-base font-semibold text-base-content">
                             Duty Breakdown
                           </h3>
-                          <p className="mt-0.5 text-[12px] text-[var(--dc-text-3)]">
+                          <p className="mt-0.5 text-xs text-base-content/60">
                             Each duty and fee on this entry for {formatDate(result.asOf)}
                             {linesDetail === "full"
                               ? ", with the reason it applies and its legal text"
@@ -362,7 +362,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                           </p>
                         </div>
                         <div
-                          className={`${styles.segmented} ${styles.segmentedSm} shrink-0`}
+                          className="join shrink-0"
                           role="radiogroup"
                           aria-label="Line detail"
                         >
@@ -378,7 +378,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                               role="radio"
                               aria-checked={linesDetail === id}
                               onClick={() => setLinesDetail(id)}
-                              className={`${styles.segment} ${styles.segmentSm} ${linesDetail === id ? styles.segmentActive : ""}`}
+                              className={`btn btn-sm join-item ${linesDetail === id ? "btn-active text-base-content" : "font-medium text-base-content/70"}`}
                             >
                               {label}
                             </button>
@@ -397,11 +397,11 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                     />
                   </section>
                   {result.warnings.length > 0 && (
-                    <ul className="flex flex-col gap-1.5 rounded-[6px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3">
+                    <ul className="flex flex-col gap-1.5 rounded-md border border-warning/40 bg-warning/10 px-4 py-3">
                       {result.warnings.map((w) => (
                         <li
                           key={w}
-                          className="flex gap-2 text-[13px] leading-snug text-[var(--dc-warning)]"
+                          className="flex gap-2 text-sm leading-snug text-warning"
                         >
                           <ExclamationTriangleIcon
                             className="w-4 h-4 shrink-0 mt-px"
@@ -460,26 +460,26 @@ const Layout = ({ f }: { f: TariffFinder }) => {
 
 const ResultsSkeleton = () => (
   <div
-    className={`${styles.card} p-5 flex flex-col gap-3`}
+    className="p-5 flex flex-col gap-3 rounded-lg border border-base-300 bg-base-100 shadow-sm"
     aria-busy="true"
     aria-label="Loading HTS data"
   >
-    <div className={`${styles.skeleton} h-7 w-48`} />
-    <div className={`${styles.skeleton} h-24 w-full`} />
+    <div className="skeleton h-7 w-48" />
+    <div className="skeleton h-24 w-full" />
     {Array.from({ length: 5 }, (_, i) => (
-      <div key={i} className={`${styles.skeleton} h-10 w-full`} />
+      <div key={i} className="skeleton h-10 w-full" />
     ))}
   </div>
 );
 
 const EmptyState = ({ f }: { f: TariffFinder }) => (
-  <section className={`${styles.card} p-6 sm:p-10 h-full flex flex-col justify-center`}>
+  <section className="p-6 sm:p-10 h-full flex flex-col justify-center rounded-lg border border-base-300 bg-base-100 shadow-sm">
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-10 items-center">
       <div>
-        <h2 className="text-[20px] font-semibold tracking-tight">
+        <h2 className="text-xl font-semibold tracking-tight text-base-content">
           {emptyTitle(f)}
         </h2>
-        <p className="mt-2 text-[15px] leading-relaxed text-[var(--dc-text-2)]">
+        <p className="mt-2 text-base leading-relaxed text-base-content/70">
           You&apos;ll get a line-by-line statement: the base rate, every Chapter
           99 tariff and exemption in effect on your entry date, and customs
           fees, each with the reason it applies.
@@ -488,10 +488,10 @@ const EmptyState = ({ f }: { f: TariffFinder }) => (
           {EMPTY_STEPS.map((step, i) => (
             <li
               key={step}
-              className="flex items-start gap-3 text-[15px] text-[var(--dc-text)]"
+              className="flex items-start gap-3 text-base text-base-content"
             >
               <span
-                className={`${styles.num} flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--dc-accent-soft)] border border-[var(--dc-accent-border)] text-[12px] font-semibold text-[var(--dc-accent)]`}
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-xs font-semibold tabular-nums text-primary"
               >
                 {i + 1}
               </span>
@@ -501,7 +501,7 @@ const EmptyState = ({ f }: { f: TariffFinder }) => (
         </ol>
       </div>
       <div className="flex flex-col gap-2.5">
-        <div className={styles.eyebrow}>Try an example</div>
+        <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">Try an example</div>
         <ExampleButtons onExample={f.selectExample} />
       </div>
     </div>

@@ -1,6 +1,6 @@
 # HTS Hero Design System
 
-This is the reference for HTS Hero's analytical UI. `/duty-calculator` and `/hts/[code]` are the reference pages: they follow every rule here. Use this doc for any new page and for moving the rest of the app off DaisyUI.
+This is the reference for HTS Hero's analytical UI. `/duty-calculator` and `/hts/[code]` are the reference pages: they follow every rule here. Use this doc for any new page and for the app-wide redesign.
 
 The look is **clean, professional and analytical**. It should feel like a financial terminal or a well-made report, not a marketing site. Data is the hero. Decoration is not.
 
@@ -8,32 +8,77 @@ The look is **clean, professional and analytical**. It should feel like a financ
 
 ## 1. Principles
 
-1. **Data first.** Numbers, codes and rates are the content. Everything else (chrome, color, motion) is there to help someone read them.
-2. **Flat and quiet.** Surfaces are separated by 1px borders and small changes in tone. No glows, no gradients, no blur, no large colored blocks.
-3. **One accent.** Use `--dc-accent` for interactive things and for the single most important element in a region. If everything is accented, nothing is.
-4. **Both themes, always.** Every color comes from a token, and every token has a light and a dark value. If something only looks right in one theme, it's a bug.
-5. **A small, fixed vocabulary.** One type scale, one radius scale, two shadows, a handful of primitives. Reuse them. Don't invent a variant for one screen.
+1. **Built-ins first.** Use Tailwind's scales (`text-sm`, `p-4`, `rounded-lg`, `shadow-sm`) and daisyUI's components and semantic colors (`btn btn-primary`, `card`, `bg-base-100`, `text-base-content/70`). Write an exact value (`text-[13px]`, `w-[312px]`) or custom CSS only when nothing built in can do the job. Section 9 lists the few accepted exceptions.
+2. **Data first.** Numbers, codes and rates are the content. Everything else (chrome, color, motion) is there to help someone read them.
+3. **Flat and quiet.** Surfaces are separated by 1px borders and small changes in tone. No glows, no gradients, no blur, no large colored blocks.
+4. **Color means something.** Navy is for actions and the one most important thing in a region. Green means savings or exemptions, orange means a caveat or an added cost, and red means an error or an increase. Everything else is neutral.
+5. **Both themes, always.** Only use semantic colors, which have a light and a dark value. If something only looks right in one theme, it's a bug.
 6. **Desktop first.** About 99% of traffic is desktop. Design at 1440px, then make sure it degrades cleanly to a 375px phone with no horizontal page scroll.
 
 ---
 
-## 2. Where things live
+## 2. Color palette
 
-```
-components/ui/                 ← the design system: shared by every page
-  theme.module.css             ← tokens (light + dark) and CSS primitives
-  font.ts                      ← `mono` (IBM Plex Mono) for codes
-  SectionHeader.tsx            ← kicker + <h2> + lead paragraph
-  FaqList.tsx                  ← FAQ disclosures
-  heat.ts                      ← tint for duty totals in tables/lists
-components/<feature>/          ← feature components (duty-calculator/, hts-page/, …)
-```
+### Brand and status
 
-**Rule:** if two features need it, it goes in `components/ui/`. If only one feature needs it, it stays in that feature's folder. Never import from another feature's folder (for example, `hts-page/` must not import from `duty-calculator/`). Move the shared piece to `ui/` first.
+| Role | daisyUI name | Light | Dark | Use |
+|---|---|---|---|---|
+| Primary | `primary` | Navy `#1b3a8c` | Blue `#6b9bff` | Buttons, links, selection, focus, the key figure or code in a region |
+| Secondary | `secondary` | Teal green `#167a6f` | `#4cc3a8` | Second data series. Rarely for UI |
+| Accent | `accent` | Orange `#b45f1d` | `#f0a860` | Third data series, highlights that aren't status. Sparingly |
+| Neutral | `neutral` | Slate `#1e293b` | `#2a313c` | Dark UI chrome (tooltips, the promo bar) |
+| Success | `success` | `#0b7045` | `#5bd79c` | Savings, exemptions, "Free", a lower rate |
+| Warning | `warning` | `#b45309` | `#f3c56b` | Unverified data, caveats, "not included" |
+| Error | `error` | `#b42318` | `#ff8f8a` | Errors, revoked rulings, a higher rate |
+| Info | `info` | `#2563eb` | `#60a5fa` | Neutral notices (prefer a plain notice with `primary`) |
 
-### Opting a page in
+**Retired:** daisyUI's default purple primary and pink secondary. Don't use purple or pink anywhere, including in charts.
 
-Tokens are scoped to `.root`. Put it on the page's outermost element:
+**Why dark mode uses different values:** navy is 10:1 against white but only 1.8:1 against the dark page, which is unreadable. In dark mode, primary becomes a lighter blue from the same family (6.5:1). The orange and green also hold up in dark mode, but only in their brightened dark values. Every value above meets WCAG AA for text on `base-100` and `base-200` in its theme. The light chart orange (`#c7702a`, 3.6:1) is only for fills, never for text.
+
+### Neutrals
+
+| daisyUI | Light | Dark | Use |
+|---|---|---|---|
+| `base-200` | `#f5f6f8` | `#0d1117` | Page background; table header rows; footers and inset areas inside a card |
+| `base-100` | `#ffffff` | `#151a22` | Cards, panels, the header, reference bands (notes, FAQ, guide) |
+| `base-300` | `#e3e6eb` | `#2a313c` | Borders and dividers, hover on `base-200` |
+| `base-content` | `#0f172a` | `#e6e9ef` | Text |
+
+Text hierarchy comes from opacity on `base-content`, in three steps only:
+
+| Class | Use |
+|---|---|
+| `text-base-content` | Headings, numbers, primary values |
+| `text-base-content/70` | Body copy, table cells, labels |
+| `text-base-content/60` | Captions, hints, metadata, icons at rest. **Never go lower for text.** |
+
+Borders: `border-base-300`. A control that must read as one (input, secondary button) uses daisyUI's own border.
+
+Soft fills: `bg-primary/10` (selected, callout), `bg-success/10`, `bg-warning/10`, `bg-error/10`. Their borders are `border-primary/30`, `border-warning/40` and so on.
+
+### Data visualization
+
+Charts need more fixed hues than daisyUI has. These are CSS variables, used in `style` (see §9):
+
+| Variable | Light | Dark | Use |
+|---|---|---|---|
+| `--dc-chart-1` | navy | blue | Base duty (always the first part of a whole) |
+| `--dc-chart-2` | orange `#c7702a` | `#f0a860` | First added program |
+| `--dc-chart-3` | green `#1f8a7e` | `#4cc3a8` | Second program |
+| `--dc-chart-4` | ochre `#a37b12` | `#e0b84a` | Third program |
+| `--dc-chart-5` | slate `#64748b` | `#94a3b8` | Fourth program |
+| `--dc-chart-6` | gray `#a1a7b0` | `#5b6472` | Fees or "other" (always last) |
+| `--dc-series-1…5` | blue, orange, green, yellow, slate | brightened versions of the same | Entities compared side by side (countries), assigned in slot order |
+| `heat(pct)` | primary-tinted, darker as the total rises | same | Background behind a duty total |
+
+Keep a color tied to the same thing everywhere on a page: if China is `series-1` in one chart, it's `series-1` in the next.
+
+### Where the palette lives
+
+`components/ui/theme.module.css` sets the palette as daisyUI's theme variables (`--p`, `--b1`, …), scoped to `.root`, so the new palette applies only to pages that opt in. When the whole app is on it, those values move into the daisyUI themes in `tailwind.config.js` and `.root` goes away.
+
+To opt a page in, put `styles.root` on its outermost element:
 
 ```tsx
 import styles from "@/components/ui/theme.module.css";
@@ -41,185 +86,83 @@ import styles from "@/components/ui/theme.module.css";
 <main className={`${styles.root} w-full flex-1 flex flex-col`}>…</main>
 ```
 
-When a token-styled component sits inside a page that isn't on the system yet (for example, a duty estimate embedded in a classification), wrap it in `${styles.root} ${styles.embedded}`. `.embedded` keeps the host page's background.
+When a component on the new theme is embedded in a page that isn't on it yet, wrap it in `${styles.root} ${styles.embedded}`. `.embedded` keeps the host page's background.
+
+`theme.module.css` also holds legacy `--dc-*` tokens and primitive classes (`styles.card`, `styles.button`, …) for components still shared with other pages. **Don't use them in new code.** Delete them once nothing imports them.
 
 ---
 
-## 3. Tokens
+## 3. Type
 
-All tokens are CSS custom properties defined in `components/ui/theme.module.css`. Use them through Tailwind arbitrary values, `text-[var(--dc-text-2)]`, or through the primitive classes.
+Use Tailwind's type scale. No exact pixel sizes.
 
-**Never** write a hex, `rgb()` or Tailwind palette color (`text-gray-500`, `bg-blue-600`) in a component. **Never** use DaisyUI semantic classes (`bg-base-100`, `text-base-content/60`, `btn`, `badge`, `text-primary`) on a page that's on the system.
-
-### Surfaces and lines
-
-| Token | Use |
+| Role | Classes |
 |---|---|
-| `--dc-bg` | Page background |
-| `--dc-surface` | Cards, panels, table bodies, the header, and "reference" bands such as notes and FAQ |
-| `--dc-surface-2` | Table headers, footers inside a card, inset areas, hover rows, segmented-control tracks |
-| `--dc-surface-3` | Hover on a `surface-2` element, skeleton shimmer |
-| `--dc-border` | Default 1px border and divider |
-| `--dc-border-strong` | Inputs, secondary buttons, and anything that must read as a control |
+| Hero headline (one per site page) | `text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight` |
+| Page title | `text-3xl lg:text-4xl font-semibold tracking-tight` |
+| Section title (`<h2>`) | `text-2xl sm:text-3xl font-semibold tracking-tight` (use `SectionHeader`) |
+| Card or panel title (`<h3>`) | `text-base font-semibold` |
+| Kicker (above a section title) | `text-xs font-semibold uppercase tracking-wider text-primary` |
+| Label (stat labels, table headers, rail headings) | `text-xs font-semibold uppercase tracking-wider text-base-content/60` |
+| Lead paragraph | `text-lg leading-relaxed text-base-content/70` |
+| Body | `text-base leading-relaxed text-base-content/70` |
+| Dense UI (tables, lists, controls, card text) | `text-sm` |
+| Caption, fine print | `text-xs text-base-content/60` |
 
-### Text
-
-| Token | Use |
-|---|---|
-| `--dc-text` | Headings, numbers, primary values |
-| `--dc-text-2` | Body copy, table cells, labels |
-| `--dc-text-3` | Captions, hints, metadata, placeholder, icons at rest |
-
-All three meet WCAG AA on every surface in both themes. Don't lower contrast with opacity (`opacity-60`). Pick a lower text token instead.
-
-### Accent and status
-
-| Token | Use |
-|---|---|
-| `--dc-accent` / `-hover` / `-contrast` | Primary buttons, links, focus, selected state, HTS codes that are links |
-| `--dc-accent-soft` / `-border` | Selected or hovered rows, callouts, icon tiles |
-| `--dc-focus` | Focus ring on inputs |
-| `--dc-positive` / `-soft` | Savings, exemptions, "Free", good outcomes |
-| `--dc-negative` / `-soft` | Increases, revoked, errors |
-| `--dc-warning` / `-soft` / `-border` | Unverified data, caveats, "not included" |
-
-Status colors carry meaning. Don't use green for decoration or red for emphasis.
-
-### Data visualization
-
-| Token | Use |
-|---|---|
-| `--dc-chart-1 … 6` | Parts of one whole: base duty, then each program, then fees (`chart-6` is reserved for fees or "other") |
-| `--dc-series-1 … 5` | Separate entities compared side by side (countries). A colorblind-checked categorical set, assigned in slot order |
-| `heat(pct)` | Tint behind a duty total in a table or list. One hue, darker as the total rises |
-
-Keep a color tied to the same thing everywhere on a page: if China is `series-1` in one chart, it's `series-1` in the next.
-
-### Shadows
-
-| Token | Use |
-|---|---|
-| `--dc-shadow` | Resting cards (already part of `.card`) |
-| `--dc-shadow-pop` | **Floating things only:** dropdowns, combobox menus, popovers, tooltips, modals |
-
-A static panel never gets `--dc-shadow-pop`, however important it is. Emphasis comes from position, size and the accent, not from elevation.
-
-### Adding or changing a token
-
-- Add it to all three blocks in `theme.module.css`: light (`.root`), `html[data-theme="dark"]`, and the `prefers-color-scheme` block. The last two must stay identical.
-- Check contrast in both themes. Text tokens need at least 4.5:1 on `--dc-surface` and `--dc-surface-2`.
-- Name it by role (`--dc-warning-border`), not by appearance (`--dc-amber`).
-
----
-
-## 4. Type
-
-### Families
-
-- **Sans:** the site font, for everything except codes.
-- **Mono:** `mono.className` from `components/ui/font.ts`, for HTS codes, Chapter 99 headings, and program codes. Codes are always mono, so digits and dots line up.
-- **Numbers:** add `styles.num` (tabular figures) to anything that shows numbers in a column, a table, a stat, or that changes as the user types.
-
-### Scale
-
-Sizes come only from this scale: **11 · 12 · 13 · 14 · 15 · 16 · 18 · 20 · 24 · 28 · 32 · 36 · 40 · 48 · 56 · 64**. Don't use half pixels (`text-[13.5px]`) or sizes off the scale.
-
-| Role | Class | Spec |
-|---|---|---|
-| Hero headline (one per site page) | inline | 36 → 48 → 56, semibold, `tracking-[-0.03em]`, `leading-[1.05]` |
-| Page title | inline | 32 → 40, semibold, `tracking-[-0.02em]` |
-| Section title (`<h2>`) | `styles.h2` | 24 → 28, semibold |
-| Card or panel title (`<h3>`) | `styles.h3` | 16, semibold |
-| Kicker (above a section title) | `styles.kicker` | 12, uppercase, `0.08em`, accent |
-| Eyebrow (stat labels, table headers, rail headings) | `styles.eyebrow` | 11, uppercase, `0.06em`, `--dc-text-3` |
-| Lead paragraph | `styles.lead` | 16, `--dc-text-2` |
-| Body | `styles.body` | 15, `leading-[1.65]`, `--dc-text-2` |
-| Dense UI text (tables, lists, controls) | inline | 13–14 |
-| Caption / fine print | `styles.caption` | 12, `--dc-text-3` |
-| Form label | `styles.label` | 13, semibold, `--dc-text-2` |
-
-**Metrics** (big numbers in stat tiles) use `styles.num`, semibold, `tracking-tight`, `leading-none`:
+**Metrics** (big numbers) are `font-semibold tracking-tight leading-none tabular-nums`:
 
 | Metric | Size |
 |---|---|
-| Headline result | 56 → 64 |
-| Primary stat | 36 (28 when compact) |
-| Secondary stat | 24 (20 when compact) |
+| Headline result | `text-5xl sm:text-6xl` |
+| Primary stat | `text-4xl` (`text-3xl` when compact) |
+| Secondary stat | `text-2xl` (`text-xl` when compact) |
 
-Weights: `font-medium` (500) and `font-semibold` (600) only. Avoid `font-bold`.
+Other rules:
 
-Line length: body copy is capped at `max-w-[80ch]` (`SectionHeader` does this).
+- **Numbers:** add `tabular-nums` to anything numeric in a column, a table or a stat, or that changes as the user types.
+- **Codes:** HTS codes, Chapter 99 headings and program codes are always mono (§9), so digits and dots line up.
+- **Weights:** `font-medium` and `font-semibold` only.
+- **Line length:** body copy is capped at `max-w-prose`, or `max-w-3xl` for wider leads.
 
 ---
 
-## 5. Layout and spacing
+## 4. Layout, spacing, shape
 
-- **Page width:** `styles.container`, which is 1440px max with 16/24px gutters. Every band on a page uses it, so edges line up from header to footer. Don't write `mx-auto max-w-[…] px-…` by hand.
-- **Bands:** a page is a stack of full-width bands, each holding a `container`. Separate bands with `border-t border-[var(--dc-border)]`. Alternate between `--dc-bg` (working area) and `--dc-surface` (reference material: notes, rulings, FAQ, guides) to group content.
-- **Vertical rhythm:** band padding is `py-12 sm:py-16`. Sections inside a band are spaced `gap-14 sm:gap-20`. Inside a section, the header and its content are `gap-6`. Inside a card, `p-5` (or `p-5 sm:p-6` for large cards).
-- **Spacing steps:** Tailwind's 4px scale. Stick to 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 20.
-- **Grids:** main + rail is `lg:grid-cols-[minmax(0,1fr)_320px]` (or `360px`). Always use `minmax(0,…)` and `min-w-0` so long codes and tables can't blow out the layout.
+- **Page width:** `mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8`. Every band on a page uses it, so edges line up from header to footer.
+- **Bands:** a page is a stack of full-width bands. The working area sits on the page background (`base-200`). Reference material (notes, rulings, FAQ, guides) goes on a `bg-base-100` band. Separate bands with `border-t border-base-300`.
+- **Vertical rhythm:** band padding is `py-12 sm:py-16`. Sections inside a band are spaced `gap-16 sm:gap-20`. A section header and its content are `gap-6`. Card padding is `p-5` (`p-6` for large cards). Card title rows are `px-5 py-4`.
+- **Spacing:** Tailwind's scale only. Prefer 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20.
+- **Grids:** main + rail is `lg:grid-cols-[minmax(0,1fr)_20rem]`. Always use `minmax(0,…)` and `min-w-0`, so long codes and tables can't blow out the layout.
 - **Anchors:** every section with an `id` gets `scroll-mt-6`.
-
-### Radius scale
-
-| Radius | Use |
-|---|---|
-| `rounded` (4px) | Chips, badges, code pills, total tints, small inner elements |
-| `rounded-[6px]` | Buttons, inputs, nav items, icon tiles, menu items, row-level links |
-| `rounded-[8px]` | Cards, panels, callouts, tables, modals |
-| `rounded-full` | Avatars, dots, step numbers, pills that are explicitly round |
-
-Nothing else (`rounded-md`, `rounded-xl`, `rounded-2xl`, `rounded-[10px]`, `rounded-[5px]`).
+- **Radius:** `rounded` for chips and badges, `rounded-md` for buttons, inputs and rows, `rounded-lg` for cards and panels, `rounded-full` for dots and avatars. daisyUI components already use these through the theme.
+- **Shadow:** `shadow-sm` on resting cards, `shadow-lg` only on things that float (menus, popovers, tooltips, modals). Nothing else.
 
 ---
 
-## 6. Primitives (CSS classes in `theme.module.css`)
+## 5. daisyUI components
 
-| Class | What it is |
+| Need | Use |
 |---|---|
-| `root` | Opts a subtree into the tokens |
-| `embedded` | With `root`, keeps the host page's background |
-| `container` | Page-width wrapper |
-| `card` | Surface, 1px border, 8px radius, resting shadow |
-| `callout` | Accent-tinted flat panel, for a CTA or one section that should stand out. No more than one or two per page |
-| `h2`, `h3`, `kicker`, `eyebrow`, `lead`, `body`, `caption`, `label` | Type roles (see §4) |
-| `num` | Tabular figures |
-| `button` | Secondary button (surface, strong border) |
-| `buttonPrimary` | Primary button (accent fill). **One per region** |
-| `buttonLg` | Size modifier for a page-level CTA: `${styles.buttonPrimary} ${styles.buttonLg}` |
-| `link` | Inline text link |
-| `input` | Text input, select, combobox shell |
-| `segmented` + `segment` + `segmentActive` | Segmented control. Add `segmentedSm` / `segmentSm` for the 32px size in panel headers |
-| `checkbox` | Checkbox |
-| `skeleton` | Loading placeholder |
-
-**Don't override a primitive with `!important` utilities** (`!h-11`, `!text-[15px]`, `!p-0`). If you need a variant more than once, add a modifier class next to the primitive (as `buttonLg` and `segmentedSm` are) and document it here.
-
-Layout utilities (margin, flex, grid, width) next to a primitive class are fine: `${styles.card} p-5 flex flex-col gap-3`.
+| Primary button | `btn btn-primary` (`btn-sm` in toolbars and panel headers). **One per region** |
+| Secondary button | `btn` (or `btn-sm`). Quiet: `btn btn-ghost` |
+| Link | `link link-primary link-hover` (inline: `link link-primary`) |
+| Card | `rounded-lg border border-base-300 bg-base-100 shadow-sm` (daisyUI `card` also works for a simple column, but it forces `flex-col`, so the plain classes are the default) |
+| Callout (CTA panel) | `rounded-lg border border-primary/30 bg-primary/5 p-6`. No more than one or two per page |
+| Input | `input input-bordered w-full` (`select select-bordered`). Labels: `label` + the label type style |
+| Checkbox | `checkbox checkbox-primary checkbox-sm` |
+| Segmented control | `join` with `btn btn-sm join-item`; the selected one gets `btn-active`. Keep `role="radiogroup"` |
+| Table | `table` (`table-sm` when dense), inside a card with `overflow-x-auto`. See §6 |
+| Stat tiles | `stats` / `stat` / `stat-title` / `stat-value` / `stat-desc`, with type overridden to the metric sizes |
+| Disclosure, FAQ | `collapse collapse-arrow` on `<details>`; use `FaqList` |
+| Badge | `badge badge-sm` (`badge-ghost`, `badge-outline`); status: `badge badge-sm badge-success` |
+| Notice | `alert` + `border-warning/40 bg-warning/10 text-warning` (or `success`/`error`). Not `alert-warning`, whose solid fill is too heavy |
+| Loading | `skeleton` blocks in the final layout's shape; `loading loading-spinner loading-sm` inside a button |
+| Tooltip | `tooltip` with `data-tip` |
+| Modal | `modal` + `modal-box` |
 
 ---
 
-## 7. Components (React, in `components/ui/`)
-
-| Component | Use |
-|---|---|
-| `<SectionHeader kicker title titleId? className?>lead</SectionHeader>` | The top of every page section. Don't hand-roll kicker + `<h2>` + `<p>` |
-| `<FaqList faqs openFirst? />` | FAQ disclosures. The text must match the page's `FAQPage` JSON-LD |
-| `heat(pct)` | Background tint for a duty total |
-
-Feature-level building blocks that already follow the system and should be reused before writing new ones:
-
-- `duty-calculator/controls.tsx`: `Field`, `NumberField`, `Segmented`
-- `duty-calculator/shared.tsx`: `ShareButtons`, `DateNotice` (warning notice pattern), `Disclaimer`
-- `duty-calculator/MoneyBreakdown.tsx`: stacked cost bar + legend
-- `hts-page/DutyByCountry.tsx`: the canonical data table (see §8)
-
-When one of these is needed by a second feature, move it to `components/ui/` (§10).
-
----
-
-## 8. Patterns
+## 6. Patterns
 
 ### Section
 
@@ -236,67 +179,91 @@ For reference sections (FAQ, notes), put the header in a left column: `grid lg:g
 
 ### Card with a header
 
-A `card` with `overflow-hidden`. The header row is `px-4 pt-3.5 pb-3 border-b border-[var(--dc-border)]` holding an `h3` and an optional `caption`. Action controls (`segmentedSm`, a `button`) sit at the right of the header. Footer rows are `border-t … bg-[var(--dc-surface-2)]`.
-
-### Stat tiles
-
-Labels use `eyebrow`, values use metric sizes with `num`, and notes use 12–13px `--dc-text-3`. For a row of stats inside one card, use a 1px-gap grid over `bg-[var(--dc-border)]`, so dividers draw themselves at every breakpoint (see `Results.tsx` and `MicroCalculator.tsx`).
+A card with `overflow-hidden`. The title row is `px-5 py-4 border-b border-base-300`, with an `<h3>` and an optional caption. Controls (`join` of `btn-sm`, a `btn btn-sm`) sit at its right. Footer rows are `border-t border-base-300 bg-base-200`.
 
 ### Data tables
 
-- Inside a `card overflow-hidden`, wrapped in `overflow-x-auto`.
-- `<table className={`w-full text-[14px] ${styles.num}`}>`
-- Header row: `className={`${styles.eyebrow} text-left bg-[var(--dc-surface-2)]`}`, cells `px-4 py-3` (first and last `px-5 sm:px-6`).
-- Body rows: `border-t border-[var(--dc-border)]`, `hover:bg-[var(--dc-surface-2)]/60`.
-- The row's subject is a `<th scope="row">`. Numbers are right-aligned. Codes are mono at 11–13px in `--dc-text-3`.
-- A footer for sources and the CTA goes in `border-t bg-[var(--dc-surface-2)]`.
+- The `table` component inside `card … overflow-hidden`, wrapped in `overflow-x-auto`.
+- `<thead>` row: the label style on `bg-base-200`.
+- Rows: `hover` (daisyUI) or `hover:bg-base-200/60`.
+- The row's subject is a `<th scope="row">`. Numbers are right-aligned with `tabular-nums`. Codes are mono, `text-xs text-base-content/60`.
+- Sources and a CTA go in a footer row: `border-t border-base-300 bg-base-200`.
 
-### Code chips and badges
+### Stat row in a card
 
-- HTS code as a link: mono, semibold, accent.
-- Program or code pill: mono, `rounded`, `border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-1 py-px text-[11px] text-[var(--dc-text-2)]`.
-- Status badge: `rounded px-1.5 py-0.5 text-[11px] font-semibold`, using the status color on its `-soft` background.
+A `grid` with `gap-px bg-base-300` and `bg-base-100` cells, so 1px dividers draw themselves at every breakpoint (see `Results.tsx`). Or use daisyUI `stats`.
 
-### Notices
+### Code chips
 
-Warning: `rounded-[6px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3.5`, with an icon and text in `--dc-warning`. See `DateNotice`. Errors and success use the same shape with `negative` and `positive`.
+- HTS code as a link: mono, `font-semibold text-primary`.
+- Program pill: mono `badge badge-sm badge-ghost`.
+
+### Color in data
+
+- Totals and rates are `text-base-content`. Color a number only for meaning: `text-success` for a saving or a lower total, `text-error` for an increase.
+- Duty totals in tables get `heat()`, not status colors.
+- In a stacked bar, base duty is `--dc-chart-1`, then programs in order, then fees as `--dc-chart-6`.
 
 ### Calls to action
 
-- **Inline:** a `link` with an arrow icon.
-- **In a region:** one `buttonPrimary`, plus at most one `button` next to it.
-- **Page-level:** a `callout` (or `card`) holding a `SectionHeader` and a `buttonPrimary buttonLg`.
-- Never use a solid accent-filled block as a banner. It's too loud in dark mode, where the accent is light.
+- **Inline:** `link link-primary` with an arrow icon.
+- **In a region:** one `btn btn-primary`, plus at most one `btn`.
+- **Page-level:** a callout holding a `SectionHeader` and `btn btn-primary`.
+- Never use a solid `bg-primary` block as a banner.
 
-### Charts
+### Interaction
 
-Follow the `dataviz` skill. Use `chart-*` for parts of a whole and `series-*` for compared entities. Gridlines use `--dc-border`, axis labels are 11–12px `--dc-text-3`, and tooltips are floating (`--dc-shadow-pop`). Every chart gets a caption (`h3` + `caption`) that says what it shows.
-
-### Interaction states
-
-- **Hover:** row or tile, `hover:bg-[var(--dc-surface-2)]` or `hover:bg-[var(--dc-accent-soft)]`. Card links get `hover:border-[var(--dc-accent-border)]`. Icons go from `--dc-text-3` to accent on `group-hover`.
-- **Focus:** always visible. Use `focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]` (the primitives already do this).
-- **Motion:** `transition-colors` at about 120ms. No translate or scale on hover. Respect `prefers-reduced-motion`.
-- **Loading:** `styles.skeleton` blocks that have the final layout's shape. No spinners for page content.
+- **Hover:** rows `hover:bg-base-200`, card links `hover:border-primary/40`, icons `text-base-content/60` → `group-hover:text-primary`.
+- **Focus:** always visible. daisyUI components handle it; custom elements get `focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary`.
+- **Motion:** `transition-colors` only. No translate or scale on hover. Respect `motion-reduce:`.
 
 ### Don't
 
-- Glows, radial or linear gradients, `blur-*`, `backdrop-blur`, or decorative blobs
-- `shadow-pop` on anything that doesn't float
-- Solid accent-filled panels or banners
-- Emoji or icons as decoration (flags next to country names are data, so they're fine)
-- Opacity for text hierarchy
+- Glows, gradients, `blur-*`, `backdrop-blur`, or decorative shapes
+- `shadow-md` or larger on anything that doesn't float
+- Solid primary-filled panels or banners
+- Purple or pink, or Tailwind palette colors (`text-gray-500`, `bg-blue-600`), or hex/`rgb()` in TSX
+- Exact pixel values where a Tailwind step exists
+- Text below `/60` opacity
 - More than one primary button per region
-- Centered body text (except short empty states)
+- Emoji or icons as decoration (flags next to country names are data, so they're fine)
 
 ---
 
-## 9. Light and dark mode
+## 7. Shared components (`components/ui/`)
 
-- The site sets `<html data-theme="light|dark">` from the header toggle, or from the OS until the user picks one. The tokens follow it automatically. Components never check the theme.
-- Because the dark accent is light (`#8ea6ff`), text on an accent fill must use `--dc-accent-contrast`, never white.
-- Soft fills in dark mode are translucent (`rgba(…, 0.1)`), so they work on any surface. Don't stack two soft fills.
-- Before you ship, check both themes with `html[data-theme]` set each way. Look at contrast, borders that disappear, and anything that looks "lit up".
+| Component | Use |
+|---|---|
+| `theme.module.css` | Palette (`styles.root`, `styles.embedded`) and chart variables |
+| `font.ts` | `mono` (IBM Plex Mono): `className={mono.className}` for codes |
+| `<SectionHeader kicker title titleId? className?>lead</SectionHeader>` | The top of every page section |
+| `<FaqList faqs openFirst? />` | FAQ disclosures. The text must match the page's `FAQPage` JSON-LD |
+| `heat(pct)` | Tint behind a duty total |
+
+Feature components to reuse before writing new ones: `duty-calculator/controls.tsx` (`Field`, `NumberField`, `Segmented`), `duty-calculator/shared.tsx` (`ShareButtons`, `DateNotice`, `Disclaimer`), `duty-calculator/MoneyBreakdown.tsx` (stacked bar + legend), and `hts-page/DutyByCountry.tsx` (the reference data table).
+
+---
+
+## 8. Light and dark mode
+
+- The site sets `<html data-theme="light|dark">` from the header toggle, or from the OS until the user picks one. Semantic classes follow it automatically. Components never check the theme.
+- Text on a `primary` fill uses `text-primary-content`, never `text-white`: in dark mode the primary is light and its content is dark.
+- Soft fills (`bg-primary/10`) work in both themes. Don't stack two of them.
+- Before you ship, check both themes. Look at contrast, borders that disappear, and anything that looks "lit up".
+
+---
+
+## 9. Accepted exceptions to "built-ins first"
+
+These are the only places exact values or custom CSS are expected. Keep a short comment on each saying why.
+
+1. **Palette and chart colors:** `theme.module.css`, and `style={{ background: "var(--dc-chart-2)" }}` for chart marks and legend swatches.
+2. **Runtime values:** bar widths, chart geometry, `heat()` tints, and series colors in `style`.
+3. **Mono font:** `mono.className` from `next/font`.
+4. **Grid templates:** `grid-cols-[minmax(0,1fr)_20rem]` and similar. Tailwind has no built-in for "fluid + fixed rail".
+5. **A width a design depends on** (a dropdown's `min-w-[16rem]`, an axis label column). Use rem, not px.
+
+Everything else uses the scales. If you need the same exception twice, it should probably be a component.
 
 ---
 
@@ -304,89 +271,52 @@ Follow the `dataviz` skill. Use `chart-*` for parts of a whole and `series-*` fo
 
 ### Creating a component
 
-1. **Search first.** Check `components/ui/` and the feature folders listed in §7. Extend what exists before you add something new.
-2. **Where it goes:** used by one feature, it lives in `components/<feature>/`. Used by two or more, it lives in `components/ui/`. Promote it when a second user appears, not before.
-3. **One component per file** for anything exported and reused. Small private helpers (`Chevron`, `RateRow`) can live below the main component in the same file.
-4. **File names:** components in `PascalCase.tsx`, matching the export (`SectionHeader.tsx` exports `SectionHeader`). Hooks are `useThing.ts`. Pure helpers are `camelCase.ts` (`format.ts`, `heat.ts`).
-5. **Named exports** for components (`export function SectionHeader`). Default exports only where Next.js requires them (`page.tsx`, `layout.tsx`).
-6. **Server first.** Leave out `"use client"` unless the component uses state, effects, or browser APIs. Keep SEO content (rates, explanations, FAQs) server-rendered.
-7. **Props:** type them inline or with a local `type Props`. Pass data, not class names. A `className` prop is only for layout (margin, grid placement) from the parent.
-8. **Size:** if a file grows past about 400 lines or holds more than one screen-level concern, split it by concern (see `duty-calculator/`). `Results.tsx`, `RateHistory.tsx` and `HtsCodePageContent.tsx` are already candidates.
+1. **Search first.** Check `components/ui/` and the feature folders in §7. Extend what exists before you add something new.
+2. **Where it goes:** used by one feature, it lives in `components/<feature>/`. Used by two or more, it lives in `components/ui/`. Promote it when a second user appears, not before. Never import from another feature's folder; move the shared piece to `ui/` first.
+3. **One component per file** for anything exported and reused. Small private helpers can live below the main component in the same file.
+4. **File names:** components in `PascalCase.tsx`, matching the export. Hooks are `useThing.ts`. Pure helpers are `camelCase.ts`.
+5. **Named exports** for components. Default exports only where Next.js requires them (`page.tsx`, `layout.tsx`).
+6. **Server first.** Leave out `"use client"` unless the component uses state, effects or browser APIs. Keep SEO content (rates, explanations, FAQs) server-rendered.
+7. **Props:** pass data, not class names. A `className` prop is only for layout (margin, grid placement) from the parent.
+8. **Size:** split a file past about 400 lines, or one with more than one screen-level concern, by concern. `Results.tsx`, `RateHistory.tsx` and `HtsCodePageContent.tsx` are candidates.
 
 ### Styling rules
 
-- Tokens, primitives and `ui/` components first. Tailwind utilities for layout and one-off spacing.
-- No new CSS files per component. If a pattern needs real CSS (pseudo-elements, keyframes, many states), add a primitive to `components/ui/theme.module.css` and document it in §6.
-- No inline `style={{}}` except for values computed at runtime (chart geometry, `heat()`, series colors).
-- No hex or `rgb()` in TSX. No Tailwind palette colors. No DaisyUI classes on system pages.
-- Arbitrary values must come from the scales: type (§4), radius (§5), and Tailwind's spacing steps.
-- Don't duplicate class strings across files. If the same 4+ utilities appear in two places, make a primitive or a component.
+- daisyUI components and semantic colors first, then Tailwind's scales, then the exceptions in §9.
+- No new CSS files. No `!important` (`!h-11`). No inline `style` except for runtime values.
+- No hex, `rgb()`, Tailwind palette colors or `--dc-*` legacy tokens in new code.
+- Don't repeat long class strings. If the same 4+ classes appear in several places, make a component.
 
 ### Code cleanliness
 
-- **Comments say why, not what.** One short line above a non-obvious block (`// 1px gaps over the border color draw the dividers at every breakpoint`). Match the plain, sentence-case style of the existing files.
-- **Delete, don't comment out.** Git keeps history. Commented-out JSX blocks (as still exist in `Hero.tsx` and `TariffGuide.tsx`) should be removed during the redesign, unless they're a deliberate, dated "coming back" with a reason.
-- **No unused imports or variables.** `npx eslint <files>` should be clean for every file you touch.
-- **Types:** no `any`. Derive types from data (`HtsDutySummary["rows"][number]`) instead of re-declaring them.
-- **Keep logic out of JSX.** Compute values above the `return`. Put formatting in `format.ts`, data shaping in `libs/`, and keep components presentational where you can.
-- **Accessibility:** use real elements (`<button>`, `<a>`, `<table>`, `<th scope>`), give icon-only controls an `aria-label`, mark decorative icons `aria-hidden`, use `role="radiogroup"` for segmented controls, and add `aria-live` where results update.
-- **Naming:** say what something is in domain terms (`DutyByCountry`, `BaseRates`), not in visual terms (`BlueBox`, `TopCard`).
+- **Comments say why, not what.** One short line above a non-obvious block. Match the plain, sentence-case style of the existing files.
+- **Delete, don't comment out.** Git keeps history.
+- **No unused imports or variables.** Lint clean on every file you touch.
+- **No `any`.** Derive types from data (`HtsDutySummary["rows"][number]`).
+- **Keep logic out of JSX.** Compute values above the `return`. Put formatting in `format.ts`, data shaping in `libs/`.
+- **Accessibility:** use real elements (`<button>`, `<a>`, `<table>`, `<th scope>`), give icon-only controls an `aria-label`, mark decorative icons `aria-hidden`, and add `aria-live` where results update.
+- **Naming:** say what something is in domain terms (`DutyByCountry`), not in visual terms (`BlueBox`).
 - Run `npx tsc --noEmit` and `npx eslint` on touched files before committing.
 
 ---
 
 ## 11. Rolling this out to the rest of the app
 
-About 220 files still use DaisyUI semantic classes. Migrate them page by page, not with a global swap.
-
-**Order:** start with public, SEO-facing pages, which carry the most traffic and are the most visible. That means `/section/[n]` and `/chapter/[n]` (`HtsPageShell`, `ChildrenList`, `CtaGrid`, `hts-page/PlaybookBanner`), then `/explore`, then the marketing pages, then the signed-in app (classify, classifications, tariffs, settings).
-
-**For each page:**
-
-1. Add `styles.root` to the page wrapper and replace the hand-written widths with `styles.container`.
-2. Replace DaisyUI classes using the map below.
-3. Replace headers with `SectionHeader`, panels with `card`/`callout`, and buttons with the button primitives.
-4. Remove glows, gradients, blur and `shadow-pop` on static elements.
-5. Check type sizes and radii against the scales.
-6. Check light and dark at 1440px and at 375px.
-7. Shared components that are also rendered on legacy pages (for example, `cross-rulings/*`, `Explore`) can't switch until every host page is on the system. Until then, branch on a prop, as `RelatedCrossRulingsSection`'s `bare` mode does, or migrate the hosts together.
-
-**DaisyUI to tokens:**
-
-| DaisyUI | System |
-|---|---|
-| `bg-base-100` | `bg-[var(--dc-surface)]` (or `--dc-bg` for the page) |
-| `bg-base-200` / `base-300` | `bg-[var(--dc-surface-2)]` / `bg-[var(--dc-surface-3)]` |
-| `text-base-content` | `text-[var(--dc-text)]` |
-| `text-base-content/60–80` | `text-[var(--dc-text-2)]` |
-| `text-base-content/30–50` | `text-[var(--dc-text-3)]` |
-| `border-base-content/10`, `border-base-300` | `border-[var(--dc-border)]` |
-| `text-primary`, `bg-primary` | `--dc-accent` tokens |
-| `btn btn-primary` | `styles.buttonPrimary` |
-| `btn`, `btn-outline`, `btn-ghost` | `styles.button` (ghost: a `rounded-[6px]` hover row) |
-| `card`, `card-body` | `styles.card` + `p-5` |
-| `badge` | Code pill or status badge (§8) |
-| `alert-warning` / `-error` / `-success` | Notice pattern (§8) |
-| `input input-bordered`, `select` | `styles.input` |
-| `tabs`, `join` | `styles.segmented` |
-| `loading loading-spinner` | `styles.skeleton` placeholders |
-| `text-error` / `text-success` / `text-warning` | `--dc-negative` / `--dc-positive` / `--dc-warning` |
-
-**When most pages are on the system:** move the token blocks from `theme.module.css` into `app/globals.css` under `:root` / `[data-theme="dark"]`, so `.root` isn't needed. Consider exposing them as Tailwind theme colors (`bg-surface`, `text-ink-2`) to shorten class names. Then remove DaisyUI.
+1. **Promote the palette.** Move the light and dark values from `theme.module.css` into the daisyUI themes in `tailwind.config.js` (replacing the default purple/pink `light` and `dark`). Every page picks up navy at once. Then check pages that relied on purple or pink, such as gradients and `secondary` badges.
+2. **Migrate page by page.** Start with public SEO pages (`/section/[n]`, `/chapter/[n]`, `/explore`), then the marketing pages, then the signed-in app. For each page, replace exact sizes with Tailwind steps and custom colors with semantic ones, remove glows and gradients, and use the patterns in §6. Check light and dark at 1440px and 375px.
+3. **Delete legacy code.** Remove `.root`, the legacy `--dc-*` tokens and the primitive classes from `theme.module.css` when nothing uses them.
 
 ---
 
 ## 12. Review checklist
 
-Before you merge UI work:
-
-- [ ] Only tokens: no hex, `rgb()`, Tailwind palette colors or DaisyUI classes
-- [ ] Type sizes on the scale, no half pixels; codes in mono; numbers have `num`
-- [ ] Radii on the scale; `shadow-pop` only on floating elements
-- [ ] No glows, gradients, blur, or accent-filled banners
-- [ ] Sections use `SectionHeader`; bands use `container`
+- [ ] daisyUI components and semantic colors; Tailwind scale sizes; exceptions only from §9
+- [ ] No purple or pink; no hex, `rgb()` or palette colors; no `--dc-*` in new code
+- [ ] Color used only for meaning (primary = action or key figure; success, warning, error = status)
+- [ ] Text no lighter than `text-base-content/60`; `tabular-nums` on numbers; codes in mono
+- [ ] `shadow-lg` only on floating elements; no glows, gradients or blur
+- [ ] Sections use `SectionHeader`; bands use the page-width classes
 - [ ] At most one primary button per region
 - [ ] Looks right in light and dark, at 1440px and 375px
 - [ ] Focus is visible; icon buttons have labels; tables use `<th>`
-- [ ] New shared pieces live in `components/ui/` and are listed in this doc
 - [ ] `npx tsc --noEmit` and `npx eslint` are clean for touched files

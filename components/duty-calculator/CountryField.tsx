@@ -4,7 +4,6 @@ import { KeyboardEvent, useMemo, useRef, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { Countries, Country } from "../../constants/countries";
-import styles from "../ui/theme.module.css";
 
 interface Props {
   id: string;
@@ -70,16 +69,15 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
     >
       <div className="relative">
         <div
-          className={`${styles.input} flex flex-wrap items-center gap-1.5 cursor-text`}
-          style={{ height: "auto", minHeight: 46, padding: "5px 8px" }}
+          className="input input-bordered flex h-auto min-h-12 w-full flex-wrap items-center gap-1.5 px-2 py-1.5 cursor-text"
           onClick={() => inputRef.current?.focus()}
         >
           {selected.map((country, i) => (
             <span
               key={country.code}
-              className={`inline-flex items-center gap-1.5 rounded-[6px] border py-1 pl-2 pr-1 text-[14px] font-medium ${i === 0 && selected.length > 1
-                ? "border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] text-[var(--dc-text)]"
-                : "border-[var(--dc-border)] bg-[var(--dc-surface-2)] text-[var(--dc-text)]"
+              className={`inline-flex items-center gap-1.5 rounded border py-1 pl-2 pr-1 text-sm font-medium ${i === 0 && selected.length > 1
+                ? "border-primary/30 bg-primary/10 text-base-content"
+                : "border-base-300 bg-base-200 text-base-content"
                 }`}
             >
               <span className="text-base leading-none" aria-hidden>
@@ -88,7 +86,7 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
               {country.name}
               <button
                 type="button"
-                className="rounded p-0.5 text-[var(--dc-text-3)] hover:bg-[var(--dc-surface-3)] hover:text-[var(--dc-text)]"
+                className="rounded p-0.5 text-base-content/60 hover:bg-base-300 hover:text-base-content"
                 aria-label={`Remove ${country.name}`}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -102,7 +100,7 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
           <Combobox.Input
             id={id}
             ref={inputRef}
-            className="flex-1 min-w-[120px] h-8 bg-transparent px-1.5 text-[15px] text-[var(--dc-text)] outline-none placeholder:text-[var(--dc-text-3)]"
+            className="flex-1 min-w-28 h-8 bg-transparent px-1.5 text-base text-base-content outline-none placeholder:text-base-content/60"
             placeholder={
               selected.length === 0
                 ? "Search countries"
@@ -117,14 +115,14 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
           />
         </div>
 
-        <Combobox.Options className="absolute z-30 mt-2 w-full min-w-[260px] max-h-72 overflow-auto rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none">
+        <Combobox.Options className="absolute z-30 mt-2 w-full min-w-64 max-h-72 overflow-auto rounded-lg border border-base-300 bg-base-100 p-1.5 shadow-lg focus:outline-none">
           {full && (
-            <div className="px-3 py-2 text-[12px] text-[var(--dc-text-3)]">
+            <div className="px-3 py-2 text-xs text-base-content/60">
               You can compare up to {max} countries. Remove one to add another.
             </div>
           )}
           {results.length === 0 ? (
-            <div className="px-3 py-3 text-sm text-[var(--dc-text-3)]">No countries match</div>
+            <div className="px-3 py-3 text-sm text-base-content/60">No countries match</div>
           ) : (
             results.map((country) => {
               const isSelected = selected.some((c) => c.code === country.code);
@@ -134,20 +132,20 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
                   value={country}
                   disabled={full && !isSelected}
                   className={({ active, disabled }) =>
-                    `flex items-center gap-3 rounded-[6px] px-3 py-2 text-[15px] ${disabled ? "opacity-45 cursor-not-allowed" : "cursor-pointer"
-                    } ${active && !disabled ? "bg-[var(--dc-accent-soft)]" : ""}`
+                    `flex items-center gap-3 rounded-md px-3 py-2 text-base ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+                    } ${active && !disabled ? "bg-primary/10" : ""}`
                   }
                 >
                   <span className="text-lg leading-none" aria-hidden>
                     {country.flag}
                   </span>
-                  <span className={`flex-1 text-[var(--dc-text)] ${isSelected ? "font-semibold" : ""}`}>
+                  <span className={`flex-1 text-base-content ${isSelected ? "font-semibold" : ""}`}>
                     {country.name}
                   </span>
                   {isSelected ? (
-                    <CheckIcon className="w-4 h-4 text-[var(--dc-accent)]" aria-label="Selected" />
+                    <CheckIcon className="w-4 h-4 text-primary" aria-label="Selected" />
                   ) : (
-                    <span className="text-xs font-medium text-[var(--dc-text-3)]">{country.code}</span>
+                    <span className="text-xs font-medium text-base-content/60">{country.code}</span>
                   )}
                 </Combobox.Option>
               );

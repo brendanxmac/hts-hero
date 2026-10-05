@@ -11,7 +11,6 @@ import {
 } from "@/libs/supabase/tariff-changelog";
 import { ChangelogTypeBadge } from "./Changelog";
 import { Field } from "./controls";
-import styles from "../ui/theme.module.css";
 
 const today = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, local time
 
@@ -88,18 +87,18 @@ export const ChangelogList = ({
     <div className="mt-10">
       {isAdmin && (
         <div className="mb-6 flex items-center justify-between gap-3">
-          <p className="text-[13px] text-[var(--dc-text-3)]">
+          <p className="text-sm text-base-content/60">
             Admin: drafts are only visible to you.
           </p>
           {editing !== "new" && (
-            <button type="button" className={styles.buttonPrimary} onClick={() => setEditing("new")}>
+            <button type="button" className="btn btn-sm btn-primary" onClick={() => setEditing("new")}>
               Add entry
             </button>
           )}
         </div>
       )}
       {error && (
-        <p role="alert" className="mb-4 rounded-[6px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3 text-[14px] text-[var(--dc-warning)]">
+        <p role="alert" className="mb-4 rounded-md border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning">
           {error}
         </p>
       )}
@@ -108,15 +107,15 @@ export const ChangelogList = ({
       )}
 
       {entries.length === 0 ? (
-        <p className={`${styles.card} px-5 py-8 text-center text-[14px] text-[var(--dc-text-3)]`}>
+        <p className="rounded-lg border border-base-300 bg-base-100 px-5 py-8 text-center text-sm text-base-content/60 shadow-sm">
           No updates yet.
         </p>
       ) : (
-        <ol className="relative border-l border-[var(--dc-border)] ml-1.5">
+        <ol className="relative border-l border-base-300 ml-1.5">
           {entries.map((entry) => (
             <li key={entry.id} className="relative pl-6 pb-8 last:pb-0">
               <span
-                className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--dc-bg)] bg-[var(--dc-accent)]"
+                className="absolute -left-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-base-200 bg-primary"
                 aria-hidden
               />
               {editing === entry.id ? (
@@ -127,32 +126,32 @@ export const ChangelogList = ({
                 />
               ) : (
                 <article>
-                  <div className="flex flex-wrap items-center gap-2 text-[13px] text-[var(--dc-text-3)]">
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-base-content/60">
                     <time dateTime={entry.entry_date}>{formatChangelogDate(entry.entry_date)}</time>
                     <ChangelogTypeBadge type={entry.type} />
                     {entry.status === "draft" && (
-                      <span className="inline-flex items-center rounded-full border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-2 py-0.5 text-[11px] font-medium text-[var(--dc-warning)]">
+                      <span className="badge badge-sm border-warning/40 bg-warning/10 font-medium text-warning">
                         Draft
                       </span>
                     )}
                   </div>
-                  <h2 className="mt-2 text-[18px] font-semibold leading-snug text-[var(--dc-text)]">{entry.title}</h2>
-                  <p className="mt-1.5 text-[15px] leading-relaxed text-[var(--dc-text-2)]">{entry.summary}</p>
+                  <h2 className="mt-2 text-lg font-semibold leading-snug text-base-content">{entry.title}</h2>
+                  <p className="mt-1.5 text-base leading-relaxed text-base-content/70">{entry.summary}</p>
                   {isAdmin && (
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <button type="button" className={styles.button} onClick={() => setEditing(entry.id)}>
+                      <button type="button" className="btn btn-sm" onClick={() => setEditing(entry.id)}>
                         Edit
                       </button>
                       {entry.status === "draft" ? (
-                        <button type="button" className={styles.buttonPrimary} onClick={() => setStatus(entry, "published")}>
+                        <button type="button" className="btn btn-sm btn-primary" onClick={() => setStatus(entry, "published")}>
                           Publish
                         </button>
                       ) : (
-                        <button type="button" className={styles.button} onClick={() => setStatus(entry, "draft")}>
+                        <button type="button" className="btn btn-sm" onClick={() => setStatus(entry, "draft")}>
                           Unpublish
                         </button>
                       )}
-                      <button type="button" className={styles.button} onClick={() => remove(entry)}>
+                      <button type="button" className="btn btn-sm" onClick={() => remove(entry)}>
                         Delete
                       </button>
                     </div>
@@ -198,7 +197,7 @@ const EntryForm = ({
   return (
     <form
       onSubmit={submit}
-      className={`${styles.card} mb-8 flex flex-col gap-4 p-5`}
+      className="mb-8 flex flex-col gap-4 rounded-lg border border-base-300 bg-base-100 p-5 shadow-sm"
     >
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Date" htmlFor="cl-date">
@@ -206,7 +205,7 @@ const EntryForm = ({
             id="cl-date"
             type="date"
             required
-            className={`${styles.input} px-3.5`}
+            className="input input-bordered w-full"
             value={draft.entry_date}
             onChange={(e) => set("entry_date", e.target.value)}
           />
@@ -214,7 +213,7 @@ const EntryForm = ({
         <Field label="Type" htmlFor="cl-type">
           <select
             id="cl-type"
-            className={`${styles.input} px-3.5`}
+            className="select select-bordered w-full"
             value={draft.type}
             onChange={(e) => set("type", e.target.value as ChangelogEntryInput["type"])}
           >
@@ -228,7 +227,7 @@ const EntryForm = ({
         <Field label="Status" htmlFor="cl-status">
           <select
             id="cl-status"
-            className={`${styles.input} px-3.5`}
+            className="select select-bordered w-full"
             value={draft.status}
             onChange={(e) => set("status", e.target.value as ChangelogEntryInput["status"])}
           >
@@ -241,7 +240,7 @@ const EntryForm = ({
         <Field label="HTS revision" htmlFor="cl-revision" hint="e.g. 2026HTSRev7">
           <input
             id="cl-revision"
-            className={`${styles.input} px-3.5`}
+            className="input input-bordered w-full"
             value={draft.revision ?? ""}
             onChange={(e) => set("revision", e.target.value || null)}
           />
@@ -252,7 +251,7 @@ const EntryForm = ({
           id="cl-title"
           required
           maxLength={120}
-          className={`${styles.input} px-3.5`}
+          className="input input-bordered w-full"
           value={draft.title}
           onChange={(e) => set("title", e.target.value)}
         />
@@ -262,17 +261,16 @@ const EntryForm = ({
           id="cl-summary"
           required
           rows={3}
-          style={{ height: "auto" }}
-          className={`${styles.input} px-3.5 py-2.5 leading-relaxed`}
+          className="textarea textarea-bordered w-full text-base leading-relaxed"
           value={draft.summary}
           onChange={(e) => set("summary", e.target.value)}
         />
       </Field>
       <div className="flex justify-end gap-2">
-        <button type="button" className={styles.button} onClick={onCancel} disabled={saving}>
+        <button type="button" className="btn btn-sm" onClick={onCancel} disabled={saving}>
           Cancel
         </button>
-        <button type="submit" className={styles.buttonPrimary} disabled={saving}>
+        <button type="submit" className="btn btn-sm btn-primary" disabled={saving}>
           {saving ? "Saving…" : "Save"}
         </button>
       </div>

@@ -11,7 +11,7 @@ import { CountryRateCharts } from "./CountryRateCharts";
 import { formatMoney, formatPct } from "./format";
 import { FaqList } from "../ui/FaqList";
 import { SectionHeader } from "../ui/SectionHeader";
-import styles from "../ui/theme.module.css";
+import { mono } from "../ui/font";
 
 // Below the calculator on /duty-calculator: today's rates for common imports, how a duty is
 // worked out, where the data comes from and the FAQ. Server-rendered so
@@ -71,12 +71,12 @@ const matrixFacts = (matrix: TariffMatrix) => {
 };
 
 const Fact = ({ label, value, note }: { label: string; value: string; note: string }) => (
-  <div className="rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] px-5 py-4">
-    <div className="text-[13px] font-medium text-[var(--dc-text-3)]">{label}</div>
-    <div className={`${styles.num} mt-1.5 text-[24px] font-semibold tracking-tight text-[var(--dc-text)]`}>
+  <div className="rounded-lg border border-base-300 bg-base-200 px-5 py-4">
+    <div className="text-sm font-medium text-base-content/60">{label}</div>
+    <div className="mt-1.5 text-2xl font-semibold leading-none tracking-tight tabular-nums text-base-content">
       {value}
     </div>
-    <div className="mt-0.5 text-[13px] text-[var(--dc-text-2)]">{note}</div>
+    <div className="mt-1.5 text-sm text-base-content/70">{note}</div>
   </div>
 );
 
@@ -173,7 +173,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
   return (
     <section
       id="how-duty-is-calculated"
-      className={`${styles.callout} scroll-mt-6 p-5 sm:p-8 lg:p-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12`}
+      className="rounded-lg border border-primary/30 bg-primary/5 scroll-mt-6 p-5 sm:p-8 lg:p-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12"
     >
       <div className="flex flex-col gap-5">
         <SectionHeader kicker="The method" title="How US import duty is calculated" />
@@ -182,16 +182,16 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
             <li key={step.title} className="relative flex gap-4 pb-5 last:pb-0">
               {/* The line joining the steps */}
               {i < STEPS.length - 1 && (
-                <span className="absolute left-[15px] top-9 bottom-0 w-px bg-[var(--dc-accent-border)]" aria-hidden />
+                <span className="absolute left-4 -ml-px top-9 bottom-0 w-px bg-primary/30" aria-hidden />
               )}
               <span
-                className={`${styles.num} relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--dc-accent)] text-[14px] font-semibold text-[var(--dc-accent-contrast)]`}
+                className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold tabular-nums text-primary-content"
                 aria-hidden
               >
                 {i + 1}
               </span>
-              <p className={`${styles.body} pt-1`}>
-                <strong className="text-[var(--dc-text)]">{step.title}</strong> {step.text}
+              <p className="pt-1 text-base leading-relaxed text-base-content/70">
+                <strong className="font-semibold text-base-content">{step.title}</strong> {step.text}
               </p>
             </li>
           ))}
@@ -199,57 +199,57 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
       </div>
 
       {/* The worked example as a receipt */}
-      <div className={`${styles.card} self-start p-5 sm:p-6`}>
-        <span className={styles.eyebrow}>Worked example</span>
-        <h3 className={`${styles.h3} mt-1.5`}>
+      <div className="self-start rounded-lg border border-base-300 bg-base-100 p-5 shadow-sm sm:p-6">
+        <span className="text-xs font-semibold uppercase tracking-wider text-base-content/60">Worked example</span>
+        <h3 className="mt-1.5 text-base font-semibold text-base-content">
           Example: {formatMoney(example.customsValue)} of {example.productName} (HTS {example.htsno})
           from {example.countryName}, entered {formatSummaryDate(asOf)} by ocean
         </h3>
-        <div className={`${styles.num} mt-4 flex items-baseline justify-between gap-3`}>
-          <span className="text-[13px] text-[var(--dc-text-3)]">Duty and fees</span>
-          <span className="text-[28px] font-semibold tracking-tight leading-none text-[var(--dc-text)]">
+        <div className="mt-4 flex items-baseline justify-between gap-3 tabular-nums">
+          <span className="text-sm text-base-content/60">Duty and fees</span>
+          <span className="text-3xl font-semibold tracking-tight leading-none text-base-content">
             {formatMoney(total)}
           </span>
         </div>
         {/* Where the money goes */}
-        <div className="mt-3 flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-[var(--dc-surface-3)]" aria-hidden>
+        <div className="mt-3 flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-base-300" aria-hidden>
           {[...parts, { label: "Fees", amount: example.totalFees, color: FEES_COLOR, code: undefined }]
             .filter((p) => p.amount > 0)
             .map((p) => (
               <span key={p.label} style={{ width: `${(p.amount / total) * 100}%`, background: p.color }} />
             ))}
         </div>
-        <table className={`mt-4 w-full text-[14px] ${styles.num}`}>
+        <table className="mt-4 w-full text-sm tabular-nums text-base-content">
           <tbody>
             {parts.map((p) => (
-              <tr key={p.label} className="border-t border-[var(--dc-border)]">
-                <td className="py-2 pr-3 text-[var(--dc-text-2)]">
+              <tr key={p.label} className="border-t border-base-300">
+                <td className="py-2 pr-3 text-base-content/70">
                   <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: p.color }} aria-hidden />
                   {p.label}
                   {p.code && (
                     <>
                       {" "}
-                      <span className="font-mono text-[12px] text-[var(--dc-text-3)]">{p.code}</span>
+                      <span className={`${mono.className} text-xs text-base-content/60`}>{p.code}</span>
                     </>
                   )}
                 </td>
                 <td className="py-2 text-right">{formatMoney(p.amount)}</td>
               </tr>
             ))}
-            <tr className="border-t border-[var(--dc-border-strong)] font-semibold">
+            <tr className="border-t border-base-content/20 font-semibold">
               <td className="py-2 pr-3">Total duty</td>
               <td className="py-2 text-right">{formatMoney(example.totalDuty)}</td>
             </tr>
             {example.fees.map((f) => (
-              <tr key={f.name} className="border-t border-[var(--dc-border)]">
-                <td className="py-2 pr-3 text-[var(--dc-text-2)]">
+              <tr key={f.name} className="border-t border-base-300">
+                <td className="py-2 pr-3 text-base-content/70">
                   <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: FEES_COLOR }} aria-hidden />
                   {f.name} ({formatPct(f.ratePct)})
                 </td>
                 <td className="py-2 text-right">{formatMoney(f.amount)}</td>
               </tr>
             ))}
-            <tr className="border-t border-[var(--dc-border-strong)] font-semibold">
+            <tr className="border-t border-base-content/20 font-semibold">
               <td className="py-2 pr-3">Total duty and fees</td>
               <td className="py-2 text-right">{formatMoney(total)}</td>
             </tr>
@@ -328,15 +328,15 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
       by the US International Trade Commission. Each HTS revision&apos;s changes are entered with
       the dates they take effect, so you can calculate past and future entry dates. Tariff data is
       verified from Revision 5 (April 8, 2026) through {revisionTitle}, and every change is listed
-      in the <Link href={CHANGELOG_PATH} className={styles.link}>calculator changelog</Link>.
+      in the <Link href={CHANGELOG_PATH} className="link link-primary">calculator changelog</Link>.
     </SectionHeader>
 
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
       {/* Included */}
-      <div className="rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] p-5 sm:p-6">
+      <div className="rounded-lg border border-base-300 bg-base-200 p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="text-[16px] font-semibold text-[var(--dc-text)]">What&apos;s included</h3>
-          <span className="text-[12px] text-[var(--dc-text-3)]">
+          <h3 className="text-base font-semibold text-base-content">What&apos;s included</h3>
+          <span className="text-xs text-base-content/60">
             Updated {formatSummaryDate(asOf)}
           </span>
         </div>
@@ -345,19 +345,19 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
           {INCLUDED.map((item) => (
             <div
               key={item.title}
-              className={`${styles.card} p-4 ${item.items ? "sm:col-span-3" : ""}`}
+              className={`rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm ${item.items ? "sm:col-span-3" : ""}`}
             >
-              <h4 className="flex items-center gap-2 text-[14px] font-semibold text-[var(--dc-text)]">
-                <span className="h-2 w-2 rounded-full bg-[var(--dc-positive)]" aria-hidden />
+              <h4 className="flex items-center gap-2 text-sm font-semibold text-base-content">
+                <span className="h-2 w-2 rounded-full bg-success" aria-hidden />
                 {item.title}
               </h4>
-              <p className="mt-1.5 text-[14px] leading-relaxed text-[var(--dc-text-2)]">{item.text}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-base-content/70">{item.text}</p>
               {item.items && (
                 <ul className="mt-3 flex flex-wrap gap-1.5">
                   {item.items.map((program) => (
                     <li
                       key={program}
-                      className="rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-2 py-1 text-[12px] text-[var(--dc-text)]"
+                      className="rounded-md border border-base-300 bg-base-200 px-2 py-1 text-xs text-base-content"
                     >
                       {program}
                     </li>
@@ -367,30 +367,30 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
             </div>
           ))}
         </div>
-        <Link href={CHANGELOG_PATH} className={`${styles.button} mt-5 inline-flex`}>
+        <Link href={CHANGELOG_PATH} className="btn btn-sm mt-5">
           View the changelog
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </Link>
       </div>
 
       {/* Not included */}
-      <div className="rounded-[8px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] p-5 sm:p-6">
-        <h3 className="text-[16px] font-semibold text-[var(--dc-text)]">Not included</h3>
-        <p className="mt-0.5 text-[13px] text-[var(--dc-text-2)]">
+      <div className="rounded-lg border border-warning/40 bg-warning/10 p-5 sm:p-6">
+        <h3 className="text-base font-semibold text-base-content">Not included</h3>
+        <p className="mt-0.5 text-sm text-base-content/70">
           Charges an entry can owe that this estimate leaves out.
         </p>
-        <ul className="mt-4 flex flex-col divide-y divide-[var(--dc-warning-border)]">
+        <ul className="mt-4 flex flex-col divide-y divide-warning/40">
           {EXCLUDED.map((item) => (
             <li key={item.title} className="flex gap-3 py-3 first:pt-0 last:pb-0">
               <span
-                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--dc-surface)] text-[var(--dc-warning)]"
+                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-base-100 text-warning"
                 aria-hidden
               >
                 <XMarkIcon className="h-3.5 w-3.5" />
               </span>
               <span>
-                <span className="block text-[14px] font-semibold text-[var(--dc-text)]">{item.title}</span>
-                <span className="block text-[13px] leading-snug text-[var(--dc-text-2)]">{item.text}</span>
+                <span className="block text-sm font-semibold text-base-content">{item.title}</span>
+                <span className="block text-sm leading-snug text-base-content/70">{item.text}</span>
               </span>
             </li>
           ))}
@@ -406,18 +406,18 @@ const FindHtsCode = () => (
   <section
     id="find-hts-code"
     aria-labelledby="find-hts-code-title"
-    className={`${styles.callout} scroll-mt-6 px-6 py-8 sm:px-10 sm:py-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center`}
+    className="rounded-lg border border-primary/30 bg-primary/5 scroll-mt-6 px-6 py-8 sm:px-10 sm:py-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
   >
     <SectionHeader kicker="Classification" title="Find the right HTS code for your products" titleId="find-hts-code-title">
       Every rate on this page depends on the 10-digit classification. The wrong code can mean the
       wrong tariffs, missed exemptions, and penalties.
     </SectionHeader>
     <div className="flex flex-wrap gap-3">
-      <Link href="/explore" className={`${styles.button} ${styles.buttonLg}`}>
+      <Link href="/explore" className="btn">
         <MagnifyingGlassIcon className="h-4 w-4" aria-hidden />
         Search the HTS
       </Link>
-      <Link href="/classify" className={`${styles.buttonPrimary} ${styles.buttonLg}`}>
+      <Link href="/classify" className="btn btn-primary">
         Classify a product
         <ArrowRightIcon className="h-4 w-4" aria-hidden />
       </Link>
@@ -430,7 +430,7 @@ const FindHtsCode = () => (
 const Faq = ({ faqs }: { faqs: { question: string; answer: string }[] }) => (
   <section id="faq" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
     <SectionHeader kicker="Questions" title="Frequently asked questions" className="lg:sticky lg:top-6 lg:self-start">
-      Something else? <a href="mailto:support@htshero.com" className={styles.link}>Ask us</a>.
+      Something else? <a href="mailto:support@htshero.com" className="link link-primary">Ask us</a>.
     </SectionHeader>
     <FaqList faqs={faqs} />
   </section>
@@ -443,17 +443,17 @@ export const TariffGuide = ({
   content: DutyCalculatorContent;
   faqs: { question: string; answer: string }[];
 }) => (
-  <div className="w-full border-t border-[var(--dc-border)] bg-[var(--dc-surface)]">
-    <div className={`${styles.container} pt-14 pb-20 sm:pt-20 flex flex-col gap-6 sm:gap-10`}>
+  <div className="w-full border-t border-base-300 bg-base-100">
+    <div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8 pt-14 pb-20 sm:pt-20 flex flex-col gap-6 sm:gap-10">
       {/* The guide's own intro, with links to each part */}
       <header className="flex flex-col gap-4">
-        <span className={styles.kicker}>Tariff guide · Updated {formatSummaryDate(content.asOf)}</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary">Tariff guide · Updated {formatSummaryDate(content.asOf)}</span>
         <div className="flex flex-col gap-2">
 
-          <p className="text-[32px] sm:text-[40px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--dc-text)]">
+          <p className="text-3xl sm:text-4xl font-semibold leading-tight tracking-tight text-base-content">
             The US Import Tariff Guide
           </p>
-          <p className={styles.lead}>
+          <p className="max-w-3xl text-lg leading-relaxed text-base-content/70">
             See how a duty is calculated, where every number comes from, and find current rates on popular products.
           </p>
         </div>

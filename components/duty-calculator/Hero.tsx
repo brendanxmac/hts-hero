@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out hero sections
 import Link from "next/link";
 import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out hero sections
@@ -11,7 +12,6 @@ import { AllRules } from "../../tariffs/engine-v2/data";
 import { HtsRevision } from "../../tariffs/engine-v2/revisions";
 import { ChangelogEntry } from "@/libs/supabase/tariff-changelog";
 import { ChangelogCard } from "./Changelog";
-import styles from "../ui/theme.module.css";
 
 // The top of /duty-calculator. Server-rendered so crawlers see the copy; the tools follow.
 
@@ -66,19 +66,19 @@ export const Hero = ({
 
   return (
     <div className="w-full">
-      <header className={`${styles.container} grid gap-8 pt-10 pb-10 md:pt-14 md:pb-12 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12 xl:gap-16`}>
+      <header className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8 grid gap-8 pt-10 pb-10 md:pt-14 md:pb-12 lg:grid-cols-[minmax(0,1fr)_22.5rem] lg:gap-12 xl:gap-16">
         <div className="min-w-0">
           <h1 className="mt-5">
-            <span className={`${styles.kicker} block`}>
+            <span className="block text-xs font-semibold uppercase tracking-wider text-primary">
               US Import Duty &amp; Tariff Calculator
             </span>
-            <span className="mt-3 block max-w-[20ch] text-[36px] leading-[1.05] sm:text-[48px] lg:text-[56px] font-semibold tracking-[-0.03em] text-[var(--dc-text)]">
+            <span className="mt-3 block max-w-3xl text-4xl leading-tight sm:text-5xl sm:leading-none lg:text-6xl font-semibold tracking-tight text-base-content">
               Know what you owe on every import.{" "}
-              <span className="text-[var(--dc-accent)]">And why.</span>
+              <span className="text-primary">And why.</span>
             </span>
           </h1>
 
-          <p className="mt-5 max-w-[62ch] text-[16px] sm:text-[18px] leading-relaxed text-[var(--dc-text-2)]">
+          <p className="mt-5 max-w-3xl text-base sm:text-lg leading-relaxed text-base-content/70">
             We find every tariff, exemption, and fee in
             effect for your imports, itemized line by line with its legal
             source, and kept current with every HTS revision.

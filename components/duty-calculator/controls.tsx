@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import styles from "../ui/theme.module.css";
 
 export const Field = ({
   label,
@@ -20,13 +19,13 @@ export const Field = ({
 }) => (
   <div className={`flex flex-col gap-2 min-w-0 ${className}`}>
     <div className="flex items-baseline justify-between gap-3">
-      <label htmlFor={htmlFor} className={styles.label}>
+      <label htmlFor={htmlFor} className="text-sm font-semibold text-base-content/70">
         {label}
       </label>
       {action}
     </div>
     {children}
-    {hint && <p className="text-[12px] leading-snug text-[var(--dc-text-3)]">{hint}</p>}
+    {hint && <p className="text-xs leading-snug text-base-content/60">{hint}</p>}
   </div>
 );
 
@@ -55,13 +54,13 @@ export const NumberField = ({
   }, [value, focused]);
 
   return (
-    <div className={`${styles.input} ${styles.num} flex items-center gap-2 px-3.5`}>
-      {prefix && <span className="text-[var(--dc-text-3)] font-medium">{prefix}</span>}
+    <div className="input input-bordered flex w-full items-center gap-2 tabular-nums">
+      {prefix && <span className="font-medium text-base-content/60">{prefix}</span>}
       <input
         id={id}
         inputMode="decimal"
         autoComplete="off"
-        className="flex-1 min-w-0 bg-transparent outline-none text-[16px] font-medium"
+        className="flex-1 min-w-0 bg-transparent outline-none text-base font-medium"
         value={text}
         onFocus={() => setFocused(true)}
         onBlur={() => {
@@ -75,7 +74,7 @@ export const NumberField = ({
           onChange(Number.isFinite(parsed) ? parsed : 0);
         }}
       />
-      {suffix && <span className="text-[13px] font-medium text-[var(--dc-text-3)]">{suffix}</span>}
+      {suffix && <span className="text-sm font-medium text-base-content/60">{suffix}</span>}
     </div>
   );
 };
@@ -97,8 +96,7 @@ export function Segmented<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className={styles.segmented}
-      style={compact ? { height: 38 } : undefined}
+      className="join w-full"
     >
       {options.map((option) => {
         const active = option.id === value;
@@ -108,7 +106,7 @@ export function Segmented<T extends string>({
             type="button"
             role="radio"
             aria-checked={active}
-            className={`${styles.segment} ${active ? styles.segmentActive : ""} ${compact ? "px-3 text-[13px]" : "px-2"}`}
+            className={`btn join-item flex-1 ${compact ? "btn-sm" : ""} ${active ? "btn-active text-base-content" : "font-medium text-base-content/70"}`}
             onClick={() => onChange(option.id)}
           >
             {option.label}
