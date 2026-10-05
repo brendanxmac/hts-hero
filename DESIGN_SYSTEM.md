@@ -235,7 +235,8 @@ All of these are class helpers from `ui/styles`. They're strings and functions r
 | Select | `ui.select` / `ui.selectSm` |
 | Checkbox | `ui.checkbox` (native, primary accent) |
 | Toggle between options | `<SegmentedControl label options value onChange size? fullWidth? />` |
-| Card or panel | `ui.card`, with `ui.cardHeader` (title row) and `ui.cardFooter` (sources, CTA) |
+| Card or panel | `ui.card`, with `ui.cardHeader` (title row) and `ui.cardFooter` (sources, CTA). It clips its contents to its rounded corners |
+| Card holding a dropdown | `ui.cardOverflowVisible`, so the dropdown can extend past the card. Anything inside with a background that reaches a corner must round itself (`rounded-t-lg` / `rounded-b-lg`) |
 | Badge | `ui.badge("neutral" \| "primary" \| "success" \| "warning" \| "error")` |
 | Notice (caveat, unverified data, error) | `ui.notice("warning" \| "error" \| "success" \| "primary")`: a card with a colored left rule; icon in the tone's color, text in `base-content` |
 | Dropdown, combobox list, menu | `ui.popover`, positioned by the caller |
@@ -260,6 +261,14 @@ Behavior-heavy controls (comboboxes, menus, dialogs) use Headless UI, which is a
 ```
 
 For reference sections (FAQ, notes), put the header in a left column: `grid lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12`, with the header `lg:sticky lg:top-6 lg:self-start`.
+
+### Corners
+
+A rounded box's corners must never be cut off. When a header, table row, stat grid or footer inside a card has its own background, its square corners paint over the card's rounded border and the corner looks clipped. So:
+
+- Every panel is `ui.card`, which clips its contents (`overflow-hidden`). Don't hand-roll `rounded-lg border bg-base-100` panels.
+- Only a card that holds a dropdown uses `ui.cardOverflowVisible`. Then any child with a background that touches a corner rounds itself to match (`rounded-t-lg`, `rounded-b-lg`).
+- Nested rounded boxes (a badge in a cell, a chip in a row) round themselves and don't touch the parent's corners.
 
 ### Card with a header
 
@@ -303,6 +312,7 @@ Use `<StackedBar parts formatValue size? highlight? onHighlight? />` from `compo
 - `!important` utilities (`!h-11`) or overriding a `ui` helper's colors or sizes
 - Text lighter than `/60`; more than one primary button per region
 - `shadow-md` or larger on anything that doesn't float
+- A hand-rolled panel (`rounded-lg border bg-base-100 …`) instead of `ui.card`, or a child that paints square corners over a card's rounded ones
 - Emoji or icons as decoration (flags next to country names are data, so they're fine)
 
 ---
@@ -415,6 +425,7 @@ About 220 files still use daisyUI component classes and its default purple theme
 - [ ] No hex, `rgb()`, `var(--…)` or palette colors in components; chart colors from `@/components/ui/theme`
 - [ ] Type uses `ui.*` roles; controls and surfaces use `ui.*` helpers; no daisyUI component classes
 - [ ] No tinted panels; cards are `ui.card` on the gray page; no glows, gradients or blur
+- [ ] Every card's corners are intact: nothing inside paints square corners over them (check headers, table rows, stat grids and footers)
 - [ ] Color only for meaning; text no lighter than `/60`; `tabular-nums` on numbers; codes in mono
 - [ ] One exported component per file, named like the file; area folders with an `index.ts`; logic in `camelCase.ts` or `lib/`
 - [ ] New design decisions added to `components/ui/` **and** this doc

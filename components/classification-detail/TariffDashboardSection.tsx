@@ -70,7 +70,7 @@ export function TariffDashboardSection({
       <div className="flex flex-col gap-5">
         {summary ? (
           <div className={`${THEME_EMBEDDED} p-4 flex flex-col gap-4`}>
-            <div className={`${ui.card} overflow-hidden`}>
+            <div className={`${ui.card}`}>
               <SummaryStats result={summary.result} customsValue={DEFAULT_CUSTOMS_VALUE} />
               <ul className="divide-y divide-base-300">
                 <SummaryLine

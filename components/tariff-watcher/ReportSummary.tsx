@@ -29,7 +29,7 @@ export const ReportSummary = ({ rows }: { rows: WatchRow[] }) => {
   ];
   return (
     // 1px gaps over the border color draw the dividers, like the calculator's summary
-    <div className={`${ui.card} overflow-hidden`}>
+    <div className={`${ui.card}`}>
       <dl className="grid grid-cols-2 gap-px bg-base-300 lg:grid-cols-4">
         {tiles.map((t) => (
           <div key={t.label} className="bg-base-100 p-5">

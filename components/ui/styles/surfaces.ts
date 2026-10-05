@@ -1,8 +1,15 @@
 // Panels, notices, badges and loading placeholders.
 
 // A resting panel: the lighter surface on the gray page, with a 1px border. The only kind
-// of panel: never a tinted one (see "Tints" in DESIGN_SYSTEM.md)
-export const card = "rounded-lg border border-base-300 bg-base-100 shadow-sm";
+// of panel: never a tinted one (see "Tints" in DESIGN_SYSTEM.md). It clips its contents to
+// its rounded corners, so a header, table or stat grid with its own background can never
+// paint square corners over the card's border.
+export const card = "overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm";
+
+// The same card for one that holds a dropdown (a combobox, a menu), which must be free to
+// extend past the card. Nothing inside may paint into its corners: a header or footer with a
+// background rounds itself (rounded-t-lg / rounded-b-lg).
+export const cardOverflowVisible = card.replace("overflow-hidden ", "");
 
 // The row across the top of a card, holding its title (and any controls on the right)
 export const cardHeader = "flex items-start justify-between gap-3 border-b border-base-300 px-5 py-4";

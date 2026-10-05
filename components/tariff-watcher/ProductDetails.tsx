@@ -18,7 +18,7 @@ export const ProductDetails = ({ row, onOpenInCalculator }: { row: WatchRow; onO
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-      <div className={`${ui.card} overflow-hidden`}>
+      <div className={`${ui.card}`}>
         <table className="w-full border-collapse text-left text-sm">
           <caption className="sr-only">Charges for {row.entry.element.htsno}</caption>
           <tbody className="tabular-nums">

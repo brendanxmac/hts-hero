@@ -27,7 +27,7 @@ export const ProductList = ({
   const perUnit = rows.some((r) => r.result.requiresQuantity);
 
   return (
-    <div className={`${ui.card} overflow-hidden`}>
+    <div className={`${ui.card}`}>
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-base-300 px-5 py-3">
         <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-base-content/70">
           {Object.keys(colors).map((key) => (

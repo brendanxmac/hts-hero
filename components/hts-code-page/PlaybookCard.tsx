@@ -17,7 +17,7 @@ const INSIDE = [
 
 export function PlaybookCard() {
   return (
-    <section className={`${ui.card} overflow-hidden`}>
+    <section className={`${ui.card}`}>
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <div className="relative w-32 sm:w-36 aspect-[2/3] rounded-md overflow-hidden border border-base-300 shrink-0">

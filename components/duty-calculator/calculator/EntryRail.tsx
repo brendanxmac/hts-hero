@@ -26,7 +26,7 @@ export const EntryRail = ({
   const { result } = f;
   return (
     <aside
-      className={`${ui.card} h-full p-5 flex flex-col gap-4`}
+      className={`${ui.cardOverflowVisible} h-full p-5 flex flex-col gap-4`}
       aria-label="Entry details"
     >
       {title && (

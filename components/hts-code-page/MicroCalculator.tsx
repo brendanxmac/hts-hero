@@ -78,7 +78,7 @@ export const MicroCalculator = ({
     <section
       id="estimate"
       aria-labelledby="estimate-title"
-      className={`${ui.card} scroll-mt-6`}
+      className={`${ui.cardOverflowVisible} scroll-mt-6`}
     >
       <div className="flex flex-col gap-3 border-b border-base-300 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
@@ -122,7 +122,7 @@ export const MicroCalculator = ({
       )}
 
       {/* The way on: what this quick estimate leaves out, and the calculator that doesn't */}
-      <div className="flex flex-col gap-3 border-t border-base-300 bg-base-200 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <div className="flex flex-col gap-3 rounded-b-lg border-t border-base-300 bg-base-200 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="min-w-0">
           <p className={`${ui.cardTitle} leading-snug`}>
             {shown && shown.totalDuty > 0

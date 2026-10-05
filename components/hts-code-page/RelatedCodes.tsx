@@ -23,7 +23,7 @@ export function RelatedCodes({
       />
 
       {children.length > 0 && (
-        <ul className={`${ui.card} grid overflow-hidden md:grid-cols-2`}>
+        <ul className={`${ui.card} grid md:grid-cols-2`}>
           {children.map((child) => {
             const rate = child.general && child.general.length <= 20 ? child.general : null;
             const body = (

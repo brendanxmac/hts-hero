@@ -53,7 +53,7 @@ export const CompareCard = ({
   return (
     <article
       // An outline, because the card's shadow would override a Tailwind ring
-      className={`${ui.card} flex flex-col overflow-hidden ${
+      className={`${ui.card} flex flex-col ${
         isLowest ? "outline outline-2 -outline-offset-1 outline-success" : ""
       }`}
       aria-label={`Duty estimate for ${country.name}`}

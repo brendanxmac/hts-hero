@@ -26,7 +26,7 @@ export function BaseRates({
   const inherited = tariffElement !== element && tariffElement.htsno;
 
   return (
-    <section id="base-rates" aria-labelledby="base-rates-title" className={`${ui.card} scroll-mt-6 overflow-hidden`}>
+    <section id="base-rates" aria-labelledby="base-rates-title" className={`${ui.card} scroll-mt-6`}>
       <div className="px-4 pt-3.5 pb-3 border-b border-base-300">
         <h2 id="base-rates-title" className={ui.cardTitle}>
           Base Duty Rates for {element.htsno}
