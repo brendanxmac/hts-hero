@@ -34,7 +34,7 @@ export const normalizeHtsCode = (code: string) => {
 
 export const extractHtsCodes = (text: string) => {
   const codes = new Set<string>()
-  for (const match of text.matchAll(HTS_CODE_PATTERN)) {
+  for (const match of Array.from(text.matchAll(HTS_CODE_PATTERN))) {
     codes.add(normalizeHtsCode(match[1]))
   }
   return Array.from(codes).sort()
@@ -151,7 +151,7 @@ const RANGE_PATTERN = new RegExp(String.raw`(?<![\d.])(${CODE})\s*(?:[-‐-―�
 export const extractHtsRanges = (text: string): HtsRange[] => {
   const seen = new Set<string>()
   const ranges: HtsRange[] = []
-  for (const m of text.matchAll(RANGE_PATTERN)) {
+  for (const m of Array.from(text.matchAll(RANGE_PATTERN))) {
     const from = normalizeHtsCode(m[1])
     const to = normalizeHtsCode(m[2])
     // Only a real range: same heading, and "to" after "from"

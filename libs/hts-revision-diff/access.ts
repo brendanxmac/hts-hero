@@ -14,7 +14,11 @@ export const canUseRevisionTool = async () => {
 
 // For API routes: returns a service-role client, or a 404 response to send.
 // 404 (not 403) so the routes look like they don't exist to anyone else.
-export const requireRevisionTool = async () => {
+export type RevisionDb = ReturnType<typeof createAdminClient>
+
+export const requireRevisionTool = async (): Promise<
+  { db: RevisionDb; denied: null } | { db: null; denied: NextResponse }
+> => {
   if (!(await canUseRevisionTool())) {
     return {
       db: null,
@@ -23,5 +27,3 @@ export const requireRevisionTool = async () => {
   }
   return { db: createAdminClient(), denied: null }
 }
-
-export type RevisionDb = ReturnType<typeof createAdminClient>

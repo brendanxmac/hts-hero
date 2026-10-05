@@ -24,7 +24,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     await uploadFile(db, path, file, "application/pdf")
 
     const existing = documents.find((d) => d.kind === "ch99_headings_pdf")
-    const values = {
+    const values: Partial<DocumentRow> = {
       original_filename: file.name,
       storage_path: path,
       size_bytes: file.size,

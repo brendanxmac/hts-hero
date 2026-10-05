@@ -81,7 +81,7 @@ const keyMatchesPrefix = (key: string | null, prefix: string) =>
 // Headings a change record item cites, looked up in the newer revision's rows
 const citedHeadingsFor = (item: ChangeRecordItem, rows: HtsRow[] | null): CitedHeading[] => {
   const codes = Array.from(new Set(item.hts_codes.map(normalizeHtsCode)))
-  if (!rows) return codes.map((code) => ({ code, status: "unverified", row: null }))
+  if (!rows) return codes.map((code): CitedHeading => ({ code, status: "unverified", row: null }))
   const withCode = rows.filter((r) => r.htsno)
   const cited: CitedHeading[] = codes.map((code) => {
     const row = withCode.find((r) => r.htsno === code) ?? null
@@ -132,7 +132,7 @@ const CROSS_REF =
 
 const findCrossRefs = (text: string, subchapter: string | null) => {
   const refs: { subchapter: string | null; slug: string; citation: string }[] = []
-  for (const m of text.matchAll(CROSS_REF)) {
+  for (const m of Array.from(text.matchAll(CROSS_REF))) {
     const kind = (m[1] ?? "").toLowerCase()
     if (kind === "general" || kind === "additional") continue
     const explicitSub = m[5] ?? null

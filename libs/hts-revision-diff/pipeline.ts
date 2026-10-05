@@ -129,7 +129,7 @@ export const advanceAttempt = async (db: RevisionDb, attemptId: string) => {
         // Read the table rows, then have Claude check them against the pages
         try {
           if (await extractHeadingRows(db, attemptId)) {
-            void checkHeadingRowsWithClaude(db, attemptId).catch(() => null)
+            void checkHeadingRowsWithClaude(db, attemptId).catch((): null => null)
           }
         } catch (error) {
           await saveHeadingPagesInfo(db, attemptId, { error: (error as Error).message })
@@ -378,7 +378,7 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
     await updateComparison(db, comparisonId, { status: "diffing" })
     // If the newer revision is current and has no JSON yet, save USITC's
     if (!to.attempt.hts_rows_path) {
-      await saveCurrentCh99Snapshot(db, to.attempt.id).catch(() => null)
+      await saveCurrentCh99Snapshot(db, to.attempt.id).catch((): null => null)
     }
     const toAttempt = (await loadAttempt(db, to.attempt.id)).attempt
     const rowsOf = (path: string | null) =>

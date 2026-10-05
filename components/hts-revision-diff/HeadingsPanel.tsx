@@ -52,10 +52,9 @@ const toEditable = (r: HeadingRow): Editable => ({
   footnotesText: r.footnotes.join("\n"),
 })
 
-const fromEditable = (e: Editable) => ({
-  ...e,
-  footnotes: e.footnotesText.split("\n").map((l) => l.trim()).filter(Boolean),
-  footnotesText: undefined,
+const fromEditable = ({ footnotesText, ...rest }: Editable) => ({
+  ...rest,
+  footnotes: footnotesText.split("\n").map((l) => l.trim()).filter(Boolean),
 })
 
 const CHECK_TONES: Record<string, Tone> = {
@@ -96,7 +95,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
   useEffect(() => {
     if (!working) return
     const timer = setTimeout(async () => {
-      await api(`/attempts/${attemptId}`).catch(() => null)
+      await api(`/attempts/${attemptId}`).catch((): null => null)
       await load()
     }, 5000)
     return () => clearTimeout(timer)

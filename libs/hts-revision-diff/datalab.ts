@@ -38,7 +38,7 @@ export const submitConversion = async (
     headers: { "X-API-Key": apiKey() },
     body: form,
   })
-  const body = await response.json().catch(() => null)
+  const body = await response.json().catch((): null => null)
   if (!response.ok || !body?.request_check_url) {
     const detail = body?.error ?? body?.detail ?? response.statusText
     throw new Error(`datalab rejected ${filename} (${response.status}): ${JSON.stringify(detail)}`)
@@ -56,7 +56,7 @@ export const pollConversion = async (checkUrl: string): Promise<DatalabPoll> => 
   if (response.status === 404) {
     return { state: "failed", error: "datalab no longer has this result (404). Convert again." }
   }
-  const body = await response.json().catch(() => null)
+  const body = await response.json().catch((): null => null)
   if (!response.ok || !body) {
     // Transient: try again on the next poll
     return { state: "processing" }

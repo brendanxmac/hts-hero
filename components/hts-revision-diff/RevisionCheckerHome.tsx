@@ -89,7 +89,7 @@ export default function RevisionCheckerHome() {
   useEffect(() => {
     if (!activeAttempts.length && !activeComparisons.length) return
     const timer = setTimeout(async () => {
-      await Promise.all(activeAttempts.map((a) => api(`/attempts/${a.id}`).catch(() => null)))
+      await Promise.all(activeAttempts.map((a) => api(`/attempts/${a.id}`).catch((): null => null)))
       await load()
     }, POLL_MS)
     return () => clearTimeout(timer)

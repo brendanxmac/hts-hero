@@ -120,7 +120,7 @@ export const suggestNotePrograms = (headings: Pick<HeadingAnalysis, "modeled" | 
   const votes = new Map<string, Set<string>>()
   for (const h of headings) {
     if (!h.modeled) continue
-    for (const key of new Set(h.noteCitations.flatMap(noteKeys))) {
+    for (const key of Array.from(new Set(h.noteCitations.flatMap(noteKeys)))) {
       const programs = votes.get(key) ?? new Set<string>()
       h.programs.forEach((p) => programs.add(p))
       votes.set(key, programs)

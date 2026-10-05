@@ -147,7 +147,7 @@ const main = async () => {
   writeFileSync(join(OUTPUT_DIR, "missing.csv"), toCsv(missingHeader, missing))
   const missingBySub = new Map<string, string[][]>()
   for (const r of missing) missingBySub.set(r[0].slice(0, 4), [...(missingBySub.get(r[0].slice(0, 4)) ?? []), r])
-  for (const [sub, list] of missingBySub) writeFileSync(join(OUTPUT_DIR, "missing", `${sub}.csv`), toCsv(missingHeader, list))
+  for (const [sub, list] of Array.from(missingBySub)) writeFileSync(join(OUTPUT_DIR, "missing", `${sub}.csv`), toCsv(missingHeader, list))
   writeFileSync(
     join(OUTPUT_DIR, "covered.csv"),
     toCsv(["heading", "status", "note", "program", "name", "records", `active_${today}`, "rate", "description"], covered)
@@ -186,20 +186,20 @@ const main = async () => {
     ``,
     `| Prefix | Subchapter | In HTS | Expired | FTZ | In effect | Modeled | Missing | Coverage |`,
     `|---|---|---:|---:|---:|---:|---:|---:|---:|`,
-    ...[...subchapterCounts]
+    ...Array.from(subchapterCounts)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([sub, c]) => `| ${sub} | ${subchapterLabel(sub)} | ${countsRow(c)}`),
     ``,
     `## Missing, by first 4 digits`,
     ``,
-    ...[...missingBySub]
+    ...Array.from(missingBySub)
       .sort(([a], [b]) => a.localeCompare(b))
       .flatMap(([sub, list]) => [
         `### ${sub} – ${subchapterLabel(sub)}: ${list.length} missing (missing/${sub}.csv)`,
         ``,
         `| Group | In effect | Modeled | Missing | Coverage |`,
         `|---|---:|---:|---:|---:|`,
-        ...[...groupCounts]
+        ...Array.from(groupCounts)
           .filter(([group, c]) => group.startsWith(sub) && c.active > c.covered)
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([group, c]) => `| ${group} | ${c.active} | ${c.covered} | ${c.active - c.covered} | ${pct(c.covered, c.active)} |`),
@@ -209,7 +209,7 @@ const main = async () => {
     ``,
     `| Group | In HTS | Expired | FTZ | In effect | Modeled | Missing | Coverage |`,
     `|---|---:|---:|---:|---:|---:|---:|---:|`,
-    ...[...groupCounts]
+    ...Array.from(groupCounts)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([group, c]) => `| ${group} | ${countsRow(c)}`),
     ``,

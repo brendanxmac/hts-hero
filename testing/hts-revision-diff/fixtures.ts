@@ -155,12 +155,12 @@ export const CH99_REV_B = `{0}------------------------------------------------
 export const CH99_JSON_A = [
   { htsno: "9903.01.25", indent: "0", description: "Products of listed countries", general: "The duty provided in the applicable subheading + 10%", special: "", other: "", units: [], footnotes: [] },
   { htsno: "", indent: "1", description: "Except as provided in note 2:", general: "", special: "", other: "", units: [], footnotes: [] },
-  { htsno: "9903.01.30", indent: "0", description: "Articles of note 3", general: "25%", special: "", other: "", units: [], footnotes: [{ columns: ["general"], marker: "1", value: "See subchapter III U.S. note 3." }] },
+  { htsno: "9903.01.30", indent: "0", description: "Articles of note 3", general: "25%", special: "", other: "", units: [] as string[], footnotes: [{ columns: ["general"], marker: "1", value: "See subchapter III U.S. note 3." }] },
 ]
 
 export const CH99_JSON_B = [
   { htsno: "9903.01.25", indent: "0", description: "Products of listed countries", general: "The duty provided in the applicable subheading + 15%", special: "", other: "", units: [], footnotes: [] },
   { htsno: "", indent: "1", description: "Except as provided in note 2:", general: "", special: "", other: "", units: [], footnotes: [] },
-  { htsno: "9903.01.30", indent: "0", description: "Articles of note 3", general: "25%", special: "", other: "", units: [], footnotes: [{ columns: ["general"], marker: "1", value: "See subchapter III U.S. note 3." }] },
+  { htsno: "9903.01.30", indent: "0", description: "Articles of note 3", general: "25%", special: "", other: "", units: [] as string[], footnotes: [{ columns: ["general"], marker: "1", value: "See subchapter III U.S. note 3." }] },
   { htsno: "9903.01.31", indent: "0", description: "Articles of note 2(e) in transit", general: "Free", special: "", other: "", units: [], footnotes: [] },
 ]
