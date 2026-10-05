@@ -70,6 +70,7 @@ components/ui/                     ← the design system: the only place design 
     StackedBar.tsx                 ← parts of a whole as one bar + legend
   SectionHeader.tsx                ← kicker + <h2> + lead: the top of every section
   SegmentedControl.tsx             ← toggle between options
+  Switch.tsx                       ← on/off for one setting
   FaqList.tsx                      ← FAQ disclosures
   font.ts                          ← mono (IBM Plex Mono) for codes
 
@@ -235,6 +236,7 @@ All of these are class helpers from `ui/styles`. They're strings and functions r
 | Select | `ui.select` / `ui.selectSm` |
 | Checkbox | `ui.checkbox` (native, primary accent) |
 | Toggle between options | `<SegmentedControl label options value onChange size? fullWidth? />` |
+| Turn one setting on or off, applied at once | `<Switch checked onChange label? labelledBy? />` |
 | Card or panel | `ui.card`, with `ui.cardHeader` (title row) and `ui.cardFooter` (sources, CTA). It clips its contents to its rounded corners |
 | Card holding a dropdown | `ui.cardOverflowVisible`, so the dropdown can extend past the card. Anything inside with a background that reaches a corner must round itself (`rounded-t-lg` / `rounded-b-lg`) |
 | Badge | `ui.badge("neutral" \| "primary" \| "success" \| "warning" \| "error")` |
@@ -323,6 +325,7 @@ Use `<StackedBar parts formatValue size? highlight? onHighlight? />` from `compo
 |---|---|
 | `<SectionHeader kicker title titleId? className?>lead</SectionHeader>` | The top of every page section |
 | `<SegmentedControl label options value onChange size? fullWidth? />` | Toggle between a few options (views, units, detail levels) |
+| `<Switch checked onChange label? labelledBy? />` | On/off for one setting that applies at once (including a product in an estimate). Its knob slides; that's the one movement allowed |
 | `<FaqList faqs openFirst? />` | FAQ disclosures. Text must match the page's `FAQPage` JSON-LD |
 | `<StackedBar parts formatValue size? highlight? onHighlight? />` | Parts of a whole as one bar plus legend |
 
