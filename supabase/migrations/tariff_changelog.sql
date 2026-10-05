@@ -144,7 +144,7 @@ INSERT INTO tariff_changelog (id, entry_date, type, title, summary, revision, st
   ('9e7d410f-f682-46c6-8bac-37643ba5a7df', '2026-10-03', 'revision',
    'HTS Revision 17 (2026)',
    'Verified tariff data now covers entries through September 1, 2026. From August 22, 2026, listed products of Canada, including beer, wine and spirits, dairy, wood and paper products, pay an additional 50% Section 338 duty, even when claimed under USMCA.',
-   '2026HTSRev17', 'draft', '2026-10-03T06:25:42.671986+00:00', '2026-10-03T06:25:42.671986+00:00'),
+   '2026HTSRev17', 'published', '2026-10-03T06:25:42.671986+00:00', '2026-10-03T06:25:42.671986+00:00'),
   ('7ae2608d-8d15-4cf7-8af6-44d13519447f', '2026-10-03', 'improvement',
    'New 50% Section 338 duty on listed Canadian products',
    'From August 22, 2026, about 550 listed products of Canada pay an additional 50% on top of other duties, including when entered under USMCA. Section 232 goods and certified civil aircraft parts are exempt.',
