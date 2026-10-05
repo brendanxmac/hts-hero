@@ -294,7 +294,7 @@ export const DutyEstimateEmbed = ({
       </div>
 
       {!country || !result ? (
-        <div className="rounded-lg border border-dashed border-[var(--dc-border-strong)] px-6 py-10 text-center">
+        <div className="rounded-md border border-dashed border-[var(--dc-border-strong)] px-6 py-10 text-center">
           <div className="text-[15px] font-semibold">
             Choose a country of origin
           </div>
@@ -436,7 +436,7 @@ const CalculatorCta = ({
     "Any entry date, transport mode and trade preference",
   ];
   return (
-    <div className="relative overflow-hidden rounded-[10px] border border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] p-5 sm:p-6">
+    <div className="relative overflow-hidden rounded-[8px] border border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] p-5 sm:p-6">
       {/* A soft glow in the corner */}
       <div
         className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full opacity-25 blur-3xl"

@@ -346,7 +346,7 @@ const LegalPanel = ({
   citations?: string[];
   notesFor?: { asOf: string; htsCode: string };
 }) => (
-  <div className="flex flex-col gap-4 rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-sm">
+  <div className="flex flex-col gap-4 rounded-md border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-sm">
     <p className="text-[13.5px] leading-relaxed text-[var(--dc-text)]">
       {text}
     </p>

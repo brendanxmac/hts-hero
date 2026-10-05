@@ -99,7 +99,7 @@ export const ChangelogList = ({
         </div>
       )}
       {error && (
-        <p role="alert" className="mb-4 rounded-lg border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3 text-[14px] text-[var(--dc-warning)]">
+        <p role="alert" className="mb-4 rounded-md border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3 text-[14px] text-[var(--dc-warning)]">
           {error}
         </p>
       )}
@@ -108,7 +108,7 @@ export const ChangelogList = ({
       )}
 
       {entries.length === 0 ? (
-        <p className="rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-5 py-8 text-center text-[14px] text-[var(--dc-text-3)]">
+        <p className="rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-5 py-8 text-center text-[14px] text-[var(--dc-text-3)]">
           No updates yet.
         </p>
       ) : (
@@ -198,7 +198,7 @@ const EntryForm = ({
   return (
     <form
       onSubmit={submit}
-      className="mb-8 flex flex-col gap-4 rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 shadow-[var(--dc-shadow)]"
+      className="mb-8 flex flex-col gap-4 rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 shadow-[var(--dc-shadow)]"
     >
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Date" htmlFor="cl-date">

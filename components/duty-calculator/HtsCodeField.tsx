@@ -146,7 +146,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
           {query.trim() && !selectedElement && (results.length > 0 || debouncedQuery === query) && (
             <Combobox.Options
               static
-              className="absolute z-30 mt-2 w-full min-w-[320px] max-h-80 overflow-auto rounded-lg border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none"
+              className="absolute z-30 mt-2 w-full min-w-[320px] max-h-80 overflow-auto rounded-md border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none"
             >
               {results.length === 0 && debouncedQuery === query ? (
                 <div className="px-3 py-3 text-sm text-[var(--dc-text-3)]">
@@ -158,7 +158,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
                     key={el.uuid}
                     value={el}
                     className={({ active }) =>
-                      `flex flex-col gap-0.5 rounded-md px-3 py-2 cursor-pointer ${
+                      `flex flex-col gap-0.5 rounded-[5px] px-3 py-2 cursor-pointer ${
                         active ? "bg-[var(--dc-accent-soft)]" : ""
                       }`
                     }

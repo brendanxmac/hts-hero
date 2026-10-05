@@ -35,6 +35,12 @@
   --dc-chart-4: #b0406a;
   --dc-chart-5: #6b52b8;
   --dc-chart-6: #9a9ea6;
+  /* Countries compared side by side: a colorblind-checked categorical set, in slot order */
+  --dc-series-1: #2a78d6;
+  --dc-series-2: #eb6834;
+  --dc-series-3: #1baf7a;
+  --dc-series-4: #eda100;
+  --dc-series-5: #e87ba4;
 
   color-scheme: light;
   background: var(--dc-bg);
@@ -73,6 +79,11 @@
   --dc-chart-4: #e58aad;
   --dc-chart-5: #b3a2f0;
   --dc-chart-6: #6b7280;
+  --dc-series-1: #3987e5;
+  --dc-series-2: #d95926;
+  --dc-series-3: #199e70;
+  --dc-series-4: #c98500;
+  --dc-series-5: #d55181;
 
   color-scheme: dark;
 }
@@ -109,6 +120,11 @@
   --dc-chart-4: #e58aad;
   --dc-chart-5: #b3a2f0;
   --dc-chart-6: #6b7280;
+  --dc-series-1: #3987e5;
+  --dc-series-2: #d95926;
+  --dc-series-3: #199e70;
+  --dc-series-4: #c98500;
+  --dc-series-5: #d55181;
 
     color-scheme: dark;
   }
@@ -128,7 +144,7 @@
 .card {
   background: var(--dc-surface);
   border: 1px solid var(--dc-border);
-  border-radius: 10px;
+  border-radius: 8px;
   box-shadow: var(--dc-shadow);
 }
 
@@ -155,7 +171,7 @@
   background: var(--dc-surface);
   color: var(--dc-text);
   border: 1px solid var(--dc-border-strong);
-  border-radius: 7px;
+  border-radius: 6px;
   font-size: 15px;
   outline: none;
   transition: border-color 120ms ease, box-shadow 120ms ease;
@@ -181,10 +197,10 @@
   height: 46px;
   background: var(--dc-surface-2);
   border: 1px solid var(--dc-border);
-  border-radius: 8px;
+  border-radius: 6px;
 }
 .segment {
-  border-radius: 5px;
+  border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
   color: var(--dc-text-2);
@@ -210,7 +226,7 @@
   gap: 8px;
   height: 38px;
   padding: 0 14px;
-  border-radius: 7px;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
   border: 1px solid var(--dc-border-strong);
@@ -234,7 +250,7 @@
   gap: 8px;
   height: 38px;
   padding: 0 14px;
-  border-radius: 7px;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
   background: var(--dc-accent);
@@ -292,7 +308,7 @@
   background: linear-gradient(90deg, var(--dc-surface-2), var(--dc-surface-3), var(--dc-surface-2));
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
-  border-radius: 6px;
+  border-radius: 5px;
 }
 @keyframes shimmer {
   0% {

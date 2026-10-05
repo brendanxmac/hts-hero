@@ -19,10 +19,15 @@ import { ExplorerDetailSection } from "./ExplorerDetailSection";
 
 interface RelatedCrossRulingsSectionProps {
   htsno: string;
+  /** Just the rulings, without the card and its header, for pages that title the section themselves */
+  bare?: boolean;
+  /** Rulings shown before a "Show all" button; all of them when unset */
+  initialCount?: number;
 }
 
-export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSectionProps) {
+export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }: RelatedCrossRulingsSectionProps) {
   const [rulings, setRulings] = useState<CrossRuling[]>([]);
+  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,41 +81,8 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
 
   const showIntro = !loadingDetail && !selectedRuling;
 
-  return (
-    <ExplorerDetailSection
-      title="Related CROSS Rulings"
-      icon={<ScaleIcon className="h-4 w-4" />}
-      description={
-        <>
-          CBP classification rulings related to{" "}
-          <span className="font-mono font-semibold text-primary">{htsno}</span>
-          .
-        </>
-      }
-    // footer={
-    //   rulings.length > 0 ? (
-    //     <>
-    //       <div>
-    //         <p className="text-sm font-semibold text-base-content">
-    //           Unsure if these rulings might affect your product?
-    //         </p>
-    //         <p className="text-xs text-base-content/50">
-    //           Run a quick analysis to see if these might affect your product.
-    //         </p>
-    //       </div>
-    //       <Link
-    //         href="/classifications/new"
-    //         target="_blank"
-    //         rel="noopener noreferrer"
-    //         className="btn btn-primary"
-    //       >
-    //         Run analysis
-    //         <span aria-hidden="true">&rarr;</span>
-    //       </Link>
-    //     </>
-    //   ) : undefined
-    // }
-    >
+  const body = (
+    <>
       {showIntro && !canFetch && (
         <p className="text-sm text-base-content/60 mb-4">
           CROSS search needs at least a 4-digit HTS code.
@@ -147,17 +119,67 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
 
           {!loading && !error && rulings.length > 0 && (
             <div className="flex flex-col gap-4">
-              {rulings.map((ruling) => (
+              {(showAll || !initialCount ? rulings : rulings.slice(0, initialCount)).map((ruling) => (
                 <RulingCard
                   key={ruling.id}
                   ruling={ruling}
                   onClick={() => handleRulingClick(ruling)}
                 />
               ))}
+              {!showAll && initialCount && rulings.length > initialCount && (
+                <button
+                  type="button"
+                  onClick={() => setShowAll(true)}
+                  className="btn btn-outline btn-sm self-center"
+                >
+                  Show all {rulings.length} rulings
+                </button>
+              )}
             </div>
           )}
         </>
       )}
+    </>
+  );
+
+  if (bare) return body;
+
+  return (
+    <ExplorerDetailSection
+      title="Related CROSS Rulings"
+      icon={<ScaleIcon className="h-4 w-4" />}
+      description={
+        <>
+          CBP classification rulings related to{" "}
+          <span className="font-mono font-semibold text-primary">{htsno}</span>
+          .
+        </>
+      }
+    // footer={
+    //   rulings.length > 0 ? (
+    //     <>
+    //       <div>
+    //         <p className="text-sm font-semibold text-base-content">
+    //           Unsure if these rulings might affect your product?
+    //         </p>
+    //         <p className="text-xs text-base-content/50">
+    //           Run a quick analysis to see if these might affect your product.
+    //         </p>
+    //       </div>
+    //       <Link
+    //         href="/classifications/new"
+    //         target="_blank"
+    //         rel="noopener noreferrer"
+    //         className="btn btn-primary"
+    //       >
+    //         Run analysis
+    //         <span aria-hidden="true">&rarr;</span>
+    //       </Link>
+    //     </>
+    //   ) : undefined
+    // }
+    >
+      {body}
     </ExplorerDetailSection>
   );
 }

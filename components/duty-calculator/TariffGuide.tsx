@@ -1,19 +1,19 @@
 import Link from "next/link";
 import {
   ArrowRightIcon,
-  CheckIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon,
   ChevronDownIcon,
-  MinusIcon,
 } from "@heroicons/react/20/solid";
-import { POPULAR_HTS_CODES } from "../../constants/popular-hts-codes";
 import { DutyCalculatorContent, TariffMatrix } from "../../libs/duty-calculator-content";
 import { formatDutyPct, formatSummaryDate } from "../../libs/hts-duty-summary";
 import { CHANGELOG_PATH } from "./Changelog";
+import { CountryRateCharts } from "./CountryRateCharts";
 import { formatMoney, formatPct } from "./format";
 import styles from "./theme.module.css";
 
 // Below the calculator on /duty-calculator: today's rates for common imports, how a duty is
-// worked out, popular lookups, where the data comes from and the FAQ. Server-rendered so
+// worked out, where the data comes from and the FAQ. Server-rendered so
 // search engines and AI crawlers can read it; the calculator itself runs in the browser.
 // A band of its own, on a different surface from the calculator, so it reads as a guide.
 
@@ -22,10 +22,10 @@ const bodyClass = "text-[15px] leading-relaxed text-[var(--dc-text-2)]";
 const eyebrowClass =
   "text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--dc-accent)]";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out section links
 const SECTIONS = [
   { id: "tariff-rates-by-country", label: "Rates by country" },
   { id: "how-duty-is-calculated", label: "How duty is calculated" },
-  { id: "popular-lookups", label: "Popular lookups" },
   { id: "sources", label: "Sources" },
   { id: "faq", label: "FAQ" },
 ];
@@ -42,22 +42,6 @@ const pctOf = (total: string) => {
   if (total === "Free") return 0;
   const match = total.match(/^(\d+(?:\.\d+)?)%$/);
   return match ? Number(match[1]) : null;
-};
-
-const HEAT = [
-  { below: 10, mix: 8, label: "Under 10%" },
-  { below: 25, mix: 16, label: "10–25%" },
-  { below: 50, mix: 26, label: "25–50%" },
-  { below: 100, mix: 36, label: "50–100%" },
-  { below: Infinity, mix: 46, label: "100% or more" },
-];
-
-// The cell's tint: green when free, then deeper reds as the total climbs
-const heat = (pct: number | null) => {
-  if (pct === null) return undefined;
-  if (pct === 0) return "color-mix(in srgb, var(--dc-positive) 14%, transparent)";
-  const level = HEAT.find((h) => pct < h.below) ?? HEAT[HEAT.length - 1];
-  return `color-mix(in srgb, var(--dc-negative) ${level.mix}%, transparent)`;
 };
 
 // One decimal is plenty for an average
@@ -91,7 +75,7 @@ const matrixFacts = (matrix: TariffMatrix) => {
 };
 
 const Fact = ({ label, value, note }: { label: string; value: string; note: string }) => (
-  <div className="rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-bg)] px-5 py-4">
+  <div className="rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] px-5 py-4">
     <div className="text-[12.5px] font-medium text-[var(--dc-text-3)]">{label}</div>
     <div className={`${styles.num} mt-1 text-[22px] font-semibold tracking-tight text-[var(--dc-text)]`}>
       {value}
@@ -107,7 +91,7 @@ const RatesByCountry = ({ content }: { content: DutyCalculatorContent }) => {
     <section id="tariff-rates-by-country" className="scroll-mt-6 flex flex-col gap-6">
       <div className="flex flex-col gap-2 max-w-[80ch]">
         <span className={eyebrowClass}>Rates by country</span>
-        <h2 className={h2Class}>US tariff rates by country: what common imports pay today</h2>
+        <h2 className={h2Class}>US Tariff Rates by Country</h2>
         <p className={bodyClass}>
           Total US import duty, base rate plus every additional tariff, on goods entered{" "}
           {formatSummaryDate(asOf)} from the {matrix.rows.length} largest sources of US imports.
@@ -137,79 +121,25 @@ const RatesByCountry = ({ content }: { content: DutyCalculatorContent }) => {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] shadow-[var(--dc-shadow)]">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[var(--dc-border)] px-5 sm:px-6 py-3 text-[12px] text-[var(--dc-text-2)]">
-          <span className="font-semibold text-[var(--dc-text-3)]">Total duty</span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded" style={{ background: heat(0) }} aria-hidden />
-            Free
-          </span>
-          {HEAT.map((h) => (
-            <span key={h.label} className="inline-flex items-center gap-1.5">
-              <span
-                className="h-3 w-3 rounded"
-                style={{ background: `color-mix(in srgb, var(--dc-negative) ${h.mix}%, transparent)` }}
-                aria-hidden
-              />
-              {h.label}
-            </span>
-          ))}
-        </div>
-        <div className="overflow-x-auto">
-          <table className={`w-full text-[14px] ${styles.num}`}>
-            <thead>
-              <tr className="text-left text-[12px] text-[var(--dc-text-3)]">
-                <th scope="col" className="sticky left-0 z-10 bg-[var(--dc-surface)] px-5 sm:px-6 py-3 font-semibold uppercase tracking-wider">
-                  Country of origin
-                </th>
-                {matrix.products.map((p) => (
-                  <th key={p.code} scope="col" className="px-2 py-3 text-center align-bottom whitespace-nowrap">
-                    <Link
-                      href={`/hts/${p.code}`}
-                      className="font-semibold text-[var(--dc-text)] hover:text-[var(--dc-accent)] hover:underline"
-                    >
-                      {p.label}
-                    </Link>
-                    <span className="block font-mono text-[11px] font-normal">{p.code}</span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {matrix.rows.map((row) => (
-                <tr key={row.country.code} className="border-t border-[var(--dc-border)]">
-                  {/* Pinned so the country stays in view while the products scroll on small screens */}
-                  <th scope="row" className="sticky left-0 z-10 bg-[var(--dc-surface)] px-5 sm:px-6 py-1.5 text-left font-medium text-[var(--dc-text)] whitespace-nowrap">
-                    <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
-                    {row.country.name}
-                  </th>
-                  {row.cells.map((cell, i) => (
-                    <td key={matrix.products[i].code} className="px-1.5 py-1.5 text-center">
-                      <span
-                        className="block rounded-md px-2 py-1.5"
-                        style={{ background: heat(pctOf(cell.total)) }}
-                      >
-                        <span className="font-semibold text-[var(--dc-text)] whitespace-nowrap">{cell.total}</span>
-                        {cell.preference && (
-                          <span className="mx-auto block max-w-[11rem] text-[11.5px] leading-tight text-[var(--dc-positive)]">
-                            {cell.preference}
-                          </span>
-                        )}
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="px-5 sm:px-6 py-4 border-t border-[var(--dc-border)] bg-[var(--dc-surface-2)] text-[12.5px] leading-relaxed text-[var(--dc-text-3)]">
-          General rates (Column 2 where it applies), before customs fees and any antidumping or
-          countervailing duties, with tariff data verified through {revisionTitle}. Green figures are
-          the total when the goods qualify for that trade preference. Some tariffs and exemptions
-          depend on details such as metal content, which the calculator asks about.
-        </p>
-      </div>
+      <CountryRateCharts
+        products={matrix.products}
+        rows={matrix.rows.map((row) => ({
+          code: row.country.code,
+          name: row.country.name,
+          flag: row.country.flag,
+          values: row.cells.map((c) => pctOf(c.total)),
+          labels: row.cells.map((c) => c.total),
+          preferences: row.cells.map((c) => c.preference),
+        }))}
+        footnote={
+          <>
+            General rates (Column 2 where it applies), before customs fees and any antidumping or
+            countervailing duties, with tariff data verified through {revisionTitle}. Green figures
+            are the total when the goods qualify for that trade preference. Some tariffs and
+            exemptions depend on details such as metal content, which the calculator asks about.
+          </>
+        }
+      />
     </section>
   );
 };
@@ -227,7 +157,7 @@ const STEPS = [
   },
   {
     title: "Add the Chapter 99 tariffs.",
-    text: "Section 232, 301, 122 and other additional duties stack on top, depending on the product, the country of origin and the entry date, unless an exemption applies.",
+    text: "Section 122, 232, 301, 338 and other additional duties stack on top, depending on the product, the country of origin and the entry date, unless an exemption applies.",
   },
   {
     title: "Add customs fees.",
@@ -251,7 +181,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
   return (
     <section
       id="how-duty-is-calculated"
-      className="scroll-mt-6 rounded-xl border border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] p-5 sm:p-8 lg:p-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12"
+      className="scroll-mt-6 rounded-[10px] border border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] p-5 sm:p-8 lg:p-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12"
     >
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
@@ -280,7 +210,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
       </div>
 
       {/* The worked example as a receipt */}
-      <div className="self-start rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 sm:p-6 shadow-[var(--dc-shadow-pop)]">
+      <div className="self-start rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 sm:p-6 shadow-[var(--dc-shadow-pop)]">
         <span className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--dc-text-3)]">
           Worked example
         </span>
@@ -343,94 +273,182 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
   );
 };
 
-// ── Popular lookups ──
-
-const PopularLookups = () => (
-  <section id="popular-lookups" className="scroll-mt-6 flex flex-col gap-6">
-    <div className="flex flex-col gap-2">
-      <span className={eyebrowClass}>Browse</span>
-      <h2 className={h2Class}>Popular duty lookups</h2>
-    </div>
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {POPULAR_HTS_CODES.map((category) => (
-        <div
-          key={category.category}
-          className="flex flex-col rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-bg)] p-4"
-        >
-          <h3 className="px-2 pb-2 text-[13px] font-semibold text-[var(--dc-text)]">{category.category}</h3>
-          <ul className="flex flex-col">
-            {category.codes.map((c) => (
-              <li key={c.code}>
-                <Link
-                  href={`/hts/${c.code}`}
-                  className="group flex items-center justify-between gap-3 rounded-md px-2 py-1.5 text-[14px] hover:bg-[var(--dc-surface)]"
-                >
-                  <span className="min-w-0 text-[var(--dc-text-2)] group-hover:text-[var(--dc-accent)]">
-                    Duty on {c.label.charAt(0).toLowerCase()}
-                    {c.label.slice(1)}
-                  </span>
-                  <span className="shrink-0 font-mono text-[11.5px] text-[var(--dc-text-3)]">{c.code}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  </section>
-);
-
 // ── Sources ──
 
-const Sources = ({ revisionTitle }: { revisionTitle: string }) => (
+// What the calculator is built from
+const INCLUDED: { title: string; text: string; items?: string[] }[] = [
+  {
+    title: "Base rates",
+    text: "The General, Special and Column 2 rates in each line of the current Harmonized Tariff Schedule, published by the US International Trade Commission. The current rates are used for every entry date.",
+  },
+  {
+    title: "Trade preferences",
+    text: "Free trade agreements and preference programs such as USMCA, from each line's Special rate, when you claim one.",
+  },
+  {
+    title: "Customs fees",
+    text: "The Merchandise Processing Fee (0.3464%, within the minimum and maximum CBP sets each fiscal year) on formal entries, and the Harbor Maintenance Fee (0.125%) on ocean shipments.",
+  },
+  {
+    title: "Chapter 99 tariffs",
+    text: "Every additional duty and exemption in Chapter 99 and its notes, including which ones stack and which replace each other:",
+    items: [
+      "Section 122 (Now Expired)",
+      "Section 201 Safeguards",
+      "Section 232: steel, aluminum and copper",
+      "Section 232: autos, trucks and parts",
+      "Section 232: wood, pharmaceuticals, semiconductors, drones",
+      "Section 301: China, Brazil",
+      "Section 301: Forced Labor",
+      "Section 338: Canada",
+      "Country trade deals and quotas",
+    ],
+  },
+];
+
+// What it leaves out, and why
+const EXCLUDED: { title: string; text: string }[] = [
+  {
+    title: "Antidumping and countervailing duties",
+    text: "Set case by case by the Commerce Department for specific producers and exporters.",
+  },
+  {
+    title: "Federal excise taxes",
+    text: "Such as those on alcohol, tobacco and fuel, which CBP collects at entry.",
+  },
+  {
+    title: "Other agency fees and assessments",
+    text: "Including commodity research and promotion assessments, and the MPF on informal entries under $2,500.",
+  },
+  {
+    title: "Import adjustment offsets",
+    text: "Set per manufacturer for some auto and truck parts. The calculator charges the full rate and asks before applying it.",
+  },
+  {
+    title: "Chapter 98 claims",
+    text: "Special treatment such as American goods returned or articles repaired abroad.",
+  },
+  {
+    title: "Freight, insurance, brokerage and state taxes",
+    text: "Landed cost here is the customs value plus duty and fees.",
+  },
+];
+
+const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string }) => (
   <section id="sources" className="scroll-mt-6 flex flex-col gap-6">
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 max-w-[80ch]">
       <span className={eyebrowClass}>Data</span>
       <h2 className={h2Class}>Where the rates come from</h2>
+      <p className={bodyClass}>
+        Every rate comes from the official Harmonized Tariff Schedule of the United States published
+        by the US International Trade Commission. Each HTS revision&apos;s changes are entered with
+        the dates they take effect, so you can calculate past and future entry dates. Tariff data is
+        verified from Revision 5 (April 8, 2026) through {revisionTitle}, and every change is listed
+        in the <Link href={CHANGELOG_PATH} className={styles.link}>calculator changelog</Link>.
+      </p>
     </div>
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-      <div className="rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 sm:p-6 shadow-[var(--dc-shadow)]">
-        <p className={bodyClass}>
-          Every rate comes from the official Harmonized Tariff Schedule of the United States published
-          by the US International Trade Commission: the base rates in each HTS line, and the
-          additional duties, exemptions and their interactions in Chapter 99 and its notes. Each HTS
-          revision&apos;s changes are entered with the dates they take effect, so you can calculate
-          any entry date, past or future. Tariff data is verified through {revisionTitle}, and every
-          change is listed in the{" "}
-          <Link href={CHANGELOG_PATH} className={styles.link}>calculator changelog</Link>.
-        </p>
-        <ul className="mt-4 grid gap-2 sm:grid-cols-2 text-[14px] text-[var(--dc-text)]">
-          {["Base rates from every HTS line", "Chapter 99 tariffs and exemptions", "Effective dates for every revision", `Verified through ${revisionTitle}`].map((item) => (
-            <li key={item} className="flex items-start gap-2">
-              <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--dc-positive)]" aria-hidden />
-              {item}
-            </li>
+
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      {/* Included */}
+      <div className="rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] p-5 sm:p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className="text-[16px] font-semibold text-[var(--dc-text)]">What&apos;s included</h3>
+          <span className="text-[12.5px] text-[var(--dc-text-3)]">
+            Updated {formatSummaryDate(asOf)}
+          </span>
+        </div>
+        {/* Three short sources in a row, then the Chapter 99 programs across the full width */}
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          {INCLUDED.map((item) => (
+            <div
+              key={item.title}
+              className={`rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-[var(--dc-shadow)] ${item.items ? "sm:col-span-3" : ""}`}
+            >
+              <h4 className="flex items-center gap-2 text-[14px] font-semibold text-[var(--dc-text)]">
+                <span className="h-2 w-2 rounded-full bg-[var(--dc-positive)]" aria-hidden />
+                {item.title}
+              </h4>
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-[var(--dc-text-2)]">{item.text}</p>
+              {item.items && (
+                <ul className="mt-3 flex flex-wrap gap-1.5">
+                  {item.items.map((program) => (
+                    <li
+                      key={program}
+                      className="rounded-[5px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-2 py-1 text-[12px] text-[var(--dc-text)]"
+                    >
+                      {program}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           ))}
-        </ul>
-        <Link
-          href={CHANGELOG_PATH}
-          className={`${styles.button} mt-5 inline-flex`}
-        >
+        </div>
+        <Link href={CHANGELOG_PATH} className={`${styles.button} mt-5 inline-flex`}>
           View the changelog
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </Link>
       </div>
-      <div className="rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-bg)] p-5 sm:p-6">
-        <h3 className="text-[15px] font-semibold text-[var(--dc-text)]">Not included</h3>
-        <p className={`${bodyClass} mt-2`}>
-          Antidumping and countervailing duties, which are set case by case for
-          specific producers, and quota-related charges. Need an HTS code first?{" "}
-          <Link href="/explore" className={styles.link}>Search the HTS</Link>.
+
+      {/* Not included */}
+      <div className="rounded-[8px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] p-5 sm:p-6">
+        <h3 className="text-[16px] font-semibold text-[var(--dc-text)]">Not included</h3>
+        <p className="mt-0.5 text-[12.5px] text-[var(--dc-text-2)]">
+          Charges an entry can owe that this estimate leaves out.
         </p>
-        <ul className="mt-4 flex flex-col gap-2 text-[14px] text-[var(--dc-text-2)]">
-          {["Antidumping duties", "Countervailing duties", "Quota-related charges"].map((item) => (
-            <li key={item} className="flex items-start gap-2">
-              <MinusIcon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--dc-text-3)]" aria-hidden />
-              {item}
+        <ul className="mt-4 flex flex-col divide-y divide-[var(--dc-warning-border)]">
+          {EXCLUDED.map((item) => (
+            <li key={item.title} className="flex gap-3 py-3 first:pt-0 last:pb-0">
+              <span
+                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--dc-surface)] text-[var(--dc-warning)]"
+                aria-hidden
+              >
+                <XMarkIcon className="h-3.5 w-3.5" />
+              </span>
+              <span>
+                <span className="block text-[14px] font-semibold text-[var(--dc-text)]">{item.title}</span>
+                <span className="block text-[13px] leading-snug text-[var(--dc-text-2)]">{item.text}</span>
+              </span>
             </li>
           ))}
         </ul>
       </div>
+    </div>
+  </section>
+);
+
+// ── Find your HTS code ──
+
+const FindHtsCode = () => (
+  <section
+    id="find-hts-code"
+    aria-labelledby="find-hts-code-title"
+    className="scroll-mt-6 rounded-[8px] bg-[var(--dc-accent)] px-6 py-8 sm:px-10 sm:py-10 text-[var(--dc-accent-contrast)] grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
+  >
+    <div className="flex flex-col gap-2 max-w-[60ch]">
+      <h2 id="find-hts-code-title" className="text-[24px] sm:text-[28px] font-semibold tracking-tight">
+        Find the right HTS code for your products
+      </h2>
+      <p className="text-[15px] leading-relaxed opacity-90">
+        Every rate on this page depends on the 10-digit classification. The wrong code can mean the
+        wrong tariffs, missed exemptions, and penalties.
+      </p>
+    </div>
+    <div className="flex flex-wrap gap-3">
+      <Link
+        href="/explore"
+        className="inline-flex h-11 items-center gap-2 rounded-[6px] bg-[var(--dc-accent-contrast)] px-5 text-[15px] font-semibold text-[var(--dc-accent)] hover:opacity-90"
+      >
+        <MagnifyingGlassIcon className="h-4 w-4" aria-hidden />
+        Search the HTS
+      </Link>
+      <Link
+        href="/classify"
+        className="inline-flex h-11 items-center gap-2 rounded-[6px] border border-current px-5 text-[15px] font-semibold hover:bg-white/10"
+      >
+        Classify a product
+        <ArrowRightIcon className="h-4 w-4" aria-hidden />
+      </Link>
     </div>
   </section>
 );
@@ -450,7 +468,7 @@ const Faq = ({ faqs }: { faqs: { question: string; answer: string }[] }) => (
       {faqs.map(({ question, answer }) => (
         <details
           key={question}
-          className="group rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-5 py-4 open:shadow-[var(--dc-shadow)] open:border-[var(--dc-accent-border)]"
+          className="group rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-5 py-4 open:shadow-[var(--dc-shadow)] open:border-[var(--dc-accent-border)]"
         >
           <summary className="cursor-pointer list-none flex items-center justify-between gap-4 text-[15.5px] font-semibold text-[var(--dc-text)] [&::-webkit-details-marker]:hidden">
             <h3>{question}</h3>
@@ -474,18 +492,20 @@ export const TariffGuide = ({
   faqs: { question: string; answer: string }[];
 }) => (
   <div className="w-full border-t border-[var(--dc-border)] bg-[var(--dc-surface)]">
-    <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 pt-14 pb-20 sm:pt-20 flex flex-col gap-16 sm:gap-20">
+    <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 pt-14 pb-20 sm:pt-20 flex flex-col gap-6 sm:gap-10">
       {/* The guide's own intro, with links to each part */}
-      <header className="flex flex-col gap-4 max-w-[72ch]">
+      <header className="flex flex-col gap-4">
         <span className={eyebrowClass}>Tariff guide · Updated {formatSummaryDate(content.asOf)}</span>
-        <p className="text-[30px] sm:text-[40px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--dc-text)]">
-          What US imports pay, and why.
-        </p>
-        <p className={`${bodyClass} text-[16px]`}>
-          Today&apos;s rates for common products by country, how a duty is built up, and where every
-          number comes from.
-        </p>
-        <nav aria-label="On this page" className="mt-2 flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2">
+
+          <p className="text-[30px] sm:text-[40px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--dc-text)]">
+            The US Import Tariff Guide
+          </p>
+          <p className={`${bodyClass} text-[16px]`}>
+            See how a duty is calculated, where every number comes from, and find current rates on popular products.
+          </p>
+        </div>
+        {/* <nav aria-label="On this page" className="mt-2 flex flex-wrap gap-2">
           {SECTIONS.filter((s) => s.id !== "tariff-rates-by-country" || content.matrix.rows.length > 0)
             .filter((s) => s.id !== "how-duty-is-calculated" || content.example)
             .map((s) => (
@@ -497,13 +517,13 @@ export const TariffGuide = ({
                 {s.label}
               </a>
             ))}
-        </nav>
+        </nav> */}
       </header>
 
-      {content.matrix.rows.length > 0 && <RatesByCountry content={content} />}
       <HowDutyIsCalculated content={content} />
-      <PopularLookups />
-      <Sources revisionTitle={content.revisionTitle} />
+      <Sources revisionTitle={content.revisionTitle} asOf={content.asOf} />
+      <FindHtsCode />
+      {content.matrix.rows.length > 0 && <RatesByCountry content={content} />}
       <Faq faqs={faqs} />
     </div>
   </div>

@@ -78,21 +78,14 @@ export const Hero = ({
               US Import Duty &amp; Tariff Calculator
             </span>
             <span className="mt-3 block max-w-[20ch] text-[36px] leading-[1.05] sm:text-[48px] lg:text-[56px] font-semibold tracking-[-0.03em] text-[var(--dc-text)]">
-              Know exactly what you owe on every import.{" "}
+              Know what you owe on every import.{" "}
               <span className="text-[var(--dc-accent)]">And why.</span>
             </span>
           </h1>
 
           <p className="mt-5 max-w-[62ch] text-[16px] sm:text-[17.5px] leading-relaxed text-[var(--dc-text-2)]">
-            Enter an{" "}
-            <Link
-              href="/explore"
-              className="font-semibold text-[var(--dc-text)] underline decoration-[var(--dc-border-strong)] underline-offset-4 hover:decoration-[var(--dc-accent)]"
-            >
-              HTS code
-            </Link>{" "}
-            and country of origin. We find every tariff, exemption and fee in
-            effect on your entry date, itemized line by line with its legal
+            We find every tariff, exemption, and fee in
+            effect for your imports, itemized line by line with its legal
             source, and kept current with every HTS revision.
           </p>
 
@@ -120,10 +113,10 @@ export const Hero = ({
               <li key={title}>
                 <Link
                   href={href}
-                  className="group flex h-full gap-3 sm:flex-col sm:gap-2 rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-[var(--dc-shadow)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--dc-accent-border)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+                  className="group flex h-full gap-3 sm:flex-col sm:gap-2 rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-[var(--dc-shadow)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--dc-accent-border)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
                 >
                   <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
                     aria-hidden
                   >
                     <Icon className="h-5 w-5" />

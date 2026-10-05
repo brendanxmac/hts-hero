@@ -147,7 +147,7 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
     id="tariff-tools"
     role="tablist"
     aria-label="Tariff tools"
-    className="grid grid-cols-2 gap-1 self-start w-full sm:w-auto rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-1.5 scroll-mt-4"
+    className="grid grid-cols-2 gap-1 self-start w-full sm:w-auto rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-1.5 scroll-mt-4"
   >
     {TOOLS.map(({ id, label, note, Icon }) => {
       const active = id === tool;
@@ -160,13 +160,13 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
           aria-selected={active}
           aria-controls={`tool-panel-${id}`}
           onClick={() => onChange(id)}
-          className={`flex items-center gap-3 rounded-lg px-3 sm:px-4 py-2.5 text-left transition-[background-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${active
+          className={`flex items-center gap-3 rounded-md px-3 sm:px-4 py-2.5 text-left transition-[background-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${active
             ? "bg-[var(--dc-surface)] shadow-[0_1px_2px_rgba(15,18,23,0.12),0_0_0_1px_var(--dc-border)]"
             : "hover:bg-[var(--dc-surface-3)]"
             }`}
         >
           <span
-            className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${active
+            className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] ${active
               ? "bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
               : "bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]"
               }`}
@@ -397,7 +397,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                     />
                   </section>
                   {result.warnings.length > 0 && (
-                    <ul className="flex flex-col gap-1.5 rounded-lg border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3">
+                    <ul className="flex flex-col gap-1.5 rounded-md border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3">
                       {result.warnings.map((w) => (
                         <li
                           key={w}

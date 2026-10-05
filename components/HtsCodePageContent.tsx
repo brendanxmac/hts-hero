@@ -1,23 +1,48 @@
 import Link from "next/link";
 import Image from "next/image";
+import {
+  ArrowRightIcon,
+  ArrowTopRightOnSquareIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  DocumentTextIcon,
+} from "@heroicons/react/20/solid";
 import logo from "@/app/logo.svg";
 import { HtsElement } from "../interfaces/hts";
 import config from "@/config";
+import { getFirstChapterOfSection } from "@/libs/hts";
+import { usitcHtsFileViewerTabUrl } from "@/libs/usitc-hts-file-url";
 import ThemeToggle from "./ThemeToggle";
-import { CTABanner } from "./CTABanner";
-import { ClassificationHierarchy, HierarchyItem } from "./classification-detail/ClassificationHierarchy";
-import { SectionChapterNotesSection } from "./SectionChapterNotesSection";
 import { RelatedCrossRulingsSection } from "./RelatedCrossRulingsSection";
 import { DutyByCountry } from "./hts-page/DutyByCountry";
+import { MicroCalculator } from "./hts-page/MicroCalculator";
+import type { MicroEstimate } from "../libs/hts-micro-estimate";
+import { bodyClass, cardClass, eyebrowClass, h2Class, heat } from "./hts-page/theme";
+import { mono } from "./duty-calculator/font";
+import styles from "./duty-calculator/theme.module.css";
 import {
+  describeTotal,
   dutyAnswerSentence,
   findRateElement,
+  formatSummaryDate,
   HtsDutySummary,
   inSentence,
   lowestTotal,
 } from "../libs/hts-duty-summary";
 
+// The /hts/[code] page: what an HTS code covers, what it pays and where it sits in the
+// schedule. Server-rendered for search engines, on the duty calculator's design tokens.
+// Each part sits on its own surface so the page scans: the hero and base rates, duties by
+// country, related codes, then notes, rulings and questions on a band of their own.
+
 const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content`;
+
+type SectionChapter = {
+  sectionNumber: number;
+  sectionDescription: string;
+  chapterDescription: string;
+} | null;
 
 interface HtsCodePageContentProps {
   element: HtsElement;
@@ -25,517 +50,774 @@ interface HtsCodePageContentProps {
   productName: string;
   // Duties from the largest sources of US imports; null when the line has no rates
   summary: HtsDutySummary | null;
+  // A quick estimate for one country, which the visitor can change
+  estimate: MicroEstimate | null;
   parentElements: HtsElement[];
   childrenElements: HtsElement[];
   siblingElements: HtsElement[];
-  sectionChapter: {
-    sectionNumber: number;
-    sectionDescription: string;
-    chapterDescription: string;
-  } | null;
+  sectionChapter: SectionChapter;
 }
 
 export function HtsCodePageContent({
   element,
   productName,
   summary,
+  estimate,
   parentElements: parents,
   childrenElements: children,
   siblingElements: siblings,
   sectionChapter,
 }: HtsCodePageContentProps) {
   const tariffElement = findRateElement(element, parents);
-  const hasDutyData = tariffElement.general || tariffElement.special || tariffElement.other;
+  const hasDutyData = !!(tariffElement.general || tariffElement.special || tariffElement.other);
+  const hasRateDetails = hasDutyData || element.units.length > 0 || !!element.quotaQuantity || !!element.additionalDuties;
+  const offerCalculator = !summary && !hasDutyData && !!element.htsno && !element.htsno.startsWith("99");
+  const hasRelated = children.length > 0 || siblings.length > 0;
+  const faqs = htsFaqs({ element, productName, summary, tariffElement, children, sectionChapter });
+
+  const sections = [
+    { id: "duty-by-country", label: "Duty by Country", show: !!summary },
+    { id: "related-codes", label: "Related Codes", show: hasRelated },
+    { id: "notes", label: "Relevant Notes", show: !!(sectionChapter && element.chapter) },
+    { id: "rulings", label: "Related CROSS Rulings", show: !!element.htsno },
+    { id: "faq", label: "FAQ", show: true },
+  ].filter((s) => s.show);
 
   return (
-    <>
-      <StructuredData element={element} productName={productName} summary={summary} tariffElement={tariffElement} parentElements={parents} childrenElements={children} sectionChapter={sectionChapter} />
+    <div className={`${styles.root} w-full min-h-screen flex flex-col`}>
+      <StructuredData element={element} productName={productName} summary={summary} tariffElement={tariffElement} parentElements={parents} sectionChapter={sectionChapter} faqs={faqs} />
 
-      {/* CTA banner + navigation */}
-      <header className="">
-        <CTABanner
-          message={`Want audit-ready HTS Codes for all your Imports?`}
-          ctaText="Find your codes, fast!"
-          href="/classify"
-          subText="And get all the evidence you need to defend them!"
-        />
-        {/* Logo bar */}
-        <div className="bg-base-100/80 backdrop-blur-lg border-b border-base-content/10">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-12 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 shrink-0">
-              <Image
-                src={logo}
-                alt={`${config.appName} logo`}
-                className="w-5"
-                priority
-                width={24}
-                height={24}
-              />
-              <span className="font-bold text-base-content text-base">
-                {config.appName}
-              </span>
-            </Link>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <PageHeader />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-6 flex flex-col gap-6">
+      {/* === Hero: the code, a quick estimate, and a rail with its base rates === */}
+      <div
+        className="w-full border-b border-[var(--dc-border)]"
+        style={{ background: "radial-gradient(70% 90% at 0% 0%, var(--dc-accent-soft), transparent 70%)" }}
+      >
+        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 pt-5 pb-8">
+          <Breadcrumbs element={element} parents={parents} sectionChapter={sectionChapter} />
 
-        {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-1 text-xs sm:text-sm text-base-content/50">
-            <li>
-              <Link href="/explore" className="hover:text-primary transition-colors">
-                HTS
-              </Link>
-            </li>
-            {sectionChapter && (
-              <>
-                <li aria-hidden="true" className="mx-1 text-base-content/30">&rsaquo;</li>
-                <li>
-                  <Link href={`/section/${sectionChapter.sectionNumber}`} className="hover:text-primary transition-colors link link-primary">
-                    Section {sectionChapter.sectionNumber}
-                  </Link>
-                </li>
-                <li aria-hidden="true" className="mx-1 text-base-content/30">&rsaquo;</li>
-                <li>
-                  <Link href={`/chapter/${element.chapter}`} className="hover:text-primary transition-colors link link-primary">
-                    Chapter {element.chapter}
-                  </Link>
-                </li>
-              </>
-            )}
-            {parents.map((parent) => (
-              <li key={parent.uuid} className="flex items-center">
-                <span aria-hidden="true" className="mx-1 text-base-content/30">&rsaquo;</span>
-                {parent.htsno ? (
-                  <Link href={`/hts/${parent.htsno}`} className="hover:text-primary link link-primary transition-colors">
-                    {parent.htsno}
-                  </Link>
-                ) : (
-                  <span className="max-w-[150px] truncate" title={parent.description}>
-                    {parent.description.split(" ").slice(0, 3).join(" ")}...
-                  </span>
-                )}
-              </li>
-            ))}
-            <li className="flex items-center">
-              <span aria-hidden="true" className="mx-1 text-base-content/30">&rsaquo;</span>
-              <span className="font-semibold text-base-content">{element.htsno || "Current"}</span>
-            </li>
-          </ol>
-        </nav>
-
-        {/* === HERO SECTION === */}
-        {/* bg-gradient-to-br from-primary/[0.07] via-base-200/60 to-secondary/[0.05] */}
-        <section className="relative rounded-2xl border border-primary/15 p-6 md:p-8">
-          {/* <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" /> */}
-          {/* <div className="absolute bottom-0 left-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl pointer-events-none" /> */}
-
-          <div className="relative z-10 flex flex-col gap-3">
-            <h1 className="flex flex-col gap-1.5">
-              <span className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
-                {element.htsno}
-              </span>
-              <span className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug">
-                {productName}
-              </span>
-            </h1>
-
-
-            <h3 className="text-sm text-base-content/80 leading-relaxed">
-              {(() => {
-                const ancestors: { key: string; node: React.ReactNode }[] = [];
-
-                if (sectionChapter) {
-                  ancestors.push({
-                    key: "section",
-                    node: (
-                      <span className="text-base-content/80">
-                        {sectionChapter.sectionDescription}
-                      </span>
-                    ),
-                  });
-                  ancestors.push({
-                    key: "chapter",
-                    node: (
-                      <span className="text-base-content/80">
-                        {sectionChapter.chapterDescription}
-                      </span>
-                    ),
-                  });
-                }
-
-                parents.forEach((parent) => {
-                  ancestors.push({
-                    key: parent.uuid,
-                    node: <span className="text-base-content/80">{parent.description}</span>
-                    ,
-                  });
-                });
-
-                return (
-                  <> HTS Code {element.htsno} covers any article best defined as
-                    {ancestors.length > 0 && (
-                      <>
-                        {" "}
-                        {ancestors.map((a, i) => (
-                          <span key={a.key}>
-                            {i > 0 && <span className="text-primary mx-1.5 text-lg" aria-hidden="true">›</span>}
-                            {a.node}
-                          </span>
-                        ))}
-                      </>
-                    )}
-                    <span className="text-primary mx-1.5 text-lg" aria-hidden="true">›</span>
-                    <span className="font-bold text-base-content">{element.description}</span>
-                    {" "}in the Harmonized Tariff Schedule
-                    {children.length > 0 && (
-                      <> — covering {children.length} sub-classification{children.length !== 1 ? "s" : ""}</>
-                    )}
-                    .
-                  </>
-                );
-              })()}
-            </h3>
-
-            {siblings.length > 0 && (
-              <div className="mt-2">
-                <h2 className="text-xs font-bold text-base-content/40 uppercase tracking-wider pt-0.5 mb-2">
-                  Other HTS Codes at This Level:
-                </h2>
-                <div className="flex flex-wrap gap-1.5">
-                  {siblings.map((sib) =>
-                    sib.htsno ? (
-                      <Link
-                        key={sib.uuid}
-                        href={`/hts/${sib.htsno}`}
-                        className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-base-100/10 border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 transition-all"
-                        title={sib.description}
-                      >
-                        <span className="text-xs font-bold text-primary group-hover:underline">{sib.htsno}</span>
-                        <span className="text-xs text-base-content/40 max-w-[180px] truncate">{sib.description}</span>
-                      </Link>
-                    ) : (
-                      <span
-                        key={sib.uuid}
-                        className="inline-flex items-center px-3 py-1.5 rounded-lg bg-base-100/50 border border-base-content/5 text-xs text-base-content/30"
-                        title={sib.description}
-                      >
-                        {sib.description.length > 30 ? sib.description.slice(0, 27) + "..." : sib.description}
-                      </span>
-                    )
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* <div className="mt-3 pt-4 border-t border-base-content/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <p className="text-sm font-semibold text-base-content">Need the correct HTS code for your product?</p>
-                <p className="text-xs text-base-content/50">Generate an audit-ready classification in minutes with AI-powered candidate discovery, GRI and Legal Note analysis, and CROSS ruling validation</p>
-              </div>
-              <Link
-                href="/classifications/new"
-                className="btn btn-primary"
-              >
-                Classify Product <span aria-hidden="true">&rarr;</span>
-              </Link>
-            </div> */}
-          </div>
-        </section>
-
-        {/* Interactive Classification CTA */}
-
-        {/* <ClassificationCTA
-          title={`Looking for the HTS Code for Your Product?`}
-          subtitle="Enter a detailed description of your product and we'll help you find it."
-          ctaButtonText="Find My HTS Code"
-        /> */}
-
-
-
-        {/* === Duty by country of origin === */}
-        {summary && (
-          <DutyByCountry htsno={element.htsno} productName={productName} summary={summary} />
-        )}
-
-        {/* No rates on this line (e.g. a heading above the rate lines): still offer the calculator */}
-        {!summary && !hasDutyData && element.htsno && !element.htsno.startsWith("99") && (
-          <section className="rounded-2xl border border-base-content/20 bg-base-100 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <p className="text-sm font-semibold text-base-content">Importing under {element.htsno}?</p>
-              <p className="text-xs text-base-content/50">Pick the full HTS code in the calculator to see every duty, tariff and exemption for your country of origin.</p>
-            </div>
-            <Link href={`/duty-calculator?code=${element.htsno}`} className="btn btn-primary">
-              Calculate Total Duty <span aria-hidden="true">&rarr;</span>
-            </Link>
-          </section>
-        )}
-
-        {/* === Duty Rates & Details === */}
-        {(hasDutyData || element.units.length > 0 || element.quotaQuantity || element.additionalDuties) && (
-          <section className="rounded-2xl border border-base-content/20 bg-base-100 overflow-hidden shadow-sm mb-8">
-            <div className="px-6 py-4 border-b border-base-content/20">
-              <h3 className="text-base font-bold text-base-content flex items-center gap-2">
-                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Base Duty Rates for {element.htsno}
-              </h3>
-            </div>
-
-            {hasDutyData && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                <DutyRateRow label="General Rate of Duty" value={tariffElement.general} />
-                <DutyRateRow label="Special Rate of Duty" value={tariffElement.special} />
-                <DutyRateRow label="Column 2 (Non-NTR)" value={tariffElement.other} />
-              </div>
-            )}
-
-            {(element.units.length > 0 || element.quotaQuantity || element.additionalDuties) && (
-              <div className="border-t border-base-content/10">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                  <DutyRateRow label="Units of Quantity" value={element.units.join(", ")} />
-                  <DutyRateRow label="Quota Quantity" value={element.quotaQuantity} />
-                  <DutyRateRow label="Additional Duties" value={element.additionalDuties} />
-                </div>
-              </div>
-            )}
-
-            <div className="border-t border-base-content/10 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <p className="text-sm font-semibold text-base-content">Importing under {element.htsno}?</p>
-                <p className="text-xs text-base-content/50">Calculate total import duties, tariffs, and trade agreement exemptions for your shipment.</p>
-              </div>
-              <Link
-                href={element.htsno ? `/duty-calculator?code=${element.htsno}` : "/duty-calculator"}
-                className="btn btn-primary"
-              >
-                Calculate Total Duty <span aria-hidden="true">&rarr;</span>
-              </Link>
-            </div>
-          </section>
-        )}
-
-
-        {/* === CLASSIFICATION HIERARCHY (includes sub-classifications) === */}
-        {(parents.length > 0 || children.length > 0 || sectionChapter) && (
-          <section className="rounded-2xl border-2 border-base-content/10 bg-base-100 overflow-hidden shadow-sm mb-8">
-            <div className="bg-base-200/40 px-6 py-4 border-b border-base-content/10 flex items-center gap-2">
-              <h2 className="text-base font-bold text-base-content">
-                Where {element.htsno || "This Code"} Appears in the Harmonized Tariff Schedule
-              </h2>
-              {children.length > 0 && (
-                <span className="px-2.5 py-1 rounded-full bg-primary/10 text-xs font-bold text-primary shrink-0">
-                  {children.length} sub-code{children.length !== 1 ? "s" : ""}
+          <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8">
+            <div className="min-w-0 flex flex-col gap-5">
+              <div className="flex flex-col gap-3">
+                <span className={eyebrowClass}>
+                  HTS Code{element.chapter ? ` · Chapter ${element.chapter}` : ""}
+                  {summary && <> · Updated {formatSummaryDate(summary.asOf)}</>}
                 </span>
-              )}
-            </div>
-            <div className="p-6">
-              <ClassificationHierarchy
-                continueLineAfterLast={children.length > 0}
-                items={[
-                  ...(sectionChapter
-                    ? [
-                      {
-                        label: `Section ${sectionChapter.sectionNumber}`,
-                        description: sectionChapter.sectionDescription,
-                        href: `/section/${sectionChapter.sectionNumber}`,
-                      },
-                      {
-                        label: `Chapter ${element.chapter}`,
-                        description: sectionChapter.chapterDescription,
-                        href: `/chapter/${element.chapter}`,
-                      },
-                    ]
-                    : []),
-                  ...parents.map((parent) => ({
-                    label: parent.htsno || "—",
-                    code: parent.htsno || undefined,
-                    description: parent.description,
-                    href: parent.htsno ? `/hts/${parent.htsno}` : undefined,
-                  })),
-                  {
-                    label: element.htsno || "Current",
-                    code: element.htsno || undefined,
-                    description: element.description,
-                    isCurrent: true,
-                  },
-                ] satisfies HierarchyItem[]}
-              />
-
-              {children.length > 0 && (
-                <ol className="relative ml-3 border-l-2 border-base-content/10 flex flex-col gap-0 mt-0">
-                  <li className="relative pl-8 pb-3">
-                    <h4 className="text-xs font-bold text-base-content/40 uppercase tracking-wider pt-0.5">
-                      HTS Codes Under {element.htsno || "This Classification"}
-                    </h4>
-                  </li>
-                  {children.map((child) => (
-                    <li key={child.uuid} className="relative pl-8 pb-4 last:pb-0">
-                      <span className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-base-content/10 border-2 border-base-100" />
-                      {child.htsno ? (
-                        <Link href={`/hts/${child.htsno}`} className="group flex flex-col gap-0.5">
-                          <span className="text-sm font-bold text-primary group-hover:underline flex items-center gap-1.5">
-                            {child.htsno}
-                            <svg className="w-3 h-3 text-base-content/15 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                            </svg>
-                          </span>
-                          <span className="text-sm text-base-content/60 group-hover:text-base-content/80 leading-snug transition-colors">
-                            {child.description}
-                          </span>
-                        </Link>
-                      ) : (
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-                            —
-                          </span>
-                          <span className="text-sm text-base-content/60 leading-snug">
-                            {child.description}
-                          </span>
-                        </div>
-                      )}
-                    </li>
+                <h1 className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  <span className={`${mono.className} text-[32px] lg:text-[40px] font-semibold leading-none tracking-[-0.02em] text-[var(--dc-accent)]`}>
+                    {element.htsno}
+                  </span>
+                  <span className="text-[22px] lg:text-[26px] font-semibold leading-tight tracking-[-0.015em] text-[var(--dc-text)]">
+                    {productName}
+                  </span>
+                </h1>
+                <p className="text-[14px] leading-relaxed text-[var(--dc-text-2)] max-w-[95ch]">
+                  HTS Code {element.htsno} covers any article best defined as{" "}
+                  {[
+                    ...(sectionChapter ? [sectionChapter.sectionDescription, sectionChapter.chapterDescription] : []),
+                    ...parents.map((p) => p.description),
+                  ].map((text, i) => (
+                    <span key={i}>
+                      {i > 0 && <Chevron />}
+                      {text}
+                    </span>
                   ))}
-                </ol>
+                  <Chevron />
+                  <strong className="font-semibold text-[var(--dc-text)]">{element.description}</strong>
+                  {" "}in the Harmonized Tariff Schedule
+                  {children.length > 0 && (
+                    <> — covering {children.length} sub-classification{children.length !== 1 ? "s" : ""}</>
+                  )}
+                  .
+                </p>
+              </div>
+
+              {estimate ? (
+                <MicroCalculator
+                  htsno={element.htsno}
+                  baseRates={{ general: tariffElement.general, special: tariffElement.special, other: tariffElement.other }}
+                  initial={estimate}
+                />
+              ) : (
+                element.htsno && !element.htsno.startsWith("99") && (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Link href={`/duty-calculator?code=${element.htsno}`} className={`${styles.buttonPrimary} !h-11 !px-5 !text-[15px]`}>
+                      Calculate Total Duty
+                      <ArrowRightIcon className="h-4 w-4" aria-hidden />
+                    </Link>
+                    <Link href="/explore" className={`${styles.button} !h-11 !px-5 !text-[15px]`}>
+                      Explore the HTS
+                    </Link>
+                  </div>
+                )
               )}
             </div>
 
-            <div className="border-t border-base-content/10 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <p className="text-sm font-semibold text-base-content">Explore the Full Tariff Schedule</p>
-                <p className="text-xs text-base-content/50">Easily navigate every part of the HTS with an interactive HTS explorer, and compare tariff rates for any country.</p>
-              </div>
-              <Link
-                href="/explore"
-                className="btn btn-primary"
-              >
-                Explore the HTS <span aria-hidden="true">&rarr;</span>
-              </Link>
-            </div>
-          </section>
-        )}
+            {/* The rail: base rates, then links to each part of the page */}
+            <div className="flex flex-col gap-4 min-w-0">
+              {hasRateDetails && (
+                <BaseRates element={element} tariffElement={tariffElement} hasDutyData={hasDutyData} showCalculatorLink={!estimate} />
+              )}
 
-        {/* === Section & Chapter Notes === */}
-        {sectionChapter && element.chapter && (
-          <SectionChapterNotesSection
-            sectionChapter={sectionChapter}
-            htsno={element.htsno}
-            chapter={element.chapter}
-          />
-        )}
-
-        {element.htsno && (
-          <RelatedCrossRulingsSection htsno={element.htsno} />
-        )}
-
-        {/* === Playbook Banner === */}
-        <section className="relative rounded-2xl overflow-hidden border-2 border-secondary/20 bg-base-100 shadow-md mb-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-secondary/[0.06] via-transparent to-secondary/[0.03] pointer-events-none" />
-          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-0">
-            {/* Left: book cover + headline + CTA */}
-            <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6">
-              {/* Book cover */}
-              <div className="relative w-32 sm:w-36 md:w-40 aspect-[2/3] rounded-xl overflow-hidden border-2 border-base-content/10 shadow-lg shrink-0">
-                <Image
-                  src={`${STORAGE_BASE}/book-cover.jpg`}
-                  alt="The Audit-Ready Classifications Playbook"
-                  fill
-                  sizes="(max-width: 640px) 128px, (max-width: 768px) 144px, 160px"
-                  className="object-cover"
-                />
-              </div>
-              {/* Text + CTA */}
-              <div className="flex flex-col gap-3 text-center sm:text-left">
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                  <span className="px-2.5 py-0.5 rounded-md bg-secondary text-secondary-content text-[10px] font-extrabold uppercase tracking-widest">
-                    Free
-                  </span>
-                  <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-                    Playbook + 7 Bonuses
-                  </span>
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold text-base-content leading-tight">
-                  The Audit-Ready Classifications Playbook
-                </h3>
-                <p className="text-sm text-base-content/60 leading-relaxed">
-                  Learn how to create HTS classifications that reduce import risk and defend profits — faster than ever.
-                </p>
-                <div>
-                  <Link
-                    href="/the-audit-ready-classifications-playbook"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-secondary text-secondary-content font-bold text-sm hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/25"
-                  >
-                    Download Free Playbook
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
+              {/* No rates on this line (e.g. a heading above the rate lines): still offer the calculator */}
+              {offerCalculator && (
+                <aside className={`${cardClass} p-5 flex flex-col gap-3`}>
+                  <p className="text-[15px] font-semibold text-[var(--dc-text)]">Importing under {element.htsno}?</p>
+                  <p className="text-[14px] leading-relaxed text-[var(--dc-text-2)]">
+                    Pick the full HTS code in the calculator to see every duty, tariff and exemption for your country of origin.
+                  </p>
+                  <Link href={`/duty-calculator?code=${element.htsno}`} className={`${styles.buttonPrimary} justify-center`}>
+                    Calculate Total Duty
+                    <ArrowRightIcon className="h-4 w-4" aria-hidden />
                   </Link>
-                </div>
-              </div>
-            </div>
-            {/* Right: what's inside */}
-            <div className="p-6 sm:p-8 lg:border-l border-t lg:border-t-0 border-secondary/10 flex flex-col justify-center">
-              <p className="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-4">
-                What&apos;s inside
-              </p>
-              <ul className="flex flex-col gap-3">
-                {[
-                  "Step-by-step classification methodology",
-                  "Audit defense strategies & documentation templates",
-                  "Common classification mistakes to avoid",
-                  "GRI application guide with real examples",
-                  "7 FREE tools and templates to boost your classifications",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-base-content/70">
-                    <svg className="shrink-0 w-4 h-4 text-secondary mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-      </div >
+                </aside>
+              )}
 
-      {/* Footer */}
-      <footer className="border-t border-base-content/10 bg-base-200/20" >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-base-content/40">
-          <span>&copy; {new Date().getFullYear()} HTS Hero. Data sourced from the USITC Harmonized Tariff Schedule.</span>
-          <div className="flex gap-4">
-            <Link href="/" className="hover:text-base-content transition-colors">About</Link>
-            <Link href="/blog" className="hover:text-base-content transition-colors">Blog</Link>
-            <Link href="/privacy-policy" className="hover:text-base-content transition-colors">Privacy</Link>
-            <Link href="/tos" className="hover:text-base-content transition-colors">Terms</Link>
+              {summary && (
+                <a
+                  href="#duty-by-country"
+                  className={`${cardClass} group block px-4 py-3 hover:border-[var(--dc-accent-border)]`}
+                >
+                  <span className="flex items-center justify-between text-[14.5px] font-semibold text-[var(--dc-text)]">
+                    Total duty by country
+                    <span className="text-[12.5px] font-medium text-[var(--dc-accent)] group-hover:underline">
+                      All {summary.rows.length} →
+                    </span>
+                  </span>
+                  <ul className={`${styles.num} mt-2 flex flex-col gap-1 text-[13px]`}>
+                    {summary.rows.slice(0, 5).map((row) => (
+                      <li key={row.country.code} className="flex items-center justify-between gap-3">
+                        <span className="text-[var(--dc-text-2)]">
+                          <span aria-hidden="true" className="mr-1.5">{row.country.flag}</span>
+                          {row.country.name}
+                        </span>
+                        <span className="rounded px-1.5 py-0.5 font-semibold text-[var(--dc-text)]" style={{ background: heat(row.totalPct) }}>
+                          {describeTotal(row)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </a>
+              )}
+
+              {sections.length > 1 && (
+                <nav aria-label="Also on this page" className={`${cardClass} px-2 py-2`}>
+                  <span className="block px-3 pt-1.5 pb-1 text-[11.5px] font-semibold uppercase tracking-[0.08em] text-[var(--dc-text-3)]">
+                    Also on this page
+                  </span>
+                  <ul>
+                    {sections.map((s) => (
+                      <li key={s.id}>
+                        <a
+                          href={`#${s.id}`}
+                          className="group flex items-center justify-between rounded-[5px] px-3 py-1.5 text-[13.5px] font-medium text-[var(--dc-text-2)] hover:bg-[var(--dc-accent-soft)] hover:text-[var(--dc-accent)]"
+                        >
+                          {s.label}
+                          <ChevronRightIcon className="h-4 w-4 text-[var(--dc-text-3)] group-hover:text-[var(--dc-accent)]" aria-hidden />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              )}
+            </div>
           </div>
         </div>
-      </footer >
-    </>
+      </div>
+
+      {/* === Duties and related codes === */}
+      <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 py-12 sm:py-16 flex flex-col gap-14 sm:gap-20">
+        {summary && <DutyByCountry htsno={element.htsno} productName={productName} summary={summary} />}
+
+        {hasRelated && <RelatedCodes element={element} subCodes={children} siblings={siblings} />}
+      </div>
+
+      {/* === Notes, rulings and questions: reference material, on a band of its own === */}
+      <div className="w-full border-t border-[var(--dc-border)] bg-[var(--dc-surface)]">
+        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 py-12 sm:py-16 flex flex-col gap-14 sm:gap-20">
+          {sectionChapter && element.chapter && (
+            <Notes sectionChapter={sectionChapter} htsno={element.htsno} chapter={element.chapter} />
+          )}
+
+          {element.htsno && (
+            <section id="rulings" className="scroll-mt-6 flex flex-col gap-6">
+              <div className="flex flex-col gap-2 max-w-[80ch]">
+                <span className={eyebrowClass}>CBP rulings</span>
+                <h2 className={h2Class}>Related CROSS Rulings for HTS {element.htsno}</h2>
+                <p className={bodyClass}>
+                  CBP classification rulings related to{" "}
+                  <span className={`${mono.className} font-medium text-[var(--dc-text)]`}>{element.htsno}</span>.
+                  Open a ruling to read how Customs classified a similar product.
+                </p>
+              </div>
+              <RelatedCrossRulingsSection htsno={element.htsno} bare initialCount={6} />
+            </section>
+          )}
+
+          <Faq htsno={element.htsno} faqs={faqs} />
+        </div>
+      </div>
+
+      {/* === Playbook === */}
+      <div className="w-full border-t border-[var(--dc-border)]">
+        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 py-12 sm:py-16">
+          <PlaybookBanner />
+        </div>
+      </div>
+
+      <PageFooter />
+    </div>
   );
 }
 
-function DutyRateRow({
-  label,
-  value,
-  highlight = false,
-}: {
-  label: string;
-  value: string | null;
-  highlight?: boolean;
-}) {
+const Chevron = () => (
+  <span className="mx-1.5 text-[var(--dc-accent)]" aria-hidden="true">›</span>
+);
+
+// ── Header and footer ──
+
+function PageHeader() {
   return (
-    <div className={`flex items-center justify-between px-6 py-4 ${highlight ? "bg-primary/[0.03]" : ""}`}>
-      <dt className="text-sm text-base-content/60 font-medium">{label}</dt>
-      <dd className={`text-sm font-bold ${value ? "text-base-content" : "text-base-content/30"}`}>
-        {value || "—"}
+    <header>
+      <div className="bg-[var(--dc-text)] text-[var(--dc-bg)]">
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2 sm:gap-6">
+          <p className="text-[13px] sm:text-[14px] text-center sm:text-left">
+            <span className="font-semibold">Want audit-ready HTS Codes for all your Imports?</span>{" "}
+            <span className="opacity-75">And get all the evidence you need to defend them!</span>
+          </p>
+          <Link
+            href="/classify"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-[5px] bg-[var(--dc-bg)] px-3 py-1.5 text-[13px] font-semibold text-[var(--dc-text)] hover:opacity-90"
+          >
+            Find your codes, fast!
+            <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+          </Link>
+        </div>
+      </div>
+      <div className="border-b border-[var(--dc-border)] bg-[var(--dc-surface)]">
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <Image src={logo} alt={`${config.appName} logo`} className="w-5" priority width={24} height={24} />
+            <span className="font-semibold text-[16px] text-[var(--dc-text)]">{config.appName}</span>
+          </Link>
+          <nav aria-label="Tools" className="flex items-center gap-1 sm:gap-2">
+            <Link href="/duty-calculator" className="rounded-[5px] px-2.5 py-1.5 text-[13.5px] font-medium text-[var(--dc-text-2)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)]">
+              Duty Calculator
+            </Link>
+            <Link href="/explore" className="hidden sm:inline-flex rounded-[5px] px-2.5 py-1.5 text-[13.5px] font-medium text-[var(--dc-text-2)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)]">
+              HTS Explorer
+            </Link>
+            <ThemeToggle />
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function PageFooter() {
+  return (
+    <footer className="mt-auto border-t border-[var(--dc-border)] bg-[var(--dc-surface)]">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[12.5px] text-[var(--dc-text-3)]">
+        <span>&copy; {new Date().getFullYear()} HTS Hero. Data sourced from the USITC Harmonized Tariff Schedule.</span>
+        <div className="flex gap-4">
+          <Link href="/" className="hover:text-[var(--dc-text)]">About</Link>
+          <Link href="/blog" className="hover:text-[var(--dc-text)]">Blog</Link>
+          <Link href="/privacy-policy" className="hover:text-[var(--dc-text)]">Privacy</Link>
+          <Link href="/tos" className="hover:text-[var(--dc-text)]">Terms</Link>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function Breadcrumbs({
+  element,
+  parents,
+  sectionChapter,
+}: {
+  element: HtsElement;
+  parents: HtsElement[];
+  sectionChapter: SectionChapter;
+}) {
+  const sep = <span aria-hidden="true" className="mx-1.5 text-[var(--dc-border-strong)]">/</span>;
+  const linkClass = "text-[var(--dc-text-2)] hover:text-[var(--dc-accent)] hover:underline underline-offset-4";
+  return (
+    <nav aria-label="Breadcrumb">
+      <ol className="flex flex-wrap items-center gap-y-1 text-[13px] text-[var(--dc-text-3)]">
+        <li>
+          <Link href="/explore" className={linkClass}>HTS</Link>
+        </li>
+        {sectionChapter && (
+          <>
+            <li className="flex items-center">
+              {sep}
+              <Link href={`/section/${sectionChapter.sectionNumber}`} className={linkClass}>
+                Section {sectionChapter.sectionNumber}
+              </Link>
+            </li>
+            <li className="flex items-center">
+              {sep}
+              <Link href={`/chapter/${element.chapter}`} className={linkClass}>
+                Chapter {element.chapter}
+              </Link>
+            </li>
+          </>
+        )}
+        {parents.map((parent) => (
+          <li key={parent.uuid} className="flex items-center">
+            {sep}
+            {parent.htsno ? (
+              <Link href={`/hts/${parent.htsno}`} className={`${mono.className} ${linkClass}`}>
+                {parent.htsno}
+              </Link>
+            ) : (
+              <span className="max-w-[150px] truncate" title={parent.description}>
+                {parent.description.split(" ").slice(0, 3).join(" ")}...
+              </span>
+            )}
+          </li>
+        ))}
+        <li className="flex items-center">
+          {sep}
+          <span className={`${mono.className} font-semibold text-[var(--dc-text)]`} aria-current="page">
+            {element.htsno || "Current"}
+          </span>
+        </li>
+      </ol>
+    </nav>
+  );
+}
+
+// ── Base rates ──
+
+// "Free (A,AU,BH) 3.5% (JP)" -> [{ rate: "Free", programs: ["A", "AU", "BH"] }, { rate: "3.5%", programs: ["JP"] }];
+// null when the text isn't in that shape
+const specialRates = (special: string) => {
+  const groups = Array.from(special.matchAll(/([^()]+?)\s*\(([^)]+)\)/g));
+  if (!groups.length || groups.map((g) => g[0]).join("").replace(/\s/g, "") !== special.replace(/\s/g, "")) return null;
+  return groups.map((g) => ({ rate: g[1].trim(), programs: g[2].split(",").map((p) => p.trim()).filter(Boolean) }));
+};
+
+function RateRow({ label, value, strong = false }: { label: string; value: string | null; strong?: boolean }) {
+  // Chapter 99 lines carry sentences in the rate columns
+  const long = (value?.length ?? 0) > 24;
+  return (
+    <div className={`px-4 py-2.5 ${long ? "" : "flex items-baseline justify-between gap-3"}`}>
+      <dt className="text-[var(--dc-text-2)]">{label}</dt>
+      <dd className={`font-semibold ${long ? "mt-1" : "text-right"} ${strong && !long ? "text-[18px] leading-none" : ""}`}>
+        <RateValue value={value} />
       </dd>
     </div>
   );
+}
+
+function RateValue({ value }: { value: string | null }) {
+  return value ? (
+    <span className="text-[var(--dc-text)]">{value}</span>
+  ) : (
+    <span className="text-[var(--dc-text-3)]">—</span>
+  );
+}
+
+function BaseRates({
+  element,
+  tariffElement,
+  hasDutyData,
+  showCalculatorLink,
+}: {
+  element: HtsElement;
+  tariffElement: HtsElement;
+  hasDutyData: boolean;
+  showCalculatorLink: boolean;
+}) {
+  const special = tariffElement.special ? specialRates(tariffElement.special) : null;
+  const details = [
+    { label: "Units of Quantity", value: element.units.join(", ") || null },
+    { label: "Quota Quantity", value: element.quotaQuantity },
+    { label: "Additional Duties", value: element.additionalDuties },
+  ].filter((d) => d.value);
+  const inherited = tariffElement !== element && tariffElement.htsno;
+
+  return (
+    <section id="base-rates" aria-labelledby="base-rates-title" className={`${cardClass} scroll-mt-6 overflow-hidden`}>
+      <div className="px-4 pt-3.5 pb-3 border-b border-[var(--dc-border)]">
+        <h2 id="base-rates-title" className="text-[14.5px] font-semibold text-[var(--dc-text)]">
+          Base Duty Rates for {element.htsno}
+        </h2>
+        <p className="mt-0.5 text-[12px] text-[var(--dc-text-3)]">
+          {inherited ? (
+            <>
+              Set at{" "}
+              <Link href={`/hts/${tariffElement.htsno}`} className={`${mono.className} hover:text-[var(--dc-accent)] hover:underline`}>
+                {tariffElement.htsno}
+              </Link>{" "}
+              in the Harmonized Tariff Schedule
+            </>
+          ) : (
+            "From the Harmonized Tariff Schedule"
+          )}
+        </p>
+      </div>
+
+      {/* One row per rate: label on the left, rate on the right; long rates (Chapter 99 sentences) wrap below */}
+      <dl className={`${styles.num} divide-y divide-[var(--dc-border)] text-[13.5px]`}>
+        {hasDutyData && (
+          <>
+            <RateRow label="General Rate of Duty" value={tariffElement.general} strong />
+            <div className="px-4 py-2.5">
+              <div className="flex items-baseline justify-between gap-3">
+                <dt className="text-[var(--dc-text-2)]">Special Rate of Duty</dt>
+                <dd className="font-semibold text-right">
+                  {special ? (
+                    <span className="text-[var(--dc-positive)]">{special.map((s) => s.rate).join(" / ")}</span>
+                  ) : (
+                    <RateValue value={tariffElement.special} />
+                  )}
+                </dd>
+              </div>
+              {special && (
+                <dd className="mt-1.5 flex flex-wrap gap-1">
+                  {special.flatMap((s) => s.programs).map((p, i) => (
+                    <span
+                      key={`${p}-${i}`}
+                      className={`${mono.className} rounded border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-1 py-px text-[10.5px] font-medium text-[var(--dc-text-2)]`}
+                    >
+                      {p}
+                    </span>
+                  ))}
+                </dd>
+              )}
+            </div>
+            <RateRow label="Column 2 (Non-NTR)" value={tariffElement.other} />
+          </>
+        )}
+        {details.map((d) => (
+          <RateRow key={d.label} label={d.label} value={d.value} />
+        ))}
+      </dl>
+
+      {showCalculatorLink && element.htsno && !element.htsno.startsWith("99") && (
+        <div className="border-t border-[var(--dc-border)] px-5 py-4 flex flex-col gap-1">
+          <p className="text-[14px] font-semibold text-[var(--dc-text)]">Importing under {element.htsno}?</p>
+          <p className="text-[13px] leading-snug text-[var(--dc-text-2)]">
+            Calculate total import duties, tariffs, and trade agreement exemptions for your shipment.
+          </p>
+          <Link href={`/duty-calculator?code=${element.htsno}`} className={`${styles.link} mt-1 inline-flex items-center gap-1 text-[13.5px]`}>
+            Calculate Total Duty
+            <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          </Link>
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ── Related codes ──
+
+// The codes under this one and beside it. Plain links, so crawlers reach every line of the schedule
+function RelatedCodes({
+  element,
+  subCodes: children,
+  siblings,
+}: {
+  element: HtsElement;
+  subCodes: HtsElement[];
+  siblings: HtsElement[];
+}) {
+  return (
+    <section id="related-codes" className="scroll-mt-6 flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <span className={eyebrowClass}>Related codes</span>
+        <h2 className={h2Class}>
+          {children.length > 0
+            ? `HTS Codes Under ${element.htsno || "This Classification"}`
+            : "Other HTS Codes at This Level"}
+        </h2>
+      </div>
+
+      {children.length > 0 && (
+        <ul className={`${cardClass} grid overflow-hidden md:grid-cols-2`}>
+          {children.map((child) => {
+            const rate = child.general && child.general.length <= 20 ? child.general : null;
+            const body = (
+              <>
+                <span className="min-w-0 flex-1">
+                  <span className={`${mono.className} block text-[13px] font-semibold ${child.htsno ? "text-[var(--dc-accent)]" : "text-[var(--dc-text-3)]"}`}>
+                    {child.htsno || "—"}
+                  </span>
+                  <span className="block text-[14px] leading-snug text-[var(--dc-text-2)]">{child.description}</span>
+                </span>
+                {rate && (
+                  <span className={`${styles.num} shrink-0 rounded-[5px] bg-[var(--dc-surface-2)] px-2 py-0.5 text-[12.5px] font-semibold text-[var(--dc-text)]`}>
+                    {rate}
+                  </span>
+                )}
+                {child.htsno && (
+                  <ChevronRightIcon className="h-4 w-4 shrink-0 text-[var(--dc-text-3)] group-hover:text-[var(--dc-accent)]" aria-hidden />
+                )}
+              </>
+            );
+            return (
+              <li key={child.uuid} className="-mb-px border-b border-[var(--dc-border)] md:odd:border-r">
+                {child.htsno ? (
+                  <Link href={`/hts/${child.htsno}`} className="group flex h-full items-center gap-3 px-5 py-3 hover:bg-[var(--dc-accent-soft)]">
+                    {body}
+                  </Link>
+                ) : (
+                  <div className="flex h-full items-center gap-3 px-5 py-3">{body}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {siblings.length > 0 && (
+        <div className="flex flex-col gap-3">
+          {children.length > 0 && (
+            <h3 className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--dc-text-3)]">
+              Other HTS Codes at This Level
+            </h3>
+          )}
+          <div className="flex flex-wrap gap-2">
+            {siblings.map((sib) =>
+              sib.htsno ? (
+                <Link
+                  key={sib.uuid}
+                  href={`/hts/${sib.htsno}`}
+                  title={sib.description}
+                  className="group inline-flex max-w-full items-center gap-2 rounded-[5px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-3 py-1.5 hover:border-[var(--dc-accent-border)]"
+                >
+                  <span className={`${mono.className} text-[12.5px] font-semibold text-[var(--dc-accent)]`}>{sib.htsno}</span>
+                  <span className="max-w-[240px] truncate text-[12.5px] text-[var(--dc-text-2)] group-hover:text-[var(--dc-text)]">{sib.description}</span>
+                </Link>
+              ) : (
+                <span
+                  key={sib.uuid}
+                  title={sib.description}
+                  className="inline-flex items-center rounded-[5px] border border-[var(--dc-border)] px-3 py-1.5 text-[12.5px] text-[var(--dc-text-3)]"
+                >
+                  {sib.description.length > 30 ? sib.description.slice(0, 27) + "..." : sib.description}
+                </span>
+              )
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ── Notes ──
+
+function Notes({
+  sectionChapter,
+  htsno,
+  chapter,
+}: {
+  sectionChapter: NonNullable<SectionChapter>;
+  htsno: string;
+  chapter: number;
+}) {
+  // Section notes are printed with the section's first chapter
+  const sectionNoteChapter = getFirstChapterOfSection(sectionChapter.sectionNumber) ?? chapter;
+  const links = [
+    ...(sectionNoteChapter !== chapter
+      ? [{ title: `Section ${sectionChapter.sectionNumber} Notes`, description: sectionChapter.sectionDescription, file: `Chapter ${sectionNoteChapter}` }]
+      : []),
+    {
+      title: `Chapter ${chapter} Notes${sectionNoteChapter === chapter ? ` (includes Section ${sectionChapter.sectionNumber} Notes)` : ""}`,
+      description: sectionChapter.chapterDescription,
+      file: `Chapter ${chapter}`,
+    },
+  ];
+
+  return (
+    <section id="notes" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:items-center lg:gap-12">
+      <div className="flex flex-col gap-2">
+        <span className={eyebrowClass}>Legal notes</span>
+        <h2 className={h2Class}>Relevant HTS Notes</h2>
+        <p className={bodyClass}>
+          Official USITC notes that may affect classification under HTS{" "}
+          {htsno ? <span className={`${mono.className} font-medium text-[var(--dc-text)]`}>{htsno}</span> : "this code"}.
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {links.map((link) => (
+          <a
+            key={link.title}
+            href={usitcHtsFileViewerTabUrl(link.file)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-start gap-3 rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] p-4 hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)]"
+          >
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]" aria-hidden>
+              <DocumentTextIcon className="h-5 w-5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[14.5px] font-semibold text-[var(--dc-text)] group-hover:text-[var(--dc-accent)]">{link.title}</span>
+              <span className="mt-0.5 block text-[13px] leading-snug text-[var(--dc-text-2)] line-clamp-2">{link.description}</span>
+            </span>
+            <ArrowTopRightOnSquareIcon className="h-4 w-4 shrink-0 text-[var(--dc-text-3)] group-hover:text-[var(--dc-accent)]" aria-hidden />
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── FAQ ──
+
+function Faq({ htsno, faqs }: { htsno: string; faqs: [string, string][] }) {
+  return (
+    <section id="faq" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
+      <div className="flex flex-col gap-2 lg:sticky lg:top-6 lg:self-start">
+        <span className={eyebrowClass}>Questions</span>
+        <h2 className={h2Class}>HTS {htsno} FAQ</h2>
+        <p className={bodyClass}>
+          Something else? <a href="mailto:support@htshero.com" className={styles.link}>Ask us</a>.
+        </p>
+      </div>
+      <div className="flex flex-col gap-3">
+        {faqs.map(([question, answer], i) => (
+          <details
+            key={question}
+            open={i === 0}
+            className="group rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] px-5 py-4 open:bg-[var(--dc-surface)] open:shadow-[var(--dc-shadow)] open:border-[var(--dc-accent-border)]"
+          >
+            <summary className="cursor-pointer list-none flex items-center justify-between gap-4 text-[15.5px] font-semibold text-[var(--dc-text)] [&::-webkit-details-marker]:hidden">
+              <h3>{question}</h3>
+              <ChevronDownIcon className="h-5 w-5 shrink-0 text-[var(--dc-text-3)] transition-transform group-open:rotate-180" aria-hidden />
+            </summary>
+            <p className={`${bodyClass} mt-3 max-w-[80ch]`}>{answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── Playbook ──
+
+function PlaybookBanner() {
+  return (
+    <section className="relative overflow-hidden rounded-[10px] bg-[var(--dc-accent)] text-[var(--dc-accent-contrast)] shadow-[var(--dc-shadow-pop)]">
+      <div className="grid grid-cols-1 lg:grid-cols-2">
+        <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          <div className="relative w-32 sm:w-36 aspect-[2/3] rounded-md overflow-hidden shadow-[var(--dc-shadow-pop)] ring-1 ring-black/10 shrink-0">
+            <Image
+              src={`${STORAGE_BASE}/book-cover.jpg`}
+              alt="The Audit-Ready Classifications Playbook"
+              fill
+              sizes="(max-width: 640px) 128px, 144px"
+              className="object-cover"
+            />
+          </div>
+          <div className="flex flex-col gap-3 text-center sm:text-left">
+            <span className="text-[12px] font-semibold uppercase tracking-[0.12em] opacity-75">
+              Free · Playbook + 7 Bonuses
+            </span>
+            <h2 className="text-[22px] sm:text-[26px] font-semibold leading-tight tracking-tight">
+              The Audit-Ready Classifications Playbook
+            </h2>
+            <p className="text-[15px] leading-relaxed opacity-85">
+              Learn how to create HTS classifications that reduce import risk and defend profits — faster than ever.
+            </p>
+            <div>
+              <Link
+                href="/the-audit-ready-classifications-playbook"
+                className="mt-1 inline-flex h-11 items-center gap-2 rounded-[6px] bg-[var(--dc-accent-contrast)] px-5 text-[15px] font-semibold text-[var(--dc-accent)] hover:opacity-90"
+              >
+                Download Free Playbook
+                <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              </Link>
+            </div>
+          </div>
+        </div>
+        <div className="p-6 sm:p-8 border-t lg:border-t-0 lg:border-l flex flex-col justify-center" style={{ borderColor: "color-mix(in srgb, currentColor 18%, transparent)" }}>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] opacity-75 mb-4">What&apos;s inside</p>
+          <ul className="flex flex-col gap-3">
+            {[
+              "Step-by-step classification methodology",
+              "Audit defense strategies & documentation templates",
+              "Common classification mistakes to avoid",
+              "GRI application guide with real examples",
+              "7 FREE tools and templates to boost your classifications",
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-2.5 text-[14.5px]">
+                <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 opacity-80" aria-hidden />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Questions and structured data ──
+
+// The page's questions, shown in the FAQ and in its FAQPage schema (which must match what's visible)
+function htsFaqs({
+  element,
+  productName,
+  summary,
+  tariffElement,
+  children,
+  sectionChapter,
+}: {
+  element: HtsElement;
+  productName: string;
+  summary: HtsDutySummary | null;
+  tariffElement: HtsElement;
+  children: HtsElement[];
+  sectionChapter: SectionChapter;
+}): [string, string][] {
+  const chapterCtx = sectionChapter
+    ? `, classified under Chapter ${element.chapter} (${sectionChapter.chapterDescription})`
+    : "";
+  const dutyCtx = tariffElement.general ? ` The general duty rate is ${tariffElement.general}.` : "";
+  const subCodesCtx = children.length > 0
+    ? ` There are ${children.length} more specific sub-classifications under this code.`
+    : "";
+
+  const china = summary?.rows.find((r) => r.country.code === "CN");
+  const lowest = summary ? lowestTotal(summary.rows) : null;
+  // Chapter 99 lines carry sentences in the rate columns
+  const general = tariffElement.general && tariffElement.general.length <= 40 && !element.htsno.startsWith("99")
+    ? tariffElement.general
+    : null;
+
+  return [
+    [
+      `What does HTS code ${element.htsno} cover?`,
+      `HTS code ${element.htsno} covers ${inSentence(productName)}${productName === element.description ? "" : ` (${element.description})`}${chapterCtx} in the US Harmonized Tariff Schedule.${dutyCtx}${subCodesCtx}`,
+    ],
+    ...(general
+      ? [[
+        `What is the duty rate for HTS ${element.htsno}?`,
+        `The general (Column 1) rate of duty for HTS ${element.htsno} is ${general}.` +
+        (tariffElement.special ? ` Goods that qualify for a trade program can enter at the special rate: ${tariffElement.special}.` : "") +
+        (tariffElement.other ? ` The Column 2 rate, for countries without normal trade relations, is ${tariffElement.other}.` : "") +
+        (summary ? " Additional Chapter 99 tariffs, such as Section 301 and Section 232, can apply on top depending on the country of origin." : ""),
+      ] as [string, string]]
+      : []),
+    ...(summary && china
+      ? [[
+        `What is the US tariff on ${inSentence(productName)} (HTS ${element.htsno}) from China?`,
+        dutyAnswerSentence({ productName, htsno: element.htsno, row: china, asOf: summary.asOf }),
+      ] as [string, string]]
+      : []),
+    ...(summary && lowest
+      ? [[
+        `Which country has the lowest US duty on HTS ${element.htsno}?`,
+        `Of the ${summary.rows.length} largest sources of US imports, the lowest total duty on HTS ${element.htsno} is ${lowest.label}, as of the tariffs in effect on ${summary.asOf}.`,
+      ] as [string, string]]
+      : []),
+  ];
 }
 
 function StructuredData({
@@ -544,16 +826,16 @@ function StructuredData({
   summary,
   tariffElement,
   parentElements: parents,
-  childrenElements: children,
   sectionChapter,
+  faqs,
 }: {
   element: HtsElement;
   productName: string;
   summary: HtsDutySummary | null;
   tariffElement: HtsElement;
   parentElements: HtsElement[];
-  childrenElements: HtsElement[];
-  sectionChapter: HtsCodePageContentProps["sectionChapter"];
+  sectionChapter: SectionChapter;
+  faqs: [string, string][];
 }) {
   const breadcrumbItems = [
     { name: "HTS Explorer", url: `https://${config.domainName}/explore` },
@@ -592,34 +874,7 @@ function StructuredData({
     })),
   };
 
-  const chapterCtx = sectionChapter
-    ? `, classified under Chapter ${element.chapter} (${sectionChapter.chapterDescription})`
-    : "";
   const dutyCtx = tariffElement.general ? ` The general duty rate is ${tariffElement.general}.` : "";
-  const subCodesCtx = children.length > 0
-    ? ` There are ${children.length} more specific sub-classifications under this code.`
-    : "";
-
-  const faqQuestion = `What does HTS code ${element.htsno} cover?`;
-  const faqAnswer = `HTS code ${element.htsno} covers ${inSentence(productName)}${productName === element.description ? "" : ` (${element.description})`}${chapterCtx} in the US Harmonized Tariff Schedule.${dutyCtx}${subCodesCtx}`;
-
-  const china = summary?.rows.find((r) => r.country.code === "CN");
-  const lowest = summary ? lowestTotal(summary.rows) : null;
-  const faqs: [string, string][] = [
-    [faqQuestion, faqAnswer],
-    ...(summary && china
-      ? [[
-        `What is the US tariff on ${inSentence(productName)} (HTS ${element.htsno}) from China?`,
-        dutyAnswerSentence({ productName, htsno: element.htsno, row: china, asOf: summary.asOf }),
-      ] as [string, string]]
-      : []),
-    ...(summary && lowest
-      ? [[
-        `Which country has the lowest US duty on HTS ${element.htsno}?`,
-        `Of the ${summary.rows.length} largest sources of US imports, the lowest total duty on HTS ${element.htsno} is ${lowest.label}, as of the tariffs in effect on ${summary.asOf}.`,
-      ] as [string, string]]
-      : []),
-  ];
 
   const faqSchema = {
     "@context": "https://schema.org",

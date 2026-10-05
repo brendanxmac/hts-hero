@@ -194,7 +194,7 @@ const ListRail = ({
         </div>
 
         {errors.length > 0 && (
-          <div className="rounded-lg border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)]">
+          <div className="rounded-md border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)]">
             <button
               type="button"
               className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left text-[12.5px] font-semibold text-[var(--dc-warning)]"
@@ -260,7 +260,7 @@ const EmptyReport = ({ hasText, onExample }: { hasText: boolean; onExample: () =
           <ArrowRightIcon className="w-4 h-4" />
         </button>
       </div>
-      <div className="rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-5">
+      <div className="rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-5">
         <div className={styles.eyebrow}>Format</div>
         <pre className={`${mono.className} mt-3 text-[14px] leading-[1.8] text-[var(--dc-text)]`}>{EXAMPLE_LIST}</pre>
         <p className="mt-3 text-[12.5px] leading-snug text-[var(--dc-text-3)]">
@@ -647,13 +647,13 @@ const ExportMenu = ({ onExport }: { onExport: (format: ExportFormat) => void }) 
       Export
       <ChevronDownIcon className="w-4 h-4 -mr-1 text-[var(--dc-text-3)]" />
     </Menu.Button>
-    <Menu.Items className="absolute right-0 z-30 mt-2 w-[250px] rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none">
+    <Menu.Items className="absolute right-0 z-30 mt-2 w-[250px] rounded-[10px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none">
       {EXPORTS.map(({ format, label, note, Icon }) => (
         <Menu.Item key={format}>
           {({ active }) => (
             <button
               type="button"
-              className={`w-full flex items-start gap-3 rounded-lg px-3 py-2.5 text-left text-[var(--dc-text)] ${
+              className={`w-full flex items-start gap-3 rounded-md px-3 py-2.5 text-left text-[var(--dc-text)] ${
                 active ? "bg-[var(--dc-accent-soft)]" : ""
               }`}
               onClick={() => onExport(format)}

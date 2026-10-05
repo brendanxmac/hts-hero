@@ -62,7 +62,7 @@ const PREFERENCE_SHORT_NAMES: Record<string, string> = {
 
 // "Generalized System of Preferences (GSP)" -> "GSP",
 // "United States-Korea Free Trade Agreement" -> "US-Korea FTA"
-const preferenceName = (name: string) =>
+export const preferenceName = (name: string) =>
   PREFERENCE_SHORT_NAMES[name] ??
   name.match(/\(([^)]+)\)\s*$/)?.[1] ??
   name.replace(/^United States-(.+?) Free Trade Agreement.*$/, "US-$1 FTA");

@@ -19,6 +19,7 @@ import {
   htsProductName,
   inSentence,
 } from "@/libs/hts-duty-summary";
+import { microEstimate } from "@/libs/hts-micro-estimate";
 
 interface HtsCodePageProps {
   params: { code: string };
@@ -146,7 +147,16 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
     notFound();
   }
 
-  const { elements, element, parents, sectionChapter, productName, summary } = page;
+  const { elements, element, parents, rateElement, sectionChapter, productName, summary } = page;
+  // The quick estimate opens on China, the most-looked-up country of origin
+  const estimate = summary
+    ? microEstimate({
+      htsCode: element.htsno,
+      baseRates: { general: rateElement.general, special: rateElement.special, other: rateElement.other },
+      country: "CN",
+      asOf: summary.asOf,
+    })
+    : null;
   const children = getDirectChildren(element, elements);
   const nearestParent = parents[parents.length - 1];
   const siblings = nearestParent
@@ -154,11 +164,12 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
     : [];
 
   return (
-    <main className="w-full min-h-screen bg-base-100">
+    <main className="w-full min-h-screen">
       <HtsCodePageContent
         element={element}
         productName={productName}
         summary={summary}
+        estimate={estimate}
         parentElements={parents}
         childrenElements={children}
         siblingElements={siblings}
