@@ -4,7 +4,7 @@ import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
 import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out banner
 import { CTABanner } from "../../components/CTABanner";
-import styles from "../../components/ui/theme.module.css";
+import { THEME } from "../../components/ui/theme";
 
 export default async function LayoutPrivate({
   children,
@@ -19,7 +19,7 @@ export default async function LayoutPrivate({
 
   // The analytical theme covers the site header too
   return (
-    <div className={`${styles.root} flex flex-col max-h-svh overflow-y-auto`}>
+    <div className={`${THEME} flex flex-col max-h-svh overflow-y-auto`}>
       {/* <CTABanner
         message="Your duty rate is only correct if your HTS code is correct."
         ctaText="Verify Your Classifications"

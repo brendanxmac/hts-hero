@@ -5,7 +5,8 @@ import { createAdminClient, createClient } from "@/app/api/supabase/server";
 import { CHANGELOG_ADMIN_EMAIL, getChangelogEntries } from "@/libs/supabase/tariff-changelog";
 import { getLatestVerifiedRevision } from "../../../tariffs/engine-v2/revisions";
 import { ChangelogList } from "../../../components/duty-calculator/ChangelogList";
-import styles from "../../../components/ui/theme.module.css";
+import { THEME } from "../../../components/ui/theme";
+import * as ui from "../../../components/ui/styles";
 
 export const metadata: Metadata = {
   title: "Tariff Calculator Changelog | HTS Hero",
@@ -32,7 +33,7 @@ export default async function TariffChangelogPage() {
   const latestVerified = getLatestVerifiedRevision();
 
   return (
-    <main className={`${styles.root} w-full flex-1 shrink-0 flex flex-col`}>
+    <main className={`${THEME} w-full flex-1 shrink-0 flex flex-col`}>
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 pt-10 pb-16 md:pt-14">
         <Link
           href="/duty-calculator"
@@ -43,7 +44,7 @@ export default async function TariffChangelogPage() {
         <h1 className="mt-4 text-3xl lg:text-4xl font-semibold leading-tight tracking-tight text-base-content">
           Changelog
         </h1>
-        <p className="mt-3 max-w-xl text-lg leading-relaxed text-base-content/70">
+        <p className={`${ui.lead} mt-3 max-w-xl`}>
           Every change to the tariff calculator: new HTS revisions, corrections and improvements.
         </p>
         <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs font-medium text-base-content/70">

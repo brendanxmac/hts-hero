@@ -38,7 +38,7 @@ import {
   SummaryStats,
 } from "./Results";
 import { DateNotice } from "./shared";
-import styles from "../ui/theme.module.css";
+import { THEME_EMBEDDED } from "../ui/theme";
 import * as ui from "../ui/styles";
 
 // A duty estimate for one HTS code, embedded in another page (the HTS explorer, a
@@ -200,7 +200,7 @@ export const DutyEstimateEmbed = ({
   const ids = `de-${surface}`;
 
   return (
-    <div className={`${styles.root} ${styles.embedded} flex flex-col gap-4`}>
+    <div className={`${THEME_EMBEDDED} flex flex-col gap-4`}>
       {/* Inputs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
         <Field
@@ -296,7 +296,7 @@ export const DutyEstimateEmbed = ({
 
       {!country || !result ? (
         <div className="rounded-lg border border-dashed border-base-content/20 px-6 py-10 text-center">
-          <div className="text-base font-semibold text-base-content">
+          <div className={ui.cardTitle}>
             Choose a country of origin
           </div>
           <p className="mt-1 text-sm text-base-content/70">
@@ -306,7 +306,7 @@ export const DutyEstimateEmbed = ({
         </div>
       ) : simple ? (
         <>
-          <div className="rounded-lg border border-base-300 bg-base-100 shadow-sm">
+          <div className={ui.card}>
             <SimpleSummary
               result={result}
               customsValue={customsValue}
@@ -327,7 +327,7 @@ export const DutyEstimateEmbed = ({
               })
             }
           />
-          <p className="text-xs text-base-content/60">
+          <p className={ui.caption}>
             Rates as of {formatDate(entryDate)}
             {isVerifiedDate(entryDate)
               ? ""
@@ -339,7 +339,7 @@ export const DutyEstimateEmbed = ({
         <>
           <DateNotice entryDate={entryDate} onUseVerified={setEntryDate} />
 
-          <div className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm">
+          <div className={ui.card}>
             <SummaryStats result={result} customsValue={customsValue} />
             <Statement
               result={result}
@@ -374,7 +374,7 @@ export const DutyEstimateEmbed = ({
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="text-xs text-base-content/60">
+            <span className={ui.caption}>
               {openQuestions > 0
                 ? "Answer the questions above to refine this estimate."
                 : "Estimates don't include antidumping or countervailing duties."}
@@ -440,7 +440,7 @@ const CalculatorCta = ({
     <div className={`${ui.card} p-5 sm:p-6`}>
       <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-5 md:items-center">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+          <div className={`${ui.kicker} inline-flex items-center gap-1.5`}>
             <SparklesIcon className="w-4 h-4" aria-hidden />
             Full analysis
           </div>

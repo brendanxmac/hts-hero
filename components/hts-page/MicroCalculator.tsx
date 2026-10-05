@@ -17,8 +17,8 @@ import * as ui from "../ui/styles";
 
 const CUSTOMS_VALUE = 10000;
 
-const COLORS = ["var(--dc-chart-1)", "var(--dc-chart-2)", "var(--dc-chart-3)", "var(--dc-chart-4)", "var(--dc-chart-5)"];
-const FEES_COLOR = "var(--dc-chart-6)";
+const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
+const FEES_COLOR = "var(--chart-6)";
 
 let engine: Promise<typeof import("../../libs/hts-micro-estimate")> | null = null;
 const loadEngine = () => (engine ??= import("../../libs/hts-micro-estimate"));
@@ -79,21 +79,21 @@ export const MicroCalculator = ({
     <section
       id="estimate"
       aria-labelledby="estimate-title"
-      className="scroll-mt-6 overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm"
+      className={`${ui.card} scroll-mt-6`}
     >
       <div className="flex flex-col gap-3 border-b border-base-300 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h2 id="estimate-title" className="text-base font-semibold text-base-content">
+          <h2 id="estimate-title" className={ui.cardTitle}>
             Estimated Duty on {htsno}
           </h2>
-          <p className="text-xs text-base-content/60">
+          <p className={ui.caption}>
             {formatMoney(CUSTOMS_VALUE)} by ocean, entered {formatDate(initial.asOf)}
             {shown?.requiresQuantity && " · 1,000 units"}
           </p>
         </div>
         {/* Start fetching the engine as soon as the visitor reaches for the field */}
         <div className="flex w-full items-center gap-3 sm:w-auto shrink-0" onPointerEnter={loadEngine} onFocusCapture={loadEngine}>
-          <label htmlFor="estimate-country" className="text-sm font-semibold text-base-content/70 whitespace-nowrap">
+          <label htmlFor="estimate-country" className={`${ui.fieldLabel} whitespace-nowrap`}>
             Country of origin
           </label>
           <div className="w-full sm:w-72">
@@ -142,7 +142,7 @@ export const MicroCalculator = ({
             Find my exact duty
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
-          <span className="text-center text-xs text-base-content/60">Free · No sign-up</span>
+          <span className={`${ui.caption} text-center`}>Free · No sign-up</span>
         </div>
       </div>
     </section>
@@ -157,7 +157,7 @@ const Stats = ({ estimate }: { estimate: MicroEstimate }) => {
     // 1px gaps over the border color draw the dividers at every breakpoint
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr] gap-px bg-base-300 border-b border-base-300">
       <div className="col-span-2 sm:col-span-3 lg:col-span-1 px-5 py-3 bg-base-100">
-        <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">Total duty</div>
+        <div className={ui.label}>Total duty</div>
         <div className="mt-1 text-3xl leading-none font-semibold tracking-tight tabular-nums text-base-content">
           {formatMoney(estimate.totalDuty)}
         </div>
@@ -179,11 +179,11 @@ const Stats = ({ estimate }: { estimate: MicroEstimate }) => {
 
 const Stat = ({ label, value, note, className = "" }: { label: string; value: string; note: string; className?: string }) => (
   <div className={`px-5 py-3 bg-base-100 ${className}`}>
-    <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">{label}</div>
+    <div className={ui.label}>{label}</div>
     <div className="mt-1 text-xl leading-none font-semibold tracking-tight tabular-nums text-base-content">
       {value}
     </div>
-    <div className="mt-1 text-xs text-base-content/60">{note}</div>
+    <div className={`${ui.caption} mt-1`}>{note}</div>
   </div>
 );
 

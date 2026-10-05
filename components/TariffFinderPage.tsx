@@ -39,7 +39,7 @@ import {
   TariffFinder,
   useTariffFinder,
 } from "./duty-calculator/useTariffFinder";
-import styles from "./ui/theme.module.css";
+import { THEME } from "./ui/theme";
 import { SegmentedControl } from "./ui/SegmentedControl";
 import * as ui from "./ui/styles";
 
@@ -114,7 +114,7 @@ export const TariffFinderPage = () => {
   };
 
   return (
-    <div className={`${styles.root} w-full pb-20`}>
+    <div className={`${THEME} w-full pb-20`}>
       <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4 px-4 sm:px-6 lg:px-8">
         {SHOW_TOOL_TABS && <ToolTabs tool={tool} onChange={changeTool} />}
         <div
@@ -180,7 +180,7 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
             <span className={`text-base font-semibold ${active ? "text-base-content" : "text-base-content/70"}`}>
               {label}
             </span>
-            <span className="text-xs text-base-content/60 truncate">{note}</span>
+            <span className={`${ui.caption} truncate`}>{note}</span>
           </span>
         </button>
       );
@@ -323,7 +323,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                   onViewDetails={f.viewCountryDetails}
                 />
               ) : f.view === "simple" ? (
-                <div className="rounded-lg border border-base-300 bg-base-100 shadow-sm">
+                <div className={ui.card}>
                   <SimpleSummary
                     result={result}
                     customsValue={f.customsValue}
@@ -333,7 +333,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                 </div>
               ) : (
                 <>
-                  <div className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm">
+                  <div className={ui.card}>
                     <SummaryStats
                       result={result}
                       customsValue={f.customsValue}
@@ -347,16 +347,16 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                     />
                   </div>
                   <section
-                    className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm"
+                    className={ui.card}
                     aria-labelledby="duty-breakdown-title"
                   >
                     <div className="px-5 sm:px-6 pt-5 pb-3 sm:pb-1 border-b border-base-300 sm:border-b-0">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <h3 id="duty-breakdown-title" className="text-base font-semibold text-base-content">
+                          <h3 id="duty-breakdown-title" className={ui.cardTitle}>
                             Duty Breakdown
                           </h3>
-                          <p className="mt-0.5 text-xs text-base-content/60">
+                          <p className={`${ui.caption} mt-0.5`}>
                             Each duty and fee on this entry for {formatDate(result.asOf)}
                             {linesDetail === "full"
                               ? ", with the reason it applies and its legal text"
@@ -390,7 +390,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                       {result.warnings.map((w) => (
                         <li
                           key={w}
-                          className="flex gap-2 text-sm leading-snug text-base-content/70"
+                          className={`${ui.bodySm} flex gap-2`}
                         >
                           <ExclamationTriangleIcon
                             className="w-4 h-4 shrink-0 mt-px text-warning"
@@ -449,7 +449,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
 
 const ResultsSkeleton = () => (
   <div
-    className="p-5 flex flex-col gap-3 rounded-lg border border-base-300 bg-base-100 shadow-sm"
+    className={`${ui.card} p-5 flex flex-col gap-3`}
     aria-busy="true"
     aria-label="Loading HTS data"
   >
@@ -462,13 +462,13 @@ const ResultsSkeleton = () => (
 );
 
 const EmptyState = ({ f }: { f: TariffFinder }) => (
-  <section className="p-6 sm:p-10 h-full flex flex-col justify-center rounded-lg border border-base-300 bg-base-100 shadow-sm">
+  <section className={`${ui.card} p-6 sm:p-10 h-full flex flex-col justify-center`}>
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-10 items-center">
       <div>
         <h2 className="text-xl font-semibold tracking-tight text-base-content">
           {emptyTitle(f)}
         </h2>
-        <p className="mt-2 text-base leading-relaxed text-base-content/70">
+        <p className={`${ui.body} mt-2`}>
           You&apos;ll get a line-by-line statement: the base rate, every Chapter
           99 tariff and exemption in effect on your entry date, and customs
           fees, each with the reason it applies.
@@ -490,7 +490,7 @@ const EmptyState = ({ f }: { f: TariffFinder }) => (
         </ol>
       </div>
       <div className="flex flex-col gap-2.5">
-        <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">Try an example</div>
+        <div className={ui.label}>Try an example</div>
         <ExampleButtons onExample={f.selectExample} />
       </div>
     </div>

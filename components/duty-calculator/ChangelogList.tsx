@@ -137,7 +137,7 @@ export const ChangelogList = ({
                     )}
                   </div>
                   <h2 className="mt-2 text-lg font-semibold leading-snug text-base-content">{entry.title}</h2>
-                  <p className="mt-1.5 text-base leading-relaxed text-base-content/70">{entry.summary}</p>
+                  <p className={`${ui.body} mt-1.5`}>{entry.summary}</p>
                   {isAdmin && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       <button type="button" className={ui.button({ size: "sm" })} onClick={() => setEditing(entry.id)}>

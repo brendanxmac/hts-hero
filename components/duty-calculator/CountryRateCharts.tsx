@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { mono } from "../ui/font";
 import { SegmentedControl } from "../ui/SegmentedControl";
+import * as ui from "../ui/styles";
 
 // The rates-by-country charts and table on /duty-calculator: the products' total duty for up to
 // five chosen countries side by side, every country's average, and every rate. Choosing a country
@@ -25,11 +26,11 @@ type Markers = "colors" | "flags";
 const MARKERS_STORAGE_KEY = "hts-hero-rates-markers";
 
 const SERIES = [
-  "var(--dc-series-1)",
-  "var(--dc-series-2)",
-  "var(--dc-series-3)",
-  "var(--dc-series-4)",
-  "var(--dc-series-5)",
+  "var(--series-1)",
+  "var(--series-2)",
+  "var(--series-3)",
+  "var(--series-4)",
+  "var(--series-5)",
 ];
 const DEFAULT_COUNTRIES = ["CN", "MX", "VN", "DE", "JP"];
 // Bars for countries that aren't chosen
@@ -55,8 +56,8 @@ const pct = (v: number) => `${Math.round(v * 10) / 10}%`;
 const Caption = ({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) => (
   <figcaption className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
     <div className="min-w-0">
-      <h3 className="text-base font-semibold text-base-content">{title}</h3>
-      <p className="mt-0.5 text-xs text-base-content/60">{children}</p>
+      <h3 className={ui.cardTitle}>{title}</h3>
+      <p className={`${ui.caption} mt-0.5`}>{children}</p>
     </div>
     {action}
   </figcaption>
@@ -262,7 +263,7 @@ export const CountryRateCharts = ({
               <span className="hidden sm:block" />
               <div className="relative mx-2 h-4">
                 {ticks.map((t) => (
-                  <span key={t} className="absolute -translate-x-1/2 text-xs text-base-content/60" style={{ left: x(t) }}>
+                  <span key={t} className={`${ui.caption} absolute -translate-x-1/2`} style={{ left: x(t) }}>
                     {t}%
                   </span>
                 ))}
@@ -310,7 +311,7 @@ export const CountryRateCharts = ({
       </div>
 
       {/* Every rate, in the same style: the total and a bar on the charts' scale */}
-      <figure className="m-0 overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm">
+      <figure className={`${ui.card} m-0`}>
         <div className="px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
           <Caption title="All rates">
             Total duty by country and product, on the same scale as the chart above. Select a
@@ -323,7 +324,7 @@ export const CountryRateCharts = ({
               <tr className="border-b border-base-300 text-left">
                 <th
                   scope="col"
-                  className="sticky left-0 z-10 bg-base-100 px-5 sm:px-6 py-2 align-bottom text-xs font-semibold uppercase tracking-wider text-base-content/60"
+                  className={`${ui.label} sticky left-0 z-10 bg-base-100 px-5 sm:px-6 py-2 align-bottom`}
                 >
                   Country
                 </th>
@@ -335,7 +336,7 @@ export const CountryRateCharts = ({
                     >
                       {p.label}
                     </Link>
-                    <span className={`${mono.className} block text-xs text-base-content/60`}>{p.code}</span>
+                    <span className={`${mono.className} block ${ui.caption}`}>{p.code}</span>
                   </th>
                 ))}
               </tr>

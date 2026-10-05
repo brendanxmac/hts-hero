@@ -273,14 +273,14 @@ const Citation = ({
           {citation.label}
         </span>
         {version && picked?.early ? (
-          <span className="text-xs text-base-content/60">
+          <span className={ui.caption}>
             As first published in the HTS on {formatDate(version.from)}
           </span>
         ) : (
           version &&
           versions &&
           versions.length > 1 && (
-            <span className="text-xs text-base-content/60">
+            <span className={ui.caption}>
               Text in force {formatDate(version.from)}
               {version.to ? ` – ${formatDate(lastDay(version.to))}` : " onward"}
             </span>
@@ -288,13 +288,13 @@ const Citation = ({
         )}
       </div>
       {file === undefined ? (
-        <p className="text-xs text-base-content/60">Loading…</p>
+        <p className={ui.caption}>Loading…</p>
       ) : version ? (
         version.nodes.map((node, i) => (
           <NoteNode key={i} node={node} htsCode={htsCode} />
         ))
       ) : (
-        <p className="text-xs text-base-content/60">
+        <p className={ui.caption}>
           Text not available for this revision.
         </p>
       )}
@@ -350,7 +350,7 @@ export const ReferencedNotes = ({
   if (!found.length) return null;
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+      <div className={ui.label}>
         Referenced notes
       </div>
       {found.map((citation) => (

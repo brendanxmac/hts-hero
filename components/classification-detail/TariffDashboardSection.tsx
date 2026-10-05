@@ -16,6 +16,7 @@ import { countOpenQuestions, questionImpacts } from "../duty-calculator/question
 import { programName, SummaryStats } from "../duty-calculator/Results";
 import dc from "../ui/theme.module.css";
 import { DashboardCard, DashboardCardHeader } from "./DashboardCard";
+import { THEME_EMBEDDED } from "../ui/theme";
 
 // The classification's duty at a glance, for its country of origin: the same engine as the
 // Tariff Calculator, for a standard shipment. The Duty & Tariffs tab has the full estimate.
@@ -68,7 +69,7 @@ export function TariffDashboardSection({
       />
       <div className="flex flex-col gap-5">
         {summary ? (
-          <div className={`${dc.root} ${dc.embedded} p-4 flex flex-col gap-4`}>
+          <div className={`${THEME_EMBEDDED} p-4 flex flex-col gap-4`}>
             <div className={`${dc.card} overflow-hidden`}>
               <SummaryStats result={summary.result} customsValue={DEFAULT_CUSTOMS_VALUE} />
               <ul className="divide-y divide-[var(--dc-border)]">

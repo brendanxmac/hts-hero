@@ -211,10 +211,10 @@ export const RateHistoryCard = ({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 id="rate-history-title" className="text-base font-semibold text-base-content">
+          <h3 id="rate-history-title" className={ui.cardTitle}>
             Duty Over Time
           </h3>
-          <p className="mt-0.5 text-xs text-base-content/60">
+          <p className={`${ui.caption} mt-0.5`}>
             {shortDate(historyRange.from)} – {formatDate(lastDate)}
           </p>
         </div>
@@ -232,7 +232,7 @@ export const RateHistoryCard = ({
 
       {/* Headline: duty on the entry date, and how it compares with the start */}
       <div>
-        <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+        <div className={ui.label}>
           {entryIndex >= 0 ? "Duty on your entry date" : `Duty on ${formatDate(lastDate)}`}
         </div>
         <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1.5">
@@ -319,7 +319,7 @@ export const RateHistoryCard = ({
 
       {/* What changed, latest first */}
       {changes === 0 ? (
-        <p className="flex gap-2 rounded-md bg-base-200 px-3.5 py-3 text-sm leading-snug text-base-content/70">
+        <p className={`${ui.bodySm} flex gap-2 rounded-md bg-base-200 px-3.5 py-3`}>
           <CheckCircleIcon className="w-4 h-4 shrink-0 mt-0.5 text-success" aria-hidden />
           <span>
             No tariff changes affected this entry from {shortDate(first.from)} to{" "}
@@ -328,7 +328,7 @@ export const RateHistoryCard = ({
         </p>
       ) : (
         <div className="flex flex-col gap-2">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-base-content/60">What changed</h4>
+          <h4 className={ui.label}>What changed</h4>
           <ol className="flex flex-col">
             {history
               .map((segment, i) => ({ segment, i }))
@@ -351,7 +351,7 @@ export const RateHistoryCard = ({
                 className="absolute left-0.5 top-2 h-2 w-2 rounded-full border-2 border-base-content/20 bg-base-100"
                 aria-hidden
               />
-              <div className="flex items-baseline justify-between gap-3 text-xs text-base-content/60">
+              <div className={`${ui.caption} flex items-baseline justify-between gap-3`}>
                 <span>
                   {formatDate(first.from)} · Starting point
                 </span>

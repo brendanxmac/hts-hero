@@ -29,13 +29,13 @@ export const ChangelogCard = ({ entries }: { entries: ChangelogEntry[] }) => (
     aria-labelledby="changelog-card-title"
     className="w-full rounded-lg border border-base-300 bg-base-100 p-5 shadow-sm"
   >
-    <h2 id="changelog-card-title" className="text-base font-semibold text-base-content">
+    <h2 id="changelog-card-title" className={ui.cardTitle}>
       Latest updates
     </h2>
     <ol className="mt-4 divide-y divide-base-300">
       {entries.map((entry) => (
         <li key={entry.id} className="py-3 first:pt-0">
-          <div className="flex items-center gap-2 text-xs text-base-content/60">
+          <div className={`${ui.caption} flex items-center gap-2`}>
             <time dateTime={entry.entry_date}>{formatChangelogDate(entry.entry_date)}</time>
             <ChangelogTypeBadge type={entry.type} />
           </div>

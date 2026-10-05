@@ -84,7 +84,7 @@ export const CompareView = ({
           <article
             key={country.code}
             // An outline, because the card's shadow would override a Tailwind ring
-            className={`rounded-lg border border-base-300 bg-base-100 shadow-sm flex flex-col overflow-hidden ${
+            className={`${ui.card} flex flex-col overflow-hidden ${
               isLowest
                 ? "outline outline-2 -outline-offset-1 outline-success"
                 : ""
@@ -101,7 +101,7 @@ export const CompareView = ({
                   <h3 className="text-base font-semibold truncate">
                     {country.name}
                   </h3>
-                  <p className="text-xs text-base-content/60">
+                  <p className={ui.caption}>
                     {COLUMN_LABEL[result.column]}
                     {result.claimedPreference
                       ? ` (${result.claimedPreference})`
@@ -134,7 +134,7 @@ export const CompareView = ({
             {/* Figures, in the same positions on every card */}
             <div className="p-5 flex flex-col gap-4 border-b border-base-300">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+                <div className={ui.label}>
                   Total duty
                 </div>
                 <div className="tabular-nums mt-1.5 text-3xl leading-none font-semibold tracking-tight">
@@ -147,13 +147,13 @@ export const CompareView = ({
               </div>
               <dl className="grid grid-cols-2 gap-3">
                 <div>
-                  <dt className="text-xs text-base-content/60">Fees</dt>
+                  <dt className={ui.caption}>Fees</dt>
                   <dd className="tabular-nums text-base font-semibold">
                     {formatMoney(result.totalFees)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-base-content/60">Landed cost</dt>
+                  <dt className={ui.caption}>Landed cost</dt>
                   <dd className="tabular-nums text-base font-semibold">
                     {formatMoney(landed(entry))}
                   </dd>
@@ -207,13 +207,13 @@ export const CompareView = ({
                       >
                         {line.code}
                       </span>
-                      <span className="tabular-nums text-xs text-base-content/60">
+                      <span className={`${ui.caption} tabular-nums`}>
                         {line.ratePct !== undefined
                           ? formatPct(line.ratePct)
                           : ""}
                       </span>
                     </span>
-                    <span className="text-sm leading-snug text-base-content/70">
+                    <span className={ui.bodySm}>
                       {programName(line.program)}
                     </span>
                   </span>
@@ -228,7 +228,7 @@ export const CompareView = ({
             <div className="p-5 pt-4 flex flex-col gap-3 border-t border-base-300 bg-base-200">
               {result.availablePreferences.length > 0 && (
                 <label className="flex flex-col gap-1.5">
-                  <span className="text-sm font-semibold text-base-content/70">
+                  <span className={ui.fieldLabel}>
                     Trade preference
                   </span>
                   <select
@@ -248,7 +248,7 @@ export const CompareView = ({
                 </label>
               )}
               <div className="flex items-center justify-between gap-3">
-                <span className="text-xs text-base-content/60">
+                <span className={ui.caption}>
                   {entry.openQuestions > 0
                     ? `${entry.openQuestions} ${entry.openQuestions === 1 ? "question" : "questions"} could change this`
                     : "No open questions"}
@@ -292,7 +292,7 @@ const AddCountryCard = ({
         <div className="w-full max-w-xs flex flex-col gap-2 text-left">
           <label
             htmlFor="dc-compare-add"
-            className="text-sm font-semibold text-base-content/70"
+            className={ui.fieldLabel}
           >
             Compare with
           </label>

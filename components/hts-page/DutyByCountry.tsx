@@ -9,7 +9,7 @@ import {
   lowestTotal,
 } from "../../libs/hts-duty-summary";
 import { mono } from "../ui/font";
-import { heat } from "../ui/heat";
+import { heat } from "../ui/theme";
 import { SectionHeader } from "../ui/SectionHeader";
 import * as ui from "../ui/styles";
 
@@ -21,11 +21,11 @@ const calculatorHref = (htsno: string, country?: string) =>
 
 const Fact = ({ label, value, note }: { label: string; value: string; note: string }) => (
   <div className="rounded-lg border border-base-300 bg-base-100 px-5 py-4 shadow-sm">
-    <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">{label}</div>
+    <div className={ui.label}>{label}</div>
     <div className="mt-1.5 text-2xl font-semibold leading-none tracking-tight tabular-nums text-base-content">
       {value}
     </div>
-    <div className="mt-1.5 text-sm leading-snug text-base-content/70">{note}</div>
+    <div className={`${ui.bodySm} mt-1.5`}>{note}</div>
   </div>
 );
 
@@ -43,7 +43,7 @@ export function DutyByCountry({
   const withTariffs = summary.rows.filter((r) => r.additional.length > 0).length;
 
   return (
-    <section id="duty-by-country" className="scroll-mt-6 flex flex-col gap-6">
+    <section id="duty-by-country" className={ui.section}>
       <SectionHeader
         kicker={`Tariffs by country · ${formatSummaryDate(summary.asOf)}`}
         title={`US Import Duty on HTS ${htsno} by Country of Origin`}
@@ -84,11 +84,11 @@ export function DutyByCountry({
         />
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm">
+      <div className={ui.card}>
         <div className="overflow-x-auto">
           <table className="table rounded-none tabular-nums">
             <thead>
-              <tr className="border-base-300 bg-base-200 text-xs font-semibold uppercase tracking-wider text-base-content/60">
+              <tr className={`${ui.label} border-base-300 bg-base-200`}>
                 <th scope="col" className="px-5 sm:px-6 py-3">Country of origin</th>
                 <th scope="col" className="px-4 py-3">Base rate</th>
                 <th scope="col" className="px-4 py-3">Additional tariffs</th>
@@ -112,7 +112,7 @@ export function DutyByCountry({
                   <td className="px-4 py-3 text-base-content/70 whitespace-nowrap">
                     {row.baseRate}
                     {row.column === "column2" && (
-                      <span className="block text-xs text-base-content/60">Column 2</span>
+                      <span className={`${ui.caption} block`}>Column 2</span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-base-content/70">
@@ -122,7 +122,7 @@ export function DutyByCountry({
                           <li key={a.code} className="flex flex-wrap items-baseline gap-x-2">
                             <span>{a.program}</span>
                             <span className="font-semibold text-base-content">{formatDutyPct(a.ratePct)}</span>
-                            <span className={`${mono.className} text-xs text-base-content/60`}>{a.code}</span>
+                            <span className={`${mono.className} ${ui.caption}`}>{a.code}</span>
                           </li>
                         ))}
                       </ul>

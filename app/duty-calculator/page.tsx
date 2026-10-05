@@ -5,13 +5,14 @@ import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
 import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions";
-import styles from "../../components/ui/theme.module.css";
+import { THEME } from "../../components/ui/theme";
 import { Hero } from "../../components/duty-calculator/Hero";
 import { createClient } from "@/app/api/supabase/server";
 import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
 import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { TariffGuide } from "../../components/duty-calculator/TariffGuide";
 import { dutyCalculatorFaqs } from "../../components/duty-calculator/faq";
+import * as ui from "../../components/ui/styles";
 
 export const metadata: Metadata = {
   title:
@@ -81,7 +82,7 @@ export default async function DutyCalculatorPage() {
   // <main> grows with its content and fills the rest of the window (flex-1, no shrinking), so
   // the layout's scroll container, which has a different background, never shows around the page
   return (
-    <main className={`${styles.root} w-full flex-1 shrink-0 flex flex-col`}>
+    <main className={`${THEME} w-full flex-1 shrink-0 flex flex-col`}>
       {renderSchemaJsonLd({
         "@type": "WebApplication",
         name: "US Import Duty & Tariff Calculator",
@@ -119,7 +120,7 @@ export default async function DutyCalculatorPage() {
       {/* Calculator */}
       <BreadcrumbsProvider>
         <Suspense
-          fallback={<div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8 pt-8"><div className="h-64 rounded-lg border border-base-300 bg-base-100 shadow-sm" /></div>}
+          fallback={<div className={`${ui.container} pt-8`}><div className={`${ui.card} h-64`} /></div>}
         >
           <TariffFinderPage />
         </Suspense>

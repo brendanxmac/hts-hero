@@ -93,7 +93,7 @@ export const SummaryStats = ({
       className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr] gap-px bg-base-300 ${standalone ? "" : "border-b border-base-300"}`}
     >
       <div className="col-span-2 sm:col-span-3 lg:col-span-1 p-5 sm:p-6 bg-base-100">
-        <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+        <div className={ui.label}>
           Total duty
         </div>
         <div className="tabular-nums mt-2 text-4xl leading-none font-semibold tracking-tight text-base-content">
@@ -135,7 +135,7 @@ const Stat = ({
   className?: string;
 }) => (
   <div className={`p-5 sm:p-6 bg-base-100 ${className}`}>
-    <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+    <div className={ui.label}>
       {label}
     </div>
     <div className="tabular-nums mt-2 text-2xl leading-none font-semibold tracking-tight text-base-content">
@@ -265,25 +265,25 @@ export const Statement = ({
             <tr className="bg-base-200 text-base-content/60">
               <th
                 scope="col"
-                className="text-xs font-semibold uppercase tracking-wider text-base-content/60 py-3 pl-5 sm:pl-6 pr-3 font-semibold"
+                className={`${ui.label} py-3 pl-5 sm:pl-6 pr-3`}
               >
                 Line
               </th>
               <th
                 scope="col"
-                className="text-xs font-semibold uppercase tracking-wider text-base-content/60 py-3 px-3 font-semibold"
+                className={`${ui.label} py-3 px-3`}
               >
                 Applies to
               </th>
               <th
                 scope="col"
-                className="text-xs font-semibold uppercase tracking-wider text-base-content/60 py-3 px-3 font-semibold text-right"
+                className={`${ui.label} py-3 px-3 text-right`}
               >
                 Rate
               </th>
               <th
                 scope="col"
-                className="text-xs font-semibold uppercase tracking-wider text-base-content/60 py-3 pl-3 pr-5 sm:pr-6 font-semibold text-right"
+                className={`${ui.label} py-3 pl-3 pr-5 sm:pr-6 text-right`}
               >
                 Amount
               </th>
@@ -386,7 +386,7 @@ const linkClass = (link?: RowLink) => (link?.active ? "bg-primary/10" : "");
 // Tiny "Effective Mar 4, 2025" after the program name
 const EffectiveDate = ({ from }: { from?: string }) =>
   from ? (
-    <span className="text-xs text-base-content/60">
+    <span className={ui.caption}>
       {" · "}Effective {formatDate(from)}
     </span>
   ) : null;
@@ -455,13 +455,13 @@ const MobileRow = ({
         )}
       </div>
       {full && (program || effectiveFrom) && (
-        <div className="text-xs text-base-content/60">
+        <div className={ui.caption}>
           {program}
           <EffectiveDate from={effectiveFrom} />
         </div>
       )}
       {full && detail && (
-        <div className="text-sm leading-snug text-base-content/70">
+        <div className={ui.bodySm}>
           {detail}
         </div>
       )}
@@ -566,13 +566,13 @@ const StatementRow = ({
               </span>
             </div>
             {full && (program || effectiveFrom) && (
-              <span className="text-xs text-base-content/60">
+              <span className={ui.caption}>
                 {program}
                 <EffectiveDate from={effectiveFrom} />
               </span>
             )}
             {full && detail && (
-              <span className="text-sm leading-snug text-base-content/70">
+              <span className={ui.bodySm}>
                 {detail}
               </span>
             )}
@@ -676,7 +676,7 @@ export const SimpleSummary = ({
   return (
     <div className="p-6 sm:p-10 flex flex-col items-center text-center gap-8">
       <div className="flex flex-col items-center gap-3">
-        <div className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+        <div className={ui.label}>
           You&apos;ll pay about
         </div>
         <div className="tabular-nums text-5xl sm:text-6xl leading-none font-semibold tracking-tight">
@@ -1022,7 +1022,7 @@ const QuestionControl = ({
         }
       />
       {input.help && (
-        <span className="text-xs text-base-content/60">{input.help}</span>
+        <span className={ui.caption}>{input.help}</span>
       )}
     </label>
   );
@@ -1042,7 +1042,7 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
   const notApplied = lines.filter((l) => l.status !== "applies");
   if (notApplied.length === 0) return null;
   return (
-    <div className="rounded-lg border border-base-300 bg-base-100 shadow-sm">
+    <div className={ui.card}>
       <button
         type="button"
         className="w-full flex items-center justify-between gap-3 p-5 sm:px-6 text-left"
@@ -1053,7 +1053,7 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
           <span className="block text-base font-semibold">
             Checked but not applied
           </span>
-          <span className="block mt-0.5 text-xs text-base-content/60">
+          <span className={`${ui.caption} block mt-0.5`}>
             {notApplied.length} other headings match this code and country
           </span>
         </span>
@@ -1070,7 +1070,7 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
             >
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <span
-                  className={`${mono.className} text-sm font-semibold text-base-content/70`}
+                  className={`${mono.className} ${ui.fieldLabel}`}
                 >
                   {line.code}
                 </span>
@@ -1087,7 +1087,7 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
                   {STATUS[line.status]}
                 </span>
                 {line.reasons[0] && (
-                  <span className="text-xs text-base-content/60">
+                  <span className={ui.caption}>
                     {line.reasons.join(" · ")}
                   </span>
                 )}
@@ -1188,7 +1188,7 @@ export const Panel = ({
   description?: string;
   children: ReactNode;
 }) => (
-  <section className="rounded-lg border border-base-300 bg-base-100 shadow-sm p-5 sm:p-6">
+  <section className={`${ui.card} p-5 sm:p-6`}>
     {/* The badge drops under the title when they don't fit side by side */}
     <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
       <h3 className="text-base font-semibold">{title}</h3>

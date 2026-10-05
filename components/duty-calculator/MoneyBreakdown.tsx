@@ -7,13 +7,13 @@ import { BASE_SLICE, FEES_SLICE, sliceForProgram } from "./Results";
 // Where the money goes: duty and fees as one stacked bar, one slice per program
 
 export const CHART = [
-  "var(--dc-chart-1)",
-  "var(--dc-chart-2)",
-  "var(--dc-chart-3)",
-  "var(--dc-chart-4)",
-  "var(--dc-chart-5)",
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
 ];
-const FEES_COLOR = "var(--dc-chart-6)";
+const FEES_COLOR = "var(--chart-6)";
 
 interface Slice {
   label: string;

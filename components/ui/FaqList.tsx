@@ -1,4 +1,5 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import * as ui from "./styles";
 
 // A page's questions as one panel of disclosures, divided by rules. Keep the text identical
 // to the page's FAQPage schema: search engines require the schema to match what's visible.
@@ -10,7 +11,7 @@ export function FaqList({
   openFirst?: boolean;
 }) {
   return (
-    <div className="divide-y divide-base-300 rounded-lg border border-base-300 bg-base-100 shadow-sm">
+    <div className={`${ui.card} divide-y divide-base-300`}>
       {faqs.map(({ question, answer }, i) => (
         <details key={question} open={openFirst && i === 0} className="group">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-base font-semibold text-base-content hover:bg-base-200/50 [&::-webkit-details-marker]:hidden">
@@ -20,7 +21,7 @@ export function FaqList({
               aria-hidden
             />
           </summary>
-          <p className="max-w-prose px-5 pb-5 text-base leading-relaxed text-base-content/70">{answer}</p>
+          <p className={`${ui.body} max-w-prose px-5 pb-5`}>{answer}</p>
         </details>
       ))}
     </div>

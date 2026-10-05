@@ -21,7 +21,7 @@ export const Field = ({
 }) => (
   <div className={`flex flex-col gap-2 min-w-0 ${className}`}>
     <div className="flex items-baseline justify-between gap-3">
-      <label htmlFor={htmlFor} className="text-sm font-semibold text-base-content/70">
+      <label htmlFor={htmlFor} className={ui.fieldLabel}>
         {label}
       </label>
       {action}

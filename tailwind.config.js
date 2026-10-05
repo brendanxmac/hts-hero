@@ -61,7 +61,12 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/typography"), require("daisyui")],
+  plugins: [
+    require("@tailwindcss/typography"),
+    require("daisyui"),
+    // The analytical theme's palette, scoped to .hts-theme (components/ui/theme/palette.js)
+    require("./components/ui/theme/plugin"),
+  ],
   daisyui: {
     // Light & dark themes are added by default (it switches automatically based on OS settings)
     // You can add another theme among the list of 30+

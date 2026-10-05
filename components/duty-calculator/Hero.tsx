@@ -12,6 +12,7 @@ import { AllRules } from "../../tariffs/engine-v2/data";
 import { HtsRevision } from "../../tariffs/engine-v2/revisions";
 import { ChangelogEntry } from "@/libs/supabase/tariff-changelog";
 import { ChangelogCard } from "./Changelog";
+import * as ui from "../ui/styles";
 
 // The top of /duty-calculator. Server-rendered so crawlers see the copy; the tools follow.
 
@@ -66,10 +67,10 @@ export const Hero = ({
 
   return (
     <div className="w-full">
-      <header className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8 grid gap-8 pt-10 pb-10 md:pt-14 md:pb-12 lg:grid-cols-[minmax(0,1fr)_22.5rem] lg:gap-12 xl:gap-16">
+      <header className={`${ui.container} grid gap-8 pt-10 pb-10 md:pt-14 md:pb-12 lg:grid-cols-[minmax(0,1fr)_22.5rem] lg:gap-12 xl:gap-16`}>
         <div className="min-w-0">
           <h1 className="mt-5">
-            <span className="block text-xs font-semibold uppercase tracking-wider text-primary">
+            <span className={`${ui.kicker} block`}>
               US Import Duty &amp; Tariff Calculator
             </span>
             <span className="mt-3 block max-w-3xl text-4xl leading-tight sm:text-5xl sm:leading-none lg:text-6xl font-semibold tracking-tight text-base-content">

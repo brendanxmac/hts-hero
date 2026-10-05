@@ -18,10 +18,9 @@ import { DutyByCountry } from "./hts-page/DutyByCountry";
 import { MicroCalculator } from "./hts-page/MicroCalculator";
 import type { MicroEstimate } from "../libs/hts-micro-estimate";
 import { mono } from "./ui/font";
-import { heat } from "./ui/heat";
+import { heat, THEME } from "./ui/theme";
 import { FaqList } from "./ui/FaqList";
 import { SectionHeader } from "./ui/SectionHeader";
-import styles from "./ui/theme.module.css";
 import {
   describeTotal,
   dutyAnswerSentence,
@@ -89,7 +88,7 @@ export function HtsCodePageContent({
   ].filter((s) => s.show);
 
   return (
-    <div className={`${styles.root} w-full min-h-screen flex flex-col`}>
+    <div className={`${THEME} w-full min-h-screen flex flex-col`}>
       <StructuredData element={element} productName={productName} summary={summary} tariffElement={tariffElement} parentElements={parents} sectionChapter={sectionChapter} faqs={faqs} />
 
       <PageHeader />
@@ -102,7 +101,7 @@ export function HtsCodePageContent({
           <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8">
             <div className="min-w-0 flex flex-col gap-5">
               <div className="flex flex-col gap-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                <span className={ui.kicker}>
                   HTS Code{element.chapter ? ` · Chapter ${element.chapter}` : ""}
                   {summary && <> · Updated {formatSummaryDate(summary.asOf)}</>}
                 </span>
@@ -164,8 +163,8 @@ export function HtsCodePageContent({
 
               {/* No rates on this line (e.g. a heading above the rate lines): still offer the calculator */}
               {offerCalculator && (
-                <aside className="rounded-lg border border-base-300 bg-base-100 shadow-sm p-5 flex flex-col gap-3">
-                  <p className="text-base font-semibold text-base-content">Importing under {element.htsno}?</p>
+                <aside className={`${ui.card} p-5 flex flex-col gap-3`}>
+                  <p className={ui.cardTitle}>Importing under {element.htsno}?</p>
                   <p className="text-sm leading-relaxed text-base-content/70">
                     Pick the full HTS code in the calculator to see every duty, tariff and exemption for your country of origin.
                   </p>
@@ -179,9 +178,9 @@ export function HtsCodePageContent({
               {summary && (
                 <a
                   href="#duty-by-country"
-                  className="rounded-lg border border-base-300 bg-base-100 shadow-sm group block px-4 py-3 transition-colors hover:border-primary/40"
+                  className={`${ui.card} group block px-4 py-3 transition-colors hover:border-primary/40`}
                 >
-                  <span className="text-base font-semibold text-base-content flex items-center justify-between">
+                  <span className={`${ui.cardTitle} flex items-center justify-between`}>
                     Total duty by country
                     <span className="text-xs font-medium text-primary group-hover:underline">
                       All {summary.rows.length} →
@@ -204,8 +203,8 @@ export function HtsCodePageContent({
               )}
 
               {sections.length > 1 && (
-                <nav aria-label="Also on this page" className="rounded-lg border border-base-300 bg-base-100 shadow-sm p-2">
-                  <span className="block px-3 pt-1.5 pb-1 text-xs font-semibold uppercase tracking-wider text-base-content/60">
+                <nav aria-label="Also on this page" className={`${ui.card} p-2`}>
+                  <span className={`${ui.label} block px-3 pt-1.5 pb-1`}>
                     Also on this page
                   </span>
                   <ul>
@@ -236,14 +235,14 @@ export function HtsCodePageContent({
       </div>
 
       {/* === Notes, rulings and questions: reference material, on a band of its own === */}
-      <div className="w-full border-t border-base-300">
+      <div className={ui.band}>
         <div className={`${CONTAINER} py-12 sm:py-16 flex flex-col gap-16 sm:gap-20`}>
           {sectionChapter && element.chapter && (
             <Notes sectionChapter={sectionChapter} htsno={element.htsno} chapter={element.chapter} />
           )}
 
           {element.htsno && (
-            <section id="rulings" className="scroll-mt-6 flex flex-col gap-6">
+            <section id="rulings" className={ui.section}>
               <SectionHeader kicker="CBP rulings" title={`Related CROSS Rulings for HTS ${element.htsno}`}>
                 CBP classification rulings related to{" "}
                 <span className={`${mono.className} font-medium text-base-content`}>{element.htsno}</span>.
@@ -258,7 +257,7 @@ export function HtsCodePageContent({
       </div>
 
       {/* === Playbook === */}
-      <div className="w-full border-t border-base-300">
+      <div className={ui.band}>
         <div className={`${CONTAINER} py-12 sm:py-16`}>
           <PlaybookBanner />
         </div>
@@ -297,7 +296,7 @@ function PageHeader() {
         <div className={`${CONTAINER} h-14 flex items-center justify-between gap-4`}>
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <Image src={logo} alt={`${config.appName} logo`} className="w-5" priority width={24} height={24} />
-            <span className="text-base font-semibold text-base-content">{config.appName}</span>
+            <span className={ui.cardTitle}>{config.appName}</span>
           </Link>
           <nav aria-label="Tools" className="flex items-center gap-1 sm:gap-2">
             <Link href="/duty-calculator" className={ui.button({ variant: "ghost", size: "sm" })}>
@@ -317,7 +316,7 @@ function PageHeader() {
 function PageFooter() {
   return (
     <footer className="mt-auto border-t border-base-300 bg-base-100">
-      <div className={`${CONTAINER} py-8 text-xs text-base-content/60 flex flex-col sm:flex-row items-center justify-between gap-4`}>
+      <div className={`${CONTAINER} py-8 ${ui.caption} flex flex-col sm:flex-row items-center justify-between gap-4`}>
         <span>&copy; {new Date().getFullYear()} HTS Hero. Data sourced from the USITC Harmonized Tariff Schedule.</span>
         <div className="flex gap-4">
           <Link href="/" className="hover:text-base-content">About</Link>
@@ -439,12 +438,12 @@ function BaseRates({
   const inherited = tariffElement !== element && tariffElement.htsno;
 
   return (
-    <section id="base-rates" aria-labelledby="base-rates-title" className="rounded-lg border border-base-300 bg-base-100 shadow-sm scroll-mt-6 overflow-hidden">
+    <section id="base-rates" aria-labelledby="base-rates-title" className={`${ui.card} scroll-mt-6 overflow-hidden`}>
       <div className="px-4 pt-3.5 pb-3 border-b border-base-300">
-        <h2 id="base-rates-title" className="text-base font-semibold text-base-content">
+        <h2 id="base-rates-title" className={ui.cardTitle}>
           Base Duty Rates for {element.htsno}
         </h2>
-        <p className="mt-0.5 text-xs text-base-content/60">
+        <p className={`${ui.caption} mt-0.5`}>
           {inherited ? (
             <>
               Set at{" "}
@@ -498,8 +497,8 @@ function BaseRates({
 
       {showCalculatorLink && element.htsno && !element.htsno.startsWith("99") && (
         <div className="border-t border-base-300 px-5 py-4 flex flex-col gap-1">
-          <p className="text-base font-semibold text-base-content">Importing under {element.htsno}?</p>
-          <p className="text-sm leading-snug text-base-content/70">
+          <p className={ui.cardTitle}>Importing under {element.htsno}?</p>
+          <p className={ui.bodySm}>
             Calculate total import duties, tariffs, and trade agreement exemptions for your shipment.
           </p>
           <Link href={`/duty-calculator?code=${element.htsno}`} className={`${ui.link} mt-1 inline-flex items-center gap-1 text-sm`}>
@@ -525,14 +524,14 @@ function RelatedCodes({
   siblings: HtsElement[];
 }) {
   return (
-    <section id="related-codes" className="scroll-mt-6 flex flex-col gap-6">
+    <section id="related-codes" className={ui.section}>
       <SectionHeader
         kicker="Related codes"
         title={children.length > 0 ? `HTS Codes Under ${element.htsno || "This Classification"}` : "Other HTS Codes at This Level"}
       />
 
       {children.length > 0 && (
-        <ul className="rounded-lg border border-base-300 bg-base-100 shadow-sm grid overflow-hidden md:grid-cols-2">
+        <ul className={`${ui.card} grid overflow-hidden md:grid-cols-2`}>
           {children.map((child) => {
             const rate = child.general && child.general.length <= 20 ? child.general : null;
             const body = (
@@ -541,7 +540,7 @@ function RelatedCodes({
                   <span className={`${mono.className} block text-sm font-semibold ${child.htsno ? "text-primary" : "text-base-content/60"}`}>
                     {child.htsno || "—"}
                   </span>
-                  <span className="block text-sm leading-snug text-base-content/70">{child.description}</span>
+                  <span className={`${ui.bodySm} block`}>{child.description}</span>
                 </span>
                 {rate && (
                   <span className="shrink-0 rounded bg-base-200 px-2 py-0.5 text-xs font-semibold tabular-nums text-base-content">
@@ -571,7 +570,7 @@ function RelatedCodes({
       {siblings.length > 0 && (
         <div className="flex flex-col gap-3">
           {children.length > 0 && (
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+            <h3 className={ui.label}>
               Other HTS Codes at This Level
             </h3>
           )}
@@ -641,14 +640,14 @@ function Notes({
             href={usitcHtsFileViewerTabUrl(link.file)}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-lg border border-base-300 bg-base-100 shadow-sm group flex items-start gap-3 p-4 transition-colors hover:border-primary/40"
+            className={`${ui.card} group flex items-start gap-3 p-4 transition-colors hover:border-primary/40`}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary" aria-hidden>
               <DocumentTextIcon className="h-5 w-5" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-base font-semibold text-base-content group-hover:text-primary">{link.title}</span>
-              <span className="mt-0.5 block text-sm leading-snug text-base-content/70 line-clamp-2">{link.description}</span>
+              <span className={`${ui.cardTitle} block group-hover:text-primary`}>{link.title}</span>
+              <span className={`${ui.bodySm} mt-0.5 block line-clamp-2`}>{link.description}</span>
             </span>
             <ArrowTopRightOnSquareIcon className="h-4 w-4 shrink-0 text-base-content/60 group-hover:text-primary" aria-hidden />
           </a>
@@ -675,7 +674,7 @@ function Faq({ htsno, faqs }: { htsno: string; faqs: [string, string][] }) {
 
 function PlaybookBanner() {
   return (
-    <section className="rounded-lg border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+    <section className={`${ui.card} overflow-hidden`}>
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <div className="relative w-32 sm:w-36 aspect-[2/3] rounded-md overflow-hidden border border-base-300 shrink-0">
@@ -688,9 +687,9 @@ function PlaybookBanner() {
             />
           </div>
           <div className="flex flex-col gap-3 text-center sm:text-left">
-            <span className="text-xs font-semibold uppercase tracking-wider text-primary">Free · Playbook + 7 Bonuses</span>
-            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-base-content">The Audit-Ready Classifications Playbook</h2>
-            <p className="text-base leading-relaxed text-base-content/70">
+            <span className={ui.kicker}>Free · Playbook + 7 Bonuses</span>
+            <h2 className={ui.sectionTitle}>The Audit-Ready Classifications Playbook</h2>
+            <p className={ui.body}>
               Learn how to create HTS classifications that reduce import risk and defend profits — faster than ever.
             </p>
             <div>
@@ -705,7 +704,7 @@ function PlaybookBanner() {
           </div>
         </div>
         <div className="p-6 sm:p-8 border-t lg:border-t-0 lg:border-l border-base-300 bg-base-200 flex flex-col justify-center">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-base-content/60">What&apos;s inside</p>
+          <p className={`${ui.label} mb-4`}>What&apos;s inside</p>
           <ul className="flex flex-col gap-3">
             {[
               "Step-by-step classification methodology",

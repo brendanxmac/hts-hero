@@ -20,18 +20,10 @@ import * as ui from "../ui/styles";
 // search engines and AI crawlers can read it; the calculator itself runs in the browser.
 // A band of its own, on a different surface from the calculator, so it reads as a guide.
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out section links
-const SECTIONS = [
-  { id: "tariff-rates-by-country", label: "Rates by country" },
-  { id: "how-duty-is-calculated", label: "How duty is calculated" },
-  { id: "sources", label: "Sources" },
-  { id: "faq", label: "FAQ" },
-];
-
 // Example colors, in the calculator's chart order: base duty, then each program, then fees
-const PROGRAM_COLORS = ["var(--dc-chart-2)", "var(--dc-chart-3)", "var(--dc-chart-4)", "var(--dc-chart-5)"];
-const BASE_COLOR = "var(--dc-chart-1)";
-const FEES_COLOR = "var(--dc-chart-6)";
+const PROGRAM_COLORS = ["var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
+const BASE_COLOR = "var(--chart-1)";
+const FEES_COLOR = "var(--chart-6)";
 
 // ── Rates by country ──
 
@@ -86,7 +78,7 @@ const RatesByCountry = ({ content }: { content: DutyCalculatorContent }) => {
   const { matrix, asOf, revisionTitle } = content;
   const facts = matrixFacts(matrix);
   return (
-    <section id="tariff-rates-by-country" className="scroll-mt-6 flex flex-col gap-6">
+    <section id="tariff-rates-by-country" className={ui.section}>
       <SectionHeader kicker="Rates by country" title="US Tariff Rates by Country">
         Total US import duty, base rate plus every additional tariff, on goods entered{" "}
         {formatSummaryDate(asOf)} from the {matrix.rows.length} largest sources of US imports.
@@ -192,7 +184,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
               >
                 {i + 1}
               </span>
-              <p className="pt-1 text-base leading-relaxed text-base-content/70">
+              <p className={`${ui.body} pt-1`}>
                 <strong className="font-semibold text-base-content">{step.title}</strong> {step.text}
               </p>
             </li>
@@ -202,8 +194,8 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
 
       {/* The worked example as a receipt */}
       <div className="self-start rounded-lg border border-base-300 bg-base-100 p-5 shadow-sm sm:p-6">
-        <span className="text-xs font-semibold uppercase tracking-wider text-base-content/60">Worked example</span>
-        <h3 className="mt-1.5 text-base font-semibold text-base-content">
+        <span className={ui.label}>Worked example</span>
+        <h3 className={`${ui.cardTitle} mt-1.5`}>
           Example: {formatMoney(example.customsValue)} of {example.productName} (HTS {example.htsno})
           from {example.countryName}, entered {formatSummaryDate(asOf)} by ocean
         </h3>
@@ -231,7 +223,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
                   {p.code && (
                     <>
                       {" "}
-                      <span className={`${mono.className} text-xs text-base-content/60`}>{p.code}</span>
+                      <span className={`${mono.className} ${ui.caption}`}>{p.code}</span>
                     </>
                   )}
                 </td>
@@ -324,7 +316,7 @@ const EXCLUDED: { title: string; text: string }[] = [
 ];
 
 const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string }) => (
-  <section id="sources" className="scroll-mt-6 flex flex-col gap-6">
+  <section id="sources" className={ui.section}>
     <SectionHeader kicker="Data" title="Where the rates come from">
       Every rate comes from the official Harmonized Tariff Schedule of the United States published
       by the US International Trade Commission. Each HTS revision&apos;s changes are entered with
@@ -337,8 +329,8 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
       {/* Included */}
       <div className="rounded-lg border border-base-300 bg-base-200 p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="text-base font-semibold text-base-content">What&apos;s included</h3>
-          <span className="text-xs text-base-content/60">
+          <h3 className={ui.cardTitle}>What&apos;s included</h3>
+          <span className={ui.caption}>
             Updated {formatSummaryDate(asOf)}
           </span>
         </div>
@@ -377,7 +369,7 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
 
       {/* Not included */}
       <div className={`${ui.card} p-5 sm:p-6`}>
-        <h3 className="flex items-center gap-2 text-base font-semibold text-base-content">
+        <h3 className={`${ui.cardTitle} flex items-center gap-2`}>
           <ExclamationTriangleIcon className="h-4 w-4 text-warning" aria-hidden />
           Not included
         </h3>
@@ -395,7 +387,7 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
               </span>
               <span>
                 <span className="block text-sm font-semibold text-base-content">{item.title}</span>
-                <span className="block text-sm leading-snug text-base-content/70">{item.text}</span>
+                <span className={`${ui.bodySm} block`}>{item.text}</span>
               </span>
             </li>
           ))}
@@ -448,33 +440,20 @@ export const TariffGuide = ({
   content: DutyCalculatorContent;
   faqs: { question: string; answer: string }[];
 }) => (
-  <div className="w-full border-t border-base-300">
-    <div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8 pt-14 pb-20 sm:pt-20 flex flex-col gap-6 sm:gap-10">
+  <div className={ui.band}>
+    <div className={`${ui.container} pt-14 pb-20 sm:pt-20 flex flex-col gap-6 sm:gap-10 md:gap-20`}>
       {/* The guide's own intro, with links to each part */}
       <header className="flex flex-col gap-4">
-        <span className="text-xs font-semibold uppercase tracking-wider text-primary">Tariff guide · Updated {formatSummaryDate(content.asOf)}</span>
+        <span className={ui.kicker}>Tariff guide · Updated {formatSummaryDate(content.asOf)}</span>
         <div className="flex flex-col gap-2">
 
           <p className="text-3xl sm:text-4xl font-semibold leading-tight tracking-tight text-base-content">
             The US Import Tariff Guide
           </p>
-          <p className="max-w-3xl text-lg leading-relaxed text-base-content/70">
+          <p className={`${ui.lead} max-w-3xl`}>
             See how a duty is calculated, where every number comes from, and find current rates on popular products.
           </p>
         </div>
-        {/* <nav aria-label="On this page" className="mt-2 flex flex-wrap gap-2">
-          {SECTIONS.filter((s) => s.id !== "tariff-rates-by-country" || content.matrix.rows.length > 0)
-            .filter((s) => s.id !== "how-duty-is-calculated" || content.example)
-            .map((s) => (
-              <a
-                key={s.id}
-                href={`#${s.id}`}
-                className="inline-flex items-center rounded-full border border-[var(--dc-border)] bg-[var(--dc-bg)] px-3.5 py-1.5 text-[14px] font-medium text-[var(--dc-text-2)] hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] hover:text-[var(--dc-accent)]"
-              >
-                {s.label}
-              </a>
-            ))}
-        </nav> */}
       </header>
 
       <HowDutyIsCalculated content={content} />

@@ -76,7 +76,7 @@ export const DateNotice = ({
       className={`${ui.notice("warning")} flex flex-col sm:flex-row sm:items-center gap-3`}
     >
       <ExclamationTriangleIcon className="w-5 h-5 shrink-0 text-warning" aria-hidden />
-      <p className="flex-1 text-sm leading-snug text-base-content/70">
+      <p className={`${ui.bodySm} flex-1`}>
         <span className="font-semibold text-base-content">Tariff rules for {formatDate(entryDate)} aren&apos;t verified yet.</span>{" "}
         Our data is verified for HTS {latestVerified.title} ({formatDate(latestVerified.from)} –{" "}
         {latestVerified.to ? formatDate(latestVerified.to) : "present"}). Changes outside that window may be missing.
@@ -105,7 +105,7 @@ export const ExampleButtons = ({ onExample }: { onExample: (e: Example) => void 
         className="group flex items-center justify-between gap-4 rounded-md border border-base-300 bg-base-200 px-4 py-3.5 text-left transition-colors hover:border-primary/30 hover:bg-primary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
       >
         <span className="flex flex-col">
-          <span className="text-base font-semibold text-base-content">
+          <span className={ui.cardTitle}>
             {example.label} from {example.origin}
           </span>
           <span className={`${mono.className} text-sm text-base-content/70`}>{example.code}</span>

@@ -165,7 +165,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
                     <span className={`${mono.className} text-sm font-semibold text-base-content`}>
                       {el.htsno}
                     </span>
-                    <span className="text-sm leading-snug text-base-content/70 line-clamp-2">
+                    <span className={`${ui.bodySm} line-clamp-2`}>
                       {plain(el.description)}
                     </span>
                   </Combobox.Option>
@@ -177,7 +177,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
       </Combobox>
 
       {path && !hidePath && (
-        <p className="text-sm leading-snug text-base-content/70 line-clamp-2" title={path}>
+        <p className={`${ui.bodySm} line-clamp-2`} title={path}>
           {path}
         </p>
       )}

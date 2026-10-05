@@ -28,7 +28,7 @@ const RailField = ({
     <div className="flex items-baseline justify-between gap-2">
       <label
         htmlFor={htmlFor}
-        className="text-xs font-semibold uppercase tracking-wider text-base-content/60"
+        className={ui.label}
       >
         {label}
       </label>
@@ -56,12 +56,12 @@ export const EntryRail = ({
   const { result } = f;
   return (
     <aside
-      className="h-full p-5 flex flex-col gap-4 rounded-lg border border-base-300 bg-base-100 shadow-sm"
+      className={`${ui.card} h-full p-5 flex flex-col gap-4`}
       aria-label="Entry details"
     >
       {title && (
         <div>
-          <h2 className="text-base font-semibold text-base-content">{title}</h2>
+          <h2 className={ui.cardTitle}>{title}</h2>
           {description && (
             <p className="mt-0.5 text-xs leading-snug text-base-content/60">
               {description}

@@ -118,7 +118,7 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
 
         <Combobox.Options className="absolute z-30 mt-2 w-full min-w-64 max-h-72 overflow-auto rounded-lg border border-base-300 bg-base-100 p-1.5 shadow-lg focus:outline-none">
           {full && (
-            <div className="px-3 py-2 text-xs text-base-content/60">
+            <div className={`${ui.caption} px-3 py-2`}>
               You can compare up to {max} countries. Remove one to add another.
             </div>
           )}
