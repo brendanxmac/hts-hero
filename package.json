@@ -11,9 +11,17 @@
     "start": "next start",
     "lint": "next lint",
     "tests": "APP_ENV=test npx tsx testing/run-tests.ts",
-    "knip": "knip"
+    "knip": "knip",
+    "sync-revisions": "npx tsx scripts/engine-v2/sync-hts-revisions.ts",
+    "notes:cited": "npx tsx scripts/engine-v2/cited-notes.ts",
+    "ch99:coverage": "npx tsx scripts/engine-v2/ch99-coverage.ts",
+    "pull-revision": "npx tsx scripts/hts-revision-diff/pull-revision.ts",
+    "pull-batch": "npx tsx scripts/hts-coverage/pull-batch.ts",
+    "changelog:draft": "npx tsx scripts/changelog-draft.ts",
+    "test:revision-diff": "npx tsx testing/hts-revision-diff/run.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.2.0",
     "@javascript-packages/roman-numerals": "^1.0.14",
@@ -26,6 +34,7 @@
     "@react-email/render": "^1.2.3",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.45.0",
+    "@uiw/react-codemirror": "^4.25.12",
     "axios": "^1.7.8",
     "canvas": "^3.1.0",
     "crisp-sdk-web": "^1.0.22",

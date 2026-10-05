@@ -40,8 +40,15 @@ async function getHtsCodes() {
 module.exports = {
   siteUrl: process.env.SITE_URL || "https://htshero.com",
   generateRobotsTxt: true,
+  robotsTxtOptions: {
+    policies: [
+      // Calculator links with inputs (?code=, ?country=…) all canonicalize to /duty-calculator;
+      // keep crawlers on the page itself, not tens of thousands of parameter variants
+      { userAgent: "*", allow: "/", disallow: ["/duty-calculator?"] },
+    ],
+  },
   sitemapSize: 5000,
-  exclude: ["/twitter-image.*", "/opengraph-image.*", "/icon.*"],
+  exclude: ["/twitter-image.*", "/opengraph-image.*", "/icon.*", "/revision-checker*", "/coverage-checker*"],
   additionalPaths: async (config) => {
     const { codes, revisionDate } = await getHtsCodes();
     const lastmod = new Date(revisionDate).toISOString();

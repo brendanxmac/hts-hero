@@ -425,11 +425,11 @@ export const Explore = ({
                     Harmonized Tariff Schedule
                   </div>
                   <div className="flex items-center gap-3">
-                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                    <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
                       <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
                         HTS {revision?.split("-")[0]}
                       </span>
-                    </h1>
+                    </h2>
                     <span className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
                       v{revision?.split("-")[1]}
                     </span>

@@ -1,0 +1,325 @@
+[
+  {
+    "name": "2025HTSBasic",
+    "title": "Basic Edition (2025)",
+    "from": "2024-12-31",
+    "to": "2025-02-05"
+  },
+  {
+    "name": "2025HTSRev1",
+    "title": "Revision 1 (2025)",
+    "from": "2025-02-05",
+    "to": "2025-02-12"
+  },
+  {
+    "name": "2025HTSRev2",
+    "title": "Revision 2 (2025)",
+    "from": "2025-02-12",
+    "to": "2025-03-06"
+  },
+  {
+    "name": "2025HTSRev3",
+    "title": "Revision 3 (2025)",
+    "from": "2025-03-06",
+    "to": "2025-03-11"
+  },
+  {
+    "name": "2025HTSRev4",
+    "title": "Revision 4 (2025)",
+    "from": "2025-03-11",
+    "to": "2025-03-14"
+  },
+  {
+    "name": "2025HTSRev5",
+    "title": "Revision 5 (2025)",
+    "from": "2025-03-14",
+    "to": "2025-04-03"
+  },
+  {
+    "name": "2025HTSRev6",
+    "title": "Revision 6 (2025)",
+    "from": "2025-04-03",
+    "to": "2025-04-04"
+  },
+  {
+    "name": "2025HTSRev7",
+    "title": "Revision 7 (2025)",
+    "from": "2025-04-04",
+    "to": "2025-04-09"
+  },
+  {
+    "name": "2025HTSRev8",
+    "title": "Revision 8 (2025)",
+    "from": "2025-04-09",
+    "to": "2025-04-11"
+  },
+  {
+    "name": "2025HTSRev9",
+    "title": "Revision 9 (2025)",
+    "from": "2025-04-11",
+    "to": "2025-04-15"
+  },
+  {
+    "name": "2025HTSRev10",
+    "title": "Revision 10 (2025)",
+    "from": "2025-04-15",
+    "to": "2025-05-02"
+  },
+  {
+    "name": "2025HTSRev11",
+    "title": "Revision 11 (2025)",
+    "from": "2025-05-02",
+    "to": "2025-05-13"
+  },
+  {
+    "name": "2025HTSRev12",
+    "title": "Revision 12 (2025)",
+    "from": "2025-05-13",
+    "to": "2025-05-16"
+  },
+  {
+    "name": "2025HTSRev13",
+    "title": "Revision 13 (2025)",
+    "from": "2025-05-16",
+    "to": "2025-06-06"
+  },
+  {
+    "name": "2025HTSRev14",
+    "title": "Revision 14 (2025)",
+    "from": "2025-06-06",
+    "to": "2025-06-20"
+  },
+  {
+    "name": "2025HTSRev15",
+    "title": "Revision 15 (2025)",
+    "from": "2025-06-20",
+    "to": "2025-07-01"
+  },
+  {
+    "name": "2025HTSRev16",
+    "title": "Revision 16 (2025)",
+    "from": "2025-07-01",
+    "to": "2025-08-01"
+  },
+  {
+    "name": "2025HTSRev17",
+    "title": "Revision 17 (2025)",
+    "from": "2025-08-01",
+    "to": "2025-08-07"
+  },
+  {
+    "name": "2025HTSRev18",
+    "title": "Revision 18 (2025)",
+    "from": "2025-08-07",
+    "to": "2025-08-18"
+  },
+  {
+    "name": "2025HTSRev19",
+    "title": "Revision 19 (2025)",
+    "from": "2025-08-18",
+    "to": "2025-08-27"
+  },
+  {
+    "name": "2025HTSRev20",
+    "title": "Revision 20 (2025)",
+    "from": "2025-08-27",
+    "to": "2025-08-29"
+  },
+  {
+    "name": "2025HTSRev21",
+    "title": "Revision 21 (2025)",
+    "from": "2025-08-29",
+    "to": "2025-09-09"
+  },
+  {
+    "name": "2025HTSRev22",
+    "title": "Revision 22 (2025)",
+    "from": "2025-09-09",
+    "to": "2025-09-16"
+  },
+  {
+    "name": "2025HTSRev23",
+    "title": "Revision 23 (2025)",
+    "from": "2025-09-16",
+    "to": "2025-09-26"
+  },
+  {
+    "name": "2025HTSRev24",
+    "title": "Revision 24 (2025)",
+    "from": "2025-09-26",
+    "to": "2025-10-10"
+  },
+  {
+    "name": "2025HTSRev25",
+    "title": "Revision 25 (2025)",
+    "from": "2025-10-10",
+    "to": "2025-10-31"
+  },
+  {
+    "name": "2025HTSRev26",
+    "title": "Revision 26 (2025)",
+    "from": "2025-10-31",
+    "to": "2025-11-07"
+  },
+  {
+    "name": "2025HTSRev27",
+    "title": "Revision 27 (2025)",
+    "from": "2025-11-07",
+    "to": "2025-11-10"
+  },
+  {
+    "name": "2025HTSRev28",
+    "title": "Revision 28 (2025)",
+    "from": "2025-11-10",
+    "to": "2025-11-17"
+  },
+  {
+    "name": "2025HTSRev29",
+    "title": "Revision 29 (2025)",
+    "from": "2025-11-17",
+    "to": "2025-11-21"
+  },
+  {
+    "name": "2025HTSRev30",
+    "title": "Revision 30 (2025)",
+    "from": "2025-11-21",
+    "to": "2025-11-28"
+  },
+  {
+    "name": "2025HTSRev31",
+    "title": "Revision 31 (2025)",
+    "from": "2025-11-28",
+    "to": "2025-12-05"
+  },
+  {
+    "name": "2025HTSRev32",
+    "title": "Revision 32 (2025)",
+    "from": "2025-12-05",
+    "to": "2025-12-31"
+  },
+  {
+    "name": "2026HTSBasic",
+    "title": "Basic Edition (2026)",
+    "from": "2025-12-31",
+    "to": "2026-01-16"
+  },
+  {
+    "name": "2026HTSRev1",
+    "title": "Revision 1 (2026)",
+    "from": "2026-01-16",
+    "to": "2026-01-30"
+  },
+  {
+    "name": "2026HTSRev2",
+    "title": "Revision 2 (2026)",
+    "from": "2026-01-30",
+    "to": "2026-02-12"
+  },
+  {
+    "name": "2026HTSRev3",
+    "title": "Revision 3 (2026)",
+    "from": "2026-02-12",
+    "to": "2026-02-25"
+  },
+  {
+    "name": "2026HTSRev4",
+    "title": "Revision 4 (2026)",
+    "from": "2026-02-25",
+    "to": "2026-04-08"
+  },
+  {
+    "name": "2026HTSRev5",
+    "title": "Revision 5 (2026)",
+    "from": "2026-04-08",
+    "to": "2026-04-23"
+  },
+  {
+    "name": "2026HTSRev6",
+    "title": "Revision 6 (2026)",
+    "from": "2026-04-23",
+    "to": "2026-04-29"
+  },
+  {
+    "name": "2026HTSRev7",
+    "title": "Revision 7 (2026)",
+    "from": "2026-04-29",
+    "to": "2026-05-22"
+  },
+  {
+    "name": "2026HTSRev8",
+    "title": "Revision 8 (2026)",
+    "from": "2026-05-22",
+    "to": "2026-05-28"
+  },
+  {
+    "name": "2026HTSRev9",
+    "title": "Revision 9 (2026)",
+    "from": "2026-05-28",
+    "to": "2026-06-08"
+  },
+  {
+    "name": "2026HTSRev10",
+    "title": "Revision 10 (2026)",
+    "from": "2026-06-08",
+    "to": "2026-07-01"
+  },
+  {
+    "name": "2026HTSRev11",
+    "title": "Revision 11 (2026)",
+    "from": "2026-07-01",
+    "to": "2026-07-21"
+  },
+  {
+    "name": "2026HTSRev12",
+    "title": "Revision 12 (2026)",
+    "from": "2026-07-21",
+    "to": "2026-07-28"
+  },
+  {
+    "name": "2026HTSRev13",
+    "title": "Revision 13 (2026) ",
+    "from": "2026-07-28",
+    "to": "2026-07-31"
+  },
+  {
+    "name": "2026HTSRev14",
+    "title": "Revision 14 (2026)",
+    "from": "2026-07-31",
+    "to": "2026-08-03"
+  },
+  {
+    "name": "2026HTSRev15",
+    "title": "Revision 15 (2026)",
+    "from": "2026-08-03",
+    "to": "2026-08-14"
+  },
+  {
+    "name": "2026HTSRev16",
+    "title": "Revision 16 (2026)",
+    "from": "2026-08-14",
+    "to": "2026-08-24"
+  },
+  {
+    "name": "2026HTSRev17",
+    "title": "Revision 17 (2026)",
+    "from": "2026-08-24",
+    "to": "2026-09-02"
+  },
+  {
+    "name": "2026HTSRev18",
+    "title": "Revision 18 (2026)",
+    "from": "2026-09-02",
+    "to": "2026-09-15"
+  },
+  {
+    "name": "2026HTSRev19",
+    "title": "Revision 19 (2026)",
+    "from": "2026-09-15",
+    "to": "2026-09-28"
+  },
+  {
+    "name": "2026HTSRev20",
+    "title": "Revision 20 (2026)",
+    "from": "2026-09-28"
+  }
+]

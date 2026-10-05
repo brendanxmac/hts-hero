@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { HomePage } from "../components/HomePage";
+import { HomeDirectory } from "../components/HomeDirectory";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
 
@@ -75,7 +76,9 @@ export default function Home() {
         description:
           "Trade compliance tools for US importers — duty calculators, AI classification, and tariff impact analysis.",
       })}
-      <HomePage />
+      <HomePage>
+        <HomeDirectory />
+      </HomePage>
     </>
   );
 }

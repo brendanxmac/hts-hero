@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { ScaleIcon } from "@heroicons/react/16/solid";
 import type { CrossRuling, CrossRulingDetail } from "../interfaces/cross-rulings";
 import {
@@ -16,13 +15,19 @@ import { ErrorBanner } from "./cross-rulings/ErrorBanner";
 import { RulingCard } from "./cross-rulings/RulingCard";
 import { RulingDetailView } from "./cross-rulings/RulingDetailView";
 import { ExplorerDetailSection } from "./ExplorerDetailSection";
+import * as ui from "./ui/styles";
 
 interface RelatedCrossRulingsSectionProps {
   htsno: string;
+  /** Just the rulings, without the card and its header, for pages that title the section themselves */
+  bare?: boolean;
+  /** Rulings shown before a "Show all" button; all of them when unset */
+  initialCount?: number;
 }
 
-export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSectionProps) {
+export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }: RelatedCrossRulingsSectionProps) {
   const [rulings, setRulings] = useState<CrossRuling[]>([]);
+  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,41 +81,8 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
 
   const showIntro = !loadingDetail && !selectedRuling;
 
-  return (
-    <ExplorerDetailSection
-      title="Related CROSS Rulings"
-      icon={<ScaleIcon className="h-4 w-4" />}
-      description={
-        <>
-          CBP classification rulings related to{" "}
-          <span className="font-mono font-semibold text-primary">{htsno}</span>
-          .
-        </>
-      }
-    // footer={
-    //   rulings.length > 0 ? (
-    //     <>
-    //       <div>
-    //         <p className="text-sm font-semibold text-base-content">
-    //           Unsure if these rulings might affect your product?
-    //         </p>
-    //         <p className="text-xs text-base-content/50">
-    //           Run a quick analysis to see if these might affect your product.
-    //         </p>
-    //       </div>
-    //       <Link
-    //         href="/classifications/new"
-    //         target="_blank"
-    //         rel="noopener noreferrer"
-    //         className="btn btn-primary"
-    //       >
-    //         Run analysis
-    //         <span aria-hidden="true">&rarr;</span>
-    //       </Link>
-    //     </>
-    //   ) : undefined
-    // }
-    >
+  const body = (
+    <>
       {showIntro && !canFetch && (
         <p className="text-sm text-base-content/60 mb-4">
           CROSS search needs at least a 4-digit HTS code.
@@ -146,18 +118,69 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
           )}
 
           {!loading && !error && rulings.length > 0 && (
-            <div className="flex flex-col gap-4">
-              {rulings.map((ruling) => (
+            <div className={bare ? "grid gap-3 md:grid-cols-2" : "flex flex-col gap-4"}>
+              {(showAll || !initialCount ? rulings : rulings.slice(0, initialCount)).map((ruling) => (
                 <RulingCard
                   key={ruling.id}
                   ruling={ruling}
                   onClick={() => handleRulingClick(ruling)}
                 />
               ))}
+              {!showAll && initialCount && rulings.length > initialCount && (
+                <button
+                  type="button"
+                  onClick={() => setShowAll(true)}
+                  // Bare, the section sits on a page with the analytical theme
+                  className={bare ? `${ui.button({ size: "sm" })} justify-self-center md:col-span-2` : "btn btn-outline btn-sm self-center"}
+                >
+                  Show all {rulings.length} rulings
+                </button>
+              )}
             </div>
           )}
         </>
       )}
+    </>
+  );
+
+  if (bare) return body;
+
+  return (
+    <ExplorerDetailSection
+      title="Related CROSS Rulings"
+      icon={<ScaleIcon className="h-4 w-4" />}
+      description={
+        <>
+          CBP classification rulings related to{" "}
+          <span className="font-mono font-semibold text-primary">{htsno}</span>
+          .
+        </>
+      }
+    // footer={
+    //   rulings.length > 0 ? (
+    //     <>
+    //       <div>
+    //         <p className="text-sm font-semibold text-base-content">
+    //           Unsure if these rulings might affect your product?
+    //         </p>
+    //         <p className="text-xs text-base-content/50">
+    //           Run a quick analysis to see if these might affect your product.
+    //         </p>
+    //       </div>
+    //       <Link
+    //         href="/classifications/new"
+    //         target="_blank"
+    //         rel="noopener noreferrer"
+    //         className="btn btn-primary"
+    //       >
+    //         Run analysis
+    //         <span aria-hidden="true">&rarr;</span>
+    //       </Link>
+    //     </>
+    //   ) : undefined
+    // }
+    >
+      {body}
     </ExplorerDetailSection>
   );
 }

@@ -60,7 +60,24 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_CONTENT_PERCENTAGE_SET = "Duty Calculator Content Percentage Set",
   DUTY_CALCULATOR_RESULTS_VIEWED = "Duty Calculator Results Viewed",
   DUTY_CALCULATOR_SUPPORT_CLICKED = "Duty Calculator Support Clicked",
-  /** User copied the shareable duty-calculator URL from CountryTariff */
+  DUTY_CALCULATOR_ENTRY_DATE_SET = "Duty Calculator Entry Date Set",
+  DUTY_CALCULATOR_TRANSPORT_MODE_SET = "Duty Calculator Transport Mode Set",
+  DUTY_CALCULATOR_VIEW_CHANGED = "Duty Calculator View Changed",
+  DUTY_CALCULATOR_QUESTION_ANSWERED = "Duty Calculator Question Answered",
+  DUTY_CALCULATOR_PREFERENCE_CLAIMED = "Duty Calculator Trade Preference Claimed",
+  DUTY_CALCULATOR_RESULTS_COPIED = "Duty Calculator Results Copied",
+  DUTY_CALCULATOR_EXAMPLE_SELECTED = "Duty Calculator Example Selected",
+  DUTY_CALCULATOR_COMPARE_CHANGED = "Duty Calculator Compare Countries Changed",
+  /** Duty estimate embedded in the explorer or a classification, opened in the calculator */
+  DUTY_ESTIMATE_OPENED_IN_CALCULATOR = "Duty Estimate Opened in Calculator",
+  /** Tariff Watcher tab on the duty calculator page */
+  TARIFF_TOOL_CHANGED = "Tariff Tool Changed",
+  TARIFF_WATCHER_LIST_CHANGED = "Tariff Watcher List Changed",
+  TARIFF_WATCHER_EXAMPLE_USED = "Tariff Watcher Example Used",
+  TARIFF_WATCHER_SORTED = "Tariff Watcher Sorted",
+  TARIFF_WATCHER_EXPORTED = "Tariff Watcher Exported",
+  TARIFF_WATCHER_OPENED_IN_CALCULATOR = "Tariff Watcher Opened in Calculator",
+  /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** HTS Explorer (/explore and embedded Explore) */
   EXPLORER_FINISHED_LOADING = "Explorer Finished Loading",

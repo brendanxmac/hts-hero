@@ -3,23 +3,21 @@
 import Link from "next/link";
 import { ChartBarIcon, QuestionMarkCircleIcon } from "@heroicons/react/16/solid";
 import type { HtsElement } from "../interfaces/hts";
-import { SingleCountryDutyTariffCard } from "./SingleCountryDutyTariffCard";
+import { DutyEstimateEmbed } from "./duty-calculator/embed";
 import { Countries } from "../constants/countries";
 import { ExplorerDetailSection } from "./ExplorerDetailSection";
 
 export interface DutyTariffExplorerSectionProps {
   element: HtsElement;
   tariffElement: HtsElement;
-  htsElements: HtsElement[];
 }
+
+const CHINA = Countries.find((c) => c.code === "CN") ?? null;
 
 export function DutyTariffExplorerSection({
   element,
   tariffElement,
-  htsElements,
 }: DutyTariffExplorerSectionProps) {
-  const calculatorHref = `/duty-calculator?code=${encodeURIComponent(element.htsno)}`;
-
   return (
     <ExplorerDetailSection
       title="Duty & Tariffs"
@@ -44,29 +42,14 @@ export function DutyTariffExplorerSection({
           by country of origin and customs value.
         </>
       }
-      footer={
-        <>
-          <div>
-            <p className="text-sm font-semibold text-base-content">
-              See Duty Rates for any HTS Code
-            </p>
-            <p className="text-xs text-base-content/50">
-              Open the dedicated duty simulator to explore duty rates for any HTS Code.
-            </p>
-          </div>
-          <Link href={calculatorHref} className="btn btn-primary">
-            Launch duty simulator
-            <span aria-hidden="true">&rarr;</span>
-          </Link>
-        </>
-      }
     >
       <div className="flex flex-col gap-4">
-        <SingleCountryDutyTariffCard
+        <DutyEstimateEmbed
           element={element}
-          htsElements={htsElements}
-          tariffElementOverride={tariffElement}
-          initialSelectedCountry={Countries.find((c) => c.code === "CN")}
+          tariffElement={tariffElement}
+          initialCountry={CHINA}
+          surface="explorer"
+          variant="simple"
         />
 
         <p className="text-xs text-base-content/40">

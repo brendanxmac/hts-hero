@@ -2,12 +2,11 @@
 
 import { useMemo } from "react";
 import { useClassification } from "../../../contexts/ClassificationContext";
-import { useHts } from "../../../contexts/HtsContext";
 import { UserProfile } from "../../../libs/supabase/user";
 import { ClassificationRecord } from "../../../interfaces/hts";
 import { Countries, Country } from "../../../constants/countries";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
-import { SingleCountryDutyTariffCard } from "../../SingleCountryDutyTariffCard";
+import { DutyEstimateEmbed } from "@/components/duty-calculator/embed";
 
 interface Props {
   classificationRecord?: ClassificationRecord;
@@ -21,7 +20,6 @@ export const DutyTariffTab = ({
   countryOfOrigin,
 }: Props) => {
   const { classification } = useClassification();
-  const { htsElements } = useHts();
   const { levels } = classification;
   const element = levels[levels.length - 1]?.selection;
 
@@ -67,12 +65,14 @@ export const DutyTariffTab = ({
         </div>
       </div>
 
-      <SingleCountryDutyTariffCard
-        element={element}
-        htsElements={htsElements}
-        initialSelectedCountry={initialSelectedCountry}
-        countryOfOrigin={countryOfOrigin}
-      />
+      <div className="mt-6">
+        <DutyEstimateEmbed
+          element={element}
+          initialCountry={initialSelectedCountry}
+          countryOfOrigin={countryOfOrigin}
+          surface="classification"
+        />
+      </div>
     </div>
   );
 };
