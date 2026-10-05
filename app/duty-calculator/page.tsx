@@ -5,7 +5,7 @@ import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
 import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions";
-import styles from "../../components/duty-calculator/theme.module.css";
+import styles from "../../components/ui/theme.module.css";
 import { Hero } from "../../components/duty-calculator/Hero";
 import { createClient } from "@/app/api/supabase/server";
 import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
@@ -119,7 +119,7 @@ export default async function DutyCalculatorPage() {
       {/* Calculator */}
       <BreadcrumbsProvider>
         <Suspense
-          fallback={<div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 pt-8"><div className="h-64 rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface)]" /></div>}
+          fallback={<div className={`${styles.container} pt-8`}><div className={`${styles.card} h-64`} /></div>}
         >
           <TariffFinderPage />
         </Suspense>

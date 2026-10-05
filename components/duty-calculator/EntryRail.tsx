@@ -7,7 +7,7 @@ import { NumberField, Segmented } from "./controls";
 import { TRANSPORT_MODES } from "./format";
 import { HtsCodeField } from "./HtsCodeField";
 import { MAX_COMPARE, TariffFinder } from "./useTariffFinder";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 // Entry details as a compact rail beside the results
 
@@ -28,7 +28,7 @@ const RailField = ({
     <div className="flex items-baseline justify-between gap-2">
       <label
         htmlFor={htmlFor}
-        className="text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[var(--dc-text-3)]"
+        className={styles.eyebrow}
       >
         {label}
       </label>
@@ -36,7 +36,7 @@ const RailField = ({
     </div>
     {children}
     {hint && (
-      <p className="text-[11.5px] leading-snug text-[var(--dc-text-3)]">
+      <p className="text-[11px] leading-snug text-[var(--dc-text-3)]">
         {hint}
       </p>
     )}
@@ -65,7 +65,7 @@ export const EntryRail = ({
         <div>
           <h2 className="text-[16px] font-semibold">{title}</h2>
           {description && (
-            <p className="mt-0.5 text-[12.5px] leading-snug text-[var(--dc-text-3)]">
+            <p className="mt-0.5 text-[12px] leading-snug text-[var(--dc-text-3)]">
               {description}
             </p>
           )}

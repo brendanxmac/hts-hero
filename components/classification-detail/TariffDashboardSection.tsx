@@ -11,10 +11,10 @@ import { AllRules } from "../../tariffs/engine-v2/data";
 import { isVerifiedDate } from "../../tariffs/engine-v2/revisions";
 import { buildEstimateInput, findTariffElement } from "../duty-calculator/estimate";
 import { formatDate, formatMoney, formatPct, todayIso } from "../duty-calculator/format";
-import { mono } from "../duty-calculator/font";
+import { mono } from "../ui/font";
 import { countOpenQuestions, questionImpacts } from "../duty-calculator/questions";
 import { programName, SummaryStats } from "../duty-calculator/Results";
-import dc from "../duty-calculator/theme.module.css";
+import dc from "../ui/theme.module.css";
 import { DashboardCard, DashboardCardHeader } from "./DashboardCard";
 
 // The classification's duty at a glance, for its country of origin: the same engine as the

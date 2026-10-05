@@ -4,7 +4,7 @@ import { KeyboardEvent, useMemo, useRef, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { Countries, Country } from "../../constants/countries";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 interface Props {
   id: string;
@@ -77,7 +77,7 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
           {selected.map((country, i) => (
             <span
               key={country.code}
-              className={`inline-flex items-center gap-1.5 rounded-[5px] border py-1 pl-2 pr-1 text-[14px] font-medium ${i === 0 && selected.length > 1
+              className={`inline-flex items-center gap-1.5 rounded-[6px] border py-1 pl-2 pr-1 text-[14px] font-medium ${i === 0 && selected.length > 1
                 ? "border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] text-[var(--dc-text)]"
                 : "border-[var(--dc-border)] bg-[var(--dc-surface-2)] text-[var(--dc-text)]"
                 }`}
@@ -117,9 +117,9 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
           />
         </div>
 
-        <Combobox.Options className="absolute z-30 mt-2 w-full min-w-[260px] max-h-72 overflow-auto rounded-md border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none">
+        <Combobox.Options className="absolute z-30 mt-2 w-full min-w-[260px] max-h-72 overflow-auto rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none">
           {full && (
-            <div className="px-3 py-2 text-[12.5px] text-[var(--dc-text-3)]">
+            <div className="px-3 py-2 text-[12px] text-[var(--dc-text-3)]">
               You can compare up to {max} countries. Remove one to add another.
             </div>
           )}
@@ -134,7 +134,7 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
                   value={country}
                   disabled={full && !isSelected}
                   className={({ active, disabled }) =>
-                    `flex items-center gap-3 rounded-[5px] px-3 py-2 text-[14.5px] ${disabled ? "opacity-45 cursor-not-allowed" : "cursor-pointer"
+                    `flex items-center gap-3 rounded-[6px] px-3 py-2 text-[15px] ${disabled ? "opacity-45 cursor-not-allowed" : "cursor-pointer"
                     } ${active && !disabled ? "bg-[var(--dc-accent-soft)]" : ""}`
                   }
                 >

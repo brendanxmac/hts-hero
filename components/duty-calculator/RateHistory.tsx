@@ -23,11 +23,11 @@ import {
 } from "../../tariffs/engine-v2/history";
 import { getVerifiedRevisions } from "../../tariffs/engine-v2/revisions";
 import { formatDate, formatMoney, formatPct } from "./format";
-import { mono } from "./font";
+import { mono } from "../ui/font";
 import { CHART } from "./MoneyBreakdown";
 import { BASE_SLICE, sliceForProgram } from "./Results";
 import { TariffFinder } from "./useTariffFinder";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 // "Duty Over Time": the selected entry's duty on every verified revision, as a stacked step
 // chart with one layer per program (colored like the Cost Breakdown), and what changed when.
@@ -201,12 +201,12 @@ export const RateHistoryCard = ({
           <h3 id="rate-history-title" className="text-[16px] font-semibold">
             Duty Over Time
           </h3>
-          <p className="mt-0.5 text-[12.5px] text-[var(--dc-text-3)]">
+          <p className="mt-0.5 text-[12px] text-[var(--dc-text-3)]">
             {shortDate(historyRange.from)} – {formatDate(lastDate)}
           </p>
         </div>
         <div
-          className={`${styles.segmented} !h-8 shrink-0`}
+          className={`${styles.segmented} ${styles.segmentedSm} shrink-0`}
           role="radiogroup"
           aria-label="Show duty as"
         >
@@ -223,7 +223,7 @@ export const RateHistoryCard = ({
               aria-checked={metric === id}
               title={title}
               onClick={() => setMetric(id)}
-              className={`${styles.segment} !text-[13px] px-2.5 ${metric === id ? styles.segmentActive : ""}`}
+              className={`${styles.segment} ${styles.segmentSm} ${metric === id ? styles.segmentActive : ""}`}
             >
               {label}
             </button>
@@ -238,7 +238,7 @@ export const RateHistoryCard = ({
         </div>
         <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1.5">
           <span
-            className={`${styles.num} text-[26px] font-semibold tracking-tight leading-none`}
+            className={`${styles.num} text-[28px] font-semibold tracking-tight leading-none`}
           >
             {show(current.result.totalDuty)}
           </span>
@@ -271,7 +271,7 @@ export const RateHistoryCard = ({
             ].map(([term, detail]) => (
               <div
                 key={term}
-                className="rounded-[5px] bg-[var(--dc-surface-2)] px-2.5 py-1.5"
+                className="rounded-[6px] bg-[var(--dc-surface-2)] px-2.5 py-1.5"
               >
                 <dt className="text-[var(--dc-text-3)]">{term}</dt>
                 <dd className={`${styles.num} font-semibold text-[var(--dc-text)]`}>
@@ -311,7 +311,7 @@ export const RateHistoryCard = ({
               onMouseLeave={() => onHighlight?.(null)}
             >
               <span
-                className="h-2.5 w-2.5 rounded-[3px] shrink-0"
+                className="h-2.5 w-2.5 rounded shrink-0"
                 style={{ background: layer.color }}
                 aria-hidden
               />
@@ -323,7 +323,7 @@ export const RateHistoryCard = ({
 
       {/* What changed, latest first */}
       {changes === 0 ? (
-        <p className="flex gap-2 rounded-md bg-[var(--dc-surface-2)] px-3.5 py-3 text-[13px] leading-snug text-[var(--dc-text-2)]">
+        <p className="flex gap-2 rounded-[6px] bg-[var(--dc-surface-2)] px-3.5 py-3 text-[13px] leading-snug text-[var(--dc-text-2)]">
           <CheckCircleIcon className="w-4 h-4 shrink-0 mt-px text-[var(--dc-positive)]" aria-hidden />
           <span>
             No tariff changes affected this entry from {shortDate(first.from)} to{" "}
@@ -355,7 +355,7 @@ export const RateHistoryCard = ({
                 className="absolute left-[3px] top-[9px] h-2 w-2 rounded-full border-2 border-[var(--dc-border-strong)] bg-[var(--dc-surface)]"
                 aria-hidden
               />
-              <div className="flex items-baseline justify-between gap-3 text-[12.5px] text-[var(--dc-text-3)]">
+              <div className="flex items-baseline justify-between gap-3 text-[12px] text-[var(--dc-text-3)]">
                 <span>
                   {formatDate(first.from)} · Starting point
                 </span>
@@ -377,7 +377,7 @@ export const RateHistoryCard = ({
         </div>
       )}
 
-      <p className="text-[11.5px] leading-snug text-[var(--dc-text-3)] border-t border-[var(--dc-border)] pt-3">
+      <p className="text-[11px] leading-snug text-[var(--dc-text-3)] border-t border-[var(--dc-border)] pt-3">
         Your value, quantity, trade preference and answers, on every date. Base rates are from the
         current HTS; customs fees aren&apos;t included.
         {!inRange && entryDate >= historyRange.to && (
@@ -507,7 +507,7 @@ const HistoryChart = ({
   return (
     <div
       ref={ref}
-      className="relative select-none outline-none rounded-[5px] focus-visible:ring-2 focus-visible:ring-[var(--dc-accent)]"
+      className="relative select-none outline-none rounded-[6px] focus-visible:ring-2 focus-visible:ring-[var(--dc-accent)]"
       style={{ height: HEIGHT, cursor: finePointer ? "crosshair" : undefined, touchAction: "pan-y" }}
       tabIndex={0}
       role="group"
@@ -709,7 +709,7 @@ const HistoryChart = ({
 
       {tooltip && (
         <div
-          className="pointer-events-none absolute z-10 w-[200px] rounded-md border border-[var(--dc-border)] bg-[var(--dc-surface)] px-3 py-2.5 shadow-[var(--dc-shadow-pop)]"
+          className="pointer-events-none absolute z-10 w-[200px] rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-3 py-2.5 shadow-[var(--dc-shadow-pop)]"
           style={{
             top: PAD.top - 6,
             ...(tooltipOnRight
@@ -718,7 +718,7 @@ const HistoryChart = ({
           }}
           role="status"
         >
-          <div className="text-[11.5px] leading-snug text-[var(--dc-text-3)]">
+          <div className="text-[11px] leading-snug text-[var(--dc-text-3)]">
             <div className="font-medium text-[var(--dc-text-2)]">{dateRange(tooltip)}</div>
           </div>
           <div className={`${styles.num} mt-1 text-[16px] font-semibold leading-none`}>
@@ -729,8 +729,8 @@ const HistoryChart = ({
               .filter((l) => (stacks[hovered].get(l.label) ?? 0) > 0)
               .reverse()
               .map((l) => (
-                <li key={l.label} className="grid grid-cols-[8px_1fr] gap-x-1.5 text-[11.5px] leading-tight">
-                  <span className="mt-[3px] h-2 w-2 rounded-[2px]" style={{ background: l.color }} aria-hidden />
+                <li key={l.label} className="grid grid-cols-[8px_1fr] gap-x-1.5 text-[11px] leading-tight">
+                  <span className="mt-[3px] h-2 w-2 rounded" style={{ background: l.color }} aria-hidden />
                   <span className="text-[var(--dc-text-2)]">{l.label}</span>
                   <span className={`${styles.num} col-start-2 font-semibold text-[var(--dc-text)]`}>
                     {show(stacks[hovered].get(l.label) ?? 0)}
@@ -810,13 +810,13 @@ const ChangeItem = ({
         {segment.changes.map((c) => (
           <li
             key={`${c.kind}-${c.code}`}
-            className="rounded-[5px] bg-[var(--dc-surface-2)] px-2.5 py-1.5 text-[12px] leading-snug"
+            className="rounded-[6px] bg-[var(--dc-surface-2)] px-2.5 py-1.5 text-[12px] leading-snug"
           >
             <div className="flex items-baseline justify-between gap-2">
               <span className="min-w-0 text-[var(--dc-text-3)]">
                 <span className="font-medium">{KIND_LABEL[c.kind]}</span>{" "}
                 {c.code !== "BASE" && (
-                  <span className={`${mono.className} text-[11.5px] text-[var(--dc-text-2)]`}>
+                  <span className={`${mono.className} text-[11px] text-[var(--dc-text-2)]`}>
                     {c.code}
                   </span>
                 )}
@@ -838,13 +838,13 @@ const ChangeItem = ({
       </ul>
       <div className="mt-2">
         {isEntry ? (
-          <span className="inline-flex items-center rounded-full border border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] px-2 py-0.5 text-[11.5px] font-medium text-[var(--dc-accent)]">
+          <span className="inline-flex items-center rounded-full border border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] px-2 py-0.5 text-[11px] font-medium text-[var(--dc-accent)]">
             Your entry date is in this period
           </span>
         ) : (
           <button
             type="button"
-            className={`${styles.link} inline-flex items-center gap-1 text-[12.5px] font-semibold`}
+            className={`${styles.link} inline-flex items-center gap-1 text-[13px] font-semibold`}
             onClick={onPick}
           >
             See the duty from {shortDate(segment.from)}

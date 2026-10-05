@@ -12,8 +12,8 @@ import {
   isValidEightOrTenDigitDigits,
   normalizeHtsCode,
 } from "../../libs/hts-code";
-import { mono } from "./font";
-import styles from "./theme.module.css";
+import { mono } from "../ui/font";
+import styles from "../ui/theme.module.css";
 
 interface Props {
   id: string;
@@ -108,7 +108,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
           <Combobox.Input
             id={id}
             ref={inputRef}
-            className={`${styles.input} ${mono.className} text-[15.5px] tracking-tight`}
+            className={`${styles.input} ${mono.className} text-[16px] tracking-tight`}
             style={{ paddingRight: 40 }}
             placeholder="e.g. 7326.90.86.88"
             autoComplete="off"
@@ -129,7 +129,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
             <button
               type="button"
               aria-label="Clear HTS code"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-[5px] text-[var(--dc-text-3)] hover:text-[var(--dc-text)] hover:bg-[var(--dc-surface-2)]"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-[6px] text-[var(--dc-text-3)] hover:text-[var(--dc-text)] hover:bg-[var(--dc-surface-2)]"
               onClick={() => {
                 onSelect(null);
                 setQuery("");
@@ -146,7 +146,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
           {query.trim() && !selectedElement && (results.length > 0 || debouncedQuery === query) && (
             <Combobox.Options
               static
-              className="absolute z-30 mt-2 w-full min-w-[320px] max-h-80 overflow-auto rounded-md border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none"
+              className="absolute z-30 mt-2 w-full min-w-[320px] max-h-80 overflow-auto rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-1.5 shadow-[var(--dc-shadow-pop)] focus:outline-none"
             >
               {results.length === 0 && debouncedQuery === query ? (
                 <div className="px-3 py-3 text-sm text-[var(--dc-text-3)]">
@@ -158,7 +158,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
                     key={el.uuid}
                     value={el}
                     className={({ active }) =>
-                      `flex flex-col gap-0.5 rounded-[5px] px-3 py-2 cursor-pointer ${
+                      `flex flex-col gap-0.5 rounded-[6px] px-3 py-2 cursor-pointer ${
                         active ? "bg-[var(--dc-accent-soft)]" : ""
                       }`
                     }

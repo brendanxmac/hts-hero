@@ -1,4 +1,4 @@
-/* Design tokens and primitives for the duty calculator.
+/* Design tokens and primitives for HTS Hero's analytical UI (see DESIGN_SYSTEM.md).
    Follows the site theme: <html data-theme="dark|light">, which the site sets from the header
    toggle or, until the user picks one, from the operating system. Falls back to the OS setting
    if the attribute is missing. Text colors meet WCAG AA (most exceed AAA) in both themes. */
@@ -88,6 +88,7 @@
   color-scheme: dark;
 }
 
+/* Same values as the block above: keep the two in sync */
 @media (prefers-color-scheme: dark) {
   :global(html:not([data-theme])) .root {
     --dc-bg: #0a0c0f;
@@ -107,24 +108,24 @@
     --dc-focus: rgba(142, 166, 255, 0.35);
     --dc-positive: #5bd79c;
     --dc-positive-soft: rgba(91, 215, 156, 0.1);
-  --dc-negative: #ff8f8a;
-  --dc-negative-soft: rgba(255, 143, 138, 0.1);
+    --dc-negative: #ff8f8a;
+    --dc-negative-soft: rgba(255, 143, 138, 0.1);
     --dc-warning: #f3c56b;
     --dc-warning-soft: rgba(243, 197, 107, 0.08);
     --dc-warning-border: rgba(243, 197, 107, 0.35);
     --dc-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 6px -2px rgba(0, 0, 0, 0.5);
     --dc-shadow-pop: 0 10px 28px -10px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.4);
-  --dc-chart-1: #8ea6ff;
-  --dc-chart-2: #f0a860;
-  --dc-chart-3: #5cc8b8;
-  --dc-chart-4: #e58aad;
-  --dc-chart-5: #b3a2f0;
-  --dc-chart-6: #6b7280;
-  --dc-series-1: #3987e5;
-  --dc-series-2: #d95926;
-  --dc-series-3: #199e70;
-  --dc-series-4: #c98500;
-  --dc-series-5: #d55181;
+    --dc-chart-1: #8ea6ff;
+    --dc-chart-2: #f0a860;
+    --dc-chart-3: #5cc8b8;
+    --dc-chart-4: #e58aad;
+    --dc-chart-5: #b3a2f0;
+    --dc-chart-6: #6b7280;
+    --dc-series-1: #3987e5;
+    --dc-series-2: #d95926;
+    --dc-series-3: #199e70;
+    --dc-series-4: #c98500;
+    --dc-series-5: #d55181;
 
     color-scheme: dark;
   }
@@ -141,6 +142,10 @@
   font-feature-settings: "tnum" 1, "cv11" 1;
 }
 
+/* ── Surfaces ── */
+
+/* A panel on the page: 8px corners, 1px border, the resting shadow. Floating things
+   (menus, popovers, tooltips) use --dc-shadow-pop instead */
 .card {
   background: var(--dc-surface);
   border: 1px solid var(--dc-border);
@@ -148,21 +153,101 @@
   box-shadow: var(--dc-shadow);
 }
 
+/* A highlighted panel in the accent tint: a call to action or a section that should stand
+   out from the cards around it. Flat: no shadow */
+.callout {
+  background: var(--dc-accent-soft);
+  border: 1px solid var(--dc-accent-border);
+  border-radius: 8px;
+}
+
+/* ── Layout ── */
+
+/* Page width: every band on a page uses it, so edges line up from header to footer */
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+@media (min-width: 640px) {
+  .container {
+    padding-inline: 24px;
+  }
+}
+
+/* ── Type ── one scale for every page: 11 · 12 · 13 · 14 · 15 · 16 · 18 · 20 · 24 · 28 · 32+ */
+
+/* Section title: one per <section> */
+.h2 {
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--dc-text);
+}
+@media (min-width: 640px) {
+  .h2 {
+    font-size: 28px;
+  }
+}
+
+/* Card or panel title */
+.h3 {
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--dc-text);
+}
+
+/* Paragraph text under a title */
+.body {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--dc-text-2);
+}
+
+/* Intro paragraph under a page title */
+.lead {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--dc-text-2);
+}
+
+/* Fine print: sources, footnotes, hints */
+.caption {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--dc-text-3);
+}
+
+/* Above a section title, in the accent color: what the section is about */
+.kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dc-accent);
+}
+
+/* Small muted caps: stat labels, table headers, rail headings */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dc-text-3);
+}
+
+/* Form field label */
 .label {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.005em;
   color: var(--dc-text-2);
 }
 
-.eyebrow {
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--dc-text-3);
-}
+/* ── Controls ── */
 
 .input {
   width: 100%;
@@ -213,6 +298,14 @@
   outline: 2px solid var(--dc-accent);
   outline-offset: 1px;
 }
+/* Small size, for a toggle in a panel header: segmentedSm on the group, segmentSm on each option */
+.segmentedSm {
+  height: 32px;
+}
+.segmentSm {
+  padding: 0 10px;
+  font-size: 13px;
+}
 .segmentActive {
   background: var(--dc-surface);
   color: var(--dc-text);
@@ -259,6 +352,13 @@
 }
 .buttonPrimary:hover {
   background: var(--dc-accent-hover);
+}
+
+/* Size modifier for a page's main call to action: <Link className={`${buttonPrimary} ${buttonLg}`}> */
+.buttonLg {
+  height: 44px;
+  padding: 0 20px;
+  font-size: 15px;
 }
 
 .link {

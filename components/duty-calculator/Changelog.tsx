@@ -5,6 +5,7 @@ import {
   ChangelogTypeLabels,
   formatChangelogDate,
 } from "@/libs/supabase/tariff-changelog"
+import styles from "../ui/theme.module.css"
 
 export const CHANGELOG_PATH = "/duty-calculator/changelog"
 
@@ -16,7 +17,7 @@ const typeStyles: Record<ChangelogType, string> = {
 
 export const ChangelogTypeBadge = ({ type }: { type: ChangelogType }) => (
   <span
-    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11.5px] font-medium ${typeStyles[type]}`}
+    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${typeStyles[type]}`}
   >
     {ChangelogTypeLabels[type]}
   </span>
@@ -26,9 +27,9 @@ export const ChangelogTypeBadge = ({ type }: { type: ChangelogType }) => (
 export const ChangelogCard = ({ entries }: { entries: ChangelogEntry[] }) => (
   <section
     aria-labelledby="changelog-card-title"
-    className="w-full rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 shadow-[var(--dc-shadow)]"
+    className={`${styles.card} w-full p-5`}
   >
-    <h2 id="changelog-card-title" className="text-[15px] font-semibold text-[var(--dc-text)]">
+    <h2 id="changelog-card-title" className={styles.h3}>
       Latest updates
     </h2>
     <ol className="mt-4 divide-y divide-[var(--dc-border)]">
@@ -44,7 +45,7 @@ export const ChangelogCard = ({ entries }: { entries: ChangelogEntry[] }) => (
     </ol>
     <Link
       href={CHANGELOG_PATH}
-      className="mt-1 inline-flex items-center gap-1 text-[13.5px] font-semibold text-[var(--dc-accent)] underline-offset-4 hover:underline"
+      className="mt-1 inline-flex items-center gap-1 text-[14px] font-semibold text-[var(--dc-accent)] underline-offset-4 hover:underline"
     >
       View full changelog
       <span aria-hidden>→</span>

@@ -8,7 +8,7 @@ import { Countries, Country } from "../../constants/countries";
 import type { MicroEstimate } from "../../libs/hts-micro-estimate";
 import { CountryField } from "../duty-calculator/CountryField";
 import { formatDate, formatMoney, formatPct } from "../duty-calculator/format";
-import styles from "../duty-calculator/theme.module.css";
+import styles from "../ui/theme.module.css";
 
 // A quick duty estimate on the /hts/[code] page: pick a country, see the calculator's
 // headline figures, then open the calculator for the rest. The first estimate is
@@ -79,14 +79,14 @@ export const MicroCalculator = ({
     <section
       id="estimate"
       aria-labelledby="estimate-title"
-      className="scroll-mt-6 overflow-hidden rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] shadow-[var(--dc-shadow-pop)]"
+      className={`${styles.card} scroll-mt-6 overflow-hidden`}
     >
       <div className="flex flex-col gap-3 border-b border-[var(--dc-border)] px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <h2 id="estimate-title" className="text-[16px] font-semibold tracking-tight text-[var(--dc-text)]">
             Estimated Duty on {htsno}
           </h2>
-          <p className="text-[12.5px] text-[var(--dc-text-3)]">
+          <p className="text-[12px] text-[var(--dc-text-3)]">
             {formatMoney(CUSTOMS_VALUE)} by ocean, entered {formatDate(initial.asOf)}
             {shown?.requiresQuantity && " · 1,000 units"}
           </p>
@@ -113,7 +113,7 @@ export const MicroCalculator = ({
           <CostBar slices={shown.slices} />
         </div>
       ) : (
-        <div className="flex min-h-[150px] items-center justify-center px-6 py-8 text-center text-[14.5px] text-[var(--dc-text-2)]" aria-live="polite">
+        <div className="flex min-h-[150px] items-center justify-center px-6 py-8 text-center text-[15px] text-[var(--dc-text-2)]" aria-live="polite">
           {failed
             ? "Couldn't calculate this estimate. Try again, or open the full calculator."
             : loading
@@ -125,24 +125,24 @@ export const MicroCalculator = ({
       {/* The way on: what this quick estimate leaves out, and the calculator that doesn't */}
       <div className="flex flex-col gap-3 border-t border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="min-w-0">
-          <p className="text-[15.5px] font-semibold leading-snug text-[var(--dc-text)]">
+          <p className="text-[16px] font-semibold leading-snug text-[var(--dc-text)]">
             {shown && shown.totalDuty > 0
               ? `Is ${formatMoney(shown.totalDuty)} really what you'll owe?`
               : "Make sure this shipment really enters duty-free."}
           </p>
-          <p className="mt-0.5 text-[13.5px] text-[var(--dc-text-2)]">{hook}</p>
+          <p className="mt-0.5 text-[14px] text-[var(--dc-text-2)]">{hook}</p>
         </div>
         <div className="flex shrink-0 flex-col items-stretch sm:items-center gap-1">
           {/* nofollow: calculator links with parameters all canonicalize to /duty-calculator */}
           <Link
             href={calculatorHref}
             rel="nofollow"
-            className={`${styles.buttonPrimary} !h-11 !px-5 !text-[15px] justify-center shadow-[var(--dc-shadow-pop)]`}
+            className={`${styles.buttonPrimary} ${styles.buttonLg} justify-center`}
           >
             Find my exact duty
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
-          <span className="text-center text-[11.5px] text-[var(--dc-text-3)]">Free · No sign-up</span>
+          <span className="text-center text-[11px] text-[var(--dc-text-3)]">Free · No sign-up</span>
         </div>
       </div>
     </section>
@@ -180,10 +180,10 @@ const Stats = ({ estimate }: { estimate: MicroEstimate }) => {
 const Stat = ({ label, value, note, className = "" }: { label: string; value: string; note: string; className?: string }) => (
   <div className={`px-5 py-3 bg-[var(--dc-surface)] ${className}`}>
     <div className={styles.eyebrow}>{label}</div>
-    <div className={`${styles.num} mt-1 text-[19px] leading-none font-semibold tracking-tight text-[var(--dc-text)]`}>
+    <div className={`${styles.num} mt-1 text-[20px] leading-none font-semibold tracking-tight text-[var(--dc-text)]`}>
       {value}
     </div>
-    <div className="mt-1 text-[12.5px] text-[var(--dc-text-3)]">{note}</div>
+    <div className="mt-1 text-[12px] text-[var(--dc-text-3)]">{note}</div>
   </div>
 );
 
@@ -198,15 +198,15 @@ const CostBar = ({ slices }: { slices: MicroEstimate["slices"] }) => {
   if (total <= 0) return null;
   return (
     <div className="flex flex-col gap-2 px-5 py-3">
-      <div className="flex h-3.5 w-full gap-0.5 overflow-hidden rounded-[5px] bg-[var(--dc-surface-3)]" aria-hidden>
+      <div className="flex h-3.5 w-full gap-0.5 overflow-hidden rounded-[6px] bg-[var(--dc-surface-3)]" aria-hidden>
         {shown.map((s) => (
           <div key={s.label} className="h-full min-w-[3px]" style={{ width: `${(s.amount / total) * 100}%`, background: s.color }} />
         ))}
       </div>
-      <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-[12.5px]">
+      <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-[13px]">
         {shown.map((s) => (
           <li key={s.label} className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: s.color }} aria-hidden />
+            <span className="h-2.5 w-2.5 shrink-0 rounded" style={{ background: s.color }} aria-hidden />
             <span className="text-[var(--dc-text-2)]">{s.label}</span>
             <span className={`${styles.num} font-semibold`}>{formatMoney(s.amount)}</span>
             <span className={`${styles.num} text-[var(--dc-text-3)]`}>{Math.round((s.amount / total) * 1000) / 10}%</span>

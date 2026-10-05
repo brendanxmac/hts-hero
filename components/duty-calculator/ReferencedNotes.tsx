@@ -6,7 +6,8 @@ import {
   NoteCitation,
 } from "../../tariffs/engine-v2/citations";
 import { formatDate } from "./format";
-import { mono } from "./font";
+import { mono } from "../ui/font";
+import styles from "../ui/theme.module.css";
 
 // The text of the note subdivisions a piece of legal text cites, for the entry's date, from
 // public/data/notes (written by `npm run notes:cited`). Code lists are shown as a grid with the
@@ -121,7 +122,7 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
       );
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[12.5px] text-[var(--dc-text-2)]">
+      <p className="text-[13px] text-[var(--dc-text-2)]">
         {codes.length} {codes.length === 1 ? "provision" : "provisions"}
         {" · "}
         {matches.length ? (
@@ -149,7 +150,7 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
       {codes.length > COLLAPSED && (
         <button
           type="button"
-          className="self-start text-[12.5px] font-medium text-[var(--dc-accent)] hover:underline"
+          className="self-start text-[13px] font-medium text-[var(--dc-accent)] hover:underline"
           onClick={() => setAll((x) => !x)}
         >
           {all ? "Show fewer" : `Show all ${codes.length}`}
@@ -162,7 +163,7 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
 const Table = ({ rows }: { rows: string[][] }) => {
   const [head, ...body] = rows;
   return (
-    <div className="overflow-x-auto rounded-[5px] border border-[var(--dc-border)] bg-[var(--dc-surface)]">
+    <div className="overflow-x-auto rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)]">
       <table className="w-full text-[12px] leading-snug">
         <thead className="bg-[var(--dc-surface-3)]">
           <tr>
@@ -213,11 +214,11 @@ const NoteNode = ({ node, htsCode }: { node: CitedNode; htsCode: string }) => {
   const hit = !isTable && mentioned.some((c) => covers(c, htsCode));
   return (
     <div
-      className={`flex flex-col gap-2 ${hit ? "rounded-[5px] bg-[var(--dc-positive-soft)] px-2 py-1 -mx-2" : ""}`}
+      className={`flex flex-col gap-2 ${hit ? "rounded-[6px] bg-[var(--dc-positive-soft)] px-2 py-1 -mx-2" : ""}`}
       style={{ marginLeft: node.depth * 16 }}
     >
       {parsed.length === 0 && (
-        <p className="text-[12.5px] text-[var(--dc-text-2)]">
+        <p className="text-[13px] text-[var(--dc-text-2)]">
           <span className="font-semibold text-[var(--dc-text)]">
             {marker(node.citation)}
           </span>
@@ -266,20 +267,20 @@ const Citation = ({
   const picked = versions?.length ? versionOn(versions, asOf) : undefined;
   const version = picked?.version;
   return (
-    <div className="flex flex-col gap-2.5 rounded-[5px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-3.5">
+    <div className="flex flex-col gap-2.5 rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-3.5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <span className="text-[12.5px] font-semibold text-[var(--dc-text)]">
+        <span className="text-[13px] font-semibold text-[var(--dc-text)]">
           {citation.label}
         </span>
         {version && picked?.early ? (
-          <span className="text-[11.5px] text-[var(--dc-text-3)]">
+          <span className="text-[11px] text-[var(--dc-text-3)]">
             As first published in the HTS on {formatDate(version.from)}
           </span>
         ) : (
           version &&
           versions &&
           versions.length > 1 && (
-            <span className="text-[11.5px] text-[var(--dc-text-3)]">
+            <span className="text-[11px] text-[var(--dc-text-3)]">
               Text in force {formatDate(version.from)}
               {version.to ? ` – ${formatDate(lastDay(version.to))}` : " onward"}
             </span>
@@ -287,13 +288,13 @@ const Citation = ({
         )}
       </div>
       {file === undefined ? (
-        <p className="text-[12.5px] text-[var(--dc-text-3)]">Loading…</p>
+        <p className="text-[12px] text-[var(--dc-text-3)]">Loading…</p>
       ) : version ? (
         version.nodes.map((node, i) => (
           <NoteNode key={i} node={node} htsCode={htsCode} />
         ))
       ) : (
-        <p className="text-[12.5px] text-[var(--dc-text-3)]">
+        <p className="text-[12px] text-[var(--dc-text-3)]">
           Text not available for this revision.
         </p>
       )}
@@ -349,7 +350,7 @@ export const ReferencedNotes = ({
   if (!found.length) return null;
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-[12px] font-semibold uppercase tracking-wide text-[var(--dc-text-3)]">
+      <div className={styles.eyebrow}>
         Referenced notes
       </div>
       {found.map((citation) => (

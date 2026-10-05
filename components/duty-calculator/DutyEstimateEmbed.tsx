@@ -38,7 +38,7 @@ import {
   SummaryStats,
 } from "./Results";
 import { DateNotice } from "./shared";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 // A duty estimate for one HTS code, embedded in another page (the HTS explorer, a
 // classification's Duty & Tariffs tab). Same engine and pieces as the Tariff Calculator,
@@ -210,7 +210,7 @@ export const DutyEstimateEmbed = ({
             countryOfOrigin && country?.code !== countryOfOrigin.code ? (
               <button
                 type="button"
-                className={`${styles.link} inline-flex items-center gap-1 text-[12.5px]`}
+                className={`${styles.link} inline-flex items-center gap-1 text-[13px]`}
                 onClick={() => setCountry(countryOfOrigin)}
               >
                 <ArrowPathIcon className="w-3.5 h-3.5" />
@@ -294,11 +294,11 @@ export const DutyEstimateEmbed = ({
       </div>
 
       {!country || !result ? (
-        <div className="rounded-md border border-dashed border-[var(--dc-border-strong)] px-6 py-10 text-center">
+        <div className="rounded-[6px] border border-dashed border-[var(--dc-border-strong)] px-6 py-10 text-center">
           <div className="text-[15px] font-semibold">
             Choose a country of origin
           </div>
-          <p className="mt-1 text-[13.5px] text-[var(--dc-text-2)]">
+          <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
             You&apos;ll see every duty and tariff that applies, line by line,
             and why.
           </p>
@@ -373,7 +373,7 @@ export const DutyEstimateEmbed = ({
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="text-[12.5px] text-[var(--dc-text-3)]">
+            <span className="text-[12px] text-[var(--dc-text-3)]">
               {openQuestions > 0
                 ? "Answer the questions above to refine this estimate."
                 : "Estimates don't include antidumping or countervailing duties."}
@@ -436,20 +436,14 @@ const CalculatorCta = ({
     "Any entry date, transport mode and trade preference",
   ];
   return (
-    <div className="relative overflow-hidden rounded-[8px] border border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] p-5 sm:p-6">
-      {/* A soft glow in the corner */}
-      <div
-        className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full opacity-25 blur-3xl"
-        style={{ background: "var(--dc-accent)" }}
-        aria-hidden
-      />
-      <div className="relative grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-5 md:items-center">
+    <div className={`${styles.callout} p-5 sm:p-6`}>
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-5 md:items-center">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--dc-accent)]">
+          <div className={`${styles.kicker} inline-flex items-center gap-1.5`}>
             <SparklesIcon className="w-4 h-4" aria-hidden />
             Full analysis
           </div>
-          <h4 className="mt-1.5 text-[20px] sm:text-[22px] font-semibold tracking-tight text-[var(--dc-text)]">
+          <h4 className="mt-1.5 text-[20px] sm:text-[24px] font-semibold tracking-tight text-[var(--dc-text)]">
             {headline}
           </h4>
           <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
@@ -459,7 +453,7 @@ const CalculatorCta = ({
             {benefits.map((b) => (
               <li
                 key={b}
-                className="flex items-start gap-2 text-[13.5px] leading-snug text-[var(--dc-text)]"
+                className="flex items-start gap-2 text-[14px] leading-snug text-[var(--dc-text)]"
               >
                 <CheckCircleIcon
                   className="mt-0.5 w-4 h-4 shrink-0 text-[var(--dc-accent)]"

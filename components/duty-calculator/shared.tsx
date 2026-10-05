@@ -12,9 +12,9 @@ import { getLatestVerifiedRevision, isVerifiedDate } from "../../tariffs/engine-
 import { Explore } from "../Explore";
 import { Segmented } from "./controls";
 import { formatDate } from "./format";
-import { mono } from "./font";
+import { mono } from "../ui/font";
 import { EXAMPLES, Example, MAX_COMPARE, TariffFinder, View } from "./useTariffFinder";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 // Smaller pieces of the Tariff Finder page
 
@@ -73,7 +73,7 @@ export const DateNotice = ({
   return (
     <div
       role="status"
-      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-md border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3.5"
+      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-[6px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3.5"
     >
       <ExclamationTriangleIcon className="w-5 h-5 shrink-0 text-[var(--dc-warning)]" aria-hidden />
       <p className="flex-1 text-[14px] leading-snug text-[var(--dc-warning)]">
@@ -102,13 +102,13 @@ export const ExampleButtons = ({ onExample }: { onExample: (e: Example) => void 
         key={example.code}
         type="button"
         onClick={() => onExample(example)}
-        className="group flex items-center justify-between gap-4 rounded-md border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-4 py-3.5 text-left transition-colors hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+        className="group flex items-center justify-between gap-4 rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-4 py-3.5 text-left transition-colors hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
       >
         <span className="flex flex-col">
-          <span className="text-[14.5px] font-semibold text-[var(--dc-text)]">
+          <span className="text-[15px] font-semibold text-[var(--dc-text)]">
             {example.label} from {example.origin}
           </span>
-          <span className={`${mono.className} text-[12.5px] text-[var(--dc-text-2)]`}>{example.code}</span>
+          <span className={`${mono.className} text-[13px] text-[var(--dc-text-2)]`}>{example.code}</span>
         </span>
         <ArrowRightIcon className="w-4 h-4 text-[var(--dc-text-3)] group-hover:text-[var(--dc-accent)]" />
       </button>
@@ -128,7 +128,7 @@ export const emptyTitle = (f: TariffFinder) =>
 // ── Around the page ──
 
 export const Disclaimer = () => (
-  <p className="text-center text-[12.5px] leading-relaxed text-[var(--dc-text-3)] max-w-2xl mx-auto">
+  <p className="text-center text-[12px] leading-relaxed text-[var(--dc-text-3)] max-w-2xl mx-auto">
     All figures shown are estimates based on the details provided and may not be complete nor correct. <br /> Spot something wrong?{" "}
     <a
       href="mailto:support@htshero.com"

@@ -3,7 +3,7 @@
 import { CalculationResult } from "../../tariffs/engine-v2/types";
 import { formatMoney } from "./format";
 import { BASE_SLICE, FEES_SLICE, sliceForProgram } from "./Results";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 // Where the money goes: duty and fees as one stacked bar, one slice per program
 
@@ -73,7 +73,7 @@ export const CostBar = ({
       onMouseLeave={() => onHighlight?.(null)}
     >
       <div
-        className="flex h-5 w-full gap-0.5 overflow-hidden rounded-[5px] bg-[var(--dc-surface-3)]"
+        className="flex h-5 w-full gap-0.5 overflow-hidden rounded-[6px] bg-[var(--dc-surface-3)]"
         aria-hidden
       >
         {shown.map((s) => (
@@ -89,7 +89,7 @@ export const CostBar = ({
           />
         ))}
       </div>
-      <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-[12.5px]">
+      <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-[13px]">
         {shown.map((s) => (
           <li
             key={s.label}
@@ -98,7 +98,7 @@ export const CostBar = ({
             onMouseEnter={() => onHighlight?.(s.label)}
           >
             <span
-              className="h-2.5 w-2.5 shrink-0 rounded-sm"
+              className="h-2.5 w-2.5 shrink-0 rounded"
               style={{ background: s.color }}
               aria-hidden
             />

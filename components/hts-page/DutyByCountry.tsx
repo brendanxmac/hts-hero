@@ -8,9 +8,10 @@ import {
   HtsDutySummary,
   lowestTotal,
 } from "../../libs/hts-duty-summary";
-import { mono } from "../duty-calculator/font";
-import styles from "../duty-calculator/theme.module.css";
-import { bodyClass, cardClass, eyebrowClass, h2Class, heat } from "./theme";
+import { mono } from "../ui/font";
+import { heat } from "../ui/heat";
+import { SectionHeader } from "../ui/SectionHeader";
+import styles from "../ui/theme.module.css";
 
 // What an import under an HTS code pays from the largest sources of US imports, on the
 // /hts/[code] page. Server-rendered from the Tariff Calculator's engine.
@@ -19,9 +20,9 @@ const calculatorHref = (htsno: string, country?: string) =>
   `/duty-calculator?code=${htsno}${country ? `&country=${country}` : ""}`;
 
 const Fact = ({ label, value, note }: { label: string; value: string; note: string }) => (
-  <div className="rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-5 py-4">
-    <div className="text-[12.5px] font-medium text-[var(--dc-text-3)]">{label}</div>
-    <div className={`${styles.num} mt-1 text-[22px] font-semibold tracking-tight text-[var(--dc-text)]`}>
+  <div className={`${styles.card} px-5 py-4`}>
+    <div className={styles.eyebrow}>{label}</div>
+    <div className={`${styles.num} mt-1.5 text-[24px] font-semibold tracking-tight text-[var(--dc-text)]`}>
       {value}
     </div>
     <div className="mt-0.5 text-[13px] leading-snug text-[var(--dc-text-2)]">{note}</div>
@@ -43,11 +44,12 @@ export function DutyByCountry({
 
   return (
     <section id="duty-by-country" className="scroll-mt-6 flex flex-col gap-6">
-      <div className="flex flex-col gap-2 max-w-[80ch]">
-        <span className={eyebrowClass}>Tariffs by country · {formatSummaryDate(summary.asOf)}</span>
-        <h2 className={h2Class}>US Import Duty on HTS {htsno} by Country of Origin</h2>
+      <SectionHeader
+        kicker={`Tariffs by country · ${formatSummaryDate(summary.asOf)}`}
+        title={`US Import Duty on HTS ${htsno} by Country of Origin`}
+      >
         {china && (
-          <p className={bodyClass}>
+          <>
             {dutyAnswerSentence({ productName, htsno, row: china, asOf: summary.asOf })}
             {lowest && summary.rows.length > 1 && (
               <>
@@ -56,9 +58,9 @@ export function DutyByCountry({
                 {lowest.label}.
               </>
             )}
-          </p>
+          </>
         )}
-      </div>
+      </SectionHeader>
 
       <div className="grid gap-3 sm:grid-cols-3">
         {china && (
@@ -82,15 +84,15 @@ export function DutyByCountry({
         />
       </div>
 
-      <div className={`${cardClass} overflow-hidden`}>
+      <div className={`${styles.card} overflow-hidden`}>
         <div className="overflow-x-auto">
           <table className={`w-full text-[14px] ${styles.num}`}>
             <thead>
-              <tr className="text-left text-[12px] uppercase tracking-wider text-[var(--dc-text-3)] bg-[var(--dc-surface-2)]">
-                <th scope="col" className="px-5 sm:px-6 py-3 font-semibold">Country of origin</th>
-                <th scope="col" className="px-4 py-3 font-semibold">Base rate</th>
-                <th scope="col" className="px-4 py-3 font-semibold">Additional tariffs</th>
-                <th scope="col" className="px-5 sm:px-6 py-3 font-semibold text-right">Total duty</th>
+              <tr className={`${styles.eyebrow} text-left bg-[var(--dc-surface-2)]`}>
+                <th scope="col" className="px-5 sm:px-6 py-3">Country of origin</th>
+                <th scope="col" className="px-4 py-3">Base rate</th>
+                <th scope="col" className="px-4 py-3">Additional tariffs</th>
+                <th scope="col" className="px-5 sm:px-6 py-3 text-right">Total duty</th>
               </tr>
             </thead>
             <tbody>
@@ -120,7 +122,7 @@ export function DutyByCountry({
                           <li key={a.code} className="flex flex-wrap items-baseline gap-x-2">
                             <span>{a.program}</span>
                             <span className="font-semibold text-[var(--dc-text)]">{formatDutyPct(a.ratePct)}</span>
-                            <span className={`${mono.className} text-[11.5px] text-[var(--dc-text-3)]`}>{a.code}</span>
+                            <span className={`${mono.className} text-[11px] text-[var(--dc-text-3)]`}>{a.code}</span>
                           </li>
                         ))}
                       </ul>
@@ -130,7 +132,7 @@ export function DutyByCountry({
                   </td>
                   <td className="px-5 sm:px-6 py-2 text-right whitespace-nowrap">
                     <span
-                      className="inline-block rounded-[5px] px-2.5 py-1 font-semibold text-[var(--dc-text)]"
+                      className="inline-block rounded px-2.5 py-1 font-semibold text-[var(--dc-text)]"
                       style={{ background: heat(row.totalPct) }}
                     >
                       {describeTotal(row)}
@@ -150,7 +152,7 @@ export function DutyByCountry({
         </div>
 
         <div className="border-t border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-5 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <p className="text-[12.5px] leading-relaxed text-[var(--dc-text-3)] max-w-3xl">
+          <p className={`${styles.caption} max-w-3xl`}>
             Duties on goods entered {formatSummaryDate(summary.asOf)} at the general rate (Column 2 where it
             applies), with tariff data verified through {summary.revision.title.replace(/^Revision (\d+) \((\d{4})\)$/, "$2 HTS Revision $1")}.
             Totals are before customs fees (MPF, HMF) and any antidumping or countervailing duties.

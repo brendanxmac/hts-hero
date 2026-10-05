@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 export const Field = ({
   label,
@@ -26,7 +26,7 @@ export const Field = ({
       {action}
     </div>
     {children}
-    {hint && <p className="text-[12.5px] leading-snug text-[var(--dc-text-3)]">{hint}</p>}
+    {hint && <p className="text-[12px] leading-snug text-[var(--dc-text-3)]">{hint}</p>}
   </div>
 );
 
@@ -61,7 +61,7 @@ export const NumberField = ({
         id={id}
         inputMode="decimal"
         autoComplete="off"
-        className="flex-1 min-w-0 bg-transparent outline-none text-[15.5px] font-medium"
+        className="flex-1 min-w-0 bg-transparent outline-none text-[16px] font-medium"
         value={text}
         onFocus={() => setFocused(true)}
         onBlur={() => {

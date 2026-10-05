@@ -16,6 +16,7 @@ import { ErrorBanner } from "./cross-rulings/ErrorBanner";
 import { RulingCard } from "./cross-rulings/RulingCard";
 import { RulingDetailView } from "./cross-rulings/RulingDetailView";
 import { ExplorerDetailSection } from "./ExplorerDetailSection";
+import styles from "./ui/theme.module.css";
 
 interface RelatedCrossRulingsSectionProps {
   htsno: string;
@@ -118,7 +119,7 @@ export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }
           )}
 
           {!loading && !error && rulings.length > 0 && (
-            <div className="flex flex-col gap-4">
+            <div className={bare ? "grid gap-3 md:grid-cols-2" : "flex flex-col gap-4"}>
               {(showAll || !initialCount ? rulings : rulings.slice(0, initialCount)).map((ruling) => (
                 <RulingCard
                   key={ruling.id}
@@ -130,7 +131,8 @@ export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }
                 <button
                   type="button"
                   onClick={() => setShowAll(true)}
-                  className="btn btn-outline btn-sm self-center"
+                  // Bare, the section sits on a page with the analytical theme's tokens
+                  className={bare ? `${styles.button} justify-self-center md:col-span-2` : "btn btn-outline btn-sm self-center"}
                 >
                   Show all {rulings.length} rulings
                 </button>

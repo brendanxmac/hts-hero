@@ -14,7 +14,7 @@ import { TariffWatcher } from "./tariff-watcher/TariffWatcher";
 import { CompareView } from "./duty-calculator/Compare";
 import { EntryRail } from "./duty-calculator/EntryRail";
 import { formatDate } from "./duty-calculator/format";
-import { mono } from "./duty-calculator/font";
+import { mono } from "./ui/font";
 import { CostBar, slices } from "./duty-calculator/MoneyBreakdown";
 import { RateHistoryCard } from "./duty-calculator/RateHistory";
 import {
@@ -39,7 +39,7 @@ import {
   TariffFinder,
   useTariffFinder,
 } from "./duty-calculator/useTariffFinder";
-import styles from "./duty-calculator/theme.module.css";
+import styles from "./ui/theme.module.css";
 
 type Tool = "calculator" | "watcher";
 
@@ -113,7 +113,7 @@ export const TariffFinderPage = () => {
 
   return (
     <div className={`${styles.root} w-full pb-20`}>
-      <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 flex flex-col gap-4">
+      <div className={`${styles.container} flex flex-col gap-4`}>
         {SHOW_TOOL_TABS && <ToolTabs tool={tool} onChange={changeTool} />}
         <div
           {...(SHOW_TOOL_TABS
@@ -160,13 +160,13 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
           aria-selected={active}
           aria-controls={`tool-panel-${id}`}
           onClick={() => onChange(id)}
-          className={`flex items-center gap-3 rounded-md px-3 sm:px-4 py-2.5 text-left transition-[background-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${active
-            ? "bg-[var(--dc-surface)] shadow-[0_1px_2px_rgba(15,18,23,0.12),0_0_0_1px_var(--dc-border)]"
+          className={`flex items-center gap-3 rounded-[6px] px-3 sm:px-4 py-2.5 text-left transition-[background-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${active
+            ? "bg-[var(--dc-surface)] shadow-[var(--dc-shadow)] ring-1 ring-[var(--dc-border)]"
             : "hover:bg-[var(--dc-surface-3)]"
             }`}
         >
           <span
-            className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] ${active
+            className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] ${active
               ? "bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
               : "bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]"
               }`}
@@ -175,10 +175,10 @@ const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => vo
             <Icon className="w-[18px] h-[18px]" />
           </span>
           <span className="flex flex-col min-w-0">
-            <span className={`text-[14.5px] font-semibold ${active ? "text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
+            <span className={`text-[15px] font-semibold ${active ? "text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
               {label}
             </span>
-            <span className="text-[12.5px] text-[var(--dc-text-3)] truncate">{note}</span>
+            <span className="text-[12px] text-[var(--dc-text-3)] truncate">{note}</span>
           </span>
         </button>
       );
@@ -269,7 +269,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
               <div className="min-w-0">
                 <h2
                   id="results-heading"
-                  className="text-[22px] font-semibold tracking-tight"
+                  className="text-[24px] font-semibold tracking-tight"
                 >
                   Duty Estimate
                 </h2>
@@ -354,7 +354,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                           <h3 id="duty-breakdown-title" className="text-[16px] font-semibold">
                             Duty Breakdown
                           </h3>
-                          <p className="mt-0.5 text-[12.5px] text-[var(--dc-text-3)]">
+                          <p className="mt-0.5 text-[12px] text-[var(--dc-text-3)]">
                             Each duty and fee on this entry for {formatDate(result.asOf)}
                             {linesDetail === "full"
                               ? ", with the reason it applies and its legal text"
@@ -362,7 +362,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                           </p>
                         </div>
                         <div
-                          className={`${styles.segmented} !h-8 shrink-0`}
+                          className={`${styles.segmented} ${styles.segmentedSm} shrink-0`}
                           role="radiogroup"
                           aria-label="Line detail"
                         >
@@ -378,7 +378,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                               role="radio"
                               aria-checked={linesDetail === id}
                               onClick={() => setLinesDetail(id)}
-                              className={`${styles.segment} !text-[13px] px-2.5 ${linesDetail === id ? styles.segmentActive : ""}`}
+                              className={`${styles.segment} ${styles.segmentSm} ${linesDetail === id ? styles.segmentActive : ""}`}
                             >
                               {label}
                             </button>
@@ -397,7 +397,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                     />
                   </section>
                   {result.warnings.length > 0 && (
-                    <ul className="flex flex-col gap-1.5 rounded-md border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3">
+                    <ul className="flex flex-col gap-1.5 rounded-[6px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3">
                       {result.warnings.map((w) => (
                         <li
                           key={w}
@@ -488,7 +488,7 @@ const EmptyState = ({ f }: { f: TariffFinder }) => (
           {EMPTY_STEPS.map((step, i) => (
             <li
               key={step}
-              className="flex items-start gap-3 text-[14.5px] text-[var(--dc-text)]"
+              className="flex items-start gap-3 text-[15px] text-[var(--dc-text)]"
             >
               <span
                 className={`${styles.num} flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--dc-accent-soft)] border border-[var(--dc-accent-border)] text-[12px] font-semibold text-[var(--dc-accent)]`}

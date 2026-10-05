@@ -17,10 +17,10 @@ import {
 import { HtsRevision } from "../../tariffs/engine-v2/revisions";
 import { isEffectiveOn } from "../../tariffs/engine-v2/dates";
 import { formatDate, formatMoney, formatPct, TRANSPORT_MODES } from "./format";
-import { mono } from "./font";
+import { mono } from "../ui/font";
 import { sortBySpecificity } from "./questions";
 import { ReferencedNotes } from "./ReferencedNotes";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 export const programName = (id?: string) =>
   AllRules.programs.find((p) => p.id === id)?.name ?? "Other";
@@ -95,7 +95,7 @@ export const SummaryStats = ({
       <div className="col-span-2 sm:col-span-3 lg:col-span-1 p-5 sm:p-6 bg-[var(--dc-surface)]">
         <div className={styles.eyebrow}>Total duty</div>
         <div
-          className={`${styles.num} mt-2 text-[34px] leading-none font-semibold tracking-tight text-[var(--dc-text)]`}
+          className={`${styles.num} mt-2 text-[36px] leading-none font-semibold tracking-tight text-[var(--dc-text)]`}
         >
           {formatMoney(result.totalDuty)}
         </div>
@@ -137,7 +137,7 @@ const Stat = ({
   <div className={`p-5 sm:p-6 bg-[var(--dc-surface)] ${className}`}>
     <div className={styles.eyebrow}>{label}</div>
     <div
-      className={`${styles.num} mt-2 text-[22px] leading-none font-semibold tracking-tight text-[var(--dc-text)]`}
+      className={`${styles.num} mt-2 text-[24px] leading-none font-semibold tracking-tight text-[var(--dc-text)]`}
     >
       {value}
     </div>
@@ -325,7 +325,7 @@ const LegalToggle = ({
 }) => (
   <button
     type="button"
-    className="self-start text-[12.5px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)] underline-offset-2 hover:underline"
+    className="self-start text-[13px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)] underline-offset-2 hover:underline"
     onClick={(e) => {
       e.preventDefault();
       onToggle();
@@ -346,8 +346,8 @@ const LegalPanel = ({
   citations?: string[];
   notesFor?: { asOf: string; htsCode: string };
 }) => (
-  <div className="flex flex-col gap-4 rounded-md border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-sm">
-    <p className="text-[13.5px] leading-relaxed text-[var(--dc-text)]">
+  <div className="flex flex-col gap-4 rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-sm">
+    <p className="text-[14px] leading-relaxed text-[var(--dc-text)]">
       {text}
     </p>
     {notesFor && (
@@ -397,7 +397,7 @@ const EffectiveDate = ({ from }: { from?: string }) =>
 // The line's chart color; lines without one keep the space, so the codes line up
 const Swatch = ({ color }: { color?: string }) => (
   <span
-    className="inline-block h-2.5 w-2.5 shrink-0 rounded-[3px] self-center"
+    className="inline-block h-2.5 w-2.5 shrink-0 rounded self-center"
     style={color ? { background: color } : undefined}
     aria-hidden
   />
@@ -432,7 +432,7 @@ const MobileRow = ({
             <Swatch color={link?.color} />
             {code}
           </div>
-          <div className="text-[14.5px] font-medium leading-snug text-[var(--dc-text)]">
+          <div className="text-[15px] font-medium leading-snug text-[var(--dc-text)]">
             {name}
           </div>
         </div>
@@ -462,7 +462,7 @@ const MobileRow = ({
         )}
       </div>
       {full && (program || effectiveFrom) && (
-        <div className="text-[12.5px] text-[var(--dc-text-3)]">
+        <div className="text-[12px] text-[var(--dc-text-3)]">
           {program}
           <EffectiveDate from={effectiveFrom} />
         </div>
@@ -563,17 +563,17 @@ const StatementRow = ({
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
               <span
-                className={`${mono.className} inline-flex items-center gap-2 text-[13.5px] font-semibold text-[var(--dc-accent)]`}
+                className={`${mono.className} inline-flex items-center gap-2 text-[14px] font-semibold text-[var(--dc-accent)]`}
               >
                 <Swatch color={link?.color} />
                 {code}
               </span>
-              <span className="text-[14.5px] font-medium text-[var(--dc-text)]">
+              <span className="text-[15px] font-medium text-[var(--dc-text)]">
                 {name}
               </span>
             </div>
             {full && (program || effectiveFrom) && (
-              <span className="text-[12.5px] text-[var(--dc-text-3)]">
+              <span className="text-[12px] text-[var(--dc-text-3)]">
                 {program}
                 <EffectiveDate from={effectiveFrom} />
               </span>
@@ -606,7 +606,7 @@ const StatementRow = ({
           />
         </td>
         <td
-          className={`${styles.num} ${pad} pl-3 pr-5 sm:pr-6 text-[14.5px] font-semibold text-right whitespace-nowrap`}
+          className={`${styles.num} ${pad} pl-3 pr-5 sm:pr-6 text-[15px] font-semibold text-right whitespace-nowrap`}
         >
           {formatMoney(amount)}
         </td>
@@ -687,7 +687,7 @@ export const SimpleSummary = ({
       <div className="flex flex-col items-center gap-3">
         <div className={styles.eyebrow}>You&apos;ll pay about</div>
         <div
-          className={`${styles.num} text-[52px] sm:text-[64px] leading-none font-semibold tracking-tight`}
+          className={`${styles.num} text-[56px] sm:text-[64px] leading-none font-semibold tracking-tight`}
         >
           {formatMoney(dutyAndFees)}
         </div>
@@ -776,7 +776,7 @@ const AdjustmentSection = ({
       <h4 className="text-[14px] font-semibold text-[var(--dc-text)]">
         {title}
       </h4>
-      <p className="text-[12.5px] leading-snug text-[var(--dc-text-3)]">
+      <p className="text-[12px] leading-snug text-[var(--dc-text-3)]">
         {description}
       </p>
     </div>
@@ -863,7 +863,7 @@ export const QuestionsPanel = ({
                   ))}
                 </ul>
               ) : preference ? null : (
-                <p className="text-[13.5px] text-[var(--dc-text-2)]">
+                <p className="text-[14px] text-[var(--dc-text-2)]">
                   No answer would change the total for this entry.
                 </p>
               )}
@@ -892,7 +892,7 @@ const Impact = ({ amount }: { amount?: number }) => {
   const lower = amount < 0;
   return (
     <span
-      className={`${styles.num} inline-flex items-center rounded-[5px] px-1.5 py-0.5 text-[12px] font-semibold ${
+      className={`${styles.num} inline-flex items-center rounded-[6px] px-1.5 py-0.5 text-[12px] font-semibold ${
         lower
           ? "bg-[var(--dc-positive-soft)] text-[var(--dc-positive)]"
           : "bg-[var(--dc-negative-soft)] text-[var(--dc-negative)]"
@@ -949,7 +949,7 @@ const CheckRow = ({
           <span className="text-[14px] leading-snug text-[var(--dc-text)]">
             {code && (
               <span
-                className={`${mono.className} mr-1.5 text-[12.5px] font-semibold text-[var(--dc-accent)]`}
+                className={`${mono.className} mr-1.5 text-[13px] font-semibold text-[var(--dc-accent)]`}
               >
                 {code}
               </span>
@@ -962,7 +962,7 @@ const CheckRow = ({
             <span className="flex flex-wrap items-center gap-2">
               {!checked && <Impact amount={impact} />}
               {noChange && (
-                <span className="inline-flex items-center rounded-[5px] px-1.5 py-0.5 text-[12px] font-medium bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]">
+                <span className="inline-flex items-center rounded-[6px] px-1.5 py-0.5 text-[12px] font-medium bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]">
                   No change to the total
                 </span>
               )}
@@ -1037,7 +1037,7 @@ const QuestionControl = ({
         }
       />
       {input.help && (
-        <span className="text-[12.5px] text-[var(--dc-text-3)]">
+        <span className="text-[12px] text-[var(--dc-text-3)]">
           {input.help}
         </span>
       )}
@@ -1070,7 +1070,7 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
           <span className="block text-[16px] font-semibold">
             Checked but not applied
           </span>
-          <span className="block mt-0.5 text-[12.5px] text-[var(--dc-text-3)]">
+          <span className="block mt-0.5 text-[12px] text-[var(--dc-text-3)]">
             {notApplied.length} other headings match this code and country
           </span>
         </span>
@@ -1084,17 +1084,17 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
             <li key={line.code} className="px-5 sm:px-6 py-3.5 flex flex-col gap-1">
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <span
-                  className={`${mono.className} text-[12.5px] font-semibold text-[var(--dc-text-2)]`}
+                  className={`${mono.className} text-[13px] font-semibold text-[var(--dc-text-2)]`}
                 >
                   {line.code}
                 </span>
-                <span className="text-[13.5px] text-[var(--dc-text)]">
+                <span className="text-[14px] text-[var(--dc-text)]">
                   {line.name}
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`inline-flex rounded-[5px] px-1.5 py-0.5 text-[11.5px] font-semibold ${
+                  className={`inline-flex rounded-[6px] px-1.5 py-0.5 text-[11px] font-semibold ${
                     line.status === "needsAnswer"
                       ? "bg-[var(--dc-warning-soft)] text-[var(--dc-warning)] border border-[var(--dc-warning-border)]"
                       : "bg-[var(--dc-surface-3)] text-[var(--dc-text-2)]"
@@ -1103,7 +1103,7 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
                   {STATUS[line.status]}
                 </span>
                 {line.reasons[0] && (
-                  <span className="text-[12.5px] text-[var(--dc-text-3)]">
+                  <span className="text-[12px] text-[var(--dc-text-3)]">
                     {line.reasons.join(" · ")}
                   </span>
                 )}
@@ -1165,7 +1165,7 @@ export const BasisPanel = ({
         {rows.map(([label, value]) => (
           <div
             key={label}
-            className="flex items-baseline justify-between gap-4 text-[13.5px]"
+            className="flex items-baseline justify-between gap-4 text-[14px]"
           >
             <dt className="text-[var(--dc-text-3)] shrink-0">{label}</dt>
             <dd className="text-right text-[var(--dc-text)] font-medium">
@@ -1179,7 +1179,7 @@ export const BasisPanel = ({
           {result.warnings.map((w) => (
             <li
               key={w}
-              className="flex gap-2 text-[12.5px] leading-snug text-[var(--dc-warning)]"
+              className="flex gap-2 text-[13px] leading-snug text-[var(--dc-warning)]"
             >
               <ExclamationTriangleIcon
                 className="w-4 h-4 shrink-0 mt-px"
@@ -1218,7 +1218,7 @@ export const Panel = ({
       )}
     </div>
     {description && (
-      <p className="mt-0.5 text-[12.5px] leading-snug text-[var(--dc-text-3)]">
+      <p className="mt-0.5 text-[12px] leading-snug text-[var(--dc-text-3)]">
         {description}
       </p>
     )}

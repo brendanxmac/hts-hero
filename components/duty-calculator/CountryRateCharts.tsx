@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 // The rates-by-country charts and table on /duty-calculator: the products' total duty for up to
 // five chosen countries side by side, every country's average, and every rate. Choosing a country
@@ -34,8 +34,8 @@ const DEFAULT_COUNTRIES = ["CN", "MX", "VN", "DE", "JP"];
 // Bars for countries that aren't chosen
 const MUTED_BAR = "color-mix(in srgb, var(--dc-text-3) 30%, transparent)";
 
-const cardClass =
-  "m-0 rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 sm:p-6 shadow-[var(--dc-shadow)]";
+// <figure> comes with a margin
+const cardClass = `${styles.card} m-0 p-5 sm:p-6`;
 
 // A round axis maximum, with four or five gridlines
 const axis = (max: number) => {
@@ -54,8 +54,8 @@ const pct = (v: number) => `${Math.round(v * 10) / 10}%`;
 const Caption = ({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) => (
   <figcaption className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
     <div className="min-w-0">
-      <h3 className="text-[16px] font-semibold text-[var(--dc-text)]">{title}</h3>
-      <p className="mt-0.5 text-[12.5px] text-[var(--dc-text-3)]">{children}</p>
+      <h3 className={styles.h3}>{title}</h3>
+      <p className={`${styles.caption} mt-0.5`}>{children}</p>
     </div>
     {action}
   </figcaption>
@@ -144,7 +144,7 @@ export const CountryRateCharts = ({
   // The marker for a chosen country: a colored dot, or its flag
   const marker = (row: CountryRates, size: "chip" | "plot") =>
     flags ? (
-      <span aria-hidden className={size === "plot" ? "text-[17px] leading-none" : "leading-none"}>
+      <span aria-hidden className={size === "plot" ? "text-[18px] leading-none" : "leading-none"}>
         {row.flag}
       </span>
     ) : (
@@ -156,7 +156,7 @@ export const CountryRateCharts = ({
     );
 
   const markerSwitch = (
-    <div className={`${styles.segmented} !h-8 shrink-0`} role="radiogroup" aria-label="Show countries as">
+    <div className={`${styles.segmented} ${styles.segmentedSm} shrink-0`} role="radiogroup" aria-label="Show countries as">
       {(
         [
           ["colors", "Colors"],
@@ -169,7 +169,7 @@ export const CountryRateCharts = ({
           role="radio"
           aria-checked={markers === id}
           onClick={() => setMarkers(id)}
-          className={`${styles.segment} !text-[13px] px-2.5 ${markers === id ? styles.segmentActive : ""}`}
+          className={`${styles.segment} ${styles.segmentSm} ${markers === id ? styles.segmentActive : ""}`}
         >
           {label}
         </button>
@@ -185,7 +185,7 @@ export const CountryRateCharts = ({
         type="button"
         onClick={() => toggle(row.code)}
         aria-pressed={Boolean(color)}
-        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12.5px] transition-colors ${
+        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[13px] transition-colors ${
           color
             ? "border-[var(--dc-border-strong)] bg-[var(--dc-surface)] font-semibold text-[var(--dc-text)]"
             : "border-[var(--dc-border)] bg-[var(--dc-bg)] text-[var(--dc-text-3)] hover:border-[var(--dc-border-strong)] hover:text-[var(--dc-text)]"
@@ -254,7 +254,7 @@ export const CountryRateCharts = ({
                         {active && (
                           <span
                             role="tooltip"
-                            className="pointer-events-none absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-[5px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-2 py-1 text-[12px] text-[var(--dc-text)]"
+                            className="pointer-events-none absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-2 py-1 text-[12px] text-[var(--dc-text)]"
                             style={{ boxShadow: "var(--dc-shadow-pop)" }}
                           >
                             {row.flag} {row.name} · <span className="font-semibold">{row.labels[p]}</span>
@@ -294,10 +294,10 @@ export const CountryRateCharts = ({
                     type="button"
                     onClick={() => toggle(row.code)}
                     aria-pressed={chosenRow}
-                    className="grid w-full grid-cols-[112px_minmax(0,1fr)_48px] items-center gap-3 rounded-[5px] px-1.5 py-[3px] text-left hover:bg-[var(--dc-surface-2)]"
+                    className="grid w-full grid-cols-[112px_minmax(0,1fr)_48px] items-center gap-3 rounded-[6px] px-1.5 py-[3px] text-left hover:bg-[var(--dc-surface-2)]"
                     aria-label={`${row.name}: ${pct(average)} average`}
                   >
-                    <span className={`truncate text-[12.5px] ${chosenRow ? "font-semibold text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
+                    <span className={`truncate text-[13px] ${chosenRow ? "font-semibold text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
                       <span aria-hidden className="mr-1.5">{row.flag}</span>
                       {row.name}
                     </span>
@@ -307,7 +307,7 @@ export const CountryRateCharts = ({
                         style={{ width: `${(average / maxAverage) * 100}%`, background: barOf(row.code) }}
                       />
                     </span>
-                    <span className={`text-right text-[12.5px] ${chosenRow ? "font-semibold text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
+                    <span className={`text-right text-[13px] ${chosenRow ? "font-semibold text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
                       {pct(average)}
                     </span>
                   </button>
@@ -319,7 +319,7 @@ export const CountryRateCharts = ({
       </div>
 
       {/* Every rate, in the same style: the total and a bar on the charts' scale */}
-      <figure className={`${cardClass} !p-0 overflow-hidden`}>
+      <figure className={`${styles.card} m-0 overflow-hidden`}>
         <div className="px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
           <Caption title="All rates">
             Total duty by country and product, on the same scale as the chart above. Select a
@@ -332,7 +332,7 @@ export const CountryRateCharts = ({
               <tr className="border-b border-[var(--dc-border)] text-left">
                 <th
                   scope="col"
-                  className="sticky left-0 z-10 bg-[var(--dc-surface)] px-5 sm:px-6 py-2 align-bottom text-[11.5px] font-semibold uppercase tracking-wider text-[var(--dc-text-3)]"
+                  className={`${styles.eyebrow} sticky left-0 z-10 bg-[var(--dc-surface)] px-5 sm:px-6 py-2 align-bottom`}
                 >
                   Country
                 </th>
@@ -340,11 +340,11 @@ export const CountryRateCharts = ({
                   <th key={p.code} scope="col" className="min-w-[132px] px-3 py-2 align-bottom font-normal">
                     <Link
                       href={`/hts/${p.code}`}
-                      className="block text-[12.5px] font-medium leading-tight text-[var(--dc-text)] hover:text-[var(--dc-accent)] hover:underline"
+                      className="block text-[13px] font-medium leading-tight text-[var(--dc-text)] hover:text-[var(--dc-accent)] hover:underline"
                     >
                       {p.label}
                     </Link>
-                    <span className="block font-mono text-[10.5px] text-[var(--dc-text-3)]">{p.code}</span>
+                    <span className="block font-mono text-[11px] text-[var(--dc-text-3)]">{p.code}</span>
                   </th>
                 ))}
               </tr>
@@ -405,7 +405,7 @@ export const CountryRateCharts = ({
           </table>
         </div>
         {footnote && (
-          <div className="px-5 sm:px-6 py-4 border-t border-[var(--dc-border)] text-[12.5px] leading-relaxed text-[var(--dc-text-3)]">
+          <div className="px-5 sm:px-6 py-4 border-t border-[var(--dc-border)] text-[12px] leading-relaxed text-[var(--dc-text-3)]">
             {footnote}
           </div>
         )}

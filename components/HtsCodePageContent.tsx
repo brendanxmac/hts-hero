@@ -4,7 +4,6 @@ import {
   ArrowRightIcon,
   ArrowTopRightOnSquareIcon,
   CheckIcon,
-  ChevronDownIcon,
   ChevronRightIcon,
   DocumentTextIcon,
 } from "@heroicons/react/20/solid";
@@ -18,9 +17,11 @@ import { RelatedCrossRulingsSection } from "./RelatedCrossRulingsSection";
 import { DutyByCountry } from "./hts-page/DutyByCountry";
 import { MicroCalculator } from "./hts-page/MicroCalculator";
 import type { MicroEstimate } from "../libs/hts-micro-estimate";
-import { bodyClass, cardClass, eyebrowClass, h2Class, heat } from "./hts-page/theme";
-import { mono } from "./duty-calculator/font";
-import styles from "./duty-calculator/theme.module.css";
+import { mono } from "./ui/font";
+import { heat } from "./ui/heat";
+import { FaqList } from "./ui/FaqList";
+import { SectionHeader } from "./ui/SectionHeader";
+import styles from "./ui/theme.module.css";
 import {
   describeTotal,
   dutyAnswerSentence,
@@ -90,17 +91,14 @@ export function HtsCodePageContent({
       <PageHeader />
 
       {/* === Hero: the code, a quick estimate, and a rail with its base rates === */}
-      <div
-        className="w-full border-b border-[var(--dc-border)]"
-        style={{ background: "radial-gradient(70% 90% at 0% 0%, var(--dc-accent-soft), transparent 70%)" }}
-      >
-        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 pt-5 pb-8">
+      <div className="w-full border-b border-[var(--dc-border)]">
+        <div className={`${styles.container} pt-5 pb-8`}>
           <Breadcrumbs element={element} parents={parents} sectionChapter={sectionChapter} />
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8">
             <div className="min-w-0 flex flex-col gap-5">
               <div className="flex flex-col gap-3">
-                <span className={eyebrowClass}>
+                <span className={styles.kicker}>
                   HTS Code{element.chapter ? ` · Chapter ${element.chapter}` : ""}
                   {summary && <> · Updated {formatSummaryDate(summary.asOf)}</>}
                 </span>
@@ -108,7 +106,7 @@ export function HtsCodePageContent({
                   <span className={`${mono.className} text-[32px] lg:text-[40px] font-semibold leading-none tracking-[-0.02em] text-[var(--dc-accent)]`}>
                     {element.htsno}
                   </span>
-                  <span className="text-[22px] lg:text-[26px] font-semibold leading-tight tracking-[-0.015em] text-[var(--dc-text)]">
+                  <span className="text-[24px] lg:text-[28px] font-semibold leading-tight tracking-[-0.015em] text-[var(--dc-text)]">
                     {productName}
                   </span>
                 </h1>
@@ -142,11 +140,11 @@ export function HtsCodePageContent({
               ) : (
                 element.htsno && !element.htsno.startsWith("99") && (
                   <div className="flex flex-wrap items-center gap-3">
-                    <Link href={`/duty-calculator?code=${element.htsno}`} className={`${styles.buttonPrimary} !h-11 !px-5 !text-[15px]`}>
+                    <Link href={`/duty-calculator?code=${element.htsno}`} className={`${styles.buttonPrimary} ${styles.buttonLg}`}>
                       Calculate Total Duty
                       <ArrowRightIcon className="h-4 w-4" aria-hidden />
                     </Link>
-                    <Link href="/explore" className={`${styles.button} !h-11 !px-5 !text-[15px]`}>
+                    <Link href="/explore" className={`${styles.button} ${styles.buttonLg}`}>
                       Explore the HTS
                     </Link>
                   </div>
@@ -162,8 +160,8 @@ export function HtsCodePageContent({
 
               {/* No rates on this line (e.g. a heading above the rate lines): still offer the calculator */}
               {offerCalculator && (
-                <aside className={`${cardClass} p-5 flex flex-col gap-3`}>
-                  <p className="text-[15px] font-semibold text-[var(--dc-text)]">Importing under {element.htsno}?</p>
+                <aside className={`${styles.card} p-5 flex flex-col gap-3`}>
+                  <p className={styles.h3}>Importing under {element.htsno}?</p>
                   <p className="text-[14px] leading-relaxed text-[var(--dc-text-2)]">
                     Pick the full HTS code in the calculator to see every duty, tariff and exemption for your country of origin.
                   </p>
@@ -177,11 +175,11 @@ export function HtsCodePageContent({
               {summary && (
                 <a
                   href="#duty-by-country"
-                  className={`${cardClass} group block px-4 py-3 hover:border-[var(--dc-accent-border)]`}
+                  className={`${styles.card} group block px-4 py-3 hover:border-[var(--dc-accent-border)]`}
                 >
-                  <span className="flex items-center justify-between text-[14.5px] font-semibold text-[var(--dc-text)]">
+                  <span className={`${styles.h3} flex items-center justify-between`}>
                     Total duty by country
-                    <span className="text-[12.5px] font-medium text-[var(--dc-accent)] group-hover:underline">
+                    <span className="text-[12px] font-medium text-[var(--dc-accent)] group-hover:underline">
                       All {summary.rows.length} →
                     </span>
                   </span>
@@ -202,8 +200,8 @@ export function HtsCodePageContent({
               )}
 
               {sections.length > 1 && (
-                <nav aria-label="Also on this page" className={`${cardClass} px-2 py-2`}>
-                  <span className="block px-3 pt-1.5 pb-1 text-[11.5px] font-semibold uppercase tracking-[0.08em] text-[var(--dc-text-3)]">
+                <nav aria-label="Also on this page" className={`${styles.card} px-2 py-2`}>
+                  <span className={`${styles.eyebrow} block px-3 pt-1.5 pb-1`}>
                     Also on this page
                   </span>
                   <ul>
@@ -211,7 +209,7 @@ export function HtsCodePageContent({
                       <li key={s.id}>
                         <a
                           href={`#${s.id}`}
-                          className="group flex items-center justify-between rounded-[5px] px-3 py-1.5 text-[13.5px] font-medium text-[var(--dc-text-2)] hover:bg-[var(--dc-accent-soft)] hover:text-[var(--dc-accent)]"
+                          className="group flex items-center justify-between rounded-[6px] px-3 py-1.5 text-[14px] font-medium text-[var(--dc-text-2)] hover:bg-[var(--dc-accent-soft)] hover:text-[var(--dc-accent)]"
                         >
                           {s.label}
                           <ChevronRightIcon className="h-4 w-4 text-[var(--dc-text-3)] group-hover:text-[var(--dc-accent)]" aria-hidden />
@@ -227,7 +225,7 @@ export function HtsCodePageContent({
       </div>
 
       {/* === Duties and related codes === */}
-      <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 py-12 sm:py-16 flex flex-col gap-14 sm:gap-20">
+      <div className={`${styles.container} py-12 sm:py-16 flex flex-col gap-14 sm:gap-20`}>
         {summary && <DutyByCountry htsno={element.htsno} productName={productName} summary={summary} />}
 
         {hasRelated && <RelatedCodes element={element} subCodes={children} siblings={siblings} />}
@@ -235,22 +233,18 @@ export function HtsCodePageContent({
 
       {/* === Notes, rulings and questions: reference material, on a band of its own === */}
       <div className="w-full border-t border-[var(--dc-border)] bg-[var(--dc-surface)]">
-        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 py-12 sm:py-16 flex flex-col gap-14 sm:gap-20">
+        <div className={`${styles.container} py-12 sm:py-16 flex flex-col gap-14 sm:gap-20`}>
           {sectionChapter && element.chapter && (
             <Notes sectionChapter={sectionChapter} htsno={element.htsno} chapter={element.chapter} />
           )}
 
           {element.htsno && (
             <section id="rulings" className="scroll-mt-6 flex flex-col gap-6">
-              <div className="flex flex-col gap-2 max-w-[80ch]">
-                <span className={eyebrowClass}>CBP rulings</span>
-                <h2 className={h2Class}>Related CROSS Rulings for HTS {element.htsno}</h2>
-                <p className={bodyClass}>
-                  CBP classification rulings related to{" "}
-                  <span className={`${mono.className} font-medium text-[var(--dc-text)]`}>{element.htsno}</span>.
-                  Open a ruling to read how Customs classified a similar product.
-                </p>
-              </div>
+              <SectionHeader kicker="CBP rulings" title={`Related CROSS Rulings for HTS ${element.htsno}`}>
+                CBP classification rulings related to{" "}
+                <span className={`${mono.className} font-medium text-[var(--dc-text)]`}>{element.htsno}</span>.
+                Open a ruling to read how Customs classified a similar product.
+              </SectionHeader>
               <RelatedCrossRulingsSection htsno={element.htsno} bare initialCount={6} />
             </section>
           )}
@@ -261,7 +255,7 @@ export function HtsCodePageContent({
 
       {/* === Playbook === */}
       <div className="w-full border-t border-[var(--dc-border)]">
-        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 py-12 sm:py-16">
+        <div className={`${styles.container} py-12 sm:py-16`}>
           <PlaybookBanner />
         </div>
       </div>
@@ -281,14 +275,14 @@ function PageHeader() {
   return (
     <header>
       <div className="bg-[var(--dc-text)] text-[var(--dc-bg)]">
-        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2 sm:gap-6">
+        <div className={`${styles.container} py-2.5 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2 sm:gap-6`}>
           <p className="text-[13px] sm:text-[14px] text-center sm:text-left">
             <span className="font-semibold">Want audit-ready HTS Codes for all your Imports?</span>{" "}
             <span className="opacity-75">And get all the evidence you need to defend them!</span>
           </p>
           <Link
             href="/classify"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-[5px] bg-[var(--dc-bg)] px-3 py-1.5 text-[13px] font-semibold text-[var(--dc-text)] hover:opacity-90"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-[6px] bg-[var(--dc-bg)] px-3 py-1.5 text-[13px] font-semibold text-[var(--dc-text)] hover:opacity-90"
           >
             Find your codes, fast!
             <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
@@ -296,16 +290,16 @@ function PageHeader() {
         </div>
       </div>
       <div className="border-b border-[var(--dc-border)] bg-[var(--dc-surface)]">
-        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+        <div className={`${styles.container} h-14 flex items-center justify-between gap-4`}>
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <Image src={logo} alt={`${config.appName} logo`} className="w-5" priority width={24} height={24} />
             <span className="font-semibold text-[16px] text-[var(--dc-text)]">{config.appName}</span>
           </Link>
           <nav aria-label="Tools" className="flex items-center gap-1 sm:gap-2">
-            <Link href="/duty-calculator" className="rounded-[5px] px-2.5 py-1.5 text-[13.5px] font-medium text-[var(--dc-text-2)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)]">
+            <Link href="/duty-calculator" className="rounded-[6px] px-2.5 py-1.5 text-[14px] font-medium text-[var(--dc-text-2)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)]">
               Duty Calculator
             </Link>
-            <Link href="/explore" className="hidden sm:inline-flex rounded-[5px] px-2.5 py-1.5 text-[13.5px] font-medium text-[var(--dc-text-2)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)]">
+            <Link href="/explore" className="hidden sm:inline-flex rounded-[6px] px-2.5 py-1.5 text-[14px] font-medium text-[var(--dc-text-2)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)]">
               HTS Explorer
             </Link>
             <ThemeToggle />
@@ -319,7 +313,7 @@ function PageHeader() {
 function PageFooter() {
   return (
     <footer className="mt-auto border-t border-[var(--dc-border)] bg-[var(--dc-surface)]">
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[12.5px] text-[var(--dc-text-3)]">
+      <div className={`${styles.container} ${styles.caption} py-8 flex flex-col sm:flex-row items-center justify-between gap-4`}>
         <span>&copy; {new Date().getFullYear()} HTS Hero. Data sourced from the USITC Harmonized Tariff Schedule.</span>
         <div className="flex gap-4">
           <Link href="/" className="hover:text-[var(--dc-text)]">About</Link>
@@ -441,9 +435,9 @@ function BaseRates({
   const inherited = tariffElement !== element && tariffElement.htsno;
 
   return (
-    <section id="base-rates" aria-labelledby="base-rates-title" className={`${cardClass} scroll-mt-6 overflow-hidden`}>
+    <section id="base-rates" aria-labelledby="base-rates-title" className={`${styles.card} scroll-mt-6 overflow-hidden`}>
       <div className="px-4 pt-3.5 pb-3 border-b border-[var(--dc-border)]">
-        <h2 id="base-rates-title" className="text-[14.5px] font-semibold text-[var(--dc-text)]">
+        <h2 id="base-rates-title" className={styles.h3}>
           Base Duty Rates for {element.htsno}
         </h2>
         <p className="mt-0.5 text-[12px] text-[var(--dc-text-3)]">
@@ -462,7 +456,7 @@ function BaseRates({
       </div>
 
       {/* One row per rate: label on the left, rate on the right; long rates (Chapter 99 sentences) wrap below */}
-      <dl className={`${styles.num} divide-y divide-[var(--dc-border)] text-[13.5px]`}>
+      <dl className={`${styles.num} divide-y divide-[var(--dc-border)] text-[14px]`}>
         {hasDutyData && (
           <>
             <RateRow label="General Rate of Duty" value={tariffElement.general} strong />
@@ -482,7 +476,7 @@ function BaseRates({
                   {special.flatMap((s) => s.programs).map((p, i) => (
                     <span
                       key={`${p}-${i}`}
-                      className={`${mono.className} rounded border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-1 py-px text-[10.5px] font-medium text-[var(--dc-text-2)]`}
+                      className={`${mono.className} rounded border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-1 py-px text-[11px] font-medium text-[var(--dc-text-2)]`}
                     >
                       {p}
                     </span>
@@ -500,11 +494,11 @@ function BaseRates({
 
       {showCalculatorLink && element.htsno && !element.htsno.startsWith("99") && (
         <div className="border-t border-[var(--dc-border)] px-5 py-4 flex flex-col gap-1">
-          <p className="text-[14px] font-semibold text-[var(--dc-text)]">Importing under {element.htsno}?</p>
+          <p className={styles.h3}>Importing under {element.htsno}?</p>
           <p className="text-[13px] leading-snug text-[var(--dc-text-2)]">
             Calculate total import duties, tariffs, and trade agreement exemptions for your shipment.
           </p>
-          <Link href={`/duty-calculator?code=${element.htsno}`} className={`${styles.link} mt-1 inline-flex items-center gap-1 text-[13.5px]`}>
+          <Link href={`/duty-calculator?code=${element.htsno}`} className={`${styles.link} mt-1 inline-flex items-center gap-1 text-[14px]`}>
             Calculate Total Duty
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
@@ -528,17 +522,13 @@ function RelatedCodes({
 }) {
   return (
     <section id="related-codes" className="scroll-mt-6 flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <span className={eyebrowClass}>Related codes</span>
-        <h2 className={h2Class}>
-          {children.length > 0
-            ? `HTS Codes Under ${element.htsno || "This Classification"}`
-            : "Other HTS Codes at This Level"}
-        </h2>
-      </div>
+      <SectionHeader
+        kicker="Related codes"
+        title={children.length > 0 ? `HTS Codes Under ${element.htsno || "This Classification"}` : "Other HTS Codes at This Level"}
+      />
 
       {children.length > 0 && (
-        <ul className={`${cardClass} grid overflow-hidden md:grid-cols-2`}>
+        <ul className={`${styles.card} grid overflow-hidden md:grid-cols-2`}>
           {children.map((child) => {
             const rate = child.general && child.general.length <= 20 ? child.general : null;
             const body = (
@@ -550,7 +540,7 @@ function RelatedCodes({
                   <span className="block text-[14px] leading-snug text-[var(--dc-text-2)]">{child.description}</span>
                 </span>
                 {rate && (
-                  <span className={`${styles.num} shrink-0 rounded-[5px] bg-[var(--dc-surface-2)] px-2 py-0.5 text-[12.5px] font-semibold text-[var(--dc-text)]`}>
+                  <span className={`${styles.num} shrink-0 rounded bg-[var(--dc-surface-2)] px-2 py-0.5 text-[12px] font-semibold text-[var(--dc-text)]`}>
                     {rate}
                   </span>
                 )}
@@ -577,7 +567,7 @@ function RelatedCodes({
       {siblings.length > 0 && (
         <div className="flex flex-col gap-3">
           {children.length > 0 && (
-            <h3 className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--dc-text-3)]">
+            <h3 className={styles.eyebrow}>
               Other HTS Codes at This Level
             </h3>
           )}
@@ -588,16 +578,16 @@ function RelatedCodes({
                   key={sib.uuid}
                   href={`/hts/${sib.htsno}`}
                   title={sib.description}
-                  className="group inline-flex max-w-full items-center gap-2 rounded-[5px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-3 py-1.5 hover:border-[var(--dc-accent-border)]"
+                  className="group inline-flex max-w-full items-center gap-2 rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-3 py-1.5 hover:border-[var(--dc-accent-border)]"
                 >
-                  <span className={`${mono.className} text-[12.5px] font-semibold text-[var(--dc-accent)]`}>{sib.htsno}</span>
-                  <span className="max-w-[240px] truncate text-[12.5px] text-[var(--dc-text-2)] group-hover:text-[var(--dc-text)]">{sib.description}</span>
+                  <span className={`${mono.className} text-[13px] font-semibold text-[var(--dc-accent)]`}>{sib.htsno}</span>
+                  <span className="max-w-[240px] truncate text-[13px] text-[var(--dc-text-2)] group-hover:text-[var(--dc-text)]">{sib.description}</span>
                 </Link>
               ) : (
                 <span
                   key={sib.uuid}
                   title={sib.description}
-                  className="inline-flex items-center rounded-[5px] border border-[var(--dc-border)] px-3 py-1.5 text-[12.5px] text-[var(--dc-text-3)]"
+                  className="inline-flex items-center rounded-[6px] border border-[var(--dc-border)] px-3 py-1.5 text-[13px] text-[var(--dc-text-3)]"
                 >
                   {sib.description.length > 30 ? sib.description.slice(0, 27) + "..." : sib.description}
                 </span>
@@ -636,14 +626,10 @@ function Notes({
 
   return (
     <section id="notes" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:items-center lg:gap-12">
-      <div className="flex flex-col gap-2">
-        <span className={eyebrowClass}>Legal notes</span>
-        <h2 className={h2Class}>Relevant HTS Notes</h2>
-        <p className={bodyClass}>
-          Official USITC notes that may affect classification under HTS{" "}
-          {htsno ? <span className={`${mono.className} font-medium text-[var(--dc-text)]`}>{htsno}</span> : "this code"}.
-        </p>
-      </div>
+      <SectionHeader kicker="Legal notes" title="Relevant HTS Notes">
+        Official USITC notes that may affect classification under HTS{" "}
+        {htsno ? <span className={`${mono.className} font-medium text-[var(--dc-text)]`}>{htsno}</span> : "this code"}.
+      </SectionHeader>
       <div className="grid gap-3 sm:grid-cols-2">
         {links.map((link) => (
           <a
@@ -651,13 +637,13 @@ function Notes({
             href={usitcHtsFileViewerTabUrl(link.file)}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-start gap-3 rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] p-4 hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)]"
+            className={`${styles.card} group flex items-start gap-3 p-4 hover:border-[var(--dc-accent-border)]`}
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]" aria-hidden>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]" aria-hidden>
               <DocumentTextIcon className="h-5 w-5" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[14.5px] font-semibold text-[var(--dc-text)] group-hover:text-[var(--dc-accent)]">{link.title}</span>
+              <span className={`${styles.h3} block group-hover:text-[var(--dc-accent)]`}>{link.title}</span>
               <span className="mt-0.5 block text-[13px] leading-snug text-[var(--dc-text-2)] line-clamp-2">{link.description}</span>
             </span>
             <ArrowTopRightOnSquareIcon className="h-4 w-4 shrink-0 text-[var(--dc-text-3)] group-hover:text-[var(--dc-accent)]" aria-hidden />
@@ -673,28 +659,10 @@ function Notes({
 function Faq({ htsno, faqs }: { htsno: string; faqs: [string, string][] }) {
   return (
     <section id="faq" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
-      <div className="flex flex-col gap-2 lg:sticky lg:top-6 lg:self-start">
-        <span className={eyebrowClass}>Questions</span>
-        <h2 className={h2Class}>HTS {htsno} FAQ</h2>
-        <p className={bodyClass}>
-          Something else? <a href="mailto:support@htshero.com" className={styles.link}>Ask us</a>.
-        </p>
-      </div>
-      <div className="flex flex-col gap-3">
-        {faqs.map(([question, answer], i) => (
-          <details
-            key={question}
-            open={i === 0}
-            className="group rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] px-5 py-4 open:bg-[var(--dc-surface)] open:shadow-[var(--dc-shadow)] open:border-[var(--dc-accent-border)]"
-          >
-            <summary className="cursor-pointer list-none flex items-center justify-between gap-4 text-[15.5px] font-semibold text-[var(--dc-text)] [&::-webkit-details-marker]:hidden">
-              <h3>{question}</h3>
-              <ChevronDownIcon className="h-5 w-5 shrink-0 text-[var(--dc-text-3)] transition-transform group-open:rotate-180" aria-hidden />
-            </summary>
-            <p className={`${bodyClass} mt-3 max-w-[80ch]`}>{answer}</p>
-          </details>
-        ))}
-      </div>
+      <SectionHeader kicker="Questions" title={`HTS ${htsno} FAQ`} className="lg:sticky lg:top-6 lg:self-start">
+        Something else? <a href="mailto:support@htshero.com" className={styles.link}>Ask us</a>.
+      </SectionHeader>
+      <FaqList faqs={faqs.map(([question, answer]) => ({ question, answer }))} openFirst />
     </section>
   );
 }
@@ -703,10 +671,10 @@ function Faq({ htsno, faqs }: { htsno: string; faqs: [string, string][] }) {
 
 function PlaybookBanner() {
   return (
-    <section className="relative overflow-hidden rounded-[10px] bg-[var(--dc-accent)] text-[var(--dc-accent-contrast)] shadow-[var(--dc-shadow-pop)]">
+    <section className={`${styles.card} overflow-hidden`}>
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          <div className="relative w-32 sm:w-36 aspect-[2/3] rounded-md overflow-hidden shadow-[var(--dc-shadow-pop)] ring-1 ring-black/10 shrink-0">
+          <div className="relative w-32 sm:w-36 aspect-[2/3] rounded-[6px] overflow-hidden border border-[var(--dc-border)] shrink-0">
             <Image
               src={`${STORAGE_BASE}/book-cover.jpg`}
               alt="The Audit-Ready Classifications Playbook"
@@ -716,19 +684,15 @@ function PlaybookBanner() {
             />
           </div>
           <div className="flex flex-col gap-3 text-center sm:text-left">
-            <span className="text-[12px] font-semibold uppercase tracking-[0.12em] opacity-75">
-              Free · Playbook + 7 Bonuses
-            </span>
-            <h2 className="text-[22px] sm:text-[26px] font-semibold leading-tight tracking-tight">
-              The Audit-Ready Classifications Playbook
-            </h2>
-            <p className="text-[15px] leading-relaxed opacity-85">
+            <span className={styles.kicker}>Free · Playbook + 7 Bonuses</span>
+            <h2 className={styles.h2}>The Audit-Ready Classifications Playbook</h2>
+            <p className={styles.body}>
               Learn how to create HTS classifications that reduce import risk and defend profits — faster than ever.
             </p>
             <div>
               <Link
                 href="/the-audit-ready-classifications-playbook"
-                className="mt-1 inline-flex h-11 items-center gap-2 rounded-[6px] bg-[var(--dc-accent-contrast)] px-5 text-[15px] font-semibold text-[var(--dc-accent)] hover:opacity-90"
+                className={`${styles.buttonPrimary} ${styles.buttonLg} mt-1`}
               >
                 Download Free Playbook
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
@@ -736,8 +700,8 @@ function PlaybookBanner() {
             </div>
           </div>
         </div>
-        <div className="p-6 sm:p-8 border-t lg:border-t-0 lg:border-l flex flex-col justify-center" style={{ borderColor: "color-mix(in srgb, currentColor 18%, transparent)" }}>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] opacity-75 mb-4">What&apos;s inside</p>
+        <div className="p-6 sm:p-8 border-t lg:border-t-0 lg:border-l border-[var(--dc-border)] bg-[var(--dc-surface-2)] flex flex-col justify-center">
+          <p className={`${styles.eyebrow} mb-4`}>What&apos;s inside</p>
           <ul className="flex flex-col gap-3">
             {[
               "Step-by-step classification methodology",
@@ -746,8 +710,8 @@ function PlaybookBanner() {
               "GRI application guide with real examples",
               "7 FREE tools and templates to boost your classifications",
             ].map((item) => (
-              <li key={item} className="flex items-start gap-2.5 text-[14.5px]">
-                <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 opacity-80" aria-hidden />
+              <li key={item} className="flex items-start gap-2.5 text-[15px] text-[var(--dc-text)]">
+                <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--dc-positive)]" aria-hidden />
                 {item}
               </li>
             ))}

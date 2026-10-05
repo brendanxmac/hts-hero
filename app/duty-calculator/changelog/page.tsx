@@ -5,7 +5,7 @@ import { createAdminClient, createClient } from "@/app/api/supabase/server";
 import { CHANGELOG_ADMIN_EMAIL, getChangelogEntries } from "@/libs/supabase/tariff-changelog";
 import { getLatestVerifiedRevision } from "../../../tariffs/engine-v2/revisions";
 import { ChangelogList } from "../../../components/duty-calculator/ChangelogList";
-import styles from "../../../components/duty-calculator/theme.module.css";
+import styles from "../../../components/ui/theme.module.css";
 
 export const metadata: Metadata = {
   title: "Tariff Calculator Changelog | HTS Hero",

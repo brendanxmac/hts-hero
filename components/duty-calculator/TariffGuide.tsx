@@ -3,24 +3,20 @@ import {
   ArrowRightIcon,
   MagnifyingGlassIcon,
   XMarkIcon,
-  ChevronDownIcon,
 } from "@heroicons/react/20/solid";
 import { DutyCalculatorContent, TariffMatrix } from "../../libs/duty-calculator-content";
 import { formatDutyPct, formatSummaryDate } from "../../libs/hts-duty-summary";
 import { CHANGELOG_PATH } from "./Changelog";
 import { CountryRateCharts } from "./CountryRateCharts";
 import { formatMoney, formatPct } from "./format";
-import styles from "./theme.module.css";
+import { FaqList } from "../ui/FaqList";
+import { SectionHeader } from "../ui/SectionHeader";
+import styles from "../ui/theme.module.css";
 
 // Below the calculator on /duty-calculator: today's rates for common imports, how a duty is
 // worked out, where the data comes from and the FAQ. Server-rendered so
 // search engines and AI crawlers can read it; the calculator itself runs in the browser.
 // A band of its own, on a different surface from the calculator, so it reads as a guide.
-
-const h2Class = "text-[24px] sm:text-[28px] font-semibold tracking-tight text-[var(--dc-text)]";
-const bodyClass = "text-[15px] leading-relaxed text-[var(--dc-text-2)]";
-const eyebrowClass =
-  "text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--dc-accent)]";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out section links
 const SECTIONS = [
@@ -76,8 +72,8 @@ const matrixFacts = (matrix: TariffMatrix) => {
 
 const Fact = ({ label, value, note }: { label: string; value: string; note: string }) => (
   <div className="rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] px-5 py-4">
-    <div className="text-[12.5px] font-medium text-[var(--dc-text-3)]">{label}</div>
-    <div className={`${styles.num} mt-1 text-[22px] font-semibold tracking-tight text-[var(--dc-text)]`}>
+    <div className="text-[13px] font-medium text-[var(--dc-text-3)]">{label}</div>
+    <div className={`${styles.num} mt-1.5 text-[24px] font-semibold tracking-tight text-[var(--dc-text)]`}>
       {value}
     </div>
     <div className="mt-0.5 text-[13px] text-[var(--dc-text-2)]">{note}</div>
@@ -89,15 +85,11 @@ const RatesByCountry = ({ content }: { content: DutyCalculatorContent }) => {
   const facts = matrixFacts(matrix);
   return (
     <section id="tariff-rates-by-country" className="scroll-mt-6 flex flex-col gap-6">
-      <div className="flex flex-col gap-2 max-w-[80ch]">
-        <span className={eyebrowClass}>Rates by country</span>
-        <h2 className={h2Class}>US Tariff Rates by Country</h2>
-        <p className={bodyClass}>
-          Total US import duty, base rate plus every additional tariff, on goods entered{" "}
-          {formatSummaryDate(asOf)} from the {matrix.rows.length} largest sources of US imports.
-          The same product can pay very different rates depending on where it&apos;s made.
-        </p>
-      </div>
+      <SectionHeader kicker="Rates by country" title="US Tariff Rates by Country">
+        Total US import duty, base rate plus every additional tariff, on goods entered{" "}
+        {formatSummaryDate(asOf)} from the {matrix.rows.length} largest sources of US imports.
+        The same product can pay very different rates depending on where it&apos;s made.
+      </SectionHeader>
 
       {facts && (
         <div className="grid gap-3 sm:grid-cols-3">
@@ -181,13 +173,10 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
   return (
     <section
       id="how-duty-is-calculated"
-      className="scroll-mt-6 rounded-[10px] border border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] p-5 sm:p-8 lg:p-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12"
+      className={`${styles.callout} scroll-mt-6 p-5 sm:p-8 lg:p-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12`}
     >
       <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-2">
-          <span className={eyebrowClass}>The method</span>
-          <h2 className={h2Class}>How US import duty is calculated</h2>
-        </div>
+        <SectionHeader kicker="The method" title="How US import duty is calculated" />
         <ol className="flex flex-col">
           {STEPS.map((step, i) => (
             <li key={step.title} className="relative flex gap-4 pb-5 last:pb-0">
@@ -201,7 +190,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
               >
                 {i + 1}
               </span>
-              <p className={`${bodyClass} pt-1`}>
+              <p className={`${styles.body} pt-1`}>
                 <strong className="text-[var(--dc-text)]">{step.title}</strong> {step.text}
               </p>
             </li>
@@ -210,17 +199,15 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
       </div>
 
       {/* The worked example as a receipt */}
-      <div className="self-start rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 sm:p-6 shadow-[var(--dc-shadow-pop)]">
-        <span className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--dc-text-3)]">
-          Worked example
-        </span>
-        <h3 className="mt-1.5 text-[16px] font-semibold leading-snug text-[var(--dc-text)]">
+      <div className={`${styles.card} self-start p-5 sm:p-6`}>
+        <span className={styles.eyebrow}>Worked example</span>
+        <h3 className={`${styles.h3} mt-1.5`}>
           Example: {formatMoney(example.customsValue)} of {example.productName} (HTS {example.htsno})
           from {example.countryName}, entered {formatSummaryDate(asOf)} by ocean
         </h3>
         <div className={`${styles.num} mt-4 flex items-baseline justify-between gap-3`}>
           <span className="text-[13px] text-[var(--dc-text-3)]">Duty and fees</span>
-          <span className="text-[30px] font-semibold tracking-tight leading-none text-[var(--dc-text)]">
+          <span className="text-[28px] font-semibold tracking-tight leading-none text-[var(--dc-text)]">
             {formatMoney(total)}
           </span>
         </div>
@@ -237,7 +224,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
             {parts.map((p) => (
               <tr key={p.label} className="border-t border-[var(--dc-border)]">
                 <td className="py-2 pr-3 text-[var(--dc-text-2)]">
-                  <span className="mr-2 inline-block h-2.5 w-2.5 rounded-[3px] align-middle" style={{ background: p.color }} aria-hidden />
+                  <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: p.color }} aria-hidden />
                   {p.label}
                   {p.code && (
                     <>
@@ -256,7 +243,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
             {example.fees.map((f) => (
               <tr key={f.name} className="border-t border-[var(--dc-border)]">
                 <td className="py-2 pr-3 text-[var(--dc-text-2)]">
-                  <span className="mr-2 inline-block h-2.5 w-2.5 rounded-[3px] align-middle" style={{ background: FEES_COLOR }} aria-hidden />
+                  <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: FEES_COLOR }} aria-hidden />
                   {f.name} ({formatPct(f.ratePct)})
                 </td>
                 <td className="py-2 text-right">{formatMoney(f.amount)}</td>
@@ -336,24 +323,20 @@ const EXCLUDED: { title: string; text: string }[] = [
 
 const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string }) => (
   <section id="sources" className="scroll-mt-6 flex flex-col gap-6">
-    <div className="flex flex-col gap-2 max-w-[80ch]">
-      <span className={eyebrowClass}>Data</span>
-      <h2 className={h2Class}>Where the rates come from</h2>
-      <p className={bodyClass}>
-        Every rate comes from the official Harmonized Tariff Schedule of the United States published
-        by the US International Trade Commission. Each HTS revision&apos;s changes are entered with
-        the dates they take effect, so you can calculate past and future entry dates. Tariff data is
-        verified from Revision 5 (April 8, 2026) through {revisionTitle}, and every change is listed
-        in the <Link href={CHANGELOG_PATH} className={styles.link}>calculator changelog</Link>.
-      </p>
-    </div>
+    <SectionHeader kicker="Data" title="Where the rates come from">
+      Every rate comes from the official Harmonized Tariff Schedule of the United States published
+      by the US International Trade Commission. Each HTS revision&apos;s changes are entered with
+      the dates they take effect, so you can calculate past and future entry dates. Tariff data is
+      verified from Revision 5 (April 8, 2026) through {revisionTitle}, and every change is listed
+      in the <Link href={CHANGELOG_PATH} className={styles.link}>calculator changelog</Link>.
+    </SectionHeader>
 
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
       {/* Included */}
       <div className="rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-bg)] p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h3 className="text-[16px] font-semibold text-[var(--dc-text)]">What&apos;s included</h3>
-          <span className="text-[12.5px] text-[var(--dc-text-3)]">
+          <span className="text-[12px] text-[var(--dc-text-3)]">
             Updated {formatSummaryDate(asOf)}
           </span>
         </div>
@@ -362,19 +345,19 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
           {INCLUDED.map((item) => (
             <div
               key={item.title}
-              className={`rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-[var(--dc-shadow)] ${item.items ? "sm:col-span-3" : ""}`}
+              className={`${styles.card} p-4 ${item.items ? "sm:col-span-3" : ""}`}
             >
               <h4 className="flex items-center gap-2 text-[14px] font-semibold text-[var(--dc-text)]">
                 <span className="h-2 w-2 rounded-full bg-[var(--dc-positive)]" aria-hidden />
                 {item.title}
               </h4>
-              <p className="mt-1.5 text-[13.5px] leading-relaxed text-[var(--dc-text-2)]">{item.text}</p>
+              <p className="mt-1.5 text-[14px] leading-relaxed text-[var(--dc-text-2)]">{item.text}</p>
               {item.items && (
                 <ul className="mt-3 flex flex-wrap gap-1.5">
                   {item.items.map((program) => (
                     <li
                       key={program}
-                      className="rounded-[5px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-2 py-1 text-[12px] text-[var(--dc-text)]"
+                      className="rounded-[6px] border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-2 py-1 text-[12px] text-[var(--dc-text)]"
                     >
                       {program}
                     </li>
@@ -393,7 +376,7 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
       {/* Not included */}
       <div className="rounded-[8px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] p-5 sm:p-6">
         <h3 className="text-[16px] font-semibold text-[var(--dc-text)]">Not included</h3>
-        <p className="mt-0.5 text-[12.5px] text-[var(--dc-text-2)]">
+        <p className="mt-0.5 text-[13px] text-[var(--dc-text-2)]">
           Charges an entry can owe that this estimate leaves out.
         </p>
         <ul className="mt-4 flex flex-col divide-y divide-[var(--dc-warning-border)]">
@@ -423,29 +406,18 @@ const FindHtsCode = () => (
   <section
     id="find-hts-code"
     aria-labelledby="find-hts-code-title"
-    className="scroll-mt-6 rounded-[8px] bg-[var(--dc-accent)] px-6 py-8 sm:px-10 sm:py-10 text-[var(--dc-accent-contrast)] grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
+    className={`${styles.callout} scroll-mt-6 px-6 py-8 sm:px-10 sm:py-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center`}
   >
-    <div className="flex flex-col gap-2 max-w-[60ch]">
-      <h2 id="find-hts-code-title" className="text-[24px] sm:text-[28px] font-semibold tracking-tight">
-        Find the right HTS code for your products
-      </h2>
-      <p className="text-[15px] leading-relaxed opacity-90">
-        Every rate on this page depends on the 10-digit classification. The wrong code can mean the
-        wrong tariffs, missed exemptions, and penalties.
-      </p>
-    </div>
+    <SectionHeader kicker="Classification" title="Find the right HTS code for your products" titleId="find-hts-code-title">
+      Every rate on this page depends on the 10-digit classification. The wrong code can mean the
+      wrong tariffs, missed exemptions, and penalties.
+    </SectionHeader>
     <div className="flex flex-wrap gap-3">
-      <Link
-        href="/explore"
-        className="inline-flex h-11 items-center gap-2 rounded-[6px] bg-[var(--dc-accent-contrast)] px-5 text-[15px] font-semibold text-[var(--dc-accent)] hover:opacity-90"
-      >
+      <Link href="/explore" className={`${styles.button} ${styles.buttonLg}`}>
         <MagnifyingGlassIcon className="h-4 w-4" aria-hidden />
         Search the HTS
       </Link>
-      <Link
-        href="/classify"
-        className="inline-flex h-11 items-center gap-2 rounded-[6px] border border-current px-5 text-[15px] font-semibold hover:bg-white/10"
-      >
+      <Link href="/classify" className={`${styles.buttonPrimary} ${styles.buttonLg}`}>
         Classify a product
         <ArrowRightIcon className="h-4 w-4" aria-hidden />
       </Link>
@@ -457,30 +429,10 @@ const FindHtsCode = () => (
 
 const Faq = ({ faqs }: { faqs: { question: string; answer: string }[] }) => (
   <section id="faq" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
-    <div className="flex flex-col gap-3 lg:sticky lg:top-6 lg:self-start">
-      <span className={eyebrowClass}>Questions</span>
-      <h2 className={h2Class}>Frequently asked questions</h2>
-      <p className={bodyClass}>
-        Something else? <a href="mailto:support@htshero.com" className={styles.link}>Ask us</a>.
-      </p>
-    </div>
-    <div className="flex flex-col gap-3">
-      {faqs.map(({ question, answer }) => (
-        <details
-          key={question}
-          className="group rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-5 py-4 open:shadow-[var(--dc-shadow)] open:border-[var(--dc-accent-border)]"
-        >
-          <summary className="cursor-pointer list-none flex items-center justify-between gap-4 text-[15.5px] font-semibold text-[var(--dc-text)] [&::-webkit-details-marker]:hidden">
-            <h3>{question}</h3>
-            <ChevronDownIcon
-              className="h-5 w-5 shrink-0 text-[var(--dc-text-3)] transition-transform group-open:rotate-180"
-              aria-hidden
-            />
-          </summary>
-          <p className={`${bodyClass} mt-3 max-w-[80ch]`}>{answer}</p>
-        </details>
-      ))}
-    </div>
+    <SectionHeader kicker="Questions" title="Frequently asked questions" className="lg:sticky lg:top-6 lg:self-start">
+      Something else? <a href="mailto:support@htshero.com" className={styles.link}>Ask us</a>.
+    </SectionHeader>
+    <FaqList faqs={faqs} />
   </section>
 );
 
@@ -492,16 +444,16 @@ export const TariffGuide = ({
   faqs: { question: string; answer: string }[];
 }) => (
   <div className="w-full border-t border-[var(--dc-border)] bg-[var(--dc-surface)]">
-    <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 pt-14 pb-20 sm:pt-20 flex flex-col gap-6 sm:gap-10">
+    <div className={`${styles.container} pt-14 pb-20 sm:pt-20 flex flex-col gap-6 sm:gap-10`}>
       {/* The guide's own intro, with links to each part */}
       <header className="flex flex-col gap-4">
-        <span className={eyebrowClass}>Tariff guide · Updated {formatSummaryDate(content.asOf)}</span>
+        <span className={styles.kicker}>Tariff guide · Updated {formatSummaryDate(content.asOf)}</span>
         <div className="flex flex-col gap-2">
 
-          <p className="text-[30px] sm:text-[40px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--dc-text)]">
+          <p className="text-[32px] sm:text-[40px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--dc-text)]">
             The US Import Tariff Guide
           </p>
-          <p className={`${bodyClass} text-[16px]`}>
+          <p className={styles.lead}>
             See how a duty is calculated, where every number comes from, and find current rates on popular products.
           </p>
         </div>
@@ -512,7 +464,7 @@ export const TariffGuide = ({
               <a
                 key={s.id}
                 href={`#${s.id}`}
-                className="inline-flex items-center rounded-full border border-[var(--dc-border)] bg-[var(--dc-bg)] px-3.5 py-1.5 text-[13.5px] font-medium text-[var(--dc-text-2)] hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] hover:text-[var(--dc-accent)]"
+                className="inline-flex items-center rounded-full border border-[var(--dc-border)] bg-[var(--dc-bg)] px-3.5 py-1.5 text-[14px] font-medium text-[var(--dc-text-2)] hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] hover:text-[var(--dc-accent)]"
               >
                 {s.label}
               </a>

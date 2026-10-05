@@ -11,7 +11,7 @@ import {
 } from "@/libs/supabase/tariff-changelog";
 import { ChangelogTypeBadge } from "./Changelog";
 import { Field } from "./controls";
-import styles from "./theme.module.css";
+import styles from "../ui/theme.module.css";
 
 const today = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, local time
 
@@ -99,7 +99,7 @@ export const ChangelogList = ({
         </div>
       )}
       {error && (
-        <p role="alert" className="mb-4 rounded-md border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3 text-[14px] text-[var(--dc-warning)]">
+        <p role="alert" className="mb-4 rounded-[6px] border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3 text-[14px] text-[var(--dc-warning)]">
           {error}
         </p>
       )}
@@ -108,7 +108,7 @@ export const ChangelogList = ({
       )}
 
       {entries.length === 0 ? (
-        <p className="rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] px-5 py-8 text-center text-[14px] text-[var(--dc-text-3)]">
+        <p className={`${styles.card} px-5 py-8 text-center text-[14px] text-[var(--dc-text-3)]`}>
           No updates yet.
         </p>
       ) : (
@@ -131,12 +131,12 @@ export const ChangelogList = ({
                     <time dateTime={entry.entry_date}>{formatChangelogDate(entry.entry_date)}</time>
                     <ChangelogTypeBadge type={entry.type} />
                     {entry.status === "draft" && (
-                      <span className="inline-flex items-center rounded-full border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-2 py-0.5 text-[11.5px] font-medium text-[var(--dc-warning)]">
+                      <span className="inline-flex items-center rounded-full border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-2 py-0.5 text-[11px] font-medium text-[var(--dc-warning)]">
                         Draft
                       </span>
                     )}
                   </div>
-                  <h2 className="mt-2 text-[17px] font-semibold leading-snug text-[var(--dc-text)]">{entry.title}</h2>
+                  <h2 className="mt-2 text-[18px] font-semibold leading-snug text-[var(--dc-text)]">{entry.title}</h2>
                   <p className="mt-1.5 text-[15px] leading-relaxed text-[var(--dc-text-2)]">{entry.summary}</p>
                   {isAdmin && (
                     <div className="mt-3 flex flex-wrap gap-2">
@@ -198,7 +198,7 @@ const EntryForm = ({
   return (
     <form
       onSubmit={submit}
-      className="mb-8 flex flex-col gap-4 rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-5 shadow-[var(--dc-shadow)]"
+      className={`${styles.card} mb-8 flex flex-col gap-4 p-5`}
     >
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Date" htmlFor="cl-date">

@@ -11,6 +11,7 @@ import { AllRules } from "../../tariffs/engine-v2/data";
 import { HtsRevision } from "../../tariffs/engine-v2/revisions";
 import { ChangelogEntry } from "@/libs/supabase/tariff-changelog";
 import { ChangelogCard } from "./Changelog";
+import styles from "../ui/theme.module.css";
 
 // The top of /duty-calculator. Server-rendered so crawlers see the copy; the tools follow.
 
@@ -64,17 +65,11 @@ export const Hero = ({
   ];
 
   return (
-    <div
-      className="w-full"
-      style={{
-        background:
-          "radial-gradient(70% 90% at 0% 0%, var(--dc-accent-soft), transparent 70%)",
-      }}
-    >
-      <header className="mx-auto grid w-full max-w-[1440px] gap-8 px-4 sm:px-6 pt-10 pb-10 md:pt-14 md:pb-12 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12 xl:gap-16">
+    <div className="w-full">
+      <header className={`${styles.container} grid gap-8 pt-10 pb-10 md:pt-14 md:pb-12 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12 xl:gap-16`}>
         <div className="min-w-0">
           <h1 className="mt-5">
-            <span className="block text-[13px] sm:text-[14px] font-semibold uppercase tracking-[0.12em] text-[var(--dc-accent)]">
+            <span className={`${styles.kicker} block`}>
               US Import Duty &amp; Tariff Calculator
             </span>
             <span className="mt-3 block max-w-[20ch] text-[36px] leading-[1.05] sm:text-[48px] lg:text-[56px] font-semibold tracking-[-0.03em] text-[var(--dc-text)]">
@@ -83,7 +78,7 @@ export const Hero = ({
             </span>
           </h1>
 
-          <p className="mt-5 max-w-[62ch] text-[16px] sm:text-[17.5px] leading-relaxed text-[var(--dc-text-2)]">
+          <p className="mt-5 max-w-[62ch] text-[16px] sm:text-[18px] leading-relaxed text-[var(--dc-text-2)]">
             We find every tariff, exemption, and fee in
             effect for your imports, itemized line by line with its legal
             source, and kept current with every HTS revision.
@@ -92,18 +87,18 @@ export const Hero = ({
           {/* <div className="mt-7 flex flex-wrap items-center gap-3">
             <Link
               href={CALCULATOR_HREF}
-              className={`${styles.buttonPrimary} !h-11 !px-5 !text-[15px]`}
+              className={`${styles.buttonPrimary} ${styles.buttonLg}`}
             >
               Calculate duty
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>
             <Link
               href={WATCHER_HREF}
-              className={`${styles.button} !h-11 !px-5 !text-[15px]`}
+              className={`${styles.button} ${styles.buttonLg}`}
             >
               Track your products
             </Link>
-            <span className="text-[13.5px] text-[var(--dc-text-3)]">
+            <span className="text-[14px] text-[var(--dc-text-3)]">
               Free. No sign-up.
             </span>
           </div> */}
@@ -116,7 +111,7 @@ export const Hero = ({
                   className="group flex h-full gap-3 sm:flex-col sm:gap-2 rounded-[8px] border border-[var(--dc-border)] bg-[var(--dc-surface)] p-4 shadow-[var(--dc-shadow)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-[var(--dc-accent-border)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
                 >
                   <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
                     aria-hidden
                   >
                     <Icon className="h-5 w-5" />
@@ -129,7 +124,7 @@ export const Hero = ({
                         aria-hidden
                       />
                     </span>
-                    <span className="text-[13.5px] leading-snug text-[var(--dc-text-2)]">
+                    <span className="text-[14px] leading-snug text-[var(--dc-text-2)]">
                       {text}
                     </span>
                   </span>
@@ -150,7 +145,7 @@ export const Hero = ({
                 >
                   {s.value}
                 </dd>
-                <dd className="text-[12.5px] leading-snug text-[var(--dc-text-3)]">
+                <dd className="text-[12px] leading-snug text-[var(--dc-text-3)]">
                   {s.label}
                 </dd>
               </div>

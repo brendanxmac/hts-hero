@@ -12,8 +12,8 @@ import { AllRules } from "../../tariffs/engine-v2/data";
 import { CalculationResult } from "../../tariffs/engine-v2/types";
 import { CountryField } from "./CountryField";
 import { formatMoney, formatPct } from "./format";
-import { mono } from "./font";
-import styles from "./theme.module.css";
+import { mono } from "../ui/font";
+import styles from "../ui/theme.module.css";
 
 export interface CompareEntry {
   country: Country;
@@ -102,7 +102,7 @@ export const CompareView = ({
                   <h3 className="text-[16px] font-semibold truncate">
                     {country.name}
                   </h3>
-                  <p className="text-[12.5px] text-[var(--dc-text-3)]">
+                  <p className="text-[12px] text-[var(--dc-text-3)]">
                     {COLUMN_LABEL[result.column]}
                     {result.claimedPreference
                       ? ` (${result.claimedPreference})`
@@ -121,7 +121,7 @@ export const CompareView = ({
                 {!single && (
                   <button
                     type="button"
-                    className="-mr-1.5 rounded-[5px] p-1.5 text-[var(--dc-text-3)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+                    className="-mr-1.5 rounded-[6px] p-1.5 text-[var(--dc-text-3)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
                     aria-label={`Remove ${country.name} from the comparison`}
                     title="Remove from comparison"
                     onClick={() => onRemove(country.code)}
@@ -137,12 +137,12 @@ export const CompareView = ({
               <div>
                 <div className={styles.eyebrow}>Total duty</div>
                 <div
-                  className={`${styles.num} mt-1.5 text-[30px] leading-none font-semibold tracking-tight`}
+                  className={`${styles.num} mt-1.5 text-[28px] leading-none font-semibold tracking-tight`}
                 >
                   {formatMoney(result.totalDuty)}
                 </div>
                 <div
-                  className={`${styles.num} mt-1.5 text-[13.5px] text-[var(--dc-text-2)]`}
+                  className={`${styles.num} mt-1.5 text-[14px] text-[var(--dc-text-2)]`}
                 >
                   {formatPct(Math.round(effectiveRate * 100) / 100)} effective
                   rate
@@ -150,7 +150,7 @@ export const CompareView = ({
               </div>
               <dl className="grid grid-cols-2 gap-3">
                 <div>
-                  <dt className="text-[12.5px] text-[var(--dc-text-3)]">
+                  <dt className="text-[12px] text-[var(--dc-text-3)]">
                     Fees
                   </dt>
                   <dd className={`${styles.num} text-[15px] font-semibold`}>
@@ -158,7 +158,7 @@ export const CompareView = ({
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-[12.5px] text-[var(--dc-text-3)]">
+                  <dt className="text-[12px] text-[var(--dc-text-3)]">
                     Landed cost
                   </dt>
                   <dd className={`${styles.num} text-[15px] font-semibold`}>
@@ -190,16 +190,16 @@ export const CompareView = ({
               <li className="flex items-baseline justify-between gap-3 px-5 py-3">
                 <span className="min-w-0">
                   <span
-                    className={`${mono.className} text-[12.5px] font-semibold text-[var(--dc-accent)] mr-1.5`}
+                    className={`${mono.className} text-[13px] font-semibold text-[var(--dc-accent)] mr-1.5`}
                   >
                     Base
                   </span>
-                  <span className="text-[13.5px] text-[var(--dc-text)]">
+                  <span className="text-[14px] text-[var(--dc-text)]">
                     {result.base.reasons[0] ?? "Free"}
                   </span>
                 </span>
                 <span
-                  className={`${styles.num} text-[13.5px] font-semibold whitespace-nowrap`}
+                  className={`${styles.num} text-[14px] font-semibold whitespace-nowrap`}
                 >
                   {formatMoney(result.base.amount)}
                 </span>
@@ -212,12 +212,12 @@ export const CompareView = ({
                   <span className="min-w-0 flex flex-col">
                     <span>
                       <span
-                        className={`${mono.className} text-[12.5px] font-semibold text-[var(--dc-accent)] mr-1.5`}
+                        className={`${mono.className} text-[13px] font-semibold text-[var(--dc-accent)] mr-1.5`}
                       >
                         {line.code}
                       </span>
                       <span
-                        className={`${styles.num} text-[12.5px] text-[var(--dc-text-3)]`}
+                        className={`${styles.num} text-[12px] text-[var(--dc-text-3)]`}
                       >
                         {line.ratePct !== undefined
                           ? formatPct(line.ratePct)
@@ -229,7 +229,7 @@ export const CompareView = ({
                     </span>
                   </span>
                   <span
-                    className={`${styles.num} text-[13.5px] font-semibold whitespace-nowrap`}
+                    className={`${styles.num} text-[14px] font-semibold whitespace-nowrap`}
                   >
                     {formatMoney(line.amount)}
                   </span>
@@ -241,7 +241,7 @@ export const CompareView = ({
             <div className="p-5 pt-4 flex flex-col gap-3 border-t border-[var(--dc-border)] bg-[var(--dc-surface-2)]">
               {result.availablePreferences.length > 0 && (
                 <label className="flex flex-col gap-1.5">
-                  <span className="text-[12.5px] font-semibold text-[var(--dc-text-2)]">
+                  <span className="text-[13px] font-semibold text-[var(--dc-text-2)]">
                     Trade preference
                   </span>
                   <select
@@ -262,7 +262,7 @@ export const CompareView = ({
                 </label>
               )}
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[12.5px] text-[var(--dc-text-3)]">
+                <span className="text-[12px] text-[var(--dc-text-3)]">
                   {entry.openQuestions > 0
                     ? `${entry.openQuestions} ${entry.openQuestions === 1 ? "question" : "questions"} could change this`
                     : "No open questions"}
@@ -321,7 +321,7 @@ const AddCountryCard = ({
           />
           <button
             type="button"
-            className="self-start text-[12.5px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)]"
+            className="self-start text-[13px] font-medium text-[var(--dc-text-3)] hover:text-[var(--dc-text)]"
             onClick={() => setSearching(false)}
           >
             Cancel
