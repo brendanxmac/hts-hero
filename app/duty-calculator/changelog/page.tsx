@@ -3,10 +3,10 @@ import Link from "next/link";
 import config from "@/config";
 import { createAdminClient, createClient } from "@/app/api/supabase/server";
 import { CHANGELOG_ADMIN_EMAIL, getChangelogEntries } from "@/libs/supabase/tariff-changelog";
-import { getLatestVerifiedRevision } from "../../../tariffs/engine-v2/revisions";
-import { ChangelogList } from "../../../components/duty-calculator/ChangelogList";
-import { THEME } from "../../../components/ui/theme";
-import * as ui from "../../../components/ui/styles";
+import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
+import { ChangelogList } from "@/components/duty-calculator/changelog/ChangelogList";
+import { THEME } from "@/components/ui/theme";
+import * as ui from "@/components/ui/styles";
 
 export const metadata: Metadata = {
   title: "Tariff Calculator Changelog | HTS Hero",

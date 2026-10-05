@@ -6,7 +6,7 @@ import { UserProfile } from "../../../libs/supabase/user";
 import { ClassificationRecord } from "../../../interfaces/hts";
 import { Countries, Country } from "../../../constants/countries";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
-import { DutyEstimateEmbed } from "../../duty-calculator/DutyEstimateEmbed";
+import { DutyEstimateEmbed } from "@/components/duty-calculator/embed";
 
 interface Props {
   classificationRecord?: ClassificationRecord;

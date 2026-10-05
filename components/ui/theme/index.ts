@@ -17,6 +17,9 @@ export const FEES_COLOR = "var(--chart-6)";
 // Entities compared side by side (countries), assigned in slot order
 export const SERIES_COLORS = ["var(--series-1)", "var(--series-2)", "var(--series-3)", "var(--series-4)", "var(--series-5)"];
 
+// A mark in the primary color, when series colors aren't in use
+export const PRIMARY_MARK = "oklch(var(--p))";
+
 // Bars and marks that aren't selected
 export const MUTED_MARK = "oklch(var(--bc) / 0.18)";
 

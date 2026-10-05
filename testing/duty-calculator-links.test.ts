@@ -1,5 +1,5 @@
 import { describe, it, expect } from "./test-runner"
-import { encodeAnswers, parseAnswers } from "../components/duty-calculator/estimate"
+import { encodeAnswers, parseAnswers } from "../components/duty-calculator/lib/estimate"
 
 describe("duty calculator links: answers", () => {
   it("writes a yes as the question's id and other answers as id=value", () => {

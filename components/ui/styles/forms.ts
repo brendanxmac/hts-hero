@@ -14,5 +14,8 @@ export const select = `${input} cursor-pointer pr-8`;
 
 export const selectSm = select.replace("h-10", "h-8");
 
+// Multi-line text: grows with its rows instead of sitting at an input's fixed height
+export const textarea = input.replace("h-10", "min-h-20 py-2");
+
 // The native checkbox in the primary color
 export const checkbox = "mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary";

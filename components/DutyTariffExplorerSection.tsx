@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ChartBarIcon, QuestionMarkCircleIcon } from "@heroicons/react/16/solid";
 import type { HtsElement } from "../interfaces/hts";
-import { DutyEstimateEmbed } from "./duty-calculator/DutyEstimateEmbed";
+import { DutyEstimateEmbed } from "./duty-calculator/embed";
 import { Countries } from "../constants/countries";
 import { ExplorerDetailSection } from "./ExplorerDetailSection";
 

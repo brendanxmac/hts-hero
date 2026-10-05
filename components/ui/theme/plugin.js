@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires -- CommonJS: tailwind.config.js loads this */
 // Tailwind plugin that applies the palette (./palette.js) to anything inside the class
 // "hts-theme": the daisyUI color variables behind the semantic classes, and the chart
 // variables. Follows <html data-theme="dark|light">, falling back to the OS setting.

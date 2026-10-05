@@ -36,5 +36,12 @@ const NOTICE_TONES: Record<Exclude<Tone, "neutral">, string> = {
 export const notice = (tone: Exclude<Tone, "neutral"> = "warning") =>
   `rounded-md border border-base-300 border-l-4 ${NOTICE_TONES[tone]} bg-base-100 px-4 py-3 shadow-sm`;
 
+// A floating list under a control: dropdowns, comboboxes, menus. Position it yourself
+// ("absolute z-30 mt-2 w-full …"); options inside are rounded-md rows
+export const popover = "rounded-lg border border-base-300 bg-base-100 p-1.5 shadow-lg";
+
+// A floating label over a chart or a mark: position it yourself
+export const tooltip = "pointer-events-none rounded-md border border-base-300 bg-base-100 text-base-content shadow-lg";
+
 // A loading placeholder: give it the size of what it stands in for
 export const skeleton = "animate-pulse rounded-md bg-base-300/70";

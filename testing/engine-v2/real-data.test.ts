@@ -10,7 +10,7 @@ import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions"
 import { calculateHistory, ruleChangeDates } from "../../tariffs/engine-v2/history"
 import { HtsLine } from "./hts-fixture"
 import { findNoteCitations } from "../../tariffs/engine-v2/citations"
-import { questionSpecificity, sortBySpecificity } from "../../components/duty-calculator/questions"
+import { questionSpecificity, sortBySpecificity } from "../../components/duty-calculator/lib/questions"
 
 const AS_OF = "2026-04-10" // 2026 Rev 5
 const VALUE = 10_000

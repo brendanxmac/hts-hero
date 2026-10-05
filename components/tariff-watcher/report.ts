@@ -3,8 +3,8 @@ import { getHtsElementParents } from "../../libs/hts";
 import { calculate } from "../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../tariffs/engine-v2/data";
 import { Authority, CalculationInput, CalculationResult } from "../../tariffs/engine-v2/types";
-import { findTariffElement } from "../duty-calculator/estimate";
-import { countOpenQuestions, questionImpacts } from "../duty-calculator/questions";
+import { findTariffElement } from "../duty-calculator/lib/estimate";
+import { countOpenQuestions, questionImpacts } from "../duty-calculator/lib/questions";
 import { WatchEntry } from "./parse";
 
 // One product on a watch list, worked out for the "rates as of" date

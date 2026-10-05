@@ -9,14 +9,14 @@ import { useHts } from "../../contexts/HtsContext";
 import { calculate } from "../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../tariffs/engine-v2/data";
 import { isVerifiedDate } from "../../tariffs/engine-v2/revisions";
-import { buildEstimateInput, findTariffElement } from "../duty-calculator/estimate";
-import { formatDate, formatMoney, formatPct, todayIso } from "../duty-calculator/format";
+import { buildEstimateInput, findTariffElement } from "../duty-calculator/lib/estimate";
+import { formatDate, formatMoney, formatPct, todayIso } from "../duty-calculator/lib/format";
 import { mono } from "../ui/font";
-import { countOpenQuestions, questionImpacts } from "../duty-calculator/questions";
-import { programName, SummaryStats } from "../duty-calculator/Results";
-import dc from "../ui/theme.module.css";
+import { countOpenQuestions, questionImpacts } from "../duty-calculator/lib/questions";
+import { programName, SummaryStats } from "../duty-calculator/results";
 import { DashboardCard, DashboardCardHeader } from "./DashboardCard";
 import { THEME_EMBEDDED } from "../ui/theme";
+import * as ui from "../ui/styles";
 
 // The classification's duty at a glance, for its country of origin: the same engine as the
 // Tariff Calculator, for a standard shipment. The Duty & Tariffs tab has the full estimate.
@@ -61,18 +61,18 @@ export function TariffDashboardSection({
         title={`Tariff Summary ${countryOfOrigin?.name ? `for ${htsno} from ${countryOfOrigin.name}` : ""}`}
         icon={<CurrencyDollarIcon className="w-4 h-4" />}
         action={
-          <button onClick={onNavigateToDuty} className="btn btn-sm btn-primary">
+          <button onClick={onNavigateToDuty} className={ui.button({ variant: "primary", size: "sm" })}>
             See All Tariff Details
-            <ArrowRightIcon className="w-3 h-3" />
+            <ArrowRightIcon className="w-3 h-3" aria-hidden />
           </button>
         }
       />
       <div className="flex flex-col gap-5">
         {summary ? (
           <div className={`${THEME_EMBEDDED} p-4 flex flex-col gap-4`}>
-            <div className={`${dc.card} overflow-hidden`}>
+            <div className={`${ui.card} overflow-hidden`}>
               <SummaryStats result={summary.result} customsValue={DEFAULT_CUSTOMS_VALUE} />
-              <ul className="divide-y divide-[var(--dc-border)]">
+              <ul className="divide-y divide-base-300">
                 <SummaryLine
                   code="Base"
                   name={summary.result.base.reasons[0] ?? "Free"}
@@ -91,7 +91,7 @@ export function TariffDashboardSection({
                   ))}
               </ul>
             </div>
-            <p className="text-[12.5px] text-[var(--dc-text-3)]">
+            <p className="text-xs text-base-content/60">
               For {formatMoney(DEFAULT_CUSTOMS_VALUE)} of goods entering {formatDate(summary.result.asOf)}
               {isVerifiedDate(summary.result.asOf) ? "" : " (tariff rules for this date aren't verified yet)"}.
               {summary.openQuestions > 0 &&
@@ -117,12 +117,12 @@ export function TariffDashboardSection({
 const SummaryLine = ({ code, name, rate, amount }: { code: string; name: string; rate?: number; amount: number }) => (
   <li className="flex items-baseline justify-between gap-4 px-5 py-3">
     <span className="min-w-0 flex items-baseline gap-2.5">
-      <span className={`${mono.className} text-[13px] font-semibold text-[var(--dc-accent)] shrink-0`}>{code}</span>
-      <span className="text-[13.5px] text-[var(--dc-text-2)] truncate">{name}</span>
+      <span className={`${mono.className} text-sm font-semibold text-primary shrink-0`}>{code}</span>
+      <span className="text-sm text-base-content/70 truncate">{name}</span>
     </span>
     <span className="flex items-baseline gap-3 shrink-0">
-      {rate !== undefined && <span className={`${dc.num} text-[12.5px] text-[var(--dc-text-3)]`}>{formatPct(rate)}</span>}
-      <span className={`${dc.num} text-[14px] font-semibold text-[var(--dc-text)]`}>{formatMoney(amount)}</span>
+      {rate !== undefined && <span className="tabular-nums text-xs text-base-content/60">{formatPct(rate)}</span>}
+      <span className="tabular-nums text-sm font-semibold text-base-content">{formatMoney(amount)}</span>
     </span>
   </li>
 );

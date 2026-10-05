@@ -8,7 +8,7 @@ import {
   getSectionAndChapterForElement,
 } from "../../../libs/hts-server";
 import { HtsElement } from "../../../interfaces/hts";
-import { HtsCodePageContent } from "@/components/HtsCodePageContent";
+import { HtsCodePage as HtsCodePageContent } from "@/components/hts-code-page";
 import config from "@/config";
 import {
   describeTotal,

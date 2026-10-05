@@ -1,17 +1,16 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { TariffFinderPage } from "../../components/TariffFinderPage";
+import { TariffFinderPage } from "../../components/duty-calculator/calculator";
 import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
-import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions";
 import { THEME } from "../../components/ui/theme";
-import { Hero } from "../../components/duty-calculator/Hero";
+import { Hero } from "@/components/duty-calculator/hero";
 import { createClient } from "@/app/api/supabase/server";
 import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
 import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
-import { TariffGuide } from "../../components/duty-calculator/TariffGuide";
-import { dutyCalculatorFaqs } from "../../components/duty-calculator/faq";
+import { TariffGuide } from "@/components/duty-calculator/guide";
+import { dutyCalculatorFaqs } from "@/components/duty-calculator/guide/faqs";
 import * as ui from "../../components/ui/styles";
 
 export const metadata: Metadata = {
@@ -73,7 +72,6 @@ export const metadata: Metadata = {
 };
 
 export default async function DutyCalculatorPage() {
-  const latestVerified = getLatestVerifiedRevision();
   const [latestUpdates, content] = await Promise.all([
     getChangelogEntries(createClient(), { limit: 2 }),
     getDutyCalculatorContent(),
@@ -115,7 +113,7 @@ export default async function DutyCalculatorPage() {
       })}
 
       {/* Hero — server-rendered, immediately visible to crawlers */}
-      <Hero latestVerified={latestVerified} latestUpdates={latestUpdates} />
+      <Hero latestUpdates={latestUpdates} />
 
       {/* Calculator */}
       <BreadcrumbsProvider>
