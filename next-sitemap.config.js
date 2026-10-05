@@ -48,7 +48,7 @@ module.exports = {
     ],
   },
   sitemapSize: 5000,
-  exclude: ["/twitter-image.*", "/opengraph-image.*", "/icon.*"],
+  exclude: ["/twitter-image.*", "/opengraph-image.*", "/icon.*", "/revision-checker*", "/coverage-checker*"],
   additionalPaths: async (config) => {
     const { codes, revisionDate } = await getHtsCodes();
     const lastmod = new Date(revisionDate).toISOString();
