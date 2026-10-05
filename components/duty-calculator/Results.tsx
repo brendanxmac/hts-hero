@@ -20,6 +20,7 @@ import { formatDate, formatMoney, formatPct, TRANSPORT_MODES } from "./format";
 import { mono } from "../ui/font";
 import { sortBySpecificity } from "./questions";
 import { ReferencedNotes } from "./ReferencedNotes";
+import * as ui from "../ui/styles";
 
 export const programName = (id?: string) =>
   AllRules.programs.find((p) => p.id === id)?.name ?? "Other";
@@ -709,7 +710,7 @@ export const SimpleSummary = ({
       </dl>
 
       {openQuestions > 0 && onShowDetails && (
-        <button type="button" className="btn btn-sm" onClick={onShowDetails}>
+        <button type="button" className={ui.button({ size: "sm" })} onClick={onShowDetails}>
           <InformationCircleIcon className="w-4 h-4 text-primary" />
           {openQuestions === 1
             ? "1 question could change this amount"
@@ -856,7 +857,7 @@ export const QuestionsPanel = ({
               {secondary.length > 0 && (
                 <button
                   type="button"
-                  className="link link-primary link-hover font-semibold mt-4 text-sm"
+                  className={`${ui.link} mt-4 text-sm`}
                   onClick={() => setShowAll((x) => !x)}
                   aria-expanded={showAll}
                 >
@@ -925,7 +926,7 @@ const CheckRow = ({
       <label className="flex items-start gap-3 cursor-pointer">
         <input
           type="checkbox"
-          className="checkbox checkbox-primary checkbox-sm"
+          className={ui.checkbox}
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
         />
@@ -1010,7 +1011,7 @@ const QuestionControl = ({
       </span>
       <input
         type={input.type === "date" ? "date" : "number"}
-        className="input input-bordered input-sm w-full"
+        className={ui.inputSm}
         value={(value as string | number) ?? ""}
         onChange={(e) =>
           onChange(

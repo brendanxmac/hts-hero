@@ -3,6 +3,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { mono } from "../ui/font";
+import { SegmentedControl } from "../ui/SegmentedControl";
 
 // The rates-by-country charts and table on /duty-calculator: the products' total duty for up to
 // five chosen countries side by side, every country's average, and every rate. Choosing a country
@@ -156,25 +157,16 @@ export const CountryRateCharts = ({
     );
 
   const markerSwitch = (
-    <div className="join shrink-0" role="radiogroup" aria-label="Show countries as">
-      {(
-        [
-          ["colors", "Colors"],
-          ["flags", "Flags"],
-        ] as const
-      ).map(([id, label]) => (
-        <button
-          key={id}
-          type="button"
-          role="radio"
-          aria-checked={markers === id}
-          onClick={() => setMarkers(id)}
-          className={`btn btn-sm join-item ${markers === id ? "btn-active" : ""}`}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
+    <SegmentedControl
+      label="Show countries as"
+      size="sm"
+      options={[
+        { id: "colors", label: "Colors" },
+        { id: "flags", label: "Flags" },
+      ] as const}
+      value={markers}
+      onChange={setMarkers}
+    />
   );
 
   const chip = (row: CountryRates) => {

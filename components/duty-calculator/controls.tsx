@@ -1,6 +1,8 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
+import { SegmentedControl } from "../ui/SegmentedControl";
+import * as ui from "../ui/styles";
 
 export const Field = ({
   label,
@@ -54,7 +56,7 @@ export const NumberField = ({
   }, [value, focused]);
 
   return (
-    <div className="input input-bordered flex w-full items-center gap-2 tabular-nums">
+    <div className={`${ui.input} flex items-center gap-2 tabular-nums`}>
       {prefix && <span className="font-medium text-base-content/60">{prefix}</span>}
       <input
         id={id}
@@ -93,26 +95,6 @@ export function Segmented<T extends string>({
   compact?: boolean;
 }) {
   return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className="join w-full"
-    >
-      {options.map((option) => {
-        const active = option.id === value;
-        return (
-          <button
-            key={option.id}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            className={`btn join-item flex-1 ${compact ? "btn-sm" : ""} ${active ? "btn-active text-base-content" : "font-medium text-base-content/70"}`}
-            onClick={() => onChange(option.id)}
-          >
-            {option.label}
-          </button>
-        );
-      })}
-    </div>
+    <SegmentedControl label={label} options={options} value={value} onChange={onChange} size={compact ? "sm" : "md"} fullWidth />
   );
 }

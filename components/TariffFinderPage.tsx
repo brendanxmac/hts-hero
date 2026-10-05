@@ -40,6 +40,8 @@ import {
   useTariffFinder,
 } from "./duty-calculator/useTariffFinder";
 import styles from "./ui/theme.module.css";
+import { SegmentedControl } from "./ui/SegmentedControl";
+import * as ui from "./ui/styles";
 
 type Tool = "calculator" | "watcher";
 
@@ -361,29 +363,16 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                               : ""}
                           </p>
                         </div>
-                        <div
-                          className="join shrink-0"
-                          role="radiogroup"
-                          aria-label="Line detail"
-                        >
-                          {(
-                            [
-                              ["compact", "Compact"],
-                              ["full", "Full"],
-                            ] as const
-                          ).map(([id, label]) => (
-                            <button
-                              key={id}
-                              type="button"
-                              role="radio"
-                              aria-checked={linesDetail === id}
-                              onClick={() => setLinesDetail(id)}
-                              className={`btn btn-sm join-item ${linesDetail === id ? "btn-active text-base-content" : "font-medium text-base-content/70"}`}
-                            >
-                              {label}
-                            </button>
-                          ))}
-                        </div>
+                        <SegmentedControl<"compact" | "full">
+                          label="Line detail"
+                          size="sm"
+                          options={[
+                            { id: "compact", label: "Compact" },
+                            { id: "full", label: "Full" },
+                          ] as const}
+                          value={linesDetail}
+                          onChange={setLinesDetail}
+                        />
                       </div>
                     </div>
                     <Statement
@@ -397,14 +386,14 @@ const Layout = ({ f }: { f: TariffFinder }) => {
                     />
                   </section>
                   {result.warnings.length > 0 && (
-                    <ul className="flex flex-col gap-1.5 rounded-md border border-warning/40 bg-warning/10 px-4 py-3">
+                    <ul className={`${ui.notice("warning")} flex flex-col gap-1.5`}>
                       {result.warnings.map((w) => (
                         <li
                           key={w}
-                          className="flex gap-2 text-sm leading-snug text-warning"
+                          className="flex gap-2 text-sm leading-snug text-base-content/70"
                         >
                           <ExclamationTriangleIcon
-                            className="w-4 h-4 shrink-0 mt-px"
+                            className="w-4 h-4 shrink-0 mt-px text-warning"
                             aria-hidden
                           />
                           {w}
@@ -464,10 +453,10 @@ const ResultsSkeleton = () => (
     aria-busy="true"
     aria-label="Loading HTS data"
   >
-    <div className="skeleton h-7 w-48" />
-    <div className="skeleton h-24 w-full" />
+    <div className={`${ui.skeleton} h-7 w-48`} />
+    <div className={`${ui.skeleton} h-24 w-full`} />
     {Array.from({ length: 5 }, (_, i) => (
-      <div key={i} className="skeleton h-10 w-full" />
+      <div key={i} className={`${ui.skeleton} h-10 w-full`} />
     ))}
   </div>
 );

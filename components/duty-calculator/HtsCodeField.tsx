@@ -13,6 +13,7 @@ import {
   normalizeHtsCode,
 } from "../../libs/hts-code";
 import { mono } from "../ui/font";
+import * as ui from "../ui/styles";
 
 interface Props {
   id: string;
@@ -107,7 +108,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
           <Combobox.Input
             id={id}
             ref={inputRef}
-            className={`input input-bordered w-full pr-10 ${mono.className} text-base tracking-tight`}
+            className={`${ui.input} pr-10 ${mono.className} text-base tracking-tight`}
             placeholder="e.g. 7326.90.86.88"
             autoComplete="off"
             spellCheck={false}

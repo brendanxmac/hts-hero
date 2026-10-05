@@ -7,6 +7,7 @@ import {
 } from "../../tariffs/engine-v2/citations";
 import { formatDate } from "./format";
 import { mono } from "../ui/font";
+import * as ui from "../ui/styles";
 
 // The text of the note subdivisions a piece of legal text cites, for the entry's date, from
 // public/data/notes (written by `npm run notes:cited`). Code lists are shown as a grid with the
@@ -149,7 +150,7 @@ const CodeList = ({ codes, htsCode }: { codes: string[]; htsCode: string }) => {
       {codes.length > COLLAPSED && (
         <button
           type="button"
-          className="link link-primary link-hover self-start text-sm font-medium"
+          className={`${ui.link} self-start text-sm`}
           onClick={() => setAll((x) => !x)}
         >
           {all ? "Show fewer" : `Show all ${codes.length}`}

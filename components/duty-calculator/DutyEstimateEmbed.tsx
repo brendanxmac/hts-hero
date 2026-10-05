@@ -39,6 +39,7 @@ import {
 } from "./Results";
 import { DateNotice } from "./shared";
 import styles from "../ui/theme.module.css";
+import * as ui from "../ui/styles";
 
 // A duty estimate for one HTS code, embedded in another page (the HTS explorer, a
 // classification's Duty & Tariffs tab). Same engine and pieces as the Tariff Calculator,
@@ -210,7 +211,7 @@ export const DutyEstimateEmbed = ({
             countryOfOrigin && country?.code !== countryOfOrigin.code ? (
               <button
                 type="button"
-                className="link link-primary link-hover inline-flex items-center gap-1 text-sm font-semibold"
+                className={`${ui.link} inline-flex items-center gap-1 text-sm`}
                 onClick={() => setCountry(countryOfOrigin)}
               >
                 <ArrowPathIcon className="w-3.5 h-3.5" />
@@ -248,7 +249,7 @@ export const DutyEstimateEmbed = ({
             <input
               id={`${ids}-date`}
               type="date"
-              className="input input-bordered w-full tabular-nums"
+              className={`${ui.input} tabular-nums`}
               value={entryDate}
               onChange={(e) => setEntryDate(e.target.value)}
             />
@@ -262,7 +263,7 @@ export const DutyEstimateEmbed = ({
           >
             <select
               id={`${ids}-mode`}
-              className="select select-bordered w-full"
+              className={ui.select}
               value={transportMode}
               onChange={(e) =>
                 setTransportMode(e.target.value as TransportMode)
@@ -379,7 +380,7 @@ export const DutyEstimateEmbed = ({
                 : "Estimates don't include antidumping or countervailing duties."}
             </span>
             <div className="flex items-center gap-2">
-              <button type="button" className="btn btn-sm" onClick={copy}>
+              <button type="button" className={ui.button({ size: "sm" })} onClick={copy}>
                 {copied ? (
                   <CheckIcon className="w-4 h-4" />
                 ) : (
@@ -389,7 +390,7 @@ export const DutyEstimateEmbed = ({
               </button>
               <a
                 href={link()}
-                className="btn btn-sm btn-primary"
+                className={ui.button({ variant: "primary", size: "sm" })}
                 onClick={() =>
                   trackEvent(MixpanelEvent.DUTY_ESTIMATE_OPENED_IN_CALCULATOR, {
                     hts_code: element.htsno,
@@ -436,7 +437,7 @@ const CalculatorCta = ({
     "Any entry date, transport mode and trade preference",
   ];
   return (
-    <div className="rounded-lg border border-primary/30 bg-primary/5 p-5 sm:p-6">
+    <div className={`${ui.card} p-5 sm:p-6`}>
       <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-5 md:items-center">
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
@@ -467,7 +468,7 @@ const CalculatorCta = ({
         <a
           href={href}
           onClick={onOpen}
-          className="btn btn-primary whitespace-nowrap"
+          className={`${ui.button({ variant: "primary", size: "lg" })} whitespace-nowrap`}
         >
           Open full analysis
           <ArrowRightIcon className="w-4 h-4" />

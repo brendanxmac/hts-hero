@@ -11,6 +11,7 @@ import {
 import { mono } from "../ui/font";
 import { heat } from "../ui/heat";
 import { SectionHeader } from "../ui/SectionHeader";
+import * as ui from "../ui/styles";
 
 // What an import under an HTS code pays from the largest sources of US imports, on the
 // /hts/[code] page. Server-rendered from the Tariff Calculator's engine.
@@ -102,7 +103,7 @@ export function DutyByCountry({
                     <Link
                       href={calculatorHref(htsno, row.country.code)}
                       rel="nofollow"
-                      className="link-hover hover:text-primary"
+                      className="hover:underline hover:text-primary"
                     >
                       <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
                       {row.country.name}
@@ -158,7 +159,7 @@ export function DutyByCountry({
             Some tariffs and exemptions depend on details such as metal content or end use, which the
             calculator asks about.
           </p>
-          <Link href={calculatorHref(htsno)} className="btn btn-sm btn-primary shrink-0">
+          <Link href={calculatorHref(htsno)} className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`}>
             Calculate Duty for Your Shipment
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>

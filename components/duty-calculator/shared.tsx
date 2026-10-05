@@ -14,6 +14,7 @@ import { Segmented } from "./controls";
 import { formatDate } from "./format";
 import { mono } from "../ui/font";
 import { EXAMPLES, Example, MAX_COMPARE, TariffFinder, View } from "./useTariffFinder";
+import * as ui from "../ui/styles";
 
 // Smaller pieces of the Tariff Finder page
 
@@ -37,7 +38,7 @@ export const ShareButtons = ({ f }: { f: TariffFinder }) => (
   <div className="flex items-center gap-2">
     <button
       type="button"
-      className="btn btn-sm"
+      className={ui.button({ size: "sm" })}
       onClick={() => f.copy("summary")}
       aria-label="Copy summary"
     >
@@ -46,7 +47,7 @@ export const ShareButtons = ({ f }: { f: TariffFinder }) => (
     </button>
     <button
       type="button"
-      className="btn btn-sm btn-primary"
+      className={ui.button({ variant: "primary", size: "sm" })}
       onClick={() => f.copy("link")}
       aria-label="Copy share link"
     >
@@ -72,15 +73,15 @@ export const DateNotice = ({
   return (
     <div
       role="status"
-      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-md border border-warning/40 bg-warning/10 px-4 py-3.5"
+      className={`${ui.notice("warning")} flex flex-col sm:flex-row sm:items-center gap-3`}
     >
       <ExclamationTriangleIcon className="w-5 h-5 shrink-0 text-warning" aria-hidden />
-      <p className="flex-1 text-sm leading-snug text-warning">
-        <span className="font-semibold">Tariff rules for {formatDate(entryDate)} aren&apos;t verified yet.</span>{" "}
+      <p className="flex-1 text-sm leading-snug text-base-content/70">
+        <span className="font-semibold text-base-content">Tariff rules for {formatDate(entryDate)} aren&apos;t verified yet.</span>{" "}
         Our data is verified for HTS {latestVerified.title} ({formatDate(latestVerified.from)} –{" "}
         {latestVerified.to ? formatDate(latestVerified.to) : "present"}). Changes outside that window may be missing.
       </p>
-      <button type="button" className="btn btn-sm shrink-0" onClick={() => onUseVerified(latestVerified.from)}>
+      <button type="button" className={`${ui.button({ size: "sm" })} shrink-0`} onClick={() => onUseVerified(latestVerified.from)}>
         Use {formatDate(latestVerified.from)}
         <ArrowRightIcon className="w-4 h-4" />
       </button>
@@ -131,7 +132,7 @@ export const Disclaimer = () => (
     All figures shown are estimates based on the details provided and may not be complete nor correct. <br /> Spot something wrong?{" "}
     <a
       href="mailto:support@htshero.com"
-      className="link link-primary font-semibold"
+      className={ui.link}
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => trackEvent(MixpanelEvent.DUTY_CALCULATOR_SUPPORT_CLICKED)}
@@ -148,7 +149,7 @@ export const ExploreModal = ({ f }: { f: TariffFinder }) =>
       <div className="modal-box w-11/12 max-w-6xl h-[85vh] p-0 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3 border-b border-base-300">
           <span className="font-semibold">Find your HTS code</span>
-          <button type="button" className="btn btn-sm btn-ghost" onClick={f.closeExplore}>
+          <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={f.closeExplore}>
             Close
           </button>
         </div>

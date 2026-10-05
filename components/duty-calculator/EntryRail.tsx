@@ -7,6 +7,7 @@ import { NumberField, Segmented } from "./controls";
 import { TRANSPORT_MODES } from "./format";
 import { HtsCodeField } from "./HtsCodeField";
 import { MAX_COMPARE, TariffFinder } from "./useTariffFinder";
+import * as ui from "../ui/styles";
 
 // Entry details as a compact rail beside the results
 
@@ -70,7 +71,7 @@ export const EntryRail = ({
       )}
       {f.loading ? (
         Array.from({ length: 6 }, (_, i) => (
-          <div key={i} className="skeleton h-12 w-full" />
+          <div key={i} className={`${ui.skeleton} h-12 w-full`} />
         ))
       ) : (
         <div
@@ -83,7 +84,7 @@ export const EntryRail = ({
             action={
               <button
                 type="button"
-                className="link link-primary link-hover inline-flex items-center gap-1 text-xs font-semibold"
+                className={`${ui.link} inline-flex items-center gap-1 text-xs`}
                 onClick={() => f.openExplore()}
               >
                 <MagnifyingGlassIcon className="w-3 h-3" />
@@ -139,7 +140,7 @@ export const EntryRail = ({
             <input
               id="dc-date"
               type="date"
-              className="input input-bordered w-full tabular-nums"
+              className={`${ui.input} tabular-nums`}
               value={f.entryDate}
               onChange={(e) => f.setEntryDate(e.target.value)}
             />

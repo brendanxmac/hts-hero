@@ -4,6 +4,7 @@ import { KeyboardEvent, useMemo, useRef, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { Countries, Country } from "../../constants/countries";
+import * as ui from "../ui/styles";
 
 interface Props {
   id: string;
@@ -69,7 +70,7 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
     >
       <div className="relative">
         <div
-          className="input input-bordered flex h-auto min-h-12 w-full flex-wrap items-center gap-1.5 px-2 py-1.5 cursor-text"
+          className={`${ui.inputBox} flex flex-wrap items-center gap-1.5 px-2 py-1 cursor-text`}
           onClick={() => inputRef.current?.focus()}
         >
           {selected.map((country, i) => (

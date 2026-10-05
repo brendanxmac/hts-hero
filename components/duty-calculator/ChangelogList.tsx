@@ -11,6 +11,7 @@ import {
 } from "@/libs/supabase/tariff-changelog";
 import { ChangelogTypeBadge } from "./Changelog";
 import { Field } from "./controls";
+import * as ui from "../ui/styles";
 
 const today = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, local time
 
@@ -91,14 +92,14 @@ export const ChangelogList = ({
             Admin: drafts are only visible to you.
           </p>
           {editing !== "new" && (
-            <button type="button" className="btn btn-sm btn-primary" onClick={() => setEditing("new")}>
+            <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => setEditing("new")}>
               Add entry
             </button>
           )}
         </div>
       )}
       {error && (
-        <p role="alert" className="mb-4 rounded-md border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning">
+        <p role="alert" className={`${ui.notice("error")} mb-4 text-sm text-base-content`}>
           {error}
         </p>
       )}
@@ -130,7 +131,7 @@ export const ChangelogList = ({
                     <time dateTime={entry.entry_date}>{formatChangelogDate(entry.entry_date)}</time>
                     <ChangelogTypeBadge type={entry.type} />
                     {entry.status === "draft" && (
-                      <span className="badge badge-sm border-warning/40 bg-warning/10 font-medium text-warning">
+                      <span className={ui.badge("warning")}>
                         Draft
                       </span>
                     )}
@@ -139,19 +140,19 @@ export const ChangelogList = ({
                   <p className="mt-1.5 text-base leading-relaxed text-base-content/70">{entry.summary}</p>
                   {isAdmin && (
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <button type="button" className="btn btn-sm" onClick={() => setEditing(entry.id)}>
+                      <button type="button" className={ui.button({ size: "sm" })} onClick={() => setEditing(entry.id)}>
                         Edit
                       </button>
                       {entry.status === "draft" ? (
-                        <button type="button" className="btn btn-sm btn-primary" onClick={() => setStatus(entry, "published")}>
+                        <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => setStatus(entry, "published")}>
                           Publish
                         </button>
                       ) : (
-                        <button type="button" className="btn btn-sm" onClick={() => setStatus(entry, "draft")}>
+                        <button type="button" className={ui.button({ size: "sm" })} onClick={() => setStatus(entry, "draft")}>
                           Unpublish
                         </button>
                       )}
-                      <button type="button" className="btn btn-sm" onClick={() => remove(entry)}>
+                      <button type="button" className={ui.button({ size: "sm" })} onClick={() => remove(entry)}>
                         Delete
                       </button>
                     </div>
@@ -205,7 +206,7 @@ const EntryForm = ({
             id="cl-date"
             type="date"
             required
-            className="input input-bordered w-full"
+            className={ui.input}
             value={draft.entry_date}
             onChange={(e) => set("entry_date", e.target.value)}
           />
@@ -213,7 +214,7 @@ const EntryForm = ({
         <Field label="Type" htmlFor="cl-type">
           <select
             id="cl-type"
-            className="select select-bordered w-full"
+            className={ui.select}
             value={draft.type}
             onChange={(e) => set("type", e.target.value as ChangelogEntryInput["type"])}
           >
@@ -227,7 +228,7 @@ const EntryForm = ({
         <Field label="Status" htmlFor="cl-status">
           <select
             id="cl-status"
-            className="select select-bordered w-full"
+            className={ui.select}
             value={draft.status}
             onChange={(e) => set("status", e.target.value as ChangelogEntryInput["status"])}
           >
@@ -240,7 +241,7 @@ const EntryForm = ({
         <Field label="HTS revision" htmlFor="cl-revision" hint="e.g. 2026HTSRev7">
           <input
             id="cl-revision"
-            className="input input-bordered w-full"
+            className={ui.input}
             value={draft.revision ?? ""}
             onChange={(e) => set("revision", e.target.value || null)}
           />
@@ -251,7 +252,7 @@ const EntryForm = ({
           id="cl-title"
           required
           maxLength={120}
-          className="input input-bordered w-full"
+          className={ui.input}
           value={draft.title}
           onChange={(e) => set("title", e.target.value)}
         />
@@ -267,10 +268,10 @@ const EntryForm = ({
         />
       </Field>
       <div className="flex justify-end gap-2">
-        <button type="button" className="btn btn-sm" onClick={onCancel} disabled={saving}>
+        <button type="button" className={ui.button({ size: "sm" })} onClick={onCancel} disabled={saving}>
           Cancel
         </button>
-        <button type="submit" className="btn btn-sm btn-primary" disabled={saving}>
+        <button type="submit" className={ui.button({ variant: "primary", size: "sm" })} disabled={saving}>
           {saving ? "Saving…" : "Save"}
         </button>
       </div>

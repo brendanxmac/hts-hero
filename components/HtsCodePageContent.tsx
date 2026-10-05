@@ -31,6 +31,7 @@ import {
   inSentence,
   lowestTotal,
 } from "../libs/hts-duty-summary";
+import * as ui from "./ui/styles";
 
 // The /hts/[code] page: what an HTS code covers, what it pays and where it sits in the
 // schedule. Server-rendered for search engines, on the analytical theme (DESIGN_SYSTEM.md).
@@ -143,11 +144,11 @@ export function HtsCodePageContent({
               ) : (
                 element.htsno && !element.htsno.startsWith("99") && (
                   <div className="flex flex-wrap items-center gap-3">
-                    <Link href={`/duty-calculator?code=${element.htsno}`} className="btn btn-primary">
+                    <Link href={`/duty-calculator?code=${element.htsno}`} className={ui.button({ variant: "primary", size: "lg" })}>
                       Calculate Total Duty
                       <ArrowRightIcon className="h-4 w-4" aria-hidden />
                     </Link>
-                    <Link href="/explore" className="btn">
+                    <Link href="/explore" className={ui.button({ size: "lg" })}>
                       Explore the HTS
                     </Link>
                   </div>
@@ -168,7 +169,7 @@ export function HtsCodePageContent({
                   <p className="text-sm leading-relaxed text-base-content/70">
                     Pick the full HTS code in the calculator to see every duty, tariff and exemption for your country of origin.
                   </p>
-                  <Link href={`/duty-calculator?code=${element.htsno}`} className="btn btn-sm btn-primary">
+                  <Link href={`/duty-calculator?code=${element.htsno}`} className={ui.button({ variant: "primary", size: "sm" })}>
                     Calculate Total Duty
                     <ArrowRightIcon className="h-4 w-4" aria-hidden />
                   </Link>
@@ -235,7 +236,7 @@ export function HtsCodePageContent({
       </div>
 
       {/* === Notes, rulings and questions: reference material, on a band of its own === */}
-      <div className="w-full border-t border-base-300 bg-base-100">
+      <div className="w-full border-t border-base-300">
         <div className={`${CONTAINER} py-12 sm:py-16 flex flex-col gap-16 sm:gap-20`}>
           {sectionChapter && element.chapter && (
             <Notes sectionChapter={sectionChapter} htsno={element.htsno} chapter={element.chapter} />
@@ -285,7 +286,7 @@ function PageHeader() {
           </p>
           <Link
             href="/classify"
-            className="btn btn-sm shrink-0"
+            className={`${ui.button({ size: "sm" })} shrink-0`}
           >
             Find your codes, fast!
             <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
@@ -299,10 +300,10 @@ function PageHeader() {
             <span className="text-base font-semibold text-base-content">{config.appName}</span>
           </Link>
           <nav aria-label="Tools" className="flex items-center gap-1 sm:gap-2">
-            <Link href="/duty-calculator" className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-base-content">
+            <Link href="/duty-calculator" className={ui.button({ variant: "ghost", size: "sm" })}>
               Duty Calculator
             </Link>
-            <Link href="/explore" className="btn btn-ghost btn-sm hidden sm:inline-flex font-medium text-base-content/70 hover:text-base-content">
+            <Link href="/explore" className={`${ui.button({ variant: "ghost", size: "sm" })} hidden sm:inline-flex`}>
               HTS Explorer
             </Link>
             <ThemeToggle />
@@ -339,7 +340,7 @@ function Breadcrumbs({
   sectionChapter: SectionChapter;
 }) {
   const sep = <span aria-hidden="true" className="mx-1.5 text-base-content/60">/</span>;
-  const linkClass = "link-hover text-base-content/70 underline-offset-4 hover:text-primary";
+  const linkClass = "hover:underline text-base-content/70 underline-offset-4 hover:text-primary";
   return (
     <nav aria-label="Breadcrumb">
       <ol className="flex flex-wrap items-center gap-y-1 text-sm text-base-content/60">
@@ -447,7 +448,7 @@ function BaseRates({
           {inherited ? (
             <>
               Set at{" "}
-              <Link href={`/hts/${tariffElement.htsno}`} className={`${mono.className} link-hover hover:text-primary`}>
+              <Link href={`/hts/${tariffElement.htsno}`} className={`${mono.className} hover:underline hover:text-primary`}>
                 {tariffElement.htsno}
               </Link>{" "}
               in the Harmonized Tariff Schedule
@@ -479,7 +480,7 @@ function BaseRates({
                   {special.flatMap((s) => s.programs).map((p, i) => (
                     <span
                       key={`${p}-${i}`}
-                      className={`${mono.className} badge badge-sm badge-ghost font-medium text-base-content/70`}
+                      className={`${ui.badge("neutral")} ${mono.className}`}
                     >
                       {p}
                     </span>
@@ -501,7 +502,7 @@ function BaseRates({
           <p className="text-sm leading-snug text-base-content/70">
             Calculate total import duties, tariffs, and trade agreement exemptions for your shipment.
           </p>
-          <Link href={`/duty-calculator?code=${element.htsno}`} className="link link-primary link-hover mt-1 inline-flex items-center gap-1 text-sm font-semibold">
+          <Link href={`/duty-calculator?code=${element.htsno}`} className={`${ui.link} mt-1 inline-flex items-center gap-1 text-sm`}>
             Calculate Total Duty
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
@@ -663,7 +664,7 @@ function Faq({ htsno, faqs }: { htsno: string; faqs: [string, string][] }) {
   return (
     <section id="faq" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
       <SectionHeader kicker="Questions" title={`HTS ${htsno} FAQ`} className="lg:sticky lg:top-6 lg:self-start">
-        Something else? <a href="mailto:support@htshero.com" className="link link-primary font-semibold">Ask us</a>.
+        Something else? <a href="mailto:support@htshero.com" className={ui.link}>Ask us</a>.
       </SectionHeader>
       <FaqList faqs={faqs.map(([question, answer]) => ({ question, answer }))} openFirst />
     </section>
@@ -695,7 +696,7 @@ function PlaybookBanner() {
             <div>
               <Link
                 href="/the-audit-ready-classifications-playbook"
-                className="btn btn-primary mt-1"
+                className={`${ui.button({ variant: "primary", size: "lg" })} mt-1`}
               >
                 Download Free Playbook
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />

@@ -27,6 +27,8 @@ import { mono } from "../ui/font";
 import { CHART } from "./MoneyBreakdown";
 import { BASE_SLICE, sliceForProgram } from "./Results";
 import { TariffFinder } from "./useTariffFinder";
+import { SegmentedControl } from "../ui/SegmentedControl";
+import * as ui from "../ui/styles";
 
 // "Duty Over Time": the selected entry's duty on every verified revision, as a stacked step
 // chart with one layer per program (colored like the Cost Breakdown), and what changed when.
@@ -216,30 +218,16 @@ export const RateHistoryCard = ({
             {shortDate(historyRange.from)} – {formatDate(lastDate)}
           </p>
         </div>
-        <div
-          className="join shrink-0"
-          role="radiogroup"
-          aria-label="Show duty as"
-        >
-          {(
-            [
-              ["usd", "$", "Dollars"],
-              ["pct", "%", "Percent of value"],
-            ] as const
-          ).map(([id, label, title]) => (
-            <button
-              key={id}
-              type="button"
-              role="radio"
-              aria-checked={metric === id}
-              title={title}
-              onClick={() => setMetric(id)}
-              className={`btn btn-sm join-item ${metric === id ? "btn-active" : ""}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl<Metric>
+          label="Show duty as"
+          size="sm"
+          options={[
+            { id: "usd", label: "$", title: "Dollars" },
+            { id: "pct", label: "%", title: "Percent of value" },
+          ] as const}
+          value={metric}
+          onChange={setMetric}
+        />
       </div>
 
       {/* Headline: duty on the entry date, and how it compares with the start */}
@@ -376,7 +364,7 @@ export const RateHistoryCard = ({
           {changes > COLLAPSED_CHANGES && (
             <button
               type="button"
-              className="link link-primary link-hover self-start text-sm font-semibold"
+              className={`${ui.link} self-start text-sm`}
               onClick={() => setShowAll(!showAll)}
             >
               {showAll ? "Show fewer" : `Show all ${changes} changes`}
@@ -848,7 +836,7 @@ const ChangeItem = ({
         ) : (
           <button
             type="button"
-            className="link link-primary link-hover inline-flex items-center gap-1 text-sm font-semibold"
+            className={`${ui.link} inline-flex items-center gap-1 text-sm`}
             onClick={onPick}
           >
             See the duty from {shortDate(segment.from)}

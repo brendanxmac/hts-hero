@@ -8,6 +8,7 @@ import { Countries, Country } from "../../constants/countries";
 import type { MicroEstimate } from "../../libs/hts-micro-estimate";
 import { CountryField } from "../duty-calculator/CountryField";
 import { formatDate, formatMoney, formatPct } from "../duty-calculator/format";
+import * as ui from "../ui/styles";
 
 // A quick duty estimate on the /hts/[code] page: pick a country, see the calculator's
 // headline figures, then open the calculator for the rest. The first estimate is
@@ -122,7 +123,7 @@ export const MicroCalculator = ({
       )}
 
       {/* The way on: what this quick estimate leaves out, and the calculator that doesn't */}
-      <div className="flex flex-col gap-3 border-t border-primary/30 bg-primary/5 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <div className="flex flex-col gap-3 border-t border-base-300 bg-base-200 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="min-w-0">
           <p className="text-base font-semibold leading-snug text-base-content">
             {shown && shown.totalDuty > 0
@@ -136,7 +137,7 @@ export const MicroCalculator = ({
           <Link
             href={calculatorHref}
             rel="nofollow"
-            className="btn btn-primary"
+            className={ui.button({ variant: "primary", size: "lg" })}
           >
             Find my exact duty
             <ArrowRightIcon className="h-4 w-4" aria-hidden />

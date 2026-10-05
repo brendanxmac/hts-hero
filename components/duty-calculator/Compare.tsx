@@ -13,6 +13,7 @@ import { CalculationResult } from "../../tariffs/engine-v2/types";
 import { CountryField } from "./CountryField";
 import { formatMoney, formatPct } from "./format";
 import { mono } from "../ui/font";
+import * as ui from "../ui/styles";
 
 export interface CompareEntry {
   country: Country;
@@ -119,7 +120,7 @@ export const CompareView = ({
                 {!single && (
                   <button
                     type="button"
-                    className="btn btn-ghost btn-sm btn-square -mr-1.5 text-base-content/60 hover:text-base-content"
+                    className={`${ui.button({ variant: "ghost", size: "sm", icon: true })} -mr-1.5`}
                     aria-label={`Remove ${country.name} from the comparison`}
                     title="Remove from comparison"
                     onClick={() => onRemove(country.code)}
@@ -231,7 +232,7 @@ export const CompareView = ({
                     Trade preference
                   </span>
                   <select
-                    className="select select-bordered select-sm w-full"
+                    className={ui.selectSm}
                     value={entry.claimedPreference}
                     onChange={(e) =>
                       onPreferenceChange(country.code, e.target.value)
@@ -254,7 +255,7 @@ export const CompareView = ({
                 </span>
                 <button
                   type="button"
-                  className="link link-primary link-hover font-semibold inline-flex items-center gap-1 text-sm shrink-0"
+                  className={`${ui.link} inline-flex items-center gap-1 text-sm shrink-0`}
                   onClick={() => onViewDetails(country)}
                 >
                   View details
@@ -329,7 +330,7 @@ const AddCountryCard = ({
           </div>
           <button
             type="button"
-            className="btn btn-sm btn-primary"
+            className={ui.button({ variant: "primary", size: "sm" })}
             onClick={() => setSearching(true)}
           >
             <PlusIcon className="w-4 h-4" />

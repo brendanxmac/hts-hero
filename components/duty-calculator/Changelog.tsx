@@ -5,18 +5,19 @@ import {
   ChangelogTypeLabels,
   formatChangelogDate,
 } from "@/libs/supabase/tariff-changelog"
+import * as ui from "../ui/styles";
 
 export const CHANGELOG_PATH = "/duty-calculator/changelog"
 
-const typeStyles: Record<ChangelogType, string> = {
-  revision: "border-primary/30 bg-primary/10 text-primary",
-  fix: "border-base-300 bg-base-200 text-base-content/70",
-  improvement: "border-transparent bg-success/10 text-success",
+const typeTones: Record<ChangelogType, Parameters<typeof ui.badge>[0]> = {
+  revision: "primary",
+  fix: "neutral",
+  improvement: "success",
 }
 
 export const ChangelogTypeBadge = ({ type }: { type: ChangelogType }) => (
   <span
-    className={`badge badge-sm font-medium ${typeStyles[type]}`}
+    className={ui.badge(typeTones[type])}
   >
     {ChangelogTypeLabels[type]}
   </span>
@@ -44,7 +45,7 @@ export const ChangelogCard = ({ entries }: { entries: ChangelogEntry[] }) => (
     </ol>
     <Link
       href={CHANGELOG_PATH}
-      className="link link-primary link-hover mt-1 inline-flex items-center gap-1 text-sm font-semibold"
+      className={`${ui.link} mt-1 inline-flex items-center gap-1 text-sm`}
     >
       View full changelog
       <span aria-hidden>→</span>

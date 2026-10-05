@@ -15,6 +15,7 @@ import { ErrorBanner } from "./cross-rulings/ErrorBanner";
 import { RulingCard } from "./cross-rulings/RulingCard";
 import { RulingDetailView } from "./cross-rulings/RulingDetailView";
 import { ExplorerDetailSection } from "./ExplorerDetailSection";
+import * as ui from "./ui/styles";
 
 interface RelatedCrossRulingsSectionProps {
   htsno: string;
@@ -130,7 +131,7 @@ export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }
                   type="button"
                   onClick={() => setShowAll(true)}
                   // Bare, the section sits on a page with the analytical theme
-                  className={bare ? "btn btn-sm justify-self-center md:col-span-2" : "btn btn-outline btn-sm self-center"}
+                  className={bare ? `${ui.button({ size: "sm" })} justify-self-center md:col-span-2` : "btn btn-outline btn-sm self-center"}
                 >
                   Show all {rulings.length} rulings
                 </button>

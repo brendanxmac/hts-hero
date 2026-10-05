@@ -3,6 +3,7 @@ import {
   ArrowRightIcon,
   MagnifyingGlassIcon,
   XMarkIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/20/solid";
 import { DutyCalculatorContent, TariffMatrix } from "../../libs/duty-calculator-content";
 import { formatDutyPct, formatSummaryDate } from "../../libs/hts-duty-summary";
@@ -12,6 +13,7 @@ import { formatMoney, formatPct } from "./format";
 import { FaqList } from "../ui/FaqList";
 import { SectionHeader } from "../ui/SectionHeader";
 import { mono } from "../ui/font";
+import * as ui from "../ui/styles";
 
 // Below the calculator on /duty-calculator: today's rates for common imports, how a duty is
 // worked out, where the data comes from and the FAQ. Server-rendered so
@@ -173,7 +175,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
   return (
     <section
       id="how-duty-is-calculated"
-      className="rounded-lg border border-primary/30 bg-primary/5 scroll-mt-6 p-5 sm:p-8 lg:p-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12"
+      className={`${ui.card} scroll-mt-6 p-5 sm:p-8 lg:p-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12`}
     >
       <div className="flex flex-col gap-5">
         <SectionHeader kicker="The method" title="How US import duty is calculated" />
@@ -182,7 +184,7 @@ const HowDutyIsCalculated = ({ content }: { content: DutyCalculatorContent }) =>
             <li key={step.title} className="relative flex gap-4 pb-5 last:pb-0">
               {/* The line joining the steps */}
               {i < STEPS.length - 1 && (
-                <span className="absolute left-4 -ml-px top-9 bottom-0 w-px bg-primary/30" aria-hidden />
+                <span className="absolute left-4 -ml-px top-9 bottom-0 w-px bg-base-300" aria-hidden />
               )}
               <span
                 className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold tabular-nums text-primary-content"
@@ -328,7 +330,7 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
       by the US International Trade Commission. Each HTS revision&apos;s changes are entered with
       the dates they take effect, so you can calculate past and future entry dates. Tariff data is
       verified from Revision 5 (April 8, 2026) through {revisionTitle}, and every change is listed
-      in the <Link href={CHANGELOG_PATH} className="link link-primary">calculator changelog</Link>.
+      in the <Link href={CHANGELOG_PATH} className={ui.link}>calculator changelog</Link>.
     </SectionHeader>
 
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
@@ -367,23 +369,26 @@ const Sources = ({ revisionTitle, asOf }: { revisionTitle: string; asOf: string 
             </div>
           ))}
         </div>
-        <Link href={CHANGELOG_PATH} className="btn btn-sm mt-5">
+        <Link href={CHANGELOG_PATH} className={`${ui.button({ size: "sm" })} mt-5`}>
           View the changelog
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </Link>
       </div>
 
       {/* Not included */}
-      <div className="rounded-lg border border-warning/40 bg-warning/10 p-5 sm:p-6">
-        <h3 className="text-base font-semibold text-base-content">Not included</h3>
+      <div className={`${ui.card} p-5 sm:p-6`}>
+        <h3 className="flex items-center gap-2 text-base font-semibold text-base-content">
+          <ExclamationTriangleIcon className="h-4 w-4 text-warning" aria-hidden />
+          Not included
+        </h3>
         <p className="mt-0.5 text-sm text-base-content/70">
           Charges an entry can owe that this estimate leaves out.
         </p>
-        <ul className="mt-4 flex flex-col divide-y divide-warning/40">
+        <ul className="mt-4 flex flex-col divide-y divide-base-300">
           {EXCLUDED.map((item) => (
             <li key={item.title} className="flex gap-3 py-3 first:pt-0 last:pb-0">
               <span
-                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-base-100 text-warning"
+                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-base-200 text-base-content/60"
                 aria-hidden
               >
                 <XMarkIcon className="h-3.5 w-3.5" />
@@ -406,18 +411,18 @@ const FindHtsCode = () => (
   <section
     id="find-hts-code"
     aria-labelledby="find-hts-code-title"
-    className="rounded-lg border border-primary/30 bg-primary/5 scroll-mt-6 px-6 py-8 sm:px-10 sm:py-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
+    className={`${ui.card} scroll-mt-6 px-6 py-8 sm:px-10 sm:py-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center`}
   >
     <SectionHeader kicker="Classification" title="Find the right HTS code for your products" titleId="find-hts-code-title">
       Every rate on this page depends on the 10-digit classification. The wrong code can mean the
       wrong tariffs, missed exemptions, and penalties.
     </SectionHeader>
     <div className="flex flex-wrap gap-3">
-      <Link href="/explore" className="btn">
+      <Link href="/explore" className={ui.button({ size: "lg" })}>
         <MagnifyingGlassIcon className="h-4 w-4" aria-hidden />
         Search the HTS
       </Link>
-      <Link href="/classify" className="btn btn-primary">
+      <Link href="/classify" className={ui.button({ variant: "primary", size: "lg" })}>
         Classify a product
         <ArrowRightIcon className="h-4 w-4" aria-hidden />
       </Link>
@@ -430,7 +435,7 @@ const FindHtsCode = () => (
 const Faq = ({ faqs }: { faqs: { question: string; answer: string }[] }) => (
   <section id="faq" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
     <SectionHeader kicker="Questions" title="Frequently asked questions" className="lg:sticky lg:top-6 lg:self-start">
-      Something else? <a href="mailto:support@htshero.com" className="link link-primary">Ask us</a>.
+      Something else? <a href="mailto:support@htshero.com" className={ui.link}>Ask us</a>.
     </SectionHeader>
     <FaqList faqs={faqs} />
   </section>
@@ -443,7 +448,7 @@ export const TariffGuide = ({
   content: DutyCalculatorContent;
   faqs: { question: string; answer: string }[];
 }) => (
-  <div className="w-full border-t border-base-300 bg-base-100">
+  <div className="w-full border-t border-base-300">
     <div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8 pt-14 pb-20 sm:pt-20 flex flex-col gap-6 sm:gap-10">
       {/* The guide's own intro, with links to each part */}
       <header className="flex flex-col gap-4">
