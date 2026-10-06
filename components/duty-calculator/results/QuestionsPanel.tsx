@@ -31,11 +31,12 @@ export const QuestionsPanel = ({
   preference?: ReactNode;
 }) => {
   const [showAll, setShowAll] = useState(false);
-  // Questions that change the amount (or are already answered) come first; the rest
+  // Questions that change the amount, can lift an import ban, or are already answered come first; the rest
   // wouldn't change this entry's total, so they're tucked away. Within each group, questions
   // about specific products come before ones that apply to a country's goods or to everything
   // (the order depends only on the headings, so answering one doesn't reshuffle the list).
   const matters = (q: Question) =>
+    q.liftsProhibition ||
     q.answered ||
     answers[q.input.id] !== undefined ||
     q.input.type !== "boolean" ||

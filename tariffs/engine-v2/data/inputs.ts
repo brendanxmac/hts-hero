@@ -51,6 +51,13 @@ export const namedInputs: InputDefinition[] = [
     citations: ["U.S. note 41(d)"],
   },
   {
+    // Asked as the case that lifts the ban, like the other "not" questions above
+    id: "alcoholInBulk",
+    label: "These beverages are in bulk, not in bottles, cans, boxes, kegs or similar containers",
+    help: "Proclamation 11061 bans these Canadian alcoholic beverages from import from September 29, 2026 only when they're packaged in bottles, cans, boxes, kegs or other similar direct-to-consumption containers. In bulk they can still be imported and pay the 50% Section 338 duty (CSMS #70050970).",
+    type: "boolean",
+  },
+  {
     id: "usContentPct",
     label: "U.S. content (% of the article's value)",
     help: "The value of the article attributable to parts produced in the United States, as a percent of its total value.",

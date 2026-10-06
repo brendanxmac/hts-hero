@@ -1393,3 +1393,54 @@ describe("engine-v2 real data: 2026 Rev 20 (Section 232 – Pharmaceuticals chan
     }
   })
 })
+
+// ============================================================
+// Section 338 – Canada import bans: Proclamations 11061 (alcoholic beverages), 11062 (dairy) and
+// 11063 (motor vehicles), from September 29, 2026, with the annexes attached to CSMS #70050970
+// ============================================================
+describe("engine-v2 real data: Section 338 – Canada import bans (Sep 29, 2026)", () => {
+  const BEFORE = "2026-09-28"
+  const AFTER = "2026-09-29"
+  const calc = (htsCode: string, country: string, asOf: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: "", other: "Free" }, answers,
+    })
+  const bans = (result: CalculationResult) => result.prohibitions.map((p) => p.id)
+
+  it("bans annex products of Canada from September 29, 2026, and not the day before", () => {
+    expect(bans(calc("0404.10.05.00", "CA", BEFORE))).toEqual([])
+    expect(bans(calc("0404.10.05.00", "CA", AFTER))).toEqual(["ban:canada-338-dairy"])
+    expect(bans(calc("2202.91.00.00", "CA", AFTER))).toEqual(["ban:canada-338-dairy"])
+    expect(bans(calc("8711.50.00.00", "CA", AFTER))).toEqual(["ban:canada-338-motor-vehicles"])
+    expect(bans(calc("2208.30.60.20", "CA", AFTER))).toEqual(["ban:canada-338-alcohol"])
+  })
+
+  it("covers only products of Canada, and only the annex provisions", () => {
+    expect(bans(calc("0404.10.05.00", "MX", AFTER))).toEqual([])
+    expect(bans(calc("2208.30.60.20", "GB", AFTER))).toEqual([])
+    expect(bans(calc("8711.40.30.00", "CA", AFTER))).toEqual([]) // 500–800 cc
+    expect(bans(calc("0402.10.05.00", "CA", AFTER))).toEqual([]) // milk powder: 50% duty, no ban
+  })
+
+  it('bans "Packaged" provisions unless the beverages are in bulk, and asks', () => {
+    const unanswered = calc("2208.30.60.40", "CA", AFTER) // bourbon over 4 liters: "Packaged"
+    expect(bans(unanswered)).toEqual(["ban:canada-338-alcohol-packaged"])
+    expect(unanswered.prohibitions[0].openInputs).toEqual(["alcoholInBulk"])
+    const question = unanswered.questions.find((q) => q.input.id === "alcoholInBulk")
+    expect(question?.liftsProhibition).toBe(true)
+    expect(question?.answered).toBe(false)
+    expect(bans(calc("2208.30.60.40", "CA", AFTER, { alcoholInBulk: true }))).toEqual([])
+    // Provisions without the limitation are banned in any container, and don't ask
+    const bourbonSmall = calc("2208.30.60.20", "CA", AFTER, { alcoholInBulk: true })
+    expect(bans(bourbonSmall)).toEqual(["ban:canada-338-alcohol"])
+    expect(bourbonSmall.questions.some((q) => q.input.id === "alcoholInBulk")).toBe(false)
+  })
+
+  it("never changes the duty: goods imported before the ban still pay the 50%", () => {
+    const banned = calc("2203.00.00.30", "CA", AFTER)
+    const bulk = calc("2203.00.00.30", "CA", AFTER, { alcoholInBulk: true })
+    expect(bans(banned)).toEqual(["ban:canada-338-alcohol-packaged"])
+    expect(banned.totalDuty).toBe(bulk.totalDuty)
+  })
+})
