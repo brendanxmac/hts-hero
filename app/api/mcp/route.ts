@@ -3,6 +3,11 @@ import { createMcpServer } from "@/libs/mcp/server";
 
 // The MCP endpoint (Streamable HTTP, stateless): https://htshero.com/api/mcp
 // Serves 2026-07-28 clients natively and older clients through the SDK's stateless fallback.
+//
+// Off unless MCP_SERVER_ENABLED=true: until it's switched on, every request gets a plain 404, as
+// if the route didn't exist.
+const ENABLED = process.env.MCP_SERVER_ENABLED === "true";
+const notFound = () => new Response("Not Found", { status: 404 });
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,9 +33,9 @@ const withCors = (response: Response) => {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 };
 
-const serve = async (request: Request) => withCors(await handler.fetch(request));
+const serve = async (request: Request) => (ENABLED ? withCors(await handler.fetch(request)) : notFound());
 
 export const GET = serve;
 export const POST = serve;
 export const DELETE = serve;
-export const OPTIONS = () => new Response(null, { status: 204, headers: CORS_HEADERS });
+export const OPTIONS = () => (ENABLED ? new Response(null, { status: 204, headers: CORS_HEADERS }) : notFound());
