@@ -45,7 +45,7 @@ export const FLEXPORT: Tool = {
     verdict:
       "Flexport's simulator is a fine free tool for a quick estimate. HTS Hero is the better fit once you need to audit past entries, track a catalog or use bulk tools without moving your freight to Flexport.",
     chooseHtsHero: [
-      "You want catalog tools, bulk upload and country comparison without becoming a freight customer",
+      "You want catalog alerts, bulk upload and country comparison without becoming a freight customer",
       "You need the duty for a past entry date to check what you paid",
       "You want to see how a product's duty changed revision by revision",
       "You want to know the price before you sign up, and to pay monthly with no contract",
@@ -78,7 +78,7 @@ export const FLEXPORT: Tool = {
       {
         question: "What's the best Flexport tariff simulator alternative?",
         answer:
-          "HTS Hero is a strong alternative if you need more than single lookups without a freight relationship: it adds past entry dates, Duty Over Time, catalog impact reports and bulk CSV upload on self-serve monthly plans with published prices.",
+          "HTS Hero is a strong alternative if you need more than single lookups without a freight relationship: it adds entry audits by date, Duty Over Time, tariff change alerts for your catalog and bulk CSV upload, on self-serve monthly plans with published prices.",
       },
       {
         question: "Can I use HTS Hero if I'm a customs broker?",

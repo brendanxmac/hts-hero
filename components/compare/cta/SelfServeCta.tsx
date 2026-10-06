@@ -5,7 +5,7 @@ import { TARIFF_CALCULATOR_PRICE, formatPrice } from "@/components/pricing-calcu
 import * as ui from "@/components/ui/styles";
 
 const PROMISES = [
-  "Free plan: see every tariff on your import, line by line",
+  "Free plan: 20 tariff lookups a month, every tariff line by line",
   "Published prices, monthly plans, no contract",
   "No demo, no sales call, no freight account",
   "Start in about a minute",

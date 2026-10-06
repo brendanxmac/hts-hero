@@ -36,7 +36,7 @@ export const GATEWAY_LINES: Tool = {
     verdict:
       "Gateway's calculator is a solid free lookup tool with bulk upload. HTS Hero is built for the next step: auditing what you paid, tracking a catalog over time, and seeing every price up front.",
     chooseHtsHero: [
-      "You need the duty for a past entry date, from the revision in force that day",
+      "You need to audit past entries, using the HTS revision in force on each entry date",
       "You want to see a product's duty across HTS revisions",
       "You want an independent tool that isn't part of a freight sales funnel",
       "You want every plan's price on the website",

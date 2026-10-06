@@ -46,12 +46,12 @@ export const ROUNDUP_FAQS: Faq[] = [
   {
     question: "What is the best US tariff calculator?",
     answer:
-      "For US importers who need an exact, auditable number, we rank HTS Hero first: it itemizes every Chapter 99 tariff with its legal source, calculates duty for past entry dates, shows duty over time and works across a product catalog, on self-serve plans with published prices. We make HTS Hero, so we've linked the sources for every other tool on this page.",
+      "For US importers who need an exact, auditable number, we rank HTS Hero first: it itemizes every Chapter 99 tariff with its legal source, audits past entries by date, shows duty over time and alerts you when a tariff change hits your products, on self-serve plans with published prices. We make HTS Hero, so we've linked the sources for every other tool on this page.",
   },
   {
     question: "Is there a free US tariff calculator?",
     answer:
-      "Yes, several. HTS Hero has a free plan with the full line-by-line breakdown, and GingerControl, Flexport, Gateway Lines, Airlift USA and AMZ Prep all offer free calculators with different limits and levels of detail.",
+      "Yes, several. HTS Hero's free plan includes 20 tariff lookups a month with the full line-by-line breakdown, and GingerControl, Flexport, Gateway Lines, Airlift USA and AMZ Prep all offer free calculators with different limits and levels of detail.",
   },
   {
     question: "Does the US government have an official tariff calculator?",

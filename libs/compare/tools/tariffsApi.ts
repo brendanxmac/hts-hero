@@ -38,7 +38,7 @@ export const TARIFFS_API: Tool = {
     verdict:
       "TariffsAPI is built for developers who want tariff data in their own systems. HTS Hero is built for the people doing the importing: a calculator, history and catalog tools at a lower starting price.",
     chooseHtsHero: [
-      "You want catalog tracking without starting at $99 a month",
+      "You want catalog alerts without starting at $99 a month",
       "You need classification help alongside your duty numbers",
       "You want Duty Over Time and past entry dates in a visual tool",
     ],

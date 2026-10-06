@@ -8,8 +8,8 @@ Research date: 2026-10-06. Items marked **[U]** could not be confirmed from a pr
 
 ### The context that matters most
 
-- **US tariff rules keep changing, and that helps us.** SCOTUS struck down the IEEPA tariffs on Feb 20. Section 122's 10% global tariff ran Feb 24 – Jul 24. Section 301 "forced-labor" duties of 10–12.5% on 60 countries started Jul 23 and are being challenged in court. Section 232 was revised again on Apr 2 and Jun 1. The IEEPA refund process (CAPE) opened phase 3 today. De minimis has been suspended since Aug 2025, and its statutory repeal takes effect Jul 1, 2027. Generic LLM answers are stale. A time-aware stacking engine that cites its sources is the thing we can win on.
-  - **Action item:** confirm that `tariffs/engine-v2` covers the Jul 23 Section 301 forced-labor headings and the Section 122 expiry.
+- **US tariff rules keep changing, and that helps us.** SCOTUS struck down the IEEPA tariffs on Feb 20. Section 122's 10% global tariff ran Feb 24 – Jul 24 (expired Jul 24). Section 301 "forced-labor" duties of 10–12.5% on 60 countries started Jul 24 and are being challenged in court. Section 232 was revised again on Apr 2 and Jun 1. The IEEPA refund process (CAPE) opened phase 3 today. De minimis has been suspended since Aug 2025, and its statutory repeal takes effect Jul 1, 2027. Generic LLM answers are stale. A time-aware stacking engine that cites its sources is the thing we can win on.
+  - **Action item:** confirm that `tariffs/engine-v2` covers the Jul 24 Section 301 forced-labor headings and the Section 122 expiry on Jul 24.
 - **Competitors are already in the AI directories.**
   - **Gateway Lines Tariff Calculator MCP** (launched Aug 6): approved in ChatGPT, works in Claude, Gemini and Cursor. It does 301/232 stacking and change tracking. Its free tier is 10 requests/week behind an email signup.
   - Also live: ustariffrates.com (MCP plus the DutyCalc Shopify app), tariffmonitor-mcp, Opsloft, Global Trade Alert, and Avalara (classification).
@@ -49,22 +49,23 @@ Research date: 2026-10-06. Items marked **[U]** could not be confirmed from a pr
 Why this fits the product:
 - Tracker pricing is per **HTS×country pair** (`TRACKER_TIERS`). The `track_product` tool directly fills the unit we charge for.
 - **Change alerts** are the natural reason to sign in: "Tell me when this changes" can't be answered from memory and needs an email.
-- Once a catalog exists, plan limits come up naturally in the web app and in email. The AI client only ever says "you're tracking 10 of 10 products on your plan. Manage at htshero.com/account" (an informational link, allowed on ChatGPT).
+- Once a catalog exists, plan limits come up naturally in the web app and in email. When limits exist, the AI client only ever says something like "you're tracking 10 of 10 products on your plan. Manage at htshero.com/tariff-tracker" (an informational link, allowed on ChatGPT).
 
-### Three tiers of access
+### Access: capabilities first, no limits yet
 
-| | Anonymous (no auth) | Free account (OAuth, lazy) | Paid (Tracker Starter/Pro) |
-|---|---|---|---|
-| Calculate duty for one product | ✅ generous (rate-limited per client and IP, not per week) | ✅ | ✅ |
-| Answer engine questions (steel %, exclusions…) | ✅ | ✅ | ✅ |
-| Compare origins | up to 3 named countries | ✅ all ~198 origins, ranked | ✅ |
-| Rate history | last 90 days | all verified revisions | ✅ |
-| Recent tariff changes feed | ✅ | ✅ filtered to *my* products | ✅ |
-| Track a product and get email alerts | — (triggers sign-in) | up to free-tier limit | per plan |
-| List my tracked products and their changes | — | ✅ | ✅ |
-| Batch calculation (many lines) | — | small cap | per plan |
+**Decision (2026-10-06):** build the capabilities now and define and enforce plan limits later. The only line drawn today is **identity, not price**. A tool needs sign-in only when it reads or writes *the user's own* data. The tool contracts below already return `catalog: { used, limit }` with `limit: null`, so adding limits later needs no tool changes.
 
-Beat Gateway Lines on generosity: no email wall for single calculations. Anonymous calls cost almost nothing because the engine is pure TypeScript and results are cacheable.
+| | Anonymous (no auth) | Signed in (OAuth, lazy) |
+|---|---|---|
+| Calculate duty for one product, answer engine questions | ✅ | ✅ |
+| Compare origins (named countries or all ~198) | ✅ | ✅ |
+| Duty history (every verified revision, including backfilled ones) | ✅ | ✅ |
+| Recent tariff changes feed | ✅ | ✅, plus filtering to *my* products |
+| Track a product and get email alerts | — (triggers sign-in) | ✅ |
+| List or remove my tracked products | — | ✅ |
+| Batch calculation | ✅ | ✅ |
+
+The only throttling is abuse protection: a rate limit per IP and per OAuth client. This also beats Gateway Lines on generosity, since it has an email wall at 10 requests/week. Anonymous calls cost almost nothing because the engine is pure TypeScript and results are cacheable.
 
 ### Links back to the app
 
@@ -79,15 +80,54 @@ Every result includes `links` that the model or widget can show. They are inform
 ## Part 3 — MCP tool design
 
 ### Server shape
-- **Endpoint:** `https://htshero.com/api/mcp`. Stateless Streamable HTTP, a Next.js route handler on Vercel. Check that `/.well-known/*` routes are served and not swallowed by `middleware.ts`.
+- **Endpoint:** `https://htshero.com/api/mcp`. Stateless Streamable HTTP, served from a Next.js route handler on Vercel. Make sure `/.well-known/*` routes are served and not swallowed by `middleware.ts`.
 - **Server name:** `hts-hero`. Registry namespace: `com.htshero/tariff-calculator`.
-- **Auth:** lazy. Public tools work with no token. Account tools return **HTTP 401 + `WWW-Authenticate`** pointing at Protected Resource Metadata (not `200 isError`). ChatGPT also needs `securitySchemes` per tool and `_meta["mcp/www_authenticate"]`.
-  - OAuth 2.1 + PKCE S256, with **CIMD** client registration (DCR is deprecated and causes client sprawl).
-  - Claude redirect: `https://claude.ai/api/mcp/auth_callback`. Discovery and token endpoints must respond in under 10 s. Claude only reads the first `authorization_servers` entry.
-  - **Decision needed:** use Supabase Auth's OAuth 2.1 server, or put an MCP-ready auth provider in front of Supabase users. Check CIMD support before choosing **[U]**.
-- **Every response** includes `as_of` (entry date used), `hts_revision`, `engine_revision` (the verified revision used), `disclaimer`, and `links`.
-- **Annotations:** every tool has a `title`, `readOnlyHint`, `destructiveHint` and `openWorldHint: false` (closed HTS dataset). Both directories reject wrong values.
-- **Descriptions:** start "Use this when…", say when *not* to use the tool, give parameter examples, no promotional language, no pricing.
+- **Auth:** lazy, using the Supabase OAuth 2.1 server (see "Auth provider" below).
+  - Public tools work without a token.
+  - Account tools return **HTTP 401 + `WWW-Authenticate`** that points at Protected Resource Metadata. Do not return `200 isError`.
+  - ChatGPT also needs `securitySchemes` on each tool and `_meta["mcp/www_authenticate"]`.
+- **Every response** includes:
+  - `as_of`: the entry date used
+  - `rates_revision`: the HTS revision whose base rates were used
+  - `rules_revision`: the verified revision whose Chapter 99 rules were used
+  - `verified: boolean`
+  - `disclaimer`
+  - `links`
+- **Annotations:** every tool has a `title`, `readOnlyHint`, `destructiveHint` and `openWorldHint: false` (the HTS is a closed dataset). Both directories reject wrong values.
+- **Descriptions:** start with "Use this when…", say when *not* to use the tool, give parameter examples. No promotional language and no pricing.
+
+### Auth provider — recommendation: **Supabase Auth's OAuth 2.1 server**
+
+HTS Hero already runs on Supabase Auth. Turning on its OAuth server makes Supabase the authorization server for MCP clients:
+- The MCP access token is a Supabase JWT whose `sub` is the same `auth.users` id the web app uses.
+- So these all work unchanged:
+  - `identifyUserServer(sub)` in Mixpanel, which gives one identity across the web app, Claude and ChatGPT
+  - the `purchases` table, and later plan checks
+  - RLS on a `tracked_products` table
+  - the Tracker reading the same catalog
+
+Why this fits:
+- **Same login.** Users sign in with their existing HTS Hero login (email, Google, whatever is enabled today). There's no second user database to keep in sync.
+- **Branded consent page.** It lives on htshero.com (e.g. `/oauth/consent`), so you own that page's analytics and copy.
+- **Security.**
+  - OAuth 2.1 with PKCE, short-lived JWTs and refresh-token rotation.
+  - Tokens are verified against Supabase's JWKS.
+  - Users can revoke an app, and so can you per client.
+  - No new vendor holding user data.
+- **Cost:** included in the Supabase plan.
+
+The gap, and how to handle it:
+- **No CIMD yet.** As of Oct 2026, Supabase reports `client_id_metadata_document_supported: false` (supabase/auth#2850, opened Oct 2).
+- **What happens instead:** Claude and ChatGPT both fall back to **Dynamic Client Registration**. That works, but every new connection registers a new "Claude" client.
+- **Mitigation:** a weekly cron that deletes DCR clients with no token activity in N days. Tag each Mixpanel event with the client's registered `client_name`, not its `client_id`.
+- **When Supabase ships CIMD:** it's a dashboard toggle. Nothing changes in the MCP server.
+
+**Fallback:** if DCR causes problems in directory review, or you later need enterprise SSO, put **WorkOS AuthKit "Standalone Connect"** in front.
+- AuthKit becomes the authorization server and supports CIMD today. It sends the user to *your* login page (Supabase), then you call its completion API with the Supabase user id.
+- Identity stays your Supabase id, but tokens are issued by WorkOS. That adds a vendor, and the MCP server has to map WorkOS tokens to Supabase ids.
+- Not worth doing until it's needed.
+
+Not recommended: Clerk, Auth0 or Stytch. Each would mean migrating users or running two identity systems, which breaks "track everything properly".
 
 ### Tools
 
@@ -102,7 +142,7 @@ Input:
   customs_value_usd?: number  // default 10000
   quantity?: number           // only needed when result.requires_quantity
   transport_mode?: "ocean"|"air"|"truck"|"rail"   // default ocean (HMF)
-  entry_date?: string         // YYYY-MM-DD, default today; past dates allowed back to the earliest verified revision
+  entry_date?: string         // YYYY-MM-DD, default today; any date covered by verified revisions (grows as the backfill lands)
   trade_program?: string      // SPI symbol, e.g. "S" (USMCA)
   answers?: Record<string, boolean|number|string>  // ids from a previous result's `questions`
 }
@@ -113,60 +153,86 @@ Output (`structuredContent`, mapped from `CalculationResult`, `tariffs/engine-v2
   product: { hts_code, description, country, entry_date },
   totals: { duty_usd, fees_usd, landed_duty_usd, effective_rate_pct },
   layers: [{ code: "9903.88.15", name, program, status: "applies"|"excluded"|"notApplicable"|"needsAnswer",
-             rate_pct, basis_usd, amount_usd, reason, source }],
+             rate_pct, basis_usd, amount_usd, reason, source, learn_more_url }],  // learn_more_url → SEO pillar articles
   fees: [{ name: "MPF"|"HMF", amount_usd }],
   available_trade_programs: [{ symbol, name, would_change_rate_pct }],
   questions: [{ id, prompt, type, affects: ["9903.81.91"], answered }],  // the model asks the user, then calls again with `answers`
   warnings: string[],
-  as_of, hts_revision, engine_revision, disclaimer,
-  links: { full_breakdown_url, analysis_url, hts_page_url }
+  as_of, rates_revision, rules_revision, verified, disclaimer,
+  links: { full_breakdown_url, analysis_url, hts_page_url, methodology_url }
 }
 ```
-UI: `ui://hts-hero/duty-card`, a stacked bar of layers, the total, any open questions, and **2 actions maximum** (a Claude limit): **"Open full breakdown"** (link) and **"Track changes"** (calls `track_product`, which triggers sign-in).
+UI: `ui://hts-hero/duty-card` shows a stacked bar of layers, the total and any open questions. It has **2 actions maximum** (a Claude limit):
+- **"Open full breakdown"**: a link.
+- **"Track changes"**: calls `track_product`, which triggers sign-in.
 
-Why it's conversational: the engine's `questions` (for example steel content %, exclusion confirmations) are a back-and-forth the model handles naturally. A static calculator can't do that.
+The engine's `questions` (e.g. steel content %, exclusion confirmations) make this conversational: the model asks the user and recalculates, which a static calculator can't do.
 
-#### 2. `compare_origins` — public (limited) / account (all)
+#### 2. `compare_origins` — public, read-only
 > Use this when the user asks which country is cheapest to import a product from, or how duty differs between countries of origin, for a known HTS code.
 
-Input: `{ hts_code, countries?: string[] /* max 3 anonymous */, all_origins?: boolean /* account */, customs_value_usd?, transport_mode?, entry_date?, answers? }`
-Output: a ranked list `[{ country, effective_rate_pct, duty_usd, best_trade_program?, rate_with_program_pct?, tier }]`, plus `cheapest`, `most_expensive` and `links.analysis_url`. If the user is anonymous and `all_origins: true`, the tool returns 401, which starts lazy sign-in.
-Reuses `originRates()` (`components/tariff-tracker/product/analysis/analysis.ts:35` on `3b7bb7a`).
+Input: `{ hts_code, countries?: string[], all_origins?: boolean, customs_value_usd?, transport_mode?, entry_date?, answers? }`
 
-#### 3. `get_duty_history` — public (90 days) / account (full)
-> Use this when the user asks how the tariff on a product has changed over time, or what it was on a past date.
+Output:
+- A ranked list: `[{ country, effective_rate_pct, duty_usd, best_trade_program?, rate_with_program_pct?, tier }]`
+- `cheapest`, `most_expensive`, `links.analysis_url`
+
+It reuses `originRates()` and `rateTiers()` from the Tracker's Analysis tab (`components/tariff-tracker/product/analysis/analysis.ts`).
+
+UI: a ranked bar chart. Its link action goes to the Tracker product Analysis view, where the globe and flag swarm live. Those make a strong "see more in the app" moment.
+
+#### 3. `get_duty_history` — public, read-only
+> Use this when the user asks how the tariff on a product has changed over time, what it was on a past entry date, or how much a specific tariff measure added during a period.
 
 Input: `{ hts_code, country_of_origin, from?, to?, customs_value_usd?, answers? }`
-Output: segments `[{ from, to, revision, effective_rate_pct, changed_layers: [{ code, change: "added"|"removed"|"rate_changed", before_pct, after_pct }] }]`. Wraps `calculateHistory` (`tariffs/engine-v2/history.ts:101`).
+
+Output: segments `[{ from, to, rules_revision, rates_revision, effective_rate_pct, changed_layers: [{ code, change: "added"|"removed"|"rate_changed", before_pct, after_pct }] }]`, plus `coverage: { verified_from, verified_to }`.
+
+It wraps `calculateHistory` (`tariffs/engine-v2/history.ts:101`) and the Tracker's `originHistory` / `changeEvents`.
+
+**This tool grows with the backfill.** Today it covers Apr 2026 onward. Once revisions back to 2025 are verified, it answers "how much IEEPA / Section 122 did I pay on this entry?", which feeds the IEEPA refund demand (~$166B collected, CAPE phase 3 opened today). A dedicated `estimate_tariff_refund` tool could follow later.
 
 #### 4. `get_hts_code` — public, read-only
 > Use this when the user gives an HTS code and wants its description, base duty rates (general, special, column 2) or parent headings. Do not use it to search by product description.
 
-Output: `{ hts_code, description, indent_path: [{ code, description }], base_rates: { general, special, other }, special_programs: [...], chapter_99_measures_that_may_apply: [{ code, name }], links.hts_page_url }`. Wraps `getHtsElementByCode` and `getHtsElementParentsServer` (`libs/hts-server.ts:72,79`).
+Output: `{ hts_code, description, indent_path: [{ code, description }], base_rates: { general, special, other }, special_programs: [...], chapter_99_measures_that_may_apply: [{ code, name }], links.hts_page_url }`.
 
-#### 5. `get_recent_tariff_changes` — public / account-personalized
+It wraps `getHtsElementByCode` and `getHtsElementParentsServer` (`libs/hts-server.ts:72,79`).
+
+#### 5. `get_recent_tariff_changes` — public, personalized when signed in
 > Use this when the user asks what has changed in US tariffs recently, or whether a recent HTS revision affects them.
 
-Input: `{ since?: string, limit?: number /* ≤20 */, only_my_products?: boolean /* account */ }`
-Output: entries from `tariff_changelog` (`libs/supabase/tariff-changelog.ts:37`, published only). With `only_my_products`, it includes the tracked products each entry affects and their rate change. That "what changed for *me*" view is a strong reason to stay signed in.
+Input: `{ since?: string, limit?: number /* ≤20 */, only_my_products?: boolean /* signed in */ }`
 
-#### 6. `track_product` — account, write (not destructive)
+Output: entries from `tariff_changelog` (`libs/supabase/tariff-changelog.ts:37`, published entries only).
+- With `only_my_products`, each entry also lists the tracked products it affects and their rate change.
+- Each entry links to the SEO "Latest US Tariff Changes" article.
+
+#### 6. `track_product` — signed in, write (not destructive)
 > Use this when the user wants to monitor a product's tariff and be notified when it changes, or save it to their HTS Hero catalog.
 
 Input: `{ hts_code, country_of_origin, customs_value_usd?, quantity?, transport_mode?, trade_program?, answers?, alerts?: boolean /* default true */ }`
-Output: `{ tracked: true, product_key: "8471300100-CN", current_effective_rate_pct, alerts: "email", catalog: { used, limit }, links.analysis_url }`.
-At the plan limit it returns `isError` with **neutral text**: "Your HTS Hero plan tracks up to N products (N in use). Manage your catalog at https://htshero.com/tariff-tracker." No price, no "upgrade". This is the paywall, and it is compliant on both platforms.
 
-#### 7. `list_tracked_products` — account, read-only
+Output: `{ tracked: true, product_key: "8471300100-CN", current_effective_rate_pct, alerts: "email", catalog: { used, limit: null }, links.analysis_url }`.
+
+How it fits the Tracker:
+- It writes the same shape the Tracker uses: a `CatalogItem` plus `Adjustments` keyed by `productKey`, in `components/tariff-tracker/adjustments.ts`.
+- So a product added from Claude shows up in the Tracker with its value, mode and answers already filled in.
+- When limits come later: return `isError` with neutral text ("Your HTS Hero plan tracks up to N products…", plus an informational link). This is allowed on both platforms.
+
+#### 7. `list_tracked_products` — signed in, read-only
 > Use this when the user asks about the products they track on HTS Hero, their current duty rates, or which ones changed.
 
 Output: `[{ product_key, hts_code, country, description, current_effective_rate_pct, rate_when_added_pct, last_change: { date, summary } }]`, plus `catalog: { used, limit }`.
 
-#### 8. `untrack_product` — account, `destructiveHint: true`
-Removes one product. Needed for a complete, reviewable surface, since both directories reject catch-all read/write tools.
+#### 8. `untrack_product` — signed in, `destructiveHint: true`
+Removes one product. It's needed for a complete, reviewable tool set, since both directories reject catch-all read/write tools.
 
-#### Later (paid): `calculate_duty_batch`
-Up to N lines `{hts_code, country, value}` in one call. This is for brokers pasting a commercial invoice into chat. The cap depends on the plan, and the same endpoint becomes the public API behind the Sheets and Excel add-ins.
+#### 9. `calculate_duty_batch` — public, read-only
+Takes many lines (`{hts_code, country, value, quantity?}`) in one call, for brokers pasting a commercial invoice into chat.
+- Output: totals for each line and for the whole batch.
+- There is no limit for now beyond an abuse ceiling (e.g. 200 lines).
+- The same service later backs the public API and the Sheets and Excel add-ins.
 
 ### Golden prompts (run before submitting, and after any description change)
 Should call a tool:
@@ -175,6 +241,7 @@ Should call a tool:
 - "What was the tariff on aluminum framing 7610.10.0010 from Canada in March?"
 - "Watch this one for me and tell me if it changes."
 - "What changed in tariffs this month?"
+- "How much reciprocal tariff did I pay on 8517.62.0090 from Vietnam entered June 2025?" (after the backfill)
 
 Should **not** call a tool: "What is a tariff?", "Explain Section 301 history", "Classify my product."
 
@@ -182,24 +249,77 @@ Track precision and recall per client (Claude, ChatGPT) in a small script.
 
 ---
 
-## Part 4 — What the codebase needs first
+## Part 4 — How the two sources of truth combine
+
+Supabase holds the full HTS (chapters 1–97 lines with their base rates). The engine holds Chapter 99 and all the stacking rules. A calculation takes the base rate from the first and applies the second on top. They work together; they don't compete. That holds **for today's date**.
+
+The one place to be careful is **past dates**, and the backfill makes that matter more:
+- **History uses today's base rates.** `useTariffFinder` and `calculateHistory` take `baseRates` once, from the *latest* Supabase revision. Every historical date gets **today's base rates** with **that date's Chapter 99 rules**.
+  - From Apr 2026 onward this is effectively right: base rates rarely change within a year.
+- **The backfill crosses a Basic edition.** Going into 2025 means crossing the 2026 Basic edition (Jan 1), which renumbered codes (`discontinued-codes-2026.ts`) and can change column 1 rates.
+- **The resulting risks:**
+  - A 2025 entry of a code split in 2026 may not resolve at all.
+  - A rate that changed in 2026 would be applied to 2025.
+- **The fix:** give each history segment the base rates from the revision in effect on that date. Supabase already stores every revision as `<revision>.json.gz` (`get-hts-data?revision=<name>`), and the engine already knows `getRevisionForDate`. That is why every response returns both `rates_revision` and `rules_revision`.
+- **Worth raising with the backfill work.** It probably belongs there rather than in the MCP server.
+
+A smaller edge case: on the day USITC publishes a new revision, Supabase may have Rev N+1 before the engine has verified it. The calculator already flags unverified dates. The MCP output carries that as `verified: false` plus a warning, so the model can say so.
+
+---
+
+## Part 5 — Building on in-flight work
+
+**Base branch.**
+- The MCP server builds on the **Tariff Tracker**: the WIP commit `3b7bb7a` on `feature/pricing-calculator`. It is local only and not pushed.
+- That commit and `feature/blog-and-compare` (the SEO work) both branch from `09c1c40`.
+- Plan: cut `feature/mcp-server` from the latest tracker commit and merge `feature/blog-and-compare` into it, or rebase once those land on master.
+- Do it in its own worktree so it doesn't disturb the SEO and backfill sessions, which share the `hts-hero-docs` worktree.
+
+**Tracker (Tariff Tracker vision).** The MCP server is a second front end for the Tracker:
+- Duty, comparison and history tools reuse its analysis libs.
+- `track_product` writes its catalog.
+- Every link lands inside `/tariff-tracker`.
+
+Needed in the Tracker:
+- Move the catalog from localStorage to a server-side Supabase store. Keep localStorage as an offline/anonymous cache and merge it on sign-in. This is already planned ("accounts/Supabase later").
+- Add a `?view=analysis|duty|history` param on product links (today it's React state only, `ProductView.tsx:55`).
+- Build the **Alerts** section. Today it's a "Soon" placeholder; MCP tracking makes it the core retention loop.
+
+**SEO strategy (blog + /compare).**
+- **Links:**
+  - The `learn_more_url` on each layer points to the pillar articles (How US Tariffs Are Calculated, Stacking Rules).
+  - `methodology_url` points to the calculation explainer.
+  - `get_recent_tariff_changes` links to "Latest US Tariff Changes".
+  - The MCP server sends AI-client traffic into the SEO content, which strengthens it.
+- **/compare:**
+  - "Available in Claude and ChatGPT" becomes a new HTS Hero fact. It goes in the one place HTS Hero's facts are recorded (`libs/compare/tools/`).
+  - It neutralizes a Gateway Lines advantage on the "HTS Hero vs Gateway Lines" page.
+  - When `track_product` and alerts ship, update the record's "alerts" claim, which that session flagged as not yet live.
+- **AEO:** add `llms.txt` and an "Use HTS Hero in Claude / ChatGPT" page. That page is also the docs URL both directories require.
+
+**Past-revision backfill.**
+- History coverage (`coverage.verified_from`) grows automatically as revisions are verified backward. The tools need no change.
+- Raise the per-date base rates fix from Part 4 with the backfill work.
+- Once 2025 is covered: add refund/IEEPA golden prompts, and consider `estimate_tariff_refund`.
+
+---
+
+## Part 6 — What the codebase needs
 
 | Gap | Why | Where |
 |---|---|---|
-| **Server-side duty service** | One function: code + inputs → result + links. Combines `getHtsElementByCode` → `findTariffElement` → `buildEstimateInput` → `calculate`. `calculatorUrl` uses `window`, so it needs a server-side URL builder. | new `libs/duty/` |
-| **Merge tracker branch / move analysis to a shared lib** | `originRates`, `originHistory` and catalog types live only on WIP commit `3b7bb7a` | `components/tariff-tracker/product/analysis/*` |
-| **Server-side catalog** | The catalog is localStorage only (`catalogStore.ts`). `track_product` needs a Supabase `tracked_products` table, synced with localStorage on sign-in. | Supabase plus `catalogStore` |
-| **Alert pipeline** | When a new verified revision changes a tracked product's rate, email the user (cron and Resend already exist). This is the main conversion engine. | `app/api/cron`, `emails/` |
-| **Plan enforcement** | `TRACKER_TIERS` exists but isn't enforced. Add a server-side entitlement check for catalog size and batch size. | `libs/supabase/purchase.ts`, webhook |
-| **OAuth authorization server** | Lazy auth for account tools (decision above) | — |
-| **Rate limiting + caching** | None exist today. Rate-limit per client, IP and user. Cache results keyed on code, country, inputs and engine revision. | middleware or KV |
-| **Revision consistency** | HTS lines come from the newest Supabase `hts_revisions` row, while the engine uses the verified list. Both must be returned, and a mismatch flagged. | `libs/supabase/hts-revision.ts`, `tariffs/engine-v2/revisions.ts` |
-| **Server-side analytics** | `trackEventServer` per tool call: client name and version, tool, anonymous or authed, result status | `libs/mixpanel-server.ts` |
-| **`/tariff-tracker` `view` param** | So links can open a product's Analysis tab directly | `ProductView.tsx` |
-| **Engine coverage check** | Section 301 forced-labor headings (Jul 23), Section 122 expiry, current 232 | `tariffs/engine-v2/data/headings/` |
+| **Server-side duty service** | One function: code + inputs → result + links. It chains `getHtsElementByCode` → `findTariffElement` → `buildEstimateInput` → `calculate`. `calculatorUrl` uses `window`, so it needs a server-side URL builder. | new `libs/duty/` |
+| **Tracker libs shared with the server** | `originRates`, `rateTiers`, `originHistory`, `changeEvents` and the catalog/adjustments types are plain TS. Make sure none of them import client-only code. | `components/tariff-tracker/**` → shared lib |
+| **Server-side catalog** | A `tracked_products` table (user_id, product_key, adjustments, alerts, created_at) with RLS. `catalogStore` syncs with it on sign-in. | Supabase + `catalogStore.ts` |
+| **Alert pipeline** | When a newly verified revision changes a tracked product's duty, email the user. The cron and Resend already exist. | `app/api/cron`, `emails/` |
+| **OAuth** | Enable the Supabase OAuth 2.1 server and DCR. Add a consent page at `/oauth/consent`, protected-resource metadata, and a JWT check in `/api/mcp`. Add a DCR-cleanup cron. | Supabase dashboard, `app/oauth/`, `app/.well-known/` |
+| **Rate limiting + caching** | Neither exists today. Add abuse limits per IP and per OAuth client. Cache results keyed on code, country, inputs, rates revision and rules revision. | middleware or KV |
+| **Per-date base rates** | See Part 4. | `libs/hts-server.ts`, history |
+| **Server-side analytics** | Call `trackEventServer` on every tool call with: client name, tool, anonymous or signed-in, status. Call `identifyUserServer(sub)` when signed in. Add UTM tags to all links. | `libs/mixpanel-server.ts` |
+| **Engine coverage check** | Section 301 forced-labor (from Jul 24), Section 122 expiry (Jul 24), current 232 | `tariffs/engine-v2/data/headings/` |
 
 ### Suggested rollout
-1. **v0 (public tools only):** tools 1–5 and the duty card UI. Submit to the Claude directory and the MCP Registry, and list on the aggregators. Then measure for 2–4 weeks.
-2. **v1 (accounts):** OAuth, server-side catalog, tools 6–8, change-alert emails. Submit to ChatGPT with a reviewer test account.
-3. **v2 (paid):** plan enforcement and batch, then the public API, then the Sheets and Excel add-ins.
-4. **Revisit Shopify** once v1 catalogs are live server-side.
+1. **v0 — public tools:** tools 1–5 and 9, plus the duty card and comparison UI. Submit to the Claude directory and the MCP Registry, and list on the aggregators. Add the docs page and `llms.txt`. Measure for 2–4 weeks.
+2. **v1 — accounts:** Supabase OAuth, the server-side catalog, tools 6–8, and alert emails. Submit to ChatGPT with a reviewer test account.
+3. **v2:** the public API, Sheets and Excel add-ins, and plan limits once they're defined.
+4. **Revisit Shopify** once catalogs live server-side.
