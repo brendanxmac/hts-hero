@@ -1,3 +1,4 @@
+import { getHtsElementParents } from "./hts-parents";
 import { ChatCompletion } from "openai/resources";
 import {
   HtsElementWithParentReference,
@@ -1315,27 +1316,8 @@ export const generateBasisForClassification = (
   return parts.join("\n\n");
 };
 
-export const getHtsElementParents = (
-  element: HtsElement,
-  elements: HtsElement[]
-): HtsElement[] => {
-  // If element is at indent 0, it has no parents
-  if (element.indent === "0") {
-    return [];
-  }
-  // Get index of this element
-  const elementIndex = elements.findIndex((e) => e.uuid === element.uuid);
-
-  // Iterate through elements backwards until we find an element with an indent level that is one less than the current element
-  for (let i = elementIndex - 1; i >= 0; i--) {
-    if (elements[i].indent === String(Number(element.indent) - 1)) {
-      // Add current element to end parents array and recurse
-      return [...getHtsElementParents(elements[i], elements), elements[i]];
-    }
-  }
-
-  return [];
-};
+// Kept here for existing imports; the implementation is server-safe in ./hts-parents
+export { getHtsElementParents };
 
 // NOTE: this will get all elements in an array of Hts Elements that are at a given indent level.
 // You will not just get the elements up until the next indent level match, at a level.

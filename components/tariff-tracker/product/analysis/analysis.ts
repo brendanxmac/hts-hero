@@ -32,7 +32,12 @@ export const partsOf = (o: OriginRate, basis: RateBasis) =>
 // Rates within a hundredth of a point are the same rate
 export const rateKey = (pct: number) => Math.round(pct * 100) / 100;
 
-export const originRates = (product: TrackedProduct): OriginRate[] => {
+// Only what the rates depend on, so the MCP server can ask for them without a whole TrackedProduct
+export type OriginRatesInput = Pick<TrackedProduct, "input" | "customsValue" | "adjustments"> & {
+  entry: { country: Pick<Country, "code"> };
+};
+
+export const originRates = (product: OriginRatesInput): OriginRate[] => {
   const { input, customsValue, adjustments, entry } = product;
   const answers = adjustments.answers ?? {};
   return Countries.filter((c) => c.code !== "US").map((country) => {

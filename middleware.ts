@@ -20,6 +20,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/classify", req.url))
   }
 
+  // The MCP server authenticates its own requests (bearer tokens, not cookies), so it skips
+  // the session refresh
+  if (pathname.startsWith("/api/mcp")) {
+    return NextResponse.next()
+  }
+
   const IS_TEST_ENV = process.env.APP_ENV === "test"
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 

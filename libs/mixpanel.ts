@@ -88,6 +88,8 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_ANALYSIS_COUNTRIES_CHOSEN = "Tariff Tracker Analysis Countries Chosen",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
+  /** A tool call to the MCP server (Claude, ChatGPT and other AI clients) */
+  MCP_TOOL_CALLED = "MCP Tool Called",
   /** HTS Explorer (/explore and embedded Explore) */
   EXPLORER_FINISHED_LOADING = "Explorer Finished Loading",
   EXPLORER_COMPLETED_CODE_SEARCH = "Explorer Completed a Code Search",

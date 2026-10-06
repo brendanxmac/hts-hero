@@ -323,3 +323,35 @@ Needed in the Tracker:
 2. **v1 — accounts:** Supabase OAuth, the server-side catalog, tools 6–8, and alert emails. Submit to ChatGPT with a reviewer test account.
 3. **v2:** the public API, Sheets and Excel add-ins, and plan limits once they're defined.
 4. **Revisit Shopify** once catalogs live server-side.
+
+---
+
+## v0 status (built 2026-10-06, branch `feature/mcp-server`)
+
+**What's built.**
+- **Endpoint:** `/api/mcp` (`app/api/mcp/route.ts`). It's stateless Streamable HTTP on `@modelcontextprotocol/server` v2. It serves 2026-07-28 clients natively and older clients through the SDK's stateless fallback.
+- **Tools:** `calculate_import_duty`, `compare_origins`, `get_duty_history`, `get_hts_code`, `get_recent_tariff_changes`, `calculate_duty_batch`. All are read-only, need no sign-in, and are annotated. They live in `libs/mcp/tools.ts`.
+- **Duty card:** `ui://hts-hero/duty-card.html`, an MCP App drawn under the duty and comparison results. It's self-contained, supports light and dark mode, and has two link actions. Source: `libs/mcp/widget.ts`.
+- **Service:** `libs/mcp/duty.ts` wraps the engine plus the Supabase HTS lines. It returns errors the model can act on: a code that's too broad, a Chapter 99 code, a discontinued code, an unknown origin.
+
+**Reused, not copied.**
+- From the calculator: `buildEstimateInput`, `findTariffElement`, `calculatorUrl` (which now takes an `origin`), `questionImpacts` and `preferenceImpacts`.
+- From the Tracker: `originRates`, `rateKey` and `rateOf`.
+- From the `/hts` pages: `getHtsDutySummary` and `htsProductName`.
+
+**Small enabling changes.**
+- `getHtsElementParents` moved to `libs/hts-parents.ts` so server code doesn't import `libs/hts.tsx`, which pulls in OpenAI and UI imports. `libs/hts.tsx` re-exports it.
+- `originRates` takes a narrower input type.
+- The Tracker calculator now honors `?view=analysis`.
+- Middleware skips `/api/mcp`.
+- The `MCP Tool Called` Mixpanel event is recorded with client, tool, status and duration. Anonymous callers are identified by a hashed IP plus user agent.
+
+**Tests:** `testing/mcp.test.ts`, run with `npm run tests`.
+
+**Before submitting to the Claude directory:**
+1. Deploy, then add `https://htshero.com/api/mcp` as a custom connector in Claude and run the golden prompts.
+2. Add a public docs page ("Use HTS Hero in Claude / ChatGPT"). It should include setup steps, the tools, 3 example prompts and the privacy note. Add `llms.txt` as well.
+3. Make sure the privacy policy covers MCP calls. Today the only data kept is the Mixpanel event: hashed id, tool, HTS code and origin.
+4. Take 3–5 screenshots of the duty card, PNG, at least 1000px wide.
+5. Add abuse rate limiting (per IP) before broad listing. There is none yet.
+6. Publish to the MCP Registry as `com.htshero/tariff-calculator` (DNS-verified).

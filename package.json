@@ -27,6 +27,7 @@
     "@javascript-packages/roman-numerals": "^1.0.14",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
+    "@modelcontextprotocol/server": "^2.3.1",
     "@next/mdx": "^13.5.6",
     "@next/third-parties": "^15.1.4",
     "@preline/textarea-auto-height": "^2.6.0",
