@@ -96,7 +96,7 @@ The reference features:
 | `components/duty-calculator/embed/` | The duty estimate embedded in classification and explorer pages |
 | `components/duty-calculator/lib/` | `useTariffFinder`, `estimate`, `questions`, `format` |
 | `components/hts-code-page/` | The `/hts/[code]` page |
-| `components/tariff-watcher/` | The Tariff Watcher tool |
+| `components/tariff-tracker/` | The Tariff Tracker app (`/tariff-tracker`) |
 
 ---
 
@@ -245,7 +245,7 @@ All of these are class helpers from `ui/styles`. They're strings and functions r
 | Floating label on a chart | `ui.tooltip`, positioned by the caller |
 | Loading | `ui.skeleton` blocks in the final layout's shape |
 
-Behavior-heavy controls (comboboxes, menus, dialogs) use Headless UI, which is already a dependency. Style them with these helpers; see `CountryField` and `tariff-watcher/ExportMenu`.
+Behavior-heavy controls (comboboxes, menus, dialogs) use Headless UI, which is already a dependency. Style them with these helpers; see `CountryField` and `tariff-tracker/ExportMenu`.
 
 ---
 

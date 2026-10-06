@@ -70,13 +70,22 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_COMPARE_CHANGED = "Duty Calculator Compare Countries Changed",
   /** Duty estimate embedded in the explorer or a classification, opened in the calculator */
   DUTY_ESTIMATE_OPENED_IN_CALCULATOR = "Duty Estimate Opened in Calculator",
-  /** Tariff Watcher tab on the duty calculator page */
-  TARIFF_TOOL_CHANGED = "Tariff Tool Changed",
-  TARIFF_WATCHER_LIST_CHANGED = "Tariff Watcher List Changed",
-  TARIFF_WATCHER_EXAMPLE_USED = "Tariff Watcher Example Used",
-  TARIFF_WATCHER_SORTED = "Tariff Watcher Sorted",
-  TARIFF_WATCHER_EXPORTED = "Tariff Watcher Exported",
-  TARIFF_WATCHER_OPENED_IN_CALCULATOR = "Tariff Watcher Opened in Calculator",
+  /** Tariff Tracker (/tariff-tracker). Was the Tariff Watcher tab, as "Tariff Watcher …" events */
+  TARIFF_TRACKER_PRODUCTS_ADDED = "Tariff Tracker Products Added",
+  TARIFF_TRACKER_PRODUCTS_REMOVED = "Tariff Tracker Products Removed",
+  TARIFF_TRACKER_CSV_TEMPLATE_DOWNLOADED = "Tariff Tracker CSV Template Downloaded",
+  TARIFF_TRACKER_EXAMPLE_USED = "Tariff Tracker Example Used",
+  TARIFF_TRACKER_DATE_SET = "Tariff Tracker Date Set",
+  TARIFF_TRACKER_PRODUCT_ADJUSTED = "Tariff Tracker Product Adjusted",
+  TARIFF_TRACKER_ADJUSTMENTS_RESET = "Tariff Tracker Adjustments Reset",
+  TARIFF_TRACKER_FILTERED = "Tariff Tracker Filtered",
+  TARIFF_TRACKER_SORTED = "Tariff Tracker Sorted",
+  TARIFF_TRACKER_EXPORTED = "Tariff Tracker Exported",
+  TARIFF_TRACKER_PRODUCT_OPENED = "Tariff Tracker Product Opened",
+  TARIFF_TRACKER_ANALYSIS_VIEWED = "Tariff Tracker Analysis Viewed",
+  TARIFF_TRACKER_ANALYSIS_BASIS_CHANGED = "Tariff Tracker Analysis Basis Changed",
+  TARIFF_TRACKER_ANALYSIS_ORIGIN_SELECTED = "Tariff Tracker Analysis Origin Selected",
+  TARIFF_TRACKER_ANALYSIS_COUNTRIES_CHOSEN = "Tariff Tracker Analysis Countries Chosen",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** HTS Explorer (/explore and embedded Explore) */

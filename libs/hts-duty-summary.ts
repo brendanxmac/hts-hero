@@ -10,7 +10,7 @@ import { DutyColumn, IsoDate } from "../tariffs/engine-v2/types";
 // Rendered into the HTML so search engines and AI crawlers can read the rates.
 
 // The largest sources of US imports, in rough order of import value
-const SUMMARY_COUNTRY_CODES = [
+export const SUMMARY_COUNTRY_CODES = [
   "CN", "MX", "CA", "VN", "DE", "JP", "KR", "TW", "IN", "IE",
   "IT", "CH", "TH", "MY", "GB", "FR", "ID", "BR", "BD", "KH",
 ];

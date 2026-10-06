@@ -42,9 +42,9 @@ module.exports = {
   generateRobotsTxt: true,
   robotsTxtOptions: {
     policies: [
-      // Calculator links with inputs (?code=, ?country=…) all canonicalize to /duty-calculator;
+      // Calculator links with inputs (?code=, ?country=…) all canonicalize to the calculator page;
       // keep crawlers on the page itself, not tens of thousands of parameter variants
-      { userAgent: "*", allow: "/", disallow: ["/duty-calculator?"] },
+      { userAgent: "*", allow: "/", disallow: ["/duty-calculator?", "/tariff-tracker?"] },
     ],
   },
   sitemapSize: 5000,

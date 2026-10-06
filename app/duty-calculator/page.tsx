@@ -11,6 +11,7 @@ import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
 import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { TariffGuide } from "@/components/duty-calculator/guide";
 import { dutyCalculatorFaqs } from "@/components/duty-calculator/guide/faqs";
+import { TariffPricing } from "@/components/pricing-calculator";
 import * as ui from "../../components/ui/styles";
 
 export const metadata: Metadata = {
@@ -123,6 +124,13 @@ export default async function DutyCalculatorPage() {
           <TariffFinderPage />
         </Suspense>
       </BreadcrumbsProvider>
+
+      {/* Plans: Free, Starter (the calculator) and Pro (the Tariff Tracker) */}
+      <div className={ui.band}>
+        <div className={`${ui.container} ${ui.bandPadding}`}>
+          <TariffPricing />
+        </div>
+      </div>
 
       {/* Rates, a worked example, lookups, sources and FAQ — server-rendered for crawlers */}
       <TariffGuide content={content} faqs={faqs} />
