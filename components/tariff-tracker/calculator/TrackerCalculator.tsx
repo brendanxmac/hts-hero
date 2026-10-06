@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useDeferredValue, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 import { BreadcrumbsProvider } from "@/contexts/BreadcrumbsContext";
 import { useHts } from "@/contexts/HtsContext";
@@ -50,7 +51,11 @@ const Calculator = ({ active }: { active: boolean }) => {
   const f = useTariffFinder({ path: TRACKER_PATH, extraParams: CALCULATOR_TAB, syncAddress: active });
   const nav = useTrackerNav();
   const { htsElements } = useHts();
-  const [view, setView] = useState<CalculatorView>("duty");
+  const searchParams = useSearchParams();
+  // `view=analysis` opens straight onto the Analysis (links from the MCP server use it)
+  const [view, setView] = useState<CalculatorView>(() =>
+    searchParams.get("view") === "analysis" ? "analysis" : "duty"
+  );
 
   // Worked out only while the Analysis is open, and only when an input changes (a beat behind
   // typing): the same product keeps the same identity, so the analysis isn't redone needlessly

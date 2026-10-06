@@ -1,6 +1,6 @@
 import { Country } from "../../../constants/countries";
 import { HtsElement } from "../../../interfaces/hts";
-import { getHtsElementParents } from "../../../libs/hts";
+import { getHtsElementParents } from "../../../libs/hts-parents";
 import { AllRules } from "../../../tariffs/engine-v2/data";
 import { Answers, CalculationInput, CalculationResult, TransportMode } from "../../../tariffs/engine-v2/types";
 import { formatDate, formatMoney, formatPct } from "./format";
@@ -84,6 +84,8 @@ export const CALCULATOR_PATH = "/duty-calculator";
 
 // A link that opens the Tariff Calculator with these inputs
 export const calculatorUrl = (params: {
+  // The site's origin; the current page's when omitted (the server passes it)
+  origin?: string;
   // Where the calculator is, and anything else its address needs (e.g. the tracker's tab)
   path?: string;
   extra?: Record<string, string>;
@@ -110,7 +112,7 @@ export const calculatorUrl = (params: {
   if (answers) search.set("answers", answers);
   if (params.compare?.length) search.set("compare", params.compare.join(","));
   if (params.view) search.set("view", params.view);
-  return `${window.location.origin}${params.path ?? CALCULATOR_PATH}?${search.toString()}`;
+  return `${params.origin ?? window.location.origin}${params.path ?? CALCULATOR_PATH}?${search.toString()}`;
 };
 
 // A plain-text statement for pasting into an email or ticket

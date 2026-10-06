@@ -33,3 +33,20 @@ export const identifyUserServer = (
     mixpanel.people.set(userId, userProperties || {});
   }
 };
+
+// Like trackEventServer, but resolves once Mixpanel has the event (or after `timeoutMs`), for
+// serverless handlers that can be frozen as soon as they respond
+export const trackEventServerAsync = (
+  eventName: MixpanelEvent,
+  userId: string,
+  properties?: Record<string, any>,
+  timeoutMs = 1500
+): Promise<void> =>
+  new Promise((resolve) => {
+    if (!mixpanel) return resolve();
+    const timer = setTimeout(resolve, timeoutMs);
+    mixpanel.track(eventName, { distinct_id: userId, ...properties }, () => {
+      clearTimeout(timer);
+      resolve();
+    });
+  });

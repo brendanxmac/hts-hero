@@ -23,6 +23,7 @@ const createAdminClient = () => {
 };
 
 let cachedElements: HtsElement[] | null = null;
+let cachedRevisionName: string | null = null;
 let cachedSections: HtsSection[] | null = null;
 
 export async function getHtsElementsServer(): Promise<HtsElement[]> {
@@ -54,8 +55,15 @@ export async function getHtsElementsServer(): Promise<HtsElement[]> {
     new Uint8Array(arrayBuffer)
   );
   cachedElements = JSON.parse(decompressed) as HtsElement[];
+  cachedRevisionName = revisionInstance.name;
 
   return cachedElements;
+}
+
+// The HTS revision the server's elements (and so their base rates) come from: "2026HTSRev20"
+export async function getHtsRevisionNameServer(): Promise<string> {
+  await getHtsElementsServer();
+  return cachedRevisionName ?? "unknown";
 }
 
 export async function getHtsSectionsServer(): Promise<HtsSection[]> {

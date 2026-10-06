@@ -1,5 +1,5 @@
 import { HtsElement } from "../../interfaces/hts";
-import { getHtsElementParents } from "../../libs/hts";
+import { getHtsElementParents } from "../../libs/hts-parents";
 import { calculate } from "../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../tariffs/engine-v2/data";
 import { Authority, CalculationInput, CalculationResult } from "../../tariffs/engine-v2/types";
