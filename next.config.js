@@ -17,6 +17,13 @@ const nextConfig = {
       },
     ],
   },
+  // Blog categories retired in the 2026 blog redesign
+  async redirects() {
+    return [
+      { source: "/blog/category/feature", destination: "/blog/category/product", permanent: true },
+      { source: "/blog/category/tutorial", destination: "/blog", permanent: true },
+    ];
+  },
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     return config;

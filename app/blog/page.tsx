@@ -1,54 +1,26 @@
-import { articleCategories, articles } from "./_assets/content";
-import CardArticle from "./_assets/components/CardArticle";
-import CardCategory from "./_assets/components/CardCategory";
+import { BlogIndex } from "@/components/blog";
+import { CATEGORIES } from "@/libs/blog/catalog";
+import { getPosts, getPostsInCategory } from "@/libs/blog/posts";
 import { getSEOTags } from "@/libs/seo";
 
 export const metadata = getSEOTags({
-  title: "HTS & Tariff Blog — Classification Tips, Duty Updates & Trade Compliance | HTS Hero",
+  title: "US Tariff Guides, Updates & HTS Revisions | HTS Hero Blog",
   description:
-    "Stay up to date with the latest HTS classification tips, US tariff updates, duty rate changes, and trade compliance best practices for importers and customs brokers.",
-  canonicalUrlRelative: "/blog",
+    "How US import duty works, how tariffs stack, and every change to the Harmonized Tariff Schedule, explained by the team behind HTS Hero's tariff calculator.",
+  extraTags: {
+    alternates: { canonical: "/blog", types: { "application/rss+xml": "/blog/feed.xml" } },
+  },
+  openGraph: {
+    title: "US Tariff Guides, Updates & HTS Revisions | HTS Hero Blog",
+    description: "How US import duty works, how tariffs stack, and every change to the Harmonized Tariff Schedule.",
+    url: "/blog",
+  },
 });
 
-export default async function Blog() {
-  const articlesToDisplay = articles
-    .sort(
-      (a, b) =>
-        new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf()
-    )
-    .slice(0, 6);
-  return (
-    <>
-      <section className="text-center max-w-3xl mx-auto mt-6 mb-12">
-        <h1 className="font-extrabold text-3xl lg:text-5xl tracking-tight mb-6">
-          HTS Hero Blog
-        </h1>
-        <p className="text-lg opacity-80 leading-relaxed">
-          The latest updates on product features, deals, and tariffs.
-        </p>
-      </section>
-
-      <section className="grid lg:grid-cols-2 mb-24 md:mb-32 gap-8">
-        {articlesToDisplay.map((article, i) => (
-          <CardArticle
-            article={article}
-            key={article.slug}
-            isImagePriority={i <= 2}
-          />
-        ))}
-      </section>
-
-      <section>
-        <p className="font-bold text-2xl lg:text-4xl tracking-tight text-center mb-8 md:mb-12">
-          Browse articles by category
-        </p>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {articleCategories.map((category) => (
-            <CardCategory key={category.slug} category={category} tag="div" />
-          ))}
-        </div>
-      </section>
-    </>
+export default function BlogPage() {
+  const featured = getPosts().filter((p) => p.featured);
+  const sections = CATEGORIES.map((category) => ({ category, posts: getPostsInCategory(category.slug) })).filter(
+    (s) => s.posts.length > 0
   );
+  return <BlogIndex featured={featured} sections={sections} />;
 }

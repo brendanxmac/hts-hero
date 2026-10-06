@@ -1,92 +1,68 @@
-import Image from "next/image";
-import { authors, articles } from "../../_assets/content";
-import CardArticle from "../../_assets/components/CardArticle";
-import { getSEOTags } from "@/libs/seo";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { AuthorCard, BlogBreadcrumbs, PostGrid } from "@/components/blog";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import * as ui from "@/components/ui/styles";
+import { AUTHORS, authorBySlug } from "@/libs/blog/catalog";
+import { getPostsByAuthor } from "@/libs/blog/posts";
 import config from "@/config";
 
-export async function generateMetadata({
-  params,
-}: {
+interface Props {
   params: { authorId: string };
-}) {
-  const author = authors.find((author) => author.slug === params.authorId);
-
-  return getSEOTags({
-    title: `${author.name}, Author at ${config.appName}'s Blog`,
-    description: `${author.name}, Author at ${config.appName}'s Blog`,
-    canonicalUrlRelative: `/blog/author/${author.slug}`,
-  });
 }
 
-export default async function Author({
-  params,
-}: {
-  params: { authorId: string };
-}) {
-  const author = authors.find((author) => author.slug === params.authorId);
-  const articlesByAuthor = articles
-    .filter((article) => article.author.slug === author.slug)
-    .sort(
-      (a, b) =>
-        new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf()
-    );
+export const dynamicParams = false;
 
+export function generateStaticParams() {
+  return AUTHORS.map((a) => ({ authorId: a.slug }));
+}
+
+export function generateMetadata({ params }: Props): Metadata {
+  const author = authorBySlug(params.authorId);
+  if (!author) return {};
+  return {
+    title: `${author.name}, ${author.role} | HTS Hero Blog`,
+    description: author.bio.slice(0, 158),
+    alternates: { canonical: `/blog/author/${author.slug}` },
+  };
+}
+
+export default function BlogAuthorPage({ params }: Props) {
+  const author = authorBySlug(params.authorId);
+  if (!author) notFound();
+  const posts = getPostsByAuthor(author.slug);
+  // The author as a Person, linked to their profile: how search engines tie posts to an expert
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    mainEntity: {
+      "@type": "Person",
+      name: author.name,
+      jobTitle: author.role,
+      description: author.bio,
+      image: `https://${config.domainName}${author.avatar}`,
+      sameAs: [author.linkedin],
+      worksFor: { "@type": "Organization", name: config.appName, url: `https://${config.domainName}` },
+    },
+  };
   return (
     <>
-      <section className="max-w-3xl mx-auto flex flex-col md:flex-row gap-8 mt-12 mb-24 md:mb-32">
-        <div>
-          <p className="text-xs uppercase tracking-wide text-base-content/80 mb-2">
-            Authors
-          </p>
-          <h1 className="font-extrabold text-3xl lg:text-5xl tracking-tight mb-2">
-            {author.name}
-          </h1>
-          <p className="md:text-lg mb-6 md:mb-10 font-medium">{author.job}</p>
-          <p className="md:text-lg text-base-content/80">
-            {author.description}
-          </p>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
+      <header className="w-full border-b border-base-300">
+        <div className={`${ui.container} flex flex-col gap-6 pb-10 pt-6`}>
+          <BlogBreadcrumbs trail={[{ href: "/blog", label: "Blog" }, { label: author.name }]} />
+          <h1 className={ui.pageTitle}>{author.name}</h1>
+          <div className="max-w-4xl">
+            <AuthorCard author={author} />
+          </div>
         </div>
-
-        <div className="max-md:order-first flex md:flex-col gap-4 shrink-0">
-          <Image
-            src={author.avatar}
-            width={256}
-            height={256}
-            alt={author.name}
-            priority={true}
-            className="rounded-box w-[12rem] md:w-[16rem] "
-          />
-
-          {author.socials?.length > 0 && (
-            <div className="flex flex-col md:flex-row gap-4">
-              {author.socials.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  className="btn btn-square"
-                  // Using a dark theme? -> className="btn btn-square btn-neutral"
-                  title={`Go to ${author.name} profile on ${social.name}`}
-                  target="_blank"
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="font-bold text-2xl lg:text-4xl tracking-tight text-center mb-8 md:mb-12">
-          Most recent articles by {author.name}
-        </h2>
-
-        <div className="grid lg:grid-cols-2 gap-8">
-          {articlesByAuthor.map((article) => (
-            <CardArticle key={article.slug} article={article} />
-          ))}
-        </div>
-      </section>
+      </header>
+      <div className={`${ui.container} ${ui.bandPadding}`}>
+        <section className={ui.section}>
+          <SectionHeader kicker="Articles" title={`Written by ${author.name.split(" ")[0]}`} />
+          <PostGrid posts={posts} />
+        </section>
+      </div>
     </>
   );
 }

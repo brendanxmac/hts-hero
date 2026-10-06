@@ -48,7 +48,23 @@ module.exports = {
     ],
   },
   sitemapSize: 5000,
-  exclude: ["/twitter-image.*", "/opengraph-image.*", "/icon.*", "/revision-checker*", "/coverage-checker*"],
+  exclude: [
+    "/twitter-image.*",
+    "/opengraph-image.*",
+    "*/opengraph-image*",
+    "/icon.*",
+    "/apple-icon.*",
+    "/revision-checker*",
+    "/coverage-checker*",
+    // Account pages: nothing for search engines here
+    "/signin",
+    "/sign-out",
+    "/reset-password",
+    "/settings*",
+    // Feeds and machine-readable files aren't pages
+    "/blog/feed.xml",
+    "/llms.txt",
+  ],
   additionalPaths: async (config) => {
     const { codes, revisionDate } = await getHtsCodes();
     const lastmod = new Date(revisionDate).toISOString();

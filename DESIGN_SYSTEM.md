@@ -186,6 +186,7 @@ Use a role, not a size. Each role is a class string on Tailwind's type scale.
 | Hero headline (one per site page) | `ui.display` | `text-4xl sm:text-5xl lg:text-6xl`, semibold, tight |
 | Page title | `ui.pageTitle` | `text-3xl lg:text-4xl`, semibold, tight |
 | Section title (`<h2>`) | `ui.sectionTitle` | `text-2xl sm:text-3xl` (use `SectionHeader`) |
+| Subsection title (`<h3>` in long-form writing) | `ui.subsectionTitle` | `text-xl`, semibold, tight |
 | Card or panel title (`<h3>`) | `ui.cardTitle` | `text-base`, semibold |
 | Kicker (above a section title) | `ui.kicker` | `text-xs`, uppercase, wide tracking, primary |
 | Label (stats, table headers, rails) | `ui.label` | `text-xs`, uppercase, wide tracking, `/60` |

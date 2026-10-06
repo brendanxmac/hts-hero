@@ -1,84 +1,67 @@
-import { articleCategories, articles } from "../../_assets/content";
-import CardArticle from "../../_assets/components/CardArticle";
-import CardCategory from "../../_assets/components/CardCategory";
-import { getSEOTags } from "@/libs/seo";
-import config from "@/config";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { BlogBreadcrumbs, BlogHero, CategoryNav, CtaPanel, PostGrid } from "@/components/blog";
+import { CATEGORIES, categoryBySlug } from "@/libs/blog/catalog";
+import { getPostsInCategory } from "@/libs/blog/posts";
+import type { CategorySlug } from "@/libs/blog/types";
+import * as ui from "@/components/ui/styles";
 
-export async function generateMetadata({
-  params,
-}: {
+interface Props {
   params: { categoryId: string };
-}) {
-  const category = articleCategories.find(
-    (category) => category.slug === params.categoryId
-  );
-
-  return getSEOTags({
-    title: `${category.title} | Blog by ${config.appName}`,
-    description: category.description,
-    canonicalUrlRelative: `/blog/category/${category.slug}`,
-  });
 }
 
-export default async function Category({
-  params,
-}: {
-  params: { categoryId: string };
-}) {
-  const category = articleCategories.find(
-    (category) => category.slug === params.categoryId
-  );
-  const articlesInCategory = articles
-    .filter((article) =>
-      article.categories.map((c) => c.slug).includes(category.slug)
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-    )
-    .slice(0, 3);
+export const dynamicParams = false;
 
+// Only categories with posts get a page
+const categoriesWithPosts = () =>
+  CATEGORIES.map((c) => ({ ...c, count: getPostsInCategory(c.slug).length })).filter((c) => c.count > 0);
+
+export function generateStaticParams() {
+  return categoriesWithPosts().map((c) => ({ categoryId: c.slug }));
+}
+
+export function generateMetadata({ params }: Props): Metadata {
+  const category = categoryBySlug(params.categoryId);
+  if (!category) return {};
+  return {
+    title: `${category.title} | HTS Hero Blog`,
+    description: category.description,
+    alternates: { canonical: `/blog/category/${category.slug}` },
+  };
+}
+
+// The tool each category's readers are most likely to need next
+const CATEGORY_CTA = {
+  guides: "calculator",
+  tariffs: "tracker",
+  "hts-revisions": "history",
+  product: "calculator",
+} as const satisfies Record<CategorySlug, string>;
+
+export default function BlogCategoryPage({ params }: Props) {
+  const category = categoryBySlug(params.categoryId);
+  if (!category) notFound();
+  const posts = getPostsInCategory(category.slug);
   return (
     <>
-      <section className="mt-12 mb-24 md:mb-32 max-w-3xl mx-auto text-center">
-        <h1 className="font-extrabold text-3xl lg:text-5xl tracking-tight mb-6 md:mb-12">
-          {category.title}
-        </h1>
-        <p className="md:text-lg opacity-80 max-w-xl mx-auto">
-          {category.description}
-        </p>
-      </section>
+      <BlogHero
+        kicker="HTS Hero Blog"
+        title={category.title}
+        lead={category.description}
+        breadcrumbs={<BlogBreadcrumbs trail={[{ href: "/blog", label: "Blog" }, { label: category.title }]} />}
+      >
+        <CategoryNav categories={categoriesWithPosts()} current={category.slug} />
+      </BlogHero>
 
-      <section className="mb-24">
-        <h2 className="font-bold text-2xl lg:text-4xl tracking-tight text-center mb-8 md:mb-12">
-          Most recent articles in {category.title}
-        </h2>
+      <div className={`${ui.container} ${ui.bandPadding}`}>
+        <PostGrid posts={posts} showCategory={false} />
+      </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {articlesInCategory.map((article) => (
-            <CardArticle
-              key={article.slug}
-              article={article}
-              tag="h3"
-              showCategory={false}
-            />
-          ))}
+      <div className={ui.band}>
+        <div className={`${ui.container} ${ui.bandPadding}`}>
+          <CtaPanel kind={CATEGORY_CTA[category.slug]} />
         </div>
-      </section>
-
-      <section>
-        <h2 className="font-bold text-2xl lg:text-4xl tracking-tight text-center mb-8 md:mb-12">
-          Other categories you might like
-        </h2>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {articleCategories
-            .filter((c) => c.slug !== category.slug)
-            .map((category) => (
-              <CardCategory key={category.slug} category={category} tag="h3" />
-            ))}
-        </div>
-      </section>
+      </div>
     </>
   );
 }
