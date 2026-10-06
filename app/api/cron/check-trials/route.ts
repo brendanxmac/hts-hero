@@ -8,6 +8,8 @@ import TariffImpactTrialEndingEmail from "@/emails/TariffImpactTrialEndingEmail"
 import { PricingPlan } from "@/types";
 import { CreateEmailOptions } from "resend";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
