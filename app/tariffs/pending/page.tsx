@@ -6,6 +6,8 @@ export const metadata = getSEOTags({
   description:
     "Track the status of upcoming and pending US tariff announcements. Stay informed about proposed tariff changes, Section 301 updates, reciprocal tariffs, and their potential impact on your imports.",
   canonicalUrlRelative: "/tariffs/pending",
+  // Out of date: kept for old links, out of search results
+  extraTags: { robots: { index: false, follow: true } },
 });
 
 export default function Home() {
