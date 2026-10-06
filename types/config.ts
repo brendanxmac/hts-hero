@@ -102,6 +102,8 @@ export interface ConfigProps {
   appName: string;
   appDescription: string;
   domainName: string;
+  // A 30-minute call with the team: integrations, the API and MCP, larger plans
+  bookCallUrl: string;
   crisp: {
     id?: string;
     onlyShowOnRoutes?: string[];

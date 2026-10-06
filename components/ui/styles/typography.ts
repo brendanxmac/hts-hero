@@ -10,6 +10,9 @@ export const pageTitle = "text-3xl lg:text-4xl font-semibold tracking-tight text
 // A section's <h2> (SectionHeader uses it)
 export const sectionTitle = "text-2xl sm:text-3xl font-semibold tracking-tight text-base-content";
 
+// A subsection's <h3> in long-form writing (blog posts, guides)
+export const subsectionTitle = "text-xl font-semibold tracking-tight text-base-content";
+
 // A card or panel's <h3>
 export const cardTitle = "text-base font-semibold text-base-content";
 

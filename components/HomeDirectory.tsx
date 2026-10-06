@@ -23,11 +23,6 @@ const TOOLS = [
     title: "HTS Classification",
     text: "Find the right HTS code for a product, with the evidence to back it up.",
   },
-  {
-    href: "/tariffs/impact-checker",
-    title: "Tariff Impact Checker",
-    text: "See which of your imports are affected by new tariff announcements.",
-  },
 ];
 
 export const HomeDirectory = async () => {
@@ -40,7 +35,7 @@ export const HomeDirectory = async () => {
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
             Free tariff tools
           </h2>
-          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {TOOLS.map((t) => (
               <li key={t.href}>
                 <Link

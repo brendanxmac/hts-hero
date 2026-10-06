@@ -24,15 +24,6 @@ export const toolLinks = [
     hoverText: "group-hover:text-primary",
   },
   {
-    href: "/tariffs/impact-checker",
-    emoji: "✓",
-    title: "Tariff Impact Checker",
-    subtitle: "Check if new tariffs affect your imports",
-    hoverBg: "hover:bg-accent/10",
-    iconBg: "bg-accent/20",
-    hoverText: "group-hover:text-accent",
-  },
-  {
     href: "/explore",
     emoji: "🔍",
     title: "HTS Explorer",

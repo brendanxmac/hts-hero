@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Country } from "@/constants/countries";
 import { HtsElement } from "@/interfaces/hts";
 import { useHts } from "@/contexts/HtsContext";
@@ -15,6 +15,7 @@ import {
   estimateSummaryText,
   findTariffElement,
 } from "../lib/estimate";
+import { estimateSurface, markCalculatorHandoff } from "../lib/analytics";
 import { todayIso, TRANSPORT_MODES } from "../lib/format";
 import { countOpenQuestions, preferenceImpacts, questionImpacts } from "../lib/questions";
 
@@ -36,7 +37,13 @@ export const useDutyEstimate = ({
   surface: Surface;
 }) => {
   const { htsElements } = useHts();
-  const [country, setCountry] = useState<Country | null>(initialCountry);
+  const [country, setCountryState] = useState<Country | null>(initialCountry);
+  // Whether the country shown is one the user chose, rather than the page's starting one
+  const countryChosen = useRef(false);
+  const setCountry = (next: Country | null) => {
+    countryChosen.current = true;
+    setCountryState(next);
+  };
   const [customsValue, setCustomsValue] = useState(10000);
   const [quantity, setQuantity] = useState(1000);
   const [entryDate, setEntryDate] = useState(todayIso);
@@ -47,7 +54,7 @@ export const useDutyEstimate = ({
 
   // The classification's country can arrive after the first render
   useEffect(() => {
-    if (initialCountry) setCountry(initialCountry);
+    if (initialCountry) setCountryState(initialCountry);
   }, [initialCountry]);
 
   // Answers and preference claims belong to one code and country
@@ -101,6 +108,22 @@ export const useDutyEstimate = ({
     [input, result, answers]
   );
 
+  // One lookup for each code and country shown, like the calculator's own
+  const lastViewedKey = useRef<string | null>(null);
+  useEffect(() => {
+    if (!result || !country) return;
+    const key = `${element.htsno}-${country.code}`;
+    if (lastViewedKey.current === key) return;
+    lastViewedKey.current = key;
+    trackEvent(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
+      hts_code: element.htsno,
+      country_code: country.code,
+      tariff_basis_hts_code: tariffElement.htsno,
+      surface: estimateSurface(surface),
+      country_source: countryChosen.current ? "user" : "default",
+    });
+  }, [result, element.htsno, country, tariffElement.htsno, surface]);
+
   const openQuestions = result ? countOpenQuestions(result, impacts) : 0;
   // The most one answer could save; savings don't always add up, so this isn't a sum
   const bestSaving = Math.max(
@@ -130,6 +153,18 @@ export const useDutyEstimate = ({
       answers,
     });
 
+  // Before following link() to the calculator
+  const trackOpen = (properties: Record<string, unknown> = {}) => {
+    const from = estimateSurface(surface);
+    markCalculatorHandoff(element.htsno, from);
+    trackEvent(MixpanelEvent.DUTY_ESTIMATE_OPENED_IN_CALCULATOR, {
+      hts_code: element.htsno,
+      country_code: country?.code,
+      surface: from,
+      ...properties,
+    });
+  };
+
   const copy = async () => {
     if (!result || !country) return;
     const ok = await copyToClipboard(
@@ -148,7 +183,7 @@ export const useDutyEstimate = ({
     trackEvent(MixpanelEvent.DUTY_CALCULATOR_RESULTS_COPIED, {
       hts_code: element.htsno,
       country_code: country.code,
-      surface,
+      surface: estimateSurface(surface),
     });
   };
 
@@ -162,7 +197,7 @@ export const useDutyEstimate = ({
     trackEvent(MixpanelEvent.DUTY_CALCULATOR_QUESTION_ANSWERED, {
       input: id,
       answered: value !== undefined,
-      surface,
+      surface: estimateSurface(surface),
     });
   };
 
@@ -188,6 +223,7 @@ export const useDutyEstimate = ({
     bestSaving,
     unitLabel,
     link,
+    trackOpen,
     copy,
     copied,
   };

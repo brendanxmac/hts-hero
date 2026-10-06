@@ -1,26 +1,19 @@
 "use client";
 
-import { Country } from "@/constants/countries";
 import * as ui from "@/components/ui/styles";
 import { DateNotice } from "../notices/DateNotice";
 import { NotAppliedPanel, PreferenceClaim, QuestionsPanel, Statement, SummaryStats } from "../results";
 import { EstimateActions } from "./EstimateActions";
-import { DutyEstimate, Surface } from "./useDutyEstimate";
+import { DutyEstimate } from "./useDutyEstimate";
 
 // The full variant: the totals and each duty line, the questions and preference claims that
 // could change them, the headings that don't apply, and copy and open buttons
 export const FullEstimate = ({
   estimate,
   result,
-  country,
-  htsno,
-  surface,
 }: {
   estimate: DutyEstimate;
   result: NonNullable<DutyEstimate["result"]>;
-  country: Country;
-  htsno: string;
-  surface: Surface;
 }) => (
   <>
     <DateNotice entryDate={estimate.entryDate} onUseVerified={estimate.setEntryDate} />
@@ -59,6 +52,6 @@ export const FullEstimate = ({
       <NotAppliedPanel lines={result.lines} />
     </div>
 
-    <EstimateActions estimate={estimate} country={country} htsno={htsno} surface={surface} />
+    <EstimateActions estimate={estimate} />
   </>
 );

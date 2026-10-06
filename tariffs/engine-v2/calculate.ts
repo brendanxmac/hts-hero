@@ -20,6 +20,7 @@ import {
   DutyLine,
   FeeLine,
   InputDefinition,
+  ProhibitionResult,
   RuleSet,
   RuleSnapshot,
   Tariff,
@@ -358,7 +359,11 @@ export const calculate = (
       return { id: fee.id, name: fee.name, ratePct: fee.ratePct, amount, note }
     })
 
-  // ── 11. Explain ──
+  // ── 11. Import bans ──
+
+  const { prohibitions, prohibitionQuestions } = getProhibitions(snapshot, input, ctx)
+
+  // ── 12. Explain ──
 
   const lines = evaluations.map(toDutyLine)
   const totalDuty =
@@ -401,7 +406,9 @@ export const calculate = (
         ),
       })),
       ...getQuestions(evaluations, snapshot),
+      ...prohibitionQuestions,
     ],
+    prohibitions,
     warnings,
   }
 }
@@ -624,6 +631,60 @@ const getQuestions = (
     headings,
     answered,
   }))
+}
+
+// The import bans in scope for the entry. A ban is lifted when one of its `unless` conditions is
+// met; an unanswered one leaves it in place and becomes a question.
+const getProhibitions = (
+  snapshot: RuleSnapshot,
+  input: CalculationInput,
+  ctx: HandlerContext,
+): { prohibitions: ProhibitionResult[]; prohibitionQuestions: Question[] } => {
+  const prohibitions: ProhibitionResult[] = []
+  const questions = new Map<string, Question>()
+  for (const ban of snapshot.prohibitions) {
+    if (
+      !countryMatches(ban.scope.countries, input.country, snapshot) ||
+      !codeMatches(ban.scope.codes, input.htsCode, snapshot)
+    ) {
+      continue
+    }
+    let lifted = false
+    const openInputs: string[] = []
+    for (const condition of ban.unless ?? []) {
+      const handler = conditionHandlers.get(condition.kind)
+      if (!handler) throw new Error(`No condition handler "${condition.kind}"`)
+      const result = handler.check(condition, ctx)
+      handler.inputs(condition).forEach((id) => {
+        const question = questions.get(id) ?? {
+          input:
+            snapshot.inputs.get(id) ??
+            ({ id, label: id, type: "boolean" } as InputDefinition),
+          headings: [],
+          answered: true,
+          liftsProhibition: true,
+        }
+        question.headings.push(ban.id)
+        if (result === "unknown") {
+          question.answered = false
+          openInputs.push(id)
+        }
+        questions.set(id, question)
+      })
+      if (result === true) lifted = true
+    }
+    if (!lifted) {
+      prohibitions.push({
+        id: ban.id,
+        name: ban.name,
+        program: ban.program,
+        description: ban.description,
+        source: ban.source,
+        openInputs,
+      })
+    }
+  }
+  return { prohibitions, prohibitionQuestions: Array.from(questions.values()) }
 }
 
 const getUnansweredInputs = (

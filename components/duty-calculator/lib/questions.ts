@@ -10,7 +10,7 @@ import {
   Scope,
 } from "../../../tariffs/engine-v2/types";
 
-// Which questions matter for a result, shared by the calculator and the Tariff Watcher
+// Which questions matter for a result, shared by the calculator and the Tariff Tracker
 
 // How much answering "yes" instead of "no" changes duty and fees, for every yes/no question.
 // Answered ones are measured the other way round, so a question keeps its sign (and its place
@@ -46,10 +46,12 @@ export const preferenceImpacts = (input: CalculationInput, result: CalculationRe
   return out;
 };
 
-// Open questions whose answer would change the amount
+// Open questions whose answer would change the amount, or lift an import ban
 export const countOpenQuestions = (result: CalculationResult, impacts: Record<string, number>) =>
   result.questions.filter(
-    (q) => !q.answered && (q.input.type !== "boolean" || Math.abs(impacts[q.input.id] ?? 0) >= 0.005)
+    (q) =>
+      !q.answered &&
+      (q.liftsProhibition || q.input.type !== "boolean" || Math.abs(impacts[q.input.id] ?? 0) >= 0.005)
   ).length;
 
 // ── Specificity ──
@@ -77,8 +79,10 @@ const scopeSpecificity = (scope: Scope, asOf: string): [number, number] => {
 
 const compareRank = (a: [number, number], b: [number, number]) => a[0] - b[0] || a[1] - b[1];
 
-// A question ranks by the most specific heading it affects, on the entry's date
+// A question ranks by the most specific heading it affects, on the entry's date. One that can
+// lift an import ban comes first: it decides whether the goods can be imported at all.
 export const questionSpecificity = (question: Question, asOf: string): [number, number] => {
+  if (question.liftsProhibition) return [-1, 0];
   let best: [number, number] = [3, 0];
   for (const code of question.headings) {
     const versions = AllRules.tariffs.filter((t) => t.code === code);

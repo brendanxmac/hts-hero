@@ -9,7 +9,7 @@ Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 10** (Apr 8 �
 |---|---|
 | Engine (types, snapshots, handlers, pipeline, validator) | Done |
 | Legacy data migrated (106 headings, 59 lists) | Done, hand-reviewed |
-| Tests: mechanics, real data, partial-value rates, Tariff Watcher | All passing |
+| Tests: mechanics, real data, partial-value rates, Tariff Tracker | All passing |
 | Full comparison, every HTS line × 14 countries | Done: 99.5% identical totals, every difference explained (before the legacy engine was removed) |
 | Tariff Finder toggle + new results panel | Done, checked in the browser (desktop and phone width) |
 
@@ -56,9 +56,9 @@ Checked in the browser:
 | `tariffs/engine-v2/revisions.ts` | HTS revision dates, verified revisions |
 | `tariffs/engine-v2/data/` | Programs, headings, lists, inputs, columns, preferences, fees |
 | `testing/engine-v2/` | Mechanics and real-data tests, HTS fixture loader (every USITC line with its base rates) |
-| `components/TariffFinderPage.tsx` | Tariff Calculator and Tariff Watcher |
+| `components/TariffFinderPage.tsx` | Tariff Calculator |
 | `components/duty-calculator/` | Calculator UI, `DutyEstimateEmbed` (explorer, classification pages), shared estimate helpers |
-| `components/tariff-watcher/` | Watch list parsing, report, CSV/Excel export |
+| `components/tariff-tracker/` | Tariff Tracker: catalog parsing, report, CSV/Excel export, app shell |
 
 ## Completed work
 
@@ -240,6 +240,15 @@ Made alongside the v2 changes so both calculators agree:
 - **The 15% filter removes 9903.76.21/.22** when the base rate is 15% or more.
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
+
+## Oct 6: import bans (Section 338 Canada, from Sep 29, 2026)
+
+- **New record type `Prohibition`** (`types.ts`, `data/prohibitions.ts`): an import ban, dated and scoped like a tariff, with optional `unless` conditions. `calculate()` returns the bans in scope as `result.prohibitions` (step 11); a ban never changes `totalDuty`, because goods imported before it still pay the duty when withdrawn from a warehouse or FTZ. Validated in `validate.ts`; included in `ruleChangeDates`.
+- **Data:** Proclamations 11061 (alcoholic beverages), 11062 (dairy: whey, molasses, non-alcoholic beer) and 11063 (motorcycles over 800 cc), from the annexes attached to CSMS #70050970, in `data/lists/canada-338-bans.ts`. The 28 alcohol provisions with the "Packaged" scope limitation are banned unless the new `alcoholInBulk` input is checked.
+- **Calculator:** `ProhibitedNotice` above the results; questions that can lift a ban (`Question.liftsProhibition`) are always shown first and counted as open.
+- **Tests:** "Section 338 – Canada import bans" in `testing/engine-v2/real-data.test.ts`.
+- **Not done:** the Tariff Tracker / Watcher doesn't flag banned products yet. No HTS revision has added Chapter 99 text for the bans (Rev 20 is still current), so the source is the proclamations and the CSMS.
+- **Note:** Proclamation 11056 ("Temporary Suspension…") only moved the Section 338 start date to Aug 22; the comment in `338-canada.ts` now says so.
 
 ## Oct 3: 2026 Rev 20 applied (branch `revision/2026HTSRev20`)
 

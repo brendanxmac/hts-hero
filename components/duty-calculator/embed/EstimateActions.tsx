@@ -5,23 +5,15 @@ import {
   CheckIcon,
   ClipboardDocumentIcon,
 } from "@heroicons/react/20/solid";
-import { Country } from "@/constants/countries";
-import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
-import { DutyEstimate, Surface } from "./useDutyEstimate";
+import { DutyEstimate } from "./useDutyEstimate";
 
 // Under the full estimate: a note on what's left out, and buttons to copy it or open it in
 // the Tariff Calculator
 export const EstimateActions = ({
   estimate,
-  country,
-  htsno,
-  surface,
 }: {
   estimate: DutyEstimate;
-  country: Country;
-  htsno: string;
-  surface: Surface;
 }) => (
   <div className="flex flex-wrap items-center justify-between gap-3">
     <span className={ui.caption}>
@@ -41,13 +33,7 @@ export const EstimateActions = ({
       <a
         href={estimate.link()}
         className={ui.button({ variant: "primary", size: "sm" })}
-        onClick={() =>
-          trackEvent(MixpanelEvent.DUTY_ESTIMATE_OPENED_IN_CALCULATOR, {
-            hts_code: htsno,
-            country_code: country.code,
-            surface,
-          })
-        }
+        onClick={() => estimate.trackOpen()}
       >
         Open in Tariff Calculator
         <ArrowTopRightOnSquareIcon className="w-4 h-4" />

@@ -96,7 +96,7 @@ The reference features:
 | `components/duty-calculator/embed/` | The duty estimate embedded in classification and explorer pages |
 | `components/duty-calculator/lib/` | `useTariffFinder`, `estimate`, `questions`, `format` |
 | `components/hts-code-page/` | The `/hts/[code]` page |
-| `components/tariff-watcher/` | The Tariff Watcher tool |
+| `components/tariff-tracker/` | The Tariff Tracker app (`/tariff-tracker`) |
 
 ---
 
@@ -186,6 +186,7 @@ Use a role, not a size. Each role is a class string on Tailwind's type scale.
 | Hero headline (one per site page) | `ui.display` | `text-4xl sm:text-5xl lg:text-6xl`, semibold, tight |
 | Page title | `ui.pageTitle` | `text-3xl lg:text-4xl`, semibold, tight |
 | Section title (`<h2>`) | `ui.sectionTitle` | `text-2xl sm:text-3xl` (use `SectionHeader`) |
+| Subsection title (`<h3>` in long-form writing) | `ui.subsectionTitle` | `text-xl`, semibold, tight |
 | Card or panel title (`<h3>`) | `ui.cardTitle` | `text-base`, semibold |
 | Kicker (above a section title) | `ui.kicker` | `text-xs`, uppercase, wide tracking, primary |
 | Label (stats, table headers, rails) | `ui.label` | `text-xs`, uppercase, wide tracking, `/60` |
@@ -245,7 +246,7 @@ All of these are class helpers from `ui/styles`. They're strings and functions r
 | Floating label on a chart | `ui.tooltip`, positioned by the caller |
 | Loading | `ui.skeleton` blocks in the final layout's shape |
 
-Behavior-heavy controls (comboboxes, menus, dialogs) use Headless UI, which is already a dependency. Style them with these helpers; see `CountryField` and `tariff-watcher/ExportMenu`.
+Behavior-heavy controls (comboboxes, menus, dialogs) use Headless UI, which is already a dependency. Style them with these helpers; see `CountryField` and `tariff-tracker/ExportMenu`.
 
 ---
 

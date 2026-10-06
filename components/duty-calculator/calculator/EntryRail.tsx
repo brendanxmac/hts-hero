@@ -11,14 +11,17 @@ import { TRANSPORT_MODES } from "../lib/format";
 import { MAX_COMPARE, TariffFinder } from "../lib/useTariffFinder";
 import { RailField } from "./RailField";
 
-// Entry details as a compact rail beside the results
+// Entry details as a compact rail beside the results. With fixedProduct, the code and origin
+// are set by the host (a Tariff Tracker product) and only the shipment can change.
 
 export const EntryRail = ({
   f,
   title,
   description,
+  fixedProduct = false,
 }: {
   f: TariffFinder;
+  fixedProduct?: boolean;
   // A heading at the top of the rail, styled like the other panels' titles
   title?: string;
   description?: ReactNode;
@@ -33,9 +36,7 @@ export const EntryRail = ({
         <div>
           <h2 className={ui.cardTitle}>{title}</h2>
           {description && (
-            <p className={`${ui.caption} mt-0.5 leading-snug`}>
-              {description}
-            </p>
+            <p className={`${ui.caption} mt-0.5 leading-snug`}>{description}</p>
           )}
         </div>
       )}
@@ -48,43 +49,45 @@ export const EntryRail = ({
           className="flex flex-col gap-4 [&_input]:text-sm"
           data-density="compact"
         >
-          <RailField
-            label="HTS code"
-            htmlFor="dc-hts"
-            action={
-              <button
-                type="button"
-                className={`${ui.link} inline-flex items-center gap-1 text-xs`}
-                onClick={() => f.openExplore()}
+          {!fixedProduct && (
+            <>
+              <RailField
+                label="HTS code"
+                htmlFor="dc-hts"
+                action={
+                  <button
+                    type="button"
+                    className={`${ui.link} inline-flex items-center gap-1 text-xs`}
+                    onClick={() => f.openExplore()}
+                  >
+                    <MagnifyingGlassIcon className="w-3 h-3" />
+                    Search
+                  </button>
+                }
               >
-                <MagnifyingGlassIcon className="w-3 h-3" />
-                Search
-              </button>
-            }
-          >
-            <HtsCodeField
-              id="dc-hts"
-              selectedElement={f.selectedElement}
-              onSelect={(el) => f.selectElement(el, "hts_selector")}
-              autoFocus={!f.codeParam}
-              hidePath
-            />
-          </RailField>
-          <RailField
-            label={f.countries.length > 1 ? "Origins" : "Origin"}
-            htmlFor="dc-country"
-          >
-            <CountryField
-              id="dc-country"
-              selected={f.countries}
-              onChange={f.changeCountries}
-              max={MAX_COMPARE}
-            />
-          </RailField>
+                <HtsCodeField
+                  id="dc-hts"
+                  selectedElement={f.selectedElement}
+                  onSelect={(el) => f.selectElement(el, "hts_selector")}
+                  autoFocus={!f.codeParam}
+                  hidePath
+                />
+              </RailField>
+              <RailField
+                label={f.countries.length > 1 ? "Origins" : "Origin"}
+                htmlFor="dc-country"
+              >
+                <CountryField
+                  id="dc-country"
+                  selected={f.countries}
+                  onChange={f.changeCountries}
+                  max={MAX_COMPARE}
+                />
+              </RailField>
+            </>
+          )}
           <div
-            className={
-              result?.requiresQuantity ? "grid grid-cols-2 gap-3" : ""
-            }
+            className={result?.requiresQuantity ? "grid grid-cols-2 gap-3" : ""}
           >
             <RailField label="Value" htmlFor="dc-value">
               <NumberField

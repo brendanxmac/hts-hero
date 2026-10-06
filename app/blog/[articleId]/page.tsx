@@ -1,181 +1,49 @@
-import Link from "next/link";
-import Script from "next/script";
-import { articles } from "../_assets/content";
-import BadgeCategory from "../_assets/components/BadgeCategory";
-import Avatar from "../_assets/components/Avatar";
-import { getSEOTags } from "@/libs/seo";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { ArticlePage } from "@/components/blog";
+import { authorBySlug, categoryBySlug } from "@/libs/blog/catalog";
+import { getPost, getPosts, getRelatedPosts } from "@/libs/blog/posts";
 import config from "@/config";
 
-export async function generateMetadata({
-  params,
-}: {
+interface Props {
   params: { articleId: string };
-}) {
-  const article = articles.find((article) => article.slug === params.articleId);
-
-  return getSEOTags({
-    title: article.title,
-    description: article.description,
-    canonicalUrlRelative: `/blog/${article.slug}`,
-    extraTags: {
-      openGraph: {
-        title: article.title,
-        description: article.description,
-        url: `/blog/${article.slug}`,
-        images: [
-          {
-            url: article.image.urlRelative,
-            width: 1200,
-            height: 660,
-          },
-        ],
-        locale: "en_US",
-        type: "website",
-      },
-    },
-  });
 }
 
-export default async function Article({
-  params,
-}: {
-  params: { articleId: string };
-}) {
-  const article = articles.find((article) => article.slug === params.articleId);
-  const articlesRelated = articles
-    .filter(
-      (a) =>
-        a.slug !== params.articleId &&
-        a.categories.some((c) =>
-          article.categories.map((c) => c.slug).includes(c.slug)
-        )
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf()
-    )
-    .slice(0, 3);
+// Every post is built ahead of time; an unknown slug is a 404, not a render
+export const dynamicParams = false;
 
-  return (
-    <div className="max-w-3xl mx-auto">
-      {/* SCHEMA JSON-LD MARKUP FOR GOOGLE */}
-      <Script
-        type="application/ld+json"
-        id={`json-ld-article-${article.slug}`}
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            mainEntityOfPage: {
-              "@type": "WebPage",
-              "@id": `https://${config.domainName}/blog/${article.slug}`,
-            },
-            name: article.title,
-            headline: article.title,
-            description: article.description,
-            image: `https://${config.domainName}${article.image.urlRelative}`,
-            datePublished: article.publishedAt,
-            dateModified: article.publishedAt,
-            author: {
-              "@type": "Person",
-              name: article.author.name,
-            },
-          }),
-        }}
-      />
+export function generateStaticParams() {
+  return getPosts().map((post) => ({ articleId: post.slug }));
+}
 
-      {/* GO BACK LINK */}
-      <div>
-        <Link
-          href="/blog"
-          className="link !no-underline text-base-content/80 hover:text-base-content inline-flex items-center gap-1"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              fillRule="evenodd"
-              d="M15 10a.75.75 0 01-.75.75H7.612l2.158 1.96a.75.75 0 11-1.04 1.08l-3.5-3.25a.75.75 0 010-1.08l3.5-3.25a.75.75 0 111.04 1.08L7.612 9.25h6.638A.75.75 0 0115 10z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Back to Blog
-        </Link>
-      </div>
+export function generateMetadata({ params }: Props): Metadata {
+  const post = getPost(params.articleId);
+  if (!post) return {};
+  const author = authorBySlug(post.author);
+  return {
+    title: `${post.title} | HTS Hero`,
+    description: post.description,
+    authors: author ? [{ name: author.name, url: `/blog/author/${author.slug}` }] : undefined,
+    alternates: { canonical: `/blog/${post.slug}` },
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      url: `https://${config.domainName}/blog/${post.slug}`,
+      siteName: config.appName,
+      type: "article",
+      publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt,
+      authors: author ? [author.name] : undefined,
+    },
+    twitter: { card: "summary_large_image", title: post.title, description: post.description },
+  };
+}
 
-      <article>
-        {/* HEADER WITH CATEGORIES AND DATE AND TITLE */}
-        <section className="my-12 md:my-16">
-          <div className="flex items-center gap-4 mb-6">
-            {article.categories.map((category) => (
-              <BadgeCategory
-                category={category}
-                key={category.slug}
-                extraStyle="!badge-lg"
-              />
-            ))}
-            <span className="text-base-content/80" itemProp="datePublished">
-              {new Date(article.publishedAt).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 md:mb-8">
-            {article.title}
-          </h1>
-
-          <p className="text-base-content/80 md:text-lg">
-            {article.description}
-          </p>
-        </section>
-
-        {/* ARTICLE CONTENT */}
-        <section className="space-y-12 md:space-y-20">
-          {article.content}
-        </section>
-
-        {/* AUTHOR AND RELATED ARTICLES AT BOTTOM */}
-        <section className="mt-16 pt-8 border-t border-base-content/10">
-          <div className="mb-8">
-            <p className="text-base-content/80 text-sm mb-2 md:mb-3">
-              Posted by
-            </p>
-            <Avatar article={article} />
-          </div>
-
-          {articlesRelated.length > 0 && (
-            <div>
-              <p className="text-base-content/80 text-sm mb-4">
-                Related reading
-              </p>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {articlesRelated.map((article) => (
-                  <div key={article.slug} className="space-y-2">
-                    <p className="mb-0.5">
-                      <Link
-                        href={`/blog/${article.slug}`}
-                        className="link link-hover hover:link-primary font-medium"
-                        rel="bookmark"
-                      >
-                        {article.title}
-                      </Link>
-                    </p>
-                    <p className="text-base-content/80 text-sm">
-                      {article.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-      </article>
-    </div>
-  );
+export default function BlogPostPage({ params }: Props) {
+  const post = getPost(params.articleId);
+  if (!post) notFound();
+  const category = categoryBySlug(post.category);
+  const author = authorBySlug(post.author);
+  if (!category || !author) notFound();
+  return <ArticlePage post={post} category={category} author={author} related={getRelatedPosts(post)} />;
 }

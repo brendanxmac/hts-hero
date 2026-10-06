@@ -11,11 +11,13 @@ import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
 import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { TariffGuide } from "@/components/duty-calculator/guide";
 import { dutyCalculatorFaqs } from "@/components/duty-calculator/guide/faqs";
+import { TariffPricing } from "@/components/pricing-calculator";
 import * as ui from "../../components/ui/styles";
 
 export const metadata: Metadata = {
-  title:
-    "US Import Duty & Tariff Calculator — Free HTS Code Lookup | HTS Hero",
+  // The year and "Tariff Calculator" up front, as in the titles ranking for "tariff calculator",
+  // "us tariff calculator" and "customs duty calculator usa" (Oct 2026)
+  title: `US Tariff Calculator ${new Date().getFullYear()}: Free Import Duty Calculator | HTS Hero`,
   description:
     "Free US tariff calculator. Enter an HTS code and country of origin to see every import duty: base rate, Section 232, 301 and 122 tariffs, exemptions and fees.",
   keywords: [
@@ -44,7 +46,7 @@ export const metadata: Metadata = {
     "u.s. tariff calculator shipping",
   ],
   openGraph: {
-    title: "Free US Import Duty & Tariff Calculator | HTS Hero",
+    title: `US Tariff Calculator ${new Date().getFullYear()}: Free Import Duty Calculator`,
     description:
       "Calculate US import duty for any HTS code and country of origin: base rate, Section 232, 301 and 122 tariffs, exemptions, trade preferences and fees.",
     url: `https://${config.domainName}/duty-calculator`,
@@ -61,7 +63,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free US Import Duty & Tariff Calculator | HTS Hero",
+    title: `US Tariff Calculator ${new Date().getFullYear()}: Free Import Duty Calculator`,
     description:
       "Enter an HTS code and country of origin to see the full duty breakdown: base rate, Section 232, 301 and 122 tariffs, exemptions and customs fees.",
     images: [`https://${config.domainName}/hero-tariffs.png`],
@@ -123,6 +125,13 @@ export default async function DutyCalculatorPage() {
           <TariffFinderPage />
         </Suspense>
       </BreadcrumbsProvider>
+
+      {/* Plans: Free, Starter (the calculator) and Pro (the Tariff Tracker) */}
+      <div className={ui.band}>
+        <div className={`${ui.container} ${ui.bandPadding}`}>
+          <TariffPricing />
+        </div>
+      </div>
 
       {/* Rates, a worked example, lookups, sources and FAQ — server-rendered for crawlers */}
       <TariffGuide content={content} faqs={faqs} />

@@ -17,6 +17,20 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // Blog categories retired in the 2026 blog redesign
+      { source: "/blog/category/feature", destination: "/blog/category/product", permanent: true },
+      { source: "/blog/category/tutorial", destination: "/blog", permanent: true },
+      // The Tariff Watcher tab on the calculator is now the Tariff Tracker
+      {
+        source: "/duty-calculator",
+        has: [{ type: "query", key: "tool", value: "watcher" }],
+        destination: "/tariff-tracker",
+        permanent: true,
+      },
+    ];
+  },
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     return config;

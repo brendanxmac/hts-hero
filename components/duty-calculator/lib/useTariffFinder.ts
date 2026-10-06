@@ -28,12 +28,14 @@ import { Answers, CalculationResult, TransportMode } from "../../../tariffs/engi
 import { CompareEntry } from "../results";
 import {
   buildEstimateInput,
+  CALCULATOR_PATH,
   calculatorUrl,
   estimateSummaryText,
   findTariffElement,
   parseAnswers,
 } from "./estimate";
 import { countOpenQuestions, preferenceImpacts, questionImpacts } from "./questions";
+import { Arrival, calculatorArrival, CalculatorLinkSource, takeCalculatorHandoff } from "./analytics";
 import { formatDate, formatMoney, todayIso, TRANSPORT_MODES } from "./format";
 
 // Everything the Tariff Finder knows and can do; the page only lays it out.
@@ -65,42 +67,80 @@ const positiveNumber = (raw: string | null, fallback: number) => {
 
 const isTariffLevel = (element: HtsElement) => htsCodeDigitsOnly(element.htsno).length >= 8;
 
-export const useTariffFinder = () => {
+// Inputs to start from instead of the address, e.g. a Tariff Tracker product and its adjustments
+export interface FinderStart {
+  element: HtsElement;
+  country: Country;
+  customsValue: number;
+  quantity: number;
+  entryDate: string;
+  transportMode: TransportMode;
+  claimedPreference?: string;
+  answers?: Answers;
+}
+
+// path: the page the calculator is on, with any extra params its address needs. The address
+// follows the inputs while syncAddress is on (off while the calculator is hidden on its page), and
+// share links open it. initial starts it from given inputs rather than the address. track: false
+// keeps its analytics quiet, for hosts that count their own (the tracker's product view).
+export const useTariffFinder = ({
+  path = CALCULATOR_PATH,
+  extraParams,
+  syncAddress = true,
+  initial,
+  track: trackAnalytics = true,
+  defaultCountry = "CN",
+}: {
+  path?: string;
+  extraParams?: Record<string, string>;
+  syncAddress?: boolean;
+  initial?: FinderStart;
+  track?: boolean;
+  // The country of origin when the address names none (a country page's own country)
+  defaultCountry?: string;
+} = {}) => {
   const searchParams = useSearchParams();
+  const track = (event: MixpanelEvent, props?: Record<string, unknown>) => {
+    if (trackAnalytics) trackEvent(event, props);
+  };
   const { htsElements, fetchElements, revision: htsRevisionName } = useHts();
   const { sections, getSections } = useHtsSections();
   const { setBreadcrumbs } = useBreadcrumbs();
 
   // ── Inputs ──
   const [loading, setLoading] = useState(htsElements.length === 0);
-  const [selectedElement, setSelectedElement] = useState<HtsElement | null>(null);
+  const [selectedElement, setSelectedElement] = useState<HtsElement | null>(initial?.element ?? null);
   // Countries of origin; the first is the main one (Detailed and Simple views), the rest are compared
   const [countries, setCountries] = useState<Country[]>(() => {
-    const main = countryByCode(searchParams.get("country")) ?? countryByCode("CN");
+    if (initial) return [initial.country];
+    const main = countryByCode(searchParams.get("country")) ?? countryByCode(defaultCountry);
     const others = (searchParams.get("compare") ?? "").split(",").map(countryByCode);
     return [main, ...others]
       .filter((c, i, all): c is Country => Boolean(c) && all.findIndex((x) => x?.code === c.code) === i)
       .slice(0, MAX_COMPARE);
   });
   const country = countries[0] ?? null;
-  const [customsValue, setCustomsValueState] = useState(() => positiveNumber(searchParams.get("value"), 10000));
-  const [quantity, setQuantityState] = useState(() => positiveNumber(searchParams.get("units"), 1000));
+  const [customsValue, setCustomsValueState] = useState(() => initial?.customsValue ?? positiveNumber(searchParams.get("value"), 10000));
+  const [quantity, setQuantityState] = useState(() => initial?.quantity ?? positiveNumber(searchParams.get("units"), 1000));
   const [entryDate, setEntryDateState] = useState(() => {
+    if (initial) return initial.entryDate;
     const date = searchParams.get("date");
     return date && ISO_DATE.test(date) ? date : todayIso();
   });
   const [transportMode, setTransportModeState] = useState<TransportMode>(() => {
+    if (initial) return initial.transportMode;
     const mode = searchParams.get("mode");
     return TRANSPORT_MODES.some((m) => m.id === mode) ? (mode as TransportMode) : "ocean";
   });
   // Trade preference claimed per country code
   const [preferences, setPreferences] = useState<Record<string, string>>(() => {
+    if (initial) return initial.claimedPreference ? { [initial.country.code]: initial.claimedPreference } : {};
     const pref = searchParams.get("pref");
-    const main = countryByCode(searchParams.get("country")) ?? countryByCode("CN");
+    const main = countryByCode(searchParams.get("country")) ?? countryByCode(defaultCountry);
     return pref && main ? { [main.code]: pref } : {};
   });
   const claimedPreference = (country && preferences[country.code]) || "";
-  const [answers, setAnswers] = useState<Answers>(() => parseAnswers(searchParams.get("answers")));
+  const [answers, setAnswers] = useState<Answers>(() => initial?.answers ?? parseAnswers(searchParams.get("answers")));
   const [view, setView] = useState<View>(() => {
     const param = searchParams.get("view");
     return param === "simple" || param === "compare" ? param : "detailed";
@@ -146,7 +186,7 @@ export const useTariffFinder = () => {
         );
       }
       setShowExplore(true);
-      trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source: "sub_tariff_code_selected" });
+      track(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source: "sub_tariff_code_selected" });
     },
     [sections, htsElements, setBreadcrumbs]
   );
@@ -154,7 +194,7 @@ export const useTariffFinder = () => {
   const selectElement = useCallback(
     (element: HtsElement | null, source: string) => {
       if (!element) {
-        if (selectedElement) trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_CLEARED);
+        if (selectedElement) track(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_CLEARED);
         setSelectedElement(null);
         return;
       }
@@ -163,7 +203,7 @@ export const useTariffFinder = () => {
         return;
       }
       setSelectedElement(element);
-      trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_SELECTED, {
+      track(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_SELECTED, {
         hts_code: element.htsno,
         digit_count: htsCodeDigitsOnly(element.htsno).length,
         source,
@@ -172,8 +212,30 @@ export const useTariffFinder = () => {
     [selectedElement, openExplorerAt]
   );
 
-  // React to ?code= whenever it changes, including links clicked inside the explorer
+  // How this visit began, noted once on arrival. The code the page opened with is handled
+  // (and attributed) only once the HTS data has loaded.
   const codeParam = searchParams.get("code");
+  const landing = useRef<{ arrival: Arrival; linkedFrom: CalculatorLinkSource | null } | null>(null);
+  const landingCodeHandled = useRef(false);
+  useEffect(() => {
+    if (landing.current) return;
+    const arrival = calculatorArrival();
+    const linkedFrom = codeParam ? takeCalculatorHandoff(codeParam) : null;
+    landing.current = { arrival, linkedFrom };
+    landingCodeHandled.current = !codeParam;
+    track(MixpanelEvent.DUTY_CALCULATOR_PAGE_LOADED, {
+      arrival,
+      link_source: linkedFrom,
+      has_code_param: Boolean(codeParam),
+      has_country_param: Boolean(searchParams.get("country")),
+      has_compare_param: Boolean(searchParams.get("compare")),
+      tool: searchParams.get("tool") ?? "calculator",
+    });
+    // Once, on arrival
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // React to ?code= whenever it changes
   useEffect(() => {
     if (!codeParam || htsElements.length === 0) return;
     const normalized = normalizeHtsCode(codeParam.trim());
@@ -181,15 +243,27 @@ export const useTariffFinder = () => {
     // The address bar follows the inputs (see below), so ?code= often names the code that's
     // already selected: nothing to do, and not a deep link
     if (match && selectedElement && htsCodesEqual(selectedElement.htsno, match.htsno)) return;
+    // The code the page opened with, or a later one the site linked to
+    const onLanding = !landingCodeHandled.current;
+    landingCodeHandled.current = true;
+    const arrival = onLanding ? landing.current?.arrival ?? "external" : "internal";
+    const linkedFrom = onLanding ? landing.current?.linkedFrom ?? null : takeCalculatorHandoff(codeParam);
+    const returning = arrival === "reload" || arrival === "back_forward";
     if (match) {
       setShowExplore(false);
-      selectElement(match, "url");
+      selectElement(match, linkedFrom ?? (onLanding && returning ? arrival : "url"));
     }
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_DEEP_LINK_OPENED, {
-      had_country_param: Boolean(searchParams.get("country")),
-      had_code_param: true,
-      code_matched_element: Boolean(match),
-    });
+    // A deep link is a link into the calculator: not a reload of the page's own address, not
+    // going back to it, and not a code picked in the explorer over the calculator
+    if (onLanding && !returning && linkedFrom !== "explorer_modal") {
+      track(MixpanelEvent.DUTY_CALCULATOR_DEEP_LINK_OPENED, {
+        had_country_param: Boolean(searchParams.get("country")),
+        had_code_param: true,
+        code_matched_element: Boolean(match),
+        arrival,
+        link_source: linkedFrom,
+      });
+    }
     // Only when the code param or data changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeParam, htsElements.length]);
@@ -305,17 +379,18 @@ export const useTariffFinder = () => {
     const key = `${selectedElement.htsno}-${country.code}`;
     if (lastViewedKey.current === key) return;
     lastViewedKey.current = key;
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
+    track(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
       hts_code: selectedElement.htsno,
       country_code: country.code,
       tariff_basis_hts_code: tariffElement.htsno,
+      surface: "calculator",
     });
   }, [result, selectedElement, country, tariffElement]);
 
   const trackLater = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const trackDebounced = (key: string, event: MixpanelEvent, props: Record<string, unknown>) => {
     clearTimeout(trackLater.current[key]);
-    trackLater.current[key] = setTimeout(() => trackEvent(event, props), 1000);
+    trackLater.current[key] = setTimeout(() => track(event, props), 1000);
   };
 
   // ── Actions ──
@@ -331,18 +406,18 @@ export const useTariffFinder = () => {
 
   const setEntryDate = (date: string, source?: string) => {
     setEntryDateState(date);
-    if (source) trackEvent(MixpanelEvent.DUTY_CALCULATOR_ENTRY_DATE_SET, { entry_date: date, source });
+    if (source) track(MixpanelEvent.DUTY_CALCULATOR_ENTRY_DATE_SET, { entry_date: date, source });
     else trackDebounced("date", MixpanelEvent.DUTY_CALCULATOR_ENTRY_DATE_SET, { entry_date: date });
   };
 
   const setTransportMode = (mode: TransportMode) => {
     setTransportModeState(mode);
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_TRANSPORT_MODE_SET, { mode });
+    track(MixpanelEvent.DUTY_CALCULATOR_TRANSPORT_MODE_SET, { mode });
   };
 
   const setPreference = (code: string, symbol: string) => {
     setPreferences((prev) => ({ ...prev, [code]: symbol }));
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_PREFERENCE_CLAIMED, { symbol: symbol || "none", country_code: code });
+    track(MixpanelEvent.DUTY_CALCULATOR_PREFERENCE_CLAIMED, { symbol: symbol || "none", country_code: code });
   };
 
   const answer = (id: string, value: unknown) => {
@@ -352,12 +427,12 @@ export const useTariffFinder = () => {
       else next[id] = value as Answers[string];
       return next;
     });
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_QUESTION_ANSWERED, { input: id, answered: value !== undefined });
+    track(MixpanelEvent.DUTY_CALCULATOR_QUESTION_ANSWERED, { input: id, answered: value !== undefined });
   };
 
   const changeView = (next: View) => {
     setView(next);
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_VIEW_CHANGED, { view: next });
+    track(MixpanelEvent.DUTY_CALCULATOR_VIEW_CHANGED, { view: next });
     try {
       window.localStorage.setItem(VIEW_STORAGE_KEY, next);
     } catch {
@@ -367,6 +442,8 @@ export const useTariffFinder = () => {
 
   const shareUrl = () =>
     calculatorUrl({
+      path,
+      extra: extraParams,
       code: selectedElement?.htsno,
       country: country?.code,
       value: customsValue,
@@ -383,15 +460,13 @@ export const useTariffFinder = () => {
   // (and a copied address works like Share). replaceState changes the URL without navigating
   // or reloading; Next.js keeps useSearchParams in sync. Debounced for typing.
   useEffect(() => {
-    if (loading) return;
+    if (loading || !syncAddress) return;
     // Don't drop a linked code from the address before it has loaded
     if (codeParam && !selectedElement) return;
     const timer = setTimeout(() => {
       const next = new URL(shareUrl());
       const current = new URL(window.location.href);
       if (next.pathname !== current.pathname) return;
-      const tool = current.searchParams.get("tool");
-      if (tool) next.searchParams.set("tool", tool);
       const target = `${next.pathname}?${next.searchParams.toString()}${current.hash}`;
       if (target !== `${current.pathname}${current.search}${current.hash}`) {
         window.history.replaceState(window.history.state, "", target);
@@ -400,7 +475,7 @@ export const useTariffFinder = () => {
     return () => clearTimeout(timer);
     // Every input that goes into the URL
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, selectedElement, countries, customsValue, quantity, entryDate, transportMode, claimedPreference, answers, view, result?.requiresQuantity]);
+  }, [syncAddress, loading, selectedElement, countries, customsValue, quantity, entryDate, transportMode, claimedPreference, answers, view, result?.requiresQuantity]);
 
   const comparing = view === "compare" && compareEntries.length > 0;
   const transportLabel = TRANSPORT_MODES.find((m) => m.id === transportMode)?.label ?? "";
@@ -439,7 +514,7 @@ export const useTariffFinder = () => {
     if (!ok) return;
     setCopied(kind);
     setTimeout(() => setCopied(null), 2000);
-    trackEvent(
+    track(
       kind === "link" ? MixpanelEvent.DUTY_CALCULATOR_SHARE_RESULTS_COPIED : MixpanelEvent.DUTY_CALCULATOR_RESULTS_COPIED,
       { hts_code: selectedElement?.htsno, country_code: country?.code, is_modal: false }
     );
@@ -450,15 +525,15 @@ export const useTariffFinder = () => {
     if (!element) return;
     setCountries([countryByCode(example.country)]);
     selectElement(element, "example");
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXAMPLE_SELECTED, { hts_code: example.code, country_code: example.country });
+    track(MixpanelEvent.DUTY_CALCULATOR_EXAMPLE_SELECTED, { hts_code: example.code, country_code: example.country });
   };
 
   const changeCountries = (next: Country[]) => {
     if (next[0]?.code !== country?.code) {
-      trackEvent(MixpanelEvent.DUTY_CALCULATOR_COUNTRY_CHANGED, { country_code: next[0]?.code ?? null });
+      track(MixpanelEvent.DUTY_CALCULATOR_COUNTRY_CHANGED, { country_code: next[0]?.code ?? null });
     }
     if (next.length !== countries.length) {
-      trackEvent(MixpanelEvent.DUTY_CALCULATOR_COMPARE_CHANGED, { countries: next.map((c) => c.code).join(",") });
+      track(MixpanelEvent.DUTY_CALCULATOR_COMPARE_CHANGED, { countries: next.map((c) => c.code).join(",") });
     }
     setCountries(next);
   };
@@ -475,12 +550,12 @@ export const useTariffFinder = () => {
 
   const openExplore = (source = "description_search_button") => {
     setShowExplore(true);
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source });
+    track(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source });
   };
 
   const closeExplore = () => {
     setShowExplore(false);
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_CLOSED);
+    track(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_CLOSED);
   };
 
   useEffect(() => {

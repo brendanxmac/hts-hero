@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CheckIcon } from "@heroicons/react/16/solid";
 
 interface CtaGridProps {
   htsCode?: string;
@@ -19,7 +18,7 @@ export function CtaGrid({ htsCode, contextLabel }: CtaGridProps) {
           Everything you need to classify, calculate duties, and stay compliant.
         </p>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <section className="relative rounded-2xl overflow-hidden border-2 border-secondary/20 bg-base-100 shadow-sm flex flex-col">
           <div className="bg-gradient-to-br from-secondary/10 to-secondary/[0.03] px-6 py-5 border-b border-secondary/10">
             <div className="flex items-center gap-3 mb-2">
@@ -67,30 +66,6 @@ export function CtaGrid({ htsCode, contextLabel }: CtaGridProps) {
               className="block text-center px-6 py-3 rounded-xl bg-primary text-primary-content font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25"
             >
               Calculate Duty Rates
-            </Link>
-          </div>
-        </section>
-
-        <section className="relative rounded-2xl overflow-hidden border-2 border-accent/20 bg-base-100 shadow-sm flex flex-col">
-          <div className="bg-gradient-to-br from-accent/10 to-accent/[0.03] px-6 py-5 border-b border-accent/10">
-            <div className="flex items-center gap-3 mb-2">
-              <span className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center">
-                <CheckIcon className="text-accent w-5 h-5" />
-              </span>
-              <h3 className="text-base font-bold text-base-content">Tariff Impact Checker</h3>
-            </div>
-          </div>
-          <div className="p-6 flex flex-col flex-1">
-            <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
-              Instantly see if new tariffs or HTS updates affect your imports and get notified when they do!
-            </p>
-            <Link
-              href={htsCode ? `/tariffs/impact-checker?codes=${htsCode}` : "/tariffs/impact-checker"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-center px-6 py-3 rounded-xl bg-accent text-accent-content font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/25"
-            >
-              Check Your Imports
             </Link>
           </div>
         </section>

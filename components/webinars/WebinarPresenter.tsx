@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { authors } from "@/app/blog/_assets/types";
+import { AUTHORS } from "@/libs/blog/catalog";
 
 interface Props {
   presenterName: string;
@@ -11,7 +11,7 @@ export default function WebinarPresenter({
   presenterName,
   presenterTitle,
 }: Props) {
-  const matchedAuthor = authors.find(
+  const matchedAuthor = AUTHORS.find(
     (a) => a.name.toLowerCase() === presenterName.toLowerCase(),
   );
 
@@ -38,7 +38,7 @@ export default function WebinarPresenter({
               {matchedAuthor.name}
             </p>
             <p className="text-sm text-base-content/60">
-              {presenterTitle || matchedAuthor.job}
+              {presenterTitle || matchedAuthor.role}
             </p>
           </div>
         </Link>
