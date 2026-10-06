@@ -16,12 +16,15 @@ export const TARIFFS_API: Tool = {
     selfServe: { support: "yes" },
     publishedPricing: { support: "yes" },
     fullStack: { support: "yes", note: "With citations" },
+    tradePreferences: { support: "yes", note: "FTA rates such as USMCA and KORUS" },
+    adjustments: { support: "unknown" },
     entryDate: { support: "partial", note: "Through the API's as_of parameter" },
     rateHistory: { support: "unknown" },
     catalogImpact: { support: "paid", note: "HTS Watch, from $99/mo" },
     countryCompare: { support: "unknown" },
     csvUpload: { support: "paid", note: "From $99/mo" },
     classification: { support: "no", note: "Doesn't offer classification" },
+    api: { support: "paid", note: "API and MCP server, from $199/mo" },
     changelog: { support: "unknown" },
   },
   strengths: ["Strong API with an MCP server", "Results cite the HTS subheading and CBP measures", "Published pricing"],
@@ -43,8 +46,8 @@ export const TARIFFS_API: Tool = {
       "You want Duty Over Time and past entry dates in a visual tool",
     ],
     chooseThem: [
-      "You're a developer who needs a tariff API or an MCP server",
-      "You want to pull duty rates straight into your ERP or pricing system",
+      "You want self-serve API keys with published per-call pricing",
+      "You're building your own product on top of duty-rate data",
     ],
     differences: [
       {

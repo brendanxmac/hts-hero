@@ -21,11 +21,12 @@ export function GET() {
 
   const body = `# HTS Hero
 
-> HTS Hero is a US tariff calculator and auditing tool for importers, customs brokers and trade compliance teams. It calculates the full US import duty for an HTS code, country of origin and entry date: the base rate, every Chapter 99 tariff (Section 232, Section 301 and others) with its exemptions and stacking rules, and customs fees. Its tariff data is checked against each new revision of the Harmonized Tariff Schedule.
+> HTS Hero is a US tariff calculator and auditing tool for importers, customs brokers and trade compliance teams. It calculates the full US import duty for an HTS code, country of origin and entry date: the base rate, every Chapter 99 tariff (Section 232, Section 301 and others) with its exemptions and stacking rules, and customs fees. Its tariff data is checked against each new revision of the Harmonized Tariff Schedule. Tariff results are also available by API and MCP for ERP, TMS and internal systems.
 
 ## Tools
 
 - [US Tariff Calculator](${SITE}/duty-calculator): every duty on an import, line by line, with exemptions, rates by country and duty over time
+- [Duty calculator FAQ](${SITE}/duty-calculator/faq): how US import duty is calculated, the 2026 tariff programs, fees and what's included
 - [HTS Explorer](${SITE}/explore): browse and search the full Harmonized Tariff Schedule
 - [HTS code pages](${SITE}/hts/6109.10.00): duty rates by country for each HTS code
 - [HTS Classification](${SITE}/classify): find and document an HTS code for a product

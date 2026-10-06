@@ -3,6 +3,7 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { COMPETITORS, HTS_HERO, ROUNDUP_SLUG, vsSlug } from "@/libs/compare/pages";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
+import { IntegrationCta } from "../cta/IntegrationCta";
 import { SelfServeCta } from "../cta/SelfServeCta";
 import { CompareHero } from "../layout/CompareHero";
 import { FeatureMatrix } from "../matrix/FeatureMatrix";
@@ -54,6 +55,8 @@ export function CompareHub() {
             }))}
           />
         </section>
+
+        <IntegrationCta />
       </div>
 
       <div className={ui.band}>

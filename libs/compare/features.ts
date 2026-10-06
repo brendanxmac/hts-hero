@@ -25,6 +25,16 @@ export const FEATURES: { key: FeatureKey; label: string; help: string }[] = [
     help: "The base rate plus Section 232, Section 301 and every other additional duty, each as its own line with exemptions applied.",
   },
   {
+    key: "tradePreferences",
+    label: "Trade agreements and preference programs",
+    help: "Claim USMCA, CAFTA-DR, KORUS and other programs and see the preferential rate.",
+  },
+  {
+    key: "adjustments",
+    label: "Exemption questions that change the duty",
+    help: "Answer the facts that unlock exemptions (metal content, generics, donations and more) and see the new total.",
+  },
+  {
     key: "entryDate",
     label: "Audit past entries by date",
     help: "Calculate the duty that applied on an entry date, to check what you paid.",
@@ -55,6 +65,11 @@ export const FEATURES: { key: FeatureKey; label: string; help: string }[] = [
     help: "Guidance to find and document the right HTS code for a product.",
   },
   {
+    key: "api",
+    label: "API, MCP and ERP/TMS integration",
+    help: "Get tariff results inside your ERP, TMS, internal tools or AI assistant.",
+  },
+  {
     key: "changelog",
     label: "Public changelog of rate updates",
     help: "A dated record of every change to the tool's tariff data.",
@@ -66,6 +81,7 @@ export const SUPPORT_LABELS: Record<Support, string> = {
   partial: "Partly",
   paid: "Paid plan",
   gated: "Customers only",
+  onRequest: "On request",
   no: "No",
   unknown: "Not found",
 };

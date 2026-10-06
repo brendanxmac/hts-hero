@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRightIcon, ArrowTopRightOnSquareIcon, CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
 import type { Tool } from "@/libs/compare/types";
+import config from "@/config";
 import * as ui from "@/components/ui/styles";
 
 // One tool in a ranked list: its place, what it is, who it suits, what it costs, and its
@@ -79,6 +80,9 @@ export function RankedToolCard({ tool, rank, vsHref }: { tool: Tool; rank: numbe
             <Link href="/pricing-calculator" className={ui.button()}>
               See pricing
             </Link>
+            <a href={config.bookCallUrl} target="_blank" rel="noopener" className={`${ui.link} text-sm`}>
+              Talk to us about the API
+            </a>
           </>
         ) : (
           <>

@@ -4,6 +4,7 @@ import { SourceList } from "@/components/blog";
 import { FaqList } from "@/components/ui/FaqList";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
+import { IntegrationCta } from "../cta/IntegrationCta";
 import { SelfServeCta } from "../cta/SelfServeCta";
 import { CompareHero } from "../layout/CompareHero";
 import { FeatureMatrix } from "../matrix/FeatureMatrix";
@@ -66,6 +67,8 @@ export function VsPage({ slug, tool, content }: { slug: string; tool: Tool; cont
           <SectionHeader kicker="Pricing" title="What each one costs" />
           <PricingSideBySide tools={[HTS_HERO, tool]} />
         </section>
+
+        <IntegrationCta />
       </div>
 
       <div className={ui.band}>

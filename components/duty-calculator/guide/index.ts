@@ -1,2 +1,3 @@
 export { TariffGuide } from "./TariffGuide";
-export { dutyCalculatorFaqs } from "./faqs";
+export { dutyCalculatorFaqSections, dutyCalculatorFaqs } from "./faqs";
+export type { Faq, FaqSection } from "./faqs";

@@ -2,27 +2,28 @@ import { HTS_HERO } from "./tools/htsHero";
 import { FLEXPORT } from "./tools/flexport";
 import { GINGER_CONTROL } from "./tools/gingerControl";
 import { GATEWAY_LINES } from "./tools/gatewayLines";
-import { TARIFFS_API } from "./tools/tariffsApi";
 import { AMZ_PREP } from "./tools/amzPrep";
+import { TARIFFS_API } from "./tools/tariffsApi";
 import { AIRLIFT_USA, AVALARA, DESCARTES, EASYSHIP, SIMPLY_DUTY, ZONOS } from "./tools/globalLandedCost";
 import type { Tool } from "./types";
 
 export { HTS_HERO };
 
-// Every competitor, in the roundup's order: US-specific calculators first, by how completely
-// they cover a US importer's duty, then global and enterprise tools
+// Every competitor, in the roundup's order: the best-known names first (Flexport, then the
+// large duty and landed-cost platforms), then the smaller single-purpose calculators. The order
+// also decides which tools fill the side-by-side tables and the alternatives lists.
 export const COMPETITORS: Tool[] = [
-  GINGER_CONTROL,
   FLEXPORT,
-  TARIFFS_API,
-  GATEWAY_LINES,
-  AIRLIFT_USA,
-  AMZ_PREP,
-  SIMPLY_DUTY,
   AVALARA,
   ZONOS,
   DESCARTES,
+  SIMPLY_DUTY,
+  GINGER_CONTROL,
+  GATEWAY_LINES,
+  AIRLIFT_USA,
+  TARIFFS_API,
   EASYSHIP,
+  AMZ_PREP,
 ];
 
 export const ROUNDUP_SLUG = "best-us-tariff-calculators";

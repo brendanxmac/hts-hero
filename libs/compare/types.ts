@@ -13,6 +13,8 @@ export type Support =
   | "paid"
   // Only for the vendor's customers, or after a demo or a sales call
   | "gated"
+  // Offered, set up with the vendor's team (an API, an integration)
+  | "onRequest"
   // Checked, and it isn't offered
   | "no"
   // Not on the vendor's public site: we don't count it either way
@@ -23,12 +25,15 @@ export type FeatureKey =
   | "selfServe"
   | "publishedPricing"
   | "fullStack"
+  | "tradePreferences"
+  | "adjustments"
   | "entryDate"
   | "rateHistory"
   | "catalogImpact"
   | "countryCompare"
   | "csvUpload"
   | "classification"
+  | "api"
   | "changelog";
 
 export interface FeatureValue {

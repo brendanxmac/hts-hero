@@ -14,6 +14,7 @@ const MARKS: Record<Support, { Icon: typeof CheckCircleIcon; color: string }> = 
   paid: { Icon: CheckCircleIcon, color: "text-primary" },
   partial: { Icon: MinusCircleIcon, color: "text-warning" },
   gated: { Icon: LockClosedIcon, color: "text-warning" },
+  onRequest: { Icon: CheckCircleIcon, color: "text-primary" },
   no: { Icon: XMarkIcon, color: "text-base-content/60" },
   unknown: { Icon: MinusIcon, color: "text-base-content/60" },
 };

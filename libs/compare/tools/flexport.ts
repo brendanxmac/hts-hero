@@ -11,48 +11,56 @@ export const FLEXPORT: Tool = {
   bestFor: "Quick one-off estimates, and Flexport freight customers",
   price: "Free; Pro for Flexport clients",
   priceDetail:
-    "Free for up to 10 HTS codes without an account. Pro is unlocked by signing in with a Flexport Client App account, and no separate price is published.",
+    "Free with no registration. Pro is unlocked by signing in with a Flexport Client App account, and no separate price is published.",
   features: {
-    freeToTry: { support: "yes", note: "Up to 10 HTS codes with no login" },
+    freeToTry: { support: "yes", note: "No registration needed" },
     selfServe: { support: "partial", note: "Free tool is self-serve; Pro needs a Flexport client account" },
     publishedPricing: { support: "no", note: "Pro has no published price" },
     fullStack: { support: "yes", note: "Results broken down by tariff type" },
-    entryDate: { support: "unknown" },
+    tradePreferences: { support: "yes", note: "Applied automatically when eligible" },
+    adjustments: { support: "yes", note: "Steel and aluminum content, when prompted" },
+    entryDate: { support: "yes", note: "Rates back to January 1, 2025, per its FAQ" },
     rateHistory: { support: "unknown" },
     catalogImpact: { support: "gated", note: "Pro email alerts, for Flexport clients" },
     countryCompare: { support: "gated", note: "Pro, for Flexport clients" },
     csvUpload: { support: "gated", note: "Pro, up to 500 rows" },
     classification: { support: "partial", note: "HTS search by product name or code" },
+    api: { support: "unknown" },
     changelog: { support: "yes" },
   },
   strengths: [
     "Well-known brand with a polished interface and trade map",
-    "Free with no login for up to 10 codes",
+    "Free with no registration",
+    "Entry-date rates back to January 1, 2025",
+    "Applies trade agreements such as USMCA automatically",
     "Public changelog of calculation updates",
     "Free IEEPA tariff refund calculator",
   ],
   limitations: [
     "Bulk upload, alerts and country comparison require becoming a Flexport client",
     "No published price for Pro",
+    "One calculation at a time on the free tool",
     "Built as a funnel for Flexport's freight and customs business",
   ],
   sources: [
     { title: "Flexport Tariff Simulator", url: "https://www.flexport.com/tariff-sim/" },
     { title: "Flexport Fall 2025 product release", url: "https://www.flexport.com/technology/product-release/fall-2025" },
+    { title: "Flexport Tariff Simulator FAQ", url: "https://tariffs.flexport.com/faq" },
   ],
   checkedAt: "2026-10-06",
   vs: {
     verdict:
-      "Flexport's simulator is a fine free tool for a quick estimate. HTS Hero is the better fit once you need to audit past entries, track a catalog or use bulk tools without moving your freight to Flexport.",
+      "Flexport's simulator is a solid free tool for one-off estimates, with trade agreements and entry-date rates. HTS Hero is the better fit once you need catalog alerts, bulk tools, country comparison or an API without moving your freight to Flexport.",
     chooseHtsHero: [
       "You want catalog alerts, bulk upload and country comparison without becoming a freight customer",
-      "You need the duty for a past entry date to check what you paid",
-      "You want to see how a product's duty changed revision by revision",
+      "You want to see how a product's duty changed revision by revision, with the heading behind each change",
+      "You want tariff results in your ERP, TMS or AI tools through an API or MCP",
       "You want to know the price before you sign up, and to pay monthly with no contract",
     ],
     chooseThem: [
       "You already ship with Flexport and want everything in one account",
       "You need a quick estimate for a handful of codes and nothing more",
+      "You need entry-date rates for 2025, which Flexport keeps back to January 1, 2025",
       "You want Flexport's IEEPA refund calculator for 2025 entries",
     ],
     differences: [
@@ -61,8 +69,12 @@ export const FLEXPORT: Tool = {
         body: "Flexport's free simulator covers single lookups. Its Pro features, including bulk upload, email alerts and country comparison, are unlocked by signing in with a Flexport client account, so they come with a freight relationship. On HTS Hero every plan is self-serve: pick one on the pricing page and start.",
       },
       {
-        title: "Auditing past entries",
-        body: "HTS Hero calculates the duty for any entry date it has verified data for, using the HTS revision in force that day, and its Duty Over Time view shows each change to a product's duty. That's what you need to check an entry summary against what the law said at the time. We couldn't find an entry-date option documented on Flexport's public pages.",
+        title: "History and auditing",
+        body: "Both tools calculate duty for a past entry date. Flexport's FAQ says its rates go back to January 1, 2025; HTS Hero's verified history starts in April 2026. Where HTS Hero goes further is showing the history: Duty Over Time charts every change to a product's duty, with the HTS revision and Chapter 99 heading behind each one.",
+      },
+      {
+        title: "Your own systems",
+        body: "HTS Hero delivers tariff results by API and MCP, so the same calculation can run inside your ERP, TMS, internal tools or an AI assistant. We didn't find a public API for Flexport's simulator.",
       },
       {
         title: "Pricing you can see",
@@ -73,12 +85,12 @@ export const FLEXPORT: Tool = {
       {
         question: "Is Flexport's tariff simulator free?",
         answer:
-          "Yes, for up to 10 HTS codes without an account. Its Pro features, such as bulk upload and alerts, require a Flexport Client App account, which means being a Flexport customer.",
+          "Yes, with no registration. Its Pro features, such as bulk upload and alerts, require a Flexport Client App account, which means being a Flexport customer.",
       },
       {
         question: "What's the best Flexport tariff simulator alternative?",
         answer:
-          "HTS Hero is a strong alternative if you need more than single lookups without a freight relationship: it adds entry audits by date, Duty Over Time, tariff change alerts for your catalog and bulk CSV upload, on self-serve monthly plans with published prices.",
+          "HTS Hero is a strong alternative if you need more than single lookups without a freight relationship: it adds Duty Over Time, tariff change alerts for your catalog, bulk CSV upload, country comparison and API and MCP access, on self-serve monthly plans with published prices.",
       },
       {
         question: "Can I use HTS Hero if I'm a customs broker?",

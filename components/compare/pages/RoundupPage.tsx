@@ -4,6 +4,7 @@ import { SourceList } from "@/components/blog";
 import { FaqList } from "@/components/ui/FaqList";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
+import { IntegrationCta } from "../cta/IntegrationCta";
 import { SelfServeCta } from "../cta/SelfServeCta";
 import { CompareHero } from "../layout/CompareHero";
 import { FeatureMatrix } from "../matrix/FeatureMatrix";
@@ -73,6 +74,8 @@ export function RoundupPage() {
           <SectionHeader kicker="Side by side" title="The leaders, feature by feature" />
           <FeatureMatrix tools={ranked.slice(0, 5)} linkFor={vsHref} />
         </section>
+
+        <IntegrationCta />
       </div>
 
       <div className={ui.band}>

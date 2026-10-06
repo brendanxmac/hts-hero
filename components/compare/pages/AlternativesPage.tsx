@@ -4,6 +4,7 @@ import { SourceList } from "@/components/blog";
 import { FaqList } from "@/components/ui/FaqList";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
+import { IntegrationCta } from "../cta/IntegrationCta";
 import { SelfServeCta } from "../cta/SelfServeCta";
 import { CompareHero } from "../layout/CompareHero";
 import { FeatureMatrix } from "../matrix/FeatureMatrix";
@@ -65,6 +66,8 @@ export function AlternativesPage({
           <SectionHeader kicker="Side by side" title={`How they compare with ${tool.name}`} />
           <FeatureMatrix tools={[HTS_HERO, tool, ...alternativesTo(tool, 3)]} linkFor={vsHref} />
         </section>
+
+        <IntegrationCta />
       </div>
 
       <div className={ui.band}>
