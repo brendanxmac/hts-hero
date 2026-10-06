@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { HtsElement } from "@/interfaces/hts";
 import { mono } from "@/components/ui/font";
+import { isVerifiedDate } from "@/tariffs/engine-v2/revisions";
 import { formatDate } from "../lib/format";
 import { TariffFinder } from "../lib/useTariffFinder";
 import { ShareButtons } from "./ShareButtons";
@@ -51,6 +52,13 @@ export const ResultsHeader = ({
         {" · "}
         {f.transportLabel}
       </p>
+      {/* Which edition of the schedule the numbers come from: freshness people can check */}
+      {f.revisionForDate && (
+        <p className="mt-0.5 text-xs text-base-content/60">
+          Rates from HTS {f.revisionForDate.title}
+          {isVerifiedDate(result.asOf) ? ", verified" : ""}
+        </p>
+      )}
     </div>
     <div className="flex flex-wrap sm:flex-nowrap w-full sm:w-auto items-center gap-2">
       <ViewSwitch f={f} className="basis-full sm:basis-auto" allowCompare={allowCompare} />

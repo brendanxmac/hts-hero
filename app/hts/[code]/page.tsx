@@ -179,6 +179,9 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
   );
 }
 
+// The codes directly under a line. A descriptive line with no code of its own ("Men's or boys'")
+// is looked through to the codes beneath it, so every 10-digit code is linked from its parent's
+// page and crawlers can reach it without the sitemap.
 function getDirectChildren(
   element: HtsElement,
   allElements: HtsElement[]
@@ -187,14 +190,19 @@ function getDirectChildren(
   if (parentIndex === -1) return [];
 
   const parentIndent = Number(element.indent);
-  const childIndent = parentIndent + 1;
   const children: HtsElement[] = [];
+  // Below a code already collected, its own sub-codes belong to its page, not this one
+  let skipDeeperThan: number | null = null;
 
   for (let i = parentIndex + 1; i < allElements.length; i++) {
-    const currentIndent = Number(allElements[i].indent);
+    const current = allElements[i];
+    const currentIndent = Number(current.indent);
     if (currentIndent <= parentIndent) break;
-    if (currentIndent === childIndent) {
-      children.push(allElements[i]);
+    if (skipDeeperThan !== null && currentIndent > skipDeeperThan) continue;
+    skipDeeperThan = null;
+    if (current.htsno) {
+      children.push(current);
+      skipDeeperThan = currentIndent;
     }
   }
 

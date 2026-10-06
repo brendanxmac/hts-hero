@@ -35,6 +35,7 @@ import {
   parseAnswers,
 } from "./estimate";
 import { countOpenQuestions, preferenceImpacts, questionImpacts } from "./questions";
+import { Arrival, calculatorArrival, CalculatorLinkSource, takeCalculatorHandoff } from "./analytics";
 import { formatDate, formatMoney, todayIso, TRANSPORT_MODES } from "./format";
 
 // Everything the Tariff Finder knows and can do; the page only lays it out.
@@ -88,12 +89,15 @@ export const useTariffFinder = ({
   syncAddress = true,
   initial,
   track: trackAnalytics = true,
+  defaultCountry = "CN",
 }: {
   path?: string;
   extraParams?: Record<string, string>;
   syncAddress?: boolean;
   initial?: FinderStart;
   track?: boolean;
+  // The country of origin when the address names none (a country page's own country)
+  defaultCountry?: string;
 } = {}) => {
   const searchParams = useSearchParams();
   const track = (event: MixpanelEvent, props?: Record<string, unknown>) => {
@@ -109,7 +113,7 @@ export const useTariffFinder = ({
   // Countries of origin; the first is the main one (Detailed and Simple views), the rest are compared
   const [countries, setCountries] = useState<Country[]>(() => {
     if (initial) return [initial.country];
-    const main = countryByCode(searchParams.get("country")) ?? countryByCode("CN");
+    const main = countryByCode(searchParams.get("country")) ?? countryByCode(defaultCountry);
     const others = (searchParams.get("compare") ?? "").split(",").map(countryByCode);
     return [main, ...others]
       .filter((c, i, all): c is Country => Boolean(c) && all.findIndex((x) => x?.code === c.code) === i)
@@ -132,7 +136,7 @@ export const useTariffFinder = ({
   const [preferences, setPreferences] = useState<Record<string, string>>(() => {
     if (initial) return initial.claimedPreference ? { [initial.country.code]: initial.claimedPreference } : {};
     const pref = searchParams.get("pref");
-    const main = countryByCode(searchParams.get("country")) ?? countryByCode("CN");
+    const main = countryByCode(searchParams.get("country")) ?? countryByCode(defaultCountry);
     return pref && main ? { [main.code]: pref } : {};
   });
   const claimedPreference = (country && preferences[country.code]) || "";
@@ -208,8 +212,30 @@ export const useTariffFinder = ({
     [selectedElement, openExplorerAt]
   );
 
-  // React to ?code= whenever it changes, including links clicked inside the explorer
+  // How this visit began, noted once on arrival. The code the page opened with is handled
+  // (and attributed) only once the HTS data has loaded.
   const codeParam = searchParams.get("code");
+  const landing = useRef<{ arrival: Arrival; linkedFrom: CalculatorLinkSource | null } | null>(null);
+  const landingCodeHandled = useRef(false);
+  useEffect(() => {
+    if (landing.current) return;
+    const arrival = calculatorArrival();
+    const linkedFrom = codeParam ? takeCalculatorHandoff(codeParam) : null;
+    landing.current = { arrival, linkedFrom };
+    landingCodeHandled.current = !codeParam;
+    track(MixpanelEvent.DUTY_CALCULATOR_PAGE_LOADED, {
+      arrival,
+      link_source: linkedFrom,
+      has_code_param: Boolean(codeParam),
+      has_country_param: Boolean(searchParams.get("country")),
+      has_compare_param: Boolean(searchParams.get("compare")),
+      tool: searchParams.get("tool") ?? "calculator",
+    });
+    // Once, on arrival
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // React to ?code= whenever it changes
   useEffect(() => {
     if (!codeParam || htsElements.length === 0) return;
     const normalized = normalizeHtsCode(codeParam.trim());
@@ -217,15 +243,27 @@ export const useTariffFinder = ({
     // The address bar follows the inputs (see below), so ?code= often names the code that's
     // already selected: nothing to do, and not a deep link
     if (match && selectedElement && htsCodesEqual(selectedElement.htsno, match.htsno)) return;
+    // The code the page opened with, or a later one the site linked to
+    const onLanding = !landingCodeHandled.current;
+    landingCodeHandled.current = true;
+    const arrival = onLanding ? landing.current?.arrival ?? "external" : "internal";
+    const linkedFrom = onLanding ? landing.current?.linkedFrom ?? null : takeCalculatorHandoff(codeParam);
+    const returning = arrival === "reload" || arrival === "back_forward";
     if (match) {
       setShowExplore(false);
-      selectElement(match, "url");
+      selectElement(match, linkedFrom ?? (onLanding && returning ? arrival : "url"));
     }
-    track(MixpanelEvent.DUTY_CALCULATOR_DEEP_LINK_OPENED, {
-      had_country_param: Boolean(searchParams.get("country")),
-      had_code_param: true,
-      code_matched_element: Boolean(match),
-    });
+    // A deep link is a link into the calculator: not a reload of the page's own address, not
+    // going back to it, and not a code picked in the explorer over the calculator
+    if (onLanding && !returning && linkedFrom !== "explorer_modal") {
+      track(MixpanelEvent.DUTY_CALCULATOR_DEEP_LINK_OPENED, {
+        had_country_param: Boolean(searchParams.get("country")),
+        had_code_param: true,
+        code_matched_element: Boolean(match),
+        arrival,
+        link_source: linkedFrom,
+      });
+    }
     // Only when the code param or data changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeParam, htsElements.length]);
@@ -345,6 +383,7 @@ export const useTariffFinder = ({
       hts_code: selectedElement.htsno,
       country_code: country.code,
       tariff_basis_hts_code: tariffElement.htsno,
+      surface: "calculator",
     });
   }, [result, selectedElement, country, tariffElement]);
 

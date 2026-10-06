@@ -1,13 +1,15 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { Countries, Country } from "@/constants/countries";
 // Types only: the engine and its tariff data load on demand, below
 import type { MicroEstimate } from "@/libs/hts-micro-estimate";
 import { CountryField } from "@/components/duty-calculator/fields";
+import { markCalculatorHandoff } from "@/components/duty-calculator/lib/analytics";
 import { formatDate, formatMoney } from "@/components/duty-calculator/lib/format";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
 import { CostBar } from "./CostBar";
 import { EstimateStats } from "./EstimateStats";
@@ -58,6 +60,30 @@ export const MicroCalculator = ({
   };
 
   const shown = country && estimate?.country === country.code ? estimate : null;
+
+  // One lookup for each country shown, like the calculator's own. The first is the page's own
+  // estimate; later ones are countries the visitor picked.
+  const lastViewed = useRef<string | null>(null);
+  useEffect(() => {
+    if (!shown || lastViewed.current === shown.country) return;
+    const first = lastViewed.current === null;
+    lastViewed.current = shown.country;
+    trackEvent(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
+      hts_code: htsno,
+      country_code: shown.country,
+      surface: "hts_code_page",
+      country_source: first && shown === initial ? "default" : "user",
+    });
+  }, [shown, htsno, initial]);
+
+  const openInCalculator = () => {
+    markCalculatorHandoff(htsno, "hts_code_page");
+    trackEvent(MixpanelEvent.DUTY_ESTIMATE_OPENED_IN_CALCULATOR, {
+      hts_code: htsno,
+      country_code: country?.code,
+      surface: "hts_code_page",
+    });
+  };
   const calculatorHref =
     `/duty-calculator?code=${htsno}` +
     (country ? `&country=${country.code}&value=${CUSTOMS_VALUE}&date=${initial.asOf}&mode=ocean` : "");
@@ -135,6 +161,7 @@ export const MicroCalculator = ({
           {/* nofollow: calculator links with parameters all canonicalize to /duty-calculator */}
           <Link
             href={calculatorHref}
+            onClick={openInCalculator}
             rel="nofollow"
             className={ui.button({ variant: "primary", size: "lg" })}
           >

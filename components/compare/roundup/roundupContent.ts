@@ -66,6 +66,6 @@ export const ROUNDUP_FAQS: Faq[] = [
   {
     question: "Can a tariff calculator tell me what I owed on a past entry?",
     answer:
-      "Only if it calculates by entry date. HTS Hero uses the HTS revision in force on the date you pick and shows how the duty changed over time. Flexport's simulator keeps rates back to January 1, 2025, and Airlift USA's free simulator also accepts an entry date for single lookups.",
+      "Only if it calculates by entry date. HTS Hero uses the HTS revision in force on the date you pick and shows how the duty changed over time. Flexport's simulator keeps rates back to January 1, 2025, and GingerControl and Airlift USA's free simulator also accept an entry date.",
   },
 ];

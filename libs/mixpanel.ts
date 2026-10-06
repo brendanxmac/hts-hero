@@ -48,7 +48,9 @@ export enum MixpanelEvent {
   /** Research / Legal Notes / CROSS Rulings panel on a classification step */
   CLASSIFICATION_STEP_TAB_SWITCH = "Classification Step Tab Switch",
   /** Duty / tariff calculator (TariffFinderPage) */
+  /** Once per visit to /duty-calculator: how it began (arrival, link_source) and what the link carried */
   DUTY_CALCULATOR_PAGE_LOADED = "Duty Calculator Page Loaded",
+  /** Arrived on a calculator link with a code; not on reloads, back/forward or explorer-modal picks */
   DUTY_CALCULATOR_DEEP_LINK_OPENED = "Duty Calculator Deep Link Opened",
   DUTY_CALCULATOR_HTS_CODE_SELECTED = "Duty Calculator HTS Code Selected",
   DUTY_CALCULATOR_HTS_CODE_CLEARED = "Duty Calculator HTS Code Cleared",
@@ -58,6 +60,7 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_CUSTOMS_VALUE_SET = "Duty Calculator Customs Value Set",
   DUTY_CALCULATOR_UNITS_SET = "Duty Calculator Units Set",
   DUTY_CALCULATOR_CONTENT_PERCENTAGE_SET = "Duty Calculator Content Percentage Set",
+  /** A duty result shown for a code and country, on any surface: the calculator or an embedded estimate */
   DUTY_CALCULATOR_RESULTS_VIEWED = "Duty Calculator Results Viewed",
   DUTY_CALCULATOR_SUPPORT_CLICKED = "Duty Calculator Support Clicked",
   DUTY_CALCULATOR_ENTRY_DATE_SET = "Duty Calculator Entry Date Set",
@@ -68,7 +71,7 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_RESULTS_COPIED = "Duty Calculator Results Copied",
   DUTY_CALCULATOR_EXAMPLE_SELECTED = "Duty Calculator Example Selected",
   DUTY_CALCULATOR_COMPARE_CHANGED = "Duty Calculator Compare Countries Changed",
-  /** Duty estimate embedded in the explorer or a classification, opened in the calculator */
+  /** Duty estimate embedded in the explorer, a classification or an HTS code page, opened in the calculator */
   DUTY_ESTIMATE_OPENED_IN_CALCULATOR = "Duty Estimate Opened in Calculator",
   /** Tariff Tracker (/tariff-tracker). Was the Tariff Watcher tab, as "Tariff Watcher …" events */
   TARIFF_TRACKER_PRODUCTS_ADDED = "Tariff Tracker Products Added",
