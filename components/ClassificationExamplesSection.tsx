@@ -11,64 +11,9 @@ import {
 import { GRIDefenseHeroMarketing } from "./GRIDefenseHeroMarketing";
 import LetsTalkModal from "./LetsTalkModal";
 import { HeroClassifyInput } from "./HeroClassifyInput";
+import { CLASSIFICATION_EXAMPLES, type ClassificationExample } from "../constants/classification-examples";
 
-interface ClassificationExample {
-  htsCode: string;
-  description: string;
-  defense?: string;
-  shareToken: string;
-  image: string;
-  classificationPath: string[];
-  stats: {
-    levels: number;
-    crossRulings: number;
-  };
-}
-
-const EXAMPLES: ClassificationExample[] = [
-  {
-    htsCode: "6813.20.00.60",
-    description:
-      "Ceramic brake pads for passenger vehicles, semi-metallic compound with copper-free formulation",
-    shareToken: "TKWXwgrFN9M",
-    image: '/brakes.png',
-    classificationPath: [
-      "Section XIII",
-      "Chapter 68",
-      "Heading 6813",
-      "6813.20.00.60",
-    ],
-    stats: { levels: 4, crossRulings: 3 },
-  },
-  {
-    htsCode: "7323.93.00.85",
-    description:
-      "Stainless steel double-wall vacuum insulated water bottle, 32oz with leak-proof lid",
-    shareToken: "XYjXJH10Ws4",
-    image: '/bottle.png',
-    classificationPath: [
-      "Section XV",
-      "Chapter 73",
-      "Heading 7323",
-      "7323.93.00.85",
-    ],
-    stats: { levels: 3, crossRulings: 5 },
-  },
-  {
-    htsCode: "6110.12.20.40",
-    description:
-      "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs",
-    shareToken: "NTUh3omQZ6Q",
-    image: '/sweater.png',
-    classificationPath: [
-      "Section XI",
-      "Chapter 61",
-      "Heading 6110",
-      "6110.12.20.40",
-    ],
-    stats: { levels: 6, crossRulings: 4 },
-  },
-];
+const EXAMPLES = CLASSIFICATION_EXAMPLES;
 
 const FEATURE_BADGES = [
   { icon: ShieldCheckIcon, label: "GRI Analysis" },

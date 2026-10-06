@@ -2,6 +2,7 @@ import config from "@/config";
 import { CATEGORIES } from "@/libs/blog/catalog";
 import { getPostsInCategory } from "@/libs/blog/posts";
 import { COMPARE_PAGES, comparePageTitle } from "@/libs/compare/pages";
+import { COUNTRY_PAGES, capitalized } from "@/libs/country-pages/countries";
 
 // /llms.txt (llmstxt.org): a plain map of the site for AI assistants and answer engines, so
 // they can find the tools and the guides worth citing. Rebuilt with every deploy.
@@ -16,6 +17,10 @@ export function GET() {
     const lines = posts.map((p) => `- [${p.title}](${SITE}/blog/${p.slug}): ${p.description}`);
     return `## ${category.title}\n\n${lines.join("\n")}\n`;
   }).filter(Boolean);
+
+  const countries = COUNTRY_PAGES.map(
+    (c) => `- [${capitalized(c.name.replace(/^the /, ""))} to US tariff calculator](${SITE}/duty-calculator/${c.slug})`
+  ).join("\n");
 
   const comparisons = COMPARE_PAGES.map((p) => `- [${comparePageTitle(p)}](${SITE}/compare/${p.slug})`).join("\n");
 
@@ -33,6 +38,10 @@ export function GET() {
 - [Pricing](${SITE}/pricing-calculator)
 
 ${guides.join("\n")}
+## Tariff calculators by country
+
+${countries}
+
 ## Comparisons
 
 ${comparisons}

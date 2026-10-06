@@ -1,6 +1,8 @@
 import { DutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { formatSummaryDate } from "@/libs/hts-duty-summary";
 import * as ui from "@/components/ui/styles";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { CountryLinks } from "../country";
 import { DataSources } from "./DataSources";
 import { FindHtsCode } from "./FindHtsCode";
 import { GuideFaq } from "./GuideFaq";
@@ -37,6 +39,12 @@ export const TariffGuide = ({
       <DataSources revisionTitle={content.revisionTitle} asOf={content.asOf} />
       <FindHtsCode />
       {content.matrix.rows.length > 0 && <RatesByCountry content={content} />}
+      <section className={ui.section}>
+        <SectionHeader kicker="By country" title="Tariff calculators by country of origin">
+          What goods from these countries pay, with the calculator set to that country.
+        </SectionHeader>
+        <CountryLinks />
+      </section>
       <GuideFaq faqs={faqs} />
     </div>
   </div>

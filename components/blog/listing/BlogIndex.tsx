@@ -28,7 +28,7 @@ export function BlogIndex({
     <>
       <BlogHero
         kicker="HTS Hero Blog"
-        title="US tariffs, explained"
+        title="US Tariffs Explained"
         lead="How US import duty actually works, and a running record of every change to the Harmonized Tariff Schedule. Written by the people who build and maintain HTS Hero's tariff calculator."
       >
         <CategoryNav categories={nav} />

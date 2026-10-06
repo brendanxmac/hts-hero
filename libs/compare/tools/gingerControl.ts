@@ -6,37 +6,39 @@ export const GINGER_CONTROL: Tool = {
   url: "https://gingercontrol.com/products/tariff-calculator",
   kind: "Free calculator with paid compliance tools",
   summary:
-    "A free US tariff calculator with an AI classifier, batch upload, an API and Compliance Radar alerts. The calculator needs no login; prices for its paid tools aren't published.",
+    "A free US tariff calculator from Flowyth Co of Austin, with an AI classifier, entry dates, a 200+ country comparison and Compliance Radar alerts in beta. The calculator needs no login; plan prices appear only after you log in.",
   bestFor: "Teams that want a free calculator plus AI classification",
   price: "Free calculator; paid pricing not published",
   priceDetail:
     "The calculator is free with no login. Enterprise batch processing, the API and Compliance Radar are listed without published prices.",
   features: {
     freeToTry: { support: "yes", note: "No login required" },
-    selfServe: { support: "partial", note: "Calculator is self-serve; paid tools list no prices" },
+    selfServe: { support: "partial", note: "Calculator is self-serve; plan prices only after login" },
     publishedPricing: { support: "no" },
     fullStack: { support: "yes", note: "Each layer as its own line item" },
-    tradePreferences: { support: "no", note: "No trade agreement option on its calculator" },
-    adjustments: { support: "no", note: "No exemption questions to answer on its calculator" },
-    entryDate: { support: "partial", note: "Says it uses date-sensitive rates" },
-    rateHistory: { support: "unknown" },
-    catalogImpact: { support: "yes", note: "Compliance Radar alerts" },
-    countryCompare: { support: "yes" },
-    csvUpload: { support: "yes", note: "Spreadsheet batch upload" },
+    tradePreferences: { support: "partial", note: "Paid area only; none on the free calculator" },
+    adjustments: { support: "no", note: "Uncertain tariffs shown as \"Potential\" and left out of the total" },
+    entryDate: { support: "yes" },
+    rateHistory: { support: "partial" },
+    catalogImpact: { support: "partial", note: "Compliance Radar, in private beta" },
+    countryCompare: { support: "yes", note: "200+ countries" },
+    csvUpload: { support: "paid", note: "100 products per import" },
     classification: { support: "yes", note: "AI classifier" },
-    api: { support: "onRequest", note: "Enterprise API, price not published" },
-    changelog: { support: "unknown" },
+    api: { support: "onRequest", note: "Price not published" },
+    changelog: { support: "no" },
   },
   strengths: [
     "Broad free feature set with no login",
-    "Multi-country comparison in one view",
-    "AI classifier and an API",
-    "Compliance Radar matches trade notices to your HTS codes",
+    "Entry dates and a 200+ country comparison",
+    "AI classifier",
+    "Covers the 2026 Section 301, 232 and 338 programs",
   ],
   limitations: [
-    "Prices for paid tools aren't published",
-    "Updated only through 2026 HTS Revision 10 as of October 6, 2026, when the current revision was 20",
-    "No way to claim a trade agreement or answer the exemption questions that change the duty",
+    "Plan prices aren't published",
+    "No exemption questions: uncertain tariffs are shown as \"Potential\" and left out of the total",
+    "Trade agreements only in the paid area",
+    "Its calculator banner said \"Revision 10\" on October 6, 2026, when the current revision was 20",
+    "We found no handling of the September 29, 2026 Canadian import bans",
   ],
   sources: [
     { title: "GingerControl Tariff Calculator", url: "https://gingercontrol.com/products/tariff-calculator" },
@@ -49,36 +51,35 @@ export const GINGER_CONTROL: Tool = {
   checkedAt: "2026-10-06",
   vs: {
     verdict:
-      "GingerControl packs a lot into its free calculator, but as of October 6, 2026 its rates stopped at HTS Revision 10, ten revisions behind. HTS Hero is current, lets you claim trade agreements and exemptions, and publishes its prices.",
+      "GingerControl packs a lot into its free calculator. HTS Hero goes further where the total depends on facts about your goods: it asks the exemption questions, lets you claim trade agreements on the free calculator, flags banned goods, and publishes its prices.",
     chooseHtsHero: [
-      "You need rates from the current HTS revision",
-      "You want to claim USMCA or another trade agreement and see the preferential rate",
+      "You want to claim USMCA or another trade agreement on the free calculator",
       "You want to answer the exemption questions that lower your duty",
       "You want every price on the website and monthly plans with no contract",
-      "You need the duty for a past entry date, from the revision in force that day",
       "You want Duty Over Time to see how a product's duty changed",
+      "You need goods banned from import flagged, not priced",
       "You want a public, dated changelog of every tariff data update",
     ],
     chooseThem: [
       "You want a free AI classifier inside the calculator",
-      "You want Compliance Radar's alerts on trade notices",
+      "You want to compare more than three countries at once",
     ],
     differences: [
       {
-        title: "Keeping current",
-        body: "On October 6, 2026, GingerControl's calculator said it was updated to 2026 HTS Revision 10. The current revision was 20, and the ten in between brought Section 301 Brazil, the Section 301 forced-labor duties, Section 232 pharmaceuticals and drones, and Section 338 Canada. HTS Hero applies every revision and logs each one in a dated public changelog.",
+        title: "Exemptions and trade agreements",
+        body: "A lot of duty savings come from facts about your goods: a USMCA claim, metal content, a generic drug, a donation. HTS Hero asks each question that could change the duty and recalculates, and lets you claim any trade program on the line. GingerControl's free calculator has no trade agreement option, and where a tariff depends on a fact it shows the line as \"Potential\" and leaves it out of the total.",
       },
       {
-        title: "Trade agreements and exemptions",
-        body: "A lot of duty savings come from facts about your goods: a USMCA claim, metal content, a generic drug, a donation. HTS Hero shows every trade program available on the line and asks each question that could change the duty, then recalculates. We found no option on GingerControl's calculator to claim a trade agreement or answer those questions.",
+        title: "Banned goods and freshness",
+        body: "From September 29, 2026, some Canadian alcohol, dairy and motorcycles can't be imported at all. HTS Hero flags them; we found no sign that GingerControl does. Its calculator banner also still said \"Revision 10\" on October 6, 2026. HTS Hero logs every revision it applies in a dated public changelog.",
       },
       {
         title: "Price transparency",
         body: "GingerControl's calculator is free, but its paid tools, including batch processing, the API and Compliance Radar, list no prices. HTS Hero publishes every plan's price, and you can start any of them yourself in a couple of minutes.",
       },
       {
-        title: "Auditing and history",
-        body: "GingerControl says its rates are date-sensitive. HTS Hero goes further: pick an entry date and it uses the HTS revision in force that day, and Duty Over Time charts every change to a product's duty with the revision that caused it.",
+        title: "History",
+        body: "Both calculate duty for a past entry date. HTS Hero also charts it: Duty Over Time shows every change to a product's duty with the revision and heading that caused it.",
       },
       {
         title: "Integrations",
@@ -94,12 +95,12 @@ export const GINGER_CONTROL: Tool = {
       {
         question: "How is HTS Hero different from GingerControl?",
         answer:
-          "HTS Hero keeps up with every HTS revision (GingerControl's calculator was on Revision 10 as of October 6, 2026), lets you claim trade agreements and answer the exemption questions that change the duty, shows past entry dates and Duty Over Time, and publishes self-serve pricing.",
+          "HTS Hero asks the exemption questions that change the duty, lets you claim trade agreements on the free calculator, flags goods banned from import, charts Duty Over Time and publishes self-serve pricing.",
       },
       {
-        question: "Is GingerControl's tariff calculator up to date?",
+        question: "Does GingerControl include exemptions?",
         answer:
-          "As of October 6, 2026, its calculator page said it was updated to 2026 HTS Revision 10. The current revision at the time was Revision 20, so changes from July to September 2026, including Section 301 forced-labor duties and Section 338 Canada, may be missing.",
+          "Not as questions. When a tariff depends on a fact about your goods, GingerControl shows it as \"Potential\" and leaves it out of the total for you to self-report. HTS Hero asks the question and recalculates.",
       },
     ],
   },
@@ -107,10 +108,10 @@ export const GINGER_CONTROL: Tool = {
     slug: "gingercontrol-alternatives",
     title: "Best GingerControl Alternatives",
     intro:
-      "GingerControl offers a capable free calculator. People usually look elsewhere when they need current rates, want to claim trade agreements and exemptions, or want clear pricing for the paid tools.",
+      "GingerControl offers a capable free calculator. People usually look elsewhere when they want exemptions and trade agreements built into the total, or clear pricing for the paid tools.",
     reasons: [
-      "Its calculator was updated only through HTS Revision 10 as of October 6, 2026",
-      "No way to claim a trade agreement or answer exemption questions",
+      "Exemptions are left out of the total as \"Potential\" lines",
+      "No trade agreement option on the free calculator",
       "Paid tools don't publish prices",
       "You need entry-date audits and a product's duty across revisions",
       "You want a dated changelog showing which HTS revision the data reflects",

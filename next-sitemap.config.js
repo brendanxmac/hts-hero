@@ -37,6 +37,23 @@ async function getHtsCodes() {
   return { codes, revisionDate: revision.created_at };
 }
 
+// Each blog post's last update, from its frontmatter
+let postDates = null;
+function blogPostDates() {
+  if (postDates) return postDates;
+  const fs = require("fs");
+  const path = require("path");
+  const matter = require("gray-matter");
+  const dir = path.join(__dirname, "content/blog");
+  postDates = {};
+  for (const file of fs.readdirSync(dir).filter((f) => f.endsWith(".mdx"))) {
+    const { data } = matter(fs.readFileSync(path.join(dir, file), "utf8"));
+    const date = data.updatedAt || data.publishedAt;
+    if (date) postDates[file.replace(/\.mdx$/, "")] = new Date(date).toISOString();
+  }
+  return postDates;
+}
+
 module.exports = {
   siteUrl: process.env.SITE_URL || "https://htshero.com",
   generateRobotsTxt: true,
@@ -44,7 +61,7 @@ module.exports = {
     policies: [
       // Calculator links with inputs (?code=, ?country=…) all canonicalize to the calculator page;
       // keep crawlers on the page itself, not tens of thousands of parameter variants
-      { userAgent: "*", allow: "/", disallow: ["/duty-calculator?", "/tariff-tracker?"] },
+      { userAgent: "*", allow: "/", disallow: ["/duty-calculator?", "/duty-calculator/*?", "/tariff-tracker?"] },
     ],
   },
   sitemapSize: 5000,
@@ -75,12 +92,15 @@ module.exports = {
       lastmod,
     }));
   },
+  // A lastmod only where we know when the page last changed: a blog post's updatedAt. A build
+  // time on every URL tells search engines nothing, so they learn to ignore it.
   transform: async (config, path) => {
+    const slug = path.startsWith("/blog/") ? path.slice("/blog/".length) : null;
     return {
       loc: path,
       changefreq: config.changefreq,
       priority: config.priority,
-      lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
+      lastmod: slug ? blogPostDates()[slug] : undefined,
     };
   },
 };

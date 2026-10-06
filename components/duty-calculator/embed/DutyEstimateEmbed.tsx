@@ -54,17 +54,11 @@ export const DutyEstimateEmbed = ({
         <SimpleEstimate
           estimate={estimate}
           result={result}
-          country={country}
-          htsno={element.htsno}
-          surface={surface}
         />
       ) : (
         <FullEstimate
           estimate={estimate}
           result={result}
-          country={country}
-          htsno={element.htsno}
-          surface={surface}
         />
       )}
     </div>

@@ -8,9 +8,9 @@ import { CalculatorLayout } from "./CalculatorLayout";
 import { Disclaimer } from "./Disclaimer";
 import { ExploreModal } from "./ExploreModal";
 
-// The Tariff Calculator on /duty-calculator
-export const TariffFinderPage = () => {
-  const f = useTariffFinder();
+// The Tariff Calculator on /duty-calculator, and on each country page with that country chosen
+export const TariffFinderPage = ({ defaultCountry, path }: { defaultCountry?: string; path?: string } = {}) => {
+  const f = useTariffFinder({ defaultCountry, path });
 
   return (
     <div className={`${THEME} w-full pb-20`}>
