@@ -26,6 +26,7 @@ const frontmatterSchema = z.object({
   updatedAt: isoDate.optional(),
   featured: z.boolean().default(false),
   featuredOrder: z.number().default(99),
+  revision: z.number().int().positive().optional(),
   takeaways: z.array(z.string()).default([]),
   sources: z.array(z.object({ title: z.string(), url: z.string().url() })).default([]),
   faqs: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
@@ -65,7 +66,10 @@ const allPosts = (): Post[] => {
       .readdirSync(POSTS_DIR)
       .filter((f) => f.endsWith(".mdx"))
       .map(readPost)
-      .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title));
+      .sort(
+        (a, b) =>
+          b.publishedAt.localeCompare(a.publishedAt) || (b.revision ?? 0) - (a.revision ?? 0) || a.title.localeCompare(b.title)
+      );
   }
   return cache;
 };

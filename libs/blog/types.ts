@@ -45,6 +45,8 @@ export interface PostMeta {
   // Pinned to the top of the blog index, in featuredOrder (lowest first)
   featured: boolean;
   featuredOrder: number;
+  // For HTS revision posts: the 2026 revision number the post covers
+  revision?: number;
   // A few short facts shown in a box at the top of the post: what an LLM or a skimmer should take away
   takeaways: string[];
   sources: Source[];
