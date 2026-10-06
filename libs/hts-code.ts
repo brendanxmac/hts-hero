@@ -46,3 +46,17 @@ export function isValidEightOrTenDigitDigits(raw: string): boolean {
   const digits = htsCodeDigitsOnly(raw.trim());
   return /^\d{8}$|^\d{10}$/.test(digits);
 }
+
+/**
+ * The canonical form of an HTS code in a page address, as the HTS writes it: digits in dotted
+ * pairs after the heading ("7318", "7318.15", "7318.15.20", "7318.15.20.95"). Accepts the forms
+ * people and other sites use ("7318.15.2095", "7318152095", "7318 15 20 95"). Null when the text
+ * isn't a 4-, 6-, 8- or 10-digit code.
+ */
+export function canonicalHtsCode(raw: string): string | null {
+  if (!/^[\d.\s-]+$/.test(raw)) return null;
+  const digits = htsCodeDigitsOnly(raw);
+  if (![4, 6, 8, 10].includes(digits.length)) return null;
+  const pairs = digits.slice(4).match(/\d{2}/g) ?? [];
+  return [digits.slice(0, 4), ...pairs].join(".");
+}

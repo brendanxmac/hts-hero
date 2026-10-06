@@ -53,6 +53,21 @@ export function htsFaqs({
         dutyAnswerSentence({ productName, htsno: element.htsno, row: china, asOf: summary.asOf }),
       ] as FaqEntry]
       : []),
+    // The other origins people ask about most, after China
+    ...(summary
+      ? ["VN", "MX"].flatMap((code): FaqEntry[] => {
+        const row = summary.rows.find((r) => r.country.code === code);
+        return row
+          ? [[
+            `What is the US tariff on ${inSentence(productName)} (HTS ${element.htsno}) from ${row.country.name}?`,
+            dutyAnswerSentence({ productName, htsno: element.htsno, row, asOf: summary.asOf }) +
+            (row.preference && row.preference.totalPct !== null
+              ? ` Goods that qualify for ${row.preference.name} pay ${row.preference.totalPct}%.`
+              : ""),
+          ]]
+          : [];
+      })
+      : []),
     ...(summary && lowest
       ? [[
         `Which country has the lowest US duty on HTS ${element.htsno}?`,
