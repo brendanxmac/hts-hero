@@ -9,7 +9,7 @@ import { analysisUrl, fullBreakdownUrl, htsPageUrl, LinkContext } from "./links"
 // `kind` tells the widget which view to draw.
 
 export const DISCLAIMER =
-  "Estimate from HTS Hero's tariff engine, not legal or customs advice. Confirm with a licensed customs broker before filing.";
+  "Estimate from HTS Hero's tariff engine, not legal or customs advice. Excludes antidumping and countervailing duties, which can apply to specific products, producers and exporters (check CBP's AD/CVD search). Confirm with a licensed customs broker before filing.";
 
 const round = (n: number, places = 2) => Math.round(n * 10 ** places) / 10 ** places;
 
