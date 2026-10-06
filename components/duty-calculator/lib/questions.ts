@@ -10,7 +10,7 @@ import {
   Scope,
 } from "../../../tariffs/engine-v2/types";
 
-// Which questions matter for a result, shared by the calculator and the Tariff Watcher
+// Which questions matter for a result, shared by the calculator and the Tariff Tracker
 
 // How much answering "yes" instead of "no" changes duty and fees, for every yes/no question.
 // Answered ones are measured the other way round, so a question keeps its sign (and its place

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import * as ui from "@/components/ui/styles";
 import { CompareView } from "../results";
 import { slices } from "../results";
@@ -21,7 +21,21 @@ import { useStickyColumn } from "./useStickyColumn";
 // and the results, with the possible adjustments between the duty lines and the headings that
 // were checked but don't apply. The results move with the page while the left column is taller.
 // Phones get one column: entry details, results, duty over time.
-export const CalculatorLayout = ({ f }: { f: TariffFinder }) => {
+// fixedProduct: the code and origin come from the host, so the rail only edits the shipment
+export const CalculatorLayout = ({
+  f,
+  fixedProduct = false,
+  railTitle = "Entry Details",
+  railDescription = "Enter the details of your import to get a duty estimate",
+  resultActions,
+}: {
+  f: TariffFinder;
+  fixedProduct?: boolean;
+  railTitle?: string;
+  railDescription?: string;
+  // Beside Copy and Share in the results' heading
+  resultActions?: ReactNode;
+}) => {
   const { result, selectedElement, country } = f;
   // The "Where the money goes" slice being hovered, in the chart or the statement
   const [highlight, setHighlight] = useState<string | null>(null);
@@ -50,11 +64,7 @@ export const CalculatorLayout = ({ f }: { f: TariffFinder }) => {
       >
         {/* Stretches to the prompt beside it when there are no results yet */}
         <div className="min-w-0 lg:col-start-1 lg:row-start-1 lg:self-stretch">
-          <EntryRail
-            f={f}
-            title="Entry Details"
-            description="Enter the details of your import to get a duty estimate"
-          />
+          <EntryRail f={f} title={railTitle} description={railDescription} fixedProduct={fixedProduct} />
         </div>
 
         {/* Results, with their heading. They move with the page; before there are any, the
@@ -70,6 +80,8 @@ export const CalculatorLayout = ({ f }: { f: TariffFinder }) => {
               result={result}
               selectedElement={selectedElement}
               country={country}
+              allowCompare={!fixedProduct}
+              actions={resultActions}
             />
           )}
           {f.loading ? (

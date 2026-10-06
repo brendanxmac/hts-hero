@@ -9,7 +9,7 @@ Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 10** (Apr 8 â
 |---|---|
 | Engine (types, snapshots, handlers, pipeline, validator) | Done |
 | Legacy data migrated (106 headings, 59 lists) | Done, hand-reviewed |
-| Tests: mechanics, real data, partial-value rates, Tariff Watcher | All passing |
+| Tests: mechanics, real data, partial-value rates, Tariff Tracker | All passing |
 | Full comparison, every HTS line Ã— 14 countries | Done: 99.5% identical totals, every difference explained (before the legacy engine was removed) |
 | Tariff Finder toggle + new results panel | Done, checked in the browser (desktop and phone width) |
 
@@ -56,9 +56,9 @@ Checked in the browser:
 | `tariffs/engine-v2/revisions.ts` | HTS revision dates, verified revisions |
 | `tariffs/engine-v2/data/` | Programs, headings, lists, inputs, columns, preferences, fees |
 | `testing/engine-v2/` | Mechanics and real-data tests, HTS fixture loader (every USITC line with its base rates) |
-| `components/TariffFinderPage.tsx` | Tariff Calculator and Tariff Watcher |
+| `components/TariffFinderPage.tsx` | Tariff Calculator |
 | `components/duty-calculator/` | Calculator UI, `DutyEstimateEmbed` (explorer, classification pages), shared estimate helpers |
-| `components/tariff-watcher/` | Watch list parsing, report, CSV/Excel export |
+| `components/tariff-tracker/` | Tariff Tracker: catalog parsing, report, CSV/Excel export, app shell |
 
 ## Completed work
 

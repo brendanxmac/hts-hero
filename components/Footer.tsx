@@ -78,9 +78,6 @@ const Footer = () => {
                 <Link href="/classify" className="link link-hover">
                   HTS Classification
                 </Link>
-                <Link href="/tariffs/impact-checker" className="link link-hover">
-                  Tariff Impact Checker
-                </Link>
                 <Link href="/blog" className="link link-hover">
                   Blog
                 </Link>

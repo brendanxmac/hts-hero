@@ -29,7 +29,7 @@ export const PriceTag = ({
           {formatPrice(price)}
         </span>
         <span className={ui.bodySm}>{unit}</span>
-        {billing === "annual" && (
+        {price < listPrice && (
           <span className="text-sm tabular-nums text-base-content/60 line-through">
             <span className="sr-only">was </span>
             {formatPrice(listPrice)}

@@ -7,6 +7,9 @@ export const ANNUAL_DISCOUNT = 0.1;
 
 export const TARIFF_CALCULATOR_PRICE = 14.99;
 
+// Duty calculations a month on the free plan; the Tariff Calculator makes them unlimited
+export const FREE_MONTHLY_CALCULATIONS = 20;
+
 // Tariff Tracker is priced by the number of HTS code + country of origin pairs it watches
 export const TRACKER_TIERS = [
   { maxPairs: 30, price: 49 },

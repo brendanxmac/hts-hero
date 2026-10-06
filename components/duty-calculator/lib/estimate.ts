@@ -79,8 +79,14 @@ export const parseAnswers = (raw: string | null): Answers => {
   return answers;
 };
 
+// The public calculator; the Tariff Tracker has its own copy
+export const CALCULATOR_PATH = "/duty-calculator";
+
 // A link that opens the Tariff Calculator with these inputs
 export const calculatorUrl = (params: {
+  // Where the calculator is, and anything else its address needs (e.g. the tracker's tab)
+  path?: string;
+  extra?: Record<string, string>;
   code?: string;
   country?: string;
   value: number;
@@ -92,7 +98,7 @@ export const calculatorUrl = (params: {
   compare?: string[];
   view?: "compare";
 }) => {
-  const search = new URLSearchParams();
+  const search = new URLSearchParams(params.extra);
   if (params.code) search.set("code", params.code);
   if (params.country) search.set("country", params.country);
   search.set("value", String(params.value));
@@ -104,7 +110,7 @@ export const calculatorUrl = (params: {
   if (answers) search.set("answers", answers);
   if (params.compare?.length) search.set("compare", params.compare.join(","));
   if (params.view) search.set("view", params.view);
-  return `${window.location.origin}/duty-calculator?${search.toString()}`;
+  return `${window.location.origin}${params.path ?? CALCULATOR_PATH}?${search.toString()}`;
 };
 
 // A plain-text statement for pasting into an email or ticket
