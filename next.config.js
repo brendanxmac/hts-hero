@@ -26,6 +26,9 @@ const nextConfig = {
         destination: "/tariff-tracker",
         permanent: true,
       },
+      // Blog categories retired in the 2026 blog redesign
+      { source: "/blog/category/feature", destination: "/blog/category/product", permanent: true },
+      { source: "/blog/category/tutorial", destination: "/blog", permanent: true },
     ];
   },
   webpack: (config) => {
