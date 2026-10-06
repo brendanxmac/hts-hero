@@ -6,6 +6,7 @@ import { CompareView } from "../results";
 import { slices } from "../results";
 import { RateHistoryCard } from "../rate-history";
 import { SimpleSummary } from "../results";
+import { ProhibitedNotice } from "../notices/ProhibitedNotice";
 import { VerifiedNotice } from "../notices/VerifiedNotice";
 import { MAX_COMPARE, TariffFinder } from "../lib/useTariffFinder";
 import { DetailedResults } from "./DetailedResults";
@@ -82,6 +83,8 @@ export const CalculatorLayout = ({ f }: { f: TariffFinder }) => {
               aria-live="polite"
             >
               <VerifiedNotice f={f} />
+              {/* A ban is about this country's goods; the comparison shows several countries */}
+              {!f.comparing && <ProhibitedNotice prohibitions={result.prohibitions} />}
 
               {f.comparing ? (
                 <CompareView

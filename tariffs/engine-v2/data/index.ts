@@ -23,6 +23,7 @@ import generatedLists from "./lists.generated.json"
 import { aircraftLists } from "./lists/aircraft"
 import { brazilLists } from "./lists/brazil"
 import { canada338Lists } from "./lists/canada-338"
+import { canada338BanLists } from "./lists/canada-338-bans"
 import { china301Lists } from "./lists/china-301"
 import { forcedLaborLists } from "./lists/forced-labor-301"
 import { metalsLists } from "./lists/metals"
@@ -32,6 +33,7 @@ import { uasLists } from "./lists/uas"
 import { vehiclePartsLists } from "./lists/vehicle-parts"
 import { preferences } from "./preferences"
 import { programs } from "./programs"
+import { prohibitions } from "./prohibitions"
 
 const tariffs = [
   ...section122,
@@ -55,7 +57,8 @@ const tariffs = [
 export const AllRules: RuleSet = {
   programs,
   tariffs,
-  lists: [...(generatedLists as CodeList[]), ...china301Lists, ...aircraftLists, ...metalsLists, ...brazilLists, ...forcedLaborLists, ...pharmaceuticalLists, ...quartzLists, ...canada338Lists, ...uasLists, ...vehiclePartsLists],
+  prohibitions,
+  lists: [...(generatedLists as CodeList[]), ...china301Lists, ...aircraftLists, ...metalsLists, ...brazilLists, ...forcedLaborLists, ...pharmaceuticalLists, ...quartzLists, ...canada338Lists, ...canada338BanLists, ...uasLists, ...vehiclePartsLists],
   interactions,
   columnAssignments,
   preferences,

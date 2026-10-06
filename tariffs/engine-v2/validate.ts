@@ -123,6 +123,26 @@ export const validateRules = (
   }
   rules.tariffs.forEach(checkTariff)
 
+  // ── Prohibitions ──
+  ;(rules.prohibitions ?? []).forEach((p) => {
+    const label = `Prohibition ${p.id}`
+    checkDates(label, p)
+    if (!programIds.has(p.program)) errors.push(`${label}: unknown program "${p.program}"`)
+    if (p.scope.countries !== "all") checkLists(label, p.scope.countries as CodeSelector)
+    checkLists(label, p.scope.codes)
+    ;(p.unless ?? []).forEach((condition) => {
+      const handler = conditionHandlers.get(condition.kind)
+      if (!handler) {
+        errors.push(`${label}: no condition handler "${condition.kind}"`)
+        return
+      }
+      handler.inputs(condition).forEach((id) => {
+        if (!inputIds.has(id)) errors.push(`${label}: unknown input "${id}"`)
+      })
+    })
+  })
+  checkNoOverlap("Prohibition", (rules.prohibitions ?? []).map((p) => ({ key: p.id, record: p })))
+
   // ── Checks on every date where anything starts or ends ──
   const dates = new Set<string>([options.checkFrom ?? todayIsoDate(), todayIsoDate()])
   const addDates = (d: Dated) => {

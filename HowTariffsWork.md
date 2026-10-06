@@ -109,6 +109,7 @@ Most HTS changes are data. A genuinely new mechanism is one new handler, registe
 | [`Interaction`](#8-interactions-how-tariffs-combine) | A rule about how programs combine | a non-stacking order, a total cap | Yes | Rarely |
 | [`TradePreference`](#92-trade-preferences-ftas-and-spi-programs) | An FTA or preference program | USMCA, KORUS, GSP | Yes | Rarely |
 | [`ColumnAssignment`](#91-duty-columns) | A country's duty column | Russia → Column 2 | Yes | Rarely |
+| `Prohibition` | An import ban: goods in scope can't be entered at all. Never a duty, so it never changes the total; the result lists it in `prohibitions`. Optional `unless` conditions lift it (a scope limitation such as "packaged only") and are asked like any input | Section 338 Canada bans, `ban:canada-338-dairy` | Yes | Rarely |
 | [`InputDefinition`](#10-inputs-and-answers) | A question the engine may need answered | steel content %, loading date | No | When a new mechanism needs a new input |
 | [Handlers](#11-handlers-the-engines-extension-points) | Code that implements a `kind` | `topUpTo`, `metalContent` | Versioned by name | When a new mechanism appears |
 

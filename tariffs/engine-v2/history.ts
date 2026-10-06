@@ -43,6 +43,7 @@ export const ruleChangeDates = (rules: RuleSet, from: IsoDate, to: IsoDate): Iso
     ...rules.tariffs,
     ...rules.lists.flatMap((l) => l.versions),
     ...rules.interactions,
+    ...(rules.prohibitions ?? []),
     ...rules.columnAssignments,
     ...rules.preferences,
     ...rules.fees,

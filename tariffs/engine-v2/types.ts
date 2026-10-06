@@ -119,6 +119,25 @@ export type Interaction = InteractionBase &
     | { kind: "capTotal"; pct: number; covers: Selector; includesBaseRate: boolean }
   )
 
+// ── Prohibitions ──
+
+// An import ban: goods in scope can't be entered at all on the dates it's in effect. It isn't a
+// duty, so it never changes the total. The duty is still calculated, because goods imported
+// before a ban and later withdrawn from a bonded warehouse or FTZ pay it.
+export interface Prohibition extends Dated {
+  id: string
+  program: string
+  name: string
+  description: string
+  scope: {
+    countries: CountrySelector
+    codes: CodeSelector
+  }
+  // The ban is lifted when any of these is met (a scope limitation such as "packaged only").
+  // An unanswered one leaves the ban in place, and is asked.
+  unless?: Condition[]
+}
+
 // ── Columns, preferences, fees ──
 
 export interface ColumnAssignment extends Dated {
@@ -166,6 +185,7 @@ export type Answers = Record<string, unknown>
 export interface RuleSet {
   programs: Program[]
   tariffs: Tariff[]
+  prohibitions?: Prohibition[]
   lists: CodeList[]
   interactions: Interaction[]
   columnAssignments: ColumnAssignment[]
@@ -179,6 +199,7 @@ export interface RuleSnapshot {
   programs: Map<string, Program>
   tariffs: Tariff[]
   tariffsByCode: Map<string, Tariff>
+  prohibitions: Prohibition[]
   // Resolved list members as of the snapshot date (includes flattened)
   lists: Map<string, Set<string>>
   interactions: Interaction[]
@@ -234,6 +255,19 @@ export interface UnansweredInput {
 // An input the engine consulted for this entry, answered or not
 export interface Question extends UnansweredInput {
   answered: boolean
+  // Answering it can lift an import ban on the entry, so it matters even with no duty effect
+  liftsProhibition?: boolean
+}
+
+// An import ban that applies to the entry
+export interface ProhibitionResult {
+  id: string
+  name: string
+  program: string
+  description: string
+  source?: Source
+  // Unanswered inputs that could lift the ban
+  openInputs: string[]
 }
 
 export interface FeeLine {
@@ -275,5 +309,7 @@ export interface CalculationResult {
   totalFees: number
   unansweredInputs: UnansweredInput[]
   questions: Question[]
+  // Import bans on the entry; when any applies, the goods can't be entered on this date
+  prohibitions: ProhibitionResult[]
   warnings: string[]
 }

@@ -30,6 +30,7 @@ export const getRulesAsOf = (rules: RuleSet, asOf: IsoDate): RuleSnapshot => {
     programs: new Map(rules.programs.map((p) => [p.id, p])),
     tariffs,
     tariffsByCode: new Map(tariffs.map((t) => [t.code, t])),
+    prohibitions: (rules.prohibitions ?? []).filter((p) => isEffectiveOn(p.effective, asOf)),
     lists: resolveLists(rules.lists, asOf),
     interactions: rules.interactions.filter((i) => isEffectiveOn(i.effective, asOf)),
     column2Countries: new Set(

@@ -4,8 +4,10 @@
 //
 // 51(a): the duties apply to the listed products of Canada, stack with every other additional duty
 // in this subchapter and subchapter IV (except as in (c) and (d)), and apply even when special
-// tariff treatment is claimed (general note 3(c)(i), so USMCA too). The context mentions a
-// temporary suspension, but the HTS text has none; applied as written (decision, Oct 3, 2026).
+// tariff treatment is claimed (general note 3(c)(i), so USMCA too). Proclamation 11056, despite its
+// "Temporary Suspension" title, only moved the effective date from August 19 to August 22, 2026,
+// so nothing else is suspended. From September 29, 2026, some of these products are banned
+// outright (Proclamations 11061–11063): see ../prohibitions.ts.
 import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
 import { tariffVersions } from "../../versioning"
