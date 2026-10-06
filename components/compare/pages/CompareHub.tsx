@@ -19,7 +19,7 @@ export function CompareHub() {
     <>
       <CompareHero
         kicker="Compare"
-        title="How HTS Hero compares"
+        title="How HTS Hero Compares to Other Tariff Calculators"
         lead="Side-by-side comparisons of HTS Hero and the other US tariff calculators: what each one covers, what it costs, and who it suits. Every claim is checked against the tool's own website and dated."
         checkedAt={checkedAt}
       />

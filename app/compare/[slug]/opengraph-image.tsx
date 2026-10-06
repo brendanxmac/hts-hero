@@ -16,7 +16,7 @@ export default function Image({ params }: { params: { slug: string } }) {
   const page = comparePage(params.slug);
   return socialImage({
     kicker: page ? KICKERS[page.kind] : "Compare",
-    title: page ? comparePageTitle(page) : "How HTS Hero compares",
+    title: page ? comparePageTitle(page) : "How HTS Hero Compares to Other Tariff Calculators",
     footer: "htshero.com/compare",
   });
 }

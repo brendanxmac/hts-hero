@@ -23,7 +23,7 @@ export function FaqPage({ sections }: { sections: FaqSection[] }) {
           </nav>
           <div className="flex max-w-4xl flex-col gap-4">
             <span className={ui.kicker}>{count} questions answered</span>
-            <h1 className={ui.display}>US import duty calculator FAQ</h1>
+            <h1 className={ui.display}>US Tariff Calculator FAQ</h1>
             <p className={`${ui.lead} max-w-3xl`}>
               How the calculator works, what&apos;s behind every rate, how the 2026 tariffs combine, and what the total does
               and doesn&apos;t include.
