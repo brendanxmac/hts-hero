@@ -19,6 +19,9 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // The old tariff calculator landing page; /duty-calculator replaced it and targets the same
+      // searches, so its signals go there
+      { source: "/about/tariffs", destination: "/duty-calculator", permanent: true },
       // Blog categories retired in the 2026 blog redesign
       { source: "/blog/category/feature", destination: "/blog/category/product", permanent: true },
       { source: "/blog/category/tutorial", destination: "/blog", permanent: true },

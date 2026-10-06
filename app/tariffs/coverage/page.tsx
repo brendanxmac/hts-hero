@@ -9,6 +9,8 @@ export const metadata = getSEOTags({
   description:
     "See the full list of US tariffs and trade programs covered by the HTS Hero duty simulator — including Section 301, Section 232, reciprocal tariffs, AD/CVD duties, USMCA, GSP, CAFTA-DR, and more.",
   canonicalUrlRelative: "/tariffs/coverage",
+  // Out of date (it predates the IEEPA ruling): kept for old links, out of search results
+  extraTags: { robots: { index: false, follow: true } },
 });
 
 const tariffsSupported: BulletPoint[] = [

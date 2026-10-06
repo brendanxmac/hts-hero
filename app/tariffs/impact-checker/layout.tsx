@@ -7,6 +7,8 @@ import config from "@/config";
 import { CTABanner } from "../../../components/CTABanner";
 
 export const metadata: Metadata = {
+  // Retired: kept working for existing users, out of search results
+  robots: { index: false, follow: true },
   title: "Tariff Impact Checker — See If New Tariffs Affect Your Imports | HTS Hero",
   description:
     "Instantly check if the latest US tariff announcements affect your imports. Paste your HTS codes to see which products are impacted by Section 301, Section 232, and other tariff changes.",

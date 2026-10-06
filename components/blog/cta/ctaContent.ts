@@ -5,9 +5,7 @@ import { formatPostDate } from "../lib/format";
 // Historical rates go back to the first HTS revision whose tariff data has been verified
 const HISTORY_FROM = formatPostDate(getVerifiedRevisions()[0].from, "short").replace(/ \d+,/, "");
 
-// Tariff Tracker isn't public yet: its CTA points at the tariff monitoring page until
-// /tariff-tracker ships, then this one line changes
-const TRACKER_HREF = "/about/tariffs";
+const TRACKER_HREF = "/tariff-tracker";
 
 // The pitch for each HTS Hero tool. A post picks one in its frontmatter (`cta:`) to match its
 // topic, and MDX can drop one inline with <Cta kind="history" />.

@@ -54,6 +54,34 @@ function blogPostDates() {
   return postDates;
 }
 
+// Server-rendered pages to list, with their priority. Country pages follow
+// libs/country-pages/countries.ts (testing/sitemap.test.ts keeps the two in step).
+const KEY_PAGES = [
+  ["/duty-calculator", 1.0],
+  ["/duty-calculator/china", 0.9],
+  ["/duty-calculator/japan", 0.9],
+  ["/duty-calculator/faq", 0.7],
+  ["/duty-calculator/changelog", 0.6],
+  ["/pricing-calculator", 0.6],
+  ["/explore", 0.5],
+];
+
+// How much each page matters to us, relative to the others. Bing reads it; Google ignores it,
+// so what the sitemap includes matters far more.
+function priorityOf(path) {
+  const key = KEY_PAGES.find(([loc]) => loc === path);
+  if (key) return key[1];
+  if (path === "/") return 0.9;
+  if (path === "/tariff-tracker") return 0.8;
+  if (path === "/compare" || path.startsWith("/compare/")) return 0.8;
+  if (path === "/blog") return 0.7;
+  if (path.startsWith("/blog/category/") || path.startsWith("/blog/author/")) return 0.4;
+  if (path.startsWith("/blog/")) return 0.7;
+  if (path.startsWith("/hts/")) return 0.5;
+  if (["/tos", "/privacy-policy"].includes(path)) return 0.2;
+  return 0.6;
+}
+
 module.exports = {
   siteUrl: process.env.SITE_URL || "https://htshero.com",
   generateRobotsTxt: true,
@@ -81,16 +109,34 @@ module.exports = {
     // Feeds and machine-readable files aren't pages
     "/blog/feed.xml",
     "/llms.txt",
+    // Retired or stale: the Tariff Impact Checker (being sunset; its tool stays up for existing
+    // users), the old tariff coverage and pending-announcement pages, and /about/tariffs, which
+    // redirects to /duty-calculator
+    "/about/*",
+    "/tariffs/*",
+    // HTS browsing hubs: still crawlable (they link down to the /hts pages) but not pages to
+    // rank in their own right
+    "/chapter/*",
+    "/section/*",
+    // Shared classifications and gated downloads
+    "/c/*",
+    "/playbook-download",
   ],
+  // Pages rendered on each request aren't in the build output next-sitemap reads, so the ones we
+  // want found are listed here: above all the calculator, which this whole sitemap supports
   additionalPaths: async (config) => {
     const { codes, revisionDate } = await getHtsCodes();
     const lastmod = new Date(revisionDate).toISOString();
-    return codes.map((code) => ({
-      loc: `/hts/${code}`,
-      changefreq: "monthly",
-      priority: 0.7,
-      lastmod,
-    }));
+    const pages = KEY_PAGES.map(([loc]) => ({ loc, changefreq: config.changefreq, priority: priorityOf(loc) }));
+    return [
+      ...pages,
+      ...codes.map((code) => ({
+        loc: `/hts/${code}`,
+        changefreq: "monthly",
+        priority: priorityOf(`/hts/${code}`),
+        lastmod,
+      })),
+    ];
   },
   // A lastmod only where we know when the page last changed: a blog post's updatedAt. A build
   // time on every URL tells search engines nothing, so they learn to ignore it.
@@ -99,8 +145,12 @@ module.exports = {
     return {
       loc: path,
       changefreq: config.changefreq,
-      priority: config.priority,
+      priority: priorityOf(path),
       lastmod: slug ? blogPostDates()[slug] : undefined,
     };
   },
 };
+
+// For tests
+module.exports.KEY_PAGES = KEY_PAGES;
+module.exports.priorityOf = priorityOf;
