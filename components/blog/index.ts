@@ -7,3 +7,5 @@ export { BlogHero } from "./listing/BlogHero";
 export { CategoryNav } from "./listing/CategoryNav";
 export { PostGrid } from "./listing/PostGrid";
 export { CtaPanel } from "./cta/CtaPanel";
+export { SourceList } from "./article/SourceList";
+export { formatPostDate } from "./lib/format";

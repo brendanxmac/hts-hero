@@ -1,6 +1,7 @@
 import config from "@/config";
 import { CATEGORIES } from "@/libs/blog/catalog";
 import { getPostsInCategory } from "@/libs/blog/posts";
+import { COMPARE_PAGES, comparePageTitle } from "@/libs/compare/pages";
 
 // /llms.txt (llmstxt.org): a plain map of the site for AI assistants and answer engines, so
 // they can find the tools and the guides worth citing. Rebuilt with every deploy.
@@ -16,6 +17,8 @@ export function GET() {
     return `## ${category.title}\n\n${lines.join("\n")}\n`;
   }).filter(Boolean);
 
+  const comparisons = COMPARE_PAGES.map((p) => `- [${comparePageTitle(p)}](${SITE}/compare/${p.slug})`).join("\n");
+
   const body = `# HTS Hero
 
 > HTS Hero is a US tariff calculator and auditing tool for importers, customs brokers and trade compliance teams. It calculates the full US import duty for an HTS code, country of origin and entry date: the base rate, every Chapter 99 tariff (Section 232, Section 301 and others) with its exemptions and stacking rules, and customs fees. Its tariff data is checked against each new revision of the Harmonized Tariff Schedule.
@@ -29,6 +32,10 @@ export function GET() {
 - [Pricing](${SITE}/pricing-calculator)
 
 ${guides.join("\n")}
+## Comparisons
+
+${comparisons}
+
 ## Optional
 
 - [Blog](${SITE}/blog): all guides and tariff updates
