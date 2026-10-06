@@ -19,6 +19,10 @@ import * as ui from "@/components/ui/styles";
 const calculatorHref = (htsno: string, country?: string) =>
   `/duty-calculator?code=${htsno}${country ? `&country=${country}` : ""}`;
 
+// A row's anchor, so answers and links can point at one country: #from-vietnam
+export const countryAnchor = (name: string) =>
+  `from-${name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+
 const Fact = ({ label, value, note }: { label: string; value: string; note: string }) => (
   <div className={`${ui.card} px-5 py-4`}>
     <div className={ui.label}>{label}</div>
@@ -78,7 +82,7 @@ export function DutyByCountry({
         <Fact
           label="Countries with additional tariffs"
           value={`${withTariffs} of ${summary.rows.length}`}
-          note="Section 232, 301, 122 and other Chapter 99 duties"
+          note="Section 232, 301 and other Chapter 99 duties"
         />
       </div>
 
@@ -95,7 +99,11 @@ export function DutyByCountry({
             </thead>
             <tbody>
               {summary.rows.map((row) => (
-                <tr key={row.country.code} className="border-t border-base-300 *:align-top hover:bg-base-200/60">
+                <tr
+                  key={row.country.code}
+                  id={countryAnchor(row.country.name)}
+                  className="border-t border-base-300 *:align-top hover:bg-base-200/60 scroll-mt-6"
+                >
                   <th scope="row" className="px-5 sm:px-6 py-3 text-left font-medium text-base-content whitespace-nowrap">
                     {/* nofollow: calculator links with parameters all canonicalize to /duty-calculator */}
                     <Link
@@ -148,6 +156,22 @@ export function DutyByCountry({
             </tbody>
           </table>
         </div>
+
+        {/* The same rates as sentences, one per country: what an answer engine can quote whole
+            for "the tariff on X from Vietnam", not only China */}
+        <details className="border-t border-base-300 px-5 sm:px-6 py-3 group">
+          <summary className={`${ui.label} cursor-pointer select-none`}>Duty from each country, in words</summary>
+          <ul className={`${ui.bodySm} mt-3 flex flex-col gap-2`}>
+            {summary.rows.map((row) => (
+              <li key={row.country.code}>
+                {dutyAnswerSentence({ productName, htsno, row, asOf: summary.asOf })}
+                {row.preference && row.preference.totalPct !== null
+                  ? ` With ${row.preference.name}, qualifying goods pay ${formatDutyPct(row.preference.totalPct)}.`
+                  : ""}
+              </li>
+            ))}
+          </ul>
+        </details>
 
         <div className={`${ui.cardFooter} sm:px-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4`}>
           <p className={`${ui.caption} max-w-3xl leading-relaxed`}>
