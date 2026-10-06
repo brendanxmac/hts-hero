@@ -19,6 +19,11 @@ export function BlogIndex({
   sections: { category: Category; posts: PostMeta[] }[];
 }) {
   const nav = sections.map(({ category, posts }) => ({ ...category, count: posts.length }));
+  // Featured posts are already at the top, so the category sections show the rest
+  const featuredSlugs = new Set(featured.map((p) => p.slug));
+  const rest = sections
+    .map((s) => ({ ...s, posts: s.posts.filter((p) => !featuredSlugs.has(p.slug)) }))
+    .filter((s) => s.posts.length > 0);
   return (
     <>
       <BlogHero
@@ -39,7 +44,7 @@ export function BlogIndex({
           </section>
         )}
 
-        {sections.map(({ category, posts }) => (
+        {rest.map(({ category, posts }) => (
           <section key={category.slug} className={ui.section}>
             <div className="flex flex-wrap items-end justify-between gap-4">
               <SectionHeader kicker={category.title} title={`Latest in ${category.title}`}>

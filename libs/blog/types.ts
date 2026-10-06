@@ -42,8 +42,9 @@ export interface PostMeta {
   author: string;
   publishedAt: string;
   updatedAt: string;
-  // Pinned to the top of the blog index
+  // Pinned to the top of the blog index, in featuredOrder (lowest first)
   featured: boolean;
+  featuredOrder: number;
   // A few short facts shown in a box at the top of the post: what an LLM or a skimmer should take away
   takeaways: string[];
   sources: Source[];

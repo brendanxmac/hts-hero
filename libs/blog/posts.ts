@@ -25,6 +25,7 @@ const frontmatterSchema = z.object({
   publishedAt: isoDate,
   updatedAt: isoDate.optional(),
   featured: z.boolean().default(false),
+  featuredOrder: z.number().default(99),
   takeaways: z.array(z.string()).default([]),
   sources: z.array(z.object({ title: z.string(), url: z.string().url() })).default([]),
   faqs: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),

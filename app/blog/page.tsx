@@ -18,7 +18,9 @@ export const metadata = getSEOTags({
 });
 
 export default function BlogPage() {
-  const featured = getPosts().filter((p) => p.featured);
+  const featured = getPosts()
+    .filter((p) => p.featured)
+    .sort((a, b) => a.featuredOrder - b.featuredOrder);
   const sections = CATEGORIES.map((category) => ({ category, posts: getPostsInCategory(category.slug) })).filter(
     (s) => s.posts.length > 0
   );
