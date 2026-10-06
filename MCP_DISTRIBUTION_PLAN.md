@@ -348,6 +348,8 @@ Needed in the Tracker:
 
 **Tests:** `testing/mcp.test.ts`, run with `npm run tests`.
 
+**Switched off in production.** `/api/mcp` returns 404 unless the `MCP_SERVER_ENABLED=true` environment variable is set. To turn it on, set the variable in Vercel and redeploy.
+
 **Before submitting to the Claude directory:**
 1. Deploy, then add `https://htshero.com/api/mcp` as a custom connector in Claude and run the golden prompts.
 2. Add a public docs page ("Use HTS Hero in Claude / ChatGPT"). It should include setup steps, the tools, 3 example prompts and the privacy note. Add `llms.txt` as well.
