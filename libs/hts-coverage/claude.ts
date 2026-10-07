@@ -59,7 +59,9 @@ const SCHEMA = {
 const material = async (db: RevisionDb, items: CoverageItem[]) => {
   const citations = Array.from(new Map(items.flatMap((i) => i.note_citations).map((c) => [c.key, c])).values())
   const { notes } = await citedNotesFor(db, citations)
-  const programs = AllRules.programs.map((p) => `- ${p.id}: ${p.name} (${p.authority})`).join("\n")
+  const programs = AllRules.programs
+    .map((p) => `- ${p.id}: ${p.name} (${p.authority}${p.tradeDeal ? ", trade deal" : ""})`)
+    .join("\n")
   const categories = CATEGORIES.map((c) => `- ${c}: ${CATEGORY_LABELS[c]}`).join("\n")
 
   const headingText = items

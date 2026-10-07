@@ -7,14 +7,17 @@ import type {
   Category,
   ChangeRow,
   ChangeSource,
+  CitedHeading,
   ClaudeUsage,
   CodeDiff,
   ComparisonRow,
   Decision,
+  HtsRow,
   NoteDiff,
   RevisionRow,
   RevisionSummary,
 } from "@/libs/hts-revision-diff/types"
+import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions"
 import { api, BUSY_STATUSES, formatTime, StatusBadge, TextBlock, WordDiffView } from "./shared"
 import {
   btn,
@@ -220,6 +223,9 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
   const decided = changes.filter((c) => c.decision !== "pending").length
   const unsummarized = changes.filter((c) => !c.summary).length
   const allDecided = changes.length > 0 && decided === changes.length
+  // Comparing the revision just before the earliest verified one to it: a
+  // backfill (HowTariffsWork.md §17.13), pulled by the older revision
+  const isBackfill = getVerifiedRevisions()[0]?.name === to.revision.name
   // Claude cost so far: the change record reading plus every summary
   const usages = [to.changeRecordUsage, comparison.revision_summary?.usage, ...changes.map((c) => c.summary?.usage)].filter(Boolean) as ClaudeUsage[]
   const claudeCost = usages.reduce((sum, u) => sum + u.cost_usd, 0)
@@ -310,8 +316,8 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                 </button>
               }
             >
-              {to.revision.name}&apos;s reviewed heading rows were added, edited or un-reviewed after this comparison ran, so the
-              cited headings below don&apos;t reflect them. Re-run to use them; decisions on unchanged changes carry over.
+              {from.revision.name}&apos;s or {to.revision.name}&apos;s reviewed heading rows were added, edited or un-reviewed after
+              this comparison ran, so the cited headings below don&apos;t reflect them. Re-run to use them; decisions on unchanged changes carry over.
             </Callout>
           )}
           {stats.consecutive === false && (
@@ -320,8 +326,22 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
             </Callout>
           )}
           {allDecided && (
-            <Callout tone="success" title="Every change has a decision" action={<CopyCommand command={`npm run pull-revision -- ${to.revision.name}`} />}>
-              Write the review into the repo for Claude Code.
+            <Callout
+              tone="success"
+              title="Every change has a decision"
+              action={
+                <CopyCommand
+                  command={
+                    isBackfill
+                      ? `npm run pull-revision -- ${from.revision.name} --backfill`
+                      : `npm run pull-revision -- ${to.revision.name}`
+                  }
+                />
+              }
+            >
+              {isBackfill
+                ? `Write the review into the repo for Claude Code, to backfill ${from.revision.name} from ${to.revision.name}, the earliest verified revision.`
+                : "Write the review into the repo for Claude Code."}
             </Callout>
           )}
 
@@ -348,6 +368,22 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                         : `No heading data for ${to.revision.name}; add heading pages on its attempt page`}
                     {(stats.unreviewedHeadingRows ?? 0) > 0 && (
                       <span className="text-warning"> · {stats.unreviewedHeadingRows} rows not reviewed</span>
+                    )}
+                  </>
+                }
+              />
+            ) : stats.headingDiff === "heading_pages" ? (
+              <Stat
+                label="Heading differences"
+                value={Object.values(stats.codeDiffs).reduce((a, b) => a + b, 0)}
+                hint={
+                  <>
+                    Headings on both revisions&apos; heading pages; added and removed headings from the change record
+                    {(stats.unreviewedHeadingRows ?? 0) + (stats.fromUnreviewedHeadingRows ?? 0) > 0 && (
+                      <span className="text-warning">
+                        {" "}
+                        · {(stats.unreviewedHeadingRows ?? 0) + (stats.fromUnreviewedHeadingRows ?? 0)} rows not reviewed
+                      </span>
                     )}
                   </>
                 }
@@ -726,7 +762,9 @@ function ChangeDetail({
 
         {citedHeadings.length > 0 && (
           <section className="flex flex-col gap-3">
-            <SectionLabel>Headings cited by the change record · {toName}</SectionLabel>
+            <SectionLabel>
+              Headings cited by the change record · {citedHeadings.some((c) => c.beforeStatus) ? `${fromName} → ${toName}` : toName}
+            </SectionLabel>
             <div className="divide-y divide-base-content/[0.07] rounded-md border border-base-content/10">
               {citedHeadings.map((c) => (
                 <div key={c.code} className="px-3.5 py-2.5 text-sm">
@@ -737,19 +775,13 @@ function ChangeDetail({
                       label={c.status === "found" ? "Found" : c.status === "not_found" ? "Not in JSON" : "Not checked"}
                     />
                   </div>
-                  {c.row && (
+                  {c.beforeStatus ? (
                     <>
-                      <p className="mt-1 text-base-content/80">{c.row.description}</p>
-                      <p className="mt-1 text-xs text-base-content/55">
-                        General: {c.row.general || "—"} <Dot /> Special: {c.row.special || "—"} <Dot /> Other: {c.row.other || "—"}
-                        {c.row.footnotes.length > 0 && (
-                          <>
-                            {" "}
-                            <Dot /> Footnotes: {c.row.footnotes.join(" | ")}
-                          </>
-                        )}
-                      </p>
+                      <CitedHeadingSide label={`Before · ${fromName}`} status={c.beforeStatus} row={c.before ?? null} />
+                      <CitedHeadingSide label={`After · ${toName}`} status={c.status} row={c.row} />
                     </>
+                  ) : (
+                    c.row && <CitedHeadingRow row={c.row} />
                   )}
                 </div>
               ))}
@@ -1188,6 +1220,39 @@ function CodeDiffView({ diff }: { diff: CodeDiff }) {
         )
       )}
       </div>
+    </div>
+  )
+}
+
+function CitedHeadingRow({ row }: { row: HtsRow }) {
+  return (
+    <>
+      <p className="mt-1 text-base-content/80">{row.description}</p>
+      <p className="mt-1 text-xs text-base-content/55">
+        General: {row.general || "—"} <Dot /> Special: {row.special || "—"} <Dot /> Other: {row.other || "—"}
+        {row.footnotes.length > 0 && (
+          <>
+            {" "}
+            <Dot /> Footnotes: {row.footnotes.join(" | ")}
+          </>
+        )}
+      </p>
+    </>
+  )
+}
+
+// One side of a cited heading: the older revision's row ("before") or the newer one's ("after")
+function CitedHeadingSide({ label, status, row }: { label: string; status: CitedHeading["status"]; row: HtsRow | null }) {
+  return (
+    <div className="mt-2">
+      <p className="text-[11px] font-medium uppercase tracking-wide text-base-content/45">{label}</p>
+      {status === "found" && row ? (
+        <CitedHeadingRow row={row} />
+      ) : (
+        <p className="mt-1 text-xs text-base-content/55">
+          {status === "not_found" ? "Not in this revision's heading data" : "Not checked: no heading data for this revision"}
+        </p>
+      )}
     </div>
   )
 }

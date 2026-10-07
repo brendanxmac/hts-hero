@@ -6,7 +6,8 @@ import { calculate } from "../../tariffs/engine-v2/calculate"
 import { AllRules } from "../../tariffs/engine-v2/data"
 import { CalculationResult } from "../../tariffs/engine-v2/types"
 import { validateRules } from "../../tariffs/engine-v2/validate"
-import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions"
+import { getRevision, getVerifiedRevisions } from "../../tariffs/engine-v2/revisions"
+import ch99Archive from "../../tariffs/engine-v2/data/ch99-first-seen.json"
 import { calculateHistory, ruleChangeDates } from "../../tariffs/engine-v2/history"
 import { HtsLine } from "./hts-fixture"
 import { findNoteCitations } from "../../tariffs/engine-v2/citations"
@@ -117,7 +118,13 @@ describe("engine-v2 real data: corrections over the legacy engine", () => {
 // ============================================================
 describe("engine-v2 real data", () => {
   it("has no validation errors in verified revisions", () => {
-    const { errors } = validateRules(AllRules, { checkFrom: getLatestVerifiedRevision().from })
+    // From the earliest verified revision, checked against when each heading was
+    // in the HTS (data/ch99-first-seen.json)
+    const { errors } = validateRules(AllRules, {
+      checkFrom: getVerifiedRevisions()[0].from,
+      archive: ch99Archive,
+      revisionStart: (name) => getRevision(name)?.from,
+    })
     if (errors.length) console.log(errors.join("\n"))
     expect(errors).toHaveLength(0)
   })

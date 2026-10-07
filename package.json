@@ -15,6 +15,7 @@
     "sync-revisions": "npx tsx scripts/engine-v2/sync-hts-revisions.ts",
     "notes:cited": "npx tsx scripts/engine-v2/cited-notes.ts",
     "ch99:coverage": "npx tsx scripts/engine-v2/ch99-coverage.ts",
+    "ch99:archive": "npx tsx scripts/backfill/ch99-archive.ts",
     "pull-revision": "npx tsx scripts/hts-revision-diff/pull-revision.ts",
     "pull-batch": "npx tsx scripts/hts-coverage/pull-batch.ts",
     "changelog:draft": "npx tsx scripts/changelog-draft.ts",
@@ -96,6 +97,7 @@
     "postcss": "^8.4.38",
     "react-email": "4.2.11",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "unpdf": "^1.8.1"
   }
 }

@@ -93,7 +93,8 @@ export const DATES_MODES = ["earliest_verified", "backfill"] as const
 export type DatesMode = (typeof DATES_MODES)[number]
 
 export const DATES_MODE_LABELS: Record<DatesMode, string> = {
-  earliest_verified: "From the earliest verified revision",
+  // The stored value predates the change to "no placeholder dates"; the label says what it does now
+  earliest_verified: "Start date from the heading text only",
   backfill: "Research and backfill real history",
 }
 

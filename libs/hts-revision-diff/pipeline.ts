@@ -13,7 +13,7 @@ import {
   RevisionDiffTables as T,
 } from "./constants"
 import { pollConversion, submitConversion } from "./datalab"
-import { diffCodes, diffNotes } from "./diff"
+import { diffCodes, diffNotes, diffSharedCodes } from "./diff"
 import { parseCh99Json } from "./parse-ch99-json"
 import { groupSlugForNoteType, parseCh99NotesMarkdown, type ExpectedCitation } from "./parse-ch99-notes"
 import {
@@ -390,17 +390,30 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       rowsOf(toAttempt.hts_rows_path),
     ])
     const noteDiffs = diffNotes(fromNotes.nodes, toNotes.nodes)
-    // Every heading is diffed only when both revisions have Chapter 99 JSON;
-    // otherwise heading changes come from the change record
-    const fullHeadingDiff = !!fromRows && !!toRows
-    const codeDiffs = fullHeadingDiff ? diffCodes(fromRows, toRows) : []
-    // Without JSON, cited headings are looked up in the reviewed rows from the
-    // revision's own heading pages
-    const headingRows = await loadHeadingRows(db, toAttempt.id)
+    // Without JSON, cited headings are looked up in the reviewed rows from each
+    // revision's own heading pages: the newer revision's for the "after", the
+    // older revision's for the "before"
+    const [headingRows, fromHeadingRows] = await Promise.all([
+      loadHeadingRows(db, toAttempt.id),
+      loadHeadingRows(db, from.attempt.id),
+    ])
     const unreviewedHeadingRows = headingRows.filter((r) => !r.reviewed).length
     const pdfRows = headingRowsAsHtsRows(headingRows)
+    const fromPdfRows = headingRowsAsHtsRows(fromHeadingRows)
     const lookupRows = toRows ?? (pdfRows.length ? pdfRows : null)
+    const fromLookupRows = fromRows ?? (fromPdfRows.length ? fromPdfRows : null)
     const headingSource = toRows ? "revision_json" : pdfRows.length ? "revision_pdf" : "none"
+    const fromHeadingSource = fromRows ? "revision_json" : fromPdfRows.length ? "revision_pdf" : "none"
+    // Every heading is diffed only when both revisions have Chapter 99 JSON.
+    // Heading pages are trimmed, so with them only headings on both sides are
+    // diffed; added and removed headings come from the change record.
+    const fullHeadingDiff = !!fromRows && !!toRows
+    const pageHeadingDiff = !fullHeadingDiff && !!lookupRows && !!fromLookupRows
+    const codeDiffs = fullHeadingDiff
+      ? diffCodes(fromRows, toRows)
+      : pageHeadingDiff
+        ? diffSharedCodes(fromLookupRows, lookupRows)
+        : []
     const changes = buildChanges({
       changeRecordItems: items,
       noteDiffs,
@@ -408,6 +421,7 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       fromNodes: fromNotes.nodes,
       toNodes: toNotes.nodes,
       toRows: lookupRows,
+      fromRows: fromLookupRows,
       fullHeadingDiff,
       toRevisionName: to.revision.name,
       headingSource,
@@ -463,10 +477,13 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
         changes.map((c) => c.source)
       ),
       carriedOverReviews: carried,
-      headingDiff: fullHeadingDiff ? "full" : "change_record_only",
+      headingDiff: fullHeadingDiff ? "full" : pageHeadingDiff ? "heading_pages" : "change_record_only",
       headingSource,
       unreviewedHeadingRows,
       headingRowsFingerprint: headingRowsFingerprint(headingRows),
+      fromHeadingSource,
+      fromUnreviewedHeadingRows: fromHeadingRows.filter((r) => !r.reviewed).length,
+      fromHeadingRowsFingerprint: headingRowsFingerprint(fromHeadingRows),
     }
     await updateComparison(db, comparisonId, { status: "ready", stats, diff_version: DIFF_VERSION })
   } catch (error) {

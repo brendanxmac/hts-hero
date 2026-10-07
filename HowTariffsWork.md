@@ -128,10 +128,11 @@ interface EffectivePeriod {
 }
 
 interface Source {
-  revision?: string // USITC release name, e.g. "2026HTSRev7"
-  citation?: string // "Proclamation 11021", "91 FR 12345", "CSMS # 68554727"
+  revision?: string    // USITC release name, e.g. "2026HTSRev7"
+  citation?: string    // "Proclamation 11021", "91 FR 12345", "CSMS # 68554727"
   url?: string
-  note?: string     // anything a future reader needs to know
+  publishedOn?: IsoDate // when the cited document was published (signed, or in the FR)
+  note?: string        // anything a future reader needs to know
 }
 
 interface Dated {
@@ -141,6 +142,8 @@ interface Dated {
 ```
 
 Every record that changes over time extends `Dated`. Always fill in `source`. It's what lets you (or an auditor) trace a number back to the law months later.
+
+`publishedOn` is when the cited document was published, which often isn't when it took effect: retroactive deals were published weeks after their effective date, and some proclamations weeks before. Fill it in whenever you read the document anyway. It's what lets the data answer "when was this announced?" as well as "when did it apply?".
 
 ---
 
@@ -156,13 +159,14 @@ type Authority =
   | "201"     // Trade Act §201 (safeguards)
   | "IEEPA"   // International Emergency Economic Powers Act
   | "ADCVD"   // antidumping / countervailing (usually out of scope, see §22)
-  | "deal"    // country agreements implemented as their own headings
+  | "deal"    // country agreements with no other authority (most deals were IEEPA: use that, plus tradeDeal)
   | "other"
 
 interface Program {
   id: string            // stable identifier, never reused
   name: string          // shown to users
-  authority: Authority
+  authority: Authority  // the law it was enacted under
+  tradeDeal?: boolean   // implements a trade deal, whatever its authority
   legalBasis?: string[] // proclamations, EOs, FR notices that created or changed it
   description?: string
 }
@@ -1322,6 +1326,12 @@ Working backward means each step builds on a revision you've just verified, inst
 
 You can also backfill in any other order. For example, if a customer needs August 2025 before the rest of 2025 is done, backfill just the records that affect those dates and verify those revisions. The dropdown can have gaps: only verified revisions appear.
 
+#### Tools
+
+- **The revision checker** compares N-1 → N, as going forward, with the older revision's heading pages as the "before" of every cited heading. `npm run pull-revision -- <N-1> --backfill` writes the package, and `/backfill-revision <N-1>` plans and implements it.
+- **`npm run ch99:archive`** reads USITC's archived Chapter 99 PDF for every revision and writes `tariffs/engine-v2/data/ch99-first-seen.json`: the revisions each 9903 heading appears in. `npm run ch99:archive -- --step <N-1>` lists the headings N added and removed, as an independent check on the change record.
+- **The validator**, given that file, fails on an undated record whose heading first appears in the HTS after the earliest verified revision starts: undated, it would apply before it existed.
+
 #### Safeguards
 
 - **Overlaps are caught.** Current records without a `from` mean "in effect forever." Adding an earlier version without dating the current one puts two versions of the same heading or list in effect at once. `validateRules()` fails with an overlap error naming it, so history can't be double-counted by accident.
@@ -1536,3 +1546,4 @@ Decisions to confirm before or during implementation:
 6. **Base rates for past revisions.** The UI needs the HTS data for the selected revision, which depends on how revision files are named in Supabase storage.
 7. **Storage.** Records as TypeScript files in git (reviewable diffs, current approach), compiled into Supabase later for audits, or Supabase from the start?
 8. **`recordedAt` timing.** Add it from day one (cheap now, harder to backfill), or wait until audits are a real product?
+9. **Refunds.** Duties a court later struck down (IEEPA, from Feb 20, 2026) keep their effective periods, since they were assessed, but are owed back. Planned as a legal status on top of the records; see [tariffs/engine-v2/REFUNDS.md](tariffs/engine-v2/REFUNDS.md).

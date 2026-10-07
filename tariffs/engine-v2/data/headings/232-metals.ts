@@ -30,7 +30,7 @@ export const headings: Tariff[] = [
       },
       requires: [confirm("9903.82.01")],
       rate: { kind: "free" },
-      effective: {},
+      effective: { from: "2026-04-06" },
       source: {
         revision: "2026HTSRev7",
         note: "Added to the HTS by Notice effective 2026-04-06 (retroactive); listed from 2026HTSRev7. Scope now includes subdivision (c)(viii), per the heading text",

@@ -106,8 +106,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -193,8 +195,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -247,8 +251,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -266,8 +272,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -286,8 +294,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -306,8 +316,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -393,8 +405,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -483,8 +497,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -502,8 +518,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -585,8 +603,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -671,8 +691,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
   {
@@ -690,8 +712,10 @@ export const headings: Tariff[] = [
     effective: { to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
-      citation: "CSMS # 67834313",
-      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
 ]

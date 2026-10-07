@@ -92,7 +92,7 @@ const BatchSettings = ({ batch, editable, onSaved }: { batch: CoverageBatch; edi
         <Field label="Title">
           <input className={inputCls} value={title} disabled={!editable} onChange={(e) => setTitle(e.target.value)} />
         </Field>
-        <Field label="Effective dates" hint={datesMode === "backfill" ? "Claude researches each heading's real start date and history" : "Each heading starts at the earliest verified revision"}>
+        <Field label="Effective dates" hint={datesMode === "backfill" ? "Claude researches each heading's real start date and history" : "A heading gets a start date only if its text gives one; otherwise it's dated when backfilling reaches it"}>
           <Segmented
             options={(Object.keys(DATES_MODE_LABELS) as DatesMode[]).map((m) => ({ value: m, label: DATES_MODE_LABELS[m] }))}
             value={datesMode}

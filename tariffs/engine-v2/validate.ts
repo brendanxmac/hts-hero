@@ -15,10 +15,27 @@ export interface ValidationResult {
 const isListRef = (value: unknown): value is ListRef =>
   typeof value === "object" && value !== null && "list" in value
 
+// A citation that identifies a document: not missing, and not just "Notice"
+const hasCitation = (record: Dated) => {
+  const citation = record.source?.citation?.trim()
+  return !!citation && !/^notice\.?$/i.test(citation)
+}
+
+// When each subchapter III heading appears in the tariff tables of USITC's
+// archived Chapter 99 PDFs (data/ch99-first-seen.json, `npm run ch99:archive`)
+export interface HeadingArchive {
+  revisions: string[]
+  headings: Record<string, { first: string; last: string; missingFrom?: string[] }>
+}
+
 export interface ValidateOptions {
   // Only run date-based checks from this date on, e.g. the first verified revision.
   // Before it, records aren't fully dated yet, so date-based warnings are noise.
   checkFrom?: string
+  // With this, records are checked against when their heading was in the HTS
+  archive?: HeadingArchive
+  // Start date of each revision in `archive`
+  revisionStart?: (revision: string) => string | undefined
 }
 
 export const validateRules = (
@@ -211,6 +228,52 @@ export const validateRules = (
   cycles.forEach((cycle) =>
     warnings.push(`Exception cycle: ${cycle} (resolved at calculation time; see calculate.ts)`),
   )
+
+  // ── Against the HTS itself (HowTariffsWork.md §17.13) ──
+  const { archive, revisionStart } = options
+  if (archive && revisionStart) {
+    const checkFrom = options.checkFrom ?? ""
+    const lastRevision = archive.revisions[archive.revisions.length - 1]
+    rules.tariffs.forEach((t) => {
+      const seen = archive.headings[t.code]
+      if (!seen) return
+      const { from, to } = t.effective ?? {}
+      const enteredHts = revisionStart(seen.first)
+      // An undated record applies before its heading existed. Inside the checked
+      // range that's a wrong result, so it's an error.
+      if (!from && enteredHts && enteredHts > checkFrom && seen.first !== archive.revisions[0]) {
+        errors.push(
+          `Tariff ${t.code}: no start date, but the heading first appears in ${seen.first} (from ${enteredHts}). Undated, it applies before then; set effective.from to its legal start date.`,
+        )
+      }
+      // Dated before its heading appeared: fine when the law was retroactive, but
+      // that needs a citation
+      if (from && enteredHts && from < enteredHts && !hasCitation(t)) {
+        warnings.push(
+          `Tariff ${t.code}: starts ${from}, before the heading first appears in ${seen.first} (${enteredHts}), with no citation for the date`,
+        )
+      }
+      // Still in effect after the heading left the HTS
+      if (seen.last !== lastRevision) {
+        const i = archive.revisions.indexOf(seen.last)
+        const removed = revisionStart(archive.revisions[i + 1])
+        if (removed && (!to || to > removed) && (!checkFrom || !to || to > checkFrom)) {
+          warnings.push(
+            `Tariff ${t.code}: in effect after ${removed}, when the heading was removed from the HTS (last in ${seen.last})`,
+          )
+        }
+      }
+    })
+  }
+
+  // Dated records whose dates have no document behind them
+  rules.tariffs.forEach((t) => {
+    const { from, to } = t.effective ?? {}
+    const inRange = (d?: string) => !!d && (!options.checkFrom || d >= options.checkFrom)
+    if ((inRange(from) || inRange(to)) && !hasCitation(t)) {
+      warnings.push(`Tariff ${t.code} (${describePeriod(t.effective)}): no citation for its dates beyond "Notice"`)
+    }
+  })
 
   return { errors, warnings }
 }

@@ -48,12 +48,18 @@ export const programs: Program[] = [
   },
   { id: "301-brazil", name: "Section 301 – Brazil", authority: "301" },
   { id: "301-forced-labor", name: "Section 301 – Forced Labor", authority: "301" },
+  // Still "deal": 9903.96.01 (UK) is in effect after IEEPA ended, since it also exempts
+  // civil aircraft from Section 232 duties
   {
     id: "aircraft-agreements",
     name: "Civil Aircraft Agreements (UK, Japan)",
     authority: "deal",
+    tradeDeal: true,
   },
-  { id: "deal-eu", name: "U.S.–EU Framework Agreement", authority: "deal" },
-  { id: "deal-jp", name: "U.S.–Japan Agreement", authority: "deal" },
-  { id: "deal-kr", name: "U.S.–Korea Agreement", authority: "deal" },
+  // Implemented under IEEPA (modifications of the reciprocal tariff order) and ended with
+  // every IEEPA duty on Feb 24, 2026 (EO 14389; CSMS # 67834313). Their authority was "deal"
+  // until Oct 7, 2026; `tradeDeal` keeps that.
+  { id: "deal-eu", name: "U.S.–EU Framework Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-jp", name: "U.S.–Japan Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-kr", name: "U.S.–Korea Agreement", authority: "IEEPA", tradeDeal: true },
 ]

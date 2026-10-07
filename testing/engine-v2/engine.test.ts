@@ -510,4 +510,49 @@ describe("engine-v2: validation", () => {
     )
     expect(errors.length).toBe(4)
   })
+
+  // When each heading was in the HTS, as `npm run ch99:archive` writes it
+  const archive = {
+    revisions: ["R1", "R2", "R3"],
+    headings: {
+      "9903.01.01": { first: "R1", last: "R3" },
+      "9903.01.02": { first: "R2", last: "R3" },
+      "9903.01.03": { first: "R1", last: "R2" },
+    },
+  }
+  const starts: Record<string, string> = { R1: "2025-01-01", R2: "2025-03-01", R3: "2025-06-01" }
+  const checkArchive = (tariffs: Tariff[], checkFrom = "2025-01-01") =>
+    validateRules(rules({ tariffs }), { checkFrom, archive, revisionStart: (r) => starts[r] })
+
+  it("flags an undated heading that first appears in the HTS after the checked range starts", () => {
+    const { errors } = checkArchive([tariff({ code: "9903.01.02", effective: {} })])
+    expect(errors.some((e) => e.includes("9903.01.02") && e.includes("no start date"))).toBe(true)
+    // Already in the HTS when the checked range starts: fine
+    expect(checkArchive([tariff({ code: "9903.01.02", effective: {} })], "2025-04-01").errors).toHaveLength(0)
+    // In the earliest archived revision: it may be older, so no start date is fine
+    expect(checkArchive([tariff({ code: "9903.01.01", effective: {} })]).errors).toHaveLength(0)
+  })
+
+  it("asks for a citation when a heading is dated before it appears in the HTS", () => {
+    const uncited = checkArchive([tariff({ code: "9903.01.02", effective: { from: "2025-02-15" } })])
+    expect(uncited.warnings.some((w) => w.includes("before the heading first appears"))).toBe(true)
+    const cited = checkArchive([
+      tariff({ code: "9903.01.02", effective: { from: "2025-02-15" }, source: { citation: "EO 14000" } }),
+    ])
+    expect(cited.warnings.some((w) => w.includes("before the heading first appears"))).toBe(false)
+  })
+
+  it("warns when a heading stays in effect after it left the HTS", () => {
+    const open = checkArchive([tariff({ code: "9903.01.03", effective: { from: "2025-01-01" } })])
+    expect(open.warnings.some((w) => w.includes("removed from the HTS"))).toBe(true)
+    const ended = checkArchive([tariff({ code: "9903.01.03", effective: { from: "2025-01-01", to: "2025-05-20" } })])
+    expect(ended.warnings.some((w) => w.includes("removed from the HTS"))).toBe(false)
+  })
+
+  it("warns about dates whose only source is \"Notice\"", () => {
+    const { warnings } = checkArchive([
+      tariff({ code: "9903.01.01", effective: { from: "2025-02-01" }, source: { citation: "Notice" } }),
+    ])
+    expect(warnings.some((w) => w.includes("no citation for its dates"))).toBe(true)
+  })
 })

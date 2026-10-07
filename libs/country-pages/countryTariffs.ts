@@ -19,7 +19,7 @@ export interface ProgramSummary {
   headings: string[];
 }
 
-const AUTHORITY_ORDER = ["301", "232", "338", "201", "122", "deal", "other"];
+const AUTHORITY_ORDER = ["301", "232", "338", "201", "122", "IEEPA", "deal", "other"];
 
 // Headings that apply only once the importer confirms a fact (a lower rate for U.S.-melted
 // metal, an onshoring plan) are reliefs, not the rate a country's goods pay

@@ -218,9 +218,11 @@ export const interactions: Interaction[] = [
       { codes: caMxExcludedFor },
       { codes: ["9903.01.10", "9903.01.01"] },
     ],
-    effective: {},
+    // Ends with the IEEPA duties it ranks: no IEEPA duty for entries on or after Feb 24, 2026
+    // (EO 14389; CSMS # 67834313). Its start comes with the backfill.
+    effective: { to: "2026-02-24" },
     source: correction(
-      "U.S. notes 33(a), (f), (p)(iii), (r)(iii), 38(a), (h) and 39(a)(6)–(7). 9903.01.10 and 9903.01.01 aren't in the data yet (ended Feb 24, 2026), so this has no effect until they're backfilled",
+      "U.S. notes 33(a), (f), (p)(iii), (r)(iii), 38(a), (h) and 39(a)(6)–(7). 9903.01.10 and 9903.01.01 aren't in the data yet (ended Feb 24, 2026: EO 14389; CSMS # 67834313), so this has no effect until they're backfilled",
     ),
   },
   {

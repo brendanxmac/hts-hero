@@ -1,7 +1,7 @@
 import { describe, expect, it } from "../test-runner"
 import { parseCh99NotesMarkdown } from "../../libs/hts-revision-diff/parse-ch99-notes"
 import { parseCh99Json } from "../../libs/hts-revision-diff/parse-ch99-json"
-import { codeChanges, diffCodes, diffNotes } from "../../libs/hts-revision-diff/diff"
+import { codeChanges, diffCodes, diffNotes, diffSharedCodes } from "../../libs/hts-revision-diff/diff"
 import { buildChanges } from "../../libs/hts-revision-diff/build-changes"
 import { wordDiff, renderWordDiff } from "../../libs/hts-revision-diff/word-diff"
 import { extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/text"
@@ -367,6 +367,81 @@ describe("Heading changes without a full heading diff", () => {
     const change = build(null)
     expect((change.payload.citedHeadings ?? []).every((c) => c.status === "unverified")).toBe(true)
     expect(change.payload.warnings.some((w) => w.includes("isn't available"))).toBe(true)
+  })
+  const buildWithBefore = (toRows: typeof rowsB | null, fromRows: typeof rowsA | null) =>
+    buildChanges({
+      changeRecordItems: [headingItem],
+      noteDiffs: [],
+      codeDiffs: [],
+      fromNodes: a.nodes,
+      toNodes: b.nodes,
+      toRows,
+      fromRows,
+      fullHeadingDiff: false,
+      toRevisionName: "Rev B",
+    })[0]
+
+  it("adds each cited heading's row in the older revision as the before", () => {
+    const cited = buildWithBefore(rowsB, rowsA).payload.citedHeadings ?? []
+    const byCode = new Map(cited.map((c) => [c.code, c]))
+    // Modified: in both revisions
+    expect(byCode.get("9903.01.25")?.beforeStatus).toBe("found")
+    expect(byCode.get("9903.01.25")?.before?.general.includes("+ 10%")).toBe(true)
+    expect(byCode.get("9903.01.25")?.row?.general.includes("+ 15%")).toBe(true)
+    // Added: only in the newer revision
+    expect(byCode.get("9903.01.31")?.status).toBe("found")
+    expect(byCode.get("9903.01.31")?.beforeStatus).toBe("not_found")
+    expect(byCode.get("9903.01.31")?.before).toBe(null)
+  })
+
+  it("marks the before unverified only when the older revision has no rows", () => {
+    const cited = buildWithBefore(rowsB, null).payload.citedHeadings ?? []
+    expect(cited.every((c) => c.beforeStatus === undefined)).toBe(true)
+  })
+
+  it("includes range rows found only in the older revision", () => {
+    const removedItem = item({
+      id: "CR-R",
+      kind: "hts_code",
+      note_type: null,
+      action: "deleted",
+      hts_code_ranges: [{ from: "9903.01.25", to: "9903.01.30" }],
+      description: "Headings deleted",
+    })
+    const [change] = buildChanges({
+      changeRecordItems: [removedItem],
+      noteDiffs: [],
+      codeDiffs: [],
+      fromNodes: a.nodes,
+      toNodes: b.nodes,
+      toRows: [],
+      fromRows: rowsA,
+      fullHeadingDiff: false,
+      toRevisionName: "Rev B",
+    })
+    const cited = change.payload.citedHeadings ?? []
+    expect(cited.map((c) => `${c.code}:${c.status}:${c.beforeStatus}`)).toEqual([
+      "9903.01.25:not_found:found",
+      "9903.01.30:not_found:found",
+    ])
+  })
+
+  it("keeps the payload hash unchanged when there are no older rows", () => {
+    expect(buildWithBefore(rowsB, null).payload.hash).toBe(build(rowsB).payload.hash)
+    expect(buildWithBefore(rowsB, rowsA).payload.hash === build(rowsB).payload.hash).toBe(false)
+  })
+})
+
+describe("diffSharedCodes", () => {
+  it("diffs only headings on both sides, so trimmed pages don't look like additions", () => {
+    const diffs = diffSharedCodes(rowsA, rowsB)
+    expect(diffs.map((d) => `${d.status}:${d.key}`)).toEqual(["modified:9903.01.25"])
+  })
+
+  it("finds nothing when the two sides share no headings", () => {
+    const onlyA = rowsA.filter((r) => (r.htsno || r.parentHtsno) === "9903.01.25")
+    const onlyB = rowsB.filter((r) => (r.htsno || r.parentHtsno) === "9903.01.31")
+    expect(diffSharedCodes(onlyA, onlyB)).toEqual([])
   })
 })
 
