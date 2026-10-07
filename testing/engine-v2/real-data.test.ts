@@ -1451,3 +1451,46 @@ describe("engine-v2 real data: Section 338 – Canada import bans (Sep 29, 2026)
     expect(banned.totalDuty).toBe(bulk.totalDuty)
   })
 })
+
+// ============================================================
+// Corrections (Oct 2026): civil aircraft agreements and note 19 lists, from Rev 5 on
+// ============================================================
+describe("engine-v2 real data: civil aircraft agreements and Russian aluminum (corrections)", () => {
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null },
+      answers,
+    })
+  const metals = (result: CalculationResult) => applying(result).filter((c) => c.startsWith("9903.82"))
+  const AIRCRAFT: [string, string][] = [["GB", "9903.96.01"], ["DE", "9903.02.76"], ["JP", "9903.96.02"], ["KR", "9903.02.81"]]
+
+  // U.S. notes 35(a), 2(v)(xxii), 35(b), 2(v)(xxiv)(b). The EU and Korea headings outlive
+  // IEEPA: Proclamation 11021 clause (10) keeps the Section 232 civil aircraft agreements.
+  // Was: metals duty applied to all four (the exemptions weren't modeled).
+  it("civil aircraft steel tube of the UK, EU, Japan or Korea drops the metals duty once confirmed", () => {
+    for (const asOf of ["2026-04-10", "2026-08-01"]) {
+      for (const [country, heading] of AIRCRAFT) {
+        expect(metals(calc("7304.31.30.00", country, asOf, "Free")).length).toBe(1)
+        const confirmed = calc("7304.31.30.00", country, asOf, "Free", { [`confirm:${heading}`]: true })
+        expect(applying(confirmed)).toContain(heading)
+        expect(metals(confirmed)).toEqual([])
+        expect(confirmed.totalDuty).toBe(0)
+      }
+    }
+  })
+
+  it("the agreements don't cover other countries' aircraft goods", () => {
+    const confirmed = calc("7304.31.30.00", "FR", "2026-04-10", "Free", { "confirm:9903.96.01": true, "confirm:9903.96.02": true })
+    expect(metals(confirmed)).toEqual(["9903.82.02"])
+  })
+
+  // Was: 7612.10.00 and 123 other note 19(i)–(k) codes were missing from the 9903.85.68 list,
+  // so Russian aluminum containers paid 50% under 9903.82.02 instead of 200%
+  it("Russian aluminum containers (19(j)) get 9903.85.68 at 200% instead of 9903.82.02", () => {
+    const v2 = calc("7612.10.00.00", "RU", "2026-04-10", "2.4%", { "confirm:9903.85.68": true })
+    expect(applying(v2)).toContain("9903.85.68")
+    expect(applying(v2)).not.toContain("9903.82.02")
+    expect(v2.lines.find((l) => l.code === "9903.85.68").amount).toBe(20_000)
+  })
+})

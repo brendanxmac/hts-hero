@@ -48,11 +48,12 @@ export const programs: Program[] = [
   },
   { id: "301-brazil", name: "Section 301 – Brazil", authority: "301" },
   { id: "301-forced-labor", name: "Section 301 – Forced Labor", authority: "301" },
-  // Still "deal": 9903.96.01 (UK) is in effect after IEEPA ended, since it also exempts
-  // civil aircraft from Section 232 duties
+  // Still "deal": these exempt civil aircraft from Section 232 duties, which outlived IEEPA.
+  // The EU (9903.02.76) and Korea (9903.02.81) headings join from Feb 24, 2026, when their
+  // IEEPA role ended; Proclamation 11021 clause (10) keeps the 232 reductions.
   {
     id: "aircraft-agreements",
-    name: "Civil Aircraft Agreements (UK, Japan)",
+    name: "Civil Aircraft Agreements (UK, EU, Japan, Korea)",
     authority: "deal",
     tradeDeal: true,
   },

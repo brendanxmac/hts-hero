@@ -210,6 +210,26 @@ export const interactions: Interaction[] = [
     source: taiwanSource("U.S. note 35(c)"),
   },
   {
+    // Every verified revision (Rev 5–Rev 20) names the same range, "9903.82.02 and
+    // 9903.82.04–9903.82.17", in all four notes
+    id: "232-metals-not-on-civil-aircraft-agreements",
+    kind: "noStack",
+    description:
+      "Section 232 metals duties don't apply to civil aircraft articles of the UK (9903.96.01), the EU (9903.02.76), Japan (9903.96.02) or Korea (9903.02.81) (U.S. notes 35(a), 2(v)(xxii), 35(b) and 2(v)(xxiv)(b))",
+    order: [
+      { codes: ["9903.96.01", "9903.02.76", "9903.96.02", "9903.02.81"] },
+      { codes: metalsHeadingsThrough17 },
+    ],
+    effective: { from: "2026-04-06" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11021",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+      publishedOn: "2026-04-02",
+      note: "U.S. notes 2(v)(xxii), 2(v)(xxiv)(b), 35(a) and 35(b) as rewritten by PP 11021 (Annex IV), effective 2026-04-06; clause (10) keeps the civil aircraft agreements. Not modeled before; added as a correction",
+    },
+  },
+  {
     id: "ieepa-ca-mx-not-on-autos-mhdv-semiconductors",
     kind: "noStack",
     description:

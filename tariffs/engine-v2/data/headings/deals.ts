@@ -2,6 +2,7 @@
 // was removed on Oct 1, 2026; this file is now the source. See HowTariffsWork.md §6.
 import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
+import { tariffVersions } from "../../versioning"
 
 export const headings: Tariff[] = [
   {
@@ -278,28 +279,51 @@ export const headings: Tariff[] = [
       note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
-  {
-    code: "9903.02.76",
-    program: "deal-eu",
-    name: "Articles of Civil Aircraft of the European Union listed in Ch.99, U.S. note 2(v)(xviii)",
-    description:
-      "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the European Union, excluding unmanned aircraft, provided for in subdivision (v)(xviii) of U.S. note 2 to this subchapter",
-    scope: {
-      countries: [{ list: "eu-members" }],
-      // TODO(list): "9903.02.76" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
-      codes: [{ list: "9903.02.76" }],
+  // Its IEEPA role ended Feb 24, 2026, but the Section 232 civil aircraft reduction it implements
+  // (U.S. note 2(v)(xxii)) continues: Proclamation 11021 clause (10) "does not alter or supersede"
+  // those agreements. The metals exemption is a noStack in interactions.ts.
+  ...tariffVersions(
+    {
+      code: "9903.02.76",
+      program: "deal-eu",
+      name: "Articles of Civil Aircraft of the European Union listed in Ch.99, U.S. note 2(v)(xviii)",
+      description:
+        "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the European Union, excluding unmanned aircraft, provided for in subdivision (v)(xviii) of U.S. note 2 to this subchapter",
+      scope: {
+        countries: [{ list: "eu-members" }],
+        // TODO(list): "9903.02.76" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
+        codes: [{ list: "9903.02.76" }],
+      },
+      requires: [confirm("9903.02.76")],
+      rate: { kind: "free" },
+      effective: {},
+      source: {
+        revision: "2026HTSRev5",
+        citation: "EO 14389; CSMS # 67834313",
+        url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+        publishedOn: "2026-02-20",
+        note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
+      },
     },
-    requires: [confirm("9903.02.76")],
-    rate: { kind: "free" },
-    effective: { to: "2026-02-24" },
-    source: {
-      revision: "2026HTSRev5",
-      citation: "EO 14389; CSMS # 67834313",
-      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
-      publishedOn: "2026-02-20",
-      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
-    },
-  },
+    [
+      {
+        from: "2026-02-24",
+        set: {
+          program: "aircraft-agreements",
+          name: "Articles of Civil Aircraft of the European Union (Section 232 Exemption)",
+          description:
+            "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the European Union, excluding unmanned aircraft, provided for in subdivision (v)(xxii) of U.S. note 2 to this subchapter",
+        },
+        source: {
+          revision: "2026HTSRev5",
+          citation: "Proclamation 11021, clause (10)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+          publishedOn: "2026-04-02",
+          note: "Section 232 civil aircraft reduction continues after IEEPA ended (U.S. note 2(v)(xxii)). Correction: previously ended on Feb 24, 2026 with the IEEPA headings",
+        },
+      },
+    ],
+  ),
   {
     code: "9903.02.77",
     program: "deal-eu",
@@ -697,25 +721,48 @@ export const headings: Tariff[] = [
       note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
     },
   },
-  {
-    code: "9903.02.81",
-    program: "deal-kr",
-    name: "Articles of Civil Aircraft of South Korea",
-    description:
-      "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of South Korea, excluding unmanned aircraft, provided for in subdivision (v)(xxiii)(b) of U.S. note 2 to this subchapter",
-    scope: {
-      countries: ["KR"],
-      codes: [{ list: "civilAircraftAndPartsOf" }],
+  // Its IEEPA role ended Feb 24, 2026, but the Section 232 civil aircraft reduction it implements
+  // (U.S. note 2(v)(xxiv)(b)) continues: Proclamation 11021 clause (10) "does not alter or supersede"
+  // those agreements. The metals exemption is a noStack in interactions.ts.
+  ...tariffVersions(
+    {
+      code: "9903.02.81",
+      program: "deal-kr",
+      name: "Articles of Civil Aircraft of South Korea",
+      description:
+        "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of South Korea, excluding unmanned aircraft, provided for in subdivision (v)(xxiii)(b) of U.S. note 2 to this subchapter",
+      scope: {
+        countries: ["KR"],
+        codes: [{ list: "civilAircraftAndPartsOf" }],
+      },
+      requires: [confirm("9903.02.81")],
+      rate: { kind: "free" },
+      effective: {},
+      source: {
+        revision: "2026HTSRev5",
+        citation: "EO 14389; CSMS # 67834313",
+        url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+        publishedOn: "2026-02-20",
+        note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
+      },
     },
-    requires: [confirm("9903.02.81")],
-    rate: { kind: "free" },
-    effective: { to: "2026-02-24" },
-    source: {
-      revision: "2026HTSRev5",
-      citation: "EO 14389; CSMS # 67834313",
-      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
-      publishedOn: "2026-02-20",
-      note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
-    },
-  },
+    [
+      {
+        from: "2026-02-24",
+        set: {
+          program: "aircraft-agreements",
+          name: "Articles of Civil Aircraft of South Korea (Section 232 Exemption)",
+          description:
+            "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of South Korea, excluding unmanned aircraft, provided for in subdivision (v)(xxiv)(b) of U.S. note 2 to this subchapter",
+        },
+        source: {
+          revision: "2026HTSRev5",
+          citation: "Proclamation 11021, clause (10)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+          publishedOn: "2026-04-02",
+          note: "Section 232 civil aircraft reduction continues after IEEPA ended (U.S. note 2(v)(xxiv)(b)). Correction: previously ended on Feb 24, 2026 with the IEEPA headings",
+        },
+      },
+    ],
+  ),
 ]

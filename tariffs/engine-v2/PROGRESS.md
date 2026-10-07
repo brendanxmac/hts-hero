@@ -241,6 +241,19 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 7: corrections found while planning the 2026HTSRev4 backfill (branch `fix/232-civil-aircraft-and-metals-lists`)
+
+These are corrections to verified data (Rev 5–20). The backfill itself is paused; see `tariffs/revision-diffs/2026HTSRev4/PLAN.md`.
+
+- **Civil aircraft agreements over Section 232 metals.** U.S. notes 35(a) (UK, 9903.96.01), 2(v)(xxii) (EU, 9903.02.76), 35(b) (Japan, 9903.96.02) and 2(v)(xxiv)(b) (Korea, 9903.02.81) exempt their civil aircraft articles from 9903.82.02 and .04–.17. That range is the same in every verified revision.
+  - Now modeled as the `232-metals-not-on-civil-aircraft-agreements` noStack, from 2026-04-06.
+  - **9903.02.76/.81 no longer end on Feb 24, 2026.** Their IEEPA role ended, but Proclamation 11021 clause (10) keeps the Section 232 civil aircraft agreements. They move to `aircraft-agreements`, with the Rev 5 heading text, which cites (v)(xxii) and (v)(xxiv)(b).
+  - This **lowers Rev 5+ duties** on confirmed UK, EU, Japanese and Korean aircraft articles.
+- **`9903.85.68` rebuilt from note 19(i)–(k)** (254 codes). The note is identical from Rev 4 to Rev 20. The migrated list had 131 of its codes, plus 9401.99.90.81, which isn't in the note. Russian aluminum containers, wire, cable and the other missing goods now pay 200% instead of 50%.
+- **`motorcycleParts16cg`:** 8516.90.50.00 → 8516.90.50, as listed in note 16(c)(vi).
+- **9903.03.06 description** replaced with the Rev 5 heading text. It was a paraphrase; no duty effect.
+- **Not changed:** 9903.96.02's `exceptions: ["9903.94.06"]`, which note 35 doesn't support. Left for a decision.
+
 ## Oct 6: import bans (Section 338 Canada, from Sep 29, 2026)
 
 - **New record type `Prohibition`** (`types.ts`, `data/prohibitions.ts`): an import ban, dated and scoped like a tariff, with optional `unless` conditions. `calculate()` returns the bans in scope as `result.prohibitions` (step 11); a ban never changes `totalDuty`, because goods imported before it still pay the duty when withdrawn from a warehouse or FTZ. Validated in `validate.ts`; included in `ruleChangeDates`.

@@ -238,7 +238,7 @@ export const headings: Tariff[] = [
       program: "122",
       name: "122 Exemption: Section 232 Articles",
       description:
-        "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks and parts of passenger vehicles and light trucks, semiconductor articles, semi-finished copper and intensive copper derivative products, wood products, or medium- and heavy-duty vehicles and buses or medium- and heavy-duty vehicle parts, of any country, as provided for in subdivision (aa)(v) of U.S. note 2 to subchapter III of chapter 99 of the HTSUS.",
+        "Articles of aluminum, of steel, or of copper or derivative aluminum or steel articles; passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks; parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks; medium- and heavy-duty vehicles; parts of medium- and heavy-duty vehicles; wood products; and semiconductor articles, of any country, as provided in subdivision (aa)(v) of U.S. note 2 to this subchapter",
       scope: {
         countries: "all",
         codes: "all",
@@ -250,7 +250,7 @@ export const headings: Tariff[] = [
       effective: { from: "2026-02-24" },
       source: {
         revision: "2026HTSRev5",
-        note: "Triggers corrected in 2026HTSRev11 to match U.S. note 2(aa)(v): 9903.82.01 and 9903.82.03 removed (data-entry correction, all dates)",
+        note: "Triggers corrected in 2026HTSRev11 to match U.S. note 2(aa)(v): 9903.82.01 and 9903.82.03 removed (data-entry correction, all dates). Description corrected to the 2026HTSRev5 heading text (Oct 2026)",
       },
     },
     [
