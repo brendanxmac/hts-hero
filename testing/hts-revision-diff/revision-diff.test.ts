@@ -720,6 +720,36 @@ describe("Heading tables", () => {
   })
 })
 
+// Seen on 2026HTSRev4/5: a rate cell split off as its own "1/ …" line, a page footer glued
+// to the footnote, and "2/" meaning different things on different pages
+describe("Heading table footnotes", () => {
+  const page = (n: number, body: string) => `{${n}}------------------------------------------------\n\n${body}`
+  const table = (code: string, desc: string) => `| Heading/ Subheading | Stat. Suf- fix | Article Description | Unit of Quantity | Rates of Duty |  |  |
+|---|---|---|---|---|---|---|
+| ${code} |  | ${desc} 1/ 2/ |  | 25% |  |  |
+`
+  const md = [
+    page(0, `${table("9903.78.01", "Copper")}\n1/ See chapter 99 statistical note 1.**Note: The shaded areas indicate the provision has expired**\n2/ The quantity of copper shall be reported in kg.\n1/ The duty provided in the applicable subheading + 10%\n`),
+    page(1, `${table("9903.88.16", "Articles of China")}\n1/ See chapter 99 statistical note 1.\n2/ Subdivisions (t) and (u) of note 20 are suspended.\n`),
+    page(2, `${table("9903.52.01", "Quota goods")}\n1/ See chapter 99 statistical note 2.\n`),
+  ].join("\n")
+  const { rows } = parseCh99HeadingTables(md)
+
+  it("takes each row's footnote from its own page, ignoring stray lines and page footers", () => {
+    expect(rows.map((r) => r.footnotes[0])).toEqual([
+      "1/ See chapter 99 statistical note 1.",
+      "1/ See chapter 99 statistical note 1.",
+      "1/ See chapter 99 statistical note 2.",
+    ])
+    expect(rows[0].footnotes[1]).toBe("2/ The quantity of copper shall be reported in kg.")
+    expect(rows[1].footnotes[1]).toBe("2/ Subdivisions (t) and (u) of note 20 are suspended.")
+  })
+
+  it("leaves off a marker that means different things on different pages when its own page doesn't say", () => {
+    expect(rows[2].footnotes).toEqual(["1/ See chapter 99 statistical note 2."])
+  })
+})
+
 describe("takeTrailingMarkers", () => {
   it("leaves text without a trailing marker alone", () => {
     expect(takeTrailingMarkers("Articles of steel, 1/2 inch or more")).toEqual({ text: "Articles of steel, 1/2 inch or more", markers: [] })
