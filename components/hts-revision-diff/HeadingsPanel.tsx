@@ -21,6 +21,20 @@ interface HeadingsData {
   cited: string[]
   uncited: string[] // row ids the change record doesn't cite
   changeRecordRead: boolean
+  // Against USITC's archived PDF: complete when every subchapter III heading is here
+  coverage: { expected: number; complete: boolean; missingCount: number; missing: string[]; unexpected: string[] } | null
+  // Comparisons using this attempt, and the headings their changes need from it
+  comparisons: { id: string; side: "from" | "to"; fromRevision: string | null; toRevision: string | null; needed: string[] }[]
+}
+
+// The heading each row belongs to: its own number, or the one above it for a
+// description-only row (as comparisons group them)
+const rowHeadings = (rows: HeadingRow[]) => {
+  let last = ""
+  return rows.map((r) => {
+    if (r.htsno) last = r.htsno.split(".").slice(0, 3).join(".")
+    return last
+  })
 }
 
 type Editable = Pick<HeadingRow, "htsno" | "stat_suffix" | "indent" | "description" | "general" | "special" | "other" | "units" | "page"> & {
@@ -66,7 +80,7 @@ const CHECK_TONES: Record<string, Tone> = {
   flagged: "error",
 }
 
-export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
+export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: string; comparisonId?: string | null }) {
   const [data, setData] = useState<HeadingsData | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [savingRows, setSavingRows] = useState<Record<string, number>>({}) // row id → review saves in flight
@@ -78,6 +92,8 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
   const [file, setFile] = useState<File | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [anchor, setAnchor] = useState<number | null>(null) // last row clicked, for shift-click ranges
+  // Which rows to show: those a comparison needs (one, or all of them), or every row
+  const [view, setView] = useState<string>(comparisonId ? `needed:${comparisonId}` : "needed")
 
   const load = useCallback(async () => {
     try {
@@ -190,12 +206,34 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
 
   if (!data) return <PageSpinner />
 
-  const { document, info, rows, cited } = data
+  const { document, info, cited } = data
+  const allRows = data.rows
   const uncited = new Set(data.uncited)
+  // Rows comparisons need reviewed: those of headings their changes rely on
+  const headingOfRow = rowHeadings(allRows)
+  const neededBy = (c: HeadingsData["comparisons"][number]) => new Set(c.needed)
+  const viewComparison = view.startsWith("needed:") ? data.comparisons.find((c) => c.id === view.slice(7)) : null
+  const needed = new Set(
+    (viewComparison ? [viewComparison] : data.comparisons).flatMap((c) => Array.from(neededBy(c)))
+  )
+  const isNeeded = (index: number) => needed.has(headingOfRow[index])
+  const showNeeded = view !== "all" && needed.size > 0
+  const rows = showNeeded ? allRows.filter((_, i) => isNeeded(i)) : allRows
+  const neededRows = allRows.filter((_, i) => isNeeded(i))
+  const neededReviewed = neededRows.filter((r) => r.reviewed).length
   const selectedRows = rows.filter((r) => selected.has(r.id))
   const allSelected = rows.length > 0 && selectedRows.length === rows.length
-  const reviewed = rows.filter((r) => r.reviewed).length
+  const reviewed = allRows.filter((r) => r.reviewed).length
   const okUnreviewed = rows.filter((r) => r.claude_status === "ok" && !r.reviewed)
+  const markReviewed = (ids: string[], label: string) =>
+    run(
+      label,
+      async () => {
+        await api(`/attempts/${attemptId}/headings/review`, { method: "POST", body: JSON.stringify({ ids, reviewed: true }) })
+        setSelected(new Set())
+      },
+      `${ids.length} row${ids.length === 1 ? "" : "s"} marked reviewed`
+    )
   const coverage = cited.map((code) => {
     const matches = rows.filter((r) => r.htsno === code)
     return { code, state: matches.some((r) => r.reviewed) ? "reviewed" : matches.length ? "unreviewed" : "missing" }
@@ -206,12 +244,77 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
   return (
     <div className="flex flex-col gap-5">
       <Help>
-        Chapter 99 headings, read from this revision&apos;s own tariff-table pages. Upload every subchapter III heading page
-        (comparisons then diff every heading, including added and removed ones), or just the pages for the headings the
-        change record cites. Rows are read from datalab&apos;s conversion; &ldquo;Check with Claude&rdquo; compares them with the pages
-        if something looks off. Comparisons use every row; review the ones a comparison lists as used by its changes before
-        pulling it.
+        Chapter 99 headings, read from this revision&apos;s own tariff-table pages. Upload every subchapter III heading page:
+        comparisons then diff every heading, including added and removed ones. You only review the rows a comparison&apos;s
+        changes rely on, listed below; the rest are used as they were read. &ldquo;Check with Claude&rdquo; compares the rows with
+        the pages if something looks off.
       </Help>
+
+      {/* What comparisons need from this revision */}
+      <Panel title="To review for comparisons">
+        <div className="flex flex-col gap-2.5 px-4 py-3 text-sm">
+          {data.coverage &&
+            (data.coverage.complete ? (
+              <StatusDot
+                tone="success"
+                label={
+                  <span className="font-normal text-base-content/70">
+                    All {data.coverage.expected} subchapter III headings are here (checked against USITC&apos;s archived PDF)
+                  </span>
+                }
+              />
+            ) : (
+              <StatusDot
+                tone="warning"
+                label={
+                  <span className="font-normal text-base-content/70">
+                    {data.coverage.missingCount} of {data.coverage.expected} subchapter III headings aren&apos;t on these pages, so
+                    comparisons can&apos;t diff every heading
+                  </span>
+                }
+              />
+            ))}
+          {data.comparisons.length === 0 ? (
+            <p className="text-base-content/50">
+              No comparison uses this revision yet. Once one does, the rows its changes rely on are listed here: those are the
+              only ones to review.
+            </p>
+          ) : (
+            data.comparisons.map((c) => {
+              const codes = neededBy(c)
+              const cRows = allRows.filter((_, i) => codes.has(headingOfRow[i]))
+              const cReviewed = cRows.filter((r) => r.reviewed).length
+              const done = cRows.length === cReviewed
+              return (
+                <div key={c.id} className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  <StatusDot
+                    tone={done ? "success" : "warning"}
+                    label={
+                      <span className="font-normal text-base-content/80">
+                        <span className="font-medium">
+                          {c.fromRevision} → {c.toRevision}
+                        </span>{" "}
+                        (this revision is the {c.side === "from" ? "before" : "after"}): {codes.size} heading
+                        {codes.size === 1 ? "" : "s"}, {cReviewed} of {cRows.length} rows reviewed
+                      </span>
+                    }
+                  />
+                  <div className="ml-auto flex gap-1.5">
+                    {!done && view !== `needed:${c.id}` && (
+                      <button className={btn.xsSecondary} onClick={() => setView(`needed:${c.id}`)}>
+                        Show these rows
+                      </button>
+                    )}
+                    <a className={btn.xsGhost} href={`/revision-checker/comparisons/${c.id}`}>
+                      Open comparison
+                    </a>
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+      </Panel>
 
       {/* Source document and Claude's check */}
       <Panel
@@ -379,7 +482,13 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
 
       {/* Rows */}
       <Panel
-        title="Heading rows"
+        title={
+          showNeeded
+            ? viewComparison
+              ? `Rows ${viewComparison.fromRevision} → ${viewComparison.toRevision} needs reviewed`
+              : "Rows comparisons need reviewed"
+            : "Heading rows"
+        }
         count={rows.length}
         actions={
           selectedRows.length > 0 ? (
@@ -387,6 +496,14 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
               <span className="mr-1 text-xs font-medium text-base-content/70">{selectedRows.length} selected</span>
               <button className={btn.xsGhost} disabled={!!busy} onClick={() => setSelected(new Set())}>
                 Clear
+              </button>
+              <button
+                className={btn.xsSecondary}
+                disabled={!!busy || selectedRows.every((r) => r.reviewed)}
+                onClick={() => markReviewed(selectedRows.filter((r) => !r.reviewed).map((r) => r.id), "bulk-review")}
+              >
+                {busy === "bulk-review" && <Spinner />}
+                Mark selected reviewed
               </button>
               <button
                 className={`${btn.xsSecondary} text-error`}
@@ -402,7 +519,8 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
             </>
           ) : (
           <>
-            {uncited.size > 0 && (
+            {/* Only for trimmed uploads: with every subchapter III page, removing rows would stop full diffs */}
+            {uncited.size > 0 && !data.coverage?.complete && (
               <button
                 className={btn.xsSecondary}
                 disabled={!!busy}
@@ -417,10 +535,26 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                 Remove {uncited.size} uncited row{uncited.size === 1 ? "" : "s"}
               </button>
             )}
-            {rows.length > 0 && (
+            {needed.size > 0 && (
+              <button className={btn.xsGhost} onClick={() => setView(showNeeded ? "all" : "needed")}>
+                {showNeeded ? `Show all ${allRows.length} rows` : "Show only rows to review"}
+              </button>
+            )}
+            {allRows.length > 0 && (
               <span className="mr-1 text-xs tabular-nums text-base-content/50">
-                {reviewed} reviewed
-                {rows.length > reviewed && <span className="text-warning"> · {rows.length - reviewed} to review</span>}
+                {needed.size > 0 ? (
+                  <>
+                    <span className={neededReviewed < neededRows.length ? "text-warning" : ""}>
+                      {neededReviewed} of {neededRows.length} rows to review done
+                    </span>
+                    {" "}
+                    · {reviewed} of {allRows.length} reviewed in all
+                  </>
+                ) : (
+                  <>
+                    {reviewed} of {allRows.length} reviewed
+                  </>
+                )}
               </span>
             )}
             {/* Stays mounted once there are Claude-confirmed rows, so the header doesn't reflow as you tick */}
@@ -432,7 +566,10 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                   run(
                     "bulk",
                     async () => {
-                      for (const r of okUnreviewed) await api(`/heading-rows/${r.id}`, { method: "PATCH", body: JSON.stringify({ reviewed: true }) })
+                      await api(`/attempts/${attemptId}/headings/review`, {
+                        method: "POST",
+                        body: JSON.stringify({ ids: okUnreviewed.map((r) => r.id), reviewed: true }),
+                      })
                     },
                     `${okUnreviewed.length} rows marked reviewed`
                   )
@@ -581,7 +718,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                       <td className={`${td} whitespace-nowrap font-mono text-[13px]`}>
                         {row.htsno || <span className="text-base-content/30">—</span>}
                         {row.stat_suffix && <span className="text-base-content/45"> {row.stat_suffix}</span>}
-                        {uncited.has(row.id) && (
+                        {uncited.has(row.id) && !data.coverage?.complete && (
                           <span className="mt-1 block font-sans">
                             <Pill title="The change record doesn't cite this heading">Not cited</Pill>
                           </span>

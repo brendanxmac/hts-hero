@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireRevisionTool } from "@/libs/hts-revision-diff/access"
 import { RevisionDiffTables as T } from "@/libs/hts-revision-diff/constants"
-import { headingPagesInfo, loadHeadingRows, uncitedHeadingRowIds } from "@/libs/hts-revision-diff/headings"
+import { headingCoverage, headingOf } from "@/libs/hts-revision-diff/archive"
+import {
+  headingPagesInfo,
+  headingRowsAsHtsRows,
+  headingsUsedByChanges,
+  loadHeadingRows,
+  uncitedHeadingRowIds,
+} from "@/libs/hts-revision-diff/headings"
 import { loadAttempt } from "@/libs/hts-revision-diff/pipeline"
 import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 import { signedUrl } from "@/libs/hts-revision-diff/storage"
@@ -9,18 +16,48 @@ import { normalizeHtsCode } from "@/libs/hts-revision-diff/text"
 
 export const dynamic = "force-dynamic"
 
-// The attempt's heading pages: document state, rows, Claude check, and the
-// headings the change record cites
+// The attempt's heading pages: document state, rows, Claude check, the headings the
+// change record cites, whether the pages hold every subchapter III heading, and the
+// headings each comparison using this attempt needs from it
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {
-    const { attempt, documents } = await loadAttempt(db, params.id)
+    const { attempt, revision, documents } = await loadAttempt(db, params.id)
     const document = documents.find((d) => d.kind === "ch99_headings_pdf") ?? null
     const cited = Array.from(
       new Set((attempt.change_record_items ?? []).filter((i) => i.in_chapter_99).flatMap((i) => i.hts_codes.map(normalizeHtsCode)))
     ).sort()
     const rows = await loadHeadingRows(db, params.id)
+    const asRows = headingRowsAsHtsRows(rows)
+    const coverage = rows.length ? headingCoverage(revision.name, asRows) : null
+
+    // Ready comparisons this attempt is in (the latest per pair), and the headings their
+    // changes rely on that have rows here: the ones to review
+    const { data: comparisons, error } = await db
+      .from(T.COMPARISONS)
+      .select("id, from_attempt_id, to_attempt_id, stats, created_at")
+      .or(`from_attempt_id.eq.${params.id},to_attempt_id.eq.${params.id}`)
+      .eq("status", "ready")
+      .order("created_at", { ascending: false })
+    if (error) throw new Error(error.message)
+    const latest = (comparisons ?? []).filter(
+      (c, i, all) => all.findIndex((o) => o.from_attempt_id === c.from_attempt_id && o.to_attempt_id === c.to_attempt_id) === i
+    )
+    const codesHere = new Set(asRows.map(headingOf))
+    const needs = await Promise.all(
+      latest.map(async (c) => {
+        const { data: changes, error } = await db.from(T.CHANGES).select("decision, payload").eq("comparison_id", c.id)
+        if (error) throw new Error(error.message)
+        return {
+          id: c.id,
+          side: c.from_attempt_id === params.id ? ("from" as const) : ("to" as const),
+          fromRevision: c.stats?.fromRevision ?? null,
+          toRevision: c.stats?.toRevision ?? null,
+          needed: Array.from(headingsUsedByChanges(changes ?? [])).filter((code) => codesHere.has(code)).sort(),
+        }
+      })
+    )
     return NextResponse.json({
       document,
       pdfUrl: document ? await signedUrl(db, document.storage_path) : null,
@@ -30,6 +67,8 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
       // Rows "Remove uncited rows" would delete (empty until the change record is read)
       uncited: attempt.change_record_items ? uncitedHeadingRowIds(rows, attempt.change_record_items) : [],
       changeRecordRead: !!attempt.change_record_items,
+      coverage,
+      comparisons: needs,
     })
   } catch (error) {
     return errorResponse(error)

@@ -334,20 +334,30 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
             </Callout>
           )}
           {unreviewed.length > 0 && (
-            <Callout tone="warning" title="Some headings used by changes aren't reviewed">
+            <Callout tone="warning" title="Heading rows to review before pulling">
+              <p>
+                These changes rely on headings whose rows haven&apos;t been checked against the PDF. Only these need reviewing; every
+                other row is used as read.
+              </p>
               {(["from", "to"] as const).map((side) => {
                 const codes = data.unreviewedInChanges?.[side] ?? []
                 if (!codes.length) return null
+                const attemptId = side === "from" ? comparison.from_attempt_id : comparison.to_attempt_id
                 return (
-                  <p key={side}>
-                    {(side === "from" ? from : to).revision.name}: {codes.join(", ")}
+                  <p key={side} className="mt-1.5 flex flex-wrap items-center gap-2">
+                    <span>
+                      {(side === "from" ? from : to).revision.name} ({side === "from" ? "before" : "after"}): {codes.length} heading
+                      {codes.length === 1 ? "" : "s"}
+                    </span>
+                    <a
+                      className={btn.xsSecondary}
+                      href={`/revision-checker/attempts/${attemptId}?tab=headings&comparison=${comparison.id}`}
+                    >
+                      Review them
+                    </a>
                   </p>
                 )
               })}
-              <p className="mt-1">
-                Review these rows on each revision&apos;s attempt page (Headings tab) before pulling. Other rows don&apos;t need
-                reviewing.
-              </p>
             </Callout>
           )}
           {incompletePages.length > 0 && (

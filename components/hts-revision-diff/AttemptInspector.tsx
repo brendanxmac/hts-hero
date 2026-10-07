@@ -1,5 +1,6 @@
 "use client"
 
+import { useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import type { AttemptRow, DocumentRow, ParsedNotes, RevisionRow } from "@/libs/hts-revision-diff/types"
@@ -36,7 +37,12 @@ interface InspectData {
 
 export default function AttemptInspector({ attemptId }: { attemptId: string }) {
   const [data, setData] = useState<InspectData | null>(null)
-  const [tab, setTab] = useState<"notes" | "warnings" | "change-record" | "headings" | "markdown">("notes")
+  // A comparison links here with ?tab=headings&comparison=<id> to show the rows it needs reviewed
+  const searchParams = useSearchParams()
+  const linkedComparison = searchParams.get("comparison")
+  const [tab, setTab] = useState<"notes" | "warnings" | "change-record" | "headings" | "markdown">(
+    searchParams.get("tab") === "headings" ? "headings" : "notes"
+  )
   const [warningKind, setWarningKind] = useState("all")
   const [focusKey, setFocusKey] = useState<string | null>(null)
   const [extracting, setExtracting] = useState(false)
@@ -208,7 +214,7 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
           </div>
         ))}
 
-      {tab === "headings" && <HeadingsPanel attemptId={attemptId} />}
+      {tab === "headings" && <HeadingsPanel attemptId={attemptId} comparisonId={linkedComparison} />}
 
       {markdownOpened && chapter99Doc?.markdown_path && (
         <div className={tab === "markdown" ? "" : "hidden"}>
