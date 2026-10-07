@@ -15,6 +15,7 @@ interface HeadingsData {
     check: { at: string; issues: string[]; usage: { cost_usd: number; input_tokens: number; output_tokens: number } } | null
     checking: boolean
     progress?: { pagesChecked: number; pages: number } | null
+    scopedCheck?: { at: string; rows: number; pages: number[]; issues: string[]; usage: { cost_usd: number } } | null
     error: string | null
   } | null
   rows: HeadingRow[]
@@ -234,6 +235,20 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
       },
       `${ids.length} row${ids.length === 1 ? "" : "s"} marked reviewed`
     )
+  // Claude checks only the pages these rows are on
+  const checkRows = (ids: string[], label: string) =>
+    run(
+      label,
+      async () => {
+        const { rows: n, pages } = await api<{ rows: number; pages: number }>(`/attempts/${attemptId}/headings/check`, {
+          method: "POST",
+          body: JSON.stringify({ rowIds: ids }),
+        })
+        setSelected(new Set())
+        toast.success(`Claude checked ${n} row${n === 1 ? "" : "s"} on ${pages} page${pages === 1 ? "" : "s"}`)
+      }
+    )
+  const pdfIds = (list: HeadingRow[]) => list.filter((r) => r.source === "pdf").map((r) => r.id)
   const coverage = cited.map((code) => {
     const matches = rows.filter((r) => r.htsno === code)
     return { code, state: matches.some((r) => r.reviewed) ? "reviewed" : matches.length ? "unreviewed" : "missing" }
@@ -246,8 +261,8 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
       <Help>
         Chapter 99 headings, read from this revision&apos;s own tariff-table pages. Upload every subchapter III heading page:
         comparisons then diff every heading, including added and removed ones. You only review the rows a comparison&apos;s
-        changes rely on, listed below; the rest are used as they were read. &ldquo;Check with Claude&rdquo; compares the rows with
-        the pages if something looks off.
+        changes rely on, listed below; the rest are used as they were read. &ldquo;Check with Claude&rdquo; compares every row with
+        the pages; &ldquo;Check … with Claude&rdquo; on a comparison, or on selected rows, reads only the pages those rows are on.
       </Help>
 
       {/* What comparisons need from this revision */}
@@ -300,6 +315,17 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
                     }
                   />
                   <div className="ml-auto flex gap-1.5">
+                    {!done && pdfIds(cRows.filter((r) => !r.reviewed)).length > 0 && (
+                      <button
+                        className={btn.xsSecondary}
+                        disabled={!!busy || !!info?.checking}
+                        title="Claude reads only the pages these rows are on and corrects them, like the full check"
+                        onClick={() => checkRows(pdfIds(cRows.filter((r) => !r.reviewed)), `check:${c.id}`)}
+                      >
+                        {busy === `check:${c.id}` && <Spinner />}
+                        Check {cRows.length - cReviewed} with Claude
+                      </button>
+                    )}
                     {!done && view !== `needed:${c.id}` && (
                       <button className={btn.xsSecondary} onClick={() => setView(`needed:${c.id}`)}>
                         Show these rows
@@ -417,6 +443,31 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
                   </button>
                 </div>
               </div>
+              {info.scopedCheck && (
+                <StatusDot
+                  tone={info.scopedCheck.issues.length ? "warning" : "success"}
+                  label={
+                    <span className="font-normal text-base-content/70">
+                      Claude checked {info.scopedCheck.rows} row{info.scopedCheck.rows === 1 ? "" : "s"} on{" "}
+                      {info.scopedCheck.pages.length === 1 ? "page" : "pages"} {info.scopedCheck.pages.join(", ")}{" "}
+                      {formatTime(info.scopedCheck.at)} <Dot /> ${info.scopedCheck.usage.cost_usd.toFixed(2)}
+                    </span>
+                  }
+                />
+              )}
+              {info.scopedCheck && info.scopedCheck.issues.length > 0 && (
+                <details className="group rounded-md border border-warning/30 bg-warning/[0.05]">
+                  <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
+                    <span className="transition-transform group-open:rotate-90">›</span>
+                    Claude found {info.scopedCheck.issues.length} difference{info.scopedCheck.issues.length === 1 ? "" : "s"} on those pages
+                  </summary>
+                  <ul className="ml-8 list-disc space-y-1 px-3 pb-3 text-base-content/75">
+                    {info.scopedCheck.issues.map((issue, i) => (
+                      <li key={i}>{issue}</li>
+                    ))}
+                  </ul>
+                </details>
+              )}
               {info.warnings.map((w, i) => (
                 <Callout key={i} tone="warning">
                   {w.message}
@@ -504,6 +555,15 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
               >
                 {busy === "bulk-review" && <Spinner />}
                 Mark selected reviewed
+              </button>
+              <button
+                className={btn.xsSecondary}
+                disabled={!!busy || !!info?.checking || pdfIds(selectedRows).length === 0}
+                title="Claude reads only the pages these rows are on and corrects them, like the full check"
+                onClick={() => checkRows(pdfIds(selectedRows), "check-selected")}
+              >
+                {busy === "check-selected" && <Spinner />}
+                Check selected with Claude
               </button>
               <button
                 className={`${btn.xsSecondary} text-error`}

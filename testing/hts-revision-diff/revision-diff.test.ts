@@ -12,6 +12,7 @@ import {
   headingRowsAsHtsRows,
   headingRowsFingerprint,
   headingsUsedByChanges,
+  orderRowsByPage,
   reconcileHeadingRows,
   uncitedHeadingRowIds,
   unreviewedHeadings,
@@ -942,5 +943,19 @@ describe("Change record items when subchapter III is diffed in full", () => {
 
   it("otherwise still counts the citation as the change", () => {
     expect(build().source).toBe("change_record")
+  })
+})
+
+describe("checking some heading rows with Claude", () => {
+  it("keeps pages in order: checked pages in Claude's order, other pages as they were", () => {
+    // Page 2 was re-read: Claude put "c" before "b" and added "x"
+    const rows = [
+      { id: "a", page: 1, order: 0 },
+      { id: "b", page: 2, order: 1 },
+      { id: "c", page: 2, order: 0 },
+      { id: "x", page: 2, order: 2 },
+      { id: "d", page: 3, order: 3 },
+    ]
+    expect(orderRowsByPage(rows)).toEqual(["a", "c", "b", "x", "d"])
   })
 })

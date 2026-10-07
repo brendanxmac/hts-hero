@@ -25,6 +25,8 @@ export interface HeadingPagesInfo {
   error: string | null
   // A chunked check that hasn't covered every page yet (checking again continues it)
   progress?: { pagesChecked: number; pages: number } | null
+  // The latest check of only some rows' pages (e.g. the rows a comparison needs)
+  scopedCheck?: { at: string; rows: number; pages: number[]; issues: string[]; usage: ClaudeUsage } | null
 }
 
 const FIELDS: (keyof HeadingFields)[] = [
@@ -299,6 +301,121 @@ export const checkHeadingRowsWithClaude = async (db: RevisionDb, attemptId: stri
       sumUsage(chunks.map((c) => c.usage))
     )
     return { done: true }
+  } catch (error) {
+    await saveHeadingPagesInfo(db, attemptId, { checking: false, error: (error as Error).message })
+    throw error
+  }
+}
+
+// Pages for a scoped check, per Claude call: up to CHECK_CHUNK_PAGES each, at most
+// CHECK_CONCURRENCY calls, so it finishes in one request
+const MAX_SCOPED_PAGES = CHECK_CHUNK_PAGES * CHECK_CONCURRENCY
+
+// Row order once some pages are re-read: by page, then each row's order within it
+// (Claude's order on checked pages, the existing order elsewhere)
+export const orderRowsByPage = (rows: { id: string; page: number; order: number }[]) =>
+  [...rows].sort((a, b) => a.page - b.page || a.order - b.order).map((r) => r.id)
+
+// Has Claude check only the pages the given rows are on, e.g. the rows a comparison
+// needs. Corrections apply to every row on those pages; the reviews of other rows Claude
+// confirms unchanged are kept. Rows on other pages aren't touched.
+export const checkSomeHeadingRowsWithClaude = async (
+  db: RevisionDb,
+  attemptId: string,
+  rowIds: string[]
+): Promise<{ rows: number; pages: number }> => {
+  const doc = await headingsDocument(db, attemptId)
+  if (!doc) throw new Error("No heading pages uploaded")
+  const all = await loadHeadingRows(db, attemptId)
+  const parsed = all.filter((r) => r.source === "pdf")
+  const pageOf = rowPages(parsed)
+  const targets = new Set(rowIds)
+  const pages = Array.from(new Set(parsed.flatMap((r, i) => (targets.has(r.id) ? [pageOf[i]] : [])))).sort((a, b) => a - b)
+  if (!pages.length) throw new Error("None of these rows were read from the PDF, so there are no pages to check")
+  if (pages.length > MAX_SCOPED_PAGES) {
+    throw new Error(`These rows are on ${pages.length} pages; check at most ${MAX_SCOPED_PAGES} at a time, or check every page`)
+  }
+
+  await saveHeadingPagesInfo(db, attemptId, { checking: true, error: null })
+  try {
+    const attempt = await loadAttemptRow(db, attemptId)
+    const cited = Array.from(
+      new Set((attempt.change_record_items ?? []).filter((i) => i.in_chapter_99).flatMap((i) => i.hts_codes.map(normalizeHtsCode)))
+    )
+    const source = await PDFDocument.load(Buffer.from(await (await downloadBlob(db, doc.storage_path)).arrayBuffer()))
+    const onPages = (list: number[]) => parsed.filter((_, i) => list.includes(pageOf[i]))
+
+    const chunks: number[][] = []
+    for (let i = 0; i < pages.length; i += CHECK_CHUNK_PAGES) chunks.push(pages.slice(i, i + CHECK_CHUNK_PAGES))
+    const results = await Promise.all(
+      chunks.map(async (chunkPages) => {
+        const chunk = await PDFDocument.create()
+        const copied = await chunk.copyPages(source, chunkPages.map((p) => p - 1))
+        copied.forEach((page) => chunk.addPage(page))
+        // Pages as the chunk numbers them, and back
+        const toChunk = (p: number) => chunkPages.indexOf(p) + 1
+        const inChunk = onPages(chunkPages).map((r) => ({
+          ...Object.fromEntries(FIELDS.map((f) => [f, r[f]])),
+          page: toChunk(pageOf[parsed.indexOf(r)]),
+        }))
+        const result = await checkHeadingRows(Buffer.from(await chunk.save()), inChunk, cited)
+        return {
+          ...result,
+          rows: result.rows.map((r) => ({ ...r, page: chunkPages[(r.page ?? 1) - 1] ?? chunkPages[0] })),
+          issues: result.issues.map((issue) => `Page${chunkPages.length > 1 ? "s" : ""} ${chunkPages.join(", ")}: ${issue}`),
+        }
+      })
+    )
+
+    // Claude's rows win on the checked pages, as in a full check
+    const checked = onPages(pages)
+    const claudeRows = results.flatMap((r) => r.rows)
+    const { updates, inserts } = reconcileHeadingRows(checked, claudeRows)
+    for (const u of updates) {
+      const values = { ...u.values }
+      // Untargeted rows Claude confirms keep their review
+      if (!targets.has(u.id) && values.claude_status === "ok") delete values.reviewed
+      const { error } = await db.from(T.HEADING_ROWS).update(values).eq("id", u.id)
+      if (error) throw new Error(`Update heading row: ${error.message}`)
+    }
+    if (inserts.length) {
+      const { error } = await db.from(T.HEADING_ROWS).insert(inserts.map((r) => ({ ...r, attempt_id: attemptId })))
+      if (error) throw new Error(`Add heading rows: ${error.message}`)
+    }
+
+    // Renumber every row: pages in order, checked pages in Claude's order, manual rows last
+    const oldPage = new Map(parsed.map((r, i) => [r.id, pageOf[i]]))
+    const after = await loadHeadingRows(db, attemptId)
+    const order = orderRowsByPage(
+      after
+        .filter((r) => r.source === "pdf")
+        .map((r) => ({
+          id: r.id,
+          // Rows already here keep their page; added rows come with Claude's
+          page: oldPage.get(r.id) ?? r.page ?? 1,
+          // Checked pages' rows now hold Claude's order (from reconcile), the rest their old
+          // one; the two never share a page
+          order: r.sort_order,
+        }))
+    )
+    const manual = after.filter((r) => r.source === "manual").map((r) => r.id)
+    const final = [...order, ...manual]
+    for (let i = 0; i < final.length; i++) {
+      const row = after.find((r) => r.id === final[i])
+      if (row && row.sort_order !== i) await db.from(T.HEADING_ROWS).update({ sort_order: i }).eq("id", row.id)
+    }
+
+    await saveHeadingPagesInfo(db, attemptId, {
+      checking: false,
+      scopedCheck: {
+        at: new Date().toISOString(),
+        rows: targets.size,
+        pages,
+        issues: results.flatMap((r) => r.issues),
+        usage: sumUsage(results.map((r) => r.usage)),
+      },
+    })
+    return { rows: targets.size, pages: pages.length }
   } catch (error) {
     await saveHeadingPagesInfo(db, attemptId, { checking: false, error: (error as Error).message })
     throw error
