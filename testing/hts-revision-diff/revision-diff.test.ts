@@ -745,6 +745,17 @@ describe("Heading table footnotes", () => {
     expect(rows[1].footnotes[1]).toBe("2/ Subdivisions (t) and (u) of note 20 are suspended.")
   })
 
+  it("skips what's left of the column header after a page break", () => {
+    const md = `| Heading/ Subheading | Stat. Suf- fix | Article Description | Unit of Quantity | Rates of Duty |  |  |
+|---|---|---|---|---|---|---|
+| 9903.01.26 |  | Articles of a listed country |  | 10% |  |  |
+|  |  |  |  | 1 | | 2 |
+|  |  |  |  | 1 General | Special | 2 |
+| 9903.01.27 |  | Other |  | 15% |  |  |
+`
+    expect(parseCh99HeadingTables(md).rows.map((r) => r.htsno)).toEqual(["9903.01.26", "9903.01.27"])
+  })
+
   it("leaves off a marker that means different things on different pages when its own page doesn't say", () => {
     expect(rows[2].footnotes).toEqual(["1/ See chapter 99 statistical note 2."])
   })

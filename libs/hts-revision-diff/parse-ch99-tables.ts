@@ -153,6 +153,10 @@ export const parseCh99HeadingTables = (markdown: string): ParsedHeadings => {
       continue
     }
 
+    // What's left of a two-row header after a page break ("1 General | Special | 2" read
+    // as a row): only column numbers and labels, no heading or text
+    if (cells.filter(Boolean).every((c) => /^(?:\d|general|special|rates of duty|\d\s+general)$/i.test(c))) continue
+
     const cols = columns ?? defaultColumns(cells.length)
     const cell = (c: Column) => (cols[c] !== undefined ? (cells[cols[c]!] ?? "") : "")
     const headingCell = cell("heading")
