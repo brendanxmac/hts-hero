@@ -208,8 +208,9 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
       <Help>
         Chapter 99 headings, read from this revision&apos;s own tariff-table pages. Upload every subchapter III heading page
         (comparisons then diff every heading, including added and removed ones), or just the pages for the headings the
-        change record cites. Rows are read from datalab&apos;s conversion and checked by Claude against the pages. Comparisons
-        use every row; review the ones a comparison lists as used by its changes before pulling it.
+        change record cites. Rows are read from datalab&apos;s conversion; &ldquo;Check with Claude&rdquo; compares them with the pages
+        if something looks off. Comparisons use every row; review the ones a comparison lists as used by its changes before
+        pulling it.
       </Help>
 
       {/* Source document and Claude's check */}

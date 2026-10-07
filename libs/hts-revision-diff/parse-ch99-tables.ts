@@ -22,6 +22,7 @@ const clean = (text: string) =>
     text
       .replace(/\.{4,}|(?:\.\s){3,}\.?/g, " ") // dot leaders
       .replace(/<br\s*\/?>/gi, " ")
+      .replace(/\[(\d{1,2}\/)\]\([^)]*\)/g, "$1") // footnote markers as links: [1/](#)
       .replace(/<\/?[a-z][^>]*>/gi, "")
       .replace(/\*\*|__/g, "")
       .replace(/\\([\\`*_{}[\]()#+\-.!$|>~])/g, "$1")
@@ -60,6 +61,19 @@ const defaultColumns = (count: number): Partial<Record<Column, number>> => {
   if (count === 6) return { heading: 0, stat: 1, description: 2, general: 3, special: 4, other: 5 }
   if (count === 5) return { heading: 0, description: 1, general: 2, special: 3, other: 4 }
   return { heading: 0, description: 1 }
+}
+
+// Footnote markers at the end of a cell ("… subchapter 1/", "<sup>1/</sup>", "1/ 2/"),
+// removed from the text
+const TRAILING_MARKER = /(?:^|\s+)(?:<sup>)?(\d{1,2})\/(?:<\/sup>)?\s*$/
+export const takeTrailingMarkers = (cell: string) => {
+  const markers: string[] = []
+  let text = cell
+  for (let m = text.match(TRAILING_MARKER); m; m = text.match(TRAILING_MARKER)) {
+    markers.unshift(m[1])
+    text = text.slice(0, m.index).trimEnd()
+  }
+  return { text, markers }
 }
 
 export interface ParsedHeadings {
@@ -114,7 +128,9 @@ export const parseCh99HeadingTables = (markdown: string): ParsedHeadings => {
       }
       // Footnotes printed below the table: "1/ See subchapter III statistical note 1."
       const fn = clean(trimmed.replace(/^[-*]\s+/, "")).match(FOOTNOTE_LINE)
-      if (fn) footnotes.set(fn[1], fn[2])
+      // The same footnote prints on every page; a conversion sometimes cuts one short, so
+      // the longest reading wins
+      if (fn && fn[2].length > (footnotes.get(fn[1])?.length ?? 0)) footnotes.set(fn[1], fn[2])
       continue
     }
     if (isSeparatorRow(trimmed)) continue
@@ -151,7 +167,7 @@ export const parseCh99HeadingTables = (markdown: string): ParsedHeadings => {
       sort_order: rows.length,
       htsno: code,
       stat_suffix: (cell("stat").match(/\b\d{2}\b/) ?? [""])[0],
-      indent: 0, // not recoverable from the converted table; set by the Claude check
+      indent: 0, // not recoverable from the converted table; set by the Claude check, if it's run
       description,
       general: cell("general"),
       special: cell("special"),
@@ -162,10 +178,17 @@ export const parseCh99HeadingTables = (markdown: string): ParsedHeadings => {
     })
   }
 
-  // Attach footnotes by their markers ("1/") in any cell
+  // Attach footnotes by their markers ("1/") in any cell. The conversion often leaves the
+  // marker printed after the dot leaders at the end of the description, or puts it in the
+  // units column: it's moved out of those cells into the footnotes.
   for (const row of rows) {
-    const text = [row.description, row.general, row.special, row.other].join(" ")
-    const markers = Array.from(new Set(Array.from(text.matchAll(/(?:^|\s|\D)(\d{1,2})\//g)).map((m) => m[1])))
+    const description = takeTrailingMarkers(row.description)
+    const units = takeTrailingMarkers(row.units)
+    row.description = description.text.replace(/\s*\.{2,}$/, "") // what's left of the dot leaders
+    row.units = units.text
+    const text = [row.general, row.special, row.other].join(" ")
+    const inRates = Array.from(text.matchAll(/(?:^|\s|\D)(\d{1,2})\//g)).map((m) => m[1])
+    const markers = Array.from(new Set([...description.markers, ...units.markers, ...inRates]))
     row.footnotes = markers.filter((m) => footnotes.has(m)).map((m) => `${m}/ ${footnotes.get(m)}`)
   }
 

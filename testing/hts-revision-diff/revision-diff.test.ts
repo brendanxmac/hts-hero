@@ -7,7 +7,7 @@ import { wordDiff, renderWordDiff } from "../../libs/hts-revision-diff/word-diff
 import { extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/text"
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
 import { readFileSync } from "fs"
-import { parseCh99HeadingTables } from "../../libs/hts-revision-diff/parse-ch99-tables"
+import { parseCh99HeadingTables, takeTrailingMarkers } from "../../libs/hts-revision-diff/parse-ch99-tables"
 import {
   headingRowsAsHtsRows,
   headingRowsFingerprint,
@@ -694,6 +694,36 @@ describe("Heading tables", () => {
 
   it("warns when there are no tables", () => {
     expect(parseCh99HeadingTables("Just text").warnings.map((w) => w.kind)).toEqual(["no_tables"])
+  })
+
+  // Seen on the forward revisions: the marker left after the description, or in the units column
+  it("moves footnote markers out of the description and units into the footnotes", () => {
+    const md = `| Heading/ Subheading | Stat. Suf- fix | Article Description | Unit of Quantity | Rates of Duty |  |  |
+|---|---|---|---|---|---|---|
+| 9903.76.24 |  | Wood products of Taiwan as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter 1/ |  | 15% |  |  |
+| 9903.82.15 |  | Articles of copper of the Russian Federation .......... | 1/ | 200% |  |  |
+| 9903.82.16 |  | Articles, see note <sup>1/</sup> <sup>2/</sup> |  | 25% |  |  |
+
+1/ See chapter 99 statistical note 1.
+2/ See subchapter III note 16.
+`
+    const { rows } = parseCh99HeadingTables(md)
+    expect(rows.map((r) => [r.description, r.units, r.footnotes])).toEqual([
+      [
+        "Wood products of Taiwan as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
+        "",
+        ["1/ See chapter 99 statistical note 1."],
+      ],
+      ["Articles of copper of the Russian Federation", "", ["1/ See chapter 99 statistical note 1."]],
+      ["Articles, see note", "", ["1/ See chapter 99 statistical note 1.", "2/ See subchapter III note 16."]],
+    ])
+  })
+})
+
+describe("takeTrailingMarkers", () => {
+  it("leaves text without a trailing marker alone", () => {
+    expect(takeTrailingMarkers("Articles of steel, 1/2 inch or more")).toEqual({ text: "Articles of steel, 1/2 inch or more", markers: [] })
+    expect(takeTrailingMarkers("No.")).toEqual({ text: "No.", markers: [] })
   })
 })
 

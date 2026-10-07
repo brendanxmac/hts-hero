@@ -1,6 +1,7 @@
 // Chapter 99 heading rows from a revision's tariff-table pages (trimmed, or every
-// subchapter III page): extracted from datalab's markdown, checked by Claude against
-// the PDF pages, corrected or added by hand, and signed off by the reviewer.
+// subchapter III page): extracted from datalab's markdown, optionally checked by Claude
+// against the PDF pages (run by hand), corrected or added by hand, and signed off by
+// the reviewer.
 // Comparisons use every row. Rows that end up in a change (cited by the change record,
 // or with a difference) must be reviewed before the comparison is pulled.
 

@@ -18,7 +18,6 @@ import { diffCodes, diffNotes, diffSharedCodes } from "./diff"
 import { parseCh99Json } from "./parse-ch99-json"
 import { groupSlugForNoteType, parseCh99NotesMarkdown, type ExpectedCitation } from "./parse-ch99-notes"
 import {
-  checkHeadingRowsWithClaude,
   extractHeadingRows,
   headingRowsAsHtsRows,
   headingRowsFingerprint,
@@ -127,11 +126,11 @@ export const advanceAttempt = async (db: RevisionDb, attemptId: string) => {
         completed_at: new Date().toISOString(),
       })
       if (doc.kind === "ch99_headings_pdf") {
-        // Read the table rows, then have Claude check them against the pages
+        // Read the table rows. Claude's check against the pages is run by hand from the
+        // Headings tab: on the forward revisions it only ever fixed formatting, which
+        // the parser now handles, and differences between revisions get reviewed anyway.
         try {
-          if (await extractHeadingRows(db, attemptId)) {
-            void checkHeadingRowsWithClaude(db, attemptId).catch((): null => null)
-          }
+          await extractHeadingRows(db, attemptId)
         } catch (error) {
           await saveHeadingPagesInfo(db, attemptId, { error: (error as Error).message })
         }
