@@ -38,6 +38,12 @@ The argument is a revision name such as `2026HTSRev6`. The reviewed changes are 
 1. Create a branch `revision/<revision>` from the current branch.
 2. Make the changes from the approved plan, following HowTariffsWork.md. Fill in `source` on every record you touch.
 3. Add pinned cases for anything new, then run `npm run tests` and fix any failures.
+   **Test links.** Give the user links to check the result in the calculator, and put them in the final message (and the PR description, if there is one). Build them from the pinned cases:
+   - Format: `http://localhost:3000/duty-calculator?code=<10-digit HTS>&country=<ISO>&date=<YYYY-MM-DD>&value=10000&units=100&answers=<id>=<value>,<id>` (also `pref=S` for a trade preference claim). `answers` takes input ids from `tariffs/engine-v2/data/inputs.ts`, such as `steelContentPct=60` and `ftzPrivilegedForeignAdmissionDate=2025-05-01`, plus `confirm:<heading>` for a heading confirmation. Use the production domain from `config.ts` instead of localhost once the change is deployed.
+   - **Applied correctly:** one link per change, on a date where it applies, with the expected total and the Chapter 99 lines that should show (for example "$6,190: 9903.81.90 $3,000 on the steel content, 9903.03.01 $400").
+   - **Boundaries:** the same entry the day before and the day of each legal effective date, so the switch is visible. Duty Over Time on that entry should show the change on that date and nowhere else.
+   - **Other revisions unaffected:** a few links on dates in the neighboring verified revisions, with their unchanged totals. If a correction did change verified results, say which links show the new result and what it was before.
+   - Open a few of them yourself in the browser pane (the calculator runs at `npm run dev`) and confirm the totals match before handing them over.
 4. Add the revision to `VerifiedTariffRevisions` only if every approved change is implemented and no deferred change affects duties in this revision. Otherwise, leave it out and say why. Then run `npm run notes:cited` to refresh the cited note text the calculator shows ("Referenced notes"), and commit `public/data/notes`. Report any citations it says it couldn't find.
 5. **Add draft changelog entries** for the customer-facing changelog at `/duty-calculator/changelog`:
    - One `revision` entry for the revision itself:

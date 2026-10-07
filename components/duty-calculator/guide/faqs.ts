@@ -1,4 +1,5 @@
 import config from "@/config";
+import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions";
 
 // The duty calculator's questions, in sections for /duty-calculator/faq. The calculator page
 // shows a shortlist (dutyCalculatorFaqs). Both pages put the same text in their FAQPage JSON-LD.
@@ -8,7 +9,15 @@ export type FaqSection = { id: string; title: string; description: string; faqs:
 
 // Facts several answers repeat, kept in one place
 const MPF = "0.3464% of the customs value, with a minimum of $34.58 and a maximum of $670.86 for fiscal year 2027 (from October 1, 2026)";
-const HISTORY_FROM = "April 8, 2026 (2026 HTS Revision 5)";
+// The first verified revision: "February 25, 2026" and "Revision 4"
+const firstVerified = getVerifiedRevisions()[0];
+export const historyStartDate = new Date(`${firstVerified.from}T00:00:00`).toLocaleDateString("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+export const historyStartRevision = firstVerified.title.replace(/ \(\d{4}\)$/, "");
+const HISTORY_FROM = `${historyStartDate} (${firstVerified.from.slice(0, 4)} HTS ${historyStartRevision})`;
 
 export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] => [
   {

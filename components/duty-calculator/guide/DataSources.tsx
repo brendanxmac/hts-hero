@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
 import { CHANGELOG_PATH } from "../changelog/constants";
+import { historyStartDate, historyStartRevision } from "./faqs";
 import { NotIncluded } from "./NotIncluded";
 import { WhatsIncluded } from "./WhatsIncluded";
 
@@ -12,7 +13,7 @@ export const DataSources = ({ revisionTitle, asOf }: { revisionTitle: string; as
       Every rate comes from the official Harmonized Tariff Schedule of the United States published
       by the US International Trade Commission. Each HTS revision&apos;s changes are entered with
       the dates they take effect, so you can calculate past and future entry dates. Tariff data is
-      verified from Revision 5 (April 8, 2026) through {revisionTitle}, and every change is listed
+      verified from {historyStartRevision} ({historyStartDate}) through {revisionTitle}, and every change is listed
       in the <Link href={CHANGELOG_PATH} className={ui.link}>calculator changelog</Link>.
     </SectionHeader>
 

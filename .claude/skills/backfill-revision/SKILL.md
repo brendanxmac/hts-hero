@@ -86,6 +86,12 @@ Work in two phases, and stop between them.
 3. **Tests.**
    - Add pinned cases for each change: a date in N-1 before the boundary, a date after it, one country and code it applies to, one it doesn't, and any exception or condition.
    - Run `npm run tests`. **Every existing pinned case must pass unchanged.** A backfill that changes a result for a verified date is a bug. The one exception is a real correction of verified data that the user approved; update that case with a comment saying why (§14.7).
+   **Test links.** Give the user links to check the result in the calculator, and put them in the final message (and the PR description, if there is one). Build them from the pinned cases:
+   - Format: `http://localhost:3000/duty-calculator?code=<10-digit HTS>&country=<ISO>&date=<YYYY-MM-DD>&value=10000&units=100&answers=<id>=<value>,<id>` (also `pref=S` for a trade preference claim). `answers` takes input ids from `tariffs/engine-v2/data/inputs.ts`, such as `steelContentPct=60` and `ftzPrivilegedForeignAdmissionDate=2025-05-01`, plus `confirm:<heading>` for a heading confirmation. Use the production domain from `config.ts` instead of localhost once the change is deployed.
+   - **Applied correctly:** one link per change, on a date where it applies, with the expected total and the Chapter 99 lines that should show (for example "$6,190: 9903.81.90 $3,000 on the steel content, 9903.03.01 $400").
+   - **Boundaries:** the same entry the day before and the day of each legal effective date, so the switch is visible. Duty Over Time on that entry should show the change on that date and nowhere else.
+   - **Other revisions unaffected:** a few links on dates in the neighboring verified revisions, with their unchanged totals. If a correction did change verified results, say which links show the new result and what it was before.
+   - Open a few of them yourself in the browser pane (the calculator runs at `npm run dev`) and confirm the totals match before handing them over.
 4. **Independent date check.** Start a subagent with a fresh context. Give it only the table of new dates (record, date, citation, URL, quoted sentence) and ask it to confirm each one against the cited document. Fix what it finds, or raise it with the user; never overrule it silently.
 5. **Mark N-1 verified** by adding it to the **front** of `VerifiedTariffRevisions`, but only if:
    - every approved change is implemented
