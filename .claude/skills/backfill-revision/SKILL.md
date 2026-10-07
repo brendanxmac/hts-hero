@@ -40,6 +40,8 @@ Work in two phases, and stop between them.
    **The engine's current record is the after.** It was verified for N. If N's text doesn't match the engine's record, that's an error in verified data: report it under open questions instead of working around it.
 
    If the text looks garbled (a PDF extraction error), say so instead of interpreting it.
+
+   **When the note text and the proclamation or executive order disagree, follow the note text** (decided by the user, Oct 7, 2026). Always flag it: quote both in the plan under a "Conflicts with the legal documents" heading, say which records it affects and by how much on an example entry, and record it in the `source.note` of each affected record (and a comment above it). Example: Rev 4 note 2(aa)(v)(a)–(b) applies Section 122 to the non-steel content even under full-value Section 232 headings, while Proclamation 11012 clause (4) exempts every part 232 applies to.
 6. **Dates.** For each change, find its **legal effective date**: the boundary where N-1's version ends and N's begins. The order of preference:
    1. The heading or note text itself ("on or after <date>").
    2. The proclamation, executive order or Federal Register notice. Use govinfo.gov copies (federalregister.gov blocks automated reads).

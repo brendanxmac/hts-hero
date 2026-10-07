@@ -320,7 +320,12 @@ export const headings: Tariff[] = [
           codes: rev4Section232ArticleHeadings,
         },
       },
-      // Covers only the metal content under the old metals headings (note 2(aa)(v)(a)–(d), (g))
+      // Covers only the metal content under the old metals headings (note 2(aa)(v)(a)–(d), (g)).
+      // CONFLICT, note followed: Proclamation 11012 clause (4) exempts "the part of the import to
+      // which section 232 tariffs do apply", so under full-value 232 headings (9903.81.87, .89 on
+      // 8708 stampings, 9903.85.04 parts…) it would exempt the whole value. The note exempts only
+      // the metal content. E.g. bumper stampings, 50% steel, $10,000: $500 of Section 122 here,
+      // $0 under the proclamation. We follow the HTS notes when they conflict (Oct 7, 2026).
       basis: { kind: "metalContentCovered", content: rev4MetalTriggers },
       rate: { kind: "free" },
       effective: { from: "2026-02-24" },
@@ -329,7 +334,7 @@ export const headings: Tariff[] = [
         citation: "Proclamation 11012; Proclamation 11021",
         url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
         publishedOn: "2026-02-20",
-        note: "Backfilled from 2026HTSRev5's change record (CR-3–5, CR-61): note 2(aa)(v) and this heading as they read before PP 11021 (91 FR 18201, signed 2026-04-02), which replaced them for entries on or after April 6, 2026. Starts with Section 122 (PP 11012)",
+        note: "Conflict with Proclamation 11012 clause (4), note text followed: Section 122 applies to the non-metal content even where Section 232 charges the full value. Backfilled from 2026HTSRev5's change record (CR-3–5, CR-61): note 2(aa)(v) and this heading as they read before PP 11021 (91 FR 18201, signed 2026-04-02), which replaced them for entries on or after April 6, 2026. Starts with Section 122 (PP 11012)",
       },
     },
     [
