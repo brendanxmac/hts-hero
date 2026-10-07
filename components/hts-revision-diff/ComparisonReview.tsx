@@ -43,8 +43,10 @@ import {
 } from "./ui"
 
 interface ComparisonData {
-  // The newer attempt's reviewed heading rows changed after this comparison was built
+  // Either attempt's heading rows changed after this comparison was built
   headingRowsChanged?: boolean
+  // Headings the changes rely on whose rows aren't reviewed yet, per side
+  unreviewedInChanges?: { from: string[]; to: string[] }
   comparison: ComparisonRow
   changes: ChangeRow[]
   from: { revision: RevisionRow; attemptNumber: number }
@@ -226,6 +228,17 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
   // Comparing the revision just before the earliest verified one to it: a
   // backfill (HowTariffsWork.md §17.13), pulled by the older revision
   const isBackfill = getVerifiedRevisions()[0]?.name === to.revision.name
+  const unreviewed = [...(data.unreviewedInChanges?.from ?? []), ...(data.unreviewedInChanges?.to ?? [])]
+  const sides = [
+    { name: from.revision.name, coverage: stats?.fromHeadingCoverage },
+    { name: to.revision.name, coverage: stats?.headingCoverage },
+  ]
+  const incompletePages = sides.flatMap(({ name, coverage }) =>
+    coverage && !coverage.complete ? [{ name, coverage }] : []
+  )
+  const unexpectedHeadings = sides.flatMap(({ name, coverage }) =>
+    coverage?.unexpected.length ? [{ name, codes: coverage.unexpected }] : []
+  )
   // Claude cost so far: the change record reading plus every summary
   const usages = [to.changeRecordUsage, comparison.revision_summary?.usage, ...changes.map((c) => c.summary?.usage)].filter(Boolean) as ClaudeUsage[]
   const claudeCost = usages.reduce((sum, u) => sum + u.cost_usd, 0)
@@ -320,6 +333,47 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
               this comparison ran, so the cited headings below don&apos;t reflect them. Re-run to use them; decisions on unchanged changes carry over.
             </Callout>
           )}
+          {unreviewed.length > 0 && (
+            <Callout tone="warning" title="Some headings used by changes aren't reviewed">
+              {(["from", "to"] as const).map((side) => {
+                const codes = data.unreviewedInChanges?.[side] ?? []
+                if (!codes.length) return null
+                return (
+                  <p key={side}>
+                    {(side === "from" ? from : to).revision.name}: {codes.join(", ")}
+                  </p>
+                )
+              })}
+              <p className="mt-1">
+                Review these rows on each revision&apos;s attempt page (Headings tab) before pulling. Other rows don&apos;t need
+                reviewing.
+              </p>
+            </Callout>
+          )}
+          {incompletePages.length > 0 && (
+            <Callout tone="info" title="Heading pages don't cover every subchapter III heading">
+              {incompletePages.map(({ name, coverage }) => (
+                <p key={name}>
+                  {name}: {coverage.missingCount} of {coverage.expected} missing
+                  {coverage.missing.length > 0 && ` (${coverage.missing.slice(0, 20).join(", ")}${coverage.missingCount > 20 ? ", …" : ""})`}
+                </p>
+              ))}
+              <p className="mt-1">
+                Upload every subchapter III heading page on both revisions to diff every heading, including added and removed
+                ones. Until then, added and removed headings come from the change record.
+              </p>
+            </Callout>
+          )}
+          {unexpectedHeadings.length > 0 && (
+            <Callout tone="warning" title="Heading numbers that aren't in USITC's archive for the revision">
+              {unexpectedHeadings.map(({ name, codes }) => (
+                <p key={name}>
+                  {name}: {codes.join(", ")}
+                </p>
+              ))}
+              <p className="mt-1">Usually a misread heading number: check these rows against the PDF.</p>
+            </Callout>
+          )}
           {stats.consecutive === false && (
             <Callout tone="warning" title="These revisions aren't consecutive">
               The change record doesn&apos;t cover the revisions in between, so some differences show as “not in change record”.
@@ -342,6 +396,7 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
               {isBackfill
                 ? `Write the review into the repo for Claude Code, to backfill ${from.revision.name} from ${to.revision.name}, the earliest verified revision.`
                 : "Write the review into the repo for Claude Code."}
+              {unreviewed.length > 0 && " Review the headings listed above first: the pull stops until they are."}
             </Callout>
           )}
 
@@ -366,9 +421,6 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                       : stats.headingSource === "revision_pdf"
                         ? `From ${to.revision.name}'s reviewed heading pages`
                         : `No heading data for ${to.revision.name}; add heading pages on its attempt page`}
-                    {(stats.unreviewedHeadingRows ?? 0) > 0 && (
-                      <span className="text-warning"> · {stats.unreviewedHeadingRows} rows not reviewed</span>
-                    )}
                   </>
                 }
               />
@@ -379,14 +431,14 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                 hint={
                   <>
                     Headings on both revisions&apos; heading pages; added and removed headings from the change record
-                    {(stats.unreviewedHeadingRows ?? 0) + (stats.fromUnreviewedHeadingRows ?? 0) > 0 && (
-                      <span className="text-warning">
-                        {" "}
-                        · {(stats.unreviewedHeadingRows ?? 0) + (stats.fromUnreviewedHeadingRows ?? 0)} rows not reviewed
-                      </span>
-                    )}
                   </>
                 }
+              />
+            ) : stats.headingDiff === "heading_pages_full" ? (
+              <Stat
+                label="Heading differences"
+                value={Object.values(stats.codeDiffs).reduce((a, b) => a + b, 0)}
+                hint={`Every subchapter III heading, from complete heading pages: ${stats.codeDiffs.modified} changed · ${stats.codeDiffs.added} added · ${stats.codeDiffs.removed} removed`}
               />
             ) : (
               <Stat

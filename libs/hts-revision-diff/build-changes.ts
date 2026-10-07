@@ -47,6 +47,9 @@ interface BuildInput {
   fromRows?: HtsRow[] | null
   // Whether codeDiffs covers every heading (both revisions had JSON)
   fullHeadingDiff: boolean
+  // Otherwise, the headings codeDiffs covers in full (added and removed too), e.g.
+  // subchapter III when both revisions' heading pages are complete
+  headingDiffed?: (code: string) => boolean
   toRevisionName: string
   // Where toRows came from
   headingSource?: "revision_json" | "revision_pdf" | "none"
@@ -355,7 +358,9 @@ export const buildChanges = (input: BuildInput): ChangeInsert[] => {
     const citesHeadings = item.hts_codes.length + item.hts_code_ranges.length > 0
     // Without a full heading diff, a heading change can't be confirmed by
     // diffing, so a heading citation counts as the change itself
-    const found = notes.length + codes.length > 0 || (!fullHeadingDiff && citesHeadings)
+    // ...unless every cited heading was diffed in full
+    const citedDiffed = !!input.headingDiffed && cited.length > 0 && cited.every((c) => input.headingDiffed!(c.code))
+    const found = notes.length + codes.length > 0 || (!fullHeadingDiff && citesHeadings && !citedDiffed)
     if (!found) {
       warnings.push(
         "The change record lists this, but no difference was found. Either the change is outside what was parsed, the citation didn't match, or the parse missed it."

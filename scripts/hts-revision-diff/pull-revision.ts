@@ -18,6 +18,7 @@ import { createClient } from "@supabase/supabase-js"
 import type { RevisionDb } from "../../libs/hts-revision-diff/access"
 import { RevisionDiffTables as T } from "../../libs/hts-revision-diff/constants"
 import { renderNotesMarkdown } from "../../libs/hts-revision-diff/parse-ch99-notes"
+import { headingsUsedByChanges, unreviewedHeadings } from "../../libs/hts-revision-diff/headings"
 import { renderChangeForExport } from "../../libs/hts-revision-diff/render"
 import { downloadJson, downloadText } from "../../libs/hts-revision-diff/storage"
 import { slugify } from "../../libs/hts-revision-diff/text"
@@ -117,24 +118,28 @@ const main = async () => {
   const toRevision = await one<RevisionRow>(db.from(T.REVISIONS).select("*").eq("id", toAttempt.revision_id).single(), "To revision")
   const fromRevision = await one<RevisionRow>(db.from(T.REVISIONS).select("*").eq("id", fromAttempt.revision_id).single(), "From revision")
 
+  // Rows for headings the changes rely on must be reviewed; the rest of the heading
+  // pages (e.g. every subchapter III page, uploaded for a full diff) needn't be
+  const used = headingsUsedByChanges(changes)
   const loadReviewedHeadingRows = async (attempt: AttemptRow, name: string) => {
     const rows = await one<HeadingRow[]>(
       db.from(T.HEADING_ROWS).select("*").eq("attempt_id", attempt.id).order("sort_order"),
       "Heading rows"
     )
-    const unreviewed = rows.filter((r) => !r.reviewed)
+    const unreviewed = unreviewedHeadings(rows, used)
     if (unreviewed.length) {
       fail(
-        `${unreviewed.length} heading rows for ${name} aren't reviewed. Review them on the attempt page's Headings tab:\n` +
-          unreviewed.slice(0, 10).map((r) => `  - ${r.htsno || r.description.slice(0, 60)}`).join("\n")
+        `${unreviewed.length} headings the changes rely on have rows in ${name} that aren't reviewed. Review them on the attempt page's Headings tab:\n` +
+          unreviewed.slice(0, 30).map((code) => `  - ${code}`).join("\n") +
+          (unreviewed.length > 30 ? `\n  …and ${unreviewed.length - 30} more` : "")
       )
     }
     return rows
   }
   const headingRows = await loadReviewedHeadingRows(toAttempt, toRevision.name)
-  // Backfill: the older revision's heading pages are the "before" of every cited
-  // heading, so they're required
-  const fromHeadingRows = backfill ? await loadReviewedHeadingRows(fromAttempt, fromRevision.name) : []
+  // The older revision's rows are the "before" of cited headings. A backfill
+  // requires them.
+  const fromHeadingRows = await loadReviewedHeadingRows(fromAttempt, fromRevision.name)
   if (backfill) {
     if (!fromHeadingRows.length) {
       fail(`${fromRevision.name} has no heading pages. Upload them on its attempt page: they're the "before" text and rates.`)
@@ -211,13 +216,13 @@ const main = async () => {
       [
         `# Chapter 99 headings: ${name}`,
         "",
-        `Read from ${name}'s own tariff-table pages (or entered by hand) and reviewed. This is the authoritative text and rates for these headings in this revision.`,
+        `Read from ${name}'s own tariff-table pages (or entered by hand). This is the authoritative text and rates for these headings in this revision. Every heading the changes rely on was reviewed by the user; a row marked "no" in Reviewed wasn't, so check it against the PDF before relying on it.`,
         "",
-        "| Heading | Stat. | Description | General | Special | Column 2 | Footnotes | Source |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Heading | Stat. | Description | General | Special | Column 2 | Footnotes | Source | Reviewed |",
+        "|---|---|---|---|---|---|---|---|---|",
         ...rows.map(
           (r) =>
-            `| ${r.htsno} | ${r.stat_suffix} | ${"&nbsp;&nbsp;".repeat(r.indent)}${cell(r.description)} | ${cell(r.general)} | ${cell(r.special)} | ${cell(r.other)} | ${cell(r.footnotes.join(" "))} | ${r.source === "manual" ? "manual" : `PDF p.${r.page ?? "?"}`} |`
+            `| ${r.htsno} | ${r.stat_suffix} | ${"&nbsp;&nbsp;".repeat(r.indent)}${cell(r.description)} | ${cell(r.general)} | ${cell(r.special)} | ${cell(r.other)} | ${cell(r.footnotes.join(" "))} | ${r.source === "manual" ? "manual" : `PDF p.${r.page ?? "?"}`} | ${r.reviewed ? "yes" : "no"} |`
         ),
         "",
       ].join("\n")
@@ -312,6 +317,8 @@ const main = async () => {
       `- Headings: ${
         manifest.headingDiff === "full"
           ? "every Chapter 99 heading diffed between the two revisions"
+          : manifest.headingDiff === "heading_pages_full"
+            ? "every subchapter III heading diffed between the two revisions (both revisions' heading pages are complete); other subchapters only where both have the heading"
           : manifest.headingDiff === "heading_pages"
             ? "headings on both revisions' heading pages diffed; added and removed headings come from the change record"
             : manifest.headingSource === "revision_json"

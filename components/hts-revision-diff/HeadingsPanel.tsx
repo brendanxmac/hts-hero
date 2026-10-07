@@ -14,6 +14,7 @@ interface HeadingsData {
     warnings: { kind: string; message: string }[]
     check: { at: string; issues: string[]; usage: { cost_usd: number; input_tokens: number; output_tokens: number } } | null
     checking: boolean
+    progress?: { pagesChecked: number; pages: number } | null
     error: string | null
   } | null
   rows: HeadingRow[]
@@ -205,9 +206,10 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
   return (
     <div className="flex flex-col gap-5">
       <Help>
-        New or changed Chapter 99 headings, read from this revision&apos;s own tariff-table pages. Upload the pages for the
-        headings the change record cites (trimmed from the Chapter 99 PDF). Rows are read from datalab&apos;s conversion, checked
-        by Claude against the pages, and only used once you mark them reviewed.
+        Chapter 99 headings, read from this revision&apos;s own tariff-table pages. Upload every subchapter III heading page
+        (comparisons then diff every heading, including added and removed ones), or just the pages for the headings the
+        change record cites. Rows are read from datalab&apos;s conversion and checked by Claude against the pages. Comparisons
+        use every row; review the ones a comparison lists as used by its changes before pulling it.
       </Help>
 
       {/* Source document and Claude's check */}
@@ -258,6 +260,15 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
               <div className="flex flex-wrap items-center gap-2">
                 {info.checking ? (
                   <StatusDot tone="info" busy label="Claude is checking the rows against the pages…" />
+                ) : info.progress && !info.check ? (
+                  <StatusDot
+                    tone="warning"
+                    label={
+                      <span className="font-normal text-base-content/70">
+                        Claude has checked {info.progress.pagesChecked} of {info.progress.pages} pages: continue to check the rest
+                      </span>
+                    }
+                  />
                 ) : info.check ? (
                   <StatusDot
                     tone={info.check.issues.length ? "warning" : "success"}
@@ -286,10 +297,19 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                   <button
                     className={btn.xsSecondary}
                     disabled={!!busy || !!info.checking || !rows.some((r) => r.source === "pdf")}
-                    onClick={() => run("check", () => api(`/attempts/${attemptId}/headings/check`, { method: "POST" }), "Checked")}
+                    onClick={() =>
+                      run(
+                        "check",
+                        async () => {
+                          const { done } = await api<{ done: boolean }>(`/attempts/${attemptId}/headings/check`, { method: "POST" })
+                          if (done) toast.success("Checked")
+                          else toast("Checked part of the pages; continue to check the rest")
+                        }
+                      )
+                    }
                   >
                     {busy === "check" && <Spinner />}
-                    {info.check ? "Check again with Claude" : "Check with Claude"}
+                    {info.progress && !info.check ? "Continue checking" : info.check ? "Check again with Claude" : "Check with Claude"}
                   </button>
                 </div>
               </div>
@@ -388,7 +408,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                 title="Deletes rows whose headings the change record doesn't cite, by code or range. Keeps parent rows of cited headings and rows you added by hand."
                 onClick={() =>
                   confirm(
-                    `Remove ${uncited.size} row${uncited.size === 1 ? "" : "s"} the change record doesn't cite? They're tagged "Not cited" in the table. This can't be undone (Re-read rows brings them back).`
+                    `Remove ${uncited.size} row${uncited.size === 1 ? "" : "s"} this revision's change record doesn't cite? They're tagged "Not cited" in the table. Keep them if comparisons should diff every heading, or if this revision is being backfilled: the next revision's changes need them as the "before". This can't be undone (Re-read rows brings them back).`
                   ) && removeUncited()
                 }
               >

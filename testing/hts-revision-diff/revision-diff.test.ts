@@ -8,8 +8,16 @@ import { extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
 import { readFileSync } from "fs"
 import { parseCh99HeadingTables } from "../../libs/hts-revision-diff/parse-ch99-tables"
-import { headingRowsAsHtsRows, headingRowsFingerprint, reconcileHeadingRows, uncitedHeadingRowIds } from "../../libs/hts-revision-diff/headings"
-import type { HeadingRow } from "../../libs/hts-revision-diff/types"
+import {
+  headingRowsAsHtsRows,
+  headingRowsFingerprint,
+  headingsUsedByChanges,
+  reconcileHeadingRows,
+  uncitedHeadingRowIds,
+  unreviewedHeadings,
+} from "../../libs/hts-revision-diff/headings"
+import { archivedHeadings, headingCoverage } from "../../libs/hts-revision-diff/archive"
+import type { ChangeRow, HeadingRow } from "../../libs/hts-revision-diff/types"
 import { join } from "path"
 import { CH99_JSON_A, CH99_JSON_B, CH99_REV_A, CH99_REV_B } from "./fixtures"
 
@@ -728,12 +736,12 @@ describe("Claude check of heading rows", () => {
     expect(update("r3").claude_status).toBe("flagged")
   })
 
-  it("only hands reviewed rows to comparisons", () => {
+  it("hands every row to comparisons, reviewed or not", () => {
     const rows = headingRowsAsHtsRows([
       headingRow({ htsno: "9903.82.18", general: "+ 50%", reviewed: true }),
       headingRow({ htsno: "9903.82.19", general: "25%", reviewed: false }),
     ])
-    expect(rows.map((r) => r.htsno)).toEqual(["9903.82.18"])
+    expect(rows.map((r) => r.htsno)).toEqual(["9903.82.18", "9903.82.19"])
   })
 })
 
@@ -777,14 +785,91 @@ describe("headingRowsFingerprint", () => {
   ] as unknown as HeadingRow[]
   const fp = headingRowsFingerprint(rows)
 
-  it("changes when a reviewed row's text changes or a row is (un)reviewed", () => {
+  it("changes when any row's text changes, or a row is added or removed", () => {
     expect(headingRowsFingerprint([{ ...rows[0], special: "+50%" }, rows[1]]) !== fp).toBe(true)
-    expect(headingRowsFingerprint([rows[0], { ...rows[1], reviewed: true }]) !== fp).toBe(true)
-    expect(headingRowsFingerprint([{ ...rows[0], reviewed: false }, rows[1]]) !== fp).toBe(true)
+    expect(headingRowsFingerprint([rows[0], { ...rows[1], special: "anything" }]) !== fp).toBe(true)
+    expect(headingRowsFingerprint([rows[0]]) !== fp).toBe(true)
   })
 
-  it("ignores unreviewed rows, which comparisons don't use", () => {
-    expect(headingRowsFingerprint([rows[0], { ...rows[1], special: "anything" }])).toBe(fp)
-    expect(headingRowsFingerprint([rows[0]])).toBe(fp)
+  it("ignores whether rows are reviewed, which doesn't change what comparisons read", () => {
+    expect(headingRowsFingerprint([rows[0], { ...rows[1], reviewed: true }])).toBe(fp)
+    expect(headingRowsFingerprint([{ ...rows[0], reviewed: false }, rows[1]])).toBe(fp)
+  })
+})
+
+describe("Reviews needed before pulling", () => {
+  const change = (decision: ChangeRow["decision"], payload: Partial<ChangeRow["payload"]>) =>
+    ({ decision, payload: { codeDiffs: [], citedHeadings: [], ...payload } }) as unknown as ChangeRow
+  const cited = (code: string, found = true) => ({ code, status: found ? "found" : "not_found", row: found ? ({} as never) : (null as never) })
+  const changes = [
+    change("approve", { citedHeadings: [cited("9903.80.01"), cited("9903.99.99", false)] as never }),
+    change("defer", {
+      codeDiffs: [{ status: "modified", key: "9903.81.87~steel", htsno: "", after: { parentHtsno: "9903.81.87" } }] as never,
+    }),
+    change("skip", { citedHeadings: [cited("9903.85.02")] as never }),
+  ]
+
+  it("collects headings that non-skipped changes cite or diff", () => {
+    expect(Array.from(headingsUsedByChanges(changes)).sort()).toEqual(["9903.80.01", "9903.81.87"])
+  })
+
+  it("asks to review only those headings' rows, including description rows under them", () => {
+    const rows = [
+      headingRow({ htsno: "9903.80.01", reviewed: true }),
+      headingRow({ htsno: "", description: "continued", reviewed: false }),
+      headingRow({ htsno: "9903.81.87", reviewed: true }),
+      headingRow({ htsno: "9903.85.02", reviewed: false }),
+      headingRow({ htsno: "9903.85.03", reviewed: false }),
+    ]
+    expect(unreviewedHeadings(rows, headingsUsedByChanges(changes))).toEqual(["9903.80.01"])
+  })
+})
+
+describe("Heading pages against USITC's archive", () => {
+  const expected = Array.from(archivedHeadings("2026HTSRev20") ?? [])
+  const asRows = (codes: string[]) =>
+    headingRowsAsHtsRows(codes.map((htsno) => headingRow({ htsno, description: htsno })))
+
+  it("knows each archived revision's subchapter III headings", () => {
+    expect(expected.length).toBe(637)
+    expect(archivedHeadings("2024HTSRev1")).toBe(null)
+  })
+
+  it("calls complete pages complete, and lists missing and unknown headings otherwise", () => {
+    expect(headingCoverage("2026HTSRev20", asRows(expected))?.complete).toBe(true)
+    const partial = headingCoverage("2026HTSRev20", asRows([...expected.slice(1), "9903.99.98"]))!
+    expect(partial.complete).toBe(false)
+    expect(partial.missing).toEqual([expected.slice().sort()[0]])
+    expect(partial.unexpected).toEqual(["9903.99.98"])
+  })
+
+  it("ignores other subchapters and statistical suffixes", () => {
+    const rows = [...asRows(expected), ...asRows(["9904.10.01"])]
+    expect(headingCoverage("2026HTSRev20", rows)?.unexpected).toEqual([])
+  })
+})
+
+describe("Change record items when subchapter III is diffed in full", () => {
+  const headingItem = item({ id: "CR-F", kind: "hts_code", note_type: null, hts_codes: ["9903.01.30"], description: "Heading modified" })
+  const build = (headingDiffed?: (code: string) => boolean) =>
+    buildChanges({
+      changeRecordItems: [headingItem],
+      noteDiffs: [],
+      codeDiffs: [],
+      fromNodes: a.nodes,
+      toNodes: b.nodes,
+      toRows: rowsB,
+      fromRows: rowsA,
+      fullHeadingDiff: false,
+      headingDiffed,
+      toRevisionName: "Rev B",
+    })[0]
+
+  it("flags a cited heading with no difference, since every heading was diffed", () => {
+    expect(build(() => true).source).toBe("change_record_no_diff")
+  })
+
+  it("otherwise still counts the citation as the change", () => {
+    expect(build().source).toBe("change_record")
   })
 })

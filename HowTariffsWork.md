@@ -1328,7 +1328,7 @@ You can also backfill in any other order. For example, if a customer needs Augus
 
 #### Tools
 
-- **The revision checker** compares N-1 → N, as going forward, with the older revision's heading pages as the "before" of every cited heading. `npm run pull-revision -- <N-1> --backfill` writes the package, and `/backfill-revision <N-1>` plans and implements it.
+- **The revision checker** compares N-1 → N, as going forward, with the older revision's heading pages as the "before" of every cited heading. Upload every subchapter III heading page for each revision: when both sides are complete (checked against the archive below), every subchapter III heading is diffed, including added and removed ones, and only rows the changes rely on need reviewing. `npm run pull-revision -- <N-1> --backfill` writes the package, and `/backfill-revision <N-1>` plans and implements it.
 - **`npm run ch99:archive`** reads USITC's archived Chapter 99 PDF for every revision and writes `tariffs/engine-v2/data/ch99-first-seen.json`: the revisions each 9903 heading appears in. `npm run ch99:archive -- --step <N-1>` lists the headings N added and removed, as an independent check on the change record.
 - **The validator**, given that file, fails on an undated record whose heading first appears in the HTS after the earliest verified revision starts: undated, it would apply before it existed.
 

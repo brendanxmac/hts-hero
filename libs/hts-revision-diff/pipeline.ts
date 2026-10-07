@@ -3,6 +3,7 @@
 // whatever is ready, so closing the page and coming back picks up where it was.
 
 import type { RevisionDb } from "./access"
+import { headingCoverage as headingCoverageFor, headingOf, isSubchapterIII } from "./archive"
 import { buildChanges, normalizeCitation } from "./build-changes"
 import { extractChangeRecord } from "./claude"
 import {
@@ -404,16 +405,34 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
     const fromLookupRows = fromRows ?? (fromPdfRows.length ? fromPdfRows : null)
     const headingSource = toRows ? "revision_json" : pdfRows.length ? "revision_pdf" : "none"
     const fromHeadingSource = fromRows ? "revision_json" : fromPdfRows.length ? "revision_pdf" : "none"
-    // Every heading is diffed only when both revisions have Chapter 99 JSON.
-    // Heading pages are trimmed, so with them only headings on both sides are
-    // diffed; added and removed headings come from the change record.
+    // Every heading is diffed when both revisions have Chapter 99 JSON. Heading pages
+    // may be trimmed: subchapter III is diffed in full when both sides have all of its
+    // headings (checked against USITC's archived PDF), and otherwise only headings on
+    // both sides are diffed, with added and removed headings from the change record.
     const fullHeadingDiff = !!fromRows && !!toRows
+    const headingCoverage = !toRows && pdfRows.length ? headingCoverageFor(to.revision.name, pdfRows) : null
+    const fromHeadingCoverage = !fromRows && fromPdfRows.length ? headingCoverageFor(from.revision.name, fromPdfRows) : null
+    const fullSubchapterIII =
+      !fullHeadingDiff &&
+      !!lookupRows &&
+      !!fromLookupRows &&
+      (!!toRows || !!headingCoverage?.complete) &&
+      (!!fromRows || !!fromHeadingCoverage?.complete)
     const pageHeadingDiff = !fullHeadingDiff && !!lookupRows && !!fromLookupRows
+    const inSubchapterIII = (r: HtsRow) => isSubchapterIII(headingOf(r))
     const codeDiffs = fullHeadingDiff
       ? diffCodes(fromRows, toRows)
-      : pageHeadingDiff
-        ? diffSharedCodes(fromLookupRows, lookupRows)
-        : []
+      : fullSubchapterIII
+        ? [
+            ...diffCodes(fromLookupRows!.filter(inSubchapterIII), lookupRows!.filter(inSubchapterIII)),
+            ...diffSharedCodes(
+              fromLookupRows!.filter((r: HtsRow) => !inSubchapterIII(r)),
+              lookupRows!.filter((r: HtsRow) => !inSubchapterIII(r))
+            ),
+          ]
+        : pageHeadingDiff
+          ? diffSharedCodes(fromLookupRows!, lookupRows!)
+          : []
     const changes = buildChanges({
       changeRecordItems: items,
       noteDiffs,
@@ -423,6 +442,9 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       toRows: lookupRows,
       fromRows: fromLookupRows,
       fullHeadingDiff,
+      // With complete subchapter III pages, a cited 9903 heading with no difference
+      // really didn't change
+      headingDiffed: fullSubchapterIII ? (code: string) => isSubchapterIII(headingOf({ htsno: code, parentHtsno: null })) : undefined,
       toRevisionName: to.revision.name,
       headingSource,
     })
@@ -477,7 +499,15 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
         changes.map((c) => c.source)
       ),
       carriedOverReviews: carried,
-      headingDiff: fullHeadingDiff ? "full" : pageHeadingDiff ? "heading_pages" : "change_record_only",
+      headingDiff: fullHeadingDiff
+        ? "full"
+        : fullSubchapterIII
+          ? "heading_pages_full"
+          : pageHeadingDiff
+            ? "heading_pages"
+            : "change_record_only",
+      headingCoverage,
+      fromHeadingCoverage,
       headingSource,
       unreviewedHeadingRows,
       headingRowsFingerprint: headingRowsFingerprint(headingRows),

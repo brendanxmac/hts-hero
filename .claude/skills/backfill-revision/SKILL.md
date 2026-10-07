@@ -20,7 +20,7 @@ Work in two phases, and stop between them.
    - `contentHash` equals the SHA-256 of `changes.json` (`shasum -a 256 changes.json`). If not, the files were edited after the pull, so ask the user to pull again.
    - `verifiedRevision` (N) is the **first** revision in `VerifiedTariffRevisions` (`tariffs/engine-v2/revisions.ts`), and `revision` (N-1) comes right before it in `HtsRevisions`. Otherwise revisions would be skipped or backfilled twice. Say which revision the engine starts at and stop.
    - `consecutive` is true. If it's false or null, the change record doesn't follow N-1, so stop.
-   - `headings.md` (N-1's reviewed heading pages, the "before") exists. If `citedHeadingsWithoutBefore` lists codes, check each one: either N added it (its change says so), or N-1's heading pages are missing a page. A missing page is an open question; ask for the page instead of guessing the text.
+   - `headings.md` (N-1's heading pages, the "before") exists. Rows marked "no" in its Reviewed column weren't reviewed: the pull only requires review for headings the changes rely on, so check any other row against the PDF before relying on it. If `citedHeadingsWithoutBefore` lists codes, check each one: either N added it (its change says so), or N-1's heading pages are missing a page. A missing page is an open question; ask for the page instead of guessing the text.
 2. **Read `HowTariffsWork.md` in full**, especially §4 (sources), §6 (tariffs), §7 (lists), §8 (interactions), §14 (versioning) and §17.13 (backfilling). Follow it for every record.
 3. **Read the package:**
    - `README.md`, then `context.md` if it exists.
@@ -28,7 +28,7 @@ Work in two phases, and stop between them.
    - `headings.md` (N-1, before) and `headings-<N>.md` (N, after).
    - `reference/ch99-notes-<N-1>.md` and `reference/ch99-notes-<N>.md` for lookups.
 4. **Run the cross-checks.** Put every result in the plan.
-   - **Headings, from USITC's archived PDFs:** run `npm run ch99:archive -- --step <N-1>`. It lists the headings N added and removed, read independently of the user's uploads. Every one should match a change in the package. Any that doesn't is an open question: the change record or the review may have missed it. The archive sees headings only: note changes have to come from the change record and the notes diff.
+   - **Headings, from USITC's archived PDFs:** if `manifest.json` says `headingDiff: "heading_pages_full"`, both revisions' heading pages hold every subchapter III heading, so the package already diffs them all, including added and removed headings. Otherwise run `npm run ch99:archive -- --step <N-1>`. It lists the headings N added and removed, read independently of the user's uploads. Every one should match a change in the package. Any that doesn't is an open question: the change record or the review may have missed it. The archive sees headings only: note changes have to come from the change record and the notes diff.
    - **Undated records:** search `tariffs/engine-v2/data/ch99-first-seen.json` for headings whose `first` is N. Each one that the engine models without `effective.from` must get its legal start date in this step. The validator fails otherwise once N-1 is verified.
    - **Lists:** before relying on the notes diff, check that the lists the engine models for every note this step touches match N's note text exactly (the technique from Rev19/20). A mismatch means the engine or the extraction is wrong; report it separately from the backfill.
 5. **How to weigh the sources**, from most to least authoritative:
