@@ -94,8 +94,13 @@ export const headings: Tariff[] = [
         "9903.82.15",
       ],
       rate: { kind: "adValorem", pct: 50 },
-      effective: {},
-      source: { revision: "2026HTSRev5" },
+      effective: { from: "2026-04-06" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
+      },
     },
     [
       {
@@ -137,8 +142,13 @@ export const headings: Tariff[] = [
     exceptions: ["9903.82.01"],
     requires: [confirm("9903.82.03")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2026-04-06" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11021",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+      publishedOn: "2026-04-02",
+    },
   },
   {
     code: "9903.82.04",
@@ -161,8 +171,13 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2026-04-06" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11021",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+      publishedOn: "2026-04-02",
+    },
   },
   ...tariffVersions(
     {
@@ -184,8 +199,13 @@ export const headings: Tariff[] = [
       rateByColumn: {
         column2: { kind: "free" },
       },
-      effective: {},
-      source: { revision: "2026HTSRev5" },
+      effective: { from: "2026-04-06" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
+      },
     },
     [
       {
@@ -237,9 +257,12 @@ export const headings: Tariff[] = [
       ],
       requires: [confirm("9903.82.06")],
       rate: { kind: "adValorem", pct: 10 },
-      effective: {},
+      effective: { from: "2026-04-06" },
       source: {
         revision: "2026HTSRev7",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
         note: "U.S. note 16(e) sentence limiting this heading to (c)(ii), (iv), (vi) and (vii) removed by Notice effective 2026-04-06 (retroactive); scope follows the heading text, adding (c)(viii)",
       },
     },
@@ -306,8 +329,13 @@ export const headings: Tariff[] = [
       rateByColumn: {
         column2: { kind: "free" },
       },
-      effective: {},
-      source: { revision: "2026HTSRev5" },
+      effective: { from: "2026-04-06" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
+      },
     },
     [
       {
@@ -350,8 +378,13 @@ export const headings: Tariff[] = [
         confirm("9903.82.08"),
       ],
       rate: { kind: "free" },
-      effective: {},
-      source: { revision: "2026HTSRev5" },
+      effective: { from: "2026-04-06" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
+      },
     },
     [
       {
@@ -393,8 +426,13 @@ export const headings: Tariff[] = [
         "9903.82.15",
       ],
       rate: { kind: "adValorem", pct: 25 },
-      effective: {},
-      source: { revision: "2026HTSRev5" },
+      effective: { from: "2026-04-06" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
+      },
     },
     [
       {
@@ -464,8 +502,13 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2026-04-06" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11021",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+      publishedOn: "2026-04-02",
+    },
   },
   {
     code: "9903.82.11",
@@ -492,8 +535,13 @@ export const headings: Tariff[] = [
     ],
     requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.82.11")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2026-04-06" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11021",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+      publishedOn: "2026-04-02",
+    },
   },
   {
     code: "9903.82.12",
@@ -516,8 +564,13 @@ export const headings: Tariff[] = [
       "9903.82.06",
     ],
     rate: { kind: "adValorem", pct: 25 },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2026-04-06" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11021",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+      publishedOn: "2026-04-02",
+    },
   },
   ...tariffVersions(
     {
@@ -533,9 +586,12 @@ export const headings: Tariff[] = [
       exceptions: ["9903.82.01", "9903.82.03"],
       requires: [confirm("9903.82.13")],
       rate: { kind: "free" },
-      effective: {},
+      effective: { from: "2026-04-06" },
       source: {
         revision: "2026HTSRev7",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
         note: "9903.82.01 added as an exception: U.S. note 16(a) as modified by Notice effective 2026-04-06 (retroactive)",
       },
     },
@@ -576,8 +632,13 @@ export const headings: Tariff[] = [
     },
     exceptions: ["9903.82.01", "9903.82.03", "9903.82.06", "9903.82.15"],
     rate: { kind: "adValorem", pct: 50 },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2026-04-06" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11021",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+      publishedOn: "2026-04-02",
+    },
   },
   ...tariffVersions(
     {
@@ -597,8 +658,13 @@ export const headings: Tariff[] = [
       requires: [confirm("9903.82.15")],
       exceptions: ["9903.82.01", "9903.82.03", "9903.82.13"],
       rate: { kind: "adValorem", pct: 10 },
-      effective: {},
-      source: { revision: "2026HTSRev5" },
+      effective: { from: "2026-04-06" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
+      },
     },
     [
       {
@@ -647,8 +713,13 @@ export const headings: Tariff[] = [
         "9903.82.15",
       ],
       rate: { kind: "adValorem", pct: 25 },
-      effective: {},
-      source: { revision: "2026HTSRev5" },
+      effective: { from: "2026-04-06" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
+      },
     },
     [
       {
@@ -685,8 +756,13 @@ export const headings: Tariff[] = [
     },
     exceptions: ["9903.82.01", "9903.82.03", "9903.82.06"],
     rate: { kind: "adValorem", pct: 25 },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2026-04-06" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11021",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+      publishedOn: "2026-04-02",
+    },
   },
   // Rate is in the Special column only ("no change" under General and Column 2), so these
   // apply only when USMCA is claimed. The confirmation covers the other conditions of
@@ -934,35 +1010,90 @@ export const headings: Tariff[] = [
       note: "U.S. notes 16(f) and 16(k); effective 2026-06-08",
     },
   },
-  {
-    code: "9903.85.67",
-    program: "232-metals",
-    name: "Aluminum Smelted or Casted in Russia (Section 232)",
-    description:
-      "Aluminum articles that are the product of Russia, or where any amount of primary aluminum used in the manufacture of the aluminum articles is smelted in Russia, or where the aluminum articles are cast in Russia, the foregoing under the terms of note 19(a)(vii)(A) to this subchapter, or note 19(m)(A) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
-    scope: {
-      countries: ["RU"],
-      // TODO(list): "9903.85.67" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
-      codes: [{ list: "9903.85.67" }],
+  ...tariffVersions(
+    {
+      code: "9903.85.67",
+      program: "232-metals",
+      name: "Aluminum Smelted or Casted in Russia (Section 232)",
+      description:
+        "Aluminum articles that are the product of Russia, or where any amount of primary aluminum used in the manufacture of the aluminum articles is smelted in Russia, or where the aluminum articles are cast in Russia, the foregoing under the terms of note 19(a)(vii)(A) to this subchapter, or note 19(m)(A) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
+      scope: {
+        countries: ["RU"],
+        // TODO(list): "9903.85.67" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
+        codes: [{ list: "9903.85.67" }],
+        // Until April 6, 2026 these are also listed by name in 19(j), so they're derivatives
+        // under 9903.85.07/.68 (2026HTSRev4 PLAN.md, Assumption 5)
+        excludeCodes: ["7616.99.51.30", "7616.99.51.40", "7616.99.51.90"],
+      },
+      // Gives way to its FTZ twin 9903.85.69 (same rate) until 9903.85.69 ended on April 6, 2026
+      exceptions: ["9903.85.69"],
+      rate: { kind: "adValorem", pct: 200 },
+      effective: {},
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
+        note: "This version ends when its FTZ twin 9903.85.69 was terminated (PP 11021, Annex IV A.11)",
+      },
     },
-    rate: { kind: "adValorem", pct: 200 },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
-  },
-  {
-    code: "9903.85.68",
-    program: "232-metals",
-    name: "Derivative Aluminum Articles from Russia where Primary Aluminum is Smelted or Cast in Russia (Section 232)",
-    description:
-      "Derivative aluminum articles that are products of Russia, or where any amount of primary aluminum used in the manufacture of the derivative articles is smelted in Russia, or where the derivative aluminum articles are cast in Russia, when such derivative articles are provided for in the headings or subheadings enumerated in note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
-    scope: {
-      countries: ["RU"],
-      // TODO(list): "9903.85.68" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
-      codes: [{ list: "9903.85.68" }],
+    [
+      {
+        from: "2026-04-06",
+        set: {
+          exceptions: [],
+          scope: {
+            countries: ["RU"],
+            codes: [{ list: "9903.85.67" }],
+          },
+        },
+        source: {
+          revision: "2026HTSRev5",
+          citation: "Proclamation 11021",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+          publishedOn: "2026-04-02",
+          note: "9903.85.69 terminated (PP 11021, Annex IV A.11); this heading continues unchanged",
+        },
+      },
+    ],
+  ),
+  ...tariffVersions(
+    {
+      code: "9903.85.68",
+      program: "232-metals",
+      name: "Derivative Aluminum Articles from Russia where Primary Aluminum is Smelted or Cast in Russia (Section 232)",
+      description:
+        "Derivative aluminum articles that are products of Russia, or where any amount of primary aluminum used in the manufacture of the derivative articles is smelted in Russia, or where the derivative aluminum articles are cast in Russia, when such derivative articles are provided for in the headings or subheadings enumerated in note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
+      scope: {
+        countries: ["RU"],
+        // TODO(list): "9903.85.68" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
+        codes: [{ list: "9903.85.68" }],
+      },
+      requires: [confirm("9903.85.68")],
+      // Gives way to its FTZ twin 9903.85.70 (same rate) until 9903.85.70 ended on April 6, 2026
+      exceptions: ["9903.85.70"],
+      rate: { kind: "adValorem", pct: 200 },
+      effective: {},
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+        publishedOn: "2026-04-02",
+        note: "This version ends when its FTZ twin 9903.85.70 was terminated (PP 11021, Annex IV A.11)",
+      },
     },
-    requires: [confirm("9903.85.68")],
-    rate: { kind: "adValorem", pct: 200 },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
-  },
+    [
+      {
+        from: "2026-04-06",
+        set: { exceptions: [] },
+        source: {
+          revision: "2026HTSRev5",
+          citation: "Proclamation 11021",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+          publishedOn: "2026-04-02",
+          note: "9903.85.70 terminated (PP 11021, Annex IV A.11); this heading continues unchanged",
+        },
+      },
+    ],
+  ),
 ]

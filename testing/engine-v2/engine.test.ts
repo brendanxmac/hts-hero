@@ -161,6 +161,77 @@ describe("engine-v2: usContentShare basis (U.S. note 16(j))", () => {
   })
 })
 
+describe("engine-v2: metalContentInChapters basis (notes 16 and 19 before April 6, 2026)", () => {
+  const set = rules({
+    tariffs: [
+      tariff({ code: "STEEL", basis: { kind: "metalContentInChapters", metal: "steel", chapters: ["73"] }, rate: { kind: "adValorem", pct: 50 } }),
+    ],
+  })
+  it("charges the steel content for chapter 73 goods", () => {
+    const result = calculate(set, input({ htsCode: "7326.90.86.88", answers: { steelContentPct: 60 } }))
+    expect(line(result, "STEEL").basisValue).toBe(6000)
+    expect(line(result, "STEEL").amount).toBe(3000)
+  })
+  it("charges the full value outside the listed chapters, with or without a content answer", () => {
+    expect(line(calculate(set, input({ htsCode: "7208.51.00.30" })), "STEEL").amount).toBe(5000)
+    expect(line(calculate(set, input({ htsCode: "8708.10.30.50", answers: { steelContentPct: 20 } })), "STEEL").amount).toBe(5000)
+  })
+  it("needs an answer for chapter 73 goods when the steel content isn't given", () => {
+    expect(line(calculate(set, input({ htsCode: "7326.90.86.88" })), "STEEL").status).toBe("needsAnswer")
+  })
+})
+
+describe("engine-v2: metalContentCovered basis (note 2(aa)(v) before April 6, 2026)", () => {
+  const set = rules({
+    inputs: [
+      { id: "steelContentPct", label: "Steel %", type: "percent" },
+      { id: "aluminumContentPct", label: "Aluminum %", type: "percent" },
+      { id: "confirmed", label: "Confirmed?", type: "boolean" },
+    ],
+    tariffs: [
+      tariff({ code: "STEEL", rate: { kind: "adValorem", pct: 50 } }),
+      tariff({ code: "ALU", requires: [{ kind: "answer", input: "confirmed", equals: true }], rate: { kind: "adValorem", pct: 50 } }),
+      tariff({ code: "AUTO", scope: { countries: "all", codes: ["8703"] }, rate: { kind: "adValorem", pct: 25 } }),
+      tariff({ code: "SURCHARGE", program: "p-c", exceptions: ["EXEMPT"] }),
+      tariff({
+        code: "EXEMPT",
+        program: "p-c",
+        scope: { countries: "all", codes: "all", whenApplies: { codes: ["STEEL", "ALU", "AUTO"] } },
+        basis: { kind: "metalContentCovered", content: [{ metal: "steel", codes: ["STEEL"] }, { metal: "aluminum", codes: ["ALU"] }] },
+        rate: { kind: "free" },
+      }),
+    ],
+  })
+  it("exempts only the steel content; the surcharge applies to the rest", () => {
+    const result = calculate(set, input({ answers: { steelContentPct: 60 } }))
+    expect(line(result, "EXEMPT").basisValue).toBe(6000)
+    expect(line(result, "SURCHARGE").amount).toBe(400) // 10% of 4,000
+  })
+  it("adds the content of each metal whose headings apply, capped at the value", () => {
+    const result = calculate(set, input({ answers: { confirmed: true, steelContentPct: 60, aluminumContentPct: 30 } }))
+    expect(line(result, "EXEMPT").basisValue).toBe(9000)
+    expect(line(result, "SURCHARGE").amount).toBe(100)
+    const capped = calculate(set, input({ answers: { confirmed: true, steelContentPct: 80, aluminumContentPct: 50 } }))
+    expect(line(capped, "EXEMPT").basisValue).toBe(10000)
+    expect(line(capped, "SURCHARGE").status).toBe("excluded")
+  })
+  it("ignores metals whose headings don't apply", () => {
+    const result = calculate(set, input({ answers: { steelContentPct: 60, aluminumContentPct: 30 } }))
+    expect(line(result, "EXEMPT").basisValue).toBe(6000)
+  })
+  it("covers the full value when a trigger outside the metals applies", () => {
+    const result = calculate(set, input({ htsCode: "8703.23.01.90", answers: { steelContentPct: 60 } }))
+    expect(line(result, "EXEMPT").basisValue).toBe(10000)
+    expect(line(result, "SURCHARGE").status).toBe("excluded")
+  })
+  it("needs an answer when the content isn't given, so the surcharge applies in full", () => {
+    const result = calculate(set, input())
+    expect(line(result, "EXEMPT").status).toBe("needsAnswer")
+    expect(line(result, "SURCHARGE").amount).toBe(1000)
+    expect(result.unansweredInputs.map((u) => u.input.id)).toContain("steelContentPct")
+  })
+})
+
 describe("engine-v2: conditions", () => {
   const set = rules({
     tariffs: [

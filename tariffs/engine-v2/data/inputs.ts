@@ -57,6 +57,32 @@ export const namedInputs: InputDefinition[] = [
     help: "Proclamation 11061 bans these Canadian alcoholic beverages from import from September 29, 2026 only when they're packaged in bottles, cans, boxes, kegs or other similar direct-to-consumption containers. In bulk they can still be imported and pay the 50% Section 338 duty (CSMS #70050970).",
     type: "boolean",
   },
+  // Section 232 metals before April 6, 2026 charged some goods on the metal content only, and
+  // Section 122 then applied to the rest (U.S. notes 16, 19, 36 and 2(aa)(v) in 2026HTSRev4)
+  {
+    id: "steelContentPct",
+    label: "Steel content (% of the article's value)",
+    help: "The declared value of the steel in the article, as a percent of its customs value. Before April 6, 2026, the Section 232 steel duty on many derivative articles (and on chapter 73 goods) applied to the steel content only.",
+    type: "percent",
+  },
+  {
+    id: "aluminumContentPct",
+    label: "Aluminum content (% of the article's value)",
+    help: "The declared value of the aluminum in the article, as a percent of its customs value. Before April 6, 2026, the Section 232 aluminum duty on chapter 76 goods and many derivative articles applied to the aluminum content only.",
+    type: "percent",
+  },
+  {
+    id: "copperContentPct",
+    label: "Copper content (% of the article's value)",
+    help: "The declared value of the copper in the article, as a percent of its customs value. Before April 6, 2026, the Section 232 copper duty applied to the copper content only (U.S. note 36).",
+    type: "percent",
+  },
+  {
+    id: "ftzPrivilegedForeignAdmissionDate",
+    label: "Date the goods were admitted to a foreign trade zone under privileged foreign status",
+    help: "Only for goods withdrawn from a U.S. foreign trade zone that were admitted under privileged foreign status (19 CFR 146.41). Some Section 232 headings apply to goods admitted before a cutoff date; the rate is the same.",
+    type: "date",
+  },
   {
     id: "usContentPct",
     label: "U.S. content (% of the article's value)",

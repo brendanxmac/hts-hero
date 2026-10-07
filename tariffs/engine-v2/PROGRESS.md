@@ -241,6 +241,25 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 7: 2026 Rev 4 backfilled (branch `backfill/2026HTSRev4`)
+
+The first backward step. Verified data now starts at 2026HTSRev4 (Feb 25, 2026). See `tariffs/revision-diffs/2026HTSRev4/PLAN.md`.
+
+- **Old Section 232 metals headings until April 6, 2026** (PP 11021, Annex IV A.11), in `data/headings/232-metals-2025.ts` with lists in `data/lists/metals-2025.ts`:
+  - steel 9903.81.87–.99, aluminum 9903.85.02–.15, .69, .70, copper 9903.78.01/.02;
+  - many charged only the metal content: all of 16(n)/(u), 19(k)/(s) and 36(b), plus chapter 73 (steel) and chapter 76 (aluminum) goods under the others.
+- **New handlers:**
+  - `metalContentInChapters`: content for listed chapters, full value otherwise.
+  - `metalContentCovered`: the Rev 4 9903.03.06 exempts only the metal content from Section 122, per note 2(aa)(v). Resolved in step 7, with triggers settled before noStack.
+- **New inputs:** steel, aluminum and copper content %, and an FTZ admission date for the FTZ headings.
+- **Interactions before April 6:** notes 33/38/39 (autos, MHDV, semiconductors) and the four civil aircraft agreements over the old headings.
+- **From April 6:** 9903.82.02–.17 now start on 2026-04-06.
+- **Checks:** an invariant sweep over 1,374 metals codes × 8 countries (21,984 calculations) found 0 problems. Results from April 6 on are unchanged: 65,952 compared, 0 differences.
+- **Found, not changed (Rev 5+, for a decision):**
+  - Russian 7616.99.51.30/.40/.90 get 9903.85.67 and .68 (both 200%) when .68 is confirmed.
+  - 9903.82.xx headings don't give way to 9903.85.67/.68 as note 16(a) says.
+- **Not modeled:** the 2018–2025 quota and exemption headings (9903.80.xx, 9903.81.01–.86, most of 9903.85). Per the compiler's notes to 16(a) and 19(a), they only covered entries before March 12, 2025.
+
 ## Oct 7: corrections found while planning the 2026HTSRev4 backfill (branch `fix/232-civil-aircraft-and-metals-lists`)
 
 These are corrections to verified data (Rev 5–20). The backfill itself is paused; see `tariffs/revision-diffs/2026HTSRev4/PLAN.md`.

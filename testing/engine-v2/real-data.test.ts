@@ -1494,3 +1494,195 @@ describe("engine-v2 real data: civil aircraft agreements and Russian aluminum (c
     expect(v2.lines.find((l) => l.code === "9903.85.68").amount).toBe(20_000)
   })
 })
+
+// ============================================================
+// 2026 Rev 4 (Feb 25 – Apr 8, 2026): the Section 232 metals structure before Proclamation
+// 11021, which replaced it for entries on or after April 6, 2026. $10,000, 100 units.
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 4 (before Proclamation 11021)", () => {
+  const BEFORE = "2026-03-15"
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null },
+      answers,
+    })
+  const amount = (result: CalculationResult, code: string) => round(result.lines.find((l) => l.code === code)?.amount ?? 0)
+  const status = (result: CalculationResult, code: string) => result.lines.find((l) => l.code === code)?.status
+
+  it("is a verified revision", () => {
+    expect(getVerifiedRevisions()[0].name).toBe("2026HTSRev4")
+  })
+
+  it("steel mill product (16(j)): 9903.81.87 at 50% of the full value until April 5, then 9903.82.02", () => {
+    for (const asOf of [BEFORE, "2026-04-05"]) {
+      const v2 = calc("7208.51.00.30", "DE", asOf, "Free", { steelContentPct: 100 })
+      expect(applying(v2)).toEqual(["9903.03.06", "9903.81.87"])
+      expect(v2.totalDuty).toBe(5000)
+    }
+    const after = calc("7208.51.00.30", "DE", "2026-04-06", "Free", { steelContentPct: 100 })
+    expect(applying(after)).toEqual(["9903.03.06", "9903.82.02"])
+    expect(after.totalDuty).toBe(5000)
+  })
+
+  it("Section 122 still applies to the non-steel content (note 2(aa)(v)(a)); unanswered, to the full value", () => {
+    const answered = calc("7208.51.00.30", "DE", BEFORE, "Free", { steelContentPct: 95 })
+    expect(amount(answered, "9903.03.01")).toBe(50) // 10% of the $500 non-steel content
+    const unanswered = calc("7208.51.00.30", "DE", BEFORE, "Free")
+    expect(status(unanswered, "9903.03.06")).toBe("needsAnswer")
+    expect(amount(unanswered, "9903.03.01")).toBe(1000)
+    expect(unanswered.totalDuty).toBe(6000)
+  })
+
+  it("chapter 73 derivative (16(m)) pays on the steel content; 122 on the rest (HowTariffsWork §19.1)", () => {
+    const v2 = calc("7326.90.86.88", "CN", BEFORE, "2.9%", { steelContentPct: 60 })
+    expect(amount(v2, "9903.81.90")).toBe(3000)
+    expect(amount(v2, "9903.88.03")).toBe(2500)
+    expect(round(v2.lines.find((l) => l.code === "9903.03.06").basisValue)).toBe(6000)
+    expect(amount(v2, "9903.03.01")).toBe(400)
+    expect(round(v2.totalDuty)).toBe(6190)
+    // Unanswered, the steel duty needs an answer
+    expect(status(calc("7326.90.86.88", "CN", BEFORE, "2.9%"), "9903.81.90")).toBe("needsAnswer")
+  })
+
+  it("duty history steps up on April 6, when 232 moves to the full value", () => {
+    const rates = RATES["7326.90.86.88"]
+    const segments = calculateHistory(
+      AllRules,
+      { htsCode: "7326.90.86.88", country: "CN", asOf: "2026-02-25", customsValue: VALUE, quantity: UNITS,
+        baseRates: { general: rates.general, special: null, other: null }, answers: { steelContentPct: 60 } },
+      "2026-02-25",
+      "2026-04-23",
+    )
+    expect(segments.map((s) => [s.from, round(s.result.totalDuty)])).toEqual([["2026-02-25", 6190], ["2026-04-06", 7790]])
+    expect(segments[1].changes.map((c) => [c.kind, c.code])).toEqual([
+      ["added", "9903.82.02"], ["removed", "9903.81.90"], ["removed", "9903.03.01"],
+    ])
+  })
+
+  it("16(l)/(m) split 7317.00.55: the listed statistical numbers go to .89, the rest to .90", () => {
+    expect(applying(calc("7317.00.55.03", "DE", BEFORE, "Free", { steelContentPct: 90 }))).toContain("9903.81.89")
+    const other = calc("7317.00.55.18", "DE", BEFORE, "Free", { steelContentPct: 90 })
+    expect(applying(other)).toContain("9903.81.90")
+    expect(applying(other)).not.toContain("9903.81.89")
+  })
+
+  it("16(n) derivative outside chapter 73 pays on the steel content (9903.81.91)", () => {
+    const v2 = calc("8431.49.90.95", "DE", BEFORE, "Free", { steelContentPct: 40 })
+    expect(amount(v2, "9903.81.91")).toBe(2000)
+    expect(amount(v2, "9903.03.01")).toBe(600)
+  })
+
+  it("bumper stampings (16(l)(C), chapter 87) pay steel on the full value, aluminum (19(k)) on its content", () => {
+    const v2 = calc("8708.10.30.50", "DE", BEFORE, "2.5%", { steelContentPct: 50, aluminumContentPct: 10 })
+    expect(amount(v2, "9903.81.89")).toBe(5000)
+    expect(amount(v2, "9903.85.08")).toBe(500)
+    expect(applying(v2)).not.toContain("9903.85.04") // 8708.10.30.50 is listed by name in 19(k)
+    expect(amount(v2, "9903.03.01")).toBe(400) // 122 on everything but the steel and aluminum content
+  })
+
+  it("UK steel: 9903.81.94 at 25% (no 95% test before April 6)", () => {
+    const v2 = calc("7208.51.00.30", "GB", BEFORE, "Free", { steelContentPct: 100 })
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.81.94"])
+    expect(v2.totalDuty).toBe(2500)
+  })
+
+  it("Mexican steel pays the full 50% (no USMCA rate before April 6)", () => {
+    expect(calc("7208.51.00.30", "MX", BEFORE, "Free", { steelContentPct: 100 }).totalDuty).toBe(5000)
+  })
+
+  it("derivatives processed abroad from U.S.-melted steel (9903.81.92) pay no steel duty; 122 still spares the steel content", () => {
+    const v2 = calc("7326.90.86.88", "DE", BEFORE, "2.9%", { steelContentPct: 60, "confirm:9903.81.92": true })
+    expect(status(v2, "9903.81.90")).toBe("excluded")
+    expect(applying(v2)).toContain("9903.81.92")
+    expect(amount(v2, "9903.03.01")).toBe(400)
+  })
+
+  it("FTZ goods admitted under privileged foreign status before June 4, 2025 file 9903.81.88 instead (same duty)", () => {
+    const before = calc("7208.51.00.30", "DE", BEFORE, "Free", { steelContentPct: 100, ftzPrivilegedForeignAdmissionDate: "2025-05-01" })
+    expect(applying(before)).toEqual(["9903.03.06", "9903.81.88"])
+    expect(before.totalDuty).toBe(5000)
+    const after = calc("7208.51.00.30", "DE", BEFORE, "Free", { steelContentPct: 100, ftzPrivilegedForeignAdmissionDate: "2025-07-01" })
+    expect(applying(after)).toEqual(["9903.03.06", "9903.81.87"])
+  })
+
+  it("aluminum (19(g)) and chapter 76 derivatives (19(j)) pay on the aluminum content", () => {
+    expect(amount(calc("7601.10.30.00", "DE", BEFORE, "2.6%", { aluminumContentPct: 100 }), "9903.85.02")).toBe(5000)
+    const container = calc("7612.10.00.00", "DE", BEFORE, "2.4%", { aluminumContentPct: 80 })
+    expect(amount(container, "9903.85.07")).toBe(4000)
+    expect(amount(container, "9903.03.01")).toBe(200)
+    // 7616.99.51.30 is in 19(g) (7616.99.51) and listed by name in 19(j): 9903.85.07 only
+    const casting = calc("7616.99.51.30", "DE", BEFORE, "2.5%", { aluminumContentPct: 90 })
+    expect(applying(casting)).toContain("9903.85.07")
+    expect(applying(casting)).not.toContain("9903.85.02")
+  })
+
+  it("U.S.-smelted aluminum derivatives (9903.85.09) pay no aluminum duty", () => {
+    const v2 = calc("7612.10.00.00", "DE", BEFORE, "2.4%", { aluminumContentPct: 80, "confirm:9903.85.09": true })
+    expect(status(v2, "9903.85.07")).toBe("excluded")
+    expect(round(v2.totalDuty)).toBe(440) // 2.4% base + 122 on the $2,000 non-aluminum content
+  })
+
+  it("Russian aluminum: 9903.85.67/.68 at 200% of the full value, or their FTZ twins .69/.70", () => {
+    const ingot = calc("7601.10.30.00", "RU", BEFORE, "2.6%", { aluminumContentPct: 100 })
+    expect(amount(ingot, "9903.85.67")).toBe(20000)
+    expect(status(ingot, "9903.85.02")).toBe("excluded")
+    const container = { aluminumContentPct: 80, "confirm:9903.85.68": true }
+    expect(amount(calc("7612.10.00.00", "RU", BEFORE, "2.4%", container), "9903.85.68")).toBe(20000)
+    const ftz = calc("7612.10.00.00", "RU", BEFORE, "2.4%", { ...container, ftzPrivilegedForeignAdmissionDate: "2023-01-01" })
+    expect(applying(ftz)).toContain("9903.85.70")
+    expect(applying(ftz)).not.toContain("9903.85.68")
+    // After April 6, .69/.70 are gone and .67 applies regardless of the FTZ date
+    expect(applying(calc("7601.10.30.00", "RU", "2026-04-10", "2.6%", { ftzPrivilegedForeignAdmissionDate: "2023-01-01" }))).toContain("9903.85.67")
+  })
+
+  it("goods on both 16(n) and 19(k) pay both, each on its own content; dropped from the lists on April 6", () => {
+    const before = calc("0402.99.68.00", "DE", BEFORE, "Free", { steelContentPct: 5, aluminumContentPct: 10 })
+    expect(amount(before, "9903.81.91")).toBe(250)
+    expect(amount(before, "9903.85.08")).toBe(500)
+    expect(amount(before, "9903.03.01")).toBe(850)
+    const after = calc("0402.99.68.00", "DE", "2026-04-10", "Free", { steelContentPct: 5, aluminumContentPct: 10 })
+    expect(applying(after).filter((c) => c.startsWith("9903.8"))).toEqual([])
+  })
+
+  it("UK derivatives on 16(u) and 19(s) pay 25% of each content", () => {
+    const v2 = calc("0402.99.68.00", "GB", BEFORE, "Free", { steelContentPct: 5, aluminumContentPct: 10 })
+    expect(amount(v2, "9903.81.98")).toBe(125)
+    expect(amount(v2, "9903.85.15")).toBe(250)
+  })
+
+  it("copper (36(b)): 9903.78.01 at 50% of the copper content, with the 9903.78.02 line for the rest", () => {
+    const v2 = calc("8544.42.90.90", "DE", BEFORE, "2.6%", { copperContentPct: 40 })
+    expect(amount(v2, "9903.78.01")).toBe(2000)
+    expect(applying(v2)).toContain("9903.78.02")
+    expect(amount(v2, "9903.03.01")).toBe(600)
+    expect(round(v2.totalDuty)).toBe(2860)
+    // 8544.42.90 is also in 19(k): with aluminum content, 122 spares both contents
+    const both = calc("8544.42.90.90", "DE", BEFORE, "2.6%", { copperContentPct: 40, aluminumContentPct: 10 })
+    expect(amount(both, "9903.85.08")).toBe(500)
+    expect(amount(both, "9903.03.01")).toBe(500)
+  })
+
+  it("auto parts under their own 232 heading don't pay the old metals duties (notes 33, 38, 39)", () => {
+    const v2 = calc("8708.10.30.50", "CN", BEFORE, "2.5%", { steelContentPct: 50, aluminumContentPct: 10, "confirm:9903.94.05": true })
+    expect(status(v2, "9903.81.89")).toBe("excluded")
+    expect(status(v2, "9903.85.08")).toBe("excluded")
+    expect(applying(v2)).toContain("9903.94.05")
+    expect(status(v2, "9903.03.01")).toBe("excluded")
+  })
+
+  it("civil aircraft of the UK, EU, Japan and Korea don't pay the old metals duties once confirmed", () => {
+    const cases: [string, string, string][] = [["GB", "9903.96.01", "9903.81.94"], ["DE", "9903.02.76", "9903.81.87"], ["JP", "9903.96.02", "9903.81.87"], ["KR", "9903.02.81", "9903.81.87"]]
+    for (const [country, exemption, metals] of cases) {
+      expect(applying(calc("7304.31.30.00", country, BEFORE, "Free", { steelContentPct: 100 }))).toContain(metals)
+      const confirmed = calc("7304.31.30.00", country, BEFORE, "Free", { steelContentPct: 100, [`confirm:${exemption}`]: true })
+      expect(status(confirmed, metals)).toBe("excluded")
+      expect(applying(confirmed)).toContain(exemption)
+      expect(confirmed.totalDuty).toBe(0)
+    }
+  })
+
+  it("non-metal goods are unchanged across April 6", () => {
+    expect(calc("0711.90.30.00", "DE", BEFORE, "8%").totalDuty).toBe(calc("0711.90.30.00", "DE", "2026-04-10", "8%").totalDuty)
+  })
+})

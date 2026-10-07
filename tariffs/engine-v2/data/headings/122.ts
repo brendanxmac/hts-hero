@@ -68,6 +68,50 @@ const section232ArticleHeadings = [
   "9903.76.23",
 ]
 
+// Until April 6, 2026 (2026HTSRev4), note 2(aa)(v)(a)–(d) and (g) named the old Section 232
+// metals headings, and the exemption covered only their metal content: "but such additional
+// duty shall apply to the non-steel content" (non-aluminum, non-copper). The other triggers,
+// (e), (f) and (h)–(k), are the same as today's (2)–(7). PP 11021 replaced (a)–(d) and (g).
+const rev4MetalTriggers = [
+  {
+    metal: "steel",
+    codes: [
+      "9903.81.87",
+      "9903.81.88",
+      "9903.81.89",
+      "9903.81.90",
+      "9903.81.91",
+      "9903.81.92",
+      "9903.81.93",
+      "9903.81.94",
+      "9903.81.95",
+      "9903.81.96",
+      "9903.81.97",
+      "9903.81.98",
+      "9903.81.99",
+    ],
+  },
+  {
+    metal: "aluminum",
+    codes: [
+      "9903.85.02",
+      "9903.85.04",
+      "9903.85.07",
+      "9903.85.08",
+      "9903.85.09",
+      "9903.85.12",
+      "9903.85.13",
+      "9903.85.14",
+      "9903.85.15",
+    ],
+  },
+  { metal: "copper", codes: ["9903.78.01"] },
+]
+const rev4Section232ArticleHeadings = [
+  ...rev4MetalTriggers.flatMap((g) => g.codes),
+  ...section232ArticleHeadings.filter((code) => !code.startsWith("9903.82.")),
+]
+
 // The note 2(aa)(v) list from 2026-06-08 (2026HTSRev10, with Rev 11's correction restoring
 // 9903.82.02). U.S. note 50(a)(vi) (Brazil, 9903.05.07) lists the same headings word for word.
 export const section232ArticleHeadingsFromJune8 = [
@@ -169,7 +213,13 @@ export const headings: Tariff[] = [
     ],
     rate: { kind: "adValorem", pct: 10 },
     effective: { from: "2026-02-24", to: "2026-07-24" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "Entries on or after 12:01 a.m. EST February 24, 2026, through 12:01 a.m. EDT July 24, 2026 (150 days)",
+    },
   },
   {
     code: "9903.03.02",
@@ -186,7 +236,13 @@ export const headings: Tariff[] = [
     ],
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-02-28" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "In transit before 12:01 a.m. EST February 24, 2026 and entered before 12:01 a.m. EST February 28, 2026",
+    },
   },
   {
     code: "9903.03.03",
@@ -201,7 +257,13 @@ export const headings: Tariff[] = [
     },
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-07-24" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "Entries on or after 12:01 a.m. EST February 24, 2026, through 12:01 a.m. EDT July 24, 2026 (150 days)",
+    },
   },
   {
     code: "9903.03.04",
@@ -215,7 +277,13 @@ export const headings: Tariff[] = [
     },
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-07-24" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "Entries on or after 12:01 a.m. EST February 24, 2026, through 12:01 a.m. EDT July 24, 2026 (150 days)",
+    },
   },
   {
     code: "9903.03.05",
@@ -230,7 +298,13 @@ export const headings: Tariff[] = [
     requires: [confirm("9903.03.05")],
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-07-24" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "Entries on or after 12:01 a.m. EST February 24, 2026, through 12:01 a.m. EDT July 24, 2026 (150 days)",
+    },
   },
   ...tariffVersions(
     {
@@ -238,22 +312,49 @@ export const headings: Tariff[] = [
       program: "122",
       name: "122 Exemption: Section 232 Articles",
       description:
-        "Articles of aluminum, of steel, or of copper or derivative aluminum or steel articles; passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks; parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks; medium- and heavy-duty vehicles; parts of medium- and heavy-duty vehicles; wood products; and semiconductor articles, of any country, as provided in subdivision (aa)(v) of U.S. note 2 to this subchapter",
+        "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks, semiconductor articles, semi-finished copper and intensive copper derivative products, wood products, or medium- and heavy-duty vehicles or medium- and heavy-duty vehicle parts, of any country, as provided in subdivision (aa)(v) of U.S. note 2 to this subchapter",
       scope: {
         countries: "all",
         codes: "all",
         whenApplies: {
-          codes: section232ArticleHeadings,
+          codes: rev4Section232ArticleHeadings,
         },
       },
+      // Covers only the metal content under the old metals headings (note 2(aa)(v)(a)–(d), (g))
+      basis: { kind: "metalContentCovered", content: rev4MetalTriggers },
       rate: { kind: "free" },
       effective: { from: "2026-02-24" },
       source: {
-        revision: "2026HTSRev5",
-        note: "Triggers corrected in 2026HTSRev11 to match U.S. note 2(aa)(v): 9903.82.01 and 9903.82.03 removed (data-entry correction, all dates). Description corrected to the 2026HTSRev5 heading text (Oct 2026)",
+        revision: "2026HTSRev4",
+        citation: "Proclamation 11012; Proclamation 11021",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+        publishedOn: "2026-02-20",
+        note: "Backfilled from 2026HTSRev5's change record (CR-3–5, CR-61): note 2(aa)(v) and this heading as they read before PP 11021 (91 FR 18201, signed 2026-04-02), which replaced them for entries on or after April 6, 2026. Starts with Section 122 (PP 11012)",
       },
     },
     [
+      {
+        from: "2026-04-06",
+        set: {
+          description:
+            "Articles of aluminum, of steel, or of copper or derivative aluminum or steel articles; passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks; parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks; medium- and heavy-duty vehicles; parts of medium- and heavy-duty vehicles; wood products; and semiconductor articles, of any country, as provided in subdivision (aa)(v) of U.S. note 2 to this subchapter",
+          scope: {
+            countries: "all",
+            codes: "all",
+            whenApplies: {
+              codes: section232ArticleHeadings,
+            },
+          },
+          basis: { kind: "fullValue" },
+        },
+        source: {
+          revision: "2026HTSRev5",
+          citation: "Proclamation 11021",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+          publishedOn: "2026-04-02",
+          note: "Note 2(aa)(v)(1) names 9903.82.02 and 9903.82.04–.17, with no content split (PP 11021, Annex IV). Triggers corrected in 2026HTSRev11: 9903.82.01 and 9903.82.03 removed (data-entry correction, all dates). Description corrected to the 2026HTSRev5 heading text (Oct 2026)",
+        },
+      },
       {
         from: "2026-04-23",
         set: {
@@ -331,7 +432,13 @@ export const headings: Tariff[] = [
     requires: [{ kind: "preferenceClaimed", symbols: ["S", "S+"] }],
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-07-24" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "Entries on or after 12:01 a.m. EST February 24, 2026, through 12:01 a.m. EDT July 24, 2026 (150 days)",
+    },
   },
   {
     code: "9903.03.08",
@@ -346,7 +453,13 @@ export const headings: Tariff[] = [
     requires: [{ kind: "preferenceClaimed", symbols: ["S", "S+"] }],
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-07-24" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "Entries on or after 12:01 a.m. EST February 24, 2026, through 12:01 a.m. EDT July 24, 2026 (150 days)",
+    },
   },
   {
     code: "9903.03.09",
@@ -364,7 +477,13 @@ export const headings: Tariff[] = [
     ],
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-07-24" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "Entries on or after 12:01 a.m. EST February 24, 2026, through 12:01 a.m. EDT July 24, 2026 (150 days)",
+    },
   },
   {
     code: "9903.03.10",
@@ -379,7 +498,13 @@ export const headings: Tariff[] = [
     requires: [{ kind: "answer", input: "isDonation", equals: true }],
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-07-24" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "Entries on or after 12:01 a.m. EST February 24, 2026, through 12:01 a.m. EDT July 24, 2026 (150 days)",
+    },
   },
   {
     code: "9903.03.11",
@@ -396,6 +521,12 @@ export const headings: Tariff[] = [
     ],
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-07-24" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11012",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-02-25/html/2026-03824.htm",
+      publishedOn: "2026-02-20",
+      note: "Entries on or after 12:01 a.m. EST February 24, 2026, through 12:01 a.m. EDT July 24, 2026 (150 days)",
+    },
   },
 ]

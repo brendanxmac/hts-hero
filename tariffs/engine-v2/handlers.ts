@@ -145,6 +145,36 @@ register(basisHandlers, "metalContent", {
   describe: (p) => `${String(p.metal)} content value`,
 })
 
+// The value of one metal's content for goods in the listed chapters, the full value otherwise.
+// U.S. notes 16 and 19 before April 6, 2026: "For goods classified in chapter 73, the additional
+// ad valorem duty imposed by headings 9903.81.89, 9903.81.90 and 9903.81.93 shall only apply to
+// the declared value of the steel content of the derivative article."
+register(basisHandlers, "metalContentInChapters", {
+  inputs: (p) => [`${String(p.metal)}ContentPct`],
+  value: (p, ctx) => {
+    const chapter = ctx.htsCode.replace(/\D/g, "").slice(0, 2)
+    if (!(p.chapters as string[]).includes(chapter)) return ctx.customsValue
+    const pct = ctx.answers[`${String(p.metal)}ContentPct`]
+    if (pct === undefined || pct === null || pct === "") return "unknown"
+    return (ctx.customsValue * Number(pct)) / 100
+  },
+  describe: (p) =>
+    `${String(p.metal)} content value (chapter ${(p.chapters as string[]).join(", ")}), full value otherwise`,
+})
+
+// Resolved by the pipeline, for a partial exemption: the content of each metal whose listed
+// headings apply (`content`: [{ codes, metal }]), capped at the customs value; the full value
+// when a trigger outside `content` applies. U.S. note 2(aa)(v) before April 6, 2026: Section 122
+// "shall apply to the non-steel content" (and non-aluminum, non-copper) of Section 232 metals.
+register(basisHandlers, "metalContentCovered", {
+  inputs: (p) =>
+    Array.from(new Set((p.content as { metal: string }[]).map((g) => `${g.metal}ContentPct`))),
+  value: () => {
+    throw new Error("metalContentCovered is resolved by the pipeline")
+  },
+  describe: () => "metal content of the Section 232 metals headings that apply",
+})
+
 // Resolved by the pipeline: the value covered by other applying tariffs matching `selector`
 // A share of the value split at a cap on U.S. content, from a percent-of-value answer
 // (U.S. note 16(j)): "upToCap" is the U.S. content up to `cap` percent of the value;

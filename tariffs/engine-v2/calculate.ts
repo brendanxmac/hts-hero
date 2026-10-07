@@ -187,7 +187,7 @@ export const calculate = (
     const basis = evaluation.tariff.basis ?? { kind: "fullValue" }
     const basisHandler = basisHandlers.get(basis.kind)
     if (!basisHandler) throw new Error(`No basis handler "${basis.kind}"`)
-    if (evaluation.state === "pending" && basis.kind !== "coveredBy") {
+    if (evaluation.state === "pending" && !PIPELINE_BASES.has(basis.kind)) {
       basisHandler
         .inputs(basis)
         .forEach((id) => evaluation.consultedInputs.add(id))
@@ -211,6 +211,22 @@ export const calculate = (
   // ── 6. noStack interactions ──
 
   const on = () => evaluations.filter((e) => e.state === "on")
+
+  // A metalContentCovered exemption's triggers are settled with the exceptions, like
+  // whenApplies, before noStack interactions drop any of them
+  const contentTriggers = new Map<Evaluation, Evaluation[]>()
+  for (const evaluation of on()) {
+    if (evaluation.tariff.basis?.kind !== "metalContentCovered") continue
+    contentTriggers.set(
+      evaluation,
+      on().filter(
+        (e) =>
+          e !== evaluation &&
+          selectorMatches(evaluation.tariff.scope.whenApplies, e.tariff, snapshot),
+      ),
+    )
+  }
+
   for (const interaction of interactionsFor(snapshot, input)) {
     if (interaction.kind !== "noStack") continue
     const groups = interaction.order.map((selector) =>
@@ -231,7 +247,7 @@ export const calculate = (
   const coveredBy: Evaluation[] = []
   for (const evaluation of on()) {
     const basis = evaluation.tariff.basis ?? { kind: "fullValue" }
-    if (basis.kind === "coveredBy") {
+    if (PIPELINE_BASES.has(basis.kind)) {
       coveredBy.push(evaluation)
       continue
     }
@@ -242,6 +258,10 @@ export const calculate = (
   }
 
   for (const evaluation of coveredBy) {
+    if (evaluation.tariff.basis.kind === "metalContentCovered") {
+      resolveMetalContentCovered(evaluation, contentTriggers.get(evaluation), input)
+      continue
+    }
     const selector = evaluation.tariff.basis.selector as Parameters<
       typeof selectorMatches
     >[0]
@@ -429,7 +449,46 @@ const isCandidate = (
   )
 }
 
-const isPartial = (tariff: Tariff) => tariff.basis?.kind === "coveredBy"
+// Bases that depend on the other lines, so the pipeline resolves them in step 7
+const PIPELINE_BASES = new Set(["coveredBy", "metalContentCovered"])
+
+// A partial exception only displaces the value it covers (HowTariffsWork.md §6.5)
+const isPartial = (tariff: Tariff) => PIPELINE_BASES.has(tariff.basis?.kind)
+
+// The metal content covered by a partial exemption (handlers.ts, "metalContentCovered"): the
+// full value if any trigger outside `content` applies, else the content of each metal whose
+// listed headings triggered it. An unanswered content % switches the exemption off, like any basis.
+const resolveMetalContentCovered = (
+  evaluation: Evaluation,
+  triggers: Evaluation[],
+  input: CalculationInput,
+) => {
+  const groups = evaluation.tariff.basis.content as { codes: string[]; metal: string }[]
+  const groupOf = (code: string) => groups.find((g) => g.codes.includes(code))
+  if (triggers.some((t) => !groupOf(t.tariff.code))) {
+    evaluation.basisValue = input.customsValue
+    return
+  }
+  const metals = Array.from(new Set(triggers.map((t) => groupOf(t.tariff.code).metal)))
+  const missing: string[] = []
+  let covered = 0
+  for (const metal of metals) {
+    const id = `${metal}ContentPct`
+    evaluation.consultedInputs.add(id)
+    const pct = input.answers?.[id]
+    if (pct === undefined || pct === null || pct === "") missing.push(id)
+    else covered += (input.customsValue * Number(pct)) / 100
+  }
+  if (missing.length > 0) {
+    missing.forEach((id) => evaluation.unknownInputs.add(id))
+    evaluation.state = "off"
+    evaluation.offForMissingAnswer = true
+    evaluation.reasons.push(`Needs the ${metals.join(" and ")} content to calculate`)
+    return
+  }
+  evaluation.basisValue = Math.min(input.customsValue, covered)
+  evaluation.reasons.push(`Covers the ${metals.join(" and ")} content`)
+}
 
 // Settles which candidates apply, given that exceptions switch headings off and
 // `whenApplies` switches them on. Repeats until nothing changes; cycles that can't
