@@ -305,7 +305,7 @@ export const headings: Tariff[] = [
       excludeCountries: ["GB"],
       codes: [{ list: "aluminum19g2025" }],
     },
-    exceptions: ["9903.85.67", "9903.85.69", "9903.85.07"],
+    exceptions: ["9903.85.67", "9903.85.69", "9903.85.07", "9903.85.68", "9903.85.70"],
     basis: {
       kind: "metalContentInChapters",
       metal: "aluminum",
@@ -314,7 +314,7 @@ export const headings: Tariff[] = [
     rate: { kind: "adValorem", pct: 50 },
     effective: END,
     source: backfilled(
-      "U.S. note 19(f)-(g): chapter 76 goods pay on the aluminum content. .07 wins for the 7616.99.51 statistical numbers 19(j) lists by name (same rate)",
+      "U.S. note 19(f)-(g): chapter 76 goods pay on the aluminum content. .07 (or Russia's .68/.70) wins for the 7616.99.51 statistical numbers 19(j) lists by name",
     ),
   },
   {
@@ -352,7 +352,13 @@ export const headings: Tariff[] = [
       excludeCountries: ["GB"],
       codes: [{ list: "aluminumDerivatives19j2025" }],
     },
-    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70"],
+    exceptions: [
+      "9903.85.09",
+      "9903.85.67",
+      "9903.85.68",
+      "9903.85.69",
+      "9903.85.70",
+    ],
     basis: {
       kind: "metalContentInChapters",
       metal: "aluminum",
@@ -361,7 +367,7 @@ export const headings: Tariff[] = [
     rate: { kind: "adValorem", pct: 50 },
     effective: END,
     source: backfilled(
-      "U.S. note 19(h), (j): all chapter 76, so on the aluminum content",
+      "U.S. note 19(h), (j): all chapter 76, so on the aluminum content. Gives way to the Russia headings .67/.69 too: 7616.99.51.30/.40/.90 are also in 19(g)",
     ),
   },
   {

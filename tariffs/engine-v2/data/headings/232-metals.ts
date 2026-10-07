@@ -4,6 +4,10 @@ import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
 import { tariffVersions } from "../../versioning"
 
+// Note 16(a): "Except as provided in headings [9903.82.01,] 9903.85.67 and 9903.85.68,
+// headings 9903.82.02–9903.82.17 [.19 from Rev 6, .26 from Rev 10] provide the ordinary customs
+// duty treatment …". So every 9903.82 heading lists the Russia headings 9903.85.67/.68 among its
+// exceptions (corrected Oct 2026; before, only 9903.82.02 did).
 export const headings: Tariff[] = [
   ...tariffVersions(
     {
@@ -139,7 +143,7 @@ export const headings: Tariff[] = [
       // TODO(list): "9903.82.03:excluded" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       excludeCodes: [{ list: "9903.82.03:excluded" }],
     },
-    exceptions: ["9903.82.01"],
+    exceptions: ["9903.82.01", "9903.85.67", "9903.85.68"],
     requires: [confirm("9903.82.03")],
     rate: { kind: "free" },
     effective: { from: "2026-04-06" },
@@ -165,7 +169,13 @@ export const headings: Tariff[] = [
         { list: "steelDerivatives16civ" },
       ],
     },
-    exceptions: ["9903.82.01", "9903.82.03", "9903.82.06"],
+    exceptions: [
+      "9903.82.01",
+      "9903.82.03",
+      "9903.82.06",
+      "9903.85.67",
+      "9903.85.68",
+    ],
     requires: [confirm("9903.82.04")],
     rate: { kind: "adValorem", pct: 25 },
     rateByColumn: {
@@ -193,7 +203,14 @@ export const headings: Tariff[] = [
           { list: "steelDerivatives16cvii" },
         ],
       },
-      exceptions: ["9903.82.01", "9903.82.03", "9903.82.06", "9903.82.13"],
+      exceptions: [
+        "9903.82.01",
+        "9903.82.03",
+        "9903.82.06",
+        "9903.82.13",
+        "9903.85.67",
+        "9903.85.68",
+      ],
       requires: [confirm("9903.82.05")],
       rate: { kind: "adValorem", pct: 15 },
       rateByColumn: {
@@ -220,6 +237,8 @@ export const headings: Tariff[] = [
             "9903.82.24",
             "9903.82.25",
             "9903.82.26",
+            "9903.85.67",
+            "9903.85.68",
           ],
         },
         source: {
@@ -254,6 +273,7 @@ export const headings: Tariff[] = [
         "9903.85.68",
         "9903.82.03",
         "9903.82.13",
+        "9903.85.67",
       ],
       requires: [confirm("9903.82.06")],
       rate: { kind: "adValorem", pct: 10 },
@@ -292,6 +312,7 @@ export const headings: Tariff[] = [
             "9903.82.13",
             "9903.82.23",
             "9903.82.24",
+            "9903.85.67",
           ],
         },
         source: {
@@ -323,6 +344,7 @@ export const headings: Tariff[] = [
         "9903.85.68",
         "9903.82.03",
         "9903.82.06",
+        "9903.85.67",
       ],
       requires: [{ kind: "baseRate", op: "<", pct: 10 }, confirm("9903.82.07")],
       rate: { kind: "topUpTo", pct: 10 },
@@ -372,6 +394,7 @@ export const headings: Tariff[] = [
         "9903.85.68",
         "9903.82.03",
         "9903.82.06",
+        "9903.85.67",
       ],
       requires: [
         { kind: "baseRate", op: ">=", pct: 10 },
@@ -424,6 +447,7 @@ export const headings: Tariff[] = [
         "9903.82.06",
         "9903.82.13",
         "9903.82.15",
+        "9903.85.67",
       ],
       rate: { kind: "adValorem", pct: 25 },
       effective: { from: "2026-04-06" },
@@ -464,6 +488,7 @@ export const headings: Tariff[] = [
             "9903.82.24",
             "9903.82.25",
             "9903.82.26",
+            "9903.85.67",
           ],
         },
         source: {
@@ -496,6 +521,7 @@ export const headings: Tariff[] = [
       "9903.82.06",
       "9903.82.07",
       "9903.82.08",
+      "9903.85.67",
     ],
     requires: [{ kind: "baseRate", op: "<", pct: 15 }, confirm("9903.82.10")],
     rate: { kind: "topUpTo", pct: 15 },
@@ -532,6 +558,7 @@ export const headings: Tariff[] = [
       "9903.82.06",
       "9903.82.07",
       "9903.82.08",
+      "9903.85.67",
     ],
     requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.82.11")],
     rate: { kind: "free" },
@@ -562,6 +589,7 @@ export const headings: Tariff[] = [
       "9903.85.68",
       "9903.82.03",
       "9903.82.06",
+      "9903.85.67",
     ],
     rate: { kind: "adValorem", pct: 25 },
     effective: { from: "2026-04-06" },
@@ -583,7 +611,7 @@ export const headings: Tariff[] = [
         countries: "all",
         codes: [{ list: "motorcycleParts16cg" }],
       },
-      exceptions: ["9903.82.01", "9903.82.03"],
+      exceptions: ["9903.82.01", "9903.82.03", "9903.85.67", "9903.85.68"],
       requires: [confirm("9903.82.13")],
       rate: { kind: "free" },
       effective: { from: "2026-04-06" },
@@ -630,7 +658,14 @@ export const headings: Tariff[] = [
         { list: "steelDerivatives16civ" },
       ],
     },
-    exceptions: ["9903.82.01", "9903.82.03", "9903.82.06", "9903.82.15"],
+    exceptions: [
+      "9903.82.01",
+      "9903.82.03",
+      "9903.82.06",
+      "9903.82.15",
+      "9903.85.67",
+      "9903.85.68",
+    ],
     rate: { kind: "adValorem", pct: 50 },
     effective: { from: "2026-04-06" },
     source: {
@@ -656,7 +691,13 @@ export const headings: Tariff[] = [
         ],
       },
       requires: [confirm("9903.82.15")],
-      exceptions: ["9903.82.01", "9903.82.03", "9903.82.13"],
+      exceptions: [
+        "9903.82.01",
+        "9903.82.03",
+        "9903.82.13",
+        "9903.85.67",
+        "9903.85.68",
+      ],
       rate: { kind: "adValorem", pct: 10 },
       effective: { from: "2026-04-06" },
       source: {
@@ -711,6 +752,8 @@ export const headings: Tariff[] = [
         "9903.82.06",
         "9903.82.13",
         "9903.82.15",
+        "9903.85.67",
+        "9903.85.68",
       ],
       rate: { kind: "adValorem", pct: 25 },
       effective: { from: "2026-04-06" },
@@ -754,7 +797,13 @@ export const headings: Tariff[] = [
       countries: ["RU"],
       codes: [{ list: "steelDerivatives16cx" }],
     },
-    exceptions: ["9903.82.01", "9903.82.03", "9903.82.06"],
+    exceptions: [
+      "9903.82.01",
+      "9903.82.03",
+      "9903.82.06",
+      "9903.85.67",
+      "9903.85.68",
+    ],
     rate: { kind: "adValorem", pct: 25 },
     effective: { from: "2026-04-06" },
     source: {
@@ -782,7 +831,7 @@ export const headings: Tariff[] = [
       { kind: "preferenceClaimed", symbols: ["S", "S+"] },
       confirm("9903.82.18"),
     ],
-    exceptions: ["9903.82.01"],
+    exceptions: ["9903.82.01", "9903.85.67", "9903.85.68"],
     rate: { kind: "adValorem", pct: 25 },
     effective: { from: "2026-04-23" },
     source: {
@@ -805,7 +854,7 @@ export const headings: Tariff[] = [
       { kind: "preferenceClaimed", symbols: ["S", "S+"] },
       confirm("9903.82.19"),
     ],
-    exceptions: ["9903.82.01"],
+    exceptions: ["9903.82.01", "9903.85.67", "9903.85.68"],
     rate: { kind: "adValorem", pct: 25 },
     effective: { from: "2026-04-23" },
     source: {
@@ -824,7 +873,14 @@ export const headings: Tariff[] = [
       countries: ["CA", "MX"],
       codes: [{ list: "steelDerivatives16cxi" }],
     },
-    exceptions: ["9903.82.01", "9903.82.03", "9903.82.06", "9903.82.13"],
+    exceptions: [
+      "9903.82.01",
+      "9903.82.03",
+      "9903.82.06",
+      "9903.82.13",
+      "9903.85.67",
+      "9903.85.68",
+    ],
     requires: [{ kind: "preferenceClaimed", symbols: ["S", "S+"] }],
     basis: {
       kind: "usContentShare",
@@ -850,7 +906,14 @@ export const headings: Tariff[] = [
       countries: ["CA", "MX"],
       codes: [{ list: "steelDerivatives16cxi" }],
     },
-    exceptions: ["9903.82.01", "9903.82.03", "9903.82.06", "9903.82.13"],
+    exceptions: [
+      "9903.82.01",
+      "9903.82.03",
+      "9903.82.06",
+      "9903.82.13",
+      "9903.85.67",
+      "9903.85.68",
+    ],
     requires: [{ kind: "preferenceClaimed", symbols: ["S", "S+"] }],
     basis: {
       kind: "usContentShare",
@@ -891,7 +954,14 @@ export const headings: Tariff[] = [
       ],
       codes: [{ list: "steelDerivatives16cxi" }],
     },
-    exceptions: ["9903.82.01", "9903.82.03", "9903.82.06", "9903.82.13"],
+    exceptions: [
+      "9903.82.01",
+      "9903.82.03",
+      "9903.82.06",
+      "9903.82.13",
+      "9903.85.67",
+      "9903.85.68",
+    ],
     requires: [],
     rate: { kind: "topUpTo", pct: 15 },
     rateByColumn: {
@@ -915,7 +985,13 @@ export const headings: Tariff[] = [
       excludeCountries: ["BY", "CU", "KP", "RU"],
       codes: [{ list: "metalsPartsForEquipment16k" }],
     },
-    exceptions: ["9903.82.01", "9903.82.03", "9903.82.13", "9903.85.68"],
+    exceptions: [
+      "9903.82.01",
+      "9903.82.03",
+      "9903.82.13",
+      "9903.85.68",
+      "9903.85.67",
+    ],
     requires: [{ kind: "baseRate", op: "<", pct: 10 }, confirm("9903.82.23")],
     rate: { kind: "topUpTo", pct: 10 },
     rateByColumn: {
@@ -939,7 +1015,13 @@ export const headings: Tariff[] = [
       excludeCountries: ["BY", "CU", "KP", "RU"],
       codes: [{ list: "metalsPartsForEquipment16k" }],
     },
-    exceptions: ["9903.82.01", "9903.82.03", "9903.82.13", "9903.85.68"],
+    exceptions: [
+      "9903.82.01",
+      "9903.82.03",
+      "9903.82.13",
+      "9903.85.68",
+      "9903.85.67",
+    ],
     requires: [{ kind: "baseRate", op: ">=", pct: 10 }, confirm("9903.82.24")],
     rate: { kind: "free" },
     effective: { from: "2026-06-08" },
@@ -968,6 +1050,7 @@ export const headings: Tariff[] = [
       "9903.82.06",
       "9903.82.23",
       "9903.82.24",
+      "9903.85.67",
     ],
     requires: [{ kind: "baseRate", op: "<", pct: 15 }, confirm("9903.82.25")],
     rate: { kind: "topUpTo", pct: 15 },
@@ -1000,6 +1083,7 @@ export const headings: Tariff[] = [
       "9903.82.06",
       "9903.82.23",
       "9903.82.24",
+      "9903.85.67",
     ],
     requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.82.26")],
     rate: { kind: "free" },
@@ -1021,12 +1105,11 @@ export const headings: Tariff[] = [
         countries: ["RU"],
         // TODO(list): "9903.85.67" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
         codes: [{ list: "9903.85.67" }],
-        // Until April 6, 2026 these are also listed by name in 19(j), so they're derivatives
-        // under 9903.85.07/.68 (2026HTSRev4 PLAN.md, Assumption 5)
-        excludeCodes: ["7616.99.51.30", "7616.99.51.40", "7616.99.51.90"],
       },
-      // Gives way to its FTZ twin 9903.85.69 (same rate) until 9903.85.69 ended on April 6, 2026
-      exceptions: ["9903.85.69"],
+      // Gives way to its FTZ twin 9903.85.69 (same rate) until 9903.85.69 ended on April 6, 2026.
+      // 7616.99.51.30/.40/.90 are on both the 19(g) and 19(j) lists: once confirmed as
+      // derivatives, 9903.85.68 (or its FTZ twin .70) takes them instead, at the same 200%.
+      exceptions: ["9903.85.69", "9903.85.68", "9903.85.70"],
       rate: { kind: "adValorem", pct: 200 },
       effective: {},
       source: {
@@ -1040,19 +1123,13 @@ export const headings: Tariff[] = [
     [
       {
         from: "2026-04-06",
-        set: {
-          exceptions: [],
-          scope: {
-            countries: ["RU"],
-            codes: [{ list: "9903.85.67" }],
-          },
-        },
+        set: { exceptions: ["9903.85.68"] },
         source: {
           revision: "2026HTSRev5",
           citation: "Proclamation 11021",
           url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
           publishedOn: "2026-04-02",
-          note: "9903.85.69 terminated (PP 11021, Annex IV A.11); this heading continues unchanged",
+          note: "9903.85.69 and .70 terminated (PP 11021, Annex IV A.11); still gives way to 9903.85.68 for the codes on both lists",
         },
       },
     ],

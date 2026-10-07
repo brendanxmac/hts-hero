@@ -1493,6 +1493,31 @@ describe("engine-v2 real data: civil aircraft agreements and Russian aluminum (c
     expect(applying(v2)).not.toContain("9903.82.02")
     expect(v2.lines.find((l) => l.code === "9903.85.68").amount).toBe(20_000)
   })
+
+  // Note 16(a): "Except as provided in headings 9903.85.67 and 9903.85.68, headings
+  // 9903.82.02–9903.82.17 [later .19, .26] provide …". Was: only 9903.82.02 gave way to both,
+  // so e.g. 7616.99.51.30 of Russia paid 9903.85.67 (200%) plus 9903.82.09 (25%).
+  it("every 9903.82 heading gives way to the Russia headings 9903.85.67/.68 (note 16(a))", () => {
+    for (const asOf of ["2026-04-10", "2026-06-10", "2026-08-01"]) {
+      const casting = calc("7616.99.51.30", "RU", asOf, "2.5%")
+      expect(applying(casting)).toContain("9903.85.67")
+      expect(applying(casting).filter((c) => c.startsWith("9903.82"))).toEqual([])
+      const steel = calc("7308.20.00.35", "RU", asOf, "Free", { "confirm:9903.85.68": true })
+      expect(applying(steel)).toContain("9903.85.68")
+      expect(applying(steel).filter((c) => c.startsWith("9903.82"))).toEqual([])
+    }
+  })
+
+  // 7616.99.51.30/.40/.90 are in 19(g) (9903.85.67) and listed by name in 19(j) (9903.85.68).
+  // Was: both 200% duties applied once .68 was confirmed.
+  it("Russian goods on both 19(g) and 19(j) pay 200% once: .67, or .68 when confirmed as derivatives", () => {
+    for (const asOf of ["2026-03-15", "2026-04-10"]) {
+      const confirmed = calc("7616.99.51.30", "RU", asOf, "2.5%", { aluminumContentPct: 90, "confirm:9903.85.68": true })
+      const russia = applying(confirmed).filter((c) => /^9903\.85\./.test(c))
+      expect(russia).toEqual(["9903.85.68"])
+      expect(applying(calc("7616.99.51.30", "RU", asOf, "2.5%", { aluminumContentPct: 90 })).filter((c) => /^9903\.85\./.test(c))).toEqual(["9903.85.67"])
+    }
+  })
 })
 
 // ============================================================

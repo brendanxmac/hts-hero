@@ -255,9 +255,12 @@ The first backward step. Verified data now starts at 2026HTSRev4 (Feb 25, 2026).
 - **Interactions before April 6:** notes 33/38/39 (autos, MHDV, semiconductors) and the four civil aircraft agreements over the old headings.
 - **From April 6:** 9903.82.02–.17 now start on 2026-04-06.
 - **Checks:** an invariant sweep over 1,374 metals codes × 8 countries (21,984 calculations) found 0 problems. Results from April 6 on are unchanged: 65,952 compared, 0 differences.
-- **Found, not changed (Rev 5+, for a decision):**
-  - Russian 7616.99.51.30/.40/.90 get 9903.85.67 and .68 (both 200%) when .68 is confirmed.
-  - 9903.82.xx headings don't give way to 9903.85.67/.68 as note 16(a) says.
+- **Russia precedence, fixed afterwards** (branch `fix/232-russia-aluminum-precedence`, corrections to Rev 5+):
+  - **Every 9903.82.02–.26 heading now gives way to 9903.85.67/.68,** per note 16(a). Before, only .02 did, so Russian goods paid the 200% plus a 9903.82 duty.
+  - **7616.99.51.30/.40/.90 (in both 19(g) and 19(j)) pay 200% once:** .67, or .68 when confirmed. Before, both applied.
+  - **Rev 4 matches:** the old .02/.07 give way to the Russia headings.
+  - **Side effects that follow the text:** without a 9903.82 heading, those goods pay Section 122 (note 2(aa)(v) doesn't exempt .67/.68) and, from August 2026, the forced-labor Section 301 duty (note 52(f) only exempts the 9903.82 headings).
+  - **Sweeps:** a Russia invariant sweep found 179 problems before and 0 after. In the regression sweep (65,952 results), 12 changed, all Russian.
 - **Not modeled:** the 2018–2025 quota and exemption headings (9903.80.xx, 9903.81.01–.86, most of 9903.85). Per the compiler's notes to 16(a) and 19(a), they only covered entries before March 12, 2025.
 
 ## Oct 7: corrections found while planning the 2026HTSRev4 backfill (branch `fix/232-civil-aircraft-and-metals-lists`)
