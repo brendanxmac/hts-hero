@@ -24,7 +24,7 @@ import {
   loadHeadingRows,
   saveHeadingPagesInfo,
 } from "./headings"
-import { detectRevision } from "./text"
+import { detectRevision, ownEditionRows } from "./text"
 import { attemptFolder, downloadBlob, downloadJson, downloadText, markdownPath, sourcePath, uploadFile } from "./storage"
 import { fetchCh99Export, getCurrentReleaseName } from "./usitc"
 import { HtsRevisions } from "../../tariffs/engine-v2/revisions"
@@ -309,8 +309,10 @@ export const ensureChangeRecordItems = async (db: RevisionDb, attemptId: string,
   if (attempt.change_record_items && !force) return attempt.change_record_items
   const doc = documents.find((d) => d.kind === "change_record")
   if (!doc?.markdown_path) throw new Error("The change record hasn't been converted")
-  const markdown = await downloadText(db, doc.markdown_path)
-  const { items, model, usage } = await extractChangeRecord(markdown, revision.name)
+  // A Basic edition's change record is cumulative: only its own rows are changes from the
+  // revision before it, and reading the whole record overruns the model's output
+  const own = ownEditionRows(await downloadText(db, doc.markdown_path), revision.name)
+  const { items, model, usage } = await extractChangeRecord(own.markdown, revision.name)
   await updateAttempt(db, attemptId, {
     change_record_items: items,
     change_record_model: `${model} (${CHANGE_RECORD_PROMPT_VERSION})`,

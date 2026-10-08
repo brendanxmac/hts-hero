@@ -4,7 +4,7 @@ import { parseCh99Json } from "../../libs/hts-revision-diff/parse-ch99-json"
 import { codeChanges, diffCodes, diffNotes, diffSharedCodes } from "../../libs/hts-revision-diff/diff"
 import { buildChanges } from "../../libs/hts-revision-diff/build-changes"
 import { wordDiff, renderWordDiff } from "../../libs/hts-revision-diff/word-diff"
-import { detectRevision, extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/text"
+import { detectRevision, extractHtsCodes, extractHtsRanges, ownEditionRows } from "../../libs/hts-revision-diff/text"
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
 import { readFileSync } from "fs"
 import { parseCh99HeadingTables, takeTrailingMarkers } from "../../libs/hts-revision-diff/parse-ch99-tables"
@@ -981,5 +981,42 @@ describe("Revision detection", () => {
 
   it("reads the Basic edition a revision's change record follows", () => {
     expect(detectRevision("# Harmonized Tariff Schedule of the United States (2026 Revision 1)\n\nupdates made to the HTS after the 2026 Basic Edition").previous).toBe("2026HTSBasic")
+  })
+})
+
+describe("Cumulative Basic change records", () => {
+  const record = [
+    "## Change Record",
+    "",
+    "| Item changed | Nature of change | Effective date | Source | Edition |",
+    "|---|---|---|---|---|",
+    "| 9903.01.25 | Modified | November 14, 2025 | Notice | 2026 |",
+    "| U.S. note 2(v)(xii)-(xiii), subch III, | Modified (renumbered | August 1, 2025 | PP 10962 | Rev 18 |",
+    "| ch 99 | subdivisions (xiii) as (xiv)) | | | |",
+    "| 9903.02.82 | Added | November 14, 2025 | Notice | 2026 |",
+    "| U.S. note 3, ch 2 | Modified (renumbered | January 1, 2026 | Notice | 2026 |",
+    "| | as note 3(a)) | | | |",
+    "",
+    "| <b>Item changed</b> | <b>Nature of change</b> | <b>Effective date</b> | <b>Source</b> | <b>Edition</b> |",
+    "|---|---|---|---|---|",
+    "| 9903.88.16 | Modified | October 1, 2025 | Notice | Rev 26 |",
+  ].join("\n")
+
+  it("keeps only the rows the Basic edition made, with their wrapped lines", () => {
+    const own = ownEditionRows(record, "2026HTSBasic")
+    expect(own.kept).toBe(3)
+    expect(own.dropped).toBe(2)
+    expect(own.markdown.includes("9903.01.25")).toBe(true)
+    expect(own.markdown.includes("9903.02.82")).toBe(true)
+    expect(own.markdown.includes("as note 3(a))")).toBe(true)
+    expect(own.markdown.includes("PP 10962")).toBe(false)
+    expect(own.markdown.includes("subdivisions (xiii) as (xiv))")).toBe(false)
+    expect(own.markdown.includes("9903.88.16")).toBe(false)
+    // Both tables keep their headers
+    expect(own.markdown.includes("<b>Edition</b>")).toBe(true)
+  })
+
+  it("leaves other revisions' change records alone", () => {
+    expect(ownEditionRows(record, "2026HTSRev1").markdown).toBe(record)
   })
 })

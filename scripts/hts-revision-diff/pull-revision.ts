@@ -21,7 +21,7 @@ import { renderNotesMarkdown } from "../../libs/hts-revision-diff/parse-ch99-not
 import { headingsUsedByChanges, unreviewedHeadings } from "../../libs/hts-revision-diff/headings"
 import { renderChangeForExport } from "../../libs/hts-revision-diff/render"
 import { downloadJson, downloadText } from "../../libs/hts-revision-diff/storage"
-import { slugify } from "../../libs/hts-revision-diff/text"
+import { ownEditionRows, slugify } from "../../libs/hts-revision-diff/text"
 import { HtsRevisions } from "../../tariffs/engine-v2/revisions"
 import type {
   AttemptRow,
@@ -207,7 +207,13 @@ const main = async () => {
     2
   )
   writeFileSync(join(outDir, "changes.json"), changesJson)
-  if (changeRecordMarkdown) writeFileSync(join(outDir, "change-record.md"), changeRecordMarkdown)
+  if (changeRecordMarkdown) {
+    // A Basic edition's change record is cumulative: change-record.md keeps only its own rows (the
+    // changes from the revision before it), and change-record-full.md the whole record
+    const own = ownEditionRows(changeRecordMarkdown, toRevision.name)
+    writeFileSync(join(outDir, "change-record.md"), own.markdown)
+    if (own.kept !== null) writeFileSync(join(outDir, "change-record-full.md"), changeRecordMarkdown)
+  }
   const writeHeadings = (file: string, rows: HeadingRow[], name: string) => {
     if (!rows.length) return
     const cell = (s: string) => s.replace(/\|/g, "\\|")

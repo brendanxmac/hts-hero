@@ -178,3 +178,50 @@ export const inRange = (code: string, r: HtsRange) => {
   const k = htsSortKey(code)
   return k >= htsSortKey(r.from) && k <= r.to.replace(/\D/g, "").padEnd(10, "9")
 }
+
+// ---------- Cumulative change records ----------
+
+// A Basic edition's change record is cumulative: it lists every change since the last printed
+// edition, with an Edition column naming the revision that made it ("Rev 16", …, "2026"). Only the
+// rows the Basic edition itself made (Edition = its year) are changes from the revision before it;
+// the rest were already in that revision. Rows that wrap onto a second line have a blank Edition
+// cell and go with the row above. Other change records, and tables without an Edition column, are
+// returned as is.
+export const ownEditionRows = (markdown: string, revisionName: string) => {
+  const basic = revisionName.match(/^(\d{4})HTSBasic$/)
+  if (!basic) return { markdown, kept: null, dropped: 0 }
+  const year = basic[1]
+  const cells = (line: string) => line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.replace(/<[^>]+>/g, "").trim())
+  const isSeparator = (line: string) => /^\|\s*:?-{3,}/.test(line.trim())
+  let editionColumn = -1
+  let keeping = true
+  let kept = 0
+  let dropped = 0
+  const out: string[] = []
+  for (const line of markdown.split("\n")) {
+    if (!line.trim().startsWith("|")) {
+      editionColumn = -1
+      keeping = true
+      out.push(line)
+      continue
+    }
+    const row = cells(line)
+    const header = row.findIndex((c) => /^edition$/i.test(c))
+    if (header >= 0) {
+      editionColumn = header
+      out.push(line)
+      continue
+    }
+    if (editionColumn < 0 || isSeparator(line)) {
+      out.push(line)
+      continue
+    }
+    const edition = row[editionColumn] ?? ""
+    if (edition) keeping = edition === year
+    if (keeping) {
+      if (edition) kept++
+      out.push(line)
+    } else if (edition) dropped++
+  }
+  return { markdown: out.join("\n"), kept, dropped }
+}
