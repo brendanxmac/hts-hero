@@ -4,13 +4,13 @@ import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
 import { tariffVersions } from "../../versioning"
 
-export const headings: Tariff[] = [
+const allHeadings: Tariff[] = [
   {
     code: "9903.94.01",
     program: "232-autos",
     name: "Section 232 Autos: Passenger Vehicles and Light Trucks",
     description:
-      "Except for products described in headings 9903.94.02, 9903.94.03, 9903.94.04, 9903.94.31, 9903.94.40, 9903.94.41, 9903.94.50, and 9903.94.51, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, as specified in note 33 to this subchapter, as provided for in subdivision (b) of U.S. note 33 to this subchapter",
+      "Except for products described in headings 9903.94.02, 9903.94.03, 9903.94.04, 9903.94.31, 9903.94.40, 9903.94.41, 9903.94.50, 9903.94.51, 9903.94.60, and 9903.94.61, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, as specified in note 33 to this subchapter, as provided for in subdivision (b) of U.S. note 33 to this subchapter",
     scope: {
       countries: "all",
       codes: [{ list: "automobiles33B" }],
@@ -405,8 +405,9 @@ export const headings: Tariff[] = [
     },
     requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.94.64")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
   },
   {
     code: "9903.94.65",
@@ -431,8 +432,9 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
   },
   {
     code: "9903.94.32",
@@ -605,8 +607,9 @@ export const headings: Tariff[] = [
     exceptions: ["9903.94.02", "9903.94.04"],
     requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.94.60")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
   },
   {
     code: "9903.94.61",
@@ -624,8 +627,9 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
   },
   {
     code: "9903.94.62",
@@ -640,8 +644,9 @@ export const headings: Tariff[] = [
     exceptions: ["9903.94.06"],
     requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.94.62")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
   },
   {
     code: "9903.94.63",
@@ -659,8 +664,9 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
   },
   {
     code: "9903.94.66",
@@ -757,3 +763,37 @@ export const headings: Tariff[] = [
     },
   },
 ]
+
+// 2025HTSRev31 text of headings the U.S.-Korea deal changed on Nov 1, 2025: they didn't yet name the
+// Korea vehicle and parts headings 9903.94.60–.65. Commerce/USTR notice (90 FR 55964), Annex Part A,
+// "on or after 12:01 a.m. eastern time on November 1, 2025" (retroactive). Text only: the exceptions
+// name headings that don't apply before then. Backfilled from 2025HTSRev32's change record
+const KOREA_AUTOS_FROM = "2025-11-01"
+const REV31_DESCRIPTIONS: Record<string, string> = {
+  "9903.94.01":
+    "Except for products described in headings 9903.94.02, 9903.94.03, 9903.94.04, 9903.94.31, 9903.94.40, 9903.94.41, 9903.94.50, and 9903.94.51, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, as specified in note 33 to this subchapter, as provided for in subdivision (b) of U.S. note 33 to this subchapter",
+  "9903.94.05":
+    "Except for products described in headings 9903.94.06, 9903.94.32, 9903.94.33, 9903.94.42, 9903.94.43, 9903.94.44, 9903.94.45, 9903.94.52, 9903.94.53, 9903.94.54, 9903.94.55, automobile parts, as provided for in subdivision (g) of U.S. note 33 to this subchapter",
+  "9903.94.07":
+    "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54 and 9903.94.55, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter",
+}
+
+export const headings: Tariff[] = allHeadings.flatMap((t) => {
+  const before = REV31_DESCRIPTIONS[t.code]
+  if (!before || (t.effective.from && t.effective.from > KOREA_AUTOS_FROM)) return [t]
+  return [
+    {
+      ...t,
+      description: before,
+      effective: { ...t.effective, to: KOREA_AUTOS_FROM },
+      source: {
+        revision: "2025HTSRev31",
+        citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+        url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+        publishedOn: "2025-12-04",
+        note: "The 2025HTSRev31 text, before the Korea vehicle and parts headings 9903.94.60–.65 (Nov 1, 2025, retroactive). Backfilled from 2025HTSRev32's change record",
+      },
+    },
+    { ...t, effective: { ...t.effective, from: KOREA_AUTOS_FROM } },
+  ]
+})

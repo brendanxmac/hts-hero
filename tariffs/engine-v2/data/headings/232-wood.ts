@@ -46,7 +46,7 @@ export const headings: Tariff[] = [
         countries: "all",
         // TODO(list): "9903.76.02" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
         codes: [{ list: "9903.76.02" }],
-        excludeCountries: ["GB", "JP", "KR", { list: "eu-members" }],
+        excludeCountries: ["GB", "JP", { list: "eu-members" }],
       },
       exceptions: [
         "9903.94.01",
@@ -70,6 +70,26 @@ export const headings: Tariff[] = [
       source: { revision: "2026HTSRev5" },
     },
     [
+      // U.S. notes 37(c) and (e) excepted South Korea from 9903.76.02 once its own heading 9903.76.23
+      // took effect: Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal
+      // (90 FR 55964), Annex Part B, "on or after 12:01 a.m. eastern time on November 14, 2025"
+      {
+        from: "2025-11-14",
+        set: {
+          scope: {
+            countries: "all",
+            codes: [{ list: "9903.76.02" }],
+            excludeCountries: ["GB", "JP", "KR", { list: "eu-members" }],
+          },
+        },
+        source: {
+          revision: "2025HTSRev32",
+          citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B",
+          url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+          publishedOn: "2025-12-04",
+          note: "U.S. notes 37(c) and (e) add South Korea (retroactive). Before Nov 14, 2025, Korean goods paid this heading's 25% (2025HTSRev31). Backfilled from 2025HTSRev32's change record",
+        },
+      },
       {
         from: "2026-05-01",
         set: {
@@ -97,7 +117,7 @@ export const headings: Tariff[] = [
         countries: "all",
         // TODO(list): "9903.76.03" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
         codes: [{ list: "9903.76.03" }],
-        excludeCountries: ["GB", "JP", "KR", { list: "eu-members" }],
+        excludeCountries: ["GB", "JP", { list: "eu-members" }],
       },
       exceptions: [
         "9903.94.01",
@@ -122,6 +142,26 @@ export const headings: Tariff[] = [
       source: { revision: "2026HTSRev5" },
     },
     [
+      // U.S. notes 37(c) and (e) excepted South Korea from 9903.76.03 once its own heading 9903.76.23
+      // took effect: Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal
+      // (90 FR 55964), Annex Part B, "on or after 12:01 a.m. eastern time on November 14, 2025"
+      {
+        from: "2025-11-14",
+        set: {
+          scope: {
+            countries: "all",
+            codes: [{ list: "9903.76.03" }],
+            excludeCountries: ["GB", "JP", "KR", { list: "eu-members" }],
+          },
+        },
+        source: {
+          revision: "2025HTSRev32",
+          citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B",
+          url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+          publishedOn: "2025-12-04",
+          note: "U.S. notes 37(c) and (e) add South Korea (retroactive). Before Nov 14, 2025, Korean goods paid this heading's 25% (2025HTSRev31). Backfilled from 2025HTSRev32's change record",
+        },
+      },
       {
         from: "2026-05-01",
         set: {
@@ -241,10 +281,11 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B: "on or after 12:01 a.m. eastern time on November 14, 2025". Retroactive
+    effective: { from: "2025-11-14" },
     source: {
       revision: "2026HTSRev9",
-      note: "Corrected from a flat +15% to topping up to 15% including the base rate, like Japan (9903.76.21), the EU (.22) and Taiwan (.24): U.S. note 37(l) uses the same terms",
+      note: "Corrected from a flat +15% to topping up to 15% including the base rate, like Japan (9903.76.21), the EU (.22) and Taiwan (.24): U.S. note 37(l) uses the same terms. Starts with goods entered on or after 12:01 a.m. ET Nov 14, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record",
     },
   },
   {

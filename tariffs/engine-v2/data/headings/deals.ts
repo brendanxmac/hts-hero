@@ -350,13 +350,14 @@ export const headings: Tariff[] = [
       "9903.02.01",
     ],
     rate: { kind: "free" },
-    effective: { to: "2026-02-24" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B: "on or after 12:01 a.m. eastern time on November 14, 2025". Retroactive
+    effective: { from: "2025-11-14", to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
       citation: "EO 14389; CSMS # 67834313",
       url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
       publishedOn: "2026-02-20",
-      note: "Corrected to the 2026HTSRev3 text (Oct 2026): description, and exceptions as the heading lists them; Section 232 goods go through 9903.01.33, which spares only the metal content of steel and aluminum articles. IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
+      note: "Corrected to the 2026HTSRev3 text (Oct 2026): description, and exceptions as the heading lists them; Section 232 goods go through 9903.01.33, which spares only the metal content of steel and aluminum articles. IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE. Starts with goods entered on or after 12:01 a.m. ET Nov 14, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record",
     },
   },
   {
@@ -384,13 +385,14 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: { to: "2026-02-24" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B: "on or after 12:01 a.m. eastern time on November 14, 2025". Retroactive
+    effective: { from: "2025-11-14", to: "2026-02-24" },
     source: {
       revision: "2026HTSRev5",
       citation: "EO 14389; CSMS # 67834313",
       url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
       publishedOn: "2026-02-20",
-      note: "Corrected to the 2026HTSRev3 text (Oct 2026): description, and exceptions as the heading lists them; Section 232 goods go through 9903.01.33, which spares only the metal content of steel and aluminum articles. IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
+      note: "Corrected to the 2026HTSRev3 text (Oct 2026): description, and exceptions as the heading lists them; Section 232 goods go through 9903.01.33, which spares only the metal content of steel and aluminum articles. IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE. Starts with goods entered on or after 12:01 a.m. ET Nov 14, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record",
     },
   },
   // Its IEEPA role ended Feb 24, 2026, but the Section 232 civil aircraft reduction it implements
@@ -409,13 +411,14 @@ export const headings: Tariff[] = [
       },
       requires: [confirm("9903.02.81")],
       rate: { kind: "free" },
-      effective: {},
+      // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B: "on or after 12:01 a.m. eastern time on November 14, 2025". Retroactive
+      effective: { from: "2025-11-14" },
       source: {
         revision: "2026HTSRev5",
         citation: "EO 14389; CSMS # 67834313",
         url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
         publishedOn: "2026-02-20",
-        note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE",
+        note: "IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026 (CSMS # 67834313), after the Supreme Court ruling of Feb 20, 2026; all IEEPA headings inactive in ACE. Starts with goods entered on or after 12:01 a.m. ET Nov 14, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record",
       },
     },
     [

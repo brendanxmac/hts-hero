@@ -23,6 +23,10 @@ const ended = (note?: string) => ({
 // Annex II, "effective with respect to goods entered for consumption, or withdrawn from warehouse
 // for consumption, on or after 12:01 a.m. eastern time on November 14, 2025". Retroactive: Basic
 // (Dec 31, 2025) first listed these headings. Backfilled from 2026HTSBasic's change record
+// U.S.-Korea Strategic Trade and Investment Deal: Commerce/USTR notice (90 FR 55964, Dec 4, 2025),
+// Annex Part B, "Heading 9903.02.56 is terminated", for goods entered "on or after 12:01 a.m.
+// eastern time on November 14, 2025" (retroactive)
+const KOREA_FROM = "2025-11-14"
 const SWISS_FROM = "2025-11-14"
 const SWISS_DEAL = { from: SWISS_FROM, to: "2026-02-24" }
 const swissDealSource = {
@@ -45,6 +49,7 @@ const beforeSwissDeal = (note: string) => ({
   note: `${note}. Ends with the Switzerland–Liechtenstein deal for goods entered on or after 12:01 a.m. ET Nov 14, 2025 (retroactive, published Dec 18, 2025). Backfilled from 2026HTSBasic's change record; start date comes with the 2025 backfill`,
 })
 
+const KOREA_DEAL_HEADINGS = ["9903.02.79", "9903.02.80", "9903.02.81"]
 const SWISS_HEADINGS = ["9903.02.82", "9903.02.83", "9903.02.84", "9903.02.85", "9903.02.86", "9903.02.87", "9903.02.88", "9903.02.89", "9903.02.90", "9903.02.91"]
 
 const BASELINE: Tariff = {
@@ -374,19 +379,26 @@ export const headings: Tariff[] = [
       "U.S. note 2(u): from 12:01 a.m. EST Nov 10, 2025 (start comes with a later backfill step)",
     ),
   },
-  // Before the deal: the Switzerland and Liechtenstein reciprocal headings 9903.02.58 and .36
-  // were in force and in 9903.01.25's "9903.02.02–9903.02.81" range; the deal headings weren't yet
+  // Before Nov 14, 2025: the Korea, Switzerland and Liechtenstein reciprocal headings 9903.02.56,
+  // .58 and .36 were in force and in 9903.01.25's "9903.02.02–9903.02.78" range; the deal headings weren't yet
   {
     ...BASELINE,
     description:
-      "Articles the product of any country, except for products described in headings 9903.01.26–9903.01.33, 9903.02.02–9903.02.81, 9903.96.01, and 9903.96.02, and except as provided for in headings 9903.01.34 and 9903.02.01, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
+      "Articles the product of any country, except for products described in headings 9903.01.26–9903.01.33, 9903.02.02–9903.02.78, 9903.96.01, and 9903.96.02, and except as provided for in headings 9903.01.34 and 9903.02.01, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     exceptions: [
-      ...BASELINE.exceptions!.filter((c) => !SWISS_HEADINGS.includes(c)),
+      ...BASELINE.exceptions!.filter((c) => !SWISS_HEADINGS.includes(c) && !KOREA_DEAL_HEADINGS.includes(c)),
       "9903.02.36",
+      "9903.02.56",
       "9903.02.58",
     ].sort(),
     effective: { to: SWISS_FROM },
-    source: beforeSwissDeal("U.S. note 2(v); 2025HTSRev32 text of 9903.01.25"),
+    // Both deals changed 9903.01.25 on Nov 14, 2025 (Korea: "9903.02.78" to "9903.02.81"; then
+    // Switzerland–Liechtenstein: to "9903.02.91"), so before then it has the 2025HTSRev31 text
+    source: {
+      ...beforeSwissDeal("U.S. note 2(v); 2025HTSRev31 text of 9903.01.25"),
+      revision: "2025HTSRev31",
+      note: "U.S. note 2(v); 2025HTSRev31 text of 9903.01.25. Ends Nov 14, 2025 with the U.S.-Korea deal (90 FR 55964, Annex Part B) and the Switzerland–Liechtenstein deal (90 FR 59281, Annex II), both retroactive. Backfilled from the 2025HTSRev32 and 2026HTSBasic change records",
+    },
   },
   { ...BASELINE, effective: SWISS_DEAL },
   {
@@ -1751,6 +1763,33 @@ export const headings: Tariff[] = [
     source: ended(
       "U.S. note 2(v). Its in-transit exception (loaded before Aug 7, entered before Oct 5, 2025) no longer applies",
     ),
+  },
+  {
+    code: "9903.02.56",
+    program: "ieepa-reciprocal",
+    name: "IEEPA Reciprocal Tariff: South Korea",
+    description:
+      "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of South Korea, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
+    scope: { countries: ["KR"], codes: "all" },
+    exceptions: [
+      "9903.01.30",
+      "9903.01.31",
+      "9903.01.32",
+      "9903.01.33",
+      "9903.01.34",
+      "9903.02.01",
+      "9903.02.78",
+    ],
+    rate: { kind: "adValorem", pct: 15 },
+    rateByColumn: { column2: { kind: "free" } },
+    effective: { to: KOREA_FROM },
+    source: {
+      revision: "2025HTSRev31",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "U.S. note 2(v); terminated by the U.S.-Korea deal for goods entered on or after 12:01 a.m. ET Nov 14, 2025 (retroactive, published Dec 4, 2025). Its in-transit exception (loaded before Aug 7, entered before Oct 5, 2025) no longer applies by then. Backfilled from 2025HTSRev32's change record; start date comes with the 2025 backfill",
+    },
   },
   {
     code: "9903.02.57",

@@ -2044,9 +2044,8 @@ describe("engine-v2 real data: 2025HTSRev32 backfill (Switzerland and Liechtenst
     expect(round(calc("6109.10.00.12", "VN", "2025-12-10", "16.5%").totalDuty)).toBe(3650)
   })
 
-  it("is first verified from 2025HTSRev32, Dec 5, 2025", () => {
-    expect(getVerifiedRevisions()[0].name).toBe("2025HTSRev32")
-    expect(getVerifiedRevisions()[0].from).toBe("2025-12-05")
+  it("2025HTSRev32 is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2025HTSRev32")
   })
 })
 
@@ -2072,5 +2071,60 @@ describe("engine-v2 real data: Section 301 Nicaragua", () => {
 
   it("doesn't apply to CAFTA-DR originating goods", () => {
     expect(line("2027-01-05", "P")).toBe(undefined)
+  })
+})
+
+// 2025HTSRev31 backfill (from 2025HTSRev32's change record): the U.S.-Korea deal (Commerce/USTR
+// notice, 90 FR 55964) applies to autos and parts from Nov 1, 2025 and to everything else from
+// Nov 14, 2025, both retroactive. Rev 31 runs from Nov 28, 2025.
+describe("engine-v2 real data: 2025HTSRev31 backfill (U.S.-Korea deal)", () => {
+  const calc = (htsCode: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country: "KR", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null }, answers,
+    })
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))!
+
+  it("Korea pays its 15% reciprocal rate before Nov 14, 2025, and the deal from then on", () => {
+    const before = calc("6109.10.00.12", "2025-11-13", "16.5%")
+    expect(applying(before)).toEqual(["9903.02.56"])
+    expect(round(before.totalDuty)).toBe(3150)
+    expect(applying(calc("6109.10.00.12", "2025-11-14", "16.5%"))).toEqual(["9903.02.79"])
+    expect(round(calc("6109.10.00.12", "2025-12-01", "16.5%").totalDuty)).toBe(1650)
+    expect(round(calc("6307.90.98.70", "2025-11-13", "7%").totalDuty)).toBe(2200)
+    expect(round(calc("6307.90.98.70", "2025-11-14", "7%").totalDuty)).toBe(1500)
+  })
+
+  it("Korean vehicles get 15% including base duty from Nov 1, 2025", () => {
+    const answers = { "confirm:9903.94.61": true }
+    const before = calc("8703.23.01.90", "2025-10-31", "2.5%", answers)
+    expect(applying(before)).toContain("9903.94.01")
+    expect(round(before.totalDuty)).toBe(2750)
+    const after = calc("8703.23.01.90", "2025-11-01", "2.5%", answers)
+    expect(applying(after)).toContain("9903.94.61")
+    expect(round(after.totalDuty)).toBe(1500)
+  })
+
+  it("Korean upholstered furniture pays the general 25% before Nov 14, 2025", () => {
+    expect(applying(calc("9401.61.40.11", "2025-11-13", "Free"))).toContain("9903.76.02")
+    const after = calc("9401.61.40.11", "2025-11-14", "Free")
+    expect(applying(after)).toContain("9903.76.23")
+    expect(round(after.totalDuty)).toBe(1500)
+  })
+
+  it("keeps Rev 31's text: 9903.01.25 excepts 9903.02.56, and 9903.94.01 doesn't name the Korea headings", () => {
+    const baseline = recordOn("9903.01.25", "2025-11-13")
+    expect(baseline.exceptions).toContain("9903.02.56")
+    expect(baseline.exceptions).not.toContain("9903.02.79")
+    expect(baseline.description.includes("9903.02.02–9903.02.78")).toBe(true)
+    expect(recordOn("9903.94.01", "2025-10-31").description.includes("9903.94.60")).toBe(false)
+    // Correction: the verified record's text predated Rev 32; from Nov 1 it names .60 and .61
+    expect(recordOn("9903.94.01", "2025-11-01").description.includes("9903.94.60, and 9903.94.61")).toBe(true)
+  })
+
+  it("is first verified from 2025HTSRev31, Nov 28, 2025", () => {
+    expect(getVerifiedRevisions()[0].name).toBe("2025HTSRev31")
+    expect(getVerifiedRevisions()[0].from).toBe("2025-11-28")
   })
 })

@@ -241,6 +241,20 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 8: 2025 Rev 31 backfilled: the U.S.-Korea deal
+
+- **Verified from Nov 28, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev31/PLAN.md`. Every change is the Commerce/USTR notice (90 FR 55964, Dec 4, 2025), retroactive. Rev 31 dates already get the deal.
+- **Part A, Nov 1, 2025:**
+  - 9903.94.60–.65 (Korea vehicles and parts) start;
+  - 9903.94.01, .05 and .07 keep Rev 31's text before then (`232-autos.ts`).
+- **Part B, Nov 14, 2025:**
+  - 9903.02.79–.81 and 9903.76.23 start;
+  - 9903.02.56 (Korea reciprocal +15%) is added back, ending then;
+  - 9903.76.02/.03 include Korea before then (notes 37(c)/(e));
+  - 9903.01.25's earlier version has Rev 31's text ("…–9903.02.78") and excepts .56.
+- **Correction (text only):** the verified 9903.94.01 description predated Rev 32. It now names 9903.94.60 and .61, from Nov 1, 2025.
+- **Sweep:** 3,765 of 160,758 results changed, all Korean goods before Nov 14, 2025.
+
 ## Oct 8: 2025 Rev 32 backfilled; Section 301 Nicaragua added
 
 - **Verified from Dec 5, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev32/PLAN.md`. Basic's cumulative change record was cut to its own 39 rows (`ownEditionRows`).
