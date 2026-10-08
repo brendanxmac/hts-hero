@@ -2032,9 +2032,11 @@ describe("engine-v2 real data: 2025HTSRev32 backfill (Switzerland and Liechtenst
     expect(recordOn("9903.01.25", "2025-11-14").exceptions).toContain("9903.02.82")
   })
 
-  it("9903.02.74–.77 keep Rev 32's cross-references until Jan 1, 2026", () => {
-    expect(recordOn("9903.02.74", "2025-12-20").description.includes("(v)(xvi) of")).toBe(true)
-    expect(recordOn("9903.02.74", "2026-01-01").description.includes("(v)(xix) of")).toBe(true)
+  it("9903.02.74–.77 take Proclamation 10999's corrected cross-references from Oct 14 and Nov 1, 2025", () => {
+    expect(recordOn("9903.02.74", "2025-10-13").description.includes("(v)(xvi) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2025-10-14").description.includes("(v)(xvii) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2025-11-01").description.includes("(v)(xix) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2025-12-20").description.includes("(v)(xix) of")).toBe(true)
     expect(recordOn("9903.02.74", "2026-01-15").description.includes("(v)(xx) of")).toBe(true)
   })
 

@@ -248,7 +248,10 @@ Made alongside the v2 changes so both calculators agree:
   - 9903.02.82–.91 start then;
   - 9903.02.58 (Switzerland 39%) and 9903.02.36 (Liechtenstein 15%) are added back, ending Nov 14;
   - 9903.01.25 has an earlier version whose exceptions include them, built from `BASELINE` in `ieepa-2026.ts`.
-- **9903.02.74–.77:** the Rev 32 cross-references apply until Jan 1, 2026 (PP 10999; the date is from the change record, accepted by the user). Added in `2026-basic-text.ts`.
+- **9903.02.74–.77 cross-references:** Proclamation 10999's Annex II corrected them in two retroactive steps, Oct 14 and Nov 1, 2025 (in `2026-basic-text.ts`).
+  - The dates come from Annex II's scanned pages, read by the independent date check and confirmed.
+  - The change record's Jan 1, 2026 is wrong.
+  - Rev 32 dates show Basic's citations.
 - **Already right:** note 31(b)/(f) Jan 1 moves (`china31b`, `china31f`).
 - **Section 301 Nicaragua** (new program `301-nicaragua`, `data/headings/301-nicaragua.ts`): 9903.89.01 at 0% (2026), 10% (2027) and 15% (2028+), not with a CAFTA-DR claim (U.S. note 29; USTR, 90 FR 57807).
 - **Sweep:** 3,884 of 153,888 results changed. They're all Switzerland/Liechtenstein on Nov 13, 2025 and Nicaragua in 2027; no verified date changed.
