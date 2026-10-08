@@ -241,6 +241,10 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 8: 2026 Rev 1 verified, with no chapter 99 changes
+
+- **Verified from Jan 16, 2026.** Rev 2's change record has no chapter 99 entries, and USITC's archived Rev 1 and Rev 2 chapter 99 PDFs are word-for-word identical (756 pages and 318,730 words each). No records were added; Rev 2's records hold. This was verified without a revision-checker comparison (decided by the user); the evidence is in `tariffs/revision-diffs/2026HTSRev1/PLAN.md`.
+
 ## Oct 8: 2026 Rev 2 backfilled: IEEPA India (branch `backfill/2026HTSRev2`)
 
 - **Verified from Jan 30, 2026.** `VerifiedTariffRevisions` now starts with "2026HTSRev2". Plan: `tariffs/revision-diffs/2026HTSRev2/PLAN.md`.

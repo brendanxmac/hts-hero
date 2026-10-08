@@ -1938,7 +1938,26 @@ describe("engine-v2 real data: IEEPA India (2026HTSRev2 backfill)", () => {
     expect(applying(r)).not.toContain("9903.01.84")
   })
 
-  it("is first verified from 2026HTSRev2", () => {
-    expect(getVerifiedRevisions()[0].name).toBe("2026HTSRev2")
+  it("2026HTSRev2 is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSRev2")
+  })
+})
+
+// 2026HTSRev1 (Jan 16–29, 2026): Rev 2's change record has no chapter 99 changes, and USITC's
+// archived chapter 99 PDFs for Rev 1 and Rev 2 are word-for-word identical, so Rev 2's records
+// already hold. See PROGRESS.md (Oct 8).
+describe("engine-v2 real data: 2026HTSRev1 verified (no chapter 99 changes)", () => {
+  it("is first verified from 2026HTSRev1, Jan 16, 2026", () => {
+    expect(getVerifiedRevisions()[0].name).toBe("2026HTSRev1")
+    expect(getVerifiedRevisions()[0].from).toBe("2026-01-16")
+  })
+
+  it("India's 25% applies in Rev 1 too", () => {
+    const r = calculate(AllRules, {
+      htsCode: "6109.10.00.12", country: "IN", asOf: "2026-01-20", customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "16.5%", special: null, other: null },
+    })
+    expect(applying(r)).toEqual(["9903.01.84", "9903.02.26"])
+    expect(round(r.totalDuty)).toBe(6650)
   })
 })
