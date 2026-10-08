@@ -4,7 +4,7 @@ import { parseCh99Json } from "../../libs/hts-revision-diff/parse-ch99-json"
 import { codeChanges, diffCodes, diffNotes, diffSharedCodes } from "../../libs/hts-revision-diff/diff"
 import { buildChanges } from "../../libs/hts-revision-diff/build-changes"
 import { wordDiff, renderWordDiff } from "../../libs/hts-revision-diff/word-diff"
-import { extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/text"
+import { detectRevision, extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/text"
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
 import { readFileSync } from "fs"
 import { parseCh99HeadingTables, takeTrailingMarkers } from "../../libs/hts-revision-diff/parse-ch99-tables"
@@ -957,5 +957,29 @@ describe("checking some heading rows with Claude", () => {
       { id: "d", page: 3, order: 3 },
     ]
     expect(orderRowsByPage(rows)).toEqual(["a", "c", "b", "x", "d"])
+  })
+})
+
+describe("Revision detection", () => {
+  it("reads a revision's title and the revision its change record follows", () => {
+    expect(detectRevision("# Harmonized Tariff Schedule of the United States (2026 Revision 3)\n\nThe modifications … reflect updates made to the HTS after 2026 Revision 2, published February 1, 2026.")).toEqual({
+      name: "2026HTSRev3",
+      previous: "2026HTSRev2",
+    })
+    expect(detectRevision("Harmonized Tariff Schedule of the United States Revision 2 (2026)").name).toBe("2026HTSRev2")
+  })
+
+  it("reads a Basic edition from its bare-year title", () => {
+    expect(detectRevision("# Harmonized Tariff Schedule of the United States (2026)\n\nAnnotated for Statistical Reporting Purposes").name).toBe("2026HTSBasic")
+  })
+
+  it("doesn't take a Basic change record's earlier edition as its name or the revision it follows", () => {
+    // 2026 Basic's change record is cumulative since the last printed edition
+    const head = "# Harmonized Tariff Schedule of the United States (2026)\n\nJanuary 1, 2026\n\n## Change Record\n\nThe modifications set forth in this change record reflect all of the updates made to the HTS since the last printed edition (2025 Basic Edition)."
+    expect(detectRevision(head)).toEqual({ name: "2026HTSBasic", previous: null })
+  })
+
+  it("reads the Basic edition a revision's change record follows", () => {
+    expect(detectRevision("# Harmonized Tariff Schedule of the United States (2026 Revision 1)\n\nupdates made to the HTS after the 2026 Basic Edition").previous).toBe("2026HTSBasic")
   })
 })
