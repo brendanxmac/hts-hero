@@ -29,6 +29,13 @@ export const getLatestVerifiedRevision = () => {
   return verified[verified.length - 1]
 }
 
+// The dates the verified revisions cover, first to last (`to` exclusive; none while the latest
+// revision is still in force)
+export const getVerifiedRange = () => {
+  const verified = getVerifiedRevisions()
+  return { from: verified[0].from, to: verified[verified.length - 1].to }
+}
+
 // True if `date` falls in a revision whose tariff data has been verified
 export const isVerifiedDate = (date: IsoDate) =>
   VerifiedTariffRevisions.includes(getRevisionForDate(date)?.name)
