@@ -453,7 +453,8 @@ const isCandidate = (
 const PIPELINE_BASES = new Set(["coveredBy", "metalContentCovered"])
 
 // A partial exception only displaces the value it covers (HowTariffsWork.md §6.5)
-const isPartial = (tariff: Tariff) => PIPELINE_BASES.has(tariff.basis?.kind)
+const PARTIAL_BASES = new Set([...Array.from(PIPELINE_BASES), "usContentPortion"])
+const isPartial = (tariff: Tariff) => PARTIAL_BASES.has(tariff.basis?.kind)
 
 // The metal content covered by a partial exemption (handlers.ts, "metalContentCovered"): the
 // full value if any trigger outside `content` applies, else the content of each metal whose

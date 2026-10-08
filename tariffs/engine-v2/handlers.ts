@@ -162,6 +162,25 @@ register(basisHandlers, "metalContentInChapters", {
     `${String(p.metal)} content value (chapter ${(p.chapters as string[]).join(", ")}), full value otherwise`,
 })
 
+// The U.S. content of the article, when it's at least `minPct` percent of the value; nothing
+// otherwise. A partial exemption: the headings it displaces still apply to the rest. U.S. note
+// 2(v)(xvii) (IEEPA reciprocal, heading 9903.01.34): the duty "shall apply only to the non-U.S.
+// content", for articles whose U.S. content is at least 20 percent of the customs value.
+register(basisHandlers, "usContentPortion", {
+  inputs: () => ["usContentPct"],
+  value: (p, ctx) => {
+    const answer = ctx.answers.usContentPct
+    if (answer === undefined || answer === null || answer === "") return "unknown"
+    const pct = Math.min(Math.max(Number(answer), 0), 100)
+    return pct >= Number(p.minPct) ? (ctx.customsValue * pct) / 100 : 0
+  },
+  describe: (p) => `U.S. content, when at least ${String(p.minPct)}% of the value`,
+  explain: (p, ctx, basisValue) =>
+    basisValue > 0
+      ? `Covers the U.S. content (${Number(ctx.answers.usContentPct)}% of the value)`
+      : `U.S. content is under ${String(p.minPct)}% of the value, so nothing is covered`,
+})
+
 // Resolved by the pipeline, for a partial exemption: the content of each metal whose listed
 // headings apply (`content`: [{ codes, metal }]), capped at the customs value; the full value
 // when a trigger outside `content` applies. U.S. note 2(aa)(v) before April 6, 2026: Section 122

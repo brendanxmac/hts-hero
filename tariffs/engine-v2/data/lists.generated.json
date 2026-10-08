@@ -14704,12 +14704,12 @@
      "8517.62.00",
      "9401.69.60",
      "9401.71.00",
-     "6307.90.98",
-     "8507.60.00"
+     "6307.90.98"
     ],
     "effective": {},
     "source": {
-     "revision": "2026HTSRev5"
+     "revision": "2026HTSRev5",
+     "note": "8507.60.00 removed (Oct 2026 correction): U.S. note 20(s)(i)–(ii) doesn't list it in any revision from 2026HTSRev3 to Rev20; lithium-ion batteries are in note 31 (9903.91.06)"
     }
    }
   ]
@@ -14736,12 +14736,12 @@
      "6307.90.98.44",
      "6307.90.98.50",
      "6307.90.98.70",
-     "6307.90.98.75",
-     "8507.60.00.10"
+     "6307.90.98.75"
     ],
     "effective": {},
     "source": {
-     "revision": "2026HTSRev5"
+     "revision": "2026HTSRev5",
+     "note": "8507.60.00.10 removed with 8507.60.00 (Oct 2026 correction)"
     }
    }
   ]

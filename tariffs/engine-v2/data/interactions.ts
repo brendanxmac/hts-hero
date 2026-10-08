@@ -126,6 +126,9 @@ const notOnSemiconductors = [
   ...["9903.74.01", "9903.74.02", "9903.74.03", "9903.74.08", "9903.74.09"],
   ...headingRange("9903.01.24", "9903.01.76"),
   ...headingRange("9903.02.01", "9903.02.71"),
+  // U.S. note 2(v)(xvi) also names the Japan, Korea, Switzerland and Liechtenstein deal headings
+  // (2026HTSRev3); both notes apply
+  ...["9903.02.72", "9903.02.73", "9903.02.80", "9903.02.83", "9903.02.88"],
 ]
 
 // U.S. notes 33(a)(2)–(3), 33(f)(2)–(3), 33(p)(iii)(2)–(3), 33(r)(iii)(2)–(3), 38(a)(2)–(3),
@@ -323,15 +326,53 @@ export const interactions: Interaction[] = [
     description:
       "IEEPA duties on goods of Canada (9903.01.10) and Mexico (9903.01.01) don't apply to vehicles, parts and semiconductors under their Section 232 headings (U.S. notes 33, 38 and 39)",
     order: [
-      { codes: caMxExcludedFor },
+      {
+        codes: [
+          ...caMxExcludedFor,
+          // U.S. notes 16(i) and (k), 19(f) and (h) (2026HTSRev3): steel, steel derivative,
+          // aluminum and aluminum derivative products "shall not be subject to" 9903.01.10 or
+          // 9903.01.01. 16(i)'s sentence names only 9903.81.87; its lead-in covers .88 too
+          ...[
+            "9903.81.87",
+            "9903.81.88",
+            "9903.81.89",
+            "9903.81.90",
+            "9903.81.91",
+            "9903.81.93",
+          ],
+          ...["9903.85.02", "9903.85.04", "9903.85.07", "9903.85.08"],
+        ],
+      },
       { codes: ["9903.01.10", "9903.01.01"] },
     ],
     // Ends with the IEEPA duties it ranks: no IEEPA duty for entries on or after Feb 24, 2026
-    // (EO 14389; CSMS # 67834313). Its start comes with the backfill.
+    // (EO 14389; CSMS # 67834313). Its start comes with later backfill steps.
     effective: { to: "2026-02-24" },
-    source: correction(
-      "U.S. notes 33(a), (f), (p)(iii), (r)(iii), 38(a), (h) and 39(a)(6)–(7). 9903.01.10 and 9903.01.01 aren't in the data yet (ended Feb 24, 2026: EO 14389; CSMS # 67834313), so this has no effect until they're backfilled",
-    ),
+    source: {
+      revision: "2026HTSRev3",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "U.S. notes 33(a), (f), (p)(iii), (r)(iii), 38(a), (h), 39(a)(6)–(7), 16(i), (k) and 19(f), (h). Backfilled with the IEEPA headings (2026HTSRev3); IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026",
+    },
+  },
+  {
+    id: "ieepa-ca-mx-not-on-232-wood",
+    kind: "noStack",
+    description:
+      "IEEPA duties on goods of Mexico (9903.01.01) and Canada (9903.01.10, 9903.01.16) don't apply to Section 232 wood products under 9903.76.01–9903.76.03 (U.S. notes 2(a), 2(j) and 2(m))",
+    order: [
+      { codes: ["9903.76.01", "9903.76.02", "9903.76.03"] },
+      { codes: ["9903.01.01", "9903.01.10", "9903.01.16"] },
+    ],
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev3",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "U.S. notes 2(a), (j) and (m) except products described in 9903.76.01–.03; potash (2(c), 2(l)) and energy aren't covered. Backfilled with the IEEPA headings (2026HTSRev3); IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026",
+    },
   },
   {
     id: "232-wood-not-on-auto-mhdv-parts",

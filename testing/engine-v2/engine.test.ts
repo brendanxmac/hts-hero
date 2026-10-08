@@ -232,6 +232,30 @@ describe("engine-v2: metalContentCovered basis (note 2(aa)(v) before April 6, 20
   })
 })
 
+describe("engine-v2: usContentPortion basis (note 2(v)(xvii), 9903.01.34)", () => {
+  const set = rules({
+    inputs: [{ id: "usContentPct", label: "U.S. content", type: "percent" }],
+    tariffs: [
+      tariff({ code: "RECIPROCAL", exceptions: ["US-CONTENT"], rate: { kind: "adValorem", pct: 20 } }),
+      tariff({ code: "US-CONTENT", basis: { kind: "usContentPortion", minPct: 20 }, rate: { kind: "free" } }),
+    ],
+  })
+  const run = (usContentPct?: number) => calculate(set, input({ answers: usContentPct === undefined ? {} : { usContentPct } }))
+  it("leaves the duty on the non-U.S. content when U.S. content is at least 20%", () => {
+    expect(line(run(30), "US-CONTENT").basisValue).toBe(3000)
+    expect(line(run(30), "RECIPROCAL").amount).toBe(1400) // 20% of 7,000
+    expect(line(run(20), "RECIPROCAL").amount).toBe(1600) // at the threshold
+  })
+  it("covers nothing under 20%", () => {
+    expect(line(run(10), "RECIPROCAL").amount).toBe(2000)
+    expect(line(run(10), "US-CONTENT").status).toBe("excluded")
+  })
+  it("needs an answer when U.S. content isn't given; the duty applies in full", () => {
+    expect(line(run(), "US-CONTENT").status).toBe("needsAnswer")
+    expect(line(run(), "RECIPROCAL").amount).toBe(2000)
+  })
+})
+
 describe("engine-v2: conditions", () => {
   const set = rules({
     tariffs: [

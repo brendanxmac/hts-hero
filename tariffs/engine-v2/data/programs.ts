@@ -63,4 +63,13 @@ export const programs: Program[] = [
   { id: "deal-eu", name: "U.S.–EU Framework Agreement", authority: "IEEPA", tradeDeal: true },
   { id: "deal-jp", name: "U.S.–Japan Agreement", authority: "IEEPA", tradeDeal: true },
   { id: "deal-kr", name: "U.S.–Korea Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-ch", name: "U.S.–Switzerland Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-li", name: "U.S.–Liechtenstein Agreement", authority: "IEEPA", tradeDeal: true },
+  // IEEPA duties, all ended for entries on or after Feb 24, 2026 (EO 14389; CSMS # 67834313).
+  // Their authority stays "IEEPA" so refunds can find them (REFUNDS.md).
+  { id: "ieepa-fentanyl-mx", name: "IEEPA – Mexico (Fentanyl and Migration)", authority: "IEEPA" },
+  { id: "ieepa-fentanyl-ca", name: "IEEPA – Canada (Fentanyl)", authority: "IEEPA" },
+  { id: "ieepa-fentanyl-cn", name: "IEEPA – China and Hong Kong (Fentanyl)", authority: "IEEPA" },
+  { id: "ieepa-reciprocal", name: "IEEPA – Reciprocal Tariffs", authority: "IEEPA" },
+  { id: "ieepa-brazil", name: "IEEPA – Brazil", authority: "IEEPA" },
 ]

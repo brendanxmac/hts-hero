@@ -241,6 +241,29 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 8: 2026 Rev 3 backfilled, with the IEEPA snapshot (branch `backfill/2026HTSRev3`)
+
+Verified data now starts at 2026HTSRev3 (Feb 12, 2026). See `tariffs/revision-diffs/2026HTSRev3/PLAN.md`.
+- **The Rev 4 change record needed no before-records.** It deleted de minimis and postal sentences, added Section 122 (already modeled) and marked the expired solar safeguard.
+- **IEEPA, as in force Feb 12–23, 2026** (completeness bar). 106 headings in `data/headings/ieepa-2026.ts` and lists in `data/lists/ieepa-2026.ts`, all ending 2026-02-24 (EO 14389; CSMS # 67834313):
+  - fentanyl duties on Mexico, Canada and China/HK, with their exemptions;
+  - the reciprocal 10% baseline (China too: its 34% is suspended), its exemptions, the 64 country rates and 40% transshipment;
+  - Brazil's 40% and its exemptions;
+  - the Swiss and Liechtenstein deals.
+  - All programs have authority IEEPA (for refunds).
+- **Lists from CBP guidance**, since the notes have none: potash (CSMS # 64336037 and # 64335789, the same 9 subheadings) and Canadian energy (CSMS # 65054354, 413 codes).
+- **New basis `usContentPortion`** (partial): 9903.01.34 spares the U.S. content when it is at least 20%.
+- **9903.01.33** reuses `metalContentCovered`: steel and aluminum articles pay on the non-metal content; copper, autos, wood, MHDV and semiconductors are fully exempt.
+- **EU/Japan/Korea deal records fixed for February:**
+  - exceptions follow the Rev 3 text (Section 232 goods through 9903.01.33, not the post-April 9903.82 headings);
+  - descriptions cite the right subdivisions;
+  - 9903.02.78 moved to `ieepa-reciprocal`.
+- **Interactions:** Canada/Mexico IEEPA drops for the old metals headings (notes 16 and 19) and for Section 232 wood; the semiconductor rule adds the deal headings named in 2(v)(xvi).
+- **Correction to verified data:** 9903.88.15 no longer lists 8507.60.00. Note 20(s) never did; the batteries are in note 31.
+- **Checks:**
+  - invariant sweep: 2,515 codes × 15 countries (113,175 calculations), 0 problems;
+  - every result from Feb 24 on unchanged: 113,175 compared, 0 differences.
+
 ## Oct 7: 2026 Rev 4 backfilled (branch `backfill/2026HTSRev4`)
 
 The first backward step. Verified data now starts at 2026HTSRev4 (Feb 25, 2026). See `tariffs/revision-diffs/2026HTSRev4/PLAN.md`.

@@ -1536,7 +1536,7 @@ describe("engine-v2 real data: 2026 Rev 4 (before Proclamation 11021)", () => {
   const status = (result: CalculationResult, code: string) => result.lines.find((l) => l.code === code)?.status
 
   it("is a verified revision", () => {
-    expect(getVerifiedRevisions()[0].name).toBe("2026HTSRev4")
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSRev4")
   })
 
   it("steel mill product (16(j)): 9903.81.87 at 50% of the full value until April 5, then 9903.82.02", () => {
@@ -1709,5 +1709,124 @@ describe("engine-v2 real data: 2026 Rev 4 (before Proclamation 11021)", () => {
 
   it("non-metal goods are unchanged across April 6", () => {
     expect(calc("0711.90.30.00", "DE", BEFORE, "8%").totalDuty).toBe(calc("0711.90.30.00", "DE", "2026-04-10", "8%").totalDuty)
+  })
+})
+
+// ============================================================
+// 2026 Rev 3 (Feb 12 – Feb 25, 2026): the IEEPA duties until they ended on Feb 24, 2026
+// (EO 14389; CSMS # 67834313). $10,000, 100 units.
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 3 (IEEPA, until Feb 24, 2026)", () => {
+  const BEFORE = "2026-02-20"
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}, claimedPreference?: string) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: claimedPreference ? `Free (${claimedPreference})` : null, other: null },
+      answers, claimedPreference,
+    })
+  const amount = (result: CalculationResult, code: string) => round(result.lines.find((l) => l.code === code)?.amount ?? 0)
+  const ieepa = (result: CalculationResult) => applying(result).filter((c) => /^9903\.0[12]\./.test(c))
+  const TEXTILE = "6307.90.98.70" // 7%, not on the Annex II list
+
+  it("is a verified revision", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSRev3")
+  })
+
+  it("Chinese steel hardware: fentanyl 10%, reciprocal 10% on the non-steel content; Section 122 from Feb 24", () => {
+    const before = calc("7326.90.86.88", "CN", BEFORE, "2.9%", { steelContentPct: 60 })
+    expect(amount(before, "9903.01.24")).toBe(1000)
+    expect(amount(before, "9903.01.25")).toBe(400) // 10% of the $4,000 non-steel content (2(v)(vii))
+    expect(amount(before, "9903.81.90")).toBe(3000)
+    expect(round(before.totalDuty)).toBe(7190)
+    const after = calc("7326.90.86.88", "CN", "2026-02-24", "2.9%", { steelContentPct: 60 })
+    expect(ieepa(after)).toEqual([])
+    expect(round(after.totalDuty)).toBe(6190)
+  })
+
+  it("ends on Feb 24: Feb 23 still pays IEEPA, Feb 24 pays Section 122 instead", () => {
+    expect(amount(calc(TEXTILE, "VN", "2026-02-23", "7%"), "9903.02.69")).toBe(2000)
+    const after = calc(TEXTILE, "VN", "2026-02-24", "7%")
+    expect(ieepa(after)).toEqual([])
+    expect(amount(after, "9903.03.01")).toBe(1000)
+  })
+
+  it("country rates and the 10% baseline", () => {
+    expect(amount(calc(TEXTILE, "VN", BEFORE, "7%"), "9903.02.69")).toBe(2000)
+    expect(amount(calc(TEXTILE, "IN", BEFORE, "7%"), "9903.02.26")).toBe(2500) // India's Russian-oil 25% ended Feb 7
+    expect(amount(calc(TEXTILE, "GB", BEFORE, "7%"), "9903.02.66")).toBe(1000)
+    expect(amount(calc(TEXTILE, "SG", BEFORE, "7%"), "9903.01.25")).toBe(1000)
+    // China's 34% (9903.01.63) is suspended, so China pays the baseline plus fentanyl; Macau only the baseline
+    expect(ieepa(calc(TEXTILE, "CN", BEFORE, "7%"))).toEqual(["9903.01.24", "9903.01.25"])
+    expect(ieepa(calc(TEXTILE, "MO", BEFORE, "7%"))).toEqual(["9903.01.25"])
+  })
+
+  it("deals top up to 15% including the base rate; 15% or more pays nothing extra", () => {
+    for (const [country, code] of [["DE", "9903.02.20"], ["JP", "9903.02.73"], ["KR", "9903.02.80"], ["CH", "9903.02.83"], ["LI", "9903.02.88"]]) {
+      const v2 = calc(TEXTILE, country, BEFORE, "7%")
+      expect(ieepa(v2)).toEqual([code])
+      expect(amount(v2, code)).toBe(800)
+    }
+    expect(ieepa(calc("6109.10.00.12", "JP", BEFORE, "16.5%"))).toEqual(["9903.02.72"])
+  })
+
+  it("Brazil: 40% plus its 10% reciprocal; Section 232 goods are exempt from the 40% in full", () => {
+    expect(ieepa(calc(TEXTILE, "BR", BEFORE, "7%"))).toEqual(["9903.01.77", "9903.02.09"])
+    expect(round(calc(TEXTILE, "BR", BEFORE, "7%").totalDuty)).toBe(5700)
+    const hardware = calc("7326.90.86.88", "BR", BEFORE, "2.9%", { steelContentPct: 60 })
+    expect(applying(hardware)).toContain("9903.01.83")
+    expect(amount(hardware, "9903.01.77")).toBe(0)
+    expect(amount(hardware, "9903.02.09")).toBe(400) // the reciprocal still applies to the non-steel content
+  })
+
+  it("Canada and Mexico: 35% / 25%, 10% on energy and potash, nothing under USMCA, nothing on 232 steel or wood", () => {
+    expect(amount(calc(TEXTILE, "CA", BEFORE, "7%"), "9903.01.10")).toBe(3500)
+    expect(amount(calc("2709.00.20.10", "CA", BEFORE, "Free"), "9903.01.13")).toBe(1000)
+    expect(amount(calc("3104.20.00.10", "CA", BEFORE, "Free"), "9903.01.15")).toBe(1000)
+    expect(amount(calc("3104.20.00.10", "MX", BEFORE, "Free"), "9903.01.05")).toBe(1000)
+    expect(amount(calc(TEXTILE, "MX", BEFORE, "7%"), "9903.01.01")).toBe(2500)
+    expect(ieepa(calc(TEXTILE, "CA", BEFORE, "7%", {}, "S"))).toEqual(["9903.01.14", "9903.01.26"])
+    // Note 16(i): no fentanyl duty on Section 232 steel; the reciprocal doesn't apply to Mexico
+    const steel = calc("7208.51.00.30", "MX", BEFORE, "Free", { steelContentPct: 100 })
+    expect(applying(steel)).not.toContain("9903.01.01")
+    expect(round(steel.totalDuty)).toBe(5000)
+    // Note 2(j): no 9903.01.10 on Section 232 wood
+    expect(applying(calc("9401.61.40.11", "CA", BEFORE, "Free"))).not.toContain("9903.01.10")
+    // Transshipped goods: 40% in lieu of 35%
+    const transshipped = calc(TEXTILE, "CA", BEFORE, "7%", { "confirm:9903.01.16": true })
+    expect(ieepa(transshipped)).toEqual(["9903.01.16", "9903.01.26"])
+  })
+
+  it("exemptions: Annex II, donations, Column 2 countries, U.S. content of 20% or more", () => {
+    expect(ieepa(calc("8471.30.01.00", "VN", BEFORE, "Free"))).toEqual(["9903.01.32"])
+    expect(applying(calc(TEXTILE, "CN", BEFORE, "7%", { isDonation: true })).filter((c) => ["9903.01.24", "9903.01.25"].includes(c))).toEqual([])
+    expect(ieepa(calc(TEXTILE, "RU", BEFORE, "7%"))).toEqual(["9903.01.29"])
+    expect(amount(calc(TEXTILE, "VN", BEFORE, "7%", { usContentPct: 30 }), "9903.02.69")).toBe(1400) // 20% of $7,000
+    expect(amount(calc(TEXTILE, "VN", BEFORE, "7%", { usContentPct: 10 }), "9903.02.69")).toBe(2000)
+  })
+
+  it("transshipment (9903.02.01): 40% in lieu of the country rate", () => {
+    const v2 = calc(TEXTILE, "VN", BEFORE, "7%", { "confirm:9903.02.01": true })
+    expect(ieepa(v2)).toEqual(["9903.02.01"])
+    expect(amount(v2, "9903.02.01")).toBe(4000)
+  })
+
+  it("EU steel hardware: the deal top-up applies to the non-steel content only", () => {
+    const v2 = calc("7326.90.86.88", "DE", BEFORE, "2.9%", { steelContentPct: 60 })
+    expect(amount(v2, "9903.02.20")).toBe(484) // (15% − 2.9%) of $4,000
+  })
+
+  // Correction (Oct 2026): 9903.88.15 (List 4A, 7.5%) listed 8507.60.00, which U.S. note 20(s)
+  // doesn't in any revision (Rev 3 to Rev 20); lithium-ion batteries are in note 31 (9903.91.06)
+  it("Chinese lithium-ion batteries don't pay the List 4A 7.5% (9903.88.15)", () => {
+    for (const asOf of [BEFORE, "2026-04-10", "2026-08-01"]) {
+      expect(applying(calc("8507.60.00.20", "CN", asOf, "3.4%"))).not.toContain("9903.88.15")
+    }
+  })
+
+  it("Section 232 autos and semiconductors don't pay the reciprocal duty; China's fentanyl duty still applies to autos", () => {
+    const part = calc("8708.10.30.50", "CN", BEFORE, "2.5%", { steelContentPct: 50, "confirm:9903.94.05": true })
+    expect(applying(part)).toContain("9903.01.24")
+    expect(applying(part)).not.toContain("9903.01.25")
+    expect(ieepa(calc("8471.50.01.50", "TW", BEFORE, "Free", { "confirm:9903.79.01": true })).filter((c) => c !== "9903.01.32")).toEqual([])
   })
 })
