@@ -1,5 +1,5 @@
 // Section 301 – Forced Labor: U.S. note 52 to subchapter III and headings 9903.05.20–9903.06.21,
-// from 2026HTSRev13 (Notice effective 2026-07-24, replacing Section 122, which expired at the
+// from 2026HTSRev13 (USTR notice, 91 FR 47318, effective 2026-07-24, replacing Section 122, which expired at the
 // close of July 23). Country rates (9903.05.20–.84) with exemptions (9903.05.85–9903.06.21); the
 // structure copies Section 122's note 2(aa). Generated from the revision's reviewed heading text
 // (tariffs/revision-diffs/2026HTSRev13/headings.md), then checked. See HowTariffsWork.md §6.
@@ -17,7 +17,15 @@ import {
 
 const PROGRAM = "301-forced-labor";
 const FROM = "2026-07-24";
-const SOURCE = { revision: "2026HTSRev13", citation: "Notice" };
+// "applicable with respect to products that are entered for consumption, or withdrawn from
+// warehouse for consumption, on or after 12:01 a.m. eastern time on July 24, 2026" (dockets
+// USTR-2026-0265 and USTR-2026-0266)
+const SOURCE = {
+  revision: "2026HTSRev13",
+  citation: "USTR, Notice of Actions in Section 301 Investigations (forced labor), 91 FR 47318",
+  url: "https://www.govinfo.gov/content/pkg/FR-2026-07-28/html/2026-15181.htm",
+  publishedOn: "2026-07-28",
+};
 
 export const headings: Tariff[] = [
   {
