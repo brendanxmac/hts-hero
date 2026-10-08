@@ -29,7 +29,7 @@ export const RateHistoryCard = ({
   onHighlight?: (label: string | null) => void;
 }) => {
   const { history, historyRange, customsValue, entryDate } = f;
-  const [metric, setMetric] = useState<Metric>("usd");
+  const [metric, setMetric] = useState<Metric>("pct");
 
   const layers = useMemo(() => layersFor(history, sliceColors), [history, sliceColors]);
 
@@ -65,8 +65,8 @@ export const RateHistoryCard = ({
           label="Show duty as"
           size="sm"
           options={[
-            { id: "usd", label: "$", title: "Dollars" },
             { id: "pct", label: "%", title: "Percent of value" },
+            { id: "usd", label: "$", title: "Dollars" },
           ] as const}
           value={metric}
           onChange={setMetric}

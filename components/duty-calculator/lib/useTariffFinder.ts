@@ -217,6 +217,9 @@ export const useTariffFinder = ({
   const codeParam = searchParams.get("code");
   const landing = useRef<{ arrival: Arrival; linkedFrom: CalculatorLinkSource | null } | null>(null);
   const landingCodeHandled = useRef(false);
+  // The page opened on a code from a link (not a reload or going back, where the browser puts
+  // the scroll back itself), so the page can bring its results into view
+  const [deepLinked, setDeepLinked] = useState(false);
   useEffect(() => {
     if (landing.current) return;
     const arrival = calculatorArrival();
@@ -252,6 +255,7 @@ export const useTariffFinder = ({
     if (match) {
       setShowExplore(false);
       selectElement(match, linkedFrom ?? (onLanding && returning ? arrival : "url"));
+      if (onLanding && !returning) setDeepLinked(true);
     }
     // A deep link is a link into the calculator: not a reload of the page's own address, not
     // going back to it, and not a code picked in the explorer over the calculator
@@ -577,6 +581,7 @@ export const useTariffFinder = ({
     // Inputs
     loading,
     codeParam,
+    deepLinked,
     selectedElement,
     selectElement,
     countries,
