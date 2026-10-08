@@ -230,6 +230,7 @@ interface Tariff extends Dated {
 **Titles (`name`).** They're for importers, not lawyers:
 
 - Start with the program ("Section 232 Autos:", "Section 301 China:"), with "Exemption:" for exemptions ("Exclusion:" for USTR's Section 301 exclusions).
+- Lines for one country's goods say "of" or "from" ("Parts of Japan"). Spell out country names (United Kingdom, European Union, United States); keep agreement and agency acronyms people know by name (USMCA, CAFTA-DR, IEEPA, USTR).
 - No note citations ("20 (e) and (f)"): the line's legal text shows them. Name what the heading covers ("List 3", "Solar Cells").
 - No rates or effective dates: the Rate column and `effective` show those, and they change between versions. Keep thresholds that define the line ("Base Duty 15% or More", "85%+ U.S. Metal") and dates you have to check ("Loaded Before Feb 24").
 - Caps say "(15% Including Base Duty)", and the paired line says "(Base Duty 15% or More)".

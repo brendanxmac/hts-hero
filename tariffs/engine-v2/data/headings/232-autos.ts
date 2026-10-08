@@ -34,7 +34,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.02",
     program: "232-autos",
-    name: "Section 232 Autos Exemption: Not a Passenger Vehicle or Light Truck, or Approved U.S. Content",
+    name: "Section 232 Autos Exemption: Not a Passenger Vehicle or Light Truck, or Approved United States Content",
     description:
       "Effective with respect to entries on or after April 3, 2025, articles as provided for in subdivision (c) of U.S. note 33 to this subchapter.",
     scope: {
@@ -49,7 +49,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.03",
     program: "232-autos",
-    name: "Section 232 Autos: Non-U.S. Content of USMCA Vehicles (Commerce Approved)",
+    name: "Section 232 Autos: Foreign Content of USMCA Vehicles (Commerce Approved)",
     description:
       "Effective with respect to entries on or after April 3, 2025, certain passenger vehicles and light trucks, as provided for in subdivision (d) of U.S. note 33 to this subchapter.",
     scope: {
@@ -189,7 +189,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.94.07",
       program: "232-autos",
-      name: "Section 232 Auto Parts: For U.S. Vehicle Production or Repair",
+      name: "Section 232 Auto Parts: For Vehicle Production or Repair in the United States",
       description:
         "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54, 9903.94.55, 9903.94.64, and 9903.94.65, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter.",
       scope: {
@@ -261,7 +261,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.33",
     program: "232-autos",
-    name: "Section 232 Auto Parts: United Kingdom Parts for U.K. Vehicles",
+    name: "Section 232 Auto Parts: Parts of the United Kingdom for United Kingdom Vehicles",
     description:
       "Automobile parts the product of the United Kingdom as provided for in subdivision (q) of U.S. note 33 to this subchapter",
     scope: {
@@ -287,9 +287,9 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.44",
     program: "232-autos",
-    name: "Section 232 Auto Parts: EU, for U.S. Production or Repair (Base Duty 15% or More)",
+    name: "Section 232 Auto Parts: Parts of the European Union for United States Production or Repair (Base Duty 15% or More)",
     description:
-      "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
+      "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
       countries: [{ list: "eu-members" }],
       // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
@@ -313,7 +313,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.45",
     program: "232-autos",
-    name: "Section 232 Auto Parts: EU, for U.S. Production or Repair (15% Including Base Duty)",
+    name: "Section 232 Auto Parts: Parts of the European Union for United States Production or Repair (15% Including Base Duty)",
     description:
       "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
@@ -339,7 +339,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.54",
     program: "232-autos",
-    name: "Section 232 Auto Parts: Japan, for U.S. Production or Repair (Base Duty 15% or More)",
+    name: "Section 232 Auto Parts: Parts of Japan for United States Production or Repair (Base Duty 15% or More)",
     description:
       "Automobile parts the product of Japan with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
@@ -362,7 +362,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.55",
     program: "232-autos",
-    name: "Section 232 Auto Parts: Japan, for U.S. Production or Repair (15% Including Base Duty)",
+    name: "Section 232 Auto Parts: Parts of Japan for United States Production or Repair (15% Including Base Duty)",
     description:
       "Automobile parts the product of Japan with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
@@ -388,7 +388,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.64",
     program: "232-autos",
-    name: "Section 232 Auto Parts: South Korea, for U.S. Production or Repair (Base Duty 15% or More)",
+    name: "Section 232 Auto Parts: Parts of South Korea for United States Production or Repair (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (r) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -411,7 +411,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.65",
     program: "232-autos",
-    name: "Section 232 Auto Parts: South Korea, for U.S. Production or Repair (15% Including Base Duty)",
+    name: "Section 232 Auto Parts: Parts of South Korea for United States Production or Repair (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (r) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
@@ -437,7 +437,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.32",
     program: "232-autos",
-    name: "Section 232 Auto Parts: United Kingdom",
+    name: "Section 232 Auto Parts: Parts of the United Kingdom",
     description:
       "Effective with respect to entries on or after June 30, 2025, parts of passenger vehicles and light trucks of the United Kingdom, classified in the subheadings enumerated in subdivision (j) of U.S. note 33 to this subchapter",
     scope: {
@@ -459,7 +459,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.40",
     program: "232-autos",
-    name: "Section 232 Autos: Japan (Base Duty 15% or More)",
+    name: "Section 232 Autos: Vehicles of Japan (Base Duty 15% or More)",
     description:
       "Passenger vehicles and light trucks that are products of Japan as provided for in subdivision (k) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter",
     scope: {
@@ -475,7 +475,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.41",
     program: "232-autos",
-    name: "Section 232 Autos: Japan (15% Including Base Duty)",
+    name: "Section 232 Autos: Vehicles of Japan (15% Including Base Duty)",
     description:
       "Passenger vehicles and light trucks that are products of Japan provided for in subdivision (k) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
     scope: {
@@ -494,7 +494,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.42",
     program: "232-autos",
-    name: "Section 232 Auto Parts: Japan (Base Duty 15% or More)",
+    name: "Section 232 Auto Parts: Parts of Japan (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Japan as provided for subdivision (l) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
     scope: {
@@ -510,7 +510,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.43",
     program: "232-autos",
-    name: "Section 232 Auto Parts: Japan (15% Including Base Duty)",
+    name: "Section 232 Auto Parts: Parts of Japan (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Japan as provided for subdivision (l) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
     scope: {
@@ -529,7 +529,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.50",
     program: "232-autos",
-    name: "Section 232 Autos: European Union (Base Duty 15% or More)",
+    name: "Section 232 Autos: Vehicles of the European Union (Base Duty 15% or More)",
     description:
       "Passenger vehicles and light trucks that are products of the European Union as specified in subdivision (n) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1 equal to or greater than 15 percent.",
     scope: {
@@ -544,7 +544,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.51",
     program: "232-autos",
-    name: "Section 232 Autos: European Union (15% Including Base Duty)",
+    name: "Section 232 Autos: Vehicles of the European Union (15% Including Base Duty)",
     description:
       "Passenger vehicles and light trucks that are products of the European Union as specified in subdivision (n) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1 less than 15 percent",
     scope: {
@@ -562,7 +562,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.52",
     program: "232-autos",
-    name: "Section 232 Auto Parts: European Union (Base Duty 15% or More)",
+    name: "Section 232 Auto Parts: Parts of the European Union (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of the European Union as specified in subdivision (o) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1 equal to or greater than 15 percent.",
     scope: {
@@ -577,7 +577,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.53",
     program: "232-autos",
-    name: "Section 232 Auto Parts: European Union (15% Including Base Duty)",
+    name: "Section 232 Auto Parts: Parts of the European Union (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of the European Union as specified in subdivision (o) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column1 less than 15 percent.",
     scope: {
@@ -595,7 +595,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.60",
     program: "232-autos",
-    name: "Section 232 Autos: South Korea (Base Duty 15% or More)",
+    name: "Section 232 Autos: Vehicles of South Korea (Base Duty 15% or More)",
     description:
       "Passenger vehicles and light trucks that are products of South Korea as specified in subdivision (s) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -611,7 +611,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.61",
     program: "232-autos",
-    name: "Section 232 Autos: South Korea (15% Including Base Duty)",
+    name: "Section 232 Autos: Vehicles of South Korea (15% Including Base Duty)",
     description:
       "Passenger vehicles and light trucks that are products of South Korea as specified in subdivision (s) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
@@ -630,7 +630,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.62",
     program: "232-autos",
-    name: "Section 232 Auto Parts: South Korea (Base Duty 15% or More)",
+    name: "Section 232 Auto Parts: Parts of South Korea (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (g) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -646,7 +646,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.63",
     program: "232-autos",
-    name: "Section 232 Auto Parts: South Korea (15% Including Base Duty)",
+    name: "Section 232 Auto Parts: Parts of South Korea (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (g) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
@@ -665,7 +665,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.66",
     program: "232-autos",
-    name: "Section 232 Auto Parts: Taiwan (Base Duty 15% or More)",
+    name: "Section 232 Auto Parts: Parts of Taiwan (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Taiwan as provided for in subdivisions (g) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -684,7 +684,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.67",
     program: "232-autos",
-    name: "Section 232 Auto Parts: Taiwan (15% Including Base Duty)",
+    name: "Section 232 Auto Parts: Parts of Taiwan (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Taiwan as provided for in subdivisions (g) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
@@ -706,7 +706,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.68",
     program: "232-autos",
-    name: "Section 232 Auto Parts: Taiwan, for U.S. Production or Repair (Base Duty 15% or More)",
+    name: "Section 232 Auto Parts: Parts of Taiwan for United States Production or Repair (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Taiwan as specified in subdivisions (r) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -731,7 +731,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.69",
     program: "232-autos",
-    name: "Section 232 Auto Parts: Taiwan, for U.S. Production or Repair (15% Including Base Duty)",
+    name: "Section 232 Auto Parts: Parts of Taiwan for United States Production or Repair (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Taiwan as provided for in subdivisions (r) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {

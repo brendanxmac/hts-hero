@@ -167,7 +167,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.01",
     program: "301-china",
-    name: "Section 301 China: Steel, Aluminum, Critical Minerals and EV Batteries",
+    name: "Section 301 China: Steel, Aluminum, Critical Minerals and Electric Vehicle Batteries",
     description:
       "Effective with respect to entries on or after September 27, 2024, articles the product of China, as provided for in subdivision (b) of U.S. note 31 to this subchapter",
     scope: {

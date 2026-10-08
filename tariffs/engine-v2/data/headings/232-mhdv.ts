@@ -43,7 +43,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.03",
     program: "232-mhdv",
-    name: "Section 232 Trucks & Buses: Non-U.S. Content of USMCA Vehicles (Commerce Approved)",
+    name: "Section 232 Trucks & Buses: Foreign Content of USMCA Vehicles (Commerce Approved)",
     description:
       "Medium- and heavy-duty vehicles, as provided for in subdivision (d) of U.S. note 38 to this subchapter.",
     scope: {
@@ -73,7 +73,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.06",
     program: "232-mhdv",
-    name: "Section 232 Trucks & Buses Exemption: Approved U.S. Content",
+    name: "Section 232 Trucks & Buses Exemption: Approved United States Content",
     description:
       "Articles as provided for in subdivision (f) of U.S. note 38 to this subchapter.",
     scope: {
@@ -126,7 +126,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.09",
     program: "232-mhdv",
-    name: "Section 232 Trucks & Buses: Parts for U.S. Production or Repair",
+    name: "Section 232 Trucks & Buses: Parts for Production or Repair in the United States",
     description:
       "Medium- and heavy-duty vehicle parts, as provided for in subdivision (j) of U.S. note 38 to this subchapter.",
     scope: {

@@ -76,7 +76,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.62",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: EU, Japan, South Korea, Switzerland, Liechtenstein (15% Including Base Duty)",
+    name: "Section 232 Pharmaceuticals: Products of the European Union, Japan, South Korea, Switzerland or Liechtenstein (15% Including Base Duty)",
     description:
       "Patented pharmaceutical articles that are the product of Japan, of a European Union member country, of South Korea, of Switzerland, or of Liechtenstein as provided for in subdivisions (c) and (f) of U.S. note 40 to this subchapter",
     scope: {
@@ -93,7 +93,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.63",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: United Kingdom",
+    name: "Section 232 Pharmaceuticals: Products of the United Kingdom",
     description:
       "Patented pharmaceutical articles that are the product of the United Kingdom as defined in subdivisions (c) and (g) of U.S. note 40 to this subchapter",
     scope: {
@@ -132,7 +132,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.65",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: Onshoring Plan and MFN Pricing Agreement",
+    name: "Section 232 Pharmaceuticals: Onshoring Plan and Most-Favored-Nation Pricing Agreement",
     description:
       "Pharmaceutical articles subject to a qualifying onshoring plan and a Most-Favored-Nation pharmaceutical pricing agreement, as provided for in subdivisions (c) and (h)(ii) of U.S. note 40 to this subchapter",
     scope: {
@@ -182,7 +182,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.68",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: U.S. Active Ingredient in Dosage Form",
+    name: "Section 232 Pharmaceuticals: Active Ingredient From the United States in Dosage Form",
     description:
       "Pharmaceutical products with an active pharmaceutical ingredient packaged in dosage form that is a product of the United States",
     scope: {

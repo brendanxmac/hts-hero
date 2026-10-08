@@ -9,7 +9,7 @@ export const headings: Tariff[] = [
     code: "9903.76.01",
     program: "232-wood",
     name: "Section 232 Wood: Softwood Timber and Lumber",
-    description: "TODO",
+    description: "Softwood timber and lumber products provided for in subdivision (b) of U.S. note 37 of this subchapter",
     scope: {
       countries: "all",
       // TODO(list): "9903.76.01" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -41,7 +41,7 @@ export const headings: Tariff[] = [
       code: "9903.76.02",
       program: "232-wood",
       name: "Section 232 Wood: Upholstered Wooden Furniture",
-      description: "TODO",
+      description: "Upholstered wooden furniture products provided for in subdivision (d) of U.S. note 37 of this subchapter",
       scope: {
         countries: "all",
         // TODO(list): "9903.76.02" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -92,7 +92,7 @@ export const headings: Tariff[] = [
       code: "9903.76.03",
       program: "232-wood",
       name: "Section 232 Wood: Kitchen Cabinets and Vanities (and Parts)",
-      description: "TODO",
+      description: "Completed kitchen cabinets and vanities and parts of kitchen cabinets and vanities provided for in subdivision (f) of U.S. note 37 of this subchapter",
       scope: {
         countries: "all",
         // TODO(list): "9903.76.03" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -143,7 +143,7 @@ export const headings: Tariff[] = [
     code: "9903.76.04",
     program: "232-wood",
     name: "Section 232 Wood Exemption: Not a Kitchen Cabinet, Vanity or Part",
-    description: "TODO",
+    description: "Articles as provided for in subdivision (g) of U.S. note 37 of this subchapter",
     scope: {
       countries: "all",
       // TODO(list): "9903.76.04" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -157,8 +157,8 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.20",
     program: "232-wood",
-    name: "Section 232 Wood: United Kingdom Furniture, Cabinets and Vanities",
-    description: "TODO",
+    name: "Section 232 Wood: Furniture, Cabinets and Vanities of the United Kingdom",
+    description: "Wood products of the United Kingdom as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
     scope: {
       countries: ["GB"],
       // TODO(list): "9903.76.20" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -175,8 +175,8 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.21",
     program: "232-wood",
-    name: "Section 232 Wood: Japan Furniture, Cabinets and Vanities (15% Including Base Duty)",
-    description: "TODO",
+    name: "Section 232 Wood: Furniture, Cabinets and Vanities of Japan (15% Including Base Duty)",
+    description: "Wood products of Japan as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
     scope: {
       countries: ["JP"],
       // TODO(list): "9903.76.21" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -197,8 +197,8 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.22",
     program: "232-wood",
-    name: "Section 232 Wood: EU Furniture, Cabinets and Vanities (15% Including Base Duty)",
-    description: "TODO",
+    name: "Section 232 Wood: Furniture, Cabinets and Vanities of the European Union (15% Including Base Duty)",
+    description: "Wood products of the European Union as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
     scope: {
       countries: [{ list: "eu-members" }],
       // TODO(list): "9903.76.22" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -219,7 +219,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.23",
     program: "232-wood",
-    name: "Section 232 Wood: South Korea Furniture, Cabinets and Vanities (15% Including Base Duty)",
+    name: "Section 232 Wood: Furniture, Cabinets and Vanities of South Korea (15% Including Base Duty)",
     description:
       "Wood products of South Korea as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
     scope: {
@@ -250,7 +250,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.24",
     program: "232-wood",
-    name: "Section 232 Wood: Taiwan Furniture, Cabinets and Vanities (15% Including Base Duty)",
+    name: "Section 232 Wood: Furniture, Cabinets and Vanities of Taiwan (15% Including Base Duty)",
     description:
       "Wood products of Taiwan as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
     scope: {

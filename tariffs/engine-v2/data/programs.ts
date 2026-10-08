@@ -53,18 +53,18 @@ export const programs: Program[] = [
   // IEEPA role ended; Proclamation 11021 clause (10) keeps the 232 reductions.
   {
     id: "aircraft-agreements",
-    name: "Civil Aircraft Agreements (UK, EU, Japan, Korea)",
+    name: "Civil Aircraft Agreements (United Kingdom, European Union, Japan, South Korea, Taiwan)",
     authority: "deal",
     tradeDeal: true,
   },
   // Implemented under IEEPA (modifications of the reciprocal tariff order) and ended with
   // every IEEPA duty on Feb 24, 2026 (EO 14389; CSMS # 67834313). Their authority was "deal"
   // until Oct 7, 2026; `tradeDeal` keeps that.
-  { id: "deal-eu", name: "U.S.–EU Framework Agreement", authority: "IEEPA", tradeDeal: true },
-  { id: "deal-jp", name: "U.S.–Japan Agreement", authority: "IEEPA", tradeDeal: true },
-  { id: "deal-kr", name: "U.S.–Korea Agreement", authority: "IEEPA", tradeDeal: true },
-  { id: "deal-ch", name: "U.S.–Switzerland Agreement", authority: "IEEPA", tradeDeal: true },
-  { id: "deal-li", name: "U.S.–Liechtenstein Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-eu", name: "United States–European Union Framework Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-jp", name: "United States–Japan Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-kr", name: "United States–South Korea Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-ch", name: "United States–Switzerland Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-li", name: "United States–Liechtenstein Agreement", authority: "IEEPA", tradeDeal: true },
   // IEEPA duties, all ended for entries on or after Feb 24, 2026 (EO 14389; CSMS # 67834313).
   // Their authority stays "IEEPA" so refunds can find them (REFUNDS.md).
   { id: "ieepa-fentanyl-mx", name: "IEEPA – Mexico (Fentanyl and Migration)", authority: "IEEPA" },

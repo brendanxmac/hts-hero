@@ -508,7 +508,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.34",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Exemption: U.S. Content of 20% or More",
+    name: "IEEPA Reciprocal Exemption: United States Content of 20% or More",
     description:
       "The U.S. content of articles the product of any country, in which the U.S. content of the article provides at least 20 percent of the Customs value of the imported article, as provided for in subdivision (v)(xvii) of U.S. note 2 to this subchapter",
     scope: { countries: "all", codes: "all" },
