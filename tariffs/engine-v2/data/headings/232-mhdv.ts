@@ -7,7 +7,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.01",
     program: "232-mhdv",
-    name: "Medium & Heavy Duty Vehicles",
+    name: "Section 232 Trucks & Buses: Medium- and Heavy-Duty Vehicles",
     description:
       "Medium- and heavy-duty vehicles as provided for in subdivision (b) of U.S. note 38 to this subchapter.",
     scope: {
@@ -22,7 +22,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.02",
     program: "232-mhdv",
-    name: "Buses & Similar Vehicles",
+    name: "Section 232 Trucks & Buses: Buses",
     description:
       "Buses and other vehicles classified in HTSUS heading 8702 as provided for in subdivision (c) of U.S. note 38 to this subchapter.",
     scope: {
@@ -43,7 +43,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.03",
     program: "232-mhdv",
-    name: "US Content Exemption: Pay 25% on ONLY the Non-US Content of Heavy Duty Vehicles that are USMCA Eligible & Approved by Secretary of Commerce",
+    name: "Section 232 Trucks & Buses: Non-U.S. Content of USMCA Vehicles (Commerce Approved)",
     description:
       "Medium- and heavy-duty vehicles, as provided for in subdivision (d) of U.S. note 38 to this subchapter.",
     scope: {
@@ -58,7 +58,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.05",
     program: "232-mhdv",
-    name: "Article is NOT a Medium or Heavy Duty Vehicle",
+    name: "Section 232 Trucks & Buses Exemption: Not a Medium- or Heavy-Duty Vehicle",
     description:
       "Articles as provided for in subdivision (e) of U.S. note 38 to this subchapter.",
     scope: {
@@ -73,7 +73,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.06",
     program: "232-mhdv",
-    name: "The US Content of an Article that Qualifies for 9903.74.03",
+    name: "Section 232 Trucks & Buses Exemption: Approved U.S. Content",
     description:
       "Articles as provided for in subdivision (f) of U.S. note 38 to this subchapter.",
     scope: {
@@ -88,7 +88,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.07",
     program: "232-mhdv",
-    name: "Heavy Duty Vehicles, Buses, and Similar Vehicles that were Manufactured Over 25 Years Prior to Enrty",
+    name: "Section 232 Trucks & Buses Exemption: Vehicles at Least 25 Years Old",
     description:
       "Medium- and heavy-duty vehicles, as provided for in subdivision (g) of U.S. note 38 to this subchapter.",
     scope: {
@@ -106,7 +106,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.08",
     program: "232-mhdv",
-    name: "Parts of Medium or Heavy Duty Vehicles",
+    name: "Section 232 Trucks & Buses: Parts",
     description:
       "Medium- and heavy-duty vehicle parts, as provided for in subdivision (i) of U.S. note 38 to this subchapter.",
     scope: {
@@ -126,7 +126,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.09",
     program: "232-mhdv",
-    name: "Parts for Production or Repair of Medium & Heavy Duty Vehicles in the US",
+    name: "Section 232 Trucks & Buses: Parts for U.S. Production or Repair",
     description:
       "Medium- and heavy-duty vehicle parts, as provided for in subdivision (j) of U.S. note 38 to this subchapter.",
     scope: {
@@ -154,7 +154,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.10",
     program: "232-mhdv",
-    name: "USCMA Qualified Medium & Heavy Duty Vehicle Parts that are NOT knock-down kits or parts compilations, whether or not being imported by an importer who produces or repairs MHDV's",
+    name: "Section 232 Trucks & Buses Exemption: USMCA Parts",
     description:
       "Articles as provided for in subdivision (k) of U.S. note 38 to this subchapter",
     scope: {
@@ -177,7 +177,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.74.11",
     program: "232-mhdv",
-    name: "Is not a part for medium of heavy duty vehicles",
+    name: "Section 232 Trucks & Buses Exemption: Not a Medium- or Heavy-Duty Vehicle Part",
     description:
       "Articles as provided for in subdivision (l) of U.S. note 38 to this subchapter.",
     scope: {

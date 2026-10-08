@@ -8,7 +8,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.01",
     program: "232-wood",
-    name: "Softwood & Timber Products",
+    name: "Section 232 Wood: Softwood Timber and Lumber",
     description: "TODO",
     scope: {
       countries: "all",
@@ -40,7 +40,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.76.02",
       program: "232-wood",
-      name: "Upholstered Wooden Furniture Products",
+      name: "Section 232 Wood: Upholstered Wooden Furniture",
       description: "TODO",
       scope: {
         countries: "all",
@@ -91,7 +91,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.76.03",
       program: "232-wood",
-      name: "Completed Kitchen Cabinets & Vanities (and parts thereof)",
+      name: "Section 232 Wood: Kitchen Cabinets and Vanities (and Parts)",
       description: "TODO",
       scope: {
         countries: "all",
@@ -142,7 +142,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.04",
     program: "232-wood",
-    name: "Is Not a Completed Kitchen Cabinets & Vanities or its parts)",
+    name: "Section 232 Wood Exemption: Not a Kitchen Cabinet, Vanity or Part",
     description: "TODO",
     scope: {
       countries: "all",
@@ -157,7 +157,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.20",
     program: "232-wood",
-    name: "Upholstered Wooden Furniture Products & Completed Cabinets & Vanities and their parts from the United Kingdom",
+    name: "Section 232 Wood: United Kingdom Furniture, Cabinets and Vanities",
     description: "TODO",
     scope: {
       countries: ["GB"],
@@ -175,7 +175,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.21",
     program: "232-wood",
-    name: "Upholstered Wooden Furniture Products & Completed Cabinets & Vanities and their parts from Japan",
+    name: "Section 232 Wood: Japan Furniture, Cabinets and Vanities (15% Including Base Duty)",
     description: "TODO",
     scope: {
       countries: ["JP"],
@@ -197,7 +197,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.22",
     program: "232-wood",
-    name: "Upholstered Wooden Furniture Products & Completed Cabinets & Vanities and their parts from the European Union",
+    name: "Section 232 Wood: EU Furniture, Cabinets and Vanities (15% Including Base Duty)",
     description: "TODO",
     scope: {
       countries: [{ list: "eu-members" }],
@@ -219,7 +219,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.23",
     program: "232-wood",
-    name: "Upholstered Wooden Furniture Products & Completed Cabinets & Vanities and their parts from South Korea",
+    name: "Section 232 Wood: South Korea Furniture, Cabinets and Vanities (15% Including Base Duty)",
     description:
       "Wood products of South Korea as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
     scope: {
@@ -250,7 +250,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.76.24",
     program: "232-wood",
-    name: "Upholstered Wooden Furniture Products & Completed Cabinets & Vanities and their parts from Taiwan",
+    name: "Section 232 Wood: Taiwan Furniture, Cabinets and Vanities (15% Including Base Duty)",
     description:
       "Wood products of Taiwan as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
     scope: {

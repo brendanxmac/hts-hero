@@ -7,7 +7,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.88.01",
     program: "301-china",
-    name: "Articles the product of China from 20 (a) and (b) (Section 301)",
+    name: "Section 301 China: List 1",
     description:
       "Except as provided in headings 9903.88.05, 9903.88.06, 9903.88.07, 9903.88.08, 9903.88.10, 9903.88.11, 9903.88.14, 9903.88.19, 9903.88.50, 9903.88.52, 9903.88.58, 9903.88.60, 9903.88.62, 9903.88.66, 9903.88.67, 9903.88.68, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(a) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(b) [to this subchapter]",
     scope: {
@@ -27,7 +27,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.88.02",
     program: "301-china",
-    name: "Articles the product of China from 20 (c) and (d) (Section 301)",
+    name: "Section 301 China: List 2",
     description:
       "Except as provided in headings 9903.88.12, 9903.88.17, 9903.88.20, 9903.88.54, 9903.88.59, 9903.88.61, 9903.88.63, 9903.88.66, 9903.88.67, 9903.88.68, 9903.88.69, or 9903.88.70, articles the product of China, as provided for in U.S. note 20(c) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(d)",
     scope: {
@@ -47,7 +47,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.88.03",
     program: "301-china",
-    name: "Articles of China from 20 (e) and (f) (Section 301)",
+    name: "Section 301 China: List 3",
     description:
       "Except as provided in headings 9903.88.13, 9903.88.18, 9903.88.33, 9903.88.34, 9903.88.35, 9903.88.36, 9903.88.37, 9903.88.38, 9903.88.40, 9903.88.41, 9903.88.43, 9903.88.45, 9903.88.46, 9903.88.48, 9903.88.56, 9903.88.64, 9903.88.66, 9903.88.67, 9903.88.68, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(e) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(f)",
     scope: {
@@ -67,7 +67,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.88.04",
     program: "301-china",
-    name: "Articles of China from 20 (g) (Section 301)",
+    name: "Section 301 China: List 3 (Other Products)",
     description:
       "Except as provided in headings 9903.88.33, 9903.88.34, 9903.88.36, 9903.88.37, 9903.88.38, 9903.88.40, 9903.88.46, 9903.88.48, 9903.88.56, 9903.88.64, 9903.88.66, 9903.88.67, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(g) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(g)",
     scope: {
@@ -89,7 +89,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.88.15",
     program: "301-china",
-    name: "Articles of China from 20 (r) and (s) (Section 301)",
+    name: "Section 301 China: List 4A",
     description:
       "Except as provided in headings 9903.88.39, 9903.88.42, 9903.88.44, 9903.88.47, 9903.88.49, 9903.88.51, 9903.88.53, 9903.88.55, 9903.88.57, 9903.88.65, 9903.88.66, 9903.88.67, 9903.88.68, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(r) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(s)",
     scope: {
@@ -111,7 +111,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.88.69",
     program: "301-china",
-    name: "Section 301 Exclusion Granted by USTR (U.S. Note 20(vvv))",
+    name: "Section 301 China Exclusion: USTR Product Exclusions",
     description:
       "Effective with respect to entries on or after June 15, 2024 and through November 9, 2026, articles the product of China, as provided for in U.S. note 20(vvv) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
@@ -143,7 +143,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.88.70",
     program: "301-china",
-    name: "Section 301 Exclusion Granted by USTR (U.S. Note 20(www))",
+    name: "Section 301 China Exclusion: Solar Manufacturing Equipment",
     description:
       "Effective with respect to entries on or after January 1, 2024, and through November 9, 2026, articles the product of China, as provided in U.S. note 20(www) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
@@ -167,7 +167,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.01",
     program: "301-china",
-    name: "Entries from China in 31(b) after Sept.27, 2024",
+    name: "Section 301 China: Steel, Aluminum, Critical Minerals and EV Batteries",
     description:
       "Effective with respect to entries on or after September 27, 2024, articles the product of China, as provided for in subdivision (b) of U.S. note 31 to this subchapter",
     scope: {
@@ -185,7 +185,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.02",
     program: "301-china",
-    name: "Articles of China from 31(c) after Sept.27, 2024",
+    name: "Section 301 China: Solar Cells",
     description:
       "Effective with respect to entries on or after September 27, 2024, articles the product of China, as provided for in subdivision (c) of U.S. note 31 to this subchapter",
     scope: {
@@ -203,7 +203,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.03",
     program: "301-china",
-    name: "Articles of China from 31(d) after Sept.27, 2024",
+    name: "Section 301 China: Electric Vehicles, Syringes and Needles",
     description:
       "Except as provided in heading 9903.91.10, effective with respect to entries on or after September 27, 2024, articles the product of China, as provided for in subdivision (d) of U.S. note 31 to this subchapter",
     scope: {
@@ -221,7 +221,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.04",
     program: "301-china",
-    name: "Articles of China from 31(e)",
+    name: "Section 301 China: Face Masks",
     description:
       "Effective with respect to entries on or after January 1, 2025, and before January 1, 2026, articles the product of China, as provided for in subdivision (e) of U.S. note 31 to this subchapter",
     scope: {
@@ -239,7 +239,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.05",
     program: "301-china",
-    name: "Articles of China from 31(f)",
+    name: "Section 301 China: Semiconductors, Polysilicon and Wafers",
     description:
       "Effective with respect to entries on or after January 1, 2025, articles the product of China, as provided for in subdivision (f) of U.S. note 31 to this subchapter",
     scope: {
@@ -257,7 +257,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.06",
     program: "301-china",
-    name: "Articles of China from 31(g)",
+    name: "Section 301 China: Lithium-Ion Batteries, Natural Graphite and Permanent Magnets",
     description:
       "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (g) of U.S. note 31 to this subchapter",
     scope: {
@@ -278,7 +278,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.07",
     program: "301-china",
-    name: "Articles of China from 31(h)",
+    name: "Section 301 China: Face Masks",
     description:
       "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (h) of U.S. note 31 to this subchapter",
     scope: {
@@ -299,7 +299,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.08",
     program: "301-china",
-    name: "Articles of China from 31(i)",
+    name: "Section 301 China: Medical Gloves",
     description:
       "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (i) of U.S. note 31 to this subchapter",
     scope: {
@@ -320,7 +320,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.11",
     program: "301-china",
-    name: "Articles of China from 31(j)",
+    name: "Section 301 China: Tungsten Products",
     description:
       "Effective with respect to entries on or after January 1, 2025, articles the product of China, as provided for in subdivision (j) of U.S. note 31 to this subchapter",
     scope: {
@@ -339,7 +339,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.92.09",
     program: "301-china",
-    name: "Ship-to-Shore Gantry Cranes of China Exeception",
+    name: "Section 301 China Exemption: Ship-to-Shore Cranes Under Contracts Signed Before May 14, 2024",
     description:
       "Notwithstanding subheading 9903.92.10, effective with respect to entries, on or after September 27, 2024, of ship-to-shore gantry cranes, configured as a high- or low-profile steel superstructure and designed to unload intermodal containers from vessels with coupling devices for containers, including spreaders or twist-locks, articles the product of China (provided for in subheading 8426.19.00), that are fulfilling in whole or in part an executed contract for sale dated prior to May 14, 2024 for goods that are entered for consumption, or withdrawn from warehouse for consumption, in the United States prior to May 14, 2026",
     scope: {
@@ -355,7 +355,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.92.10",
     program: "301-china",
-    name: "Ship-to-Shore Gantry Cranes of China Additional Tariff",
+    name: "Section 301 China: Ship-to-Shore Gantry Cranes",
     description:
       "Except as provided in heading 9903.91.09, ship-to-shore gantry cranes, configured as a high- or low-profile steel superstructure and designed to unload intermodal containers from vessels with coupling devices for containers, including spreaders or twist-locks (provided for in subheading 8426.19.00)",
     scope: {

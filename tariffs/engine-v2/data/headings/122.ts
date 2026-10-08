@@ -224,7 +224,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.02",
     program: "122",
-    name: "122 Exemption: Articles Loaded Prior to Feb 24, or Entered for Consumption Before Feb 28",
+    name: "Section 122 Exemption: Loaded Before Feb 24, Entered Before Feb 28",
     description:
       " Articles the product of any country that (1) were loaded onto a vessel at the port of loading and in transit on the final mode of transit prior to entry into the United States, before 12:01 a.m. eastern standard time on February 24, 2026; and (2) are entered for consumption, or withdrawn from warehouse for consumption, before 12:01 a.m. eastern standard time on February 28, 2026.",
     scope: {
@@ -247,7 +247,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.03",
     program: "122",
-    name: "122 Exemption: Specific Articles",
+    name: "Section 122 Exemption: Listed Products",
     description:
       "Articles the product of any country, as provided for in subdivision (aa)(ii) of U.S. note 2 to subchapter III of chapter 99 of the HTSUS.",
     scope: {
@@ -268,7 +268,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.04",
     program: "122",
-    name: "122 Exemption: Agricultural Products",
+    name: "Section 122 Exemption: Agricultural Products",
     description:
       "Articles the product of any country, as provided for in subdivision (aa)(iii) of U.S. note 2 to subchapter III of chapter 99 of the HTSUS. The agricultural products described in subdivision (aa)(iii) are:",
     scope: {
@@ -288,7 +288,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.05",
     program: "122",
-    name: "122 Exemption: Civil Aircraft Article",
+    name: "Section 122 Exemption: Civil Aircraft Articles",
     description:
       "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts and components; their other parts, components and subassemblies; and ground flight simulators and their parts and components of any country, provided for in subdivision (aa)(iv) of U.S. note 2 to subchapter III of chapter 99 of the HTSUS.",
     scope: {
@@ -310,7 +310,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.03.06",
       program: "122",
-      name: "122 Exemption: Section 232 Articles",
+      name: "Section 122 Exemption: Section 232 Articles",
       description:
         "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light trucks, semiconductor articles, semi-finished copper and intensive copper derivative products, wood products, or medium- and heavy-duty vehicles or medium- and heavy-duty vehicle parts, of any country, as provided in subdivision (aa)(v) of U.S. note 2 to this subchapter",
       scope: {
@@ -427,7 +427,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.07",
     program: "122",
-    name: "122 Exemption: Articles of Canada Entered via USMCA",
+    name: "Section 122 Exemption: Articles of Canada Entered via USMCA",
     description:
       "Articles the product of Canada, entered free of duty under the United States-Mexico-Canada Agreement.",
     scope: {
@@ -448,7 +448,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.08",
     program: "122",
-    name: "122 Exemption: Articles of Mexico Entered via USMCA",
+    name: "Section 122 Exemption: Articles of Mexico Entered via USMCA",
     description:
       "Articles the product of Mexico, entered free of duty under the United States-Mexico-Canada Agreement.",
     scope: {
@@ -469,7 +469,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.09",
     program: "122",
-    name: "122 Exemption: Articles of Apparel Entered via CAFTA-DR",
+    name: "Section 122 Exemption: Textiles or Apparel Entered via CAFTA-DR",
     description:
       "Articles of textiles or apparel the product of Costa Rica, the Dominican Republic, El Salvador, Guatemala, Honduras or Nicaragua that meet the rules of origin under the Dominican Republic-Central America Free Trade Agreement.",
     scope: {
@@ -493,7 +493,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.10",
     program: "122",
-    name: "122 Exemption: Donation",
+    name: "Section 122 Exemption: Donations",
     description:
       " Articles that are donations, by persons subject to the jurisdiction of the United States, such as food, clothing and medicine, intended to be used to relieve human suffering.",
     scope: {
@@ -514,7 +514,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.11",
     program: "122",
-    name: "122 Exemption: Information Material",
+    name: "Section 122 Exemption: Informational Materials",
     description:
       "Articles that are informational materials, including but not limited to publications, films, posters, phonograph records, photographs, microfilms, microfiche, tapes, compact disks, CD ROMs, artworks and news wire feeds.",
     scope: {

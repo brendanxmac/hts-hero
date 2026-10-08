@@ -214,7 +214,7 @@ A `Tariff` is one Chapter 99 heading as it stands during one effective period.
 interface Tariff extends Dated {
   code: string          // the Chapter 99 heading, e.g. "9903.81.91"
   program: string       // Program.id
-  name: string          // short name shown in the UI (no dates in names; use `effective`)
+  name: string          // short title shown in the UI (conventions below)
   description: string   // the heading's legal text
 
   scope: Scope          // which countries and HTS codes it covers
@@ -226,6 +226,13 @@ interface Tariff extends Dated {
   rateByColumn?: Partial<Record<DutyColumn, RateRule>> // rare: a different rate for a column
 }
 ```
+
+**Titles (`name`).** They're for importers, not lawyers:
+
+- Start with the program ("Section 232 Autos:", "Section 301 China:"), with "Exemption:" for exemptions ("Exclusion:" for USTR's Section 301 exclusions).
+- No note citations ("20 (e) and (f)"): the line's legal text shows them. Name what the heading covers ("List 3", "Solar Cells").
+- No rates or effective dates: the Rate column and `effective` show those, and they change between versions. Keep thresholds that define the line ("Base Duty 15% or More", "85%+ U.S. Metal") and dates you have to check ("Loaded Before Feb 24").
+- Caps say "(15% Including Base Duty)", and the paired line says "(Base Duty 15% or More)".
 
 ### 6.1 Scope: which countries and codes
 

@@ -13,7 +13,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.82.01",
       program: "232-metals",
-      name: "Section 232 Metal Exemption: Article Contains No Aluminum, Steel, or Copper",
+      name: "Section 232 Metals Exemption: Contains No Steel, Aluminum or Copper",
       description:
         "Articles provided for in subdivision (c) of U.S. note 16 to this subchapter that do not contain any aluminum, steel, or copper",
       scope: {
@@ -134,7 +134,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.03",
     program: "232-metals",
-    name: "Section 232 Metal Exemption: Aggregate 232 Metal weight is <15% of Article Weight",
+    name: "Section 232 Metals Exemption: Metal Under 15% of the Article's Weight",
     description:
       "Except for articles classifiable in chapters 72, 73, 74 or 76, articles where the weight of the applicable metal is less than 15 percent of the weight of the imported article, as provided for in subdivision (c) of U.S. note 16 to this subchapter",
     scope: {
@@ -157,7 +157,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.04",
     program: "232-metals",
-    name: "232 Metals of UK Origin (95%+ Smelted or Most Recently Cast or Poured in UK)",
+    name: "Section 232 Metals: United Kingdom (95%+ Smelted, Cast or Poured in the UK)",
     description:
       "Articles of aluminum or of steel and derivative aluminum or steel articles the product of the United Kingdom, as provided for in subdivisions (c)(i)–(iv) and (d) of U.S. note 16 to this subchapter",
     scope: {
@@ -193,7 +193,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.82.05",
       program: "232-metals",
-      name: "Section 232 Metal Articles of UK Origin (95%+ Smelted or Most Recently Cast or Poured in UK)",
+      name: "Section 232 Metals: United Kingdom Lower-Rate Derivatives (95%+ Smelted, Cast or Poured in the UK)",
       description:
         "Derivative aluminum or steel articles the product of the United Kingdom, as provided for in subdivisions (c)(vi)–(vii) and (d) of U.S. note 16 to this subchapter",
       scope: {
@@ -253,7 +253,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.82.06",
       program: "232-metals",
-      name: "Section 232 Metal Articles 95% smelted, cast, or poured in the US",
+      name: "Section 232 Metals: Metal 95%+ Smelted, Cast or Poured in the U.S.",
       description:
         "Except as provided for in headings 9903.82.15 and 9903.85.68, articles of copper and derivative aluminum and steel articles, as provided for in subdivisions (c)(ii), (iv), (vi)–(viii) and (e) of U.S. note 16 to this subchapter",
       scope: {
@@ -290,7 +290,7 @@ export const headings: Tariff[] = [
       {
         from: "2026-06-08",
         set: {
-          name: "Section 232 Metal Articles 85% smelted, cast, or poured in the US",
+          name: "Section 232 Metals: Metal 85%+ Smelted, Cast or Poured in the U.S.",
           description:
             "Except as provided for in headings 9903.82.15 and 9903.85.68, articles of copper and derivative aluminum and steel articles, as provided for in subdivisions (c)(ii), (iv), (vi)\u2013(viii), (xi) and (e) of U.S. note 16 to this subchapter",
           scope: {
@@ -327,7 +327,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.82.07",
       program: "232-metals",
-      name: "Section 232 Metal Articles, with metals over 95% smelted, cast, or poured in the US, and <10% Column 1 Ad Valorem Rate of Duty (Replaces General Duty)",
+      name: "Section 232 Metals: Machinery & Equipment, 95%+ U.S. Metal (10% Including Base Duty)",
       description:
         "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 10 percent, as provided for in subdivisions (c)(ix)–(x) and (e) of U.S. note 16 to this subchapter",
       scope: {
@@ -363,7 +363,7 @@ export const headings: Tariff[] = [
       {
         from: "2026-06-08",
         set: {
-          name: "Section 232 Metal Articles, with metals 85%+ smelted, cast, or poured in the US, and <10% Column 1 Ad Valorem Rate of Duty (Replaces General Duty)",
+          name: "Section 232 Metals: Machinery & Equipment, 85%+ U.S. Metal (10% Including Base Duty)",
         },
         source: {
           revision: "2026HTSRev10",
@@ -377,7 +377,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.82.08",
       program: "232-metals",
-      name: "Section 232 Metal Articles, with metals 95%+ smelted, cast, or poured in the US, and 10%+ Column 1 Ad Valorem Rate of Duty",
+      name: "Section 232 Metals: Machinery & Equipment, 95%+ U.S. Metal (Base Duty 10% or More)",
       description:
         "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 10 percent, as provided for in subdivisions (c)(ix)–(x) and (e) of U.S. note 16 to this subchapter",
       scope: {
@@ -413,7 +413,7 @@ export const headings: Tariff[] = [
       {
         from: "2026-06-08",
         set: {
-          name: "Section 232 Metal Articles, with metals 85%+ smelted, cast, or poured in the US, and 10%+ Column 1 Ad Valorem Rate of Duty",
+          name: "Section 232 Metals: Machinery & Equipment, 85%+ U.S. Metal (Base Duty 10% or More)",
         },
         source: {
           revision: "2026HTSRev10",
@@ -427,7 +427,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.82.09",
       program: "232-metals",
-      name: "Section 232 Metal Articles provided for in 16(c)(vi)–(viii)",
+      name: "Section 232 Metals: Other Derivative Articles (Lower Rate)",
       description:
         "Except as provided for in headings 9903.82.16 and 9903.85.68, articles of copper and derivative aluminum and steel articles, as provided for in subdivisions (c)(vi)–(viii) of U.S. note 16 to this subchapter",
       scope: {
@@ -502,7 +502,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.10",
     program: "232-metals",
-    name: "Section 232 Metal Articles, <15% Column 1 Ad Valorem Rate of Duty (Replaces General Duty)",
+    name: "Section 232 Metals: Machinery & Equipment (15% Including Base Duty)",
     description:
       "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (f) of U.S. note 16 to this subchapter",
     scope: {
@@ -539,7 +539,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.11",
     program: "232-metals",
-    name: "Section 232 Metal Articles 15%+ Column 1 Ad Valorem Rate of Duty",
+    name: "Section 232 Metals: Machinery & Equipment (Base Duty 15% or More)",
     description:
       "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (f) of U.S. note 16 to this subchapter",
     scope: {
@@ -573,7 +573,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.12",
     program: "232-metals",
-    name: "Section 232 Metal Articles from Non Normal-Trade Relation Countries listed in General Note 3(B)",
+    name: "Section 232 Metals: Machinery & Equipment of Belarus, Cuba, North Korea or Russia",
     description:
       "Except as provided for in headings 9903.82.17 and 9903.85.68, derivative aluminum and steel articles the product of any country identified in general note 3(b), as provided for in subdivisions (c)(ix)–(x) of U.S. note 16 to this subchapter",
     scope: {
@@ -604,7 +604,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.82.13",
       program: "232-metals",
-      name: "Section 232 Metal Exemption: Parts for Manufacture of Motorcycles in the US",
+      name: "Section 232 Metals Exemption: Motorcycle Parts for U.S. Manufacturing",
       description:
         "Motorcycle parts, as provided for in subdivision (g) of U.S. note 16 to the subchapter",
       scope: {
@@ -647,7 +647,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.14",
     program: "232-metals",
-    name: "Section 232 Metal Articles from Russia",
+    name: "Section 232 Metals: Russia – Steel, Copper and Listed Derivatives",
     description:
       "Section 232 Metal Articles of Russia, provided for in subdivisions (c)(iii)–(v) of U.S. note 16 to this subchapter",
     scope: {
@@ -679,7 +679,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.82.15",
       program: "232-metals",
-      name: "Section 232 Metal Articles from Russia, 95%+ smelted, cast, or poured in the US",
+      name: "Section 232 Metals: Russia – Metal 95%+ Smelted, Cast or Poured in the U.S.",
       description:
         "Section 232 Metal Articles of Russia, provided for in subdivisions (c)(iv), (vii), (viii) and (e) of U.S. note 16 to this subchapter",
       scope: {
@@ -711,7 +711,7 @@ export const headings: Tariff[] = [
       {
         from: "2026-06-08",
         set: {
-          name: "Section 232 Metal Articles from Russia, 85%+ smelted, cast, or poured in the US",
+          name: "Section 232 Metals: Russia – Metal 85%+ Smelted, Cast or Poured in the U.S.",
           description:
             "Articles of copper and derivative steel the product of the Russian Federation, as provided for in subdivisions (c)(iv), (vii), (viii), (xi) and (e) of U.S. note 16 to this subchapter",
           scope: {
@@ -736,7 +736,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.82.16",
       program: "232-metals",
-      name: "Section 232 Metal Articles from Russia",
+      name: "Section 232 Metals: Russia – Other Derivative Articles (Lower Rate)",
       description:
         "Articles of copper and derivative steel the product of the Russian Federation, as provided for in subdivisions (c)(vii)–(viii) of U.S. note 16 to this subchapter",
       scope: {
@@ -790,7 +790,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.17",
     program: "232-metals",
-    name: "Section 232 Metal Articles from Russia",
+    name: "Section 232 Metals: Russia – Machinery & Equipment",
     description:
       "Derivative steel articles the product of the Russian Federation, as provided for in subdivision (c)(x) of U.S. note 16 to this subchapter",
     scope: {
@@ -866,7 +866,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.20",
     program: "232-metals",
-    name: "Section 232 Mobile Industrial Equipment (16(c)(xi)) under USMCA: Non-U.S. Content and U.S. Content Above 40%",
+    name: "Section 232 Metals: Mobile Industrial Equipment Under USMCA – Non-U.S. Content and U.S. Content Above 40%",
     description:
       "Derivative steel articles as provided in subdivision (j) of U.S. note 16 to this subchapter",
     scope: {
@@ -899,7 +899,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.21",
     program: "232-metals",
-    name: "Section 232 Mobile Industrial Equipment (16(c)(xi)) under USMCA: U.S. Content up to 40% (No Duty)",
+    name: "Section 232 Metals Exemption: Mobile Industrial Equipment Under USMCA – U.S. Content up to 40%",
     description:
       "Derivative steel articles as provided in subdivision (j) of U.S. note 16 to this subchapter",
     scope: {
@@ -935,7 +935,7 @@ export const headings: Tariff[] = [
     // Revisit if a later note or CBP guidance says it is 15% on top of the base rate.
     code: "9903.82.22",
     program: "232-metals",
-    name: "Section 232 Mobile Industrial Equipment (16(c)(xi)) of Partner Countries: 15% Including Base Duty",
+    name: "Section 232 Metals: Mobile Industrial Equipment of Partner Countries (15% Including Base Duty)",
     description:
       "Derivative steel articles the product of Argentina, Ecuador, El Salvador, Guatemala, Japan, the Republic of Korea, Liechtenstein, Switzerland, Taiwan, the United Kingdom, or a member nation of the European Union, as provided for in subdivision (c)(xi) of U.S. note 16 to this subchapter",
     scope: {
@@ -977,7 +977,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.23",
     program: "232-metals",
-    name: "Parts for Agricultural/Industrial Equipment (16(k)), 85%+ U.S.-Melted Metal, <10% Column 1 Rate (Topped Up to 10%)",
+    name: "Section 232 Metals: Farm & Industrial Equipment Parts, 85%+ U.S. Metal (10% Including Base Duty)",
     description:
       "Articles of copper and derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 10 percent, as provided for in subdivisions (e) and (k) of U.S. note 16 to this subchapter",
     scope: {
@@ -1007,7 +1007,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.24",
     program: "232-metals",
-    name: "Parts for Agricultural/Industrial Equipment (16(k)), 85%+ U.S.-Melted Metal, 10%+ Column 1 Rate",
+    name: "Section 232 Metals: Farm & Industrial Equipment Parts, 85%+ U.S. Metal (Base Duty 10% or More)",
     description:
       "Articles of copper and derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 10 percent, as provided for in subdivisions (e) and (k) of U.S. note 16 to this subchapter",
     scope: {
@@ -1034,7 +1034,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.25",
     program: "232-metals",
-    name: "Parts for Agricultural/Industrial Equipment (16(k)), <15% Column 1 Rate (Topped Up to 15%)",
+    name: "Section 232 Metals: Farm & Industrial Equipment Parts (15% Including Base Duty)",
     description:
       "Articles of copper and derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivisions (f) and (k) of U.S. note 16 to this subchapter",
     scope: {
@@ -1067,7 +1067,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.82.26",
     program: "232-metals",
-    name: "Parts for Agricultural/Industrial Equipment (16(k)), 15%+ Column 1 Rate",
+    name: "Section 232 Metals: Farm & Industrial Equipment Parts (Base Duty 15% or More)",
     description:
       "Articles of copper and derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivisions (f) and (k) of U.S. note 16 to this subchapter",
     scope: {
@@ -1098,7 +1098,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.85.67",
       program: "232-metals",
-      name: "Aluminum Smelted or Casted in Russia (Section 232)",
+      name: "Section 232 Aluminum: Russian Aluminum (Smelted or Cast in Russia)",
       description:
         "Aluminum articles that are the product of Russia, or where any amount of primary aluminum used in the manufacture of the aluminum articles is smelted in Russia, or where the aluminum articles are cast in Russia, the foregoing under the terms of note 19(a)(vii)(A) to this subchapter, or note 19(m)(A) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
       scope: {
@@ -1138,7 +1138,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.85.68",
       program: "232-metals",
-      name: "Derivative Aluminum Articles from Russia where Primary Aluminum is Smelted or Cast in Russia (Section 232)",
+      name: "Section 232 Aluminum: Derivatives Made With Russian Aluminum",
       description:
         "Derivative aluminum articles that are products of Russia, or where any amount of primary aluminum used in the manufacture of the derivative articles is smelted in Russia, or where the derivative aluminum articles are cast in Russia, when such derivative articles are provided for in the headings or subheadings enumerated in note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
       scope: {

@@ -22,7 +22,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.01",
     program: "ieepa-fentanyl-mx",
-    name: "IEEPA Mexico (25%)",
+    name: "IEEPA Mexico: Fentanyl and Migration Tariff",
     description:
       "Except for products described in headings 9903.01.02, 9903.01.03, 9903.01.04 and 9903.01.05 articles the product of Mexico, as provided for in U.S. note 2(a) to this subchapter",
     scope: { countries: ["MX"], codes: "all" },
@@ -76,7 +76,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.05",
     program: "ieepa-fentanyl-mx",
-    name: "IEEPA Mexico: Potash (10%)",
+    name: "IEEPA Mexico: Potash",
     description:
       "Potash that is a product of Mexico, as provided for in U.S. note 2(c) to this subchapter",
     scope: { countries: ["MX"], codes: [{ list: "ieepaPotashCaMx" }] },
@@ -89,7 +89,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.10",
     program: "ieepa-fentanyl-ca",
-    name: "IEEPA Canada (35%)",
+    name: "IEEPA Canada: Fentanyl Tariff",
     description:
       "Except for products described in headings 9903.01.11, 9903.01.12, 9903.01.13, 9903.01.14 or 9903.01.15, articles the product of Canada, as provided for in U.S. note 2(j) to this subchapter",
     scope: { countries: ["CA"], codes: "all" },
@@ -137,7 +137,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.13",
     program: "ieepa-fentanyl-ca",
-    name: "IEEPA Canada: Energy and Critical Minerals (10%)",
+    name: "IEEPA Canada: Energy and Critical Minerals",
     description:
       "Crude oil, natural gas, lease condensates, natural gas liquids, refined petroleum products, uranium, coal, biofuels, geothermal heat, the kinetic movement of flowing water, and critical minerals, as defined by 30 U.S.C. 1606(a)(3)",
     scope: { countries: ["CA"], codes: [{ list: "ieepaCanadaEnergy" }] },
@@ -164,7 +164,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.15",
     program: "ieepa-fentanyl-ca",
-    name: "IEEPA Canada: Potash (10%)",
+    name: "IEEPA Canada: Potash",
     description:
       "Potash that is a product of Canada, as provided for in U.S. note 2(l) to this subchapter",
     scope: { countries: ["CA"], codes: [{ list: "ieepaPotashCaMx" }] },
@@ -177,7 +177,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.16",
     program: "ieepa-fentanyl-ca",
-    name: "IEEPA Canada: Transshipped Goods (40%)",
+    name: "IEEPA Canada: Transshipped Goods",
     description:
       "Except for products described in 9903.01.11, 9903.01.12, and 9903.01.14, articles the product of Canada as provided for in subdivision (m) to note 2 to this subchapter and determined by CBP to have been transshipped to evade applicable duties",
     scope: { countries: ["CA"], codes: "all" },
@@ -219,7 +219,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.24",
     program: "ieepa-fentanyl-cn",
-    name: "IEEPA China and Hong Kong (10%)",
+    name: "IEEPA China and Hong Kong: Fentanyl Tariff",
     description:
       "Except for products described in headings 9903.01.21, 9903.01.22, 9903.01.23, articles the product of China and Hong Kong, as provided for in U.S. note 2(u) to this subchapter",
     scope: { countries: ["CN", "HK"], codes: "all" },
@@ -234,7 +234,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.25",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff (10%)",
+    name: "IEEPA Reciprocal Tariff: Baseline (Countries Without Their Own Rate)",
     description:
       "Articles the product of any country, except for products described in headings 9903.01.26-9903.01.33, 9903.02.02-9903.02.91, 9903.96.01, and 9903.96.02, and except as provided for in headings 9903.01.34 and 9903.02.01, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: "all", codes: "all" },
@@ -369,7 +369,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.29",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Exemption: Column 2 Countries",
+    name: "IEEPA Reciprocal Exemption: Belarus, Cuba, North Korea and Russia",
     description:
       "Articles the product of any country identified in general note 3(b)",
     scope: { countries: ["CU", "KP", "RU", "BY"], codes: "all" },
@@ -406,7 +406,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.32",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Exemption: Annex II Articles",
+    name: "IEEPA Reciprocal Exemption: Listed Products (Annex II)",
     description:
       "Articles the product of any country, classified in the subheadings enumerated in subdivision (v)(iii)(a) of U.S. note 2 to this subchapter",
     scope: {
@@ -522,7 +522,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.01",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal: Transshipped Goods (40%)",
+    name: "IEEPA Reciprocal Tariff: Transshipped Goods",
     description:
       "Articles the product of any country determined by U.S. Customs and Border Protection to have been transshipped to evade applicable duties under section 2 of Executive Order [Insert EO number], as amended [Compiler's note: [Insert EO Number] refers to Executive Order 14326, 90 Fed. Reg. 37963.]",
     scope: { countries: "all", codes: "all" },
@@ -537,7 +537,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.02",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Afghanistan (15%)",
+    name: "IEEPA Reciprocal Tariff: Afghanistan",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Afghanistan, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["AF"], codes: "all" },
@@ -560,7 +560,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.03",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Algeria (30%)",
+    name: "IEEPA Reciprocal Tariff: Algeria",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Algeria, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["DZ"], codes: "all" },
@@ -583,7 +583,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.04",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Angola (15%)",
+    name: "IEEPA Reciprocal Tariff: Angola",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Angola, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["AO"], codes: "all" },
@@ -606,7 +606,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.05",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Bangladesh (20%)",
+    name: "IEEPA Reciprocal Tariff: Bangladesh",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Bangladesh, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["BD"], codes: "all" },
@@ -629,7 +629,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.06",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Bolivia (15%)",
+    name: "IEEPA Reciprocal Tariff: Bolivia",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Bolivia, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["BO"], codes: "all" },
@@ -652,7 +652,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.07",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Bosnia and Herzegovina (30%)",
+    name: "IEEPA Reciprocal Tariff: Bosnia and Herzegovina",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Bosnia and Herzegovina, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["BA"], codes: "all" },
@@ -675,7 +675,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.08",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Botswana (15%)",
+    name: "IEEPA Reciprocal Tariff: Botswana",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Botswana, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["BW"], codes: "all" },
@@ -698,7 +698,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.09",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Brazil (10%)",
+    name: "IEEPA Reciprocal Tariff: Brazil",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Brazil, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["BR"], codes: "all" },
@@ -721,7 +721,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.10",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Brunei (25%)",
+    name: "IEEPA Reciprocal Tariff: Brunei",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Brunei, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["BN"], codes: "all" },
@@ -744,7 +744,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.11",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Cambodia (19%)",
+    name: "IEEPA Reciprocal Tariff: Cambodia",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Cambodia, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["KH"], codes: "all" },
@@ -767,7 +767,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.12",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Cameroon (15%)",
+    name: "IEEPA Reciprocal Tariff: Cameroon",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Cameroon, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["CM"], codes: "all" },
@@ -790,7 +790,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.13",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Chad (15%)",
+    name: "IEEPA Reciprocal Tariff: Chad",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Chad, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["TD"], codes: "all" },
@@ -813,7 +813,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.14",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Costa Rica (15%)",
+    name: "IEEPA Reciprocal Tariff: Costa Rica",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Costa Rica, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["CR"], codes: "all" },
@@ -836,7 +836,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.15",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: C\u00f4te d'Ivoire (15%)",
+    name: "IEEPA Reciprocal Tariff: Côte d'Ivoire",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Côte d'Ivoire, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["CI"], codes: "all" },
@@ -859,7 +859,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.16",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Democratic Republic of the Congo (15%)",
+    name: "IEEPA Reciprocal Tariff: Democratic Republic of the Congo",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Democratic Republic of the Congo, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["CD"], codes: "all" },
@@ -882,7 +882,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.17",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Ecuador (15%)",
+    name: "IEEPA Reciprocal Tariff: Ecuador",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Ecuador, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["EC"], codes: "all" },
@@ -905,7 +905,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.18",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Equatorial Guinea (15%)",
+    name: "IEEPA Reciprocal Tariff: Equatorial Guinea",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Equatorial Guinea, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["GQ"], codes: "all" },
@@ -928,7 +928,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.21",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Falkland Islands (10%)",
+    name: "IEEPA Reciprocal Tariff: Falkland Islands",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Falkland Islands, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["FK"], codes: "all" },
@@ -951,7 +951,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.22",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Fiji (15%)",
+    name: "IEEPA Reciprocal Tariff: Fiji",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Fiji, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["FJ"], codes: "all" },
@@ -974,7 +974,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.23",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Ghana (15%)",
+    name: "IEEPA Reciprocal Tariff: Ghana",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Ghana, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["GH"], codes: "all" },
@@ -997,7 +997,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.24",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Guyana (15%)",
+    name: "IEEPA Reciprocal Tariff: Guyana",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Guyana, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["GY"], codes: "all" },
@@ -1020,7 +1020,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.25",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Iceland (15%)",
+    name: "IEEPA Reciprocal Tariff: Iceland",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Iceland, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["IS"], codes: "all" },
@@ -1043,7 +1043,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.26",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: India (25%)",
+    name: "IEEPA Reciprocal Tariff: India",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of India, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["IN"], codes: "all" },
@@ -1066,7 +1066,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.27",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Indonesia (19%)",
+    name: "IEEPA Reciprocal Tariff: Indonesia",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Indonesia, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["ID"], codes: "all" },
@@ -1089,7 +1089,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.28",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Iraq (35%)",
+    name: "IEEPA Reciprocal Tariff: Iraq",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Iraq, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["IQ"], codes: "all" },
@@ -1112,7 +1112,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.29",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Israel (15%)",
+    name: "IEEPA Reciprocal Tariff: Israel",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Israel, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["IL"], codes: "all" },
@@ -1135,7 +1135,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.31",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Jordan (15%)",
+    name: "IEEPA Reciprocal Tariff: Jordan",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Jordan, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["JO"], codes: "all" },
@@ -1158,7 +1158,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.32",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Kazakhstan (25%)",
+    name: "IEEPA Reciprocal Tariff: Kazakhstan",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Kazakhstan, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["KZ"], codes: "all" },
@@ -1181,7 +1181,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.33",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Laos (40%)",
+    name: "IEEPA Reciprocal Tariff: Laos",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Laos, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["LA"], codes: "all" },
@@ -1204,7 +1204,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.34",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Lesotho (15%)",
+    name: "IEEPA Reciprocal Tariff: Lesotho",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Lesotho, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["LS"], codes: "all" },
@@ -1227,7 +1227,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.35",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Libya (30%)",
+    name: "IEEPA Reciprocal Tariff: Libya",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Libya, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["LY"], codes: "all" },
@@ -1250,7 +1250,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.37",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Madagascar (15%)",
+    name: "IEEPA Reciprocal Tariff: Madagascar",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Madagascar, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["MG"], codes: "all" },
@@ -1273,7 +1273,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.38",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Malawi (15%)",
+    name: "IEEPA Reciprocal Tariff: Malawi",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Malawi, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["MW"], codes: "all" },
@@ -1296,7 +1296,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.39",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Malaysia (19%)",
+    name: "IEEPA Reciprocal Tariff: Malaysia",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Malaysia, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["MY"], codes: "all" },
@@ -1319,7 +1319,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.40",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Mauritius (15%)",
+    name: "IEEPA Reciprocal Tariff: Mauritius",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Mauritius, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["MU"], codes: "all" },
@@ -1342,7 +1342,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.41",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Moldova (25%)",
+    name: "IEEPA Reciprocal Tariff: Moldova",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Moldova, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["MD"], codes: "all" },
@@ -1365,7 +1365,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.42",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Mozambique (15%)",
+    name: "IEEPA Reciprocal Tariff: Mozambique",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Mozambique, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["MZ"], codes: "all" },
@@ -1388,7 +1388,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.43",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Myanmar (Burma) (40%)",
+    name: "IEEPA Reciprocal Tariff: Myanmar (Burma)",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Myanmar (Burma), as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["MM"], codes: "all" },
@@ -1411,7 +1411,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.44",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Namibia (15%)",
+    name: "IEEPA Reciprocal Tariff: Namibia",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Namibia, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["NA"], codes: "all" },
@@ -1434,7 +1434,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.45",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Nauru (15%)",
+    name: "IEEPA Reciprocal Tariff: Nauru",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Nauru, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["NR"], codes: "all" },
@@ -1457,7 +1457,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.46",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: New Zealand (15%)",
+    name: "IEEPA Reciprocal Tariff: New Zealand",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of New Zealand, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["NZ"], codes: "all" },
@@ -1480,7 +1480,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.47",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Nicaragua (18%)",
+    name: "IEEPA Reciprocal Tariff: Nicaragua",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Nicaragua, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["NI"], codes: "all" },
@@ -1503,7 +1503,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.48",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Nigeria (15%)",
+    name: "IEEPA Reciprocal Tariff: Nigeria",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Nigeria, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["NG"], codes: "all" },
@@ -1526,7 +1526,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.49",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: North Macedonia (15%)",
+    name: "IEEPA Reciprocal Tariff: North Macedonia",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of North Macedonia, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["MK"], codes: "all" },
@@ -1549,7 +1549,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.50",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Norway (15%)",
+    name: "IEEPA Reciprocal Tariff: Norway",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Norway, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["NO"], codes: "all" },
@@ -1572,7 +1572,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.51",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Pakistan (19%)",
+    name: "IEEPA Reciprocal Tariff: Pakistan",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Pakistan, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["PK"], codes: "all" },
@@ -1595,7 +1595,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.52",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Papua New Guinea (15%)",
+    name: "IEEPA Reciprocal Tariff: Papua New Guinea",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Papua New Guinea, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["PG"], codes: "all" },
@@ -1618,7 +1618,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.53",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: the Philippines (19%)",
+    name: "IEEPA Reciprocal Tariff: the Philippines",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the Philippines, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["PH"], codes: "all" },
@@ -1641,7 +1641,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.54",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Serbia (35%)",
+    name: "IEEPA Reciprocal Tariff: Serbia",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Serbia, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["RS"], codes: "all" },
@@ -1664,7 +1664,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.55",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: South Africa (30%)",
+    name: "IEEPA Reciprocal Tariff: South Africa",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of South Africa, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["ZA"], codes: "all" },
@@ -1687,7 +1687,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.57",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Sri Lanka (20%)",
+    name: "IEEPA Reciprocal Tariff: Sri Lanka",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Sri Lanka, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["LK"], codes: "all" },
@@ -1710,7 +1710,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.59",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Syria (41%)",
+    name: "IEEPA Reciprocal Tariff: Syria",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Syria, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["SY"], codes: "all" },
@@ -1733,7 +1733,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.60",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Taiwan (20%)",
+    name: "IEEPA Reciprocal Tariff: Taiwan",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Taiwan, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["TW"], codes: "all" },
@@ -1756,7 +1756,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.61",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Thailand (19%)",
+    name: "IEEPA Reciprocal Tariff: Thailand",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Thailand, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["TH"], codes: "all" },
@@ -1779,7 +1779,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.62",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Trinidad and Tobago (15%)",
+    name: "IEEPA Reciprocal Tariff: Trinidad and Tobago",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Trinidad and Tobago, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["TT"], codes: "all" },
@@ -1802,7 +1802,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.63",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Tunisia (25%)",
+    name: "IEEPA Reciprocal Tariff: Tunisia",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Tunisia, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["TN"], codes: "all" },
@@ -1825,7 +1825,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.64",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Turkey (15%)",
+    name: "IEEPA Reciprocal Tariff: Turkey",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Turkey, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["TR"], codes: "all" },
@@ -1848,7 +1848,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.65",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Uganda (15%)",
+    name: "IEEPA Reciprocal Tariff: Uganda",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Uganda, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["UG"], codes: "all" },
@@ -1871,7 +1871,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.66",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: the United Kingdom (10%)",
+    name: "IEEPA Reciprocal Tariff: the United Kingdom",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34, 9903.02.01, and 9903.96.01, articles the product of the United Kingdom, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["GB"], codes: "all" },
@@ -1895,7 +1895,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.67",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Vanuatu (15%)",
+    name: "IEEPA Reciprocal Tariff: Vanuatu",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Vanuatu, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["VU"], codes: "all" },
@@ -1918,7 +1918,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.68",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Venezuela (15%)",
+    name: "IEEPA Reciprocal Tariff: Venezuela",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Venezuela, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["VE"], codes: "all" },
@@ -1941,7 +1941,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.69",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Vietnam (20%)",
+    name: "IEEPA Reciprocal Tariff: Vietnam",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Vietnam, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["VN"], codes: "all" },
@@ -1964,7 +1964,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.70",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Zambia (15%)",
+    name: "IEEPA Reciprocal Tariff: Zambia",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Zambia, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["ZM"], codes: "all" },
@@ -1987,7 +1987,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.71",
     program: "ieepa-reciprocal",
-    name: "IEEPA Reciprocal Tariff: Zimbabwe (15%)",
+    name: "IEEPA Reciprocal Tariff: Zimbabwe",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Zimbabwe, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["ZW"], codes: "all" },
@@ -2010,7 +2010,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.01.77",
     program: "ieepa-brazil",
-    name: "IEEPA Brazil (40%)",
+    name: "IEEPA Brazil Tariff",
     description:
       "Except for products described in headings 9903.01.78-9903.01.83 and 9903.01.90, articles the product of Brazil that are entered for consumption, or withdrawn from warehouse for consumption, after 12:01 a.m. eastern daylight time 7 days after the date of the executive order, excluding the day the executive order is signed, as provided for in subdivision (x) of U.S. note 2 to this subchapter [Compiler's note: Executive Order 14323 (90 Fed. Reg. 37739) was signed on July 30, 2025, and became effective on August 6, 2025.]",
     scope: { countries: ["BR"], codes: "all" },
@@ -2141,7 +2141,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.82",
     program: "deal-ch",
-    name: "Switzerland Trade Deal Tariff (When General Duty >=15%)",
+    name: "Switzerland Deal Tariff (Base Duty 15% or More)",
     description:
       "Except for products described in headings 9903.01.30-9903.01.33, 9903.02.78, and 9903.02.84-9903.02.86, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Switzerland, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["CH"], codes: "all" },
@@ -2165,7 +2165,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.83",
     program: "deal-ch",
-    name: "Switzerland Trade Deal Tariff (Tops General Duty Up to 15%)",
+    name: "Switzerland Deal Tariff (15% Including Base Duty)",
     description:
       "Except for products described in headings 9903.01.30–9903.01.33, 9903.02.78, and 9903.02.84–9903.02.86, and except as provided for inheadings 9903.01.34 and 9903.02.01, articles the product of Switzerland, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["CH"], codes: "all" },
@@ -2234,7 +2234,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.87",
     program: "deal-li",
-    name: "Liechtenstein Trade Deal Tariff (When General Duty >=15%)",
+    name: "Liechtenstein Deal Tariff (Base Duty 15% or More)",
     description:
       "Except for products described in headings 9903.01.30–9903.01.33, 9903.02.78, and 9903.02.89–9903.02.91, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Liechtenstein, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["LI"], codes: "all" },
@@ -2258,7 +2258,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.88",
     program: "deal-li",
-    name: "Liechtenstein Trade Deal Tariff (Tops General Duty Up to 15%)",
+    name: "Liechtenstein Deal Tariff (15% Including Base Duty)",
     description:
       "Except for products described in headings 9903.01.30–9903.01.33, 9903.02.78, and 9903.02.89–9903.02.91, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of Liechtenstein, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: { countries: ["LI"], codes: "all" },

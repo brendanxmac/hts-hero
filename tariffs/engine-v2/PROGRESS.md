@@ -241,6 +241,19 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 8: Plainer tariff titles (branch `fix/tariff-titles`)
+
+- **278 title changes** (the `name` shown on the Duty Breakdown and Possible Adjustments); codes, rates, dates and amounts are unchanged. Every change and its reason is in `title-changes.md` (review copy, not committed). The conventions are now in HowTariffsWork.md §Tariff.
+- **12 titles were wrong**, among them:
+  - 9903.03.02 said "or" where the exemption needs both conditions.
+  - 9903.74.03 was labeled an exemption but charges the duty.
+  - 9903.74.07 said "over 25 years" where the note says at least 25.
+  - Three Russia metals headings had the same title.
+- **Section 338 titles:** `duty()` in `338-canada.ts` now takes the title.
+- **Flagged, not changed:**
+  - 9903.94.44's stored description says "less than 15 percent", but its condition (and the HTS) is 15% or more.
+  - The descriptions of 9903.76.01–.22 are still "TODO".
+
 ## Oct 8: Section 301 China exclusions need confirmation for described products (branch `fix/301-china-exclusions`)
 
 - **Two kinds of exclusion in U.S. note 20(vvv).**

@@ -55,7 +55,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.03",
     program: "301-brazil",
-    name: "Section 301 Brazil Exemption: Specific Articles",
+    name: "Section 301 Brazil Exemption: Listed Products",
     description:
       "Articles the product of Brazil, as provided for in subdivision (a)(ii) of U.S. note 50 to this subchapter",
     scope: {
@@ -69,7 +69,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.04",
     program: "301-brazil",
-    name: "Section 301 Brazil Exemption: Particular Articles",
+    name: "Section 301 Brazil Exemption: Described Products",
     description:
       "Articles the product of Brazil, as provided for in subdivision (a)(iii) of U.S. note 50 to this subchapter",
     scope: {
@@ -149,7 +149,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.08",
     program: "301-brazil",
-    name: "Section 301 Brazil Exemption: Donation",
+    name: "Section 301 Brazil Exemption: Donations",
     description:
       "Articles the product of Brazil that are donations by persons subject to the jurisdiction of the United States, such as food, clothing and medicine, intended to be used to relieve human suffering",
     scope: {
@@ -164,7 +164,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.09",
     program: "301-brazil",
-    name: "Section 301 Brazil Exemption: Information Material",
+    name: "Section 301 Brazil Exemption: Informational Materials",
     description:
       "Articles the product of Brazil that are informational materials, including but not limited to publications, films, posters, phonograph records, photographs, microfilms, microfiche, tapes, compact disks, CD ROMs, artworks and news wire feeds",
     scope: {

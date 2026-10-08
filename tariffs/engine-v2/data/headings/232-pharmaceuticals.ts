@@ -42,7 +42,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.60",
     program: PROGRAM,
-    name: "Section 232 – Patented Pharmaceuticals",
+    name: "Section 232 Pharmaceuticals: Patented Pharmaceuticals",
     description:
       "Except as provided in heading 9903.04.61, patented pharmaceutical articles as provided for in subdivisions (c) and (d) of U.S. note 40 to this subchapter",
     scope: {
@@ -60,7 +60,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.61",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: Companies Identified by the Secretary (Before Sep 29, 2026)",
+    name: "Section 232 Pharmaceuticals: Companies Identified by Commerce",
     description:
       "Patented pharmaceutical articles entered before 12:01 a.m. eastern time on September 29, 2026 as provided for in subdivisions (c) and (e) of U.S. note 40 to this subchapter",
     scope: {
@@ -76,7 +76,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.62",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: Japan, EU, South Korea, Switzerland, Liechtenstein (15% Total)",
+    name: "Section 232 Pharmaceuticals: EU, Japan, South Korea, Switzerland, Liechtenstein (15% Including Base Duty)",
     description:
       "Patented pharmaceutical articles that are the product of Japan, of a European Union member country, of South Korea, of Switzerland, or of Liechtenstein as provided for in subdivisions (c) and (f) of U.S. note 40 to this subchapter",
     scope: {

@@ -7,7 +7,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.79.01",
     program: "232-semiconductors",
-    name: "Semiconductor Articles Possibly Subject to Additional Tariffs",
+    name: "Section 232 Semiconductors: Certain Advanced Computing Chips",
     description:
       "Semiconductor articles as provided for in subdivisions (a) and (b) of U.S. note 39 to this subchapter",
     scope: {

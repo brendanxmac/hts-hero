@@ -506,7 +506,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.38",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – the European Union (General Duty ≥10%)",
+    name: "Section 301 Forced Labor – the European Union (Base Duty 10% or More)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92 and 9903.05.97, articles the product of a member state of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 10 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -534,7 +534,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.39",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – the European Union (Tops General Duty Up to 10%)",
+    name: "Section 301 Forced Labor – the European Union (10% Including Base Duty)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92 and 9903.05.97, articles the product of a member state of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 10 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -777,7 +777,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.48",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – Japan (General Duty ≥12.5%)",
+    name: "Section 301 Forced Labor – Japan (Base Duty 12.5% or More)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92, articles the product of Japan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 12.5 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -804,7 +804,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.49",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – Japan (Tops General Duty Up to 12.5%)",
+    name: "Section 301 Forced Labor – Japan (12.5% Including Base Duty)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92, articles the product of Japan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 12.5 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -1356,7 +1356,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.70",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – South Korea (General Duty ≥12.5%)",
+    name: "Section 301 Forced Labor – South Korea (Base Duty 12.5% or More)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 12.5 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -1383,7 +1383,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.71",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – South Korea (Tops General Duty Up to 12.5%)",
+    name: "Section 301 Forced Labor – South Korea (12.5% Including Base Duty)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 12.5 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -1436,7 +1436,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.73",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – Switzerland (General Duty ≥12.5%)",
+    name: "Section 301 Forced Labor – Switzerland (Base Duty 12.5% or More)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92 and 9903.05.98, articles the product of Switzerland, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 12.5 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -1464,7 +1464,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.74",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – Switzerland (Tops General Duty Up to 12.5%)",
+    name: "Section 301 Forced Labor – Switzerland (12.5% Including Base Duty)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92 and 9903.05.98, articles the product of Switzerland, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 12.5 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -1492,7 +1492,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.75",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – Taiwan (General Duty ≥10%)",
+    name: "Section 301 Forced Labor – Taiwan (Base Duty 10% or More)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92 and 9903.06.14–9903.06.15, articles the product of Taiwan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 10 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -1521,7 +1521,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.76",
     program: PROGRAM,
-    name: "Section 301 Forced Labor – Taiwan (Tops General Duty Up to 10%)",
+    name: "Section 301 Forced Labor – Taiwan (10% Including Base Duty)",
     description:
       "Except for products described in headings 9903.05.85–9903.05.92 and 9903.06.14–9903.06.15, articles the product of Taiwan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 10 percent, as provided for in U.S. note 52 to this subchapter",
     scope: {
@@ -1776,7 +1776,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.86",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles",
+    name: "Section 301 Forced Labor Exemption: Listed Products",
     description:
       "Articles provided for in subdivision (b) of U.S. note 52 to this subchapter",
     scope: {
@@ -1790,7 +1790,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.87",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles",
+    name: "Section 301 Forced Labor Exemption: Described Products",
     description:
       "Articles provided for in subdivision (c) of U.S. note 52 to this subchapter",
     scope: {
@@ -1875,7 +1875,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.91",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Donation",
+    name: "Section 301 Forced Labor Exemption: Donations",
     description:
       "Articles that are donations by persons subject to the jurisdiction of the United States, such as food, clothing and medicine, intended to be used to relieve human suffering",
     scope: {
@@ -1890,7 +1890,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.92",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Information Material",
+    name: "Section 301 Forced Labor Exemption: Informational Materials",
     description:
       "Articles that are informational materials, including but not limited to publications, films, posters, phonograph records, photographs, microfilms, microfiche, tapes, compact disks, CD ROMs, artworks and news wire feeds",
     scope: {
@@ -2000,7 +2000,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.99",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of Malaysia",
+    name: "Section 301 Forced Labor Exemption: Listed Products of Malaysia",
     description:
       "Articles the product of Malaysia, as provided for in subdivision (j)(4)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2014,7 +2014,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.01",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of Malaysia",
+    name: "Section 301 Forced Labor Exemption: Described Products of Malaysia",
     description:
       "Articles the product of Malaysia, as provided for in subdivision (j)(4)(ii) of U.S. note 52 to this subchapter",
     scope: {
@@ -2028,7 +2028,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.02",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of Cambodia",
+    name: "Section 301 Forced Labor Exemption: Listed Products of Cambodia",
     description:
       "Articles the product of Cambodia, as provided for in subdivision (j)(5)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2042,7 +2042,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.03",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of Cambodia",
+    name: "Section 301 Forced Labor Exemption: Described Products of Cambodia",
     description:
       "Articles the product of Cambodia, as provided for in subdivision (j)(5)(ii) of U.S. note 52 to this subchapter",
     scope: {
@@ -2056,7 +2056,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.04",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of Guatemala",
+    name: "Section 301 Forced Labor Exemption: Listed Products of Guatemala",
     description:
       "Articles the product of Guatemala, as provided for in subdivision (j)(6)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2070,7 +2070,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.05",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of Guatemala",
+    name: "Section 301 Forced Labor Exemption: Described Products of Guatemala",
     description:
       "Articles the product of Guatemala, as provided for in subdivision (j)(6)(ii) of U.S. note 52 to this subchapter",
     scope: {
@@ -2099,7 +2099,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.07",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of El Salvador",
+    name: "Section 301 Forced Labor Exemption: Listed Products of El Salvador",
     description:
       "Articles the product of El Salvador, as provided for in subdivision (j)(7)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2113,7 +2113,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.08",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of El Salvador",
+    name: "Section 301 Forced Labor Exemption: Described Products of El Salvador",
     description:
       "Articles the product of El Salvador, as provided for in subdivision (j)(7)(ii) of U.S. note 52 to this subchapter",
     scope: {
@@ -2142,7 +2142,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.10",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of Argentina",
+    name: "Section 301 Forced Labor Exemption: Listed Products of Argentina",
     description:
       "Articles the product of Argentina, as provided for in subdivision (j)(8)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2156,7 +2156,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.11",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of Argentina",
+    name: "Section 301 Forced Labor Exemption: Described Products of Argentina",
     description:
       "Articles the product of Argentina, as provided for in subdivision (j)(8)(ii) of U.S. note 52 to this subchapter",
     scope: {
@@ -2170,7 +2170,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.12",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of Bangladesh",
+    name: "Section 301 Forced Labor Exemption: Listed Products of Bangladesh",
     description:
       "Articles the product of Bangladesh, as provided for in subdivision (j)(9)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2184,7 +2184,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.13",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of Bangladesh",
+    name: "Section 301 Forced Labor Exemption: Described Products of Bangladesh",
     description:
       "Articles the product of Bangladesh, as provided for in subdivision (j)(9)(ii) of U.S. note 52 to this subchapter",
     scope: {
@@ -2198,7 +2198,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.14",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of Taiwan",
+    name: "Section 301 Forced Labor Exemption: Listed Products of Taiwan",
     description:
       "Articles the product of Taiwan, as provided for in subdivision (j)(10)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2212,7 +2212,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.15",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of Taiwan",
+    name: "Section 301 Forced Labor Exemption: Described Products of Taiwan",
     description:
       "Articles the product of Taiwan, as provided for in subdivision (j)(10)(ii) of U.S. note 52 to this subchapter",
     scope: {
@@ -2226,7 +2226,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.16",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of Indonesia",
+    name: "Section 301 Forced Labor Exemption: Listed Products of Indonesia",
     description:
       "Articles the product of Indonesia, as provided for in subdivision (j)(11)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2240,7 +2240,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.17",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of Indonesia",
+    name: "Section 301 Forced Labor Exemption: Described Products of Indonesia",
     description:
       "Articles the product of Indonesia, as provided for in subdivision (j)(11)(ii) of U.S. note 52 to this subchapter",
     scope: {
@@ -2254,7 +2254,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.18",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of Ecuador",
+    name: "Section 301 Forced Labor Exemption: Listed Products of Ecuador",
     description:
       "Articles the product of Ecuador, as provided for in subdivision (j)(12)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2268,7 +2268,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.19",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of Ecuador",
+    name: "Section 301 Forced Labor Exemption: Described Products of Ecuador",
     description:
       "Articles the product of Ecuador, as provided for in subdivision (j)(12)(ii) of U.S. note 52 to this subchapter",
     scope: {
@@ -2282,7 +2282,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.20",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Specific Articles of Jordan",
+    name: "Section 301 Forced Labor Exemption: Listed Products of Jordan",
     description:
       "Articles the product of Jordan, as provided for in subdivision (j)(13)(i) of U.S. note 52 to this subchapter",
     scope: {
@@ -2296,7 +2296,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.06.21",
     program: PROGRAM,
-    name: "Section 301 Forced Labor Exemption: Particular Articles of Jordan",
+    name: "Section 301 Forced Labor Exemption: Described Products of Jordan",
     description:
       "Articles the product of Jordan, as provided for in subdivision (j)(13)(ii) of U.S. note 52 to this subchapter",
     scope: {

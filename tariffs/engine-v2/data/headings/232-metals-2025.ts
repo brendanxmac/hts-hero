@@ -25,7 +25,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.87",
     program: "232-metals",
-    name: "Section 232 Steel (50%)",
+    name: "Section 232 Steel",
     description:
       "Except for derivative iron or steel products described in headings 9903.81.89, 9903.81.90 or 9903.81.91, products of iron or steel provided for in the tariff headings or subheadings enumerated in subdivision (j) of note 16 to this subchapter",
     scope: {
@@ -44,7 +44,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.88",
     program: "232-metals",
-    name: "Section 232 Steel (50%), FTZ Privileged Foreign Status Before June 4, 2025",
+    name: "Section 232 Steel: Admitted to a Foreign Trade Zone Before June 4, 2025",
     description:
       'Products of iron or steel provided for in the tariff headings or subheadings enumerated in subdivision (j) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under "privileged foreign status" as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025',
     scope: {
@@ -67,7 +67,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.89",
     program: "232-metals",
-    name: "Section 232 Steel Derivatives, Note 16(l) (50%)",
+    name: "Section 232 Steel: Nails, Tacks and Vehicle Stampings",
     description:
       "Derivative iron or steel products provided for in the tariff provisions enumerated in subdivision (l) of note 16 to this subchapter",
     scope: {
@@ -86,7 +86,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.90",
     program: "232-metals",
-    name: "Section 232 Steel Derivatives, Note 16(m) (50%)",
+    name: "Section 232 Steel: Derivative Articles of Iron or Steel",
     description:
       "Except as provided in heading 9903.81.92, derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision (m) of note 16 to this subchapter",
     scope: {
@@ -113,7 +113,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.91",
     program: "232-metals",
-    name: "Section 232 Steel Derivatives, Note 16(n) (50% of Steel Content)",
+    name: "Section 232 Steel: Other Derivative Products (Steel Content Only)",
     description:
       "Except as provided in heading 9903.81.92, derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision (n) of note 16 to this subchapter",
     scope: {
@@ -132,7 +132,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.92",
     program: "232-metals",
-    name: "Section 232 Steel Derivatives Processed Abroad from U.S.-Melted Steel (No Additional Duty)",
+    name: "Section 232 Steel Exemption: Derivatives Made Abroad From U.S.-Melted Steel",
     description:
       "Derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision subdivisions (m), (n), (t) or (u) of note 16 to this subchapter, where the derivative iron or steel product was processed in another country from steel articles that were melted and poured in the United States",
     scope: {
@@ -160,7 +160,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.93",
     program: "232-metals",
-    name: "Section 232 Steel Derivatives (50%), FTZ Privileged Foreign Status Before June 4, 2025",
+    name: "Section 232 Steel: Derivatives Admitted to a Foreign Trade Zone Before June 4, 2025",
     description:
       'Except as provided in headings 9903.81.91 or 9903.81.92, derivative products of iron or steel, as specified in subdivisions (l) and (m) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under "privileged foreign status" as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025',
     scope: {
@@ -187,7 +187,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.94",
     program: "232-metals",
-    name: "Section 232 Steel of the United Kingdom (25%)",
+    name: "Section 232 Steel: United Kingdom",
     description:
       "Except for derivative iron or steel products described in headings 9903.81.96, 9903.81.97 or 9903.81.98, products of iron or steel of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (q) of note 16 to this subchapter",
     scope: { countries: ["GB"], codes: [{ list: "steel16j2025" }] },
@@ -200,7 +200,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.95",
     program: "232-metals",
-    name: "Section 232 Steel of the United Kingdom (25%), FTZ Privileged Foreign Status Before June 4, 2025",
+    name: "Section 232 Steel: United Kingdom, Admitted to a Foreign Trade Zone Before June 4, 2025",
     description:
       'Products of iron or steel of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (q) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under "privileged foreign status" as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025',
     scope: { countries: ["GB"], codes: [{ list: "steel16j2025" }] },
@@ -219,7 +219,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.96",
     program: "232-metals",
-    name: "Section 232 Steel Derivatives of the United Kingdom, Note 16(s) (25%)",
+    name: "Section 232 Steel: United Kingdom Nails, Tacks and Vehicle Stampings",
     description:
       "Derivative iron or steel products of the United Kingdom provided for in the tariff subheadings enumerated in subdivision (s) of note 16 to this subchapter",
     scope: { countries: ["GB"], codes: [{ list: "steelDerivatives16l2025" }] },
@@ -232,7 +232,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.97",
     program: "232-metals",
-    name: "Section 232 Steel Derivatives of the United Kingdom, Note 16(t) (25%)",
+    name: "Section 232 Steel: United Kingdom Derivative Articles of Iron or Steel",
     description:
       "Except as provided in heading 9903.81.92, derivative iron or steel products of the United Kingdom provided for in the tariff subheadings enumerated in subdivision (t) of note 16 to this subchapter",
     scope: {
@@ -256,7 +256,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.98",
     program: "232-metals",
-    name: "Section 232 Steel Derivatives of the United Kingdom, Note 16(u) (25% of Steel Content)",
+    name: "Section 232 Steel: United Kingdom Other Derivative Products (Steel Content Only)",
     description:
       "Except as provided in heading 9903.81.92, derivative iron or steel products of the United Kingdom provided for in the tariff subheadings enumerated in subdivision (u) of note 16 to this subchapter",
     scope: { countries: ["GB"], codes: [{ list: "steelDerivatives16n2025" }] },
@@ -271,7 +271,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.81.99",
     program: "232-metals",
-    name: "Section 232 Steel Derivatives of the United Kingdom (25%), FTZ Privileged Foreign Status Before June 4, 2025",
+    name: "Section 232 Steel: United Kingdom Derivatives Admitted to a Foreign Trade Zone Before June 4, 2025",
     description:
       "Except as provided in headings 9903.81.98 or 9903.81.92, derivative products of iron or steel of the United Kingdom, as specified in subdivisions (s) and (t) of note 16 to this subchapter, admitted to a U.S.foreign trade zone under ''privileged foreign status'' as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025",
     scope: {
@@ -297,7 +297,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.02",
     program: "232-metals",
-    name: "Section 232 Aluminum (50%)",
+    name: "Section 232 Aluminum",
     description:
       "Except as provided in headings 9903.85.67 or 9903.85.69, products of aluminum provided for in the tariff headings or subheadings enumerated in subdivision (g) of note 19 to this subchapter",
     scope: {
@@ -320,7 +320,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.04",
     program: "232-metals",
-    name: "Section 232 Aluminum Derivatives, Note 19(i) (50%)",
+    name: "Section 232 Aluminum: Stranded Wire and Vehicle Stampings",
     description:
       "Except as provided in headings 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings or subheadings enumerated in subdivision (i) of note 19 to this subchapter",
     scope: {
@@ -344,7 +344,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.07",
     program: "232-metals",
-    name: "Section 232 Aluminum Derivatives, Note 19(j) (50%)",
+    name: "Section 232 Aluminum: Derivative Articles of Aluminum",
     description:
       "Except as provided in headings 9903.85.09, 9903.85.68 or 9903.85.70, derivative aluminum products, provided for in the tariff provisions enumerated in subdivision (j) of note 19 to this subchapter",
     scope: {
@@ -373,7 +373,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.08",
     program: "232-metals",
-    name: "Section 232 Aluminum Derivatives, Note 19(k) (50% of Aluminum Content)",
+    name: "Section 232 Aluminum: Other Derivative Products (Aluminum Content Only)",
     description:
       "Except as provided in heading 9903.85.09, 9903.85.68 or 9903.85.70, derivative aluminum products, provided for in the tariff provisions enumerated in subdivision (k) of note 19 to this subchapter",
     scope: {
@@ -392,7 +392,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.09",
     program: "232-metals",
-    name: "Section 232 Aluminum Derivatives Processed Abroad from U.S.-Smelted Aluminum (No Additional Duty)",
+    name: "Section 232 Aluminum Exemption: Derivatives Made Abroad From U.S.-Smelted Aluminum",
     description:
       "Except as provided in heading 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings and subheadings enumerated in subdivisions (j), (k), (r) or (s) of note 19 to this subchapter, where the derivative aluminum products were processed in another country from aluminum articles that were smelted and cast in the United States",
     scope: {
@@ -413,7 +413,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.12",
     program: "232-metals",
-    name: "Section 232 Aluminum of the United Kingdom (25%)",
+    name: "Section 232 Aluminum: United Kingdom",
     description:
       "Except as provided in headings 9903.85.67 or 9903.85.69, products of aluminum of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (o) of note 19 to this subchapter",
     scope: { countries: ["GB"], codes: [{ list: "aluminum19g2025" }] },
@@ -432,7 +432,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.13",
     program: "232-metals",
-    name: "Section 232 Aluminum Derivatives of the United Kingdom, Note 19(q) (25%)",
+    name: "Section 232 Aluminum: United Kingdom Stranded Wire and Vehicle Stampings",
     description:
       "Except as provided in headings 9903.85.68 or 9903.85.70, derivative aluminum products of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (q) of note 19 to this subchapter",
     scope: {
@@ -455,7 +455,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.14",
     program: "232-metals",
-    name: "Section 232 Aluminum Derivatives of the United Kingdom, Note 19(r) (25%)",
+    name: "Section 232 Aluminum: United Kingdom Derivative Articles of Aluminum",
     description:
       "Except as provided in headings 9903.85.09, 9903.85.68 or 9903.85.70, derivative aluminum products of the United Kingdom, provided for in the tariff provisions enumerated in subdivision (r) of note 19 to this subchapter",
     scope: {
@@ -475,7 +475,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.15",
     program: "232-metals",
-    name: "Section 232 Aluminum Derivatives of the United Kingdom, Note 19(s) (25% of Aluminum Content)",
+    name: "Section 232 Aluminum: United Kingdom Other Derivative Products (Aluminum Content Only)",
     description:
       "Except as provided in heading 9903.85.09, 9903.85.68 or 9903.85.70, derivative aluminum products, provided for in the tariff provisions enumerated in subdivision (s) of note 19 to this subchapter",
     scope: {
@@ -493,7 +493,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.69",
     program: "232-metals",
-    name: "Aluminum Smelted or Cast in Russia (200%), FTZ Privileged Foreign Status Before April 10, 2023",
+    name: "Section 232 Aluminum: Russian Aluminum Admitted to a Foreign Trade Zone Before April 10, 2023",
     description:
       'Except for goods provided for in heading 9903.85.67, aluminum articles that are the product of Russia, or where any amount of primary aluminum used in the manufacture of the aluminum articles is smelted in Russia, or where the aluminum articles are cast in Russia, the foregoing under the terms of note 19(a)(vii)(A) to this subchapter, or note 19(m)(A) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, admitted into a U.S. foreign trade zone under "privileged foreign status" as defined in 19 CFR 146.41, prior to 12:01 a.m. eastern standard time on April 10, 2023, except any exclusions that may be determined and announced by the Department of Commerce',
     scope: { countries: ["RU"], codes: [{ list: "aluminum19g2025" }] },
@@ -513,7 +513,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.85.70",
     program: "232-metals",
-    name: "Derivative Aluminum Smelted or Cast in Russia (200%), FTZ Privileged Foreign Status Before April 10, 2023",
+    name: "Section 232 Aluminum: Russian Aluminum Derivatives Admitted to a Foreign Trade Zone Before April 10, 2023",
     description:
       'Except for goods provided for in heading 9903.85.68, derivative aluminum articles that are products of Russia, or where any amount of primary aluminum used in the manufacture of the derivative aluminum articles is smelted in Russia, or where the derivative aluminum articles are cast in Russia, when such derivative articles are provided for in the headings or subheadings enumerated in note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, admitted into a U.S. foreign trade zone under "privileged foreign status" as defined in 19 CFR 146.41, prior to 12:01 a.m. eastern standard time on April 10, 2023, except any exclusions that may be determined and announced by the Department of Commerce',
     scope: { countries: ["RU"], codes: [{ list: "9903.85.68" }] },
@@ -533,7 +533,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.78.01",
     program: "232-metals",
-    name: "Section 232 Copper (50% of Copper Content)",
+    name: "Section 232 Copper: Copper Content",
     description:
       "Semi-finished copper and intensive copper derivative products provided for in subdivision (b) of note 36 to this subchapter",
     scope: { countries: "all", codes: [{ list: "copper36b2025" }] },
@@ -547,7 +547,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.78.02",
     program: "232-metals",
-    name: "Section 232 Copper: Non-Copper Content (No Additional Duty)",
+    name: "Section 232 Copper Exemption: Non-Copper Content",
     description:
       "Articles as provided for in subdivision (c) of U.S. note 36 to this subchapter",
     scope: { countries: "all", codes: [{ list: "copper36b2025" }] },

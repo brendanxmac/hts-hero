@@ -28,7 +28,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.08.20",
     program: PROGRAM,
-    name: "Section 232 UAS: Not for Use With Unmanned Aircraft",
+    name: "Section 232 Drones Exemption: Not for Use With Drones",
     description:
       "Articles provided for in the enumerated provisions of subdivision (c) of U.S. note 43 to this subchapter that are not for use in or with the products described therein",
     // The general-purpose codes in (c)(1)–(2) (docking station parts, aircraft parts) aren't UAS
@@ -45,7 +45,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.08.21",
     program: PROGRAM,
-    name: "Section 232 – Unmanned Aircraft, Parts and Components (100%)",
+    name: "Section 232 Drones: Drones, Parts and Components",
     description:
       "Except as provided in headings 9903.08.23–9903.08.26, unmanned aircraft, their parts and components, as provided for in subdivisions (c)(1)–(3) of U.S. note 43 to this subchapter",
     scope: {
@@ -62,7 +62,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.08.22",
     program: PROGRAM,
-    name: "Section 232 – Unmanned Aircraft Without Thermal Imaging (25%)",
+    name: "Section 232 Drones: Drones Without Thermal Imaging",
     description:
       "Except as provided in headings 9903.08.23–9903.08.26, unmanned aircraft, as provided for in subdivision (c)(4) of U.S. note 43 to this subchapter",
     scope: {
@@ -79,7 +79,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.08.23",
     program: PROGRAM,
-    name: "Section 232 UAS: United Kingdom (Critical Components From the U.S. or Allies)",
+    name: "Section 232 Drones: United Kingdom (Critical Components From the U.S. or Allies)",
     description:
       "Unmanned aircraft, their parts and components that are the product of the United Kingdom, as provided for in subdivisions (d) of U.S. note 43 to this subchapter",
     scope: {
@@ -97,7 +97,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.08.24",
     program: PROGRAM,
-    name: "Section 232 UAS: Japan, Liechtenstein, South Korea, Switzerland, Taiwan, EU (15% Total)",
+    name: "Section 232 Drones: Japan, South Korea, Taiwan, Switzerland, Liechtenstein, EU (15% Including Base Duty)",
     description:
       "Unmanned aircraft, their parts and components that are the product of Japan, Liechtenstein, South Korea, Switzerland, Taiwan or a member nation of the European Union, as provided for in subdivisions (d) of U.S. note 43 to this subchapter",
     scope: {
@@ -116,7 +116,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.08.25",
     program: PROGRAM,
-    name: "Section 232 UAS: Onshoring Plan Approved by DHS or the Department of War",
+    name: "Section 232 Drones Exemption: Onshoring Plan Approved by DHS or the Department of War",
     description:
       "Unmanned aircraft, their parts and components, as provided for in subdivision (c) of U.S. note 43, imported for companies subject to an onshoring plan approved by the Department of Homeland Security or the Department of War",
     scope: {
@@ -132,7 +132,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.08.26",
     program: PROGRAM,
-    name: "Section 232 UAS: Onshoring Plan Approved by the Secretary of Commerce",
+    name: "Section 232 Drones Exemption: Onshoring Plan Approved by Commerce",
     description:
       "Unmanned aircraft, their parts and components, as provided for in subdivision (c) of U.S. note 43, imported subject to an onshoring plan approved by the Secretary of Commerce in accordance with a process to be established in a Federal Register notice",
     scope: {

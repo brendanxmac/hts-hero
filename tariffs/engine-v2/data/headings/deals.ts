@@ -30,7 +30,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.72",
     program: "deal-jp",
-    name: "Japan Trade Deal Tariff (When General Duty >=15%)",
+    name: "Japan Deal Tariff (Base Duty 15% or More)",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34, 9903.02.01, and 9903.96.02, articles the product of Japan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: {
@@ -61,7 +61,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.73",
     program: "deal-jp",
-    name: "Japan Trade Deal Tariff (Tops General Duty Up to 15%)",
+    name: "Japan Deal Tariff (15% Including Base Duty)",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33 and 9903.02.78, and except as provided for in headings 9903.01.34, 9903.02.01, and 9903.96.02, articles the product of Japan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: {
@@ -130,7 +130,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.74",
     program: "deal-eu",
-    name: "Articles of the European Union Exempt from Reciprocal Tariff",
+    name: "EU Deal Exemption: Listed Products",
     description:
       "Articles the product of the European Union, as provided for in subdivision (v)(xx) of U.S. note 2 to this subchapter",
     scope: {
@@ -151,7 +151,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.75",
     program: "deal-eu",
-    name: "Essential Oils of the European Union Exempt from Reciprocal Tariff",
+    name: "EU Deal Exemption: Essential Oils",
     description:
       "Articles the product of the European Union, as provided for in subdivision (v)(xxi) of U.S. note 2 to this subchapter",
     scope: {
@@ -176,7 +176,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.02.76",
       program: "deal-eu",
-      name: "Articles of Civil Aircraft of the European Union",
+      name: "EU Deal Exemption: Civil Aircraft",
       description:
         "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the European Union, excluding unmanned aircraft, provided for in subdivision (v)(xxii) of U.S. note 2 to this subchapter",
       scope: {
@@ -217,7 +217,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.77",
     program: "deal-eu",
-    name: "Non-patented Articles for Use in Pharmaceutical Applications of the European Union",
+    name: "EU Deal Exemption: Non-Patented Pharmaceutical Articles",
     description:
       "Articles the product of the European Union that are non-patented articles for use in pharmaceutical applications, provided for in subdivision (v)(xxiii) of U.S. note 2 to this subchapter",
     scope: {
@@ -239,7 +239,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.19",
     program: "deal-eu",
-    name: "EU Trade Deal Tariff (General Duty >= 15%)",
+    name: "EU Deal Tariff (Base Duty 15% or More)",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025,except for products described in headings 9903.01.30–9903.01.33 and 9903.02.78 and 9903.02.74–9903.02.77, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: {
@@ -273,7 +273,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.20",
     program: "deal-eu",
-    name: "EU Trade Deal Tariff (Tops General Duty Up to 15%)",
+    name: "EU Deal Tariff (15% Including Base Duty)",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30–9903.01.33 and 9903.02.78 and 9903.02.74–9903.02.77, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: {
@@ -310,7 +310,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.78",
     program: "ieepa-reciprocal",
-    name: "Agricultural Articles Exempt from Reciprocal Tariffs (Any Country)",
+    name: "IEEPA Reciprocal Exemption: Listed Agricultural Products",
     description:
       "Articles the product of any country, as provided for in subdivision (v)(iii)(b) of U.S. note 2 to this subchapter",
     scope: {
@@ -331,7 +331,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.79",
     program: "deal-kr",
-    name: "South Korea Trade Deal Tariff (When General Duty >=15%)",
+    name: "South Korea Deal Tariff (Base Duty 15% or More)",
     description:
       "Except for products described in headings 9903.01.30-9903.01.33, 9903.02.78, and 9903.02.81, and except as provided for in headings 9903.01.34, 9903.02.01, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent, as provided for in subdivision (v)(xxiv)(a) of U.S. note 2 to this subchapter",
     scope: {
@@ -362,7 +362,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.80",
     program: "deal-kr",
-    name: "South Korea Trade Deal Tariff (Tops General Duty Up to 15%)",
+    name: "South Korea Deal Tariff (15% Including Base Duty)",
     description:
       "Except for products described in headings 9903.01.30-9903.01.33, 9903.02.78, and 9903.02.81, and except as provided for in headings 9903.01.34, 9903.02.01, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General or column 1-Special less than 15 percent, as provided for in subdivision (v)(xxiv)(a) of U.S. note 2 to this subchapter",
     scope: {
@@ -400,7 +400,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.02.81",
       program: "deal-kr",
-      name: "Articles of Civil Aircraft of South Korea",
+      name: "South Korea Deal Exemption: Civil Aircraft",
       description:
         "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of South Korea, excluding unmanned aircraft, provided for in subdivision (v)(xxiv)(b) of U.S. note 2 to this subchapter",
       scope: {
