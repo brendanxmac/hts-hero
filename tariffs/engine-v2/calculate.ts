@@ -161,16 +161,16 @@ export const calculate = (
       const handler = conditionHandlers.get(condition.kind)
       if (!handler) throw new Error(`No condition handler "${condition.kind}"`)
       handler
-        .inputs(condition)
+        .inputs(condition, ctx)
         .forEach((id) => evaluation.consultedInputs.add(id))
       let result = handler.check(condition, ctx)
       if (result === "unknown") {
         handler
-          .inputs(condition)
+          .inputs(condition, ctx)
           .forEach((id) => evaluation.unknownInputs.add(id))
         result = condition.assume === true
         if (!result) evaluation.offForMissingAnswer = true
-      } else if (handler.inputs(condition).length > 0) {
+      } else if (handler.inputs(condition, ctx).length > 0) {
         evaluation.answered = true
       }
       if (!result) {

@@ -14893,13 +14893,17 @@
      "9401.91.15.00",
      "9401.99.10.85",
      "9404.90.10.60",
-     "9404.90.10.90"
+     "9404.90.10.90",
+     "7009.10.00.00",
+     "7326.90.86.88",
+     "8544.42.20.00"
     ],
     "effective": {
      "to": "2026-07-01"
     },
     "source": {
-     "revision": "2026HTSRev5"
+     "revision": "2026HTSRev5",
+     "note": " 7009.10.00.00, 7326.90.86.88 and 8544.42.20.00 added (Oct 2026 correction): U.S. note 20(vvv)(iii) items (38)–(39), (41) and (60) in every revision from 2026HTSRev3 to Rev20"
     }
    },
    {
@@ -15050,7 +15054,10 @@
      "8413.91.90.59",
      "8413.91.90.99",
      "3926.90.99.15",
-     "3926.90.99.20"
+     "3926.90.99.20",
+     "7009.10.00.00",
+     "7326.90.86.88",
+     "8544.42.20.00"
     ],
     "effective": {
      "from": "2026-07-01"
@@ -15058,7 +15065,7 @@
     "source": {
      "revision": "2026HTSRev18",
      "citation": "Notice",
-     "note": "U.S. note 20(vvv)(i)(4)-(6) and (iv)(4): the July 1, 2026 statistical numbers added; the old ones stay (cited elsewhere, and no longer HTS lines)"
+     "note": "U.S. note 20(vvv)(i)(4)-(6) and (iv)(4): the July 1, 2026 statistical numbers added; the old ones stay (cited elsewhere, and no longer HTS lines) 7009.10.00.00, 7326.90.86.88 and 8544.42.20.00 added (Oct 2026 correction): U.S. note 20(vvv)(iii) items (38)–(39), (41) and (60) in every revision from 2026HTSRev3 to Rev20"
     }
    }
   ]

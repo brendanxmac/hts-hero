@@ -2,6 +2,7 @@
 // Rule: once past results depend on a handler, never change its behavior; register a new kind.
 // See HowTariffsWork.md §11.
 
+import { codeMatches } from "./snapshot"
 import { Answers, IsoDate, RuleSnapshot, Tri } from "./types"
 
 export interface HandlerContext {
@@ -19,8 +20,9 @@ export interface HandlerContext {
 type Params = Record<string, unknown>
 
 export interface ConditionHandler {
-  // Input ids this condition reads (so the UI can ask for them)
-  inputs: (params: Params) => string[]
+  // Input ids this condition reads (so the UI can ask for them). Without a context (the
+  // validator), every input it can read; with one, those it reads for this entry
+  inputs: (params: Params, ctx?: HandlerContext) => string[]
   check: (params: Params, ctx: HandlerContext) => Tri
   describe: (params: Params) => string
 }
@@ -115,6 +117,21 @@ register(conditionHandlers, "inputCompare", {
     return compare(Number(value), p.op, p.value as number)
   },
   describe: (p) => `${String(p.input)} ${String(p.op)} ${String(p.value)}`,
+})
+
+// A yes/no answer asked only for codes on `list`; other codes pass without a question. For
+// headings whose list mixes whole statistical numbers with described products: USTR's Section 301
+// exclusions in U.S. note 20(vvv) cover a whole number, or only a product "described in" one.
+register(conditionHandlers, "answerForListedCodes", {
+  inputs: (p, ctx) =>
+    !ctx || codeMatches([{ list: p.list as string }], ctx.htsCode, ctx.snapshot) ? [p.input as string] : [],
+  check: (p, ctx) => {
+    if (!codeMatches([{ list: p.list as string }], ctx.htsCode, ctx.snapshot)) return true
+    const value = ctx.answers[p.input as string]
+    if (value === undefined || value === null) return "unknown"
+    return value === (p.equals ?? true)
+  },
+  describe: (p) => `${String(p.input)} = ${String(p.equals ?? true)} (codes on ${String(p.list)})`,
 })
 
 // The importer claims (or doesn't claim) one of the listed trade preferences (SPI symbols).

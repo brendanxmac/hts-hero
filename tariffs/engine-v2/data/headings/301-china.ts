@@ -111,37 +111,57 @@ export const headings: Tariff[] = [
   {
     code: "9903.88.69",
     program: "301-china",
-    name: "Articles of China from Ch.99, III, 20(vvv) (Exclusions)",
+    name: "Section 301 Exclusion Granted by USTR (U.S. Note 20(vvv))",
     description:
-      "Effective with respect to entries on or after June 15, 2024 and through November 29, 2025, articles the product of China, as provided for in U.S. note 20(vvv) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
+      "Effective with respect to entries on or after June 15, 2024 and through November 9, 2026, articles the product of China, as provided for in U.S. note 20(vvv) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
       countries: ["CN"],
       // TODO(list): "9903.88.69" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.88.69" }],
     },
+    // Whole statistical numbers (20(vvv)(i)–(ii)) apply as listed; for an exclusion of a product
+    // "described in" a number (20(vvv)(iii)–(iv)), the goods must be that product
+    requires: [
+      {
+        kind: "answerForListedCodes",
+        input: "confirm:9903.88.69",
+        equals: true,
+        list: "china301ExclusionDescribedProducts20vvv",
+      },
+    ],
     rate: { kind: "free" },
     effective: { from: "2024-06-15", to: "2026-11-10" },
     source: {
-      revision: "2026HTSRev5",
-      note: "Heading text says through Nov 29, 2025; the legacy name says the exclusions were extended to Nov 9, 2026",
+      revision: "2026HTSRev20",
+      citation:
+        "USTR notice of product exclusion extensions, 90 FR 55232 (FR Doc. 2025-21671)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-01/html/2025-21671.htm",
+      publishedOn: "2025-12-01",
+      note: 'The 178 exclusions extended for entries on or after 12:01 a.m. EST Nov 30, 2025 and before 11:59 p.m. EDT Nov 9, 2026; the heading reads "through November 9, 2026" from 2026HTSRev4 on. Described-product exclusions need confirmation (Oct 2026 correction: they applied to every good under the number)',
     },
   },
   {
     code: "9903.88.70",
     program: "301-china",
-    name: "Articles of China from Ch.99, III, 20(www) (Exclusions)",
+    name: "Section 301 Exclusion Granted by USTR (U.S. Note 20(www))",
     description:
-      "Effective with respect to entries on or after January 1, 2024, and through November 29, 2025, articles the product of China, as provided in U.S. note 20(www) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
+      "Effective with respect to entries on or after January 1, 2024, and through November 9, 2026, articles the product of China, as provided in U.S. note 20(www) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
       countries: ["CN"],
       // TODO(list): "9903.88.70" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
       codes: [{ list: "9903.88.70" }],
     },
+    // Every 20(www) exclusion is a product "described in" a number (solar wafer equipment)
+    requires: [confirm("9903.88.70")],
     rate: { kind: "free" },
     effective: { from: "2024-01-01", to: "2026-11-10" },
     source: {
-      revision: "2026HTSRev5",
-      note: "Heading text says through Nov 29, 2025; the legacy name says the exclusions were extended to Nov 9, 2026",
+      revision: "2026HTSRev20",
+      citation:
+        "USTR notice of product exclusion extensions, 90 FR 55232 (FR Doc. 2025-21671)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-01/html/2025-21671.htm",
+      publishedOn: "2025-12-01",
+      note: 'Extended with 9903.88.69 for entries before 11:59 p.m. EDT Nov 9, 2026; the heading reads "through November 9, 2026" from 2026HTSRev4 on. Needs confirmation (Oct 2026 correction: it applied to every good under the number)',
     },
   },
   {

@@ -256,6 +256,25 @@ describe("engine-v2: usContentPortion basis (note 2(v)(xvii), 9903.01.34)", () =
   })
 })
 
+describe("engine-v2: answerForListedCodes condition", () => {
+  const set = rules({
+    lists: [{ id: "described", kind: "hts", description: "", versions: [{ codes: ["7326.90.86.88"], effective: {} }] }],
+    tariffs: [
+      tariff({ code: "DUTY", exceptions: ["EXCLUSION"] }),
+      tariff({ code: "EXCLUSION", rate: { kind: "free" }, requires: [{ kind: "answerForListedCodes", input: "confirmed", equals: true, list: "described" }] }),
+    ],
+  })
+  it("asks for listed codes, and applies once answered", () => {
+    expect(line(calculate(set, input()), "EXCLUSION").status).toBe("needsAnswer")
+    expect(line(calculate(set, input({ answers: { confirmed: true } })), "EXCLUSION").status).toBe("applies")
+  })
+  it("applies to other codes without asking", () => {
+    const result = calculate(set, input({ htsCode: "8483.50.90.40" }))
+    expect(line(result, "EXCLUSION").status).toBe("applies")
+    expect(result.questions.some((q) => q.input.id === "confirmed")).toBe(false)
+  })
+})
+
 describe("engine-v2: conditions", () => {
   const set = rules({
     tariffs: [

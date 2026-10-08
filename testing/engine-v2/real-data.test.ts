@@ -1292,10 +1292,15 @@ describe("engine-v2 real data: 2026 Rev 18", () => {
     }
   })
 
+  // Updated Oct 2026 (correction, approved): these are exclusions of products "described in" the
+  // numbers (20(vvv)(iii)), so 9903.88.69 now applies once the goods are confirmed to be that
+  // product. Before, it applied to every Chinese good under the number.
   it("recognizes the 20(vvv) exclusions under the July 1, 2026 statistical numbers", () => {
-    expect(applying(calc("8413.91.90.39", "CN", "2026-07-15")).includes("9903.88.69")).toBe(true)
-    expect(applying(calc("3926.90.99.15", "CN", "2026-07-15")).includes("9903.88.69")).toBe(true)
-    expect(applying(calc("8413.91.90.39", "CN", "2026-06-15")).includes("9903.88.69")).toBe(false)
+    const exclusion = yes("9903.88.69")
+    expect(applying(calc("8413.91.90.39", "CN", "2026-07-15", exclusion)).includes("9903.88.69")).toBe(true)
+    expect(applying(calc("3926.90.99.15", "CN", "2026-07-15", exclusion)).includes("9903.88.69")).toBe(true)
+    expect(applying(calc("8413.91.90.39", "CN", "2026-06-15", exclusion)).includes("9903.88.69")).toBe(false)
+    expect(applying(calc("8413.91.90.39", "CN", "2026-07-15")).includes("9903.88.69")).toBe(false)
   })
 
   it("files lean beef trimmings under the additional quota (9903.54.02) when confirmed, at $0", () => {
@@ -1709,6 +1714,53 @@ describe("engine-v2 real data: 2026 Rev 4 (before Proclamation 11021)", () => {
 
   it("non-metal goods are unchanged across April 6", () => {
     expect(calc("0711.90.30.00", "DE", BEFORE, "8%").totalDuty).toBe(calc("0711.90.30.00", "DE", "2026-04-10", "8%").totalDuty)
+  })
+})
+
+// ============================================================
+// Correction (Oct 2026): Section 301 exclusions (9903.88.69/.70) for described products need a
+// confirmation; whole-number exclusions don't. Extended through Nov 9, 2026 (90 FR 55232).
+// ============================================================
+describe("engine-v2 real data: Section 301 China exclusions (corrections)", () => {
+  const calc = (htsCode: string, answers: Record<string, unknown> = {}, asOf = "2026-08-01") =>
+    calculate(AllRules, {
+      htsCode, country: "CN", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "3%", special: null, other: null }, answers: { steelContentPct: 60, ...answers },
+    })
+  const confirmed = { "confirm:9903.88.69": true }
+
+  it("steel cable hooks (20(vvv)(iii)(41)): 25% unless confirmed as the excluded product", () => {
+    expect(applying(calc("7326.90.86.88"))).toContain("9903.88.03")
+    const hooks = calc("7326.90.86.88", confirmed)
+    expect(applying(hooks)).toContain("9903.88.69")
+    expect(applying(hooks)).not.toContain("9903.88.03")
+  })
+
+  it("the other two added exclusions: rear-view mirrors and telecom conductors", () => {
+    for (const code of ["7009.10.00.00", "8544.42.20.00"]) {
+      expect(applying(calc(code))).toContain("9903.88.03")
+      expect(applying(calc(code, confirmed))).not.toContain("9903.88.03")
+    }
+  })
+
+  it("whole-number exclusions (20(vvv)(i)) apply without a question", () => {
+    const v2 = calc("8483.50.90.40")
+    expect(applying(v2)).toContain("9903.88.69")
+    expect(v2.questions.some((q) => q.input.id === "confirm:9903.88.69")).toBe(false)
+  })
+
+  it("asks only for described-product codes", () => {
+    expect(calc("7326.90.86.88").questions.some((q) => q.input.id === "confirm:9903.88.69")).toBe(true)
+  })
+
+  it("solar wafer equipment (20(www)) needs confirmation too", () => {
+    expect(applying(calc("8486.10.00.00"))).not.toContain("9903.88.70")
+    expect(applying(calc("8486.10.00.00", { "confirm:9903.88.70": true }))).toContain("9903.88.70")
+  })
+
+  it("the exclusions end with Nov 9, 2026", () => {
+    expect(applying(calc("8483.50.90.40", {}, "2026-11-09"))).toContain("9903.88.69")
+    expect(applying(calc("8483.50.90.40", {}, "2026-11-10"))).not.toContain("9903.88.69")
   })
 })
 

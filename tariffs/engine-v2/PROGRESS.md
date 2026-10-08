@@ -241,6 +241,19 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 8: Section 301 China exclusions need confirmation for described products (branch `fix/301-china-exclusions`)
+
+- **Two kinds of exclusion in U.S. note 20(vvv).**
+  - Parts (i)–(ii) list whole statistical numbers.
+  - Parts (iii)–(iv) describe a product within a number, e.g. "Cable hooks of steel … with spring loaded closure gate (described in statistical reporting number 7326.90.8688)".
+  - The engine applied 9903.88.69 to every code on its list, so all Chinese goods under the 120 described-product numbers lost their Section 301 duty.
+- **New condition `answerForListedCodes`.** It asks `confirm:9903.88.69` only for codes on `china301ExclusionDescribedProducts20vvv` (140 numbers). Whole-number exclusions still apply without a question.
+  - **Supporting change:** `ConditionHandler.inputs` takes an optional context, so the question shows only where it's needed.
+- **9903.88.70 (20(www), solar wafer equipment):** all of its exclusions are described products, so it now uses `confirm()`.
+- **Added the three missing exclusions:** 7009.10.00.00 (rear-view mirrors), 7326.90.86.88 (steel cable hooks) and 8544.42.20.00 (telecom conductors). Every revision from Rev 3 to Rev 20 lists them.
+- **Dates documented:** USTR's extension notice, 90 FR 55232 (Dec 1, 2025), extends "the 178 current exclusions" from 12:01 a.m. EST Nov 30, 2025 "before 11:59 p.m. eastern daylight time on November 9, 2026". The heading text now matches: "through November 9, 2026".
+- **Effect, a correction to verified data:** 351 results changed in the regression sweep, all Chinese goods on described-product codes. Unconfirmed, they pay Section 301 again; confirmed, it's $0 as before. The Rev 18 pinned case is updated with a comment.
+
 ## Oct 8: 2026 Rev 3 backfilled, with the IEEPA snapshot (branch `backfill/2026HTSRev3`)
 
 Verified data now starts at 2026HTSRev3 (Feb 12, 2026). See `tariffs/revision-diffs/2026HTSRev3/PLAN.md`.
