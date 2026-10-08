@@ -1882,3 +1882,63 @@ describe("engine-v2 real data: 2026 Rev 3 (IEEPA, until Feb 24, 2026)", () => {
     expect(ieepa(calc("8471.50.01.50", "TW", BEFORE, "Free", { "confirm:9903.79.01": true })).filter((c) => c !== "9903.01.32")).toEqual([])
   })
 })
+
+// 2026HTSRev2 backfill (from 2026HTSRev3's change record): India's extra 25% (U.S. note 2(z),
+// 9903.01.84–.89) applies to entries before Feb 7, 2026 (EO 14384). Rev 2 starts Jan 30.
+describe("engine-v2 real data: IEEPA India (2026HTSRev2 backfill)", () => {
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null }, answers,
+    })
+
+  it("adds 25% on top of India's reciprocal 25%, Jan 30 to Feb 6, 2026", () => {
+    for (const asOf of ["2026-01-30", "2026-02-06"]) {
+      const r = calc("6109.10.00.12", "IN", asOf, "16.5%")
+      expect(applying(r)).toEqual(["9903.01.84", "9903.02.26"])
+      expect(round(r.totalDuty)).toBe(6650)
+    }
+  })
+
+  it("ends for entries on or after Feb 7, 2026", () => {
+    for (const asOf of ["2026-02-07", "2026-02-12"]) {
+      const r = calc("6109.10.00.12", "IN", asOf, "16.5%")
+      expect(applying(r)).toEqual(["9903.02.26"])
+      expect(round(r.totalDuty)).toBe(4150)
+    }
+  })
+
+  it("doesn't apply to other countries", () => {
+    expect(applying(calc("6109.10.00.12", "VN", "2026-02-05", "16.5%"))).toEqual(["9903.02.69"])
+  })
+
+  it("exempts Annex II products (2(z)(ii))", () => {
+    const r = calc("2841.90.20.00", "IN", "2026-02-05", "3.1%")
+    expect(applying(r)).toContain("9903.01.86")
+    expect(applying(r)).not.toContain("9903.01.84")
+  })
+
+  it("exempts the 2(v)(iii)(b) particular articles once confirmed", () => {
+    expect(applying(calc("0811.90.80.40", "IN", "2026-02-05", "14.5%"))).toContain("9903.01.84")
+    const confirmed = calc("0811.90.80.40", "IN", "2026-02-05", "14.5%", { "confirm:9903.01.86": true })
+    expect(applying(confirmed)).toContain("9903.01.86")
+    expect(applying(confirmed)).not.toContain("9903.01.84")
+  })
+
+  it("exempts Section 232 articles, the whole article (2(z)(iii)–(xiii))", () => {
+    const r = calc("7208.51.00.30", "IN", "2026-02-05", "Free", { steelContentPct: 100 })
+    expect(applying(r)).toContain("9903.01.87")
+    expect(applying(r)).not.toContain("9903.01.84")
+    expect(round(r.totalDuty)).toBe(5000)
+  })
+
+  it("exempts donations", () => {
+    const r = calc("6109.10.00.12", "IN", "2026-02-05", "16.5%", { isDonation: true })
+    expect(applying(r)).toContain("9903.01.88")
+    expect(applying(r)).not.toContain("9903.01.84")
+  })
+
+  it("is first verified from 2026HTSRev2", () => {
+    expect(getVerifiedRevisions()[0].name).toBe("2026HTSRev2")
+  })
+})

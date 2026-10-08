@@ -1,4 +1,5 @@
-// IEEPA duties as they stood in 2026HTSRev3, for entries Feb 12–23, 2026: the fentanyl and
+// IEEPA duties as they stood in 2026HTSRev3, for entries Feb 12–23, 2026 (and unchanged in
+// 2026HTSRev2, from Jan 30: every subchapter III heading row compared in USITC's PDFs): the fentanyl and
 // border duties on Mexico, Canada and China, the reciprocal tariffs (baseline, exemptions and
 // country rates), Brazil, and the Swiss and Liechtenstein deals. EU, Japan and Korea are in
 // deals.ts. Everything ends with IEEPA for entries on or after 12:00 a.m. ET Feb 24, 2026

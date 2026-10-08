@@ -72,4 +72,6 @@ export const programs: Program[] = [
   { id: "ieepa-fentanyl-cn", name: "IEEPA – China and Hong Kong (Fentanyl)", authority: "IEEPA" },
   { id: "ieepa-reciprocal", name: "IEEPA – Reciprocal Tariffs", authority: "IEEPA" },
   { id: "ieepa-brazil", name: "IEEPA – Brazil", authority: "IEEPA" },
+  // Ended earlier, for entries on or after Feb 7, 2026 (EO 14384)
+  { id: "ieepa-india", name: "IEEPA – India (Russian Oil)", authority: "IEEPA" },
 ]

@@ -241,6 +241,15 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 8: 2026 Rev 2 backfilled: IEEPA India (branch `backfill/2026HTSRev2`)
+
+- **Verified from Jan 30, 2026.** `VerifiedTariffRevisions` now starts with "2026HTSRev2". Plan: `tariffs/revision-diffs/2026HTSRev2/PLAN.md`.
+- **New program `ieepa-india`** (authority IEEPA) in `data/headings/ieepa-india.ts`: India's 25% (9903.01.84) and its exemptions .85–.89 (U.S. note 2(z)).
+  - **Dates:** from Aug 27, 2025 (the heading text) to Feb 7, 2026 (EO 14384, 91 FR 6501).
+  - **9903.01.86** covers both parts of 2(v)(iii). The (b) particular articles need confirming, through `answerForListedCodes` (decided by the user).
+- **IEEPA snapshot holds for Rev 2.** Every subchapter III heading row in USITC's Rev 2 and Rev 3 PDFs was compared. The only changes are the India termination notes and the new 9903.54.01, an Argentine beef quota that isn't modeled. The 7 skipped note differences are extraction noise; for example, the PDF's note 33(g) does list 9401.20.00.
+- **Sweep:** 862 of 144,270 results changed, all Indian goods on Rev 2 dates; no verified date changed.
+
 ## Oct 8: Plainer tariff titles (branch `fix/tariff-titles`)
 
 - **284 title changes** (the `name` shown on the Duty Breakdown and Possible Adjustments); codes, rates, dates and amounts are unchanged. Every change and its reason is in `title-changes.md` (review copy, not committed). The conventions are now in HowTariffsWork.md §Tariff.

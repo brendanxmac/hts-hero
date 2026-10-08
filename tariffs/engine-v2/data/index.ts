@@ -8,6 +8,7 @@ import { headings as section232Autos } from "./headings/232-autos"
 import { headings as section232Metals } from "./headings/232-metals"
 import { headings as section232Metals2025 } from "./headings/232-metals-2025"
 import { headings as ieepa2026 } from "./headings/ieepa-2026"
+import { headings as ieepaIndia } from "./headings/ieepa-india"
 import { headings as section232Mhdv } from "./headings/232-mhdv"
 import { headings as section232Pharmaceuticals } from "./headings/232-pharmaceuticals"
 import { headings as section232Uas } from "./headings/232-uas"
@@ -44,6 +45,7 @@ const tariffs = [
   ...section232Metals,
   ...section232Metals2025,
   ...ieepa2026,
+  ...ieepaIndia,
   ...section232Autos,
   ...section232Wood,
   ...section232Mhdv,
