@@ -1994,8 +1994,81 @@ describe("engine-v2 real data: 2026HTSBasic backfill (Section 232 semiconductors
     expect(round(india.totalDuty)).toBe(6650)
   })
 
-  it("is first verified from 2026HTSBasic, Dec 31, 2025", () => {
-    expect(getVerifiedRevisions()[0].name).toBe("2026HTSBasic")
-    expect(getVerifiedRevisions()[0].from).toBe("2025-12-31")
+  it("2026HTSBasic is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSBasic")
+  })
+})
+
+// 2025HTSRev32 backfill (from 2026HTSBasic's change record). The Switzerland–Liechtenstein deal
+// applies from Nov 14, 2025 (Commerce/USTR notice, 90 FR 59281; retroactive, published Dec 18).
+// Rev 32 runs from Dec 5, 2025.
+describe("engine-v2 real data: 2025HTSRev32 backfill (Switzerland and Liechtenstein deal)", () => {
+  const calc = (htsCode: string, country: string, asOf: string, general: string, claimedPreference?: string) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null }, claimedPreference,
+    })
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))!
+
+  it("Switzerland pays its 39% reciprocal rate before Nov 14, 2025, and the deal from then on", () => {
+    const before = calc("6109.10.00.12", "CH", "2025-11-13", "16.5%")
+    expect(applying(before)).toEqual(["9903.02.58"])
+    expect(round(before.totalDuty)).toBe(5550)
+    expect(applying(calc("6109.10.00.12", "CH", "2025-11-14", "16.5%"))).toEqual(["9903.02.82"])
+    expect(round(calc("6109.10.00.12", "CH", "2025-12-10", "16.5%").totalDuty)).toBe(1650)
+    // Base duty under 15%: topped up to 15%
+    expect(round(calc("6307.90.98.70", "CH", "2025-11-14", "7%").totalDuty)).toBe(1500)
+  })
+
+  it("Liechtenstein pays its 15% reciprocal rate before Nov 14, 2025", () => {
+    expect(applying(calc("6109.10.00.12", "LI", "2025-11-13", "16.5%"))).toEqual(["9903.02.36"])
+    expect(applying(calc("6307.90.98.70", "LI", "2025-11-14", "7%"))).toEqual(["9903.02.88"])
+  })
+
+  it("the 10% baseline excepts the Swiss and Liechtenstein headings before the deal", () => {
+    expect(recordOn("9903.01.25", "2025-11-13").exceptions).toContain("9903.02.58")
+    expect(recordOn("9903.01.25", "2025-11-13").exceptions).not.toContain("9903.02.82")
+    expect(recordOn("9903.01.25", "2025-11-14").exceptions).toContain("9903.02.82")
+  })
+
+  it("9903.02.74–.77 keep Rev 32's cross-references until Jan 1, 2026", () => {
+    expect(recordOn("9903.02.74", "2025-12-20").description.includes("(v)(xvi) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2026-01-01").description.includes("(v)(xix) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2026-01-15").description.includes("(v)(xx) of")).toBe(true)
+  })
+
+  it("other countries are unchanged in Rev 32", () => {
+    expect(round(calc("6109.10.00.12", "VN", "2025-12-10", "16.5%").totalDuty)).toBe(3650)
+  })
+
+  it("is first verified from 2025HTSRev32, Dec 5, 2025", () => {
+    expect(getVerifiedRevisions()[0].name).toBe("2025HTSRev32")
+    expect(getVerifiedRevisions()[0].from).toBe("2025-12-05")
+  })
+})
+
+// Section 301 – Nicaragua (U.S. note 29, 9903.89.01; USTR, 90 FR 57807): 0% in 2026, 10% in
+// 2027, 15% from 2028, not on CAFTA-DR originating goods
+describe("engine-v2 real data: Section 301 Nicaragua", () => {
+  const calc = (asOf: string, claimedPreference?: string) =>
+    calculate(AllRules, {
+      htsCode: "6109.10.00.12", country: "NI", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "16.5%", special: "Free (AU,BH,CL,CO,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: null }, claimedPreference,
+    })
+  const line = (asOf: string, claimedPreference?: string) => calc(asOf, claimedPreference).lines.find((l) => l.code === "9903.89.01" && l.status === "applies")
+
+  it("starts Jan 1, 2026 at 0%", () => {
+    expect(line("2025-12-31")).toBe(undefined)
+    expect(line("2026-01-05")!.amount).toBe(0)
+  })
+
+  it("rises to 10% in 2027 and 15% from 2028", () => {
+    expect(round(line("2027-01-05")!.amount)).toBe(1000)
+    expect(round(line("2028-01-05")!.amount)).toBe(1500)
+  })
+
+  it("doesn't apply to CAFTA-DR originating goods", () => {
+    expect(line("2027-01-05", "P")).toBe(undefined)
   })
 })

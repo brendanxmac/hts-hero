@@ -9,6 +9,7 @@ import { headings as section232Metals } from "./headings/232-metals"
 import { headings as section232Metals2025 } from "./headings/232-metals-2025"
 import { headings as ieepa2026 } from "./headings/ieepa-2026"
 import { headings as ieepaIndia } from "./headings/ieepa-india"
+import { headings as section301Nicaragua } from "./headings/301-nicaragua"
 import { headings as section232Mhdv } from "./headings/232-mhdv"
 import { headings as section232Pharmaceuticals } from "./headings/232-pharmaceuticals"
 import { headings as section232Uas } from "./headings/232-uas"
@@ -56,6 +57,7 @@ const tariffs = withBasicText([
   ...section232Uas,
   ...section301China,
   ...section301Brazil,
+  ...section301Nicaragua,
   ...section301ForcedLabor,
   ...section201Quartz,
   ...section338Canada,

@@ -47,6 +47,7 @@ export const programs: Program[] = [
     legalBasis: ["Proclamation 11051"],
   },
   { id: "301-brazil", name: "Section 301 – Brazil", authority: "301" },
+  { id: "301-nicaragua", name: "Section 301 – Nicaragua", authority: "301" },
   { id: "301-forced-labor", name: "Section 301 – Forced Labor", authority: "301" },
   // Still "deal": these exempt civil aircraft from Section 232 duties, which outlived IEEPA.
   // The EU (9903.02.76) and Korea (9903.02.81) headings join from Feb 24, 2026, when their

@@ -241,6 +241,18 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 8: 2025 Rev 32 backfilled; Section 301 Nicaragua added
+
+- **Verified from Dec 5, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev32/PLAN.md`. Basic's cumulative change record was cut to its own 39 rows (`ownEditionRows`).
+- **Switzerland and Liechtenstein deal** (Commerce/USTR notice, 90 FR 59281, Annex II), retroactive to Nov 14, 2025:
+  - 9903.02.82–.91 start then;
+  - 9903.02.58 (Switzerland 39%) and 9903.02.36 (Liechtenstein 15%) are added back, ending Nov 14;
+  - 9903.01.25 has an earlier version whose exceptions include them, built from `BASELINE` in `ieepa-2026.ts`.
+- **9903.02.74–.77:** the Rev 32 cross-references apply until Jan 1, 2026 (PP 10999; the date is from the change record, accepted by the user). Added in `2026-basic-text.ts`.
+- **Already right:** note 31(b)/(f) Jan 1 moves (`china31b`, `china31f`).
+- **Section 301 Nicaragua** (new program `301-nicaragua`, `data/headings/301-nicaragua.ts`): 9903.89.01 at 0% (2026), 10% (2027) and 15% (2028+), not with a CAFTA-DR claim (U.S. note 29; USTR, 90 FR 57807).
+- **Sweep:** 3,884 of 153,888 results changed. They're all Switzerland/Liechtenstein on Nov 13, 2025 and Nicaragua in 2027; no verified date changed.
+
 ## Oct 8: 2026 Basic backfilled: Section 232 semiconductors from Jan 15
 
 - **Verified from Dec 31, 2025.** Every change in Rev 1's change record comes from Proclamation 11002 (91 FR 2443), effective 12:01 a.m. EST Jan 15, 2026, Basic's last day. Plan: `tariffs/revision-diffs/2026HTSBasic/PLAN.md`.

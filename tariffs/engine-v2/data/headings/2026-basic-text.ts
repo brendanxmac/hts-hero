@@ -48,6 +48,18 @@ const RENUMBERED: Record<string, [string, string]> = {
   "9903.02.91": ["(v)(xxv)(d)", "(v)(xxiv)(d)"],
 }
 
+// Before Jan 1, 2026 (2025HTSRev32 text): Proclamation 10999 corrected these four headings'
+// cross-references, which earlier proclamations had left behind when they renumbered note 2(v):
+// [Basic, Rev 32]. Its Annex II dates are scanned images; Jan 1 is from 2026HTSBasic's change
+// record (accepted by the user, Oct 8, 2026). Text only
+export const PP_10999_FROM = "2026-01-01"
+const REV32_CITATIONS: Record<string, [string, string]> = {
+  "9903.02.74": ["(v)(xix)", "(v)(xvi)"],
+  "9903.02.75": ["(v)(xx)", "(v)(xvii)"],
+  "9903.02.76": ["(v)(xxi)", "(v)(xviii)"],
+  "9903.02.77": ["(v)(xxii)", "(v)(xix)"],
+}
+
 const basicDescription = (t: Tariff) => {
   if (BASIC_DESCRIPTIONS[t.code]) return BASIC_DESCRIPTIONS[t.code]
   const [current, basic] = RENUMBERED[t.code]
@@ -79,5 +91,25 @@ export const withBasicText = (tariffs: Tariff[]): Tariff[] =>
         note: `The 2026HTSBasic text, before Proclamation 11002 renumbered U.S. note 2 on Jan 15, 2026. Backfilled from 2026HTSRev1's change record${t.source?.note ? `. Later text: ${t.source.note}` : ""}`,
       },
     }
-    return [before, { ...t, effective: { ...t.effective, from: PP_11002_FROM } }]
+    const after = { ...t, effective: { ...t.effective, from: PP_11002_FROM } }
+    const rev32 = REV32_CITATIONS[t.code]
+    if (!rev32) return [before, after]
+    const [basic, older] = rev32
+    if (!before.description.includes(`${basic} of`)) throw new Error(`${t.code}: expected "${basic} of" in its Basic description`)
+    return [
+      {
+        ...before,
+        description: before.description.replace(`${basic} of`, `${older} of`),
+        effective: { ...before.effective, to: PP_10999_FROM },
+        source: {
+          revision: "2025HTSRev32",
+          citation: "Proclamation 10999 (91 FR 889), Annex II",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-01-08/html/2026-00245.htm",
+          publishedOn: "2026-01-08",
+          note: "The 2025HTSRev32 text, before Proclamation 10999 corrected its note 2(v) cross-reference on Jan 1, 2026 (date from 2026HTSBasic's change record; the Annex II dates are images). Backfilled from 2026HTSBasic's change record",
+        },
+      },
+      { ...before, effective: { ...before.effective, from: PP_10999_FROM } },
+      after,
+    ]
   })
