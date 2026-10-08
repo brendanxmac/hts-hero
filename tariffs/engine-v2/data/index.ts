@@ -39,8 +39,10 @@ import { vehiclePartsLists } from "./lists/vehicle-parts"
 import { preferences } from "./preferences"
 import { programs } from "./programs"
 import { prohibitions } from "./prohibitions"
+import { withBasicText } from "./headings/2026-basic-text"
 
-const tariffs = [
+// withBasicText: the 2026HTSBasic text of headings Proclamation 11002 changed on Jan 15, 2026
+const tariffs = withBasicText([
   ...section122,
   ...section232Metals,
   ...section232Metals2025,
@@ -59,7 +61,7 @@ const tariffs = [
   ...section338Canada,
   ...quotas,
   ...deals,
-]
+])
 
 // Every rule record across all dates. The engine resolves it to a single date with getRulesAsOf().
 export const AllRules: RuleSet = {

@@ -241,6 +241,18 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 8: 2026 Basic backfilled: Section 232 semiconductors from Jan 15
+
+- **Verified from Dec 31, 2025.** Every change in Rev 1's change record comes from Proclamation 11002 (91 FR 2443), effective 12:01 a.m. EST Jan 15, 2026, Basic's last day. Plan: `tariffs/revision-diffs/2026HTSBasic/PLAN.md`.
+- **9903.79.01 starts Jan 15** (it was undated). The note 39 interaction `232-autos-mhdv-ieepa-not-on-semiconductors` starts then too.
+- **`data/headings/2026-basic-text.ts`** (`withBasicText`, applied in `data/index.ts`) splits the 18 headings PP 11002 renumbered, or gave "semiconductor articles", at Jan 15: the Basic text before, the current text after.
+  - Before Jan 15, 9903.01.33, .83 and .87 also drop 9903.79.01 from `whenApplies`.
+  - No amounts change.
+- **Checks:**
+  - **Archive:** 690 → 699 headings, the nine 9903.79 ones added.
+  - **Full text:** every Basic → Rev 1 difference traces to PP 11002.
+  - **Sweep:** 0 of 144,270 results changed (7 dates, Dec 31 to Aug 1).
+
 ## Oct 8: 2026 Rev 1 verified, with no chapter 99 changes
 
 - **Verified from Jan 16, 2026.** Rev 2's change record has no chapter 99 entries, and USITC's archived Rev 1 and Rev 2 chapter 99 PDFs are word-for-word identical (756 pages and 318,730 words each). No records were added; Rev 2's records hold. This was verified without a revision-checker comparison (decided by the user); the evidence is in `tariffs/revision-diffs/2026HTSRev1/PLAN.md`.

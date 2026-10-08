@@ -1947,9 +1947,8 @@ describe("engine-v2 real data: IEEPA India (2026HTSRev2 backfill)", () => {
 // archived chapter 99 PDFs for Rev 1 and Rev 2 are word-for-word identical, so Rev 2's records
 // already hold. See PROGRESS.md (Oct 8).
 describe("engine-v2 real data: 2026HTSRev1 verified (no chapter 99 changes)", () => {
-  it("is first verified from 2026HTSRev1, Jan 16, 2026", () => {
-    expect(getVerifiedRevisions()[0].name).toBe("2026HTSRev1")
-    expect(getVerifiedRevisions()[0].from).toBe("2026-01-16")
+  it("2026HTSRev1 is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSRev1")
   })
 
   it("India's 25% applies in Rev 1 too", () => {
@@ -1959,5 +1958,44 @@ describe("engine-v2 real data: 2026HTSRev1 verified (no chapter 99 changes)", ()
     })
     expect(applying(r)).toEqual(["9903.01.84", "9903.02.26"])
     expect(round(r.totalDuty)).toBe(6650)
+  })
+})
+
+// 2026HTSBasic backfill (from 2026HTSRev1's change record): Proclamation 11002 (Section 232
+// semiconductors) is effective Jan 15, 2026, Basic's last day. Basic runs from Dec 31, 2025.
+describe("engine-v2 real data: 2026HTSBasic backfill (Section 232 semiconductors)", () => {
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null }, answers,
+    })
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))!
+
+  it("the semiconductor duty starts Jan 15, 2026", () => {
+    const answers = { "confirm:9903.79.01": true }
+    expect(applying(calc("8471.50.01.10", "TW", "2026-01-14", "Free", answers))).not.toContain("9903.79.01")
+    const on = calc("8471.50.01.10", "TW", "2026-01-15", "Free", answers)
+    expect(applying(on)).toEqual(["9903.79.01"])
+    expect(round(on.totalDuty)).toBe(2500)
+  })
+
+  it("keeps the Basic text of the headings PP 11002 renumbered, until Jan 15", () => {
+    expect(recordOn("9903.02.74", "2026-01-10").description.includes("(v)(xix) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2026-01-15").description.includes("(v)(xx) of")).toBe(true)
+    expect(recordOn("9903.01.33", "2026-01-10").description.includes("semiconductor articles")).toBe(false)
+    expect(recordOn("9903.01.33", "2026-01-15").description.includes("semiconductor articles")).toBe(true)
+  })
+
+  it("other duties are unchanged in Basic", () => {
+    expect(round(calc("6109.10.00.12", "VN", "2026-01-10", "16.5%").totalDuty)).toBe(3650)
+    const india = calc("6109.10.00.12", "IN", "2025-12-31", "16.5%")
+    expect(applying(india)).toEqual(["9903.01.84", "9903.02.26"])
+    expect(round(india.totalDuty)).toBe(6650)
+  })
+
+  it("is first verified from 2026HTSBasic, Dec 31, 2025", () => {
+    expect(getVerifiedRevisions()[0].name).toBe("2026HTSBasic")
+    expect(getVerifiedRevisions()[0].from).toBe("2025-12-31")
   })
 })

@@ -172,8 +172,15 @@ export const interactions: Interaction[] = [
     description:
       "Auto, MHDV and IEEPA duties don't apply to semiconductor articles under 9903.79.01 (U.S. note 39(a))",
     order: [{ codes: ["9903.79.01"] }, { codes: notOnSemiconductors }],
-    effective: { to: TAIWAN_FROM },
-    source: correction("U.S. note 39(a)(1)–(4) and (8)"),
+    // U.S. note 39 was added by Proclamation 11002, effective Jan 15, 2026
+    effective: { from: "2026-01-15", to: TAIWAN_FROM },
+    source: {
+      ...correction("U.S. note 39(a)(1)–(4) and (8)"),
+      citation: "Proclamation 11002 (91 FR 2443)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-01-20/html/2026-01052.htm",
+      publishedOn: "2026-01-20",
+      note: "U.S. note 39(a)(1)–(4) and (8). Not modeled before; added as a correction (2026HTSRev6). Start date backfilled from 2026HTSRev1's change record: note 39 was added by PP 11002, effective Jan 15, 2026",
+    },
   },
   {
     id: "232-autos-mhdv-ieepa-not-on-semiconductors",
