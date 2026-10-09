@@ -2167,10 +2167,11 @@ describe("engine-v2 real data: 2025HTSRev29 backfill (EO 14361, Brazil agricultu
     AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))
   const listOn = (id: string, date: string) =>
     AllRules.lists.find((l) => l.id === id)!.versions.find((v) => (!v.effective.from || v.effective.from <= date) && (!v.effective.to || v.effective.to > date))!
-  const calc = (htsCode: string, country: string, asOf: string, general: string) =>
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
     calculate(AllRules, {
       htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
       baseRates: { general, special: null, other: null },
+      answers,
     })
   const brazil = (result: CalculationResult) => applying(result).filter((c) => /^9903\.01\.(7[7-9]|8\d|90)$/.test(c))
   const COFFEE = "0901.11.00.15"
@@ -2189,13 +2190,16 @@ describe("engine-v2 real data: 2025HTSRev29 backfill (EO 14361, Brazil agricultu
     expect(round(calc(BEEF, "BR", "2025-11-18", "26.4%").totalDuty)).toBe(2640) // base duty only
   })
 
-  it("açaí pays the 40% until Nov 12 and is exempt under the new 9903.01.90 from Nov 13", () => {
-    expect(brazil(calc(ACAI, "BR", "2025-11-12", "Free"))).toEqual(["9903.01.77"])
+  it("açaí pays the 40% until Nov 12 and, once confirmed, is exempt under the new 9903.01.90 from Nov 13", () => {
+    const acai = { "confirm:9903.01.90": true }
+    expect(brazil(calc(ACAI, "BR", "2025-11-12", "Free", acai))).toEqual(["9903.01.77"])
     expect(recordOn("9903.01.90", "2025-11-12")).toBe(undefined)
-    expect(brazil(calc(ACAI, "BR", "2025-11-13", "Free"))).toEqual(["9903.01.90"])
-    const rev29 = calc(ACAI, "BR", "2025-11-18", "Free")
+    expect(brazil(calc(ACAI, "BR", "2025-11-13", "Free", acai))).toEqual(["9903.01.90"])
+    const rev29 = calc(ACAI, "BR", "2025-11-18", "Free", acai)
     expect(brazil(rev29)).toEqual(["9903.01.90"])
     expect(round(rev29.totalDuty)).toBe(1000) // the 10% reciprocal 9903.02.09 still applies
+    // Unconfirmed, the 40% applies (decided by the user, Oct 9, 2026: see the next describe)
+    expect(brazil(calc(ACAI, "BR", "2025-11-18", "Free"))).toEqual(["9903.01.77"])
   })
 
   it("goods already on Rev 29's list stay exempt, and other goods keep paying, on both sides of Nov 13", () => {
@@ -2224,5 +2228,46 @@ describe("engine-v2 real data: 2025HTSRev29 backfill (EO 14361, Brazil agricultu
   it("is first verified from 2025HTSRev29, Nov 17, 2025", () => {
     expect(getVerifiedRevisions()[0].name).toBe("2025HTSRev29")
     expect(getVerifiedRevisions()[0].from).toBe("2025-11-17")
+  })
+})
+
+// The 11 particular articles of note 2(v)(iii)(b) (argiculturalArticlesExemptFromCertainTariffs)
+// are each narrower than their subheading ("Acai (classifiable in subheading 2008.99.21)"), so
+// every heading that exempts them needs confirming, as 9903.02.78 always did. Decided by the user,
+// Oct 9, 2026. A correction of verified data: 9903.01.90, 9903.03.04, 9903.05.04 and (for these 11)
+// 9903.05.87 applied without asking before.
+describe("engine-v2 real data: the 11 particular agricultural articles need confirming under every heading", () => {
+  const ACAI = "2008.99.21.40"
+  const calc = (htsCode: string, country: string, asOf: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: null, other: null },
+      answers,
+    })
+  const needs = (result: CalculationResult) => result.lines.filter((l) => l.status === "needsAnswer").map((l) => l.code)
+
+  for (const [code, country, asOf, duty] of [
+    ["9903.02.78", "VN", "2025-11-18", 2000], // reciprocal (unchanged)
+    ["9903.01.90", "BR", "2025-11-18", 5000], // IEEPA Brazil 40% (and its 10% reciprocal, also exempt via .78)
+    ["9903.03.04", "VN", "2026-03-15", 1000], // Section 122
+    ["9903.05.04", "BR", "2026-08-01", 3750], // Section 301 Brazil (and 301 forced labor, via .87)
+    ["9903.05.87", "VN", "2026-08-01", 1250], // Section 301 forced labor
+  ] as const) {
+    it(`${code} applies to açaí (${country}, ${asOf}) only once confirmed`, () => {
+      const unconfirmed = calc(ACAI, country, asOf)
+      expect(applying(unconfirmed)).not.toContain(code)
+      expect(needs(unconfirmed)).toContain(code)
+      expect(round(unconfirmed.totalDuty)).toBe(duty)
+      const confirmed = calc(ACAI, country, asOf, {
+        "confirm:9903.02.78": true, "confirm:9903.01.90": true, "confirm:9903.03.04": true,
+        "confirm:9903.05.04": true, "confirm:9903.05.87": true,
+      })
+      expect(applying(confirmed)).toContain(code)
+      expect(round(confirmed.totalDuty)).toBe(0)
+    })
+  }
+
+  it("the rest of note 52(c) (seeds for sowing, plywood) is still exempt without asking", () => {
+    expect(applying(calc("1207.40.00.00", "VN", "2026-08-01"))).toContain("9903.05.87")
   })
 })

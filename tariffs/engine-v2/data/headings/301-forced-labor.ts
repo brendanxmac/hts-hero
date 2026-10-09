@@ -1805,6 +1805,17 @@ export const headings: Tariff[] = [
       countries: "all",
       codes: [{ list: "forcedLabor52c" }],
     },
+    // The 11 particular articles also exempt under 9903.02.78 are each narrower than their
+    // subheading ("Acai (classifiable in subheading 2008.99.21)"), so they need confirming, as
+    // there. Decided by the user, Oct 9, 2026 (for those 11; the rest of 52(c) isn't asked)
+    requires: [
+      {
+        kind: "answerForListedCodes",
+        input: "confirm:9903.05.87",
+        equals: true,
+        list: "argiculturalArticlesExemptFromCertainTariffs",
+      },
+    ],
     rate: { kind: "free" },
     effective: { from: FROM },
     source: { ...SOURCE, note: "U.S. note 52(c)" },

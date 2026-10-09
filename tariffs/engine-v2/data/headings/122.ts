@@ -275,6 +275,9 @@ export const headings: Tariff[] = [
       countries: "all",
       codes: [{ list: "argiculturalArticlesExemptFromCertainTariffs" }],
     },
+    // Each of the 11 particular articles is narrower than its subheading ("Acai (classifiable in
+    // subheading 2008.99.21)"), so it needs confirming, as under 9903.02.78. Decided by the user, Oct 9, 2026
+    requires: [confirm("9903.03.04")],
     rate: { kind: "free" },
     effective: { from: "2026-02-24", to: "2026-07-24" },
     source: {

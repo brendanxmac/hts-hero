@@ -76,6 +76,9 @@ export const headings: Tariff[] = [
       countries: ["BR"],
       codes: [{ list: "brazilExempt50aiii" }],
     },
+    // Each of the 11 particular articles is narrower than its subheading ("Acai (classifiable in
+    // subheading 2008.99.21)"), so it needs confirming, as under 9903.02.78. Decided by the user, Oct 9, 2026
+    requires: [confirm("9903.05.04")],
     rate: { kind: "free" },
     effective: { from: FROM },
     source: { ...SOURCE, note: "U.S. note 50(a)(iii)" },
