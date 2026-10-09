@@ -241,6 +241,12 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 9: 2025 Rev 30 verified (Section 301 exclusion end dates)
+
+- **Verified from Nov 21, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev30/PLAN.md`. Rev 31's only changes: 9903.88.69 and .70 went from "through November 29, 2025" to "through November 9, 2026" (USTR, 90 FR 55232, effective 12:01 a.m. EST Nov 30, 2025).
+- **Text only.** The records split at Nov 30 (`301-china.ts`); the exclusions apply without a break.
+- **Checks:** the full text of Rev 30 vs Rev 31 differs in just 3 passages (those two, plus a note 2(v) compiler's-note citation). The date check confirmed the Nov 30 date. The sweep changed 0 results.
+
 ## Oct 8: 2025 Rev 31 backfilled: the U.S.-Korea deal
 
 - **Verified from Nov 28, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev31/PLAN.md`. Every change is the Commerce/USTR notice (90 FR 55964, Dec 4, 2025), retroactive. Rev 31 dates already get the deal.

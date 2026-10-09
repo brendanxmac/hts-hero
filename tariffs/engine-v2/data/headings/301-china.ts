@@ -3,7 +3,7 @@
 import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
 
-export const headings: Tariff[] = [
+const allHeadings: Tariff[] = [
   {
     code: "9903.88.01",
     program: "301-china",
@@ -374,3 +374,29 @@ export const headings: Tariff[] = [
     source: { revision: "2026HTSRev5" },
   },
 ]
+
+// Before USTR extended the 178 Section 301 product exclusions (90 FR 55232, Dec 1, 2025: from
+// 12:01 a.m. EST Nov 30, 2025 to before 11:59 p.m. EDT Nov 9, 2026), 9903.88.69 and .70 ran
+// "through November 29, 2025" (2025HTSRev30 text). The exclusions applied without a break, so
+// this is text only. Backfilled from 2025HTSRev31's change record
+const EXTENSION_FROM = "2025-11-30"
+const EXTENDED = ["9903.88.69", "9903.88.70"]
+
+export const headings: Tariff[] = allHeadings.flatMap((t) => {
+  if (!EXTENDED.includes(t.code)) return [t]
+  return [
+    {
+      ...t,
+      description: t.description.replace("November 9, 2026", "November 29, 2025"),
+      effective: { ...t.effective, to: EXTENSION_FROM },
+      source: {
+        revision: "2025HTSRev30",
+        citation: "USTR notice of product exclusion extensions, 90 FR 55232 (FR Doc. 2025-21671)",
+        url: "https://www.govinfo.gov/content/pkg/FR-2025-12-01/html/2025-21671.htm",
+        publishedOn: "2025-12-01",
+        note: "The 2025HTSRev30 text (\"through November 29, 2025\"), before USTR extended the exclusions from 12:01 a.m. EST Nov 30, 2025. Backfilled from 2025HTSRev31's change record",
+      },
+    },
+    { ...t, effective: { ...t.effective, from: EXTENSION_FROM } },
+  ]
+})

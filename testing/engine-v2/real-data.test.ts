@@ -2123,8 +2123,35 @@ describe("engine-v2 real data: 2025HTSRev31 backfill (U.S.-Korea deal)", () => {
     expect(recordOn("9903.94.01", "2025-11-01").description.includes("9903.94.60, and 9903.94.61")).toBe(true)
   })
 
-  it("is first verified from 2025HTSRev31, Nov 28, 2025", () => {
-    expect(getVerifiedRevisions()[0].name).toBe("2025HTSRev31")
-    expect(getVerifiedRevisions()[0].from).toBe("2025-11-28")
+  it("2025HTSRev31 is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2025HTSRev31")
+  })
+})
+
+// 2025HTSRev30 backfill (from 2025HTSRev31's change record): USTR extended the Section 301 China
+// product exclusions from Nov 30, 2025 (90 FR 55232). Text only. Rev 30 runs from Nov 21, 2025.
+describe("engine-v2 real data: 2025HTSRev30 backfill (Section 301 exclusions extended)", () => {
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))!
+  const calc = (asOf: string) =>
+    calculate(AllRules, {
+      htsCode: "8483.50.90.40", country: "CN", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "2.8%", special: null, other: null },
+    })
+
+  it("the exclusions read \"through November 29, 2025\" until the extension on Nov 30", () => {
+    for (const code of ["9903.88.69", "9903.88.70"]) {
+      expect(recordOn(code, "2025-11-29").description.includes("through November 29, 2025")).toBe(true)
+      expect(recordOn(code, "2025-11-30").description.includes("through November 9, 2026")).toBe(true)
+    }
+  })
+
+  it("the exclusions apply without a break", () => {
+    for (const asOf of ["2025-11-25", "2025-11-29", "2025-11-30"]) expect(applying(calc(asOf))).toContain("9903.88.69")
+  })
+
+  it("is first verified from 2025HTSRev30, Nov 21, 2025", () => {
+    expect(getVerifiedRevisions()[0].name).toBe("2025HTSRev30")
+    expect(getVerifiedRevisions()[0].from).toBe("2025-11-21")
   })
 })
