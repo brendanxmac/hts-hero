@@ -18,13 +18,15 @@ export interface Country {
 // Rwanda - "RW"
 // Union of the Comoros - "KM"
 // Sao Tome and Principe - "ST"
-// Congo - "CG"
+// Republic of the Congo - "CG"
+// Democratic Republic of the Congo - "CD"
 // Senegal - "SN"
 // Côte d’Ivoire - "CI"
 // Sierra Leone - "SL"
 // Djibouti - "DJ"
 // South Africa - "ZA"
 // Eswatini - "SZ"
+// Gabon - "GA"
 // The Gambia - "GM"
 // Tanzania - "TZ"
 // Ghana - "GH"
@@ -127,7 +129,6 @@ export const Countries: Country[] = [
   { flag: "🇨🇳", name: "China", code: "CN" },
   { flag: "🇨🇴", name: "Colombia", code: "CO" },
   { flag: "🇰🇲", name: "Comoros", code: "KM" },
-  { flag: "🇨🇬", name: "Congo", code: "CG" },
   { flag: "🇨🇷", name: "Costa Rica", code: "CR" },
   { flag: "🇭🇷", name: "Croatia", code: "HR" },
   { flag: "🇨🇺", name: "Cuba", code: "CU" },
@@ -135,6 +136,7 @@ export const Countries: Country[] = [
   { flag: "🇨🇾", name: "Cyprus", code: "CY" },
   { flag: "🇨🇿", name: "Czech Republic", code: "CZ" },
   { flag: "🇨🇮", name: "Côte d'Ivoire", code: "CI" },
+  { flag: "🇨🇩", name: "Democratic Republic of the Congo", code: "CD" },
   { flag: "🇩🇰", name: "Denmark", code: "DK" },
   { flag: "🇩🇯", name: "Djibouti", code: "DJ" },
   { flag: "🇩🇲", name: "Dominica", code: "DM" },
@@ -231,6 +233,7 @@ export const Countries: Country[] = [
   { flag: "🇵🇱", name: "Poland", code: "PL" },
   { flag: "🇵🇹", name: "Portugal", code: "PT" },
   { flag: "🇶🇦", name: "Qatar", code: "QA" },
+  { flag: "🇨🇬", name: "Republic of the Congo", code: "CG" },
   { flag: "🇷🇴", name: "Romania", code: "RO" },
   { flag: "🇷🇺", name: "Russia", code: "RU" },
   { flag: "🇷🇼", name: "Rwanda", code: "RW" },
