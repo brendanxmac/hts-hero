@@ -49,6 +49,34 @@ const beforeSwissDeal = (note: string) => ({
   note: `${note}. Ends with the Switzerland–Liechtenstein deal for goods entered on or after 12:01 a.m. ET Nov 14, 2025 (retroactive, published Dec 18, 2025). Backfilled from 2026HTSBasic's change record; start date comes with the 2025 backfill`,
 })
 
+// Executive Order 14361 (90 FR 54467), sec. 2 and Annex II ¶1, took Brazil's agricultural products
+// out of 9903.01.77 for goods entered "on or after 12:01 a.m. eastern standard time on November 13,
+// 2025": 238 subheadings added to 2(x)(iii), renumbered (iii)(a) (9903.01.81), and new heading
+// 9903.01.90 for 2(x)(iii)(b). Retroactive: signed Nov 20, 2025, after 2025HTSRev29 (Nov 17) printed
+// the old text. Backfilled from 2025HTSRev30's change record
+export const EO_14361_FROM = "2025-11-13"
+export const eo14361Source = {
+  citation: "EO 14361 (90 FR 54467), sec. 2 and Annex II",
+  url: "https://www.govinfo.gov/content/pkg/FR-2025-11-26/pdf/2025-21417.pdf",
+  publishedOn: "2025-11-20",
+}
+const RETROACTIVE_14361 =
+  "goods entered on or after 12:01 a.m. EST Nov 13, 2025 (EO 14361, 90 FR 54467, signed Nov 20, 2025; retroactive, before 2025HTSRev29 printed it)"
+const beforeEo14361 = (note: string) => ({
+  revision: "2025HTSRev29",
+  ...eo14361Source,
+  note: `${note}. Ends with EO 14361 for ${RETROACTIVE_14361}. Backfilled from 2025HTSRev30's change record; start date comes with the 2025 backfill`,
+})
+// The current text, in force from Nov 13, 2025
+const eo14361Text = (note: string) => {
+  const end = ended(note)
+  return { ...end, note: `${end.note}. This text from ${RETROACTIVE_14361}, backfilled from 2025HTSRev30's change record` }
+}
+const fromEo14361 = (note: string) => {
+  const end = ended(note)
+  return { ...end, note: `${end.note}. Starts with ${RETROACTIVE_14361}, backfilled from 2025HTSRev30's change record` }
+}
+
 const KOREA_DEAL_HEADINGS = ["9903.02.79", "9903.02.80", "9903.02.81"]
 const SWISS_HEADINGS = ["9903.02.82", "9903.02.83", "9903.02.84", "9903.02.85", "9903.02.86", "9903.02.87", "9903.02.88", "9903.02.89", "9903.02.90", "9903.02.91"]
 
@@ -164,6 +192,36 @@ const BASELINE: Tariff = {
     source: ended(
       "U.S. note 2(v). Also China, Hong Kong and Macau: their 34% heading 9903.01.63 and note 2(v)(xviii)(10) are suspended",
     ),
+}
+
+// Shared by each version below; every version sets its own dates and source
+const BRAZIL: Omit<Tariff, "effective"> = {
+  code: "9903.01.77",
+  program: "ieepa-brazil",
+  name: "IEEPA Brazil Tariff",
+  description:
+    "Except for products described in headings 9903.01.78-9903.01.83 and 9903.01.90, articles the product of Brazil that are entered for consumption, or withdrawn from warehouse for consumption, after 12:01 a.m. eastern daylight time 7 days after the date of the executive order, excluding the day the executive order is signed, as provided for in subdivision (x) of U.S. note 2 to this subchapter [Compiler's note: Executive Order 14323 (90 Fed. Reg. 37739) was signed on July 30, 2025, and became effective on August 6, 2025.]",
+  scope: { countries: ["BR"], codes: "all" },
+  exceptions: [
+    "9903.01.79",
+    "9903.01.80",
+    "9903.01.81",
+    "9903.01.82",
+    "9903.01.83",
+    "9903.01.90",
+  ],
+  rate: { kind: "adValorem", pct: 40 },
+  rateByColumn: { column2: { kind: "free" } },
+}
+
+const BRAZIL_LISTED: Omit<Tariff, "effective"> = {
+  code: "9903.01.81",
+  program: "ieepa-brazil",
+  name: "IEEPA Brazil Exemption: Listed Articles",
+  description:
+    "Articles the product of Brazil, classified in the subheadings enumerated in subdivision (x)(iii)(a) of U.S. note 2 to this subchapter",
+  scope: { countries: ["BR"], codes: [{ list: "brazilExempt2xiiia" }] },
+  rate: { kind: "free" },
 }
 
 export const headings: Tariff[] = [
@@ -2137,28 +2195,16 @@ export const headings: Tariff[] = [
       "U.S. note 2(v). Its in-transit exception (loaded before Aug 7, entered before Oct 5, 2025) no longer applies",
     ),
   },
+  // Before Nov 13, 2025 (EO 14361): no 9903.01.90 yet (2025HTSRev29 text)
   {
-    code: "9903.01.77",
-    program: "ieepa-brazil",
-    name: "IEEPA Brazil Tariff",
+    ...BRAZIL,
     description:
-      "Except for products described in headings 9903.01.78-9903.01.83 and 9903.01.90, articles the product of Brazil that are entered for consumption, or withdrawn from warehouse for consumption, after 12:01 a.m. eastern daylight time 7 days after the date of the executive order, excluding the day the executive order is signed, as provided for in subdivision (x) of U.S. note 2 to this subchapter [Compiler's note: Executive Order 14323 (90 Fed. Reg. 37739) was signed on July 30, 2025, and became effective on August 6, 2025.]",
-    scope: { countries: ["BR"], codes: "all" },
-    exceptions: [
-      "9903.01.79",
-      "9903.01.80",
-      "9903.01.81",
-      "9903.01.82",
-      "9903.01.83",
-      "9903.01.90",
-    ],
-    rate: { kind: "adValorem", pct: 40 },
-    rateByColumn: { column2: { kind: "free" } },
-    effective: END,
-    source: ended(
-      "U.S. note 2(x); stacks with the Brazil reciprocal 9903.02.09",
-    ),
+      "Except for products described in headings 9903.01.78-9903.01.83, articles the product of Brazil that are entered for consumption, or withdrawn from warehouse for consumption, after 12:01 a.m. eastern daylight time 7 days after the date of the executive order, excluding the day the executive order is signed, as provided for in subdivision (x) of U.S. note 2 to this subchapter [Compiler's note: Executive Order 14323 (90 Fed. Reg. 37739) was signed on July 30, 2025, and became effective on August 6, 2025.]",
+    exceptions: BRAZIL.exceptions!.filter((c) => c !== "9903.01.90"),
+    effective: { to: EO_14361_FROM },
+    source: beforeEo14361("U.S. note 2(x); stacks with the Brazil reciprocal 9903.02.09. 2025HTSRev29 text of 9903.01.77"),
   },
+  { ...BRAZIL, effective: { from: EO_14361_FROM, to: END.to }, source: eo14361Text("U.S. note 2(x); stacks with the Brazil reciprocal 9903.02.09") },
   {
     code: "9903.01.79",
     program: "ieepa-brazil",
@@ -2185,17 +2231,15 @@ export const headings: Tariff[] = [
     effective: END,
     source: ended(),
   },
+  // Before Nov 13, 2025 (EO 14361): cites 2(x)(iii), before it was renumbered (iii)(a)
   {
-    code: "9903.01.81",
-    program: "ieepa-brazil",
-    name: "IEEPA Brazil Exemption: Listed Articles",
+    ...BRAZIL_LISTED,
     description:
-      "Articles the product of Brazil, classified in the subheadings enumerated in subdivision (x)(iii)(a) of U.S. note 2 to this subchapter",
-    scope: { countries: ["BR"], codes: [{ list: "brazilExempt2xiiia" }] },
-    rate: { kind: "free" },
-    effective: END,
-    source: ended("U.S. note 2(x)(iii)(a)"),
+      "Articles the product of Brazil, classified in the subheadings enumerated in subdivision (x)(iii) of U.S. note 2 to this subchapter",
+    effective: { to: EO_14361_FROM },
+    source: beforeEo14361("U.S. note 2(x)(iii); 2025HTSRev29 text of 9903.01.81"),
   },
+  { ...BRAZIL_LISTED, effective: { from: EO_14361_FROM, to: END.to }, source: eo14361Text("U.S. note 2(x)(iii)(a)") },
   {
     code: "9903.01.82",
     program: "ieepa-brazil",
@@ -2265,8 +2309,8 @@ export const headings: Tariff[] = [
       codes: [{ list: "argiculturalArticlesExemptFromCertainTariffs" }],
     },
     rate: { kind: "free" },
-    effective: END,
-    source: ended("U.S. note 2(x)(iii)(b)"),
+    effective: { from: EO_14361_FROM, to: END.to },
+    source: fromEo14361("U.S. note 2(x)(iii)(b)"),
   },
   {
     code: "9903.02.82",

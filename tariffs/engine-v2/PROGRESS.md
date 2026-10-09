@@ -241,6 +241,14 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 9: 2025 Rev 29 verified (Brazil agricultural exemptions, EO 14361)
+
+- **Verified from Nov 17, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev29/PLAN.md`. Seven of Rev 30's eight changes are EO 14361 (90 FR 54467, signed Nov 20, 2025), effective for goods entered on or after 12:01 a.m. EST Nov 13, 2025 (retroactive, before Rev 29 printed it). Rev 29 dates already get the new rules.
+- **Before Nov 13** (`ieepa-2026.ts`): 9903.01.77 without the 9903.01.90 exception, 9903.01.81 citing 2(x)(iii), and `brazilExempt2xiiia` with Rev 29's 129 subheadings (EO 14361 added 238, `EO_14361_ADDED`). 9903.01.90 starts Nov 13.
+- **Note 33(g)** gained wording about Proclamation 10925's manufacturer offset; the parts list is unchanged, so nothing to model. The package's Rev 30 text drops 9401.20.00 from 33(g), but USITC's PDF still lists it (extraction error).
+- **Checks:** the full text of Rev 29 vs Rev 30 differs in exactly the change record's 8 items. The date check confirmed Nov 13 against the order and Annex II. The sweep changed 256 of 1,136,160 results, all Brazilian goods on Nov 12, 2025 (Rev 28, unverified).
+- **Open:** 9903.01.90 has no confirmation, while 9903.02.78 (the reciprocal exemption for the same 11 items, each narrower than its subheading) does. Left as verified.
+
 ## Oct 9: 2025 Rev 30 verified (Section 301 exclusion end dates)
 
 - **Verified from Nov 21, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev30/PLAN.md`. Rev 31's only changes: 9903.88.69 and .70 went from "through November 29, 2025" to "through November 9, 2026" (USTR, 90 FR 55232, effective 12:01 a.m. EST Nov 30, 2025).

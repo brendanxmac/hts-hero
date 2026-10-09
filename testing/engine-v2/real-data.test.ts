@@ -2150,8 +2150,79 @@ describe("engine-v2 real data: 2025HTSRev30 backfill (Section 301 exclusions ext
     for (const asOf of ["2025-11-25", "2025-11-29", "2025-11-30"]) expect(applying(calc(asOf))).toContain("9903.88.69")
   })
 
-  it("is first verified from 2025HTSRev30, Nov 21, 2025", () => {
-    expect(getVerifiedRevisions()[0].name).toBe("2025HTSRev30")
-    expect(getVerifiedRevisions()[0].from).toBe("2025-11-21")
+  it("2025HTSRev30 is verified", () => {
+    // Was "is first verified from 2025HTSRev30, Nov 21, 2025" until 2025HTSRev29 was verified
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2025HTSRev30")
+  })
+})
+
+// 2025HTSRev29 backfill (from 2025HTSRev30's change record): EO 14361 (90 FR 54467, signed Nov 20,
+// 2025) took Brazil's agricultural products out of the 40% IEEPA Brazil duty (9903.01.77) from
+// Nov 13, 2025, retroactively: 238 subheadings added to 2(x)(iii), renumbered (iii)(a) (9903.01.81),
+// and new heading 9903.01.90 for 2(x)(iii)(b). Rev 29 runs from Nov 17, so all of it has the new
+// rules. Nov 12 is in Rev 28, whose other IEEPA changes aren't backfilled yet, so those cases check
+// the Brazil 40% lines only.
+describe("engine-v2 real data: 2025HTSRev29 backfill (EO 14361, Brazil agricultural exemptions)", () => {
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))
+  const listOn = (id: string, date: string) =>
+    AllRules.lists.find((l) => l.id === id)!.versions.find((v) => (!v.effective.from || v.effective.from <= date) && (!v.effective.to || v.effective.to > date))!
+  const calc = (htsCode: string, country: string, asOf: string, general: string) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null },
+    })
+  const brazil = (result: CalculationResult) => applying(result).filter((c) => /^9903\.01\.(7[7-9]|8\d|90)$/.test(c))
+  const COFFEE = "0901.11.00.15"
+  const BEEF = "0202.30.50.25"
+  const ACAI = "2008.99.21.40"
+  const ORANGE_JUICE = "2009.11.00.20"
+  const TEXTILE = "6307.90.98.70"
+
+  it("coffee and beef pay the 40% until Nov 12 and are exempt under 9903.01.81 from Nov 13", () => {
+    for (const [code, general] of [[COFFEE, "Free"], [BEEF, "26.4%"]]) {
+      expect(brazil(calc(code, "BR", "2025-11-12", general))).toEqual(["9903.01.77"])
+      expect(brazil(calc(code, "BR", "2025-11-13", general))).toEqual(["9903.01.81"])
+      expect(brazil(calc(code, "BR", "2025-11-18", general))).toEqual(["9903.01.81"])
+    }
+    expect(round(calc(COFFEE, "BR", "2025-11-18", "Free").totalDuty)).toBe(0)
+    expect(round(calc(BEEF, "BR", "2025-11-18", "26.4%").totalDuty)).toBe(2640) // base duty only
+  })
+
+  it("açaí pays the 40% until Nov 12 and is exempt under the new 9903.01.90 from Nov 13", () => {
+    expect(brazil(calc(ACAI, "BR", "2025-11-12", "Free"))).toEqual(["9903.01.77"])
+    expect(recordOn("9903.01.90", "2025-11-12")).toBe(undefined)
+    expect(brazil(calc(ACAI, "BR", "2025-11-13", "Free"))).toEqual(["9903.01.90"])
+    const rev29 = calc(ACAI, "BR", "2025-11-18", "Free")
+    expect(brazil(rev29)).toEqual(["9903.01.90"])
+    expect(round(rev29.totalDuty)).toBe(1000) // the 10% reciprocal 9903.02.09 still applies
+  })
+
+  it("goods already on Rev 29's list stay exempt, and other goods keep paying, on both sides of Nov 13", () => {
+    for (const asOf of ["2025-11-12", "2025-11-13", "2025-11-18"]) {
+      expect(brazil(calc(ORANGE_JUICE, "BR", asOf, "Free"))).toEqual(["9903.01.81"])
+      expect(brazil(calc(TEXTILE, "BR", asOf, "7%"))).toEqual(["9903.01.77"])
+      expect(brazil(calc(COFFEE, "CO", asOf, "Free"))).toEqual([])
+    }
+    expect(round(calc(TEXTILE, "BR", "2025-11-18", "7%").totalDuty)).toBe(5700)
+  })
+
+  it("keeps Rev 29's text and list before Nov 13", () => {
+    const before = recordOn("9903.01.77", "2025-11-12")!
+    expect(before.exceptions).not.toContain("9903.01.90")
+    expect(before.description.startsWith("Except for products described in headings 9903.01.78-9903.01.83, articles")).toBe(true)
+    expect(recordOn("9903.01.77", "2025-11-13")!.exceptions).toContain("9903.01.90")
+    expect(recordOn("9903.01.81", "2025-11-12")!.description.includes("subdivision (x)(iii) of")).toBe(true)
+    expect(recordOn("9903.01.81", "2025-11-13")!.description.includes("subdivision (x)(iii)(a) of")).toBe(true)
+    const rev29List = listOn("brazilExempt2xiiia", "2025-11-12").codes!
+    expect(rev29List.length).toBe(129)
+    expect(rev29List.includes("0901.11.00")).toBe(false)
+    expect(rev29List.includes("2009.11.00")).toBe(true)
+    expect(listOn("brazilExempt2xiiia", "2025-11-13").codes!.length).toBe(367)
+  })
+
+  it("is first verified from 2025HTSRev29, Nov 17, 2025", () => {
+    expect(getVerifiedRevisions()[0].name).toBe("2025HTSRev29")
+    expect(getVerifiedRevisions()[0].from).toBe("2025-11-17")
   })
 })
