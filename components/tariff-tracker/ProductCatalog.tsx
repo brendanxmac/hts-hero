@@ -1,6 +1,7 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import * as ui from "@/components/ui/styles";
 import { AddMethod, AddProductsDialog } from "./AddProductsDialog";
@@ -38,6 +39,14 @@ export const ProductCatalog = () => {
   }, [nav.product]);
 
   const openDialog = (method: AddMethod) => setDialog({ open: true, method });
+
+  // ?add=paste (or csv) opens the Add products dialog on arrival: links from other pages ("Track
+  // your products") land on the step that matters
+  const searchParams = useSearchParams();
+  const addParam = searchParams.get("add");
+  useEffect(() => {
+    if (addParam === "paste" || addParam === "csv") openDialog(addParam);
+  }, [addParam]);
 
   const loadExample = () => {
     t.addProducts(itemsFromText(EXAMPLE_LIST), "example");

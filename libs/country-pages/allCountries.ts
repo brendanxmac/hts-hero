@@ -96,3 +96,23 @@ export const hubSummary = (rows: CountryRow[]): HubSummary => {
     none: rows.filter(noCountryTariffs).map((r) => r.name),
   };
 };
+
+// The primary sources behind the hub's tariffs, from the engine's own citations
+export const hubSources = (asOf: string) => {
+  const snapshot = getRulesAsOf(AllRules, asOf);
+  const forcedLabor = snapshot.tariffs.find((t) => t.program === FORCED_LABOR && t.source?.url)?.source;
+  const proclamations = Array.from(
+    new Set(
+      snapshot.tariffs
+        .filter((t) => t.program === "338-canada")
+        .flatMap((t) => Array.from((t.source?.citation ?? "").matchAll(/\b(1\d{4})\b/g), (m) => m[1]))
+    )
+  ).sort();
+  return [
+    { name: "Harmonized Tariff Schedule of the United States (USITC)", url: "https://hts.usitc.gov" },
+    ...(forcedLabor?.citation ? [{ name: forcedLabor.citation, url: forcedLabor.url ?? null }] : []),
+    ...(proclamations.length
+      ? [{ name: `Section 338 tariffs on Canada: Presidential Proclamations ${proclamations.join(", ")}`, url: null }]
+      : []),
+  ] as { name: string; url: string | null }[];
+};

@@ -41,6 +41,7 @@ ${guides.join("\n")}
 ## Tariff calculators by country
 
 - [US tariffs by country: every country of origin in one table](${SITE}/duty-calculator/countries)
+- [US tariffs by country as CSV: every country's forced-labor rate, country tariffs, Column 2 and trade agreements](${SITE}/duty-calculator/countries.csv)
 ${countries}
 
 ## Comparisons

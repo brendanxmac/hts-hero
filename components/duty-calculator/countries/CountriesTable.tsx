@@ -44,7 +44,7 @@ const SORTS: Record<Sort, (a: HubRow, b: HubRow) => number> = {
 const th = `${ui.label} px-4 py-3 text-left align-bottom first:pl-5 last:pr-5`;
 const td = "px-4 py-3 align-top first:pl-5 last:pr-5";
 
-export function CountriesTable({ rows }: { rows: HubRow[] }) {
+export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf: string; asOfLabel: string }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<Sort>("imports");
@@ -101,7 +101,10 @@ export function CountriesTable({ rows }: { rows: HubRow[] }) {
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm tabular-nums">
-          <caption className="sr-only">US tariffs by country of origin</caption>
+          <caption className={`${ui.caption} px-5 py-2 text-left`}>
+            US tariffs by country of origin, for goods entered <time dateTime={asOf}>{asOfLabel}</time>. Imports: US Census
+            Bureau, 2025.
+          </caption>
           <thead>
             <tr className="border-b border-base-300">
               <SortHeader id="name" label="Country" />

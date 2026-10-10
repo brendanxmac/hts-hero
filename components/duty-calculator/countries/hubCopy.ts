@@ -82,3 +82,78 @@ export const hubFaqs = (rows: CountryRow[], s: HubSummary, asOfLabel: string, ve
     },
   ];
 };
+
+// Short, dated facts for the top of the page: each one a sentence an answer engine can lift whole
+export const hubKeyFacts = (rows: CountryRow[], s: HubSummary) => {
+  const byImports = rows.filter((r) => r.imports2025).sort((a, b) => (b.imports2025 ?? 0) - (a.imports2025 ?? 0));
+  const largest = byImports.slice(0, 3).map((r) => `${r.name} (${formatImports(r.imports2025!)})`);
+  const programs = s.byPreference.filter((p) => p.names.length > 1).map((p) => `${p.name} (${p.names.length})`);
+  return [
+    `Section 301 forced-labor tariff: ${s.forcedLabor.count} countries since July 24, 2026 (${s.forcedLabor.byRate
+      .map((g) => `${lowerFirst(g.rates)}: ${g.names.length}`)
+      .join("; ")}).`,
+    s.countrySpecific.length ? `Tariffs written for one country: ${s.countrySpecific.map(specificPhrase).join("; ")}.` : "",
+    s.column2.length ? `Column 2 base rates: ${joinList(s.column2)}.` : "",
+    `Trade agreements and preference programs: ${s.withPreferences} countries${programs.length ? `, including ${joinList(programs)}` : ""}.`,
+    `No added tariff: ${s.none.length} countries pay only their HTS base rate and Section 232.`,
+    "The IEEPA tariffs, including the reciprocal tariffs, ended when the Supreme Court ruled them unlawful on February 20, 2026; the Section 122 tariff that followed has expired.",
+    `Largest sources of US imports in 2025: ${joinList(largest)}.`,
+  ].filter(Boolean);
+};
+
+export interface HubGroup {
+  id: string;
+  title: string;
+  note: string;
+  names: string[];
+  // Shown after a country's name: its agreement, in the group of single-country agreements
+  details?: Record<string, string>;
+}
+
+// The page's groups, each a heading and the complete list of countries in it. Programs with a
+// single country share one group, so the page isn't a run of one-name headings.
+export const hubGroups = (s: HubSummary): HubGroup[] => [
+  ...s.forcedLabor.byRate.map((g) => ({
+    id: `forced-labor-${g.rates.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "")}`,
+    title: g.rates.startsWith("Up to")
+      ? `Countries with a Section 301 forced-labor tariff of ${lowerFirst(g.rates)}`
+      : `Countries with a ${g.rates} Section 301 forced-labor tariff`,
+    note: g.rates.startsWith("Up to")
+      ? "These countries have a US trade deal: the forced-labor tariff tops their duty up to this rate, including the base rate."
+      : "Charged on top of the base rate, on all products, since July 24, 2026.",
+    names: g.names,
+  })),
+  ...(s.countrySpecific.length
+    ? [{ id: "country-tariffs", title: "Countries with tariffs of their own", note: s.countrySpecific.map(specificPhrase).join("; ") + ".", names: s.countrySpecific.map((r) => r.name) }]
+    : []),
+  ...(s.column2.length
+    ? [{ id: "column-2", title: "Countries that pay Column 2 rates", note: "No normal trade relations with the US: their goods pay the HTS Column 2 base rates.", names: s.column2 }]
+    : []),
+  ...s.byPreference
+    .filter((p) => p.names.length > 1)
+    .map((p) => ({
+      id: `program-${p.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+      title: `${p.name} countries`,
+      note: "Goods that meet the program's rules of origin can claim its preferential rates.",
+      names: p.names,
+    })),
+  ...singleAgreements(s),
+  { id: "no-added-tariff", title: "Countries with no added US tariff", note: "Their goods pay only the HTS base rate and the Section 232 tariffs every country pays.", names: s.none },
+];
+
+// Agreements with one country each (US-Korea FTA, US-Peru TPA…) as one group
+function singleAgreements(s: HubSummary): HubGroup[] {
+  const single = s.byPreference.filter((p) => p.names.length === 1);
+  if (!single.length) return [];
+  const details: Record<string, string> = {};
+  single.forEach((p) => (details[p.names[0]] = details[p.names[0]] ? `${details[p.names[0]]}, ${p.name}` : p.name));
+  return [
+    {
+      id: "other-agreements",
+      title: "Other US trade agreements",
+      note: "Bilateral free trade and trade promotion agreements. Goods that meet an agreement's rules of origin can claim its rates.",
+      names: Object.keys(details).sort(),
+      details,
+    },
+  ];
+}

@@ -73,6 +73,8 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_COMPARE_CHANGED = "Duty Calculator Compare Countries Changed",
   /** Duty estimate embedded in the explorer, a classification or an HTS code page, opened in the calculator */
   DUTY_ESTIMATE_OPENED_IN_CALCULATOR = "Duty Estimate Opened in Calculator",
+  /** A call to action on the tariffs-by-country hub: cta (calculator | tracker | csv) and where on the page */
+  COUNTRIES_HUB_CTA_CLICKED = "Countries Hub CTA Clicked",
   /** Tariff Tracker (/tariff-tracker). Was the Tariff Watcher tab, as "Tariff Watcher …" events */
   TARIFF_TRACKER_PRODUCTS_ADDED = "Tariff Tracker Products Added",
   TARIFF_TRACKER_PRODUCTS_REMOVED = "Tariff Tracker Products Removed",

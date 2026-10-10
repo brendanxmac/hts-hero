@@ -1,7 +1,8 @@
 import { describe, it, expect } from "./test-runner"
 import { Countries } from "../constants/countries"
 import { countryRows, hubSummary, noCountryTariffs } from "../libs/country-pages/allCountries"
-import { hubFaqs, hubLead } from "../components/duty-calculator/countries/hubCopy"
+import { hubFaqs, hubGroups, hubKeyFacts, hubLead } from "../components/duty-calculator/countries/hubCopy"
+import { GET as csv } from "../app/duty-calculator/countries.csv/route"
 import { preferenceName } from "../libs/hts-duty-summary"
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -35,6 +36,26 @@ describe("Tariffs by country hub", () => {
   it("leads with the counts", () => {
     const lead = hubLead(summary, "October 10, 2026")
     expect(lead.includes(`${summary.forcedLabor.count} of the ${summary.total} countries`)).toBe(true)
+  })
+
+  it("puts every country in a group, and groups have unique anchors", () => {
+    const groups = hubGroups(summary)
+    expect(new Set(groups.map((g) => g.id)).size).toBe(groups.length)
+    const grouped = new Set(groups.flatMap((g) => g.names))
+    rows.forEach((r) => expect(grouped.has(r.name)).toBe(true))
+  })
+
+  it("states the key facts with the counts", () => {
+    const facts = hubKeyFacts(rows, summary)
+    expect(facts[0].startsWith(`Section 301 forced-labor tariff: ${summary.forcedLabor.count} countries`)).toBe(true)
+    expect(facts.some((f) => f.startsWith(`No added tariff: ${summary.none.length} countries`))).toBe(true)
+  })
+
+  it("serves the table as CSV, one line per country", async () => {
+    const text = await csv().text()
+    const lines = text.trim().split("\n")
+    expect(lines.length).toBe(rows.length + 1)
+    expect(lines[0].startsWith("Country,ISO code,US imports 2025")).toBe(true)
   })
 
   it("is in the sitemap", () => {

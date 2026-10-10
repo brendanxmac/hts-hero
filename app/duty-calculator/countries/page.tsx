@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import config from "@/config";
-import { CountriesHub, HubRow, hubDescription, hubFaqs, hubLead } from "@/components/duty-calculator/countries";
+import { CountriesHub, HubRow, hubDescription, hubFaqs, hubGroups, hubKeyFacts, hubLead } from "@/components/duty-calculator/countries";
 import { THEME } from "@/components/ui/theme";
-import { countryRows, hubSummary } from "@/libs/country-pages/allCountries";
+import { countryRows, hubSources, hubSummary } from "@/libs/country-pages/allCountries";
 import { formatImports, IMPORT_SOURCE } from "@/libs/country-pages/importStats";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
@@ -13,7 +13,9 @@ export const revalidate = 86400;
 
 const PATH = "/duty-calculator/countries";
 const URL_ = `https://${config.domainName}${PATH}`;
-const TITLE = "US Tariffs by Country (2026): Rates for Every Country of Origin";
+const CSV_PATH = "/duty-calculator/countries.csv";
+// "US Tariffs by Country 2026: Rates for All 199 Countries"
+const title = (total: number) => `US Tariffs by Country 2026: Rates for All ${total} Countries`;
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 const longDate = (iso: string) =>
@@ -27,7 +29,9 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 export function generateMetadata(): Metadata {
   const asOf = todayIso();
-  const description = hubDescription(hubSummary(countryRows(asOf)), monthYear(asOf));
+  const summary = hubSummary(countryRows(asOf));
+  const description = hubDescription(summary, monthYear(asOf));
+  const TITLE = title(summary.total);
   return {
     title: TITLE,
     description,
@@ -44,6 +48,9 @@ export default function CountriesHubRoute() {
   const all = countryRows(asOf);
   const summary = hubSummary(all);
   const faqs = hubFaqs(all, summary, asOfLabel, verifiedThrough);
+  const sources = hubSources(asOf);
+  // A country's name links to its page, or to its row in the table
+  const hrefs = Object.fromEntries(all.map((r) => [r.name, r.slug ? `/duty-calculator/${r.slug}` : `#${r.code.toLowerCase()}`]));
   const rows: HubRow[] = all.map((r) => ({
     code: r.code,
     name: r.name,
@@ -71,10 +78,17 @@ export default function CountriesHubRoute() {
         temporalCoverage: asOf,
         spatialCoverage: { "@type": "Place", name: "United States" },
         creator: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
-        isBasedOn: [
-          { "@type": "CreativeWork", name: "Harmonized Tariff Schedule of the United States", url: "https://hts.usitc.gov" },
-          { "@type": "CreativeWork", name: IMPORT_SOURCE.name, url: IMPORT_SOURCE.url },
-        ],
+        isBasedOn: [...sources, { name: IMPORT_SOURCE.name, url: IMPORT_SOURCE.url }].map((s) => ({
+          "@type": "CreativeWork",
+          name: s.name,
+          ...(s.url ? { url: s.url } : {}),
+        })),
+        distribution: {
+          "@type": "DataDownload",
+          encodingFormat: "text/csv",
+          contentUrl: `https://${config.domainName}${CSV_PATH}`,
+        },
+        keywords: ["US tariffs by country", "tariff rates by country", "Section 301 forced labor tariff", "Column 2", "US trade agreements"],
         variableMeasured: [
           "US goods imports in 2025 (USD)",
           "Section 301 forced-labor tariff rate",
@@ -103,8 +117,14 @@ export default function CountriesHubRoute() {
         rows={rows}
         summary={summary}
         lead={hubLead(summary, asOfLabel)}
+        keyFacts={hubKeyFacts(all, summary)}
+        groups={hubGroups(summary)}
         faqs={faqs}
+        sources={sources}
+        hrefs={hrefs}
+        csvHref={CSV_PATH}
         verifiedThrough={verifiedThrough}
+        asOf={asOf}
         asOfLabel={asOfLabel}
       />
     </main>
