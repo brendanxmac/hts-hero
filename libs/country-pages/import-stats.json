@@ -1,0 +1,2100 @@
+{
+ "source": {
+  "name": "U.S. Census Bureau, U.S. Trade in Goods by Country",
+  "url": "https://www.census.gov/foreign-trade/balance/index.html",
+  "retrieved": "2026-10-10"
+ },
+ "unit": "millions of USD, general imports, not seasonally adjusted",
+ "ytd": {
+  "year": 2026,
+  "months": 8,
+  "through": "August 2026"
+ },
+ "world": {
+  "imports2024": 3263893.3,
+  "imports2025": 3414510.6,
+  "importsYtd": 2434785.4,
+  "importsYtdPriorYear": 2337863.4
+ },
+ "countries": {
+  "GL": {
+   "name": "Greenland",
+   "census": "1010",
+   "imports2024": 32.6,
+   "imports2025": 29.8,
+   "importsYtd": 17.8,
+   "importsYtdPriorYear": 16.2,
+   "rank2025": 156
+  },
+  "CA": {
+   "name": "Canada",
+   "census": "1220",
+   "imports2024": 411771.6,
+   "imports2025": 381922.1,
+   "importsYtd": 269645.4,
+   "importsYtdPriorYear": 258765,
+   "rank2025": 2
+  },
+  "PM": {
+   "name": "Saint Pierre and Miquelon",
+   "census": "1610",
+   "imports2024": null,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": null
+  },
+  "MX": {
+   "name": "Mexico",
+   "census": "2010",
+   "imports2024": 503110.1,
+   "imports2025": 534315,
+   "importsYtd": 419344.4,
+   "importsYtdPriorYear": 354477.4,
+   "rank2025": 1
+  },
+  "GT": {
+   "name": "Guatemala",
+   "census": "2050",
+   "imports2024": 5015.5,
+   "imports2025": 5173.2,
+   "importsYtd": 3795.7,
+   "importsYtdPriorYear": 3690.2,
+   "rank2025": 53
+  },
+  "BZ": {
+   "name": "Belize",
+   "census": "2080",
+   "imports2024": 81.1,
+   "imports2025": 58.4,
+   "importsYtd": 28.2,
+   "importsYtdPriorYear": 44.7,
+   "rank2025": 138
+  },
+  "SV": {
+   "name": "El Salvador",
+   "census": "2110",
+   "imports2024": 2307.7,
+   "imports2025": 2278.9,
+   "importsYtd": 1592.6,
+   "importsYtdPriorYear": 1536.2,
+   "rank2025": 68
+  },
+  "HN": {
+   "name": "Honduras",
+   "census": "2150",
+   "imports2024": 5520.6,
+   "imports2025": 5503.8,
+   "importsYtd": 3919,
+   "importsYtdPriorYear": 3870.6,
+   "rank2025": 51
+  },
+  "NI": {
+   "name": "Nicaragua",
+   "census": "2190",
+   "imports2024": 4597.7,
+   "imports2025": 4958.8,
+   "importsYtd": 3524.5,
+   "importsYtdPriorYear": 3297.4,
+   "rank2025": 57
+  },
+  "CR": {
+   "name": "Costa Rica",
+   "census": "2230",
+   "imports2024": 11632.7,
+   "imports2025": 13900.4,
+   "importsYtd": 7962.8,
+   "importsYtdPriorYear": 9182.9,
+   "rank2025": 34
+  },
+  "PA": {
+   "name": "Panama",
+   "census": "2250",
+   "imports2024": 552.8,
+   "imports2025": 659.3,
+   "importsYtd": 743,
+   "importsYtdPriorYear": 394.1,
+   "rank2025": 96
+  },
+  "BM": {
+   "name": "Bermuda",
+   "census": "2320",
+   "imports2024": 23.2,
+   "imports2025": 47.5,
+   "importsYtd": 6.6,
+   "importsYtdPriorYear": 9.9,
+   "rank2025": 143
+  },
+  "BS": {
+   "name": "Bahamas",
+   "census": "2360",
+   "imports2024": 1792.4,
+   "imports2025": 2615.2,
+   "importsYtd": 1240.8,
+   "importsYtdPriorYear": 1384.6,
+   "rank2025": 67
+  },
+  "CU": {
+   "name": "Cuba",
+   "census": "2390",
+   "imports2024": 4.7,
+   "imports2025": 17.5,
+   "importsYtd": 0.7,
+   "importsYtdPriorYear": 4.5,
+   "rank2025": 163
+  },
+  "JM": {
+   "name": "Jamaica",
+   "census": "2410",
+   "imports2024": 362.6,
+   "imports2025": 379.2,
+   "importsYtd": 225.7,
+   "importsYtdPriorYear": 259.9,
+   "rank2025": 103
+  },
+  "TC": {
+   "name": "Turks and Caicos Islands",
+   "census": "2430",
+   "imports2024": 10.9,
+   "imports2025": 8.6,
+   "importsYtd": 8.3,
+   "importsYtdPriorYear": 5.8,
+   "rank2025": 177
+  },
+  "KY": {
+   "name": "Cayman Islands",
+   "census": "2440",
+   "imports2024": 49.2,
+   "imports2025": 40.5,
+   "importsYtd": 41.5,
+   "importsYtdPriorYear": 27.7,
+   "rank2025": 150
+  },
+  "HT": {
+   "name": "Haiti",
+   "census": "2450",
+   "imports2024": 607.7,
+   "imports2025": 535.8,
+   "importsYtd": 327.7,
+   "importsYtdPriorYear": 370.3,
+   "rank2025": 102
+  },
+  "DO": {
+   "name": "Dominican Republic",
+   "census": "2470",
+   "imports2024": 7481.4,
+   "imports2025": 7564.8,
+   "importsYtd": 5146.1,
+   "importsYtdPriorYear": 5088.9,
+   "rank2025": 45
+  },
+  "AI": {
+   "name": "Anguilla",
+   "census": "2481",
+   "imports2024": 1.1,
+   "imports2025": 0.6,
+   "importsYtd": 0.2,
+   "importsYtdPriorYear": 0.6,
+   "rank2025": 207
+  },
+  "VG": {
+   "name": "British Virgin Islands",
+   "census": "2482",
+   "imports2024": 60.1,
+   "imports2025": 14.1,
+   "importsYtd": 69.5,
+   "importsYtdPriorYear": 12,
+   "rank2025": 167
+  },
+  "KN": {
+   "name": "Saint Kitts and Nevis",
+   "census": "2483",
+   "imports2024": 19.4,
+   "imports2025": 20.3,
+   "importsYtd": 15,
+   "importsYtdPriorYear": 14.3,
+   "rank2025": 160
+  },
+  "AG": {
+   "name": "Antigua and Barbuda",
+   "census": "2484",
+   "imports2024": 16.1,
+   "imports2025": 12.7,
+   "importsYtd": 12.5,
+   "importsYtdPriorYear": 9.9,
+   "rank2025": 170
+  },
+  "MS": {
+   "name": "Montserrat",
+   "census": "2485",
+   "imports2024": 5.4,
+   "imports2025": 0.4,
+   "importsYtd": 0.2,
+   "importsYtdPriorYear": 0.4,
+   "rank2025": 211
+  },
+  "DM": {
+   "name": "Dominica",
+   "census": "2486",
+   "imports2024": 2.2,
+   "imports2025": 2.2,
+   "importsYtd": 1.7,
+   "importsYtdPriorYear": 1.4,
+   "rank2025": 196
+  },
+  "LC": {
+   "name": "Saint Lucia",
+   "census": "2487",
+   "imports2024": 7,
+   "imports2025": 13.2,
+   "importsYtd": 11.5,
+   "importsYtdPriorYear": 5.3,
+   "rank2025": 169
+  },
+  "VC": {
+   "name": "Saint Vincent and the Grenadines",
+   "census": "2488",
+   "imports2024": 8.3,
+   "imports2025": 6.5,
+   "importsYtd": 6.5,
+   "importsYtdPriorYear": 3.6,
+   "rank2025": 182
+  },
+  "GD": {
+   "name": "Grenada",
+   "census": "2489",
+   "imports2024": 14,
+   "imports2025": 14,
+   "importsYtd": 10.3,
+   "importsYtdPriorYear": 9.8,
+   "rank2025": 168
+  },
+  "BB": {
+   "name": "Barbados",
+   "census": "2720",
+   "imports2024": 48.7,
+   "imports2025": 46.6,
+   "importsYtd": 26.3,
+   "importsYtdPriorYear": 31.3,
+   "rank2025": 144
+  },
+  "TT": {
+   "name": "Trinidad and Tobago",
+   "census": "2740",
+   "imports2024": 3367.7,
+   "imports2025": 2675.9,
+   "importsYtd": 2100.9,
+   "importsYtdPriorYear": 1866.7,
+   "rank2025": 66
+  },
+  "SX": {
+   "name": "Sint Maarten",
+   "census": "2774",
+   "imports2024": 101.4,
+   "imports2025": 133.3,
+   "importsYtd": 79.1,
+   "importsYtdPriorYear": 79.4,
+   "rank2025": 121
+  },
+  "CW": {
+   "name": "Curacao",
+   "census": "2777",
+   "imports2024": 31.9,
+   "imports2025": 54.3,
+   "importsYtd": 31.4,
+   "importsYtdPriorYear": 33.4,
+   "rank2025": 139
+  },
+  "AW": {
+   "name": "Aruba",
+   "census": "2779",
+   "imports2024": 10.6,
+   "imports2025": 10.3,
+   "importsYtd": 21.6,
+   "importsYtdPriorYear": 7.8,
+   "rank2025": 175
+  },
+  "GP": {
+   "name": "Guadeloupe",
+   "census": "2831",
+   "imports2024": 3.2,
+   "imports2025": 5.5,
+   "importsYtd": 1.9,
+   "importsYtdPriorYear": 3,
+   "rank2025": 189
+  },
+  "MQ": {
+   "name": "Martinique",
+   "census": "2839",
+   "imports2024": 2.8,
+   "imports2025": 6.5,
+   "importsYtd": 13.5,
+   "importsYtdPriorYear": 2,
+   "rank2025": 183
+  },
+  "CO": {
+   "name": "Colombia",
+   "census": "3010",
+   "imports2024": 17856.9,
+   "imports2025": 17879.2,
+   "importsYtd": 12099.4,
+   "importsYtdPriorYear": 12156.1,
+   "rank2025": 26
+  },
+  "VE": {
+   "name": "Venezuela",
+   "census": "3070",
+   "imports2024": 6021.5,
+   "imports2025": 3696.7,
+   "importsYtd": 9937.6,
+   "importsYtdPriorYear": 2658.8,
+   "rank2025": 61
+  },
+  "GY": {
+   "name": "Guyana",
+   "census": "3120",
+   "imports2024": 5375.7,
+   "imports2025": 5106.8,
+   "importsYtd": 4796.6,
+   "importsYtdPriorYear": 3584.6,
+   "rank2025": 55
+  },
+  "SR": {
+   "name": "Suriname",
+   "census": "3150",
+   "imports2024": 90.8,
+   "imports2025": 74.6,
+   "importsYtd": 58.1,
+   "importsYtdPriorYear": 49.5,
+   "rank2025": 135
+  },
+  "GF": {
+   "name": "French Guiana",
+   "census": "3170",
+   "imports2024": 1.9,
+   "imports2025": 1.4,
+   "importsYtd": 0.8,
+   "importsYtdPriorYear": 0.4,
+   "rank2025": 198
+  },
+  "EC": {
+   "name": "Ecuador",
+   "census": "3310",
+   "imports2024": 8541,
+   "imports2025": 9048.6,
+   "importsYtd": 6778.2,
+   "importsYtdPriorYear": 6292.3,
+   "rank2025": 40
+  },
+  "PE": {
+   "name": "Peru",
+   "census": "3330",
+   "imports2024": 9357.3,
+   "imports2025": 10712.8,
+   "importsYtd": 7260.9,
+   "importsYtdPriorYear": 6490.6,
+   "rank2025": 37
+  },
+  "BO": {
+   "name": "Bolivia",
+   "census": "3350",
+   "imports2024": 502.8,
+   "imports2025": 618.2,
+   "importsYtd": 414.4,
+   "importsYtdPriorYear": 407.3,
+   "rank2025": 97
+  },
+  "CL": {
+   "name": "Chile",
+   "census": "3370",
+   "imports2024": 16413.1,
+   "imports2025": 18980,
+   "importsYtd": 14518.4,
+   "importsYtdPriorYear": 13740.9,
+   "rank2025": 25
+  },
+  "BR": {
+   "name": "Brazil",
+   "census": "3510",
+   "imports2024": 42313.9,
+   "imports2025": 39881.7,
+   "importsYtd": 24079.7,
+   "importsYtdPriorYear": 29072.9,
+   "rank2025": 17
+  },
+  "PY": {
+   "name": "Paraguay",
+   "census": "3530",
+   "imports2024": 355.3,
+   "imports2025": 558.8,
+   "importsYtd": 445.2,
+   "importsYtdPriorYear": 319.3,
+   "rank2025": 101
+  },
+  "UY": {
+   "name": "Uruguay",
+   "census": "3550",
+   "imports2024": 1230.1,
+   "imports2025": 1582.8,
+   "importsYtd": 1108.6,
+   "importsYtdPriorYear": 1087.4,
+   "rank2025": 77
+  },
+  "AR": {
+   "name": "Argentina",
+   "census": "3570",
+   "imports2024": 7104.5,
+   "imports2025": 8283.6,
+   "importsYtd": 6506.2,
+   "importsYtdPriorYear": 4967.7,
+   "rank2025": 41
+  },
+  "FK": {
+   "name": "Falkland Islands (Islas Malvinas)",
+   "census": "3720",
+   "imports2024": 22.7,
+   "imports2025": 20.9,
+   "importsYtd": 15.3,
+   "importsYtdPriorYear": 20.9,
+   "rank2025": 159
+  },
+  "IS": {
+   "name": "Iceland",
+   "census": "4000",
+   "imports2024": 1072.4,
+   "imports2025": 1007.1,
+   "importsYtd": 461.6,
+   "importsYtdPriorYear": 776.2,
+   "rank2025": 88
+  },
+  "SE": {
+   "name": "Sweden",
+   "census": "4010",
+   "imports2024": 18006.4,
+   "imports2025": 16047.7,
+   "importsYtd": 11341.4,
+   "importsYtdPriorYear": 10838.7,
+   "rank2025": 31
+  },
+  "SJ": {
+   "name": "Svalbard and Jan Mayen",
+   "census": "4031",
+   "imports2024": null,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": null
+  },
+  "NO": {
+   "name": "Norway",
+   "census": "4039",
+   "imports2024": 6600.3,
+   "imports2025": 6622.4,
+   "importsYtd": 4234.9,
+   "importsYtdPriorYear": 4708,
+   "rank2025": 46
+  },
+  "FI": {
+   "name": "Finland",
+   "census": "4050",
+   "imports2024": 8144.1,
+   "imports2025": 8079,
+   "importsYtd": 6392.1,
+   "importsYtdPriorYear": 5518.9,
+   "rank2025": 43
+  },
+  "FO": {
+   "name": "Faroe Islands",
+   "census": "4091",
+   "imports2024": 249.3,
+   "imports2025": 268.1,
+   "importsYtd": 211.3,
+   "importsYtdPriorYear": 168.2,
+   "rank2025": 109
+  },
+  "DK": {
+   "name": "Denmark, except Greenland",
+   "census": "4099",
+   "imports2024": 10033.7,
+   "imports2025": 12155,
+   "importsYtd": 6846.4,
+   "importsYtdPriorYear": 8514.2,
+   "rank2025": 35
+  },
+  "GB": {
+   "name": "United Kingdom",
+   "census": "4120",
+   "imports2024": 68218.4,
+   "imports2025": 64784.3,
+   "importsYtd": 44067.8,
+   "importsYtdPriorYear": 44303.6,
+   "rank2025": 15
+  },
+  "IE": {
+   "name": "Ireland",
+   "census": "4190",
+   "imports2024": 103264.5,
+   "imports2025": 133649.9,
+   "importsYtd": 38838.2,
+   "importsYtdPriorYear": 100125.4,
+   "rank2025": 8
+  },
+  "NL": {
+   "name": "Netherlands",
+   "census": "4210",
+   "imports2024": 33982.8,
+   "imports2025": 34944.8,
+   "importsYtd": 17027.7,
+   "importsYtdPriorYear": 25341.2,
+   "rank2025": 19
+  },
+  "BE": {
+   "name": "Belgium",
+   "census": "4231",
+   "imports2024": 27778.1,
+   "imports2025": 27177,
+   "importsYtd": 19074.2,
+   "importsYtdPriorYear": 19118.5,
+   "rank2025": 22
+  },
+  "LU": {
+   "name": "Luxembourg",
+   "census": "4239",
+   "imports2024": 698.1,
+   "imports2025": 951.5,
+   "importsYtd": 545.4,
+   "importsYtdPriorYear": 691.2,
+   "rank2025": 89
+  },
+  "AD": {
+   "name": "Andorra",
+   "census": "4271",
+   "imports2024": 3.5,
+   "imports2025": 6.8,
+   "importsYtd": 2.1,
+   "importsYtdPriorYear": 5.2,
+   "rank2025": 181
+  },
+  "MC": {
+   "name": "Monaco",
+   "census": "4272",
+   "imports2024": 121.4,
+   "imports2025": 41.8,
+   "importsYtd": 43.8,
+   "importsYtdPriorYear": 27,
+   "rank2025": 148
+  },
+  "FR": {
+   "name": "France",
+   "census": "4279",
+   "imports2024": 59781.3,
+   "imports2025": 68073.6,
+   "importsYtd": 46049.8,
+   "importsYtdPriorYear": 44178,
+   "rank2025": 14
+  },
+  "DE": {
+   "name": "Germany (Federal Republic of Germany)",
+   "census": "4280",
+   "imports2024": 160307,
+   "imports2025": 155827.9,
+   "importsYtd": 100634.2,
+   "importsYtdPriorYear": 103328.7,
+   "rank2025": 6
+  },
+  "AT": {
+   "name": "Austria",
+   "census": "4330",
+   "imports2024": 19181,
+   "imports2025": 17773.8,
+   "importsYtd": 11683.9,
+   "importsYtdPriorYear": 10760.7,
+   "rank2025": 27
+  },
+  "CZ": {
+   "name": "Czech Republic",
+   "census": "4351",
+   "imports2024": 8059.5,
+   "imports2025": 8166.5,
+   "importsYtd": 6439.6,
+   "importsYtdPriorYear": 5684.3,
+   "rank2025": 42
+  },
+  "SK": {
+   "name": "Slovakia",
+   "census": "4359",
+   "imports2024": 8182,
+   "imports2025": 6586.1,
+   "importsYtd": 4944.1,
+   "importsYtdPriorYear": 4506.1,
+   "rank2025": 47
+  },
+  "HU": {
+   "name": "Hungary",
+   "census": "4370",
+   "imports2024": 12709.2,
+   "imports2025": 11811.5,
+   "importsYtd": 7979,
+   "importsYtdPriorYear": 8405.6,
+   "rank2025": 36
+  },
+  "LI": {
+   "name": "Liechtenstein",
+   "census": "4411",
+   "imports2024": 243.7,
+   "imports2025": 233,
+   "importsYtd": 156.2,
+   "importsYtdPriorYear": 151.4,
+   "rank2025": 111
+  },
+  "CH": {
+   "name": "Switzerland",
+   "census": "4419",
+   "imports2024": 63418.5,
+   "imports2025": 106214.1,
+   "importsYtd": 33767.5,
+   "importsYtdPriorYear": 89809.3,
+   "rank2025": 10
+  },
+  "EE": {
+   "name": "Estonia",
+   "census": "4470",
+   "imports2024": 1065.1,
+   "imports2025": 1018.9,
+   "importsYtd": 711.9,
+   "importsYtdPriorYear": 696.3,
+   "rank2025": 86
+  },
+  "LV": {
+   "name": "Latvia",
+   "census": "4490",
+   "imports2024": 630.5,
+   "imports2025": 609.9,
+   "importsYtd": 335.3,
+   "importsYtdPriorYear": 423.5,
+   "rank2025": 98
+  },
+  "LT": {
+   "name": "Lithuania",
+   "census": "4510",
+   "imports2024": 2029.3,
+   "imports2025": 1899.8,
+   "importsYtd": 940.6,
+   "importsYtdPriorYear": 1375.9,
+   "rank2025": 75
+  },
+  "PL": {
+   "name": "Poland",
+   "census": "4550",
+   "imports2024": 13645.3,
+   "imports2025": 14053.1,
+   "importsYtd": 10119.6,
+   "importsYtdPriorYear": 9501.4,
+   "rank2025": 33
+  },
+  "RU": {
+   "name": "Russia",
+   "census": "4621",
+   "imports2024": 3007.9,
+   "imports2025": 3776.6,
+   "importsYtd": 2215.7,
+   "importsYtdPriorYear": 3040.9,
+   "rank2025": 60
+  },
+  "BY": {
+   "name": "Belarus",
+   "census": "4622",
+   "imports2024": 19.9,
+   "imports2025": 19.1,
+   "importsYtd": 10.9,
+   "importsYtdPriorYear": 11.7,
+   "rank2025": 161
+  },
+  "UA": {
+   "name": "Ukraine",
+   "census": "4623",
+   "imports2024": 1178.4,
+   "imports2025": 1444.7,
+   "importsYtd": 941.8,
+   "importsYtdPriorYear": 1042,
+   "rank2025": 79
+  },
+  "AM": {
+   "name": "Armenia",
+   "census": "4631",
+   "imports2024": 121.3,
+   "imports2025": 64.4,
+   "importsYtd": 38.1,
+   "importsYtdPriorYear": 46.7,
+   "rank2025": 137
+  },
+  "AZ": {
+   "name": "Azerbaijan",
+   "census": "4632",
+   "imports2024": 157.8,
+   "imports2025": 101,
+   "importsYtd": 79,
+   "importsYtdPriorYear": 81.6,
+   "rank2025": 128
+  },
+  "GE": {
+   "name": "Georgia",
+   "census": "4633",
+   "imports2024": 165.4,
+   "imports2025": 102.2,
+   "importsYtd": 128.9,
+   "importsYtdPriorYear": 69.3,
+   "rank2025": 127
+  },
+  "KZ": {
+   "name": "Kazakhstan",
+   "census": "4634",
+   "imports2024": 2348.8,
+   "imports2025": 4072.9,
+   "importsYtd": 861.9,
+   "importsYtdPriorYear": 3553.5,
+   "rank2025": 58
+  },
+  "KG": {
+   "name": "Kyrgyzstan",
+   "census": "4635",
+   "imports2024": 16.4,
+   "imports2025": 31.6,
+   "importsYtd": 5.9,
+   "importsYtdPriorYear": 20.4,
+   "rank2025": 154
+  },
+  "MD": {
+   "name": "Moldova (Republic of Moldova)",
+   "census": "4641",
+   "imports2024": 135,
+   "imports2025": 100.1,
+   "importsYtd": 54.8,
+   "importsYtdPriorYear": 69.3,
+   "rank2025": 129
+  },
+  "TJ": {
+   "name": "Tajikistan",
+   "census": "4642",
+   "imports2024": 4.5,
+   "imports2025": 0.5,
+   "importsYtd": 4.9,
+   "importsYtdPriorYear": 0.4,
+   "rank2025": 210
+  },
+  "TM": {
+   "name": "Turkmenistan",
+   "census": "4643",
+   "imports2024": 14.4,
+   "imports2025": 39.4,
+   "importsYtd": 39.6,
+   "importsYtdPriorYear": 34.9,
+   "rank2025": 151
+  },
+  "UZ": {
+   "name": "Uzbekistan",
+   "census": "4644",
+   "imports2024": 42.4,
+   "imports2025": 575.1,
+   "importsYtd": 60.6,
+   "importsYtdPriorYear": 555.4,
+   "rank2025": 100
+  },
+  "ES": {
+   "name": "Spain",
+   "census": "4700",
+   "imports2024": 21243.3,
+   "imports2025": 21348.5,
+   "importsYtd": 14218.6,
+   "importsYtdPriorYear": 14953.7,
+   "rank2025": 23
+  },
+  "PT": {
+   "name": "Portugal",
+   "census": "4710",
+   "imports2024": 6782.4,
+   "imports2025": 6256.1,
+   "importsYtd": 4254.4,
+   "importsYtdPriorYear": 4617.7,
+   "rank2025": 49
+  },
+  "GI": {
+   "name": "Gibraltar",
+   "census": "4720",
+   "imports2024": 0.4,
+   "imports2025": 0.7,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0.7,
+   "rank2025": 206
+  },
+  "MT": {
+   "name": "Malta",
+   "census": "4730",
+   "imports2024": 220.2,
+   "imports2025": 282.8,
+   "importsYtd": 530.7,
+   "importsYtdPriorYear": 223.5,
+   "rank2025": 107
+  },
+  "SM": {
+   "name": "San Marino",
+   "census": "4751",
+   "imports2024": 25.2,
+   "imports2025": 26.6,
+   "importsYtd": 17.4,
+   "importsYtdPriorYear": 13.1,
+   "rank2025": 157
+  },
+  "VA": {
+   "name": "Holy See (Vatican City)",
+   "census": "4752",
+   "imports2024": null,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0
+  },
+  "IT": {
+   "name": "Italy",
+   "census": "4759",
+   "imports2024": 75994.6,
+   "imports2025": 74436.8,
+   "importsYtd": 51542.2,
+   "importsYtdPriorYear": 51160,
+   "rank2025": 13
+  },
+  "HR": {
+   "name": "Croatia",
+   "census": "4791",
+   "imports2024": 999.4,
+   "imports2025": 949.3,
+   "importsYtd": 721.9,
+   "importsYtdPriorYear": 640.8,
+   "rank2025": 90
+  },
+  "SI": {
+   "name": "Slovenia",
+   "census": "4792",
+   "imports2024": 6289.9,
+   "imports2025": 3112.6,
+   "importsYtd": 1884.7,
+   "importsYtdPriorYear": 2330.1,
+   "rank2025": 62
+  },
+  "BA": {
+   "name": "Bosnia and Herzegovina",
+   "census": "4793",
+   "imports2024": 178.7,
+   "imports2025": 157.4,
+   "importsYtd": 100.3,
+   "importsYtdPriorYear": 103.9,
+   "rank2025": 120
+  },
+  "MK": {
+   "name": "North Macedonia",
+   "census": "4794",
+   "imports2024": 176,
+   "imports2025": 307.4,
+   "importsYtd": 131.3,
+   "importsYtdPriorYear": 207.1,
+   "rank2025": 105
+  },
+  "RS": {
+   "name": "Serbia",
+   "census": "4801",
+   "imports2024": 813.5,
+   "imports2025": 944.1,
+   "importsYtd": 532.9,
+   "importsYtdPriorYear": 648,
+   "rank2025": 91
+  },
+  "KV": {
+   "name": "Kosovo",
+   "census": "4803",
+   "imports2024": 34.3,
+   "imports2025": 12.2,
+   "importsYtd": 8.6,
+   "importsYtdPriorYear": 8.7,
+   "rank2025": 171
+  },
+  "ME": {
+   "name": "Montenegro",
+   "census": "4804",
+   "imports2024": 15.1,
+   "imports2025": 10.7,
+   "importsYtd": 8.6,
+   "importsYtdPriorYear": 5.8,
+   "rank2025": 174
+  },
+  "AL": {
+   "name": "Albania",
+   "census": "4810",
+   "imports2024": 128.3,
+   "imports2025": 110.3,
+   "importsYtd": 117.2,
+   "importsYtdPriorYear": 57.2,
+   "rank2025": 124
+  },
+  "GR": {
+   "name": "Greece",
+   "census": "4840",
+   "imports2024": 2242.1,
+   "imports2025": 2256.6,
+   "importsYtd": 1445.3,
+   "importsYtdPriorYear": 1438.4,
+   "rank2025": 69
+  },
+  "RO": {
+   "name": "Romania",
+   "census": "4850",
+   "imports2024": 3903.2,
+   "imports2025": 3875.5,
+   "importsYtd": 2693.9,
+   "importsYtdPriorYear": 2573.6,
+   "rank2025": 59
+  },
+  "BG": {
+   "name": "Bulgaria",
+   "census": "4870",
+   "imports2024": 1487.2,
+   "imports2025": 1472.6,
+   "importsYtd": 1008.2,
+   "importsYtdPriorYear": 995.5,
+   "rank2025": 78
+  },
+  "TR": {
+   "name": "Turkey",
+   "census": "4890",
+   "imports2024": 16707.3,
+   "imports2025": 16419.4,
+   "importsYtd": 11605.1,
+   "importsYtdPriorYear": 10991.9,
+   "rank2025": 30
+  },
+  "CY": {
+   "name": "Cyprus",
+   "census": "4910",
+   "imports2024": 58.7,
+   "imports2025": 79.3,
+   "importsYtd": 46.8,
+   "importsYtdPriorYear": 57.9,
+   "rank2025": 133
+  },
+  "SY": {
+   "name": "Syria (Syrian Arab Republic)",
+   "census": "5020",
+   "imports2024": 10.7,
+   "imports2025": 7.6,
+   "importsYtd": 17.9,
+   "importsYtdPriorYear": 6,
+   "rank2025": 179
+  },
+  "LB": {
+   "name": "Lebanon",
+   "census": "5040",
+   "imports2024": 256.6,
+   "imports2025": 217.4,
+   "importsYtd": 113.2,
+   "importsYtdPriorYear": 149,
+   "rank2025": 114
+  },
+  "IQ": {
+   "name": "Iraq",
+   "census": "5050",
+   "imports2024": 7540.7,
+   "imports2025": 6274.6,
+   "importsYtd": 2289.6,
+   "importsYtdPriorYear": 4531,
+   "rank2025": 48
+  },
+  "IR": {
+   "name": "Iran",
+   "census": "5070",
+   "imports2024": 6.2,
+   "imports2025": 1.4,
+   "importsYtd": 1,
+   "importsYtdPriorYear": 1.1,
+   "rank2025": 199
+  },
+  "IL": {
+   "name": "Israel",
+   "census": "5081",
+   "imports2024": 22205.2,
+   "imports2025": 20734.2,
+   "importsYtd": 14159.7,
+   "importsYtdPriorYear": 13944.1,
+   "rank2025": 24
+  },
+  "GZ": {
+   "name": "Gaza Strip administered by Israel",
+   "census": "5082",
+   "imports2024": null,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": null
+  },
+  "WE": {
+   "name": "West Bank administered by Israel",
+   "census": "5083",
+   "imports2024": 6.2,
+   "imports2025": 4.9,
+   "importsYtd": 4,
+   "importsYtdPriorYear": 3.5,
+   "rank2025": 192
+  },
+  "JO": {
+   "name": "Jordan",
+   "census": "5110",
+   "imports2024": 3353.8,
+   "imports2025": 3069.4,
+   "importsYtd": 1815.3,
+   "importsYtdPriorYear": 2050.5,
+   "rank2025": 64
+  },
+  "KW": {
+   "name": "Kuwait",
+   "census": "5130",
+   "imports2024": 1669.5,
+   "imports2025": 1411.9,
+   "importsYtd": 895,
+   "importsYtdPriorYear": 981,
+   "rank2025": 81
+  },
+  "SA": {
+   "name": "Saudi Arabia",
+   "census": "5170",
+   "imports2024": 12854.6,
+   "imports2025": 10486.9,
+   "importsYtd": 6539.5,
+   "importsYtdPriorYear": 7253,
+   "rank2025": 38
+  },
+  "QA": {
+   "name": "Qatar",
+   "census": "5180",
+   "imports2024": 1835.3,
+   "imports2025": 2062.2,
+   "importsYtd": 726.2,
+   "importsYtdPriorYear": 1546.6,
+   "rank2025": 72
+  },
+  "AE": {
+   "name": "United Arab Emirates",
+   "census": "5200",
+   "imports2024": 7400.6,
+   "imports2025": 7680.4,
+   "importsYtd": 4345.5,
+   "importsYtdPriorYear": 4988.5,
+   "rank2025": 44
+  },
+  "YE": {
+   "name": "Yemen (Republic of Yemen)",
+   "census": "5210",
+   "imports2024": 8.8,
+   "imports2025": 7.5,
+   "importsYtd": 3.8,
+   "importsYtdPriorYear": 5.7,
+   "rank2025": 180
+  },
+  "OM": {
+   "name": "Oman",
+   "census": "5230",
+   "imports2024": 1325.7,
+   "imports2025": 1125.6,
+   "importsYtd": 969.2,
+   "importsYtdPriorYear": 777.4,
+   "rank2025": 84
+  },
+  "BH": {
+   "name": "Bahrain",
+   "census": "5250",
+   "imports2024": 1238.6,
+   "imports2025": 1257.7,
+   "importsYtd": 549.3,
+   "importsYtdPriorYear": 827.1,
+   "rank2025": 82
+  },
+  "AF": {
+   "name": "Afghanistan",
+   "census": "5310",
+   "imports2024": 22.4,
+   "imports2025": 34.6,
+   "importsYtd": 20.6,
+   "importsYtdPriorYear": 25.4,
+   "rank2025": 152
+  },
+  "IN": {
+   "name": "India",
+   "census": "5330",
+   "imports2024": 87285,
+   "imports2025": 103776.1,
+   "importsYtd": 68041.5,
+   "importsYtdPriorYear": 73337.5,
+   "rank2025": 11
+  },
+  "PK": {
+   "name": "Pakistan",
+   "census": "5350",
+   "imports2024": 5118,
+   "imports2025": 5418.3,
+   "importsYtd": 3521.5,
+   "importsYtdPriorYear": 3541.3,
+   "rank2025": 52
+  },
+  "NP": {
+   "name": "Nepal",
+   "census": "5360",
+   "imports2024": 120.4,
+   "imports2025": 123.9,
+   "importsYtd": 88.3,
+   "importsYtdPriorYear": 81,
+   "rank2025": 123
+  },
+  "BD": {
+   "name": "Bangladesh",
+   "census": "5380",
+   "imports2024": 8357.7,
+   "imports2025": 9473.3,
+   "importsYtd": 6410.2,
+   "importsYtdPriorYear": 6459.3,
+   "rank2025": 39
+  },
+  "LK": {
+   "name": "Sri Lanka",
+   "census": "5420",
+   "imports2024": 3014.4,
+   "imports2025": 3110.8,
+   "importsYtd": 1998.4,
+   "importsYtdPriorYear": 2092.4,
+   "rank2025": 63
+  },
+  "MM": {
+   "name": "Burma (Myanmar)",
+   "census": "5460",
+   "imports2024": 652.8,
+   "imports2025": 762.4,
+   "importsYtd": 361.5,
+   "importsYtdPriorYear": 498.1,
+   "rank2025": 94
+  },
+  "TH": {
+   "name": "Thailand",
+   "census": "5490",
+   "imports2024": 62955.3,
+   "imports2025": 91255.5,
+   "importsYtd": 92700.4,
+   "importsYtdPriorYear": 54346.4,
+   "rank2025": 12
+  },
+  "VN": {
+   "name": "Vietnam",
+   "census": "5520",
+   "imports2024": 136317.8,
+   "imports2025": 193879.4,
+   "importsYtd": 176087.7,
+   "importsYtdPriorYear": 122730.3,
+   "rank2025": 5
+  },
+  "LA": {
+   "name": "Laos (Lao People's Democratic Republic)",
+   "census": "5530",
+   "imports2024": 804.6,
+   "imports2025": 2105.9,
+   "importsYtd": 367.4,
+   "importsYtdPriorYear": 1745.9,
+   "rank2025": 71
+  },
+  "KH": {
+   "name": "Cambodia",
+   "census": "5550",
+   "imports2024": 12645,
+   "imports2025": 15294.6,
+   "importsYtd": 12052.9,
+   "importsYtdPriorYear": 9539.6,
+   "rank2025": 32
+  },
+  "MY": {
+   "name": "Malaysia",
+   "census": "5570",
+   "imports2024": 52163.5,
+   "imports2025": 59536.8,
+   "importsYtd": 56040.4,
+   "importsYtdPriorYear": 39058.4,
+   "rank2025": 16
+  },
+  "SG": {
+   "name": "Singapore",
+   "census": "5590",
+   "imports2024": 43259.2,
+   "imports2025": 38227.9,
+   "importsYtd": 22576.3,
+   "importsYtdPriorYear": 26617.1,
+   "rank2025": 18
+  },
+  "ID": {
+   "name": "Indonesia",
+   "census": "5600",
+   "imports2024": 27745.7,
+   "imports2025": 34637.1,
+   "importsYtd": 22000.5,
+   "importsYtdPriorYear": 22944.6,
+   "rank2025": 20
+  },
+  "TL": {
+   "name": "Timor-Leste",
+   "census": "5601",
+   "imports2024": 5.8,
+   "imports2025": 12,
+   "importsYtd": 4.3,
+   "importsYtdPriorYear": 1.3,
+   "rank2025": 172
+  },
+  "BN": {
+   "name": "Brunei",
+   "census": "5610",
+   "imports2024": 238.7,
+   "imports2025": 105.5,
+   "importsYtd": 9.7,
+   "importsYtdPriorYear": 56.2,
+   "rank2025": 125
+  },
+  "PH": {
+   "name": "Philippines",
+   "census": "5650",
+   "imports2024": 14154.6,
+   "imports2025": 17762.3,
+   "importsYtd": 17512,
+   "importsYtdPriorYear": 10923.6,
+   "rank2025": 28
+  },
+  "MO": {
+   "name": "Macao",
+   "census": "5660",
+   "imports2024": 108.2,
+   "imports2025": 129.1,
+   "importsYtd": 162.9,
+   "importsYtdPriorYear": 66.1,
+   "rank2025": 122
+  },
+  "BT": {
+   "name": "Bhutan",
+   "census": "5682",
+   "imports2024": 3.3,
+   "imports2025": 6.2,
+   "importsYtd": 9.3,
+   "importsYtdPriorYear": 3.6,
+   "rank2025": 185
+  },
+  "MV": {
+   "name": "Maldives",
+   "census": "5683",
+   "imports2024": 5,
+   "imports2025": 5.1,
+   "importsYtd": 3.6,
+   "importsYtdPriorYear": 3.2,
+   "rank2025": 190
+  },
+  "CN": {
+   "name": "China",
+   "census": "5700",
+   "imports2024": 440319.5,
+   "imports2025": 308651.7,
+   "importsYtd": 183524,
+   "importsYtdPriorYear": 219346,
+   "rank2025": 3
+  },
+  "MN": {
+   "name": "Mongolia",
+   "census": "5740",
+   "imports2024": 27.2,
+   "imports2025": 43.3,
+   "importsYtd": 69.9,
+   "importsYtdPriorYear": 20.1,
+   "rank2025": 146
+  },
+  "KP": {
+   "name": "North Korea (Democratic People's Republic of Korea)",
+   "census": "5790",
+   "imports2024": null,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": null
+  },
+  "KR": {
+   "name": "South Korea (Republic of Korea)",
+   "census": "5800",
+   "imports2024": 131457.5,
+   "imports2025": 125545.9,
+   "importsYtd": 110073.4,
+   "importsYtdPriorYear": 85857.5,
+   "rank2025": 9
+  },
+  "HK": {
+   "name": "Hong Kong",
+   "census": "5820",
+   "imports2024": 5947,
+   "imports2025": 5146.6,
+   "importsYtd": 2251.5,
+   "importsYtdPriorYear": 4228.3,
+   "rank2025": 54
+  },
+  "TW": {
+   "name": "Taiwan",
+   "census": "5830",
+   "imports2024": 116284.9,
+   "imports2025": 201369.4,
+   "importsYtd": 186935.7,
+   "importsYtdPriorYear": 119189.6,
+   "rank2025": 4
+  },
+  "JP": {
+   "name": "Japan",
+   "census": "5880",
+   "imports2024": 147116.5,
+   "imports2025": 145842,
+   "importsYtd": 96516.6,
+   "importsYtdPriorYear": 99328.1,
+   "rank2025": 7
+  },
+  "AU": {
+   "name": "Australia",
+   "census": "6021",
+   "imports2024": 16639.1,
+   "imports2025": 28953.4,
+   "importsYtd": 12669.6,
+   "importsYtdPriorYear": 21070.8,
+   "rank2025": 21
+  },
+  "NF": {
+   "name": "Norfolk Island",
+   "census": "6022",
+   "imports2024": null,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": null
+  },
+  "CC": {
+   "name": "Cocos (Keeling) Islands",
+   "census": "6023",
+   "imports2024": 1,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0.3
+  },
+  "CX": {
+   "name": "Christmas Island (in the Indian Ocean)",
+   "census": "6024",
+   "imports2024": 1.7,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0
+  },
+  "HM": {
+   "name": "Heard Island and McDonald Islands",
+   "census": "6029",
+   "imports2024": null,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": null
+  },
+  "PG": {
+   "name": "Papua New Guinea",
+   "census": "6040",
+   "imports2024": 79.1,
+   "imports2025": 78.5,
+   "importsYtd": 33.6,
+   "importsYtdPriorYear": 46.6,
+   "rank2025": 134
+  },
+  "NZ": {
+   "name": "New Zealand",
+   "census": "6141",
+   "imports2024": 5611.5,
+   "imports2025": 5578.6,
+   "importsYtd": 4489.4,
+   "importsYtdPriorYear": 3874.5,
+   "rank2025": 50
+  },
+  "CK": {
+   "name": "Cook Islands",
+   "census": "6142",
+   "imports2024": 0.7,
+   "imports2025": 0.2,
+   "importsYtd": 3.9,
+   "importsYtdPriorYear": 0.2,
+   "rank2025": 212
+  },
+  "TK": {
+   "name": "Tokelau",
+   "census": "6143",
+   "imports2024": 0,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0
+  },
+  "NU": {
+   "name": "Niue",
+   "census": "6144",
+   "imports2024": 4.5,
+   "imports2025": 0.8,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0.8,
+   "rank2025": 203
+  },
+  "WS": {
+   "name": "Samoa (Western Samoa)",
+   "census": "6150",
+   "imports2024": 5.7,
+   "imports2025": 18,
+   "importsYtd": 3.3,
+   "importsYtdPriorYear": 2.9,
+   "rank2025": 162
+  },
+  "SB": {
+   "name": "Solomon Islands",
+   "census": "6223",
+   "imports2024": 1.3,
+   "imports2025": 1.4,
+   "importsYtd": 0.3,
+   "importsYtdPriorYear": 0.9,
+   "rank2025": 200
+  },
+  "VU": {
+   "name": "Vanuatu",
+   "census": "6224",
+   "imports2024": 13.7,
+   "imports2025": 17.1,
+   "importsYtd": 12.5,
+   "importsYtdPriorYear": 9.5,
+   "rank2025": 165
+  },
+  "PN": {
+   "name": "Pitcairn Islands",
+   "census": "6225",
+   "imports2024": 0,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0
+  },
+  "KI": {
+   "name": "Kiribati",
+   "census": "6226",
+   "imports2024": 0.8,
+   "imports2025": 1.4,
+   "importsYtd": 0.2,
+   "importsYtdPriorYear": 1,
+   "rank2025": 201
+  },
+  "TV": {
+   "name": "Tuvalu",
+   "census": "6227",
+   "imports2024": 0,
+   "imports2025": 0,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0
+  },
+  "NC": {
+   "name": "New Caledonia",
+   "census": "6412",
+   "imports2024": 33.6,
+   "imports2025": 30.9,
+   "importsYtd": 26.9,
+   "importsYtdPriorYear": 18,
+   "rank2025": 155
+  },
+  "WF": {
+   "name": "Wallis and Futuna",
+   "census": "6413",
+   "imports2024": null,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0.1
+  },
+  "PF": {
+   "name": "French Polynesia",
+   "census": "6414",
+   "imports2024": 40.5,
+   "imports2025": 44.7,
+   "importsYtd": 15.2,
+   "importsYtdPriorYear": 16.6,
+   "rank2025": 145
+  },
+  "MH": {
+   "name": "Marshall Islands",
+   "census": "6810",
+   "imports2024": 20.1,
+   "imports2025": 17.3,
+   "importsYtd": 10.6,
+   "importsYtdPriorYear": 12.2,
+   "rank2025": 164
+  },
+  "FM": {
+   "name": "Micronesia, Federated States of",
+   "census": "6820",
+   "imports2024": 2.2,
+   "imports2025": 0.6,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0.6,
+   "rank2025": 208
+  },
+  "PW": {
+   "name": "Palau",
+   "census": "6830",
+   "imports2024": 2.3,
+   "imports2025": 0.2,
+   "importsYtd": 0.1,
+   "importsYtdPriorYear": 0.2,
+   "rank2025": 213
+  },
+  "NR": {
+   "name": "Nauru",
+   "census": "6862",
+   "imports2024": 2.3,
+   "imports2025": 0.1,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0.1,
+   "rank2025": 214
+  },
+  "FJ": {
+   "name": "Fiji",
+   "census": "6863",
+   "imports2024": 258.4,
+   "imports2025": 206.9,
+   "importsYtd": 125,
+   "importsYtdPriorYear": 145.9,
+   "rank2025": 115
+  },
+  "TO": {
+   "name": "Tonga",
+   "census": "6864",
+   "imports2024": 2.8,
+   "imports2025": 3.1,
+   "importsYtd": 1.5,
+   "importsYtdPriorYear": 2.5,
+   "rank2025": 194
+  },
+  "MA": {
+   "name": "Morocco",
+   "census": "7140",
+   "imports2024": 1902.7,
+   "imports2025": 1858.8,
+   "importsYtd": 1498.2,
+   "importsYtdPriorYear": 1238.3,
+   "rank2025": 76
+  },
+  "DZ": {
+   "name": "Algeria",
+   "census": "7210",
+   "imports2024": 2461.3,
+   "imports2025": 2235.8,
+   "importsYtd": 1931.2,
+   "importsYtdPriorYear": 1645.3,
+   "rank2025": 70
+  },
+  "TN": {
+   "name": "Tunisia",
+   "census": "7230",
+   "imports2024": 1122.3,
+   "imports2025": 1014.1,
+   "importsYtd": 850.9,
+   "importsYtdPriorYear": 702.7,
+   "rank2025": 87
+  },
+  "LY": {
+   "name": "Libya",
+   "census": "7250",
+   "imports2024": 1465.2,
+   "imports2025": 1416.8,
+   "importsYtd": 934.4,
+   "importsYtdPriorYear": 933.7,
+   "rank2025": 80
+  },
+  "EG": {
+   "name": "Egypt",
+   "census": "7290",
+   "imports2024": 2545.3,
+   "imports2025": 2849.9,
+   "importsYtd": 2304.9,
+   "importsYtdPriorYear": 1972.6,
+   "rank2025": 65
+  },
+  "SD": {
+   "name": "Sudan",
+   "census": "7321",
+   "imports2024": 13.1,
+   "imports2025": 11.4,
+   "importsYtd": 7.4,
+   "importsYtdPriorYear": 8,
+   "rank2025": 173
+  },
+  "SS": {
+   "name": "South Sudan",
+   "census": "7323",
+   "imports2024": 0.7,
+   "imports2025": 2.2,
+   "importsYtd": 2.1,
+   "importsYtdPriorYear": 0,
+   "rank2025": 197
+  },
+  "GQ": {
+   "name": "Equatorial Guinea",
+   "census": "7380",
+   "imports2024": 127.6,
+   "imports2025": 95.6,
+   "importsYtd": 39.4,
+   "importsYtdPriorYear": 70,
+   "rank2025": 130
+  },
+  "MR": {
+   "name": "Mauritania",
+   "census": "7410",
+   "imports2024": 2.9,
+   "imports2025": 6.4,
+   "importsYtd": 1.2,
+   "importsYtdPriorYear": 6.2,
+   "rank2025": 184
+  },
+  "CM": {
+   "name": "Cameroon",
+   "census": "7420",
+   "imports2024": 247,
+   "imports2025": 287.3,
+   "importsYtd": 277.6,
+   "importsYtdPriorYear": 153.5,
+   "rank2025": 106
+  },
+  "SN": {
+   "name": "Senegal",
+   "census": "7440",
+   "imports2024": 205.4,
+   "imports2025": 217.9,
+   "importsYtd": 77.3,
+   "importsYtdPriorYear": 190.6,
+   "rank2025": 113
+  },
+  "ML": {
+   "name": "Mali",
+   "census": "7450",
+   "imports2024": 5.4,
+   "imports2025": 5.6,
+   "importsYtd": 2.8,
+   "importsYtdPriorYear": 3.3,
+   "rank2025": 188
+  },
+  "GN": {
+   "name": "Guinea",
+   "census": "7460",
+   "imports2024": 6.8,
+   "imports2025": 9.6,
+   "importsYtd": 10.4,
+   "importsYtdPriorYear": 5.4,
+   "rank2025": 176
+  },
+  "SL": {
+   "name": "Sierra Leone",
+   "census": "7470",
+   "imports2024": 28.5,
+   "imports2025": 50.5,
+   "importsYtd": 10.8,
+   "importsYtdPriorYear": 33.1,
+   "rank2025": 140
+  },
+  "CI": {
+   "name": "Cote d'Ivoire",
+   "census": "7480",
+   "imports2024": 1014.7,
+   "imports2025": 1928.4,
+   "importsYtd": 1735.5,
+   "importsYtdPriorYear": 1541.5,
+   "rank2025": 73
+  },
+  "GH": {
+   "name": "Ghana",
+   "census": "7490",
+   "imports2024": 1173.5,
+   "imports2025": 1216.3,
+   "importsYtd": 1326.4,
+   "importsYtdPriorYear": 1024,
+   "rank2025": 83
+  },
+  "GM": {
+   "name": "Gambia",
+   "census": "7500",
+   "imports2024": 1.9,
+   "imports2025": 0.6,
+   "importsYtd": 0.5,
+   "importsYtdPriorYear": 0.3,
+   "rank2025": 209
+  },
+  "NE": {
+   "name": "Niger",
+   "census": "7510",
+   "imports2024": 7.9,
+   "imports2025": 3,
+   "importsYtd": 54.6,
+   "importsYtdPriorYear": 1.6,
+   "rank2025": 195
+  },
+  "TG": {
+   "name": "Togo",
+   "census": "7520",
+   "imports2024": 89.9,
+   "imports2025": 80.7,
+   "importsYtd": 64.9,
+   "importsYtdPriorYear": 54.9,
+   "rank2025": 131
+  },
+  "NG": {
+   "name": "Nigeria",
+   "census": "7530",
+   "imports2024": 5743.6,
+   "imports2025": 5022.2,
+   "importsYtd": 2345.6,
+   "importsYtdPriorYear": 3607.7,
+   "rank2025": 56
+  },
+  "CF": {
+   "name": "Central African Republic",
+   "census": "7540",
+   "imports2024": 1.5,
+   "imports2025": 0.9,
+   "importsYtd": 0.2,
+   "importsYtdPriorYear": 0.9,
+   "rank2025": 202
+  },
+  "GA": {
+   "name": "Gabon",
+   "census": "7550",
+   "imports2024": 171.3,
+   "imports2025": 603.2,
+   "importsYtd": 253.6,
+   "importsYtdPriorYear": 249.9,
+   "rank2025": 99
+  },
+  "TD": {
+   "name": "Chad",
+   "census": "7560",
+   "imports2024": 80.9,
+   "imports2025": 16.5,
+   "importsYtd": 6.6,
+   "importsYtdPriorYear": 10.6,
+   "rank2025": 166
+  },
+  "SH": {
+   "name": "Saint Helena",
+   "census": "7580",
+   "imports2024": 10.5,
+   "imports2025": 6,
+   "importsYtd": 8.2,
+   "importsYtdPriorYear": 6,
+   "rank2025": 186
+  },
+  "BF": {
+   "name": "Burkina Faso",
+   "census": "7600",
+   "imports2024": 4.5,
+   "imports2025": 5.1,
+   "importsYtd": 2.1,
+   "importsYtdPriorYear": 2,
+   "rank2025": 191
+  },
+  "BJ": {
+   "name": "Benin",
+   "census": "7610",
+   "imports2024": 48.7,
+   "imports2025": 40.6,
+   "importsYtd": 39.9,
+   "importsYtdPriorYear": 27.5,
+   "rank2025": 149
+  },
+  "AO": {
+   "name": "Angola",
+   "census": "7620",
+   "imports2024": 1869.3,
+   "imports2025": 871.1,
+   "importsYtd": 501,
+   "importsYtdPriorYear": 662.9,
+   "rank2025": 92
+  },
+  "CG": {
+   "name": "Congo, Republic of the Congo",
+   "census": "7630",
+   "imports2024": 40.1,
+   "imports2025": 104.2,
+   "importsYtd": 18.2,
+   "importsYtdPriorYear": 91.3,
+   "rank2025": 126
+  },
+  "GW": {
+   "name": "Guinea-Bissau",
+   "census": "7642",
+   "imports2024": 0.1,
+   "imports2025": 0,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0
+  },
+  "CV": {
+   "name": "Cabo Verde",
+   "census": "7643",
+   "imports2024": 4.1,
+   "imports2025": 5.9,
+   "importsYtd": 3.6,
+   "importsYtdPriorYear": 5,
+   "rank2025": 187
+  },
+  "ST": {
+   "name": "Sao Tome and Principe",
+   "census": "7644",
+   "imports2024": 0.5,
+   "imports2025": 0.1,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0.1,
+   "rank2025": 215
+  },
+  "LR": {
+   "name": "Liberia",
+   "census": "7650",
+   "imports2024": 72.6,
+   "imports2025": 72.1,
+   "importsYtd": 28.2,
+   "importsYtdPriorYear": 46.5,
+   "rank2025": 136
+  },
+  "CD": {
+   "name": "Congo, Democratic Republic of the Congo (formerly Zaire)",
+   "census": "7660",
+   "imports2024": 323.2,
+   "imports2025": 1927.6,
+   "importsYtd": 2868,
+   "importsYtdPriorYear": 1646,
+   "rank2025": 74
+  },
+  "BI": {
+   "name": "Burundi",
+   "census": "7670",
+   "imports2024": 3.6,
+   "imports2025": 8.2,
+   "importsYtd": 19.6,
+   "importsYtdPriorYear": 5.7,
+   "rank2025": 178
+  },
+  "RW": {
+   "name": "Rwanda",
+   "census": "7690",
+   "imports2024": 30.3,
+   "imports2025": 43.3,
+   "importsYtd": 54,
+   "importsYtdPriorYear": 22.9,
+   "rank2025": 147
+  },
+  "SO": {
+   "name": "Somalia",
+   "census": "7700",
+   "imports2024": 2.4,
+   "imports2025": 0.8,
+   "importsYtd": 0.4,
+   "importsYtdPriorYear": 0.4,
+   "rank2025": 204
+  },
+  "ER": {
+   "name": "Eritrea",
+   "census": "7741",
+   "imports2024": 0.8,
+   "imports2025": 0,
+   "importsYtd": 0.2,
+   "importsYtdPriorYear": 0
+  },
+  "ET": {
+   "name": "Ethiopia",
+   "census": "7749",
+   "imports2024": 465.3,
+   "imports2025": 1039.3,
+   "importsYtd": 1177,
+   "importsYtdPriorYear": 548.1,
+   "rank2025": 85
+  },
+  "DJ": {
+   "name": "Djibouti",
+   "census": "7770",
+   "imports2024": 40.2,
+   "imports2025": 49.3,
+   "importsYtd": 128.5,
+   "importsYtdPriorYear": 36.7,
+   "rank2025": 141
+  },
+  "UG": {
+   "name": "Uganda",
+   "census": "7780",
+   "imports2024": 131.9,
+   "imports2025": 198.5,
+   "importsYtd": 156.8,
+   "importsYtdPriorYear": 136.9,
+   "rank2025": 116
+  },
+  "KE": {
+   "name": "Kenya",
+   "census": "7790",
+   "imports2024": 736.9,
+   "imports2025": 862.2,
+   "importsYtd": 1137.7,
+   "importsYtdPriorYear": 559,
+   "rank2025": 93
+  },
+  "SC": {
+   "name": "Seychelles",
+   "census": "7800",
+   "imports2024": 7.1,
+   "imports2025": 4.3,
+   "importsYtd": 2.8,
+   "importsYtdPriorYear": 3,
+   "rank2025": 193
+  },
+  "IO": {
+   "name": "British Indian Ocean Territory",
+   "census": "7810",
+   "imports2024": 0.4,
+   "imports2025": 0,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0
+  },
+  "TZ": {
+   "name": "Tanzania (United Republic of Tanzania)",
+   "census": "7830",
+   "imports2024": 204.8,
+   "imports2025": 241.6,
+   "importsYtd": 268.1,
+   "importsYtdPriorYear": 184.7,
+   "rank2025": 110
+  },
+  "MU": {
+   "name": "Mauritius",
+   "census": "7850",
+   "imports2024": 233.6,
+   "imports2025": 190.9,
+   "importsYtd": 135.4,
+   "importsYtdPriorYear": 123,
+   "rank2025": 117
+  },
+  "MZ": {
+   "name": "Mozambique",
+   "census": "7870",
+   "imports2024": 216.1,
+   "imports2025": 162.4,
+   "importsYtd": 65.8,
+   "importsYtdPriorYear": 106.3,
+   "rank2025": 119
+  },
+  "MG": {
+   "name": "Madagascar",
+   "census": "7880",
+   "imports2024": 731.1,
+   "imports2025": 695.2,
+   "importsYtd": 362.2,
+   "importsYtdPriorYear": 469.4,
+   "rank2025": 95
+  },
+  "YT": {
+   "name": "Mayotte",
+   "census": "7881",
+   "imports2024": 1.9,
+   "imports2025": null,
+   "importsYtd": 0,
+   "importsYtdPriorYear": 0.1
+  },
+  "KM": {
+   "name": "Comoros",
+   "census": "7890",
+   "imports2024": 1.8,
+   "imports2025": 0.8,
+   "importsYtd": 0.5,
+   "importsYtdPriorYear": 0.6,
+   "rank2025": 205
+  },
+  "RE": {
+   "name": "Reunion",
+   "census": "7904",
+   "imports2024": 44,
+   "imports2025": 32.4,
+   "importsYtd": 21.8,
+   "importsYtdPriorYear": 20.2,
+   "rank2025": 153
+  },
+  "TF": {
+   "name": "French Southern and Antarctic Lands",
+   "census": "7905",
+   "imports2024": 0,
+   "imports2025": 0,
+   "importsYtd": 5,
+   "importsYtdPriorYear": 0
+  },
+  "ZA": {
+   "name": "South Africa",
+   "census": "7910",
+   "imports2024": 14684.7,
+   "imports2025": 16454.1,
+   "importsYtd": 7878.4,
+   "importsYtdPriorYear": 12484.2,
+   "rank2025": 29
+  },
+  "NA": {
+   "name": "Namibia",
+   "census": "7920",
+   "imports2024": 274.5,
+   "imports2025": 271.4,
+   "importsYtd": 68.2,
+   "importsYtdPriorYear": 205.4,
+   "rank2025": 108
+  },
+  "BW": {
+   "name": "Botswana",
+   "census": "7930",
+   "imports2024": 405,
+   "imports2025": 228.5,
+   "importsYtd": 167.9,
+   "importsYtdPriorYear": 184.6,
+   "rank2025": 112
+  },
+  "ZM": {
+   "name": "Zambia",
+   "census": "7940",
+   "imports2024": 168.6,
+   "imports2025": 321.4,
+   "importsYtd": 748.6,
+   "importsYtdPriorYear": 273.7,
+   "rank2025": 104
+  },
+  "SZ": {
+   "name": "Eswatini",
+   "census": "7950",
+   "imports2024": 22.5,
+   "imports2025": 25,
+   "importsYtd": 11.8,
+   "importsYtdPriorYear": 8.6,
+   "rank2025": 158
+  },
+  "ZW": {
+   "name": "Zimbabwe",
+   "census": "7960",
+   "imports2024": 66.9,
+   "imports2025": 79.9,
+   "importsYtd": 118.2,
+   "importsYtdPriorYear": 57,
+   "rank2025": 132
+  },
+  "MW": {
+   "name": "Malawi",
+   "census": "7970",
+   "imports2024": 39.8,
+   "imports2025": 48.6,
+   "importsYtd": 37.1,
+   "importsYtdPriorYear": 31.9,
+   "rank2025": 142
+  },
+  "LS": {
+   "name": "Lesotho",
+   "census": "7990",
+   "imports2024": 237.2,
+   "imports2025": 170.2,
+   "importsYtd": 100.9,
+   "importsYtdPriorYear": 126,
+   "rank2025": 118
+  }
+ }
+}

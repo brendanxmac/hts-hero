@@ -3,13 +3,27 @@ import type { ExampleDuty } from "@/libs/country-pages/countryTariffs";
 import { heat } from "@/components/ui/theme";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
+import type { ExampleComparison } from "./countryCopy";
 
 const th = `${ui.label} px-4 py-3 text-left first:pl-5 last:pr-5`;
 const td = "px-4 py-3 align-top first:pl-5 last:pr-5";
 const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
 // What everyday products from this country pay, calculated for the page's date
-export function CountryExamples({ examples, calculatorPath }: { examples: ExampleDuty[]; calculatorPath: string }) {
+// With `comparison`, a column for the same product from another country (China, or Vietnam on the
+// China page), so the page answers "is it cheaper than China?" for each product
+export function CountryExamples({
+  examples,
+  calculatorPath,
+  countryName,
+  comparison,
+}: {
+  examples: ExampleDuty[];
+  calculatorPath: string;
+  countryName: string;
+  comparison: ExampleComparison | null;
+}) {
+  const other = (htsno: string) => comparison?.examples.find((x) => x.htsno === htsno);
   return (
     <div className={ui.card}>
       <div className="overflow-x-auto">
@@ -17,7 +31,8 @@ export function CountryExamples({ examples, calculatorPath }: { examples: Exampl
           <thead className="bg-base-200">
             <tr>
               <th scope="col" className={th}>Product</th>
-              <th scope="col" className={`${th} text-right`}>Duty on $10,000</th>
+              <th scope="col" className={`${th} text-right`}>Duty on $10,000 from {countryName}</th>
+              {comparison && <th scope="col" className={`${th} text-right`}>From {comparison.name}</th>}
               <th scope="col" className={th}>Tariffs charged</th>
             </tr>
           </thead>
@@ -37,6 +52,18 @@ export function CountryExamples({ examples, calculatorPath }: { examples: Exampl
                   <span className="font-semibold text-base-content">{usd(e.totalDuty)}</span>
                   {e.totalPct !== null && <span className="block text-xs text-base-content/60">{e.totalPct}%</span>}
                 </td>
+                {comparison && (
+                  <td className={`${td} text-right text-base-content/70`}>
+                    {other(e.htsno) ? (
+                      <>
+                        <span>{usd(other(e.htsno)!.totalDuty)}</span>
+                        {other(e.htsno)!.totalPct !== null && <span className="block text-xs">{other(e.htsno)!.totalPct}%</span>}
+                      </>
+                    ) : (
+                      "–"
+                    )}
+                  </td>
+                )}
                 <td className={`${td} text-base-content/70`}>
                   {e.tariffs.length === 0
                     ? "Base rate only"

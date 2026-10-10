@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import config from "@/config";
 import { CountryCalculatorPage, countryFaqs, metaDescription, titleName } from "@/components/duty-calculator/country";
 import { THEME } from "@/components/ui/theme";
-import { COUNTRY_PAGES, countryPageBySlug } from "@/libs/country-pages/countries";
+import { COUNTRY_PAGES, countryPageByCode, countryPageBySlug } from "@/libs/country-pages/countries";
+import { IMPORT_SOURCE, importFacts } from "@/libs/country-pages/importStats";
 import { countryExamples, countryPreferences, countryTariffs } from "@/libs/country-pages/countryTariffs";
 import { getHtsElementsServer } from "@/libs/hts-server";
 import { renderSchemaJsonLd } from "@/libs/seo";
@@ -37,7 +38,8 @@ export function generateMetadata({ params }: Props): Metadata {
   const description = metaDescription(country, countryTariffs(country.code, todayIso()), monthYear(todayIso()));
   const url = `https://${config.domainName}/duty-calculator/${country.slug}`;
   return {
-    title: `${title} | HTS Hero`,
+    // The brand goes on when it fits; long country names need the room for the keyword
+    title: `${title} | HTS Hero`.length <= 70 ? `${title} | HTS Hero` : title,
     description,
     alternates: { canonical: `/duty-calculator/${country.slug}` },
     openGraph: { title, description, url, siteName: "HTS Hero", type: "website" },
@@ -51,9 +53,15 @@ export default async function CountryCalculatorRoute({ params }: Props) {
 
   const asOf = todayIso();
   const tariffs = countryTariffs(country.code, asOf);
-  const examples = countryExamples(country.code, asOf, await getHtsElementsServer());
+  const elements = await getHtsElementsServer();
+  const examples = countryExamples(country.code, asOf, elements);
   const preferences = countryPreferences(country.code, asOf);
-  const faqs = countryFaqs({ country, tariffs, examples, preferences, asOfLabel: longDate(asOf) });
+  const facts = importFacts(country.code);
+  // Everyone asks how a country compares with China; China's page compares with Vietnam, the
+  // largest alternative it has lost share to
+  const other = countryPageByCode(country.code === "CN" ? "VN" : "CN");
+  const comparison = other ? { name: titleName(other), examples: countryExamples(other.code, asOf, elements) } : null;
+  const faqs = countryFaqs({ country, tariffs, examples, preferences, asOfLabel: longDate(asOf), facts, comparison });
   const name = titleName(country);
   const url = `https://${config.domainName}/duty-calculator/${country.slug}`;
 
@@ -66,8 +74,11 @@ export default async function CountryCalculatorRoute({ params }: Props) {
         applicationCategory: "BusinessApplication",
         operatingSystem: "All",
         dateModified: asOf,
+        description: metaDescription(country, tariffs, monthYear(asOf)),
+        about: { "@type": "Country", name: titleName(country) },
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
         provider: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
+        ...(facts ? { citation: { "@type": "CreativeWork", name: IMPORT_SOURCE.name, url: IMPORT_SOURCE.url } } : {}),
       })}
       {renderSchemaJsonLd({
         "@type": "FAQPage",
@@ -91,6 +102,8 @@ export default async function CountryCalculatorRoute({ params }: Props) {
         faqs={faqs}
         verifiedThrough={revisionTitle(getLatestVerifiedRevision().name)}
         asOfLabel={longDate(asOf)}
+        facts={facts}
+        comparison={comparison}
       />
     </main>
   );

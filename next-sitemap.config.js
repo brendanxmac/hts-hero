@@ -54,12 +54,13 @@ function blogPostDates() {
   return postDates;
 }
 
-// Server-rendered pages to list, with their priority. Country pages follow
-// libs/country-pages/countries.ts (testing/sitemap.test.ts keeps the two in step).
+// The "[Country] to US tariff calculator" pages, from the same list the pages are built from
+const COUNTRY_PAGES = require("./libs/country-pages/countries.json");
+
+// Server-rendered pages to list, with their priority
 const KEY_PAGES = [
   ["/duty-calculator", 1.0],
-  ["/duty-calculator/china", 0.9],
-  ["/duty-calculator/japan", 0.9],
+  ...COUNTRY_PAGES.map((c) => [`/duty-calculator/${c.slug}`, 0.9]),
   ["/duty-calculator/faq", 0.7],
   ["/duty-calculator/changelog", 0.6],
   ["/pricing-calculator", 0.6],
