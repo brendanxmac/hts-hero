@@ -23,7 +23,7 @@ export function HubOverview({
 }) {
   const stats = [
     { value: summary.forcedLabor.count, label: "Forced-labor tariff", note: "Section 301, since July 24, 2026", href: `#${groupIds.forcedLabor}` },
-    { value: summary.countrySpecific.length + summary.column2.length, label: "Own tariffs or Column 2", note: [...summary.countrySpecific.map((r) => r.name), ...summary.column2].join(", "), href: `#${groupIds.own}` },
+    { value: summary.countrySpecific.length + summary.column2.length, label: "Own tariffs or Column 2 Rates", note: [...summary.countrySpecific.map((r) => r.name), ...summary.column2].join(", "), href: `#${groupIds.own}` },
     { value: summary.withPreferences, label: "Trade agreements", note: "Agreements and preference programs", href: `#${groupIds.agreements}` },
     { value: summary.none.length, label: "No added tariff", note: "Base rate and Section 232 only", href: `#${groupIds.none}` },
   ];

@@ -18,7 +18,7 @@ export function GET() {
     "Import rank 2025",
     "Section 301 forced-labor tariff",
     "Other country tariffs",
-    "Column 2 rates",
+    "Column 2 Rates",
     "Own Section 232 rates (headings)",
     "Trade agreements",
     "As of",

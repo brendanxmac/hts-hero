@@ -122,7 +122,7 @@ export const hubSources = (asOf: string) => {
 export const hubTiers = (rows: CountryRow[]) => {
   const tiers = new Map<string, number>();
   const tierOf = (r: CountryRow) => {
-    if (r.otherTariffs.length > 0 || r.column2) return "Own tariffs or Column 2";
+    if (r.otherTariffs.length > 0 || r.column2) return "Own tariffs or Column 2 Rates";
     if (r.forcedLabor) return `Forced labor ${r.forcedLabor.replace(/ including the base rate$/, "").replace(/^Up to/, "up to")}`;
     return "No added tariff";
   };

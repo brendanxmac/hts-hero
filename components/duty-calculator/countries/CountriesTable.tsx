@@ -34,7 +34,7 @@ type Filter = "all" | "forcedLabor" | "specific" | "agreements" | "none";
 const FILTERS: { id: Filter; label: string; test: (r: HubRow) => boolean }[] = [
   { id: "all", label: "All", test: () => true },
   { id: "forcedLabor", label: "Forced-labor tariff", test: (r) => r.forcedLabor !== null },
-  { id: "specific", label: "Own tariffs or Column 2", test: (r) => r.otherTariffs.length > 0 || r.column2 },
+  { id: "specific", label: "Own tariffs or Column 2 Rates", test: (r) => r.otherTariffs.length > 0 || r.column2 },
   { id: "agreements", label: "Trade agreement", test: (r) => r.preferences.length > 0 },
   { id: "none", label: "No added tariff", test: (r) => !r.forcedLabor && r.otherTariffs.length === 0 && !r.column2 },
 ];
@@ -140,7 +140,6 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
                       <span aria-hidden="true" className="mr-2">{r.flag}</span>
                       {r.name}
                     </Link>
-                    {r.slug && <span className={`${ui.badge("primary")} ml-2`}>Page</span>}
                   </th>
                   <td className={`${td} w-44`}>
                     {r.importsLabel ? (
@@ -185,7 +184,7 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
                             <span className={ui.caption}>{t.detail}</span>
                           </span>
                         ))}
-                        {r.column2 && <span className={ui.badge("error")}>Column 2 rates</span>}
+                        {r.column2 && <span className={ui.badge("error")}>Column 2 Rates</span>}
                         {r.dealRates > 0 && <span className={ui.badge("neutral")}>Own Section 232 rates · {r.dealRates}</span>}
                       </div>
                     )}

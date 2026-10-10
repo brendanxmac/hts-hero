@@ -99,8 +99,7 @@ export function CountriesHub({
 
         <section id="table" className={ui.section}>
           <SectionHeader kicker="Every country" title="US tariffs by country of origin">
-            Search, filter or sort all {summary.total}. Countries marked &ldquo;Page&rdquo; have their own calculator
-            page; each row links by code, like <a href="#vn" className={ui.link}>#vn</a>. <CsvLink href={csvHref} />.
+            Search, filter or sort all {summary.total}. Each row links by country code, like <a href="#vn" className={ui.link}>#vn</a>. <CsvLink href={csvHref} />.
           </SectionHeader>
           <CountriesTable rows={rows} asOf={asOf} asOfLabel={asOfLabel} />
         </section>

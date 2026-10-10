@@ -29,14 +29,14 @@ export const hubLead = (s: HubSummary, asOfLabel: string) =>
     s.countrySpecific.length
       ? `${joinList(s.countrySpecific.map((r) => r.name))} also pay tariffs written for them alone.`
       : "",
-    s.column2.length ? `${joinList(s.column2)} pay the higher Column 2 base rates.` : "",
+    s.column2.length ? `${joinList(s.column2)} pay the higher Column 2 Rates.` : "",
     `${s.withPreferences} countries can claim a US trade agreement or preference program, and Section 232 tariffs on metals, autos, wood and other products apply to every country.`,
   ]
     .filter(Boolean)
     .join(" ");
 
 export const hubDescription = (s: HubSummary, month: string) =>
-  `US tariffs for all ${s.total} countries of origin: Section 301 forced-labor rates, country tariffs, Column 2 and trade agreements, with 2025 import values. Updated ${month}.`;
+  `US tariffs for all ${s.total} countries of origin: Section 301 forced-labor rates, country tariffs, Column 2 Rates and trade agreements, with 2025 import values. Updated ${month}.`;
 
 export const hubFaqs = (rows: CountryRow[], s: HubSummary, asOfLabel: string, verifiedThrough: string) => {
   const byImports = rows.filter((r) => r.imports2025).sort((a, b) => (b.imports2025 ?? 0) - (a.imports2025 ?? 0));
@@ -49,7 +49,7 @@ export const hubFaqs = (rows: CountryRow[], s: HubSummary, asOfLabel: string, ve
           ? `Goods from ${joinList(s.countrySpecific.map((r) => r.name))} pay tariffs written for those countries on top of everything else: ${s.countrySpecific.map(specificPhrase).join("; ")}.`
           : "",
         s.column2.length
-          ? `${joinList(s.column2)} pay Column 2 base rates, which are far higher than the normal rates for most products.`
+          ? `${joinList(s.column2)} pay Column 2 Rates, which are far higher than the normal rates for most products.`
           : "",
         `Beyond those, the forced-labor tariff (${forcedLaborRates(s)}) is the main difference between countries. What a product pays also depends on its HTS code, Section 232 and any trade agreement claimed.`,
       ]
@@ -99,7 +99,7 @@ export const hubKeyFacts = (rows: CountryRow[], s: HubSummary) => {
     ...(s.countrySpecific.length
       ? [{ label: "Tariffs of their own", text: `Tariffs written for one country: ${s.countrySpecific.map(specificPhrase).join("; ")}.` }]
       : []),
-    ...(s.column2.length ? [{ label: "Column 2", text: `Column 2 base rates: ${joinList(s.column2)}.` }] : []),
+    ...(s.column2.length ? [{ label: "Column 2 Rates", text: `Column 2 Rates: ${joinList(s.column2)}.` }] : []),
     {
       label: "Trade agreements",
       text: `Trade agreements and preference programs: ${s.withPreferences} countries${programs.length ? `, including ${joinList(programs)}` : ""}.`,
@@ -115,7 +115,7 @@ export const hubKeyFacts = (rows: CountryRow[], s: HubSummary) => {
 
 // One line under the headline; the detail is in the key facts
 export const hubSubtitle = (s: HubSummary) =>
-  `What goods from each of the ${s.total} countries of origin pay on entry to the US: Section 301 forced-labor rates, tariffs written for one country, Column 2 and trade agreements.`;
+  `What goods from each of the ${s.total} countries of origin pay on entry to the US: Section 301 forced-labor rates, tariffs written for one country, Column 2 Rates and trade agreements.`;
 
 export interface HubGroup {
   id: string;
@@ -143,7 +143,7 @@ export const hubGroups = (s: HubSummary): HubGroup[] => [
     ? [{ id: "country-tariffs", title: "Countries with tariffs of their own", note: s.countrySpecific.map(specificPhrase).join("; ") + ".", names: s.countrySpecific.map((r) => r.name) }]
     : []),
   ...(s.column2.length
-    ? [{ id: "column-2", title: "Countries that pay Column 2 rates", note: "No normal trade relations with the US: their goods pay the HTS Column 2 base rates.", names: s.column2 }]
+    ? [{ id: "column-2", title: "Countries that pay Column 2 Rates", note: "No normal trade relations with the US: their goods pay the HTS Column 2 Rates.", names: s.column2 }]
     : []),
   ...s.byPreference
     .filter((p) => p.names.length > 1)
