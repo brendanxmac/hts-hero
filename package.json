@@ -13,6 +13,7 @@
     "tests": "APP_ENV=test npx tsx testing/run-tests.ts",
     "knip": "knip",
     "sync-revisions": "npx tsx scripts/engine-v2/sync-hts-revisions.ts",
+    "sync-country-imports": "npx tsx scripts/sync-country-imports.ts",
     "notes:cited": "npx tsx scripts/engine-v2/cited-notes.ts",
     "ch99:coverage": "npx tsx scripts/engine-v2/ch99-coverage.ts",
     "ch99:archive": "npx tsx scripts/backfill/ch99-archive.ts",

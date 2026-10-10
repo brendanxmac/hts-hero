@@ -11,7 +11,8 @@ import { TariffFinderPage } from "../calculator";
 import { CountryExamples } from "./CountryExamples";
 import { CountryLinks } from "./CountryLinks";
 import { CountryTariffTables } from "./CountryTariffTables";
-import { tariffSummary, titleName } from "./countryCopy";
+import { ExampleComparison, importSentence, tariffSummary, titleName } from "./countryCopy";
+import { IMPORT_SOURCE, ImportFacts } from "@/libs/country-pages/importStats";
 
 // /duty-calculator/[country]: the calculator with the country chosen, then what that country's
 // goods pay and why. Everything below the calculator is server-rendered for search engines.
@@ -22,6 +23,8 @@ export function CountryCalculatorPage({
   faqs,
   verifiedThrough,
   asOfLabel,
+  facts,
+  comparison,
 }: {
   country: CountryPage;
   tariffs: CountryTariffs;
@@ -29,6 +32,8 @@ export function CountryCalculatorPage({
   faqs: { question: string; answer: string }[];
   verifiedThrough: string;
   asOfLabel: string;
+  facts: ImportFacts | null;
+  comparison: ExampleComparison | null;
 }) {
   const name = titleName(country);
   const path = `/duty-calculator/${country.slug}`;
@@ -46,6 +51,15 @@ export function CountryCalculatorPage({
           <span className={ui.kicker}>{name} to US</span>
           <h1 className={`${ui.display} max-w-4xl`}>{name} to US tariff calculator</h1>
           <p className={`${ui.lead} max-w-3xl`}>{tariffSummary(country, tariffs)}</p>
+          {facts && (
+            <p className={`${ui.body} max-w-3xl`}>
+              {importSentence(country, facts)}{" "}
+              <a href={IMPORT_SOURCE.url} rel="noopener" className={ui.link}>
+                Source: US Census Bureau
+              </a>
+              .
+            </p>
+          )}
           <p className={ui.caption}>
             Rates verified through {verifiedThrough}. Page updated {asOfLabel}.
           </p>
@@ -71,8 +85,10 @@ export function CountryCalculatorPage({
 
           {examples.length > 0 && (
             <section className={ui.section}>
-              <SectionHeader kicker="Examples" title={`What common products from ${country.name} pay`} />
-              <CountryExamples examples={examples} calculatorPath={path} />
+              <SectionHeader kicker="Examples" title={`What common products from ${country.name} pay`}>
+                {comparison ? `The same products from ${comparison.name} alongside, for comparison.` : null}
+              </SectionHeader>
+              <CountryExamples examples={examples} calculatorPath={path} countryName={name} comparison={comparison} />
             </section>
           )}
 

@@ -12,6 +12,7 @@ import { mono } from "@/components/ui/font";
 import { heat } from "@/components/ui/theme";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
+import { countryPageByCode } from "@/libs/country-pages/countries";
 
 // What an import under an HTS code pays from the largest sources of US imports, on the
 // /hts/[code] page. Server-rendered from the Tariff Calculator's engine.
@@ -105,15 +106,28 @@ export function DutyByCountry({
                   className="border-t border-base-300 *:align-top hover:bg-base-200/60 scroll-mt-6"
                 >
                   <th scope="row" className="px-5 sm:px-6 py-3 text-left font-medium text-base-content whitespace-nowrap">
-                    {/* nofollow: calculator links with parameters all canonicalize to /duty-calculator */}
-                    <Link
-                      href={calculatorHref(htsno, row.country.code)}
-                      rel="nofollow"
-                      className="hover:underline hover:text-primary"
-                    >
-                      <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
-                      {row.country.name}
-                    </Link>
+                    {/* A country with its own calculator page links there (a link search engines
+                        follow); others open the calculator with the code, which canonicalizes to
+                        /duty-calculator, so nofollow */}
+                    {countryPageByCode(row.country.code) ? (
+                      <Link
+                        href={`/duty-calculator/${countryPageByCode(row.country.code)!.slug}`}
+                        title={`${row.country.name} to US tariff calculator`}
+                        className="hover:underline hover:text-primary"
+                      >
+                        <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
+                        {row.country.name}
+                      </Link>
+                    ) : (
+                      <Link
+                        href={calculatorHref(htsno, row.country.code)}
+                        rel="nofollow"
+                        className="hover:underline hover:text-primary"
+                      >
+                        <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
+                        {row.country.name}
+                      </Link>
+                    )}
                   </th>
                   <td className="px-4 py-3 text-base-content/70 whitespace-nowrap">
                     {row.baseRate}
@@ -137,12 +151,16 @@ export function DutyByCountry({
                     )}
                   </td>
                   <td className="px-5 sm:px-6 py-2 text-right whitespace-nowrap">
-                    <span
-                      className="inline-block rounded px-2.5 py-1 font-semibold text-base-content"
+                    {/* The total opens this code from this country in the calculator */}
+                    <Link
+                      href={calculatorHref(htsno, row.country.code)}
+                      rel="nofollow"
+                      title={`Calculate HTS ${htsno} from ${row.country.name}`}
+                      className="inline-block rounded px-2.5 py-1 font-semibold text-base-content hover:ring-1 hover:ring-primary/40"
                       style={{ background: heat(row.totalPct) }}
                     >
                       {describeTotal(row)}
-                    </span>
+                    </Link>
                     {row.preference && (
                       <span className="block mt-1 text-xs font-medium text-success">
                         {row.preference.totalPct !== null
