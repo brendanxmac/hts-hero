@@ -2021,6 +2021,12 @@ describe("engine-v2 real data: 2025HTSRev32 backfill (Switzerland and Liechtenst
     expect(round(calc("6307.90.98.70", "CH", "2025-11-14", "7%").totalDuty)).toBe(1500)
   })
 
+  it("the Swiss, Liechtenstein and Korea reciprocal headings start Aug 7, 2025 (EO 14326)", () => {
+    expect(applying(calc("6109.10.00.12", "CH", "2025-08-06", "16.5%"))).toEqual(["9903.01.25"])
+    expect(applying(calc("6109.10.00.12", "CH", "2025-08-07", "16.5%"))).toEqual(["9903.02.58"])
+    expect(applying(calc("6109.10.00.12", "KR", "2025-08-07", "16.5%"))).toEqual(["9903.02.56"])
+  })
+
   it("Liechtenstein pays its 15% reciprocal rate before Nov 14, 2025", () => {
     expect(applying(calc("6109.10.00.12", "LI", "2025-11-13", "16.5%"))).toEqual(["9903.02.36"])
     expect(applying(calc("6307.90.98.70", "LI", "2025-11-14", "7%"))).toEqual(["9903.02.88"])

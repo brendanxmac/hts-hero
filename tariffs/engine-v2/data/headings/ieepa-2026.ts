@@ -26,7 +26,15 @@ const ended = (note?: string) => ({
 // U.S.-Korea Strategic Trade and Investment Deal: Commerce/USTR notice (90 FR 55964, Dec 4, 2025),
 // Annex Part B, "Heading 9903.02.56 is terminated", for goods entered "on or after 12:01 a.m.
 // eastern time on November 14, 2025" (retroactive)
+// Country-specific reciprocal headings 9903.02.02–.73 took effect with EO 14326 (90 FR 37963),
+// sec. 2(a): goods entered "on or after 12:01 a.m. eastern daylight time 7 days after the date of
+// this order" (signed July 31, 2025), i.e. Aug 7, 2025, which their text states: "Except for goods
+// loaded … before 12:01 a.m. eastern daylight time on August 7, 2025". The in-transit exception
+// (entered before Oct 5, 2025) isn't modeled; it matters only for Aug 7 – Oct 4, 2025
+const RECIPROCAL_COUNTRY_FROM = "2025-08-07"
+const eo14326Start = "Starts Aug 7, 2025 (heading text; EO 14326, 90 FR 37963, sec. 2(a): \"on or after 12:01 a.m. eastern daylight time 7 days after the date of this order\", signed July 31, 2025, https://www.govinfo.gov/content/pkg/FR-2025-08-06/html/2025-15010.htm)"
 const KOREA_FROM = "2025-11-14"
+const withStart = <T extends { note: string }>(source: T): T => ({ ...source, note: `${source.note.replace("; start date comes with the 2025 backfill", "")}. ${eo14326Start}` })
 const SWISS_FROM = "2025-11-14"
 const SWISS_DEAL = { from: SWISS_FROM, to: "2026-02-24" }
 const swissDealSource = {
@@ -1380,10 +1388,10 @@ export const headings: Tariff[] = [
     ],
     rate: { kind: "adValorem", pct: 15 },
     rateByColumn: { column2: { kind: "free" } },
-    effective: { to: SWISS_FROM },
-    source: beforeSwissDeal(
+    effective: { from: RECIPROCAL_COUNTRY_FROM, to: SWISS_FROM },
+    source: withStart(beforeSwissDeal(
       "U.S. note 2(v); terminated by the Switzerland–Liechtenstein deal. Its in-transit exception (loaded before Aug 7, entered before Oct 5, 2025) no longer applies by then",
-    ),
+    )),
   },
   {
     code: "9903.02.37",
@@ -1840,13 +1848,13 @@ export const headings: Tariff[] = [
     ],
     rate: { kind: "adValorem", pct: 15 },
     rateByColumn: { column2: { kind: "free" } },
-    effective: { to: KOREA_FROM },
+    effective: { from: RECIPROCAL_COUNTRY_FROM, to: KOREA_FROM },
     source: {
       revision: "2025HTSRev31",
       citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B",
       url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
       publishedOn: "2025-12-04",
-      note: "U.S. note 2(v); terminated by the U.S.-Korea deal for goods entered on or after 12:01 a.m. ET Nov 14, 2025 (retroactive, published Dec 4, 2025). Its in-transit exception (loaded before Aug 7, entered before Oct 5, 2025) no longer applies by then. Backfilled from 2025HTSRev32's change record; start date comes with the 2025 backfill",
+      note: `U.S. note 2(v); terminated by the U.S.-Korea deal for goods entered on or after 12:01 a.m. ET Nov 14, 2025 (retroactive, published Dec 4, 2025). Its in-transit exception (loaded before Aug 7, entered before Oct 5, 2025) no longer applies by then. Backfilled from 2025HTSRev32's change record. ${eo14326Start}`,
     },
   },
   {
@@ -1890,10 +1898,10 @@ export const headings: Tariff[] = [
     ],
     rate: { kind: "adValorem", pct: 39 },
     rateByColumn: { column2: { kind: "free" } },
-    effective: { to: SWISS_FROM },
-    source: beforeSwissDeal(
+    effective: { from: RECIPROCAL_COUNTRY_FROM, to: SWISS_FROM },
+    source: withStart(beforeSwissDeal(
       "U.S. note 2(v); terminated by the Switzerland–Liechtenstein deal. Its in-transit exception (loaded before Aug 7, entered before Oct 5, 2025) no longer applies by then",
-    ),
+    )),
   },
   {
     code: "9903.02.59",

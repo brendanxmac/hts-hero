@@ -67,14 +67,14 @@ const main = async () => {
   nodes.forEach(collect)
   // Which subdivisions mention each code, to find candidates fast
   const byCode = new Map<string, string[]>()
-  for (const [key, set] of subtreeCodes) for (const c of set) byCode.set(c, [...(byCode.get(c) ?? []), key])
+  for (const [key, set] of Array.from(subtreeCodes)) for (const c of Array.from(set)) byCode.set(c, [...(byCode.get(c) ?? []), key])
 
   const date = revision.from
   // Only lists that a tariff in effect on the date uses
   const inForce = (e?: { from?: string; to?: string }) => (!e?.from || e.from <= date) && (!e?.to || e.to > date)
   const used = new Set<string>()
   for (const t of AllRules.tariffs.filter((t) => inForce(t.effective)))
-    for (const m of JSON.stringify(t).matchAll(/"list":"([^"]+)"/g)) used.add(m[1])
+    for (const m of Array.from(JSON.stringify(t).matchAll(/"list":"([^"]+)"/g))) used.add(m[1])
   const differing: string[] = []
   const exact: string[] = []
   const unmatched: string[] = []
@@ -85,7 +85,7 @@ const main = async () => {
     let best: { key: string; overlap: number; inter: number } | null = null
     const candidates = new Set<string>()
     codes.forEach((c) => (byCode.get(c) ?? []).forEach((k) => candidates.add(k)))
-    for (const key of candidates) {
+    for (const key of Array.from(candidates)) {
       const note = subtreeCodes.get(key)!
       let inter = 0
       codes.forEach((c) => note.has(c) && inter++)
@@ -99,8 +99,8 @@ const main = async () => {
       continue
     }
     const note = subtreeCodes.get(best.key)!
-    const onlyList = [...codes].filter((c) => !note.has(c))
-    const onlyNote = [...note].filter((c) => !codes.has(c))
+    const onlyList = Array.from(codes).filter((c) => !note.has(c))
+    const onlyNote = Array.from(note).filter((c) => !codes.has(c))
     const where = best.key.replace(/^.*us-notes\//, "note ")
     if (!onlyList.length && !onlyNote.length) exact.push(`${label} = ${where}`)
     else
