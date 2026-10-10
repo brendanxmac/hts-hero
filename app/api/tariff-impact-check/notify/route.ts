@@ -278,7 +278,15 @@ const processTariffImpactNotifications = async (
   }
 };
 
+// Disabled: requesterIsAdmin accepts any non-empty x-api-key header.
+// Fix that check before flipping this back to true.
+const ROUTE_ENABLED = false;
+
 export async function POST(req: NextRequest) {
+  if (!ROUTE_ENABLED) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
+
   try {
     // Validate request authorization
     if (!requesterIsAdmin(req)) {
