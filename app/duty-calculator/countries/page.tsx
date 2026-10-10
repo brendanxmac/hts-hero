@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import config from "@/config";
-import { CountriesHub, HubRow, hubDescription, hubFaqs, hubGroups, hubKeyFacts, hubLead } from "@/components/duty-calculator/countries";
+import { CountriesHub, HubRow, hubDescription, hubFaqs, hubGroups, hubKeyFacts, hubLead, hubSubtitle } from "@/components/duty-calculator/countries";
 import { THEME } from "@/components/ui/theme";
-import { countryRows, hubSources, hubSummary } from "@/libs/country-pages/allCountries";
+import { countryRows, hubSources, hubSummary, hubTiers } from "@/libs/country-pages/allCountries";
 import { formatImports, IMPORT_SOURCE } from "@/libs/country-pages/importStats";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
@@ -61,7 +61,7 @@ export default function CountriesHubRoute() {
     rank: r.rank2025,
     forcedLabor: r.forcedLabor,
     forcedLaborPct: r.forcedLaborPct,
-    otherTariffs: r.otherTariffs.map((t) => `${t.name}: ${lowerFirst(t.rates)} on ${t.allProducts ? "all products" : "listed products"}`),
+    otherTariffs: r.otherTariffs.map((t) => ({ name: t.name, detail: `${lowerFirst(t.rates)} on ${t.allProducts ? "all products" : "listed products"}` })),
     dealRates: r.dealRates,
     preferences: r.preferences,
     column2: r.column2,
@@ -116,8 +116,9 @@ export default function CountriesHubRoute() {
       <CountriesHub
         rows={rows}
         summary={summary}
-        lead={hubLead(summary, asOfLabel)}
+        subtitle={hubSubtitle(summary)}
         keyFacts={hubKeyFacts(all, summary)}
+        tiers={hubTiers(all)}
         groups={hubGroups(summary)}
         faqs={faqs}
         sources={sources}

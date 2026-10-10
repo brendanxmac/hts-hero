@@ -102,10 +102,10 @@ const UnauthenticatedTariffsHeader = () => {
           {/* Desktop Right Side - CTA & Theme Toggle */}
           <div className="hidden md:flex items-center gap-3">
             <Link
-              href="/about/tariffs"
+              href="/duty-calculator"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              Check Your Tariff Impact
+              Calculate Your Tariffs
             </Link>
             <ButtonSignin text="Sign In" />
             <ThemeToggle />
@@ -186,11 +186,11 @@ const UnauthenticatedTariffsHeader = () => {
             {/* CTA & Theme Toggle */}
             <div className="flex flex-col gap-4">
               <Link
-                href="/about/tariffs"
+                href="/duty-calculator"
                 onClick={() => setIsOpen(false)}
                 className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200"
               >
-                Check Your Tariff Impact
+                Calculate Your Tariffs
               </Link>
               <div className="flex items-center gap-3">
                 <ButtonSignin text="Sign In" />

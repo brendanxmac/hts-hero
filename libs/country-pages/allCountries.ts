@@ -116,3 +116,18 @@ export const hubSources = (asOf: string) => {
       : []),
   ] as { name: string; url: string | null }[];
 };
+
+// Each country in exactly one tier, by the most it faces: tariffs of its own or Column 2, then
+// its forced-labor rate, then nothing added. For the breakdown bar.
+export const hubTiers = (rows: CountryRow[]) => {
+  const tiers = new Map<string, number>();
+  const tierOf = (r: CountryRow) => {
+    if (r.otherTariffs.length > 0 || r.column2) return "Own tariffs or Column 2";
+    if (r.forcedLabor) return `Forced labor ${r.forcedLabor.replace(/ including the base rate$/, "").replace(/^Up to/, "up to")}`;
+    return "No added tariff";
+  };
+  rows.forEach((r) => tiers.set(tierOf(r), (tiers.get(tierOf(r)) ?? 0) + 1));
+  const order = (label: string) =>
+    label.startsWith("Own") ? 0 : label === "No added tariff" ? 99 : 10 - (Number(label.match(/(\d+(?:\.\d+)?)%/)?.[1] ?? 0) / 10) + (label.includes("up to") ? 0.05 : 0);
+  return Array.from(tiers, ([label, count]) => ({ label, count })).sort((a, b) => order(a.label) - order(b.label));
+};

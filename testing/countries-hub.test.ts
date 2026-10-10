@@ -47,8 +47,8 @@ describe("Tariffs by country hub", () => {
 
   it("states the key facts with the counts", () => {
     const facts = hubKeyFacts(rows, summary)
-    expect(facts[0].startsWith(`Section 301 forced-labor tariff: ${summary.forcedLabor.count} countries`)).toBe(true)
-    expect(facts.some((f) => f.startsWith(`No added tariff: ${summary.none.length} countries`))).toBe(true)
+    expect(facts[0].text.startsWith(`Section 301 forced-labor tariff: ${summary.forcedLabor.count} countries`)).toBe(true)
+    expect(facts.some((f) => f.text.startsWith(`No added tariff: ${summary.none.length} countries`))).toBe(true)
   })
 
   it("serves the table as CSV, one line per country", async () => {

@@ -83,23 +83,39 @@ export const hubFaqs = (rows: CountryRow[], s: HubSummary, asOfLabel: string, ve
   ];
 };
 
-// Short, dated facts for the top of the page: each one a sentence an answer engine can lift whole
+// Short, dated facts for the top of the page, each a label and a sentence an answer engine can
+// lift whole
 export const hubKeyFacts = (rows: CountryRow[], s: HubSummary) => {
   const byImports = rows.filter((r) => r.imports2025).sort((a, b) => (b.imports2025 ?? 0) - (a.imports2025 ?? 0));
   const largest = byImports.slice(0, 3).map((r) => `${r.name} (${formatImports(r.imports2025!)})`);
   const programs = s.byPreference.filter((p) => p.names.length > 1).map((p) => `${p.name} (${p.names.length})`);
   return [
-    `Section 301 forced-labor tariff: ${s.forcedLabor.count} countries since July 24, 2026 (${s.forcedLabor.byRate
-      .map((g) => `${lowerFirst(g.rates)}: ${g.names.length}`)
-      .join("; ")}).`,
-    s.countrySpecific.length ? `Tariffs written for one country: ${s.countrySpecific.map(specificPhrase).join("; ")}.` : "",
-    s.column2.length ? `Column 2 base rates: ${joinList(s.column2)}.` : "",
-    `Trade agreements and preference programs: ${s.withPreferences} countries${programs.length ? `, including ${joinList(programs)}` : ""}.`,
-    `No added tariff: ${s.none.length} countries pay only their HTS base rate and Section 232.`,
-    "The IEEPA tariffs, including the reciprocal tariffs, ended when the Supreme Court ruled them unlawful on February 20, 2026; the Section 122 tariff that followed has expired.",
-    `Largest sources of US imports in 2025: ${joinList(largest)}.`,
-  ].filter(Boolean);
+    {
+      label: "Forced-labor tariff",
+      text: `Section 301 forced-labor tariff: ${s.forcedLabor.count} countries since July 24, 2026 (${s.forcedLabor.byRate
+        .map((g) => `${lowerFirst(g.rates)}: ${g.names.length}`)
+        .join("; ")}).`,
+    },
+    ...(s.countrySpecific.length
+      ? [{ label: "Tariffs of their own", text: `Tariffs written for one country: ${s.countrySpecific.map(specificPhrase).join("; ")}.` }]
+      : []),
+    ...(s.column2.length ? [{ label: "Column 2", text: `Column 2 base rates: ${joinList(s.column2)}.` }] : []),
+    {
+      label: "Trade agreements",
+      text: `Trade agreements and preference programs: ${s.withPreferences} countries${programs.length ? `, including ${joinList(programs)}` : ""}.`,
+    },
+    { label: "No added tariff", text: `No added tariff: ${s.none.length} countries pay only their HTS base rate and Section 232.` },
+    {
+      label: "IEEPA tariffs",
+      text: "The IEEPA tariffs, including the reciprocal tariffs, ended when the Supreme Court ruled them unlawful on February 20, 2026; the Section 122 tariff that followed has expired.",
+    },
+    { label: "Largest sources", text: `Largest sources of US imports in 2025: ${joinList(largest)}.` },
+  ];
 };
+
+// One line under the headline; the detail is in the key facts
+export const hubSubtitle = (s: HubSummary) =>
+  `What goods from each of the ${s.total} countries of origin pay on entry to the US: Section 301 forced-labor rates, tariffs written for one country, Column 2 and trade agreements.`;
 
 export interface HubGroup {
   id: string;

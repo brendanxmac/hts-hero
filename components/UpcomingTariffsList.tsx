@@ -190,7 +190,7 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
               Quickly knowing your impacts can mean big savings
             </p>
             <Link
-              href="/about/tariffs#pricing"
+              href="/pricing-calculator"
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
             >
               <span>Be Prepared Today</span>

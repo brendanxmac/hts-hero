@@ -6,25 +6,22 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
 import { CountryLinks } from "../country/CountryLinks";
 import { CountriesTable, HubRow } from "./CountriesTable";
+import { GroupCard } from "./GroupCard";
+import { HubGroup } from "./hubCopy";
 import { CsvLink, HubButtons, HubCtaCards } from "./HubCtas";
+import { HubOverview } from "./HubOverview";
 
-// /duty-calculator/countries: what goods from every country of origin face. Answer first (the
-// lead and key facts), then the table, the two next steps, every group of countries as its own
-// heading and list, the FAQs and the sources. Everything is server-rendered.
-
-const Stat = ({ value, label, note }: { value: string | number; label: string; note: string }) => (
-  <div className={`${ui.card} px-5 py-4`}>
-    <div className={ui.label}>{label}</div>
-    <div className={`${ui.metric.secondary} mt-1.5`}>{value}</div>
-    <div className={`${ui.bodySm} mt-1.5`}>{note}</div>
-  </div>
-);
+// /duty-calculator/countries: what goods from every country of origin face. A short headline,
+// then the key facts beside the overview, the table, the two next steps, every group of
+// countries, the FAQs and the sources. Everything is server-rendered; long lists fold into
+// disclosures and the table scrolls, so nothing leaves the page's HTML.
 
 export function CountriesHub({
   rows,
   summary,
-  lead,
+  subtitle,
   keyFacts,
+  tiers,
   groups,
   faqs,
   sources,
@@ -36,9 +33,10 @@ export function CountriesHub({
 }: {
   rows: HubRow[];
   summary: HubSummary;
-  lead: string;
-  keyFacts: string[];
-  groups: { id: string; title: string; note: string; names: string[]; details?: Record<string, string> }[];
+  subtitle: string;
+  keyFacts: { label: string; text: string }[];
+  tiers: { label: string; count: number }[];
+  groups: HubGroup[];
   faqs: { question: string; answer: string }[];
   sources: { name: string; url: string | null }[];
   // Where each country's name links: its own page, or its row in the table
@@ -48,10 +46,17 @@ export function CountriesHub({
   asOf: string;
   asOfLabel: string;
 }) {
+  const groupIds = {
+    forcedLabor: groups.find((g) => g.id.startsWith("forced-labor"))?.id ?? "groups",
+    own: groups.find((g) => g.id === "country-tariffs")?.id ?? "groups",
+    agreements: groups.find((g) => g.id.startsWith("program-") || g.id === "other-agreements")?.id ?? "groups",
+    none: "no-added-tariff",
+  };
+
   return (
     <>
       <header className="w-full border-b border-base-300">
-        <div className={`${ui.container} flex flex-col gap-4 pb-8 pt-6`}>
+        <div className={`${ui.container} flex flex-col gap-3 pb-8 pt-6`}>
           <nav aria-label="Breadcrumb" className="text-sm text-base-content/60">
             <Link href="/duty-calculator" className="text-base-content/70 underline-offset-4 hover:text-primary hover:underline">
               Duty Calculator
@@ -61,43 +66,41 @@ export function CountriesHub({
           </nav>
           <span className={ui.kicker}>All {summary.total} countries of origin</span>
           <h1 className={`${ui.display} max-w-4xl`}>US tariffs by country, 2026</h1>
-          <p className={`${ui.lead} max-w-4xl`}>{lead}</p>
+          <p className={`${ui.lead} max-w-3xl`}>{subtitle}</p>
           <p className={ui.caption}>
-            Tariff rules verified through {verifiedThrough}. Updated <time dateTime={asOf}>{asOfLabel}</time>.
+            Tariff rules verified through {verifiedThrough} · Updated <time dateTime={asOf}>{asOfLabel}</time>
           </p>
-          <HubButtons placement="top" />
+          <div className="pt-2">
+            <HubButtons placement="top" />
+          </div>
         </div>
       </header>
 
       <div className={`${ui.container} flex flex-col gap-16 py-10 sm:gap-20`}>
-        <section aria-labelledby="key-facts" className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-12">
-          <div className="flex flex-col gap-3">
-            <h2 id="key-facts" className="text-2xl font-semibold tracking-tight text-base-content">
-              Key facts, {asOfLabel}
+        <section aria-labelledby="key-facts" className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
+          <div className="flex flex-col gap-4">
+            <h2 id="key-facts" className={ui.sectionTitle}>
+              Key facts
             </h2>
-            <ul className={`${ui.body} flex list-disc flex-col gap-2 pl-5`}>
-              {keyFacts.map((fact) => (
-                <li key={fact}>{fact}</li>
+            {/* Each fact is a whole sentence (what answer engines quote); the label is for scanning */}
+            <dl className="flex flex-col divide-y divide-base-300 border-y border-base-300">
+              {keyFacts.map((f) => (
+                <div key={f.label} className="grid gap-1 py-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-4">
+                  <dt className={`${ui.label} pt-0.5`}>{f.label}</dt>
+                  <dd className={ui.bodySm}>{f.text}</dd>
+                </div>
               ))}
-            </ul>
+            </dl>
           </div>
-          <div className="grid content-start gap-3 sm:grid-cols-2" aria-label="Summary">
-            <Stat value={summary.forcedLabor.count} label="Forced-labor tariff" note="Countries paying Section 301 forced-labor duties since July 24, 2026" />
-            <Stat
-              value={summary.countrySpecific.length}
-              label="Tariffs of their own"
-              note={summary.countrySpecific.map((r) => r.name).join(", ") || "None"}
-            />
-            <Stat value={summary.withPreferences} label="Trade agreements" note="Countries that can claim a US trade agreement or preference program" />
-            <Stat value={summary.none.length} label="No added tariff" note="Countries paying only the base rate and Section 232" />
+          <div className="lg:pt-12">
+            <HubOverview summary={summary} tiers={tiers} groupIds={groupIds} />
           </div>
         </section>
 
         <section id="table" className={ui.section}>
           <SectionHeader kicker="Every country" title="US tariffs by country of origin">
-            Sorted by US imports. Countries with their own page link to it; the rest open the calculator set to that
-            country. Each row has its own link by country code, for example <a href="#vn" className={ui.link}>#vn</a>.{" "}
-            <CsvLink href={csvHref} />.
+            Search, filter or sort all {summary.total}. Countries marked &ldquo;Page&rdquo; have their own calculator
+            page; each row links by code, like <a href="#vn" className={ui.link}>#vn</a>. <CsvLink href={csvHref} />.
           </SectionHeader>
           <CountriesTable rows={rows} asOf={asOf} asOfLabel={asOfLabel} />
         </section>
@@ -110,25 +113,9 @@ export function CountriesHub({
           <SectionHeader kicker="By tariff" title="Countries grouped by what they pay">
             Every country in each group, as of {asOfLabel}.
           </SectionHeader>
-          <div className="grid gap-x-12 gap-y-10 lg:grid-cols-2">
+          <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
             {groups.map((g) => (
-              <div key={g.id} id={g.id} className="scroll-mt-6 flex flex-col gap-2">
-                <h3 className="text-lg font-semibold text-base-content">
-                  {g.title} <span className="font-normal text-base-content/60">({g.names.length})</span>
-                </h3>
-                <p className={ui.bodySm}>{g.note}</p>
-                <p className={`${ui.body} text-sm`}>
-                  {g.names.map((name, i) => (
-                    <span key={name}>
-                      <a href={hrefs[name]} className="text-base-content/80 hover:text-primary hover:underline">
-                        {name}
-                      </a>
-                      {g.details?.[name] ? ` (${g.details[name]})` : ""}
-                      {i < g.names.length - 1 ? ", " : ""}
-                    </span>
-                  ))}
-                </p>
-              </div>
+              <GroupCard key={g.id} group={g} hrefs={hrefs} />
             ))}
           </div>
         </section>
@@ -142,14 +129,14 @@ export function CountriesHub({
           <FaqList faqs={faqs} openFirst />
         </section>
 
-        <section id="sources" className={ui.section}>
+        <section id="sources" className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
           <SectionHeader kicker="Sources" title="Where these numbers come from">
             Tariffs come from HTS Hero&rsquo;s engine, the same rules as the duty calculator, checked against each HTS
-            revision. Import values come from the {IMPORT_SOURCE.name}.
+            revision.
           </SectionHeader>
-          <ul className={`${ui.body} flex list-disc flex-col gap-1.5 pl-5`}>
+          <ul className={`${ui.card} divide-y divide-base-300`}>
             {[...sources, { name: IMPORT_SOURCE.name, url: IMPORT_SOURCE.url }].map((s) => (
-              <li key={s.name}>
+              <li key={s.name} className={`${ui.bodySm} px-5 py-3`}>
                 {s.url ? (
                   <a href={s.url} rel="noopener" className={ui.link}>
                     {s.name}
