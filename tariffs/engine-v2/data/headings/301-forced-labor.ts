@@ -1885,8 +1885,11 @@ export const headings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev14",
-          citation: "Notice",
-          note: "U.S. note 52(f)(8)",
+          citation:
+            "USTR, Notice of Actions in Section 301 Investigations (forced labor), Annex I, Part B, 91 FR 47318 (FR Doc. 2026-15181)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-07-28/html/2026-15181.htm",
+          publishedOn: "2026-07-28",
+          note: "U.S. note 52(f)(8), from 12:01 a.m. ET July 31, 2026",
         },
       },
     ],

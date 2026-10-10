@@ -37,7 +37,11 @@ export const headings: Tariff[] = [
       effective: { from: "2026-04-06" },
       source: {
         revision: "2026HTSRev7",
-        note: "Added to the HTS by Notice effective 2026-04-06 (retroactive); listed from 2026HTSRev7. Scope now includes subdivision (c)(viii), per the heading text",
+        citation:
+          "Commerce (BIS) notice, Technical Corrections to the HTSUS for Duties Imposed by Proclamation 11021, 91 FR 23056 (FR Doc. 2026-08297)",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-29/html/2026-08297.htm",
+        publishedOn: "2026-04-29",
+        note: "Added to the HTS by the notice, effective 2026-04-06 (retroactive); listed from 2026HTSRev7. Scope now includes subdivision (c)(viii), per the heading text",
       },
     },
     [
@@ -126,7 +130,11 @@ export const headings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev6",
-          note: "U.S. note 16(a) range extended to 9903.82.19; effective date from the change record",
+          citation:
+            "Commerce (ITA) notice, Procedures for Submissions by Certain Steel and Aluminum Producers Committing to New U.S. Steel or Aluminum Production To Obtain Tariff Adjustments Under Proclamation 10984, Annex, 91 FR 21790 (FR Doc. 2026-07987)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-04-23/html/2026-07987.htm",
+          publishedOn: "2026-04-23",
+          note: "U.S. note 16(a) range extended to 9903.82.19",
         },
       },
     ],
@@ -280,10 +288,11 @@ export const headings: Tariff[] = [
       effective: { from: "2026-04-06" },
       source: {
         revision: "2026HTSRev7",
-        citation: "Proclamation 11021",
-        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
-        publishedOn: "2026-04-02",
-        note: "U.S. note 16(e) sentence limiting this heading to (c)(ii), (iv), (vi) and (vii) removed by Notice effective 2026-04-06 (retroactive); scope follows the heading text, adding (c)(viii)",
+        citation:
+          "Commerce (BIS) notice, Technical Corrections to the HTSUS for Duties Imposed by Proclamation 11021, 91 FR 23056 (FR Doc. 2026-08297)",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-29/html/2026-08297.htm",
+        publishedOn: "2026-04-29",
+        note: "U.S. note 16(e) sentence limiting this heading to (c)(ii), (iv), (vi) and (vii) removed by the notice, effective 2026-04-06 (retroactive); scope follows the heading text, adding (c)(viii)",
       },
     },
     [
@@ -617,10 +626,11 @@ export const headings: Tariff[] = [
       effective: { from: "2026-04-06" },
       source: {
         revision: "2026HTSRev7",
-        citation: "Proclamation 11021",
-        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
-        publishedOn: "2026-04-02",
-        note: "9903.82.01 added as an exception: U.S. note 16(a) as modified by Notice effective 2026-04-06 (retroactive)",
+        citation:
+          "Commerce (BIS) notice, Technical Corrections to the HTSUS for Duties Imposed by Proclamation 11021, 91 FR 23056 (FR Doc. 2026-08297)",
+        url: "https://www.govinfo.gov/content/pkg/FR-2026-04-29/html/2026-08297.htm",
+        publishedOn: "2026-04-29",
+        note: "9903.82.01 added as an exception: U.S. note 16(a) as modified by the notice, effective 2026-04-06 (retroactive)",
       },
     },
     [

@@ -124,7 +124,11 @@ export const headings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 35(c); Notice effective 2026-05-01. Removes the metals duties via a noStack interaction",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 35(c); the notice, effective 2026-05-01 (retroactive). Removes the metals duties via a noStack interaction",
     },
   },
   {

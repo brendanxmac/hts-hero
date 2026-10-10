@@ -135,7 +135,13 @@ const allHeadings: Tariff[] = [
       requires: [confirm("9903.94.05")],
       rate: { kind: "adValorem", pct: 25 },
       effective: {},
-      source: { revision: "2026HTSRev5" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+        url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+        publishedOn: "2025-12-04",
+        note: "Excepts the Korea headings 9903.94.62 and .63 from Nov 1, 2025 (retroactive); the Taiwan headings are added May 1, 2026",
+      },
     },
     [
       {
@@ -165,7 +171,11 @@ const allHeadings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev9",
-          note: "Taiwan headings 9903.94.66/67 added as exceptions (U.S. note 33(u)); Notice effective 2026-05-01",
+          citation:
+            "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+          publishedOn: "2026-05-28",
+          note: "Taiwan headings 9903.94.66/67 added as exceptions (U.S. note 33(u)); the notice, effective 2026-05-01 (retroactive)",
         },
       },
     ],
@@ -225,7 +235,13 @@ const allHeadings: Tariff[] = [
       requires: [confirm("9903.94.07")],
       rate: { kind: "adValorem", pct: 25 },
       effective: {},
-      source: { revision: "2026HTSRev5" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+        url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+        publishedOn: "2025-12-04",
+        note: "Excepts the Korea headings 9903.94.64 and .65 from Nov 1, 2025 (retroactive); the Taiwan headings are added May 1, 2026",
+      },
     },
     [
       {
@@ -253,7 +269,11 @@ const allHeadings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev9",
-          note: "Taiwan headings 9903.94.68/69 added as exceptions (U.S. note 33(u)); Notice effective 2026-05-01",
+          citation:
+            "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+          publishedOn: "2026-05-28",
+          note: "Taiwan headings 9903.94.68/69 added as exceptions (U.S. note 33(u)); the notice, effective 2026-05-01 (retroactive)",
         },
       },
     ],
@@ -407,7 +427,13 @@ const allHeadings: Tariff[] = [
     rate: { kind: "free" },
     // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
     effective: { from: "2025-11-01" },
-    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.65",
@@ -434,7 +460,13 @@ const allHeadings: Tariff[] = [
     },
     // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
     effective: { from: "2025-11-01" },
-    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.32",
@@ -609,7 +641,13 @@ const allHeadings: Tariff[] = [
     rate: { kind: "free" },
     // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
     effective: { from: "2025-11-01" },
-    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.61",
@@ -629,7 +667,13 @@ const allHeadings: Tariff[] = [
     },
     // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
     effective: { from: "2025-11-01" },
-    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.62",
@@ -646,7 +690,13 @@ const allHeadings: Tariff[] = [
     rate: { kind: "free" },
     // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
     effective: { from: "2025-11-01" },
-    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.63",
@@ -666,7 +716,13 @@ const allHeadings: Tariff[] = [
     },
     // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
     effective: { from: "2025-11-01" },
-    source: { revision: "2026HTSRev5", note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.66",
@@ -684,7 +740,11 @@ const allHeadings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 33(u); Notice effective 2026-05-01",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 33(u); the notice, effective 2026-05-01 (retroactive)",
     },
   },
   {
@@ -706,7 +766,11 @@ const allHeadings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 33(u); Notice effective 2026-05-01",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 33(u); the notice, effective 2026-05-01 (retroactive)",
     },
   },
   {
@@ -731,7 +795,11 @@ const allHeadings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 33(u); Notice effective 2026-05-01",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 33(u); the notice, effective 2026-05-01 (retroactive)",
     },
   },
   {
@@ -759,7 +827,11 @@ const allHeadings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 33(u); Notice effective 2026-05-01",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 33(u); the notice, effective 2026-05-01 (retroactive)",
     },
   },
 ]

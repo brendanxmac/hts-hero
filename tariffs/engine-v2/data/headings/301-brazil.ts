@@ -7,7 +7,13 @@ import { confirm } from "../confirmations"
 import { section232ArticleHeadingsFromJuly31, section232ArticleHeadingsFromJune8 } from "./122"
 
 const FROM = "2026-07-22"
-const SOURCE = { revision: "2026HTSRev12", citation: "Notice" }
+const NOTICE = {
+  citation:
+    "USTR notice, Notice of Action: Section 301 Investigation of Brazil's Acts, Policies, and Practices, 91 FR 45516 (FR Doc. 2026-14542)",
+  url: "https://www.govinfo.gov/content/pkg/FR-2026-07-20/html/2026-14542.htm",
+  publishedOn: "2026-07-20",
+}
+const SOURCE = { revision: "2026HTSRev12", ...NOTICE }
 
 export const headings: Tariff[] = [
   {
@@ -145,7 +151,8 @@ export const headings: Tariff[] = [
             whenApplies: { codes: section232ArticleHeadingsFromJuly31 },
           },
         },
-        source: { revision: "2026HTSRev14", citation: "Notice", note: "U.S. note 50(a)(vi)(8)" },
+        // Annex I, Part B: from 12:01 a.m. ET July 31, 2026
+        source: { revision: "2026HTSRev14", ...NOTICE, note: "U.S. note 50(a)(vi)(8), Annex I, Part B" },
       },
     ],
   ),

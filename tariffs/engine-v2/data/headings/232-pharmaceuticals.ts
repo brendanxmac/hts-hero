@@ -225,7 +225,13 @@ const PATENTED = [
   "9903.04.65",
   "9903.04.66",
 ];
-const REV20 = { revision: "2026HTSRev20", citation: "Notice" };
+const REV20 = {
+  revision: "2026HTSRev20",
+  citation:
+    "Commerce (BIS) notice, Guidance and Procedures for Specialty Pharmaceuticals and Technical Corrections to the HTSUS for Duties Imposed Under Proclamation 11020, Annex I, 91 FR 60360 (FR Doc. 2026-19498)",
+  url: "https://www.govinfo.gov/content/pkg/FR-2026-09-23/html/2026-19498.htm",
+  publishedOn: "2026-09-23",
+};
 
 export const headings: Tariff[] = [
   ...base.flatMap((tariff) =>

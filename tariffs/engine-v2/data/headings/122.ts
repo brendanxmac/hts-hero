@@ -376,7 +376,11 @@ export const headings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev6",
-          note: "U.S. note 2(aa)(v)(1) range extended to 9903.82.19; effective date from the change record",
+          citation:
+            "Commerce (ITA) notice, Procedures for Submissions by Certain Steel and Aluminum Producers Committing to New U.S. Steel or Aluminum Production To Obtain Tariff Adjustments Under Proclamation 10984, Annex, 91 FR 21790 (FR Doc. 2026-07987)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-04-23/html/2026-07987.htm",
+          publishedOn: "2026-04-23",
+          note: "U.S. note 2(aa)(v)(1) range extended to 9903.82.19",
         },
       },
       {
@@ -401,7 +405,11 @@ export const headings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev9",
-          note: "U.S. note 2(aa)(v)(3) and (4) add the Taiwan auto parts (9903.94.66–.69) and wood (9903.76.24) headings; Notice effective 2026-05-01",
+          citation:
+            "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+          publishedOn: "2026-05-28",
+          note: "U.S. note 2(aa)(v)(3) and (4) add the Taiwan auto parts (9903.94.66–.69) and wood (9903.76.24) headings; effective 2026-05-01 (retroactive)",
         },
       },
       {

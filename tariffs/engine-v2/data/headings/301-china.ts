@@ -138,7 +138,7 @@ const allHeadings: Tariff[] = [
         "USTR notice of product exclusion extensions, 90 FR 55232 (FR Doc. 2025-21671)",
       url: "https://www.govinfo.gov/content/pkg/FR-2025-12-01/html/2025-21671.htm",
       publishedOn: "2025-12-01",
-      note: 'The 178 exclusions extended for entries on or after 12:01 a.m. EST Nov 30, 2025 and before 11:59 p.m. EDT Nov 9, 2026; the heading reads "through November 9, 2026" from 2026HTSRev4 on. Described-product exclusions need confirmation (Oct 2026 correction: they applied to every good under the number)',
+      note: 'The 178 exclusions extended for entries on or after 12:01 a.m. EST Nov 30, 2025 and before 11:59 p.m. EDT Nov 9, 2026; the heading reads "through November 9, 2026" from that date (before it, "through November 29, 2025", 2025HTSRev30). Described-product exclusions need confirmation (Oct 2026 correction: they applied to every good under the number)',
     },
   },
   {
@@ -162,7 +162,7 @@ const allHeadings: Tariff[] = [
         "USTR notice of product exclusion extensions, 90 FR 55232 (FR Doc. 2025-21671)",
       url: "https://www.govinfo.gov/content/pkg/FR-2025-12-01/html/2025-21671.htm",
       publishedOn: "2025-12-01",
-      note: 'Extended with 9903.88.69 for entries before 11:59 p.m. EDT Nov 9, 2026; the heading reads "through November 9, 2026" from 2026HTSRev4 on. Needs confirmation (Oct 2026 correction: it applied to every good under the number)',
+      note: 'Extended with 9903.88.69 for entries before 11:59 p.m. EDT Nov 9, 2026; the heading reads "through November 9, 2026" from Nov 30, 2025 (before it, "through November 29, 2025", 2025HTSRev30). Needs confirmation (Oct 2026 correction: it applied to every good under the number)',
     },
   },
   {
@@ -181,7 +181,13 @@ const allHeadings: Tariff[] = [
       column2: { kind: "free" },
     },
     effective: { from: "2024-09-27" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation:
+        "USTR notice, Notice of Modification: China's Acts, Policies and Practices Related to Technology Transfer, Intellectual Property and Innovation, 89 FR 76581 (FR Doc. 2024-21217)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2024-09-18/html/2024-21217.htm",
+      publishedOn: "2024-09-18",
+    },
   },
   {
     code: "9903.91.02",
@@ -199,7 +205,13 @@ const allHeadings: Tariff[] = [
       column2: { kind: "free" },
     },
     effective: { from: "2024-09-27" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation:
+        "USTR notice, Notice of Modification: China's Acts, Policies and Practices Related to Technology Transfer, Intellectual Property and Innovation, 89 FR 76581 (FR Doc. 2024-21217)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2024-09-18/html/2024-21217.htm",
+      publishedOn: "2024-09-18",
+    },
   },
   {
     code: "9903.91.03",
@@ -217,7 +229,13 @@ const allHeadings: Tariff[] = [
       column2: { kind: "free" },
     },
     effective: { from: "2024-09-27" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation:
+        "USTR notice, Notice of Modification: China's Acts, Policies and Practices Related to Technology Transfer, Intellectual Property and Innovation, 89 FR 76581 (FR Doc. 2024-21217)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2024-09-18/html/2024-21217.htm",
+      publishedOn: "2024-09-18",
+    },
   },
   {
     code: "9903.91.04",
@@ -235,7 +253,14 @@ const allHeadings: Tariff[] = [
       column2: { kind: "free" },
     },
     effective: { from: "2025-01-01", to: "2026-01-01" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation:
+        "USTR notice, Notice of Modification: China's Acts, Policies and Practices Related to Technology Transfer, Intellectual Property and Innovation, 89 FR 76581 (FR Doc. 2024-21217)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2024-09-18/html/2024-21217.htm",
+      publishedOn: "2024-09-18",
+      note: "U.S. note 31(e): before January 1, 2026",
+    },
   },
   {
     code: "9903.91.05",
@@ -351,7 +376,14 @@ const allHeadings: Tariff[] = [
     requires: [confirm("9903.92.09")],
     rate: { kind: "free" },
     effective: { from: "2024-09-27", to: "2026-05-14" },
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation:
+        "USTR notice, Notice of Modification: China's Acts, Policies and Practices Related to Technology Transfer, Intellectual Property and Innovation, 89 FR 76581 (FR Doc. 2024-21217)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2024-09-18/html/2024-21217.htm",
+      publishedOn: "2024-09-18",
+      note: "Before May 14, 2026. The notice added this exemption as 9903.91.09; the HTS lists it as 9903.92.09 (and 9903.92.10 still excepts \"9903.91.09\")",
+    },
   },
   {
     code: "9903.92.10",

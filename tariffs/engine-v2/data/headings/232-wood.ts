@@ -102,7 +102,11 @@ export const headings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev9",
-          note: "Taiwan excluded: U.S. note 37(c) as modified by Notice effective 2026-05-01 (Taiwan has 9903.76.24)",
+          citation:
+            "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+          publishedOn: "2026-05-28",
+          note: "Taiwan excluded: U.S. note 37(c) as modified by the notice, effective 2026-05-01 (retroactive) (Taiwan has 9903.76.24)",
         },
       },
     ],
@@ -174,7 +178,11 @@ export const headings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev9",
-          note: "Taiwan excluded: U.S. note 37(e) as modified by Notice effective 2026-05-01 (Taiwan has 9903.76.24)",
+          citation:
+            "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+          publishedOn: "2026-05-28",
+          note: "Taiwan excluded: U.S. note 37(e) as modified by the notice, effective 2026-05-01 (retroactive) (Taiwan has 9903.76.24)",
         },
       },
     ],
@@ -285,6 +293,9 @@ export const headings: Tariff[] = [
     effective: { from: "2025-11-14" },
     source: {
       revision: "2026HTSRev9",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
       note: "Corrected from a flat +15% to topping up to 15% including the base rate, like Japan (9903.76.21), the EU (.22) and Taiwan (.24): U.S. note 37(l) uses the same terms. Starts with goods entered on or after 12:01 a.m. ET Nov 14, 2025 (Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part B; retroactive, published Dec 4, 2025), backfilled from 2025HTSRev32's change record",
     },
   },
@@ -316,7 +327,11 @@ export const headings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 37(m); Notice effective 2026-05-01",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 37(m); the notice, effective 2026-05-01 (retroactive)",
     },
   },
 ]
