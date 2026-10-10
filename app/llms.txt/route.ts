@@ -40,6 +40,7 @@ export function GET() {
 ${guides.join("\n")}
 ## Tariff calculators by country
 
+- [US tariffs by country: every country of origin in one table](${SITE}/duty-calculator/countries)
 ${countries}
 
 ## Comparisons

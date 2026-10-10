@@ -61,11 +61,17 @@ const PREFERENCE_SHORT_NAMES: Record<string, string> = {
 };
 
 // "Generalized System of Preferences (GSP)" -> "GSP",
-// "United States-Korea Free Trade Agreement" -> "US-Korea FTA"
+// "United States-Korea Free Trade Agreement" -> "US-Korea FTA",
+// "United States-Israel Free Trade Area Implementation Act of 1985" -> "US-Israel FTA",
+// "United States-Peru Trade Promotion Agreement" -> "US-Peru TPA",
+// "Trade Agreement between the United States and Japan" -> "US-Japan Trade Agreement"
 export const preferenceName = (name: string) =>
   PREFERENCE_SHORT_NAMES[name] ??
   name.match(/\(([^)]+)\)\s*$/)?.[1] ??
-  name.replace(/^United States-(.+?) Free Trade Agreement.*$/, "US-$1 FTA");
+  name
+    .replace(/^United States-(.+?) Free Trade (Agreement|Area).*$/, "US-$1 FTA")
+    .replace(/^United States-(.+?) Trade Promotion Agreement.*$/, "US-$1 TPA")
+    .replace(/^Trade Agreement between the United States and (.+)$/, "US-$1 Trade Agreement");
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 

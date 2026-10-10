@@ -197,7 +197,11 @@ export function DutyByCountry({
             applies), with tariff data verified through {summary.revision.title.replace(/^Revision (\d+) \((\d{4})\)$/, "$2 HTS Revision $1")}.
             Totals are before customs fees (MPF, HMF) and any antidumping or countervailing duties.
             Some tariffs and exemptions depend on details such as metal content or end use, which the
-            calculator asks about.
+            calculator asks about.{" "}
+            <Link href="/duty-calculator/countries" className={ui.link}>
+              See US tariffs for every country
+            </Link>
+            .
           </p>
           <Link href={calculatorHref(htsno)} className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`}>
             Calculate Duty for Your Shipment

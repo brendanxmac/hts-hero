@@ -60,6 +60,7 @@ const COUNTRY_PAGES = require("./libs/country-pages/countries.json");
 // Server-rendered pages to list, with their priority
 const KEY_PAGES = [
   ["/duty-calculator", 1.0],
+  ["/duty-calculator/countries", 0.9],
   ...COUNTRY_PAGES.map((c) => [`/duty-calculator/${c.slug}`, 0.9]),
   ["/duty-calculator/faq", 0.7],
   ["/duty-calculator/changelog", 0.6],
