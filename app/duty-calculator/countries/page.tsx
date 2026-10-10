@@ -49,13 +49,10 @@ export default function CountriesHubRoute() {
   const summary = hubSummary(all);
   const faqs = hubFaqs(all, summary, asOfLabel, verifiedThrough);
   const sources = hubSources(asOf);
-  // A country's name links to its page, or to its row in the table
-  const hrefs = Object.fromEntries(all.map((r) => [r.name, r.slug ? `/duty-calculator/${r.slug}` : `#${r.code.toLowerCase()}`]));
   const rows: HubRow[] = all.map((r) => ({
     code: r.code,
     name: r.name,
     flag: r.flag,
-    slug: r.slug,
     imports: r.imports2025,
     importsLabel: r.imports2025 ? formatImports(r.imports2025) : null,
     rank: r.rank2025,
@@ -122,7 +119,6 @@ export default function CountriesHubRoute() {
         groups={hubGroups(summary)}
         faqs={faqs}
         sources={sources}
-        hrefs={hrefs}
         csvHref={CSV_PATH}
         verifiedThrough={verifiedThrough}
         asOf={asOf}

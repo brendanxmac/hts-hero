@@ -25,7 +25,6 @@ export function CountriesHub({
   groups,
   faqs,
   sources,
-  hrefs,
   csvHref,
   verifiedThrough,
   asOf,
@@ -39,20 +38,11 @@ export function CountriesHub({
   groups: HubGroup[];
   faqs: { question: string; answer: string }[];
   sources: { name: string; url: string | null }[];
-  // Where each country's name links: its own page, or its row in the table
-  hrefs: Record<string, string>;
   csvHref: string;
   verifiedThrough: string;
   asOf: string;
   asOfLabel: string;
 }) {
-  const groupIds = {
-    forcedLabor: groups.find((g) => g.id.startsWith("forced-labor"))?.id ?? "groups",
-    own: groups.find((g) => g.id === "country-tariffs")?.id ?? "groups",
-    agreements: groups.find((g) => g.id.startsWith("program-") || g.id === "other-agreements")?.id ?? "groups",
-    none: "no-added-tariff",
-  };
-
   return (
     <>
       <header className="w-full border-b border-base-300">
@@ -93,13 +83,13 @@ export function CountriesHub({
             </dl>
           </div>
           <div className="lg:pt-12">
-            <HubOverview summary={summary} tiers={tiers} groupIds={groupIds} />
+            <HubOverview summary={summary} tiers={tiers} />
           </div>
         </section>
 
         <section id="table" className={ui.section}>
           <SectionHeader kicker="Every country" title="US tariffs by country of origin">
-            Search, filter or sort all {summary.total}. Each row links by country code, like <a href="#vn" className={ui.link}>#vn</a>. <CsvLink href={csvHref} />.
+            Search, filter or sort all {summary.total} countries. <CsvLink href={csvHref} />.
           </SectionHeader>
           <CountriesTable rows={rows} asOf={asOf} asOfLabel={asOfLabel} />
         </section>
@@ -114,7 +104,7 @@ export function CountriesHub({
           </SectionHeader>
           <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
             {groups.map((g) => (
-              <GroupCard key={g.id} group={g} hrefs={hrefs} />
+              <GroupCard key={g.id} group={g} />
             ))}
           </div>
         </section>

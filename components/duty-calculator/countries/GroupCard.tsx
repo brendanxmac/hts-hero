@@ -5,17 +5,17 @@ import type { HubGroup } from "./hubCopy";
 // disclosure: still in the page's HTML for search engines, out of the way for readers.
 const VISIBLE = 15;
 
-export function GroupCard({ group, hrefs }: { group: HubGroup; hrefs: Record<string, string> }) {
-  const link = (name: string) => (
-    <a href={hrefs[name]} className="text-base-content/70 hover:text-primary hover:underline">
+export function GroupCard({ group }: { group: HubGroup }) {
+  const label = (name: string) => (
+    <>
       {name}
       {group.details?.[name] ? <span className="text-base-content/60"> ({group.details[name]})</span> : null}
-    </a>
+    </>
   );
   const list = (names: string[]) => (
-    <ul className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+    <ul className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-base-content/70">
       {names.map((name) => (
-        <li key={name}>{link(name)}</li>
+        <li key={name}>{label(name)}</li>
       ))}
     </ul>
   );
@@ -23,7 +23,7 @@ export function GroupCard({ group, hrefs }: { group: HubGroup; hrefs: Record<str
   const rest = group.names.slice(VISIBLE);
 
   return (
-    <div id={group.id} className={`${ui.card} scroll-mt-6 flex flex-col`}>
+    <div className={`${ui.card} flex flex-col`}>
       <div className={ui.cardHeader}>
         <h3 className={ui.cardTitle}>{group.title}</h3>
         <span className={`${ui.badge("neutral")} shrink-0 tabular-nums`}>{group.names.length}</span>

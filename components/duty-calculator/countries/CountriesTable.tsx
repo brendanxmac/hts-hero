@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { ChevronUpDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { heat, PRIMARY_MARK } from "@/components/ui/theme";
 import { mono } from "@/components/ui/font";
@@ -15,7 +14,6 @@ export interface HubRow {
   code: string;
   name: string;
   flag: string;
-  slug: string | null;
   imports: number | null; // millions of USD, for sorting
   importsLabel: string | null; // "$194 billion"
   rank: number | null;
@@ -120,7 +118,7 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
               <SortHeader id="name" label="Country" />
               <SortHeader id="imports" label="US imports 2025" />
               <SortHeader id="forcedLabor" label="Forced-labor tariff" />
-              <th scope="col" className={th}>Own tariffs</th>
+              <th scope="col" className={th}>Country tariffs</th>
               <th scope="col" className={th}>Trade agreements</th>
             </tr>
           </thead>
@@ -128,18 +126,10 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
             {shown.map((r) => {
               const capped = r.forcedLabor?.startsWith("Up to");
               return (
-                <tr key={r.code} id={r.code.toLowerCase()} className="scroll-mt-12 border-t border-base-300 hover:bg-base-200/60">
-                  <th scope="row" className={`${td} whitespace-nowrap text-left font-medium`}>
-                    {/* A country with its own page links there; others open the calculator set to
-                        that country, which canonicalizes to /duty-calculator, so nofollow */}
-                    <Link
-                      href={r.slug ? `/duty-calculator/${r.slug}` : `/duty-calculator?country=${r.code}`}
-                      rel={r.slug ? undefined : "nofollow"}
-                      className="text-base-content hover:text-primary hover:underline"
-                    >
-                      <span aria-hidden="true" className="mr-2">{r.flag}</span>
-                      {r.name}
-                    </Link>
+                <tr key={r.code} className="border-t border-base-300 hover:bg-base-200/60">
+                  <th scope="row" className={`${td} whitespace-nowrap text-left font-medium text-base-content`}>
+                    <span aria-hidden="true" className="mr-2">{r.flag}</span>
+                    {r.name}
                   </th>
                   <td className={`${td} w-44`}>
                     {r.importsLabel ? (
@@ -185,7 +175,7 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
                           </span>
                         ))}
                         {r.column2 && <span className={ui.badge("error")}>Column 2 Rates</span>}
-                        {r.dealRates > 0 && <span className={ui.badge("neutral")}>Own Section 232 rates · {r.dealRates}</span>}
+                        {r.dealRates > 0 && <span className={ui.caption}>Own Section 232 rates on some products</span>}
                       </div>
                     )}
                   </td>
