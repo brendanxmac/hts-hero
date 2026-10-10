@@ -6,6 +6,7 @@
 // before Jan 15 there's no 9903.79.01 for the exemptions to name. Backfilled from 2026HTSRev1's
 // change record; see tariffs/revision-diffs/2026HTSBasic/PLAN.md.
 import { Tariff } from "../../types"
+import { replaceOnce, splitTariffAt } from "../../versioning"
 
 export const PP_11002_FROM = "2026-01-15"
 
@@ -73,45 +74,47 @@ const pp10999Source = (step: string) => ({
 const basicDescription = (t: Tariff) => {
   if (BASIC_DESCRIPTIONS[t.code]) return BASIC_DESCRIPTIONS[t.code]
   const [current, basic] = RENUMBERED[t.code]
-  if (!t.description.includes(current)) throw new Error(`${t.code}: expected "${current}" in its description`)
-  return t.description.replace(current, basic)
+  return replaceOnce(t.description, current, basic, t.code)
 }
 
-const inForceOn = (t: Tariff, date: string) =>
-  (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date)
-
-// Splits each listed heading's record in force on Jan 15, 2026 into its Basic text before and its
-// current text from that day; every other record is returned as is
+// Splits each listed heading's record in force across Jan 15, 2026 into its Basic text before and
+// its current text from then on; 9903.02.74–.77's Basic part is split again at Nov 1 and Oct 14, 2025
+// (Proclamation 10999's two steps). splitTariffAt only splits a record that spans the date, so
+// earlier versions a later backfill adds keep their own text
 export const withBasicText = (tariffs: Tariff[]): Tariff[] =>
   tariffs.flatMap((t) => {
-    if (!(t.code in BASIC_DESCRIPTIONS || t.code in RENUMBERED) || !inForceOn(t, PP_11002_FROM)) return [t]
-    const whenApplies = t.scope.whenApplies
-    const before: Tariff = {
-      ...t,
-      description: basicDescription(t),
-      // Note 2(v)(xvi), 2(x)(xv) and 2(z)(xiii) didn't exist yet
-      scope:
-        whenApplies && "codes" in whenApplies && Array.isArray(whenApplies.codes)
-          ? { ...t.scope, whenApplies: { ...whenApplies, codes: whenApplies.codes.filter((c) => c !== SEMICONDUCTORS) } }
-          : t.scope,
-      effective: { ...t.effective, to: PP_11002_FROM },
-      source: {
-        ...pp11002Source,
-        revision: "2026HTSBasic",
-        note: `The 2026HTSBasic text, before Proclamation 11002 renumbered U.S. note 2 on Jan 15, 2026. Backfilled from 2026HTSRev1's change record${t.source?.note ? `. Later text: ${t.source.note}` : ""}`,
-      },
-    }
-    const after = { ...t, effective: { ...t.effective, from: PP_11002_FROM } }
+    if (!(t.code in BASIC_DESCRIPTIONS || t.code in RENUMBERED)) return [t]
+    const pieces = splitTariffAt(t, PP_11002_FROM, (r) => {
+      const whenApplies = r.scope.whenApplies
+      return {
+        description: basicDescription(r),
+        // Note 2(v)(xvi), 2(x)(xv) and 2(z)(xiii) didn't exist yet
+        scope:
+          whenApplies && "codes" in whenApplies && Array.isArray(whenApplies.codes)
+            ? { ...r.scope, whenApplies: { ...whenApplies, codes: whenApplies.codes.filter((c) => c !== SEMICONDUCTORS) } }
+            : r.scope,
+        source: {
+          ...pp11002Source,
+          revision: "2026HTSBasic",
+          note: `The 2026HTSBasic text, before Proclamation 11002 renumbered U.S. note 2 on Jan 15, 2026. Backfilled from 2026HTSRev1's change record${r.source?.note ? `. Later text: ${r.source.note}` : ""}`,
+        },
+      }
+    })
     const steps = PP_10999_CITATIONS[t.code]
-    if (!steps) return [before, after]
+    if (!steps) return pieces
     const [basic, middle, oldest] = steps
-    if (!before.description.includes(`${basic} of`)) throw new Error(`${t.code}: expected "${basic} of" in its Basic description`)
     const [oct14, nov1] = PP_10999_STEPS
-    const withCitation = (citation: string) => before.description.replace(`${basic} of`, `${citation} of`)
-    return [
-      { ...before, description: withCitation(oldest), effective: { ...before.effective, to: oct14 }, source: pp10999Source(oct14) },
-      { ...before, description: withCitation(middle), effective: { from: oct14, to: nov1 }, source: pp10999Source(nov1) },
-      { ...before, effective: { ...before.effective, from: nov1 } },
-      after,
-    ]
+    return pieces
+      .flatMap((p) =>
+        splitTariffAt(p, nov1, (r) => ({
+          description: replaceOnce(r.description, `${basic} of`, `${middle} of`, t.code),
+          source: pp10999Source(nov1),
+        })),
+      )
+      .flatMap((p) =>
+        splitTariffAt(p, oct14, (r) => ({
+          description: replaceOnce(r.description, `${middle} of`, `${oldest} of`, t.code),
+          source: pp10999Source(oct14),
+        })),
+      )
   })

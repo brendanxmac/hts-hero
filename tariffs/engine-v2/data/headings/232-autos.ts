@@ -2,7 +2,7 @@
 // was removed on Oct 1, 2026; this file is now the source. See HowTariffsWork.md §6.
 import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
-import { tariffVersions } from "../../versioning"
+import { tariffVersions, splitTariffAt } from "../../versioning"
 
 const allHeadings: Tariff[] = [
   {
@@ -778,22 +778,17 @@ const REV31_DESCRIPTIONS: Record<string, string> = {
     "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54 and 9903.94.55, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter",
 }
 
-export const headings: Tariff[] = allHeadings.flatMap((t) => {
-  const before = REV31_DESCRIPTIONS[t.code]
-  if (!before || (t.effective.from && t.effective.from > KOREA_AUTOS_FROM)) return [t]
-  return [
-    {
-      ...t,
-      description: before,
-      effective: { ...t.effective, to: KOREA_AUTOS_FROM },
-      source: {
-        revision: "2025HTSRev31",
-        citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
-        url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
-        publishedOn: "2025-12-04",
-        note: "The 2025HTSRev31 text, before the Korea vehicle and parts headings 9903.94.60–.65 (Nov 1, 2025, retroactive). Backfilled from 2025HTSRev32's change record",
-      },
-    },
-    { ...t, effective: { ...t.effective, from: KOREA_AUTOS_FROM } },
-  ]
-})
+export const headings: Tariff[] = allHeadings.flatMap((t) =>
+  REV31_DESCRIPTIONS[t.code]
+    ? splitTariffAt(t, KOREA_AUTOS_FROM, () => ({
+        description: REV31_DESCRIPTIONS[t.code],
+        source: {
+          revision: "2025HTSRev31",
+          citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+          url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+          publishedOn: "2025-12-04",
+          note: "The 2025HTSRev31 text, before the Korea vehicle and parts headings 9903.94.60–.65 (Nov 1, 2025, retroactive). Backfilled from 2025HTSRev32's change record",
+        },
+      }))
+    : [t],
+)

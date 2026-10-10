@@ -2,7 +2,7 @@
 // checked in isolation. Real-data tests are in real-data.test.ts.
 import { describe, it, expect } from "../test-runner"
 import { calculate } from "../../tariffs/engine-v2/calculate"
-import { codeListVersions, tariffVersions } from "../../tariffs/engine-v2/versioning"
+import { codeListVersions, replaceOnce, splitTariffAt, tariffVersions } from "../../tariffs/engine-v2/versioning"
 import { validateRules } from "../../tariffs/engine-v2/validate"
 import {
   CalculationInput,
@@ -668,5 +668,47 @@ describe("engine-v2: validation", () => {
       tariff({ code: "9903.01.01", effective: { from: "2025-02-01" }, source: { citation: "Notice" } }),
     ])
     expect(warnings.some((w) => w.includes("no citation for its dates"))).toBe(true)
+  })
+})
+
+describe("splitTariffAt", () => {
+  const base = {
+    code: "9903.99.99", program: "x", name: "x", description: "through November 9, 2026",
+    scope: { countries: "all", codes: "all" }, rate: { kind: "free" },
+  } as unknown as Tariff
+  const older = () => ({ description: "through November 29, 2025" })
+
+  it("splits a record that spans the date", () => {
+    const parts = splitTariffAt({ ...base, effective: { from: "2024-06-15", to: "2026-11-10" } }, "2025-11-30", older)
+    expect(parts.map((p) => [p.effective.from, p.effective.to, p.description])).toEqual([
+      ["2024-06-15", "2025-11-30", "through November 29, 2025"],
+      ["2025-11-30", "2026-11-10", "through November 9, 2026"],
+    ])
+  })
+
+  it("splits an undated record, keeping it undated before the date", () => {
+    const parts = splitTariffAt({ ...base, effective: {} }, "2025-11-30", older)
+    expect(parts.map((p) => [p.effective.from, p.effective.to])).toEqual([[undefined, "2025-11-30"], ["2025-11-30", undefined]])
+  })
+
+  it("leaves a record that starts on or after the date, or ends on or before it", () => {
+    for (const effective of [{ from: "2025-11-30" }, { from: "2026-01-01" }, { to: "2025-11-30" }, { from: "2025-01-01", to: "2025-09-01" }]) {
+      const parts = splitTariffAt({ ...base, effective }, "2025-11-30", older)
+      expect(parts.length).toBe(1)
+      expect(parts[0].description).toBe("through November 9, 2026")
+    }
+  })
+})
+
+describe("replaceOnce", () => {
+  it("replaces the text, and throws when it isn't there", () => {
+    expect(replaceOnce("through November 9, 2026", "November 9, 2026", "November 29, 2025", "x")).toBe("through November 29, 2025")
+    let threw = false
+    try {
+      replaceOnce("through November 10, 2026", "November 9, 2026", "November 29, 2025", "x")
+    } catch {
+      threw = true
+    }
+    expect(threw).toBe(true)
   })
 })
