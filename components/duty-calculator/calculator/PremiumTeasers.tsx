@@ -1,152 +1,181 @@
 "use client";
 
-import { ReactNode } from "react";
-import { LockClosedIcon, SparklesIcon } from "@heroicons/react/20/solid";
-import * as ui from "@/components/ui/styles";
+import { CheckIcon, LockClosedIcon, SparklesIcon } from "@heroicons/react/20/solid";
+import * as tt from "@/components/ui/styles/tracker";
 import { TRIAL_DAYS } from "@/components/pricing-calculator/lib/pricing";
 import { useOptionalTrackerAccess } from "@/components/tariff-tracker/access/accessContext";
-import { PremiumFeature } from "@/components/tariff-tracker/access/features";
-import { currentPath, signupHref } from "@/components/tariff-tracker/access/signup";
-import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { HistorySegment } from "@/tariffs/engine-v2/history";
 import { formatDate, formatMoney } from "../lib/format";
+import { useConversion } from "./ConversionDialog";
 
-// Premium offers teased in the calculator, which every Tariff Tracker plan (and the trial)
-// includes: checking whether the goods qualify for an exemption or trade program, and checking
-// past entries for a refund. In the Tracker, the next step is its own (start the trial, or pick a
-// plan); on the free calculator's pages, a free account first.
+// The calculator's way up, in three steps per tab: what anyone sees, what a free account adds,
+// and what the Tariff Tracker (trial or paid) adds. Each locked step opens its pitch
+// (useConversion).
+// - Duty: the Possible Adjustments ladder (amounts / what each would change / which apply)
+// - Duty Over Time: the history (free) / any past date in full (account) / past entries checked
+//   for refunds in bulk (Tracker), the last from a button in the card's heading
+// - Compare: up to 3 origins (free) / every origin ranked (account) / cheaper origins across the
+//   catalog (Tracker)
 
-const usePremiumUnlock = (feature: PremiumFeature, page: string) => {
-  const access = useOptionalTrackerAccess();
-  const premium = Boolean(access?.premium);
-  // Nothing to pay yet: a free account then the trial (signed out), or the trial
-  const free = !access || !access.signedIn || access.canStartTrial;
-  const note = !access || !access.signedIn
-    ? `Free account (less than 30 seconds), then try it free for ${TRIAL_DAYS} days. No credit card.`
-    : access.canStartTrial
-      ? `Free for ${TRIAL_DAYS} days with the Tariff Tracker trial. No credit card.`
-      : "Included in every Tariff Tracker plan.";
-  const unlock = () => {
-    trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature, reason: access?.access.kind ?? "anonymous", page });
-    if (access) access.unlock(feature);
-    else window.location.href = signupHref(currentPath());
-  };
-  return { premium, free, note, unlock };
+type Conversion = ReturnType<typeof useConversion>;
+
+const QUALIFY_TRIAL = {
+  title: "Find out exactly which of these apply to your goods",
+  subtitle:
+    "A guided check works out which exemptions and trade programs should apply to this import, and the proof you'd need to claim them.",
+  cta: "Find out what I qualify for",
 };
 
-const TeaserCard = ({
-  feature,
-  page,
-  title,
-  body,
-  fact,
-  cta,
-}: {
-  feature: PremiumFeature;
-  page: string;
-  title: string;
-  body: string;
-  // A real number from this import, when there is one
-  fact?: ReactNode;
-  // The button: what the visitor gets, in their words (the access step is in the note under it)
-  cta: string;
-}) => {
-  const { premium, note, unlock } = usePremiumUnlock(feature, page);
+// The top of Possible Adjustments: the three steps, the ones still locked as buttons
+export const AdjustmentsLadder = ({ conversion, canSeeWhy }: { conversion: Conversion; canSeeWhy: boolean }) => {
+  const access = useOptionalTrackerAccess();
+  const premium = Boolean(access?.premium);
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 sm:p-5">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2.5">
-          <SparklesIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-          <div>
-            <h4 className="text-sm font-semibold text-base-content">{title}</h4>
-            <p className={`${ui.caption} mt-0.5 leading-snug`}>{body}</p>
-          </div>
-        </div>
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[0.7rem] font-semibold text-primary">
-          <LockClosedIcon className="h-3 w-3" aria-hidden />
-          Tariff Tracker
-        </span>
-      </div>
-      {fact && <p className="text-sm text-base-content">{fact}</p>}
-      {premium ? (
-        // Included in the user's plan; the check itself is still being built (PRE_DEPLOY.md)
-        <p className={ui.caption}>Coming soon to your plan.</p>
+    <div className="grid grid-cols-3 gap-2">
+      <Step state="open" label="Free" text="What each could change the total by" />
+      {canSeeWhy ? (
+        <Step state="open" label="Free account" text="What each would change, on each row" />
       ) : (
-        <div className="flex flex-col gap-1.5">
-          <button type="button" className={`${ui.button({ variant: "primary", size: "lg" })} w-full sm:w-auto sm:min-w-[20rem] sm:self-start`} onClick={unlock}>
-            {cta}
-          </button>
-          <span className={ui.caption}>{note}</span>
-        </div>
+        <Step
+          state="account"
+          label="Free account"
+          text="What each would change, in plain English"
+          onClick={() =>
+            conversion.openAccount(
+              { title: "See what each adjustment would change, free", highlight: "adjustments", cta: "Create my free account" },
+              "adjustments-ladder",
+            )
+          }
+        />
+      )}
+      {premium ? (
+        <Step state="open" label="Your plan" text="Which apply to your goods: coming soon" />
+      ) : (
+        <Step
+          state="trial"
+          label={`${TRIAL_DAYS}-day free trial`}
+          text="Which apply to your goods, with the proof you'd need"
+          onClick={() => conversion.openTrial("qualify", QUALIFY_TRIAL)}
+        />
       )}
     </div>
   );
 };
 
-// Under the possible adjustments: the guided check that works out which of them should apply (the
-// paid tier; visitors see each adjustment's amount, free accounts what each would change)
-export const QualifyTeaser = ({ page, bestSaving }: { page: string; bestSaving: number }) => (
-  <TeaserCard
-    feature="qualify"
-    page={page}
-    title="Find out which of these apply to your imports"
-    cta={bestSaving < -0.005 ? `See if I can save up to ${formatMoney(Math.abs(bestSaving))}` : "Find out what I qualify for"}
-    body="Step through a short, guided check about your goods. We work out which of these exemptions and trade programs should apply, and the proof you'd need to claim them."
-    fact={
-      bestSaving < -0.005 ? (
-        <>
-          The adjustments above could lower this duty by up to <b className="text-success">{formatMoney(Math.abs(bestSaving))}</b>, if your goods qualify.
-        </>
-      ) : undefined
-    }
-  />
-);
+const STEP_STYLES = {
+  open: "bg-tt-soft text-base-content/70",
+  account: "bg-base-100 ring-1 ring-primary/40 hover:bg-primary/5",
+  trial: "bg-base-100 ring-1 ring-success/50 hover:bg-success/5",
+};
 
-// A row's own link to the same: on each adjustment that could save money
-export const QualifyLink = ({ page }: { page: string }) => {
-  const { premium, free, note, unlock } = usePremiumUnlock("qualify", page);
-  if (premium) return null;
-  // A paid feature, but free to try: it says so, so it doesn't read as a paywall; the lock is for
-  // a plan to pick
-  return (
-    <button
-      type="button"
-      title={note}
-      className="group inline-flex items-center gap-1.5 text-sm font-medium text-primary"
-      onClick={(e) => {
-        e.preventDefault();
-        unlock();
-      }}
-    >
-      {!free && <LockClosedIcon className="h-3 w-3" aria-hidden />}
-      <span className="underline-offset-2 group-hover:underline">Check if you qualify</span>
-      {free && <span className="rounded-full bg-primary/10 px-1.5 py-px text-[0.7rem] font-semibold">Free trial</span>}
+const Step = ({ state, label, text, onClick }: { state: keyof typeof STEP_STYLES; label: string; text: string; onClick?: () => void }) => {
+  const tone = state === "trial" ? "text-success" : state === "account" ? "text-primary" : "text-base-content/60";
+  const body = (
+    <>
+      <span className={`flex items-center gap-1 text-xs font-semibold ${tone}`}>
+        {state === "open" ? <CheckIcon className="h-3.5 w-3.5" aria-hidden /> : <LockClosedIcon className="h-3 w-3" aria-hidden />}
+        {label}
+      </span>
+      <span className="text-xs leading-snug text-base-content">{text}</span>
+    </>
+  );
+  const className = `flex flex-col gap-1 rounded-[8px] px-2.5 py-2 text-left transition-colors ${STEP_STYLES[state]}`;
+  return onClick ? (
+    <button type="button" className={className} onClick={onClick}>
+      {body}
     </button>
+  ) : (
+    <div className={className}>{body}</div>
   );
 };
 
-// Under the duty over time: check what was paid on past entries
-export const RefundTeaser = ({ page, history, customsValue }: { page: string; history: HistorySegment[]; customsValue: number }) => {
+// Duty Over Time's heading: check past entries for refunds, with how much more this import has
+// paid than it does today, when it has
+export const RefundsButton = ({ conversion, history, customsValue }: { conversion: Conversion; history: HistorySegment[]; customsValue: number }) => {
+  const access = useOptionalTrackerAccess();
   const today = new Date().toISOString().slice(0, 10);
   const past = history.filter((s) => s.from <= today);
   const current = past[past.length - 1];
   const peak = past.reduce<HistorySegment | undefined>((a, b) => (!a || b.result.totalDuty > a.result.totalDuty ? b : a), undefined);
   const over = peak && current ? peak.result.totalDuty - current.result.totalDuty : 0;
+  const fact = over > 0.005 && peak ? `Up to ${formatMoney(over)} more per entry from ${formatDate(peak.from)}` : null;
   return (
-    <TeaserCard
-      feature="refunds"
-      page={page}
-      title="Check if you might qualify for a refund"
-      cta="Check my past entries for a refund"
-      body="Enter what you paid on a past entry of this import. We'll compare it with the duty in force on its entry date: a refund you could ask your broker to request, or an underpayment to correct."
-      fact={
-        over > 0.005 && peak ? (
-          <>
-            On {formatMoney(customsValue)} of goods, this import paid up to <b className="text-warning">{formatMoney(over)}</b> more from {formatDate(peak.from)} than it does
-            today. Entries from then are worth checking.
-          </>
-        ) : undefined
-      }
-    />
+    <div className="flex items-center gap-3">
+      {fact && <span className="hidden text-right text-xs font-medium text-warning md:block">{fact}</span>}
+      <button
+        type="button"
+        className={tt.button("money", "sm", "rounded")}
+        onClick={() =>
+          conversion.openTrial("refunds", {
+            title: "Find out if you overpaid on past entries",
+            subtitle: `${over > 0.005 && peak ? `From ${formatDate(peak.from)}, entries of this import paid up to ${formatMoney(over)} more on ${formatMoney(customsValue)} of goods than they would today. ` : ""}Check every past entry against the duty in force on its date, in bulk: refunds to request through your broker, or underpayments to fix.`,
+            cta: "Check my past entries",
+          })
+        }
+      >
+        <SparklesIcon className="h-4 w-4" aria-hidden />
+        {access?.premium ? "Check past entries (soon)" : "Check past entries for refunds"}
+      </button>
+    </div>
+  );
+};
+
+// Compare's heading: the free comparison, and the next step up (every origin ranked, signed out;
+// cheaper origins across the catalog, signed in)
+export const CompareHeader = ({
+  conversion,
+  max,
+  originsTeaser,
+}: {
+  conversion: Conversion;
+  max: number;
+  // How many origins pay less, without saying which (the Analysis' own teaser)
+  originsTeaser: string | null;
+}) => {
+  const access = useOptionalTrackerAccess();
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-[8px] border border-base-300 bg-base-100 px-5 py-4">
+      <div className="min-w-0">
+        <h3 className="text-base font-semibold text-base-content">Compare countries of origin</h3>
+        <p className="mt-0.5 text-sm text-base-content/70">
+          {originsTeaser ?? `Up to ${max} side by side, free.`}
+        </p>
+      </div>
+      {!conversion.signedIn ? (
+        <button
+          type="button"
+          className={tt.button("next", "md", "rounded")}
+          onClick={() =>
+            conversion.openAccount(
+              {
+                title: "See this import's duty from every country, free",
+                highlight: "analysis",
+                thisImport: ["Every origin ranked by duty, on a map", "The trade agreements that could lower it", "Which rates have been stable, and which haven't"],
+                cta: "Rank every origin, free",
+              },
+              "compare-header",
+            )
+          }
+        >
+          <SparklesIcon className="h-4 w-4" aria-hidden />
+          Rank every origin
+        </button>
+      ) : access?.premium ? null : (
+        <button
+          type="button"
+          className={tt.button("money", "md", "rounded")}
+          onClick={() =>
+            conversion.openTrial("sourcing", {
+              title: "Find cheaper origins for everything you import",
+              subtitle: "See which countries could cut the duty on each of your products, and the trade agreements that could lower it further.",
+              cta: "Find cheaper origins",
+            })
+          }
+        >
+          <SparklesIcon className="h-4 w-4" aria-hidden />
+          Find cheaper origins for all your imports
+        </button>
+      )}
+    </div>
   );
 };

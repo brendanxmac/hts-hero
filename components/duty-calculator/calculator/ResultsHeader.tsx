@@ -16,11 +16,15 @@ export const ResultsHeader = ({
   selectedElement,
   country,
   allowCompare = true,
+  leadingActions,
   actions,
   viewSwitch,
 }: {
   f: TariffFinder;
   allowCompare?: boolean;
+  // Before Share (Download)
+  leadingActions?: ReactNode;
+  // After Share: the host's main action (Track this import, Add to catalog)
   actions?: ReactNode;
   // In place of the Simple / Detailed / Compare switch (the Tariff Tracker's calculator tabs)
   viewSwitch?: ReactNode;
@@ -56,18 +60,12 @@ export const ResultsHeader = ({
         {" · "}
         {f.transportLabel}
       </p>
-      {/* Which edition of the schedule the numbers come from: freshness people can check */}
-      {/* {f.revisionForDate && (
-        <p className="mt-0.5 text-xs text-base-content/60">
-          Rates from HTS {f.revisionForDate.title}
-          {isVerifiedDate(result.asOf) ? ", verified" : ""}
-        </p>
-      )} */}
     </div>
     <div className="flex flex-wrap sm:flex-nowrap w-full sm:w-auto items-center gap-2">
       {viewSwitch ?? <ViewSwitch f={f} className="basis-full sm:basis-auto" allowCompare={allowCompare} />}
-      {actions}
+      {leadingActions}
       <ShareButtons f={f} />
+      {actions}
     </div>
   </div>
 );

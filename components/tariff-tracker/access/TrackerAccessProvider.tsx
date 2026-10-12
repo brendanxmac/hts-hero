@@ -14,7 +14,7 @@ import {
 } from "@/libs/tariff-tracker/plan";
 import { TRIAL_DAYS } from "@/components/pricing-calculator/lib/pricing";
 import { TrackerAccessContext, TrackerAccessValue } from "./accessContext";
-import { PremiumFeature } from "./features";
+import { PREMIUM_FEATURES, PremiumFeature } from "./features";
 import { currentPath, signupHref } from "./signup";
 import { StartTrialDialog } from "./StartTrialDialog";
 import { UpgradeDialog } from "./UpgradeDialog";
@@ -135,6 +135,22 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
       unlockLabel: !signedIn ? "Create a free account" : startable ? `Start ${TRIAL_DAYS}-day free trial` : "See plans",
     };
   }, [access, loading, userLoading, userId, user?.email]);
+
+  // From the calculator's "Start my free trial" (`trial=<feature>`, or `trial=start` for tracking,
+  // through sign-up): once access is known, offer the trial for that feature where they landed
+  // (or plans, if it's been used)
+  useEffect(() => {
+    if (value.loading || !value.signedIn || typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const asked = url.searchParams.get("trial");
+    if (!asked) return;
+    const feature: PremiumFeature = asked in PREMIUM_FEATURES ? (asked as PremiumFeature) : "tracking";
+    url.searchParams.delete("trial");
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
+    if (value.premium) return;
+    if (value.canStartTrial) value.openTrial(feature);
+    else value.openUpgrade(feature);
+  }, [value]);
 
   return (
     <TrackerAccessContext.Provider value={value}>

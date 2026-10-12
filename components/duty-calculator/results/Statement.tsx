@@ -159,7 +159,7 @@ export const Statement = ({
         <table className="w-full text-left border-collapse">
           <caption className="sr-only">Duty statement</caption>
           <thead>
-            <tr className="bg-base-200 text-base-content/60">
+            <tr className="bg-primary/[0.06] text-base-content/70">
               <th scope="col" className={`${ui.label} py-3 pl-5 sm:pl-6 pr-3`}>
                 Line
               </th>

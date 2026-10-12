@@ -7,6 +7,7 @@ import { currentPath, signupHref } from "@/components/tariff-tracker/access/sign
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { CalculationResult } from "@/tariffs/engine-v2/types";
 import { accountPitch } from "../lib/summary";
+import { ACCOUNT_BENEFITS } from "./ConversionDialog";
 import { TariffFinder } from "../lib/useTariffFinder";
 import { useCanSeeWhy } from "./WhyGate";
 
@@ -15,11 +16,7 @@ import { useCanSeeWhy } from "./WhyGate";
 // or country of origin. The locked lines further down still offer the account.
 
 // What every free account gets, whatever the import
-const EVERY_ACCOUNT = [
-  "This import's duty from every country of origin",
-  "Alerts when tariffs change on up to 3 imports",
-  "A PDF of any result, to share or file",
-];
+const EVERY_ACCOUNT = ACCOUNT_BENEFITS.filter((b) => ["analysis", "alerts", "pdf"].includes(b.id)).map((b) => b.text);
 
 export const AccountCta = ({ f, result, bestSaving, page }: { f: TariffFinder; result: CalculationResult; bestSaving: number; page: string }) => {
   const { canSee, loading } = useCanSeeWhy();

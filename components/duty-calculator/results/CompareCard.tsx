@@ -181,7 +181,7 @@ export const CompareCard = ({
       </ul>
 
       {/* Footer */}
-      <div className="p-5 pt-4 flex flex-col gap-3 border-t border-base-300 bg-base-200">
+      <div className="p-5 pt-4 flex flex-col gap-3 border-t border-base-300 bg-primary/[0.05]">
         {result.availablePreferences.length > 0 && (
           <label className="flex flex-col gap-1.5">
             <span className={ui.fieldLabel}>Trade preference</span>

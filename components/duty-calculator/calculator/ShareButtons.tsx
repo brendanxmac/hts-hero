@@ -1,14 +1,14 @@
 "use client";
 
 import { CheckIcon, LinkIcon } from "@heroicons/react/20/solid";
-import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { TariffFinder } from "../lib/useTariffFinder";
 
-// Copy a link to the estimate
+// Copy a link to the estimate (styled like Download beside it; only Track this import stands out)
 export const ShareButtons = ({ f }: { f: TariffFinder }) => (
   <button
     type="button"
-    className={ui.button({ variant: "primary", size: "sm" })}
+    className={tt.button("secondary", "sm", "rounded")}
     onClick={f.copyLink}
     aria-label="Copy share link"
   >

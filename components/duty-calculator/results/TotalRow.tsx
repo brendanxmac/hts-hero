@@ -17,7 +17,7 @@ export const TotalRow = ({
   hideBasis?: boolean;
 }) => (
   <tr
-    className={`border-t ${strong ? "border-base-content/20 bg-base-200" : "border-base-content/20"}`}
+    className={`border-t ${strong ? "border-base-content/20 bg-primary/[0.06]" : "border-base-content/20"}`}
   >
     <td
       colSpan={hideBasis ? 2 : 3}

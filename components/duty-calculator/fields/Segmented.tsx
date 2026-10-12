@@ -9,14 +9,16 @@ export function Segmented<T extends string>({
   value,
   onChange,
   compact,
+  tone,
 }: {
   label: string;
   options: readonly { id: T; label: string }[];
   value: T;
   onChange: (value: T) => void;
   compact?: boolean;
+  tone?: "inset" | "accent";
 }) {
   return (
-    <SegmentedControl label={label} options={options} value={value} onChange={onChange} size={compact ? "sm" : "md"} fullWidth />
+    <SegmentedControl label={label} options={options} value={value} onChange={onChange} size={compact ? "sm" : "md"} fullWidth tone={tone} />
   );
 }

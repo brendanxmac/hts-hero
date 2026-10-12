@@ -58,12 +58,8 @@ export const TariffFinderPage = ({
             f={f}
             page="calculator"
             empty={<LandingEmpty f={f} />}
-            actions={
-              <>
-                <DownloadPdfButton />
-                <TrackImportButton f={f} size="sm" />
-              </>
-            }
+            leadingActions={<DownloadPdfButton />}
+            actions={<TrackImportButton f={f} size="sm" />}
           />
           <Disclaimer />
           <ExploreModal f={f} />

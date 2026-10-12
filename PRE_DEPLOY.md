@@ -13,12 +13,15 @@ add new ones as they come up.
       see every adjustment and what it could change the total by; free accounts see a plain-English
       line on why each could apply; paying (and trial) users step through a guided workflow that
       works out exactly which adjustments SHOULD apply to their goods, and the proof they'd need.
-      The calculator teases it ("Find out exactly which of these apply" under Possible Adjustments,
-      "Check if you qualify" on each row that could save money); trial and paid users see "Coming
-      soon to your plan". Build the workflow in the Tracker.
-- [ ] **Refund check.** Duty Over Time teases "Check if you might qualify for a refund" (enter what
-      was paid on a past entry; compare with the duty then). Trial and paid users see "Coming soon
-      to your plan". Build it (it overlaps the Tracker's Entry audit, still marked Soon).
+      The calculator teases it as the third step of the strip atop Possible Adjustments ("Which
+      apply to your goods"); trial and paid users see "coming soon". Build the workflow in the
+      Tracker.
+- [ ] **Refund check (bulk entry audit).** Duty Over Time's heading has "Check past entries for
+      refunds", promising to check every past entry against the duty in force on its date, in
+      bulk. Trial and paid users see "Coming soon". Build it (it overlaps the Tracker's Entry
+      audit, still marked Soon).
+- [ ] **Sourcing.** Compare's heading offers signed-in users "Find cheaper origins for all your
+      imports" (the Tracker's Sourcing, trial or paid). Build it, or drop the button.
 - [ ] **Apply the migration** `supabase/migrations/tariff_tracker_accounts.sql` (tracker_catalogs,
       tracker_trials, tracker_alert_settings).
 - [ ] **Stripe prices.** Create the products and set
@@ -33,3 +36,11 @@ add new ones as they come up.
       nothing. Wire it to alerts, or hide it.
 - [ ] **`view=history` in the Tracker calculator.** The Duty Over Time teaser signs people up
       back to `view=history`; the Tracker should open on the duty history for it.
+
+## Consider
+
+- [ ] **Notify team members about savings opportunities.** Consider adding the ability to
+      notify team members about tariff saving opportunities: for example when someone audits
+      old imports, or when they toggle certain adjustments on their imports.
+- [ ] **Notify the customs broker.** Also, or as an additional option, let users notify their
+      customs broker about the same opportunities.

@@ -64,9 +64,10 @@ const BUTTONS: Record<Button, string> = {
   ghost: "text-base-content/70 hover:bg-tt-soft hover:text-base-content",
 };
 
-// Buttons are pills. One green or cobalt button per panel.
-export const button = (variant: Button = "secondary", size: "sm" | "md" = "md") =>
-  `inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:pointer-events-none disabled:opacity-50 ${
+// Buttons are pills (or, beside tabs, "rounded" to match their slightly rounded corners). One
+// green or cobalt button per panel.
+export const button = (variant: Button = "secondary", size: "sm" | "md" = "md", shape: "pill" | "rounded" = "pill") =>
+  `inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap ${shape === "pill" ? "rounded-full" : "rounded-[8px]"} font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:pointer-events-none disabled:opacity-50 ${
     size === "sm" ? "h-8 px-3.5 text-xs" : "h-10 px-5 text-sm"
   } ${BUTTONS[variant]}`;
 

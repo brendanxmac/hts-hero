@@ -24,6 +24,7 @@ export const DutyBreakdown = ({
   linesDetail,
   onLinesDetailChange,
   summary,
+  headerAction,
   footer,
   changes,
   onClearChanges,
@@ -39,6 +40,8 @@ export const DutyBreakdown = ({
   onLinesDetailChange: (detail: LinesDetail) => void;
   // Inside the card, between its heading and the lines (In plain English)
   summary?: ReactNode;
+  // In the heading, beside Compact / Full (the calculator's "Explain this", signed out)
+  headerAction?: ReactNode;
   // Inside the card, under the lines (the headings checked but not applied)
   footer?: ReactNode;
   // What the last answer or trade program changed: summed up over the lines and marked in them
@@ -65,6 +68,8 @@ export const DutyBreakdown = ({
               : ""}
           </p>
         </div>
+        <div className="flex shrink-0 items-center gap-2">
+        {headerAction}
         <SegmentedControl<LinesDetail>
           label="Line detail"
           size="sm"
@@ -75,6 +80,7 @@ export const DutyBreakdown = ({
           value={linesDetail}
           onChange={onLinesDetailChange}
         />
+        </div>
       </div>
     </div>
     {summary}

@@ -13,11 +13,13 @@ import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
-import { GatedAnalysis } from "@/components/tariff-tracker/product/analysis/GatedAnalysis";
+import { GatedAnalysis, teaserFor } from "@/components/tariff-tracker/product/analysis/GatedAnalysis";
+import { SparklesIcon } from "@heroicons/react/20/solid";
+import * as tt from "@/components/ui/styles/tracker";
 import { productFromFinder } from "@/components/tariff-tracker/report";
 import { Segmented } from "../fields/Segmented";
 import { whatClaimingDoes, whatItWouldDo } from "../lib/explain";
-import { formatMoney } from "../lib/format";
+import { formatDate, formatMoney } from "../lib/format";
 import { plainReasons } from "../lib/plainReason";
 import { sortBySpecificity } from "../lib/questions";
 import { useLineChanges } from "../lib/useLineChanges";
@@ -37,7 +39,9 @@ import {
 import { DutyBreakdown, LinesDetail } from "./DutyBreakdown";
 import { EmptyState } from "./EmptyState";
 import { EntryBar } from "./EntryBar";
-import { QualifyLink, QualifyTeaser, RefundTeaser } from "./PremiumTeasers";
+import { AdjustmentsLadder, CompareHeader, RefundsButton } from "./PremiumTeasers";
+import { useConversion } from "./ConversionDialog";
+import { accountPitch } from "../lib/summary";
 import { DutySummary } from "./DutySummary";
 import { AccountCta } from "./AccountCta";
 import { ResultsHeader } from "./ResultsHeader";
@@ -65,12 +69,15 @@ const TABS: { id: ResultsTab; label: string }[] = [
 
 export const CalculatorWorkspace = ({
   f,
+  leadingActions,
   actions,
   empty,
   page,
 }: {
   f: TariffFinder;
-  // Beside Share in the results' heading (Add to catalog, Track this import)
+  // In the results' heading: before Share (Download), and after it, the host's main action
+  // (Add to catalog, Track this import)
+  leadingActions?: ReactNode;
   actions?: ReactNode;
   // In place of the results before there are any (the default prompt otherwise)
   empty?: ReactNode;
@@ -193,8 +200,11 @@ export const CalculatorWorkspace = ({
     : f.preferenceChanges;
   // Possible Adjustments in three tiers: anyone sees each adjustment and what it could change the
   // total by; a free account adds what each would change (WhyGate: signed out, one locked line for
-  // the whole panel); the Tracker's guided check works out which should (QualifyLink, QualifyTeaser)
+  // the whole panel); the Tracker's guided check works out which should (AdjustmentsLadder)
   const { canSee: canSeeWhy, loading: whyLoading } = useCanSeeWhy();
+  // The way up from each tab (PremiumTeasers): its pitches, in one dialog
+  const conversion = useConversion(page);
+  const signedOut = !whyLoading && !canSeeWhy;
   // Shown while there's anything to adjust, before or after answering
   const hasAdjustments = stableQuestions.length > 0 || preferences.length > 0;
   const explainReason = useMemo(
@@ -265,6 +275,7 @@ export const CalculatorWorkspace = ({
             result={result}
             selectedElement={selectedElement}
             country={country}
+            leadingActions={leadingActions}
             actions={actions}
             viewSwitch={
               <div className="w-full min-w-0 basis-full sm:w-96 sm:basis-auto">
@@ -274,6 +285,7 @@ export const CalculatorWorkspace = ({
                   value={tab}
                   onChange={changeTab}
                   compact
+                  tone="accent"
                 />
               </div>
             }
@@ -332,6 +344,24 @@ export const CalculatorWorkspace = ({
                     linesDetail={linesDetail}
                     onLinesDetailChange={setLinesDetail}
                     summary={<DutySummary f={f} result={result} bestSaving={bestSaving} />}
+                    headerAction={
+                      signedOut ? (
+                        <button
+                          type="button"
+                          className={tt.button("next", "sm", "rounded")}
+                          onClick={() => {
+                            const pitch = accountPitch(f, result, bestSaving);
+                            conversion.openAccount(
+                              { title: pitch.headline, thisImport: pitch.thisImport, cta: "Explain my duty, free" },
+                              "explain-this",
+                            );
+                          }}
+                        >
+                          <SparklesIcon className="h-4 w-4" aria-hidden />
+                          Explain this
+                        </button>
+                      ) : undefined
+                    }
                     footer={
                       <NotAppliedPanel
                         lines={result.lines}
@@ -359,15 +389,7 @@ export const CalculatorWorkspace = ({
                       questions={result.questions}
                       stableQuestions={stableQuestions}
                       notes={canSeeWhy ? questionNotes : {}}
-                      notice={
-                        !whyLoading && !canSeeWhy ? (
-                          <div className="flex flex-col gap-1 rounded-lg bg-base-200/70 px-3 py-2.5">
-                            <WhyLocked label="See what each adjustment would change, in plain English" where="adjustments" bars={false} className="text-sm" />
-                            <span className={ui.caption}>Free account, takes less than 30 seconds.</span>
-                          </div>
-                        ) : undefined
-                      }
-                      qualifyLink={<QualifyLink page={page} />}
+                      notice={<AdjustmentsLadder conversion={conversion} canSeeWhy={canSeeWhy} />}
                       answers={f.answers}
                       impacts={f.impacts}
                       lines={[...result.lines, ...(unadjusted?.lines ?? [])]}
@@ -385,14 +407,10 @@ export const CalculatorWorkspace = ({
                             impacts={prefImpacts}
                             stable
                             notes={canSeeWhy ? Object.fromEntries(preferences.map((p) => [p.symbol, whatClaimingDoes(p.name)])) : {}}
-                            qualifyLink={<QualifyLink page={page} />}
                           />
                         ) : undefined
                       }
                     />
-                    <div className="mt-4">
-                      <QualifyTeaser page={page} bestSaving={bestSaving} />
-                    </div>
                   </aside>
                 )}
               </div>
@@ -400,24 +418,32 @@ export const CalculatorWorkspace = ({
           )}
 
           {tab === "history" && (
-            // Free for everyone; checking past entries for a refund is the Tracker's
-            <>
-              <RateHistoryCard
-                f={f}
-                sliceColors={sliceColors}
-                highlight={highlight}
-                onHighlight={setHighlight}
-              />
-              <RefundTeaser
-                page={page}
-                history={f.history}
-                customsValue={f.customsValue}
-              />
-            </>
+            // The history is free; opening a past date takes a free account; checking past entries
+            // for refunds, in bulk, is the Tracker's (the button in its heading)
+            <RateHistoryCard
+              f={f}
+              sliceColors={sliceColors}
+              highlight={highlight}
+              onHighlight={setHighlight}
+              headerAction={<RefundsButton conversion={conversion} history={f.history} customsValue={f.customsValue} />}
+              onPickDate={(date, source) =>
+                signedOut
+                  ? conversion.openAccount(
+                      { title: `See this import on ${formatDate(date)}, line by line`, highlight: "history", cta: "Create my free account" },
+                      source,
+                    )
+                  : f.setEntryDate(date, source)
+              }
+            />
           )}
 
           {tab === "compare" && (
             <>
+              <CompareHeader
+                conversion={conversion}
+                max={MAX_COMPARE}
+                originsTeaser={signedOut && product ? teaserFor(product) : null}
+              />
               <CompareView
                 entries={f.compareEntries}
                 countries={f.countries}
@@ -436,6 +462,7 @@ export const CalculatorWorkspace = ({
           )}
         </section>
       )}
+      {conversion.dialog}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { addDays } from "@/tariffs/engine-v2/history";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
@@ -21,12 +21,18 @@ export const RateHistoryCard = ({
   sliceColors,
   highlight,
   onHighlight,
+  headerAction,
+  onPickDate,
 }: {
   f: TariffFinder;
   // Colors of the Cost Breakdown slices, so the same program has the same color here
   sliceColors: Record<string, string>;
   highlight?: string | null;
   onHighlight?: (label: string | null) => void;
+  // In the heading, beside the % / $ switch (the calculator's refund check)
+  headerAction?: ReactNode;
+  // Opening a past date (from the chart or the list); by default it becomes the entry date
+  onPickDate?: (date: string, source: string) => void;
 }) => {
   const { history, historyRange, customsValue, entryDate } = f;
   const [metric, setMetric] = useState<Metric>("pct");
@@ -48,7 +54,7 @@ export const RateHistoryCard = ({
   // The last day there's data for
   const lastDate = addDays(historyRange.to, -1);
 
-  const pickDate = (date: string, source: string) => f.setEntryDate(date, source);
+  const pickDate = (date: string, source: string) => (onPickDate ? onPickDate(date, source) : f.setEntryDate(date, source));
 
   return (
     <section className={`${ui.card} p-5 flex flex-col gap-4`} aria-labelledby="rate-history-title">
@@ -61,6 +67,8 @@ export const RateHistoryCard = ({
             {shortDate(historyRange.from)} – {formatDate(lastDate)}
           </p>
         </div>
+        <div className="flex items-center gap-3">
+        {headerAction}
         <SegmentedControl<Metric>
           label="Show duty as"
           size="sm"
@@ -71,6 +79,7 @@ export const RateHistoryCard = ({
           value={metric}
           onChange={setMetric}
         />
+        </div>
       </div>
 
       <RateHistoryHeadline

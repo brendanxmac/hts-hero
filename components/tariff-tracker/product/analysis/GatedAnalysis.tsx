@@ -10,7 +10,7 @@ import { AnalysisTab } from "./AnalysisTab";
 
 // The Analysis, which needs a free account (PRICING.md). Signed out, the teaser is worked out
 // from the product itself: how many origins pay less, without saying which.
-const teaserFor = (product: TrackedProduct) => {
+export const teaserFor = (product: TrackedProduct) => {
   const rates = originRates(product);
   const facts = analysisFacts(rates, "standard");
   const origin = product.entry.country.name;
