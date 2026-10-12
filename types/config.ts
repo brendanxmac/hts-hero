@@ -74,6 +74,10 @@ export enum PricingPlan {
   TARIFF_IMPACT_STARTER = "Tariff Impact Starter",
   TARIFF_IMPACT_STANDARD = "Tariff Impact Standard",
   TARIFF_IMPACT_PRO = "Tariff Impact Pro",
+  // Tariff Tracker, by the number of pairs it tracks (see PRICING.md)
+  TARIFF_TRACKER_30 = "Tariff Tracker 30",
+  TARIFF_TRACKER_100 = "Tariff Tracker 100",
+  TARIFF_TRACKER_500 = "Tariff Tracker 500",
 }
 
 export interface PricingFeatureI {

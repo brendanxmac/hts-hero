@@ -34,7 +34,7 @@ export const EmptyState = ({ f }: { f: TariffFinder }) => (
       </div>
       <div className="flex flex-col gap-2.5">
         <div className={ui.label}>Try an example</div>
-        <ExampleButtons onExample={f.selectExample} />
+        <ExampleButtons examples={f.examples} onExample={f.selectExample} />
       </div>
     </div>
   </section>

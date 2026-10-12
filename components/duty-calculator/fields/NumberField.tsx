@@ -13,12 +13,15 @@ export const NumberField = ({
   onChange,
   prefix,
   suffix,
+  bare = false,
 }: {
   id: string;
   value: number;
   onChange: (value: number) => void;
   prefix?: string;
   suffix?: string;
+  // No box of its own: it sits inside a host that draws one (the calculator's input bar)
+  bare?: boolean;
 }) => {
   const [text, setText] = useState(formatAmount(value));
   const [focused, setFocused] = useState(false);
@@ -28,7 +31,7 @@ export const NumberField = ({
   }, [value, focused]);
 
   return (
-    <div className={`${ui.input} flex items-center gap-2 tabular-nums`}>
+    <div className={`${bare ? "h-7 w-full font-semibold" : ui.input} flex items-center gap-2 tabular-nums`}>
       {prefix && <span className="font-medium text-base-content/60">{prefix}</span>}
       <input
         id={id}

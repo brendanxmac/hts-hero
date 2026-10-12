@@ -6,6 +6,8 @@ import * as ui from "@/components/ui/styles";
 import { ProductRow, ROW_GRID } from "./ProductRow";
 import { programColors } from "./programColors";
 import { UNITS, VALUE, TrackedProduct } from "./report";
+import { useTrackerAccess } from "./access/accessContext";
+import { useTracker } from "./TrackerContext";
 
 // Every product on the list, with a color key and column headings. Each row opens the
 // product's own view.
@@ -20,6 +22,9 @@ export const ProductList = ({
   onOpen: (row: TrackedProduct) => void;
 }) => {
   const colors = useMemo(() => programColors(rows), [rows]);
+  // Signed in, products past the plan's limit are marked; signed out, nothing is tracked yet
+  const { trackedKeys } = useTracker();
+  const { signedIn } = useTrackerAccess();
   const maxPct = Math.max(...rows.map((r) => r.totalPct), 1);
   // Per-unit duty on a product left at the default shipment
   const perUnit = rows.some((r) => r.result.requiresQuantity && !r.adjustments.customsValue && !r.adjustments.quantity);
@@ -57,6 +62,7 @@ export const ProductList = ({
             row={row}
             colors={colors}
             maxPct={maxPct}
+            untracked={signedIn && !trackedKeys.has(row.key)}
             onOpen={() => onOpen(row)}
           />
         ))}

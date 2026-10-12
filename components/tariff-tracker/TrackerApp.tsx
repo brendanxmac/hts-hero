@@ -10,6 +10,10 @@ import { SectionPage } from "./shell/SectionPage";
 import { TrackerNav, TrackerNavContext } from "./shell/TrackerNav";
 import { TrackerShell } from "./shell/TrackerShell";
 import { TrackerProvider } from "./TrackerContext";
+import { TrackerAccessProvider } from "./access/TrackerAccessProvider";
+import { InsightsProvider } from "./insights/InsightsContext";
+import { AlertSettingsProvider } from "./alerts/AlertSettingsContext";
+import { rememberSection } from "./overview/seenSections";
 
 // The Tariff Tracker: one page, with a tab per section. A tab's code loads the first time it's
 // opened; after that it stays mounted (hidden while another tab is open), so switching back is
@@ -26,6 +30,10 @@ const PanelSkeleton = () => (
 const ProductCatalog = dynamic(() => import("./ProductCatalog").then((m) => m.ProductCatalog), {
   loading: PanelSkeleton,
 });
+const Overview = dynamic(() => import("./overview/Overview").then((m) => m.Overview), { loading: PanelSkeleton });
+const RateHistory = dynamic(() => import("./history/RateHistory").then((m) => m.RateHistory), { loading: PanelSkeleton });
+const Alerts = dynamic(() => import("./alerts/Alerts").then((m) => m.Alerts), { loading: PanelSkeleton });
+const Savings = dynamic(() => import("./savings/Savings").then((m) => m.Savings), { loading: PanelSkeleton });
 const TrackerCalculator = dynamic(
   () => import("./calculator/TrackerCalculator").then((m) => m.TrackerCalculator),
   { loading: PanelSkeleton }
@@ -36,7 +44,10 @@ const BASE_TITLE = "Tariff Tracker | HTS Hero";
 
 export const TrackerApp = () => {
   const searchParams = useSearchParams();
-  const tab = sectionBySlug(searchParams.get("tab"))?.slug ?? DEFAULT_SECTION;
+  // Links into the catalog from before it had a tab of its own (?add=, ?product=) still land there
+  const tab =
+    sectionBySlug(searchParams.get("tab"))?.slug ??
+    (searchParams.get("add") || searchParams.get("product") ? "catalog" : DEFAULT_SECTION);
   // A catalog product open in its own view
   const product = tab === "catalog" ? searchParams.get("product") : null;
 
@@ -44,6 +55,7 @@ export const TrackerApp = () => {
   const [visited, setVisited] = useState<SectionSlug[]>([tab]);
   useEffect(() => {
     setVisited((prev) => (prev.includes(tab) ? prev : [...prev, tab]));
+    rememberSection(tab);
   }, [tab]);
 
   useEffect(() => {
@@ -55,6 +67,10 @@ export const TrackerApp = () => {
   const panels: Partial<Record<SectionSlug, (active: boolean) => ReactNode>> = {
     calculator: (active) => <TrackerCalculator key={calculatorRun} active={active} />,
     catalog: () => <ProductCatalog />,
+    overview: () => <Overview />,
+    history: () => <RateHistory />,
+    savings: () => <Savings />,
+    alerts: () => <Alerts />,
   };
 
   // Bumped to start the calculator over from the address, for a calculator link opened in place
@@ -91,28 +107,34 @@ export const TrackerApp = () => {
   );
 
   return (
-    <TrackerProvider>
-      <TrackerNavContext.Provider value={nav}>
-        <TrackerShell>
-          {SECTIONS.filter((s) => visited.includes(s.slug)).map((section) => {
-            const active = section.slug === tab;
-            const panel = panels[section.slug];
-            return (
-              <div
-                key={section.slug}
-                role="tabpanel"
-                id={`tt-panel-${section.slug}`}
-                aria-labelledby={`tt-tab-${section.slug}`}
-                hidden={!active}
-              >
-                <SectionPage section={section} showHeader={!(section.slug === "catalog" && product)}>
-                  {panel ? panel(active) : <PlannedSection section={section} />}
-                </SectionPage>
-              </div>
-            );
-          })}
-        </TrackerShell>
-      </TrackerNavContext.Provider>
-    </TrackerProvider>
+    <TrackerAccessProvider>
+      <TrackerProvider>
+        <InsightsProvider>
+          <AlertSettingsProvider>
+            <TrackerNavContext.Provider value={nav}>
+              <TrackerShell>
+                {SECTIONS.filter((s) => visited.includes(s.slug)).map((section) => {
+                  const active = section.slug === tab;
+                  const panel = panels[section.slug];
+                  return (
+                    <div
+                      key={section.slug}
+                      role="tabpanel"
+                      id={`tt-panel-${section.slug}`}
+                      aria-labelledby={`tt-tab-${section.slug}`}
+                      hidden={!active}
+                    >
+                      <SectionPage section={section} showHeader={section.slug !== "overview" && !(section.slug === "catalog" && product)}>
+                        {panel ? panel(active) : <PlannedSection section={section} />}
+                      </SectionPage>
+                    </div>
+                  );
+                })}
+              </TrackerShell>
+            </TrackerNavContext.Provider>
+          </AlertSettingsProvider>
+        </InsightsProvider>
+      </TrackerProvider>
+    </TrackerAccessProvider>
   );
 };

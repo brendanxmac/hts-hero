@@ -18,7 +18,7 @@ import { TRACKER_PATH } from "../sections";
 import { SubTabs } from "../shell/SubTabs";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
-import { AnalysisTab } from "./analysis/AnalysisTab";
+import { GatedAnalysis } from "./analysis/GatedAnalysis";
 
 // One catalog product, opened from its row: the full calculator for it (its shipment, trade
 // programs, conditions, duty over time), its duty from every other origin (Analysis), and its
@@ -174,7 +174,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
       />
 
       {tab === "analysis" ? (
-        <AnalysisTab product={row} />
+        <GatedAnalysis product={row} page="tracker_product" />
       ) : tab === "duty" ? (
         <div className="flex flex-col gap-4">
           <CalculatorLayout

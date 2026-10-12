@@ -5,6 +5,7 @@ import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
 import { THEME } from "../../components/ui/theme";
+import * as mk from "@/components/ui/marketing/styles";
 import { Hero } from "@/components/duty-calculator/hero";
 import { createClient } from "@/app/api/supabase/server";
 import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
@@ -12,7 +13,6 @@ import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { TariffGuide } from "@/components/duty-calculator/guide";
 import { dutyCalculatorFaqs } from "@/components/duty-calculator/guide/faqs";
 import { TariffPricing } from "@/components/pricing-calculator";
-import * as ui from "../../components/ui/styles";
 
 export const metadata: Metadata = {
   // The year and "Tariff Calculator" up front, as in the titles ranking for "tariff calculator",
@@ -75,14 +75,14 @@ export const metadata: Metadata = {
 
 export default async function DutyCalculatorPage() {
   const [latestUpdates, content] = await Promise.all([
-    getChangelogEntries(createClient(), { limit: 2 }),
+    getChangelogEntries(createClient(), { limit: 3 }),
     getDutyCalculatorContent(),
   ]);
   const faqs = dutyCalculatorFaqs(content.revisionTitle);
   // <main> grows with its content and fills the rest of the window (flex-1, no shrinking), so
   // the layout's scroll container, which has a different background, never shows around the page
   return (
-    <main className={`${THEME} w-full flex-1 shrink-0 flex flex-col`}>
+    <main className={`${THEME} follow-theme ${mk.page} flex w-full flex-1 flex-col`}>
       {renderSchemaJsonLd({
         "@type": "WebApplication",
         name: "US Import Duty & Tariff Calculator",
@@ -114,27 +114,27 @@ export default async function DutyCalculatorPage() {
         })),
       })}
 
-      {/* Hero — server-rendered, immediately visible to crawlers */}
-      <Hero latestUpdates={latestUpdates} />
-
-      {/* Calculator */}
+      {/* The headline and the calculator in one band, in the calculator's look. The headline is
+          server-rendered, immediately visible to crawlers. */}
       <BreadcrumbsProvider>
         <Suspense
-          fallback={<div className={`${ui.container} pt-8`}><div className={`${ui.card} h-64`} /></div>}
+          fallback={
+            <div className={`${mk.container} py-10`}>
+              <div className="h-64 animate-pulse rounded-3xl bg-slate-100" />
+            </div>
+          }
         >
-          <TariffFinderPage />
+          <div id="calculator" className="scroll-mt-16">
+            <TariffFinderPage>
+              <Hero latestUpdates={latestUpdates} revisionTitle={content.revisionTitle} />
+            </TariffFinderPage>
+          </div>
         </Suspense>
       </BreadcrumbsProvider>
 
-      {/* Plans: Free, Starter (the calculator) and Pro (the Tariff Tracker) */}
-      <div className={ui.band}>
-        <div className={`${ui.container} ${ui.bandPadding}`}>
-          <TariffPricing />
-        </div>
-      </div>
-
-      {/* Rates, a worked example, lookups, sources and FAQ — server-rendered for crawlers */}
-      <TariffGuide content={content} faqs={faqs} />
+      {/* The method, sources, rates, then pricing (the free calculator and the Tariff Tracker),
+          the FAQ and the country pages — server-rendered for crawlers */}
+      <TariffGuide content={content} faqs={faqs} beforeFaq={<TariffPricing />} />
 
       {/* Interactive Classification CTA */}
       {/* <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-12">

@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import config from "@/config";
 import { CountriesHub, HubRow, hubDescription, hubFaqs, hubGroups, hubKeyFacts, hubLead, hubSubtitle } from "@/components/duty-calculator/countries";
-import { THEME } from "@/components/ui/theme";
+import { THEME_LIGHT } from "@/components/ui/theme";
+import * as mk from "@/components/ui/marketing/styles";
 import { countryRows, hubSources, hubSummary, hubTiers } from "@/libs/country-pages/allCountries";
 import { formatImports, IMPORT_SOURCE } from "@/libs/country-pages/importStats";
 import { renderSchemaJsonLd } from "@/libs/seo";
@@ -65,7 +66,7 @@ export default function CountriesHubRoute() {
   }));
 
   return (
-    <main className={`${THEME} w-full flex-1 shrink-0 flex flex-col`}>
+    <main className={`${THEME_LIGHT} ${mk.page} flex w-full flex-1 flex-col`}>
       {renderSchemaJsonLd({
         "@type": "Dataset",
         name: "US tariffs by country of origin",

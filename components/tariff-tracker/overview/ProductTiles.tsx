@@ -1,0 +1,79 @@
+"use client";
+
+import { mono } from "@/components/ui/font";
+import * as tt from "@/components/ui/styles/tracker";
+import { ERROR_MARK, PRIMARY_MARK } from "@/components/ui/theme";
+import { formatRate } from "../formatRate";
+import { CatalogChange, ProductHistory } from "../insights/catalogHistory";
+import { Saving } from "../insights/savings";
+import { wholeDollars } from "../insights/teasers";
+import { TrackedProduct } from "../report";
+import { sparkPath } from "./lib/geometry";
+
+// The products to look at first: the biggest potential savings and the latest increases, each
+// with its rate over time
+export interface ProductPick {
+  product: TrackedProduct;
+  reason: "saving" | "increase";
+  saving?: Saving;
+  change?: CatalogChange;
+}
+
+export const ProductTiles = ({
+  picks,
+  histories,
+  onOpen,
+  onAll,
+  total,
+}: {
+  picks: ProductPick[];
+  histories: Map<string, ProductHistory>;
+  onOpen: (key: string) => void;
+  onAll: () => void;
+  total: number;
+}) => (
+  <section className="flex flex-col gap-3" aria-labelledby="tt-look">
+    <div className="flex items-baseline justify-between px-1">
+      <h2 id="tt-look" className={tt.title}>
+        Products to look at first
+      </h2>
+      <button type="button" className="text-sm font-semibold text-primary hover:underline" onClick={onAll}>
+        All {total.toLocaleString("en-US")} →
+      </button>
+    </div>
+    <div className="grid gap-4 sm:grid-cols-2">
+      {picks.map(({ product, reason, saving, change }) => {
+        const history = histories.get(product.key) ?? [];
+        const increase = reason === "increase";
+        return (
+          <button
+            key={product.key}
+            type="button"
+            onClick={() => onOpen(product.key)}
+            className={`${tt.panel} flex flex-col gap-2.5 p-5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
+          >
+            <span className="flex items-center justify-between gap-2">
+              <span className={`${mono.className} text-sm font-bold text-base-content`}>{product.entry.element.htsno}</span>
+              <span className={tt.chip(increase ? "error" : "success")}>{increase ? "Changed" : "Potential"}</span>
+            </span>
+            <span className="truncate text-sm text-base-content/60">
+              {product.entry.country.flag} {product.entry.country.name} · {product.description}
+            </span>
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none" className="h-10 w-full" aria-hidden>
+              {history.length > 1 && (
+                // Theme marks (DESIGN_SYSTEM §10)
+                <path d={sparkPath(history.map((s) => s.pct), 200, 40, 3)} fill="none" stroke={increase ? ERROR_MARK : PRIMARY_MARK} strokeWidth={2.5} vectorEffect="non-scaling-stroke" />
+              )}
+            </svg>
+            <span className="flex items-baseline justify-between gap-2">
+              <span className={`${tt.display} text-2xl font-semibold tabular-nums text-base-content`}>{formatRate(product.totalPct)}</span>
+              <span className={`text-sm font-semibold ${increase ? "text-error" : "text-success"}`}>
+                {increase && change ? `+${Math.round(change.deltaPct * 100) / 100} pts` : saving ? `Could save ${wholeDollars(saving.usd)}` : ""}
+              </span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  </section>
+);

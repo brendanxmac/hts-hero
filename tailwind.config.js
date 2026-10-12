@@ -11,6 +11,15 @@ module.exports = {
       screens: {
         xs: "475px",
       },
+      // The Tariff Tracker's extra surfaces and marks (palette.tracker.extra), set inside .hts-tracker
+      colors: {
+        "tt-soft": "var(--tt-soft)",
+        "tt-side": "var(--tt-side)",
+        "tt-side-card": "var(--tt-side-card)",
+        "tt-side-active": "var(--tt-side-active)",
+        "tt-sky": "var(--tt-sky)",
+        "tt-slate": "var(--tt-slate)",
+      },
       backgroundImage: {
         gradient:
           "linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82)",
@@ -66,6 +75,18 @@ module.exports = {
     require("daisyui"),
     // The analytical theme's palette, scoped to .hts-theme (components/ui/theme/palette.js)
     require("./components/ui/theme/plugin"),
+    // follow-dark: dark styles for marketing pieces, only on pages that opt in to following the
+    // site's light/dark setting with .follow-theme (the marketing layer is otherwise always light)
+    require("tailwindcss/plugin")(({ addVariant }) => {
+      addVariant("follow-dark", [
+        '[data-theme="dark"] .follow-theme &',
+        '[data-theme="dark"] &.follow-theme',
+        "@media (prefers-color-scheme: dark) { :root:not([data-theme]) .follow-theme & }",
+      ]);
+      // skin: the Tariff Tracker's look (its theme tokens, which follow light and dark) on the
+      // same opted-in pages, in place of the marketing layer's slate and teal
+      addVariant("skin", [".follow-theme &", "&.follow-theme"]);
+    }),
   ],
   daisyui: {
     // Light & dark themes are added by default (it switches automatically based on OS settings)

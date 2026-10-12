@@ -3,12 +3,19 @@
 
 export type Billing = "monthly" | "annual";
 
-export const ANNUAL_DISCOUNT = 0.1;
+export const ANNUAL_DISCOUNT = 0.15;
 
-export const TARIFF_CALCULATOR_PRICE = 14.99;
+// The Tariff Calculator is free: unlimited lookups, no account. A free account unlocks Duty over
+// time and Analysis. See PRICING.md.
 
-// Duty calculations a month on the free plan; the Tariff Calculator makes them unlimited
-export const FREE_MONTHLY_CALCULATIONS = 20;
+// Tariff Tracker's free plan: monitoring and alerts for this many pairs, free
+export const FREE_TRACKED_PAIRS = 3;
+
+// Every account starts on the free plan and can start a trial of the full Tracker for
+// TRIAL_PAIRS pairs for TRIAL_DAYS, once, whenever it wants. It drops back to the free plan
+// unless it upgrades
+export const TRIAL_DAYS = 14;
+export const TRIAL_PAIRS = 100;
 
 // Tariff Tracker is priced by the number of HTS code + country of origin pairs it watches
 export const TRACKER_TIERS = [
@@ -84,7 +91,6 @@ export type ClassifyAudience = "individual" | "team";
 export type TeamOption = "workspace" | "licenses";
 
 export type EstimateInput = {
-  calculator: boolean;
   tracker: boolean;
   pairs: number;
   classify: boolean;
@@ -102,8 +108,6 @@ export type LineItem = {
   listMonthly: number | null;
   // Set up with our team rather than through self-serve checkout
   viaSales?: boolean;
-  // Comes with another product in the estimate, at no extra cost
-  includedWith?: string;
 };
 
 const pluralize = (n: number, word: string) => `${n.toLocaleString()} ${word}${n === 1 ? "" : "s"}`;
@@ -111,25 +115,14 @@ const pluralize = (n: number, word: string) => `${n.toLocaleString()} ${word}${n
 export const lineItems = (input: EstimateInput, billing: Billing): LineItem[] => {
   const lines: LineItem[] = [];
 
-  // Tariff Tracker includes the Tariff Calculator
-  if (input.tracker) {
+  if (input.tracker && input.pairs <= FREE_TRACKED_PAIRS) {
     lines.push({
-      id: "calculator",
-      label: "Tariff Calculator",
-      detail: "Included with Tariff Tracker",
+      id: "tracker",
+      label: "Tariff Tracker",
+      detail: `${pluralize(input.pairs, "pair")} · free plan, monitoring and alerts`,
       listMonthly: 0,
-      includedWith: "Tariff Tracker",
     });
-  } else if (input.calculator) {
-    lines.push({
-      id: "calculator",
-      label: "Tariff Calculator",
-      detail: "Unlimited duty calculations",
-      listMonthly: TARIFF_CALCULATOR_PRICE,
-    });
-  }
-
-  if (input.tracker) {
+  } else if (input.tracker) {
     const tier = trackerTierFor(input.pairs);
     lines.push({
       id: "tracker",

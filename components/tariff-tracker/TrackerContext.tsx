@@ -2,13 +2,16 @@
 
 import { createContext, ReactNode, useContext, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { HtsElement } from "../../interfaces/hts";
+import { useUser } from "../../contexts/UserContext";
+import { useTrackerAccess } from "./access/accessContext";
+import { useCatalogSync } from "./catalogSync";
 import { useHts } from "../../contexts/HtsContext";
 import { useHtsSections } from "../../contexts/HtsSectionsContext";
 import { htsCodeDigitsOnly } from "../../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { todayIso } from "../duty-calculator/lib/format";
 import { Adjustments, productKey } from "./adjustments";
-import { CatalogItem, NewProduct } from "./catalog";
+import { CatalogItem, itemKey, NewProduct } from "./catalog";
 import * as store from "./catalogStore";
 import { FilterContext, FilterState } from "./filters";
 import { CatalogEntry, findCountry } from "./parse";
@@ -19,7 +22,7 @@ import { TrackedProduct, trackProduct } from "./report";
 // around every tab, so it carries over as the user moves between them.
 
 // Where added products came from, for analytics
-export type AddSource = "paste" | "csv" | "generated" | "example" | "calculator" | "tracker_calculator";
+export type AddSource = "paste" | "csv" | "generated" | "example" | "calculator" | "tracker_calculator" | "monitor_page" | "recent_lookups" | "overview_paste";
 
 export interface Tracker {
   loading: boolean;
@@ -39,6 +42,12 @@ export interface Tracker {
   clearCatalog: () => void;
   // Each product's rates as of entryDate, with its adjustments
   products: TrackedProduct[];
+  // The products the plan tracks (rate history, savings, alerts): the first pairLimit added
+  trackedKeys: Set<string>;
+  // Products in the catalog beyond the plan's limit
+  untrackedCount: number;
+  // Tracked products only, in catalog order
+  trackedProducts: TrackedProduct[];
   // Remembered per product key (HTS code + country)
   setAdjustments: (key: string, patch: Adjustments) => void;
   resetAdjustments: (key: string) => void;
@@ -62,8 +71,12 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   const { sections, getSections } = useHtsSections();
   const [loading, setLoading] = useState(htsElements.length === 0);
   const [entryDate, setEntryDateState] = useState(todayIso);
-  // The saved catalog, shared with the calculator's "Add to catalog" (and other tabs)
+  // The saved catalog, shared with the calculator's "Add to catalog" (and other tabs), and saved
+  // to the account when signed in
   const { items, adjustments } = store.useCatalog();
+  const { user, isLoading: userLoading } = useUser();
+  useCatalogSync(userLoading ? undefined : (user?.id ?? null));
+  const { access } = useTrackerAccess();
 
   useEffect(() => {
     // Chapter names, for the chapter filter; not needed to show rates
@@ -182,6 +195,13 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
     return out;
   }, [matched, htsElements, entryDate, deferredAdjustments]);
 
+  // The plan tracks the first products added, up to its limit (PRICING.md)
+  const trackedKeys = useMemo(
+    () => new Set(items.slice(0, access.pairLimit).map(itemKey)),
+    [items, access.pairLimit]
+  );
+  const trackedProducts = useMemo(() => products.filter((p) => trackedKeys.has(p.key)), [products, trackedKeys]);
+
   return (
     <TrackerContext.Provider
       value={{
@@ -196,6 +216,9 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
         removeProducts,
         clearCatalog,
         products,
+        trackedKeys,
+        untrackedCount: Math.max(0, items.length - access.pairLimit),
+        trackedProducts,
         setAdjustments,
         resetAdjustments,
         filters,

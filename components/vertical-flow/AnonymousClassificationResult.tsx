@@ -204,7 +204,7 @@ export const AnonymousClassificationResult = ({
             </div>
             <div className="flex items-center gap-1.5">
               <SparklesIcon className="w-4 h-4" />
-              <span>Free forever plan</span>
+              <span>Free plan</span>
             </div>
           </div>
 

@@ -77,6 +77,9 @@ export enum MixpanelEvent {
   COUNTRIES_HUB_CTA_CLICKED = "Countries Hub CTA Clicked",
   /** Tariff Tracker (/tariff-tracker). Was the Tariff Watcher tab, as "Tariff Watcher …" events */
   TARIFF_TRACKER_PRODUCTS_ADDED = "Tariff Tracker Products Added",
+  TARIFF_MONITOR_PRODUCT_CHECKED = "Tariff Monitor Product Checked",
+  TARIFF_MONITOR_TRACK_CLICKED = "Tariff Monitor Track Clicked",
+  TARIFF_AUDIT_REQUESTED = "Tariff Audit Requested",
   TARIFF_TRACKER_PRODUCTS_REMOVED = "Tariff Tracker Products Removed",
   TARIFF_TRACKER_CSV_TEMPLATE_DOWNLOADED = "Tariff Tracker CSV Template Downloaded",
   TARIFF_TRACKER_EXAMPLE_USED = "Tariff Tracker Example Used",
@@ -91,6 +94,18 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_ANALYSIS_BASIS_CHANGED = "Tariff Tracker Analysis Basis Changed",
   TARIFF_TRACKER_ANALYSIS_ORIGIN_SELECTED = "Tariff Tracker Analysis Origin Selected",
   TARIFF_TRACKER_ANALYSIS_COUNTRIES_CHOSEN = "Tariff Tracker Analysis Countries Chosen",
+  /** Funnel (PRICING.md): a locked feature shown, and its call to action clicked */
+  LOCKED_FEATURE_VIEWED = "Locked Feature Viewed",
+  LOCKED_FEATURE_CTA_CLICKED = "Locked Feature CTA Clicked",
+  TARIFF_TRACKER_TRIAL_DIALOG_OPENED = "Tariff Tracker Trial Dialog Opened",
+  TARIFF_TRACKER_TRIAL_STARTED = "Tariff Tracker Trial Started",
+  TARIFF_TRACKER_UPGRADE_OPENED = "Tariff Tracker Upgrade Opened",
+  TARIFF_TRACKER_CHECKOUT_STARTED = "Tariff Tracker Checkout Started",
+  TARIFF_TRACKER_SETUP_STEP_CLICKED = "Tariff Tracker Setup Step Clicked",
+  TARIFF_TRACKER_CATALOG_SYNCED = "Tariff Tracker Catalog Synced",
+  TARIFF_TRACKER_ALERTS_SAVED = "Tariff Tracker Alerts Saved",
+  TARIFF_TRACKER_STORY_ROTATED = "Tariff Tracker Story Rotated",
+  TARIFF_TRACKER_LOOKUPS_ADDED = "Tariff Tracker Lookups Added",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** A tool call to the MCP server (Claude, ChatGPT and other AI clients) */

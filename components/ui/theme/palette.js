@@ -89,4 +89,79 @@ const shape = {
   "--border-btn": "1px",
 };
 
-module.exports = { light, dark, chart, series, shape };
+// The Tariff Tracker's own palette (DESIGN_SYSTEM.md §15): simple and colorful, applied inside
+// "hts-tracker" on the same variables, so every themed component in the Tracker follows it.
+// Cobalt is the user's data and the next step, green is money, red an increase, amber a
+// heads-up or a lock, sky a second series, slate base duty. The sidebar is dark in both modes.
+const tracker = {
+  light: {
+    primary: "#2f49d1",
+    "primary-content": "#ffffff",
+    secondary: "#7cc4f2",
+    "secondary-content": "#0e1220",
+    accent: "#a86a0c",
+    "accent-content": "#ffffff",
+    neutral: "#0e1220",
+    "neutral-content": "#f1f3f8",
+    "base-100": "#ffffff",
+    "base-200": "#eef0f5",
+    "base-300": "#e3e6ee",
+    "base-content": "#0e1220",
+    info: "#2f49d1",
+    "info-content": "#ffffff",
+    success: "#138a5b",
+    "success-content": "#ffffff",
+    warning: "#a86a0c",
+    "warning-content": "#ffffff",
+    error: "#c2412d",
+    "error-content": "#ffffff",
+  },
+  dark: {
+    primary: "#8ea2ff",
+    "primary-content": "#0e1220",
+    secondary: "#5cc3f5",
+    "secondary-content": "#0e1220",
+    accent: "#f2b24c",
+    "accent-content": "#0e1220",
+    neutral: "#111319",
+    "neutral-content": "#f1f3f8",
+    "base-100": "#111319",
+    "base-200": "#08090d",
+    "base-300": "#232733",
+    "base-content": "#f1f3f8",
+    info: "#8ea2ff",
+    "info-content": "#0e1220",
+    success: "#34c98b",
+    "success-content": "#0e1220",
+    warning: "#f2b24c",
+    "warning-content": "#0e1220",
+    error: "#ff7d6e",
+    "error-content": "#0e1220",
+  },
+  // Plain CSS variables for the Tracker's extra surfaces and chart marks
+  extra: {
+    light: {
+      "--tt-soft": "#f5f6fa",
+      "--tt-side": "#0e1220",
+      "--tt-side-card": "#1a2033",
+      "--tt-side-active": "#20273d",
+      "--tt-sky": "#7cc4f2",
+      "--tt-slate": "#cdd2e0",
+    },
+    dark: {
+      "--tt-soft": "#181b23",
+      "--tt-side": "#111319",
+      "--tt-side-card": "#1a1e28",
+      "--tt-side-active": "#1f2431",
+      "--tt-sky": "#5cc3f5",
+      "--tt-slate": "#3a4154",
+    },
+  },
+  // Product chart parts in the Tracker: base duty slate, then cobalt, sky, amber, red, green
+  chart: {
+    light: ["#cdd2e0", "#2f49d1", "#7cc4f2", "#a86a0c", "#c2412d", "#138a5b"],
+    dark: ["#3a4154", "#8ea2ff", "#5cc3f5", "#f2b24c", "#ff7d6e", "#34c98b"],
+  },
+};
+
+module.exports = { light, dark, chart, series, shape, tracker };

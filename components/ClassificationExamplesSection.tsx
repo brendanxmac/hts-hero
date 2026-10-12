@@ -215,43 +215,22 @@ export default function ClassificationExamplesSection({
           ))}
         </div>
 
-        {/* CTA */}
-        {/* <div className="text-center mt-12">
+        {/* Bottom CTA — pass bottomCta="book-demo" to restore the demo button */}
+        <div className="flex flex-col items-center mt-16">
           <button
-            onClick={() => scrollTo({ top: 0, behavior: "smooth" })}
-            className="btn btn-primary btn-lg text-lg min-w-72 text-base font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] transition-all duration-200"
+            onClick={() => setIsBookDemoModalOpen(true)}
+            className="inline-flex items-center gap-3 px-10 py-4 rounded-xl font-bold text-lg bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
-            Try Now!
+            Book a Demo
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </button>
-          <p className="text-xs text-base-content/50 mt-4">
-            100% Free. No Credit Card Required
+          <p className="text-sm text-base-content/50 mt-3">
+            See how HTS Hero removes risk from your classifications
           </p>
-        </div> */}
+        </div>
 
-        {/* Bottom CTA — pass bottomCta="book-demo" to restore the demo button */}
-        {bottomCta === "classify" ? (
-          <div className="mt-16 w-full max-w-4xl mx-auto text-center">
-            <HeroClassifyInput entryPoint="examples_section" />
-          </div>
-        ) : (
-          <div className="flex flex-col items-center mt-16">
-            <button
-              onClick={() => setIsBookDemoModalOpen(true)}
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-xl font-bold text-lg bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
-            >
-              Book a Demo
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
-            <p className="text-sm text-base-content/50 mt-3">
-              See how HTS Hero removes risk from your classifications
-            </p>
-          </div>
-        )}
       </div>
 
       <LetsTalkModal

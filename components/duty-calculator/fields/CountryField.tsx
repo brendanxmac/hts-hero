@@ -12,12 +12,14 @@ interface Props {
   onChange: (countries: Country[]) => void;
   // Most countries that can be selected; the first is the main one
   max: number;
+  // No box of its own: it sits inside a host that draws one (the calculator's input bar)
+  bare?: boolean;
 }
 
 const ORIGIN_COUNTRIES = Countries.filter((c) => c.code !== "US");
 
 // Countries of origin as removable chips inside a searchable field
-export const CountryField = ({ id, selected, onChange, max }: Props) => {
+export const CountryField = ({ id, selected, onChange, max, bare = false }: Props) => {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   // With room for one country, picking another replaces it
@@ -70,13 +72,13 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
     >
       <div className="relative">
         <div
-          className={`${ui.inputBox} flex flex-wrap items-center gap-1.5 px-2 py-1 cursor-text`}
+          className={`${bare ? "h-7 flex-nowrap overflow-hidden" : `${ui.inputBox} ${single ? "flex-nowrap overflow-hidden" : "flex-wrap"} px-2 py-1`} flex items-center gap-1.5 cursor-text`}
           onClick={() => inputRef.current?.focus()}
         >
           {selected.map((country, i) => (
             <span
               key={country.code}
-              className={`inline-flex items-center gap-1.5 rounded border py-1 pl-2 pr-1 text-sm font-medium ${i === 0 && selected.length > 1
+              className={bare ? "inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap font-semibold text-base-content" : `inline-flex items-center gap-1.5 rounded border py-1 pl-2 pr-1 text-sm font-medium ${i === 0 && selected.length > 1
                 ? "border-primary/30 bg-primary/10 text-base-content"
                 : "border-base-300 bg-base-200 text-base-content"
                 }`}
@@ -84,7 +86,7 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
               <span className="text-base leading-none" aria-hidden>
                 {country.flag}
               </span>
-              {country.name}
+              {bare ? <span className="truncate">{country.name}</span> : country.name}
               <button
                 type="button"
                 className="rounded p-0.5 text-base-content/60 hover:bg-base-300 hover:text-base-content"
@@ -101,8 +103,8 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
           <Combobox.Input
             id={id}
             ref={inputRef}
-            className="flex-1 min-w-28 h-8 bg-transparent px-1.5 text-base text-base-content outline-none placeholder:text-base-content/60"
-            placeholder={selected.length === 0 ? "Search countries" : ""}
+            className={`${bare ? (selected.length ? "h-7 w-2 min-w-2 px-0" : "h-7 min-w-0 px-0 font-semibold placeholder:font-normal") : single && selected.length ? "h-8 w-2 min-w-2 px-0 text-base" : "min-w-28 h-8 px-1.5 text-base"} flex-1 bg-transparent text-base-content outline-none placeholder:text-base-content/60`}
+            placeholder={selected.length === 0 ? (bare ? "Choose a country" : "Search countries") : ""}
             autoComplete="off"
             value={query}
             onChange={(e) => setQuery(e.target.value)}

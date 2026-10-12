@@ -11,7 +11,7 @@
 // ];
 
 // Individual testimonials
-const testimonials = [
+export const testimonials = [
   // {
   //   role: "Vice President, LCB",
   //   company: "DEX Global",

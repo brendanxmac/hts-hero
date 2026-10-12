@@ -31,6 +31,18 @@ export const createClient = () => {
   );
 };
 
+// A client for public data with no user session, so pages that read it can stay static
+// (cookies() would make them dynamic). Row-level security limits it to what anyone may read.
+export const createPublicClient = () =>
+  createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    cookies: {
+      getAll() {
+        return [];
+      },
+      setAll() {},
+    },
+  });
+
 // Create an admin client with service role key for storage operations
 export const createAdminClient = () => {
   return createServerClient(

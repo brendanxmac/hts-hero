@@ -23,6 +23,7 @@ import {
 // The saved catalog, its products and their adjustments, for every page that uses it: the
 // Tariff Tracker, and the calculator's "Add to catalog" on /duty-calculator. One copy in memory,
 // kept in browser storage; components re-render when it changes, including from another tab.
+// Signed in, the account's copy is the saved one (catalogSync.ts) and this is its cache.
 
 export interface CatalogSnapshot {
   items: CatalogItem[];
@@ -90,6 +91,18 @@ const subscribe = (listener: () => void) => {
 
 // The catalog right now, outside React
 export const getCatalog = () => getSnapshot();
+
+// Every change from this tab (not other tabs, which save their own), outside React: for saving
+// the catalog to the account
+export const subscribeCatalog = (listener: () => void) => {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+};
+
+// The whole catalog at once: the account's saved copy, loaded on sign-in
+export const replaceCatalog = (next: CatalogSnapshot) => save(next);
 
 // The catalog, in a component. Empty on the server and while hydrating, then the saved one.
 export const useCatalog = () => useSyncExternalStore(subscribe, getSnapshot, () => EMPTY);

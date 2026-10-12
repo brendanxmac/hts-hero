@@ -22,6 +22,8 @@ interface Props {
   autoFocus?: boolean;
   // Leave out the description under the field, for layouts that show it elsewhere
   hidePath?: boolean;
+  // No box of its own: it sits inside a host that draws one (the calculator's input bar)
+  bare?: boolean;
 }
 
 const MAX_RESULTS = 20;
@@ -32,7 +34,7 @@ const plain = (text: string) => text.replace(/<[^>]+>/g, "").trim();
 // Description levels end with ":" in the HTS; drop it when showing the path
 const level = (text: string) => plain(text).replace(/:\s*$/, "");
 
-export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePath }: Props) => {
+export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePath, bare = false }: Props) => {
   const { htsElements } = useHts();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -108,7 +110,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
           <Combobox.Input
             id={id}
             ref={inputRef}
-            className={`${ui.input} pr-10 ${mono.className} text-base tracking-tight`}
+            className={`${bare ? "h-7 w-full bg-transparent font-semibold text-base-content outline-none placeholder:font-normal placeholder:text-base-content/60" : ui.input} pr-10 ${mono.className} text-base tracking-tight`}
             placeholder="e.g. 7326.90.86.88"
             autoComplete="off"
             spellCheck={false}

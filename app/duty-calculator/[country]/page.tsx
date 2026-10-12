@@ -2,13 +2,12 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import config from "@/config";
 import { CountryCalculatorPage, countryFaqs, metaDescription, titleName } from "@/components/duty-calculator/country";
-import { THEME } from "@/components/ui/theme";
+import * as mk from "@/components/ui/marketing/styles";
 import { COUNTRY_PAGES, countryPageByCode, countryPageBySlug } from "@/libs/country-pages/countries";
 import { IMPORT_SOURCE, importFacts } from "@/libs/country-pages/importStats";
 import { countryExamples, countryPreferences, countryTariffs } from "@/libs/country-pages/countryTariffs";
 import { getHtsElementsServer } from "@/libs/hts-server";
 import { renderSchemaJsonLd } from "@/libs/seo";
-import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
 
 interface Props {
   params: { country: string };
@@ -27,8 +26,6 @@ const longDate = (iso: string) =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
 const monthYear = (iso: string) =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
-// "2026HTSRev20" → "2026 HTS Revision 20"
-const revisionTitle = (name: string) => name.replace(/^(\d{4})HTSRev(\d+)$/, "$1 HTS Revision $2");
 
 export function generateMetadata({ params }: Props): Metadata {
   const country = countryPageBySlug(params.country);
@@ -66,7 +63,7 @@ export default async function CountryCalculatorRoute({ params }: Props) {
   const url = `https://${config.domainName}/duty-calculator/${country.slug}`;
 
   return (
-    <main className={`${THEME} w-full flex-1 shrink-0 flex flex-col`}>
+    <main className={`${mk.page} flex w-full flex-1 flex-col`}>
       {renderSchemaJsonLd({
         "@type": "WebApplication",
         name: `${name} to US Tariff Calculator`,
@@ -100,7 +97,6 @@ export default async function CountryCalculatorRoute({ params }: Props) {
         tariffs={tariffs}
         examples={examples}
         faqs={faqs}
-        verifiedThrough={revisionTitle(getLatestVerifiedRevision().name)}
         asOfLabel={longDate(asOf)}
         facts={facts}
         comparison={comparison}

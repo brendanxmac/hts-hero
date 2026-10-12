@@ -1,5 +1,3 @@
-import * as ui from "@/components/ui/styles";
-
 // What every Tariff Calculator result covers, as a grid of short facts
 const FACTS = [
   { value: "~200", label: "Countries of origin" },
@@ -9,11 +7,11 @@ const FACTS = [
 ];
 
 export const CoverageGrid = () => (
-  <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-base-300 bg-base-300">
+  <dl className="grid grid-cols-2 gap-3">
     {FACTS.map((fact) => (
-      <div key={fact.label} className="flex flex-col-reverse gap-1 bg-base-100 px-4 py-3">
-        <dt className={ui.caption}>{fact.label}</dt>
-        <dd className="text-base font-semibold text-base-content">{fact.value}</dd>
+      <div key={fact.label} className="flex flex-col-reverse gap-1 rounded-xl bg-slate-50 px-4 py-3.5 ring-1 ring-inset ring-slate-200">
+        <dt className="text-sm text-slate-500">{fact.label}</dt>
+        <dd className="text-lg font-bold text-slate-900">{fact.value}</dd>
       </div>
     ))}
   </dl>

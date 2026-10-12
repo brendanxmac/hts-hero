@@ -2,9 +2,12 @@
 
 import { ReactNode, useState } from "react";
 import * as ui from "@/components/ui/styles";
+import { THEME_ON_DARK } from "@/components/ui/theme";
 import { CompareView } from "../results";
 import { slices } from "../results";
 import { RateHistoryCard } from "../rate-history";
+import { AccountGate } from "@/components/tariff-tracker/access/AccountGate";
+import { ChartStandIn } from "@/components/ui/stand-ins";
 import { SimpleSummary } from "../results";
 import { ProhibitedNotice } from "../notices/ProhibitedNotice";
 import { VerifiedNotice } from "../notices/VerifiedNotice";
@@ -16,6 +19,7 @@ import { EntryRail } from "./EntryRail";
 import { ResultsHeader } from "./ResultsHeader";
 import { ResultsSkeleton } from "./ResultsSkeleton";
 import { useStickyColumn } from "./useStickyColumn";
+import { formatDate } from "../lib/format";
 
 // Two columns, 30/70: the entry details with, in the detailed view, the duty over time below them;
 // and the results, with the possible adjustments between the duty lines and the headings that
@@ -28,6 +32,7 @@ export const CalculatorLayout = ({
   railTitle = "Entry Details",
   railDescription = "Enter the details of your import to get a duty estimate",
   resultActions,
+  onDark = false,
 }: {
   f: TariffFinder;
   fixedProduct?: boolean;
@@ -35,6 +40,8 @@ export const CalculatorLayout = ({
   railDescription?: string;
   // Beside Copy and Share in the results' heading
   resultActions?: ReactNode;
+  // Placed on a dark band: the results heading, which sits outside any card, turns light
+  onDark?: boolean;
 }) => {
   const { result, selectedElement, country } = f;
   // The "Where the money goes" slice being hovered, in the chart or the statement
@@ -52,6 +59,8 @@ export const CalculatorLayout = ({
     : {};
   const ready = Boolean(result && selectedElement && country && !f.loading);
   const detailed = ready && !f.comparing && f.view === "detailed";
+  // Duty over time needs a free account (PRICING.md); signed out, the teaser counts its changes
+  const historyChanges = f.history.filter((s) => s.changes.length > 0).length;
   const hasAdjustments =
     detailed &&
     result !== null &&
@@ -75,14 +84,16 @@ export const CalculatorLayout = ({
           style={ready ? { top: resultsTop } : undefined}
         >
           {ready && result && selectedElement && country && (
-            <ResultsHeader
-              f={f}
-              result={result}
-              selectedElement={selectedElement}
-              country={country}
-              allowCompare={!fixedProduct}
-              actions={resultActions}
-            />
+            <div className={onDark ? THEME_ON_DARK : undefined}>
+              <ResultsHeader
+                f={f}
+                result={result}
+                selectedElement={selectedElement}
+                country={country}
+                allowCompare={!fixedProduct}
+                actions={resultActions}
+              />
+            </div>
           )}
           {f.loading ? (
             <ResultsSkeleton />
@@ -137,12 +148,26 @@ export const CalculatorLayout = ({
 
         {detailed && (
           <div className="min-w-0 lg:col-start-1">
-            <RateHistoryCard
-              f={f}
-              sliceColors={sliceColors}
-              highlight={highlight}
-              onHighlight={setHighlight}
-            />
+            <AccountGate
+              feature="duty-over-time"
+              page={fixedProduct ? "tracker_product" : "calculator"}
+              title="See how this duty changed over time"
+              teaser={
+                historyChanges > 0
+                  ? `The duty on this entry changed ${historyChanges} ${historyChanges === 1 ? "time" : "times"} since ${formatDate(f.historyRange.from)}.`
+                  : `See every tariff on this entry since ${formatDate(f.historyRange.from)}.`
+              }
+              points={["Each change: when, which tariff, and by how much"]}
+              preview={<ChartStandIn />}
+              minHeight="min-h-[26rem]"
+            >
+              <RateHistoryCard
+                f={f}
+                sliceColors={sliceColors}
+                highlight={highlight}
+                onHighlight={setHighlight}
+              />
+            </AccountGate>
           </div>
         )}
       </div>

@@ -1,16 +1,18 @@
 // Straight from the price list: the pricing feature's index also pulls in its client components
 import {
+  ANNUAL_DISCOUNT,
   CLASSIFY_PLANS,
-  TARIFF_CALCULATOR_PRICE,
+  FREE_TRACKED_PAIRS,
   TRACKER_TIERS,
+  TRIAL_DAYS,
+  TRIAL_PAIRS,
   formatPrice,
 } from "@/components/pricing-calculator/lib/pricing";
 import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions";
 import type { Tool } from "../types";
 
-// What the free tier offers today. One place to change when usage limits ship (planned: 5
-// lookups without an account, 20 a month with one).
-const FREE_TIER = "Free to start, no sign-up";
+// What the free tier offers. The calculator is free and unlimited with no account (PRICING.md).
+const FREE_TIER = "Calculator free and unlimited, no sign-up";
 
 const historyFrom = new Date(`${getVerifiedRevisions()[0].from}T00:00:00Z`).toLocaleDateString("en-US", {
   month: "long",
@@ -28,8 +30,8 @@ export const HTS_HERO: Tool = {
   summary:
     "A US tariff calculator built for importers who need the exact number: every Chapter 99 tariff stacked line by line with its legal source, entry audits by date, duty over time, alerts when a tariff change hits your products, and results by API and MCP for your own systems.",
   bestFor: "Importers, brokers and compliance teams who need exact, auditable US duty",
-  price: `Free, then from ${formatPrice(TARIFF_CALCULATOR_PRICE)}/mo`,
-  priceDetail: `${FREE_TIER}. Tariff Calculator ${formatPrice(TARIFF_CALCULATOR_PRICE)}/mo for unlimited calculations. Tariff Tracker from ${formatPrice(TRACKER_TIERS[0].price)}/mo for your product catalog. Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo. Monthly plans, no contract, 10% off annually.`,
+  price: `Calculator free; Tracker from ${formatPrice(TRACKER_TIERS[0].price)}/mo`,
+  priceDetail: `${FREE_TIER}. Tariff Tracker free for ${FREE_TRACKED_PAIRS} pairs, and you can try up to ${TRIAL_PAIRS} free for ${TRIAL_DAYS} days; paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo for your product catalog. Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo. Monthly plans, no contract, ${ANNUAL_DISCOUNT * 100}% off annually.`,
   features: {
     freeToTry: { support: "yes", note: FREE_TIER },
     selfServe: { support: "yes", note: "Every plan is self-serve, with no demo or contract" },
@@ -38,7 +40,7 @@ export const HTS_HERO: Tool = {
     tradePreferences: { support: "yes", note: "USMCA, CAFTA-DR, KORUS and every program on the line" },
     adjustments: { support: "yes", note: "Answer each question and see the new total" },
     entryDate: { support: "yes", note: `Entry audits, with verified rates back to ${historyFrom}` },
-    rateHistory: { support: "yes", note: "Duty Over Time, revision by revision" },
+    rateHistory: { support: "yes", note: "Duty Over Time, revision by revision, free with no account" },
     catalogImpact: { support: "paid", note: "Tariff Tracker alerts, with the cost to each product" },
     countryCompare: { support: "yes" },
     csvUpload: { support: "paid", note: "Tariff Tracker" },

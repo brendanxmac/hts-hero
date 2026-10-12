@@ -18,11 +18,14 @@ export const ProductRow = ({
   row,
   colors,
   maxPct,
+  untracked = false,
   onOpen,
 }: {
   row: TrackedProduct;
   colors: Record<string, string>;
   maxPct: number;
+  // Past the plan's limit: duty shown, but no history, savings or alerts
+  untracked?: boolean;
   onOpen: () => void;
 }) => {
   const { entry } = row;
@@ -65,7 +68,12 @@ export const ProductRow = ({
           <span className="text-xl font-semibold leading-none tracking-tight tabular-nums">
             {formatRate(row.totalPct)}
           </span>
-          {row.bestSavingPct > 0.005 && (
+          {untracked && (
+            <span className={`${ui.badge()} whitespace-nowrap`} title="Past your plan's limit: no history, savings or alerts">
+              Not tracked
+            </span>
+          )}
+          {!untracked && row.bestSavingPct > 0.005 && (
             <span className={`${ui.badge("success")} gap-1 whitespace-nowrap`}>
               <SparklesIcon className="h-3 w-3" aria-hidden />
               Could be lower

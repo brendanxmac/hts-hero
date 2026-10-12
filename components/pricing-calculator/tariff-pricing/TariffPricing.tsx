@@ -3,139 +3,123 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import * as ui from "@/components/ui/styles";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
+import * as mk from "@/components/ui/marketing/styles";
 import { LINKS, contactLink } from "../lib/links";
-import { ANNUAL_DISCOUNT, Billing, FREE_MONTHLY_CALCULATIONS, TARIFF_CALCULATOR_PRICE } from "../lib/pricing";
-import { BillingToggle } from "../plans/BillingToggle";
-import { PriceTag } from "../plans/PriceTag";
-import { FREE_FEATURES, PRO_FEATURES, STARTER_FEATURES, TRACKER_OPTIONS, TrackerOption } from "./plans";
+import { ANNUAL_DISCOUNT, Billing, FREE_TRACKED_PAIRS, TRACKER_TIERS, TRIAL_DAYS, TRIAL_PAIRS } from "../lib/pricing";
+import { PlanPrice } from "../plans/PlanPrice";
+import { CALCULATOR_FEATURES, FREE_TRACKER_OPTION, TRACKER_FEATURES, TRACKER_PAID_ONLY_FEATURES, TRACKER_OPTIONS, TrackerOption } from "./plans";
 import { TierCard } from "./TierCard";
 import { TrackerTierPicker } from "./TrackerTierPicker";
 
-// A fixed allowance, drawn on the same inset track as the Pro card's tier picker so the
-// three cards read as one set
-const Allowance = ({ value, unit }: { value: string; unit?: string }) => (
-  <div className="flex h-14 items-center gap-1.5 rounded-lg bg-base-200 px-4 ring-1 ring-inset ring-base-300">
-    <span className="text-lg font-semibold tabular-nums text-base-content">{value}</span>
-    {unit && <span className={ui.bodySm}>{unit}</span>}
-  </div>
-);
-
-// Free, Starter (the Tariff Calculator) and Pro (the Tariff Tracker) side by side, with one
-// billing toggle. Pro's price follows the tier picked on its card.
+// The pricing band on /duty-calculator: the free calculator and the Tariff Tracker side by side,
+// with one billing switch. The Tracker card's picker runs from its free plan through the paid
+// tiers, and the card's price, button and features follow the stop picked. See PRICING.md.
 export const TariffPricing = () => {
   const [billing, setBilling] = useState<Billing>("monthly");
-  const [trackerOption, setTrackerOption] = useState<TrackerOption>(TRACKER_OPTIONS[0]);
+  // Opens on the lowest paid tier; the free plan is one stop to the left
+  const [trackerOption, setTrackerOption] = useState<TrackerOption>(TRACKER_OPTIONS[1]);
 
+  const isFree = trackerOption.id === FREE_TRACKER_OPTION.id;
   const isCustom = trackerOption.price === null;
-  const isLowestTier = trackerOption.id === TRACKER_OPTIONS[0].id;
+  const isLowestTier = trackerOption.id === TRACKER_OPTIONS[1].id;
   const trackerNote = isCustom
     ? "We'll build a plan around your catalog."
-    : `Up to ${trackerOption.maxPairs} pairs. A pair is one HTS code from one country of origin.`;
+    : isFree
+      ? `Free for ${FREE_TRACKED_PAIRS} products. Try up to ${TRIAL_PAIRS} free for ${TRIAL_DAYS} days.`
+      : `Up to ${trackerOption.maxPairs} products. A product is one HTS code from one country of origin.`;
 
   return (
-    <section id="pricing" className={ui.section} aria-labelledby="pricing-title">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <SectionHeader kicker="Pricing" title="Start free. Upgrade when your imports need it." titleId="pricing-title">
-          Calculate duties for free, go unlimited with Starter, or put your whole
-          catalog under watch with Pro.
-        </SectionHeader>
-        <BillingToggle billing={billing} onChange={setBilling} />
-      </div>
+    <section id="pricing" className={`${mk.band} ${mk.bandMuted} scroll-mt-20`} aria-labelledby="pricing-title">
+      <div className={mk.container}>
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <SectionIntro eyebrow="Pricing" title="Calculate for free. Unlock savings, alerts, and audits when you're ready." id="pricing-title">
+            This calculator is free and unlimited. Put your own products under watch with the Tariff Tracker: free for{" "}
+            {FREE_TRACKED_PAIRS}, with a {TRIAL_DAYS}-day trial of up to {TRIAL_PAIRS}.
+          </SectionIntro>
+          <div className="shrink-0">
+            <BillingSwitch billing={billing} onChange={setBilling} />
+          </div>
+        </div>
 
-      <div className="grid gap-6 lg:grid-cols-3 lg:gap-y-0">
-        <TierCard
-          id="plan-free"
-          name="Free"
-          description="For a quick check on an import now and then."
-          price={<PriceTag listPrice={0} billing={billing} note="Free forever" />}
-          allowanceLabel="Duty calculations"
-          allowance={<Allowance value={String(FREE_MONTHLY_CALCULATIONS)} unit="per month" />}
-          allowanceNote="No credit card needed."
-          cta={
-            <button
-              type="button"
-              // Back up to the calculator. The page scrolls inside the layout, not the window.
-              onClick={() => document.querySelector("main")?.scrollIntoView({ behavior: "smooth" })}
-              className={`${ui.button({ size: "lg" })} w-full`}
-            >
-              Calculate for free
-            </button>
-          }
-          featuresLabel="Every calculation includes"
-          features={FREE_FEATURES}
-        />
-
-        <TierCard
-          id="plan-starter"
-          name="Starter"
-          description="The Tariff Calculator, unlimited, for anyone pricing imports every week."
-          price={<PriceTag listPrice={TARIFF_CALCULATOR_PRICE} billing={billing} />}
-          allowanceLabel="Duty calculations"
-          allowance={<Allowance value="Unlimited" />}
-          allowanceNote="Calculate as often as you need."
-          cta={
-            <Link href={LINKS.signUp} className={`${ui.button({ size: "lg" })} w-full`}>
-              Get Starter
-            </Link>
-          }
-          featuresLabel="Everything in Free, plus"
-          features={STARTER_FEATURES}
-        />
-
-        <TierCard
-          id="plan-pro"
-          name="Pro"
-          badge="Tariff Tracker"
-          featured
-          description="Your whole catalog under watch, so you know the moment a tariff change hits."
-          price={
-            isCustom ? (
-              <div>
-                <span className={ui.metric.primary} aria-live="polite">
-                  Let&apos;s talk
-                </span>
-                <p className={`${ui.caption} mt-2`}>Priced to fit your catalog</p>
-              </div>
-            ) : (
-              <PriceTag
-                listPrice={trackerOption.price ?? 0}
-                billing={billing}
-                prefix={isLowestTier ? "Starting at" : undefined}
-              />
-            )
-          }
-          allowanceLabel="HTS + country pairs"
-          allowance={<TrackerTierPicker value={trackerOption} onChange={setTrackerOption} billing={billing} />}
-          allowanceNote={trackerNote}
-          cta={
-            isCustom ? (
-              <a
-                href={contactLink("Tariff Tracker for a large catalog")}
-                className={`${ui.button({ variant: "primary", size: "lg" })} w-full`}
-              >
-                Talk to us
-                <ArrowRightIcon className="h-4 w-4" aria-hidden />
+        <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-[5fr_7fr] lg:gap-y-0">
+          <TierCard
+            id="plan-calculator"
+            name="Tariff Calculator"
+            description="The exact duty on any import, with the reasons behind it."
+            price={<PlanPrice listPrice={0} billing={billing} unit="" note="Free" />}
+            cta={
+              <a href="#calculator" className={`${mk.buttonSecondary} h-14 w-full text-lg`}>
+                Calculate a duty
               </a>
-            ) : (
-              <Link href={LINKS.signUp} className={`${ui.button({ variant: "primary", size: "lg" })} w-full`}>
-                Start tracking
-                <ArrowRightIcon className="h-4 w-4" aria-hidden />
-              </Link>
-            )
-          }
-          featuresLabel="Everything in Starter, plus"
-          features={PRO_FEATURES}
-        />
-      </div>
+            }
+            featuresLabel="Every calculation includes"
+            features={CALCULATOR_FEATURES}
+          />
 
-      <p className={ui.caption}>
-        Prices in USD. Annual plans are billed once a year at {ANNUAL_DISCOUNT * 100}% off.{" "}
-        <Link href="/pricing-calculator" className={ui.link}>
-          See all plans and estimate your price
-        </Link>
-      </p>
+          <TierCard
+            id="plan-tracker"
+            name="Tariff Tracker"
+            badge={`${TRIAL_DAYS}-day free trial`}
+            dark
+            description="Your whole catalog under watch, your entries audited and your potential savings found."
+            price={
+              isCustom ? (
+                <div>
+                  <span className="text-6xl font-extrabold tracking-tight text-white" aria-live="polite">
+                    Let&apos;s talk
+                  </span>
+                  <p className="mt-2 text-sm text-slate-400">Priced to fit your catalog</p>
+                </div>
+              ) : isFree ? (
+                <PlanPrice listPrice={0} billing={billing} unit="" note="Free" dark />
+              ) : (
+                <PlanPrice
+                  listPrice={trackerOption.price ?? TRACKER_TIERS[0].price}
+                  billing={billing}
+                  prefix={isLowestTier ? "From" : undefined}
+                  dark
+                />
+              )
+            }
+            allowanceLabel="Products tracked"
+            allowance={<TrackerTierPicker value={trackerOption} onChange={setTrackerOption} billing={billing} />}
+            allowanceNote={trackerNote}
+            cta={
+              isCustom ? (
+                <a href={contactLink("Tariff Tracker for a large catalog")} className={`${mk.buttonOnDark} h-14 w-full text-lg`}>
+                  Talk to us
+                  <ArrowRightIcon className="h-5 w-5" aria-hidden />
+                </a>
+              ) : isFree ? (
+                <Link href={LINKS.signUp} className={`${mk.buttonOnDark} h-14 w-full text-lg`}>
+                  Start free
+                  <ArrowRightIcon className="h-5 w-5" aria-hidden />
+                </Link>
+              ) : (
+                <Link href={LINKS.signUp} className={`${mk.buttonOnDark} h-14 w-full text-lg`}>
+                  Start your free trial
+                  <ArrowRightIcon className="h-5 w-5" aria-hidden />
+                </Link>
+              )
+            }
+            featuresLabel={isFree ? "Free plan includes" : "Every paid plan includes"}
+            features={TRACKER_FEATURES}
+            excludedFeatures={isFree ? TRACKER_PAID_ONLY_FEATURES : undefined}
+          />
+        </div>
+
+        <p className={`${mk.small} mt-8`}>
+          Prices in USD. Annual plans are billed once a year at {ANNUAL_DISCOUNT * 100}% off.{" "}
+          <Link href="/tariff-monitor" className={mk.link}>
+            See how the Tariff Tracker works
+          </Link>{" "}
+          or{" "}
+          <Link href="/pricing-calculator" className={mk.link}>
+            estimate your price
+          </Link>
+        </p>
+      </div>
     </section>
   );
 };

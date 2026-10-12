@@ -1,0 +1,189 @@
+"use client";
+
+import { useMemo } from "react";
+import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
+import { TableStandIn } from "@/components/ui/stand-ins";
+import { useUser } from "@/contexts/UserContext";
+import { todayIso } from "../../duty-calculator/lib/format";
+import { addDays } from "../../../tariffs/engine-v2/history";
+import { useTrackerAccess } from "../access/accessContext";
+import { PremiumGate } from "../access/PremiumGate";
+import { formatRate } from "../formatRate";
+import { averageRateSeries } from "../insights/catalogHistory";
+import { useInsights } from "../insights/InsightsContext";
+import { changesTeaser, wholeDollars } from "../insights/teasers";
+import { TrackingNotice } from "../plan";
+import { shortProgram } from "../report";
+import { useTrackerNav } from "../shell/TrackerNav";
+import { useTracker } from "../TrackerContext";
+import { EmptyOverview } from "./EmptyOverview";
+import { ExposureMap } from "./ExposureMap";
+import { LatestChanges } from "./LatestChanges";
+import { averageRate, changesLastYear, countryCount, dutyPerShipment, dutySeries, monthlyChanges, productsToLookAt } from "./lib/metrics";
+import { buildStories } from "./lib/story";
+import { Metric, MetricTiles } from "./MetricTiles";
+import { NewsTape } from "./NewsTape";
+import { NextStep } from "./NextStep";
+import { OriginDistribution } from "./OriginDistribution";
+import { OverviewHeader } from "./OverviewHeader";
+import { ProductTiles } from "./ProductTiles";
+import { PulseEvent, RatePulse } from "./RatePulse";
+import { SavingsRing } from "./SavingsRing";
+import { StoryLine } from "./StoryLine";
+
+// The Overview (DESIGN_SYSTEM.md §15): the Tracker's home. A rotating line about the catalog and
+// the one next step, then the numbers, potential savings, the rate pulse, where the catalog comes
+// from, its exposure, the latest changes and the products to look at first. Before there are
+// products, the empty overview asks for them.
+
+// The value on a date in a series of steps
+const valueOn = <T extends { date: string }>(series: T[], date: string) => [...series].reverse().find((p) => p.date <= date) ?? series[0];
+
+export const Overview = () => {
+  const t = useTracker();
+  const nav = useTrackerNav();
+  const insights = useInsights();
+  const { premium, unlock, unlockLabel } = useTrackerAccess();
+  const { user } = useUser();
+  const today = todayIso();
+
+  const data = useMemo(() => {
+    const duty = dutyPerShipment(t.products);
+    const rateSeries = averageRateSeries(insights.products, insights.histories);
+    const dSeries = dutySeries(insights.products, insights.histories);
+    const yearAgo = addDays(today, -365);
+    const quarterAgo = addDays(today, -90);
+    const lastYear = changesLastYear(insights.changes, today);
+
+    const rateThen = rateSeries.length ? valueOn(rateSeries, quarterAgo).pct : 0;
+    const rateNow = averageRate(t.products);
+    const dutyThen = dSeries.length ? valueOn(dSeries, quarterAgo).usd : 0;
+    const dutyNow = dSeries.length ? dSeries[dSeries.length - 1].usd : duty;
+    const delta = (now: number, then: number, show: (n: number) => string) =>
+      Math.abs(now - then) < 0.005 ? { note: "No change in 90 days", tone: "neutral" as const } : { note: `${now > then ? "▲" : "▼"} ${show(Math.abs(now - then))} in 90 days`, tone: now > then ? ("error" as const) : ("success" as const) };
+    const dutyDelta = delta(dutyNow, dutyThen, wholeDollars);
+    const rateDelta = delta(rateNow, rateThen, (n) => `${Math.round(n * 100) / 100} pts`);
+    const recent = <T extends { date: string }>(s: T[]) => s.filter((p) => p.date >= yearAgo);
+
+    const metrics: Metric[] = [
+      { label: "Duty per shipment", value: wholeDollars(duty), note: dutyDelta.note, noteTone: dutyDelta.tone, spark: recent(dSeries).map((p) => p.usd) },
+      { label: "Average rate", value: formatRate(rateNow), note: rateDelta.note, noteTone: rateDelta.tone, spark: recent(rateSeries).map((p) => p.pct) },
+      {
+        label: "Changes, last 12 months",
+        value: lastYear.count.toLocaleString("en-US"),
+        note: lastYear.count ? `Hit ${lastYear.products} of your products` : "None on your products",
+        noteTone: "neutral",
+        spark: monthlyChanges(insights.changes, today).reduce<number[]>((acc, n) => [...acc, (acc[acc.length - 1] ?? 0) + n], []),
+        sparkTone: "error",
+      },
+      { label: "Products", value: t.items.length.toLocaleString("en-US"), note: `From ${countryCount(t.products)} countries`, noteTone: "neutral" },
+    ];
+
+    // The rate pulse's biggest rise and drop in the last year, with the tariff behind each
+    const steps = rateSeries.slice(1).map((p, i) => ({ date: p.date, diff: p.pct - rateSeries[i].pct })).filter((s) => s.date >= yearAgo);
+    const event = (pick: (a: number, b: number) => boolean): PulseEvent | undefined => {
+      const best = steps.reduce<(typeof steps)[number] | undefined>((top, s) => (!top || pick(s.diff, top.diff) ? s : top), undefined);
+      if (!best || Math.abs(best.diff) < 0.005) return undefined;
+      // The tariff that moved rates this way that day, on the most products
+      const names = new Map<string, number>();
+      insights.changes
+        .filter((c) => c.date === best.date)
+        .flatMap((c) => c.after.changes)
+        .filter((l) => (best.diff > 0 ? l.delta > 0 : l.delta < 0))
+        .forEach((l) => names.set(l.name, (names.get(l.name) ?? 0) + 1));
+      const cause = Array.from(names).sort((a, b) => b[1] - a[1])[0]?.[0];
+      return { date: best.date, label: cause ? shortProgram(cause) : best.diff > 0 ? "Rates up" : "Rates down" };
+    };
+    const rise = event((a, b) => a > b);
+    const drop = event((a, b) => a < b);
+
+    const stories = buildStories({
+      today,
+      products: t.items.length,
+      dutyUsd: duty,
+      potentialUsd: insights.savingsReady ? insights.totals.anyUsd : null,
+      changes: insights.changes,
+      joinedAt: user?.created_at ? user.created_at.slice(0, 10) : null,
+    });
+
+    return {
+      duty,
+      scopeDuty: dutyPerShipment(insights.products),
+      metrics,
+      rateSeries,
+      yearAgo,
+      rise: rise && rise.date ? rise : undefined,
+      drop: drop && drop.date && drop.date !== rise?.date ? drop : undefined,
+      stories,
+      picks: productsToLookAt(insights.products, insights.savings, insights.changes),
+      lastYearChanges: insights.changes.filter((c) => c.date >= yearAgo),
+    };
+  }, [t.products, t.items.length, insights, today, user?.created_at]);
+
+  if (t.loading) return <div className={`${ui.skeleton} h-96 w-full`} />;
+  if (!t.items.length) return <EmptyOverview />;
+
+  const open = (key: string) => nav.openProduct(key);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <OverviewHeader />
+      <NewsTape />
+      <TrackingNotice />
+
+      <section aria-label="This week" className={`${tt.panel} flex flex-col gap-6 p-6 lg:p-8`}>
+        <StoryLine stories={data.stories} />
+        <NextStep />
+      </section>
+
+      <MetricTiles metrics={data.metrics} />
+
+      <div className="grid items-start gap-4 xl:grid-cols-12">
+        <div className="xl:col-span-4">
+          <SavingsRing
+            potential={insights.totals.anyUsd}
+            duty={data.scopeDuty}
+            ready={insights.savingsReady}
+            action={
+              premium
+                ? { label: "See potential savings", onClick: () => nav.openTab("savings"), money: true }
+                : { label: unlockLabel, onClick: () => unlock("savings"), money: true }
+            }
+          />
+        </div>
+        <div className="xl:col-span-8">
+          <RatePulse series={data.rateSeries} from={data.yearAgo} to={today} rise={data.rise} drop={data.drop} />
+        </div>
+      </div>
+
+      <div className="grid items-start gap-4 xl:grid-cols-12">
+        <div className="xl:col-span-5">
+          <OriginDistribution products={t.products} />
+        </div>
+        <div className="xl:col-span-7">
+          <ExposureMap products={t.products} onOpen={open} />
+        </div>
+      </div>
+
+      <div className="grid items-start gap-4 xl:grid-cols-12">
+        <div className="xl:col-span-5">
+          <PremiumGate
+            feature="history"
+            title="What changed on your products"
+            teaser={changesTeaser(insights) ?? "Going through your products' history…"}
+            preview={<TableStandIn columns={["Product", "Origin", "Change", "Date"]} />}
+            minHeight="min-h-96"
+          >
+            <LatestChanges changes={data.lastYearChanges} onOpen={open} onAll={() => nav.openTab("history")} />
+          </PremiumGate>
+        </div>
+        <div className="xl:col-span-7">
+          {data.picks.length > 0 && (
+            <ProductTiles picks={data.picks} histories={insights.histories} onOpen={open} onAll={() => nav.openTab("catalog")} total={t.items.length} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

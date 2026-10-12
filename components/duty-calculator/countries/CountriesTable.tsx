@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { ChevronUpDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { heat, PRIMARY_MARK } from "@/components/ui/theme";
 import { mono } from "@/components/ui/font";
-import * as ui from "@/components/ui/styles";
+import * as mk from "@/components/ui/marketing/styles";
+import { dutyTint } from "../country/dutyTint";
 
 // Every country of origin and what its goods face. All rows render on the server, so the whole
 // table is in the page's HTML; searching, filtering and sorting only rearrange it. The body
@@ -43,9 +43,12 @@ const SORTS: Record<Sort, (a: HubRow, b: HubRow) => number> = {
   forcedLabor: (a, b) => (b.forcedLaborPct ?? -1) - (a.forcedLaborPct ?? -1) || a.name.localeCompare(b.name),
 };
 
-const th = `${ui.label} sticky top-0 z-10 bg-base-200 px-3 py-2.5 text-left align-bottom first:pl-5 last:pr-5`;
-const td = "px-3 py-2.5 align-top first:pl-5 last:pr-5";
-const none = <span className="text-base-content/60">—</span>;
+const th =
+  "sticky top-0 z-10 border-b border-slate-200 bg-slate-50 px-3 py-3 text-left align-bottom text-xs font-semibold uppercase tracking-wider text-slate-500 first:pl-6 last:pr-6";
+const td = "px-3 py-3 align-top first:pl-6 last:pr-6";
+const none = <span className="text-slate-300">—</span>;
+const pill = "inline-block rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset";
+const caption = "text-xs text-slate-500";
 
 export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf: string; asOfLabel: string }) {
   const [query, setQuery] = useState("");
@@ -65,41 +68,41 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
 
   const SortHeader = ({ id, label, className = "" }: { id: Sort; label: string; className?: string }) => (
     <th scope="col" className={`${th} ${className}`} aria-sort={sort === id ? (id === "name" ? "ascending" : "descending") : "none"}>
-      <button type="button" className="inline-flex items-center gap-1 uppercase hover:text-base-content" onClick={() => setSort(id)}>
+      <button type="button" className="inline-flex items-center gap-1 uppercase tracking-wider hover:text-slate-900" onClick={() => setSort(id)}>
         {label}
-        <ChevronUpDownIcon className={`h-3.5 w-3.5 ${sort === id ? "text-primary" : ""}`} aria-hidden />
+        <ChevronUpDownIcon className={`h-3.5 w-3.5 ${sort === id ? "text-teal-600" : "text-slate-400"}`} aria-hidden />
       </button>
     </th>
   );
 
   return (
-    <div className={ui.card}>
-      <div className={`${ui.cardHeader} flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between`}>
+    <div className={`${mk.card} overflow-hidden`}>
+      <div className="flex flex-col gap-4 border-b border-slate-200 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
         <label className="relative w-full lg:max-w-xs">
           <span className="sr-only">Find a country</span>
-          <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/60" aria-hidden />
+          <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Find a country"
-            className={`${ui.inputSm} w-full pl-9`}
+            className={`${mk.input} h-10 pl-9 text-sm`}
           />
         </label>
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Show">
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Show">
           {FILTERS.map((f) => (
             <button
               key={f.id}
               type="button"
               aria-pressed={filter === f.id}
               onClick={() => setFilter(f.id)}
-              className={`rounded-md border px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+              className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 ${
                 filter === f.id
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-base-300 text-base-content/70 hover:border-primary/40 hover:text-primary"
+                  ? "border-slate-900 bg-slate-900 text-white"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-teal-300 hover:text-teal-700"
               }`}
             >
-              {f.label} <span className="tabular-nums text-base-content/60">{rows.filter(f.test).length}</span>
+              {f.label} <span className={`tabular-nums ${filter === f.id ? "text-white/60" : "text-slate-400"}`}>{rows.filter(f.test).length}</span>
             </button>
           ))}
         </div>
@@ -108,7 +111,7 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
       {/* The body scrolls under the sticky header; every row stays in the page */}
       <div className="max-h-screen overflow-auto">
         <table className="w-full text-sm tabular-nums">
-          <caption className={`${ui.caption} caption-bottom border-t border-base-300 bg-base-200 px-5 py-2.5 text-left`}>
+          <caption className="caption-bottom border-t border-slate-200 bg-slate-50 px-6 py-3 text-left text-xs leading-relaxed text-slate-500">
             US tariffs by country of origin for goods entered <time dateTime={asOf}>{asOfLabel}</time>. Showing{" "}
             {shown.length} of {rows.length}. Section 232 applies to every country; trade agreements apply only to goods
             that meet their rules of origin. Imports: US Census Bureau, 2025.
@@ -126,8 +129,8 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
             {shown.map((r) => {
               const capped = r.forcedLabor?.startsWith("Up to");
               return (
-                <tr key={r.code} className="border-t border-base-300 hover:bg-base-200/60">
-                  <th scope="row" className={`${td} whitespace-nowrap text-left font-medium text-base-content`}>
+                <tr key={r.code} className="border-t border-slate-100 transition-colors first:border-t-0 hover:bg-slate-50/70">
+                  <th scope="row" className={`${td} whitespace-nowrap text-left font-semibold text-slate-900`}>
                     <span aria-hidden="true" className="mr-2">{r.flag}</span>
                     {r.name}
                   </th>
@@ -135,14 +138,14 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
                     {r.importsLabel ? (
                       <div className="flex flex-col gap-1">
                         <div className="flex items-baseline justify-between gap-2">
-                          <span className="text-base-content">{r.importsLabel}</span>
-                          <span className={`${mono.className} text-xs text-base-content/60`}>#{r.rank}</span>
+                          <span className="text-slate-900">{r.importsLabel}</span>
+                          <span className={`${mono.className} text-xs text-slate-400`}>#{r.rank}</span>
                         </div>
-                        <div className="h-1 w-full rounded-full bg-base-300" aria-hidden>
+                        <div className="h-1.5 w-full rounded-full bg-slate-100" aria-hidden>
                           {/* Bar width is a runtime value (DESIGN_SYSTEM §10) */}
                           <div
-                            className="h-1 rounded-full"
-                            style={{ width: `${Math.max(2, (Math.sqrt(r.imports ?? 0) / maxImports) * 100)}%`, background: PRIMARY_MARK }}
+                            className="h-1.5 rounded-full bg-teal-500"
+                            style={{ width: `${Math.max(2, (Math.sqrt(r.imports ?? 0) / maxImports) * 100)}%` }}
                           />
                         </div>
                       </div>
@@ -153,11 +156,11 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
                   <td className={`${td} whitespace-nowrap`}>
                     {r.forcedLabor ? (
                       <>
-                        {/* heat() shades a rate by size, as totals are elsewhere */}
-                        <span className="inline-block rounded px-2 py-0.5 font-semibold text-base-content" style={{ background: heat(r.forcedLaborPct) }}>
+                        {/* dutyTint() shades a rate by size, as totals are elsewhere */}
+                        <span className="inline-block rounded-md px-2 py-0.5 font-semibold text-slate-900" style={{ background: dutyTint(r.forcedLaborPct) }}>
                           {capped ? `Up to ${r.forcedLaborPct}%` : r.forcedLabor}
                         </span>
-                        {capped && <span className={`${ui.caption} block mt-0.5`}>incl. base rate</span>}
+                        {capped && <span className={`${caption} mt-0.5 block`}>incl. base rate</span>}
                       </>
                     ) : (
                       none
@@ -170,12 +173,12 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
                       <div className="flex flex-col items-start gap-1">
                         {r.otherTariffs.map((t) => (
                           <span key={t.name} className="flex flex-wrap items-baseline gap-x-1.5">
-                            <span className={ui.badge("error")}>{t.name}</span>
-                            <span className={ui.caption}>{t.detail}</span>
+                            <span className={`${pill} bg-rose-50 text-rose-700 ring-rose-200`}>{t.name}</span>
+                            <span className={caption}>{t.detail}</span>
                           </span>
                         ))}
-                        {r.column2 && <span className={ui.badge("error")}>Column 2 Rates</span>}
-                        {r.dealRates > 0 && <span className={ui.caption}>Own Section 232 rates on some products</span>}
+                        {r.column2 && <span className={`${pill} bg-rose-50 text-rose-700 ring-rose-200`}>Column 2 Rates</span>}
+                        {r.dealRates > 0 && <span className={caption}>Own Section 232 rates on some products</span>}
                       </div>
                     )}
                   </td>
@@ -183,7 +186,7 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
                     {r.preferences.length ? (
                       <div className="flex flex-wrap gap-1">
                         {r.preferences.map((p) => (
-                          <span key={p} className={ui.badge("success")}>
+                          <span key={p} className={`${pill} bg-emerald-50 text-emerald-700 ring-emerald-200`}>
                             {p}
                           </span>
                         ))}
@@ -197,7 +200,7 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
             })}
           </tbody>
         </table>
-        {shown.length === 0 && <p className={`${ui.body} px-5 py-8 text-center`}>No country matches.</p>}
+        {shown.length === 0 && <p className={`${mk.body} px-6 py-10 text-center`}>No country matches.</p>}
       </div>
     </div>
   );

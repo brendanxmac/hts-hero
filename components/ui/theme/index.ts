@@ -7,6 +7,12 @@ export const THEME = "hts-theme";
 // For a themed component embedded in a page that isn't themed yet: keeps the host's background
 export const THEME_EMBEDDED = "hts-theme hts-theme-embedded";
 
+// Always light, ignoring the dark-mode toggle: marketing pages and the components embedded in them
+export const THEME_LIGHT = "hts-theme hts-theme-light";
+
+// Always dark with no background, for themed text placed straight on a dark marketing band
+export const THEME_ON_DARK = "hts-theme hts-theme-dark";
+
 // Parts of one whole (a duty's stacked bar), in order: base duty first, then each added
 // program. Fees always take FEES_COLOR, last.
 export const CHART_COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
@@ -19,6 +25,12 @@ export const SERIES_COLORS = ["var(--series-1)", "var(--series-2)", "var(--serie
 
 // A mark in the primary color, when series colors aren't in use
 export const PRIMARY_MARK = "oklch(var(--p))";
+
+// Marks for a saving or a decrease, and for an increase
+export const SUCCESS_MARK = "oklch(var(--su))";
+export const ERROR_MARK = "oklch(var(--er))";
+// A caution: an amount that went up without being an error
+export const WARNING_MARK = "oklch(var(--wa))";
 
 // Bars and marks that aren't selected
 export const MUTED_MARK = "oklch(var(--bc) / 0.18)";

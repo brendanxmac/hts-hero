@@ -4,21 +4,31 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+// Tariff tools first: they're the focus. Classification follows the HTS Explorer.
 export const toolLinks = [
-  {
-    href: "/classifications",
-    emoji: "🎯",
-    title: "Classification Assistant",
-    subtitle: "AI-powered classification assistance",
-    hoverBg: "hover:bg-secondary/10",
-    iconBg: "bg-secondary/20",
-    hoverText: "group-hover:text-secondary",
-  },
   {
     href: "/duty-calculator",
     emoji: "💰",
-    title: "Duty & Tariff Simulator",
-    subtitle: "Duties & tariffs for any import",
+    title: "Tariff Calculator",
+    subtitle: "Every duty on any import, free",
+    hoverBg: "hover:bg-primary/10",
+    iconBg: "bg-primary/20",
+    hoverText: "group-hover:text-primary",
+  },
+  {
+    href: "/tariff-monitor",
+    emoji: "🔔",
+    title: "Tariff Tracker",
+    subtitle: "Alerts when tariffs change on your products",
+    hoverBg: "hover:bg-primary/10",
+    iconBg: "bg-primary/20",
+    hoverText: "group-hover:text-primary",
+  },
+  {
+    href: "/tariff-audit",
+    emoji: "🧾",
+    title: "Tariff Audit",
+    subtitle: "Find overpaid duty and refunds",
     hoverBg: "hover:bg-primary/10",
     iconBg: "bg-primary/20",
     hoverText: "group-hover:text-primary",
@@ -31,6 +41,15 @@ export const toolLinks = [
     hoverBg: "hover:bg-base-content/10",
     iconBg: "bg-base-content/10",
     hoverText: "group-hover:text-base-content",
+  },
+  {
+    href: "/classifications",
+    emoji: "🎯",
+    title: "Classification Assistant",
+    subtitle: "AI-powered classification assistance",
+    hoverBg: "hover:bg-secondary/10",
+    iconBg: "bg-secondary/20",
+    hoverText: "group-hover:text-secondary",
   },
 ];
 

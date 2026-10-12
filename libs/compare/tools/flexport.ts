@@ -82,7 +82,7 @@ export const FLEXPORT: Tool = {
       },
       {
         title: "Pricing you can see",
-        body: "Flexport doesn't publish a price for Pro. HTS Hero's prices are on its pricing page, every plan is monthly, and annual billing takes 10% off. There's no demo to book and no contract to sign.",
+        body: "Flexport doesn't publish a price for Pro. HTS Hero's prices are on its pricing page, every plan is monthly, and annual billing takes 15% off. There's no demo to book and no contract to sign.",
       },
     ],
     faqs: [

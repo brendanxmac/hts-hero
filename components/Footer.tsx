@@ -72,6 +72,12 @@ const Footer = () => {
                 <Link href="/duty-calculator" className="link link-hover">
                   US Tariff Calculator
                 </Link>
+                <Link href="/tariff-monitor" className="link link-hover">
+                  Tariff Tracker
+                </Link>
+                <Link href="/tariff-audit" className="link link-hover">
+                  Tariff Audit
+                </Link>
                 <Link href="/explore" className="link link-hover">
                   HTS Code Lookup
                 </Link>

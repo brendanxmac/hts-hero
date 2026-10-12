@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import config from "@/config";
 import { renderSchemaJsonLd } from "@/libs/seo";
-import * as ui from "@/components/ui/styles";
-import { THEME } from "@/components/ui/theme";
+import * as mk from "@/components/ui/marketing/styles";
+import { THEME_LIGHT } from "@/components/ui/theme";
 import {
   ClosingCta,
   PRICING_FAQS,
@@ -15,11 +15,11 @@ import {
 export const metadata: Metadata = {
   title: "Pricing — Tariff Calculator, Tariff Tracker & Classify | HTS Hero",
   description:
-    "HTS Hero pricing. Tariff Calculator from $14.99/mo, Tariff Tracker from $49/mo priced by HTS code + country pairs, and Classify from $39/mo. Save 10% with annual billing.",
+    "HTS Hero pricing. The Tariff Calculator is free and unlimited with no account. Tariff Tracker is free for 3 HTS code + country pairs, then from $49/mo. Classify from $39/mo. Save 15% with annual billing.",
   openGraph: {
     title: "HTS Hero Pricing",
     description:
-      "Build your plan: Tariff Calculator, Tariff Tracker and Classify. See your price before you sign up, and save 10% with annual billing.",
+      "The Tariff Calculator is free. Build your Tariff Tracker and Classify plan, see your price before you sign up, and save 15% with annual billing.",
     url: `https://${config.domainName}/pricing-calculator`,
     siteName: "HTS Hero",
     type: "website",
@@ -35,9 +35,9 @@ export default function PricingCalculatorPage({
 }: {
   searchParams: Record<string, string | string[] | undefined>;
 }) {
-  // <main> fills the rest of the window so the layout's scroll container never shows around it
+  // Always light, like the other landing pages; the light theme covers any shared control inside
   return (
-    <main className={`${THEME} w-full flex-1 shrink-0 flex flex-col`}>
+    <main className={`${THEME_LIGHT} ${mk.page} flex w-full flex-1 flex-col`}>
       {renderSchemaJsonLd({
         "@type": "FAQPage",
         mainEntity: PRICING_FAQS.map(({ question, answer }) => ({
@@ -52,12 +52,8 @@ export default function PricingCalculatorPage({
       {/* Plans and the estimator share the billing toggle */}
       <PricingCalculator initial={parseEstimateParams(searchParams)} />
 
-      <div className={ui.band}>
-        <div className={`${ui.container} ${ui.bandPadding} flex flex-col gap-16 sm:gap-20`}>
-          <PricingFaq />
-          <ClosingCta />
-        </div>
-      </div>
+      <PricingFaq />
+      <ClosingCta />
     </main>
   );
 }

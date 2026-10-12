@@ -24,6 +24,20 @@ const themeVars = (mode) => {
   return { ...vars, ...chartVars(mode), colorScheme: mode };
 };
 
+// The Tariff Tracker's palette (palette.tracker), on the same variables
+const trackerVars = (mode) => {
+  const vars = daisyTheming.convertColorFormat(palette.tracker[mode]);
+  Object.keys(vars).forEach((key) => {
+    if (!/^--[a-z0-9]+$/.test(key) || key.startsWith("--rounded") || key.startsWith("--animation")) delete vars[key];
+  });
+  return {
+    ...vars,
+    ...Object.fromEntries(palette.tracker.chart[mode].map((color, i) => [`--chart-${i + 1}`, color])),
+    ...palette.tracker.extra[mode],
+    colorScheme: mode,
+  };
+};
+
 module.exports = plugin(({ addBase }) => {
   addBase({
     ".hts-theme": {
@@ -36,8 +50,35 @@ module.exports = plugin(({ addBase }) => {
     '[data-theme="dark"] .hts-theme': themeVars("dark"),
     "@media (prefers-color-scheme: dark)": {
       ":root:not([data-theme]) .hts-theme": themeVars("dark"),
+      // The Tracker's dark palette, more specific so it wins over the line above
+      ":root:not([data-theme]) .hts-theme.hts-tracker": trackerVars("dark"),
     },
     // Inside another page (explorer, classification): keep that page's background
     ".hts-theme.hts-theme-embedded": { backgroundColor: "transparent" },
+    // Always light, whatever the toggle says: marketing pages, and any themed tool inside one
+    // (the duty calculator on /duty-calculator). Placed last and as specific as the dark rules
+    // above, so it wins over both of them.
+    ":root .hts-theme.hts-theme-light, [data-theme] .hts-theme.hts-theme-light, :root .hts-theme-light .hts-theme, [data-theme] .hts-theme-light .hts-theme":
+      themeVars("light"),
+    // Always dark, on a transparent background: themed text that sits straight on a dark band
+    // (the calculator's results heading and fine print on /duty-calculator). Placed after the
+    // light rule and more specific, so it wins inside a light page too.
+    ":root .hts-theme.hts-theme-dark, :root .hts-theme-light .hts-theme.hts-theme-dark": {
+      ...themeVars("dark"),
+      backgroundColor: "transparent",
+    },
+    // The Tariff Tracker (DESIGN_SYSTEM.md §15): its palette, and softer, rounder panels. Placed
+    // after the rules above and more specific, so it wins inside the Tracker in both modes.
+    ":root .hts-theme.hts-tracker": trackerVars("light"),
+    '[data-theme="dark"] .hts-theme.hts-tracker': trackerVars("dark"),
+    // Inside a page held light (THEME_LIGHT, e.g. the country pages), the Tracker look stays light
+    // too. As specific as the dark rules above and after them, so it wins.
+    ":root .hts-theme-light .hts-theme.hts-tracker, [data-theme] .hts-theme-light .hts-theme.hts-tracker": trackerVars("light"),
+    // A page that follows the site's light/dark setting (.follow-theme): anything inside it held
+    // light (the footer, themed blocks in marketing sections) follows too
+    '[data-theme="dark"] .follow-theme .hts-theme.hts-theme-light, [data-theme="dark"] .follow-theme.hts-theme.hts-theme-light': themeVars("dark"),
+    ".hts-tracker .rounded-lg": { borderRadius: "1.25rem" },
+    // The sidebar is dark in both modes: everything inside it takes the dark palette
+    ".hts-tracker .hts-tracker-on-dark, [data-theme] .hts-tracker .hts-tracker-on-dark": trackerVars("dark"),
   });
 });

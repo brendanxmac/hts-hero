@@ -1,15 +1,34 @@
-import { FaqList } from "@/components/ui/FaqList";
-import { SectionHeader } from "@/components/ui/SectionHeader";
-import * as ui from "@/components/ui/styles";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { SectionIntro } from "@/components/ui/marketing";
+import * as mk from "@/components/ui/marketing/styles";
 import { LINKS } from "../lib/links";
 import { PRICING_FAQS } from "./faqs";
 
-// The page's FAQ, with its header in a sticky left column
+// The page's FAQ as disclosures, with its header in a sticky left column. The text matches the
+// page's FAQPage schema exactly.
 export const PricingFaq = () => (
-  <section id="faq" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
-    <SectionHeader kicker="Questions" title="Pricing questions" className="lg:sticky lg:top-6 lg:self-start">
-      Something else? <a href={LINKS.contact} className={ui.link}>Ask us</a>.
-    </SectionHeader>
-    <FaqList faqs={PRICING_FAQS} />
+  <section id="faq" className={`${mk.band} scroll-mt-6`} aria-labelledby="faq-title">
+    <div className={`${mk.container} grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]`}>
+      <div className="lg:sticky lg:top-24 lg:self-start">
+        <SectionIntro eyebrow="Questions" title="Pricing questions" id="faq-title">
+          Something else?{" "}
+          <a href={LINKS.contact} className={mk.link}>
+            Ask us
+          </a>
+          .
+        </SectionIntro>
+      </div>
+      <div className="flex flex-col gap-3">
+        {PRICING_FAQS.map(({ question, answer }, i) => (
+          <details key={question} open={i === 0} className={`${mk.card} group`}>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 [&::-webkit-details-marker]:hidden">
+              <h3 className="text-lg font-semibold text-slate-900">{question}</h3>
+              <ChevronDownIcon className="h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180" aria-hidden />
+            </summary>
+            <p className={`${mk.body} px-6 pb-6`}>{answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
   </section>
 );

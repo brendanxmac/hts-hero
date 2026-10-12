@@ -64,6 +64,9 @@ const KEY_PAGES = [
   ...COUNTRY_PAGES.map((c) => [`/duty-calculator/${c.slug}`, 0.9]),
   ["/duty-calculator/faq", 0.7],
   ["/duty-calculator/changelog", 0.6],
+  ["/tariff-monitor", 0.9],
+  ["/tariff-audit", 0.9],
+  ["/classify", 0.8],
   ["/pricing-calculator", 0.6],
   ["/explore", 0.5],
 ];
@@ -74,7 +77,6 @@ function priorityOf(path) {
   const key = KEY_PAGES.find(([loc]) => loc === path);
   if (key) return key[1];
   if (path === "/") return 0.9;
-  if (path === "/tariff-tracker") return 0.8;
   if (path === "/compare" || path.startsWith("/compare/")) return 0.8;
   if (path === "/blog") return 0.7;
   if (path.startsWith("/blog/category/") || path.startsWith("/blog/author/")) return 0.4;
@@ -105,6 +107,8 @@ module.exports = {
     "/coverage-checker*",
     // Account pages: nothing for search engines here
     "/signin",
+    // The Tariff Tracker app is noindexed; /tariff-monitor is its page
+    "/tariff-tracker",
     "/sign-out",
     "/reset-password",
     "/settings*",

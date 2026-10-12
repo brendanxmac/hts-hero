@@ -14,6 +14,7 @@ import {
 } from "../../../libs/hts";
 import { htsCodeDigitsOnly, htsCodesEqual, normalizeHtsCode } from "../../../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
+import { recordLookup } from "../../../libs/recent-lookups";
 import { copyToClipboard } from "../../../utilities/data";
 import { calculate } from "../../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../../tariffs/engine-v2/data";
@@ -30,13 +31,12 @@ import {
   buildEstimateInput,
   CALCULATOR_PATH,
   calculatorUrl,
-  estimateSummaryText,
   findTariffElement,
   parseAnswers,
 } from "./estimate";
 import { countOpenQuestions, preferenceImpacts, questionImpacts } from "./questions";
 import { Arrival, calculatorArrival, CalculatorLinkSource, takeCalculatorHandoff } from "./analytics";
-import { formatDate, formatMoney, todayIso, TRANSPORT_MODES } from "./format";
+import { todayIso, TRANSPORT_MODES } from "./format";
 
 // Everything the Tariff Finder knows and can do; the page only lays it out.
 
@@ -45,14 +45,16 @@ export type View = "detailed" | "simple" | "compare";
 // Countries shown side by side, including the main one
 export const MAX_COMPARE = 3;
 
-export const EXAMPLES = [
+export type Example = { code: string; country: string; label: string; origin: string };
+
+// The "Try an example" products, unless the host gives its own (a country page's, all from that country)
+export const EXAMPLES: Example[] = [
   { code: "7326.90.86.88", country: "CN", label: "Steel hardware", origin: "China" },
   { code: "8703.23.01.90", country: "DE", label: "Passenger car", origin: "Germany" },
   { code: "6109.10.00.12", country: "VN", label: "Cotton T-shirts", origin: "Vietnam" },
   { code: "9504.50.00.00", country: "JP", label: "Video game consoles", origin: "Japan" },
   { code: "9506.62.40.80", country: "PK", label: "Soccer balls", origin: "Pakistan" },
 ];
-export type Example = (typeof EXAMPLES)[number];
 
 const VIEW_STORAGE_KEY = "hts-hero-duty-calculator-view";
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -90,6 +92,7 @@ export const useTariffFinder = ({
   initial,
   track: trackAnalytics = true,
   defaultCountry = "CN",
+  examples = EXAMPLES,
 }: {
   path?: string;
   extraParams?: Record<string, string>;
@@ -98,6 +101,7 @@ export const useTariffFinder = ({
   track?: boolean;
   // The country of origin when the address names none (a country page's own country)
   defaultCountry?: string;
+  examples?: Example[];
 } = {}) => {
   const searchParams = useSearchParams();
   const track = (event: MixpanelEvent, props?: Record<string, unknown>) => {
@@ -146,7 +150,7 @@ export const useTariffFinder = ({
     return param === "simple" || param === "compare" ? param : "detailed";
   });
   const [showExplore, setShowExplore] = useState(false);
-  const [copied, setCopied] = useState<"link" | "summary" | null>(null);
+  const [copied, setCopied] = useState(false);
 
   // Remember the preferred view on this device, unless the link specified one
   useEffect(() => {
@@ -313,6 +317,12 @@ export const useTariffFinder = ({
     () => (baseInput ? calculate(AllRules, { ...baseInput, answers }) : null),
     [baseInput, answers]
   );
+  // The same entry before any adjustment (no answers, no trade preference claimed), so the
+  // calculator can show what the adjustments changed
+  const unadjustedResult: CalculationResult | null = useMemo(
+    () => (baseInput ? calculate(AllRules, { ...baseInput, claimedPreference: undefined, answers: {} }) : null),
+    [baseInput]
+  );
 
   // The same entry on every verified date, to show how its duty has changed
   const historyRange = useMemo(() => {
@@ -389,6 +399,17 @@ export const useTariffFinder = ({
       tariff_basis_hts_code: tariffElement.htsno,
       surface: "calculator",
     });
+    // Remembered for the Tracker's "start from your recent lookups" (not a catalog product's own view)
+    if (trackAnalytics && customsValue > 0) {
+      recordLookup({
+        code: htsCodeDigitsOnly(selectedElement.htsno),
+        htsno: selectedElement.htsno,
+        country: country.code,
+        pct: (result.totalDuty / customsValue) * 100,
+      });
+    }
+    // Once per product, like the event; the value it's worked out on doesn't start a new one
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result, selectedElement, country, tariffElement]);
 
   const trackLater = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -484,44 +505,16 @@ export const useTariffFinder = ({
   const comparing = view === "compare" && compareEntries.length > 0;
   const transportLabel = TRANSPORT_MODES.find((m) => m.id === transportMode)?.label ?? "";
 
-  const summaryText = () => {
-    if (!result || !selectedElement || !country) return "";
-    if (comparing) {
-      return [
-        `Duty comparison · HTS ${selectedElement.htsno}`,
-        `Entry ${formatDate(result.asOf)} · ${transportLabel} · Customs value ${formatMoney(customsValue)}`,
-        "",
-        "Country".padEnd(28) + "Total duty".padStart(16) + "Fees".padStart(12) + "Landed cost".padStart(16),
-        ...compareEntries.map(
-          (e) =>
-            e.country.name.slice(0, 26).padEnd(28) +
-            formatMoney(e.result.totalDuty).padStart(16) +
-            formatMoney(e.result.totalFees).padStart(12) +
-            formatMoney(customsValue + e.result.totalDuty + e.result.totalFees).padStart(16)
-        ),
-        "",
-        shareUrl(),
-      ].join("\n");
-    }
-    return estimateSummaryText({
-      result,
-      htsno: selectedElement.htsno,
-      country,
-      customsValue,
-      transportLabel,
-      link: shareUrl(),
-    });
-  };
-
-  const copy = async (kind: "link" | "summary") => {
-    const ok = await copyToClipboard(kind === "link" ? shareUrl() : summaryText());
+  const copyLink = async () => {
+    const ok = await copyToClipboard(shareUrl());
     if (!ok) return;
-    setCopied(kind);
-    setTimeout(() => setCopied(null), 2000);
-    track(
-      kind === "link" ? MixpanelEvent.DUTY_CALCULATOR_SHARE_RESULTS_COPIED : MixpanelEvent.DUTY_CALCULATOR_RESULTS_COPIED,
-      { hts_code: selectedElement?.htsno, country_code: country?.code, is_modal: false }
-    );
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    track(MixpanelEvent.DUTY_CALCULATOR_SHARE_RESULTS_COPIED, {
+      hts_code: selectedElement?.htsno,
+      country_code: country?.code,
+      is_modal: false,
+    });
   };
 
   const selectExample = (example: Example) => {
@@ -605,6 +598,7 @@ export const useTariffFinder = ({
     answer,
     // Results
     result,
+    unadjustedResult,
     impacts,
     preferenceChanges,
     history,
@@ -622,7 +616,8 @@ export const useTariffFinder = ({
     changeView,
     viewCountryDetails,
     copied,
-    copy,
+    copyLink,
+    examples,
     selectExample,
     showExplore,
     openExplore,

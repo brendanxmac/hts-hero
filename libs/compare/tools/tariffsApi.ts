@@ -57,7 +57,7 @@ export const TARIFFS_API: Tool = {
       },
       {
         title: "Starting price",
-        body: "TariffsAPI's Importer plan is $99 a month. HTS Hero's Tariff Calculator plan costs a fraction of that, and Tariff Tracker for catalogs starts lower too. Both companies publish their prices.",
+        body: "TariffsAPI's Importer plan is $99 a month. HTS Hero's Tariff Calculator is free, and Tariff Tracker for catalogs starts lower too. Both companies publish their prices.",
       },
     ],
     faqs: [

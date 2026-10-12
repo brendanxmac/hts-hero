@@ -2,6 +2,7 @@
 
 // The trade preferences (FTAs and preference programs) the entry could claim, as checkboxes of
 // which at most one is checked, each with what claiming it would change
+import React from "react";
 import { CheckRow } from "./CheckRow";
 
 export const PreferenceClaim = ({
@@ -9,11 +10,18 @@ export const PreferenceClaim = ({
   value,
   onChange,
   impacts = {},
+  stable,
+  notes = {},
+  qualifyLink,
 }: {
   options: { symbol: string; name: string }[];
   value: string;
   onChange: (symbol: string) => void;
   impacts?: Record<string, number>;
+  // Rows keep their shape while answering (CheckRow), each with what claiming it does
+  stable?: boolean;
+  notes?: Record<string, React.ReactNode>;
+  qualifyLink?: React.ReactNode;
 }) => (
   <ul className="flex flex-col divide-y divide-base-300">
     {options.map((p) => (
@@ -25,6 +33,9 @@ export const PreferenceClaim = ({
           label={p.name}
           impact={impacts[p.symbol]}
           showNoChange
+          stable={stable}
+          note={notes[p.symbol]}
+          qualifyLink={qualifyLink}
         />
       </li>
     ))}

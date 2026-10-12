@@ -7,7 +7,8 @@ import { TariffFinder } from "../lib/useTariffFinder";
 import { ShareButtons } from "./ShareButtons";
 import { ViewSwitch } from "./ViewSwitch";
 
-// The results' heading: the code, origins, date and transport, with the view switch, any actions
+// The results' heading: the code, origins, date and transport, with the view switch (or the
+// host's own), any actions
 // the host adds (the Tariff Tracker's "Add to catalog") and sharing
 export const ResultsHeader = ({
   f,
@@ -16,10 +17,13 @@ export const ResultsHeader = ({
   country,
   allowCompare = true,
   actions,
+  viewSwitch,
 }: {
   f: TariffFinder;
   allowCompare?: boolean;
   actions?: ReactNode;
+  // In place of the Simple / Detailed / Compare switch (the Tariff Tracker's calculator tabs)
+  viewSwitch?: ReactNode;
   result: NonNullable<TariffFinder["result"]>;
   selectedElement: HtsElement;
   country: NonNullable<TariffFinder["country"]>;
@@ -53,15 +57,15 @@ export const ResultsHeader = ({
         {f.transportLabel}
       </p>
       {/* Which edition of the schedule the numbers come from: freshness people can check */}
-      {f.revisionForDate && (
+      {/* {f.revisionForDate && (
         <p className="mt-0.5 text-xs text-base-content/60">
           Rates from HTS {f.revisionForDate.title}
           {isVerifiedDate(result.asOf) ? ", verified" : ""}
         </p>
-      )}
+      )} */}
     </div>
     <div className="flex flex-wrap sm:flex-nowrap w-full sm:w-auto items-center gap-2">
-      <ViewSwitch f={f} className="basis-full sm:basis-auto" allowCompare={allowCompare} />
+      {viewSwitch ?? <ViewSwitch f={f} className="basis-full sm:basis-auto" allowCompare={allowCompare} />}
       {actions}
       <ShareButtons f={f} />
     </div>

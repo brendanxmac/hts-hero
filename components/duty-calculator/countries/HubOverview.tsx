@@ -1,52 +1,76 @@
-"use client";
-
-import { StackedBar } from "@/components/ui/charts/StackedBar";
-import { CHART_COLORS, FEES_COLOR } from "@/components/ui/theme";
-import * as ui from "@/components/ui/styles";
+import { CountUp } from "@/components/ui/marketing";
+import * as mk from "@/components/ui/marketing/styles";
 import type { HubSummary } from "@/libs/country-pages/allCountries";
 
-// The hub at a glance: four counts and one bar showing how all countries split by the most their
-// goods face.
+// The hub at a glance: four counts (HubStats, in the hero) and one bar showing how all countries
+// split by the most their goods face (HubOverview, beside the key facts).
 
-// Tier colors in the bar's order; "no added tariff" is the neutral last part, like fees elsewhere
-const TIER_COLORS = [CHART_COLORS[2], CHART_COLORS[0], CHART_COLORS[3], CHART_COLORS[1], CHART_COLORS[4]];
-
-export function HubOverview({
-  summary,
-  tiers,
-}: {
-  summary: HubSummary;
-  tiers: { label: string; count: number }[];
-}) {
+export function HubStats({ summary }: { summary: HubSummary }) {
   const stats = [
-    { value: summary.forcedLabor.count, label: "Forced-labor tariff", note: "Section 301, since July 24, 2026" },
-    { value: summary.countrySpecific.length + summary.column2.length, label: "Own tariffs or Column 2 Rates", note: [...summary.countrySpecific.map((r) => r.name), ...summary.column2].join(", ") },
-    { value: summary.withPreferences, label: "Trade agreements", note: "Agreements and preference programs" },
-    { value: summary.none.length, label: "No added tariff", note: "Base rate and Section 232 only" },
+    { value: summary.forcedLabor.count, label: "Forced-labor tariff", note: "Section 301, since July 24, 2026", tone: "text-rose-600" },
+    {
+      value: summary.countrySpecific.length + summary.column2.length,
+      label: "Own tariffs or Column 2 Rates",
+      note: [...summary.countrySpecific.map((r) => r.name), ...summary.column2].join(", "),
+      tone: "text-slate-900",
+    },
+    { value: summary.withPreferences, label: "Trade agreements", note: "Agreements and preference programs", tone: "text-teal-700" },
+    { value: summary.none.length, label: "No added tariff", note: "Base rate and Section 232 only", tone: "text-emerald-600" },
   ];
-  const parts = tiers.map((t, i) => ({
-    label: t.label,
-    amount: t.count,
-    // Chart colors are runtime values from the theme (DESIGN_SYSTEM §10)
-    color: t.label === "No added tariff" ? FEES_COLOR : TIER_COLORS[i % TIER_COLORS.length],
-  }));
+  return (
+    <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2">
+      {stats.map((s) => (
+        <div key={s.label} className={`${mk.card} flex min-w-0 flex-col p-5`}>
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">{s.label}</div>
+          <CountUp to={s.value} className={`mt-2 text-4xl font-bold tracking-tight sm:text-5xl ${s.tone}`} />
+          <div className="mt-1.5 break-words text-sm text-slate-500">{s.note}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Tier colors in the bar's order: own tariffs in rose, forced-labor tiers from deep navy to light
+// teal as the rate falls, and "no added tariff" in neutral slate
+const OWN = "#e11d48";
+const FORCED = ["#0c2a5c", "#115e59", "#0d9488", "#2dd4bf", "#99f6e4"];
+const NONE = "#cbd5e1";
+
+export function HubOverview({ summary, tiers }: { summary: HubSummary; tiers: { label: string; count: number }[] }) {
+  let forced = 0;
+  const parts = tiers
+    .filter((t) => t.count > 0)
+    .map((t) => ({
+      ...t,
+      color: t.label === "No added tariff" ? NONE : t.label.startsWith("Own") ? OWN : FORCED[forced++ % FORCED.length],
+    }));
+  const total = parts.reduce((sum, p) => sum + p.count, 0);
+  const share = (n: number) => `${Math.round((n / total) * 1000) / 10}%`;
+  const countries = (n: number) => `${n} ${n === 1 ? "country" : "countries"}`;
 
   return (
-    <div className={ui.card}>
-      {/* 1px gaps over the border color draw the dividers at every breakpoint */}
-      <div className="grid grid-cols-2 gap-px bg-base-300 border-b border-base-300">
-        {stats.map((s) => (
-          <div key={s.label} className="bg-base-100 p-5">
-            <div className={ui.label}>{s.label}</div>
-            <div className={`${ui.metric.primaryCompact} mt-1.5`}>{s.value}</div>
-            <div className={`${ui.caption} mt-1`}>{s.note}</div>
+    <div className={`${mk.card} flex flex-col gap-5 p-6 sm:p-8`}>
+      <h2 className="text-2xl font-bold tracking-tight text-slate-900">All {summary.total} countries by the most their goods face</h2>
+      {total > 0 && (
+        <>
+          {/* Segment widths and colors are runtime values, set inline */}
+          <div className="flex h-4 w-full gap-0.5 overflow-hidden rounded-full bg-slate-100" aria-hidden>
+            {parts.map((p) => (
+              <div key={p.label} className="h-full min-w-1" style={{ width: `${(p.count / total) * 100}%`, background: p.color }} />
+            ))}
           </div>
-        ))}
-      </div>
-      <div className="flex flex-col gap-3 p-5">
-        <h2 className={ui.cardTitle}>All {summary.total} countries by the most their goods face</h2>
-        <StackedBar parts={parts} formatValue={(n) => `${n} ${n === 1 ? "country" : "countries"}`} size="sm" />
-      </div>
+          <ul className="flex flex-col divide-y divide-slate-100 text-sm tabular-nums">
+            {parts.map((p) => (
+              <li key={p.label} className="flex items-center gap-3 py-2.5">
+                <span className="h-3 w-3 shrink-0 rounded-sm" style={{ background: p.color }} aria-hidden />
+                <span className="min-w-0 flex-1 text-slate-700">{p.label}</span>
+                <span className="font-semibold text-slate-900">{countries(p.count)}</span>
+                <span className="w-12 text-right text-slate-500">{share(p.count)}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }

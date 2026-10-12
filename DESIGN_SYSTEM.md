@@ -329,6 +329,7 @@ Use `<StackedBar parts formatValue size? highlight? onHighlight? />` from `compo
 | `<Switch checked onChange label? labelledBy? />` | On/off for one setting that applies at once (including a product in an estimate). Its knob slides; that's the one movement allowed |
 | `<FaqList faqs openFirst? />` | FAQ disclosures. Text must match the page's `FAQPage` JSON-LD |
 | `<StackedBar parts formatValue size? highlight? onHighlight? />` | Parts of a whole as one bar plus legend |
+| `<LockedPreview title teaser? points? cta note? preview onShown? />` | A feature that needs an account or the Tracker trial: a blurred stand-in, a teaser (a real number where possible) and one call to action |
 
 Feature building blocks worth reusing before writing new ones:
 - `duty-calculator/fields/` (`Field`, `NumberField`, `Segmented`, `CountryField`, `HtsCodeField`)
@@ -356,7 +357,8 @@ These are the only places exact values or inline styles are expected. Keep a sho
 2. **Mono font:** `mono.className` from `components/ui/font.ts`.
 3. **Grid templates:** `grid-cols-[minmax(0,1fr)_20rem]` and similar. Tailwind has no built-in for "fluid + fixed rail". Use rem, not px.
 4. **A width a design depends on** (a dropdown's `min-w-64`, an axis label column). Use a Tailwind step if one exists, otherwise rem.
-5. **Legacy hosts:** `ExploreModal` keeps daisyUI's `modal` around the legacy Explore component, and `RelatedCrossRulingsSection` keeps daisyUI in its non-`bare` branch for the explorer. Both change when those pages migrate.
+5. **Locked previews:** `<LockedPreview>` (`components/ui/LockedPreview.tsx`) blurs a stand-in for a feature the visitor hasn't unlocked (a free account for Duty over time and Analysis, the Tracker trial for premium sections). The user approved the blur for this one job (Oct 2026). The blurred content is always a placeholder, never the real data. Nowhere else.
+6. **Legacy hosts:** `ExploreModal` keeps daisyUI's `modal` around the legacy Explore component, and `RelatedCrossRulingsSection` keeps daisyUI in its non-`bare` branch for the explorer. Both change when those pages migrate.
 
 If you need the same exception twice, it should probably be a helper or a component in `components/ui/`.
 
@@ -436,3 +438,91 @@ About 220 files still use daisyUI component classes and its default purple theme
 - [ ] Looks right in light and dark, at 1440px and 375px
 - [ ] Focus is visible; icon buttons have labels; tables use `<th>`
 - [ ] `npx tsc --noEmit`, `npx eslint` and `npm run tests` are clean
+
+---
+
+## 14. Marketing layer (landing pages)
+
+Landing pages that sell (`/tariff-monitor`, `/tariff-audit`) use a separate, bolder layer in `components/ui/marketing/`. The analytical rules above (flat, quiet, color only for meaning, color-only motion) are right for tools and wrong for persuasion, so these pages follow this section instead. Tools, HTS pages and the app keep §1–13.
+
+The look is the "Command center" direction: **always light**, crisp slate and navy with a **teal** accent, big type, real product visuals, and **dark bands** (`bg-slate-950`) for contrast. It sells the product's accuracy and intelligence: every visual shows real tariff data or a real view of the product.
+
+| Need | Use |
+|---|---|
+| Type, buttons, surfaces, bands | `import * as mk from "@/components/ui/marketing/styles"` (`mk.display`, `mk.h2`, `mk.lead`, `mk.card`, `mk.frame`, `mk.buttonPrimary`, `mk.band`, `mk.bandDark`, …) |
+| Section top | `<SectionIntro eyebrow title id? center? dark?>lead</SectionIntro>` |
+| A tariff program's color (alerts, heat map, map lanes, diagrams) | `PROGRAM["Section 232"]` from `components/ui/marketing/colors.ts`, the same everywhere |
+| Duty heat (light teal to navy) | `heat(pct)` |
+| Numbers that count up | `<CountUp to={…} />` (server renders the final number) |
+| A visual that fades in on scroll | `<Reveal>` (visuals only; never wrap copy) |
+| Something arriving (a new alert) | `<Enter>` |
+| Calculator components inside a landing page | Wrap them in `THEME_LIGHT` so they stay light whatever the toggle says |
+
+Rules:
+- **Light, unless a page opts in to the Tracker's look.** No `dark:` variants. A page in the Tariff Tracker's look wraps in `.follow-theme` (the frame does it per path with `FollowTheme` in `components/ui/marketing/FollowTheme.tsx`, which also adds `hts-theme hts-tracker` and the Tracker fonts; `/duty-calculator` and the country pages do as of Oct 2026). There the `skin:` variants apply: theme tokens (`base-content`, `primary`, `tt-soft`, Sora headings via `--font-tracker-display`) in place of slate and teal, following light and dark. The `mk.*` helpers carry them; hard-coded palette classes need their own. `follow-dark:` remains only for `color-scheme`. The header shows the light/dark toggle on these pages only.
+- **Tailwind palette colors are allowed here** (slate, teal, sky, amber, orange, emerald, rose), plus the hex values in `marketing/colors.ts` for SVG and inline styles. Still no purple or pink.
+- **Motion is allowed**: SVG animation, entrances, count-ups, scroll reveals. Everything that moves stops for `prefers-reduced-motion` (`motion-reduce:hidden` on moving SVG parts; the helpers check it).
+- **SEO stays intact**: copy is server-rendered text (never in images or canvas), one H1, the answer-first definition near the top, FAQPage and product schema, and visuals reserve their space so nothing jumps while loading.
+- **Data honesty**: real engine output wherever possible (the worked example, verified history, changelog). Illustrative numbers are labeled "example" on the page and explained in a comment.
+
+---
+
+## 15. Tracker app layer (the paid dashboard)
+
+`/tariff-tracker` is the product people pay for, so it gets its own layer: **simple, colorful, and always about the money**. Chosen Oct 2026 as "Option D" (the Atlas look with the Command concept's charts and path to lower duty; mockups on the "Tariff Tracker Dashboard Concepts" canvas). It replaces §1–13's flat, quiet analytical look inside the Tracker only; the calculator and SEO pages keep §1–13, landing pages keep §14. Built Oct 2026: the palette is `palette.tracker` in `components/ui/theme/palette.js`, applied by the theme plugin inside `.hts-theme.hts-tracker` on the same variables as everything else (so existing themed components in the Tracker follow it), plus `--tt-*` extras exposed as Tailwind colors (`bg-tt-soft`, `bg-tt-side`, `bg-tt-side-card`, `bg-tt-side-active`, `tt-sky`, `tt-slate`). The sidebar carries `.hts-tracker-on-dark`, which gives it the dark palette in both modes. Class helpers: `import * as tt from "@/components/ui/styles/tracker"` (`panel`, `tile`, `title`, `metric`, `eyebrow(tone)`, `chip(tone)`, `numberChip(tone)`, `button(variant)`, `toggleTrack`/`toggleOption`). Fonts: `trackerSans` (Figtree) and `trackerDisplay` (Sora) in `components/ui/font.ts`. Inside the Tracker, `rounded-lg` panels round to 20px.
+
+### Principles
+
+1. **Tell their story.** The Overview opens with one rotating sentence about the user's own catalog, numbers in colored chips. It rotates through four framings, the most relevant first: just announced ("A Section 232 copper proposal could hit **2 of your products**: about **+$480** per shipment if it passes"), the cost of waiting, what we've done since they joined, and all clear.
+2. **One next step.** Show only the next step that matters and what it's worth, never the whole list. The Overview's next-step card walks four steps: add products → turn on alerts → set product values (finish the ones still on the $10,000 default) → detect savings → audit past entries (coming soon; v1 is catalogs only, to cut onboarding friction).
+3. **Color is meaning.** Cobalt is the user's data, links and the next step; green is money (savings, trial, done); red is an increase or a new change; amber is a heads-up, pending action or a lock.
+4. **Soft and roomy.** Round corners, generous padding, white space.
+5. **Savings are always potential.** Importers may not qualify, or may need a process (certificates of origin, rulings, a supplier move) to lock a saving in. Say "potential savings", "could save", "up to", "may qualify"; never "you save", "will save" or a bare "Save $X". Show the real number, blur only the detail, then offer the trial (§10.5).
+
+### Color (light / dark)
+
+| Role | Light | Dark | Soft tint |
+|---|---|---|---|
+| Ground | `#EEF0F5` | `#08090D` | |
+| Surface (cards) | `#FFFFFF` | `#111319` | |
+| Soft (tiles inside cards) | `#F5F6FA` | `#181B23` | |
+| Border | `#E3E6EE` | `#232733` | |
+| Text | `#0E1220` | `#F1F3F8` | |
+| Muted text | `#5D6475` | `#9298A6` | |
+| Sidebar (always dark) | `#0E1220`, active `#20273D`, card `#1A2033` | `#111319`, active `#1F2431`, card `#1A1E28` | |
+| Cobalt | `#2F49D1` | `#8EA2FF` | 9% / 14% |
+| Green | `#138A5B` | `#34C98B` | 10% / 14% |
+| Red | `#C2412D` | `#FF7D6E` | 9% / 14% |
+| Amber | `#A86A0C` | `#F2B24C` | 10% / 14% |
+| Sky (second series) | `#7CC4F2` | `#5CC3F5` | |
+| Slate (base duty, quiet marks) | `#CDD2E0` | `#3A4154` | |
+
+Soft tints are the role color at the given opacity, for chips and highlight panels. The heat ramp is cobalt alone, faint to deep; empty cells stay Soft.
+
+### Type
+
+Sora (600) for headlines and every big number; Figtree (400–700) for everything else; tabular figures everywhere. Story sentence 38, metrics 26–32, card titles 18, body and rows 14, captions 12–13 muted, eyebrows 11–12 bold with +6% tracking in the role color.
+
+### Shape and space
+
+Radii: hero 28, cards and sidebar 24, tiles 18–20, nav items and inputs 12, buttons and chips full pills. Page gutter and card gaps 16; card padding 28 (hero 36–40); tile padding 18. Buttons and nav items 40–44 tall. Cards have a 1px border and no shadow; only floating things (dialogs, popovers, locked overlays) cast one.
+
+### Components
+
+- **Sidebar:** floating, dark in both modes. Workspace and Intelligence groups; each item has a colored dot and count for what's waiting (red "6 new", green "$6.7k", amber alerts). Plan card at the foot (trial days as 14 segments, payoff line, green button), then the account.
+- **Buttons, one color per intent:** primary = Text fill (dark pill in light mode); money = green; next step = cobalt; secondary = outline pill. At most one green or cobalt button per card.
+- **Chips:** number chips inside sentences; status chips (POTENTIAL green, CHANGED red, PROGRAM cobalt, HEADS-UP amber).
+- **Tariff news tape:** the latest tariff news and newly added tariffs (proposals, HTS revisions, Federal Register, CSMS, court rulings), as pills with a colored dot.
+- **Next-step card:** cobalt tint with a 2px cobalt border, "Your next step · 2 of 5" with a five-segment bar, the step's title, its parts with their status, one cobalt button with the time it takes. Beside it, at most two quiet tiles tease what comes after, with the payoff ("$6,700 already found").
+- **Alert banner:** amber, only when something needs action, e.g. products left untracked after a trial ends. Product counts against the plan are never a regular metric.
+- **Empty state (no products yet):** the ask first (drop a file or paste codes, template and example links), four benefits, picks from the user's recent calculator lookups as toggle cards, then a clearly labeled EXAMPLE dashboard.
+- **Alerts:** soft rows with a round role-colored icon.
+- **Product tiles:** code, status chip, name · origin, sparkline, rate and payoff.
+
+### Charts
+
+Few marks, round ends, no gridlines, no 3D, five series at most; events labelled with colored pills. Savings ring (one green arc on a Soft track: the share of duty that could be saved), rate pulse (a smooth cobalt line with a fill fading from 25% to clear; changes marked green or red with pill labels), exposure heat map (cobalt ramp), origin distribution (round bars with share and count; a Products / Value toggle, Value estimated from the $10,000 default and labeled "est." until the user enters their own values), sparklines in the metric's color.
+
+### Don't
+
+Gradients, glows or decorative blur (two exceptions: a chart's area fill may fade to clear, and blur hides locked values); purple or pink; a new color without a job; gray text below 4.5:1 contrast; shipping a screen without checking light and dark.

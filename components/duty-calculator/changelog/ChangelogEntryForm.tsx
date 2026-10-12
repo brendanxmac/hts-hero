@@ -1,15 +1,34 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, ReactNode, useState } from "react";
 import {
   ChangelogEntryInput,
   ChangelogTypeLabels,
   ChangelogTypes,
 } from "@/libs/supabase/tariff-changelog";
-import * as ui from "@/components/ui/styles";
-import { Field } from "../fields/Field";
+import * as mk from "@/components/ui/marketing/styles";
 
-// The text input's look, grown to fit several lines
+// A labelled control with an optional hint, in the marketing look
+const Field = ({
+  label,
+  htmlFor,
+  hint,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  hint?: ReactNode;
+  children: ReactNode;
+}) => (
+  <div className="flex min-w-0 flex-col gap-2">
+    <label htmlFor={htmlFor} className={mk.fieldLabel}>
+      {label}
+    </label>
+    {children}
+    {hint && <p className="text-xs leading-snug text-slate-500">{hint}</p>}
+  </div>
+);
+
 // The admin's form for adding or editing a changelog entry
 export const ChangelogEntryForm = ({
   initial,
@@ -40,14 +59,14 @@ export const ChangelogEntryForm = ({
   };
 
   return (
-    <form onSubmit={submit} className={`${ui.card} mb-8 flex flex-col gap-4 p-5`}>
+    <form onSubmit={submit} className={`${mk.card} mb-10 flex flex-col gap-5 p-6`}>
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Date" htmlFor="cl-date">
           <input
             id="cl-date"
             type="date"
             required
-            className={ui.input}
+            className={mk.input}
             value={draft.entry_date}
             onChange={(e) => set("entry_date", e.target.value)}
           />
@@ -55,7 +74,7 @@ export const ChangelogEntryForm = ({
         <Field label="Type" htmlFor="cl-type">
           <select
             id="cl-type"
-            className={ui.select}
+            className={`${mk.input} cursor-pointer`}
             value={draft.type}
             onChange={(e) => set("type", e.target.value as ChangelogEntryInput["type"])}
           >
@@ -69,7 +88,7 @@ export const ChangelogEntryForm = ({
         <Field label="Status" htmlFor="cl-status">
           <select
             id="cl-status"
-            className={ui.select}
+            className={`${mk.input} cursor-pointer`}
             value={draft.status}
             onChange={(e) => set("status", e.target.value as ChangelogEntryInput["status"])}
           >
@@ -82,7 +101,7 @@ export const ChangelogEntryForm = ({
         <Field label="HTS revision" htmlFor="cl-revision" hint="e.g. 2026HTSRev7">
           <input
             id="cl-revision"
-            className={ui.input}
+            className={mk.input}
             value={draft.revision ?? ""}
             onChange={(e) => set("revision", e.target.value || null)}
           />
@@ -93,7 +112,7 @@ export const ChangelogEntryForm = ({
           id="cl-title"
           required
           maxLength={120}
-          className={ui.input}
+          className={mk.input}
           value={draft.title}
           onChange={(e) => set("title", e.target.value)}
         />
@@ -103,16 +122,16 @@ export const ChangelogEntryForm = ({
           id="cl-summary"
           required
           rows={3}
-          className={ui.textarea}
+          className={mk.textarea}
           value={draft.summary}
           onChange={(e) => set("summary", e.target.value)}
         />
       </Field>
       <div className="flex justify-end gap-2">
-        <button type="button" className={ui.button({ size: "sm" })} onClick={onCancel} disabled={saving}>
+        <button type="button" className={`${mk.buttonSecondary} h-9 px-4 text-sm`} onClick={onCancel} disabled={saving}>
           Cancel
         </button>
-        <button type="submit" className={ui.button({ variant: "primary", size: "sm" })} disabled={saving}>
+        <button type="submit" className={`${mk.buttonPrimary} h-9 px-4 text-sm disabled:opacity-60`} disabled={saving}>
           {saving ? "Saving…" : "Save"}
         </button>
       </div>

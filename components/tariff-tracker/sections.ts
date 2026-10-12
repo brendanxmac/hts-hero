@@ -7,14 +7,17 @@ import {
   ClockIcon,
   GlobeAltIcon,
   ChatBubbleLeftRightIcon,
+  HomeIcon,
   ReceiptPercentIcon,
   Squares2X2Icon,
 } from "@heroicons/react/20/solid";
 
 // The Tariff Tracker's sections, in sidebar order: tabs on the one /tariff-tracker page, picked
-// with ?tab=. Sections that aren't built yet show what's planned.
+// with ?tab=. Sections that aren't built yet show what's planned. Premium sections need the
+// trial or a paid plan (PRICING.md); the rest are free with an account.
 
 export type SectionSlug =
+  | "overview"
   | "calculator"
   | "catalog"
   | "history"
@@ -35,6 +38,8 @@ export interface TrackerSection {
   title: string;
   summary: string;
   ready: boolean;
+  // Needs the trial or a paid plan
+  premium: boolean;
   // What the section will do, until it's built
   planned: string[];
 }
@@ -42,11 +47,21 @@ export interface TrackerSection {
 export const TRACKER_PATH = "/tariff-tracker";
 
 // The tab with no ?tab=
-export const DEFAULT_SECTION: SectionSlug = "catalog";
+export const DEFAULT_SECTION: SectionSlug = "overview";
 
 const section = (s: TrackerSection) => s;
 
 export const SECTIONS: TrackerSection[] = [
+  section({
+    slug: "overview",
+    label: "Overview",
+    Icon: HomeIcon,
+    title: "Overview",
+    summary: "Your catalog's tariffs at a glance: what you pay, what changed and where to save.",
+    ready: true,
+    premium: false,
+    planned: [],
+  }),
   section({
     slug: "calculator",
     label: "Calculator",
@@ -54,6 +69,7 @@ export const SECTIONS: TrackerSection[] = [
     title: "Calculator",
     summary: "Every duty on one shipment of any product, from any country.",
     ready: true,
+    premium: false,
     planned: [],
   }),
   section({
@@ -63,20 +79,8 @@ export const SECTIONS: TrackerSection[] = [
     title: "Catalog",
     summary: "Every product you import, and the duty rate on it today.",
     ready: true,
+    premium: false,
     planned: [],
-  }),
-  section({
-    slug: "history",
-    label: "Rate history",
-    Icon: ClockIcon,
-    title: "Rate history",
-    summary: "How the rate on each of your products has changed, and why.",
-    ready: false,
-    planned: [
-      "The rate for every product in your catalog on any past date",
-      "A timeline of each change: the program, the HTS revision and the date it took effect",
-      "Any two dates side by side, to see exactly what moved",
-    ],
   }),
   section({
     slug: "alerts",
@@ -84,7 +88,8 @@ export const SECTIONS: TrackerSection[] = [
     Icon: BellAlertIcon,
     title: "Alerts",
     summary: "Know as soon as a tariff change affects one of your products.",
-    ready: false,
+    ready: true,
+    premium: false,
     planned: [
       "An email and an in-app alert whenever a new HTS revision or tariff action changes a rate in your catalog",
       "What changed, which products it hits, and the difference in duty",
@@ -92,16 +97,31 @@ export const SECTIONS: TrackerSection[] = [
     ],
   }),
   section({
-    slug: "entries",
-    label: "Entry audit",
-    Icon: ClipboardDocumentCheckIcon,
-    title: "Entry audit",
-    summary: "Check the duty paid on every shipment against the rates in force that day.",
-    ready: false,
+    slug: "history",
+    label: "Rate history",
+    Icon: ClockIcon,
+    title: "Rate history",
+    summary: "How the rate on each of your products has changed, and why.",
+    ready: true,
+    premium: true,
     planned: [
-      "Log each entry you clear: product, country, entry date, value and the duty you paid",
-      "An instant check against the rates in force on the entry date",
-      "Overpayments you could recover, and underpayments to fix before Customs finds them",
+      "The rate for every product in your catalog on any past date",
+      "A timeline of each change: the program, the HTS revision and the date it took effect",
+      "Any two dates side by side, to see exactly what moved",
+    ],
+  }),
+  section({
+    slug: "savings",
+    label: "Savings",
+    Icon: ReceiptPercentIcon,
+    title: "Savings",
+    summary: "Ways you could pay less duty on the products you already import.",
+    ready: true,
+    premium: true,
+    planned: [
+      "Trade programs your products can claim from the countries they come from",
+      "The lowest-duty countries of origin for every product",
+      "Exemptions worth checking, and the total you could potentially save",
     ],
   }),
   section({
@@ -111,6 +131,7 @@ export const SECTIONS: TrackerSection[] = [
     title: "Sourcing",
     summary: "Find the country with the lowest tariffs for any product.",
     ready: false,
+    premium: true,
     planned: [
       "Every country of origin ranked by total duty for a product, new or already in your catalog",
       "Trade agreements and preference programs that apply to each",
@@ -124,23 +145,11 @@ export const SECTIONS: TrackerSection[] = [
     title: "Trends",
     summary: "How tariffs on your catalog, and across the whole schedule, have moved over time.",
     ready: false,
+    premium: true,
     planned: [
       "Your catalog's average duty rate over time",
       "Your exposure by program (Section 232, 301, 122 and more) and by country",
       "Tariff trends across every HTS code and country, beyond your own products",
-    ],
-  }),
-  section({
-    slug: "savings",
-    label: "Savings",
-    Icon: ReceiptPercentIcon,
-    title: "Savings",
-    summary: "Ways to pay less duty on the products you already import.",
-    ready: false,
-    planned: [
-      "Exemptions and trade preferences your products may qualify for",
-      "The questions whose answers could lower a product's rate",
-      "The total you could save across your catalog",
     ],
   }),
   section({
@@ -150,9 +159,24 @@ export const SECTIONS: TrackerSection[] = [
     title: "Charts",
     summary: "Clear, shareable charts of your tariffs for your team or your audience.",
     ready: false,
+    premium: true,
     planned: [
       "Charts of your rates, history, exposure and savings, ready to share",
       "Links for your team, and images sized for LinkedIn and X",
+    ],
+  }),
+  section({
+    slug: "entries",
+    label: "Entry audit",
+    Icon: ClipboardDocumentCheckIcon,
+    title: "Entry audit",
+    summary: "Check the duty paid on every shipment against the rates in force that day.",
+    ready: false,
+    premium: true,
+    planned: [
+      "Log each entry you clear: product, country, entry date, value and the duty you paid",
+      "An instant check against the rates in force on the entry date",
+      "Overpayments you could recover, and underpayments to fix before Customs finds them",
     ],
   }),
   section({
@@ -162,6 +186,7 @@ export const SECTIONS: TrackerSection[] = [
     title: "Expert help",
     summary: "Work with the HTS Hero team on your tariff strategy.",
     ready: false,
+    premium: true,
     planned: [
       "A review of your catalog by the HTS Hero team",
       "Help confirming you're on the right track, and finding ways to save",
@@ -176,5 +201,4 @@ export const sectionUrl = (slug: SectionSlug) =>
   slug === DEFAULT_SECTION ? TRACKER_PATH : `${TRACKER_PATH}?tab=${slug}`;
 
 // The address of a catalog product's own view
-export const productUrl = (key: string) =>
-  `${TRACKER_PATH}?${DEFAULT_SECTION === "catalog" ? "" : "tab=catalog&"}product=${encodeURIComponent(key)}`;
+export const productUrl = (key: string) => `${TRACKER_PATH}?tab=catalog&product=${encodeURIComponent(key)}`;

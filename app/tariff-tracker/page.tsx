@@ -8,6 +8,8 @@ export const metadata: Metadata = {
     "Track the US tariff rate on every product you import. Paste your HTS codes and countries of origin to see each product's current duty rate, the tariffs behind it, and ways to lower it.",
   // ?tab= variants are the same page
   alternates: { canonical: "/tariff-tracker" },
+  // The app itself has little for search engines; /tariff-monitor is the page that explains it
+  robots: { index: false, follow: true },
 };
 
 export default function TariffTrackerPage() {

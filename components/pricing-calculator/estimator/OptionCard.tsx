@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode } from "react";
-import * as ui from "@/components/ui/styles";
 
 // One choice in a radio group of cards: a title, its price and a line on what it includes
 export const OptionCard = ({
@@ -27,25 +26,25 @@ export const OptionCard = ({
     aria-checked={selected}
     disabled={disabled}
     onClick={onSelect}
-    className={`flex h-full flex-col gap-2 rounded-md border bg-base-100 p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:bg-base-200 ${
-      selected ? "border-primary ring-1 ring-primary" : "border-base-300 hover:border-primary/40"
+    className={`flex h-full flex-col gap-2 rounded-xl border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-60 sm:p-5 ${
+      selected ? "border-teal-500 bg-teal-50 ring-1 ring-teal-500" : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
     }`}
   >
-    <span className="flex w-full items-start justify-between gap-3">
+    <span className="flex w-full flex-wrap items-start justify-between gap-x-3 gap-y-1.5">
       <span className="flex items-center gap-2.5">
         <span
           aria-hidden
-          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-            selected ? "border-primary" : "border-base-content/30"
+          className={`flex h-[1.125rem] w-[1.125rem] shrink-0 items-center justify-center rounded-full border-2 ${
+            selected ? "border-teal-600 bg-white" : "border-slate-300 bg-white"
           }`}
         >
-          {selected && <span className="h-2 w-2 rounded-full bg-primary" />}
+          {selected && <span className="h-2 w-2 rounded-full bg-teal-600" />}
         </span>
-        <span className="text-sm font-semibold text-base-content">{title}</span>
+        <span className="text-base font-semibold text-slate-900">{title}</span>
       </span>
       {badge}
     </span>
-    <span className="pl-6 text-base font-semibold tabular-nums text-base-content">{price}</span>
-    <span className={`${ui.caption} pl-6`}>{detail}</span>
+    <span className="pl-7 text-lg font-bold tabular-nums text-slate-900">{price}</span>
+    <span className="pl-7 text-sm leading-relaxed text-slate-600">{detail}</span>
   </button>
 );

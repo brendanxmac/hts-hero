@@ -1,31 +1,39 @@
 import { Metadata } from "next";
-import { HomePage } from "../components/HomePage";
-import { HomeDirectory } from "../components/HomeDirectory";
-import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
+import { renderSchemaJsonLd } from "@/libs/seo";
+import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import {
+  DEFINITION,
+  HOME_FAQS,
+  HeroTicker,
+  HomeDirectory,
+  HomeFaq,
+  LookupStrip,
+  OfferCta,
+  PricingOverview,
+  ToolShowcase,
+} from "@/components/home";
+import { Testimonials } from "@/components/classify-landing";
+import { monitorFacts } from "@/components/tariff-monitor";
+import { getAuditExample } from "@/libs/tariff-audit-example";
+import { getSavingsExamples } from "@/libs/tariff-savings-example";
+import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
+import * as mk from "@/components/ui/marketing/styles";
+
+// Static, refreshed daily with the tariff data
+export const revalidate = 86400;
+
+const TITLE = "HTS Hero: US Tariff Calculator, Tariff Monitoring & Duty Audits";
+const DESCRIPTION =
+  "Calculate the US duty on any HTS code free, get alerts when tariffs change on your products, and find duty you overpaid. For importers and customs brokers.";
 
 export const metadata: Metadata = {
-  title:
-    "HTS Hero — Produce Audit-Ready HTS Classifications, Fast!",
-  description:
-    "Classify any product correctly in minutes, see the duties and tariffs for any import, and check tariff impact on your imports. Trusted by hundreds of customs brokers, freight forwarders, and manufacturers.",
-  keywords: [
-    "HTS Hero",
-    "US import duty calculator",
-    "HTS classification",
-    "harmonized tariff schedule",
-    "tariff calculator",
-    "us tariff calculator",
-    "customs duty calculator",
-    "HTS code lookup",
-    "import tariff",
-    "trade compliance",
-    "customs broker tools",
-  ],
+  title: TITLE,
+  description: DESCRIPTION,
   openGraph: {
-    title: "HTS Hero — Produce Audit-Ready HTS Classifications, Fast!",
-    description:
-      "Free tools for importers: calculate duties by HTS code, classify products with AI, and check tariff impacts on your imports.",
+    title: "HTS Hero: know every tariff on every import",
+    description: DESCRIPTION,
     url: `https://${config.domainName}`,
     siteName: "HTS Hero",
     type: "website",
@@ -34,31 +42,34 @@ export const metadata: Metadata = {
         url: `https://${config.domainName}/hero-tariffs.png`,
         width: 1200,
         height: 630,
-        alt: "HTS Hero — US Import Duty Simulator & Classification Tools",
+        alt: "HTS Hero tariff software",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HTS Hero — Produce Audit-Ready HTS Classifications, Fast!",
-    description:
-      "Free tools for importers: calculate duties by HTS code, classify products with AI, and check tariff impacts.",
+    title: "HTS Hero: know every tariff on every import",
+    description: DESCRIPTION,
     images: [`https://${config.domainName}/hero-tariffs.png`],
   },
-  alternates: {
-    canonical: "/",
-  },
+  alternates: { canonical: "/" },
 };
 
-export default function Home() {
+export default async function Home() {
+  const facts = monitorFacts();
+  const [{ example }, audit, savings] = await Promise.all([
+    getDutyCalculatorContent(),
+    getAuditExample(),
+    getSavingsExamples(),
+  ]);
+
   return (
-    <>
+    <MarketingLayout>
       {renderSchemaJsonLd({
         "@type": "WebSite",
         name: "HTS Hero",
         url: `https://${config.domainName}`,
-        description:
-          "Classify any product in minutes and see the tariff rate for any import. Trusted by hundreds of customs brokers, freight forwarders, and importers.",
+        description: DEFINITION,
         potentialAction: {
           "@type": "SearchAction",
           target: {
@@ -73,12 +84,39 @@ export default function Home() {
         name: "HTS Hero",
         url: `https://${config.domainName}`,
         logo: `https://${config.domainName}/logo.svg`,
-        description:
-          "Trade compliance tools for US importers — duty calculators, AI classification, and tariff impact analysis.",
+        description: DEFINITION,
       })}
-      <HomePage>
+      {renderSchemaJsonLd({
+        "@type": "WebPage",
+        name: TITLE,
+        url: `https://${config.domainName}`,
+        description: DESCRIPTION,
+        // The tariff data on the page follows the latest verified HTS revision
+        dateModified: getLatestVerifiedRevision().from,
+      })}
+      {renderSchemaJsonLd({
+        "@type": "FAQPage",
+        mainEntity: HOME_FAQS.map(({ question, answer }) => ({
+          "@type": "Question",
+          name: question,
+          acceptedAnswer: { "@type": "Answer", text: answer },
+        })),
+      })}
+      <main className={`${mk.page} w-full flex-1 shrink-0`}>
+        <HeroTicker />
+        <LookupStrip />
+        <ToolShowcase
+          example={example}
+          audit={audit}
+          savings={savings}
+          facts={facts}
+        />
+        <Testimonials />
+        <PricingOverview />
         <HomeDirectory />
-      </HomePage>
-    </>
+        <HomeFaq />
+        <OfferCta />
+      </main>
+    </MarketingLayout>
   );
 }

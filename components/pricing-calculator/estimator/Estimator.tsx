@@ -1,13 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import * as ui from "@/components/ui/styles";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SectionIntro } from "@/components/ui/marketing";
 import {
   Billing,
   CLASSIFY_PLANS,
+  FREE_TRACKED_PAIRS,
   EstimateInput,
-  TARIFF_CALCULATOR_PRICE,
   TRACKER_TIERS,
   estimate,
   formatPrice,
@@ -37,24 +36,24 @@ export const Estimator = ({
   const rate = (listPrice: number) => formatPrice(monthlyRate(listPrice, billing));
 
   return (
-    <section id="estimate" className={ui.section} aria-labelledby="estimate-title">
-      <SectionHeader kicker="Pricing calculator" title="Build your plan" titleId="estimate-title">
-        Turn on the tools you need, tell us the size of your catalog and team,
-        and see exactly what you&apos;ll pay.
-      </SectionHeader>
+    <section id="estimate" className="flex flex-col gap-10 sm:gap-12" aria-labelledby="estimate-title">
+      <SectionIntro eyebrow="Pricing calculator" title="Build your plan" id="estimate-title">
+        The Tariff Calculator is free. Turn on what you need to watch your own
+        products, tell us the size of your catalog and team, and see exactly
+        what you&apos;ll pay.
+      </SectionIntro>
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8">
-        <div className="flex min-w-0 flex-col gap-4">
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-10">
+        <div className="flex min-w-0 flex-col gap-5">
           <ProductCard
             name="Tariff Calculator"
-            summary={`${rate(TARIFF_CALCULATOR_PRICE)}/mo · every duty on an import, line by line`}
-            enabled={input.calculator || input.tracker}
-            includedWith={input.tracker ? "Tariff Tracker" : undefined}
-            onToggle={(calculator) => update({ calculator })}
+            summary="Unlimited lookups, no account · every duty on an import, line by line"
+            enabled
+            fixedLabel="Free for everyone"
           />
           <ProductCard
             name="Tariff Tracker"
-            summary={`From ${rate(TRACKER_TIERS[0].price)}/mo · your catalog, watched for tariff changes`}
+            summary={`Free for ${FREE_TRACKED_PAIRS} pairs, then from ${rate(TRACKER_TIERS[0].price)}/mo · alerts, audits and savings on your catalog`}
             enabled={input.tracker}
             onToggle={(tracker) => update({ tracker })}
           >
@@ -70,7 +69,7 @@ export const Estimator = ({
           </ProductCard>
         </div>
 
-        <div className="lg:sticky lg:top-6">
+        <div className="min-w-0 lg:sticky lg:top-24">
           <EstimateSummary est={est} billing={billing} onBillingChange={onBillingChange} query={query} />
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { ChangelogEntry, formatChangelogDate } from "@/libs/supabase/tariff-changelog";
-import * as ui from "@/components/ui/styles";
+import * as mk from "@/components/ui/marketing/styles";
 import { ChangelogTypeBadge } from "./ChangelogTypeBadge";
 
 // One entry in the full changelog, with the admin's controls under it. Rendered by
@@ -18,28 +18,28 @@ export const ChangelogArticle = ({
   onDelete: () => void;
 }) => (
   <article>
-    <div className="flex flex-wrap items-center gap-2 text-sm text-base-content/60">
+    <div className="flex flex-wrap items-center gap-2 text-sm font-medium tabular-nums text-slate-500">
       <time dateTime={entry.entry_date}>{formatChangelogDate(entry.entry_date)}</time>
       <ChangelogTypeBadge type={entry.type} />
-      {entry.status === "draft" && <span className={ui.badge("warning")}>Draft</span>}
+      {entry.status === "draft" && <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 ring-1 ring-inset ring-amber-200">Draft</span>}
     </div>
-    <h2 className="mt-2 text-lg font-semibold leading-snug text-base-content">{entry.title}</h2>
-    <p className={`${ui.body} mt-1.5`}>{entry.summary}</p>
+    <h2 className="mt-3 text-xl font-semibold leading-snug tracking-tight text-slate-900 sm:text-2xl">{entry.title}</h2>
+    <p className={`${mk.body} mt-2`}>{entry.summary}</p>
     {isAdmin && (
-      <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" className={ui.button({ size: "sm" })} onClick={onEdit}>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button type="button" className={`${mk.buttonSecondary} h-9 px-4 text-sm`} onClick={onEdit}>
           Edit
         </button>
         {entry.status === "draft" ? (
-          <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => onSetStatus("published")}>
+          <button type="button" className={`${mk.buttonPrimary} h-9 px-4 text-sm`} onClick={() => onSetStatus("published")}>
             Publish
           </button>
         ) : (
-          <button type="button" className={ui.button({ size: "sm" })} onClick={() => onSetStatus("draft")}>
+          <button type="button" className={`${mk.buttonSecondary} h-9 px-4 text-sm`} onClick={() => onSetStatus("draft")}>
             Unpublish
           </button>
         )}
-        <button type="button" className={ui.button({ size: "sm" })} onClick={onDelete}>
+        <button type="button" className={`${mk.buttonSecondary} h-9 px-4 text-sm`} onClick={onDelete}>
           Delete
         </button>
       </div>

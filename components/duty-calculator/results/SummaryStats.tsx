@@ -1,4 +1,5 @@
 // Summary figures: total duty and effective rate, fees, duty + fees, landed cost
+import React from "react";
 import * as ui from "@/components/ui/styles";
 import { CalculationResult } from "@/tariffs/engine-v2/types";
 import { formatMoney, formatPct } from "../lib/format";
@@ -7,11 +8,14 @@ export const SummaryStats = ({
   result,
   customsValue,
   standalone,
+  note,
 }: {
   result: CalculationResult;
   customsValue: number;
   // In a card of its own, rather than above the statement
   standalone?: boolean;
+  // Under the total (what the possible adjustments could do)
+  note?: React.ReactNode;
 }) => {
   const effectiveRate =
     customsValue > 0 ? (result.totalDuty / customsValue) * 100 : 0;
@@ -29,6 +33,7 @@ export const SummaryStats = ({
         <div className="tabular-nums mt-2 text-sm text-base-content/70">
           {formatPct(Math.round(effectiveRate * 100) / 100)} effective rate
         </div>
+        {note}
       </div>
       <Stat
         label="Fees"

@@ -1,0 +1,264 @@
+import Link from "next/link";
+import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
+import { QuickLookup } from "../hero/QuickLookup";
+import { CalculationTerminal, CatalogFrame } from "@/components/tariff-monitor";
+import { RecalcTerminal } from "@/components/tariff-audit";
+import { Reveal } from "@/components/ui/marketing";
+import * as mk from "@/components/ui/marketing/styles";
+import {
+  CLASSIFY_PLANS,
+  FREE_TRACKED_PAIRS,
+  TRACKER_TIERS,
+  formatPrice,
+} from "@/components/pricing-calculator/lib/pricing";
+import type { WorkedExample } from "@/libs/duty-calculator-content";
+import type { AuditExample } from "@/libs/tariff-audit-example";
+import type { SavingsExample } from "@/libs/tariff-savings-example";
+import type { MonitorFacts } from "@/components/tariff-monitor/lib/facts";
+import { OFFER } from "../lib/offer";
+import { SavingsFinder } from "../savings/SavingsFinder";
+
+// The four capabilities, one block each, every one with a real visual and its own call to action:
+// calculate (with the lookup), alert, discover savings, audit; then classification. The order
+// follows the hero's scan: changes, savings, audits.
+
+const Points = ({ items, dark }: { items: string[]; dark?: boolean }) => (
+  <ul className="mt-6 flex flex-col gap-3">
+    {items.map((p) => (
+      <li
+        key={p}
+        className={`flex gap-2.5 ${dark ? "text-slate-300" : "text-slate-700"}`}
+      >
+        <CheckIcon
+          className={`mt-1 h-4 w-4 shrink-0 ${dark ? "text-teal-300" : "text-teal-600"}`}
+          aria-hidden
+        />
+        {p}
+      </li>
+    ))}
+  </ul>
+);
+
+const Step = ({
+  n,
+  verb,
+  dark,
+}: {
+  n: string;
+  verb: string;
+  dark?: boolean;
+}) => (
+  <p
+    className={`flex items-center gap-3 text-sm font-bold uppercase tracking-wider ${dark ? "text-teal-300" : "text-teal-700"}`}
+  >
+    <span
+      className={`flex h-7 w-7 items-center justify-center rounded-full text-xs ${dark ? "bg-teal-400 text-slate-950" : "bg-slate-900 text-white"}`}
+    >
+      {n}
+    </span>
+    {verb}
+  </p>
+);
+
+export const ToolShowcase = ({
+  example,
+  audit,
+  savings,
+  facts,
+}: {
+  example: WorkedExample | null;
+  audit: AuditExample | null;
+  savings: SavingsExample[];
+  facts: MonitorFacts;
+}) => (
+  <>
+    {/* Calculate */}
+    <section className={mk.band} aria-labelledby="tool-calc-title">
+      <div
+        className={`${mk.container} grid grid-cols-1 items-center gap-14 lg:grid-cols-2`}
+      >
+        <div>
+          <Step n="1" verb="Calculate" />
+          <h2 id="tool-calc-title" className={`${mk.h2} mt-4`}>
+            The exact duty on any import,{" "}
+            <span className={mk.accent}>line by line.</span>
+          </h2>
+          <p className={`${mk.lead} mt-4`}>
+            Base rate, every Chapter 99 tariff with its legal source,
+            exemptions, trade preferences and fees, for any HTS code and country
+            of origin. Free and unlimited.
+          </p>
+          <div className="mt-8">
+            <QuickLookup />
+          </div>
+        </div>
+        {example && (
+          <Reveal>
+            <CalculationTerminal
+              example={example}
+              revision={facts.latestRevisionTitle}
+            />
+          </Reveal>
+        )}
+      </div>
+    </section>
+
+    {/* Alert */}
+    <section
+      className={`${mk.band} ${mk.bandMuted}`}
+      aria-labelledby="tool-alert-title"
+    >
+      <div
+        className={`${mk.container} grid grid-cols-1 items-center gap-14 lg:grid-cols-2`}
+      >
+        <Reveal className="pb-10 lg:order-1">
+          <CatalogFrame />
+        </Reveal>
+        <div className="lg:order-2">
+          <Step n="2" verb="Alert" />
+          <h2 id="tool-alert-title" className={`${mk.h2} mt-4`}>
+            Hear about every change{" "}
+            <span className={mk.accent}>before it costs you.</span>
+          </h2>
+          <p className={`${mk.lead} mt-4`}>
+            Get notified when new tariffs affect your imports by email, in-app,
+            Slack or Teams.
+          </p>
+          <Points
+            items={[
+              "Filtered to your HTS codes and countries",
+              "The new duty already worked out",
+              `Free for ${FREE_TRACKED_PAIRS} products, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo`,
+            ]}
+          />
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link href={OFFER.href} className={mk.buttonPrimary}>
+              Get Alerts <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            </Link>
+            <Link href="/tariff-monitor" className={mk.link}>
+              How the Tariff Tracker works
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* Discover savings */}
+    {savings.length > 0 && (
+      <section
+        className={`${mk.band} bg-[#0b1220] text-white`}
+        aria-labelledby="tool-savings-title"
+      >
+        <div
+          className={`${mk.container} grid grid-cols-1 items-center gap-14 lg:grid-cols-2`}
+        >
+          <div>
+            <Step n="3" verb="Discover savings" dark />
+            <h2 id="tool-savings-title" className={`${mk.h2Dark} mt-4`}>
+              Pay less duty{" "}
+              <span className={mk.accentDark}>on the same products.</span>
+            </h2>
+            <p className={`${mk.leadDark} mt-4`}>
+              Most savings hide in the products you already import: an exemption
+              nobody claimed, or a trade program left off the entry. HTS Hero
+              checks every product for both, then prices every other country of
+              origin.
+            </p>
+            <Points
+              dark
+              items={[
+                "Exemptions you qualify for but aren't claiming",
+                "Trade programs like USMCA, checked on every product",
+                "Your duty from every other country of origin",
+              ]}
+            />
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link href={OFFER.href} className={mk.buttonOnDark}>
+                Find your savings{" "}
+                <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              </Link>
+              <Link
+                href="/tariff-monitor"
+                className="font-semibold text-teal-300 underline-offset-4 hover:underline"
+              >
+                How the Tariff Tracker works
+              </Link>
+            </div>
+          </div>
+          <Reveal>
+            <SavingsFinder examples={savings} />
+          </Reveal>
+        </div>
+      </section>
+    )}
+
+    {/* Audit */}
+    <section className={mk.band} aria-labelledby="tool-audit-title">
+      <div
+        className={`${mk.container} grid grid-cols-1 items-center gap-14 lg:grid-cols-2`}
+      >
+        <div>
+          <Step n="4" verb="Audit" />
+          <h2 id="tool-audit-title" className={`${mk.h2} mt-4`}>
+            Find the duty you overpaid.{" "}
+            <span className={mk.accent}>Get it back.</span>
+          </h2>
+          <p className={`${mk.lead} mt-4`}>
+            Every past entry recalculated with the rules in force on its entry
+            date: wrong stacking, missed exemptions, and refundable tariffs like
+            IEEPA, flagged for your broker to file.
+          </p>
+          <Points
+            items={[
+              "Paid vs. owed, line by line",
+              "Where IEEPA and Section 122 refunds stand",
+              "Self-audit free for 14 days, or we'll do it for you",
+            ]}
+          />
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link href="/tariff-audit" className={mk.buttonPrimary}>
+              Run a free audit{" "}
+              <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            </Link>
+            <Link href="/tariff-audit#request" className={mk.link}>
+              Request an audit
+            </Link>
+          </div>
+        </div>
+        {audit && (
+          <Reveal>
+            <RecalcTerminal example={audit} />
+          </Reveal>
+        )}
+      </div>
+    </section>
+
+    {/* Classification */}
+    <section
+      className={`${mk.bandMuted} py-16`}
+      aria-labelledby="tool-classify-title"
+    >
+      <div
+        className={`${mk.container} flex flex-col items-start justify-between gap-6 md:flex-row md:items-center`}
+      >
+        <div>
+          <p className={mk.eyebrow}>Need the HTS code first?</p>
+          <h2
+            id="tool-classify-title"
+            className="mt-3 text-3xl font-bold tracking-tight text-slate-900"
+          >
+            Produce audit-ready classifications in minutes
+          </h2>
+          <p className={`${mk.body} mt-2 max-w-2xl`}>
+            Find candidates, eliminate blind spots, and back every code with
+            legal notes and CROSS rulings. From{" "}
+            {formatPrice(CLASSIFY_PLANS.starter.price)}/mo.
+          </p>
+        </div>
+        <Link href="/classify" className={`${mk.buttonSecondary} shrink-0`}>
+          Classify a product <ArrowRightIcon className="h-4 w-4" aria-hidden />
+        </Link>
+      </div>
+    </section>
+  </>
+);

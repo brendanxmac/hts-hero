@@ -2,7 +2,8 @@ import { Metadata } from "next";
 import config from "@/config";
 import { FaqPage } from "@/components/duty-calculator/faq";
 import { dutyCalculatorFaqSections } from "@/components/duty-calculator/guide";
-import { THEME } from "@/components/ui/theme";
+import { THEME_LIGHT } from "@/components/ui/theme";
+import * as mk from "@/components/ui/marketing/styles";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
 
@@ -26,7 +27,7 @@ const revisionTitle = (name: string) => name.replace(/^(\d{4})HTSRev(\d+)$/, "$1
 export default function DutyCalculatorFaqPage() {
   const sections = dutyCalculatorFaqSections(revisionTitle(getLatestVerifiedRevision().name));
   return (
-    <main className={`${THEME} w-full flex-1 shrink-0 flex flex-col`}>
+    <main className={`${THEME_LIGHT} ${mk.page} flex w-full flex-1 flex-col`}>
       {renderSchemaJsonLd({
         "@type": "FAQPage",
         mainEntity: sections

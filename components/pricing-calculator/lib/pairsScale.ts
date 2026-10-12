@@ -1,18 +1,17 @@
-import { TRACKER_TIERS } from "./pricing";
+import { FREE_TRACKED_PAIRS, TRACKER_TIERS } from "./pricing";
 
-// The Tariff Tracker slider gives each tier an equal share of the track, so 1–30 pairs is as
-// easy to set as 100–500. Each stop is [slider position 0–100, pairs].
+// The Tariff Tracker slider gives the free plan and each tier an equal share of the track, so
+// 1–30 pairs is as easy to set as 100–500. Each stop is [slider position 0–100, pairs].
 const LAST_LISTED = TRACKER_TIERS[TRACKER_TIERS.length - 1].maxPairs;
 export const PAIRS_SLIDER_MAX_PAIRS = 1000;
 
+const LIMITS = [FREE_TRACKED_PAIRS, ...TRACKER_TIERS.map((tier) => tier.maxPairs)];
+
 const STOPS: [number, number][] = [
   [0, 1],
-  ...TRACKER_TIERS.map((tier, i): [number, number] => [((i + 1) * 100) / (TRACKER_TIERS.length + 1), tier.maxPairs]),
+  ...LIMITS.map((limit, i): [number, number] => [((i + 1) * 100) / (LIMITS.length + 1), limit]),
   [100, PAIRS_SLIDER_MAX_PAIRS],
 ];
-
-// Where each tier ends on the track, for its marker
-export const TIER_POSITIONS = STOPS.slice(1, -1).map(([position]) => position);
 
 export const pairsAt = (position: number) => {
   const i = Math.max(1, STOPS.findIndex(([p]) => p >= position));

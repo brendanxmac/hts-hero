@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { updateSession } from "@/app/api/supabase/middleware"
 import { canonicalHtsCode } from "@/libs/hts-code"
+import { countryPageBySlug } from "@/libs/country-pages/countries"
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -65,7 +66,25 @@ export async function middleware(req: NextRequest) {
     })
   }
 
-  const response = await updateSession(req)
+  const { response, user } = await updateSession(req)
+
+  // The Tariff Tracker is every account's home: signed-in visitors to the calculator's landing
+  // page, or a country calculator page, go to the Tracker's Calculator tab with whatever they'd
+  // entered (PRICING.md)
+  // A country page counts too, with its country chosen unless the link names one
+  const countryPage = pathname.startsWith("/duty-calculator/")
+    ? countryPageBySlug(pathname.slice("/duty-calculator/".length))
+    : undefined
+  if (user && (pathname === "/duty-calculator" || countryPage)) {
+    const url = req.nextUrl.clone()
+    url.pathname = "/tariff-tracker"
+    url.searchParams.set("tab", "calculator")
+    if (countryPage && !url.searchParams.get("country")) url.searchParams.set("country", countryPage.code)
+    const redirect = NextResponse.redirect(url)
+    // Keep any refreshed session cookies
+    response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie))
+    return redirect
+  }
 
   // Ensure the x-pathname header is preserved in the response
   if (response instanceof NextResponse) {

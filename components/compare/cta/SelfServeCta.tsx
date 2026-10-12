@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 // Straight from the price list: the pricing feature's index also pulls in its client components
-import { TARIFF_CALCULATOR_PRICE, formatPrice } from "@/components/pricing-calculator/lib/pricing";
+import { FREE_TRACKED_PAIRS } from "@/components/pricing-calculator/lib/pricing";
 import * as ui from "@/components/ui/styles";
 
 const PROMISES = [
-  "Free to start, no sign-up: every tariff on your import, line by line",
+  "Free and unlimited, no sign-up: every tariff on your import, line by line",
   "Published prices, monthly plans, no contract",
   "No demo, no sales call, no freight account",
   "Start in about a minute",
@@ -22,7 +22,8 @@ export function SelfServeCta({ title = "Try HTS Hero now. No demo required." }: 
           <h2 className={ui.sectionTitle}>{title}</h2>
           <p className={`${ui.body} max-w-prose`}>
             Enter an HTS code and a country of origin and see the full US duty: the base rate, every Chapter 99 tariff
-            and the fees. When you need unlimited calculations, it&apos;s {formatPrice(TARIFF_CALCULATOR_PRICE)} a month.
+            and the fees. It&apos;s free and unlimited. To watch your own products for tariff changes, the Tariff
+            Tracker is free for {FREE_TRACKED_PAIRS}.
           </p>
           <div className="mt-2 flex flex-wrap gap-3">
             <Link href="/duty-calculator" className={ui.button({ variant: "primary", size: "lg" })}>
