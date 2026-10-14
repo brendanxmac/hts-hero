@@ -1,11 +1,11 @@
-import { MUTED_MARK } from "@/components/ui/theme";
+import { StackedBar } from "@/components/ui/charts/StackedBar";
 import { formatRate } from "../../formatRate";
 import { programColors } from "../../programColors";
 import { RatePart, shortProgram } from "../../report";
 
-// Rates as bars on one scale, each split into its base duty and tariffs, so a lower rate is a
-// shorter bar and what it drops is plain to see. Colors follow the catalog's (programColors), with
-// a legend of every part. Each segment names itself on hover.
+// Rates as bars on one scale (StackedBar's fill), each split into its base duty and tariffs, so a
+// lower rate is a shorter bar and what it drops is plain to see. Each tariff has its color from
+// every other screen (programColors), with a legend of every part; segments name themselves on hover.
 
 export interface RateBar {
   label: string;
@@ -25,19 +25,14 @@ export const RateBars = ({ bars }: { bars: RateBar[] }) => {
             <span className="text-base-content/70">{bar.label}</span>
             <span className="font-semibold tabular-nums text-base-content">{formatRate(bar.pct)}</span>
           </div>
-          {/* Runtime widths and series colors (DESIGN_SYSTEM §10) */}
-          <div className="flex h-3.5 w-full gap-0.5 overflow-hidden rounded-full" style={{ background: MUTED_MARK }}>
-            <div className="flex h-full gap-0.5" style={{ width: `${(bar.pct / max) * 100}%` }}>
-              {bar.parts.map((p) => (
-                <div
-                  key={p.key}
-                  className="h-full min-w-1 first:rounded-l-full last:rounded-r-full"
-                  style={{ width: `${(p.pct / Math.max(bar.pct, 0.01)) * 100}%`, background: colors[p.key] }}
-                  title={`${shortProgram(p.key)}: ${formatRate(p.pct)}`}
-                />
-              ))}
-            </div>
-          </div>
+          <StackedBar
+            parts={bar.parts.map((p) => ({ label: shortProgram(p.key), amount: p.pct, color: colors[p.key] }))}
+            formatValue={formatRate}
+            size="sm"
+            shape="pill"
+            fill={bar.pct / max}
+            legend={false}
+          />
         </div>
       ))}
       <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-base-content/70">

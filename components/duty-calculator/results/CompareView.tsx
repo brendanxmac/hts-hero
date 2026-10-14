@@ -3,7 +3,7 @@
 // Compare: one card per country side by side, the lowest landed cost marked, and a card to add
 // the next country
 import { Country } from "@/constants/countries";
-import { CHART_COLORS } from "@/components/ui/theme";
+import { partColors } from "@/components/ui/charts/partColors";
 import { AddCountryCard } from "./AddCountryCard";
 import { CompareCard } from "./CompareCard";
 import { CompareEntry } from "./compareEntry";
@@ -38,8 +38,7 @@ export const CompareView = ({
   const lowestNames = lowestEntries.map((e) => e.country.name).join(" and ");
   const allTied = lowestEntries.length === entries.length;
 
-  // One color per part of the duty across every card, so a program looks the same wherever it is:
-  // base duty first, then programs in the order they first appear
+  // One color per part of the duty across every card, the same one it has everywhere (partColors)
   const labels = [BASE_SLICE];
   entries.forEach((e) =>
     e.result.lines
@@ -49,7 +48,8 @@ export const CompareView = ({
         if (!labels.includes(label)) labels.push(label);
       }),
   );
-  const colorFor = (label: string) => CHART_COLORS[Math.max(0, labels.indexOf(label)) % CHART_COLORS.length];
+  const colors = partColors(labels);
+  const colorFor = (label: string) => colors[label] ?? colors[BASE_SLICE];
 
   const single = entries.length === 1;
   const canAdd = countries.length < max;

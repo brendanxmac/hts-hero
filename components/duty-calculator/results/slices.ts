@@ -1,5 +1,5 @@
 // Where the money goes: duty and fees split into slices, one per program
-import { CHART_COLORS, FEES_COLOR } from "@/components/ui/theme";
+import { partColors } from "@/components/ui/charts/partColors";
 import { CalculationResult } from "@/tariffs/engine-v2/types";
 import { programName } from "./labels";
 
@@ -14,7 +14,7 @@ export interface Slice {
   color: string;
 }
 
-// Base duty, then one slice per program, then fees
+// Base duty, then one slice per program, then fees, each in its own color everywhere (partColors)
 export const slices = (result: CalculationResult): Slice[] => {
   const byProgram = new Map<string, number>();
   result.lines
@@ -25,13 +25,10 @@ export const slices = (result: CalculationResult): Slice[] => {
         (byProgram.get(sliceForProgram(l.program)) ?? 0) + l.amount,
       ),
     );
+  const colors = partColors([BASE_SLICE, ...Array.from(byProgram.keys()), FEES_SLICE]);
   return [
-    { label: BASE_SLICE, amount: result.base.amount, color: CHART_COLORS[0] },
-    ...Array.from(byProgram).map(([label, amount], i) => ({
-      label,
-      amount,
-      color: CHART_COLORS[(i + 1) % CHART_COLORS.length],
-    })),
-    { label: FEES_SLICE, amount: result.totalFees, color: FEES_COLOR },
+    { label: BASE_SLICE, amount: result.base.amount, color: colors[BASE_SLICE] },
+    ...Array.from(byProgram).map(([label, amount]) => ({ label, amount, color: colors[label] })),
+    { label: FEES_SLICE, amount: result.totalFees, color: colors[FEES_SLICE] },
   ];
 };

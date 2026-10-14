@@ -4,6 +4,7 @@
 // stands against the lowest, what it's made of (one bar, colored the same on every card, and a
 // row per part), the landed cost, and the trade preference to claim. Every line, with its code and
 // legal text, is in the full breakdown.
+import { StackedBar } from "@/components/ui/charts/StackedBar";
 import { TrophyIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { Country } from "@/constants/countries";
 import * as ui from "@/components/ui/styles";
@@ -123,11 +124,13 @@ export const CompareCard = ({
       <div className="flex flex-1 flex-col gap-2.5 px-5 py-4">
         {parts.length > 0 ? (
           <>
-            <div className="flex h-2 overflow-hidden rounded-full bg-base-200" aria-hidden>
-              {parts.map((p) => (
-                <span key={p.label} style={{ width: `${(p.amount / result.totalDuty) * 100}%`, backgroundColor: colorFor(p.label) }} />
-              ))}
-            </div>
+            <StackedBar
+              parts={parts.map((p) => ({ label: p.label, amount: p.amount, color: colorFor(p.label) }))}
+              formatValue={formatMoney}
+              size="xs"
+              shape="pill"
+              legend={false}
+            />
             <ul className="flex flex-col gap-1.5">
               {parts.map((p) => (
                 <li key={p.label} className="flex items-center justify-between gap-3 text-sm">

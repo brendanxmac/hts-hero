@@ -1,3 +1,4 @@
+import { StackedBar } from "@/components/ui/charts/StackedBar";
 import * as tt from "@/components/ui/styles/tracker";
 import { formatMoney, todayIso } from "../../../duty-calculator/lib/format";
 import { addDays } from "../../../../tariffs/engine-v2/history";
@@ -40,17 +41,13 @@ export const DutyCard = ({ product, onOpen }: { product: TrackedProduct; onOpen:
         </div>
       </div>
 
-      {/* Runtime widths and series colors (DESIGN_SYSTEM §10) */}
-      <div className="flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-base-300" aria-hidden>
-        {product.parts.map((p) => (
-          <div
-            key={p.key}
-            className="h-full min-w-1"
-            style={{ width: `${(p.pct / Math.max(product.totalPct, 0.01)) * 100}%`, background: colors[p.key] }}
-            title={`${shortProgram(p.key)}: ${formatRate(p.pct)}`}
-          />
-        ))}
-      </div>
+      <StackedBar
+        parts={product.parts.map((p) => ({ label: shortProgram(p.key), amount: p.pct, color: colors[p.key] }))}
+        formatValue={formatRate}
+        size="sm"
+        shape="pill"
+        legend={false}
+      />
 
       <table className="w-full text-sm tabular-nums">
         <tbody>

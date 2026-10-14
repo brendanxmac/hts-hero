@@ -1,5 +1,6 @@
 "use client";
 
+import { StackedBar } from "@/components/ui/charts/StackedBar";
 import { ArrowRightIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
 import { CalculationResult } from "@/tariffs/engine-v2/types";
@@ -75,12 +76,7 @@ export const AnswerCard = ({
 
       {dutyParts.length > 0 && (
         <div className="flex flex-col gap-3">
-          <div className="flex h-2.5 gap-0.5 overflow-hidden rounded-full" aria-hidden>
-            {dutyParts.map((s) => (
-              // Runtime width and theme chart color (DESIGN_SYSTEM §10)
-              <span key={s.label} className="h-full" style={{ width: `${(s.amount / result.totalDuty) * 100}%`, background: s.color }} />
-            ))}
-          </div>
+          <StackedBar parts={dutyParts} formatValue={formatMoney} size="xs" shape="pill" legend={false} />
           <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-base-content/60">
             {dutyParts.map((s) => (
               <li key={s.label} className="flex items-center gap-1.5">

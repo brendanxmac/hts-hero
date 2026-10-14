@@ -2,6 +2,7 @@
 
 import { AdjustmentsHorizontalIcon, CheckCircleIcon, ChevronRightIcon, LockClosedIcon, SparklesIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
+import { StackedBar } from "@/components/ui/charts/StackedBar";
 import * as ui from "@/components/ui/styles";
 import { adjustmentTags } from "./adjustments";
 import { formatRate } from "./formatRate";
@@ -135,17 +136,14 @@ export const ProductRow = ({
 
         {/* Tariffs: a bar scaled to the highest rate on the list, and the rate of each part */}
         <span className="col-span-2 flex min-w-0 flex-col gap-2 md:order-3 md:col-span-1">
-          <span className="flex h-2.5 w-full overflow-hidden rounded-full bg-base-300" aria-hidden>
-            <span className="flex h-full" style={{ width: `${barWidth}%` }}>
-              {row.parts.map((p) => (
-                <span
-                  key={p.key}
-                  className="h-full"
-                  style={{ width: `${(p.pct / row.totalPct) * 100}%`, background: colors[p.key] }}
-                />
-              ))}
-            </span>
-          </span>
+          <StackedBar
+            parts={row.parts.map((p) => ({ label: shortProgram(p.key), amount: p.pct, color: colors[p.key] }))}
+            formatValue={formatRate}
+            size="xs"
+            shape="pill"
+            fill={barWidth / 100}
+            legend={false}
+          />
           <span className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-base-content/70">
             {row.parts.length === 0 ? (
               <span className="text-base-content/60">Duty free</span>
