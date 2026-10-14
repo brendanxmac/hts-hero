@@ -50,3 +50,14 @@ export const heat = (pct: number | null) => {
   const level = HEAT.find((h) => pct < h.below) ?? HEAT[HEAT.length - 1];
   return `color-mix(in srgb, oklch(var(--p)) ${level.mix}%, transparent)`;
 };
+
+// A sequential ramp for magnitude in one hue (dataviz: one hue, light to dark): step 0 of `steps`
+// is the full primary color, the last the lightest, all opaque (mixed into the surface, so it
+// follows light and dark mode). For tiers of one measure, like rates from highest to lowest.
+export const rampColor = (step: number, steps: number) => {
+  const share = steps <= 1 ? 100 : Math.round(100 - (Math.min(step, steps - 1) / (steps - 1)) * 70);
+  return `color-mix(in srgb, oklch(var(--p)) ${share}%, oklch(var(--b1)))`;
+};
+
+// A neutral, opaque fill for "none" in a chart of parts (no added tariff)
+export const NEUTRAL_FILL = "color-mix(in srgb, oklch(var(--bc)) 16%, oklch(var(--b1)))";

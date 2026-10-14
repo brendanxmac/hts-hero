@@ -2,18 +2,20 @@ import { WorkedExample as WorkedExampleData } from "@/libs/duty-calculator-conte
 import { formatDutyPct, formatSummaryDate } from "@/libs/hts-duty-summary";
 import { mono } from "@/components/ui/font";
 import * as mk from "@/components/ui/marketing/styles";
-import { BASE_DUTY_COLOR, FEES_COLOR, PROGRAM_COLORS } from "@/components/ui/theme";
+import { BASE_LABEL, FEES_LABEL, partColors } from "@/components/ui/charts/partColors";
+import { StackedBar } from "@/components/ui/charts/StackedBar";
 import { formatMoney, formatPct } from "../lib/format";
 
-// One real entry worked through as a receipt: each part of the duty in the calculator's chart
-// colors, then the fees and the total.
+// One real entry worked through as a receipt: each part of the duty in its color from every other
+// chart (partColors), then the fees and the total.
 export const WorkedExample = ({ example, asOf }: { example: WorkedExampleData; asOf: string }) => {
+  const colors = partColors([BASE_LABEL, ...example.lines.map((l) => l.program), FEES_LABEL]);
   const parts = [
-    { label: `Base rate (${example.baseRate})`, amount: example.baseAmount, color: BASE_DUTY_COLOR, code: undefined as string | undefined },
-    ...example.lines.map((l, i) => ({
+    { label: `Base rate (${example.baseRate})`, amount: example.baseAmount, color: colors[BASE_LABEL], code: undefined as string | undefined },
+    ...example.lines.map((l) => ({
       label: `${l.program} (${formatDutyPct(l.ratePct)})`,
       amount: l.amount,
-      color: PROGRAM_COLORS[i % PROGRAM_COLORS.length],
+      color: colors[l.program],
       code: l.code,
     })),
   ];
@@ -30,13 +32,14 @@ export const WorkedExample = ({ example, asOf }: { example: WorkedExampleData; a
         <span className="text-3xl font-bold tracking-tight text-slate-900 skin:text-base-content">{formatMoney(total)}</span>
       </div>
       {/* Where the money goes */}
-      <div className="mt-3 flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-slate-200 skin:bg-base-300" aria-hidden>
-        {[...parts, { label: "Fees", amount: example.totalFees, color: FEES_COLOR, code: undefined }]
-          .filter((p) => p.amount > 0)
-          .map((p) => (
-            <span key={p.label} style={{ width: `${(p.amount / total) * 100}%`, background: p.color }} />
-          ))}
-      </div>
+      <StackedBar
+        className="mt-3"
+        parts={[...parts, { label: "Fees", amount: example.totalFees, color: colors[FEES_LABEL] }]}
+        formatValue={formatMoney}
+        size="sm"
+        shape="pill"
+        legend={false}
+      />
       <table className="mt-4 w-full text-sm tabular-nums text-slate-900 skin:text-base-content">
         <tbody>
           {parts.map((p) => (
@@ -61,7 +64,7 @@ export const WorkedExample = ({ example, asOf }: { example: WorkedExampleData; a
           {example.fees.map((f) => (
             <tr key={f.name} className="border-t border-slate-200 skin:border-base-300">
               <td className="py-2 pr-3 text-slate-600 skin:text-base-content/70">
-                <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: FEES_COLOR }} aria-hidden />
+                <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: colors[FEES_LABEL] }} aria-hidden />
                 {f.name} ({formatPct(f.ratePct)})
               </td>
               <td className="py-2 text-right">{formatMoney(f.amount)}</td>

@@ -6,6 +6,11 @@ import { createContext, ReactNode, useContext, useEffect, useRef, useState } fro
 // widths and text sizes instead of scaling with a viewBox), a fixed height, and margins for the
 // axes. Children draw in SVG with the plot's size from useChart(); `overlay` is HTML laid over
 // the plot (the tooltip). Named for screen readers; give each chart a table view as well.
+//
+// Before it's measured (on the server, and until the page's script runs) nothing is drawn,
+// unless the host gives an `initialWidth`: then the chart is drawn at that width and scaled to fit
+// (a viewBox), so server-rendered pages (marketing, SEO) show it straight away and to crawlers,
+// and it redraws at its real width once measured.
 
 export interface Margin {
   top: number;
@@ -39,9 +44,12 @@ export const ChartFrame = ({
   label,
   overlay,
   onLeave,
+  initialWidth,
   children,
 }: {
   height: number;
+  // Draw at this width (scaled to fit) until the real width is measured: for server rendering
+  initialWidth?: number;
   margin?: Margin;
   // What the chart shows, for screen readers
   label: string;
@@ -57,21 +65,32 @@ export const ChartFrame = ({
     observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
+  // Measured, or the host's starting width until it is
+  const drawn = width || initialWidth || 0;
+  const scaled = !width && Boolean(initialWidth);
   const size: ChartSize = {
-    width,
+    width: drawn,
     height,
     margin,
-    innerWidth: Math.max(0, width - margin.left - margin.right),
+    innerWidth: Math.max(0, drawn - margin.left - margin.right),
     innerHeight: Math.max(0, height - margin.top - margin.bottom),
   };
   return (
     <div ref={ref} className="relative w-full" style={{ height }} onMouseLeave={onLeave}>
-      {width > 0 && (
+      {drawn > 0 && (
         <ChartContext.Provider value={size}>
-          <svg width={width} height={height} role="img" aria-label={label} className="block overflow-visible">
+          <svg
+            width={scaled ? "100%" : drawn}
+            height={height}
+            viewBox={scaled ? `0 0 ${drawn} ${height}` : undefined}
+            preserveAspectRatio={scaled ? "xMinYMid meet" : undefined}
+            role="img"
+            aria-label={label}
+            className="block overflow-visible"
+          >
             <g transform={`translate(${margin.left},${margin.top})`}>{children(size)}</g>
           </svg>
-          {overlay?.(size)}
+          {!scaled && overlay?.(size)}
         </ChartContext.Provider>
       )}
     </div>

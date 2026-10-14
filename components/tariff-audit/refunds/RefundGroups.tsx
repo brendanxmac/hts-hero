@@ -3,7 +3,8 @@ import { ArrowRightIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Reveal, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { REFUND_GROUPS, RefundStatusTone } from "../lib/refundGroups";
-import { RefundTimeline, TIMELINE_EVENTS } from "./RefundTimeline";
+import { RefundTimeline } from "./RefundTimeline";
+import { TIMELINE_EVENTS } from "./timelineEvents";
 
 const STATUS: Record<RefundStatusTone, string> = {
   success: "bg-success/10 text-success ring-success",

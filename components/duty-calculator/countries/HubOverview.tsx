@@ -1,4 +1,6 @@
+import { StackedBar } from "@/components/ui/charts/StackedBar";
 import { CountUp } from "@/components/ui/marketing";
+import { ERROR_MARK, NEUTRAL_FILL, rampColor } from "@/components/ui/theme";
 import * as mk from "@/components/ui/marketing/styles";
 import type { HubSummary } from "@/libs/country-pages/allCountries";
 
@@ -30,20 +32,17 @@ export function HubStats({ summary }: { summary: HubSummary }) {
   );
 }
 
-// Tier colors in the bar's order: own tariffs in rose, forced-labor tiers from deep navy to light
-// teal as the rate falls, and "no added tariff" in neutral slate
-const OWN = "#e11d48";
-const FORCED = ["#0c2a5c", "#115e59", "#0d9488", "#2dd4bf", "#99f6e4"];
-const NONE = "#cbd5e1";
+// Tier colors from the theme, in the bar's order: own tariffs in the error color, the
+// forced-labor tiers one hue from dark to light as the rate falls (a sequential ramp), and "no
+// added tariff" neutral
 
 export function HubOverview({ summary, tiers }: { summary: HubSummary; tiers: { label: string; count: number }[] }) {
-  let forced = 0;
-  const parts = tiers
-    .filter((t) => t.count > 0)
-    .map((t) => ({
-      ...t,
-      color: t.label === "No added tariff" ? NONE : t.label.startsWith("Own") ? OWN : FORCED[forced++ % FORCED.length],
-    }));
+  const shown = tiers.filter((t) => t.count > 0);
+  const forcedTiers = shown.filter((t) => t.label !== "No added tariff" && !t.label.startsWith("Own"));
+  const parts = shown.map((t) => ({
+    ...t,
+    color: t.label === "No added tariff" ? NEUTRAL_FILL : t.label.startsWith("Own") ? ERROR_MARK : rampColor(forcedTiers.indexOf(t), forcedTiers.length),
+  }));
   const total = parts.reduce((sum, p) => sum + p.count, 0);
   const share = (n: number) => `${Math.round((n / total) * 1000) / 10}%`;
   const countries = (n: number) => `${n} ${n === 1 ? "country" : "countries"}`;
@@ -53,12 +52,13 @@ export function HubOverview({ summary, tiers }: { summary: HubSummary; tiers: { 
       <h2 className="text-2xl font-bold tracking-tight text-slate-900">All {summary.total} countries by the most their goods face</h2>
       {total > 0 && (
         <>
-          {/* Segment widths and colors are runtime values, set inline */}
-          <div className="flex h-4 w-full gap-0.5 overflow-hidden rounded-full bg-slate-100" aria-hidden>
-            {parts.map((p) => (
-              <div key={p.label} className="h-full min-w-1" style={{ width: `${(p.count / total) * 100}%`, background: p.color }} />
-            ))}
-          </div>
+          <StackedBar
+            parts={parts.map((p) => ({ label: p.label, amount: p.count, color: p.color }))}
+            formatValue={countries}
+            size="md"
+            shape="pill"
+            legend={false}
+          />
           <ul className="flex flex-col divide-y divide-slate-100 text-sm tabular-nums">
             {parts.map((p) => (
               <li key={p.label} className="flex items-center gap-3 py-2.5">
