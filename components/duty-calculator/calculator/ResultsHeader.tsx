@@ -18,10 +18,7 @@ export const ResultsHeader = ({
   allowCompare = true,
   actions,
   viewSwitch,
-  explain,
 }: {
-  // Before Share: the way to show and hide the plain-English explanation
-  explain?: ReactNode;
   f: TariffFinder;
   allowCompare?: boolean;
   // After Share: the host's main action (Track this import, Add to catalog)
@@ -63,7 +60,6 @@ export const ResultsHeader = ({
     </div>
     <div className="flex flex-wrap sm:flex-nowrap w-full sm:w-auto items-center gap-2">
       {viewSwitch ?? <ViewSwitch f={f} className="basis-full sm:basis-auto" allowCompare={allowCompare} />}
-      {explain}
       <ShareButtons f={f} />
       {actions}
     </div>

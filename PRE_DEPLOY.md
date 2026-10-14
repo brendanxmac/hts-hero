@@ -33,6 +33,23 @@ add new ones as they come up.
 - [ ] **Stripe prices.** Create the products and set
       `STRIPE_TARIFF_TRACKER_<10|30|100|500>_<MONTHLY|ANNUAL>_PRICE_ID`.
 - [ ] **Alert sending job.** Alert settings are saved, but nothing sends alerts yet.
+- [ ] **Apply the migration** `supabase/migrations/tariff_sources.sql` (tariff_source_items,
+      tariff_source_runs) for the tariff source collectors (/tariff-sources admin view).
+- [ ] **Apply the migration** `supabase/migrations/tariff_updates.sql` (tariff_updates, and the
+      sorting/grouping columns on tariff_source_items), after tariff_sources.sql.
+- [ ] **Review tariff updates in production.** /tariff-sources (where updates are reviewed,
+      edited, hidden and regrouped) uses the revision checker's gate, which only opens where
+      `HTS_REVISION_TOOL_ENABLED=true` (local dev). Production's cron fills production's tables, so
+      decide how the review screen reaches them (enable it on production for the admin email, or
+      point local at production).
+- [ ] **Vercel plan allows the 15-minute crons** `/api/cron/tariff-sources` and
+      `/api/cron/tariff-updates` (vercel.json; the second runs up to 5 minutes). Hobby only runs
+      crons daily and rejects the deploy; CBP's CSMS feeds keep only ~3 weeks, so the cron has to
+      keep up.
+- [ ] **Full tariff sources backfill** (added 2026-10-14). Dev starts with a few months
+      (`npm run tariff-sources:collect -- --since 2026-07-01`) so Brendan can look at and play with
+      it first. Once he's happy, backfill to January 2025 (`--since 2025-01-01`; the CSMS archive
+      PDFs and USTR monthly listings cover it) so /tariff-updates launches with the whole history.
 - [ ] **Onboarding email sequence** (plan in ONBOARDING_PLAN.md, worktree
       claude/vibrant-maxwell-5fa15d, awaiting answers).
 

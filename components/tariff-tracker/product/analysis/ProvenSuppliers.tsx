@@ -24,7 +24,8 @@ export const ProvenSuppliers = ({
   rates: OriginRate[];
   basis: RateBasis;
   imports: UsImports | null;
-  selected: string | null;
+  // The shortlist: lit everywhere
+  selected: ReadonlySet<string>;
   onSelect: (code: string) => void;
 }) => {
   if (!imports) return null;
@@ -63,7 +64,7 @@ export const ProvenSuppliers = ({
               const row = imports.byCountry.get(r.country.code)!;
               const trend = row.prior > 0 ? (row.value - row.prior) / row.prior : null;
               return (
-                <Tr key={r.country.code} selected={selected === r.country.code} onClick={() => onSelect(r.country.code)}>
+                <Tr key={r.country.code} selected={selected.has(r.country.code)} onClick={() => onSelect(r.country.code)}>
                   <RowHeader className="text-base-content">
                     <span className="mr-2" aria-hidden>
                       {r.country.flag}

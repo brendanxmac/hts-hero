@@ -21,6 +21,8 @@
     "pull-revision": "npx tsx scripts/hts-revision-diff/pull-revision.ts",
     "pull-batch": "npx tsx scripts/hts-coverage/pull-batch.ts",
     "changelog:draft": "npx tsx scripts/changelog-draft.ts",
+    "tariff-sources:collect": "npx tsx scripts/tariff-sources/collect.ts",
+    "tariff-updates:process": "npx tsx scripts/tariff-updates/process.ts",
     "lists:check": "npx tsx scripts/engine-v2/check-lists.ts",
     "test:revision-diff": "npx tsx testing/hts-revision-diff/run.ts"
   },

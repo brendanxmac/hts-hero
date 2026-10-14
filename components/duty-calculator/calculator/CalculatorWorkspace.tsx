@@ -13,12 +13,10 @@ import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
-import {
-  GatedAnalysis,
-  teaserFor,
-} from "@/components/tariff-tracker/product/analysis/GatedAnalysis";
+import { ComparePanel } from "../compare/ComparePanel";
 import { productFromFinder } from "@/components/tariff-tracker/report";
 import { provenPicks } from "@/components/tariff-tracker/product/analysis/analysis";
+import toast from "react-hot-toast";
 import { Countries } from "@/constants/countries";
 import { CENSUS_NOTICE } from "../lib/census";
 import { formatImportValue, useUsImports } from "../lib/usImports";
@@ -32,7 +30,6 @@ import { ProhibitedNotice } from "../notices/ProhibitedNotice";
 import { VerifiedNotice } from "../notices/VerifiedNotice";
 import { RateHistoryCard } from "../rate-history";
 import {
-  CompareView,
   CostBar,
   NotAppliedPanel,
   PreferenceClaim,
@@ -45,7 +42,6 @@ import { EmptyState } from "./EmptyState";
 import { EntryBar } from "./EntryBar";
 import {
   CheckSavingsLink,
-  CompareBox,
   QUALIFY_TRIAL,
   QualifyHeaderLink,
   QualifyLink,
@@ -130,7 +126,8 @@ export const CalculatorWorkspace = ({
 
   // Kept here, so they survive switching tabs
   const [highlight, setHighlight] = useState<string | null>(null);
-  // The plain-English explanation, shown on request (ExplainToggle) above the totals
+  // The plain-English explanation, shown on request ("Explain this" in the breakdown's heading)
+  // above the totals
   const [explainOpen, setExplainOpen] = useState(false);
   const [linesDetail, setLinesDetail] = useState<LinesDetail>("compact");
   const [adjustmentsRef, adjustmentsTop] = useStickyColumn();
@@ -191,6 +188,23 @@ export const CalculatorWorkspace = ({
     // When Compare opens on a product, or its figures arrive
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, product, imports, pickKey]);
+  // The shortlist is the Compare tab's one selection: the cards show it, every view of Explore
+  // lights it, and selecting a country in any of them adds it (or takes it off). The import's own
+  // origin always stays; the map turns to face the one added last.
+  const shortlist = useMemo(() => new Set(f.countries.map((c) => c.code)), [f.countries]);
+  const [lastAdded, setLastAdded] = useState<string | null>(null);
+  const toggleShortlist = (code: string) => {
+    if (code === country?.code) return;
+    if (shortlist.has(code)) return f.removeCountry(code);
+    const added = Countries.find((c) => c.code === code);
+    if (!added) return;
+    if (f.countries.length >= MAX_COMPARE) {
+      toast(`Your shortlist holds ${MAX_COMPARE} countries. Remove one to add ${added.name}.`);
+      return;
+    }
+    f.changeCountries([...f.countries, added]);
+    setLastAdded(code);
+  };
   // The picked countries still compared, to say why they're there
   const picked = (autoPicked.current.get(pickKey) ?? []).filter((code) => f.countries.some((c) => c.code === code));
   const dutyOf = (code: string | undefined) => f.compareEntries.find((e) => e.country.code === code)?.result.totalDuty;
@@ -334,7 +348,6 @@ export const CalculatorWorkspace = ({
               selectedElement={selectedElement}
               country={country}
               actions={actions}
-              explain={tab === "duty" ? <ExplainToggle open={explainOpen} onToggle={() => setExplainOpen((x) => !x)} /> : undefined}
               viewSwitch={
                 <div className="w-full min-w-0 basis-full sm:w-[28rem] sm:basis-auto">
                   <Segmented
@@ -423,7 +436,9 @@ export const CalculatorWorkspace = ({
                           >
                             Explain this
                           </ArrowLink>
-                        ) : undefined
+                        ) : (
+                          <ExplainToggle open={explainOpen} onToggle={() => setExplainOpen((x) => !x)} />
+                        )
                       }
                       footer={
                         <NotAppliedPanel
@@ -542,39 +557,37 @@ export const CalculatorWorkspace = ({
               </>
             )}
 
-            {tab === "compare" && (
-              <>
-                <CompareBox
-                  conversion={conversion}
+            {tab === "compare" &&
+              (product ? (
+                <ComparePanel
+                  product={product}
+                  page={page}
+                  signedIn={!signedOut}
+                  countries={f.countries}
                   max={MAX_COMPARE}
-                  originsTeaser={
-                    signedOut && product ? teaserFor(product) : null
+                  lastAdded={lastAdded}
+                  onToggle={toggleShortlist}
+                  onAdd={(added) => {
+                    f.changeCountries([...f.countries, added]);
+                    setLastAdded(added.code);
+                  }}
+                  onRemove={f.removeCountry}
+                  onViewDetails={(c, preference) => {
+                    setHistoryOpen(false);
+                    if (preference) f.setPreference(c.code, preference);
+                    f.viewCountryDetails(c);
+                  }}
+                  note={
+                    pickedNote && (
+                      <p className={ui.caption}>
+                        {pickedNote} Source: U.S. Census Bureau. {CENSUS_NOTICE}
+                      </p>
+                    )
                   }
-                >
-                  <CompareView
-                    entries={f.compareEntries}
-                    countries={f.countries}
-                    max={MAX_COMPARE}
-                    onAdd={(added) =>
-                      f.changeCountries([...f.countries, added])
-                    }
-                    customsValue={f.customsValue}
-                    onRemove={f.removeCountry}
-                    onPreferenceChange={f.setPreference}
-                    onViewDetails={(c) => {
-                      setHistoryOpen(false);
-                      f.viewCountryDetails(c);
-                    }}
-                  />
-                  {pickedNote && (
-                    <p className={ui.caption}>
-                      {pickedNote} Source: U.S. Census Bureau. {CENSUS_NOTICE}
-                    </p>
-                  )}
-                </CompareBox>
-                {product && <GatedAnalysis product={product} page={page} />}
-              </>
-            )}
+                />
+              ) : (
+                <div className={`${ui.skeleton} h-96 w-full`} />
+              ))}
           </section>
         </WhyUnlockContext.Provider>
       )}

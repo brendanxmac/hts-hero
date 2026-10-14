@@ -2,13 +2,10 @@
 
 import { useMemo } from "react";
 import * as ui from "@/components/ui/styles";
-import * as tt from "@/components/ui/styles/tracker";
 import { TableStandIn } from "@/components/ui/stand-ins";
-import { useUser } from "@/contexts/UserContext";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { time } from "@/components/ui/charts/kit";
 import { addDays } from "../../../tariffs/engine-v2/history";
-import { useTrackerAccess } from "../access/accessContext";
 import { AccountGate } from "../access/AccountGate";
 import { formatRate } from "../formatRate";
 import { averageRateSeries } from "../insights/catalogHistory";
@@ -22,17 +19,13 @@ import { EmptyOverview } from "./EmptyOverview";
 import { ExposureMap } from "./ExposureMap";
 import { LatestChanges } from "./LatestChanges";
 import { averageRate, changesLastYear, countryCount, dutyPerShipment, dutySeries, monthlyChanges, productsToLookAt } from "./lib/metrics";
-import { buildStories } from "./lib/story";
 import { Metric, MetricTiles } from "./MetricTiles";
 import { NewsTape } from "./NewsTape";
 import { NextStep } from "./NextStep";
 import { OriginDistribution } from "./OriginDistribution";
-import { OverviewHeader } from "./OverviewHeader";
 import { ProductTiles } from "./ProductTiles";
 import { PulseEvent, RatePulse } from "./RatePulse";
-import { ReviewProgress } from "../opportunities/ReviewProgress";
-import { SavingsRing } from "./SavingsRing";
-import { StoryLine } from "./StoryLine";
+import { TariffHealth } from "./TariffHealth";
 
 // The Overview (DESIGN_SYSTEM.md §15): the Tracker's home. A rotating line about the catalog, the
 // path to lower duty on a strip of its own, then the numbers, potential savings, the rate pulse, where the catalog comes
@@ -40,14 +33,15 @@ import { StoryLine } from "./StoryLine";
 // products, the empty overview asks for them.
 
 // The value on a date in a series of steps
+// A cell of a side-by-side row: its panel fills the cell, so the row's panels are one height
+const ROW = "flex flex-col [&>*]:flex-1";
+
 const valueOn = <T extends { date: string }>(series: T[], date: string) => [...series].reverse().find((p) => p.date <= date) ?? series[0];
 
 export const Overview = () => {
   const t = useTracker();
   const nav = useTrackerNav();
   const insights = useInsights();
-  const { signedIn, unlock, unlockLabel } = useTrackerAccess();
-  const { user } = useUser();
   const today = todayIso();
 
   const data = useMemo(() => {
@@ -107,28 +101,17 @@ export const Overview = () => {
     const rise = event((a, b) => a > b);
     const drop = event((a, b) => a < b);
 
-    const stories = buildStories({
-      today,
-      products: t.items.length,
-      dutyUsd: duty,
-      potentialUsd: insights.savingsReady && insights.beyond.ready ? insights.totals.anyUsd + insights.beyond.anyUsd : null,
-      changes: insights.changes,
-      joinedAt: user?.created_at ? user.created_at.slice(0, 10) : null,
-    });
-
     return {
       duty,
-      scopeDuty: dutyPerShipment(insights.products),
       metrics,
       rateSeries,
       yearAgo,
       rise: rise && rise.date ? rise : undefined,
       drop: drop && drop.date && drop.date !== rise?.date ? drop : undefined,
-      stories,
       picks: productsToLookAt(insights.products, insights.savings, insights.changes),
       lastYearChanges: insights.changes.filter((c) => c.date >= yearAgo),
     };
-  }, [t.products, t.items.length, insights, today, user?.created_at]);
+  }, [t.products, t.items.length, insights, today]);
 
   if (t.loading) return <div className={`${ui.skeleton} h-96 w-full`} />;
   if (!t.items.length) return <EmptyOverview />;
@@ -137,49 +120,32 @@ export const Overview = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <OverviewHeader />
+      {/* No visible title: the page opens on the tariff news */}
+      <h1 className="sr-only">Overview</h1>
       <NewsTape />
       <NextStep />
 
-      <section aria-label="This week" className={`${tt.panel} p-6 lg:p-8`}>
-        <StoryLine stories={data.stories} />
-      </section>
+      <TariffHealth />
+      {/* On a plan: what the imports it doesn't cover could add */}
+      <BeyondPlanTeaser compact />
 
       <MetricTiles metrics={data.metrics} />
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
-        <div className="flex flex-col gap-4 xl:col-span-4">
-          {/* Across the whole catalog: what's checked, and what checking the rest could find */}
-          <SavingsRing
-            potential={insights.totals.anyUsd + insights.beyond.anyUsd}
-            duty={data.scopeDuty}
-            ready={insights.savingsReady && insights.beyond.ready}
-            action={
-              signedIn
-                ? { label: "See potential savings", onClick: () => nav.openTab("savings"), money: true }
-                : { label: unlockLabel, onClick: () => unlock("savings"), money: true }
-            }
-          />
-          {/* On a plan: what the imports it doesn't cover could add */}
-          <BeyondPlanTeaser compact />
-          {signedIn && <ReviewProgress action={{ label: "Review savings", onClick: () => nav.openTab("savings") }} />}
-        </div>
-        <div className="xl:col-span-8">
+      {/* Side by side, each row's panels stretch to the taller one, so no gaps open under them */}
+      <div className="grid gap-4 xl:grid-cols-12">
+        <div className={`${ROW} xl:col-span-8`}>
           <RatePulse series={data.rateSeries} from={data.yearAgo} to={today} rise={data.rise} drop={data.drop} />
         </div>
-      </div>
-
-      <div className="grid items-start gap-4 xl:grid-cols-12">
-        <div className="xl:col-span-5">
+        <div className={`${ROW} xl:col-span-4`}>
           <OriginDistribution products={t.products} />
         </div>
-        <div className="xl:col-span-7">
-          <ExposureMap products={t.products} onOpen={open} />
-        </div>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
-        <div className="xl:col-span-5">
+      <div className="grid gap-4 xl:grid-cols-12">
+        <div className={`${ROW} xl:col-span-7`}>
+          <ExposureMap products={t.products} onOpen={open} />
+        </div>
+        <div className={`${ROW} xl:col-span-5`}>
           <AccountGate
             feature="history"
             page="tracker"
@@ -191,12 +157,11 @@ export const Overview = () => {
             <LatestChanges changes={data.lastYearChanges} onOpen={open} onAll={() => nav.openTab("history")} />
           </AccountGate>
         </div>
-        <div className="xl:col-span-7">
-          {data.picks.length > 0 && (
-            <ProductTiles picks={data.picks} histories={insights.histories} onOpen={open} onAll={() => nav.openTab("catalog")} total={t.items.length} />
-          )}
-        </div>
       </div>
+
+      {data.picks.length > 0 && (
+        <ProductTiles picks={data.picks} histories={insights.histories} onOpen={open} onAll={() => nav.openTab("catalog")} total={t.items.length} />
+      )}
     </div>
   );
 };

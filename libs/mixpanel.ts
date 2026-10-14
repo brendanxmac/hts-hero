@@ -94,7 +94,6 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_ANALYSIS_BASIS_CHANGED = "Tariff Tracker Analysis Basis Changed",
   TARIFF_TRACKER_ANALYSIS_ORIGIN_SELECTED = "Tariff Tracker Analysis Origin Selected",
   TARIFF_TRACKER_ANALYSIS_COUNTRIES_CHOSEN = "Tariff Tracker Analysis Countries Chosen",
-  TARIFF_TRACKER_ANALYSIS_SUPPLIERS_FILTERED = "Tariff Tracker Analysis Suppliers Filtered",
   /** Funnel (PRICING.md): a locked feature shown, and its call to action clicked */
   LOCKED_FEATURE_VIEWED = "Locked Feature Viewed",
   LOCKED_FEATURE_CTA_CLICKED = "Locked Feature CTA Clicked",
@@ -112,7 +111,6 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_SETUP_STEP_CLICKED = "Tariff Tracker Setup Step Clicked",
   TARIFF_TRACKER_CATALOG_SYNCED = "Tariff Tracker Catalog Synced",
   TARIFF_TRACKER_ALERTS_SAVED = "Tariff Tracker Alerts Saved",
-  TARIFF_TRACKER_STORY_ROTATED = "Tariff Tracker Story Rotated",
   TARIFF_TRACKER_LOOKUPS_ADDED = "Tariff Tracker Lookups Added",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",

@@ -40,6 +40,7 @@ export function GET() {
 - [US Tariff Calculator](${SITE}/duty-calculator): every duty on an import, line by line, with exemptions and rates by country. Free and unlimited, no account, including duty over time. A free account adds the plain-English why behind every result (why each tariff applies and why others don't) and the duty from every country of origin
 - [Tariff Tracker](${SITE}/tariff-monitor): tariff monitoring and alerts by HTS code and country of origin, by email, in-app, Slack or Microsoft Teams, with rate history, entry audit and savings discovery. Free to start: upload your whole catalog, check ${TRIAL_ALLOWANCE.savingsChecks} imports for savings and get alerts on ${TRIAL_ALLOWANCE.alertImports}, no credit card
 - [Tariff audit](${SITE}/tariff-audit): find overpaid US import duty on past entries, recalculated at each entry date, and where IEEPA, Section 122 and other refunds stand. ${TRIAL_ALLOWANCE.auditChecks} free audit checks with any account, or request one free
+- [Latest US tariff updates](${SITE}/tariff-updates): every new US tariff action from the White House, Federal Register, CBP and USTR, summarized in plain English with its official sources and the stage it has reached, checked every 15 minutes
 - [Duty calculator FAQ](${SITE}/duty-calculator/faq): how US import duty is calculated, the 2026 tariff programs, fees and what's included
 - [HTS Explorer](${SITE}/explore): browse and search the full Harmonized Tariff Schedule
 - [HTS code pages](${SITE}/hts/6109.10.00): duty rates by country for each HTS code

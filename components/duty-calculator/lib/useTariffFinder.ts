@@ -43,7 +43,7 @@ import { todayIso, TRANSPORT_MODES } from "./format";
 export type View = "detailed" | "simple" | "compare";
 
 // Countries shown side by side, including the main one
-export const MAX_COMPARE = 3;
+export const MAX_COMPARE = 4;
 
 export type Example = { code: string; country: string; label: string; origin: string };
 

@@ -18,7 +18,7 @@ import { TariffFinder } from "../lib/useTariffFinder";
 import { useCanSeeWhy } from "./WhyGate";
 
 // The duty breakdown explained in plain English (summarySections), shown on request from the
-// results' heading (ExplainToggle) above the totals: what's owed in one sentence, what you pay line
+// breakdown's heading (ExplainToggle, "Explain this") above the totals: what's owed in one sentence, what you pay line
 // by line beside it, then every other section (exemptions at work, the user's adjustments, what
 // was ruled out, what could change it) as a card of its own, each with a few items and the rest
 // on request. It all takes a free account (the "why" is the product's edge), and isn't rendered
@@ -66,8 +66,9 @@ const Section = ({ title, items, all = false }: { title: string; items: string[]
   );
 };
 
-// The button that shows and hides it, beside Share in the results' heading. Nothing for anyone
-// who can't see the explanation (signed out).
+// "Explain this": the button that shows and hides it, in the Duty Breakdown's heading right of
+// Compact / Detailed. Nothing for anyone who can't see the explanation (signed out: the
+// breakdown's own "Explain this" link opens the pitch).
 export const ExplainToggle = ({ open, onToggle }: { open: boolean; onToggle: () => void }) => {
   const { canSee, loading } = useCanSeeWhy();
   if (loading || !canSee) return null;
@@ -79,7 +80,7 @@ export const ExplainToggle = ({ open, onToggle }: { open: boolean; onToggle: () 
       className={`${ui.button({ variant: open ? "primary" : "secondary", size: "sm" })} shrink-0`}
     >
       <SparklesIcon className="h-4 w-4" aria-hidden />
-      In plain English
+      Explain this
     </button>
   );
 };

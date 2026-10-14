@@ -45,12 +45,17 @@ export const callJson = async <T>(params: {
   schema: Record<string, unknown>
   maxTokens: number
   effort: "low" | "medium" | "high"
+  // CLAUDE_MODEL unless given
+  model?: string
 }): Promise<{ data: T; model: string; usage: ClaudeUsage }> => {
   const anthropic = client()
+  const model = params.model ?? CLAUDE_MODEL
+  // Haiku has no server-side refusal fallback
+  const fallbacksAvailable = !model.startsWith("claude-haiku")
   const request = (withFallback: boolean) =>
     anthropic.beta.messages
       .stream({
-        model: CLAUDE_MODEL,
+        model,
         max_tokens: params.maxTokens,
         thinking: { type: "adaptive" },
         output_config: {
@@ -80,7 +85,7 @@ export const callJson = async <T>(params: {
 
   let message: BetaMessage
   try {
-    message = await request(true)
+    message = await request(fallbacksAvailable)
   } catch (error) {
     if (error instanceof Anthropic.BadRequestError && /fallback/i.test(error.message)) {
       message = await request(false)

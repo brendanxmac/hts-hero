@@ -54,12 +54,15 @@ export const CompareView = ({
   const single = entries.length === 1;
   const canAdd = countries.length < max;
   const cards = entries.length + (canAdd ? 1 : 0);
+  // Up to four across: the shortlist, then the card that adds the next one
   const columns =
-    cards >= 3
-      ? "lg:grid-cols-3 md:grid-cols-2"
-      : cards === 2
-        ? "md:grid-cols-2"
-        : "";
+    cards >= 4
+      ? "md:grid-cols-2 xl:grid-cols-4"
+      : cards === 3
+        ? "md:grid-cols-2 lg:grid-cols-3"
+        : cards === 2
+          ? "md:grid-cols-2"
+          : "";
 
   return (
     <div className={`grid grid-cols-1 ${columns} gap-4 items-stretch`}>

@@ -143,7 +143,7 @@ export const OriginDetail = ({
           ) : (
             <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={add}>
               <PlusIcon className="h-4 w-4" aria-hidden />
-              Add to your imports
+              Add to imports
             </button>
           )}
           <button type="button" className={ui.button({ size: "sm" })} onClick={tryInCalculator}>

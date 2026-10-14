@@ -42,7 +42,8 @@ export const ProductTiles = ({
         All {total.toLocaleString("en-US")} →
       </button>
     </div>
-    <div className="grid gap-4 sm:grid-cols-2">
+    {/* Across the page: as many columns as tiles (up to four), so a row is never left part-empty */}
+    <div className={`grid gap-4 sm:grid-cols-2 ${["xl:grid-cols-1", "xl:grid-cols-2", "xl:grid-cols-3", "xl:grid-cols-4"][Math.min(picks.length, 4) - 1] ?? ""}`}>
       {picks.map(({ product, reason, saving, change }) => {
         const history = histories.get(product.key) ?? [];
         const increase = reason === "increase";

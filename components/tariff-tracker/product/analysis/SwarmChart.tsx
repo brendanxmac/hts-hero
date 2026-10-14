@@ -92,12 +92,13 @@ export const SwarmChart = ({
   onSelect,
   maxPct,
   title = "Every origin, by its rate",
-  description = "Each flag is a country this product could come from. Hover for its tariffs, select one to compare it with yours. Piles hold countries that pay the same rate.",
+  description = "Each flag is a country this product could come from. Hover for its tariffs, select one to add it to your shortlist. Piles hold countries that pay the same rate.",
   footer,
 }: {
   rates: OriginRate[];
   basis: RateBasis;
-  selected: string | null;
+  // The shortlist: lit everywhere
+  selected: ReadonlySet<string>;
   onSelect: (code: string) => void;
   // A fixed top for the scale, so the axis stays put while the rates change (the time-lapse)
   maxPct?: number;
@@ -165,19 +166,21 @@ export const SwarmChart = ({
 
           if (node.kind === "pile") {
             const open = openPile === node.key;
+            // Shortlisted countries inside the pile: it's lit like one of them
+            const picked = node.origins.filter((o) => !o.isOrigin && selected.has(o.country.code));
             return (
               <button
                 key={node.key}
                 type="button"
                 className={`${motionClass} z-10 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${
-                  open || hover === node.key ? "ring-2 ring-primary" : ""
+                  open || hover === node.key ? "ring-2 ring-primary" : picked.length ? "ring-2 ring-success" : ""
                 }`}
                 style={{ ...motion, width: size, height: size }}
                 onClick={() => setOpenPile(open ? null : node.key)}
                 onMouseEnter={() => setHover(node.key)}
                 onMouseLeave={() => setHover(null)}
                 aria-expanded={open}
-                aria-label={`${node.origins.length} countries at ${formatRate(node.pct)}`}
+                aria-label={`${node.origins.length} countries at ${formatRate(node.pct)}${picked.length ? `, including ${picked.map((o) => o.country.name).join(" and ")}` : ""}`}
               >
                 <Mosaic origins={node.origins} size={size} />
                 <span
@@ -192,8 +195,8 @@ export const SwarmChart = ({
                     role="tooltip"
                     className={`${ui.tooltip} absolute bottom-full left-1/2 z-40 mb-2 -translate-x-1/2 whitespace-nowrap px-2 py-1 text-xs`}
                   >
-                    <span className="font-semibold">{node.origins.length} countries</span> at {formatRate(node.pct)} ·
-                    select to see them
+                    <span className="font-semibold">{node.origins.length} countries</span> at {formatRate(node.pct)}
+                    {picked.length > 0 && <> · incl. {picked.map((o) => o.country.name).join(", ")}</>} · select to see them
                   </span>
                 )}
               </button>
@@ -202,7 +205,7 @@ export const SwarmChart = ({
 
           const o = node.origin;
           const code = o.country.code;
-          const isSelected = selected === code;
+          const isSelected = selected.has(code);
           const ring = o.isOrigin
             ? "ring-2 ring-primary"
             : isSelected
@@ -253,7 +256,7 @@ export const SwarmChart = ({
                 <button
                   type="button"
                   className={`flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-sm transition-colors hover:bg-base-100 ${
-                    selected === o.country.code ? "bg-base-100 font-semibold text-success" : "text-base-content/80"
+                    selected.has(o.country.code) ? "bg-base-100 font-semibold text-success" : "text-base-content/80"
                   }`}
                   onClick={() => onSelect(o.country.code)}
                 >

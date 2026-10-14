@@ -11,7 +11,7 @@
 export { ChartFrame, DEFAULT_MARGIN, useChart } from "./ChartFrame";
 export type { ChartSize, Margin } from "./ChartFrame";
 export { BottomAxis, ValueAxis } from "./Axis";
-export { Bar, Baseline, Dot, GroupedBars, StepArea, StepLine } from "./marks";
+export { Bar, Baseline, Dot, GroupedBars, StepArea, StepBand, StepLine } from "./marks";
 export { Crosshair, HitArea, nearestIndex, Tooltip, TooltipRow, useHovered } from "./hover";
 export { TimeStepChart } from "./TimeStepChart";
 export type { Step } from "./TimeStepChart";

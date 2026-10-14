@@ -13,7 +13,7 @@ import { TariffFinder } from "../lib/useTariffFinder";
 // The duty lines as one tight row each, or with their program, dates and legal text
 export type LinesDetail = "compact" | "full";
 
-// Each duty and fee on the entry, in a card with a Compact / Full toggle
+// Each duty and fee on the entry, in a card with a Compact / Detailed toggle
 export const DutyBreakdown = ({
   result,
   customsValue,
@@ -37,11 +37,12 @@ export const DutyBreakdown = ({
   highlight: string | null;
   onHighlight: (label: string | null) => void;
   linesDetail: LinesDetail;
-  // Without it, no Compact / Full toggle (visitors get the one, full view)
+  // Without it, no Compact / Detailed toggle (visitors get the one, detailed view)
   onLinesDetailChange?: (detail: LinesDetail) => void;
   // Inside the card, between its heading and the lines (In plain English)
   summary?: ReactNode;
-  // In the heading, beside Compact / Full (the calculator's "Explain this", signed out)
+  // In the heading, right of Compact / Detailed: "Explain this" (the plain-English explanation,
+  // or the pitch for it signed out)
   headerAction?: ReactNode;
   // Inside the card, under the lines (the headings checked but not applied)
   footer?: ReactNode;
@@ -71,20 +72,20 @@ export const DutyBreakdown = ({
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-        {headerAction}
         {onLinesDetailChange && (
           <SegmentedControl<LinesDetail>
             label="Line detail"
             size="sm"
             options={[
               { id: "compact", label: "Compact" },
-              { id: "full", label: "Full" },
+              { id: "full", label: "Detailed" },
             ] as const}
             value={linesDetail}
             onChange={onLinesDetailChange}
             tone="accent"
           />
         )}
+        {headerAction}
         </div>
       </div>
     </div>

@@ -1,8 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
 import { SparklesIcon } from "@heroicons/react/20/solid";
-import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { HistorySegment } from "@/tariffs/engine-v2/history";
 import { formatDate, formatPct } from "../lib/format";
@@ -18,7 +16,7 @@ import { useConversion } from "./ConversionDialog";
 //   atop it, in the Tracker) and a link on each row that could save
 // - Duty Over Time: the history (free) / any past date in full (account) / past entries checked
 //   for refunds in bulk (Tracker), the last from a button in the card's heading
-// - Compare: up to 3 origins (free) / every origin ranked (account) / cheaper origins across the
+// - Compare: a shortlist of up to 4 origins (free) / every origin ranked (account) / cheaper origins across the
 //   catalog (Tracker)
 
 type Conversion = ReturnType<typeof useConversion>;
@@ -86,66 +84,5 @@ export const RefundsButton = ({ conversion, history, customsValue: _customsValue
         Check my entries for refunds or issues
       </button>
     </div>
-  );
-};
-
-// The Compare tab's card: what the tab does and the next step up in its heading, "Get Advanced
-// Comparisons" (every origin ranked, signed out; cheaper origins across the catalog, signed in),
-// the comparison inside
-export const CompareBox = ({
-  conversion,
-  max,
-  originsTeaser,
-  children,
-}: {
-  conversion: Conversion;
-  max: number;
-  // How many origins pay less, without saying which (the Analysis' own teaser)
-  originsTeaser: string | null;
-  children: ReactNode;
-}) => {
-  return (
-    // Overflow visible, for the compare cards' trade program dropdowns
-    <section className={`${ui.cardOverflowVisible} flex flex-col gap-4 p-5`} aria-labelledby="compare-title">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <h3 id="compare-title" className={ui.cardTitle}>
-            Compare Origins
-          </h3>
-          <p className={`${ui.caption} mt-0.5`}>
-            {originsTeaser ?? `This import from up to ${max} countries side by side, with duty, fees and landed cost.`}
-          </p>
-        </div>
-        {!conversion.signedIn ? (
-          <ArrowLink
-            onClick={() =>
-              conversion.openAccount(
-                {
-                  title: "Get advanced comparisons, free",
-                  body: "Create a free account to see this import's duty from every country of origin, ranked, with the trade agreements that could lower it. It takes less than 30 seconds.",
-                  cta: "Create my free account",
-                },
-                "compare-header",
-              )
-            }
-          >
-            Get Advanced Comparisons
-          </ArrowLink>
-        ) : (
-          <ArrowLink
-            onClick={() =>
-              conversion.openTrial("sourcing", {
-                title: "Get advanced comparisons for everything you import",
-                subtitle: "See which countries could cut the duty on each of your products, and the trade agreements that could lower it further.",
-                cta: "Find cheaper origins",
-              })
-            }
-          >
-            Get Advanced Comparisons
-          </ArrowLink>
-        )}
-      </div>
-      {children}
-    </section>
   );
 };

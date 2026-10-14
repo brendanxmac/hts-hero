@@ -37,6 +37,20 @@ async function getHtsCodes() {
   return { codes, revisionDate: revision.created_at };
 }
 
+// Published tariff updates (/tariff-updates/[slug]), each with its latest activity. Pages added
+// after a build are found through the list page and its RSS feed until the next build.
+async function getTariffUpdates() {
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const { data, error } = await supabase
+    .from("tariff_updates")
+    .select("slug, last_activity_at")
+    .eq("status", "published")
+    .order("last_activity_at", { ascending: false })
+    .limit(5000);
+  if (error) throw new Error(`Failed to get tariff updates: ${error.message}`);
+  return data;
+}
+
 // Each blog post's last update, from its frontmatter
 let postDates = null;
 function blogPostDates() {
@@ -66,6 +80,7 @@ const KEY_PAGES = [
   ["/duty-calculator/changelog", 0.6],
   ["/tariff-monitor", 0.9],
   ["/tariff-audit", 0.9],
+  ["/tariff-updates", 0.9],
   ["/classify", 0.8],
   ["/pricing-calculator", 0.6],
   ["/explore", 0.5],
@@ -81,6 +96,7 @@ function priorityOf(path) {
   if (path === "/blog") return 0.7;
   if (path.startsWith("/blog/category/") || path.startsWith("/blog/author/")) return 0.4;
   if (path.startsWith("/blog/")) return 0.7;
+  if (path.startsWith("/tariff-updates/")) return 0.6;
   if (path.startsWith("/hts/")) return 0.5;
   if (["/tos", "/privacy-policy"].includes(path)) return 0.2;
   return 0.6;
@@ -114,6 +130,7 @@ module.exports = {
     "/settings*",
     // Feeds and machine-readable files aren't pages
     "/blog/feed.xml",
+    "/tariff-updates/feed.xml",
     "/llms.txt",
     // Retired or stale: the Tariff Impact Checker (being sunset; its tool stays up for existing
     // users), the old tariff coverage and pending-announcement pages, and /about/tariffs, which
@@ -132,10 +149,17 @@ module.exports = {
   // want found are listed here: above all the calculator, which this whole sitemap supports
   additionalPaths: async (config) => {
     const { codes, revisionDate } = await getHtsCodes();
+    const updates = await getTariffUpdates();
     const lastmod = new Date(revisionDate).toISOString();
     const pages = KEY_PAGES.map(([loc]) => ({ loc, changefreq: config.changefreq, priority: priorityOf(loc) }));
     return [
       ...pages,
+      ...updates.map((u) => ({
+        loc: `/tariff-updates/${u.slug}`,
+        changefreq: "weekly",
+        priority: priorityOf(`/tariff-updates/${u.slug}`),
+        lastmod: new Date(u.last_activity_at).toISOString(),
+      })),
       ...codes.map((code) => ({
         loc: `/hts/${code}`,
         changefreq: "monthly",

@@ -3,6 +3,14 @@
     {
       "path": "/api/cron/check-trials",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/tariff-sources",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/tariff-updates",
+      "schedule": "5,20,35,50 * * * *"
     }
   ]
 }

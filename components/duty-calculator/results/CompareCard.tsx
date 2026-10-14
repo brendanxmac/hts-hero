@@ -78,9 +78,10 @@ export const CompareCard = ({
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           {isLowest && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
+            // Short, so four cards across still show the name; the line under the total says what it means
+            <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-1 text-xs font-semibold text-success" title="Lowest landed cost">
               <TrophyIcon className="h-3.5 w-3.5" aria-hidden />
-              Lowest cost
+              Lowest
             </span>
           )}
           {/* The last country can't be removed here; it's the one being estimated */}

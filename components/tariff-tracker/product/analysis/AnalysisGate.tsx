@@ -7,9 +7,8 @@ import { useUser } from "@/contexts/UserContext";
 import { AccountGate } from "../../access/AccountGate";
 import { TrackedProduct } from "../../report";
 import { analysisFacts, originRates } from "./analysis";
-import { AnalysisTab } from "./AnalysisTab";
 
-// The Analysis, which needs a free account (PRICING.md). Signed out, the teaser is worked out
+// Compare's view of every origin needs a free account (PRICING.md). Signed out, the teaser is worked out
 // from the product itself: how many origins pay less, without saying which.
 export const teaserFor = (product: TrackedProduct) => {
   const rates = originRates(product);
@@ -60,7 +59,10 @@ const pitchFor = (product: TrackedProduct, imports: UsImports | null): { teaser:
   };
 };
 
-export const GatedAnalysis = ({ product, page }: { product: TrackedProduct; page: string }) => {
+// The account gate over the parts of Compare that cover every origin (the full list, the map,
+// the insights): signed out, the real content blurred under the pitch, worked out from the
+// product itself
+export const AnalysisGate = ({ product, page, children }: { product: TrackedProduct; page: string; children: ReactNode }) => {
   const { user, isLoading } = useUser();
   const imports = useUsImports(user || isLoading ? undefined : product.entry.element.htsno);
   const pitch = useMemo(() => (user || isLoading ? null : pitchFor(product, imports)), [user, isLoading, product, imports]);
@@ -71,11 +73,11 @@ export const GatedAnalysis = ({ product, page }: { product: TrackedProduct; page
       title="Get Advanced Comparisons, 100% Free"
       teaser={pitch?.teaser}
       points={pitch?.points ?? []}
-      // The real Analysis, blurred: what they'd unlock is the best pitch for it
-      preview={<AnalysisTab product={product} />}
+      // The real content, blurred: what they'd unlock is the best pitch for it
+      preview={children}
       minHeight="min-h-[30rem]"
     >
-      <AnalysisTab product={product} />
+      {children}
     </AccountGate>
   );
 };

@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
 import { useTrackerAccess } from "../access/accessContext";
+import { useAlertSettings } from "../alerts/AlertSettingsContext";
 import { useInsights } from "../insights/InsightsContext";
 import { wholeDollars } from "../insights/teasers";
 import { useTrackerNav } from "../shell/TrackerNav";
@@ -11,35 +12,9 @@ import { useTracker } from "../TrackerContext";
 import { pathSteps, Step, StepId } from "./lib/steps";
 import { readSeenSections } from "./seenSections";
 
-// The path to lower duty, as a slim strip of its own under the story (DESIGN_SYSTEM.md §15): the
-// next step up front with what it's worth and one button, then the whole path as a checklist, each
-// step still to do saying what it would show and opening it in one click.
-
-const R = 20;
-const C = 2 * Math.PI * R;
-
-// How much of the path is done, as a ring with the count inside
-const ProgressRing = ({ done, total }: { done: number; total: number }) => (
-  <div className="relative h-14 w-14 shrink-0" aria-label={`${done} of ${total} steps done`} role="img">
-    <svg viewBox="0 0 48 48" className="h-full w-full -rotate-90" aria-hidden>
-      <circle cx="24" cy="24" r={R} fill="none" strokeWidth="5" className="stroke-base-300" />
-      <circle
-        cx="24"
-        cy="24"
-        r={R}
-        fill="none"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeDasharray={C}
-        strokeDashoffset={C * (1 - done / Math.max(total, 1))}
-        className="stroke-primary transition-[stroke-dashoffset] duration-700"
-      />
-    </svg>
-    <span className={`${tt.display} absolute inset-0 flex items-center justify-center text-sm font-semibold tabular-nums text-base-content`}>
-      {done}/{total}
-    </span>
-  </div>
-);
+// The path to lower duty, as one slim row under the news (DESIGN_SYSTEM.md §15): the whole path
+// as a small track beside "Your next step" (each step still to do opens in a click), the next
+// step's title and what it's worth on one line, and one button.
 
 interface StepContent {
   title: string;
@@ -51,7 +26,8 @@ interface StepContent {
 }
 
 export const NextStep = () => {
-  const { items, products } = useTracker();
+  const { items, products, trackedKeys } = useTracker();
+  const alerts = useAlertSettings();
   const insights = useInsights();
   const { signedIn, paid, access, savingsLeft, auditsLeft, unlock, unlockLabel } = useTrackerAccess();
   const nav = useTrackerNav();
@@ -62,6 +38,7 @@ export const NextStep = () => {
   const { steps, next } = pathSteps({
     products: items.length,
     valuesSet,
+    alertsSet: signedIn && alerts.configured,
     savingsSeen: insights.unlocked.size > 0 && seen.has("savings"),
     entriesAudited: access.usage.auditsChecked.length > 0 || (paid && seen.has("entries")),
   });
@@ -72,6 +49,8 @@ export const NextStep = () => {
 
   const openValues = () => (firstDefault ? nav.openProduct(firstDefault.key, false, "duty") : nav.openTab("catalog"));
   const openSavings = () => (signedIn ? nav.openTab("savings") : unlock("savings"));
+  const openAlerts = () => (signedIn ? nav.openTab("alerts") : unlock("alerts"));
+  const covered = trackedKeys.size;
 
   const content: Record<Exclude<StepId, "products">, StepContent> = {
     values: {
@@ -82,6 +61,21 @@ export const NextStep = () => {
       action: (
         <button type="button" className={tt.button("next")} onClick={openValues}>
           Set values
+          <ArrowRightIcon className="h-4 w-4" aria-hidden />
+        </button>
+      ),
+    },
+    alerts: {
+      title: "Set up your tariff alerts",
+      // Signed out nothing is covered yet, so it speaks to every import
+      body: `Say where to tell you when a tariff changes on ${
+        !signedIn || covered === 0 || covered === items.length ? "your" : `${covered.toLocaleString("en-US")} of your`
+      } ${items.length.toLocaleString("en-US")} imports: email, Slack or Microsoft Teams.`,
+      payoff: "Hear about a change the day it's published",
+      go: openAlerts,
+      action: (
+        <button type="button" className={tt.button("next")} onClick={openAlerts}>
+          {signedIn ? "Set up alerts" : unlockLabel}
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </button>
       ),
@@ -132,72 +126,78 @@ export const NextStep = () => {
   const done = steps.filter((s) => s.done).length;
   const current = next && next.id !== "products" ? content[next.id as keyof typeof content] : null;
 
-  // A step in the checklist: done ones are quiet, the next one is marked, the rest open in a click
-  const checklistStep = (step: Step) => {
+  // A step on the track in the header: done ones are a green check, the suggested one a cobalt
+  // dot, the rest an open ring that opens in a click (its payoff in the tooltip)
+  const trackStep = (step: Step, i: number) => {
     const c = step.id === "products" ? null : content[step.id];
     const isNext = step === next;
     const inner = (
       <>
+        {/* No numbers: past adding imports, the steps can be done in any order */}
         <span
-          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${step.done ? "bg-success text-success-content" : isNext ? "bg-primary text-primary-content" : "bg-base-300 text-base-content/70"
-            }`}
+          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
+            step.done ? "bg-success text-success-content" : isNext ? "bg-primary ring-4 ring-primary/15" : "border-2 border-base-300"
+          }`}
+          aria-hidden
         >
-          {step.done ? <CheckIcon className="h-3.5 w-3.5" aria-hidden /> : step.number}
+          {step.done && <CheckIcon className="h-3 w-3" />}
         </span>
-        <span className="flex min-w-0 flex-col text-left">
-          <span className={`text-sm font-semibold ${step.done ? "text-base-content/50 line-through decoration-base-content/30" : "text-base-content"}`}>
-            {step.label}
-          </span>
-          {!step.done && c && <span className="truncate text-xs text-base-content/60">{c.payoff}</span>}
+        <span
+          className={`whitespace-nowrap text-xs font-semibold ${
+            step.done ? "text-base-content/50 line-through decoration-base-content/30" : isNext ? "text-primary" : "text-base-content/70"
+          }`}
+        >
+          {step.label}
         </span>
+        {step.done && <span className="sr-only">(done)</span>}
       </>
     );
-    if (step.done || !c)
-      return (
-        <li key={step.id} className="flex min-w-0 items-center gap-2.5 rounded-2xl px-3 py-2">
-          {inner}
-        </li>
-      );
     return (
-      <li key={step.id} className="min-w-0">
-        <button
-          type="button"
-          onClick={c.go}
-          className={`flex w-full min-w-0 items-center gap-2.5 rounded-2xl px-3 py-2 transition-colors hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${isNext ? "bg-primary/5" : ""
-            }`}
-        >
-          {inner}
-        </button>
+      <li key={step.id} className="flex items-center gap-1.5">
+        {i > 0 && <span className={`h-px w-4 ${step.done || isNext ? "bg-primary/40" : "bg-base-300"}`} aria-hidden />}
+        {step.done || !c || isNext ? (
+          <span className="flex items-center gap-1.5 px-1 py-0.5" aria-current={isNext ? "step" : undefined}>
+            {inner}
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={c.go}
+            title={c.payoff}
+            className="flex items-center gap-1.5 rounded-full px-1 py-0.5 transition-colors hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          >
+            {inner}
+          </button>
+        )}
       </li>
     );
   };
 
   return (
-    <section aria-label="Get more from your Tracker" className={`${tt.panel} flex flex-col gap-4 p-5 lg:px-6`}>
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-        <ProgressRing done={done} total={steps.length} />
-        <div className="flex min-w-64 flex-1 flex-col gap-1">
+    <section aria-label="Get more from your Tracker" className={`${tt.panel} flex flex-wrap items-center gap-x-6 gap-y-3 px-5 py-4 lg:px-6`}>
+      <div className="flex min-w-64 flex-1 flex-col gap-1.5">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
           {current ? (
-            <>
-              <span className={tt.eyebrow("primary")}>Your next step</span>
-              <h2 className={`${tt.display} m-0 text-lg font-semibold text-base-content`}>{current.title}</h2>
-              <p className="m-0 text-sm leading-relaxed text-base-content/70">{current.body}</p>
-            </>
+            <span className={tt.eyebrow("primary")}>Your next step</span>
           ) : (
-            <>
-              <span className={tt.eyebrow("success")}>All set up</span>
-              <h2 className={`${tt.display} m-0 text-lg font-semibold text-base-content`}>You&apos;re getting everything the Tracker finds</h2>
-              <p className="m-0 text-sm leading-relaxed text-base-content/70">
-                Your products are in with your own values, your potential savings are in view and you&apos;ve audited your entries.
-              </p>
-            </>
+            <span className={tt.eyebrow("success")}>All set up</span>
           )}
+          <ol className="m-0 flex list-none flex-wrap items-center gap-1.5 p-0" aria-label={`${done} of ${steps.length} steps done`}>
+            {steps.map(trackStep)}
+          </ol>
         </div>
-        {current && <div className="flex flex-wrap items-center gap-3">{current.action}</div>}
+        {current ? (
+          <p className="m-0 min-w-0 text-sm leading-snug text-base-content/70">
+            <span className={`${tt.display} font-semibold text-base-content`}>{current.title}.</span> {current.body}
+          </p>
+        ) : (
+          <p className="m-0 text-sm leading-snug text-base-content/70">
+            <span className={`${tt.display} font-semibold text-base-content`}>You&apos;re getting everything the Tracker finds.</span> Your
+            imports are in with your own values, alerts are set up, your potential savings are in view and you&apos;ve audited your entries.
+          </p>
+        )}
       </div>
-      <ol className="m-0 grid list-none gap-1 border-t border-base-300 p-0 pt-3 sm:grid-cols-2 xl:grid-cols-4">
-        {steps.map(checklistStep)}
-      </ol>
+      {current && <div className="flex flex-wrap items-center gap-3">{current.action}</div>}
     </section>
   );
 };

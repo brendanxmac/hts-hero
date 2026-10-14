@@ -84,7 +84,7 @@ export const AddToCatalogButton = ({
       }}
     >
       <PlusIcon className="h-4 w-4" aria-hidden />
-      Add to your imports
+      Add to imports
     </button>
   );
 };

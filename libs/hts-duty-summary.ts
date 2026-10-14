@@ -58,6 +58,7 @@ const programName = (id?: string) =>
 
 const PREFERENCE_SHORT_NAMES: Record<string, string> = {
   "United States-Mexico-Canada Agreement": "USMCA",
+  "Dominican Republic-Central America-United States Free Trade Agreement": "CAFTA-DR",
 };
 
 // "Generalized System of Preferences (GSP)" -> "GSP",

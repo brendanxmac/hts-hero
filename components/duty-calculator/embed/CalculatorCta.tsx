@@ -25,7 +25,7 @@ export const CalculatorCta = ({
     openQuestions > 0
       ? `${openQuestions} ${openQuestions === 1 ? "exemption" : "exemptions and adjustments"} to check, with what each would save`
       : "Exemptions, adjustments and partial-value rates checked for you",
-    "Compare up to 3 countries of origin side by side",
+    "Compare up to 4 countries of origin side by side",
     "Any entry date, transport mode and trade preference",
   ];
   return (

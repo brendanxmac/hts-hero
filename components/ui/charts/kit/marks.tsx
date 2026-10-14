@@ -37,6 +37,31 @@ export const StepLine = ({
   return <path d={d ?? ""} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeDasharray={dashed ? "4 4" : undefined} />;
 };
 
+// The range between a low and a high that each hold until they change (the lowest and highest
+// rate of every other origin, behind the ones being compared), as one quiet step band
+export const StepBand = ({
+  points,
+  x,
+  y,
+  to,
+  fill = MUTED_MARK,
+}: {
+  points: { x: number; low: number; high: number }[];
+  x: (value: number) => number;
+  y: (value: number) => number;
+  to: number;
+  fill?: string;
+}) => {
+  if (!points.length) return null;
+  const last = points[points.length - 1];
+  const d = area<{ x: number; low: number; high: number }>()
+    .x((p) => x(p.x))
+    .y0((p) => y(p.low))
+    .y1((p) => y(p.high))
+    .curve(curveStepAfter)([...points, { ...last, x: to }]);
+  return <path d={d ?? ""} fill={fill} />;
+};
+
 // The area under a step line, down to the baseline (y0): a soft fill under the rate. Pass a
 // gradient's url as the fill for the one fade the design allows (DESIGN_SYSTEM §15)
 export const StepArea = ({

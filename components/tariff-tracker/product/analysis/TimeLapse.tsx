@@ -59,7 +59,8 @@ export const TimeLapse = ({
   progress: number;
   ready: boolean;
   basis: RateBasis;
-  selected: string | null;
+  // The shortlist: lit everywhere
+  selected: ReadonlySet<string>;
   onSelect: (code: string) => void;
 }) => {
   const { range, total, day, date, playing, events, current, frameDate } = timeline;
