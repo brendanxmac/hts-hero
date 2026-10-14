@@ -18,5 +18,5 @@ export type { Step } from "./TimeStepChart";
 export { Sparkline } from "./Sparkline";
 export type { SparkPoint } from "./Sparkline";
 export { Legend } from "./Legend";
-export { bandScale, linearScale, niceMax, niceTicks, stepIndexAt, time, timeScale } from "./scales";
+export { bandScale, barWidth, linearScale, niceMax, niceTicks, stepIndexAt, time, timeScale } from "./scales";
 export type { Scale, TimeScale } from "./scales";

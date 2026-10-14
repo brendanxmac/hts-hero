@@ -1,5 +1,6 @@
 "use client";
 
+import { barWidth } from "@/components/ui/charts/kit";
 import { useMemo } from "react";
 import { ArrowPathIcon, PauseIcon, PlayIcon } from "@heroicons/react/20/solid";
 import { formatDate } from "@/components/duty-calculator/lib/format";
@@ -131,7 +132,7 @@ export const TimeLapse = ({
             <span className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-base-300" aria-hidden />
             <span
               className="absolute left-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-primary"
-              style={{ width: `${(day / total) * 100}%` }}
+              style={{ width: barWidth(day, total) }}
               aria-hidden
             />
             {events.map((e, i) => (

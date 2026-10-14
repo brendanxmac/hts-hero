@@ -69,3 +69,13 @@ export const bandScale = (categories: string[], range: [number, number], gap = 0
 // The step in force at x: the last of the (sorted) step starts at or before it, else the first
 const stepBisector = bisector((x: number) => x);
 export const stepIndexAt = (starts: number[], x: number) => Math.max(0, stepBisector.right(starts, x) - 1);
+
+// A bar's width as a share of the largest, for CSS ("37.5%"): never NaN or Infinity (an empty or
+// all-zero set, a missing value), never past 100%, and at least `min` percent when the value is
+// above zero, so a small value stays visible
+export const barWidth = (value: number | null | undefined, max: number | null | undefined, min = 0) => {
+  const v = Number(value);
+  const m = Number(max);
+  if (!Number.isFinite(v) || !Number.isFinite(m) || m <= 0 || v <= 0) return "0%";
+  return `${Math.min(100, Math.max(min, (v / m) * 100))}%`;
+};

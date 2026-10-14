@@ -1,5 +1,6 @@
 "use client";
 
+import { barWidth } from "@/components/ui/charts/kit";
 import { useState } from "react";
 import { ChartCaption } from "@/components/duty-calculator/country-rate-charts/ChartCaption";
 import { figureCard } from "@/components/duty-calculator/country-rate-charts/scale";
@@ -48,9 +49,9 @@ export const RateTiers = ({
               </div>
               <div className="flex flex-col gap-1.5">
                 <span className="flex h-2.5 overflow-hidden rounded-full bg-base-300" aria-hidden>
-                  <span className="flex h-full" style={{ width: `${(tier.pct / max) * 100}%` }}>
+                  <span className="flex h-full" style={{ width: barWidth(tier.pct, max) }}>
                     {tier.parts.map((p) => (
-                      <span key={p.key} className="h-full" style={{ width: `${(p.pct / tier.pct) * 100}%`, background: colors[p.key] }} />
+                      <span key={p.key} className="h-full" style={{ width: barWidth(p.pct, tier.pct), background: colors[p.key] }} />
                     ))}
                   </span>
                 </span>

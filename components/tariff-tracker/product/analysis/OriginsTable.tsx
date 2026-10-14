@@ -1,5 +1,6 @@
 "use client";
 
+import { barWidth } from "@/components/ui/charts/kit";
 import { useMemo, useState } from "react";
 import { ChevronUpDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { ChartCaption } from "@/components/duty-calculator/country-rate-charts/ChartCaption";
@@ -123,13 +124,13 @@ export const OriginsTable = ({
                     <span className="flex h-2.5 w-full overflow-hidden rounded-r bg-transparent">
                       <span
                         className="flex h-full motion-safe:transition-[width] motion-safe:duration-500"
-                        style={{ width: `${(pct / top) * 100}%` }}
+                        style={{ width: barWidth(pct, top) }}
                       >
                         {partsOf(r, basis).map((p) => (
                           <span
                             key={p.key}
                             className={`h-full ${r.isOrigin || selected === r.country.code ? "" : "opacity-80"}`}
-                            style={{ width: `${pct ? (p.pct / pct) * 100 : 0}%`, background: colors[p.key] }}
+                            style={{ width: barWidth(p.pct, pct), background: colors[p.key] }}
                           />
                         ))}
                       </span>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "./test-runner"
-import { bandScale, linearScale, niceMax, niceTicks, stepIndexAt, time, timeScale } from "../components/ui/charts/kit/scales"
+import { bandScale, barWidth, linearScale, niceMax, niceTicks, stepIndexAt, time, timeScale } from "../components/ui/charts/kit/scales"
 import { nearestIndex } from "../components/ui/charts/kit/hover"
 
 // The shared chart kit's maths (d3 underneath): what every chart's axes and hover rest on
@@ -50,5 +50,18 @@ describe("Chart kit: scales", () => {
     expect(stepIndexAt(starts, 99)).toBe(2)
     expect(nearestIndex(starts, 21)).toBe(2)
     expect(nearestIndex([], 5)).toBe(0)
+  })
+
+  it("bar widths are always valid CSS, even for empty or all-zero data", () => {
+    expect(barWidth(5, 10)).toBe("50%")
+    expect(barWidth(5, 0)).toBe("0%")
+    expect(barWidth(0, 0)).toBe("0%")
+    expect(barWidth(null, 10)).toBe("0%")
+    expect(barWidth(5, undefined)).toBe("0%")
+    expect(barWidth(NaN, 10)).toBe("0%")
+    expect(barWidth(5, Infinity)).toBe("0%")
+    expect(barWidth(20, 10)).toBe("100%")
+    expect(barWidth(0.01, 100, 2)).toBe("2%")
+    expect(barWidth(0, 100, 2)).toBe("0%")
   })
 })

@@ -1,3 +1,4 @@
+import { barWidth } from "@/components/ui/charts/kit";
 import { Countries } from "../../../../constants/countries";
 import { CENSUS_NOTICE } from "../../../duty-calculator/lib/census";
 import { formatImportValue } from "../../../duty-calculator/lib/usImportsData";
@@ -61,7 +62,7 @@ export const SuppliersCard = ({ product, onSourcing }: { product: TrackedProduct
               </span>
               <div className="h-2 overflow-hidden rounded-full bg-base-300" aria-hidden>
                 {/* Runtime width (DESIGN_SYSTEM §10) */}
-                <div className={`h-full rounded-full ${mine ? "bg-primary" : "bg-base-content/40"}`} style={{ width: `${(v.value / max) * 100}%` }} />
+                <div className={`h-full rounded-full ${mine ? "bg-primary" : "bg-base-content/40"}`} style={{ width: barWidth(v.value, max) }} />
               </div>
               <span className="text-right tabular-nums text-base-content/70">{Math.round((v.value / total) * 100)}%</span>
               <span className={`text-right tabular-nums ${rate !== undefined && rate < product.totalPct - 0.005 ? "font-semibold text-success" : "text-base-content/70"}`}>

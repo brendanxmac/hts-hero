@@ -1,5 +1,6 @@
 "use client";
 
+import { barWidth } from "@/components/ui/charts/kit";
 import { useMemo, useState } from "react";
 import { ChevronUpDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
@@ -145,7 +146,7 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
                           {/* Bar width is a runtime value (DESIGN_SYSTEM §10) */}
                           <div
                             className="h-1.5 rounded-full bg-teal-500"
-                            style={{ width: `${Math.max(2, (Math.sqrt(r.imports ?? 0) / maxImports) * 100)}%` }}
+                            style={{ width: barWidth(Math.sqrt(r.imports ?? 0), maxImports, 2) }}
                           />
                         </div>
                       </div>

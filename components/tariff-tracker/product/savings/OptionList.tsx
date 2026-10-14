@@ -1,5 +1,6 @@
 "use client";
 
+import { barWidth } from "@/components/ui/charts/kit";
 import { ReactNode } from "react";
 import * as tt from "@/components/ui/styles/tracker";
 import { formatImportValue, UsImports } from "../../../duty-calculator/lib/usImportsData";
@@ -86,7 +87,7 @@ const Row = ({
           <div className="flex items-center gap-2">
             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-base-300" aria-hidden>
               {/* Runtime width (DESIGN_SYSTEM §10) */}
-              <div className={`h-full rounded-full ${option.counted ? "bg-success" : "bg-warning"}`} style={{ width: `${Math.max(2, (option.ratePct / Math.max(todayPct, 0.01)) * 100)}%` }} />
+              <div className={`h-full rounded-full ${option.counted ? "bg-success" : "bg-warning"}`} style={{ width: barWidth(option.ratePct, todayPct, 2) }} />
             </div>
             <span className="text-xs tabular-nums text-base-content/60">to {formatRate(option.ratePct)}</span>
           </div>

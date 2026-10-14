@@ -1,5 +1,6 @@
 "use client";
 
+import { barWidth } from "@/components/ui/charts/kit";
 import { useState } from "react";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as tt from "@/components/ui/styles/tracker";
@@ -50,7 +51,7 @@ export const OriginDistribution = ({ products }: { products: TrackedProduct[] })
             </span>
             <span className="h-4 overflow-hidden rounded-full bg-tt-soft">
               {/* Runtime width and theme chart color (DESIGN_SYSTEM §10) */}
-              <span className="block h-full rounded-full" style={{ width: `${(r.share / max) * 100}%`, background: colorOf(r.code) }} />
+              <span className="block h-full rounded-full" style={{ width: barWidth(r.share, max), background: colorOf(r.code) }} />
             </span>
             <span className="text-right tabular-nums">
               <b className="text-base-content">{Math.round(r.share * 100)}%</b>{" "}

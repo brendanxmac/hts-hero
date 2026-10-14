@@ -1,5 +1,6 @@
 "use client";
 
+import { barWidth } from "@/components/ui/charts/kit";
 import { ChartCaption } from "./ChartCaption";
 import { average, figureCard, pct } from "./scale";
 import { CountryRates } from "./types";
@@ -49,7 +50,7 @@ export const AverageByCountryChart = ({
                 <span className="relative h-2.5">
                   <span
                     className="absolute inset-y-0 left-0 rounded-r"
-                    style={{ width: `${(average / maxAverage) * 100}%`, background: barOf(row.code) }}
+                    style={{ width: barWidth(average, maxAverage), background: barOf(row.code) }}
                   />
                 </span>
                 <span className={`text-right text-sm ${chosenRow ? "font-semibold text-base-content" : "text-base-content/70"}`}>

@@ -1,5 +1,6 @@
 "use client";
 
+import { barWidth } from "@/components/ui/charts/kit";
 import { SUCCESS_MARK, WARNING_MARK } from "@/components/ui/theme";
 import * as tt from "@/components/ui/styles/tracker";
 import { CalculationResult } from "@/tariffs/engine-v2/types";
@@ -53,11 +54,11 @@ export const AdjustmentsTab = ({ f, result }: { f: TariffFinder; result: Calcula
         {/* One bar on one scale (runtime widths, DESIGN_SYSTEM §10): the total with adjustments,
             then the part they take off (striped) or add */}
         <div className="mt-5 flex h-3 overflow-hidden rounded-full bg-tt-soft" aria-hidden>
-          <span className="h-full bg-primary transition-[width] duration-500 ease-out" style={{ width: `${(Math.min(before, after) / scale) * 100}%` }} />
+          <span className="h-full bg-primary transition-[width] duration-500 ease-out" style={{ width: barWidth(Math.min(before, after), scale) }} />
           <span
             className="h-full transition-[width] duration-500 ease-out"
             style={{
-              width: `${(Math.abs(change) / scale) * 100}%`,
+              width: barWidth(Math.abs(change), scale),
               backgroundImage: `repeating-linear-gradient(-45deg, ${change < 0 ? SUCCESS_MARK : WARNING_MARK} 0 4px, transparent 4px 8px)`,
               backgroundColor: `color-mix(in oklch, ${change < 0 ? SUCCESS_MARK : WARNING_MARK} 18%, transparent)`,
             }}
