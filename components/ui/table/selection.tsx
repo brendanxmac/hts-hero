@@ -35,7 +35,7 @@ export const SelectionBar = <T,>({ table, children }: { table: Table<T>; childre
   const rows = table.getFilteredSelectedRowModel().rows;
   if (!rows.length) return null;
   return (
-    <div role="region" aria-label="Selected rows" className="flex flex-wrap items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5">
+    <div role="region" aria-label="Selected rows" className="flex flex-wrap items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 tracker:rounded-2xl tracker:border-transparent tracker:bg-primary/10 tracker:py-2">
       <span className="text-sm font-semibold text-base-content">
         {rows.length.toLocaleString("en-US")} selected
       </span>

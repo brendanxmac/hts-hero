@@ -132,7 +132,7 @@ export const TrackerApp = () => {
                           aria-labelledby={`tt-tab-${section.slug}`}
                           hidden={!active}
                         >
-                          <SectionPage section={section} showHeader={section.slug !== "overview" && !(section.slug === "catalog" && product)}>
+                          <SectionPage section={section} showHeader={section.slug !== "overview" && section.slug !== "catalog"}>
                             {panel ? panel(active) : <PlannedSection section={section} />}
                           </SectionPage>
                         </div>

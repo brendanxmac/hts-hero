@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { StackedBar } from "@/components/ui/charts/StackedBar";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { selectColumn } from "@/components/ui/table";
 import { Countries } from "../../../constants/countries";
 import { HtsSection } from "../../../interfaces/hts";
@@ -45,19 +46,19 @@ const Status = ({ row, ctx }: { row: TrackedProduct; ctx: ImportColumnContext })
   const lower = row.bestSavingPct > 0.005;
   return (
     <span className="flex flex-wrap items-center justify-end gap-1">
-      {ctx.signedIn && !ctx.covered(row.key) && <span className={`${ui.badge()} whitespace-nowrap`}>No alerts</span>}
+      {ctx.signedIn && !ctx.covered(row.key) && <span className={tt.chip()}>No alerts</span>}
       {review === "reviewed" ? (
-        <span className={`${ui.badge("success")} gap-1 whitespace-nowrap`} title="Every quick win on this import is secured or ruled out">
+        <span className={`${tt.chip("success")} gap-1`} title="Every quick win on this import is secured or ruled out">
           <CheckCircleIcon className="h-3 w-3" aria-hidden />
           Savings reviewed
         </span>
       ) : locked && lower ? (
-        <span className={`${ui.badge("success")} gap-1 whitespace-nowrap`} title="Check this import's savings to see how it could be lower">
+        <span className={`${tt.chip("success")} gap-1`} title="Check this import's savings to see how it could be lower">
           <LockClosedIcon className="h-3 w-3" aria-hidden />
           Savings found
         </span>
       ) : lower ? (
-        <span className={`${ui.badge("success")} gap-1 whitespace-nowrap`}>
+        <span className={`${tt.chip("success")} gap-1`}>
           <SparklesIcon className="h-3 w-3" aria-hidden />
           Could be lower
         </span>
@@ -88,7 +89,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
             <span className="mt-1 flex flex-wrap items-center gap-1" aria-label="Adjustments">
               <AdjustmentsHorizontalIcon className="h-3.5 w-3.5 text-primary" aria-hidden />
               {tags.map((t) => (
-                <span key={t.id} className={`${ui.badge("primary")} max-w-48 truncate`} title={t.title}>
+                <span key={t.id} className={`${tt.chip("primary")} max-w-48 truncate font-semibold`} title={t.title}>
                   {t.label}
                 </span>
               ))}
@@ -184,7 +185,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
     meta: { align: "right", width: "w-[9rem]" },
     cell: ({ row: { original: r } }) => (
       <span className="flex flex-col items-end gap-1">
-        <span className="text-xl font-semibold leading-none tracking-tight tabular-nums">{formatRate(r.totalPct)}</span>
+        <span className={`${tt.display} text-xl font-semibold leading-none tabular-nums text-base-content`}>{formatRate(r.totalPct)}</span>
         <Status row={r} ctx={ctx} />
       </span>
     ),

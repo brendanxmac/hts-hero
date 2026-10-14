@@ -9,7 +9,8 @@ import * as ui from "@/components/ui/styles";
 export const TableSearch = <T,>({ table, placeholder }: { table: Table<T>; placeholder: string }) => {
   const value = (table.getState().globalFilter as string) ?? "";
   return (
-    <label className={`${ui.inputSm} flex w-full items-center gap-2 sm:w-72`}>
+    // Inside the Tracker: a soft pill on the panel
+    <label className={`${ui.inputSm} flex w-full items-center gap-2 sm:w-72 tracker:h-9 tracker:rounded-full tracker:border-transparent tracker:bg-tt-soft tracker:px-3.5 tracker:shadow-none tracker:hover:border-base-300`}>
       <MagnifyingGlassIcon className="h-4 w-4 shrink-0 text-base-content/60" aria-hidden />
       <input
         type="search"

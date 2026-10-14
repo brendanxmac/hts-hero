@@ -3,19 +3,21 @@
 import { Menu } from "@headlessui/react";
 import { EllipsisHorizontalIcon, ExclamationTriangleIcon, PlusIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
-import { formatDate } from "../duty-calculator/lib/format";
 import { DateNotice } from "../duty-calculator/notices/DateNotice";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { itemKey } from "./catalog";
 import { downloadReport } from "./export";
 import { ExportMenu } from "./ExportMenu";
 import { ImportsTable } from "./imports/ImportsTable";
 import { TrackedProduct } from "./report";
 import { ReportSummary } from "./ReportSummary";
+import { sectionBySlug } from "./sections";
+import { SectionHeader } from "./shell/SectionPage";
 import { useTracker } from "./TrackerContext";
 
-// The report on the user's imports: its toolbar (the date, export, adding products), then the
-// imports table (ImportsTable: search, filters, sorting by heading, bulk actions), with a summary
+// The report on the user's imports: the section's header with its actions (the date, export,
+// adding products), a summary, then the imports table (ImportsTable: search, filters, sorting by heading, bulk actions), with a summary
 // of the imports showing. The summary and the export cover what the search and filters let through,
 // in the order shown.
 export const TariffReport = ({
@@ -30,32 +32,26 @@ export const TariffReport = ({
   const { entryDate, setEntryDate, clearFilters, missing, items, removeProducts, clearCatalog } = useTracker();
 
   return (
-    <section className="flex flex-col gap-4" aria-labelledby="tt-report-heading">
-      <h2 id="tt-report-heading" className="sr-only">
-        Tariff report, rates as of {formatDate(entryDate)}
-      </h2>
+    <section className="flex flex-col gap-5" aria-label="Your imports">
       <ImportsTable
         rows={rows}
         onOpen={onOpen}
         header={(table) => (
           <>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="tt-date" className={`${ui.label} whitespace-nowrap`}>
+            <SectionHeader
+              section={sectionBySlug("catalog")!}
+              actions={
+                <>
+                  <label className="flex h-9 items-center gap-2 rounded-full border border-base-300 bg-base-100 pl-3.5 pr-2 text-xs font-semibold text-base-content/70">
                     Rates as of
-                  </label>
-                  {/* The input style is full width; this sets the width */}
-                  <div className="w-40">
                     <input
                       id="tt-date"
                       type="date"
-                      className={`${ui.inputSm} tabular-nums`}
+                      className="h-7 rounded-full bg-transparent px-1 text-sm font-semibold tabular-nums text-base-content outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                       value={entryDate}
                       onChange={(e) => setEntryDate(e.target.value)}
                     />
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
+                  </label>
                   <ExportMenu
                     onExport={(format) => {
                       const shown = table.getRowModel().rows.map((row) => row.original);
@@ -68,16 +64,16 @@ export const TariffReport = ({
                     }}
                   />
                   <Menu as="div" className="relative">
-                    <Menu.Button className={ui.button({ size: "sm", icon: true })}>
+                    <Menu.Button className={`${tt.button("secondary").replace("px-5", "")} w-10`}>
                       <EllipsisHorizontalIcon className="h-4 w-4" aria-hidden />
                       <span className="sr-only">More import actions</span>
                     </Menu.Button>
-                    <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-56 focus:outline-none`}>
+                    <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-56 rounded-2xl p-2 focus:outline-none`}>
                       <Menu.Item>
                         {({ active }) => (
                           <button
                             type="button"
-                            className={`flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-error ${active ? "bg-base-200" : ""}`}
+                            className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm text-error ${active ? "bg-tt-soft" : ""}`}
                             onClick={() => {
                               const count = items.length.toLocaleString("en-US");
                               if (window.confirm(`Remove all ${count} imports? Their adjustments are kept.`)) {
@@ -93,14 +89,15 @@ export const TariffReport = ({
                       </Menu.Item>
                     </Menu.Items>
                   </Menu>
-                  <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={onAdd}>
+                  <button type="button" className={tt.button("primary")} onClick={onAdd}>
                     <PlusIcon className="h-4 w-4" aria-hidden />
                     Add products
                   </button>
-                </div>
-              </div>
+                </>
+              }
+            />
           {missing.length > 0 && (
-            <div role="status" className={`${ui.notice("warning")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
+            <div role="status" className={`${ui.notice("warning")} flex flex-col gap-3 rounded-2xl sm:flex-row sm:items-center`}>
               <ExclamationTriangleIcon className="h-5 w-5 shrink-0 text-warning" aria-hidden />
               <p className={`${ui.bodySm} flex-1`}>
                 <span className="font-semibold text-base-content">
@@ -112,7 +109,7 @@ export const TariffReport = ({
               </p>
               <button
                 type="button"
-                className={`${ui.button({ size: "sm" })} shrink-0`}
+                className={tt.button("secondary", "sm")}
                 onClick={() => removeProducts(missing.map(itemKey))}
               >
                 Remove {missing.length === 1 ? "it" : "them"}

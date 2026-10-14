@@ -12,7 +12,10 @@ import * as ui from "@/components/ui/styles";
 // (and aria-sort), rows ruled and lit on hover, numbers right-aligned, the row's subject as its
 // heading. A row can open something (onRowClick); a modified click on a link inside it still
 // opens a tab. Past `virtualizeFrom` rows only the rows in view are drawn (TanStack Virtual), so a
-// catalog of thousands scrolls smoothly; the scroller is the nearest scrolling parent.
+// catalog of thousands scrolls smoothly; the scroller is the nearest scrolling parent. A `toolbar`
+// (search, filters, a count) sits in the card above the headers. Inside the Tracker (`tracker:`,
+// DESIGN_SYSTEM §15) the card is a round panel and the headers sit on its soft fill, so they
+// stand apart from the ground.
 
 const ALIGN = { left: "text-left", right: "text-right", center: "text-center" };
 
@@ -25,7 +28,7 @@ const SortIcon = ({ dir }: { dir: false | "asc" | "desc" }) =>
     <ChevronUpDownIcon className="h-3.5 w-3.5 opacity-40" aria-hidden />
   );
 
-const HeaderCell = <T,>({ header, first, last }: { header: Header<T, unknown>; first: boolean; last: boolean }) => {
+const HeaderCell = <T,>({ header, first, last, top }: { header: Header<T, unknown>; first: boolean; last: boolean; top: boolean }) => {
   const meta = header.column.columnDef.meta;
   const align = ALIGN[meta?.align ?? "left"];
   const pad = `${first ? "pl-5 sm:pl-6" : "pl-4"} ${last ? "pr-5 sm:pr-6" : "pr-4"}`;
@@ -35,7 +38,10 @@ const HeaderCell = <T,>({ header, first, last }: { header: Header<T, unknown>; f
     <th
       scope="col"
       // The card can't clip (that would stop the header sticking), so the corner cells round themselves
-      className={`${ui.label} sticky top-0 z-10 bg-base-200 py-2.5 ${pad} ${align} ${meta?.width ?? ""} ${first ? "rounded-tl-lg" : ""} ${last ? "rounded-tr-lg" : ""}`}
+      // Under a toolbar the header row is a band across the card, ruled above
+      className={`${ui.label} sticky top-0 z-10 bg-base-200 py-2.5 tracker:bg-tt-soft tracker:py-3 tracker:font-bold tracker:text-base-content/70 ${pad} ${align} ${meta?.width ?? ""} ${
+        top ? `${first ? "rounded-tl-lg tracker:rounded-tl-3xl" : ""} ${last ? "rounded-tr-lg tracker:rounded-tr-3xl" : ""}` : "border-t border-base-300"
+      }`}
       aria-sort={dir === "asc" ? "ascending" : dir === "desc" ? "descending" : header.column.getCanSort() ? "none" : undefined}
     >
       {header.column.getCanSort() ? (
@@ -75,7 +81,7 @@ const BodyRow = <T,>({
     <tr
       ref={measure}
       data-index={index}
-      className={`border-t border-base-300 transition-colors hover:bg-base-200/60 ${onRowClick ? "cursor-pointer" : ""} ${row.getIsSelected() ? "bg-primary/5" : ""} ${rowClassName?.(row.original) ?? ""}`}
+      className={`transition-colors hover:bg-base-200/60 tracker:hover:bg-tt-soft/70 ${onRowClick ? "cursor-pointer" : ""} ${row.getIsSelected() ? "bg-primary/5" : ""} ${rowClassName?.(row.original) ?? ""}`}
       onClick={(e) => {
         if (!onRowClick) return;
         // Controls in the row, and modified clicks on links, do their own thing
@@ -89,7 +95,7 @@ const BodyRow = <T,>({
       {cells.map((cell, i) => {
         const meta = cell.column.columnDef.meta;
         const pad = `${i === 0 ? "pl-5 sm:pl-6" : "pl-4"} ${i === cells.length - 1 ? "pr-5 sm:pr-6" : "pr-4"}`;
-        const className = `py-3 align-middle ${pad} ${ALIGN[meta?.align ?? "left"]} ${meta?.width ?? ""}`;
+        const className = `border-t border-base-300 py-3 align-middle tracker:py-3.5 ${pad} ${ALIGN[meta?.align ?? "left"]} ${meta?.width ?? ""}`;
         const content = flexRender(cell.column.columnDef.cell, cell.getContext());
         return meta?.rowHeader ? (
           <th key={cell.id} scope="row" className={`${className} font-normal`}>
@@ -120,6 +126,7 @@ export const DataTable = <T,>({
   onRowClick,
   rowClassName,
   empty,
+  toolbar,
   virtualizeFrom = 300,
   estimateRowHeight = 72,
 }: {
@@ -130,6 +137,8 @@ export const DataTable = <T,>({
   rowClassName?: (row: T) => string;
   // Shown in place of the rows when none match
   empty?: ReactNode;
+  // Above the headers, inside the card: search, filters, a count
+  toolbar?: ReactNode;
   // Rows from which only those in view are drawn
   virtualizeFrom?: number;
   estimateRowHeight?: number;
@@ -153,14 +162,21 @@ export const DataTable = <T,>({
   const after = items.length ? virtualizer.getTotalSize() - (items[items.length - 1].end - virtualizer.options.scrollMargin) : 0;
 
   return (
-    <div className={`${ui.cardOverflowVisible}`}>
-      <div className="rounded-lg">
-        <table ref={tableRef} className="w-full border-separate border-spacing-0 text-sm tabular-nums" aria-label={label} aria-rowcount={rows.length + 1}>
+    <div className={`${ui.cardOverflowVisible} tracker:rounded-3xl tracker:shadow-none`}>
+      {toolbar && <div className="flex flex-col gap-3 px-5 py-4 sm:px-6">{toolbar}</div>}
+      <div>
+        {/* The last row's corner cells round with the card, so a hover never paints past it */}
+        <table
+          ref={tableRef}
+          className="w-full border-separate border-spacing-0 text-sm tabular-nums [&_tbody>tr:last-child>*:first-child]:rounded-bl-lg [&_tbody>tr:last-child>*:last-child]:rounded-br-lg tracker:[&_tbody>tr:last-child>*:first-child]:rounded-bl-3xl tracker:[&_tbody>tr:last-child>*:last-child]:rounded-br-3xl"
+          aria-label={label}
+          aria-rowcount={rows.length + 1}
+        >
           <thead>
             {table.getHeaderGroups().map((group) => (
               <tr key={group.id}>
                 {group.headers.map((header, i) => (
-                  <HeaderCell key={header.id} header={header} first={i === 0} last={i === group.headers.length - 1} />
+                  <HeaderCell key={header.id} header={header} first={i === 0} last={i === group.headers.length - 1} top={!toolbar} />
                 ))}
               </tr>
             ))}
@@ -168,7 +184,7 @@ export const DataTable = <T,>({
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={columns} className="px-5 py-8 sm:px-6">
+                <td colSpan={columns} className="border-t border-base-300 px-5 py-8 sm:px-6">
                   {empty ?? <p className={ui.bodySm}>Nothing matches.</p>}
                 </td>
               </tr>

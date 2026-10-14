@@ -42,14 +42,19 @@ export const FacetFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
 
   return (
     <Popover className="relative">
-      <Popover.Button className={`${ui.button({ size: "sm" })} ${picked.length ? "border-primary/40 text-primary" : ""}`}>
+      {/* Inside the Tracker: an outline pill, cobalt-tinted while it filters */}
+      <Popover.Button
+        className={`${ui.button({ size: "sm" })} tracker:h-9 tracker:rounded-full tracker:border-base-300 tracker:px-3.5 tracker:font-semibold tracker:shadow-none tracker:hover:bg-tt-soft ${
+          picked.length ? "border-primary/40 text-primary tracker:border-primary/30 tracker:bg-primary/10 tracker:hover:bg-primary/15" : ""
+        }`}
+      >
         {facet.label}
-        {picked.length > 0 && <span className="rounded bg-primary/10 px-1.5 text-xs font-semibold tabular-nums">{picked.length}</span>}
+        {picked.length > 0 && <span className="rounded bg-primary/10 px-1.5 text-xs font-semibold tabular-nums tracker:rounded-full tracker:bg-primary tracker:text-primary-content">{picked.length}</span>}
         <ChevronDownIcon className="-mr-1 h-4 w-4 text-base-content/60" aria-hidden />
       </Popover.Button>
-      <Popover.Panel className={`${ui.popover} absolute left-0 z-30 mt-2 flex w-80 flex-col gap-1`}>
+      <Popover.Panel className={`${ui.popover} absolute left-0 z-30 mt-2 flex w-80 flex-col gap-1 tracker:rounded-2xl tracker:p-2`}>
         {options.length >= SEARCH_FROM && (
-          <label className={`${ui.inputSm} mb-1 flex items-center gap-2`}>
+          <label className={`${ui.inputSm} mb-1 flex items-center gap-2 tracker:rounded-xl tracker:border-transparent tracker:bg-tt-soft tracker:shadow-none`}>
             <MagnifyingGlassIcon className="h-4 w-4 text-base-content/60" aria-hidden />
             <input
               className="min-w-0 flex-1 bg-transparent outline-none"
@@ -63,7 +68,7 @@ export const FacetFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
         <ul className="flex max-h-72 flex-col overflow-y-auto" role="group" aria-label={facet.label}>
           {shown.map((o) => (
             <li key={o.value}>
-              <label className="flex cursor-pointer items-start gap-2.5 rounded-md px-2 py-1.5 hover:bg-base-200">
+              <label className="flex cursor-pointer items-start gap-2.5 rounded-md px-2 py-1.5 hover:bg-base-200 tracker:rounded-xl tracker:px-2.5 tracker:py-2 tracker:hover:bg-tt-soft">
                 <input type="checkbox" className={ui.checkbox} checked={picked.includes(o.value)} onChange={() => toggle(o.value)} />
                 <span className="flex min-w-0 flex-1 flex-col">
                   <span className="flex items-center gap-1.5 text-sm text-base-content">

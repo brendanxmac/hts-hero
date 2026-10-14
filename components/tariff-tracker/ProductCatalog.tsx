@@ -10,7 +10,9 @@ import { CatalogEmptyState } from "./CatalogEmptyState";
 import { EXAMPLE_LIST } from "./exampleList";
 import { ProductView } from "./product/ProductView";
 import { TrackedProduct } from "./report";
+import { SectionHeader } from "./shell/SectionPage";
 import { useTrackerNav } from "./shell/TrackerNav";
+import { sectionBySlug } from "./sections";
 import { TariffReport } from "./TariffReport";
 import { useTracker } from "./TrackerContext";
 
@@ -58,28 +60,34 @@ export const ProductCatalog = () => {
       {nav.product && (
         <ProductView key={nav.product} productKey={nav.product} />
       )}
+      {/* The report draws its own header, with its actions in it */}
       <div hidden={Boolean(nav.product)}>
-        {t.loading ? (
-          <div
-            className={`${ui.card} flex flex-col gap-3 p-5`}
-            aria-busy="true"
-            aria-label="Loading HTS data"
-          >
-            <div className={`${ui.skeleton} h-7 w-48`} />
-            <div className={`${ui.skeleton} h-24 w-full`} />
-            {Array.from({ length: 5 }, (_, i) => (
-              <div key={i} className={`${ui.skeleton} h-14 w-full`} />
-            ))}
-          </div>
-        ) : t.items.length === 0 ? (
-          <CatalogEmptyState onAdd={openDialog} onExample={loadExample} />
-        ) : (
-          <TariffReport
-            rows={t.products}
-            onAdd={() => openDialog("paste")}
-            onOpen={(row: TrackedProduct) => nav.openProduct(row.key, true)}
-          />
-        )}
+        <div className="flex flex-col gap-5">
+          {(t.loading || t.items.length === 0) && (
+            <SectionHeader section={sectionBySlug("catalog")!} />
+          )}
+          {t.loading ? (
+            <div
+              className={`${ui.card} flex flex-col gap-3 p-5`}
+              aria-busy="true"
+              aria-label="Loading HTS data"
+            >
+              <div className={`${ui.skeleton} h-7 w-48`} />
+              <div className={`${ui.skeleton} h-24 w-full`} />
+              {Array.from({ length: 5 }, (_, i) => (
+                <div key={i} className={`${ui.skeleton} h-14 w-full`} />
+              ))}
+            </div>
+          ) : t.items.length === 0 ? (
+            <CatalogEmptyState onAdd={openDialog} onExample={loadExample} />
+          ) : (
+            <TariffReport
+              rows={t.products}
+              onAdd={() => openDialog("paste")}
+              onOpen={(row: TrackedProduct) => nav.openProduct(row.key, true)}
+            />
+          )}
+        </div>
       </div>
       <AddProductsDialog
         open={dialog.open}

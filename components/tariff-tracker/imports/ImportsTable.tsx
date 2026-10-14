@@ -4,6 +4,7 @@ import { ReactNode, useMemo } from "react";
 import { BellAlertIcon, BellSlashIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { ColumnFiltersState, Row, Table, Updater } from "@tanstack/react-table";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { DataTable, FacetFilter, FilterChips, SelectionBar, TableSearch, useDataTable } from "@/components/ui/table";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
 import { useTrackerAccess } from "../access/accessContext";
@@ -18,8 +19,9 @@ import { importColumns } from "./importColumns";
 // counts; sort by product, origin or rate (list order until a heading is clicked); pick rows to
 // turn alerts on or off or remove them together. Past a few hundred imports only the rows in view
 // are drawn. The filters live in the Tracker (TrackerContext), so they stay set between tabs.
-// `header` and `summary` get the table, for what's shown around it from the same rows (export
-// covers what's showing; the summary sums it up).
+// `header` and `summary` get the table, for what's shown above it from the same rows (export
+// covers what's showing; the summary sums it up). The search, filters and bulk actions sit in the
+// table's panel, over the rows they act on.
 
 const FACETS = ["country", "chapter", "tariffs", "savings", "alerts"];
 
@@ -31,9 +33,9 @@ export const ImportsTable = ({
 }: {
   rows: TrackedProduct[];
   onOpen: (row: TrackedProduct) => void;
-  // Above the search: the report's own toolbar
+  // Above everything: the report's header and notices
   header?: (table: Table<TrackedProduct>) => ReactNode;
-  // Between the filters and the rows
+  // Between the header and the table
   summary?: (table: Table<TrackedProduct>) => ReactNode;
 }) => {
   const { filters, replaceFilters, filterContext, trackedKeys, pickedKeys, setCovered, removeProducts } = useTracker();
@@ -95,50 +97,56 @@ export const ImportsTable = ({
     table.resetRowSelection();
   };
 
-  return (
-    <div className="flex flex-col gap-3">
-      {header?.(table)}
+  const toolbar = (
+    <>
       <div className="flex flex-wrap items-center gap-2">
         <TableSearch table={table} placeholder="Search code, product or country" />
         {FACETS.map((id) => {
           const column = table.getColumn(id);
           return column ? <FacetFilter key={id} column={column} /> : null;
         })}
-        <span className="ml-auto text-sm tabular-nums text-base-content/70" aria-live="polite">
-          {filtered ? `Showing ${shown.toLocaleString("en-US")} of ${rows.length.toLocaleString("en-US")} imports` : `${rows.length.toLocaleString("en-US")} ${rows.length === 1 ? "import" : "imports"}`}
+        <span className="ml-auto text-sm font-semibold tabular-nums text-base-content/60" aria-live="polite">
+          {filtered ? `Showing ${shown.toLocaleString("en-US")} of ${rows.length.toLocaleString("en-US")}` : `${rows.length.toLocaleString("en-US")} ${rows.length === 1 ? "import" : "imports"}`}
         </span>
       </div>
       <FilterChips table={table} />
       <SelectionBar table={table}>
         {(picked) => (
           <>
-            <button type="button" className={ui.button({ size: "sm" })} onClick={() => alertsOn(picked)}>
+            <button type="button" className={tt.button("secondary", "sm")} onClick={() => alertsOn(picked)}>
               <BellAlertIcon className="h-4 w-4" aria-hidden />
               Turn on alerts
             </button>
-            <button type="button" className={ui.button({ size: "sm" })} onClick={() => alertsOff(picked)}>
+            <button type="button" className={tt.button("secondary", "sm")} onClick={() => alertsOff(picked)}>
               <BellSlashIcon className="h-4 w-4" aria-hidden />
               Turn off alerts
             </button>
-            <button type="button" className={`${ui.button({ size: "sm" })} hover:text-error`} onClick={() => remove(picked)}>
+            <button type="button" className={`${tt.button("secondary", "sm")} hover:text-error`} onClick={() => remove(picked)}>
               <TrashIcon className="h-4 w-4" aria-hidden />
               Remove
             </button>
           </>
         )}
       </SelectionBar>
+    </>
+  );
+
+  return (
+    <div className="flex flex-col gap-5">
+      {header?.(table)}
       {shown > 0 && summary?.(table)}
       <DataTable
         table={table}
         label="Your imports"
         onRowClick={onOpen}
         estimateRowHeight={84}
+        toolbar={toolbar}
         empty={
           <div className="flex flex-col items-start gap-3">
             <p className={ui.body}>No imports match {table.getState().globalFilter ? "this search" : "these filters"}.</p>
             <button
               type="button"
-              className={ui.button({ size: "sm" })}
+              className={tt.button("secondary", "sm")}
               onClick={() => {
                 table.resetColumnFilters(true);
                 table.setGlobalFilter("");

@@ -30,13 +30,13 @@ export const FilterChips = <T,>({ table }: { table: Table<T> }) => {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {search && (
-        <button type="button" className={`${ui.badge("primary")} gap-1 hover:bg-primary/20`} onClick={() => table.setGlobalFilter("")} aria-label={`Clear the search: ${search}`}>
+        <button type="button" className={`${ui.badge("primary")} gap-1 hover:bg-primary/20 tracker:rounded-full tracker:px-2.5 tracker:py-1 tracker:font-semibold tracker:ring-0`} onClick={() => table.setGlobalFilter("")} aria-label={`Clear the search: ${search}`}>
           “{search}”
           <XMarkIcon className="h-3 w-3" aria-hidden />
         </button>
       )}
       {chips.map((c) => (
-        <button key={c.key} type="button" className={`${ui.badge("primary")} gap-1 hover:bg-primary/20`} onClick={c.remove} aria-label={`Remove ${c.title}`}>
+        <button key={c.key} type="button" className={`${ui.badge("primary")} gap-1 hover:bg-primary/20 tracker:rounded-full tracker:px-2.5 tracker:py-1 tracker:font-semibold tracker:ring-0`} onClick={c.remove} aria-label={`Remove ${c.title}`}>
           {c.label}
           <XMarkIcon className="h-3 w-3" aria-hidden />
         </button>
