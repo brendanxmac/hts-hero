@@ -62,6 +62,8 @@ export interface Tracker {
   // Kept while moving between tabs, not saved
   filters: FilterState;
   setFilter: (id: string, values: string[]) => void;
+  // All of them at once (the imports table's filters)
+  replaceFilters: (next: FilterState) => void;
   clearFilters: () => void;
   filterContext: FilterContext;
 }
@@ -139,6 +141,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
     trackEvent(MixpanelEvent.TARIFF_TRACKER_FILTERED, { filter: id, values: values.length });
   };
   const clearFilters = () => setFilters({});
+  const replaceFilters = (next: FilterState) => setFilters(Object.fromEntries(Object.entries(next).filter(([, v]) => v?.length)));
   const filterContext = useMemo(() => ({ sections }), [sections]);
 
   // Debounced, so picking a date with the keyboard counts once
@@ -252,6 +255,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
         resetAdjustments,
         filters,
         setFilter,
+        replaceFilters,
         clearFilters,
         filterContext,
       }}

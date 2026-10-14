@@ -1,0 +1,199 @@
+"use client";
+
+import "./meta";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import { ChevronDownIcon, ChevronUpDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { flexRender, Header, Row, Table } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import * as ui from "@/components/ui/styles";
+
+// Every data table, drawn the same way (DESIGN_SYSTEM.md "Data table"): a real <table> in a card,
+// headers in small caps on the soft background, sortable ones as buttons with the direction shown
+// (and aria-sort), rows ruled and lit on hover, numbers right-aligned, the row's subject as its
+// heading. A row can open something (onRowClick); a modified click on a link inside it still
+// opens a tab. Past `virtualizeFrom` rows only the rows in view are drawn (TanStack Virtual), so a
+// catalog of thousands scrolls smoothly; the scroller is the nearest scrolling parent.
+
+const ALIGN = { left: "text-left", right: "text-right", center: "text-center" };
+
+const SortIcon = ({ dir }: { dir: false | "asc" | "desc" }) =>
+  dir === "asc" ? (
+    <ChevronUpIcon className="h-3.5 w-3.5" aria-hidden />
+  ) : dir === "desc" ? (
+    <ChevronDownIcon className="h-3.5 w-3.5" aria-hidden />
+  ) : (
+    <ChevronUpDownIcon className="h-3.5 w-3.5 opacity-40" aria-hidden />
+  );
+
+const HeaderCell = <T,>({ header, first, last }: { header: Header<T, unknown>; first: boolean; last: boolean }) => {
+  const meta = header.column.columnDef.meta;
+  const align = ALIGN[meta?.align ?? "left"];
+  const pad = `${first ? "pl-5 sm:pl-6" : "pl-4"} ${last ? "pr-5 sm:pr-6" : "pr-4"}`;
+  const dir = header.column.getIsSorted();
+  const content = header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext());
+  return (
+    <th
+      scope="col"
+      // The card can't clip (that would stop the header sticking), so the corner cells round themselves
+      className={`${ui.label} sticky top-0 z-10 bg-base-200 py-2.5 ${pad} ${align} ${meta?.width ?? ""} ${first ? "rounded-tl-lg" : ""} ${last ? "rounded-tr-lg" : ""}`}
+      aria-sort={dir === "asc" ? "ascending" : dir === "desc" ? "descending" : header.column.getCanSort() ? "none" : undefined}
+    >
+      {header.column.getCanSort() ? (
+        <button
+          type="button"
+          onClick={header.column.getToggleSortingHandler()}
+          className={`inline-flex items-center gap-1 rounded uppercase tracking-wider hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+            meta?.align === "right" ? "flex-row-reverse" : ""
+          } ${dir ? "text-base-content" : ""}`}
+        >
+          {content}
+          <SortIcon dir={dir} />
+        </button>
+      ) : (
+        content
+      )}
+    </th>
+  );
+};
+
+const BodyRow = <T,>({
+  row,
+  onRowClick,
+  rowClassName,
+  measure,
+  index,
+}: {
+  row: Row<T>;
+  onRowClick?: (row: T) => void;
+  rowClassName?: (row: T) => string;
+  // Virtualized: the virtualizer measures each drawn row's real height
+  measure?: (el: HTMLTableRowElement | null) => void;
+  index?: number;
+}) => {
+  const cells = row.getVisibleCells();
+  return (
+    <tr
+      ref={measure}
+      data-index={index}
+      className={`border-t border-base-300 transition-colors hover:bg-base-200/60 ${onRowClick ? "cursor-pointer" : ""} ${row.getIsSelected() ? "bg-primary/5" : ""} ${rowClassName?.(row.original) ?? ""}`}
+      onClick={(e) => {
+        if (!onRowClick) return;
+        // Controls in the row, and modified clicks on links, do their own thing
+        const target = e.target as HTMLElement;
+        if (target.closest("button, input, label, select, textarea, [data-row-ignore]")) return;
+        if (target.closest("a") && (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) return;
+        e.preventDefault();
+        onRowClick(row.original);
+      }}
+    >
+      {cells.map((cell, i) => {
+        const meta = cell.column.columnDef.meta;
+        const pad = `${i === 0 ? "pl-5 sm:pl-6" : "pl-4"} ${i === cells.length - 1 ? "pr-5 sm:pr-6" : "pr-4"}`;
+        const className = `py-3 align-middle ${pad} ${ALIGN[meta?.align ?? "left"]} ${meta?.width ?? ""}`;
+        const content = flexRender(cell.column.columnDef.cell, cell.getContext());
+        return meta?.rowHeader ? (
+          <th key={cell.id} scope="row" className={`${className} font-normal`}>
+            {content}
+          </th>
+        ) : (
+          <td key={cell.id} className={className}>
+            {content}
+          </td>
+        );
+      })}
+    </tr>
+  );
+};
+
+// The nearest parent that scrolls, for the virtualizer
+const scrollParent = (el: HTMLElement | null): HTMLElement | null => {
+  for (let p = el?.parentElement; p; p = p.parentElement) {
+    const { overflowY } = getComputedStyle(p);
+    if (overflowY === "auto" || overflowY === "scroll") return p;
+  }
+  return null;
+};
+
+export const DataTable = <T,>({
+  table,
+  label,
+  onRowClick,
+  rowClassName,
+  empty,
+  virtualizeFrom = 300,
+  estimateRowHeight = 72,
+}: {
+  table: Table<T>;
+  // What the table is, for screen readers
+  label: string;
+  onRowClick?: (row: T) => void;
+  rowClassName?: (row: T) => string;
+  // Shown in place of the rows when none match
+  empty?: ReactNode;
+  // Rows from which only those in view are drawn
+  virtualizeFrom?: number;
+  estimateRowHeight?: number;
+}) => {
+  const rows = table.getRowModel().rows;
+  const tableRef = useRef<HTMLTableElement>(null);
+  const [scroller, setScroller] = useState<HTMLElement | null>(null);
+  useEffect(() => setScroller(scrollParent(tableRef.current)), []);
+  const virtual = rows.length >= virtualizeFrom;
+  const virtualizer = useVirtualizer({
+    count: virtual ? rows.length : 0,
+    getScrollElement: () => scroller,
+    estimateSize: () => estimateRowHeight,
+    overscan: 12,
+    // Rows are offset by where the table starts inside the scroller
+    scrollMargin: tableRef.current && scroller ? tableRef.current.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop : 0,
+  });
+  const items = virtual ? virtualizer.getVirtualItems() : [];
+  const columns = table.getVisibleLeafColumns().length;
+  const before = items.length ? items[0].start - virtualizer.options.scrollMargin : 0;
+  const after = items.length ? virtualizer.getTotalSize() - (items[items.length - 1].end - virtualizer.options.scrollMargin) : 0;
+
+  return (
+    <div className={`${ui.cardOverflowVisible}`}>
+      <div className="rounded-lg">
+        <table ref={tableRef} className="w-full border-separate border-spacing-0 text-sm tabular-nums" aria-label={label} aria-rowcount={rows.length + 1}>
+          <thead>
+            {table.getHeaderGroups().map((group) => (
+              <tr key={group.id}>
+                {group.headers.map((header, i) => (
+                  <HeaderCell key={header.id} header={header} first={i === 0} last={i === group.headers.length - 1} />
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={columns} className="px-5 py-8 sm:px-6">
+                  {empty ?? <p className={ui.bodySm}>Nothing matches.</p>}
+                </td>
+              </tr>
+            ) : virtual ? (
+              <>
+                {/* Spacers keep the scrollbar the full height while only the rows in view are drawn */}
+                {before > 0 && <tr aria-hidden style={{ height: before }} />}
+                {items.map((item) => (
+                  <BodyRow
+                    key={rows[item.index].id}
+                    row={rows[item.index]}
+                    onRowClick={onRowClick}
+                    rowClassName={rowClassName}
+                    measure={virtualizer.measureElement}
+                    index={item.index}
+                  />
+                ))}
+                {after > 0 && <tr aria-hidden style={{ height: after }} />}
+              </>
+            ) : (
+              rows.map((row) => <BodyRow key={row.id} row={row} onRowClick={onRowClick} rowClassName={rowClassName} />)
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};

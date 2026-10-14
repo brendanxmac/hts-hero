@@ -14,7 +14,7 @@ import { formatRate } from "../formatRate";
 import { averageRateSeries } from "../insights/catalogHistory";
 import { useInsights } from "../insights/InsightsContext";
 import { changesTeaser, wholeDollars } from "../insights/teasers";
-import { BeyondPlanTeaser, TrackingNotice } from "../plan";
+import { BeyondPlanTeaser } from "../plan";
 import { shortProgram } from "../report";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
@@ -34,8 +34,8 @@ import { ReviewProgress } from "../opportunities/ReviewProgress";
 import { SavingsRing } from "./SavingsRing";
 import { StoryLine } from "./StoryLine";
 
-// The Overview (DESIGN_SYSTEM.md §15): the Tracker's home. A rotating line about the catalog and
-// the one next step, then the numbers, potential savings, the rate pulse, where the catalog comes
+// The Overview (DESIGN_SYSTEM.md §15): the Tracker's home. A rotating line about the catalog, the
+// path to lower duty on a strip of its own, then the numbers, potential savings, the rate pulse, where the catalog comes
 // from, its exposure, the latest changes and the products to look at first. Before there are
 // products, the empty overview asks for them.
 
@@ -139,11 +139,10 @@ export const Overview = () => {
     <div className="flex flex-col gap-4">
       <OverviewHeader />
       <NewsTape />
-      <TrackingNotice />
+      <NextStep />
 
-      <section aria-label="This week" className={`${tt.panel} flex flex-col gap-6 p-6 lg:p-8`}>
+      <section aria-label="This week" className={`${tt.panel} p-6 lg:p-8`}>
         <StoryLine stories={data.stories} />
-        <NextStep />
       </section>
 
       <MetricTiles metrics={data.metrics} />

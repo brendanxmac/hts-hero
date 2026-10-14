@@ -283,7 +283,8 @@ A rounded box's corners must never be cut off. When a header, table row, stat gr
 
 ### Data table
 
-- A plain `<table className="w-full text-sm tabular-nums">` inside `ui.card` with `overflow-hidden`, wrapped in `overflow-x-auto`. See `hts-code-page/DutyByCountry.tsx`.
+- Any table people sort, filter, search or pick rows in is built on `@/components/ui/table` (TanStack Table under the hood): `useDataTable({ data, columns, getRowId, searchText? })`, then `<DataTable table label onRowClick? empty? />`, with `TableSearch`, `FacetFilter` (one per filterable column, counts included), `FilterChips` and, for bulk actions, `selectColumn` plus `SelectionBar`. Columns describe themselves in `meta`: `align`, `width`, `rowHeader`, and `facet` (the filter's label and how each value reads). Sorting is by clicking a header; lists stay in their own order until then. Past 300 rows only the rows in view are drawn. See `tariff-tracker/imports/ImportsTable.tsx`.
+- `DataTable` draws the rules below. A small static table can still be written by hand to the same rules: a plain `<table className="w-full text-sm tabular-nums">` inside `ui.card` with `overflow-hidden`, wrapped in `overflow-x-auto`. See `hts-code-page/DutyByCountry.tsx`.
 - Header row: `ui.label` on `bg-base-200`.
 - Body rows: `border-t border-base-300 hover:bg-base-200/60`. Cells are `px-4 py-3`, with `px-5 sm:px-6` on the first and last.
 - The row's subject is a `<th scope="row">`. Numbers are right-aligned. Codes are mono, `text-xs text-base-content/60`.
@@ -479,8 +480,8 @@ Rules:
 
 ### Principles
 
-1. **Tell their story.** The Overview opens with one rotating sentence about the user's own catalog, numbers in colored chips. It rotates through four framings, the most relevant first: just announced ("A Section 232 copper proposal could hit **2 of your products**: about **+$480** per shipment if it passes"), the cost of waiting, what we've done since they joined, and all clear.
-2. **One next step.** Show only the next step that matters and what it's worth, never the whole list. The Overview's next-step card walks four steps: add products → turn on alerts → set product values (finish the ones still on the $10,000 default) → detect savings → audit past entries (coming soon; v1 is catalogs only, to cut onboarding friction).
+1. **Tell their story.** The Overview opens with one rotating sentence about the user's own catalog, numbers in colored chips. It sits in its own panel: the framings as tabs (a colored dot each, and a thin timer bar filling under the open one that moves to the next when full; paused on hover, focus, the pause button or reduced motion), an icon tile in the story's color, the sentence, and one link to where it leads ("See what changed"). All framings share one grid cell, so the panel never jumps. Four framings, the most relevant first: just announced ("A Section 232 copper proposal could hit **2 of your products**: about **+$480** per shipment if it passes"), the cost of waiting, what we've done since they joined, and all clear.
+2. **One next step.** Lead with the next step that matters and what it's worth. The Overview's path strip walks four steps: add products → set product values (finish the ones still on the $10,000 default) → see potential savings → audit past entries. Alerts are out of the path (and every "get alerts" CTA is gone) until a better alerts pitch exists.
 3. **Color is meaning.** Cobalt is the user's data, links and the next step; green is money (savings, trial, done); red is an increase or a new change; amber is a heads-up, pending action or a lock.
 4. **Soft and roomy.** Round corners, generous padding, white space.
 5. **Savings are always potential.** Importers may not qualify, or may need a process (certificates of origin, rulings, a supplier move) to lock a saving in. Say "potential savings", "could save", "up to", "may qualify"; never "you save", "will save" or a bare "Save $X". Show the real number, blur only the detail, then offer the trial (§10.5).
@@ -519,7 +520,7 @@ Radii: hero 28, cards and sidebar 24, tiles 18–20, nav items and inputs 12, bu
 - **Buttons, one color per intent:** primary = Text fill (dark pill in light mode); money = green; next step = cobalt; secondary = outline pill. At most one green or cobalt button per card.
 - **Chips:** number chips inside sentences; status chips (POTENTIAL green, CHANGED red, PROGRAM cobalt, HEADS-UP amber).
 - **Tariff news tape:** the latest tariff news and newly added tariffs (proposals, HTS revisions, Federal Register, CSMS, court rulings), as pills with a colored dot.
-- **Next-step card:** cobalt tint with a 2px cobalt border, "Your next step · 2 of 5" with a five-segment bar, the step's title, its parts with their status, one cobalt button with the time it takes. Beside it, at most two quiet tiles tease what comes after, with the payoff ("$6,700 already found").
+- **Path strip (Oct 2026):** its own slim panel under the story panel, never inside it. A progress ring ("2/4"), "Your next step", the step's title and one line of payoff, one cobalt (or green, for savings) button. Under a hairline, the whole path as a four-up checklist: done steps struck through in green, the next one tinted cobalt, every step still to do a one-click button with its payoff ("Up to $6,700 per shipment spotted"). The Overview header has no Add products button; with no products, the empty overview's add-products panel is the CTA (inverted, like every CTA).
 - **Alert banner:** amber, only when something needs action, e.g. a free allowance used up (savings checks, audit checks, alert slots). Product counts against the plan are never a regular metric.
 - **Empty state (no products yet):** the ask first (drop a file or paste codes, template and example links), four benefits, picks from the user's recent calculator lookups as toggle cards, then a clearly labeled EXAMPLE dashboard.
 - **Alerts:** soft rows with a round role-colored icon.

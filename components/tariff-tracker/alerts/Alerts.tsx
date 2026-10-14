@@ -4,7 +4,6 @@ import * as tt from "@/components/ui/styles/tracker";
 import { TableStandIn } from "@/components/ui/stand-ins";
 import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { AccountGate } from "../access/AccountGate";
-import { TrackingNotice } from "../plan/TrackingNotice";
 import { AlertSettingsPanel } from "./AlertSettingsPanel";
 
 // The Alerts section: where alerts go, what sets one off, and which imports get them. Alerts come
@@ -25,7 +24,6 @@ export const Alerts = () => (
     preview={<TableStandIn columns={["Alert", "Products", "Change", "Date"]} />}
   >
     <div className="flex flex-col gap-4">
-      <TrackingNotice />
       <AlertSettingsPanel />
       <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-alert-triggers">
         <h2 id="tt-alert-triggers" className={tt.title}>

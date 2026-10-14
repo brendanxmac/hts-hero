@@ -30,6 +30,9 @@ module.exports = {
         wiggle: "wiggle 1.5s ease-in-out infinite",
         popup: "popup 0.25s ease-in-out",
         shimmer: "shimmer 3s ease-out infinite alternate",
+        // The Overview's story: each tab's timer fills, and the new sentence rises in
+        "story-timer": "storyTimer 9s linear forwards",
+        "story-in": "storyIn 400ms ease-out",
       },
       keyframes: {
         opacity: {
@@ -66,6 +69,14 @@ module.exports = {
           "0%": { backgroundPosition: "0 50%" },
           "50%": { backgroundPosition: "100% 50%" },
           "100%": { backgroundPosition: "0% 50%" },
+        },
+        storyTimer: {
+          "0%": { transform: "scaleX(0)" },
+          "100%": { transform: "scaleX(1)" },
+        },
+        storyIn: {
+          "0%": { opacity: 0, transform: "translateY(6px)" },
+          "100%": { opacity: 1, transform: "translateY(0)" },
         },
       },
     },

@@ -59,7 +59,9 @@ import {
   readAdjustments,
   writeAdjustments,
 } from "../components/tariff-tracker/adjustments"
-import { activeFilters, applyFilters, CATALOG_FILTERS, FilterContext, filterOptions } from "../components/tariff-tracker/filters"
+import { ColumnDef, ColumnFiltersState, createTable, getCoreRowModel, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel } from "@tanstack/react-table"
+import { facetFilter, normalizeSearch, pruneColumnFilters } from "../components/ui/table/useDataTable"
+import { TrackedProduct } from "../components/tariff-tracker/report"
 
 // A top-level HTS line carrying its own base rate (no parents to look up)
 const htsLine = (htsno: string, general: string, description: string) =>
@@ -167,36 +169,64 @@ describe("Tariff Tracker: product adjustments", () => {
   })
 })
 
-describe("Tariff Tracker: filters", () => {
+describe("Tariff Tracker: filtering your imports", () => {
   const steelCN = product("7326.90.86.88", "2.9%", "CN")
   const steelVN = product("7326.90.86.88", "2.9%", "VN")
   const watchCN = product("9103.10.40", "24¢ each", "CN")
   const all = [steelCN, steelVN, watchCN]
-  const context: FilterContext = { sections: [] }
-  const byId = (id: string) => CATALOG_FILTERS.find((f) => f.id === id)!
+  const columns: ColumnDef<TrackedProduct, any>[] = [
+    { id: "country", accessorFn: (r) => r.entry.country.code, filterFn: facetFilter as any },
+    { id: "chapter", accessorFn: (r) => String(r.entry.element.chapter), filterFn: facetFilter as any },
+    { id: "tags", accessorFn: (r) => (r.entry.country.code === "CN" ? ["China", "Asia"] : ["Asia"]), getUniqueValues: (r) => (r.entry.country.code === "CN" ? ["China", "Asia"] : ["Asia"]), filterFn: facetFilter as any },
+  ]
+  const table = (filters: ColumnFiltersState) =>
+    createTable<TrackedProduct>({
+      data: all,
+      columns,
+      getRowId: (r) => `${r.entry.element.htsno}-${r.entry.country.code}`,
+      state: { columnFilters: pruneColumnFilters(filters, columns, all) },
+      onStateChange: () => {},
+      renderFallbackValue: null,
+      getCoreRowModel: getCoreRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+      getFacetedRowModel: getFacetedRowModel(),
+      getFacetedUniqueValues: getFacetedUniqueValues(),
+    })
+  const shown = (filters: ColumnFiltersState) => table(filters).getRowModel().rows.map((r) => r.original)
 
   it("lets everything through with nothing picked", () => {
-    expect(applyFilters(all, {}).length).toBe(3)
-    expect(applyFilters(all, { country: [] }).length).toBe(3)
+    expect(shown([]).length).toBe(3)
+    expect(shown([{ id: "country", value: [] }]).length).toBe(3)
   })
 
   it("matches any picked value within a filter, and every filter across them", () => {
-    expect(applyFilters(all, { country: ["CN", "VN"] }).length).toBe(3)
-    expect(applyFilters(all, { country: ["CN"] }).length).toBe(2)
-    expect(applyFilters(all, { country: ["CN"], chapter: ["91"] })).toEqual([watchCN])
+    expect(shown([{ id: "country", value: ["CN", "VN"] }]).length).toBe(3)
+    expect(shown([{ id: "country", value: ["CN"] }]).length).toBe(2)
+    expect(shown([{ id: "country", value: ["CN"] }, { id: "chapter", value: ["91"] }])).toEqual([watchCN])
   })
 
-  it("ignores picked values no product has any more", () => {
-    expect(applyFilters(all, { country: ["MX"] }).length).toBe(3)
-    expect(activeFilters(all, { country: ["MX", "VN"] })[0].picked).toEqual(["VN"])
+  it("matches a list value (an import's tariffs) by any of its items", () => {
+    expect(shown([{ id: "tags", value: ["China"] }]).length).toBe(2)
+    expect(shown([{ id: "tags", value: ["Asia"] }]).length).toBe(3)
   })
 
-  it("lists every value with its count against the other filters", () => {
-    const countries = filterOptions(byId("country"), all, { chapter: ["73"] }, context)
-    expect(countries.map((o) => `${o.value}:${o.count}`)).toEqual(["CN:1", "VN:1"])
-    expect(countries[0].label).toBe("China")
-    const chapters = filterOptions(byId("chapter"), all, { country: ["VN"] }, context)
-    expect(chapters.map((o) => `${o.value}:${o.count}`)).toEqual(["73:1", "91:0"])
+  it("ignores picked values no import has any more", () => {
+    expect(shown([{ id: "country", value: ["MX"] }]).length).toBe(3)
+    expect(pruneColumnFilters([{ id: "country", value: ["MX", "VN"] }], columns, all)).toEqual([{ id: "country", value: ["VN"] }])
+  })
+
+  it("counts every value against the other filters", () => {
+    const counts = (t: ReturnType<typeof table>, id: string) =>
+      [...t.getColumn(id)!.getFacetedUniqueValues().entries()].map(([v, n]) => `${v}:${n}`).sort()
+    expect(counts(table([{ id: "chapter", value: ["73"] }]), "country")).toEqual(["CN:1", "VN:1"])
+    expect(counts(table([{ id: "country", value: ["VN"] }]), "chapter")).toEqual(["73:1"])
+    expect(counts(table([]), "tags")).toEqual(["Asia:3", "China:2"])
+  })
+
+  it("searches codes with or without dots and spaces, in any case", () => {
+    expect(normalizeSearch("7326.90.86")).toBe("73269086")
+    expect(normalizeSearch("7326 90-86")).toBe("73269086")
+    expect(normalizeSearch("China")).toBe("china")
   })
 })
 

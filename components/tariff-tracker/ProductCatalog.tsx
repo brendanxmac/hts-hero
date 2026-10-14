@@ -12,7 +12,6 @@ import { ProductView } from "./product/ProductView";
 import { TrackedProduct } from "./report";
 import { useTrackerNav } from "./shell/TrackerNav";
 import { TariffReport } from "./TariffReport";
-import { TrackingNotice } from "./plan";
 import { useTracker } from "./TrackerContext";
 
 // The Catalog tab: every product the user imports with its duty rate today. Before there are
@@ -75,14 +74,11 @@ export const ProductCatalog = () => {
         ) : t.items.length === 0 ? (
           <CatalogEmptyState onAdd={openDialog} onExample={loadExample} />
         ) : (
-          <div className="flex flex-col gap-4">
-            <TrackingNotice />
-            <TariffReport
-              rows={t.products}
-              onAdd={() => openDialog("paste")}
-              onOpen={(row: TrackedProduct) => nav.openProduct(row.key, true)}
-            />
-          </div>
+          <TariffReport
+            rows={t.products}
+            onAdd={() => openDialog("paste")}
+            onOpen={(row: TrackedProduct) => nav.openProduct(row.key, true)}
+          />
         )}
       </div>
       <AddProductsDialog

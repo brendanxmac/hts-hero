@@ -1,11 +1,10 @@
 "use client";
 
-import { PlusIcon } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
 import { formatDate, todayIso } from "../../duty-calculator/lib/format";
 import { TRACKER_PATH } from "../sections";
 
-// The Overview's greeting, the date rates are worked out for, and the way to add products
+// The Overview's greeting and the date rates are worked out for
 const greeting = () => {
   const hour = new Date().getHours();
   return hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
@@ -21,9 +20,5 @@ export const OverviewHeader = ({ title }: { title?: string }) => (
       <span className="text-sm text-base-content/60">Rates as of {formatDate(todayIso())}</span>
       <h1 className={`${tt.display} m-0 text-2xl font-semibold text-base-content`}>{title ?? greeting()}</h1>
     </div>
-    <button type="button" className={tt.button("primary")} onClick={() => openAddProducts()}>
-      <PlusIcon className="h-4 w-4" aria-hidden />
-      Add products
-    </button>
   </header>
 );
