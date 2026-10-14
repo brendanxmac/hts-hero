@@ -59,7 +59,7 @@ export const Overview = () => {
     const delta = (now: number, then: number, show: (n: number) => string) =>
       Math.abs(now - then) < 0.005 ? { note: "No change in 90 days", tone: "neutral" as const } : { note: `${now > then ? "▲" : "▼"} ${show(Math.abs(now - then))} in 90 days`, tone: now > then ? ("error" as const) : ("success" as const) };
     const dutyDelta = delta(dutyNow, dutyThen, wholeDollars);
-    const rateDelta = delta(rateNow, rateThen, (n) => `${Math.round(n * 100) / 100} pts`);
+    const rateDelta = delta(rateNow, rateThen, (n) => `${Math.round(n * 100) / 100}%`);
     // The last year of a step series as points along real dates, starting with the value in force
     // a year ago
     const lastYearOf = <T extends { date: string }>(s: T[], value: (p: T) => number) =>

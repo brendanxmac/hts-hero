@@ -71,7 +71,7 @@ export const ProductTiles = ({
             <span className="flex items-baseline justify-between gap-2">
               <span className={`${tt.display} text-2xl font-semibold tabular-nums text-base-content`}>{formatRate(product.totalPct)}</span>
               <span className={`text-sm font-semibold ${increase ? "text-error" : "text-success"}`}>
-                {increase && change ? `+${Math.round(change.deltaPct * 100) / 100} pts` : saving ? `Could save ${wholeDollars(saving.usd)}` : ""}
+                {increase && change ? `+${Math.round(change.deltaPct * 100) / 100}%` : saving ? `Could save ${wholeDollars(saving.usd)}` : ""}
               </span>
             </span>
           </button>

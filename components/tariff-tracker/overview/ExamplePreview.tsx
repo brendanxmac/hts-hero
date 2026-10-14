@@ -11,7 +11,7 @@ import { useTracker } from "../TrackerContext";
 // 48-product catalog, labeled EXAMPLE on the page; loading the real example catalog replaces it.
 const KPIS = [
   { label: "Duty per shipment", value: "$9,200", note: "▲ $640 in 90 days", tone: "text-error" },
-  { label: "Average rate", value: "23.0%", note: "▲ 1.1 pts in 90 days", tone: "text-error" },
+  { label: "Average rate", value: "23.0%", note: "▲ 1.1% in 90 days", tone: "text-error" },
   { label: "Changes, last 12 months", value: "6", note: "Hit 3 products", tone: "text-base-content/60" },
   { label: "Potential savings", value: "Up to $6,700", note: "Per shipment, if you qualify", tone: "text-success" },
 ];

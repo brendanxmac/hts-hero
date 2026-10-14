@@ -24,7 +24,9 @@
     "tariff-sources:collect": "npx tsx scripts/tariff-sources/collect.ts",
     "tariff-updates:process": "npx tsx scripts/tariff-updates/process.ts",
     "lists:check": "npx tsx scripts/engine-v2/check-lists.ts",
-    "test:revision-diff": "npx tsx testing/hts-revision-diff/run.ts"
+    "test:revision-diff": "npx tsx testing/hts-revision-diff/run.ts",
+    "social:studio": "remotion studio social/remotion/index.tsx",
+    "social:ideas": "npx tsx scripts/social-studio/ideas.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
@@ -39,6 +41,9 @@
     "@preline/textarea-auto-height": "^2.6.0",
     "@react-email/components": "^0.5.3",
     "@react-email/render": "^1.2.3",
+    "@remotion/google-fonts": "4.0.530",
+    "@remotion/player": "4.0.530",
+    "@remotion/web-renderer": "4.0.530",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.45.0",
     "@tanstack/react-table": "8.21.3",
@@ -78,6 +83,7 @@
     "react-syntax-highlighter": "^5.8.0",
     "react-tooltip": "^5.26.3",
     "remark-gfm": "^4.0.1",
+    "remotion": "4.0.530",
     "resend": "^4.0.1",
     "sharp": "^0.34.3",
     "stripe": "^18.2.1",
@@ -88,6 +94,7 @@
   },
   "devDependencies": {
     "@react-email/preview-server": "^4.2.11",
+    "@remotion/cli": "4.0.530",
     "@tailwindcss/typography": "^0.5.19",
     "@types/d3-array": "^3.2.2",
     "@types/d3-geo": "^3.1.1",

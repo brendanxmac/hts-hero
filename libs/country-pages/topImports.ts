@@ -50,7 +50,7 @@ const headingName = (text: string, max = 40) => {
 };
 // "Other", "Other: Of cotton": says nothing on its own
 const isVague = (text: string) => /^other\b/i.test(text);
-const shortLabel = (element: HtsElement, parents: HtsElement[]) => {
+export const shortLabel = (element: HtsElement, parents: HtsElement[]) => {
   // The 4-digit heading, else the broadest line with a code of its own (some headings are written
   // at 8 digits, like toys), else the top of the chain
   const heading =

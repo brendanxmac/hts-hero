@@ -41,6 +41,9 @@ const nextConfig = {
     outputFileTracingIncludes: {
       "/hts/[code]": ["./public/data/us-imports/**"],
       "/api/mcp": ["./public/data/us-imports/**"],
+      // The social studio's posts and daily ideas read them too
+      "/api/social-studio/**": ["./public/data/us-imports/**"],
+      "/api/cron/social-ideas": ["./public/data/us-imports/**"],
     },
   },
   webpack: (config) => {
