@@ -5,7 +5,7 @@ import { ArrowRightIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/s
 import config from "@/config"
 import { renderSchemaJsonLd } from "@/libs/seo"
 import { SOURCES } from "@/libs/tariff-sources/types"
-import { chapterOf, getPublishedUpdate, getPublishedUpdates, htsPageCode, stagesReached } from "@/libs/tariff-updates/public"
+import { getPublishedUpdate, getPublishedUpdates, resolveHtsLinks, stagesReached } from "@/libs/tariff-updates/public"
 import { STAGE_ORDER } from "@/libs/tariff-updates/types"
 import { THEME } from "@/components/ui/theme"
 import { mono, trackerDisplay, trackerSans } from "@/components/ui/font"
@@ -31,9 +31,10 @@ const clip = (text: string, max: number) => (text.length <= max ? text : `${text
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const found = await getPublishedUpdate(params.slug)
   if (!found) return {}
-  const { update } = found
+  const { update, indexable } = found
   const description = clip(update.summary, 158)
   return {
+    ...(indexable ? {} : { robots: { index: false, follow: true } }),
     title: `${clip(update.title, 70)} | HTS Hero`,
     description,
     openGraph: { title: update.title, description, url: `${SITE}/tariff-updates/${update.slug}`, siteName: "HTS Hero", type: "article" },
@@ -42,20 +43,23 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-const HtsCode = ({ code }: { code: string }) => {
-  const chapter = chapterOf(code)
-  const htsCode = htsPageCode(code)
+const HtsCode = ({ code, href }: { code: string; href: string | null }) => {
   const className = `${mono.className} rounded-full bg-tt-soft px-2.5 py-1 text-xs text-base-content`
-  if (chapter) return <Link href={`/chapter/${chapter}`} className={`${className} hover:text-primary`}>{code}</Link>
-  if (htsCode) return <Link href={`/hts/${htsCode}`} className={`${className} hover:text-primary`}>{code}</Link>
-  return <span className={className}>{code}</span>
+  return href ? (
+    <Link href={href} className={`${className} hover:text-primary`}>
+      {code}
+    </Link>
+  ) : (
+    <span className={className}>{code}</span>
+  )
 }
 
 export default async function TariffUpdatePage({ params }: { params: { slug: string } }) {
   const found = await getPublishedUpdate(params.slug)
   if (!found) notFound()
-  const { update, sources } = found
+  const { update, sources, revisionEntry } = found
   const reached = stagesReached(sources)
+  const htsLinks = await resolveHtsLinks(update.hts_codes)
   const related = (await getPublishedUpdates()).filter((u) => u.authority === update.authority && u.slug !== update.slug).slice(0, 4)
   const url = `${SITE}/tariff-updates/${update.slug}`
 
@@ -183,7 +187,7 @@ export default async function TariffUpdatePage({ params }: { params: { slug: str
                 </h2>
                 <div className="flex flex-wrap gap-1.5">
                   {update.hts_codes.slice(0, HTS_SHOWN).map((code) => (
-                    <HtsCode key={code} code={code} />
+                    <HtsCode key={code} code={code} href={htsLinks[code]} />
                   ))}
                 </div>
                 {update.hts_codes.length > HTS_SHOWN && (
@@ -191,11 +195,23 @@ export default async function TariffUpdatePage({ params }: { params: { slug: str
                     <summary className="cursor-pointer text-xs font-semibold text-primary">Show all {update.hts_codes.length}</summary>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {update.hts_codes.slice(HTS_SHOWN).map((code) => (
-                        <HtsCode key={code} code={code} />
+                        <HtsCode key={code} code={code} href={htsLinks[code]} />
                       ))}
                     </div>
                   </details>
                 )}
+              </section>
+            )}
+
+            {revisionEntry && (
+              <section aria-labelledby="calculator-changes" className={`${tt.panel} flex flex-col gap-2 p-6`}>
+                <h2 id="calculator-changes" className={tt.eyebrow("primary")}>
+                  In HTS Hero&apos;s calculator
+                </h2>
+                <p className="text-sm leading-relaxed text-base-content/80">{revisionEntry.summary}</p>
+                <Link href="/duty-calculator/changelog" className="text-xs font-semibold text-primary underline-offset-4 hover:underline">
+                  Calculator changelog, {formatDay(revisionEntry.entry_date)}
+                </Link>
               </section>
             )}
 

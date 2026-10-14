@@ -19,6 +19,7 @@ const NAV = [
   { href: "/duty-calculator", label: "Tariff Calculator" },
   { href: "/tariff-monitor", label: "Tariff Tracker" },
   { href: "/tariff-audit", label: "Tariff Audit" },
+  { href: "/tariff-updates", label: "Tariff Updates" },
   { href: "/classify", label: "Classification" },
   { href: "/pricing-calculator", label: "Pricing" },
 ];
@@ -57,12 +58,13 @@ export const MarketingHeader = () => {
           <Image src={logo} alt={`${config.appName} logo`} width={28} height={28} priority />
           <span className="text-lg font-extrabold text-slate-900 skin:text-base-content">{config.appName}</span>
         </Link>
-        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+        <nav aria-label="Main" className="hidden items-center gap-0 lg:flex xl:gap-1">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+              // Six items fit at 1024px with tighter padding below xl
+              className={`whitespace-nowrap rounded-lg px-2 py-2 text-sm font-semibold transition-colors xl:px-3 ${
                 pathname === item.href ? "bg-teal-50 skin:bg-primary/10 skin:bg-primary/10 text-teal-800 skin:text-primary skin:text-primary" : "text-slate-600 skin:text-base-content/70 hover:bg-slate-50 skin:hover:bg-tt-soft hover:text-slate-900 skin:hover:text-base-content"
               }`}
             >
@@ -70,7 +72,7 @@ export const MarketingHeader = () => {
             </Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-4 lg:flex">
+        <div className="hidden items-center gap-3 whitespace-nowrap lg:flex xl:gap-4">
           {themeSwitch}
           {actions}
         </div>

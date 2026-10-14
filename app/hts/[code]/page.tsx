@@ -22,6 +22,7 @@ import {
 import { microEstimate } from "@/libs/hts-micro-estimate";
 import { getUsImports } from "@/libs/us-imports-server";
 import { IMPORT_SOURCES_SHOWN } from "@/components/hts-code-page/ImportSources";
+import { getUpdatesNamingCode } from "@/libs/tariff-updates/public";
 
 interface HtsCodePageProps {
   params: { code: string };
@@ -171,6 +172,7 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
       asOf: summary.asOf,
     })
     : null;
+  const tariffUpdates = element.htsno ? await getUpdatesNamingCode(element.htsno) : [];
   const children = getDirectChildren(element, elements);
   const nearestParent = parents[parents.length - 1];
   const siblings = nearestParent
@@ -190,6 +192,7 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
         sectionChapter={sectionChapter}
         imports={imports}
         importDuty={importDuty}
+        tariffUpdates={tariffUpdates}
       />
     </main>
   );

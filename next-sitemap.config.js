@@ -43,12 +43,18 @@ async function getTariffUpdates() {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
   const { data, error } = await supabase
     .from("tariff_updates")
-    .select("slug, last_activity_at")
+    .select("id, slug, kind, last_activity_at")
     .eq("status", "published")
     .order("last_activity_at", { ascending: false })
     .limit(5000);
   if (error) throw new Error(`Failed to get tariff updates: ${error.message}`);
-  return data;
+  // An HTS revision's page is noindexed until the calculator changelog describes the revision
+  // (app/tariff-updates/[slug]), so it stays out of the sitemap until then too
+  const { data: releases } = await supabase.from("tariff_source_items").select("update_id, external_id").eq("source", "usitc").not("update_id", "is", null);
+  const { data: entries } = await supabase.from("tariff_changelog").select("revision").eq("status", "published").eq("type", "revision");
+  const described = new Set((entries || []).map((e) => e.revision));
+  const releaseOf = new Map((releases || []).map((r) => [r.update_id, r.external_id]));
+  return data.filter((u) => u.kind !== "hts_revision" || described.has(releaseOf.get(u.id)));
 }
 
 // Each blog post's last update, from its frontmatter

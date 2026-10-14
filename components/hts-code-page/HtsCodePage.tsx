@@ -24,6 +24,8 @@ import { PlaybookCard } from "./PlaybookCard";
 import { RelatedCodes } from "./RelatedCodes";
 import { RelatedRulings } from "./RelatedRulings";
 import { StructuredData } from "./StructuredData";
+import { CodeUpdates } from "@/components/tariff-updates/CodeUpdates";
+import type { PublicUpdate } from "@/libs/tariff-updates/public";
 import type { SectionChapter } from "./types";
 
 // The /hts/[code] page: what an HTS code covers, what it pays and where it sits in the
@@ -47,6 +49,8 @@ export interface HtsCodePageProps {
   // Where the US imports it from (Census), and the duty from each of those countries
   imports?: UsImports | null;
   importDuty?: HtsDutySummary | null;
+  // The latest tariff updates naming the code or a heading above it
+  tariffUpdates?: PublicUpdate[];
 }
 
 export function HtsCodePage({
@@ -60,6 +64,7 @@ export function HtsCodePage({
   sectionChapter,
   imports,
   importDuty,
+  tariffUpdates = [],
 }: HtsCodePageProps) {
   const tariffElement = findRateElement(element, parents);
   const hasDutyData = !!(tariffElement.general || tariffElement.special || tariffElement.other);
@@ -126,6 +131,7 @@ export function HtsCodePage({
               )}
               {offerCalculator && <CalculatorPrompt htsno={element.htsno} />}
               {summary && <DutyPreview summary={summary} />}
+              <CodeUpdates updates={tariffUpdates} htsno={element.htsno} />
               {sections.length > 1 && <OnThisPage sections={sections} />}
             </div>
           </div>
