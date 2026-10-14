@@ -14,7 +14,10 @@ import { OriginHistory, volatility, Volatility } from "./history";
 // Cheap vs stable: every origin by its rate today (across) and how far its rate has swung since
 // the verified data begins (up). The lines cross at the product's own origin, so each corner
 // reads against yours; the corner that matters is cheaper and steadier. Origins on exactly the
-// same spot share one mark, sized by how many.
+// same spot share one mark, sized by how many: its tooltip gives the range across all of them
+// (they share today's rate and the size of their swing, not when or how often it moved), and
+// clicking it lists them to pick one. Each corner is labelled inside its own quadrant, when the
+// quadrant has room.
 
 const HEIGHT = 380;
 const PAD = { left: 52, right: 28, top: 24, bottom: 40 };
@@ -27,8 +30,21 @@ interface Point {
   origins: OriginRate[];
   rate: number;
   swing: number;
-  vol: Volatility;
+  // Each origin's own volatility, in the same order as origins
+  vols: Volatility[];
 }
+
+// Across a pile: the lowest and highest rate any of them had, and how many changes each made
+const pileStats = (vols: Volatility[]) => ({
+  min: Math.min(...vols.map((v) => v.min)),
+  max: Math.max(...vols.map((v) => v.max)),
+  fewest: Math.min(...vols.map((v) => v.changes)),
+  most: Math.max(...vols.map((v) => v.changes)),
+});
+
+// Room a quadrant needs for its label
+const LABEL_W = 150;
+const LABEL_H = 28;
 
 const pileSize = (count: number) => Math.round(Math.min(72, 30 + 7 * Math.log2(count)));
 
@@ -53,6 +69,8 @@ export const CheapVsStable = ({
 }) => {
   const { ref, width } = useWidth();
   const [hover, setHover] = useState<string | null>(null);
+  // A pile clicked open, to pick one of its origins
+  const [openPile, setOpenPile] = useState<string | null>(null);
 
   const points = useMemo(() => {
     if (!ready) return [] as Point[];
@@ -65,8 +83,9 @@ export const CheapVsStable = ({
       const swing = rateKey(vol.swing);
       // The product's own origin always has a mark of its own
       const key = o.isOrigin ? `you-${o.country.code}` : `${rate}|${swing}`;
-      const group = groups.get(key) ?? { key, origins: [], rate, swing, vol };
+      const group = groups.get(key) ?? { key, origins: [], rate, swing, vols: [] };
       group.origins.push(o);
+      group.vols.push(vol);
       groups.set(key, group);
     });
     return Array.from(groups.values());
@@ -84,14 +103,23 @@ export const CheapVsStable = ({
     ? points.filter((p) => p !== yours && p.rate < yours.rate && p.swing <= yours.swing).reduce((n, p) => n + p.origins.length, 0)
     : 0;
 
-  const quadrants = yours
-    ? [
-        { label: "Cheaper, steadier", x: PAD.left + 8, y: PAD.top + plotH - 8, anchor: "start", good: true },
-        { label: "Cheaper, more volatile", x: PAD.left + 8, y: PAD.top + 14, anchor: "start" },
-        { label: "Pricier, steadier", x: PAD.left + plotW - 8, y: PAD.top + plotH - 8, anchor: "end" },
-        { label: "Pricier, more volatile", x: PAD.left + plotW - 8, y: PAD.top + 14, anchor: "end" },
-      ]
-    : [];
+  // Each label in the outer corner of its own quadrant (the cross splits the plot at your
+  // origin), and only where that quadrant is big enough to hold it
+  const quadrants = (() => {
+    if (!yours) return [];
+    const cx = px(yours.rate);
+    const cy = py(yours.swing);
+    const left = cx - PAD.left;
+    const right = PAD.left + plotW - cx;
+    const top = cy - PAD.top;
+    const bottom = PAD.top + plotH - cy;
+    return [
+      { label: "Cheaper, steadier", x: PAD.left + 8, y: PAD.top + plotH - 8, anchor: "start", good: true, fits: left >= LABEL_W && bottom >= LABEL_H },
+      { label: "Cheaper, more volatile", x: PAD.left + 8, y: PAD.top + 14, anchor: "start", fits: left >= LABEL_W && top >= LABEL_H },
+      { label: "Pricier, steadier", x: PAD.left + plotW - 8, y: PAD.top + plotH - 8, anchor: "end", fits: right >= LABEL_W && bottom >= LABEL_H },
+      { label: "Pricier, more volatile", x: PAD.left + plotW - 8, y: PAD.top + 14, anchor: "end", fits: right >= LABEL_W && top >= LABEL_H },
+    ].filter((q) => q.fits);
+  })();
 
   return (
     <figure className={figureCard}>
@@ -101,7 +129,7 @@ export const CheapVsStable = ({
           : `Across: the rate today. Up: how far it has swung since ${formatDate(since)}.`}
       </ChartCaption>
 
-      <div ref={ref} className="relative mt-4 select-none" style={{ height: HEIGHT }}>
+      <div ref={ref} className="relative mt-4 select-none" style={{ height: HEIGHT }} onMouseLeave={() => setOpenPile(null)} onKeyDown={(e) => e.key === "Escape" && setOpenPile(null)}>
         {!ready ? (
           <div className="flex h-full flex-col items-center justify-center gap-2">
             <span className={ui.caption}>Working out every origin&apos;s rate history…</span>
@@ -178,24 +206,29 @@ export const CheapVsStable = ({
                   const o = p.origins[0];
                   const size = single ? FLAG : pileSize(p.origins.length);
                   const isYours = p === yours;
-                  const isSelected = single && selected === o.country.code;
+                  const isSelected = single ? selected === o.country.code : p.origins.some((m) => m.country.code === selected);
+                  const stats = pileStats(p.vols);
+                  const open = openPile === p.key;
+                  // Near the top, the tooltip opens below the mark so it stays on the chart
+                  const below = py(p.swing) < 150;
                   return (
                     <button
                       key={p.key}
                       type="button"
                       className={`absolute -translate-x-1/2 translate-y-1/2 rounded-full motion-safe:transition-[left,bottom] motion-safe:duration-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${
-                        hover === p.key || isYours ? "z-30" : "z-20"
+                        hover === p.key || open ? "z-40" : isYours ? "z-30" : "z-20"
                       }`}
                       style={{ left: px(p.rate), bottom: HEIGHT - py(p.swing), width: size, height: size }}
                       onMouseEnter={() => setHover(p.key)}
                       onMouseLeave={() => setHover(null)}
                       onFocus={() => setHover(p.key)}
                       onBlur={() => setHover(null)}
-                      onClick={() => single && onSelect(o.country.code)}
+                      onClick={() => (single ? onSelect(o.country.code) : setOpenPile(open ? null : p.key))}
+                      aria-expanded={single ? undefined : open}
                       aria-label={
                         single
                           ? `${o.country.name}: ${formatRate(p.rate)}, swung ${formatRate(p.swing)}`
-                          : `${p.origins.length} countries at ${formatRate(p.rate)}, swung ${formatRate(p.swing)}`
+                          : `${p.origins.length} countries at ${formatRate(p.rate)}, swung ${formatRate(p.swing)}: choose one`
                       }
                     >
                       <span
@@ -230,10 +263,10 @@ export const CheapVsStable = ({
                           You
                         </span>
                       )}
-                      {hover === p.key && (
+                      {hover === p.key && !open && (
                         <span
                           role="tooltip"
-                          className={`${ui.tooltip} absolute bottom-full left-1/2 z-40 mb-2 w-60 -translate-x-1/2 px-3 py-2 text-left text-xs`}
+                          className={`${ui.tooltip} absolute left-1/2 z-40 w-60 -translate-x-1/2 px-3 py-2 text-left text-xs ${below ? "top-full mt-2" : "bottom-full mb-2"}`}
                         >
                           <span className="block font-semibold text-base-content">
                             {single ? `${o.country.flag} ${o.country.name}` : `${p.origins.length} countries`}
@@ -243,14 +276,14 @@ export const CheapVsStable = ({
                             <span className="font-semibold tabular-nums">{formatRate(p.rate)}</span>
                           </span>
                           <span className="flex justify-between">
-                            <span className="text-base-content/70">Range since {formatDate(since)}</span>
+                            <span className="text-base-content/70">{single ? "Range" : "Range across them"} since {formatDate(since)}</span>
                             <span className="tabular-nums">
-                              {formatRate(p.vol.min)} – {formatRate(p.vol.max)}
+                              {formatRate(stats.min)} – {formatRate(stats.max)}
                             </span>
                           </span>
                           <span className="flex justify-between">
                             <span className="text-base-content/70">Changes</span>
-                            <span className="tabular-nums">{p.vol.changes}</span>
+                            <span className="tabular-nums">{stats.fewest === stats.most ? stats.fewest : `${stats.fewest}–${stats.most} each`}</span>
                           </span>
                           {!single && (
                             <span className="mt-1 block text-base-content/60">
@@ -258,7 +291,7 @@ export const CheapVsStable = ({
                                 .slice(0, 8)
                                 .map((m) => m.country.name)
                                 .join(", ")}
-                              {p.origins.length > 8 ? ` and ${p.origins.length - 8} more` : ""}
+                              {p.origins.length > 8 ? ` and ${p.origins.length - 8} more` : ""}. Click to choose one.
                             </span>
                           )}
                         </span>
@@ -266,6 +299,50 @@ export const CheapVsStable = ({
                     </button>
                   );
                 })}
+
+              {/* A pile opened: its origins, to pick one */}
+              {(() => {
+                const p = points.find((q) => q.key === openPile);
+                if (!p) return null;
+                const below = py(p.swing) < 150;
+                return (
+                  <div
+                    role="dialog"
+                    aria-label={`${p.origins.length} countries at ${formatRate(p.rate)}`}
+                    className={`${ui.popover} absolute z-50 max-h-60 w-64 -translate-x-1/2 overflow-y-auto`}
+                    // Runtime position (DESIGN_SYSTEM §10)
+                    style={{
+                      left: Math.min(Math.max(px(p.rate), 136), width - 136),
+                      ...(below ? { top: py(p.swing) + pileSize(p.origins.length) / 2 + 8 } : { bottom: HEIGHT - py(p.swing) + pileSize(p.origins.length) / 2 + 8 }),
+                    }}
+                  >
+                    <p className="m-0 px-2.5 pb-1.5 pt-1 text-xs font-semibold text-base-content">
+                      {p.origins.length} countries at {formatRate(p.rate)}
+                    </p>
+                    <ul className="m-0 flex list-none flex-col p-0">
+                      {p.origins.map((m, i) => (
+                        <li key={m.country.code}>
+                          <button
+                            type="button"
+                            className={`flex w-full items-center justify-between gap-3 rounded-md px-2.5 py-1.5 text-left text-sm hover:bg-base-200 ${selected === m.country.code ? "font-semibold text-success" : "text-base-content"}`}
+                            onClick={() => {
+                              onSelect(m.country.code);
+                              setOpenPile(null);
+                            }}
+                          >
+                            <span className="truncate">
+                              {m.country.flag} {m.country.name}
+                            </span>
+                            <span className="shrink-0 text-xs tabular-nums text-base-content/60">
+                              {p.vols[i].changes} {p.vols[i].changes === 1 ? "change" : "changes"}
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })()}
             </>
           )
         )}
