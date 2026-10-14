@@ -40,7 +40,7 @@ export const ExamplePreview = () => {
           What your dashboard looks like with 48 products
         </h2>
         <button type="button" className="text-sm font-semibold text-primary hover:underline" onClick={load}>
-          Load an example catalog →
+          Load example imports →
         </button>
       </div>
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-hidden>

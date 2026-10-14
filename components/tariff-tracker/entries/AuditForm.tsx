@@ -54,7 +54,7 @@ export const AuditForm = ({ fixedProduct }: { fixedProduct?: TrackedProduct }) =
     if (outOfChecks) return openUpgrade("entries");
     const value = Number(draft.customsValue);
     const paidUsd = Number(draft.dutyPaid);
-    if (!product) return setProblem("Pick a product from your catalog.");
+    if (!product) return setProblem("Pick a product from your imports.");
     if (!draft.entryDate || draft.entryDate > today) return setProblem("Enter the entry date (today or earlier).");
     if (draft.entryDate < range.from) return setProblem(`Entries from ${formatDate(range.from)} on can be checked.`);
     if (!(value > 0)) return setProblem("Enter the entered (customs) value.");
@@ -126,7 +126,7 @@ export const AuditForm = ({ fixedProduct }: { fixedProduct?: TrackedProduct }) =
       <div className={`${ui.cardFooter} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between`}>
         <p className={problem ? "text-sm text-error" : ui.caption}>
           {problem ??
-            "Checked with the product's own answers and trade program from your catalog. Duty paid is on the entry summary, without MPF or HMF."}
+            "Checked with the product's own answers and trade program from your imports. Duty paid is on the entry summary, without MPF or HMF."}
         </p>
         <button type="submit" className={`${ui.button({ variant: "primary" })} shrink-0`} disabled={busy || !products.length}>
           {busy ? "Checking…" : outOfChecks ? "See plans" : paid ? "Check this entry" : "Check this entry · 1 free check"}

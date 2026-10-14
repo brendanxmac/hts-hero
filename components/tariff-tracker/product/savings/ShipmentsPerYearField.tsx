@@ -29,7 +29,6 @@ export const ShipmentsPerYearField = ({ productKey }: { productKey: string }) =>
         placeholder="1"
         onChange={(e) => change(e.target.value)}
       />
-      shipments a year
     </label>
   );
 };

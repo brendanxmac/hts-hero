@@ -38,7 +38,7 @@ export const CatalogRateChart = ({ series, to }: { series: { date: IsoDate; pct:
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 id="tt-avg-rate" className={ui.cardTitle}>
-            Average duty rate across your catalog
+            Average duty rate across your imports
           </h3>
           <p className={`${ui.caption} mt-0.5`}>
             {shortDate(series[0].date, true)} – {formatDate(to)}

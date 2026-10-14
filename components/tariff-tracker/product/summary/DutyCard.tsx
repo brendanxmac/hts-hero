@@ -1,24 +1,62 @@
-import { formatMoney } from "../../../duty-calculator/lib/format";
+import * as tt from "@/components/ui/styles/tracker";
+import { formatMoney, todayIso } from "../../../duty-calculator/lib/format";
+import { addDays } from "../../../../tariffs/engine-v2/history";
 import { formatRate } from "../../formatRate";
+import { segmentOn } from "../../insights/catalogHistory";
+import { useInsights } from "../../insights/InsightsContext";
 import { programColors } from "../../programColors";
 import { shortProgram, TrackedProduct } from "../../report";
-import { RateBars } from "../savings/RateBars";
 import { SummaryCard } from "./SummaryCard";
 
-// What the product pays today: its rate as one bar, then each part of it as a rate and in dollars
-// on its shipment, with the fees
+// What the import pays today: its rate, big, with how it's moved in a year; a bar of what it's
+// made of (base duty and each tariff); then each part as a rate and in dollars on its shipment,
+// with the fees
 export const DutyCard = ({ product, onOpen }: { product: TrackedProduct; onOpen: () => void }) => {
+  const { histories } = useInsights();
   const colors = programColors([product]);
   const money = (n: number) => formatMoney(Math.round(n * 100) / 100);
+  const history = histories.get(product.key);
+  const yearAgo = history?.length ? segmentOn(history, addDays(todayIso(), -365)).pct : undefined;
+  const moved = yearAgo === undefined ? 0 : product.totalPct - yearAgo;
+
   return (
     <SummaryCard title="Duty today" link={{ label: "Open the calculator", onClick: onOpen }}>
-      <RateBars bars={[{ label: "Total duty rate", pct: product.totalPct, parts: product.parts }]} />
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <span className={tt.eyebrow("primary")}>Duty rate</span>
+          <p className={`${tt.metricLg} m-0 mt-1 text-primary`}>{formatRate(product.totalPct)}</p>
+        </div>
+        <div className="flex flex-col items-end gap-1.5">
+          {yearAgo !== undefined && (
+            <span className={tt.chip(Math.abs(moved) < 0.005 ? "neutral" : moved > 0 ? "error" : "success")}>
+              {Math.abs(moved) < 0.005 ? "No change in a year" : `${moved > 0 ? "▲" : "▼"} ${formatRate(Math.abs(moved))} in a year`}
+            </span>
+          )}
+          <span className="text-sm text-base-content/70">
+            <span className="font-semibold tabular-nums text-base-content">{money(product.result.totalDuty)}</span> on{" "}
+            {formatMoney(product.customsValue).replace(/\.00$/, "")}
+            {product.adjustments.customsValue === undefined ? " (estimate)" : ""}
+          </span>
+        </div>
+      </div>
+
+      {/* Runtime widths and series colors (DESIGN_SYSTEM §10) */}
+      <div className="flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-base-300" aria-hidden>
+        {product.parts.map((p) => (
+          <div
+            key={p.key}
+            className="h-full min-w-1"
+            style={{ width: `${(p.pct / Math.max(product.totalPct, 0.01)) * 100}%`, background: colors[p.key] }}
+            title={`${shortProgram(p.key)}: ${formatRate(p.pct)}`}
+          />
+        ))}
+      </div>
+
       <table className="w-full text-sm tabular-nums">
         <tbody>
           {product.parts.map((p) => (
             <tr key={p.key} className="border-t border-base-300">
               <td className="py-2 text-base-content/70">
-                {/* Series color (DESIGN_SYSTEM §10) */}
                 <span className="mr-2 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: colors[p.key] }} aria-hidden />
                 {shortProgram(p.key)}
               </td>

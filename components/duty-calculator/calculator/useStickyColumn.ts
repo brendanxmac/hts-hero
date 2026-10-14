@@ -7,10 +7,13 @@ import { useEffect, useState } from "react";
 // scrolling it on its own. Returns the ref setter and the sticky offset for the column.
 const STICKY_GAP = 16;
 
-// The site's header, when it stays on screen: what's under it is hidden, so columns stop (and
-// scrolling lands) below it
+// The header that stays on screen above the content, when there is one: a header marked
+// data-sticky-header that's showing (a Tracker import's, inside a tab that may be hidden), else the
+// site's own when it's sticky or fixed. What's under it is hidden, so columns stop (and scrolling
+// lands) below it.
 export const stickyHeaderHeight = () => {
-  const header = document.querySelector("header");
+  const marked = Array.from(document.querySelectorAll<HTMLElement>("[data-sticky-header]")).find((el) => el.offsetParent !== null);
+  const header = marked ?? document.querySelector("header");
   if (!header) return 0;
   const { position } = getComputedStyle(header);
   return position === "sticky" || position === "fixed" ? header.getBoundingClientRect().height : 0;

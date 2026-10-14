@@ -80,6 +80,7 @@ export const TariffReport = ({
               trackEvent(MixpanelEvent.TARIFF_TRACKER_SORTED, { sort: next });
             }}
             size="sm"
+            tone="accent"
           />
           <ExportMenu
             onExport={(format) => {
@@ -94,7 +95,7 @@ export const TariffReport = ({
           <Menu as="div" className="relative">
             <Menu.Button className={ui.button({ size: "sm", icon: true })}>
               <EllipsisHorizontalIcon className="h-4 w-4" aria-hidden />
-              <span className="sr-only">More catalog actions</span>
+              <span className="sr-only">More import actions</span>
             </Menu.Button>
             <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-56 focus:outline-none`}>
               <Menu.Item>
@@ -104,14 +105,14 @@ export const TariffReport = ({
                     className={`flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-error ${active ? "bg-base-200" : ""}`}
                     onClick={() => {
                       const count = items.length.toLocaleString("en-US");
-                      if (window.confirm(`Remove all ${count} products from your catalog? Their adjustments are kept.`)) {
+                      if (window.confirm(`Remove all ${count} imports? Their adjustments are kept.`)) {
                         clearCatalog();
                         clearFilters();
                       }
                     }}
                   >
                     <TrashIcon className="h-4 w-4" aria-hidden />
-                    Clear catalog
+                    Remove all imports
                   </button>
                 )}
               </Menu.Item>

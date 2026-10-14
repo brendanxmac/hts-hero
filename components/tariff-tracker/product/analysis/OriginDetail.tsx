@@ -138,12 +138,12 @@ export const OriginDetail = ({
           {inCatalog ? (
             <button type="button" className={`${ui.button({ size: "sm" })} text-success`} onClick={() => nav.openProduct(key)}>
               <CheckIcon className="h-4 w-4" aria-hidden />
-              In catalog
+              In your imports
             </button>
           ) : (
             <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={add}>
               <PlusIcon className="h-4 w-4" aria-hidden />
-              Add to catalog
+              Add to your imports
             </button>
           )}
           <button type="button" className={ui.button({ size: "sm" })} onClick={tryInCalculator}>

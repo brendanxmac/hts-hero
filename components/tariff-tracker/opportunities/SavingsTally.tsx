@@ -20,7 +20,7 @@ export const SavingsTally = () => {
         <span className={tt.eyebrow("success")}>Secured</span>
         <span className={`${tt.metric} text-success`}>{wholeDollars(tally.secured.perYear)}</span>
         <span className="text-xs text-base-content/60">
-          a year, from {tally.secured.count} {tally.secured.count === 1 ? "saving" : "savings"} applied to your catalog
+          a year, from {tally.secured.count} {tally.secured.count === 1 ? "saving" : "savings"} applied to your imports
         </span>
       </div>
       <div className="flex flex-col gap-1">

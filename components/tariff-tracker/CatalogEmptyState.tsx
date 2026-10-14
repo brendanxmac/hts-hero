@@ -128,7 +128,7 @@ export const CatalogEmptyState = ({
     <p className={ui.bodySm}>
       Just looking?{" "}
       <button type="button" className={ui.link} onClick={onExample}>
-        Try an example catalog
+        Try example imports
       </button>
     </p>
   </section>

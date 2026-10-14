@@ -91,7 +91,7 @@ export const RecentLookups = () => {
       </div>
       <div className="flex flex-wrap items-center gap-3">
         <button type="button" className={tt.button("money")} onClick={add} disabled={!picked.length}>
-          {picked.length ? `Add ${picked.length} ${picked.length === 1 ? "product" : "products"} to my catalog` : "Pick products to add"}
+          {picked.length ? `Add ${picked.length} ${picked.length === 1 ? "product" : "products"} to your imports` : "Pick products to add"}
         </button>
         <span className="text-sm text-base-content/60">You can add more, or remove any, later.</span>
       </div>

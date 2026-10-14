@@ -1,3 +1,4 @@
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as tt from "@/components/ui/styles/tracker";
 import { formatRate } from "../../formatRate";
 import { wholeDollars } from "../../insights/teasers";
@@ -14,13 +15,7 @@ import { ShipmentsPerYearField } from "./ShipmentsPerYearField";
 // secured and is in progress on it, and the switch between percentages and dollars
 
 export const MeasureToggle = ({ value, onChange }: { value: Measure; onChange: (m: Measure) => void }) => (
-  <div className={tt.toggleTrack} role="radiogroup" aria-label="Show amounts as">
-    {MEASURES.map((m) => (
-      <button key={m.id} type="button" role="radio" aria-checked={value === m.id} className={tt.toggleOption(value === m.id)} onClick={() => onChange(m.id)}>
-        {m.label}
-      </button>
-    ))}
-  </div>
+  <SegmentedControl<Measure> label="Show amounts as" options={MEASURES} value={value} onChange={onChange} size="sm" tone="accent" />
 );
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;

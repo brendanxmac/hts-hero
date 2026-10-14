@@ -125,6 +125,7 @@ export const EntryRail = ({
               value={f.transportMode}
               onChange={f.setTransportMode}
               compact
+              tone="accent"
             />
           </RailField>
         </div>

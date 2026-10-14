@@ -115,10 +115,10 @@ export const UpgradeDialog = ({
           <div className="flex flex-col gap-5 overflow-y-auto px-5 py-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className={ui.bodySm}>
-                Your catalog has <span className="font-semibold text-base-content tabular-nums">{items.length}</span>{" "}
+                You have <span className="font-semibold text-base-content tabular-nums">{items.length}</span>{" "}
                 {items.length === 1 ? "import" : "imports"}.
               </p>
-              <SegmentedControl<Billing> label="Billing" options={BILLING} value={billing} onChange={setBilling} size="sm" />
+              <SegmentedControl<Billing> label="Billing" options={BILLING} value={billing} onChange={setBilling} size="sm" tone="accent" />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -132,7 +132,7 @@ export const UpgradeDialog = ({
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h3 className={ui.cardTitle}>Up to {plan.maxPairs} imports</h3>
-                      {recommended && <span className={ui.badge("primary")}>Fits your catalog</span>}
+                      {recommended && <span className={ui.badge("primary")}>Fits your imports</span>}
                     </div>
                     <p className="flex items-baseline gap-1">
                       <span className={ui.metric.primaryCompact}>{formatPrice(monthlyRate(plan.price, billing))}</span>
@@ -162,7 +162,7 @@ export const UpgradeDialog = ({
               </ul>
               <p className={ui.bodySm}>
                 More than {TRACKER_MAX_LISTED_PAIRS} imports?{" "}
-                <a className={ui.link} href={`mailto:${config.resend.supportEmail}?subject=Tariff%20Tracker%20for%20a%20large%20catalog`}>
+                <a className={ui.link} href={`mailto:${config.resend.supportEmail}?subject=Tariff%20Tracker%20for%20many%20imports`}>
                   Let&apos;s talk
                 </a>
                 .

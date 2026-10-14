@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as tt from "@/components/ui/styles/tracker";
 import { CHART_COLORS, SUCCESS_MARK } from "@/components/ui/theme";
 import { TrackedProduct } from "../report";
@@ -25,16 +26,19 @@ export const OriginDistribution = ({ products }: { products: TrackedProduct[] })
           <h2 id="tt-origins" className={tt.title}>
             Origin distribution
           </h2>
-          <p className={tt.subtitle}>Where your catalog comes from</p>
+          <p className={tt.subtitle}>Where your imports come from</p>
         </div>
-        <div role="radiogroup" aria-label="Measure" className={tt.toggleTrack}>
-          <button type="button" role="radio" aria-checked={!byValue} className={tt.toggleOption(!byValue)} onClick={() => setByValue(false)}>
-            Products
-          </button>
-          <button type="button" role="radio" aria-checked={byValue} className={tt.toggleOption(byValue)} onClick={() => setByValue(true)}>
-            Value{estimatedNote}
-          </button>
-        </div>
+        <SegmentedControl<"products" | "value">
+          label="Measure"
+          options={[
+            { id: "products", label: "Products" },
+            { id: "value", label: `Value${estimatedNote}` },
+          ]}
+          value={byValue ? "value" : "products"}
+          onChange={(v) => setByValue(v === "value")}
+          size="sm"
+          tone="accent"
+        />
       </div>
       <ul className="flex flex-col gap-3">
         {rows.map((r, i) => (

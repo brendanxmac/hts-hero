@@ -31,7 +31,7 @@ export type ListItem = { option?: SavingOption; opportunity?: Opportunity; id: s
 // What's under an option's title: its condition and headings, its agreement and how sure it is
 // the country can make it, or that it's applied
 const subline = (option: SavingOption | undefined, imports: UsImports | null) => {
-  if (!option) return "Applied to your catalog";
+  if (!option) return "Applied to your imports";
   if (option.kind === "exemption") {
     return [option.detail, ...(option.headings ?? []).map((h) => (h.name ? `${h.code} · ${h.name}` : h.code))].join(" · ");
   }

@@ -31,17 +31,9 @@ export const QUALIFY_TRIAL = {
 };
 
 // What each adjustment would change is free for everyone (on each row of Possible Adjustments);
-// working out which ones the goods qualify for is the Tracker's. In the Tracker, across the top of
-// Possible Adjustments; on /duty-calculator, a link across from its title (QualifyHeaderLink)
-export const AdjustmentsCta = ({ conversion }: { conversion: Conversion }) => {
-  return (
-    // Just the button: the pitch opens from it
-    <button type="button" className={`${tt.button("next", "sm", "rounded")} w-full`} onClick={() => conversion.openTrial("qualify", QUALIFY_TRIAL)}>
-      <SparklesIcon className="h-4 w-4" aria-hidden />
-      See what you qualify for
-    </button>
-  );
-};
+// working out which ones the goods qualify for is the Tracker's savings check. In the Tracker,
+// across from Possible Adjustments' title: the way to this import's savings (the host says where)
+export const CheckSavingsLink = ({ onClick }: { onClick: () => void }) => <ArrowLink onClick={onClick}>Check Possible Savings</ArrowLink>;
 
 // On /duty-calculator, across from Possible Adjustments' title: the same check, as a link
 export const QualifyHeaderLink = ({ conversion }: { conversion: Conversion }) => {

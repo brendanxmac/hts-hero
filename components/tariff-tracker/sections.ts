@@ -63,7 +63,7 @@ export const SECTIONS: TrackerSection[] = [
     Icon: HomeIcon,
     title: "Overview",
     summary:
-      "Your catalog's tariffs at a glance: what you pay, what changed and where to save.",
+      "Your imports' tariffs at a glance: what you pay, what changed and where to save.",
     ready: true,
     group: "workspace",
     paidOnly: false,
@@ -82,10 +82,10 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "catalog",
-    label: "Catalog",
+    label: "Your imports",
     Icon: Squares2X2Icon,
-    title: "Catalog",
-    summary: "Every product you import, at a glance.",
+    title: "Your imports",
+    summary: "Everything you import, with the duty on each today.",
     ready: true,
     group: "workspace",
     paidOnly: false,
@@ -101,7 +101,7 @@ export const SECTIONS: TrackerSection[] = [
     group: "workspace",
     paidOnly: false,
     planned: [
-      "An email and an in-app alert whenever a new HTS revision or tariff action changes a rate in your catalog",
+      "An email and an in-app alert whenever a new HTS revision or tariff action changes a rate on one of your imports",
       "What changed, which products it hits, and the difference in duty",
       "Badges on affected products until you've reviewed them",
     ],
@@ -116,7 +116,7 @@ export const SECTIONS: TrackerSection[] = [
     group: "intelligence",
     paidOnly: false,
     planned: [
-      "The rate for every product in your catalog on any past date",
+      "The rate on every one of your imports on any past date",
       "A timeline of each change: the program, the HTS revision and the date it took effect",
       "Any two dates side by side, to see exactly what moved",
     ],
@@ -149,7 +149,7 @@ export const SECTIONS: TrackerSection[] = [
     planned: [
       "Cheaper countries of origin for each product that already ship it to the US, with how much",
       "The trade agreements that could lower each country's rate",
-      "The countries that could supply the most of your catalog for less, and what moving could save",
+      "The countries that could supply the most of your imports for less, and what moving could save",
     ],
   }),
   section({
@@ -158,12 +158,12 @@ export const SECTIONS: TrackerSection[] = [
     Icon: ArrowTrendingUpIcon,
     title: "Trends",
     summary:
-      "How tariffs on your catalog, and across the whole schedule, have moved over time.",
+      "How tariffs on your imports, and across the whole schedule, have moved over time.",
     ready: false,
     group: "intelligence",
     paidOnly: true,
     planned: [
-      "Your catalog's average duty rate over time",
+      "The average duty rate across your imports over time",
       "Your exposure by program (Section 232, 301, 122 and more) and by country",
       "Tariff trends across every HTS code and country, beyond your own products",
     ],
@@ -210,7 +210,7 @@ export const SECTIONS: TrackerSection[] = [
     group: "intelligence",
     paidOnly: true,
     planned: [
-      "A review of your catalog by the HTS Hero team",
+      "A review of your imports by the HTS Hero team",
       "Help confirming you're on the right track, and finding ways to save",
     ],
   }),

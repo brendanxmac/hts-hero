@@ -22,7 +22,7 @@ import { ProductHeader } from "./ProductHeader";
 import { ProductSummary } from "./summary/ProductSummary";
 import { ProductSavings } from "./savings/ProductSavings";
 
-// One catalog product, opened from its row: its header (what it is, four facts, the tabs), then
+// One import, opened from its row: a small header (what it is, and the tabs), then
 // - Summary (where it opens): every part of it at a glance, each leading to its tab
 // - Duty: the calculator tab's own calculator, for this product (its code and origin fixed), with
 //   Recent Changes and Compare (where the Analysis is). Everything set here is saved as the
@@ -114,36 +114,27 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f.entryDate]);
 
-  const totalPct = f.result && f.customsValue > 0 ? (f.result.totalDuty / f.customsValue) * 100 : row.totalPct;
-  const totalDuty = f.result ? f.result.totalDuty : row.result.totalDuty;
+  const remove = () => {
+    removeProducts([row.key]);
+    nav.closeProduct();
+  };
 
   return (
     <div className="flex flex-col gap-5">
-      <ProductHeader
-        row={row}
-        totalPct={totalPct}
-        totalDuty={totalDuty}
-        tab={tab}
-        onTab={openTab}
-        onBack={nav.closeProduct}
-        onReset={onReset}
-        onRemove={() => {
-          removeProducts([row.key]);
-          nav.closeProduct();
-        }}
-        adjusted={isAdjusted(row.adjustments)}
-      />
+      <ProductHeader row={row} tab={tab} onTab={openTab} onBack={nav.closeProduct} onRemove={remove} />
 
       <MovingNotice row={row} movingTo={itemFor(row.key)?.movingTo} hasNew={(key) => products.some((p) => p.key === key)} />
 
       {/* Kept mounted, so the calculator keeps its state while another tab is open. A class, not the
           hidden attribute: `flex` would override that and keep it showing */}
       <div className={tab === "duty" ? "flex flex-col gap-4" : "hidden"}>
-        <CalculatorWorkspace f={f} page="tracker_product" fixedProduct />
+        <CalculatorWorkspace f={f} page="tracker_product" fixedProduct onCheckSavings={() => openTab("savings")} />
         <Disclaimer />
         <ExploreModal f={f} />
       </div>
-      {tab === "summary" && <ProductSummary product={row} onTab={openTab} />}
+      {tab === "summary" && (
+        <ProductSummary product={row} onTab={openTab} onReset={onReset} adjusted={isAdjusted(row.adjustments)} />
+      )}
       {tab === "savings" && <ProductSavings product={row} />}
       {tab === "audit" && <ProductAudit product={row} />}
     </div>
@@ -163,7 +154,7 @@ const MovingNotice = ({ row, movingTo, hasNew }: { row: TrackedProduct; movingTo
         <span className="font-semibold text-base-content">
           Moving to {country.flag} {country.name}.
         </span>{" "}
-        The new origin is its own product in your catalog. Keep this one while you still import from {row.entry.country.name}; its
+        The new origin is its own import in your list. Keep this one while you still import from {row.entry.country.name}; its
         history and entries stay here.
       </p>
       {hasNew(newKey) && (
@@ -194,10 +185,10 @@ export const ProductView = ({ productKey }: { productKey: string }) => {
   if (!row) {
     return (
       <div className={`${ui.card} flex max-w-xl flex-col items-start gap-3 p-6`}>
-        <p className={ui.body}>This product isn&apos;t in your catalog.</p>
+        <p className={ui.body}>This product isn&apos;t in your imports.</p>
         <button type="button" className={ui.button({ size: "sm" })} onClick={nav.closeProduct}>
           <ArrowLeftIcon className="h-4 w-4" aria-hidden />
-          Back to the catalog
+          Back to your imports
         </button>
       </div>
     );

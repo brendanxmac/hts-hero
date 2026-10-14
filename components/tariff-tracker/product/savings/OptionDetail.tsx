@@ -98,7 +98,7 @@ export const OptionDetail = ({
         </Step>
       ) : (
         <div className={`${ui.notice("primary")} flex items-center justify-between gap-4 text-sm`}>
-          <span>{opportunity?.title}: applied to your catalog, so this product pays it today.</span>
+          <span>{opportunity?.title}: applied to your imports, so this product pays it today.</span>
           {worth}
         </div>
       )}

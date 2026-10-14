@@ -44,7 +44,7 @@ export const PlanCard = () => {
   if (!signedIn) {
     return (
       <div className={BOX}>
-        <span className={tt.eyebrow("primary")}>Save your catalog</span>
+        <span className={tt.eyebrow("primary")}>Save your imports</span>
         <span className={`${tt.display} text-base font-semibold leading-snug`}>Keep your products and unlock Analysis</span>
         <Link href={signupHref(currentPath())} className={tt.button("next", "sm")}>
           Create free account

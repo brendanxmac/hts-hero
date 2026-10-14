@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { mono } from "@/components/ui/font";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as tt from "@/components/ui/styles/tracker";
 import { MUTED_MARK } from "@/components/ui/theme";
 import { CalculationResult, DutyLine, Question } from "@/tariffs/engine-v2/types";
@@ -160,13 +161,17 @@ export const DutyTable = ({
         <h3 id="dc-lines" className={`${tt.display} m-0 text-base font-semibold text-base-content`}>
           Duty Breakdown
         </h3>
-        <div className={tt.toggleTrack} role="radiogroup" aria-label="Detail">
-          {(["summary", "detailed"] as const).map((v) => (
-            <button key={v} type="button" role="radio" aria-checked={view === v} className={tt.toggleOption(view === v)} onClick={() => setView(v)}>
-              {v === "summary" ? "Summary" : "Detailed"}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl<"summary" | "detailed">
+          label="Detail"
+          options={[
+            { id: "summary", label: "Summary" },
+            { id: "detailed", label: "Detailed" },
+          ]}
+          value={view}
+          onChange={setView}
+          size="sm"
+          tone="accent"
+        />
       </div>
 
       <div className={`grid ${COLS} items-baseline gap-x-4`}>

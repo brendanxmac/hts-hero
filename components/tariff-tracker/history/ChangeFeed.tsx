@@ -22,7 +22,7 @@ export const ChangeFeed = ({ days, onOpen }: { days: ChangeDay[]; onOpen: (key: 
       <div className={ui.cardHeader}>
         <div>
           <h3 id="tt-change-feed" className={ui.cardTitle}>
-            Every change on your catalog
+            Every change on your imports
           </h3>
           <p className={`${ui.caption} mt-0.5`}>The day a tariff took effect, and the products it moved</p>
         </div>

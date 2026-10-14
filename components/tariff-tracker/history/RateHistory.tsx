@@ -45,7 +45,7 @@ const HistoryReport = () => {
           {
             label: "Products affected",
             value: affected.toLocaleString("en-US"),
-            note: `Of ${products.length.toLocaleString("en-US")} in your catalog`,
+            note: `Of ${products.length.toLocaleString("en-US")} in your imports`,
           },
           {
             label: "Average rate",
@@ -92,7 +92,7 @@ export const RateHistory = () => {
       title="See every tariff change on your products"
       teaser={changesTeaser(insights) ?? "Going through your products' history…"}
       points={section.planned}
-      preview={<ChartStandIn title="Average duty rate across your catalog" />}
+      preview={<ChartStandIn title="Average duty rate across your imports" />}
       minHeight="min-h-[28rem]"
     >
       <HistoryReport />

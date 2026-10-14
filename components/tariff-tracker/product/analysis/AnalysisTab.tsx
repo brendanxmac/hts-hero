@@ -157,6 +157,7 @@ export const AnalysisTab = ({ product }: { product: TrackedProduct }) => {
               trackEvent(MixpanelEvent.TARIFF_TRACKER_ANALYSIS_BASIS_CHANGED, { basis: next });
             }}
             size="sm"
+            tone="accent"
           />
         </div>
       </div>

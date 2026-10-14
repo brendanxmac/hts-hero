@@ -73,9 +73,3 @@ export const button = (variant: Button = "secondary", size: "sm" | "md" = "md", 
     size === "sm" ? "h-8 px-3.5 text-xs" : "h-10 px-5 text-sm"
   } ${BUTTONS[variant]}`;
 
-// A segmented toggle on a soft track, and its options
-export const toggleTrack = "inline-flex gap-0.5 rounded-full bg-tt-soft p-1";
-export const toggleOption = (active: boolean) =>
-  `h-8 rounded-full px-3.5 text-xs font-semibold transition-colors ${
-    active ? "bg-base-100 text-base-content shadow-sm" : "text-base-content/60 hover:text-base-content"
-  }`;

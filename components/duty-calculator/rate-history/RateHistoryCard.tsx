@@ -82,6 +82,7 @@ export const RateHistoryCard = ({
             ] as const}
             value={metric}
             onChange={setMetric}
+            tone="accent"
           />
         </div>
         {headerAction}

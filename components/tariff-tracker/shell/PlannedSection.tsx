@@ -69,7 +69,7 @@ export const PlannedSection = ({ section }: { section: TrackerSection }) => {
         <div className={`${ui.cardFooter} ${ui.bodySm}`}>
           It will work from your{" "}
           <button type="button" className={ui.link} onClick={() => openTab("catalog")}>
-            catalog
+            imports
           </button>
           , so the products you add there now carry over.
         </div>

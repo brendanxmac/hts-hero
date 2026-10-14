@@ -18,7 +18,7 @@ export const STATUSES: StatusInfo[] = [
   { id: "found", label: "Found", description: "Spotted by HTS Hero, not looked into yet", tone: "neutral" },
   { id: "researching", label: "Researching", description: "Checking whether your goods meet the requirements", tone: "primary" },
   { id: "in_progress", label: "In progress", description: "Paperwork, certificates or supplier changes under way", tone: "warning" },
-  { id: "secured", label: "Secured", description: "Done: applied to your catalog and counted as secured", tone: "success" },
+  { id: "secured", label: "Secured", description: "Done: applied to your imports and counted as secured", tone: "success" },
   { id: "not_eligible", label: "Not eligible", description: "Ruled out, with the reason kept for the record", tone: "error" },
 ];
 

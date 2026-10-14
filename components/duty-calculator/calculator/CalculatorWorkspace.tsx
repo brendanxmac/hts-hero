@@ -44,14 +44,15 @@ import { DutyBreakdown, LinesDetail } from "./DutyBreakdown";
 import { EmptyState } from "./EmptyState";
 import { EntryBar } from "./EntryBar";
 import {
-  AdjustmentsCta,
+  CheckSavingsLink,
   CompareBox,
+  QUALIFY_TRIAL,
   QualifyHeaderLink,
   QualifyLink,
   RefundsButton,
 } from "./PremiumTeasers";
 import { useConversion } from "./ConversionDialog";
-import { DutySummary } from "./DutySummary";
+import { DutySummary, ExplainToggle } from "./DutySummary";
 import { AccountCta } from "./AccountCta";
 import { ResultsHeader } from "./ResultsHeader";
 import { useCanSeeWhy, WhyLocked, WhyUnlockContext } from "./WhyGate";
@@ -87,6 +88,7 @@ export const CalculatorWorkspace = ({
   empty,
   page,
   fixedProduct = false,
+  onCheckSavings,
 }: {
   f: TariffFinder;
   // In the results' heading, after Share: the host's main action (Add to catalog, Track this import)
@@ -97,6 +99,9 @@ export const CalculatorWorkspace = ({
   page: "calculator" | "tracker_calculator" | "tracker_product";
   // A catalog product's view: its code and origin can't be changed
   fixedProduct?: boolean;
+  // In the Tracker: where "Check Possible Savings" goes (this import's savings); the Tracker's
+  // Savings section when left out
+  onCheckSavings?: () => void;
 }) => {
   const { htsElements } = useHts();
   const searchParams = useSearchParams();
@@ -125,6 +130,8 @@ export const CalculatorWorkspace = ({
 
   // Kept here, so they survive switching tabs
   const [highlight, setHighlight] = useState<string | null>(null);
+  // The plain-English explanation, shown on request (ExplainToggle) above the totals
+  const [explainOpen, setExplainOpen] = useState(false);
   const [linesDetail, setLinesDetail] = useState<LinesDetail>("compact");
   const [adjustmentsRef, adjustmentsTop] = useStickyColumn();
   // What the last answer or trade program changed, marked in the breakdown until the next change
@@ -250,7 +257,7 @@ export const CalculatorWorkspace = ({
     }
     : f.preferenceChanges;
   // Possible Adjustments in two tiers: anyone sees each adjustment, its amount and what it would
-  // change; the Tracker works out which ones the goods qualify for (AdjustmentsCta, QualifyLink).
+  // change; the Tracker works out which ones the goods qualify for (CheckSavingsLink, QualifyLink).
   // The rest of the plain-English why takes a free account (WhyGate)
   const { canSee: canSeeWhy, loading: whyLoading } = useCanSeeWhy();
   // The way up from each tab (PremiumTeasers): its pitches, in one dialog
@@ -327,6 +334,7 @@ export const CalculatorWorkspace = ({
               selectedElement={selectedElement}
               country={country}
               actions={actions}
+              explain={tab === "duty" ? <ExplainToggle open={explainOpen} onToggle={() => setExplainOpen((x) => !x)} /> : undefined}
               viewSwitch={
                 <div className="w-full min-w-0 basis-full sm:w-[28rem] sm:basis-auto">
                   <Segmented
@@ -349,6 +357,9 @@ export const CalculatorWorkspace = ({
             {tab === "duty" && (
               <>
                 {/* <AccountCta f={f} result={result} bestSaving={bestSaving} page={page} /> */}
+                {/* Signed in only (it renders nothing otherwise): signed out, "Explain this" in the
+                  breakdown's heading opens the pitch instead */}
+                {explainOpen && <DutySummary f={f} result={result} bestSaving={bestSaving} onClose={() => setExplainOpen(false)} />}
                 <div className={ui.card}>
                   <SummaryStats
                     result={result}
@@ -377,9 +388,6 @@ export const CalculatorWorkspace = ({
                     ))}
                   </ul>
                 )}
-                {/* Signed in only (it renders nothing otherwise): signed out, "Explain this" in the
-                  breakdown's heading opens the pitch instead */}
-                <DutySummary f={f} result={result} bestSaving={bestSaving} />
                 <div
                   className={
                     hasAdjustments
@@ -454,10 +462,15 @@ export const CalculatorWorkspace = ({
                         stableQuestions={stableQuestions}
                         notes={questionNotes}
                         qualifyLink={<QualifyLink conversion={conversion} />}
-                        notice={page !== "calculator" ? <AdjustmentsCta conversion={conversion} /> : undefined}
                         hideLegal={!canSeeWhy}
                         changeSummary={changeSummaryFor("question")}
-                        action={page === "calculator" ? <QualifyHeaderLink conversion={conversion} /> : undefined}
+                        action={
+                          page === "calculator" ? (
+                            <QualifyHeaderLink conversion={conversion} />
+                          ) : (
+                            <CheckSavingsLink onClick={onCheckSavings ?? (() => conversion.openTrial("qualify", QUALIFY_TRIAL))} />
+                          )
+                        }
                         answers={f.answers}
                         impacts={f.impacts}
                         lines={[...result.lines, ...(unadjusted?.lines ?? [])]}

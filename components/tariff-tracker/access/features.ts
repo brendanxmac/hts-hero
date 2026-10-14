@@ -49,7 +49,7 @@ export const PREMIUM_FEATURES: Record<
   },
   trends: {
     name: "Trends",
-    benefit: "Follow your catalog's duty rate and exposure over time",
+    benefit: "Follow the duty rate and exposure across your imports over time",
   },
   charts: {
     name: "Charts",
@@ -61,11 +61,11 @@ export const PREMIUM_FEATURES: Record<
   },
   tracking: {
     name: "Alerts",
-    benefit: "Get alerts on every import in your catalog, not just the first few",
+    benefit: "Get alerts on every one of your imports, not just the first few",
   },
   plan: {
     name: "Tariff Tracker",
-    benefit: "Everything in the Tracker, for your whole catalog",
+    benefit: "Everything in the Tracker, for all your imports",
   },
   qualify: {
     name: "Qualification check",
@@ -84,7 +84,7 @@ export const PREMIUM_INCLUDES = [
   "Savings checks on every import your plan covers, with the qualification check",
   "Unlimited audit checks: what you paid on past entries against what you owed",
   "Alerts when a tariff change hits any import your plan covers",
-  "Rate history and Sourcing for your whole catalog",
+  "Rate history and Sourcing for all your imports",
   "Share tariff reports with your team, clients, or broker",
 ]
 

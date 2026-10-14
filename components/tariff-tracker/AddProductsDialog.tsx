@@ -173,6 +173,7 @@ const Generator = ({ onGenerate }: { onGenerate: (text: string) => void }) => {
             value={origins}
             onChange={setOrigins}
             fullWidth
+            tone="accent"
           />
         </div>
       </div>
@@ -300,7 +301,7 @@ export const AddProductsDialog = ({
           </div>
 
           <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-5">
-            <SegmentedControl<AddMethod> label="How to add products" options={METHODS} value={method} onChange={setMethod} fullWidth />
+            <SegmentedControl<AddMethod> label="How to add products" options={METHODS} value={method} onChange={setMethod} fullWidth tone="accent" />
 
             {method === "paste" && (
               <PasteInput
@@ -338,7 +339,7 @@ export const AddProductsDialog = ({
                   ? "Nothing to add yet"
                   : [
                       `${ready.toLocaleString("en-US")} ${ready === 1 ? "product" : "products"} ready`,
-                      repeated ? `${repeated.toLocaleString("en-US")} already in your catalog` : "",
+                      repeated ? `${repeated.toLocaleString("en-US")} already in your imports` : "",
                       parsed.errors.length ? `${parsed.errors.length.toLocaleString("en-US")} skipped` : "",
                     ]
                       .filter(Boolean)

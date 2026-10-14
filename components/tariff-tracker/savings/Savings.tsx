@@ -208,7 +208,7 @@ const SavingsReport = () => {
       {paid && <BeyondPlanTeaser />}
       {checked > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <SegmentedControl<Show> label="Show savings" options={SHOWS} value={show} onChange={setShow} size="sm" />
+          <SegmentedControl<Show> label="Show savings" options={SHOWS} value={show} onChange={setShow} size="sm" tone="accent" />
           <p className={ui.caption}>
             Per shipment, at each product&apos;s value and quantity. Open a product to change them.
           </p>
@@ -251,7 +251,7 @@ export const Savings = () => {
       feature="savings"
       page="tracker"
       title="See where you could pay less duty"
-      teaser={savingsTeaser(insights) ?? "Checking your catalog for savings…"}
+      teaser={savingsTeaser(insights) ?? "Checking your imports for savings…"}
       points={section.planned}
       preview={<TableStandIn />}
       minHeight="min-h-[28rem]"

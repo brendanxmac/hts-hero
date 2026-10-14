@@ -15,8 +15,9 @@ export function SegmentedControl<T extends string>({
 }: {
   // Names the group for screen readers
   label: string;
-  // count: a number in a small pill after the label (how many there are to see)
-  options: readonly { id: T; label: string; title?: string; count?: number }[];
+  // count: a number in a small pill after the label (how many there are to see); badge: a short
+  // word after it ("Beta")
+  options: readonly { id: T; label: string; title?: string; count?: number; badge?: string }[];
   value: T;
   onChange: (value: T) => void;
   size?: "sm" | "md";
@@ -60,6 +61,15 @@ export function SegmentedControl<T extends string>({
                 }`}
               >
                 {option.count}
+              </span>
+            )}
+            {option.badge && (
+              <span
+                className={`ml-1.5 inline-flex items-center rounded-full px-1.5 text-[11px] font-semibold leading-[18px] ${
+                  active && accent ? "bg-primary-content/20 text-primary-content" : "bg-warning/15 text-warning"
+                }`}
+              >
+                {option.badge}
               </span>
             )}
           </button>

@@ -82,6 +82,7 @@ export const DutyBreakdown = ({
             ] as const}
             value={linesDetail}
             onChange={onLinesDetailChange}
+            tone="accent"
           />
         )}
         </div>

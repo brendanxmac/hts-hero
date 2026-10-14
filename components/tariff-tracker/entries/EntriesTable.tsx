@@ -51,7 +51,7 @@ const Row = ({
           </>
         ) : (
           <span className="text-xs text-base-content/60">
-            {entry.htsCode} · {entry.country} (no longer in your catalog)
+            {entry.htsCode} · {entry.country} (no longer in your imports)
           </span>
         )}
       </td>

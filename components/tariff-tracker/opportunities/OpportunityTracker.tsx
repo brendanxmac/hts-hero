@@ -28,10 +28,10 @@ const DOTS: Record<StatusTone, string> = {
 
 const applyText = (option: SavingOption, product: TrackedProduct) =>
   option.kind === "origin"
-    ? `adds ${product.entry.element.htsno} from ${option.setup.country.name} to your catalog and marks this one as moving there`
+    ? `adds ${product.entry.element.htsno} from ${option.setup.country.name} to your imports and marks this one as moving there`
     : option.kind === "program"
-      ? `claims it on this product in your catalog`
-      : `answers this condition yes on this product in your catalog`;
+      ? `claims it on this product in your imports`
+      : `answers this condition yes on this product in your imports`;
 
 const Timeline = ({ events }: { events: OpportunityEvent[] }) => (
   <ol className="flex flex-col gap-3">
@@ -48,7 +48,7 @@ const Timeline = ({ events }: { events: OpportunityEvent[] }) => (
             {e.note && <p className="m-0 mt-0.5 text-sm text-base-content/70">{e.note}</p>}
             {e.applied && (
               <p className="m-0 mt-0.5 text-xs text-base-content/60">
-                Applied to your catalog{e.applied.addedProductKey ? `: added ${e.applied.addedProductKey}` : ""}.
+                Applied to your imports{e.applied.addedProductKey ? `: added ${e.applied.addedProductKey}` : ""}.
               </p>
             )}
           </div>
@@ -90,7 +90,7 @@ export const OpportunityTracker = ({
     const ok = await setStatus(opportunity, pending, note.trim() || null, applied);
     setBusy(false);
     if (!ok) return toast.error("Couldn't save this. Please try again.");
-    if (applied) toast.success("Secured and applied to your catalog.");
+    if (applied) toast.success("Secured and applied to your imports.");
     setPending(null);
     setNote("");
   };

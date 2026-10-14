@@ -1,7 +1,9 @@
 "use client";
 
 import { ReactNode } from "react";
+import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { Switch } from "@/components/ui/Switch";
+import * as tt from "@/components/ui/styles/tracker";
 import { formatMoney, TRANSPORT_MODES } from "../../../duty-calculator/lib/format";
 import { useTrackerAccess } from "../../access/accessContext";
 import { DEFAULT_MODE } from "../../adjustments";
@@ -11,7 +13,8 @@ import { ShipmentsPerYearField } from "../savings/ShipmentsPerYearField";
 import { SummaryCard } from "./SummaryCard";
 
 // How the product is set up: the shipment its duty is worked out for, its trade program and
-// conditions, how often it ships, and whether it gets alerts (with the switch)
+// conditions, how often it ships, and whether it gets alerts (with the switch); and the way to
+// reset what's been set on it
 
 const Row = ({ label, children }: { label: string; children: ReactNode }) => (
   <div className="flex items-center justify-between gap-3 border-t border-base-300 py-2 text-sm first:border-t-0">
@@ -20,7 +23,18 @@ const Row = ({ label, children }: { label: string; children: ReactNode }) => (
   </div>
 );
 
-export const SetupCard = ({ product, onEdit }: { product: TrackedProduct; onEdit: () => void }) => {
+export const SetupCard = ({
+  product,
+  onEdit,
+  onReset,
+  adjusted,
+}: {
+  product: TrackedProduct;
+  onEdit: () => void;
+  onReset: () => void;
+  // Anything set on it to reset
+  adjusted: boolean;
+}) => {
   const { trackedKeys, setCovered } = useTracker();
   const { signedIn, openUpgrade } = useTrackerAccess();
   const a = product.adjustments;
@@ -57,6 +71,14 @@ export const SetupCard = ({ product, onEdit }: { product: TrackedProduct; onEdit
           </Row>
         )}
       </div>
+      {adjusted && (
+        <div className="border-t border-base-300 pt-3">
+          <button type="button" className={tt.button("ghost", "sm")} onClick={onReset}>
+            <ArrowPathIcon className="h-4 w-4" aria-hidden />
+            Reset adjustments
+          </button>
+        </div>
+      )}
     </SummaryCard>
   );
 };

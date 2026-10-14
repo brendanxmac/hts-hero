@@ -32,7 +32,7 @@ export const AddProductsPanel = () => {
       return;
     }
     const { added, duplicates } = addProducts(items, "overview_paste");
-    setMessage(duplicates ? `Added ${added}; ${duplicates} were already in your catalog.` : null);
+    setMessage(duplicates ? `Added ${added}; ${duplicates} were already in your imports.` : null);
   };
 
   return (
@@ -110,7 +110,7 @@ export const AddProductsPanel = () => {
               trackEvent(MixpanelEvent.TARIFF_TRACKER_EXAMPLE_USED, { from: "overview" });
             }}
           >
-            Try an example catalog
+            Try example imports
           </button>
         </div>
       </div>
