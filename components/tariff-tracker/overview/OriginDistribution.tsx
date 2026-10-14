@@ -63,9 +63,9 @@ export const OriginDistribution = ({ products }: { products: TrackedProduct[] })
       <p className="m-0 text-xs text-base-content/60">
         {byValue
           ? estimated > 0
-            ? `Estimated: ${estimated.toLocaleString("en-US")} of ${products.length.toLocaleString("en-US")} products use the $10,000 default until you enter their values.`
+            ? `Estimated: ${estimated.toLocaleString("en-US")} of ${products.length.toLocaleString("en-US")} imports use the $10,000 default until you enter their values.`
             : "By the shipment values you entered."
-          : "By number of products (an HTS code from one country is one product)."}
+          : "By number of imports (an HTS code from one country is one import)."}
       </p>
     </section>
   );

@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table"
 import {
   CATEGORIES,
   CATEGORY_LABELS,
@@ -117,15 +118,16 @@ const SortHeader = ({
   setSort: (s: { key: SortKey; dir: 1 | -1 }) => void
   className?: string
 }) => (
-  <th className={`px-3 py-2 font-medium ${className}`}>
+  <Th className={className} aria-sort={sort.key === k ? (sort.dir === 1 ? "ascending" : "descending") : "none"}>
     <button
-      className="inline-flex items-center gap-1 hover:text-base-content"
+      type="button"
+      className={`inline-flex items-center gap-1 uppercase tracking-wider hover:text-base-content ${sort.key === k ? "text-base-content" : ""}`}
       onClick={() => setSort({ key: k, dir: sort.key === k ? (-sort.dir as 1 | -1) : 1 })}
     >
       {label}
       <span className="text-base-content/30">{sort.key === k ? (sort.dir === 1 ? "↑" : "↓") : ""}</span>
     </button>
-  </th>
+  </Th>
 )
 
 const BulkBar = ({
@@ -696,86 +698,81 @@ export default function CoverageDashboard() {
             {filtered.length === 0 ? (
               <EmptyState title="No headings match">Try another view or clear the filters.</EmptyState>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="border-b border-base-content/10 text-left text-xs text-base-content/55">
-                    <tr>
-                      <th className="w-8 px-3 py-2">
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-xs"
-                          checked={allShownSelected}
-                          onChange={() =>
-                            setSelected((s) => {
-                              const next = new Set(s)
-                              shown.forEach((r) => (allShownSelected ? next.delete(r.item.htsno) : next.add(r.item.htsno)))
-                              return next
-                            })
-                          }
-                          title="Select this page"
-                        />
-                      </th>
-                      <SortHeader label="Heading" k="htsno" sort={sort} setSort={setSort} />
-                      <th className="px-3 py-2 font-medium">Description</th>
-                      <SortHeader label="Rate" k="rate" sort={sort} setSort={setSort} />
-                      <SortHeader label="Status" k="status" sort={sort} setSort={setSort} />
-                      <SortHeader label="Category" k="category" sort={sort} setSort={setSort} />
-                      <SortHeader label="Program" k="program" sort={sort} setSort={setSort} />
-                      <SortHeader label="Priority" k="priority" sort={sort} setSort={setSort} />
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-base-content/5">
-                    {shown.map((r) => (
-                      <tr
-                        key={r.item.htsno}
-                        className={`cursor-pointer align-top hover:bg-base-content/[0.03] ${open === r.item.htsno ? "bg-base-content/[0.05]" : ""}`}
-                        onClick={() => setOpen(r.item.htsno)}
-                      >
-                        <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+              <Table label="Headings" framed={false} dense valign="top">
+                <THead>
+                  <Tr>
+                    <Th className="w-8">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-xs"
+                        checked={allShownSelected}
+                        onChange={() =>
+                          setSelected((s) => {
+                            const next = new Set(s)
+                            shown.forEach((r) => (allShownSelected ? next.delete(r.item.htsno) : next.add(r.item.htsno)))
+                            return next
+                          })
+                        }
+                        title="Select this page"
+                      />
+                    </Th>
+                    <SortHeader label="Heading" k="htsno" sort={sort} setSort={setSort} />
+                    <Th>Description</Th>
+                    <SortHeader label="Rate" k="rate" sort={sort} setSort={setSort} />
+                    <SortHeader label="Status" k="status" sort={sort} setSort={setSort} />
+                    <SortHeader label="Category" k="category" sort={sort} setSort={setSort} />
+                    <SortHeader label="Program" k="program" sort={sort} setSort={setSort} />
+                    <SortHeader label="Priority" k="priority" sort={sort} setSort={setSort} />
+                  </Tr>
+                </THead>
+                <TBody>
+                  {shown.map((r) => (
+                    <Tr key={r.item.htsno} selected={open === r.item.htsno} onClick={() => setOpen(r.item.htsno)}>
+                      <Td>
+                        {/* Clicks around the checkbox select, they don't open the heading */}
+                        <span className="-m-2 inline-flex p-2" onClick={(e) => e.stopPropagation()}>
                           <input
                             type="checkbox"
                             className="checkbox checkbox-xs"
                             checked={selected.has(r.item.htsno)}
                             onChange={() => toggle(r.item.htsno)}
                           />
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">{r.item.htsno}</td>
-                        <td className="max-w-md px-3 py-2">
-                          <p className="line-clamp-2 text-[13px] leading-snug text-base-content/85">{r.item.description}</p>
-                          <div className="mt-1 flex flex-wrap gap-1">
-                            {r.starts && <Pill tone="warning">Starts {formatDay(r.starts)}</Pill>}
-                            {r.item.engine_referenced && !r.item.engine_modeled && <Pill tone="info">referenced</Pill>}
-                            {r.item.note_citations.slice(0, 2).map((c) => (
-                              <Pill key={c.key}>{c.label}</Pill>
-                            ))}
-                            {r.item.note_citations.length > 2 && <Pill>+{r.item.note_citations.length - 2}</Pill>}
-                            {r.item.notes && <Pill title={r.item.notes}>note</Pill>}
+                        </span>
+                      </Td>
+                      <RowHeader className="whitespace-nowrap font-mono text-xs">{r.item.htsno}</RowHeader>
+                      <Td className="max-w-md">
+                        <p className="line-clamp-2 text-[13px] leading-snug text-base-content/85">{r.item.description}</p>
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {r.starts && <Pill tone="warning">Starts {formatDay(r.starts)}</Pill>}
+                          {r.item.engine_referenced && !r.item.engine_modeled && <Pill tone="info">referenced</Pill>}
+                          {r.item.note_citations.slice(0, 2).map((c) => (
+                            <Pill key={c.key}>{c.label}</Pill>
+                          ))}
+                          {r.item.note_citations.length > 2 && <Pill>+{r.item.note_citations.length - 2}</Pill>}
+                          {r.item.notes && <Pill title={r.item.notes}>note</Pill>}
+                        </div>
+                      </Td>
+                      <Td className="max-w-[12rem] text-xs text-base-content/70">
+                        <span className="line-clamp-2">{r.item.general || "—"}</span>
+                      </Td>
+                      <Td className="whitespace-nowrap">
+                        <Pill tone={STATUS_TONES[r.status]} title={r.membership ? `In ${r.membership.title} (${r.membership.decision})` : r.item.status_note ?? undefined}>
+                          {STATUS_LABELS[r.status]}
+                        </Pill>
+                        {r.membership && (
+                          <div className="mt-1 max-w-[9rem] truncate text-[11px] text-base-content/50" title={r.membership.title}>
+                            {r.membership.title}
+                            {r.membership.decision === "skip" && " (skipped)"}
                           </div>
-                        </td>
-                        <td className="max-w-[12rem] px-3 py-2 text-xs text-base-content/70">
-                          <span className="line-clamp-2">{r.item.general || "—"}</span>
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-2">
-                          <Pill tone={STATUS_TONES[r.status]} title={r.membership ? `In ${r.membership.title} (${r.membership.decision})` : r.item.status_note ?? undefined}>
-                            {STATUS_LABELS[r.status]}
-                          </Pill>
-                          {r.membership && (
-                            <div className="mt-1 max-w-[9rem] truncate text-[11px] text-base-content/50" title={r.membership.title}>
-                              {r.membership.title}
-                              {r.membership.decision === "skip" && " (skipped)"}
-                            </div>
-                          )}
-                        </td>
-                        <td className={`whitespace-nowrap px-3 py-2 text-xs ${r.item.category ? "" : "italic text-base-content/50"}`}>
-                          {categoryLabel(r.category)}
-                        </td>
-                        <td className="max-w-[11rem] truncate px-3 py-2 text-xs text-base-content/70">{r.program ? programName(r.program) : "—"}</td>
-                        <td className="px-3 py-2 text-xs font-medium">{r.item.priority ?? <span className="text-base-content/30">—</span>}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        )}
+                      </Td>
+                      <Td className={`whitespace-nowrap text-xs ${r.item.category ? "" : "italic text-base-content/50"}`}>{categoryLabel(r.category)}</Td>
+                      <Td className="max-w-[11rem] truncate text-xs text-base-content/70">{r.program ? programName(r.program) : "—"}</Td>
+                      <Td className="text-xs font-medium">{r.item.priority ?? <span className="text-base-content/30">—</span>}</Td>
+                    </Tr>
+                  ))}
+                </TBody>
+              </Table>
             )}
 
             {pages > 1 && (

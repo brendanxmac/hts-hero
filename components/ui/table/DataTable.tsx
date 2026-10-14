@@ -6,6 +6,7 @@ import { ChevronDownIcon, ChevronUpDownIcon, ChevronUpIcon } from "@heroicons/re
 import { flexRender, Header, Row, Table } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as ui from "@/components/ui/styles";
+import * as s from "./styles";
 
 // Every data table, drawn the same way (DESIGN_SYSTEM.md "Data table"): a real <table> in a card,
 // headers in small caps on the soft background, sortable ones as buttons with the direction shown
@@ -17,7 +18,6 @@ import * as ui from "@/components/ui/styles";
 // DESIGN_SYSTEM §15) the card is a round panel and the headers sit on its soft fill, so they
 // stand apart from the ground.
 
-const ALIGN = { left: "text-left", right: "text-right", center: "text-center" };
 
 const SortIcon = ({ dir }: { dir: false | "asc" | "desc" }) =>
   dir === "asc" ? (
@@ -30,8 +30,7 @@ const SortIcon = ({ dir }: { dir: false | "asc" | "desc" }) =>
 
 const HeaderCell = <T,>({ header, first, last, top }: { header: Header<T, unknown>; first: boolean; last: boolean; top: boolean }) => {
   const meta = header.column.columnDef.meta;
-  const align = ALIGN[meta?.align ?? "left"];
-  const pad = `${first ? "pl-5 sm:pl-6" : "pl-4"} ${last ? "pr-5 sm:pr-6" : "pr-4"}`;
+  const align = s.ALIGN[meta?.align ?? "left"];
   const dir = header.column.getIsSorted();
   const content = header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext());
   return (
@@ -39,7 +38,7 @@ const HeaderCell = <T,>({ header, first, last, top }: { header: Header<T, unknow
       scope="col"
       // The card can't clip (that would stop the header sticking), so the corner cells round themselves
       // Under a toolbar the header row is a band across the card, ruled above
-      className={`${ui.label} sticky top-0 z-10 whitespace-nowrap bg-base-200 py-2.5 tracker:bg-tt-soft tracker:py-3 tracker:font-bold tracker:text-base-content/70 ${pad} ${align} ${meta?.width ?? ""} ${
+      className={`${s.headCell} ${s.pad} sticky top-0 z-10 ${align} ${meta?.width ?? ""} ${
         top ? `${first ? "rounded-tl-lg tracker:rounded-tl-3xl" : ""} ${last ? "rounded-tr-lg tracker:rounded-tr-3xl" : ""}` : "border-t border-base-300"
       }`}
       aria-sort={dir === "asc" ? "ascending" : dir === "desc" ? "descending" : header.column.getCanSort() ? "none" : undefined}
@@ -81,7 +80,7 @@ const BodyRow = <T,>({
     <tr
       ref={measure}
       data-index={index}
-      className={`transition-colors hover:bg-base-200/60 tracker:hover:bg-tt-soft ${onRowClick ? "cursor-pointer" : ""} ${row.getIsSelected() ? "bg-primary/5" : ""} ${rowClassName?.(row.original) ?? ""}`}
+      className={`${s.rowHover} ${onRowClick ? "cursor-pointer" : ""} ${row.getIsSelected() ? s.rowSelected : ""} ${rowClassName?.(row.original) ?? ""}`}
       onClick={(e) => {
         if (!onRowClick) return;
         // Controls in the row, and modified clicks on links, do their own thing
@@ -92,10 +91,9 @@ const BodyRow = <T,>({
         onRowClick(row.original);
       }}
     >
-      {cells.map((cell, i) => {
+      {cells.map((cell) => {
         const meta = cell.column.columnDef.meta;
-        const pad = `${i === 0 ? "pl-5 sm:pl-6" : "pl-4"} ${i === cells.length - 1 ? "pr-5 sm:pr-6" : "pr-4"}`;
-        const className = `border-t border-base-300 py-3 align-middle tracker:py-3.5 ${pad} ${ALIGN[meta?.align ?? "left"]} ${meta?.width ?? ""}`;
+        const className = `${s.bodyCell} ${s.pad} ${s.ALIGN[meta?.align ?? "left"]} ${meta?.width ?? ""}`;
         const content = flexRender(cell.column.columnDef.cell, cell.getContext());
         return meta?.rowHeader ? (
           <th key={cell.id} scope="row" className={`${className} font-normal`}>
@@ -162,13 +160,13 @@ export const DataTable = <T,>({
   const after = items.length ? virtualizer.getTotalSize() - (items[items.length - 1].end - virtualizer.options.scrollMargin) : 0;
 
   return (
-    <div className={`${ui.cardOverflowVisible} tracker:rounded-3xl tracker:shadow-none`}>
+    <div className={s.frameOpen}>
       {toolbar && <div className="flex flex-col gap-3 px-5 py-4 sm:px-6">{toolbar}</div>}
       <div>
         {/* The last row's corner cells round with the card, so a hover never paints past it */}
         <table
           ref={tableRef}
-          className="w-full border-separate border-spacing-0 text-sm tabular-nums [&_tbody>tr:last-child>*:first-child]:rounded-bl-lg [&_tbody>tr:last-child>*:last-child]:rounded-br-lg tracker:[&_tbody>tr:last-child>*:first-child]:rounded-bl-3xl tracker:[&_tbody>tr:last-child>*:last-child]:rounded-br-3xl"
+          className={`${s.table} [&_tbody>tr:last-child>*:first-child]:rounded-bl-lg [&_tbody>tr:last-child>*:last-child]:rounded-br-lg tracker:[&_tbody>tr:last-child>*:first-child]:rounded-bl-3xl tracker:[&_tbody>tr:last-child>*:last-child]:rounded-br-3xl`}
           aria-label={label}
           aria-rowcount={rows.length + 1}
         >

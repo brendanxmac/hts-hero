@@ -51,6 +51,8 @@ function NewClassificationContent() {
   const hasAutoSubmittedRef = useRef(false);
 
   const productParam = searchParams.get("product") || "";
+  // A 10-digit code to confirm (e.g. from the HTS explorer's "Confirm this classification")
+  const codeParam = searchParams.get("code") || "";
 
   useEffect(() => {
     resetClassificationState();
@@ -62,6 +64,13 @@ function NewClassificationContent() {
       hasAutoSubmittedRef.current = true;
     }
   }, [productParam]);
+
+  useEffect(() => {
+    if (codeParam && isValidTenDigitHtsInput(codeParam)) {
+      setInputMode("hts_code");
+      setLocalHtsCode(normalizeHtsCode(codeParam));
+    }
+  }, [codeParam]);
 
   const descriptionCanSubmit = localDescription.trim().length > 0;
   const htsCanSubmit = isValidTenDigitHtsInput(localHtsCode);

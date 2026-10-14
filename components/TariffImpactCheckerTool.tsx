@@ -44,6 +44,7 @@ import { fetchUser } from "../libs/supabase/user";
 import TariffImpactPricing from "./TariffImpactPricing";
 import apiClient from "../libs/api";
 import { discontinuedCodes2026 } from "../discontinued-codes-2026";
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table";
 
 export default function TariffImpactCheckerTool() {
   const CHARACTER_LIMIT = 3000;
@@ -228,30 +229,30 @@ export default function TariffImpactCheckerTool() {
 
     if (impacted === null) {
       return (
-        <td className="hidden sm:table-cell">
+        <Td className="hidden sm:table-cell">
           <span className="text-xs text-base-content/50">
             {error || "Code Unsupported"}
           </span>
-        </td>
+        </Td>
       );
     }
 
     if (!codeExists && !(code in discontinuedCodes2026)) {
       return (
-        <td className="hidden sm:table-cell">
+        <Td className="hidden sm:table-cell">
           <span className="text-xs text-base-content/50">
             Code Does Not Exist
           </span>
-        </td>
+        </Td>
       );
     }
 
     const resultNote = result.code in discontinuedCodes2026 ? discontinuedCodes2026[result.code] : note;
 
     return (
-      <td className="hidden sm:table-cell text-sm text-base-content/70">
+      <Td muted className="hidden sm:table-cell">
         {resultNote || "-"}
-      </td>
+      </Td>
     );
   };
 
@@ -279,9 +280,12 @@ export default function TariffImpactCheckerTool() {
     }
 
     return (
-      <td className="text-xl tooltip tooltip-left" data-tip={tooltip}>
-        {indicator}
-      </td>
+      <Td className="text-xl">
+        {/* Td takes no data attributes, so the tooltip sits on the indicator */}
+        <span className="tooltip tooltip-left" data-tip={tooltip}>
+          {indicator}
+        </span>
+      </Td>
     );
   };
 
@@ -586,25 +590,16 @@ export default function TariffImpactCheckerTool() {
               </div>
 
               {/* Results Table */}
-              <div className="overflow-x-auto">
-                <table className="table table-sm w-full">
-                  <thead>
-                    <tr className="border-b border-base-content/10">
-                      <th className="w-12 text-xs font-semibold uppercase tracking-widest text-base-content/50 bg-base-200/30">
-                        #
-                      </th>
-                      <th className="text-xs font-semibold uppercase tracking-widest text-base-content/50 bg-base-200/30">
-                        HTS Code
-                      </th>
-                      <th className="text-xs font-semibold uppercase tracking-widest text-base-content/50 bg-base-200/30">
-                        Impacted
-                      </th>
-                      <th className="hidden sm:table-cell text-xs font-semibold uppercase tracking-widest text-base-content/50 bg-base-200/30">
-                        Notes
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <Table framed={false} dense>
+                <THead>
+                  <Tr>
+                    <Th className="w-12">#</Th>
+                    <Th>HTS Code</Th>
+                    <Th>Impacted</Th>
+                    <Th className="hidden sm:table-cell">Notes</Th>
+                  </Tr>
+                </THead>
+                <TBody>
                     {results.map((result, i) => {
                       const htsElementForCode = htsElements.find(
                         (element) => element.htsno === result.code
@@ -617,15 +612,15 @@ export default function TariffImpactCheckerTool() {
                       );
 
                       return (
-                        <tr
+                        <Tr
                           key={`${result.code}-${i}`}
-                          className="border-b border-base-content/5 hover:bg-base-200/30 transition-colors"
+                          className="transition-colors hover:bg-base-200/60"
                         >
-                          <td className="text-base-content/50 font-medium">
+                          <Td className="font-medium text-base-content/50">
                             {i + 1}
-                          </td>
+                          </Td>
                           {htsElementForCode ? (
-                            <td className="min-w-32 lg:min-w-64">
+                            <RowHeader className="min-w-32 lg:min-w-64">
                               <Link
                                 href={`/explore?code=${result.code}`}
                                 target="_blank"
@@ -646,22 +641,21 @@ export default function TariffImpactCheckerTool() {
                                   />
                                 </svg>
                               </Link>
-                            </td>
+                            </RowHeader>
                           ) : (
-                            <td className="min-w-32 lg:min-w-64">
+                            <RowHeader className="min-w-32 lg:min-w-64">
                               <span className="inline-flex px-2.5 py-1 rounded-lg bg-base-content/5 border border-base-content/10 text-xs font-medium text-base-content/60">
                                 {result.code}
                               </span>
-                            </td>
+                            </RowHeader>
                           )}
                           {impactIndicator}
                           {notes}
-                        </tr>
+                        </Tr>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
+                </TBody>
+              </Table>
             </div>
           )}
         </div>

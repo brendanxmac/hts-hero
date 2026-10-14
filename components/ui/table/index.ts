@@ -11,6 +11,7 @@ export { FacetFilter, facetOptions } from "./FacetFilter";
 export { FilterChips } from "./FilterChips";
 export type { FacetMeta, FacetOption } from "./meta";
 export { selectColumn, SelectionBar } from "./selection";
+export { RowHeader, Table, TBody, Td, Th, THead, Tr } from "./Table";
 export { TableSearch } from "./TableSearch";
 export { TableToolbar } from "./TableToolbar";
 export { facetFilter, normalizeSearch, pruneColumnFilters, useDataTable } from "./useDataTable";

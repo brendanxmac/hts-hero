@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { toRoman } from "@javascript-packages/roman-numerals";
-import { Explore } from "../../components/Explore";
+import { Explore } from "@/components/hts-explorer/Explore";
 import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import config from "@/config";
 import { getHtsSectionsServer } from "../../libs/hts-server";
@@ -48,27 +48,28 @@ export default async function Home() {
   // the explorer itself loads the HTS in the browser
   return (
     <main className="w-full flex-1 min-h-0 flex flex-col bg-base-200">
-      <header className="mx-auto w-full max-w-screen-xl px-6 lg:px-8 pt-8 md:pt-10">
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-base-content [font-family:var(--font-tracker-display)]">
-          HTS Code Lookup
-        </h1>
-        <p className="mt-3 max-w-3xl text-sm md:text-base text-base-content/70 leading-relaxed">
-          Search the US Harmonized Tariff Schedule (HTSUS) by code or product
-          description, then open any HTS code to see its duty rates and notes,
-          or{" "}
-          <Link href="/duty-calculator" className="text-primary hover:underline">
-            calculate the full duty
-          </Link>{" "}
-          for a country of origin.
-        </p>
-      </header>
-
-      <div className="mx-auto w-full max-w-screen-xl px-6 lg:px-8 mt-6">
-        <div className="rounded-3xl border border-base-300 bg-base-100 overflow-hidden">
-          <BreadcrumbsProvider>
-            <Explore explorerSurface="explore_page" />
-          </BreadcrumbsProvider>
-        </div>
+      <div className="mx-auto w-full max-w-screen-xl px-6 lg:px-8 pt-8 md:pt-10 pb-16 sm:pb-20">
+        <BreadcrumbsProvider>
+          <Explore
+            explorerSurface="explore_page"
+            heading={
+              <>
+                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-base-content [font-family:var(--font-tracker-display)]">
+                  HTS Code Lookup
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm md:text-base text-base-content/70 leading-relaxed">
+                  Search the US Harmonized Tariff Schedule (HTSUS) by code or product
+                  description, then open any HTS code to see its duty rates and notes,
+                  or{" "}
+                  <Link href="/duty-calculator" className="text-primary hover:underline">
+                    calculate the full duty
+                  </Link>{" "}
+                  for a country of origin.
+                </p>
+              </>
+            }
+          />
+        </BreadcrumbsProvider>
       </div>
 
       {/* <section className="mx-auto w-full max-w-screen-xl px-6 lg:px-8 py-12 sm:py-16">

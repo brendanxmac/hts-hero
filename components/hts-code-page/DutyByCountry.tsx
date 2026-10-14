@@ -14,6 +14,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { countryPageByCode } from "@/libs/country-pages/countries";
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table/Table";
 
 // What an import under an HTS code pays from the largest sources of US imports, on the
 // /hts/[code] page. Server-rendered from the Tariff Calculator's engine.
@@ -89,92 +90,88 @@ export function DutyByCountry({
       </div>
 
       <div className={`${tt.panel} overflow-hidden`}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm tabular-nums">
-            <thead>
-              <tr className={`${tt.eyebrow()} whitespace-nowrap border-b border-base-300 bg-tt-soft`}>
-                <th scope="col" className="px-5 sm:px-6 py-3">Country of origin</th>
-                <th scope="col" className="px-4 py-3">Base rate</th>
-                <th scope="col" className="px-4 py-3">Additional tariffs</th>
-                <th scope="col" className="px-5 sm:px-6 py-3 text-right">Total duty</th>
-              </tr>
-            </thead>
-            <tbody>
-              {summary.rows.map((row) => (
-                <tr
-                  key={row.country.code}
-                  id={countryAnchor(row.country.name)}
-                  className="border-t border-base-300 *:align-top hover:bg-tt-soft scroll-mt-6"
-                >
-                  <th scope="row" className="px-5 sm:px-6 py-3 text-left font-medium text-base-content whitespace-nowrap">
-                    {/* A country with its own calculator page links there (a link search engines
-                        follow); others open the calculator with the code, which canonicalizes to
-                        /duty-calculator, so nofollow */}
-                    {countryPageByCode(row.country.code) ? (
-                      <Link
-                        href={`/duty-calculator/${countryPageByCode(row.country.code)!.slug}`}
-                        title={`${row.country.name} to US tariff calculator`}
-                        className="hover:underline hover:text-primary"
-                      >
-                        <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
-                        {row.country.name}
-                      </Link>
-                    ) : (
-                      <Link
-                        href={calculatorHref(htsno, row.country.code)}
-                        rel="nofollow"
-                        className="hover:underline hover:text-primary"
-                      >
-                        <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
-                        {row.country.name}
-                      </Link>
-                    )}
-                  </th>
-                  <td className="px-4 py-3 text-base-content/70 whitespace-nowrap">
-                    {row.baseRate}
-                    {row.column === "column2" && (
-                      <span className={`${ui.caption} block`}>Column 2</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-base-content/70">
-                    {row.additional.length ? (
-                      <ul className="flex flex-col gap-1">
-                        {row.additional.map((a) => (
-                          <li key={a.code} className="flex flex-wrap items-baseline gap-x-2">
-                            <span>{a.program}</span>
-                            <span className="font-semibold text-base-content">{formatDutyPct(a.ratePct)}</span>
-                            <span className={`${mono.className} ${ui.caption}`}>{a.code}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <span className="text-base-content/60">None</span>
-                    )}
-                  </td>
-                  <td className="px-5 sm:px-6 py-2 text-right whitespace-nowrap">
-                    {/* The total opens this code from this country in the calculator */}
+        <Table framed={false} valign="top">
+          <THead>
+            <Tr>
+              <Th>Country of origin</Th>
+              <Th>Base rate</Th>
+              <Th>Additional tariffs</Th>
+              <Th align="right">Total duty</Th>
+            </Tr>
+          </THead>
+          <TBody>
+            {summary.rows.map((row) => (
+              // The row itself is the anchor (#from-vietnam)
+              <Tr key={row.country.code} id={countryAnchor(row.country.name)} className="scroll-mt-6 transition-colors hover:bg-tt-soft">
+                <RowHeader className="whitespace-nowrap">
+                  {/* A country with its own calculator page links there (a link search engines
+                      follow); others open the calculator with the code, which canonicalizes to
+                      /duty-calculator, so nofollow */}
+                  {countryPageByCode(row.country.code) ? (
+                    <Link
+                      href={`/duty-calculator/${countryPageByCode(row.country.code)!.slug}`}
+                      title={`${row.country.name} to US tariff calculator`}
+                      className="font-medium text-base-content hover:underline hover:text-primary"
+                    >
+                      <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
+                      {row.country.name}
+                    </Link>
+                  ) : (
                     <Link
                       href={calculatorHref(htsno, row.country.code)}
                       rel="nofollow"
-                      title={`Calculate HTS ${htsno} from ${row.country.name}`}
-                      className="inline-block rounded-full px-3 py-1 font-semibold text-base-content hover:ring-1 hover:ring-primary/40"
-                      style={{ background: heat(row.totalPct) }}
+                      className="font-medium text-base-content hover:underline hover:text-primary"
                     >
-                      {describeTotal(row)}
+                      <span aria-hidden="true" className="mr-2">{row.country.flag}</span>
+                      {row.country.name}
                     </Link>
-                    {row.preference && (
-                      <span className="block mt-1 text-xs font-medium text-success">
-                        {row.preference.totalPct !== null
-                          ? `${formatDutyPct(row.preference.totalPct)} with ${row.preference.name}`
-                          : `Lower with ${row.preference.name}`}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  )}
+                </RowHeader>
+                <Td muted className="whitespace-nowrap">
+                  {row.baseRate}
+                  {row.column === "column2" && (
+                    <span className={`${ui.caption} block`}>Column 2</span>
+                  )}
+                </Td>
+                <Td muted>
+                  {row.additional.length ? (
+                    <ul className="flex flex-col gap-1">
+                      {row.additional.map((a) => (
+                        <li key={a.code} className="flex flex-wrap items-baseline gap-x-2">
+                          <span>{a.program}</span>
+                          <span className="font-semibold text-base-content">{formatDutyPct(a.ratePct)}</span>
+                          <span className={`${mono.className} ${ui.caption}`}>{a.code}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-base-content/60">None</span>
+                  )}
+                </Td>
+                {/* A step less padding than the other cells, so the pill's text lines up with theirs */}
+                <Td align="right" className="whitespace-nowrap !py-2.5">
+                  {/* The total opens this code from this country in the calculator */}
+                  <Link
+                    href={calculatorHref(htsno, row.country.code)}
+                    rel="nofollow"
+                    title={`Calculate HTS ${htsno} from ${row.country.name}`}
+                    className="inline-block rounded-full px-3 py-1 font-semibold text-base-content hover:ring-1 hover:ring-primary/40"
+                    style={{ background: heat(row.totalPct) }}
+                  >
+                    {describeTotal(row)}
+                  </Link>
+                  {row.preference && (
+                    <span className="block mt-1 text-xs font-medium text-success">
+                      {row.preference.totalPct !== null
+                        ? `${formatDutyPct(row.preference.totalPct)} with ${row.preference.name}`
+                        : `Lower with ${row.preference.name}`}
+                    </span>
+                  )}
+                </Td>
+              </Tr>
+            ))}
+          </TBody>
+        </Table>
 
         {/* The same rates as sentences, one per country: what an answer engine can quote whole
             for "the tariff on X from Vietnam", not only China */}

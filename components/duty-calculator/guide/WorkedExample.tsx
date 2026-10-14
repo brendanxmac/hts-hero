@@ -4,6 +4,7 @@ import { mono } from "@/components/ui/font";
 import * as mk from "@/components/ui/marketing/styles";
 import { BASE_LABEL, FEES_LABEL, partColors } from "@/components/ui/charts/partColors";
 import { StackedBar } from "@/components/ui/charts/StackedBar";
+import { Table, TBody, Td, Tr } from "@/components/ui/table/Table";
 import { formatMoney, formatPct } from "../lib/format";
 
 // One real entry worked through as a receipt: each part of the duty in its color from every other
@@ -40,11 +41,11 @@ export const WorkedExample = ({ example, asOf }: { example: WorkedExampleData; a
         shape="pill"
         legend={false}
       />
-      <table className="mt-4 w-full text-sm tabular-nums text-slate-900 skin:text-base-content">
-        <tbody>
+      <Table edge="flush" dense className="mt-4 text-slate-900 skin:text-base-content">
+        <TBody>
           {parts.map((p) => (
-            <tr key={p.label} className="border-t border-slate-200 skin:border-base-300">
-              <td className="py-2 pr-3 text-slate-600 skin:text-base-content/70">
+            <Tr key={p.label}>
+              <Td className="text-slate-600 skin:text-base-content/70">
                 <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: p.color }} aria-hidden />
                 {p.label}
                 {p.code && (
@@ -53,29 +54,29 @@ export const WorkedExample = ({ example, asOf }: { example: WorkedExampleData; a
                     <span className={`${mono.className} text-xs text-slate-500 skin:text-base-content/60`}>{p.code}</span>
                   </>
                 )}
-              </td>
-              <td className="py-2 text-right">{formatMoney(p.amount)}</td>
-            </tr>
+              </Td>
+              <Td align="right">{formatMoney(p.amount)}</Td>
+            </Tr>
           ))}
-          <tr className="border-t border-slate-300 skin:border-base-300 font-semibold">
-            <td className="py-2 pr-3">Total duty</td>
-            <td className="py-2 text-right">{formatMoney(example.totalDuty)}</td>
-          </tr>
+          <Tr total>
+            <Td>Total duty</Td>
+            <Td align="right">{formatMoney(example.totalDuty)}</Td>
+          </Tr>
           {example.fees.map((f) => (
-            <tr key={f.name} className="border-t border-slate-200 skin:border-base-300">
-              <td className="py-2 pr-3 text-slate-600 skin:text-base-content/70">
+            <Tr key={f.name}>
+              <Td className="text-slate-600 skin:text-base-content/70">
                 <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: colors[FEES_LABEL] }} aria-hidden />
                 {f.name} ({formatPct(f.ratePct)})
-              </td>
-              <td className="py-2 text-right">{formatMoney(f.amount)}</td>
-            </tr>
+              </Td>
+              <Td align="right">{formatMoney(f.amount)}</Td>
+            </Tr>
           ))}
-          <tr className="border-t border-slate-300 skin:border-base-300 font-semibold">
-            <td className="py-2 pr-3">Total duty and fees</td>
-            <td className="py-2 text-right">{formatMoney(total)}</td>
-          </tr>
-        </tbody>
-      </table>
+          <Tr total>
+            <Td>Total duty and fees</Td>
+            <Td align="right">{formatMoney(total)}</Td>
+          </Tr>
+        </TBody>
+      </Table>
     </div>
   );
 };

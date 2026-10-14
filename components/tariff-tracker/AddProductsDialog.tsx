@@ -10,6 +10,7 @@ import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
+import { RowHeader, Table, TBody, Td, Tr } from "@/components/ui/table";
 import { adjustmentTags } from "./adjustments";
 import { itemKey, NewProduct } from "./catalog";
 import { CSV_COLUMNS, downloadCsvTemplate, ImportedEntry, parseCsv } from "./csv";
@@ -116,19 +117,22 @@ const CsvInput = ({
             Download template
           </button>
         </div>
-        <table className="w-full text-left text-sm">
-          <tbody>
+        {/* On the card's px-4, like its header and note, and no rule over the first row (the header draws it) */}
+        <Table framed={false} dense>
+          <TBody>
             {CSV_COLUMNS.map((c) => (
-              <tr key={c.name} className="border-t border-base-300 first:border-t-0">
-                <td className={`${mono.className} px-4 py-2 font-semibold text-base-content`}>{c.name}</td>
-                <td className="px-4 py-2 text-base-content/70">{c.description}</td>
-                <td className="px-4 py-2 text-right">
+              <Tr key={c.name} className="[&:first-child>*]:border-t-0">
+                <RowHeader className="!pl-4">
+                  <span className={`${mono.className} font-semibold text-base-content`}>{c.name}</span>
+                </RowHeader>
+                <Td muted>{c.description}</Td>
+                <Td align="right" className="!pr-4">
                   <span className={ui.badge(c.required ? "primary" : "neutral")}>{c.required ? "Required" : "Optional"}</span>
-                </td>
-              </tr>
+                </Td>
+              </Tr>
             ))}
-          </tbody>
-        </table>
+          </TBody>
+        </Table>
         <p className={`${ui.caption} border-t border-base-300 px-4 py-2`}>
           Columns can be in any order and other columns are ignored. Optional values become the product&apos;s
           adjustments.

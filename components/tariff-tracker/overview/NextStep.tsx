@@ -75,8 +75,8 @@ export const NextStep = () => {
 
   const content: Record<Exclude<StepId, "products">, StepContent> = {
     values: {
-      title: "Set your product values",
-      body: `${onEstimate.toLocaleString("en-US")} of your ${items.length.toLocaleString("en-US")} products use the $10,000 estimate. Your own values make every duty and potential saving yours.`,
+      title: "Set your import values",
+      body: `${onEstimate.toLocaleString("en-US")} of your ${items.length.toLocaleString("en-US")} imports use the default $10,000 estimate. Your own values make every duty and potential saving yours.`,
       payoff: onEstimate > 0 ? `${onEstimate.toLocaleString("en-US")} still on the estimate` : "Every number is yours",
       go: openValues,
       action: (
@@ -139,9 +139,8 @@ export const NextStep = () => {
     const inner = (
       <>
         <span
-          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-            step.done ? "bg-success text-success-content" : isNext ? "bg-primary text-primary-content" : "bg-base-300 text-base-content/70"
-          }`}
+          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${step.done ? "bg-success text-success-content" : isNext ? "bg-primary text-primary-content" : "bg-base-300 text-base-content/70"
+            }`}
         >
           {step.done ? <CheckIcon className="h-3.5 w-3.5" aria-hidden /> : step.number}
         </span>
@@ -164,9 +163,8 @@ export const NextStep = () => {
         <button
           type="button"
           onClick={c.go}
-          className={`flex w-full min-w-0 items-center gap-2.5 rounded-2xl px-3 py-2 transition-colors hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-            isNext ? "bg-primary/5" : ""
-          }`}
+          className={`flex w-full min-w-0 items-center gap-2.5 rounded-2xl px-3 py-2 transition-colors hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${isNext ? "bg-primary/5" : ""
+            }`}
         >
           {inner}
         </button>

@@ -119,9 +119,10 @@ export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }
 
           {!loading && !error && rulings.length > 0 && (
             <div className={bare ? "grid gap-3 md:grid-cols-2" : "flex flex-col gap-4"}>
-              {(showAll || !initialCount ? rulings : rulings.slice(0, initialCount)).map((ruling) => (
+              {(showAll || !initialCount ? rulings : rulings.slice(0, initialCount)).map((ruling, i) => (
                 <RulingCard
-                  key={ruling.id}
+                  // CBP can list a ruling twice
+                  key={`${ruling.id}-${i}`}
                   ruling={ruling}
                   onClick={() => handleRulingClick(ruling)}
                 />

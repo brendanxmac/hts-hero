@@ -35,7 +35,7 @@ import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
 import { TariffColumn } from "../enums/tariff";
-import { NavigatableElement } from "../components/Elements";
+import { NavigatableElement } from "../components/hts-explorer/types";
 import { generateClassificationReport } from "./classification";
 import { SecondaryText } from "../components/SecondaryText";
 import { TertiaryLabel } from "../components/TertiaryLabel";

@@ -12,6 +12,7 @@ import { validateTariffableHtsCode } from "../libs/hts";
 import { User } from "@supabase/supabase-js";
 import { sentEmailWithExampleOfTariffImpactCheck } from "../libs/tariff-impact-check";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table";
 
 interface ValidatedCode {
   code: string;
@@ -174,24 +175,24 @@ export const ManageCodeListModal = ({
                 ⚠️ Invalid Codes
               </label>
               <div className="w-full rounded-md border-2 border-warning overflow-hidden">
-                <table className="table table-zebra table-sm table-pin-cols w-full">
-                  <thead className="bg-base-100">
-                    <tr>
-                      <th>Code</th>
-                      <th>Error</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                <Table framed={false} dense>
+                  <THead>
+                    <Tr>
+                      <Th>Code</Th>
+                      <Th>Error</Th>
+                    </Tr>
+                  </THead>
+                  <TBody>
                     {codes
                       .filter(({ error }) => error)
                       .map(({ code, error }, index) => (
-                        <tr key={code + index}>
-                          <td className="truncate max-w-48">{code}</td>
-                          <td>{error || "-"}</td>
-                        </tr>
+                        <Tr key={code + index}>
+                          <RowHeader className="truncate max-w-48">{code}</RowHeader>
+                          <Td>{error || "-"}</Td>
+                        </Tr>
                       ))}
-                  </tbody>
-                </table>
+                  </TBody>
+                </Table>
               </div>
             </div>
           )}

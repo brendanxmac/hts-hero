@@ -7,7 +7,7 @@ import { Countries, Country } from "@/constants/countries";
 // Types only: the engine and its tariff data load on demand, below
 import type { MicroEstimate } from "@/libs/hts-micro-estimate";
 import { CountryField } from "@/components/duty-calculator/fields";
-import { markCalculatorHandoff } from "@/components/duty-calculator/lib/analytics";
+import { estimateSurface, markCalculatorHandoff } from "@/components/duty-calculator/lib/analytics";
 import { formatDate, formatMoney } from "@/components/duty-calculator/lib/format";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
@@ -29,11 +29,18 @@ export const MicroCalculator = ({
   htsno,
   baseRates,
   initial,
+  inExplorer = false,
+  onUseCode,
 }: {
   htsno: string;
   baseRates: { general: string | null; special: string | null; other: string | null };
   initial: MicroEstimate;
+  // Shown in the HTS explorer rather than on the code's own page, for analytics
+  inExplorer?: boolean;
+  // Over a calculator: the way on is putting this code in it, rather than opening another one
+  onUseCode?: () => void;
 }) => {
+  const surface = () => (inExplorer ? estimateSurface("explorer") : "hts_code_page");
   const [country, setCountry] = useState<Country | null>(
     Countries.find((c) => c.code === initial.country) ?? null,
   );
@@ -72,17 +79,19 @@ export const MicroCalculator = ({
     trackEvent(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
       hts_code: htsno,
       country_code: shown.country,
-      surface: "hts_code_page",
+      surface: surface(),
       country_source: first && shown === initial ? "default" : "user",
     });
+    // surface() only reads where the page is
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shown, htsno, initial]);
 
   const openInCalculator = () => {
-    markCalculatorHandoff(htsno, "hts_code_page");
+    markCalculatorHandoff(htsno, surface());
     trackEvent(MixpanelEvent.DUTY_ESTIMATE_OPENED_IN_CALCULATOR, {
       hts_code: htsno,
       country_code: country?.code,
-      surface: "hts_code_page",
+      surface: surface(),
     });
   };
   const calculatorHref =
@@ -159,17 +168,26 @@ export const MicroCalculator = ({
           <p className="mt-0.5 text-sm text-base-content/70">{hook}</p>
         </div>
         <div className="flex shrink-0 flex-col items-stretch sm:items-center gap-1">
-          {/* nofollow: calculator links with parameters all canonicalize to /duty-calculator */}
-          <Link
-            href={calculatorHref}
-            onClick={openInCalculator}
-            rel="nofollow"
-            className={tt.button("next")}
-          >
-            Find my exact duty
-            <ArrowRightIcon className="h-4 w-4" aria-hidden />
-          </Link>
-          <span className={`${ui.caption} text-center`}>Free · No sign-up</span>
+          {onUseCode ? (
+            <button type="button" onClick={onUseCode} className={tt.button("next")}>
+              Use this code
+              <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            </button>
+          ) : (
+            <>
+              {/* nofollow: calculator links with parameters all canonicalize to /duty-calculator */}
+              <Link
+                href={calculatorHref}
+                onClick={openInCalculator}
+                rel="nofollow"
+                className={tt.button("next")}
+              >
+                Find my exact duty
+                <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              </Link>
+              <span className={`${ui.caption} text-center`}>Free · No sign-up</span>
+            </>
+          )}
         </div>
       </div>
     </section>

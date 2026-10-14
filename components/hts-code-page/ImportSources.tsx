@@ -7,6 +7,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { countryPageByCode } from "@/libs/country-pages/countries";
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table/Table";
 
 // Where the US imports an HTS code from, on the /hts/[code] page: the code's own top supplying
 // countries by last year's US imports (Census), each with its share, the change on the year
@@ -49,70 +50,72 @@ export function ImportSources({
       </SectionHeader>
 
       <div className={`${tt.panel} overflow-hidden`}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm tabular-nums">
-            <thead>
-              <tr className={`${tt.eyebrow()} whitespace-nowrap border-b border-base-300 bg-tt-soft`}>
-                <th scope="col" className="px-5 py-3 sm:px-6">Country of origin</th>
-                <th scope="col" className="px-4 py-3 text-right">US imports, {imports.year}</th>
-                <th scope="col" className="px-4 py-3 text-right">Share</th>
-                <th scope="col" className="px-4 py-3 text-right">vs {imports.prior}</th>
-                <th scope="col" className="px-5 py-3 text-right sm:px-6">Total duty today</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map(([iso, v]) => {
-                const row = dutyFor(iso);
-                const trend = v.prior > 0 ? (v.value - v.prior) / v.prior : null;
-                const page = countryPageByCode(iso);
-                const name = row?.country.name ?? iso;
-                return (
-                  <tr key={iso} className="border-t border-base-300 hover:bg-tt-soft">
-                    <th scope="row" className="whitespace-nowrap px-5 py-3 text-left font-medium text-base-content sm:px-6">
-                      {/* As in Duty by Country: a country page is followed, the calculator isn't */}
-                      <Link
-                        href={page ? `/duty-calculator/${page.slug}` : `/duty-calculator?code=${htsno}&country=${iso}`}
-                        rel={page ? undefined : "nofollow"}
-                        className="hover:text-primary hover:underline"
-                      >
-                        <span aria-hidden="true" className="mr-2">
-                          {row?.country.flag}
-                        </span>
-                        {name}
-                      </Link>
-                    </th>
-                    <td className="px-4 py-3 text-right font-medium">{formatImportValue(v.value)}</td>
-                    <td className="px-4 py-3 text-right text-base-content/70">{share(v.value)}%</td>
-                    <td className="px-4 py-3 text-right">
-                      {trend === null ? (
-                        <span className="text-xs text-base-content/60">New</span>
-                      ) : (
-                        <span className={`inline-flex items-center gap-1 text-xs font-medium ${trend >= 0 ? "text-success" : "text-base-content/60"}`}>
-                          {trend >= 0 ? <ArrowTrendingUpIcon className="h-3.5 w-3.5" aria-hidden /> : <ArrowTrendingDownIcon className="h-3.5 w-3.5" aria-hidden />}
-                          {Math.abs(Math.round(trend * 100))}%
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3 text-right sm:px-6">
-                      {row ? (
-                        <>
-                          <span className="font-semibold text-base-content">{describeTotal(row)}</span>
-                          {row.preference && row.preference.totalPct !== null && (
-                            <span className={`${ui.caption} block`}>
-                              {formatDutyPct(row.preference.totalPct)} with {row.preference.name}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <Table framed={false}>
+          <THead>
+            <Tr>
+              <Th>Country of origin</Th>
+              <Th align="right">US imports, {imports.year}</Th>
+              <Th align="right">Share</Th>
+              <Th align="right">vs {imports.prior}</Th>
+              <Th align="right">Total duty today</Th>
+            </Tr>
+          </THead>
+          <TBody>
+            {rows.map(([iso, v]) => {
+              const row = dutyFor(iso);
+              const trend = v.prior > 0 ? (v.value - v.prior) / v.prior : null;
+              const page = countryPageByCode(iso);
+              const name = row?.country.name ?? iso;
+              return (
+                <Tr key={iso} className="transition-colors hover:bg-tt-soft">
+                  <RowHeader className="whitespace-nowrap">
+                    {/* As in Duty by Country: a country page is followed, the calculator isn't */}
+                    <Link
+                      href={page ? `/duty-calculator/${page.slug}` : `/duty-calculator?code=${htsno}&country=${iso}`}
+                      rel={page ? undefined : "nofollow"}
+                      className="font-medium text-base-content hover:text-primary hover:underline"
+                    >
+                      <span aria-hidden="true" className="mr-2">
+                        {row?.country.flag}
+                      </span>
+                      {name}
+                    </Link>
+                  </RowHeader>
+                  <Td align="right" className="font-medium">
+                    {formatImportValue(v.value)}
+                  </Td>
+                  <Td align="right" muted>
+                    {share(v.value)}%
+                  </Td>
+                  <Td align="right">
+                    {trend === null ? (
+                      <span className="text-xs text-base-content/60">New</span>
+                    ) : (
+                      <span className={`inline-flex items-center gap-1 text-xs font-medium ${trend >= 0 ? "text-success" : "text-base-content/60"}`}>
+                        {trend >= 0 ? <ArrowTrendingUpIcon className="h-3.5 w-3.5" aria-hidden /> : <ArrowTrendingDownIcon className="h-3.5 w-3.5" aria-hidden />}
+                        {Math.abs(Math.round(trend * 100))}%
+                      </span>
+                    )}
+                  </Td>
+                  <Td align="right">
+                    {row ? (
+                      <>
+                        <span className="font-semibold text-base-content">{describeTotal(row)}</span>
+                        {row.preference && row.preference.totalPct !== null && (
+                          <span className={`${ui.caption} block`}>
+                            {formatDutyPct(row.preference.totalPct)} with {row.preference.name}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </Td>
+                </Tr>
+              );
+            })}
+          </TBody>
+        </Table>
         <p className="border-t border-base-300 px-6 py-4 text-xs leading-snug text-base-content/60">
           Source: U.S. Census Bureau, general imports{imports.level === 10 ? "" : ` (${imports.level}-digit group, as Census has no figures for this exact line)`}. Duty on a $10,000
           ocean shipment entered today, before customs fees. {CENSUS_NOTICE}

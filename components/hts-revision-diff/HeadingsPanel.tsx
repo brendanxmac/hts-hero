@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table"
 import type { DocumentRow, HeadingRow } from "@/libs/hts-revision-diff/types"
 import { api, formatBytes, formatTime, StatusBadge } from "./shared"
 import { btn, Callout, Dot, EmptyState, Help, PageSpinner, Panel, Pill, Spinner, StatusDot, type Tone } from "./ui"
@@ -253,8 +254,6 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
     const matches = rows.filter((r) => r.htsno === code)
     return { code, state: matches.some((r) => r.reviewed) ? "reviewed" : matches.length ? "unreviewed" : "missing" }
   })
-  const th = "whitespace-nowrap px-3 py-2 text-left text-xs font-medium text-base-content/50"
-  const td = "px-3 py-2.5 align-top"
 
   return (
     <div className="flex flex-col gap-5">
@@ -678,172 +677,167 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
         {rows.length === 0 ? (
           <EmptyState title="No heading rows">Upload the heading pages, or add a heading by hand.</EmptyState>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-base-content/10">
-                  <th className={`${th} w-8 pr-0`}>
-                    <input
-                      type="checkbox"
-                      aria-label="Select all rows"
-                      className="checkbox checkbox-xs rounded"
-                      checked={allSelected}
-                      ref={(el) => {
-                        if (el) el.indeterminate = selectedRows.length > 0 && !allSelected
-                      }}
-                      onChange={() => {
-                        setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)))
-                        setAnchor(null)
-                      }}
-                    />
-                  </th>
-                  <th className={`${th} w-16`} title="Reviewed">
-                    ✓
-                  </th>
-                  <th className={th}>Heading</th>
-                  <th className={`${th} min-w-[18rem]`}>Description</th>
-                  <th className={th}>General</th>
-                  <th className={th}>Special</th>
-                  <th className={th}>Col. 2</th>
-                  <th className={th}>Footnotes</th>
-                  <th className={`${th} text-right`}>Page</th>
-                  <th className={th}>Check</th>
-                  <th className={th} />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-base-content/[0.07]">
-                {rows.map((row, index) =>
-                  editing === row.id ? (
-                    <tr key={row.id} className="bg-base-content/[0.02]">
-                      <td colSpan={11} className="px-4 py-4">
-                        <RowForm value={draft} onChange={setDraft} />
-                        <div className="mt-3 flex justify-end gap-2">
-                          <button className={btn.xsGhost} onClick={() => setEditing(null)}>
-                            Cancel
-                          </button>
-                          <button
-                            className={btn.xsPrimary}
-                            disabled={!!busy}
-                            onClick={async () => {
-                              await patch(row, fromEditable(draft))
-                              setEditing(null)
-                            }}
-                          >
-                            {busy === `row-${row.id}` && <Spinner />}
-                            Save and mark reviewed
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    <tr
-                      key={row.id}
-                      className={`group transition-colors duration-150 ${
-                        selected.has(row.id)
-                          ? "bg-info/[0.07]"
-                          : row.claude_status === "flagged"
-                            ? "bg-error/[0.05]"
-                            : row.reviewed
-                              ? ""
-                              : "bg-warning/[0.03]"
-                      }`}
-                    >
-                      <td className={`${td} pr-0`}>
-                        <input
-                          type="checkbox"
-                          aria-label={`Select ${row.htsno || "row"}`}
-                          className="checkbox checkbox-xs mt-0.5 rounded"
-                          checked={selected.has(row.id)}
-                          onChange={(e) => toggleSelected(index, (e.nativeEvent as MouseEvent).shiftKey)}
-                        />
-                      </td>
-                      <td className={td}>
-                        <span className="flex items-center gap-1.5">
-                          <input
-                            type="checkbox"
-                            className="checkbox checkbox-xs mt-0.5 rounded"
-                            checked={row.reviewed}
-                            // Only operations that replace or delete rows lock the checkboxes
-                            disabled={!!busy && !busy.startsWith("row-")}
-                            onChange={(e) => toggleReviewed(row, e.target.checked)}
-                          />
-                          {/* Fixed slot: the spinner never changes the column's width */}
-                          <span className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center" aria-hidden>
-                            {((savingRows[row.id] ?? 0) > 0 || busy === `row-${row.id}`) && (
-                              <span className="loading loading-spinner h-3 w-3 text-base-content/40" />
-                            )}
-                          </span>
-                        </span>
-                      </td>
-                      <td className={`${td} whitespace-nowrap font-mono text-[13px]`}>
-                        {row.htsno || <span className="text-base-content/30">—</span>}
-                        {row.stat_suffix && <span className="text-base-content/45"> {row.stat_suffix}</span>}
-                        {uncited.has(row.id) && !data.coverage?.complete && (
-                          <span className="mt-1 block font-sans">
-                            <Pill title="The change record doesn't cite this heading">Not cited</Pill>
-                          </span>
-                        )}
-                      </td>
-                      <td className={td}>
-                        <span style={{ paddingLeft: `${row.indent * 1}rem` }} className="block leading-snug">
-                          {row.description}
-                        </span>
-                        {row.parser_original && (
-                          <span className="mt-1 block text-xs text-base-content/45">
-                            Parser read:{" "}
-                            {Object.entries(row.parser_original)
-                              .map(([k, v]) => `${k} "${Array.isArray(v) ? v.join("; ") : v}"`)
-                              .join(", ")}
-                          </span>
-                        )}
-                      </td>
-                      <td className={td}>{row.general}</td>
-                      <td className={`${td} max-w-[12rem] break-words`}>{row.special}</td>
-                      <td className={td}>{row.other}</td>
-                      <td className={`${td} max-w-[12rem] text-xs text-base-content/70`}>{row.footnotes.join(" ")}</td>
-                      <td className={`${td} text-right text-xs tabular-nums text-base-content/55`}>{row.page ?? ""}</td>
-                      <td className={`${td} text-xs`}>
-                        {row.source === "manual" ? (
-                          <Pill>Manual</Pill>
-                        ) : (
-                          row.claude_status && (
-                            <Pill tone={CHECK_TONES[row.claude_status]} title={row.claude_notes ?? ""}>
-                              {row.claude_status.charAt(0).toUpperCase() + row.claude_status.slice(1)}
-                            </Pill>
-                          )
-                        )}
-                        {row.claude_notes && row.claude_status !== "ok" && (
-                          <span className="mt-1 block max-w-[12rem] leading-snug text-base-content/55">{row.claude_notes}</span>
-                        )}
-                      </td>
-                      <td className={`${td} whitespace-nowrap text-right`}>
+          <Table label="Heading rows" framed={false} dense valign="top">
+            <THead>
+              <Tr>
+                <Th className="w-8 pr-0">
+                  <input
+                    type="checkbox"
+                    aria-label="Select all rows"
+                    className="checkbox checkbox-xs rounded"
+                    checked={allSelected}
+                    ref={(el) => {
+                      if (el) el.indeterminate = selectedRows.length > 0 && !allSelected
+                    }}
+                    onChange={() => {
+                      setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)))
+                      setAnchor(null)
+                    }}
+                  />
+                </Th>
+                <Th className="w-16">
+                  <span title="Reviewed">✓</span>
+                </Th>
+                <Th>Heading</Th>
+                <Th className="min-w-[18rem]">Description</Th>
+                <Th>General</Th>
+                <Th>Special</Th>
+                <Th>Col. 2</Th>
+                <Th>Footnotes</Th>
+                <Th align="right">Page</Th>
+                <Th>Check</Th>
+                <Th />
+              </Tr>
+            </THead>
+            <TBody>
+              {rows.map((row, index) =>
+                editing === row.id ? (
+                  <Tr key={row.id} className="bg-base-content/[0.02]">
+                    <Td colSpan={11} className="py-4">
+                      <RowForm value={draft} onChange={setDraft} />
+                      <div className="mt-3 flex justify-end gap-2">
+                        <button className={btn.xsGhost} onClick={() => setEditing(null)}>
+                          Cancel
+                        </button>
                         <button
-                          className={btn.xsGhost}
-                          onClick={() => {
-                            setDraft(toEditable(row))
-                            setEditing(row.id)
+                          className={btn.xsPrimary}
+                          disabled={!!busy}
+                          onClick={async () => {
+                            await patch(row, fromEditable(draft))
+                            setEditing(null)
                           }}
                         >
-                          Edit
+                          {busy === `row-${row.id}` && <Spinner />}
+                          Save and mark reviewed
                         </button>
-                        <button
-                          className={`${btn.xsGhost} text-base-content/40 hover:text-error`}
-                          disabled={!!busy}
-                          onClick={() =>
-                            confirm(`Delete ${row.htsno || "this row"}?`) &&
-                            run(`del-${row.id}`, () => api(`/heading-rows/${row.id}`, { method: "DELETE" }))
-                          }
-                        >
-                          {busy === `del-${row.id}` && <Spinner />}
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </Td>
+                  </Tr>
+                ) : (
+                  <Tr
+                    key={row.id}
+                    selected={selected.has(row.id)}
+                    className={`group transition-colors duration-150 ${
+                      selected.has(row.id) ? "" : row.claude_status === "flagged" ? "bg-error/[0.05]" : row.reviewed ? "" : "bg-warning/[0.03]"
+                    }`}
+                  >
+                    <Td className="pr-0">
+                      <input
+                        type="checkbox"
+                        aria-label={`Select ${row.htsno || "row"}`}
+                        className="checkbox checkbox-xs mt-0.5 rounded"
+                        checked={selected.has(row.id)}
+                        onChange={(e) => toggleSelected(index, (e.nativeEvent as MouseEvent).shiftKey)}
+                      />
+                    </Td>
+                    <Td>
+                      <span className="flex items-center gap-1.5">
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-xs mt-0.5 rounded"
+                          checked={row.reviewed}
+                          // Only operations that replace or delete rows lock the checkboxes
+                          disabled={!!busy && !busy.startsWith("row-")}
+                          onChange={(e) => toggleReviewed(row, e.target.checked)}
+                        />
+                        {/* Fixed slot: the spinner never changes the column's width */}
+                        <span className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center" aria-hidden>
+                          {((savingRows[row.id] ?? 0) > 0 || busy === `row-${row.id}`) && (
+                            <span className="loading loading-spinner h-3 w-3 text-base-content/40" />
+                          )}
+                        </span>
+                      </span>
+                    </Td>
+                    <RowHeader className="whitespace-nowrap font-mono text-[13px]">
+                      {row.htsno || <span className="text-base-content/30">—</span>}
+                      {row.stat_suffix && <span className="text-base-content/45"> {row.stat_suffix}</span>}
+                      {uncited.has(row.id) && !data.coverage?.complete && (
+                        <span className="mt-1 block font-sans">
+                          <Pill title="The change record doesn't cite this heading">Not cited</Pill>
+                        </span>
+                      )}
+                    </RowHeader>
+                    <Td>
+                      <span style={{ paddingLeft: `${row.indent * 1}rem` }} className="block leading-snug">
+                        {row.description}
+                      </span>
+                      {row.parser_original && (
+                        <span className="mt-1 block text-xs text-base-content/45">
+                          Parser read:{" "}
+                          {Object.entries(row.parser_original)
+                            .map(([k, v]) => `${k} "${Array.isArray(v) ? v.join("; ") : v}"`)
+                            .join(", ")}
+                        </span>
+                      )}
+                    </Td>
+                    <Td>{row.general}</Td>
+                    <Td className="max-w-[12rem] break-words">{row.special}</Td>
+                    <Td>{row.other}</Td>
+                    <Td className="max-w-[12rem] text-xs text-base-content/70">{row.footnotes.join(" ")}</Td>
+                    <Td align="right" className="text-xs text-base-content/55">
+                      {row.page ?? ""}
+                    </Td>
+                    <Td className="text-xs">
+                      {row.source === "manual" ? (
+                        <Pill>Manual</Pill>
+                      ) : (
+                        row.claude_status && (
+                          <Pill tone={CHECK_TONES[row.claude_status]} title={row.claude_notes ?? ""}>
+                            {row.claude_status.charAt(0).toUpperCase() + row.claude_status.slice(1)}
+                          </Pill>
+                        )
+                      )}
+                      {row.claude_notes && row.claude_status !== "ok" && (
+                        <span className="mt-1 block max-w-[12rem] leading-snug text-base-content/55">{row.claude_notes}</span>
+                      )}
+                    </Td>
+                    <Td align="right" className="whitespace-nowrap">
+                      <button
+                        className={btn.xsGhost}
+                        onClick={() => {
+                          setDraft(toEditable(row))
+                          setEditing(row.id)
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className={`${btn.xsGhost} text-base-content/40 hover:text-error`}
+                        disabled={!!busy}
+                        onClick={() =>
+                          confirm(`Delete ${row.htsno || "this row"}?`) &&
+                          run(`del-${row.id}`, () => api(`/heading-rows/${row.id}`, { method: "DELETE" }))
+                        }
+                      >
+                        {busy === `del-${row.id}` && <Spinner />}
+                        Delete
+                      </button>
+                    </Td>
+                  </Tr>
+                )
+              )}
+            </TBody>
+          </Table>
         )}
       </Panel>
     </div>

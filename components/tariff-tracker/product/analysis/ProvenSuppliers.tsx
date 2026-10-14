@@ -2,6 +2,7 @@
 
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table";
 import { CENSUS_NOTICE, formatImportValue, UsImports } from "@/components/duty-calculator/lib/usImports";
 import { formatRate } from "../../formatRate";
 import { OriginRate, RateBasis, rateKey, rateOf } from "./analysis";
@@ -48,53 +49,47 @@ export const ProvenSuppliers = ({
         </p>
       </div>
       {proven.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm tabular-nums">
-            <thead>
-              <tr className="border-y border-base-300 bg-base-200 text-left">
-                <th className={`${ui.label} px-5 py-2`}>Country</th>
-                <th className={`${ui.label} px-3 py-2 text-right`}>Duty rate</th>
-                <th className={`${ui.label} px-3 py-2 text-right`}>US imports, {imports.year}</th>
-                <th className={`${ui.label} px-5 py-2 text-right`}>vs {imports.prior}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {proven.slice(0, SHOWN).map((r) => {
-                const row = imports.byCountry.get(r.country.code)!;
-                const trend = row.prior > 0 ? (row.value - row.prior) / row.prior : null;
-                return (
-                  <tr
-                    key={r.country.code}
-                    className={`cursor-pointer border-b border-base-300 last:border-0 hover:bg-base-200 ${selected === r.country.code ? "bg-primary/5" : ""}`}
-                    onClick={() => onSelect(r.country.code)}
-                  >
-                    <td className="px-5 py-2.5">
-                      <span className="mr-2" aria-hidden>
-                        {r.country.flag}
+        <Table labelledBy="proven-suppliers-title" framed={false}>
+          <THead>
+            <Tr>
+              <Th>Country</Th>
+              <Th align="right">Duty rate</Th>
+              <Th align="right">US imports, {imports.year}</Th>
+              <Th align="right">vs {imports.prior}</Th>
+            </Tr>
+          </THead>
+          <TBody>
+            {proven.slice(0, SHOWN).map((r) => {
+              const row = imports.byCountry.get(r.country.code)!;
+              const trend = row.prior > 0 ? (row.value - row.prior) / row.prior : null;
+              return (
+                <Tr key={r.country.code} selected={selected === r.country.code} onClick={() => onSelect(r.country.code)}>
+                  <RowHeader className="text-base-content">
+                    <span className="mr-2" aria-hidden>
+                      {r.country.flag}
+                    </span>
+                    {r.country.name}
+                    {basis === "agreements" && r.agreement && <span className="ml-2 text-xs text-base-content/60">with {r.agreement.symbol}</span>}
+                  </RowHeader>
+                  <Td align="right" className="font-semibold text-success">
+                    {formatRate(rateOf(r, basis))}
+                  </Td>
+                  <Td align="right">{formatImportValue(row.value)}</Td>
+                  <Td align="right">
+                    {trend === null ? (
+                      <span className="text-xs text-base-content/60">New</span>
+                    ) : (
+                      <span className={`inline-flex items-center gap-1 text-xs font-medium ${trend >= 0 ? "text-success" : "text-base-content/60"}`}>
+                        {trend >= 0 ? <ArrowTrendingUpIcon className="h-3.5 w-3.5" aria-hidden /> : <ArrowTrendingDownIcon className="h-3.5 w-3.5" aria-hidden />}
+                        {Math.abs(Math.round(trend * 100))}%
                       </span>
-                      {r.country.name}
-                      {basis === "agreements" && r.agreement && (
-                        <span className="ml-2 text-xs text-base-content/60">with {r.agreement.symbol}</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2.5 text-right font-semibold text-success">{formatRate(rateOf(r, basis))}</td>
-                    <td className="px-3 py-2.5 text-right">{formatImportValue(row.value)}</td>
-                    <td className="px-5 py-2.5 text-right">
-                      {trend === null ? (
-                        <span className="text-xs text-base-content/60">New</span>
-                      ) : (
-                        <span className={`inline-flex items-center gap-1 text-xs font-medium ${trend >= 0 ? "text-success" : "text-base-content/60"}`}>
-                          {trend >= 0 ? <ArrowTrendingUpIcon className="h-3.5 w-3.5" aria-hidden /> : <ArrowTrendingDownIcon className="h-3.5 w-3.5" aria-hidden />}
-                          {Math.abs(Math.round(trend * 100))}%
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                    )}
+                  </Td>
+                </Tr>
+              );
+            })}
+          </TBody>
+        </Table>
       )}
       <p className="border-t border-base-300 px-5 py-3 text-xs leading-snug text-base-content/60">
         {origin && yours && `For comparison, the US imported ${formatImportValue(yours.value)} from ${origin.country.name} in ${imports.year}. `}

@@ -1,5 +1,6 @@
 import { StackedBar } from "@/components/ui/charts/StackedBar";
 import * as tt from "@/components/ui/styles/tracker";
+import { Table, TBody, Td, Tr } from "@/components/ui/table";
 import { formatMoney, todayIso } from "../../../duty-calculator/lib/format";
 import { addDays } from "../../../../tariffs/engine-v2/history";
 import { formatRate } from "../../formatRate";
@@ -49,30 +50,38 @@ export const DutyCard = ({ product, onOpen }: { product: TrackedProduct; onOpen:
         legend={false}
       />
 
-      <table className="w-full text-sm tabular-nums">
-        <tbody>
+      <Table label="Duty by part" edge="flush" dense>
+        <TBody>
           {product.parts.map((p) => (
-            <tr key={p.key} className="border-t border-base-300">
-              <td className="py-2 text-base-content/70">
+            <Tr key={p.key}>
+              <Td muted>
                 <span className="mr-2 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: colors[p.key] }} aria-hidden />
                 {shortProgram(p.key)}
-              </td>
-              <td className="py-2 text-right text-base-content">{formatRate(p.pct)}</td>
-              <td className="py-2 text-right text-base-content/70">{money((p.pct / 100) * product.customsValue)}</td>
-            </tr>
+              </Td>
+              <Td align="right" className="text-base-content">
+                {formatRate(p.pct)}
+              </Td>
+              <Td align="right" muted>
+                {money((p.pct / 100) * product.customsValue)}
+              </Td>
+            </Tr>
           ))}
-          <tr className="border-t border-base-300">
-            <td className="py-2 text-base-content/70">Fees (MPF, HMF)</td>
-            <td className="py-2 text-right text-base-content/40">—</td>
-            <td className="py-2 text-right text-base-content/70">{money(product.result.totalFees)}</td>
-          </tr>
-          <tr className="border-t border-base-300 font-semibold">
-            <td className="py-2 text-base-content">Duty on one shipment</td>
-            <td className="py-2 text-right text-base-content">{formatRate(product.totalPct)}</td>
-            <td className="py-2 text-right text-base-content">{money(product.result.totalDuty)}</td>
-          </tr>
-        </tbody>
-      </table>
+          <Tr>
+            <Td muted>Fees (MPF, HMF)</Td>
+            <Td align="right" className="text-base-content/40">
+              —
+            </Td>
+            <Td align="right" muted>
+              {money(product.result.totalFees)}
+            </Td>
+          </Tr>
+          <Tr total>
+            <Td>Duty on one shipment</Td>
+            <Td align="right">{formatRate(product.totalPct)}</Td>
+            <Td align="right">{money(product.result.totalDuty)}</Td>
+          </Tr>
+        </TBody>
+      </Table>
     </SummaryCard>
   );
 };

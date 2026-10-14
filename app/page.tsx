@@ -27,7 +27,7 @@ export const revalidate = 86400;
 
 const TITLE = "HTS Hero: US Tariff Calculator, Tariff Monitoring & Duty Audits";
 const DESCRIPTION =
-  "Calculate the US duty on any HTS code free, get alerts when tariffs change on your products, and find duty you overpaid. For importers and customs brokers.";
+  "Calculate the US duty on any HTS code free, get alerts when tariffs change on your imports, and find duty you overpaid. For importers and customs brokers.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -67,60 +67,60 @@ export default async function Home() {
   return (
     // The Tariff Tracker's look, following the site's light/dark setting (DESIGN_SYSTEM.md §15)
     <FollowTheme>
-    <MarketingLayout>
-      {renderSchemaJsonLd({
-        "@type": "WebSite",
-        name: "HTS Hero",
-        url: `https://${config.domainName}`,
-        description: DEFINITION,
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `https://${config.domainName}/hts/{search_term_string}`,
+      <MarketingLayout>
+        {renderSchemaJsonLd({
+          "@type": "WebSite",
+          name: "HTS Hero",
+          url: `https://${config.domainName}`,
+          description: DEFINITION,
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `https://${config.domainName}/hts/{search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
           },
-          "query-input": "required name=search_term_string",
-        },
-      })}
-      {renderSchemaJsonLd({
-        "@type": "Organization",
-        name: "HTS Hero",
-        url: `https://${config.domainName}`,
-        logo: `https://${config.domainName}/logo.svg`,
-        description: DEFINITION,
-      })}
-      {renderSchemaJsonLd({
-        "@type": "WebPage",
-        name: TITLE,
-        url: `https://${config.domainName}`,
-        description: DESCRIPTION,
-        // The tariff data on the page follows the latest verified HTS revision
-        dateModified: getLatestVerifiedRevision().from,
-      })}
-      {renderSchemaJsonLd({
-        "@type": "FAQPage",
-        mainEntity: HOME_FAQS.map(({ question, answer }) => ({
-          "@type": "Question",
-          name: question,
-          acceptedAnswer: { "@type": "Answer", text: answer },
-        })),
-      })}
-      <main className={`${mk.page} w-full flex-1 shrink-0`}>
-        <HeroTicker />
-        <LookupStrip />
-        <ToolShowcase
-          example={example}
-          audit={audit}
-          savings={savings}
-          facts={facts}
-        />
-        <Testimonials />
-        <PricingOverview />
-        <HomeDirectory />
-        <HomeFaq />
-        <OfferCta />
-      </main>
-    </MarketingLayout>
+        })}
+        {renderSchemaJsonLd({
+          "@type": "Organization",
+          name: "HTS Hero",
+          url: `https://${config.domainName}`,
+          logo: `https://${config.domainName}/logo.svg`,
+          description: DEFINITION,
+        })}
+        {renderSchemaJsonLd({
+          "@type": "WebPage",
+          name: TITLE,
+          url: `https://${config.domainName}`,
+          description: DESCRIPTION,
+          // The tariff data on the page follows the latest verified HTS revision
+          dateModified: getLatestVerifiedRevision().from,
+        })}
+        {renderSchemaJsonLd({
+          "@type": "FAQPage",
+          mainEntity: HOME_FAQS.map(({ question, answer }) => ({
+            "@type": "Question",
+            name: question,
+            acceptedAnswer: { "@type": "Answer", text: answer },
+          })),
+        })}
+        <main className={`${mk.page} w-full flex-1 shrink-0`}>
+          <HeroTicker />
+          <LookupStrip />
+          <ToolShowcase
+            example={example}
+            audit={audit}
+            savings={savings}
+            facts={facts}
+          />
+          <Testimonials />
+          <PricingOverview />
+          <HomeDirectory />
+          <HomeFaq />
+          <OfferCta />
+        </main>
+      </MarketingLayout>
     </FollowTheme>
   );
 }

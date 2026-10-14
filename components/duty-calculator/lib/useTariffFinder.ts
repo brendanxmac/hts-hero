@@ -555,14 +555,6 @@ export const useTariffFinder = ({
     track(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_CLOSED);
   };
 
-  useEffect(() => {
-    if (!showExplore) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeExplore();
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showExplore]);
-
   // ── Derived display state ──
 
   // The first unit is the one duty is charged in; later ones are statistical reporting units
