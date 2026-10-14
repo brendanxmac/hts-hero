@@ -1,9 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ArrowTrendingDownIcon, ArrowTrendingUpIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { useMemo } from "react";
+import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/20/solid";
+import { ColumnDef } from "@tanstack/react-table";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
+import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table";
 import { TableStandIn } from "@/components/ui/stand-ins";
 import { CENSUS_NOTICE, formatImportValue, useUsImportsFor } from "@/components/duty-calculator/lib/usImports";
 import { AccountGate } from "../access/AccountGate";
@@ -17,13 +20,13 @@ import { NeedsProducts } from "../shell/NeedsProducts";
 import { StatRow } from "../shell/StatRow";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
-import { SourcingOption, sourcingIdeas } from "./ideas";
+import { countryFacet, openColumn } from "../tableColumns";
+import { CountryIdea, SourcingIdea, SourcingOption, sourcingIdeas } from "./ideas";
 
 // The Sourcing tab: for each product, the countries that pay less duty than its origin and
 // already ship it to the US (Census imports), and the countries that could supply the most of the
 // catalog for less. A row opens the product, whose Analysis has every origin.
 
-const PAGE = 50;
 const OPTIONS_SHOWN = 3;
 const COUNTRIES_SHOWN = 8;
 
@@ -55,10 +58,140 @@ const Option = ({ option }: { option: SourcingOption }) => (
   </li>
 );
 
+const COUNTRY_COLUMNS: ColumnDef<CountryIdea, any>[] = [
+  {
+    id: "country",
+    accessorFn: (c) => c.country.name,
+    header: "Country",
+    meta: { rowHeader: true },
+    cell: ({ row: { original: c } }) => (
+      <span className="font-semibold text-base-content">
+        <span aria-hidden className="mr-2">
+          {c.country.flag}
+        </span>
+        {c.country.name}
+      </span>
+    ),
+  },
+  {
+    id: "products",
+    accessorFn: (c) => c.products,
+    header: "Your products it ships for less",
+    sortDescFirst: true,
+    meta: { align: "right" },
+    cell: ({ getValue }) => getValue().toLocaleString("en-US"),
+  },
+  {
+    id: "usd",
+    accessorFn: (c) => c.usd,
+    header: "Up to, one shipment of each",
+    sortDescFirst: true,
+    meta: { align: "right" },
+    cell: ({ getValue }) => <span className="font-semibold text-success">{wholeDollars(getValue())}</span>,
+  },
+];
+
+const CountriesTable = ({ countries }: { countries: CountryIdea[] }) => {
+  const table = useDataTable<CountryIdea>({ data: countries, columns: COUNTRY_COLUMNS, getRowId: (c) => c.country.code });
+  return <DataTable table={table} label="Countries that already make your products for less" />;
+};
+
+const ideaColumns = (year?: number): ColumnDef<SourcingIdea, any>[] => [
+  {
+    id: "product",
+    accessorFn: (i) => i.product.entry.element.htsno,
+    header: "Product",
+    meta: { rowHeader: true, width: "w-[26%]" },
+    cell: ({ row: { original: { product } } }) => (
+      <span className="flex min-w-0 flex-col text-left">
+        <span className={`${mono.className} text-sm font-semibold text-base-content`}>{product.entry.element.htsno}</span>
+        <span className="truncate text-xs text-base-content/60" title={product.description}>
+          {product.description}
+        </span>
+        <span className="text-xs text-base-content/60">
+          From {product.entry.country.flag} {product.entry.country.name}
+        </span>
+      </span>
+    ),
+  },
+  {
+    id: "country",
+    accessorFn: (i) => i.product.entry.country.code,
+    header: "Origin",
+    filterFn: "facet",
+    meta: { facet: countryFacet("Current origin") },
+  },
+  {
+    id: "rate",
+    accessorFn: (i) => i.product.totalPct,
+    header: "Rate now",
+    sortDescFirst: true,
+    meta: { align: "right", width: "w-28" },
+    cell: ({ getValue }) => formatRate(getValue()),
+  },
+  {
+    id: "options",
+    // Each cheaper country on its own in the filter
+    accessorFn: (i) => i.options.map((o) => o.country.code),
+    getUniqueValues: (i) => i.options.map((o) => o.country.code),
+    header: `Cheaper origins that ship it to the US${year ? `, ${year}` : ""}`,
+    enableSorting: false,
+    filterFn: "facet",
+    meta: { facet: countryFacet("Cheaper origin") },
+    cell: ({ row: { original: { options } } }) => (
+      <span className="flex flex-col gap-1">
+        <ul className="flex flex-col gap-1">
+          {options.slice(0, OPTIONS_SHOWN).map((o) => (
+            <Option key={o.country.code} option={o} />
+          ))}
+        </ul>
+        {options.length > OPTIONS_SHOWN && (
+          <span className="text-xs text-base-content/60">+{options.length - OPTIONS_SHOWN} more in the product&apos;s Analysis</span>
+        )}
+      </span>
+    ),
+  },
+  {
+    id: "usd",
+    accessorFn: (i) => i.best.usd,
+    header: "Up to, per shipment",
+    sortDescFirst: true,
+    meta: { align: "right", width: "w-40" },
+    cell: ({ row: { original: { best } } }) => (
+      <span className="flex flex-col items-end">
+        <span className={`${tt.display} text-base font-semibold text-base-content`}>{wholeDollars(best.usd)}</span>
+        <span className="text-xs text-base-content/60">
+          −{formatRate(best.pts)} from {best.country.name}
+        </span>
+      </span>
+    ),
+  },
+  openColumn<SourcingIdea>(),
+];
+
+const IdeasTable = ({ ideas, year, onOpen }: { ideas: SourcingIdea[]; year?: number; onOpen: (key: string) => void }) => {
+  const columns = useMemo(() => ideaColumns(year), [year]);
+  const table = useDataTable<SourcingIdea>({
+    data: ideas,
+    columns,
+    getRowId: (i) => i.product.key,
+    searchText: (i) => `${i.product.entry.element.htsno} ${i.product.description} ${i.product.entry.country.name} ${i.options.map((o) => o.country.name).join(" ")}`,
+    hidden: ["country"],
+  });
+  return (
+    <DataTable
+      table={table}
+      label="Cheaper origins for your products"
+      onRowClick={(i) => onOpen(i.product.key)}
+      toolbar={<TableToolbar table={table} placeholder="Search code, product or country" facets={["country", "options"]} noun={["product", "products"]} />}
+      empty={<p className="text-sm text-base-content/70">No products match.</p>}
+    />
+  );
+};
+
 const SourcingReport = () => {
   const insights = useInsights();
   const nav = useTrackerNav();
-  const [shown, setShown] = useState(PAGE);
   const codes = useMemo(() => insights.products.map((p) => p.entry.element.htsno), [insights.products]);
   const imports = useUsImportsFor(codes);
   const sourcing = useMemo(
@@ -99,9 +232,9 @@ const SourcingReport = () => {
       <BeyondPlanTeaser />
 
       {sourcing.countries.length > 0 && (
-        <section className={ui.card} aria-labelledby="tt-sourcing-countries">
-          <div className="flex flex-col gap-0.5 px-5 pb-3 pt-5">
-            <h2 id="tt-sourcing-countries" className={ui.cardTitle}>
+        <section className="flex flex-col gap-3" aria-labelledby="tt-sourcing-countries">
+          <div className="flex flex-col gap-0.5 px-1">
+            <h2 id="tt-sourcing-countries" className={tt.title}>
               Countries that already make your products for less
             </h2>
             <p className={ui.caption}>
@@ -109,114 +242,14 @@ const SourcingReport = () => {
               country covering several products can mean fewer suppliers to qualify.
             </p>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm tabular-nums">
-              <thead className="border-y border-base-300 bg-base-200">
-                <tr>
-                  <th scope="col" className={`${ui.label} px-5 py-2.5 text-left`}>Country</th>
-                  <th scope="col" className={`${ui.label} px-4 py-2.5 text-right`}>Your products it ships for less</th>
-                  <th scope="col" className={`${ui.label} px-5 py-2.5 text-right`}>Up to, one shipment of each</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sourcing.countries.slice(0, COUNTRIES_SHOWN).map((c) => (
-                  <tr key={c.country.code} className="border-b border-base-300 last:border-0">
-                    <th scope="row" className="px-5 py-2.5 text-left font-medium text-base-content">
-                      <span aria-hidden className="mr-2">
-                        {c.country.flag}
-                      </span>
-                      {c.country.name}
-                    </th>
-                    <td className="px-4 py-2.5 text-right">{c.products.toLocaleString("en-US")}</td>
-                    <td className="px-5 py-2.5 text-right font-semibold text-success">{wholeDollars(c.usd)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <CountriesTable countries={sourcing.countries.slice(0, COUNTRIES_SHOWN)} />
         </section>
       )}
 
       {sourcing.ideas.length ? (
-        <div className={ui.card}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm tabular-nums">
-              <thead className="bg-base-200">
-                <tr>
-                  <th scope="col" className={`${ui.label} px-5 py-2.5 text-left sm:px-6`}>Product</th>
-                  <th scope="col" className={`${ui.label} px-4 py-2.5 text-right`}>Rate now</th>
-                  <th scope="col" className={`${ui.label} px-4 py-2.5 text-left`}>
-                    Cheaper origins that ship it to the US{year ? `, ${year}` : ""}
-                  </th>
-                  <th scope="col" className={`${ui.label} px-4 py-2.5 text-right`}>Up to, per shipment</th>
-                  <th scope="col" className="px-5 py-2.5 sm:px-6">
-                    <span className="sr-only">Open</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {sourcing.ideas.slice(0, shown).map(({ product, options, best }) => (
-                  <tr
-                    key={product.key}
-                    className="cursor-pointer border-t border-base-300 align-top hover:bg-base-200/60"
-                    onClick={() => nav.openProduct(product.key)}
-                  >
-                    <th scope="row" className="max-w-xs px-5 py-3 text-left font-normal sm:px-6">
-                      <span className={`${mono.className} block text-sm font-semibold text-base-content`}>{product.entry.element.htsno}</span>
-                      <span className="block truncate text-xs text-base-content/60" title={product.description}>
-                        {product.description}
-                      </span>
-                      <span className="block text-xs text-base-content/60">
-                        From {product.entry.country.flag} {product.entry.country.name}
-                      </span>
-                    </th>
-                    <td className="px-4 py-3 text-right">{formatRate(product.totalPct)}</td>
-                    <td className="px-4 py-3">
-                      <ul className="flex flex-col gap-1">
-                        {options.slice(0, OPTIONS_SHOWN).map((o) => (
-                          <Option key={o.country.code} option={o} />
-                        ))}
-                      </ul>
-                      {options.length > OPTIONS_SHOWN && (
-                        <span className="mt-1 block text-xs text-base-content/60">
-                          +{options.length - OPTIONS_SHOWN} more in the product&apos;s Analysis
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <span className="font-semibold text-base-content">{wholeDollars(best.usd)}</span>
-                      <span className="block text-xs text-base-content/60">
-                        −{formatRate(best.pts)} from {best.country.name}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 text-right sm:px-6">
-                      <button
-                        type="button"
-                        className={ui.button({ variant: "ghost", size: "sm", icon: true })}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          nav.openProduct(product.key);
-                        }}
-                      >
-                        <ChevronRightIcon className="h-4 w-4" aria-hidden />
-                        <span className="sr-only">Open {product.entry.element.htsno}</span>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {sourcing.ideas.length > shown && (
-            <div className={`${ui.cardFooter} flex justify-center`}>
-              <button type="button" className={ui.button({ size: "sm" })} onClick={() => setShown((n) => n + PAGE)}>
-                Show more ({(sourcing.ideas.length - shown).toLocaleString("en-US")} left)
-              </button>
-            </div>
-          )}
-        </div>
+        <IdeasTable ideas={sourcing.ideas} year={year} onOpen={(key) => nav.openProduct(key)} />
       ) : (
-        <div className={`${ui.card} p-6`}>
+        <div className={`${tt.panel} p-6`}>
           <p className={ui.bodySm}>
             {insights.savingsReady && imports.ready
               ? "None of the countries that ship your products to the US pays less duty than your current origins."

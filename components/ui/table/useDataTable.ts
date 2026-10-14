@@ -58,6 +58,8 @@ export interface DataTableOptions<T> {
   getRowId: (row: T) => string;
   // The text the search box looks through, per row (code, description, country…)
   searchText?: (row: T) => string;
+  // The order before anyone clicks a heading (the data's own order when left out)
+  initialSorting?: SortingState;
   // Host-owned state, when it should outlive the table
   sorting?: SortingState;
   onSortingChange?: OnChangeFn<SortingState>;
@@ -79,9 +81,10 @@ export const useDataTable = <T>({
   searchText,
   hidden = [],
   enableRowSelection = false,
+  initialSorting = [],
   ...controlled
 }: DataTableOptions<T>) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>(initialSorting);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});

@@ -1,19 +1,19 @@
 "use client";
 
-import { AdjustmentsHorizontalIcon, CheckCircleIcon, ChevronRightIcon, LockClosedIcon, SparklesIcon } from "@heroicons/react/20/solid";
+import { AdjustmentsHorizontalIcon, CheckCircleIcon, LockClosedIcon, SparklesIcon } from "@heroicons/react/20/solid";
 import { ColumnDef } from "@tanstack/react-table";
 import { StackedBar } from "@/components/ui/charts/StackedBar";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { selectColumn } from "@/components/ui/table";
-import { Countries } from "../../../constants/countries";
 import { HtsSection } from "../../../interfaces/hts";
 import { adjustmentTags } from "../adjustments";
 import { formatRate } from "../formatRate";
 import { REVIEW_LABELS, ReviewState } from "../opportunities/review";
 import { BASE_PART, shortProgram, TrackedProduct } from "../report";
 import { productUrl } from "../sections";
+import { countryFacet, openColumn } from "../tableColumns";
 
 // The columns of the user's imports (ImportsTable): what each shows, how it sorts, and the ones
 // people filter by (origin, HTS chapter, tariff, savings, alerts), each with its values' labels
@@ -107,13 +107,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
     filterFn: "facet",
     meta: {
       width: "w-[16%]",
-      facet: {
-        label: "Country of origin",
-        describe: (code) => {
-          const country = Countries.find((c) => c.code === code);
-          return { label: country?.name ?? code, icon: country?.flag };
-        },
-      },
+      facet: countryFacet(),
     },
     cell: ({ row: { original: r } }) => (
       <span className="flex min-w-0 items-center gap-2">
@@ -234,11 +228,5 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
         } satisfies ColumnDef<TrackedProduct, any>,
       ]
     : []),
-  {
-    id: "open",
-    header: () => <span className="sr-only">Open</span>,
-    enableSorting: false,
-    meta: { width: "w-10", align: "right" },
-    cell: () => <ChevronRightIcon className="ml-auto h-5 w-5 text-base-content/40" aria-hidden />,
-  },
+  openColumn<TrackedProduct>(),
 ];

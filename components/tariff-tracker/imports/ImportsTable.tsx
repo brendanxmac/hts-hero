@@ -1,11 +1,20 @@
 "use client";
 
 import { ReactNode, useMemo } from "react";
-import { BellAlertIcon, BellSlashIcon, TrashIcon } from "@heroicons/react/20/solid";
+import {
+  BellAlertIcon,
+  BellSlashIcon,
+  TrashIcon,
+} from "@heroicons/react/20/solid";
 import { ColumnFiltersState, Row, Table, Updater } from "@tanstack/react-table";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { DataTable, FacetFilter, FilterChips, SelectionBar, TableSearch, useDataTable } from "@/components/ui/table";
+import {
+  DataTable,
+  SelectionBar,
+  TableToolbar,
+  useDataTable,
+} from "@/components/ui/table";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
 import { useTrackerAccess } from "../access/accessContext";
 import { useInsights } from "../insights/InsightsContext";
@@ -38,7 +47,15 @@ export const ImportsTable = ({
   // Between the header and the table
   summary?: (table: Table<TrackedProduct>) => ReactNode;
 }) => {
-  const { filters, replaceFilters, filterContext, trackedKeys, pickedKeys, setCovered, removeProducts } = useTracker();
+  const {
+    filters,
+    replaceFilters,
+    filterContext,
+    trackedKeys,
+    pickedKeys,
+    setCovered,
+    removeProducts,
+  } = useTracker();
   const { signedIn, openUpgrade } = useTrackerAccess();
   const { unlocked, review } = useInsights();
 
@@ -57,17 +74,33 @@ export const ImportsTable = ({
         review: (key) => review.get(key) ?? "unchecked",
         unlocked: (key) => unlocked.has(key),
       }),
-    [signedIn, filterContext.sections, rows, trackedKeys, pickedKeys, setCovered, openUpgrade, review, unlocked]
+    [
+      signedIn,
+      filterContext.sections,
+      rows,
+      trackedKeys,
+      pickedKeys,
+      setCovered,
+      openUpgrade,
+      review,
+      unlocked,
+    ],
   );
 
   // The Tracker's filters, as the table's column filters (and back)
   const columnFilters = useMemo<ColumnFiltersState>(
-    () => Object.entries(filters).filter(([, v]) => v.length).map(([id, value]) => ({ id, value })),
-    [filters]
+    () =>
+      Object.entries(filters)
+        .filter(([, v]) => v.length)
+        .map(([id, value]) => ({ id, value })),
+    [filters],
   );
   const onColumnFiltersChange = (updater: Updater<ColumnFiltersState>) => {
-    const next = typeof updater === "function" ? updater(columnFilters) : updater;
-    replaceFilters(Object.fromEntries(next.map((f) => [f.id, f.value as string[]])));
+    const next =
+      typeof updater === "function" ? updater(columnFilters) : updater;
+    replaceFilters(
+      Object.fromEntries(next.map((f) => [f.id, f.value as string[]])),
+    );
     trackEvent(MixpanelEvent.TARIFF_TRACKER_FILTERED, { filters: next.length });
   };
 
@@ -75,7 +108,8 @@ export const ImportsTable = ({
     data: rows,
     columns,
     getRowId: (r) => r.key,
-    searchText: (r) => `${r.entry.element.htsno} ${r.description} ${r.entry.country.name} ${r.entry.country.code}`,
+    searchText: (r) =>
+      `${r.entry.element.htsno} ${r.description} ${r.entry.country.name} ${r.entry.country.code}`,
     columnFilters,
     onColumnFiltersChange,
     hidden: ["chapter", "savings"],
@@ -83,52 +117,65 @@ export const ImportsTable = ({
   });
 
   const shown = table.getRowModel().rows.length;
-  const filtered = shown < rows.length;
 
   // Alerts on for the picked imports, as far as the plan allows
   const alertsOn = (picked: Row<TrackedProduct>[]) => {
-    const full = picked.find((r) => !trackedKeys.has(r.id) && !setCovered(r.id, true));
+    const full = picked.find(
+      (r) => !trackedKeys.has(r.id) && !setCovered(r.id, true),
+    );
     if (full) openUpgrade("tracking");
   };
-  const alertsOff = (picked: Row<TrackedProduct>[]) => picked.forEach((r) => setCovered(r.id, false));
+  const alertsOff = (picked: Row<TrackedProduct>[]) =>
+    picked.forEach((r) => setCovered(r.id, false));
   const remove = (picked: Row<TrackedProduct>[]) => {
-    if (!window.confirm(`Remove ${picked.length} ${picked.length === 1 ? "import" : "imports"}? Their adjustments are kept.`)) return;
+    if (
+      !window.confirm(
+        `Remove ${picked.length} ${picked.length === 1 ? "import" : "imports"}? Their adjustments are kept.`,
+      )
+    )
+      return;
     removeProducts(picked.map((r) => r.id));
     table.resetRowSelection();
   };
 
   const toolbar = (
-    <>
-      <div className="flex flex-wrap items-center gap-2">
-        <TableSearch table={table} placeholder="Search code, product or country" />
-        {FACETS.map((id) => {
-          const column = table.getColumn(id);
-          return column ? <FacetFilter key={id} column={column} /> : null;
-        })}
-        <span className="ml-auto text-sm font-semibold tabular-nums text-base-content/60" aria-live="polite">
-          {filtered ? `Showing ${shown.toLocaleString("en-US")} of ${rows.length.toLocaleString("en-US")}` : `${rows.length.toLocaleString("en-US")} ${rows.length === 1 ? "import" : "imports"}`}
-        </span>
-      </div>
-      <FilterChips table={table} />
+    <TableToolbar
+      table={table}
+      placeholder="Search code, product or country"
+      facets={FACETS}
+      noun={["import", "imports"]}
+    >
       <SelectionBar table={table}>
         {(picked) => (
           <>
-            <button type="button" className={tt.button("secondary", "sm")} onClick={() => alertsOn(picked)}>
+            <button
+              type="button"
+              className={tt.button("secondary", "sm")}
+              onClick={() => alertsOn(picked)}
+            >
               <BellAlertIcon className="h-4 w-4" aria-hidden />
               Turn on alerts
             </button>
-            <button type="button" className={tt.button("secondary", "sm")} onClick={() => alertsOff(picked)}>
+            <button
+              type="button"
+              className={tt.button("secondary", "sm")}
+              onClick={() => alertsOff(picked)}
+            >
               <BellSlashIcon className="h-4 w-4" aria-hidden />
               Turn off alerts
             </button>
-            <button type="button" className={`${tt.button("secondary", "sm")} hover:text-error`} onClick={() => remove(picked)}>
+            <button
+              type="button"
+              className={`${tt.button("secondary", "sm")} hover:text-error`}
+              onClick={() => remove(picked)}
+            >
               <TrashIcon className="h-4 w-4" aria-hidden />
               Remove
             </button>
           </>
         )}
       </SelectionBar>
-    </>
+    </TableToolbar>
   );
 
   return (
@@ -143,7 +190,10 @@ export const ImportsTable = ({
         toolbar={toolbar}
         empty={
           <div className="flex flex-col items-start gap-3">
-            <p className={ui.body}>No imports match {table.getState().globalFilter ? "this search" : "these filters"}.</p>
+            <p className={ui.body}>
+              No imports match{" "}
+              {table.getState().globalFilter ? "this search" : "these filters"}.
+            </p>
             <button
               type="button"
               className={tt.button("secondary", "sm")}

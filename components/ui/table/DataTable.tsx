@@ -39,7 +39,7 @@ const HeaderCell = <T,>({ header, first, last, top }: { header: Header<T, unknow
       scope="col"
       // The card can't clip (that would stop the header sticking), so the corner cells round themselves
       // Under a toolbar the header row is a band across the card, ruled above
-      className={`${ui.label} sticky top-0 z-10 bg-base-200 py-2.5 tracker:bg-tt-soft tracker:py-3 tracker:font-bold tracker:text-base-content/70 ${pad} ${align} ${meta?.width ?? ""} ${
+      className={`${ui.label} sticky top-0 z-10 whitespace-nowrap bg-base-200 py-2.5 tracker:bg-tt-soft tracker:py-3 tracker:font-bold tracker:text-base-content/70 ${pad} ${align} ${meta?.width ?? ""} ${
         top ? `${first ? "rounded-tl-lg tracker:rounded-tl-3xl" : ""} ${last ? "rounded-tr-lg tracker:rounded-tr-3xl" : ""}` : "border-t border-base-300"
       }`}
       aria-sort={dir === "asc" ? "ascending" : dir === "desc" ? "descending" : header.column.getCanSort() ? "none" : undefined}
@@ -48,7 +48,7 @@ const HeaderCell = <T,>({ header, first, last, top }: { header: Header<T, unknow
         <button
           type="button"
           onClick={header.column.getToggleSortingHandler()}
-          className={`inline-flex items-center gap-1 rounded uppercase tracking-wider hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          className={`inline-flex items-center gap-1 whitespace-nowrap rounded uppercase tracking-wider hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             meta?.align === "right" ? "flex-row-reverse" : ""
           } ${dir ? "text-base-content" : ""}`}
         >
@@ -81,7 +81,7 @@ const BodyRow = <T,>({
     <tr
       ref={measure}
       data-index={index}
-      className={`transition-colors hover:bg-base-200/60 tracker:hover:bg-tt-soft/70 ${onRowClick ? "cursor-pointer" : ""} ${row.getIsSelected() ? "bg-primary/5" : ""} ${rowClassName?.(row.original) ?? ""}`}
+      className={`transition-colors hover:bg-base-200/60 tracker:hover:bg-tt-soft ${onRowClick ? "cursor-pointer" : ""} ${row.getIsSelected() ? "bg-primary/5" : ""} ${rowClassName?.(row.original) ?? ""}`}
       onClick={(e) => {
         if (!onRowClick) return;
         // Controls in the row, and modified clicks on links, do their own thing

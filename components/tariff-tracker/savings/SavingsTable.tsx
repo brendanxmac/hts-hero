@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import { useMemo } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import { mono } from "@/components/ui/font";
-import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
+import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table";
 import { formatRate } from "../formatRate";
 import { wholeDollars } from "../insights/teasers";
 import { Saving, SavingKind } from "../insights/savings";
 import { TrackedProduct } from "../report";
+import { countryFacet, openColumn } from "../tableColumns";
 
 // Every saving across the catalog, biggest first: the product, what to do, and what it's worth
-// on one shipment. A row opens the product, where the saving can be checked and applied.
+// on one shipment, on the shared table (search, a filter by origin, sorting by the figures). A row
+// opens the product, where the saving can be checked and applied.
 
 const KIND_LABELS: Record<SavingKind, string> = {
   program: "Trade program",
@@ -18,87 +21,102 @@ const KIND_LABELS: Record<SavingKind, string> = {
   origin: "Sourcing",
 };
 
-const PAGE = 50;
-
 export interface SavingRow {
   saving: Saving;
   product: TrackedProduct;
 }
 
+const COLUMNS: ColumnDef<SavingRow, any>[] = [
+  {
+    id: "product",
+    accessorFn: (r) => r.product.entry.element.htsno,
+    header: "Product",
+    meta: { rowHeader: true, width: "w-[22%]" },
+    cell: ({ row: { original: r } }) => (
+      <span className="flex flex-col gap-0.5 text-left">
+        <span className={`${mono.className} text-sm font-semibold text-base-content`}>{r.product.entry.element.htsno}</span>
+        <span className="text-xs text-base-content/60">
+          {r.product.entry.country.flag} {r.product.entry.country.name}
+        </span>
+      </span>
+    ),
+  },
+  {
+    id: "country",
+    accessorFn: (r) => r.product.entry.country.code,
+    header: "Origin",
+    filterFn: "facet",
+    meta: { facet: countryFacet() },
+  },
+  {
+    id: "opportunity",
+    accessorFn: (r) => r.saving.title,
+    header: "Opportunity",
+    enableSorting: false,
+    cell: ({ row: { original: r } }) => (
+      <span className="flex flex-col gap-1">
+        <span className="flex flex-wrap items-center gap-2">
+          <span className={tt.chip(r.saving.kind === "origin" ? "neutral" : "success")}>{KIND_LABELS[r.saving.kind]}</span>
+          <span className="font-semibold text-base-content">
+            {r.saving.country ? `${r.saving.country.flag} ` : ""}
+            {r.saving.title}
+          </span>
+        </span>
+        <span className="line-clamp-2 text-xs text-base-content/60" title={r.saving.detail}>
+          {r.saving.detail}
+        </span>
+      </span>
+    ),
+  },
+  {
+    id: "rate",
+    accessorFn: (r) => r.product.totalPct,
+    header: "Rate now",
+    sortDescFirst: true,
+    meta: { align: "right", width: "w-28" },
+    cell: ({ getValue }) => formatRate(getValue()),
+  },
+  {
+    id: "pts",
+    accessorFn: (r) => r.saving.pts,
+    header: "Could lower by",
+    sortDescFirst: true,
+    meta: { align: "right", width: "w-32" },
+    cell: ({ getValue }) => <span className="font-semibold text-success">−{formatRate(getValue())}</span>,
+  },
+  {
+    id: "usd",
+    accessorFn: (r) => r.saving.usd,
+    header: "Up to, per shipment",
+    sortDescFirst: true,
+    meta: { align: "right", width: "w-40" },
+    cell: ({ row: { original: r } }) => (
+      <span className="flex flex-col items-end">
+        <span className={`${tt.display} text-base font-semibold text-base-content`}>{wholeDollars(r.saving.usd)}</span>
+        {r.saving.kind === "exemption" && <span className="text-xs text-base-content/60">If it applies</span>}
+      </span>
+    ),
+  },
+  openColumn<SavingRow>(),
+];
+
 export const SavingsTable = ({ rows, onOpen }: { rows: SavingRow[]; onOpen: (key: string) => void }) => {
-  const [shown, setShown] = useState(PAGE);
+  const columns = useMemo(() => COLUMNS, []);
+  const table = useDataTable<SavingRow>({
+    data: rows,
+    columns,
+    getRowId: (r) => `${r.saving.productKey}|${r.saving.kind}|${r.saving.ref}`,
+    searchText: (r) =>
+      `${r.product.entry.element.htsno} ${r.product.description} ${r.product.entry.country.name} ${r.saving.title} ${r.saving.country?.name ?? ""}`,
+    hidden: ["country"],
+  });
   return (
-    <div className={ui.card}>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm tabular-nums">
-          <thead className="bg-base-200">
-            <tr>
-              <th scope="col" className={`${ui.label} px-5 py-2.5 text-left sm:px-6`}>Product</th>
-              <th scope="col" className={`${ui.label} px-4 py-2.5 text-left`}>Opportunity</th>
-              <th scope="col" className={`${ui.label} px-4 py-2.5 text-right`}>Rate now</th>
-              <th scope="col" className={`${ui.label} px-4 py-2.5 text-right`}>Could lower by</th>
-              <th scope="col" className={`${ui.label} px-4 py-2.5 text-right`}>Up to, per shipment</th>
-              <th scope="col" className="px-5 py-2.5 sm:px-6">
-                <span className="sr-only">Open</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.slice(0, shown).map(({ saving, product }, i) => (
-              <tr
-                key={`${saving.productKey}-${saving.kind}-${i}`}
-                className="cursor-pointer border-t border-base-300 hover:bg-base-200/60"
-                onClick={() => onOpen(product.key)}
-              >
-                <th scope="row" className="px-5 py-3 text-left font-normal sm:px-6">
-                  <span className={`${mono.className} block text-sm font-semibold text-base-content`}>{product.entry.element.htsno}</span>
-                  <span className="block text-xs text-base-content/60">
-                    {product.entry.country.flag} {product.entry.country.name}
-                  </span>
-                </th>
-                <td className="px-4 py-3">
-                  <span className="flex items-center gap-2">
-                    <span className={ui.badge(saving.kind === "origin" ? "neutral" : "success")}>{KIND_LABELS[saving.kind]}</span>
-                    <span className="font-medium text-base-content">
-                      {saving.country ? `${saving.country.flag} ` : ""}
-                      {saving.title}
-                    </span>
-                  </span>
-                  <span className="mt-1 line-clamp-2 block text-xs text-base-content/60" title={saving.detail}>
-                    {saving.detail}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-right">{formatRate(product.totalPct)}</td>
-                <td className="px-4 py-3 text-right font-semibold text-success">−{formatRate(saving.pts)}</td>
-                <td className="px-4 py-3 text-right font-semibold text-base-content">
-                  {wholeDollars(saving.usd)}
-                  {saving.kind === "exemption" && <span className="block text-xs font-normal text-base-content/60">If it applies</span>}
-                </td>
-                <td className="px-5 py-3 text-right sm:px-6">
-                  <button
-                    type="button"
-                    className={ui.button({ variant: "ghost", size: "sm", icon: true })}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOpen(product.key);
-                    }}
-                  >
-                    <ChevronRightIcon className="h-4 w-4" aria-hidden />
-                    <span className="sr-only">Open {product.entry.element.htsno}</span>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {rows.length > shown && (
-        <div className={`${ui.cardFooter} flex justify-center`}>
-          <button type="button" className={ui.button({ size: "sm" })} onClick={() => setShown((n) => n + PAGE)}>
-            Show more ({(rows.length - shown).toLocaleString("en-US")} left)
-          </button>
-        </div>
-      )}
-    </div>
+    <DataTable
+      table={table}
+      label="Potential savings"
+      onRowClick={(r) => onOpen(r.product.key)}
+      toolbar={<TableToolbar table={table} placeholder="Search code, product or saving" facets={["country"]} noun={["saving", "savings"]} />}
+      empty={<p className="text-sm text-base-content/70">No savings match.</p>}
+    />
   );
 };
