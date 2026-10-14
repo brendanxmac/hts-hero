@@ -1,11 +1,16 @@
 "use client";
 
+import { area, curveStepAfter, line } from "d3-shape";
 import { MUTED_MARK } from "@/components/ui/theme";
 import { useChart } from "./ChartFrame";
 
 // The marks charts are made of, to the design system's specs (DESIGN_SYSTEM §10, dataviz): 2px
 // lines, bars with 4px-rounded data ends on the baseline and a 2px gap between neighbours, dots of
 // at least 8px with a ring of the surface around them where they overlap other marks.
+
+// Steps on d3-shape (curveStepAfter): each point holds until the next, and the last one runs on
+// to `to`
+const stepped = (points: { x: number; y: number }[], to: number) => [...points, { x: to, y: points[points.length - 1].y }];
 
 // A rate that holds until it changes: a step from each point to the next, and on to `to`
 export const StepLine = ({
@@ -25,10 +30,11 @@ export const StepLine = ({
   dashed?: boolean;
 }) => {
   if (!points.length) return null;
-  const d = points
-    .map((p, i) => `${i === 0 ? "M" : "L"}${x(p.x)},${y(p.y)} H${x(i + 1 < points.length ? points[i + 1].x : to)}`)
-    .join(" ");
-  return <path d={d} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeDasharray={dashed ? "4 4" : undefined} />;
+  const d = line<{ x: number; y: number }>()
+    .x((p) => x(p.x))
+    .y((p) => y(p.y))
+    .curve(curveStepAfter)(stepped(points, to));
+  return <path d={d ?? ""} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeDasharray={dashed ? "4 4" : undefined} />;
 };
 
 // The area under a step line, down to the baseline (y0): a soft fill under the rate. Pass a
@@ -50,8 +56,12 @@ export const StepArea = ({
   fill: string;
 }) => {
   if (!points.length) return null;
-  const top = points.map((p, i) => `${i === 0 ? "M" : "L"}${x(p.x)},${y(p.y)} H${x(i + 1 < points.length ? points[i + 1].x : to)}`).join(" ");
-  return <path d={`${top} V${y0} H${x(points[0].x)} Z`} fill={fill} />;
+  const d = area<{ x: number; y: number }>()
+    .x((p) => x(p.x))
+    .y0(y0)
+    .y1((p) => y(p.y))
+    .curve(curveStepAfter)(stepped(points, to));
+  return <path d={d ?? ""} fill={fill} />;
 };
 
 // A vertical bar from the baseline, its top end rounded

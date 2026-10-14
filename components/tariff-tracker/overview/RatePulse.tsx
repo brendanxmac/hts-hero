@@ -1,7 +1,24 @@
 "use client";
 
 import { useId, useMemo } from "react";
-import { BottomAxis, ChartFrame, Crosshair, Dot, HitArea, linearScale, niceMax, StepArea, StepLine, time, timeScale, Tooltip, TooltipRow, useHovered, ValueAxis } from "@/components/ui/charts/kit";
+import {
+  BottomAxis,
+  ChartFrame,
+  Crosshair,
+  Dot,
+  HitArea,
+  linearScale,
+  niceMax,
+  StepArea,
+  StepLine,
+  stepIndexAt,
+  time,
+  timeScale,
+  Tooltip,
+  TooltipRow,
+  useHovered,
+  ValueAxis,
+} from "@/components/ui/charts/kit";
 import * as tt from "@/components/ui/styles/tracker";
 import { ERROR_MARK, PRIMARY_MARK, SUCCESS_MARK } from "@/components/ui/theme";
 import { formatDate } from "../../duty-calculator/lib/format";
@@ -164,7 +181,7 @@ export const RatePulse = ({
                   <Dot cx={x.at(active.date)} cy={y(active.pct)} color={PRIMARY_MARK} active />
                 </>
               )}
-              <HitArea onMove={(px) => hover.set(xs.reduce((best, sx, j) => (sx <= px ? j : best), 0))} />
+              <HitArea onMove={(px) => hover.set(stepIndexAt(xs, px))} />
             </>
           );
         }}

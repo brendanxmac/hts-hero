@@ -153,6 +153,10 @@ Charts need more fixed hues than the semantic set. Import them from `@/component
 
 Keep a color tied to the same thing everywhere on a page: if China is `series-1` in one chart, it's `series-1` in the next. Chart colors go in `style` (an accepted exception, §10). The light chart orange is too light for text, so use it for fills only.
 
+### Building charts
+
+New charts are built from the shared kit, `@/components/ui/charts/kit`: `ChartFrame` (measured width, never a stretched viewBox), the scales (`linearScale`, `timeScale`, `bandScale`, `niceMax`, `stepIndexAt`), `ValueAxis` and `BottomAxis`, the marks (`StepLine`, `StepArea`, `Bar`, `GroupedBars`, `Dot`), the hover layer (`HitArea`, `Crosshair`, `Tooltip`, `TooltipRow`, `useHovered`) and `Legend`. The maths underneath is d3 (`d3-scale`, `d3-shape`, `d3-array`), wrapped by the kit, so charts never import d3 themselves. Rates that hold until a tariff changes them are always steps, never smoothed curves. Existing charts move onto the kit one at a time (Rate pulse first, Oct 2026); the maps (`WorldMap`, `LaneMap`) keep their own d3-geo code.
+
 ### Applying the theme
 
 The plugin applies the palette inside the class `hts-theme`. Put `THEME` on a page's outermost element:

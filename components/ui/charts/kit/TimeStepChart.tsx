@@ -5,7 +5,7 @@ import { BottomAxis, ValueAxis } from "./Axis";
 import { ChartFrame } from "./ChartFrame";
 import { Crosshair, HitArea, Tooltip, TooltipRow, useHovered } from "./hover";
 import { Dot, StepLine } from "./marks";
-import { linearScale, niceMax, time, timeScale } from "./scales";
+import { linearScale, niceMax, stepIndexAt, time, timeScale } from "./scales";
 
 // A value that holds until it changes, over time (a duty rate across tariff revisions), with
 // optional points on it (entries at the rate they paid) and the hover layer: the kit's parts put
@@ -72,7 +72,7 @@ export const TimeStepChart = ({
         const y = linearScale([0, max], [innerHeight, 0]);
         const xs = steps.map((s) => x.at(s.date));
         // The step under the pointer: the last one that starts at or before it
-        const onMove = (px: number) => hover.set(xs.reduce((best, sx, j) => (sx <= px ? j : best), 0));
+        const onMove = (px: number) => hover.set(stepIndexAt(xs, px));
         const active = hover.index === null ? null : steps[hover.index];
         return (
           <>

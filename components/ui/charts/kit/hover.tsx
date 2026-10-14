@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
+import { leastIndex } from "d3-array";
 import { useChart } from "./ChartFrame";
 
 // The hover layer every chart gets (dataviz: "ship a crosshair and tooltip by default"): a hit
@@ -8,8 +9,7 @@ import { useChart } from "./ChartFrame";
 // tooltip in HTML that stays inside the chart.
 
 // The index of the point nearest x, among points at xs
-export const nearestIndex = (xs: number[], x: number) =>
-  xs.reduce((best, value, i) => (Math.abs(value - x) < Math.abs(xs[best] - x) ? i : best), 0);
+export const nearestIndex = (xs: number[], x: number) => (xs.length ? (leastIndex(xs, (v) => Math.abs(v - x)) ?? 0) : 0);
 
 // Which point is under the pointer: set from the plot (where the scales are), cleared on leave
 export const useHovered = () => {
