@@ -8,7 +8,8 @@ import { CatalogChange, ProductHistory } from "../insights/catalogHistory";
 import { Saving } from "../insights/savings";
 import { wholeDollars } from "../insights/teasers";
 import { TrackedProduct } from "../report";
-import { sparkPath } from "./lib/geometry";
+import { Sparkline, time } from "@/components/ui/charts/kit";
+import { todayIso } from "../../duty-calculator/lib/format";
 
 // The products to look at first: the biggest potential savings and the latest increases, each
 // with its rate over time
@@ -59,12 +60,13 @@ export const ProductTiles = ({
             <span className="truncate text-sm text-base-content/60">
               {product.entry.country.flag} {product.entry.country.name} · {product.description}
             </span>
-            <svg viewBox="0 0 200 40" preserveAspectRatio="none" className="h-10 w-full" aria-hidden>
-              {history.length > 1 && (
-                // Theme marks (DESIGN_SYSTEM §10)
-                <path d={sparkPath(history.map((s) => s.pct), 200, 40, 3)} fill="none" stroke={increase ? ERROR_MARK : PRIMARY_MARK} strokeWidth={2.5} vectorEffect="non-scaling-stroke" />
-              )}
-            </svg>
+            <Sparkline
+              points={history.map((seg) => ({ x: time(seg.from), y: seg.pct }))}
+              color={increase ? ERROR_MARK : PRIMARY_MARK}
+              step
+              to={time(todayIso())}
+              height={40}
+            />
             <span className="flex items-baseline justify-between gap-2">
               <span className={`${tt.display} text-2xl font-semibold tabular-nums text-base-content`}>{formatRate(product.totalPct)}</span>
               <span className={`text-sm font-semibold ${increase ? "text-error" : "text-success"}`}>

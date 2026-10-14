@@ -1,17 +1,21 @@
 "use client";
 
+import { SparkPoint, Sparkline } from "@/components/ui/charts/kit";
 import * as tt from "@/components/ui/styles/tracker";
 import { ERROR_MARK, PRIMARY_MARK } from "@/components/ui/theme";
-import { sparkPath } from "./lib/geometry";
 
-// The Overview's headline numbers, each with a small trend line in the color of what it shows
+// The Overview's headline numbers, each with a small trend line (the chart kit's Sparkline) in
+// the color of what it shows: steps for a value that holds until it changes, along real dates
 export interface Metric {
   label: string;
   value: string;
   note: string;
   noteTone: "error" | "success" | "neutral";
-  spark?: number[];
+  spark?: SparkPoint[];
   sparkTone?: "primary" | "error";
+  // Steps (a rate or duty that holds until it changes), running on to sparkTo (today)
+  sparkStep?: boolean;
+  sparkTo?: number;
 }
 
 const NOTE_TONES = { error: "text-error", success: "text-success", neutral: "text-base-content/60" };
@@ -22,12 +26,7 @@ export const MetricTiles = ({ metrics }: { metrics: Metric[] }) => (
       <div key={m.label} className={`${tt.panel} flex flex-col gap-1.5 p-5`}>
         <span className="text-sm text-base-content/70">{m.label}</span>
         <span className={tt.metric}>{m.value}</span>
-        <svg viewBox="0 0 120 30" preserveAspectRatio="none" className="h-8 w-full" aria-hidden>
-          {m.spark && m.spark.length > 1 && (
-            // Theme marks (DESIGN_SYSTEM §10)
-            <path d={sparkPath(m.spark, 120, 30, 3)} fill="none" stroke={m.sparkTone === "error" ? ERROR_MARK : PRIMARY_MARK} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          )}
-        </svg>
+        <Sparkline points={m.spark ?? []} color={m.sparkTone === "error" ? ERROR_MARK : PRIMARY_MARK} step={m.sparkStep} to={m.sparkTo} height={32} />
         <span className={`text-xs font-semibold ${NOTE_TONES[m.noteTone]}`}>{m.note}</span>
       </div>
     ))}

@@ -6,6 +6,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { TableStandIn } from "@/components/ui/stand-ins";
 import { useUser } from "@/contexts/UserContext";
 import { todayIso } from "../../duty-calculator/lib/format";
+import { time } from "@/components/ui/charts/kit";
 import { addDays } from "../../../tariffs/engine-v2/history";
 import { useTrackerAccess } from "../access/accessContext";
 import { AccountGate } from "../access/AccountGate";
@@ -65,17 +66,24 @@ export const Overview = () => {
       Math.abs(now - then) < 0.005 ? { note: "No change in 90 days", tone: "neutral" as const } : { note: `${now > then ? "▲" : "▼"} ${show(Math.abs(now - then))} in 90 days`, tone: now > then ? ("error" as const) : ("success" as const) };
     const dutyDelta = delta(dutyNow, dutyThen, wholeDollars);
     const rateDelta = delta(rateNow, rateThen, (n) => `${Math.round(n * 100) / 100} pts`);
-    const recent = <T extends { date: string }>(s: T[]) => s.filter((p) => p.date >= yearAgo);
+    // The last year of a step series as points along real dates, starting with the value in force
+    // a year ago
+    const lastYearOf = <T extends { date: string }>(s: T[], value: (p: T) => number) =>
+      s.length ? [{ x: time(yearAgo), y: value(valueOn(s, yearAgo)) }, ...s.filter((p) => p.date > yearAgo).map((p) => ({ x: time(p.date), y: value(p) }))] : [];
+    const stepSpark = { sparkStep: true, sparkTo: time(today) };
 
     const metrics: Metric[] = [
-      { label: "Duty per shipment", value: wholeDollars(duty), note: dutyDelta.note, noteTone: dutyDelta.tone, spark: recent(dSeries).map((p) => p.usd) },
-      { label: "Average rate", value: formatRate(rateNow), note: rateDelta.note, noteTone: rateDelta.tone, spark: recent(rateSeries).map((p) => p.pct) },
+      { label: "Duty per shipment", value: wholeDollars(duty), note: dutyDelta.note, noteTone: dutyDelta.tone, spark: lastYearOf(dSeries, (p) => p.usd), ...stepSpark },
+      { label: "Average rate", value: formatRate(rateNow), note: rateDelta.note, noteTone: rateDelta.tone, spark: lastYearOf(rateSeries, (p) => p.pct), ...stepSpark },
       {
         label: "Changes, last 12 months",
         value: lastYear.count.toLocaleString("en-US"),
         note: lastYear.count ? `Hit ${lastYear.products} of your products` : "None on your products",
         noteTone: "neutral",
-        spark: monthlyChanges(insights.changes, today).reduce<number[]>((acc, n) => [...acc, (acc[acc.length - 1] ?? 0) + n], []),
+        // Changes so far, month by month
+        spark: monthlyChanges(insights.changes, today)
+          .reduce<number[]>((acc, n) => [...acc, (acc[acc.length - 1] ?? 0) + n], [])
+          .map((y, i) => ({ x: i, y })),
         sparkTone: "error",
       },
       { label: "Products", value: t.items.length.toLocaleString("en-US"), note: `From ${countryCount(t.products)} countries`, noteTone: "neutral" },
