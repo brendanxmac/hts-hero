@@ -1,7 +1,7 @@
 "use client";
 
-import { MouseEvent, ReactNode, useEffect } from "react";
-import { LockClosedIcon } from "@heroicons/react/20/solid";
+import { MouseEvent, ReactNode, useEffect, useState } from "react";
+import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/app/logo.svg";
@@ -58,8 +58,24 @@ const META_TEXT: Record<NavMeta["tone"], string> = {
   neutral: "text-base-content/60",
 };
 
-const SidebarTab = ({ section, meta, locked }: { section: TrackerSection; meta?: NavMeta; locked: boolean }) => {
+const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSection; meta?: NavMeta; locked: boolean; collapsed: boolean }) => {
   const { active, props } = useTabLink(section);
+  // Collapsed: the section's icon alone, its name as the tooltip, and its dot when something waits
+  if (collapsed)
+    return (
+      <a
+        {...props}
+        id={`tt-tab-${section.slug}`}
+        title={meta ? `${section.label} · ${meta.text}` : section.label}
+        aria-label={section.label}
+        className={`relative flex h-10 w-10 items-center justify-center self-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          active ? "bg-tt-side-active text-base-content" : "text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
+        } ${section.ready ? "" : "opacity-60"}`}
+      >
+        <section.Icon className="h-5 w-5" aria-hidden />
+        {meta && meta.tone !== "neutral" && <span className={`absolute right-1.5 top-1.5 h-2 w-2 rounded-full ${DOTS[meta.tone]}`} aria-hidden />}
+      </a>
+    );
   return (
     <a
       {...props}
@@ -105,8 +121,28 @@ const useLockPageScroll = () => {
   }, []);
 };
 
+// The sidebar folds down to its icons, for more room; remembered on this device
+const COLLAPSED_KEY = "hts-hero-tariff-tracker-sidebar-collapsed";
+
 export const TrackerShell = ({ children }: { children: ReactNode }) => {
   useLockPageScroll();
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    try {
+      setCollapsed(window.localStorage.getItem(COLLAPSED_KEY) === "1");
+    } catch {
+      // Not critical
+    }
+  }, []);
+  const toggleCollapsed = () =>
+    setCollapsed((was) => {
+      try {
+        window.localStorage.setItem(COLLAPSED_KEY, was ? "0" : "1");
+      } catch {
+        // Not critical
+      }
+      return !was;
+    });
   const { paid, loading } = useTrackerAccess();
   const meta = useNavMeta();
 
@@ -115,31 +151,50 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
     // overflow hidden): an absolutely positioned dropdown, popover or screen-reader label far down
     // a scrolled section would otherwise be placed against the page and stretch it past the app
     <div className={`${THEME} hts-tracker ${trackerSans.className} relative flex h-svh flex-col overflow-hidden bg-base-200 lg:flex-row lg:gap-4 lg:p-4`}>
-      <aside className="hts-tracker-on-dark relative hidden w-64 shrink-0 flex-col gap-5 rounded-3xl bg-tt-side p-4 text-base-content lg:flex">
-        <div className="flex items-center gap-2.5 px-2 pt-1">
+      <aside
+        className={`hts-tracker-on-dark relative hidden shrink-0 flex-col gap-5 rounded-3xl bg-tt-side text-base-content transition-[width] lg:flex ${collapsed ? "w-[4.5rem] px-2 py-4" : "w-64 p-4"}`}
+      >
+        <div className={`flex items-center gap-2.5 pt-1 ${collapsed ? "flex-col" : "px-2"}`}>
           <Link href="/" className="flex shrink-0 items-center rounded-full bg-base-content p-1" aria-label={`${config.appName} home`}>
             <Image src={logo} alt="" className="w-6" priority width={24} height={24} />
           </Link>
-          <div className="flex min-w-0 flex-col">
-            <span className={`${tt.display} truncate text-[0.95rem] font-semibold`}>Tariff Tracker</span>
-            <span className="truncate text-xs text-base-content/60">{config.appName}</span>
-          </div>
+          {!collapsed && (
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className={`${tt.display} truncate text-[0.95rem] font-semibold`}>Tariff Tracker</span>
+              <span className="truncate text-xs text-base-content/60">{config.appName}</span>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-base-content/60 transition-colors hover:bg-tt-side-active hover:text-base-content"
+            aria-label={collapsed ? "Expand the menu" : "Collapse the menu"}
+            title={collapsed ? "Expand the menu" : "Collapse the menu"}
+          >
+            {collapsed ? <ChevronDoubleRightIcon className="h-4 w-4" aria-hidden /> : <ChevronDoubleLeftIcon className="h-4 w-4" aria-hidden />}
+          </button>
         </div>
         <nav role="tablist" aria-orientation="vertical" aria-label="Tariff Tracker" className="relative flex flex-1 flex-col gap-4 overflow-y-auto">
           {GROUPS.map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
-              <span className="px-3 pb-1 text-[0.7rem] font-bold uppercase tracking-wider text-base-content/60">{group.label}</span>
+              {collapsed ? (
+                <span className="mx-auto mb-1 h-px w-6 bg-base-content/20" aria-hidden />
+              ) : (
+                <span className="px-3 pb-1 text-[0.7rem] font-bold uppercase tracking-wider text-base-content/60">{group.label}</span>
+              )}
               {SECTIONS.filter((s) => s.group === group.id).map((section) => (
-                <SidebarTab key={section.slug} section={section} meta={meta[section.slug]} locked={section.paidOnly && section.ready && !paid && !loading} />
+                <SidebarTab key={section.slug} section={section} meta={meta[section.slug]} locked={section.paidOnly && section.ready && !paid && !loading} collapsed={collapsed} />
               ))}
             </div>
           ))}
         </nav>
-        <PlanCard />
-        <div className="flex items-center gap-1">
-          <div className="min-w-0 flex-1">
-            <AccountMenu />
-          </div>
+        {!collapsed && <PlanCard />}
+        <div className={`flex items-center gap-1 ${collapsed ? "flex-col" : ""}`}>
+          {!collapsed && (
+            <div className="min-w-0 flex-1">
+              <AccountMenu />
+            </div>
+          )}
           <ThemeSwitch />
         </div>
       </aside>

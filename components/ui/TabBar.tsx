@@ -1,0 +1,55 @@
+"use client";
+
+// A row of tabs along the bottom edge of a panel's header: plain labels, the open one in the
+// brand color with a line under it that sits on the header's bottom border (so it reads as
+// the tab the content below belongs to). For switching what a panel shows; for a small toggle
+// between views inside content, use SegmentedControl.
+export function TabBar<T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  // Names the tabs for screen readers
+  label: string;
+  // count: a number in a small pill after the label (how many there are to see); badge: a short
+  // word after it ("Beta")
+  options: readonly { id: T; label: string; title?: string; count?: number; badge?: string }[];
+  value: T;
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div role="tablist" aria-label={label} className="-mb-px flex gap-6 overflow-x-auto">
+      {options.map((option) => {
+        const active = option.id === value;
+        return (
+          <button
+            key={option.id}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            title={option.title}
+            onClick={() => onChange(option.id)}
+            className={`inline-flex h-11 shrink-0 items-center whitespace-nowrap border-b-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+              active ? "border-primary text-primary" : "border-transparent text-base-content/60 hover:border-base-300 hover:text-base-content"
+            }`}
+          >
+            {option.label}
+            {option.count !== undefined && (
+              <span
+                className={`ml-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[11px] font-semibold tabular-nums ${
+                  active ? "bg-primary/10 text-primary" : "bg-base-content/10 text-base-content/70"
+                }`}
+              >
+                {option.count}
+              </span>
+            )}
+            {option.badge && (
+              <span className="ml-1.5 inline-flex items-center rounded-full bg-warning/15 px-1.5 text-[11px] font-semibold leading-[18px] text-warning">{option.badge}</span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}

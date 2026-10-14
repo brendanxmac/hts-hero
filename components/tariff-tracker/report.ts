@@ -59,7 +59,7 @@ export interface TrackedProduct {
 const plain = (text: string) => text.replace(/<[^>]+>/g, "").replace(/:\s*$/, "").trim();
 
 // The nearest two levels that say what the product is; "Other" levels say nothing on their own
-const describe = (element: HtsElement, htsElements: HtsElement[]) => {
+export const describe = (element: HtsElement, htsElements: HtsElement[]) => {
   const levels = [...getHtsElementParents(element, htsElements), element]
     .map((el) => plain(el.description))
     .filter((text) => text && !/^other\b[\s.,]*$/i.test(text));

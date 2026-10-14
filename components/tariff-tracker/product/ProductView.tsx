@@ -19,14 +19,14 @@ import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ProductAudit } from "./audit/ProductAudit";
 import { ProductHeader } from "./ProductHeader";
-import { ProductSummary } from "./summary/ProductSummary";
+import { ProductSourcing } from "./sourcing/ProductSourcing";
 import { ProductSavings } from "./savings/ProductSavings";
 
-// One import, opened from its row: a small header (what it is, and the tabs), then
-// - Summary (where it opens): every part of it at a glance, each leading to its tab
-// - Duty: the calculator tab's own calculator, for this product (its code and origin fixed), with
-//   Recent Changes and Compare (where the Analysis is). Everything set here is saved as the
-//   product's adjustments, so the catalog row shows it on the way back.
+// One import, opened from its row: a small header (what it is, and its one row of tabs), then
+// - Duty (where it opens), Compare, History: the calculator's own tabs, for this product (its
+//   code and origin fixed), held by the header's tabs. Compare adds every country for the import under the side by side.
+//   Everything set here is saved as the product's adjustments, so the catalog row shows it on
+//   the way back.
 // - Savings: every way to pay less on it, guided, once its savings are unlocked
 // - Audit (Beta): its past entries, checked against the duty in force on each entry date
 
@@ -57,14 +57,18 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
   const { setAdjustments, entryDate, setEntryDate, removeProducts, itemFor, products } = useTracker();
   const nav = useTrackerNav();
   const searchParams = useSearchParams();
-  const asked = searchParams.get("ptab");
-  const [tab, setTab] = useState<ProductTab>(isProductTab(asked) ? asked : "summary");
+  // Sourcing is now part of Compare, and Summary is gone; old links still land somewhere
+  const ptab = searchParams.get("ptab");
+  const asked = ptab === "sourcing" ? "compare" : ptab;
+  const [tab, setTab] = useState<ProductTab>(isProductTab(asked) ? asked : "duty");
   // Opened again on another tab (from Savings or Entry audit) while already open
   useEffect(() => {
     if (isProductTab(asked)) setTab(asked);
   }, [asked]);
   const openTab = (next: ProductTab) => {
     setTab(next);
+    // Each view opens at its top (the Tracker's one scroller is its main)
+    document.querySelector("main")?.scrollTo({ top: 0 });
     trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCT_TAB_OPENED, { tab: next });
   };
   const f = useTariffFinder({
@@ -121,20 +125,32 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
 
   return (
     <div className="flex flex-col gap-5">
-      <ProductHeader row={row} tab={tab} onTab={openTab} onBack={nav.closeProduct} onRemove={remove} />
-
+      <ProductHeader
+        row={row}
+        tab={tab}
+        onTab={openTab}
+        onBack={nav.closeProduct}
+        onRemove={remove}
+        onReset={isAdjusted(row.adjustments) ? onReset : undefined}
+      />
       <MovingNotice row={row} movingTo={itemFor(row.key)?.movingTo} hasNew={(key) => products.some((p) => p.key === key)} />
 
-      {/* Kept mounted, so the calculator keeps its state while another tab is open. A class, not the
+      {/* The calculator, on the menu's Duty, Compare or History (and every country under Compare).
+          Kept mounted, so it keeps its state while another view is open. A class, not the
           hidden attribute: `flex` would override that and keep it showing */}
-      <div className={tab === "duty" ? "flex flex-col gap-4" : "hidden"}>
-        <CalculatorWorkspace f={f} page="tracker_product" fixedProduct onCheckSavings={() => openTab("savings")} />
+      <div className={tab === "duty" || tab === "compare" || tab === "history" ? "flex flex-col gap-4" : "hidden"}>
+        <CalculatorWorkspace
+          f={f}
+          page="tracker_product"
+          fixedProduct
+          onCheckSavings={() => openTab("savings")}
+          tab={tab === "compare" ? "compare" : tab === "history" ? "history" : "duty"}
+          onTabChange={openTab}
+        />
+        {tab === "compare" && <ProductSourcing product={row} f={f} />}
         <Disclaimer />
         <ExploreModal f={f} />
       </div>
-      {tab === "summary" && (
-        <ProductSummary product={row} onTab={openTab} onReset={onReset} adjusted={isAdjusted(row.adjustments)} />
-      )}
       {tab === "savings" && <ProductSavings product={row} />}
       {tab === "audit" && <ProductAudit product={row} />}
     </div>

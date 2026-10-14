@@ -10,7 +10,7 @@ import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { itemKey } from "@/components/tariff-tracker/catalog";
 import { addToCatalog } from "@/components/tariff-tracker/catalogStore";
-import { productUrl } from "@/components/tariff-tracker/sections";
+import { ProductTab, productUrl } from "@/components/tariff-tracker/sections";
 import { ConversionDialog } from "../calculator/ConversionDialog";
 import { TariffFinder } from "../lib/useTariffFinder";
 
@@ -46,6 +46,8 @@ export const TrackImportButton = ({ f, size = "md" }: { f: TariffFinder; size?: 
 export const useTrackImport = (f: TariffFinder, source = "track-import") => {
   const { user } = useUser();
   const [open, setOpen] = useState(false);
+  // Which of the import's tabs to land on (its Summary when left out)
+  const [landOn, setLandOn] = useState<ProductTab | undefined>(undefined);
   if (!f.selectedElement || !f.country) return null;
   const product = { code: htsCodeDigitsOnly(f.selectedElement.htsno), country: f.country.code };
   const save = () => {
@@ -64,10 +66,11 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
     trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "calculator", hts_code: f.selectedElement?.htsno });
   };
   const url = productUrl(itemKey(product));
-  const start = () => {
+  const start = (tab?: ProductTab) => {
+    setLandOn(tab);
     if (user) {
       save();
-      window.location.href = url;
+      window.location.href = productUrl(itemKey(product), tab);
       return;
     }
     setOpen(true);
@@ -77,12 +80,12 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
     <ConversionDialog
       open={open}
       view="account"
-      account={{ title: "Track this import, free", highlight: "alerts", cta: "Create my free account" }}
-      accountNote={`This import is saved to your Tracker, with free alerts on up to ${TRIAL_ALLOWANCE.alertImports} imports.`}
+      account={{ title: "Track this import, free", highlight: "savings", cta: "Create my free account" }}
+      accountNote={`This import is saved to your Tracker, with ${TRIAL_ALLOWANCE.savingsChecks} free savings checks and ${TRIAL_ALLOWANCE.auditChecks} free entry audits.`}
       onClose={() => setOpen(false)}
       onCreateAccount={() => {
         save();
-        window.location.href = signupHref(url);
+        window.location.href = signupHref(productUrl(itemKey(product), landOn));
       }}
       page="calculator"
     />

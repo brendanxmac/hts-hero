@@ -1,165 +1,114 @@
 "use client";
 
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useMemo } from "react";
+import { ArrowRightIcon, GlobeAltIcon } from "@heroicons/react/20/solid";
 import { Country } from "@/constants/countries";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
-import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
-import { AnalysisGate } from "@/components/tariff-tracker/product/analysis/AnalysisGate";
-import { changeEvents, OriginHistory, ratesOn } from "@/components/tariff-tracker/product/analysis/history";
-import { useTimeline } from "@/components/tariff-tracker/product/analysis/useTimeline";
+import * as tt from "@/components/ui/styles/tracker";
+import { ratesOn } from "@/components/tariff-tracker/product/analysis/history";
 import { TrackedProduct } from "@/components/tariff-tracker/report";
-import { AllTab } from "./AllTab";
-import { CompareControls } from "./CompareControls";
-import { InsightsTab } from "./InsightsTab";
-import { optionsFor, ProgramMode } from "./options";
+import { todayIso } from "../lib/format";
+import { optionsFor } from "./options";
 import { SideBySide } from "./SideBySide";
 import { Origins, shortlistColors, useOrigins } from "./useOrigins";
 
-// The calculator's Compare tab: one shortlist, three ways to look, one control bar.
-// - Side by Side (first): the shortlist alone, in depth, with its charts
-// - All: the whole field (the headline, the globe, every origin by its rate, proven cheaper
-//   suppliers, rate tiers, cheap vs stable, every origin as one list)
-// - Insights: the answer first, then the questions behind it, each opening its chart
-// The control bar sets two things for every tab and chart at once: trade programs (without them,
-// with each country's agreement applied, or both side by side) and the date the rates are for.
-// The shortlist is the only selection, its colors the same everywhere; selecting a country
-// anywhere adds it (or takes it off). Side by Side is free; All, Insights and the band behind its
-// chart take a free account.
-
-type Tab = "side" | "all" | "insights";
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: "side", label: "Side by Side" },
-  { id: "all", label: "All" },
-  { id: "insights", label: "Insights" },
-];
+// The Compare tab: countries side by side, and that's all. Up to four, each at the trade program
+// claimed for it, with the agreement it could claim and what that would save, on the import's
+// entry date. Finding a cheaper country among all of them (every country ranked, the globe, how
+// rates have moved, who already ships it) is the import's Sourcing tab in the Tariff Tracker: one
+// card here points there (tracking the import free, on /duty-calculator).
 
 export const ComparePanel = ({
   product,
   page,
-  signedIn,
   countries,
   max,
-  lastAdded,
-  onToggle,
+  claimed,
+  onClaim,
+  entryDate,
   onAdd,
   onRemove,
   onViewDetails,
+  onTrack,
+  onOpenSourcing,
   note,
 }: {
   product: TrackedProduct;
-  page: string;
-  signedIn: boolean;
+  page: "calculator" | "tracker_calculator" | "tracker_product";
   // The shortlist, the import's own origin first
   countries: Country[];
   max: number;
-  lastAdded: string | null;
-  onToggle: (code: string) => void;
+  // The trade program claimed for each country, and the way to claim or drop one
+  claimed: Record<string, string>;
+  onClaim: (code: string, symbol: string) => void;
+  entryDate: string;
   onAdd: (country: Country) => void;
   onRemove: (countryCode: string) => void;
-  // A country's full breakdown, with the agreement claimed for an agreement option
+  // A country's full breakdown, with a program claimed
   onViewDetails: (country: Country, preference?: string) => void;
-  // Under Side by Side: why the picked countries are on the shortlist (Census)
+  // On /duty-calculator: tracking the import, landing on its Sourcing
+  onTrack?: () => void;
+  // In the Tracker: the import's Sourcing tab
+  onOpenSourcing?: () => void;
+  // Under the table: why the picked countries are on it (Census)
   note?: ReactNode;
 }) => {
-  const [tab, setTab] = useState<Tab>("side");
-  const [mode, setMode] = useState<ProgramMode>("both");
   const origins = useOrigins(product);
-  const { rates, histories, range, ready } = origins;
-
-  // The control bar's date, for everything in Compare
-  const all = useMemo(() => rates.map((r) => histories.get(r.country.code)).filter((h): h is OriginHistory => Boolean(h)), [rates, histories]);
-  const events = useMemo(() => (ready ? changeEvents(all, "standard") : []), [ready, all]);
-  const timeline = useTimeline(range, events);
-  const asOf = ready && !timeline.atToday ? timeline.date : undefined;
-  // Every origin's rates on that date: what every tab works from
+  const { rates, histories, ready } = origins;
+  // Every origin's rates on the entry date, when it isn't today
+  const asOf = ready && entryDate < todayIso() ? entryDate : undefined;
   const dated: Origins = useMemo(() => (asOf ? { ...origins, rates: ratesOn(rates, histories, asOf) } : origins), [asOf, origins, rates, histories]);
-
   const key = countries.map((c) => c.code).join();
   const colors = useMemo(() => shortlistColors(countries.map((c) => c.code)), [key]); // eslint-disable-line react-hooks/exhaustive-deps
-  const shortlist = useMemo(() => new Set(countries.map((c) => c.code)), [key]); // eslint-disable-line react-hooks/exhaustive-deps
-  // The shortlist's options, in its order, under the control bar's choice
   const options = useMemo(
     () =>
       countries.flatMap((c) => {
         const origin = dated.rates.find((r) => r.country.code === c.code);
-        return origin ? optionsFor(origin, mode) : [];
+        return origin ? optionsFor(origin, "without") : [];
       }),
-    [key, dated.rates, mode] // eslint-disable-line react-hooks/exhaustive-deps
+    [key, dated.rates] // eslint-disable-line react-hooks/exhaustive-deps
   );
-  const agreements = dated.rates.filter((r) => r.agreement).length;
+  const yours = rates.find((r) => r.isOrigin);
+  const cheaper = rates.filter((r) => !r.isOrigin && (r.agreement?.pct ?? r.pct) < (yours?.pct ?? 0) - 0.005).length;
+  const goToSourcing = page === "calculator" ? onTrack : onOpenSourcing;
 
   return (
-    <section className="flex flex-col gap-4" aria-labelledby="compare-title">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="min-w-0">
-          <h3 id="compare-title" className={ui.cardTitle}>
-            Compare origins
-          </h3>
-          {/* What the open tab is for, in a line */}
-          <p className={`${ui.caption} mt-0.5`}>
-            {tab === "side"
-              ? `Your shortlist of up to ${max} countries, detail by detail. Add one here, or from any country in All or Insights.`
-              : tab === "all"
-                ? `All ${rates.length} countries this could come from: where it's cheapest, every origin's rate and who already ships it to the US.`
-                : "What the field means for you: the answer first, then the questions behind it, each with its chart."}
-          </p>
-        </div>
-        <SegmentedControl<Tab>
-          label="Compare view"
-          options={TABS}
-          value={tab}
-          onChange={(next) => {
-            setTab(next);
-            trackEvent(MixpanelEvent.TARIFF_TRACKER_ANALYSIS_VIEWED, { origins: rates.length, view: next });
-          }}
-          tone="accent"
-        />
-      </div>
-      {/* On the calculator's page it stays in view under the site header as the tabs scroll; in the
-          Tracker the import's own header sticks there instead */}
-      <div className={page === "calculator" ? "sticky top-[4.5rem] z-20" : ""}>
-      <CompareControls
-        mode={mode}
-        onModeChange={(next) => {
-          setMode(next);
-          trackEvent(MixpanelEvent.TARIFF_TRACKER_ANALYSIS_BASIS_CHANGED, { basis: next });
-        }}
-        timeline={timeline}
-        ready={ready}
-        agreements={agreements}
+    // Sections of the results box: the table, why the picks are there, the way to Sourcing
+    <>
+      <SideBySide
+        product={product}
+        origins={dated}
+        options={options}
+        claimed={claimed}
+        onClaim={onClaim}
+        asOf={asOf}
+        countries={countries}
+        colors={colors}
+        max={max}
+        onAdd={onAdd}
+        onRemove={onRemove}
+        onViewDetails={onViewDetails}
       />
-      </div>
+      {note && <div className="results-pad">{note}</div>}
 
-      {tab === "side" && (
-        <>
-          <SideBySide
-            product={product}
-            origins={dated}
-            options={options}
-            asOf={asOf}
-            countries={countries}
-            colors={colors}
-            max={max}
-            signedIn={signedIn}
-            onAdd={onAdd}
-            onRemove={onRemove}
-            onViewDetails={onViewDetails}
-          />
-          {note}
-        </>
+      {/* The way to every other country: the import's Sourcing */}
+      {goToSourcing && (
+        <div className={`${ui.card} flex flex-col items-start gap-4 px-5 py-4 sm:flex-row sm:items-center sm:px-6`}>
+          <span className={`${tt.chip("primary")} h-10 w-10 shrink-0 justify-center rounded-xl`} aria-hidden>
+            <GlobeAltIcon className="h-5 w-5 shrink-0" />
+          </span>
+          <p className="m-0 flex-1 text-sm text-base-content/80">
+            <span className="font-semibold text-base-content">Find a cheaper country for this import.</span>{" "}
+            {cheaper
+              ? `${cheaper} of ${rates.length} countries could pay less than ${yours?.country.name ?? "yours"}. See them all ranked, on a globe, with who already ships it to the US and how steady each rate has been.`
+              : `See all ${rates.length} countries ranked, on a globe, with who already ships it to the US.`}
+          </p>
+          <button type="button" className={tt.button("next", "sm", "rounded")} onClick={goToSourcing}>
+            {page === "calculator" ? "Track this import free" : "Open Sourcing"}
+            <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          </button>
+        </div>
       )}
-      {tab === "all" && (
-        <AnalysisGate product={product} page={page}>
-          <AllTab origins={dated} mode={mode} customsValue={product.customsValue} shortlist={shortlist} colors={colors} lastAdded={lastAdded} onToggle={onToggle} />
-        </AnalysisGate>
-      )}
-      {tab === "insights" && (
-        <AnalysisGate product={product} page={page}>
-          <InsightsTab origins={dated} mode={mode} timeline={timeline} customsValue={product.customsValue} shortlist={shortlist} colors={colors} onToggle={onToggle} />
-        </AnalysisGate>
-      )}
-    </section>
+    </>
   );
 };

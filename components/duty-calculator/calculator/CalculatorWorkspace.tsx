@@ -9,18 +9,18 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
+import { ExclamationTriangleIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { ComparePanel } from "../compare/ComparePanel";
 import { productFromFinder } from "@/components/tariff-tracker/report";
 import { provenPicks } from "@/components/tariff-tracker/product/analysis/analysis";
-import toast from "react-hot-toast";
 import { Countries } from "@/constants/countries";
 import { CENSUS_NOTICE } from "../lib/census";
 import { formatImportValue, useUsImports } from "../lib/usImports";
-import { Segmented } from "../fields/Segmented";
+import { TabBar } from "@/components/ui/TabBar";
 import { whatClaimingDoes, whatItWouldDo } from "../lib/explain";
 import { plainReasons } from "../lib/plainReason";
 import { sortBySpecificity } from "../lib/questions";
@@ -39,7 +39,7 @@ import {
 } from "../results";
 import { DutyBreakdown, LinesDetail } from "./DutyBreakdown";
 import { EmptyState } from "./EmptyState";
-import { EntryBar } from "./EntryBar";
+import { EntryDetails, ResultsBox } from "./CalculatorTop";
 import {
   CheckSavingsLink,
   QUALIFY_TRIAL,
@@ -50,7 +50,7 @@ import {
 import { useConversion } from "./ConversionDialog";
 import { DutySummary, ExplainToggle } from "./DutySummary";
 import { AccountCta } from "./AccountCta";
-import { ResultsHeader } from "./ResultsHeader";
+import { ShareButtons } from "./ShareButtons";
 import { useCanSeeWhy, WhyLocked, WhyUnlockContext } from "./WhyGate";
 import { ChangeSummary } from "../results/ChangeSummary";
 import { ArrowLink } from "./ArrowLink";
@@ -74,8 +74,8 @@ type ResultsTab = "duty" | "history" | "compare";
 
 const TABS: { id: ResultsTab; label: string }[] = [
   { id: "duty", label: "Duty" },
-  { id: "history", label: "Recent Changes" },
   { id: "compare", label: "Compare" },
+  { id: "history", label: "History" },
 ];
 
 export const CalculatorWorkspace = ({
@@ -85,6 +85,8 @@ export const CalculatorWorkspace = ({
   page,
   fixedProduct = false,
   onCheckSavings,
+  tab: hostTab,
+  onTabChange,
 }: {
   f: TariffFinder;
   // In the results' heading, after Share: the host's main action (Add to catalog, Track this import)
@@ -98,6 +100,10 @@ export const CalculatorWorkspace = ({
   // In the Tracker: where "Check Possible Savings" goes (this import's savings); the Tracker's
   // Savings section when left out
   onCheckSavings?: () => void;
+  // A host whose own menu holds the tabs (the Tracker's import page): which one is open (the
+  // results then show no tab row of their own), and the way to change it
+  tab?: ResultsTab;
+  onTabChange?: (tab: ResultsTab) => void;
 }) => {
   const { htsElements } = useHts();
   const searchParams = useSearchParams();
@@ -108,17 +114,19 @@ export const CalculatorWorkspace = ({
   const [historyOpen, setHistoryOpen] = useState(
     () => searchParams.get("view") === "history",
   );
-  const tab: ResultsTab = historyOpen
+  const ownTab: ResultsTab = historyOpen
     ? "history"
     : f.view === "compare"
       ? "compare"
       : "duty";
+  const tab: ResultsTab = hostTab ?? ownTab;
   useEffect(() => {
     if (searchParams.get("view") === "analysis") f.changeView("compare");
     // Once, on arrival
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const changeTab = (next: ResultsTab) => {
+    if (onTabChange) return onTabChange(next);
     setHistoryOpen(next === "history");
     // The address says Compare only while it's open
     f.changeView(next === "compare" ? "compare" : "detailed");
@@ -188,23 +196,6 @@ export const CalculatorWorkspace = ({
     // When Compare opens on a product, or its figures arrive
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, product, imports, pickKey]);
-  // The shortlist is the Compare tab's one selection: the cards show it, every view of Explore
-  // lights it, and selecting a country in any of them adds it (or takes it off). The import's own
-  // origin always stays; the map turns to face the one added last.
-  const shortlist = useMemo(() => new Set(f.countries.map((c) => c.code)), [f.countries]);
-  const [lastAdded, setLastAdded] = useState<string | null>(null);
-  const toggleShortlist = (code: string) => {
-    if (code === country?.code) return;
-    if (shortlist.has(code)) return f.removeCountry(code);
-    const added = Countries.find((c) => c.code === code);
-    if (!added) return;
-    if (f.countries.length >= MAX_COMPARE) {
-      toast(`Your shortlist holds ${MAX_COMPARE} countries. Remove one to add ${added.name}.`);
-      return;
-    }
-    f.changeCountries([...f.countries, added]);
-    setLastAdded(code);
-  };
   // The picked countries still compared, to say why they're there
   const picked = (autoPicked.current.get(pickKey) ?? []).filter((code) => f.countries.some((c) => c.code === code));
   const dutyOf = (code: string | undefined) => f.compareEntries.find((e) => e.country.code === code)?.result.totalDuty;
@@ -279,8 +270,25 @@ export const CalculatorWorkspace = ({
   const signedOut = !whyLoading && !canSeeWhy;
   // How often the duty on this import changed: counted in the Recent Changes tab
   const historyChanges = f.history.filter((x) => x.changes.length > 0).length;
-  // Recent Changes' way up on /duty-calculator: alerts on this import (tracking it, a free account)
-  const track = useTrackImport(f, "recent-changes-alerts");
+  // The calculator's one main way up: track this import (a free account, and the import saved to
+  // the Tracker, where its savings and past entries are checked)
+  const track = useTrackImport(f, "track-import");
+  const trackButton = page === "calculator" && track && (
+    <button type="button" className={tt.button("next", "sm", "rounded")} onClick={() => track.start()}>
+      <PlusIcon className="h-4 w-4" aria-hidden />
+      Track this import free
+    </button>
+  );
+  // Under each tab on /duty-calculator: what tracking it would add
+  const trackStrip = page === "calculator" && track && (
+    <div className={`${ui.card} results-keep-fill flex flex-col items-start gap-3 bg-primary/5 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 tracker:border-primary/20`}>
+      <p className="m-0 text-sm text-base-content/80">
+        <span className="font-semibold text-base-content">Track this import free.</span> See what you could save on it (trade programs, exemptions, cheaper
+        origins) and check your past entries for duty you may have overpaid.
+      </p>
+      {trackButton}
+    </div>
+  );
   // A locked "why" opens the free account's pitch, led by what was clicked
   const unlockWhy = (where: string) =>
     conversion.openAccount(
@@ -324,11 +332,10 @@ export const CalculatorWorkspace = ({
   );
   return (
     <div className="flex flex-col gap-4">
-      <EntryBar
+      <EntryDetails
         f={f}
-        title="Entry Details"
-        description={fixedProduct ? "Saved to this product as you change it" : "Enter the details of your import to get a duty estimate"}
         fixedProduct={fixedProduct}
+        description={fixedProduct ? "Saved to this import as you change it" : "Enter the details of your import to get a duty estimate"}
       />
 
       {f.loading ? (
@@ -337,34 +344,34 @@ export const CalculatorWorkspace = ({
         (empty ?? <EmptyState f={f} />)
       ) : (
         <WhyUnlockContext.Provider value={unlockWhy}>
-          <section
-            className="flex flex-col gap-4"
-            aria-labelledby="results-heading"
-            aria-live="polite"
+          <ResultsBox
+            f={f}
+            actions={
+              <>
+                <ShareButtons f={f} />
+                {actions}
+                {trackButton}
+              </>
+            }
+            tabs={
+              hostTab ? undefined : (
+                <TabBar
+                  label="Results"
+                  options={TABS.map((t) => (t.id === "history" && historyChanges > 0 ? { ...t, count: historyChanges } : t))}
+                  value={tab}
+                  onChange={changeTab}
+                />
+              )
+            }
           >
-            <ResultsHeader
-              f={f}
-              result={result}
-              selectedElement={selectedElement}
-              country={country}
-              actions={actions}
-              viewSwitch={
-                <div className="w-full min-w-0 basis-full sm:w-[28rem] sm:basis-auto">
-                  <Segmented
-                    label="Results"
-                    options={TABS.map((t) => (t.id === "history" && historyChanges > 0 ? { ...t, count: historyChanges } : t))}
-                    value={tab}
-                    onChange={changeTab}
-                    compact
-                    tone="accent"
-                  />
-                </div>
-              }
-            />
-            <VerifiedNotice f={f} />
+            <div className="results-pad">
+              <VerifiedNotice f={f} />
+            </div>
             {/* A ban is about this country's goods; the comparison shows several countries */}
             {tab !== "compare" && (
-              <ProhibitedNotice prohibitions={result.prohibitions} />
+              <div className="results-pad">
+                <ProhibitedNotice prohibitions={result.prohibitions} />
+              </div>
             )}
 
             {tab === "duty" && (
@@ -387,6 +394,7 @@ export const CalculatorWorkspace = ({
                   />
                 </div>
                 {result.warnings.length > 0 && (
+                  <div className="results-pad">
                   <ul
                     className={`${ui.notice("warning")} flex flex-col gap-1.5`}
                   >
@@ -400,12 +408,13 @@ export const CalculatorWorkspace = ({
                       </li>
                     ))}
                   </ul>
+                  </div>
                 )}
                 <div
                   className={
                     hasAdjustments
-                      ? "grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
-                      : ""
+                      ? "results-row grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+                      : "results-row"
                   }
                 >
                   <div className="min-w-0">
@@ -534,7 +543,7 @@ export const CalculatorWorkspace = ({
                   onHighlight={setHighlight}
                   headerAction={
                     page === "calculator" ? (
-                      track && <ArrowLink onClick={track.start}>Get alerted when it changes</ArrowLink>
+                      track && <ArrowLink onClick={() => track.start("history")}>Track this import free</ArrowLink>
                     ) : (
                       <RefundsButton conversion={conversion} history={f.history} customsValue={f.customsValue} />
                     )
@@ -562,15 +571,20 @@ export const CalculatorWorkspace = ({
                 <ComparePanel
                   product={product}
                   page={page}
-                  signedIn={!signedOut}
                   countries={f.countries}
                   max={MAX_COMPARE}
-                  lastAdded={lastAdded}
-                  onToggle={toggleShortlist}
-                  onAdd={(added) => {
-                    f.changeCountries([...f.countries, added]);
-                    setLastAdded(added.code);
-                  }}
+                  // Each country's program, as the calculator has it (claimed here or on its Duty tab)
+                  claimed={Object.fromEntries(
+                    f.countries.map((c) => [
+                      c.code,
+                      f.compareEntries.find((e) => e.country.code === c.code)?.claimedPreference ??
+                        (c.code === country.code ? f.claimedPreference : ""),
+                    ]),
+                  )}
+                  onClaim={f.setPreference}
+                  entryDate={f.entryDate}
+                  onTrack={() => track?.start("compare")}
+                  onAdd={(added) => f.changeCountries([...f.countries, added])}
                   onRemove={f.removeCountry}
                   onViewDetails={(c, preference) => {
                     setHistoryOpen(false);
@@ -588,7 +602,9 @@ export const CalculatorWorkspace = ({
               ) : (
                 <div className={`${ui.skeleton} h-96 w-full`} />
               ))}
-          </section>
+            {/* Compare ends with its own way up (to Sourcing) */}
+            {tab !== "compare" && trackStrip}
+          </ResultsBox>
         </WhyUnlockContext.Provider>
       )}
       {conversion.dialog}

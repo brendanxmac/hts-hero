@@ -1,1 +1,0 @@
-export { LandingCalculator } from "./LandingCalculator";

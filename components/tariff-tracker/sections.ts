@@ -223,13 +223,13 @@ export const sectionBySlug = (slug: string | null) =>
 export const sectionUrl = (slug: SectionSlug) =>
   slug === DEFAULT_SECTION ? TRACKER_PATH : `${TRACKER_PATH}?tab=${slug}`
 
-// A catalog product's own view's tabs, in order; Summary is where it opens
-export type ProductTab = "summary" | "duty" | "savings" | "audit"
+// A catalog product's own view's tabs, in order; Duty is where it opens
+export type ProductTab = "duty" | "compare" | "history" | "savings" | "audit"
 
-export const PRODUCT_TABS: ProductTab[] = ["summary", "duty", "savings", "audit"]
+export const PRODUCT_TABS: ProductTab[] = ["duty", "compare", "history", "savings", "audit"]
 
 export const isProductTab = (tab: string | null): tab is ProductTab => PRODUCT_TABS.includes(tab as ProductTab)
 
-// The address of a catalog product's own view, on one of its tabs (Summary when left out)
+// The address of a catalog product's own view, on one of its tabs (Duty when left out)
 export const productUrl = (key: string, productTab?: ProductTab) =>
-  `${TRACKER_PATH}?tab=catalog&product=${encodeURIComponent(key)}${productTab && productTab !== "summary" ? `&ptab=${productTab}` : ""}`
+  `${TRACKER_PATH}?tab=catalog&product=${encodeURIComponent(key)}${productTab && productTab !== "duty" ? `&ptab=${productTab}` : ""}`

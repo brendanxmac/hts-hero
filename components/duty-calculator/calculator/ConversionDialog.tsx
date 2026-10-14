@@ -25,7 +25,7 @@ import { thisPageWith } from "../landing/redirect";
 // Each view's button runs the host's own action (where sign-up should come back to).
 // useConversion opens it from anywhere, sending signed-in users the right way instead.
 
-export type AccountBenefit = "why" | "legal" | "ruled-out" | "history" | "analysis" | "alerts";
+export type AccountBenefit = "why" | "legal" | "ruled-out" | "history" | "analysis" | "alerts" | "savings" | "audits";
 
 // What every free account gets (the AccountCta's "For every import" is analysis and alerts)
 export const ACCOUNT_BENEFITS: { id: AccountBenefit; text: string }[] = [
@@ -35,6 +35,8 @@ export const ACCOUNT_BENEFITS: { id: AccountBenefit; text: string }[] = [
   { id: "history", text: "Any import's full duty on any past date, line by line" },
   { id: "analysis", text: "Any import's duty from every country of origin" },
   { id: "alerts", text: `Alerts when tariffs change on up to ${TRIAL_ALLOWANCE.alertImports} imports` },
+  { id: "savings", text: `What you could save on ${TRIAL_ALLOWANCE.savingsChecks} imports: trade programs, exemptions and cheaper origins` },
+  { id: "audits", text: `${TRIAL_ALLOWANCE.auditChecks} past entries checked for duty you may have overpaid` },
 ];
 
 export type ConversionView = "account" | "trial";

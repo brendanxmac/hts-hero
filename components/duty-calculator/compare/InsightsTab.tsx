@@ -74,6 +74,7 @@ export const InsightsTab = ({
   shortlist,
   colors: shortlistColors,
   onToggle,
+  afterAnswer,
 }: {
   origins: Origins;
   mode: ProgramMode;
@@ -84,6 +85,8 @@ export const InsightsTab = ({
   // The shortlist's colors
   colors: Record<string, string>;
   onToggle: (code: string) => void;
+  // Between the answer and the sections (the explorer's globe and every origin)
+  afterAnswer?: ReactNode;
 }) => {
   const { rates, imports, histories, range, ready, progress } = origins;
   const basis = basisFor(mode);
@@ -204,6 +207,8 @@ export const InsightsTab = ({
           </div>
         </dl>
       </section>
+
+      {afterAnswer}
 
       <div className="flex flex-col gap-3">
         <h4 className={ui.cardTitle}>Where you stand</h4>
