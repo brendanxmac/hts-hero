@@ -4,11 +4,9 @@ import * as mk from "@/components/ui/marketing/styles";
 import { PAIRS_SLIDER_MAX_PAIRS, pairsAt, positionOf } from "../lib/pairsScale";
 import {
   Billing,
-  FREE_TRACKED_PAIRS,
   TRACKER_MAX_LISTED_PAIRS,
-  TRIAL_DAYS,
-  TRIAL_PAIRS,
   TRACKER_TIERS,
+  TRIAL_ALLOWANCE,
   formatPrice,
   monthlyRate,
   trackerTierFor,
@@ -19,7 +17,7 @@ import { NumberInput } from "./NumberInput";
 // The custom tier: anything past the largest listed one
 const CUSTOM_PAIRS = TRACKER_MAX_LISTED_PAIRS * 2;
 
-// How many HTS code + country pairs to track. The slider's segments line up with the tier
+// How many imports (HTS code + country pairs) to cover. The slider's segments line up with the tier
 // buttons under it, so dragging walks through the tiers.
 export const TrackerControls = ({
   pairs,
@@ -30,16 +28,14 @@ export const TrackerControls = ({
   onPairsChange: (pairs: number) => void;
   billing: Billing;
 }) => {
-  const isFree = pairs <= FREE_TRACKED_PAIRS;
   const tier = trackerTierFor(pairs);
   const tiers = [
-    { key: "free", label: `Up to ${FREE_TRACKED_PAIRS}`, price: "Free", pairs: FREE_TRACKED_PAIRS, active: isFree },
     ...TRACKER_TIERS.map((t) => ({
       key: String(t.maxPairs),
       label: `Up to ${t.maxPairs}`,
       price: formatPrice(monthlyRate(t.price, billing)),
       pairs: t.maxPairs,
-      active: !isFree && tier === t,
+      active: tier === t,
     })),
     { key: "custom", label: `${TRACKER_MAX_LISTED_PAIRS}+`, price: "Let's talk", pairs: CUSTOM_PAIRS, active: !tier },
   ];
@@ -49,11 +45,12 @@ export const TrackerControls = ({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0 flex-1 basis-64">
           <label htmlFor="tracker-pairs" className={mk.fieldLabel}>
-            HTS code + country pairs
+            Imports
           </label>
           <p className={`${mk.small} mt-1 max-w-md leading-relaxed`}>
-            One HTS code from one country of origin. The same code from China and Vietnam is two pairs.
-            Try up to {TRIAL_PAIRS} free for {TRIAL_DAYS} days.
+            One HTS code from one country of origin. The same code from China and Vietnam is two imports.
+            Every account starts free: savings checks on {TRIAL_ALLOWANCE.savingsChecks} imports,{" "}
+            {TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on {TRIAL_ALLOWANCE.alertImports}, no credit card.
           </p>
         </div>
         <NumberInput id="tracker-pairs" value={pairs} onChange={onPairsChange} min={1} max={MAX_PAIRS} className="w-28 text-right" />
@@ -67,8 +64,8 @@ export const TrackerControls = ({
           step={0.25}
           value={positionOf(pairs)}
           onChange={(e) => onPairsChange(pairsAt(Number(e.target.value)))}
-          aria-label="HTS code + country pairs"
-          aria-valuetext={pairs >= PAIRS_SLIDER_MAX_PAIRS ? `${pairs}+ pairs` : `${pairs} pairs`}
+          aria-label="Imports (HTS code + country pairs)"
+          aria-valuetext={pairs >= PAIRS_SLIDER_MAX_PAIRS ? `${pairs}+ imports` : `${pairs} imports`}
           className="h-2 w-full cursor-pointer rounded-full accent-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 focus-visible:ring-offset-4"
         />
         <div
@@ -88,7 +85,7 @@ export const TrackerControls = ({
               }`}
             >
               <span className={`text-xs font-medium tabular-nums ${t.active ? "text-teal-700" : "text-slate-500"}`}>
-                {t.label} pairs
+                {t.label} imports
               </span>
               <span className={`text-base font-semibold tabular-nums ${t.active ? "text-teal-800" : "text-slate-900"}`}>
                 {t.price}

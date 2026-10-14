@@ -5,7 +5,7 @@ for product code, plan copy, landing pages, comparison pages, blog FAQs, `llms.t
 tools. If code or copy disagrees with this file, this file wins. Change this file first when
 pricing changes.
 
-_Last updated 2026-10-12._
+_Last updated 2026-10-13._
 
 ## The rule
 
@@ -15,14 +15,16 @@ _Last updated 2026-10-12._
   duty result, and available over MCP.
 - **Duty over time** (how the duty on an entry changed) is free, with no account.
 - A **free account** unlocks Analysis (the product's duty from every country of origin) and the
-  **plain-English why** behind every result: why each tariff applies, what each adjustment would
-  switch off, why other headings don't apply, and the full summary of the duty (its first
-  sentence is free). They stay unlocked for every account, forever, whatever its plan.
-- Two calculator tools that work out money for the user are **Tracker features** (trial or
-  paid), teased in the calculator: the **qualification check** (which exemptions and trade
-  programs the goods could qualify for, and the proof needed) and the **refund check** (what
-  was paid on a past entry against the duty in force then: a refund to request through a
-  broker, or an underpayment to correct).
+  **plain-English why** behind every result: why each tariff applies, why other headings don't
+  apply, and the full summary of the duty. What each possible adjustment would change is free
+  for everyone; working out which adjustments the goods qualify for is the Tracker's
+  qualification check. They stay unlocked for every account, forever, whatever its plan.
+- Two calculator tools that work out money for the user are **Tracker features**, teased in the
+  calculator and free to try with every account's usage allowance: the **qualification check**
+  (which exemptions and trade programs the goods could qualify for, and the proof needed; part
+  of a product's **savings check**) and the **refund check** (what was paid on a past entry
+  against the duty in force then: a refund to request through a broker, or an underpayment to
+  correct; each one is an **audit check**).
 - An account is required, and money is made, when HTS Hero works on **the user's own
   products**: alerts, monitoring, rate history for their catalog, entry audits and savings
   discovery. All of that is the Tariff Tracker.
@@ -57,65 +59,73 @@ calculations" upgrade.
 
 ## Tariff Tracker: account required
 
-### Free plan and the 14-day trial
+### Usage-based trial: every account, no time limit
 
-Every account starts on the **free plan**. Any account can start a **14-day trial of the full
-Tracker for up to 100 pairs** (everything in the $79 tier), once, whenever it wants. No credit
-card. The trial is started by the user, not on sign-up: every premium feature in the Tracker
-shows a teaser worked out from the user's own catalog (for example "$4,180 less duty per
-shipment across 12 products" or "7 tariff changes hit your catalog since April") and one click
-starts the trial there. When the trial ends without a paid plan, the account is back on the
-free plan:
+There is **no time-limited trial**. Every account is on the trial from the moment it signs up
+(nothing to start, no credit card) and keeps it until it pays. The trial is a **usage
+allowance** that never resets (`TRIAL_ALLOWANCE` in `components/pricing-calculator/lib/pricing.ts`):
 
-| | Free plan | Trial (14 days) | Paid tiers |
-|---|---|---|---|
-| Pairs tracked | 3 | Up to 100 | 30 / 100 / 500 / quoted |
-| Monitoring + alerts | Yes | Yes | Yes |
-| Rate history | No | Yes | Yes |
-| Entry audit | No | Yes | Yes |
-| Savings discovery | No | Yes | Yes |
-| Qualification check | No | Yes | Yes |
-| Refund check | No | Yes | Yes |
+| | Trial (every account) | Paid tiers |
+|---|---|---|
+| Catalog (upload the whole thing) | Unlimited | Unlimited |
+| Overview insights across the whole catalog | Yes | Yes |
+| Rate history, Sourcing | Yes, whole catalog | Yes, whole catalog |
+| Alerts | On up to 10 imports | On every covered import |
+| Savings checks (incl. the qualification check) | 5 imports | Every covered import |
+| Audit checks (entry audit, refund check) | 10 entries | Unlimited |
 
-- After the trial, tracking stays on for 3 pairs and stops for the rest. Products stay in the
-  catalog (nothing is deleted), so upgrading turns tracking back on.
-- The pairs that stay tracked are the first 3 the user added (no picker).
-- Every product in the catalog still shows its current duty: that's a lookup, and lookups are
-  free. Tracking is what's limited.
+- **An import** is one HTS code from one country of origin (a "pair": 6110.20.20 from China and
+  from Vietnam is two imports).
+- **A savings check** reveals every way to save on one import: trade programs, lower-duty
+  origins, exemptions worth checking and the qualification check. A check, once spent, stays
+  unlocked for that import; it can't be moved to another one.
+- **An audit check** checks what was paid on one past entry against the duty in force on its
+  entry date (the entry audit and the calculator's refund check are the same check). Checking the
+  same entry again is free.
+- **Alerts** cover up to 10 imports on the trial (the user's picks in the catalog's Alerts column,
+  else the highest-duty); those slots can be moved at any time.
+- When an allowance runs out, that feature needs a paid plan. Users can upgrade at any time.
+- **The whole catalog, always.** Any account can add its entire product catalog (paste or CSV)
+  at any time, with no cap. Every product shows its current duty (a lookup), its rate history and
+  sourcing, and the Overview works across all of it.
+- **Tease the rest, constantly**: the Tracker works out potential savings across the whole
+  catalog and shows what checking the rest could find ("Savings found" on unchecked products;
+  "potential savings found on N products you haven't checked").
 - Signed-in users who open `/duty-calculator` go to the Tracker's Calculator tab, with their
   inputs kept: the Tracker is every account's home.
-- Copy: "Start free", "Try up to 100 products free for 14 days", "Free for 3 products",
-  "Start your 14-day trial". Never say every new account starts on a trial.
+- Copy: "Start free", "Check 5 imports for savings free", "10 free audit checks", "Free alerts
+  on 10 imports", "No credit card". Never mention a 14-day (or any time-limited) trial.
 
 ### Paid tiers
 
-Priced by the number of **pairs** it watches. A pair is one HTS code from one country of
-origin (6110.20.20 from China and from Vietnam is two pairs).
+Priced by the number of **imports** (pairs) a plan covers: alerts and savings on each one, and
+unlimited audit checks.
 
-| Pairs | Price / month | Annual (per month) |
+| Imports | Price / month | Annual (per month) |
 |---|---|---|
-| Up to 30 | $49 | $44 |
-| Up to 100 | $79 | $71 |
-| Up to 500 | $149 | $134 |
+| Up to 10 | $19 | $16 |
+| Up to 30 | $49 | $41 |
+| Up to 100 | $149 | $126 |
+| Up to 500 | $249 | $211 |
 | 500+ | Quoted ("Let's talk") | Quoted |
 
-Annual prices are rounded down to the dollar (`monthlyRate`).
+Annual prices are rounded down to the dollar (`monthlyRate`). The $19 plan is for smaller
+importers with fewer than 10 imports.
 
 Included in every tier:
 
 - Catalog: paste or upload products as CSV, with the current duty for each
-- Monitoring and alerts when a tariff change hits a tracked product, and by how much
-- Rate history for every tracked product
-- Entry audit: log entries and flag over- and underpaid duty
-- Savings discovery: lower-tariff origins, trade programs and exemptions
-- Qualification check: which exemptions and trade programs the goods could qualify for
-- Refund check: what was paid on a past entry against the duty in force then
+- Monitoring and alerts when a tariff change hits a covered import, and by how much
+- Rate history and Sourcing for the whole catalog
+- Savings discovery on every covered import: lower-tariff origins, trade programs and exemptions,
+  with the qualification check
+- Entry audit and refund checks: unlimited audit checks, flagging over- and underpaid duty
 - Reports and exports to share with the team
 - Everything in the free Tariff Calculator
 
 ## Free tariff audit check (lead magnet)
 
-The self-audit in the Tracker (Entry audit) is trial-or-paid, like every premium section: copy says "Audit free for 14 days". The two free paths on `/tariff-audit` are this one-time check and a requested audit.
+The self-audit in the Tracker (Entry audit) uses audit checks: 10 free with every account, unlimited on a paid plan. Copy says "10 free audit checks". The two free paths on `/tariff-audit` are this one-time check and a requested audit.
 
 The audit landing page offers a free, one-time overpayment check: the importer shares entry data
 and gets a report of likely over- and underpaid duty. It is a lead, not a plan: no price is
@@ -139,8 +149,8 @@ importer's licensed customs broker or counsel (that filing is customs business).
 | Tariff Calculator plan: $14.99/mo for unlimited calculations | Removed; the calculator is free |
 | "Compare countries and duty over time" sold with the $14.99 plan | Free in the calculator |
 | Tariff Tracker "includes the Tariff Calculator" as a perk | The calculator is free for everyone; drop the perk |
-| Tracker tiers $49 / $79 / $149 / quoted | Unchanged |
-| No free Tracker | Free plan: 3 pairs, monitoring + alerts; 14-day reverse trial of 100 pairs |
+| Tracker tiers $49 / $79 / $149 / quoted | $19 (10) / $49 (30) / $149 (100) / $249 (500) / quoted (2026-10-13) |
+| No free Tracker | Usage-based trial for every account (2026-10-13): 5 savings checks, 10 audit checks, alerts on 10 imports |
 | Classification plans | Unchanged |
 
 Code and copy that still state the old pricing (as of 2026-10-10):
@@ -164,5 +174,9 @@ Code and copy that still state the old pricing (as of 2026-10-10):
 - Decided 2026-10-11: Analysis (one product's rate from every origin) needs a free account,
   not a paid plan, in the calculator and the Tracker alike. Savings (opportunities across the
   whole catalog) is the paid feature.
-- Tracker Stripe price IDs are placeholders (`STRIPE_TRACKER_*_PRICE_ID` env vars) until the
-  prices are created in Stripe.
+- Tracker Stripe price IDs are placeholders (`STRIPE_TARIFF_TRACKER_<10|30|100|500>_<MONTHLY|ANNUAL>_PRICE_ID`
+  env vars) until the prices are created in Stripe.
+- Decided 2026-10-13: the 14-day trial and the 3-pair free plan are gone. Every account gets a
+  lifetime usage allowance instead (above). Rate history and Sourcing are free for every account.
+- Allowances are enforced by `/api/tracker/checks` (it records each spent check in
+  `tracker_checks`), but the results are worked out in the browser, as the teasers are.

@@ -1,14 +1,18 @@
 "use client";
 
-import { ReactNode } from "react";
-import { LockClosedIcon } from "@heroicons/react/20/solid";
+import { createContext, ReactNode, useContext } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { currentPath, signupHref } from "@/components/tariff-tracker/access/signup";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 
 // The plain-English "why" behind every number (why a tariff applies, what an adjustment would
 // switch off, why a heading doesn't apply, the summary) takes a free account: no paywall, just
-// sign-up. Signed out, a locked line takes its place, and the real text isn't rendered at all.
+// sign-up. Signed out, a small link to the sign-up pitch takes its place, and the real text isn't
+// rendered at all.
+
+// What a locked line does when clicked: the host's sign-up pitch (the calculator's account
+// pop-up), named by where it was clicked; without one, straight to sign-up
+export const WhyUnlockContext = createContext<((where: string) => void) | null>(null);
 
 export const useCanSeeWhy = () => {
   const { user, isLoading } = useUser();
@@ -21,29 +25,24 @@ const signUp = (where: string) => {
   window.location.href = signupHref(currentPath());
 };
 
-// A locked line in place of an explanation: a few blurred bars (never the real text) and the ask
-// (`bars={false}`: just the ask, where it stands alone rather than in place of a line of text)
-export const WhyLocked = ({ label, where, className = "", bars = true }: { label: string; where: string; className?: string; bars?: boolean }) => (
-  <button
-    type="button"
-    onClick={(e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      signUp(where);
-    }}
-    className={`group inline-flex max-w-full items-center gap-2 text-left text-xs font-medium text-primary ${className}`}
-  >
-    {bars && (
-      <span aria-hidden className="flex shrink-0 gap-1 blur-[2px]">
-        <span className="h-2 w-10 rounded-full bg-base-content/20" />
-        <span className="h-2 w-16 rounded-full bg-base-content/20" />
-        <span className="h-2 w-8 rounded-full bg-base-content/20" />
-      </span>
-    )}
-    <LockClosedIcon className="h-3 w-3 shrink-0" aria-hidden />
-    <span className="underline-offset-2 group-hover:underline">{label}</span>
-  </button>
-);
+// A locked explanation: a small text link to the sign-up pitch, in its place
+export const WhyLocked = ({ label, where, className = "" }: { label: string; where: string; className?: string }) => {
+  const unlock = useContext(WhyUnlockContext);
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (unlock) unlock(where);
+        else signUp(where);
+      }}
+      className={`self-start text-left text-xs font-medium text-primary underline-offset-2 hover:underline ${className}`}
+    >
+      {label}
+    </button>
+  );
+};
 
 // The explanation when signed in; the locked line when not
 export const WhyGate = ({ label, where, children }: { label: string; where: string; children: ReactNode }) => {

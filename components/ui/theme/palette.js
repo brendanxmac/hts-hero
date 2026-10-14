@@ -157,10 +157,12 @@ const tracker = {
       "--tt-slate": "#3a4154",
     },
   },
-  // Product chart parts in the Tracker: base duty slate, then cobalt, sky, amber, red, green
+  // Product chart parts in the Tracker: base duty a clear gray, then each program in a hue far
+  // from the last (cobalt, orange, yellow, red), then fees green. Neighbours also differ in
+  // lightness, so they stay apart side by side and for colorblind viewers.
   chart: {
-    light: ["#cdd2e0", "#2f49d1", "#7cc4f2", "#a86a0c", "#c2412d", "#138a5b"],
-    dark: ["#3a4154", "#8ea2ff", "#5cc3f5", "#f2b24c", "#ff7d6e", "#34c98b"],
+    light: ["#959eb0", "#2f49d1", "#ea7a26", "#d9a90f", "#c2413a", "#138a5b"],
+    dark: ["#a7afc0", "#7d96ff", "#ff9547", "#f2c94c", "#ff6f61", "#34c98b"],
   },
 };
 

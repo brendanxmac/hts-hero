@@ -1,3 +1,5 @@
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+
 // The audit page's fixed copy. The FAQ is shown on the page and in its FAQPage schema, so the two
 // always match.
 
@@ -78,6 +80,6 @@ export const AUDIT_FAQS = [
   {
     question: "Is the audit free?",
     answer:
-      "Self-audits run in the Tariff Tracker, included in every Tracker plan, and you can try them free for 14 days with no credit card. Two ways are free outright: upload your entries for a one-time check with the results emailed to you, or request an audit and we'll review your entries and send you a report.",
+      `Self-audits run in the Tariff Tracker. Every account gets ${TRIAL_ALLOWANCE.auditChecks} free audit checks (one per past entry) with no credit card, and paid Tracker plans include unlimited audit checks. Two ways are free outright: upload your entries for a one-time check with the results emailed to you, or request an audit and we'll review your entries and send you a report.`,
   },
 ];

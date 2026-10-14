@@ -6,9 +6,9 @@ import { REFUND_GROUPS, RefundStatusTone } from "../lib/refundGroups";
 import { RefundTimeline, TIMELINE_EVENTS } from "./RefundTimeline";
 
 const STATUS: Record<RefundStatusTone, string> = {
-  success: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  warning: "bg-amber-50 text-amber-800 ring-amber-200",
-  neutral: "bg-slate-100 text-slate-700 ring-slate-200",
+  success: "bg-success/10 text-success ring-success",
+  warning: "bg-warning/10 text-warning ring-warning",
+  neutral: "bg-tt-soft text-base-content/70 ring-base-300",
 };
 
 const longDate = (iso: string) =>
@@ -26,15 +26,15 @@ export const RefundGroups = ({ verifiedFrom }: { verifiedFrom: string }) => (
       <Reveal className="mt-12">
         <div className={`${mk.card} p-6 sm:p-8`}>
           <RefundTimeline verifiedFrom={verifiedFrom} />
-          <ol className="mt-6 grid gap-4 border-t border-slate-100 pt-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="mt-6 grid gap-4 border-t border-base-300 pt-6 sm:grid-cols-2 lg:grid-cols-4">
             {TIMELINE_EVENTS.map((e, i) => (
               <li key={e.at} className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white" aria-hidden>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-base-content text-xs font-bold text-base-100" aria-hidden>
                   {i + 1}
                 </span>
                 <span>
-                  <span className="block text-sm font-semibold text-slate-900">{e.date}</span>
-                  <span className="text-sm text-slate-600">{e.label}</span>
+                  <span className="block text-sm font-semibold text-base-content">{e.date}</span>
+                  <span className="text-sm text-base-content/70">{e.label}</span>
                 </span>
               </li>
             ))}
@@ -56,17 +56,17 @@ export const RefundGroups = ({ verifiedFrom }: { verifiedFrom: string }) => (
               </div>
               <p className={mk.body}>{g.summary}</p>
             </div>
-            <div className="flex flex-col gap-2 rounded-b-2xl border-t border-slate-100 bg-slate-50 px-7 py-4">
-              <p className="flex gap-2 text-sm text-slate-700">
-                <MagnifyingGlassIcon className="mt-0.5 h-4 w-4 shrink-0 text-teal-600" aria-hidden />
+            <div className="flex flex-col gap-2 rounded-b-2xl border-t border-base-300 bg-tt-soft px-7 py-4">
+              <p className="flex gap-2 text-sm text-base-content/70">
+                <MagnifyingGlassIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
                 <span>{g.check.replace("{verifiedFrom}", longDate(verifiedFrom))}</span>
               </p>
               {g.href ? (
-                <Link href={g.href} className="inline-flex items-center gap-1 text-sm font-semibold text-teal-700 hover:text-teal-800">
+                <Link href={g.href} className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary">
                   {g.name} refund guide <ArrowRightIcon className="h-4 w-4" aria-hidden />
                 </Link>
               ) : (
-                <p className="text-xs text-slate-400">Full refund guide coming soon.</p>
+                <p className="text-xs text-base-content/60">Full refund guide coming soon.</p>
               )}
             </div>
           </article>

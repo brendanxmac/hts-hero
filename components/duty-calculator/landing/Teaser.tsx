@@ -59,7 +59,7 @@ export const Teaser = ({
         >
           {cta}
         </a>
-        <span className="text-xs text-base-content/60">Free forever. No credit card.</span>
+        <span className="text-xs text-base-content/60">No credit card.</span>
       </div>
     </div>
   </div>

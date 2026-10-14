@@ -4,3 +4,4 @@ export { Testimonials } from "./proof/Testimonials";
 export { HowItWorks } from "./how-it-works/HowItWorks";
 export { VideoBand } from "./video/VideoBand";
 export { ClassifyPlans } from "./pricing/ClassifyPlans";
+export { ClosingCta } from "./cta/ClosingCta";

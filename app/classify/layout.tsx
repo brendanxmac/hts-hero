@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { Metadata } from "next";
 import config from "@/config";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { FollowTheme } from "@/components/ui/marketing/FollowTheme";
 
 export const metadata: Metadata = {
   title: "Produce Audit-Ready HTS Classifications, Fast! | HTS Hero",
@@ -37,5 +38,10 @@ export const metadata: Metadata = {
 };
 
 export default function ClassifyLayout({ children }: { children: ReactNode }) {
-  return <MarketingLayout>{children}</MarketingLayout>;
+  // The Tariff Tracker's look, following the site's light/dark setting (DESIGN_SYSTEM.md §15)
+  return (
+    <FollowTheme>
+      <MarketingLayout>{children}</MarketingLayout>
+    </FollowTheme>
+  );
 }

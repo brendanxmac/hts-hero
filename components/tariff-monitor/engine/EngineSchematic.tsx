@@ -28,14 +28,14 @@ export const EngineSchematic = () => (
     aria-label="Tariff changes from USITC, the White House, the Federal Register and CBP flow through HTS Hero's engine (base rate, Chapter 99 stacking, exemptions and preferences, fees) to the products they affect"
   >
     {SOURCES.map((_, i) => (
-      <path key={`i${i}`} d={inPath(i)} fill="none" stroke="#99f6e4" strokeWidth="1.5" strokeDasharray="4 4" />
+      <path key={`i${i}`} d={inPath(i)} fill="none" stroke="oklch(var(--p)/0.4)" strokeWidth="1.5" strokeDasharray="4 4" />
     ))}
     {PRODUCTS.map((p, i) => (
       <path key={`o${i}`} d={outPath(i)} fill="none" stroke={p.color} strokeOpacity="0.45" strokeWidth="2" />
     ))}
     <g className="motion-reduce:hidden">
       {SOURCES.map((_, i) => (
-        <circle key={`di${i}`} r="4" fill="#0d9488">
+        <circle key={`di${i}`} r="4" fill="oklch(var(--p))">
           <animateMotion dur="2.6s" begin={`${i * 0.65}s`} repeatCount="indefinite" path={inPath(i)} />
         </circle>
       ))}
@@ -47,28 +47,28 @@ export const EngineSchematic = () => (
     </g>
     {SOURCES.map((s, i) => (
       <g key={s}>
-        <rect x="0" y={srcY(i) - 20} width="190" height="40" rx="8" fill="white" stroke="#cbd5e1" />
-        <text x="14" y={srcY(i) + 5} fontSize="13" fontWeight="600" fill="#0f172a">
+        <rect x="0" y={srcY(i) - 20} width="190" height="40" rx="8" fill="oklch(var(--b1))" stroke="oklch(var(--b3))" />
+        <text x="14" y={srcY(i) + 5} fontSize="13" fontWeight="600" fill="oklch(var(--bc))">
           {s}
         </text>
       </g>
     ))}
-    <rect x={ENGINE.x} y={ENGINE.y} width={ENGINE.w} height={ENGINE.h} rx="12" fill="white" stroke="#0f172a" strokeWidth="2" />
-    <text x={ENGINE.x + 18} y={ENGINE.y + 32} fontSize="12" fontWeight="700" letterSpacing="2" fill="#0d9488">
+    <rect x={ENGINE.x} y={ENGINE.y} width={ENGINE.w} height={ENGINE.h} rx="12" fill="oklch(var(--b1))" stroke="oklch(var(--bc))" strokeWidth="2" />
+    <text x={ENGINE.x + 18} y={ENGINE.y + 32} fontSize="12" fontWeight="700" letterSpacing="2" fill="oklch(var(--p))">
       HTS HERO ENGINE
     </text>
     {STAGES.map((s, i) => (
       <g key={s}>
-        <rect x={ENGINE.x + 18} y={ENGINE.y + 54 + i * 58} width={ENGINE.w - 36} height="42" rx="8" fill="#f0fdfa" stroke="#99f6e4" />
-        <text x={ENGINE.x + 32} y={ENGINE.y + 80 + i * 58} fontSize="12.5" fontWeight="600" fill="#0f172a">
+        <rect x={ENGINE.x + 18} y={ENGINE.y + 54 + i * 58} width={ENGINE.w - 36} height="42" rx="8" fill="oklch(var(--p)/0.08)" stroke="oklch(var(--p)/0.4)" />
+        <text x={ENGINE.x + 32} y={ENGINE.y + 80 + i * 58} fontSize="12.5" fontWeight="600" fill="oklch(var(--bc))">
           {i + 1}. {s}
         </text>
       </g>
     ))}
     {PRODUCTS.map((p, i) => (
       <g key={p.name}>
-        <rect x="570" y={prodY(i) - 28} width="190" height="56" rx="10" fill="white" stroke={p.color} strokeWidth="1.75" />
-        <text x="584" y={prodY(i) - 6} fontSize="13" fontWeight="600" fill="#0f172a">
+        <rect x="570" y={prodY(i) - 28} width="190" height="56" rx="10" fill="oklch(var(--b1))" stroke={p.color} strokeWidth="1.75" />
+        <text x="584" y={prodY(i) - 6} fontSize="13" fontWeight="600" fill="oklch(var(--bc))">
           {p.name}
         </text>
         <text x="584" y={prodY(i) + 15} fontSize="12" fontWeight="700" fill={p.color}>

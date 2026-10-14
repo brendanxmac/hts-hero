@@ -5,7 +5,6 @@ import { SectionIntro } from "@/components/ui/marketing";
 import {
   Billing,
   CLASSIFY_PLANS,
-  FREE_TRACKED_PAIRS,
   EstimateInput,
   TRACKER_TIERS,
   estimate,
@@ -53,7 +52,7 @@ export const Estimator = ({
           />
           <ProductCard
             name="Tariff Tracker"
-            summary={`Free for ${FREE_TRACKED_PAIRS} pairs, then from ${rate(TRACKER_TIERS[0].price)}/mo · alerts, audits and savings on your catalog`}
+            summary={`Start free, then from ${rate(TRACKER_TIERS[0].price)}/mo · alerts, audits and savings on your catalog`}
             enabled={input.tracker}
             onToggle={(tracker) => update({ tracker })}
           >

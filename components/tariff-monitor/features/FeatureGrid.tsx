@@ -14,12 +14,12 @@ import { FEATURES } from "../lib/copy";
 
 // One icon and tint per feature, in FEATURES order
 const LOOK = [
-  { Icon: BellAlertIcon, tint: "bg-teal-50 text-teal-700" },
-  { Icon: MegaphoneIcon, tint: "bg-amber-50 text-amber-700" },
-  { Icon: ChartBarIcon, tint: "bg-sky-50 text-sky-700" },
-  { Icon: ClipboardDocumentCheckIcon, tint: "bg-rose-50 text-rose-700" },
-  { Icon: GlobeAmericasIcon, tint: "bg-emerald-50 text-emerald-700" },
-  { Icon: UserGroupIcon, tint: "bg-slate-100 text-slate-700" },
+  { Icon: BellAlertIcon, tint: "bg-primary/10 text-primary" },
+  { Icon: MegaphoneIcon, tint: "bg-warning/10 text-warning" },
+  { Icon: ChartBarIcon, tint: "bg-warning/10 text-warning" },
+  { Icon: ClipboardDocumentCheckIcon, tint: "bg-error/10 text-error" },
+  { Icon: GlobeAmericasIcon, tint: "bg-success/10 text-success" },
+  { Icon: UserGroupIcon, tint: "bg-tt-soft text-base-content/70" },
 ];
 
 export const FeatureGrid = () => (
@@ -33,14 +33,14 @@ export const FeatureGrid = () => (
         {FEATURES.map((f, i) => {
           const { Icon, tint } = LOOK[i % LOOK.length];
           return (
-            <article key={f.title} className={`${mk.card} flex flex-col gap-4 p-7 transition-colors hover:border-teal-300`}>
+            <article key={f.title} className={`${mk.card} flex flex-col gap-4 p-7 transition-colors hover:border-primary/40`}>
               <span className={`flex h-12 w-12 items-center justify-center rounded-xl ${tint}`}>
                 <Icon className="h-6 w-6" aria-hidden />
               </span>
               <h3 className={mk.h3}>{f.title}</h3>
               <p className={mk.body}>{f.text}</p>
               {f.href && (
-                <Link href={f.href} className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-teal-700 hover:text-teal-800">
+                <Link href={f.href} className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary">
                   {f.linkText} <ArrowRightIcon className="h-4 w-4" aria-hidden />
                 </Link>
               )}

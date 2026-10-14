@@ -119,7 +119,7 @@ export const EstimateSummary = ({
           <div className={`${mk.cardDark} flex gap-2.5 rounded-xl p-4`}>
             <InformationCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" aria-hidden />
             <p className="text-sm leading-relaxed text-slate-300">
-              Tracking more than {TRACKER_MAX_LISTED_PAIRS} pairs is priced to your catalog. The total leaves it out.
+              Covering more than {TRACKER_MAX_LISTED_PAIRS} imports is priced to your catalog. The total leaves it out.
             </p>
           </div>
         </div>

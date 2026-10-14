@@ -68,6 +68,18 @@ export async function middleware(req: NextRequest) {
 
   const { response, user } = await updateSession(req)
 
+  // The Tariff Tracker is for signed-in accounts only: anyone else signs in (or up) first and comes
+  // back to the same page, tab and inputs
+  if (!user && (pathname === "/tariff-tracker" || pathname.startsWith("/tariff-tracker/"))) {
+    const url = req.nextUrl.clone()
+    url.pathname = "/signin"
+    url.search = ""
+    url.searchParams.set("redirect", `${pathname}${req.nextUrl.search}`)
+    const redirect = NextResponse.redirect(url)
+    response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie))
+    return redirect
+  }
+
   // The Tariff Tracker is every account's home: signed-in visitors to the calculator's landing
   // page, or a country calculator page, go to the Tracker's Calculator tab with whatever they'd
   // entered (PRICING.md)

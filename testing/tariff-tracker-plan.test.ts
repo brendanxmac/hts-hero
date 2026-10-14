@@ -1,55 +1,73 @@
 import { describe, it, expect } from "./test-runner"
 import {
-  canStartTrial,
-  isPremium,
+  auditUnlocked,
+  canSpendCheck,
+  checksLeft,
+  NO_USAGE,
+  savingsUnlocked,
   trackerAccessFrom,
-  trialDaysLeft,
-  trialEndFrom,
 } from "../libs/tariff-tracker/plan"
+import { trackerTierFor } from "../components/pricing-calculator/lib/pricing"
 import { PricingPlan } from "../types"
 
-// The Tariff Tracker's plan rules (PRICING.md): free tracks 3, one 14-day trial of 100, paid by tier
-const NOW = new Date("2026-10-11T12:00:00Z")
-const trialFrom = (start: string) => ({ startedAt: start, endsAt: trialEndFrom(new Date(start)).toISOString() })
+// The Tariff Tracker's plan rules (PRICING.md): every account is on the usage-based trial (5
+// savings checks, 10 audit checks, alerts on 10 imports, never reset); paid by tier
+const usage = (savings: number, audits: number) => ({
+  savingsChecked: Array.from({ length: savings }, (_, i) => `610${i}-CN`),
+  auditsChecked: Array.from({ length: audits }, (_, i) => `entry-${i}`),
+})
 
 describe("Tariff Tracker: plans", () => {
-  it("a new account is on the free plan, tracks 3 and can start its trial", () => {
-    const access = trackerAccessFrom({ trial: null, activePlans: [], now: NOW })
-    expect(access.kind).toBe("free")
-    expect(access.pairLimit).toBe(3)
-    expect(isPremium(access)).toBe(false)
-    expect(canStartTrial(access)).toBe(true)
-  })
-
-  it("a running trial tracks 100 and unlocks everything for 14 days", () => {
-    const access = trackerAccessFrom({ trial: trialFrom("2026-10-05T12:00:00Z"), activePlans: [], now: NOW })
+  it("a new account is on the trial, with every check left", () => {
+    const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [] })
     expect(access.kind).toBe("trial")
-    expect(access.pairLimit).toBe(100)
-    expect(isPremium(access)).toBe(true)
-    expect(trialDaysLeft(access, NOW)).toBe(8)
+    expect(access.pairLimit).toBe(10)
+    expect(checksLeft(access, "savings")).toBe(5)
+    expect(checksLeft(access, "audit")).toBe(10)
   })
 
-  it("after the trial the account is back on the free plan and can't start another", () => {
-    const access = trackerAccessFrom({ trial: trialFrom("2026-09-01T12:00:00Z"), activePlans: [], now: NOW })
-    expect(access.kind).toBe("free")
-    expect(access.pairLimit).toBe(3)
-    expect(canStartTrial(access)).toBe(false)
+  it("spent checks count down and stop at the allowance", () => {
+    const access = trackerAccessFrom({ usage: usage(5, 3), activePlans: [] })
+    expect(checksLeft(access, "savings")).toBe(0)
+    expect(checksLeft(access, "audit")).toBe(7)
+    expect(canSpendCheck(access, "savings", "9999-VN")).toBe(false)
+    // One checked before costs nothing again
+    expect(canSpendCheck(access, "savings", "6100-CN")).toBe(true)
   })
 
-  it("a paid plan tracks its tier, and the largest active plan wins", () => {
+  it("savings show on checked imports only, on the trial", () => {
+    const access = trackerAccessFrom({ usage: usage(2, 0), activePlans: [] })
+    const unlocked = savingsUnlocked(access, new Set(["7000-MX"]))
+    expect(unlocked.has("6100-CN")).toBe(true)
+    expect(unlocked.has("7000-MX")).toBe(false)
+  })
+
+  it("the largest paid plan wins, with unlimited audits and savings on covered imports", () => {
     const access = trackerAccessFrom({
-      trial: null,
-      activePlans: [PricingPlan.TARIFF_TRACKER_30, PricingPlan.TARIFF_TRACKER_500, PricingPlan.CLASSIFY_PRO],
-      now: NOW,
+      usage: usage(1, 12),
+      activePlans: [PricingPlan.TARIFF_TRACKER_10, PricingPlan.TARIFF_TRACKER_500, PricingPlan.CLASSIFY_PRO],
     })
     expect(access.kind).toBe("paid")
     expect(access.paidPlan).toBe(PricingPlan.TARIFF_TRACKER_500)
     expect(access.pairLimit).toBe(500)
-    expect(canStartTrial(access)).toBe(false)
+    expect(checksLeft(access, "audit")).toBe(Infinity)
+    expect(auditUnlocked(access, "never-checked")).toBe(true)
+    const unlocked = savingsUnlocked(access, new Set(["7000-MX"]))
+    expect(unlocked.has("7000-MX")).toBe(true)
+    expect(unlocked.has("6100-CN")).toBe(true)
   })
 
   it("classification plans don't unlock the Tracker", () => {
-    const access = trackerAccessFrom({ trial: null, activePlans: [PricingPlan.CLASSIFY_PRO], now: NOW })
-    expect(access.kind).toBe("free")
+    const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [PricingPlan.CLASSIFY_PRO] })
+    expect(access.kind).toBe("trial")
+  })
+
+  it("tiers: $19 to 10, $49 to 30, $149 to 100, $249 to 500, then quoted", () => {
+    expect(trackerTierFor(3)?.price).toBe(19)
+    expect(trackerTierFor(10)?.price).toBe(19)
+    expect(trackerTierFor(11)?.price).toBe(49)
+    expect(trackerTierFor(100)?.price).toBe(149)
+    expect(trackerTierFor(500)?.price).toBe(249)
+    expect(trackerTierFor(501)).toBe(null)
   })
 })

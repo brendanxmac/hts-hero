@@ -2,6 +2,8 @@ import { AllRules } from "../../tariffs/engine-v2/data";
 import { DutyLine } from "../../tariffs/engine-v2/types";
 import { htsProductName } from "../hts-duty-summary";
 import { OriginRate, RateBasis, rateOf } from "../../components/tariff-tracker/product/analysis/analysis";
+import { CENSUS_NOTICE } from "../../components/duty-calculator/lib/census";
+import type { UsImports } from "../../components/duty-calculator/lib/usImportsData";
 import { DutyCalculation, impactsOf, sortedQuestions } from "./duty";
 import { analysisUrl, fullBreakdownUrl, htsPageUrl, LinkContext } from "./links";
 
@@ -135,3 +137,26 @@ export const originRow = (o: OriginRate, customsValue: number, rank: number, bas
 });
 
 export type OriginRow = ReturnType<typeof originRow>;
+
+// The US imports of a code (Census), for a tool's payload. Census's terms ask for the notice
+// wherever the figures are shown.
+export const importsMeta = (imports: UsImports) => ({
+  year: imports.year,
+  compared_with: imports.prior,
+  // "hts10": the code's own line; "hts8"/"hts6": its family, when Census has nothing for the line
+  match: `hts${imports.level}`,
+  total_usd: imports.totalValue,
+  source: "U.S. Census Bureau, general imports by HTS code and country",
+  notice: CENSUS_NOTICE,
+});
+
+// One country's US imports of a code, or null when the US imported none from it
+export const countryImports = (imports: UsImports | null, code: string) => {
+  const v = imports?.byCountry.get(code);
+  if (!imports || !v || v.value <= 0) return null;
+  return {
+    value_usd: v.value,
+    share_pct: imports.totalValue > 0 ? round((v.value / imports.totalValue) * 100, 1) : null,
+    change_pct: v.prior > 0 ? round(((v.value - v.prior) / v.prior) * 100, 1) : null,
+  };
+};

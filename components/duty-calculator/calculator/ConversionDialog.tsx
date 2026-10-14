@@ -1,40 +1,40 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { ArrowLeftIcon, CheckIcon, LockClosedIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
 import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
 import { useUser } from "@/contexts/UserContext";
-import { FREE_TRACKED_PAIRS, TRIAL_DAYS, TRIAL_PAIRS } from "@/components/pricing-calculator/lib/pricing";
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { useOptionalTrackerAccess } from "@/components/tariff-tracker/access/accessContext";
-import { PREMIUM_INCLUDES, PremiumFeature } from "@/components/tariff-tracker/access/features";
+import { featureTab, PremiumFeature } from "@/components/tariff-tracker/access/features";
+import { sectionUrl } from "@/components/tariff-tracker/sections";
+import { TrackerNavContext } from "@/components/tariff-tracker/shell/TrackerNav";
 import { currentPath, signupHref } from "@/components/tariff-tracker/access/signup";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { thisPageWith } from "../landing/redirect";
 
 // The calculator's two sign-up pitches, as a dialog for signed-out visitors:
-// - "account": everything a free account adds (PRICING.md), led by what they reached for (the
-//   PDF, an explanation of this import, a past date) when the host says
-// - "trial": what the Tariff Tracker's trial adds, led by the feature they reached for (tracking,
-//   the qualification check, refunds, sourcing); "Not ready for a trial?" steps down to the free
-//   account
+// - "account": everything a free account adds (PRICING.md), led by what they reached for (an
+//   explanation of this import, a past date) when the host says
+// - "trial": what the Tariff Tracker's usage-based trial adds (every account gets it, with no time
+//   limit), led by the feature they reached for (tracking, the qualification check, refunds,
+//   sourcing); "See everything else" steps over to the account view
 // Each view's button runs the host's own action (where sign-up should come back to).
 // useConversion opens it from anywhere, sending signed-in users the right way instead.
 
-export type AccountBenefit = "why" | "adjustments" | "ruled-out" | "history" | "analysis" | "alerts" | "pdf";
+export type AccountBenefit = "why" | "legal" | "ruled-out" | "history" | "analysis" | "alerts";
 
-// What every free account gets (the AccountCta's "For every import" is analysis, alerts and pdf)
+// What every free account gets (the AccountCta's "For every import" is analysis and alerts)
 export const ACCOUNT_BENEFITS: { id: AccountBenefit; text: string }[] = [
-  { id: "why", text: "The plain-English why behind every tariff on every import" },
-  { id: "adjustments", text: "What each possible adjustment would change" },
+  { id: "why", text: "The plain-english 'why' behind every tariff on every import" },
+  { id: "legal", text: "The legal text behind every tariff and exemption, with the notes it cites" },
   { id: "ruled-out", text: "Why other tariffs don't apply, so you know nothing was missed" },
   { id: "history", text: "Any import's full duty on any past date, line by line" },
   { id: "analysis", text: "Any import's duty from every country of origin" },
-  { id: "alerts", text: `Alerts when tariffs change on up to ${FREE_TRACKED_PAIRS} imports` },
-  { id: "pdf", text: "A PDF of any result, to share or file" },
+  { id: "alerts", text: `Alerts when tariffs change on up to ${TRIAL_ALLOWANCE.alertImports} imports` },
 ];
 
 export type ConversionView = "account" | "trial";
@@ -46,6 +46,8 @@ export type AccountPitch = {
   highlight?: AccountBenefit;
   // What the account would answer about this import, above the list of benefits
   thisImport?: string[];
+  // Just this sentence in place of the lists: the short pitch
+  body?: string;
   cta: string;
 };
 
@@ -60,8 +62,16 @@ export type TrialPitch = {
 const DEFAULT_ACCOUNT: AccountPitch = { title: "Understand every import, free", cta: "Create my free account" };
 const DEFAULT_TRIAL: TrialPitch = {
   title: "Know the moment a tariff change hits this import",
-  subtitle: `Track this import and up to ${TRIAL_PAIRS} others, and find every way you could pay less duty on them.`,
+  subtitle: "Upload your whole catalog, get alerts on your top imports, and find every way you could pay less duty on them.",
 };
+
+// What every account's trial includes, for the trial view's list (PRICING.md)
+const TRIAL_INCLUDES = [
+  `Savings checks on ${TRIAL_ALLOWANCE.savingsChecks} imports: trade programs, cheaper origins and what you could qualify for`,
+  `${TRIAL_ALLOWANCE.auditChecks} audit checks: what you paid on past entries against what you owed`,
+  `Alerts when a tariff change hits up to ${TRIAL_ALLOWANCE.alertImports} of your imports`,
+  "Rate history, sourcing and insights across your whole catalog",
+];
 
 export const ConversionDialog = ({
   open,
@@ -113,14 +123,14 @@ export const ConversionDialog = ({
           {view === "trial" ? (
             <div className="flex flex-col gap-5">
               <div className="pr-8">
-                <p className={tt.eyebrow("success")}>{trial.eyebrow ?? `Tariff Tracker · ${TRIAL_DAYS}-day free trial`}</p>
+                <p className={tt.eyebrow("success")}>{trial.eyebrow ?? "Tariff Tracker · Free trial"}</p>
                 <Dialog.Title className={`${tt.display} mt-2 text-2xl font-semibold leading-tight text-base-content`}>{trial.title}</Dialog.Title>
                 <p className={`${tt.subtitle} mt-2`}>{trial.subtitle}</p>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold text-base-content/60">Everything in the trial:</p>
+                <p className="text-xs font-semibold text-base-content/60">Free with every account:</p>
                 <ul className="flex flex-col gap-2.5">
-                  {PREMIUM_INCLUDES.map((item) => (
+                  {TRIAL_INCLUDES.map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-sm text-base-content">
                       <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
                       {item}
@@ -130,10 +140,10 @@ export const ConversionDialog = ({
               </div>
               <div className="flex flex-col gap-2">
                 <button type="button" className={`${tt.button("money", "md", "rounded")} h-12 w-full text-base`} onClick={onStartTrial}>
-                  {trial.cta ?? `Start my ${TRIAL_DAYS}-day free trial`}
+                  {trial.cta ?? "Start free"}
                 </button>
                 <p className="text-center text-xs text-base-content/60">
-                  No credit card. A free account (less than 30 seconds), then your trial starts in one click.
+                  No credit card, no time limit. Your free account (less than 30 seconds) comes with the trial.
                 </p>
               </div>
               <button
@@ -141,7 +151,7 @@ export const ConversionDialog = ({
                 onClick={stepDown}
                 className="self-center text-sm font-medium text-primary underline-offset-2 hover:underline"
               >
-                Not ready for a trial? See what a free account gets you
+                See everything else a free account gets you
               </button>
             </div>
           ) : (
@@ -157,50 +167,58 @@ export const ConversionDialog = ({
                     Back to the trial
                   </button>
                 )}
-                <p className={tt.eyebrow("primary")}>Free account · free forever</p>
+                <p className={tt.eyebrow("primary")}>Create Free account</p>
                 <Dialog.Title className={`${tt.display} mt-2 text-2xl font-semibold leading-tight text-base-content`}>
                   {initialView === "trial" ? DEFAULT_ACCOUNT.title : account.title}
                 </Dialog.Title>
               </div>
-              {initialView !== "trial" && account.thisImport && account.thisImport.length > 0 && (
-                <div className="flex flex-col gap-2 rounded-2xl bg-primary/5 px-4 py-3.5 ring-1 ring-primary/20">
-                  <p className="text-xs font-semibold text-primary">Your free account answers, for this import:</p>
-                  <ul className="flex flex-col gap-1.5">
-                    {account.thisImport.map((q) => (
-                      <li key={q} className="flex items-start gap-2 text-sm text-base-content">
-                        <LockClosedIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
-                        {q}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              {initialView !== "trial" && account.body ? (
+                <p className="-mt-2 text-base leading-relaxed text-base-content/80">{account.body}</p>
+              ) : (
+                <>
+                  {initialView !== "trial" && account.thisImport && account.thisImport.length > 0 && (
+                    <div className="flex flex-col gap-2 rounded-2xl bg-primary/5 px-4 py-3.5 ring-1 ring-primary/20">
+                      <p className="text-xs font-semibold text-primary">Your free account answers, for this import:</p>
+                      <ul className="flex flex-col gap-1.5">
+                        {account.thisImport.map((q) => (
+                          <li key={q} className="flex items-start gap-2 text-sm text-base-content">
+                            <LockClosedIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
+                            {q}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs font-semibold text-base-content/60">
+                      {account.thisImport?.length && initialView !== "trial" ? "Plus, on every import:" : "Create a free account and you get:"}
+                    </p>
+                    <ul className="flex flex-col gap-1">
+                      {benefits.map((b) => {
+                        // Picked out only when nothing about this import leads the dialog
+                        const picked = initialView !== "trial" && !account.thisImport?.length && b.id === account.highlight;
+                        return (
+                          <li
+                            key={b.id}
+                            className={`flex items-start gap-2.5 rounded-xl px-3 py-1.5 text-sm ${picked ? "bg-primary/10 font-semibold text-base-content ring-1 ring-primary/30" : "text-base-content"}`}
+                          >
+                            <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                            <span className="flex-1">{b.text}</span>
+                            {picked && <span className={tt.chip("primary")}>What you clicked</span>}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </>
               )}
-              <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold text-base-content/60">
-                  {account.thisImport?.length && initialView !== "trial" ? "Plus, on every import:" : "Create a free account and you get:"}
-                </p>
-                <ul className="flex flex-col gap-1">
-                  {benefits.map((b) => {
-                    // Picked out only when nothing about this import leads the dialog
-                    const picked = initialView !== "trial" && !account.thisImport?.length && b.id === account.highlight;
-                    return (
-                      <li
-                        key={b.id}
-                        className={`flex items-start gap-2.5 rounded-xl px-3 py-1.5 text-sm ${picked ? "bg-primary/10 font-semibold text-base-content ring-1 ring-primary/30" : "text-base-content"}`}
-                      >
-                        <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-                        <span className="flex-1">{b.text}</span>
-                        {picked && <span className={tt.chip("primary")}>What you clicked</span>}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
               <div className="flex flex-col gap-2">
                 <button type="button" className={`${tt.button("next", "md", "rounded")} h-12 w-full text-base`} onClick={onCreateAccount}>
                   {initialView === "trial" ? DEFAULT_ACCOUNT.cta : account.cta}
                 </button>
-                <p className="text-center text-xs text-base-content/60">Less than 30 seconds. No credit card. {accountNote}</p>
+                <p className="text-center text-xs text-base-content/60">
+                  {initialView !== "trial" && account.body ? "" : "Less than 30 seconds. "}No credit card. {accountNote}
+                </p>
               </div>
             </div>
           )}
@@ -211,12 +229,13 @@ export const ConversionDialog = ({
 };
 
 // Opens the pitches from any button on the calculator. Signed out, the dialog; signed in, the
-// account step is already done, and the trial step goes through the Tracker's own access (its
-// trial or plans dialog, or "coming soon" for a feature their plan has but isn't built yet).
-// Sign-up from the trial view comes back with `trial=<feature>`, which the Tracker opens on.
+// account (and with it the trial) is already there, so the feature's Tracker tab opens, where its
+// checks are spent. Sign-up from the trial view comes back with `trial=<feature>`, which the
+// Tracker welcomes.
 export const useConversion = (page: string) => {
   const { user } = useUser();
   const access = useOptionalTrackerAccess();
+  const nav = useContext(TrackerNavContext);
   const [state, setState] = useState<{
     open: boolean;
     view: ConversionView;
@@ -231,10 +250,8 @@ export const useConversion = (page: string) => {
   };
   const openTrial = (feature: PremiumFeature, trial: TrialPitch) => {
     trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature, reason: access?.access.kind ?? (user ? "signed-in" : "anonymous"), page });
-    if (access?.signedIn) {
-      if (access.premium) toast("Coming soon to your plan.");
-      else access.unlock(feature);
-    } else if (user) window.location.href = `/tariff-tracker?trial=${feature}`;
+    if (access?.signedIn && nav) nav.openTab(featureTab(feature));
+    else if (user) window.location.href = sectionUrl(featureTab(feature));
     else setState({ open: true, view: "trial", trial, feature });
   };
 

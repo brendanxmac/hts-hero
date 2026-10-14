@@ -2,6 +2,7 @@ import { Countries, Country } from "../../../../constants/countries";
 import { calculate } from "../../../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../../../tariffs/engine-v2/data";
 import { CalculationInput, CalculationResult } from "../../../../tariffs/engine-v2/types";
+import type { UsImports } from "../../../duty-calculator/lib/usImportsData";
 import { RatePart, rateParts, TrackedProduct } from "../../report";
 
 // Tariff intelligence for one product: its duty from every country of origin, worked out for the
@@ -37,10 +38,12 @@ export type OriginRatesInput = Pick<TrackedProduct, "input" | "customsValue" | "
   entry: { country: Pick<Country, "code"> };
 };
 
-export const originRates = (product: OriginRatesInput): OriginRate[] => {
+// Every origin, or only `codes` (and always the product's own origin)
+export const originRates = (product: OriginRatesInput, codes?: string[]): OriginRate[] => {
   const { input, customsValue, adjustments, entry } = product;
   const answers = adjustments.answers ?? {};
-  return Countries.filter((c) => c.code !== "US").map((country) => {
+  const only = codes ? new Set([...codes, entry.country.code]) : null;
+  return Countries.filter((c) => c.code !== "US" && (!only || only.has(c.code))).map((country) => {
     const base: Omit<CalculationInput, "answers"> = { ...input, country: country.code, claimedPreference: undefined };
     const result = calculate(AllRules, { ...base, answers });
     const pct = (result.totalDuty / customsValue) * 100;
@@ -93,6 +96,34 @@ export const presetCountries = (
   }[preset];
   return rates.filter((r) => !r.isOrigin && pick(r)).map((r) => r.country.code);
 };
+
+// ── Proven suppliers ──
+// Countries the US already imports a product from (Census), so a lower rate there is a real
+// sourcing option and not just a number
+
+// The origins worth comparing first: the largest suppliers to the US that pay less duty than the
+// product's own origin, then the largest suppliers whatever their duty. Works out only the top
+// suppliers' rates (a few dozen calculations), so it's quick enough to run on opening Compare.
+export const provenPicks = (product: OriginRatesInput, imports: UsImports, count: number, candidates = 15): string[] => {
+  const own = product.entry.country.code;
+  const largest = Array.from(imports.byCountry.entries())
+    .filter(([code, v]) => code !== own && code !== "US" && v.value > 0)
+    .sort((a, b) => b[1].value - a[1].value)
+    .slice(0, candidates)
+    .map(([code]) => code);
+  if (!largest.length) return [];
+  const rates = originRates(product, largest);
+  const best = (r: OriginRate) => rateKey(rateOf(r, "agreements"));
+  const origin = rates.find((r) => r.isOrigin);
+  const yours = origin ? best(origin) : Infinity;
+  const ranked = largest.filter((code) => rates.some((r) => r.country.code === code));
+  const cheaper = ranked.filter((code) => best(rates.find((r) => r.country.code === code)!) < yours);
+  return [...cheaper, ...ranked.filter((code) => !cheaper.includes(code))].slice(0, count);
+};
+
+// The origins the US imported this from, or null when there are no figures
+export const supplierCodes = (imports: UsImports | null) =>
+  imports ? new Set(Array.from(imports.byCountry.entries()).filter(([, v]) => v.value > 0).map(([code]) => code)) : null;
 
 // ── Facts ──
 

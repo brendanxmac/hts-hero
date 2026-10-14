@@ -23,16 +23,20 @@ export const RateHistoryCard = ({
   onHighlight,
   headerAction,
   onPickDate,
+  changesGate,
 }: {
   f: TariffFinder;
   // Colors of the Cost Breakdown slices, so the same program has the same color here
   sliceColors: Record<string, string>;
   highlight?: string | null;
   onHighlight?: (label: string | null) => void;
-  // In the heading, beside the % / $ switch (the calculator's refund check)
+  // In the heading, across from the title and its % / $ switch (the calculator's alerts; the
+  // Tracker's refund check)
   headerAction?: ReactNode;
   // Opening a past date (from the chart or the list); by default it becomes the entry date
   onPickDate?: (date: string, source: string) => void;
+  // Wraps "What changed" (the calculator's account gate, signed out)
+  changesGate?: (changes: ReactNode) => ReactNode;
 }) => {
   const { history, historyRange, customsValue, entryDate } = f;
   const [metric, setMetric] = useState<Metric>("pct");
@@ -59,27 +63,28 @@ export const RateHistoryCard = ({
   return (
     <section className={`${ui.card} p-5 flex flex-col gap-4`} aria-labelledby="rate-history-title">
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 id="rate-history-title" className={ui.cardTitle}>
-            Duty Over Time
-          </h3>
-          <p className={`${ui.caption} mt-0.5`}>
-            {shortDate(historyRange.from)} – {formatDate(lastDate)}
-          </p>
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="min-w-0">
+            <h3 id="rate-history-title" className={ui.cardTitle}>
+              Duty Over Time
+            </h3>
+            <p className={`${ui.caption} mt-0.5`}>
+              {shortDate(historyRange.from)} – {formatDate(lastDate)}
+            </p>
+          </div>
+          {/* Beside the title: it changes how everything in the card reads */}
+          <SegmentedControl<Metric>
+            label="Show duty as"
+            size="sm"
+            options={[
+              { id: "pct", label: "%", title: "Percent of value" },
+              { id: "usd", label: "$", title: "Dollars" },
+            ] as const}
+            value={metric}
+            onChange={setMetric}
+          />
         </div>
-        <div className="flex items-center gap-3">
         {headerAction}
-        <SegmentedControl<Metric>
-          label="Show duty as"
-          size="sm"
-          options={[
-            { id: "pct", label: "%", title: "Percent of value" },
-            { id: "usd", label: "$", title: "Dollars" },
-          ] as const}
-          value={metric}
-          onChange={setMetric}
-        />
-        </div>
       </div>
 
       <RateHistoryHeadline
@@ -108,15 +113,17 @@ export const RateHistoryCard = ({
         <LayerLegend layers={layers} highlight={highlight} onHighlight={onHighlight} />
       )}
 
-      <ChangeTimeline
-        history={history}
-        entryIndex={entryIndex}
-        lastDate={lastDate}
-        metric={metric}
-        value={value}
-        show={show}
-        onPick={(date) => pickDate(date, "rate_history_list")}
-      />
+      {(changesGate ?? ((c: ReactNode) => c))(
+        <ChangeTimeline
+          history={history}
+          entryIndex={entryIndex}
+          lastDate={lastDate}
+          metric={metric}
+          value={value}
+          show={show}
+          onPick={(date) => pickDate(date, "rate_history_list")}
+        />
+      )}
 
       <p className="text-xs leading-snug text-base-content/60 border-t border-base-300 pt-3">
         Your value, quantity, trade preference and answers, on every date. Base rates are from the

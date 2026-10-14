@@ -14,6 +14,7 @@ import {
   partsOf,
   RateBasis,
   rateTiers,
+  supplierCodes,
   visibleOrigins,
 } from "./analysis";
 import { AnalysisFacts } from "./AnalysisFacts";
@@ -21,6 +22,8 @@ import { CheapVsStable } from "./CheapVsStable";
 import { CountryChips, CountryPicker } from "./CountryPicker";
 import { OriginDetail } from "./OriginDetail";
 import { OriginsTable } from "./OriginsTable";
+import { ProvenSuppliers } from "./ProvenSuppliers";
+import { useUsImports } from "@/components/duty-calculator/lib/usImports";
 import { RateTiers } from "./RateTiers";
 import { SwarmChart } from "./SwarmChart";
 import { changeEvents, OriginHistory, ratesOn } from "./history";
@@ -73,8 +76,16 @@ export const AnalysisTab = ({ product }: { product: TrackedProduct }) => {
 
   // Every origin, worked out once per product and shipment (about 200 calculations, quick)
   const rates = useMemo(() => originRates(product), [product]);
+  // Which countries the US imports this from (Census), loaded with this tab
+  const imports = useUsImports(product.entry.element.htsno);
+  const suppliers = useMemo(() => supplierCodes(imports), [imports]);
+  // Only the countries that already ship it to the US (on top of the chosen ones)
+  const [suppliersOnly, setSuppliersOnly] = useState(false);
   // The chosen countries, and the product's own origin
-  const shown = useMemo(() => visibleOrigins(rates, countries), [rates, countries]);
+  const shown = useMemo(() => {
+    const chosen = visibleOrigins(rates, countries);
+    return suppliersOnly && suppliers ? chosen.filter((r) => r.isOrigin || suppliers.has(r.country.code)) : chosen;
+  }, [rates, countries, suppliersOnly, suppliers]);
   const facts = useMemo(() => analysisFacts(shown, basis), [shown, basis]);
   const tiers = useMemo(() => rateTiers(shown, basis), [shown, basis]);
   const colors = useMemo(
@@ -118,6 +129,24 @@ export const AnalysisTab = ({ product }: { product: TrackedProduct }) => {
           {withAgreements > 0 && ` ${withAgreements} origins have a trade agreement that can lower it.`}
         </p>
         <div className="flex flex-wrap items-center gap-2">
+          {suppliers && suppliers.size > 0 && imports && (
+            <label
+              className={`${ui.button({ size: "sm" })} cursor-pointer ${suppliersOnly ? "border-primary/40 text-primary" : ""}`}
+              title={`Only the countries the US imported this from in ${imports.year} (U.S. Census Bureau)`}
+            >
+              <input
+                type="checkbox"
+                className={ui.checkbox}
+                checked={suppliersOnly}
+                onChange={(e) => {
+                  setSuppliersOnly(e.target.checked);
+                  trackEvent(MixpanelEvent.TARIFF_TRACKER_ANALYSIS_SUPPLIERS_FILTERED, { on: e.target.checked, suppliers: suppliers.size });
+                }}
+              />
+              Already ship it to the US
+              <span className="tabular-nums text-base-content/50">{suppliers.size}</span>
+            </label>
+          )}
           <CountryPicker rates={rates} basis={basis} selection={countries} onChange={chooseCountries} />
           <SegmentedControl<RateBasis>
             label="Rates"
@@ -134,7 +163,10 @@ export const AnalysisTab = ({ product }: { product: TrackedProduct }) => {
 
       {countries && <CountryChips rates={rates} selection={countries} onChange={chooseCountries} />}
 
-      <AnalysisFacts facts={facts} customsValue={product.customsValue} filtered={Boolean(countries)} />
+      <AnalysisFacts facts={facts} customsValue={product.customsValue} filtered={Boolean(countries) || suppliersOnly} />
+
+      {/* The cheaper origins that already make it for the US (Census imports) */}
+      <ProvenSuppliers rates={rates} basis={basis} imports={imports} selected={selected} onSelect={select} />
 
       <div className={`grid items-start gap-4 ${chosen ? "xl:grid-cols-[minmax(0,1fr)_20rem]" : ""}`}>
         <SwarmChart rates={shown} basis={basis} selected={selected} onSelect={select} />

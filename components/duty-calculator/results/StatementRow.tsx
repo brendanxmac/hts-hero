@@ -5,7 +5,6 @@ import { useState } from "react";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import { formatMoney, formatPct } from "../lib/format";
-import { EffectiveDate } from "./EffectiveDate";
 import { LegalPanel } from "./LegalPanel";
 import { LegalToggle } from "./LegalToggle";
 import { Stacked } from "./Stacked";
@@ -16,8 +15,6 @@ import { WhyLocked } from "../calculator/WhyGate";
 export const StatementRow = ({
   code,
   name,
-  program,
-  effectiveFrom,
   detail,
   legal,
   basis,
@@ -55,14 +52,10 @@ export const StatementRow = ({
               </span>
               {change && <ChangeBadge change={change} amount={amount} />}
             </div>
-            {full && (program || effectiveFrom) && (
-              <span className={ui.caption}>
-                {program}
-                <EffectiveDate from={effectiveFrom} />
-              </span>
+            {full && detail && (
+              <span className={ui.bodySm}>{detail}</span>
             )}
-            {full && detail && <span className={ui.bodySm}>{detail}</span>}
-            {full && whyLocked && <WhyLocked label="Why this tariff applies to your import" where="breakdown" />}
+            {full && whyLocked && <WhyLocked label="See why this applies, with full legal text" where="breakdown" />}
             {full && legal && (
               <LegalToggle
                 open={legalOpen}
@@ -105,9 +98,9 @@ export const StatementRow = ({
   );
 };
 
-// A row the last answer changed: tinted green when added, blue when its amount moved, faded when
+// A row the last answer changed: tinted green when added, blue when its amount moved, red when
 // switched off
-const CHANGE_ROW = { added: "bg-success/[0.06]", changed: "bg-primary/[0.06]", removed: "bg-base-200/70", none: "" };
+const CHANGE_ROW = { added: "bg-success/[0.06]", changed: "bg-primary/[0.06]", removed: "bg-error/[0.06]", none: "" };
 
 const ChangeBadge = ({ change, amount }: { change: RowChange; amount: number }) => {
   const diff = amount - (change.before ?? 0);
@@ -117,7 +110,9 @@ const ChangeBadge = ({ change, amount }: { change: RowChange; amount: number }) 
       : change.kind === "removed"
         ? "Removed by your answer"
         : `${diff < 0 ? "−" : "+"}${formatMoney(Math.abs(diff))}`;
-  // Green when it lowered the duty, red when it raised it, blue when it added a free line
-  const tone = diff < -0.005 || change.kind === "removed" ? "bg-success/10 text-success" : diff > 0.005 ? "bg-error/10 text-error" : "bg-primary/10 text-primary";
+  // Added lines green, switched-off lines red; a line whose amount moved, green when it lowered the
+  // duty and red when it raised it
+  const tone =
+    change.kind === "added" ? "bg-success/10 text-success" : change.kind === "removed" || diff > 0.005 ? "bg-error/10 text-error" : "bg-success/10 text-success";
   return <span className={`rounded-md px-1.5 py-0.5 text-xs font-semibold ${tone}`}>{label}</span>;
 };

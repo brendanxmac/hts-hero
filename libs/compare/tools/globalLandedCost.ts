@@ -53,7 +53,7 @@ export const AVALARA: Tool = {
       "You import into the US and need the exact duty on each entry",
       "You need every Chapter 99 tariff itemized, with exemptions",
       "You want to audit past entries and track your catalog's duty over time",
-      "You want to start today on a free plan, with published prices",
+      "You want to start today for free, with published prices",
     ],
     chooseThem: [
       "You sell cross-border to consumers in many countries and need duty at checkout",
@@ -66,7 +66,7 @@ export const AVALARA: Tool = {
       },
       {
         title: "Getting started",
-        body: "We didn't find published prices for Avalara's cross-border products. HTS Hero has a free plan and published monthly prices, and you can start in a couple of minutes.",
+        body: "We didn't find published prices for Avalara's cross-border products. HTS Hero's calculator is free, its monthly prices are published, and you can start in a couple of minutes.",
       },
     ],
     faqs: [
@@ -91,7 +91,7 @@ export const AVALARA: Tool = {
       {
         question: "What's a simpler alternative to Avalara for US import duty?",
         answer:
-          "HTS Hero is a self-serve US tariff calculator with a free plan. It shows the base rate and each Chapter 99 tariff for an HTS code, country and entry date.",
+          "HTS Hero is a free, self-serve US tariff calculator. It shows the base rate and each Chapter 99 tariff for an HTS code, country and entry date.",
       },
     ],
   },
@@ -147,7 +147,7 @@ export const ZONOS: Tool = {
       },
       {
         title: "Pricing",
-        body: "Zonos doesn't publish prices on its landed cost page. HTS Hero publishes every plan's price and has a free plan.",
+        body: "Zonos doesn't publish prices on its landed cost page. HTS Hero publishes every plan's price, and its calculator is free.",
       },
     ],
     faqs: [
@@ -250,7 +250,7 @@ export const SIMPLY_DUTY: Tool = {
     faqs: [
       {
         question: "What's a SimplyDuty alternative for US import duty?",
-        answer: "HTS Hero is built for US imports: every Chapter 99 tariff itemized, past entry dates and Duty Over Time, with a free plan.",
+        answer: "HTS Hero is built for US imports: every Chapter 99 tariff itemized, past entry dates and Duty Over Time, with a free calculator.",
       },
     ],
   },
@@ -304,7 +304,7 @@ export const DESCARTES: Tool = {
       {
         question: "Is there a cheaper alternative to Descartes CustomsInfo for US imports?",
         answer:
-          "Yes. HTS Hero covers US duty in depth on self-serve monthly plans with published prices, starting with a free plan.",
+          "Yes. HTS Hero covers US duty in depth on self-serve monthly plans with published prices, and you can start free.",
       },
     ],
   },

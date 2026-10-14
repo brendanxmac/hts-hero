@@ -485,3 +485,64 @@ describe("Tariff Tracker: rate history across origins", () => {
     expect(daysBetween("2026-04-08", "2026-04-10")).toBe(2)
   })
 })
+
+import { originCosts } from "../components/tariff-tracker/insights/savings"
+import { provenPicks, supplierCodes } from "../components/tariff-tracker/product/analysis/analysis"
+import { sourcingIdeas } from "../components/tariff-tracker/sourcing/ideas"
+import type { UsImports } from "../components/duty-calculator/lib/usImportsData"
+
+describe("Tariff Tracker: proven suppliers and sourcing ideas", () => {
+  const steel = product("7326.90.86.88", "2.9%", "CN")
+  const rates = originRates(steel)
+  const rateFor = (code: string) => rates.find((r) => r.country.code === code)!
+  // Mexico and Vietnam ship it; China (its origin) too
+  const imports: UsImports = {
+    year: 2025,
+    prior: 2024,
+    level: 10,
+    byCountry: new Map([
+      ["CN", { value: 900e6, prior: 1000e6 }],
+      ["VN", { value: 300e6, prior: 100e6 }],
+      ["MX", { value: 500e6, prior: 450e6 }],
+      ["DE", { value: 0, prior: 10e6 }],
+    ]),
+    totalValue: 1700e6,
+  }
+
+  it("works out only the asked-for origins, and always the product's own", () => {
+    expect(originRates(steel, ["MX"]).map((r) => r.country.code).sort()).toEqual(["CN", "MX"])
+  })
+
+  it("lists the countries that ship it, leaving out those with no imports", () => {
+    expect(Array.from(supplierCodes(imports)!).sort()).toEqual(["CN", "MX", "VN"])
+    expect(supplierCodes(null)).toBe(null)
+  })
+
+  it("picks the largest suppliers, cheaper ones first, never the product's own origin", () => {
+    const picks = provenPicks(steel, imports, 2)
+    expect(picks.includes("CN")).toBe(false)
+    expect(picks.sort()).toEqual(["MX", "VN"])
+    const cheaper = (code: string) => rateOf(rateFor(code), "agreements") < rateOf(rateFor("CN"), "agreements") - 0.005
+    // A cheaper supplier is never listed after one that isn't
+    const first = provenPicks(steel, imports, 2)
+    expect(!cheaper(first[0]) && cheaper(first[1])).toBe(false)
+  })
+
+  it("finds cheaper origins that ship each product, largest supplier first", () => {
+    const sourcing = sourcingIdeas([steel], new Map([[steel.key, originCosts(rates)]]), new Map([[steel.entry.element.htsno, imports]]))
+    expect(sourcing.withFigures).toBe(1)
+    const idea = sourcing.ideas[0]
+    if (idea) {
+      expect(idea.options.every((o) => o.pct < steel.totalPct && ["MX", "VN"].includes(o.country.code))).toBe(true)
+      expect(idea.options.every((o, i) => i === 0 || o.value <= idea.options[i - 1].value)).toBe(true)
+      expect(sourcing.usd).toBe(idea.best.usd)
+      expect(sourcing.countries.every((c) => c.products === 1)).toBe(true)
+    }
+  })
+
+  it("counts products Census has no figures for", () => {
+    const sourcing = sourcingIdeas([steel], new Map([[steel.key, originCosts(rates)]]), new Map([[steel.entry.element.htsno, null]]))
+    expect(sourcing.withoutFigures).toBe(1)
+    expect(sourcing.ideas.length).toBe(0)
+  })
+})

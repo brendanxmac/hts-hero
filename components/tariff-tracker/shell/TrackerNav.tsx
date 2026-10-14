@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { SectionSlug } from "../sections";
+import { ProductTab, SectionSlug } from "../sections";
 
 // Moving between the tracker's tabs, from anywhere inside it
 export interface TrackerNav {
@@ -10,7 +10,7 @@ export interface TrackerNav {
   // The catalog product open in its own view (by product key), if any
   product: string | null;
   // fromList: opened from the catalog list, so going back returns to it as it was
-  openProduct: (key: string, fromList?: boolean) => void;
+  openProduct: (key: string, fromList?: boolean, productTab?: ProductTab) => void;
   // Back to the catalog list
   closeProduct: () => void;
   // The Calculator tab, started over from a calculator link (code, country, shipment…)

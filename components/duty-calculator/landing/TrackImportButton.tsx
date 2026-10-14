@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRightIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { PlusIcon } from "@heroicons/react/20/solid";
 import { useUser } from "@/contexts/UserContext";
-import { FREE_TRACKED_PAIRS } from "@/components/pricing-calculator/lib/pricing";
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { signupHref } from "@/components/tariff-tracker/access/signup";
 import * as tt from "@/components/ui/styles/tracker";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
@@ -16,10 +16,34 @@ import { TariffFinder } from "../lib/useTariffFinder";
 
 // "Track this import": saves it to the Tariff Tracker catalog (kept on this device until they
 // sign up) and opens it there, where alerts, history and savings live. The way from a quick
-// answer into the product. Signed out, it first opens the Tracker's pitch (ConversionDialog):
-// the trial, or a step down to the free account; either way the import is saved and sign-up
-// lands on it in the Tracker (`trial=start` opens the trial there).
+// answer into the product. Signed out, it opens the free account's pitch (ConversionDialog), not
+// the trial's: the calculator's job is turning visitors into accounts; the Tracker, its emails and
+// its teasers sell the plans. The import is saved, and sign-up lands on it in the Tracker.
 export const TrackImportButton = ({ f, size = "md" }: { f: TariffFinder; size?: "sm" | "md" }) => {
+  const track = useTrackImport(f);
+  if (!track) return null;
+  return (
+    <>
+      <a
+        href={track.url}
+        className={tt.button("next", size, "rounded")}
+        onClick={(e) => {
+          e.preventDefault();
+          track.start();
+        }}
+      >
+        <PlusIcon className="h-4 w-4" aria-hidden />
+        Track this import
+      </a>
+      {track.dialog}
+    </>
+  );
+};
+
+// The flow behind it, for anything that starts it (the calculator's insight cards too): signed in,
+// saves the import and opens it in the Tracker; signed out, the free account's pitch first.
+// Null until there's an import to track.
+export const useTrackImport = (f: TariffFinder, source = "track-import") => {
   const { user } = useUser();
   const [open, setOpen] = useState(false);
   if (!f.selectedElement || !f.country) return null;
@@ -40,37 +64,28 @@ export const TrackImportButton = ({ f, size = "md" }: { f: TariffFinder; size?: 
     trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "calculator", hts_code: f.selectedElement?.htsno });
   };
   const url = productUrl(itemKey(product));
-  return (
-    <>
-      <a
-        href={url}
-        className={tt.button("money", size, "rounded")}
-        onClick={(e) => {
-          if (user) return save();
-          e.preventDefault();
-          setOpen(true);
-          trackEvent(MixpanelEvent.TARIFF_TRACKER_TRIAL_DIALOG_OPENED, { feature: "tracking", page: "calculator" });
-        }}
-      >
-        <PlusIcon className="h-4 w-4" aria-hidden />
-        Track this import
-        <ArrowRightIcon className="h-4 w-4" aria-hidden />
-      </a>
-      <ConversionDialog
-        open={open}
-        view="trial"
-        accountNote={`This import is saved to your Tracker, free for up to ${FREE_TRACKED_PAIRS} imports.`}
-        onClose={() => setOpen(false)}
-        onStartTrial={() => {
-          save();
-          window.location.href = signupHref(`${url}&trial=start`);
-        }}
-        onCreateAccount={() => {
-          save();
-          window.location.href = signupHref(url);
-        }}
-        page="calculator"
-      />
-    </>
+  const start = () => {
+    if (user) {
+      save();
+      window.location.href = url;
+      return;
+    }
+    setOpen(true);
+    trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature: source, reason: "account", page: "calculator" });
+  };
+  const dialog = (
+    <ConversionDialog
+      open={open}
+      view="account"
+      account={{ title: "Track this import, free", highlight: "alerts", cta: "Create my free account" }}
+      accountNote={`This import is saved to your Tracker, with free alerts on up to ${TRIAL_ALLOWANCE.alertImports} imports.`}
+      onClose={() => setOpen(false)}
+      onCreateAccount={() => {
+        save();
+        window.location.href = signupHref(url);
+      }}
+      page="calculator"
+    />
   );
+  return { url, start, dialog };
 };

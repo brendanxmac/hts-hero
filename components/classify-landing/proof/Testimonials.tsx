@@ -20,17 +20,17 @@ export const Testimonials = () => (
       <div className="mt-14 grid gap-6 md:grid-cols-3">
         {testimonials.map((t) => (
           <figure key={t.company} className={`${mk.card} flex flex-col p-8`}>
-            <p className="text-amber-400" aria-label="5 stars">
+            <p className="text-warning" aria-label="5 stars">
               ★★★★★
             </p>
-            <blockquote className="mt-4 flex-1 text-lg leading-relaxed text-slate-800">&ldquo;{t.quote}&rdquo;</blockquote>
+            <blockquote className="mt-4 flex-1 text-lg leading-relaxed text-base-content">&ldquo;{t.quote}&rdquo;</blockquote>
             <figcaption className="mt-6 flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white" aria-hidden>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-base-content text-sm font-bold text-base-100" aria-hidden>
                 {initials(t.company)}
               </span>
               <span>
-                <span className="block font-semibold text-slate-900">{t.company}</span>
-                <span className="text-sm text-slate-500">{t.role}</span>
+                <span className="block font-semibold text-base-content">{t.company}</span>
+                <span className="text-sm text-base-content/60">{t.role}</span>
               </span>
             </figcaption>
           </figure>

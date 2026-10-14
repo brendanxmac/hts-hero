@@ -12,6 +12,7 @@ import { mono } from "@/components/ui/font";
 import { heat } from "@/components/ui/theme";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { countryPageByCode } from "@/libs/country-pages/countries";
 
 // What an import under an HTS code pays from the largest sources of US imports, on the
@@ -25,9 +26,9 @@ export const countryAnchor = (name: string) =>
   `from-${name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
 
 const Fact = ({ label, value, note }: { label: string; value: string; note: string }) => (
-  <div className={`${ui.card} px-5 py-4`}>
-    <div className={ui.label}>{label}</div>
-    <div className={`${ui.metric.secondary} mt-1.5`}>{value}</div>
+  <div className={`${tt.panel} px-6 py-5`}>
+    <div className={tt.eyebrow()}>{label}</div>
+    <div className={`${tt.metric} mt-2`}>{value}</div>
     <div className={`${ui.bodySm} mt-1.5`}>{note}</div>
   </div>
 );
@@ -65,7 +66,7 @@ export function DutyByCountry({
         )}
       </SectionHeader>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3">
         {china && (
           <Fact
             label={`Total duty from ${china.country.name}`}
@@ -87,11 +88,11 @@ export function DutyByCountry({
         />
       </div>
 
-      <div className={ui.card}>
+      <div className={`${tt.panel} overflow-hidden`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm tabular-nums">
             <thead>
-              <tr className={`${ui.label} whitespace-nowrap border-b border-base-300 bg-base-200`}>
+              <tr className={`${tt.eyebrow()} whitespace-nowrap border-b border-base-300 bg-tt-soft`}>
                 <th scope="col" className="px-5 sm:px-6 py-3">Country of origin</th>
                 <th scope="col" className="px-4 py-3">Base rate</th>
                 <th scope="col" className="px-4 py-3">Additional tariffs</th>
@@ -103,7 +104,7 @@ export function DutyByCountry({
                 <tr
                   key={row.country.code}
                   id={countryAnchor(row.country.name)}
-                  className="border-t border-base-300 *:align-top hover:bg-base-200/60 scroll-mt-6"
+                  className="border-t border-base-300 *:align-top hover:bg-tt-soft scroll-mt-6"
                 >
                   <th scope="row" className="px-5 sm:px-6 py-3 text-left font-medium text-base-content whitespace-nowrap">
                     {/* A country with its own calculator page links there (a link search engines
@@ -156,7 +157,7 @@ export function DutyByCountry({
                       href={calculatorHref(htsno, row.country.code)}
                       rel="nofollow"
                       title={`Calculate HTS ${htsno} from ${row.country.name}`}
-                      className="inline-block rounded px-2.5 py-1 font-semibold text-base-content hover:ring-1 hover:ring-primary/40"
+                      className="inline-block rounded-full px-3 py-1 font-semibold text-base-content hover:ring-1 hover:ring-primary/40"
                       style={{ background: heat(row.totalPct) }}
                     >
                       {describeTotal(row)}
@@ -178,7 +179,7 @@ export function DutyByCountry({
         {/* The same rates as sentences, one per country: what an answer engine can quote whole
             for "the tariff on X from Vietnam", not only China */}
         <details className="border-t border-base-300 px-5 sm:px-6 py-3 group">
-          <summary className={`${ui.label} cursor-pointer select-none`}>Duty from each country, in words</summary>
+          <summary className={`${tt.eyebrow()} cursor-pointer select-none`}>Duty from each country, in words</summary>
           <ul className={`${ui.bodySm} mt-3 flex flex-col gap-2`}>
             {summary.rows.map((row) => (
               <li key={row.country.code}>
@@ -191,7 +192,7 @@ export function DutyByCountry({
           </ul>
         </details>
 
-        <div className={`${ui.cardFooter} sm:px-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4`}>
+        <div className={`border-t border-base-300 bg-tt-soft px-6 py-4 sm:px-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4`}>
           <p className={`${ui.caption} max-w-3xl leading-relaxed`}>
             Duties on goods entered {formatSummaryDate(summary.asOf)} at the general rate (Column 2 where it
             applies), with tariff data verified through {summary.revision.title.replace(/^Revision (\d+) \((\d{4})\)$/, "$2 HTS Revision $1")}.
@@ -203,7 +204,7 @@ export function DutyByCountry({
             </Link>
             .
           </p>
-          <Link href={calculatorHref(htsno)} className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`}>
+          <Link href={calculatorHref(htsno)} className={`${tt.button("primary", "sm")} shrink-0`}>
             Calculate Duty for Your Shipment
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>

@@ -266,7 +266,7 @@ export const Element = ({
               icon={<PercentBadgeIcon className="h-5 w-5" />}
             >
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="flex flex-col gap-2 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 p-4">
+                <div className="flex flex-col gap-2 rounded-xl border border-base-300 bg-base-100 p-4">
                   <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
                     General (Column 1)
                   </span>
@@ -279,7 +279,7 @@ export const Element = ({
                   )}
                 </div>
 
-                <div className="flex flex-col gap-2 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 p-4">
+                <div className="flex flex-col gap-2 rounded-xl border border-base-300 bg-base-100 p-4">
                   <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
                     Special (Column 1)
                   </span>
@@ -343,7 +343,7 @@ export const Element = ({
                   )}
                 </div>
 
-                <div className="flex flex-col gap-2 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 p-4">
+                <div className="flex flex-col gap-2 rounded-xl border border-base-300 bg-base-100 p-4">
                   <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
                     Column 2 (Non-NTR)
                   </span>
@@ -356,7 +356,7 @@ export const Element = ({
                   )}
                 </div>
 
-                <div className="flex flex-col gap-2 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 p-4">
+                <div className="flex flex-col gap-2 rounded-xl border border-base-300 bg-base-100 p-4">
                   <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
                     Units
                   </span>
@@ -366,7 +366,7 @@ export const Element = ({
                 </div>
 
                 {tariffElement.additionalDuties && (
-                  <div className="flex flex-col gap-2 rounded-xl border border-warning/20 bg-gradient-to-br from-warning/5 via-base-100 to-base-200/30 p-4 sm:col-span-2">
+                  <div className="flex flex-col gap-2 rounded-xl border border-warning/30 bg-base-100 p-4 sm:col-span-2">
                     <span className="text-xs font-semibold uppercase tracking-widest text-warning/70">
                       Additional duties
                     </span>

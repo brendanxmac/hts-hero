@@ -1,6 +1,6 @@
 "use client";
 
-import { AdjustmentsHorizontalIcon, ChevronRightIcon, SparklesIcon } from "@heroicons/react/20/solid";
+import { AdjustmentsHorizontalIcon, CheckCircleIcon, ChevronRightIcon, LockClosedIcon, SparklesIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import { adjustmentTags } from "./adjustments";
@@ -19,13 +19,23 @@ export const ProductRow = ({
   colors,
   maxPct,
   untracked = false,
+  savingsLocked = false,
+  savingsReviewed = false,
+  coverage,
   onOpen,
 }: {
   row: TrackedProduct;
   colors: Record<string, string>;
   maxPct: number;
-  // Past the plan's limit: duty shown, but no history, savings or alerts
+  // No alerts on it (past the trial's or the plan's limit): duty, history and sourcing still shown
   untracked?: boolean;
+  // Its savings aren't checked (or covered by a plan) yet
+  savingsLocked?: boolean;
+  // Its quick wins are all secured or ruled out (opportunities/review.ts)
+  savingsReviewed?: boolean;
+  // Alert coverage, signed in: whether this product gets alerts (picked by the user, or filling a
+  // spare slot), and the way to pick it or take it out
+  coverage?: { covered: boolean; picked: boolean; onChange: (covered: boolean) => void };
   onOpen: () => void;
 }) => {
   const { entry } = row;
@@ -34,10 +44,31 @@ export const ProductRow = ({
   const barWidth = Math.max((row.totalPct / maxPct) * 100, row.totalPct > 0 ? 2 : 0);
 
   return (
-    <li>
+    <li className="flex items-stretch">
+      {coverage && (
+        // Outside the row's link: a control can't sit inside one
+        <label
+          className="flex w-12 shrink-0 cursor-pointer items-start justify-center pt-[1.15rem]"
+          title={
+            coverage.covered
+              ? coverage.picked
+                ? "Alerts on (your pick). Uncheck to free the slot."
+                : "Alerts on (picked for you: high duty). Uncheck to take it out."
+              : "No alerts. Check to turn them on."
+          }
+        >
+          <input
+            type="checkbox"
+            className={`${ui.checkbox} ${coverage.covered && !coverage.picked ? "opacity-60" : ""}`}
+            checked={coverage.covered}
+            onChange={(e) => coverage.onChange(e.target.checked)}
+            aria-label={`Alerts on ${entry.element.htsno} from ${entry.country.name}`}
+          />
+        </label>
+      )}
       <a
         href={productUrl(row.key)}
-        className={`group grid w-full grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-3 ${ROW_GRID} px-5 py-4 text-left text-base-content transition-colors hover:bg-base-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40`}
+        className={`group grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-3 ${ROW_GRID} px-5 py-4 text-left text-base-content transition-colors hover:bg-base-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40`}
         onClick={(e) => {
           if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
           e.preventDefault();
@@ -69,11 +100,24 @@ export const ProductRow = ({
             {formatRate(row.totalPct)}
           </span>
           {untracked && (
-            <span className={`${ui.badge()} whitespace-nowrap`} title="Past your plan's limit: no history, savings or alerts">
-              Not tracked
+            <span className={`${ui.badge()} whitespace-nowrap`} title="No alerts on this import: pick it in the Alerts column">
+              No alerts
             </span>
           )}
-          {!untracked && row.bestSavingPct > 0.005 && (
+          {/* What checking it would find, without saying what */}
+          {savingsLocked && row.bestSavingPct > 0.005 && (
+            <span className={`${ui.badge("success")} gap-1 whitespace-nowrap`} title="Check this import's savings to see how it could be lower">
+              <LockClosedIcon className="h-3 w-3" aria-hidden />
+              Savings found
+            </span>
+          )}
+          {savingsReviewed && (
+            <span className={`${ui.badge("success")} gap-1 whitespace-nowrap`} title="Every quick win on this import is secured or ruled out">
+              <CheckCircleIcon className="h-3 w-3" aria-hidden />
+              Savings reviewed
+            </span>
+          )}
+          {!savingsLocked && !savingsReviewed && row.bestSavingPct > 0.005 && (
             <span className={`${ui.badge("success")} gap-1 whitespace-nowrap`}>
               <SparklesIcon className="h-3 w-3" aria-hidden />
               Could be lower

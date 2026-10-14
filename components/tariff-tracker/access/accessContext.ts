@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { TrackerAccess } from "@/libs/tariff-tracker/plan";
+import { CheckKind, TrackerAccess } from "@/libs/tariff-tracker/plan";
 import { PremiumFeature } from "./features";
 
 // The visitor's Tariff Tracker plan, and the ways up from it, for every part of the Tracker
@@ -11,15 +11,17 @@ export interface TrackerAccessValue {
   signedIn: boolean;
   email: string | null;
   access: TrackerAccess;
-  // Trial or paid: everything unlocked
-  premium: boolean;
-  canStartTrial: boolean;
-  daysLeft: number;
-  // The trial dialog, opened from a feature; anonymous visitors go to sign up instead
-  openTrial: (feature: PremiumFeature) => void;
-  // The plans, for a trial that's running or over, or a plan that's too small
+  // On a paid plan (otherwise, signed in, on the usage-based trial)
+  paid: boolean;
+  // Checks left in the trial's allowance; Infinity when unlimited
+  savingsLeft: number;
+  auditsLeft: number;
+  // Spends one check (a ref checked before is free again). Resolves to whether it's unlocked;
+  // with none left it opens the plans instead, and signed out it goes to sign up
+  spendCheck: (kind: CheckKind, ref: string, feature: PremiumFeature) => Promise<boolean>;
+  // The plans, for an allowance that's used up or a plan that's too small
   openUpgrade: (feature: PremiumFeature) => void;
-  // The right next step for a locked feature: sign up, start the trial or upgrade
+  // The right next step for a locked feature: sign up, or pick a plan
   unlock: (feature: PremiumFeature) => void;
   // What that step is called on a button
   unlockLabel: string;

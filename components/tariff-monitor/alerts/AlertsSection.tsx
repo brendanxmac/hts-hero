@@ -5,10 +5,10 @@ import { CHANNELS, SOURCES } from "../lib/copy";
 import { CatalogFrame } from "./CatalogFrame";
 
 const CHANNEL_STYLE = [
-  { Icon: EnvelopeIcon, color: "bg-sky-50 text-sky-700 ring-sky-200" },
-  { Icon: BellAlertIcon, color: "bg-teal-50 text-teal-700 ring-teal-200" },
-  { Icon: ChatBubbleLeftRightIcon, color: "bg-amber-50 text-amber-800 ring-amber-200" },
-  { Icon: UsersIcon, color: "bg-white text-slate-700 ring-slate-200" },
+  { Icon: EnvelopeIcon, color: "bg-warning/10 text-warning ring-warning" },
+  { Icon: BellAlertIcon, color: "bg-primary/10 text-primary ring-primary/20" },
+  { Icon: ChatBubbleLeftRightIcon, color: "bg-warning/10 text-warning ring-warning" },
+  { Icon: UsersIcon, color: "bg-base-100 text-base-content/70 ring-base-300" },
 ];
 
 // Alerts: where they come from, where they go, and what one looks like on your catalog
@@ -21,7 +21,7 @@ export const AlertsSection = () => (
           what it costs at your volumes.
         </SectionIntro>
         <div className="mt-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Sent to</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-base-content/60">Sent to</p>
           <ul className="mt-3 grid gap-3 sm:grid-cols-2">
             {CHANNELS.map((c, i) => {
               const { Icon, color } = CHANNEL_STYLE[i];
@@ -38,11 +38,11 @@ export const AlertsSection = () => (
           </ul>
         </div>
         <div className="mt-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Watching</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-base-content/60">Watching</p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {SOURCES.map((s) => (
-              <li key={s.name} className="rounded-full bg-white px-3 py-1.5 text-sm text-slate-700 ring-1 ring-slate-200">
-                <span className="font-semibold">{s.name}</span> <span className="text-slate-400">· {s.detail}</span>
+              <li key={s.name} className="rounded-full bg-base-100 px-3 py-1.5 text-sm text-base-content/70 ring-1 ring-base-300">
+                <span className="font-semibold">{s.name}</span> <span className="text-base-content/60">· {s.detail}</span>
               </li>
             ))}
           </ul>

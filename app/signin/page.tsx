@@ -123,10 +123,12 @@ function LoginContent() {
 
     try {
       if (isSignUp) {
+        // The confirmation link signs them in and goes on to where sign-up was headed (e.g. the
+        // import they tracked from the calculator)
         const signUpRedirect =
           window.location.origin +
           "/api/auth/callback" +
-          `?redirect=${encodeURIComponent("/signin")}`;
+          `?redirect=${encodeURIComponent(redirectTo || "/signin")}`;
         const { error } = await supabase.auth.signUp({
           email,
           password,

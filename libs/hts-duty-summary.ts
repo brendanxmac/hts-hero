@@ -78,9 +78,12 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 // Local date as "YYYY-MM-DD"
 const todayIso = () => new Date().toLocaleDateString("en-CA");
 
+// codes: the countries of origin, in order (the largest sources of US imports by default; the
+// HTS page's "where it's imported from" passes the code's own top suppliers)
 export const getHtsDutySummary = (
   element: HtsElement,
   rateElement: HtsElement,
+  codes: string[] = SUMMARY_COUNTRY_CODES,
 ): HtsDutySummary | null => {
   // Chapter 99 lines are the additional duties themselves; headings above the rate lines have
   // no rates to start from
@@ -105,7 +108,7 @@ export const getHtsDutySummary = (
       transportMode: "ocean",
     });
 
-  const rows = SUMMARY_COUNTRY_CODES.flatMap((code) => {
+  const rows = codes.flatMap((code) => {
     const country = Countries.find((c) => c.code === code);
     if (!country) return [];
     const result = run(code);

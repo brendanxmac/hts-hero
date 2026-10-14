@@ -5,6 +5,7 @@ import { CountryCalculatorPage, countryFaqs, metaDescription, titleName } from "
 import * as mk from "@/components/ui/marketing/styles";
 import { COUNTRY_PAGES, countryPageByCode, countryPageBySlug } from "@/libs/country-pages/countries";
 import { IMPORT_SOURCE, importFacts } from "@/libs/country-pages/importStats";
+import { countryTopImports } from "@/libs/country-pages/topImports";
 import { countryExamples, countryPreferences, countryTariffs } from "@/libs/country-pages/countryTariffs";
 import { getHtsElementsServer } from "@/libs/hts-server";
 import { renderSchemaJsonLd } from "@/libs/seo";
@@ -100,6 +101,7 @@ export default async function CountryCalculatorRoute({ params }: Props) {
         asOfLabel={longDate(asOf)}
         facts={facts}
         comparison={comparison}
+        topImports={countryTopImports(country.code, elements)}
       />
     </main>
   );

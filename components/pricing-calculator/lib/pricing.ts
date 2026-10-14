@@ -5,23 +5,26 @@ export type Billing = "monthly" | "annual";
 
 export const ANNUAL_DISCOUNT = 0.15;
 
-// The Tariff Calculator is free: unlimited lookups, no account. A free account unlocks Duty over
-// time and Analysis. See PRICING.md.
+// The Tariff Calculator is free: unlimited lookups, no account. A free account unlocks Analysis
+// and the plain-English why. See PRICING.md.
 
-// Tariff Tracker's free plan: monitoring and alerts for this many pairs, free
-export const FREE_TRACKED_PAIRS = 3;
+// Tariff Tracker's usage-based trial: every account is on it from sign-up, with no time limit and
+// no card. These allowances never reset; past them, a feature needs a paid plan (PRICING.md)
+export const TRIAL_ALLOWANCE = {
+  // Imports (pairs) whose savings can be checked, the qualification check included
+  savingsChecks: 5,
+  // Past entries checked against the duty in force on their date (entry audit, refund check)
+  auditChecks: 10,
+  // Imports with alerts on; the slots can be moved
+  alertImports: 10,
+} as const;
 
-// Every account starts on the free plan and can start a trial of the full Tracker for
-// TRIAL_PAIRS pairs for TRIAL_DAYS, once, whenever it wants. It drops back to the free plan
-// unless it upgrades
-export const TRIAL_DAYS = 14;
-export const TRIAL_PAIRS = 100;
-
-// Tariff Tracker is priced by the number of HTS code + country of origin pairs it watches
+// Tariff Tracker is priced by the number of imports (HTS code + country of origin pairs) it covers
 export const TRACKER_TIERS = [
+  { maxPairs: 10, price: 19 },
   { maxPairs: 30, price: 49 },
-  { maxPairs: 100, price: 79 },
-  { maxPairs: 500, price: 149 },
+  { maxPairs: 100, price: 149 },
+  { maxPairs: 500, price: 249 },
 ] as const;
 export const TRACKER_MAX_LISTED_PAIRS = TRACKER_TIERS[TRACKER_TIERS.length - 1].maxPairs;
 
@@ -115,21 +118,14 @@ const pluralize = (n: number, word: string) => `${n.toLocaleString()} ${word}${n
 export const lineItems = (input: EstimateInput, billing: Billing): LineItem[] => {
   const lines: LineItem[] = [];
 
-  if (input.tracker && input.pairs <= FREE_TRACKED_PAIRS) {
-    lines.push({
-      id: "tracker",
-      label: "Tariff Tracker",
-      detail: `${pluralize(input.pairs, "pair")} · free plan, monitoring and alerts`,
-      listMonthly: 0,
-    });
-  } else if (input.tracker) {
+  if (input.tracker) {
     const tier = trackerTierFor(input.pairs);
     lines.push({
       id: "tracker",
       label: "Tariff Tracker",
       detail: tier
-        ? `${pluralize(input.pairs, "pair")} · up to ${tier.maxPairs} plan`
-        : `${pluralize(input.pairs, "pair")} · custom plan`,
+        ? `${pluralize(input.pairs, "import")} · up to ${tier.maxPairs} plan`
+        : `${pluralize(input.pairs, "import")} · custom plan`,
       listMonthly: tier ? tier.price : null,
       viaSales: !tier,
     });

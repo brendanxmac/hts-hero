@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ClassifyCta } from "@/components/ui/marketing/ClassifyCta";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { QuickLookup } from "../hero/QuickLookup";
 import { CalculationTerminal, CatalogFrame } from "@/components/tariff-monitor";
@@ -6,9 +7,8 @@ import { RecalcTerminal } from "@/components/tariff-audit";
 import { Reveal } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import {
-  CLASSIFY_PLANS,
-  FREE_TRACKED_PAIRS,
   TRACKER_TIERS,
+  TRIAL_ALLOWANCE,
   formatPrice,
 } from "@/components/pricing-calculator/lib/pricing";
 import type { WorkedExample } from "@/libs/duty-calculator-content";
@@ -17,20 +17,22 @@ import type { SavingsExample } from "@/libs/tariff-savings-example";
 import type { MonitorFacts } from "@/components/tariff-monitor/lib/facts";
 import { OFFER } from "../lib/offer";
 import { SavingsFinder } from "../savings/SavingsFinder";
+import { darkBand, followPage, glow, moneyButtonMd } from "../lib/theme";
 
 // The four capabilities, one block each, every one with a real visual and its own call to action:
 // calculate (with the lookup), alert, discover savings, audit; then classification. The order
 // follows the hero's scan: changes, savings, audits.
 
-const Points = ({ items, dark }: { items: string[]; dark?: boolean }) => (
+// Theme classes only, so the same markup reads right in the dark band
+const Points = ({ items }: { items: string[] }) => (
   <ul className="mt-6 flex flex-col gap-3">
     {items.map((p) => (
       <li
         key={p}
-        className={`flex gap-2.5 ${dark ? "text-slate-300" : "text-slate-700"}`}
+        className="flex gap-2.5 text-base-content/70"
       >
         <CheckIcon
-          className={`mt-1 h-4 w-4 shrink-0 ${dark ? "text-teal-300" : "text-teal-600"}`}
+          className="mt-1 h-4 w-4 shrink-0 text-success"
           aria-hidden
         />
         {p}
@@ -39,21 +41,9 @@ const Points = ({ items, dark }: { items: string[]; dark?: boolean }) => (
   </ul>
 );
 
-const Step = ({
-  n,
-  verb,
-  dark,
-}: {
-  n: string;
-  verb: string;
-  dark?: boolean;
-}) => (
-  <p
-    className={`flex items-center gap-3 text-sm font-bold uppercase tracking-wider ${dark ? "text-teal-300" : "text-teal-700"}`}
-  >
-    <span
-      className={`flex h-7 w-7 items-center justify-center rounded-full text-xs ${dark ? "bg-teal-400 text-slate-950" : "bg-slate-900 text-white"}`}
-    >
+const Step = ({ n, verb }: { n: string; verb: string }) => (
+  <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-primary">
+    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-base-content text-xs text-base-100">
       {n}
     </span>
     {verb}
@@ -128,7 +118,7 @@ export const ToolShowcase = ({
             items={[
               "Filtered to your HTS codes and countries",
               "The new duty already worked out",
-              `Free for ${FREE_TRACKED_PAIRS} products, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo`,
+              `Free alerts on ${TRIAL_ALLOWANCE.alertImports} imports, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo`,
             ]}
           />
           <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -146,26 +136,26 @@ export const ToolShowcase = ({
     {/* Discover savings */}
     {savings.length > 0 && (
       <section
-        className={`${mk.band} bg-[#0b1220] text-white`}
+        className={`relative overflow-hidden ${mk.band} ${darkBand}`}
         aria-labelledby="tool-savings-title"
       >
+        <div aria-hidden className={glow} />
         <div
-          className={`${mk.container} grid grid-cols-1 items-center gap-14 lg:grid-cols-2`}
+          className={`${mk.container} relative grid grid-cols-1 items-center gap-14 lg:grid-cols-2`}
         >
           <div>
-            <Step n="3" verb="Discover savings" dark />
-            <h2 id="tool-savings-title" className={`${mk.h2Dark} mt-4`}>
+            <Step n="3" verb="Discover savings" />
+            <h2 id="tool-savings-title" className={`${mk.h2} mt-4`}>
               Pay less duty{" "}
-              <span className={mk.accentDark}>on the same products.</span>
+              <span className={mk.accent}>on the same products.</span>
             </h2>
-            <p className={`${mk.leadDark} mt-4`}>
+            <p className={`${mk.lead} mt-4`}>
               Most savings hide in the products you already import: an exemption
               nobody claimed, or a trade program left off the entry. HTS Hero
               checks every product for both, then prices every other country of
               origin.
             </p>
             <Points
-              dark
               items={[
                 "Exemptions you qualify for but aren't claiming",
                 "Trade programs like USMCA, checked on every product",
@@ -173,20 +163,22 @@ export const ToolShowcase = ({
               ]}
             />
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link href={OFFER.href} className={mk.buttonOnDark}>
+              <Link href={OFFER.href} className={moneyButtonMd}>
                 Find your savings{" "}
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </Link>
               <Link
                 href="/tariff-monitor"
-                className="font-semibold text-teal-300 underline-offset-4 hover:underline"
+                className="font-semibold text-primary underline-offset-4 hover:underline"
               >
                 How the Tariff Tracker works
               </Link>
             </div>
           </div>
           <Reveal>
-            <SavingsFinder examples={savings} />
+            <div className={followPage}>
+              <SavingsFinder examples={savings} />
+            </div>
           </Reveal>
         </div>
       </section>
@@ -212,7 +204,7 @@ export const ToolShowcase = ({
             items={[
               "Paid vs. owed, line by line",
               "Where IEEPA and Section 122 refunds stand",
-              "Self-audit free for 14 days, or we'll do it for you",
+              `${TRIAL_ALLOWANCE.auditChecks} free audit checks, or we'll do it for you`,
             ]}
           />
           <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -234,31 +226,6 @@ export const ToolShowcase = ({
     </section>
 
     {/* Classification */}
-    <section
-      className={`${mk.bandMuted} py-16`}
-      aria-labelledby="tool-classify-title"
-    >
-      <div
-        className={`${mk.container} flex flex-col items-start justify-between gap-6 md:flex-row md:items-center`}
-      >
-        <div>
-          <p className={mk.eyebrow}>Need the HTS code first?</p>
-          <h2
-            id="tool-classify-title"
-            className="mt-3 text-3xl font-bold tracking-tight text-slate-900"
-          >
-            Produce audit-ready classifications in minutes
-          </h2>
-          <p className={`${mk.body} mt-2 max-w-2xl`}>
-            Find candidates, eliminate blind spots, and back every code with
-            legal notes and CROSS rulings. From{" "}
-            {formatPrice(CLASSIFY_PLANS.starter.price)}/mo.
-          </p>
-        </div>
-        <Link href="/classify" className={`${mk.buttonSecondary} shrink-0`}>
-          Classify a product <ArrowRightIcon className="h-4 w-4" aria-hidden />
-        </Link>
-      </div>
-    </section>
+    <ClassifyCta />
   </>
 );

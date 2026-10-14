@@ -9,12 +9,12 @@ import { changesTeaser, sourcingTeaser } from "../insights/teasers";
 import { TrackerSection } from "../sections";
 import { useTrackerNav } from "./TrackerNav";
 
-// A section that isn't built yet: what it will do. A premium one leads with what it would have
+// A section that isn't built yet: what it will do. A paid-only one leads with what it would have
 // told the user about their own catalog, and the way to get it.
 export const PlannedSection = ({ section }: { section: TrackerSection }) => {
   const { openTab } = useTrackerNav();
   const insights = useInsights();
-  const { premium, unlock, unlockLabel, loading } = useTrackerAccess();
+  const { paid, unlock, unlockLabel, loading } = useTrackerAccess();
   const { Icon } = section;
   const headingId = `tt-planned-${section.slug}`;
   const teaser =
@@ -26,16 +26,16 @@ export const PlannedSection = ({ section }: { section: TrackerSection }) => {
 
   return (
     <div className="flex max-w-3xl flex-col gap-4">
-      {section.premium && !loading && (teaser || !premium) && (
+      {section.paidOnly && !loading && (teaser || !paid) && (
         <div className={`${ui.notice("primary")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
           <SparklesIcon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
           <p className={`${ui.bodySm} flex-1`}>
             {teaser && <span className="font-semibold text-base-content">{teaser} </span>}
-            {premium
+            {paid
               ? `${section.label} is included in your plan and switches on as soon as it launches.`
-              : `${section.label} is part of the full Tracker. Start now and it switches on for you the day it launches.`}
+              : `${section.label} comes with every paid plan, and switches on for you the day it launches.`}
           </p>
-          {!premium && (
+          {!paid && (
             <button
               type="button"
               className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`}

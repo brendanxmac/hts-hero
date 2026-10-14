@@ -1,6 +1,7 @@
 import type { MicroEstimate } from "@/libs/hts-micro-estimate";
 import { formatMoney, formatPct } from "@/components/duty-calculator/lib/format";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 
 // A quick estimate's headline figures, as in the calculator
 export const EstimateStats = ({ estimate, customsValue }: { estimate: MicroEstimate; customsValue: number }) => {
@@ -9,9 +10,9 @@ export const EstimateStats = ({ estimate, customsValue }: { estimate: MicroEstim
   return (
     // 1px gaps over the border color draw the dividers at every breakpoint
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr] gap-px bg-base-300 border-b border-base-300">
-      <div className="col-span-2 sm:col-span-3 lg:col-span-1 px-5 py-3 bg-base-100">
-        <div className={ui.label}>Total duty</div>
-        <div className={`${ui.metric.primaryCompact} mt-1`}>
+      <div className="col-span-2 sm:col-span-3 lg:col-span-1 px-6 py-5 bg-base-100">
+        <div className={tt.eyebrow()}>Total duty</div>
+        <div className={`${tt.metric} mt-1`}>
           {formatMoney(estimate.totalDuty)}
         </div>
         <div className="mt-1 text-sm tabular-nums text-base-content/70">
@@ -31,9 +32,9 @@ export const EstimateStats = ({ estimate, customsValue }: { estimate: MicroEstim
 };
 
 const Stat = ({ label, value, note, className = "" }: { label: string; value: string; note: string; className?: string }) => (
-  <div className={`px-5 py-3 bg-base-100 ${className}`}>
-    <div className={ui.label}>{label}</div>
-    <div className={`${ui.metric.secondaryCompact} mt-1`}>{value}</div>
+  <div className={`px-6 py-5 bg-base-100 ${className}`}>
+    <div className={tt.eyebrow()}>{label}</div>
+    <div className={`${tt.metricSm} mt-1`}>{value}</div>
     <div className={`${ui.caption} mt-1`}>{note}</div>
   </div>
 );

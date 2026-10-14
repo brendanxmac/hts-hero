@@ -20,6 +20,8 @@ import {
   inSentence,
 } from "@/libs/hts-duty-summary";
 import { microEstimate } from "@/libs/hts-micro-estimate";
+import { getUsImports } from "@/libs/us-imports-server";
+import { IMPORT_SOURCES_SHOWN } from "@/components/hts-code-page/ImportSources";
 
 interface HtsCodePageProps {
   params: { code: string };
@@ -148,6 +150,18 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
   }
 
   const { elements, element, parents, rateElement, sectionChapter, productName, summary } = page;
+  // Where the US imports it from (Census), and the duty from each of its top suppliers
+  const imports = summary ? getUsImports(element.htsno) : null;
+  const importDuty = imports
+    ? getHtsDutySummary(
+        element,
+        rateElement,
+        Array.from(imports.byCountry.entries())
+          .sort((a, b) => b[1].value - a[1].value)
+          .slice(0, IMPORT_SOURCES_SHOWN)
+          .map(([iso]) => iso)
+      )
+    : null;
   // The quick estimate opens on China, the most-looked-up country of origin
   const estimate = summary
     ? microEstimate({
@@ -174,6 +188,8 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
         childrenElements={children}
         siblingElements={siblings}
         sectionChapter={sectionChapter}
+        imports={imports}
+        importDuty={importDuty}
       />
     </main>
   );

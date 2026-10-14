@@ -3,7 +3,7 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { LINKS } from "../lib/links";
-import { Billing, FREE_TRACKED_PAIRS, TRACKER_TIERS, TRIAL_DAYS, TRIAL_PAIRS } from "../lib/pricing";
+import { Billing, TRACKER_TIERS, TRIAL_ALLOWANCE } from "../lib/pricing";
 import { CALCULATOR_FEATURES, TRACKER_FEATURES } from "../tariff-pricing/plans";
 import { CoverageGrid } from "./CoverageGrid";
 import { PlanCard } from "./PlanCard";
@@ -24,7 +24,8 @@ export const TariffPlans = ({
         <Link href="/tariff-monitor" className={mk.link}>
           Tariff Tracker
         </Link>{" "}
-        watches your catalog, audits your entries and finds savings, and it&apos;s free for {FREE_TRACKED_PAIRS} products.
+        watches your catalog, audits your entries and finds savings, and it&apos;s free to start: check{" "}
+        {TRIAL_ALLOWANCE.savingsChecks} imports for savings and get {TRIAL_ALLOWANCE.auditChecks} free audit checks.
       </SectionIntro>
       <div className="shrink-0">
         <BillingSwitch billing={billing} onChange={onBillingChange} />
@@ -50,7 +51,7 @@ export const TariffPlans = ({
       <PlanCard
         id="plan-tariff-tracker"
         name="Tariff Tracker"
-        badge={`${TRIAL_DAYS}-day free trial`}
+        badge="Free to start"
         dark
         description="For importers who need to know the moment a tariff change hits their products, and what they overpaid."
         price={
@@ -58,14 +59,14 @@ export const TariffPlans = ({
             listPrice={TRACKER_TIERS[0].price}
             billing={billing}
             prefix="From"
-            note={`Free for ${FREE_TRACKED_PAIRS} products. Try up to ${TRIAL_PAIRS} free for ${TRIAL_DAYS} days.`}
+            note={`Start free with alerts on ${TRIAL_ALLOWANCE.alertImports} imports. No credit card.`}
             dark
           />
         }
         features={TRACKER_FEATURES}
         cta={
           <Link href={LINKS.signUp} className={`${mk.buttonOnDark} h-14 w-full text-lg`}>
-            Start your free trial <ArrowRightIcon className="h-5 w-5" aria-hidden />
+            Start free <ArrowRightIcon className="h-5 w-5" aria-hidden />
           </Link>
         }
       >

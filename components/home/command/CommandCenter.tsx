@@ -123,30 +123,30 @@ const LAYERS = [
     label: "Changes",
     column: "Changes",
     Icon: SignalIcon,
-    accent: "text-teal-600",
-    ring: "ring-teal-400",
-    bar: "bg-teal-500",
-    scanColor: "via-teal-300/40",
+    accent: "text-primary",
+    ring: "ring-primary",
+    bar: "bg-primary",
+    scanColor: "via-primary/20",
   },
   {
     key: "savings" as const,
     label: "Savings",
     column: "Savings",
     Icon: BanknotesIcon,
-    accent: "text-emerald-600",
-    ring: "ring-emerald-400",
-    bar: "bg-emerald-500",
-    scanColor: "via-emerald-300/40",
+    accent: "text-success",
+    ring: "ring-success",
+    bar: "bg-success",
+    scanColor: "via-success/20",
   },
   {
     key: "audit" as const,
     label: "Audits",
     column: "Audit",
     Icon: ClipboardDocumentCheckIcon,
-    accent: "text-sky-600",
-    ring: "ring-sky-400",
-    bar: "bg-sky-500",
-    scanColor: "via-sky-300/40",
+    accent: "text-warning",
+    ring: "ring-warning",
+    bar: "bg-warning",
+    scanColor: "via-warning/20",
   },
 ];
 
@@ -161,22 +161,22 @@ const CHANNELS = [
   {
     name: "Slack",
     Icon: ChatBubbleLeftRightIcon,
-    tint: "bg-amber-100 text-amber-700",
+    tint: "bg-warning/10 text-warning",
   },
   {
     name: "Teams",
     Icon: UsersIcon,
-    tint: "bg-sky-100 text-sky-700",
+    tint: "bg-warning/10 text-warning",
   },
   {
     name: "Email",
     Icon: EnvelopeIcon,
-    tint: "bg-rose-100 text-rose-700",
+    tint: "bg-error/10 text-error",
   },
   {
     name: "In-app",
     Icon: BellAlertIcon,
-    tint: "bg-teal-100 text-teal-700",
+    tint: "bg-primary/10 text-primary",
   },
 ];
 // Each row's height in rem, which the scan line steps by
@@ -192,10 +192,10 @@ const sumOf = (key: "savings" | "audit", upTo: number) =>
   ROWS.slice(0, upTo).reduce((s, r) => s + (r[key].amount ?? 0), 0);
 
 const TONE: Record<Tone, string> = {
-  bad: "bg-rose-50 text-rose-700",
-  good: "bg-emerald-50 text-emerald-700",
-  info: "bg-sky-50 text-sky-700",
-  none: "text-slate-400",
+  bad: "bg-error/10 text-error",
+  good: "bg-success/10 text-success",
+  info: "bg-warning/10 text-warning",
+  none: "text-base-content/60",
 };
 
 // A layer's finding for one product: a short label over the amount, or a quiet "nothing here"
@@ -210,7 +210,7 @@ const ResultCell = ({
 }) => (
   <td className="px-1.5 align-middle">
     {!shown ? (
-      <span className="text-[11px] text-slate-300">·</span>
+      <span className="text-[11px] text-base-content/40">·</span>
     ) : cell.value ? (
       <span
         className={`inline-flex max-w-full flex-col rounded-md px-1.5 py-0.5 leading-tight transition-transform duration-500 ${TONE[cell.tone]} ${fresh ? "scale-110" : "scale-100"}`}
@@ -221,7 +221,7 @@ const ResultCell = ({
         <span className="text-xs font-bold tabular-nums">{cell.value}</span>
       </span>
     ) : (
-      <span className="text-[11px] text-slate-400">{cell.label}</span>
+      <span className="text-[11px] text-base-content/60">{cell.label}</span>
     )}
   </td>
 );
@@ -317,7 +317,7 @@ export const CommandCenter = () => {
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-50 p-4 shadow-2xl shadow-black/40 sm:p-5"
+      className="relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-4 sm:p-6"
       aria-label="Example HTS Hero account"
     >
       {/* While sharing, the dashboard steps aside (kept in place, so the card keeps its size) */}
@@ -325,11 +325,11 @@ export const CommandCenter = () => {
         className={`transition-opacity duration-500 ${shared !== null ? "invisible opacity-0" : "opacity-100"}`}
       >
         <div className="mb-4 flex items-center justify-between px-1">
-          <p className="text-sm font-semibold text-slate-900">
+          <p className="text-sm font-semibold text-base-content">
             Your Product Catalog
           </p>
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-teal-500" />{" "}
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />{" "}
             Watching 24/7
           </span>
         </div>
@@ -348,17 +348,17 @@ export const CommandCenter = () => {
                 role="tab"
                 aria-selected={on}
                 onClick={() => jump(i)}
-                className={`relative overflow-hidden rounded-xl bg-white p-3.5 text-left transition-all ${on ? `shadow-md ring-2 ${ring}` : "ring-1 ring-slate-200 hover:ring-slate-300"}`}
+                className={`relative overflow-hidden rounded-2xl bg-tt-soft p-3.5 text-left transition-all ${on ? `ring-2 ${ring}` : "ring-1 ring-transparent hover:ring-base-300"}`}
               >
-                <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-base-content/60">
                   <Icon className={`h-4 w-4 ${accent}`} aria-hidden /> {label}
                 </span>
                 <span
-                  className={`mt-1.5 block text-2xl font-extrabold tabular-nums transition-colors ${filled(i) ? accent : "text-slate-300"}`}
+                  className={`mt-1.5 block text-2xl font-semibold [font-family:var(--font-tracker-display)] tabular-nums transition-colors ${filled(i) ? accent : "text-base-content/40"}`}
                 >
                   {tileValue[i]}
                 </span>
-                <span className="block text-xs text-slate-500">
+                <span className="block text-xs text-base-content/60">
                   {tileSub[i]}
                 </span>
                 {/* How much of this layer's scan is done; the width is a runtime value */}
@@ -372,10 +372,10 @@ export const CommandCenter = () => {
           })}
         </div>
 
-        <div className="relative mt-3 overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <div className="relative mt-3 overflow-hidden rounded-2xl border border-base-300 bg-base-100">
           <table className="w-full table-fixed text-left">
             <thead>
-              <tr className="h-8 border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400">
+              <tr className="h-8 border-b border-base-300 text-[11px] uppercase tracking-wider text-base-content/60">
                 <th className="w-[31%] px-3 font-semibold">Your catalog</th>
                 {LAYERS.map((l, i) => (
                   <th
@@ -392,15 +392,15 @@ export const CommandCenter = () => {
                 // Rows have a fixed height so the scan line can step through them
                 <tr
                   key={r.code}
-                  className="border-b border-slate-50 last:border-0"
+                  className="border-b border-base-300 last:border-0"
                   style={{ height: `${ROW_H}rem` }}
                 >
                   <td className="px-3 leading-tight">
-                    <span className="block truncate text-[13px] font-semibold text-slate-900">
+                    <span className="block truncate text-[13px] font-semibold text-base-content">
                       {r.name}
                     </span>
                     <span
-                      className={`${mono.className} block truncate text-[10px] text-slate-400`}
+                      className={`${mono.className} block truncate text-[10px] text-base-content/60`}
                     >
                       {r.code} · {r.origin}
                     </span>
@@ -425,7 +425,7 @@ export const CommandCenter = () => {
               style={{ top: `calc(2rem + ${rows * ROW_H}rem)` }}
             />
           )}
-          <p className="border-t border-slate-100 px-3 py-1.5 text-center text-xs text-slate-400">
+          <p className="border-t border-base-300 px-3 py-1.5 text-center text-xs text-base-content/60">
             + {CATALOG_SIZE - ROWS.length} more products watched
           </p>
         </div>
@@ -434,19 +434,19 @@ export const CommandCenter = () => {
       {shared !== null && (
         // The finale: the results going out to each channel in turn
         <div
-          className="absolute inset-0 flex animate-[opacity_0.5s_ease-out] flex-col items-center justify-center bg-slate-50 px-6 text-center"
+          className="absolute inset-0 flex animate-[opacity_0.5s_ease-out] flex-col items-center justify-center bg-base-100 px-6 text-center"
           aria-live="polite"
         >
-          <span className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-xl">
+          <span className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-base-content text-base-100">
             <BellAlertIcon className="h-8 w-8" aria-hidden />
             {shared <= CHANNELS.length && (
               <span
-                className="absolute inset-0 rounded-2xl ring-4 ring-teal-400/70 motion-safe:animate-ping"
+                className="absolute inset-0 rounded-2xl ring-4 ring-primary/60 motion-safe:animate-ping"
                 aria-hidden
               />
             )}
           </span>
-          <p className="mt-6 text-2xl font-extrabold tracking-tight text-slate-900">
+          <p className="mt-6 text-2xl font-semibold [font-family:var(--font-tracker-display)] tracking-tight text-base-content">
             {shared > CHANNELS.length
               ? "Shared with your team"
               : "Sharing with your team…"}
@@ -465,15 +465,15 @@ export const CommandCenter = () => {
                   >
                     <Icon className="h-7 w-7" aria-hidden />
                     <span
-                      className={`absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow transition-all duration-300 ${sent ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
+                      className={`absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-base-100 shadow transition-all duration-300 ${sent ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
                     >
                       <CheckCircleIcon
-                        className="h-6 w-6 text-emerald-500"
+                        className="h-6 w-6 text-success"
                         aria-hidden
                       />
                     </span>
                   </span>
-                  <span className="text-xs font-semibold text-slate-700">
+                  <span className="text-xs font-semibold text-base-content/70">
                     {name}
                   </span>
                 </li>
@@ -481,13 +481,13 @@ export const CommandCenter = () => {
             })}
           </ul>
           <p
-            className={`mt-8 flex items-center gap-2 text-sm text-slate-500 transition-opacity duration-500 ${shared > CHANNELS.length ? "opacity-100" : "opacity-0"}`}
+            className={`mt-8 flex items-center gap-2 text-sm text-base-content/60 transition-opacity duration-500 ${shared > CHANNELS.length ? "opacity-100" : "opacity-0"}`}
           >
             <span className="flex -space-x-1.5" aria-hidden>
-              {["bg-teal-500", "bg-sky-500", "bg-amber-500"].map((c) => (
+              {["bg-primary", "bg-success", "bg-warning"].map((c) => (
                 <span
                   key={c}
-                  className={`h-6 w-6 rounded-full ring-2 ring-slate-50 ${c}`}
+                  className={`h-6 w-6 rounded-full ring-2 ring-base-100 ${c}`}
                 />
               ))}
             </span>

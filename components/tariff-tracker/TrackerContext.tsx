@@ -11,7 +11,7 @@ import { htsCodeDigitsOnly } from "../../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { todayIso } from "../duty-calculator/lib/format";
 import { Adjustments, productKey } from "./adjustments";
-import { CatalogItem, itemKey, NewProduct } from "./catalog";
+import { CatalogItem, CatalogItemMeta, itemKey, NewProduct } from "./catalog";
 import * as store from "./catalogStore";
 import { FilterContext, FilterState } from "./filters";
 import { CatalogEntry, findCountry } from "./parse";
@@ -22,7 +22,7 @@ import { TrackedProduct, trackProduct } from "./report";
 // around every tab, so it carries over as the user moves between them.
 
 // Where added products came from, for analytics
-export type AddSource = "paste" | "csv" | "generated" | "example" | "calculator" | "tracker_calculator" | "monitor_page" | "recent_lookups" | "overview_paste";
+export type AddSource = "paste" | "csv" | "generated" | "example" | "calculator" | "tracker_calculator" | "monitor_page" | "recent_lookups" | "overview_paste" | "savings";
 
 export interface Tracker {
   loading: boolean;
@@ -42,12 +42,20 @@ export interface Tracker {
   clearCatalog: () => void;
   // Each product's rates as of entryDate, with its adjustments
   products: TrackedProduct[];
-  // The products the plan tracks (rate history, savings, alerts): the first pairLimit added
+  // The products with alerts (the trial's alert allowance, or the plan's size; on a plan, savings
+  // too): the ones the user picked, then the highest-duty others in any spare slots
   trackedKeys: Set<string>;
-  // Products in the catalog beyond the plan's limit
+  // The ones the user picked themselves
+  pickedKeys: Set<string>;
+  // Picks a product for the plan's coverage, or takes it out; false when the plan is full
+  setCovered: (key: string, covered: boolean) => boolean;
+  // Products in the catalog beyond that limit
   untrackedCount: number;
   // Tracked products only, in catalog order
   trackedProducts: TrackedProduct[];
+  // The catalog item for a product key, and what's kept about it (shipments a year, a move of origin)
+  itemFor: (key: string) => CatalogItem | undefined;
+  setProductMeta: (key: string, patch: CatalogItemMeta) => void;
   // Remembered per product key (HTS code + country)
   setAdjustments: (key: string, patch: Adjustments) => void;
   resetAdjustments: (key: string) => void;
@@ -195,11 +203,28 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
     return out;
   }, [matched, htsElements, entryDate, deferredAdjustments]);
 
-  // The plan tracks the first products added, up to its limit (PRICING.md)
-  const trackedKeys = useMemo(
-    () => new Set(items.slice(0, access.pairLimit).map(itemKey)),
-    [items, access.pairLimit]
-  );
+  // Alerts cover the products the user picked, up to the limit, then fill any spare slots with the
+  // highest-duty products they haven't taken out (PRICING.md)
+  const pickedKeys = useMemo(() => new Set(items.filter((i) => i.covered === true).map(itemKey)), [items]);
+  const trackedKeys = useMemo(() => {
+    const limit = access.pairLimit;
+    const covered = new Set(items.filter((i) => i.covered === true).map(itemKey).slice(0, limit));
+    const takenOut = new Set(items.filter((i) => i.covered === false).map(itemKey));
+    const spare = [...products]
+      .filter((p) => !covered.has(p.key) && !takenOut.has(p.key))
+      .sort((a, b) => b.result.totalDuty - a.result.totalDuty);
+    for (const p of spare) {
+      if (covered.size >= limit) break;
+      covered.add(p.key);
+    }
+    return covered;
+  }, [items, products, access.pairLimit]);
+  const setCovered = (key: string, covered: boolean) => {
+    if (covered && !pickedKeys.has(key) && pickedKeys.size >= access.pairLimit) return false;
+    store.setProductCovered(key, covered);
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_COVERAGE_CHANGED, { covered, picked: pickedKeys.size + (covered ? 1 : -1), limit: access.pairLimit });
+    return true;
+  };
   const trackedProducts = useMemo(() => products.filter((p) => trackedKeys.has(p.key)), [products, trackedKeys]);
 
   return (
@@ -217,8 +242,12 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
         clearCatalog,
         products,
         trackedKeys,
+        pickedKeys,
+        setCovered,
         untrackedCount: Math.max(0, items.length - access.pairLimit),
         trackedProducts,
+        itemFor: (key) => items.find((i) => itemKey(i) === key),
+        setProductMeta: store.setProductMeta,
         setAdjustments,
         resetAdjustments,
         filters,

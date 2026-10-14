@@ -12,9 +12,9 @@ import { DEMO_FLAGS, DemoFlag } from "../lib/demoFlags";
 const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
 const TONE: Record<DemoFlag["kind"], { label: string; text: string; ring: string }> = {
-  overpaid: { label: "Overpaid", text: "text-emerald-600", ring: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
-  refundable: { label: "Refundable", text: "text-emerald-600", ring: "bg-teal-50 text-teal-700 ring-teal-200" },
-  underpaid: { label: "Underpaid", text: "text-rose-600", ring: "bg-rose-50 text-rose-700 ring-rose-200" },
+  overpaid: { label: "Overpaid", text: "text-success", ring: "bg-success/10 text-success ring-success" },
+  refundable: { label: "Refundable", text: "text-success", ring: "bg-primary/10 text-primary ring-primary/20" },
+  underpaid: { label: "Underpaid", text: "text-error", ring: "bg-error/10 text-error ring-error/20" },
 };
 
 const useFlagCycle = (visible = 4, everyMs = 2600) => {
@@ -35,35 +35,35 @@ export const AuditDashboard = () => {
   return (
     <div className={mk.frame} aria-label="Example audit result">
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm font-semibold text-slate-900">Entry audit · example account</p>
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-teal-500" /> Checking
+        <p className="text-sm font-semibold text-base-content">Entry audit · example account</p>
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-primary" /> Checking
         </span>
       </div>
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "Entry lines checked", value: <CountUp to={1284} />, tone: "text-slate-900" },
-          { label: "Overpaid found", value: <>$<CountUp to={86} />K</>, tone: "text-emerald-600" },
-          { label: "Refundable", value: <>$<CountUp to={212} />K</>, tone: "text-teal-600" },
+          { label: "Entry lines checked", value: <CountUp to={1284} />, tone: "text-base-content" },
+          { label: "Overpaid found", value: <>$<CountUp to={86} />K</>, tone: "text-success" },
+          { label: "Refundable", value: <>$<CountUp to={212} />K</>, tone: "text-primary" },
         ].map((k) => (
-          <div key={k.label} className="rounded-xl border border-slate-200 bg-white p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{k.label}</p>
+          <div key={k.label} className="rounded-xl border border-base-300 bg-base-100 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-base-content/60">{k.label}</p>
             <p className={`mt-1 text-3xl font-bold tabular-nums ${k.tone}`}>{k.value}</p>
           </div>
         ))}
       </div>
-      <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-slate-500">Flagged lines</p>
+      <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-base-content/60">Flagged lines</p>
       <ul className="flex flex-col gap-2">
         {flags.map((f, i) => {
           const tone = TONE[f.kind];
           return (
             <Enter key={f.serial}>
-              <li className={`flex items-center justify-between gap-4 rounded-xl border bg-white px-4 py-3 ${i === 0 ? "border-teal-300 ring-2 ring-teal-100" : "border-slate-200"}`}>
+              <li className={`flex items-center justify-between gap-4 rounded-xl border bg-base-100 px-4 py-3 ${i === 0 ? "border-primary/40 ring-2 ring-primary" : "border-base-300"}`}>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-slate-900">
-                    {f.product} <span className={`${mono.className} text-xs font-normal text-slate-400`}>{f.code}</span>
+                  <p className="truncate text-sm font-semibold text-base-content">
+                    {f.product} <span className={`${mono.className} text-xs font-normal text-base-content/60`}>{f.code}</span>
                   </p>
-                  <p className="truncate text-xs text-slate-500">
+                  <p className="truncate text-xs text-base-content/60">
                     {f.origin} · {f.date} · {f.reason}
                   </p>
                 </div>

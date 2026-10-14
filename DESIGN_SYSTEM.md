@@ -357,8 +357,10 @@ These are the only places exact values or inline styles are expected. Keep a sho
 2. **Mono font:** `mono.className` from `components/ui/font.ts`.
 3. **Grid templates:** `grid-cols-[minmax(0,1fr)_20rem]` and similar. Tailwind has no built-in for "fluid + fixed rail". Use rem, not px.
 4. **A width a design depends on** (a dropdown's `min-w-64`, an axis label column). Use a Tailwind step if one exists, otherwise rem.
-5. **Locked previews:** `<LockedPreview>` (`components/ui/LockedPreview.tsx`) blurs a stand-in for a feature the visitor hasn't unlocked (a free account for Duty over time and Analysis, the Tracker trial for premium sections). The user approved the blur for this one job (Oct 2026). The blurred content is always a placeholder, never the real data. Nowhere else.
+5. **Locked previews:** `<LockedPreview>` (`components/ui/LockedPreview.tsx`) blurs a stand-in for a feature the visitor hasn't unlocked (a free account for Duty over time and Analysis, the Tracker trial for premium sections). The user approved the blur for this one job (Oct 2026). The blurred content is a placeholder, except in the calculator's account gates (the Compare tab's Analysis and Duty Over Time's "What changed"), where the user chose (Oct 2026) to blur the real content, since seeing what they'd unlock sells it best. Behind the blur nothing can be clicked, selected, focused (`inert`) or read by assistive tech, and the card stays in view over a tall preview. Nowhere else.
 6. **Legacy hosts:** `ExploreModal` keeps daisyUI's `modal` around the legacy Explore component, and `RelatedCrossRulingsSection` keeps daisyUI in its non-`bare` branch for the explorer. Both change when those pages migrate.
+
+7. **Homepage glow:** the homepage's dark bands (hero, savings, closing offer) carry a soft cobalt and green glow (`glow` in `components/home/lib/theme.ts`), at the owner's request. Homepage only; §15's no-glow rule holds everywhere else.
 
 If you need the same exception twice, it should probably be a helper or a component in `components/ui/`.
 
@@ -443,7 +445,7 @@ About 220 files still use daisyUI component classes and its default purple theme
 
 ## 14. Marketing layer (landing pages)
 
-Landing pages that sell (`/tariff-monitor`, `/tariff-audit`) use a separate, bolder layer in `components/ui/marketing/`. The analytical rules above (flat, quiet, color only for meaning, color-only motion) are right for tools and wrong for persuasion, so these pages follow this section instead. Tools, HTS pages and the app keep §1–13.
+Landing pages that sell (`/tariff-monitor`, `/tariff-audit`) use a separate, bolder layer in `components/ui/marketing/`. The analytical rules above (flat, quiet, color only for meaning, color-only motion) are right for tools and wrong for persuasion, so these pages follow this section instead. Tools keep §1–13; the HTS code pages and the Tracker use §15.
 
 The look is the "Command center" direction: **always light**, crisp slate and navy with a **teal** accent, big type, real product visuals, and **dark bands** (`bg-slate-950`) for contrast. It sells the product's accuracy and intelligence: every visual shows real tariff data or a real view of the product.
 
@@ -469,7 +471,7 @@ Rules:
 
 ## 15. Tracker app layer (the paid dashboard)
 
-`/tariff-tracker` is the product people pay for, so it gets its own layer: **simple, colorful, and always about the money**. Chosen Oct 2026 as "Option D" (the Atlas look with the Command concept's charts and path to lower duty; mockups on the "Tariff Tracker Dashboard Concepts" canvas). It replaces §1–13's flat, quiet analytical look inside the Tracker only; the calculator and SEO pages keep §1–13, landing pages keep §14. Built Oct 2026: the palette is `palette.tracker` in `components/ui/theme/palette.js`, applied by the theme plugin inside `.hts-theme.hts-tracker` on the same variables as everything else (so existing themed components in the Tracker follow it), plus `--tt-*` extras exposed as Tailwind colors (`bg-tt-soft`, `bg-tt-side`, `bg-tt-side-card`, `bg-tt-side-active`, `tt-sky`, `tt-slate`). The sidebar carries `.hts-tracker-on-dark`, which gives it the dark palette in both modes. Class helpers: `import * as tt from "@/components/ui/styles/tracker"` (`panel`, `tile`, `title`, `metric`, `eyebrow(tone)`, `chip(tone)`, `numberChip(tone)`, `button(variant)`, `toggleTrack`/`toggleOption`). Fonts: `trackerSans` (Figtree) and `trackerDisplay` (Sora) in `components/ui/font.ts`. Inside the Tracker, `rounded-lg` panels round to 20px.
+`/tariff-tracker` is the product people pay for, so it gets its own layer: **simple, colorful, and always about the money**. Chosen Oct 2026 as "Option D" (the Atlas look with the Command concept's charts and path to lower duty; mockups on the "Tariff Tracker Dashboard Concepts" canvas). It replaces §1–13's flat, quiet analytical look inside the Tracker, the calculator (`/duty-calculator` and the country pages, through §14's `.follow-theme`) and the HTS code pages (`/hts/[code]`, since Oct 2026); other tools and SEO pages keep §1–13, landing pages keep §14. Built Oct 2026: the palette is `palette.tracker` in `components/ui/theme/palette.js`, applied by the theme plugin inside `.hts-theme.hts-tracker` on the same variables as everything else (so existing themed components in the Tracker follow it), plus `--tt-*` extras exposed as Tailwind colors (`bg-tt-soft`, `bg-tt-side`, `bg-tt-side-card`, `bg-tt-side-active`, `tt-sky`, `tt-slate`). The sidebar carries `.hts-tracker-on-dark`, which gives it the dark palette in both modes. Class helpers: `import * as tt from "@/components/ui/styles/tracker"` (`panel`, `tile`, `title`, `metric`, `eyebrow(tone)`, `chip(tone)`, `numberChip(tone)`, `button(variant)`, `metricSm`, `toggleTrack`/`toggleOption`). Fonts: `trackerSans` (Figtree) and `trackerDisplay` (Sora) in `components/ui/font.ts`. Inside the Tracker, `rounded-lg` panels round to 20px.
 
 ### Principles
 
@@ -509,19 +511,48 @@ Radii: hero 28, cards and sidebar 24, tiles 18–20, nav items and inputs 12, bu
 
 ### Components
 
-- **Sidebar:** floating, dark in both modes. Workspace and Intelligence groups; each item has a colored dot and count for what's waiting (red "6 new", green "$6.7k", amber alerts). Plan card at the foot (trial days as 14 segments, payoff line, green button), then the account.
+- **Sidebar:** floating, dark in both modes. Workspace and Intelligence groups; each item has a colored dot and count for what's waiting (red "6 new", green "$6.7k", amber alerts). Plan card at the foot (the trial's free checks left as segments, payoff line, green button), then the account.
 - **Buttons, one color per intent:** primary = Text fill (dark pill in light mode); money = green; next step = cobalt; secondary = outline pill. At most one green or cobalt button per card.
 - **Chips:** number chips inside sentences; status chips (POTENTIAL green, CHANGED red, PROGRAM cobalt, HEADS-UP amber).
 - **Tariff news tape:** the latest tariff news and newly added tariffs (proposals, HTS revisions, Federal Register, CSMS, court rulings), as pills with a colored dot.
 - **Next-step card:** cobalt tint with a 2px cobalt border, "Your next step · 2 of 5" with a five-segment bar, the step's title, its parts with their status, one cobalt button with the time it takes. Beside it, at most two quiet tiles tease what comes after, with the payoff ("$6,700 already found").
-- **Alert banner:** amber, only when something needs action, e.g. products left untracked after a trial ends. Product counts against the plan are never a regular metric.
+- **Alert banner:** amber, only when something needs action, e.g. a free allowance used up (savings checks, audit checks, alert slots). Product counts against the plan are never a regular metric.
 - **Empty state (no products yet):** the ask first (drop a file or paste codes, template and example links), four benefits, picks from the user's recent calculator lookups as toggle cards, then a clearly labeled EXAMPLE dashboard.
 - **Alerts:** soft rows with a round role-colored icon.
 - **Product tiles:** code, status chip, name · origin, sparkline, rate and payoff.
 
 ### Charts
 
-Few marks, round ends, no gridlines, no 3D, five series at most; events labelled with colored pills. Savings ring (one green arc on a Soft track: the share of duty that could be saved), rate pulse (a smooth cobalt line with a fill fading from 25% to clear; changes marked green or red with pill labels), exposure heat map (cobalt ramp), origin distribution (round bars with share and count; a Products / Value toggle, Value estimated from the $10,000 default and labeled "est." until the user enters their own values), sparklines in the metric's color.
+Few marks, round ends, no gridlines, no 3D, five series at most; events labelled with colored pills. A duty's parts (`palette.tracker.chart`): base duty a clear gray, then each program in a hue far from the last (cobalt, orange, yellow, red), fees green; neighbours differ in lightness too, so no two read as the same color side by side. Savings ring (one green arc on a Soft track: the share of duty that could be saved), rate pulse (a smooth cobalt line with a fill fading from 25% to clear; changes marked green or red with pill labels), exposure heat map (cobalt ramp), origin distribution (round bars with share and count; a Products / Value toggle, Value estimated from the $10,000 default and labeled "est." until the user enters their own values), sparklines in the metric's color.
+
+### Public pages in the Tracker look
+
+A public page can take this layer without the Tracker's shell, so search visitors see the product's look before they sign up. The HTS reference pages (`/hts/[code]`, `/explore`, `/section/[n]`, `/chapter/[n]`) are the model:
+
+- **The frame** is `HtsFrame` (`components/hts-page/HtsFrame.tsx`, used by each route's `layout.tsx`): `FollowTheme` with no paths (the Tracker's look on every page under it), then `MarketingLayout` with the `TrackerBanner` promo bar above the marketing header ("Start tracking free", or "Open the Tariff Tracker" when signed in) and the `ClassifyCta` band (the homepage's "Need the HTS code first?") above the footer. Page content uses `mk.container` so its edges line up with the header.
+
+- **Wrap the page** in `${THEME} hts-tracker ${trackerSans.className} ${trackerDisplay.variable} bg-base-200`: the Tracker palette (following light and dark), Figtree, Sora on `--font-tracker-display`, and the soft ground. No bordered bands: sections sit on the ground with 64–80px between them.
+- **Swap the §1–13 helpers for their Tracker equivalents:**
+
+| §1–13 (`ui.*`) | Tracker (`tt.*`) |
+|---|---|
+| `ui.card`, `ui.cardOverflowVisible` | `tt.panel` (add `overflow-hidden` for tables and rows that hover to the edge) |
+| `ui.cardTitle` | `tt.title` |
+| `ui.kicker` | `tt.eyebrow("primary")` |
+| `ui.label` (stat labels, table headers) | `tt.eyebrow()` |
+| `ui.metric.primary*` / `ui.metric.secondary*` | `tt.metric` / `tt.metricSm` |
+| `ui.button({ variant: "primary" })` | `tt.button("primary")` (the next step after a figure, such as "Find my exact duty": `tt.button("next")`) |
+| `ui.button()` | `tt.button("secondary")` |
+| `ui.badge(…)` | `tt.chip(…)` |
+| `bg-base-200` inside a panel (table head, card footer) | `bg-tt-soft` |
+
+- **Padding and shape:** panel rows and headers `px-6 py-4/5`; small figure chips (duty heat, rates) and link chips are `rounded-full`; icon squares `rounded-xl`; the last band of a panel rounds with it (`rounded-b-3xl`). HTS codes stay in `mono`.
+- **Shared components follow on their own** through the `tracker:` variant (`.hts-tracker &`, in `tailwind.config.js`): `SectionHeader` (Sora title, bold eyebrow), `FaqList` (round panel, roomier rows) and the bare CROSS rulings list's button. Give a shared component `tracker:` classes rather than a prop when it should look different inside the Tracker's look; layout and content never change with it.
+- **The homepage** (`/`, `components/home/`) is in this look too, through `FollowTheme` in `app/page.tsx`. Its parts use theme tokens directly (they appear nowhere else); the shared landing visuals it borrows (`CatalogFrame`, `Testimonials`) keep their marketing classes and add `skin:` twins, so `/tariff-monitor` and `/classify` stay as they were.
+- **Dark bands** (the homepage hero with its tariff ticker, the savings band, the closing offer, the Tracker pricing card) stay dark in both modes: `darkBand` from `components/home/lib/theme.ts` (`hts-tracker-on-dark bg-base-200`), so ordinary theme classes inside read light on dark and the band stays darker than the page in dark mode. A product view inside one (the hero's dashboard, the savings finder) takes `followPage` (`hts-theme hts-tracker`) to follow the page's light/dark again. The trial button there is the green money pill (`moneyButton`); no glows or radial gradients.
+- **The landing pages** `/tariff-monitor`, `/tariff-audit` and `/classify` are in this look too (`FollowTheme` in each `layout.tsx`). Their components use theme tokens; their SVG diagrams take theme colors as `oklch(var(--p))`-style values; `mk.bandDark` carries `.mk-dark`, which the theme plugin gives the dark palette on these pages, and the `mk.*Dark` helpers have `skin:` twins. Decorative glows are gone there.
+- **Calls to action are bold and inverted from the page**: dark in light mode, light in dark mode (`.hts-tracker-inverse`, a theme plugin rule, so theme classes inside follow). Use `components/ui/marketing/cta.ts` (`band`, `bandPad`, `title`, `lead`, `button`: a big green pill, `secondary`, `link`). Every closing band uses it (homepage, Tariff Tracker, Tariff Audit), and so do `ClassifyCta` and the shared FAQ's "Still have questions?" box (through `tracker:` classes, so it changes only in this look).
+- Colors need no work: every themed class (`text-primary`, `border-base-300`, `heat()`, chart colors) already takes the Tracker palette inside `.hts-tracker`, and `rounded-lg` rounds to 20px there.
 
 ### Don't
 

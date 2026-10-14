@@ -15,7 +15,7 @@ import {
 export const metadata: Metadata = {
   title: "Pricing — Tariff Calculator, Tariff Tracker & Classify | HTS Hero",
   description:
-    "HTS Hero pricing. The Tariff Calculator is free and unlimited with no account. Tariff Tracker is free for 3 HTS code + country pairs, then from $49/mo. Classify from $39/mo. Save 15% with annual billing.",
+    "HTS Hero pricing. The Tariff Calculator is free and unlimited with no account. Tariff Tracker starts free: check 5 imports for savings, 10 free audit checks, then from $19/mo. Classify from $39/mo. Save 15% with annual billing.",
   openGraph: {
     title: "HTS Hero Pricing",
     description:

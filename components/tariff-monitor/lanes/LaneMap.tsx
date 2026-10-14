@@ -51,16 +51,16 @@ const highlighted = world.features.filter((f) => String(f.id) === US || laneColo
 
 export const LaneMap = () => (
   <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label={`Trade lanes into the US from ${LANES.map((l) => l.country).join(", ")}, each with a 2026 tariff change`}>
-    <path d={background} fill="#1e293b" stroke="#0b1220" strokeWidth={0.5} />
+    <path d={background} fill="oklch(var(--b3))" stroke="oklch(var(--b2))" strokeWidth={0.5} />
     {highlighted.map((f) => {
       const id = String(f.id);
       return (
         <path
           key={id}
           d={pathOf(f) ?? ""}
-          fill={id === US ? "#e2e8f0" : laneColor.get(id)}
+          fill={id === US ? "oklch(var(--bc)/0.85)" : laneColor.get(id)}
           fillOpacity={id === US ? 0.95 : 0.6}
-          stroke="#0b1220"
+          stroke="oklch(var(--b2))"
           strokeWidth={0.5}
         />
       );
@@ -73,11 +73,11 @@ export const LaneMap = () => (
         <circle r={6} fill={l.color} className="motion-reduce:hidden">
           <animateMotion dur="3.2s" begin={`${i * 0.6}s`} repeatCount="indefinite" path={lanePath(l.id)} />
         </circle>
-        <circle cx={point(l.id)[0]} cy={point(l.id)[1]} r={5} fill={l.color} stroke="#0b1220" strokeWidth={1.5} />
+        <circle cx={point(l.id)[0]} cy={point(l.id)[1]} r={5} fill={l.color} stroke="oklch(var(--b2))" strokeWidth={1.5} />
       </g>
     ))}
-    <circle cx={usPt[0]} cy={usPt[1]} r={9} fill="#f8fafc" />
-    <circle cx={usPt[0]} cy={usPt[1]} r={9} fill="none" stroke="#5eead4" strokeWidth={2} className="motion-reduce:hidden">
+    <circle cx={usPt[0]} cy={usPt[1]} r={9} fill="oklch(var(--b1))" />
+    <circle cx={usPt[0]} cy={usPt[1]} r={9} fill="none" stroke="oklch(var(--p))" strokeWidth={2} className="motion-reduce:hidden">
       <animate attributeName="r" from="9" to="34" dur="2s" repeatCount="indefinite" />
       <animate attributeName="opacity" from="0.9" to="0" dur="2s" repeatCount="indefinite" />
     </circle>

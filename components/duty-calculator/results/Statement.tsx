@@ -5,8 +5,8 @@
 import * as ui from "@/components/ui/styles";
 import { CalculationResult } from "@/tariffs/engine-v2/types";
 import { formatMoney } from "../lib/format";
-import { legalText, tariffStartDate } from "./headings";
-import { COLUMN_LABEL, programName } from "./labels";
+import { legalText } from "./headings";
+import { COLUMN_LABEL } from "./labels";
 import { MobileRow } from "./MobileRow";
 import { MobileTotal } from "./MobileTotal";
 import { BASE_SLICE, FEES_SLICE, sliceForProgram } from "./slices";
@@ -35,7 +35,7 @@ export const Statement = ({
   // The slice being hovered, here or in the chart
   highlight?: string | null;
   onHighlight?: (slice: string | null) => void;
-  // One tight line per row: no program, effective date, reasons or legal text
+  // One tight line per row: no reasons or legal text
   compact?: boolean;
   // What the last answer or trade program changed, to mark in the rows
   changes?: LineChanges | null;
@@ -76,12 +76,11 @@ export const Statement = ({
       code: line.code,
       slice: sliceForProgram(line.program),
       name: line.name,
-      program: programName(line.program),
-      effectiveFrom: tariffStartDate(line.code, result.asOf),
       // Why it applies, in plain English (the engine's own reasons are mostly empty)
       detail: lockWhy ? undefined : whyApplies(line, result, result.questions).join(" · "),
       whyLocked: lockWhy,
-      legal: legalText(line.code, result),
+      // The legal text takes a free account too (the locked line says so)
+      legal: lockWhy ? undefined : legalText(line.code, result),
       basis: line.basisValue,
       rate: line.ratePct,
       amount: line.amount,
@@ -95,8 +94,7 @@ export const Statement = ({
         code: line.code,
         slice: sliceForProgram(line.program),
         name: line.name,
-        program: programName(line.program),
-        basis: line.basisValue,
+          basis: line.basisValue,
         rate: line.ratePct,
         amount: 0,
         change: { kind: "removed", before: line.amount },

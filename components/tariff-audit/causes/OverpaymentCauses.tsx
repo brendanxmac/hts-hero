@@ -5,10 +5,10 @@ import { CAUSES } from "../lib/copy";
 
 // One icon and tint per cause, in CAUSES order
 const LOOK = [
-  { Icon: Square3Stack3DIcon, tint: "bg-sky-50 text-sky-700" },
-  { Icon: CheckBadgeIcon, tint: "bg-emerald-50 text-emerald-700" },
-  { Icon: ArrowPathIcon, tint: "bg-amber-50 text-amber-700" },
-  { Icon: NoSymbolIcon, tint: "bg-rose-50 text-rose-700" },
+  { Icon: Square3Stack3DIcon, tint: "bg-warning/10 text-warning" },
+  { Icon: CheckBadgeIcon, tint: "bg-success/10 text-success" },
+  { Icon: ArrowPathIcon, tint: "bg-warning/10 text-warning" },
+  { Icon: NoSymbolIcon, tint: "bg-error/10 text-error" },
 ];
 
 export const OverpaymentCauses = () => (

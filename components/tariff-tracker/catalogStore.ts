@@ -11,6 +11,7 @@ import {
 import {
   CATALOG_ITEMS_KEY,
   CatalogItem,
+  CatalogItemMeta,
   itemKey,
   itemsFromText,
   LEGACY_TEXT_KEYS,
@@ -135,6 +136,26 @@ export const removeFromCatalog = (keys: string[]) => {
 };
 
 export const clearCatalog = () => save({ ...getSnapshot(), items: [] });
+
+// Picks a product for the plan's coverage, or takes it out (see TrackerContext)
+export const setProductCovered = (key: string, covered: boolean) => {
+  const current = getSnapshot();
+  save({ ...current, items: current.items.map((item) => (itemKey(item) === key ? { ...item, covered } : item)) });
+};
+
+// Shipments a year, or the origin it's moving to; undefined clears one
+export const setProductMeta = (key: string, patch: CatalogItemMeta) => {
+  const current = getSnapshot();
+  save({
+    ...current,
+    items: current.items.map((item) => {
+      if (itemKey(item) !== key) return item;
+      const next = { ...item, ...patch };
+      (Object.keys(patch) as (keyof CatalogItemMeta)[]).forEach((k) => next[k] === undefined && delete next[k]);
+      return next;
+    }),
+  });
+};
 
 export const setProductAdjustments = (key: string, patch: Adjustments) => {
   const current = getSnapshot();

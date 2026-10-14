@@ -8,7 +8,6 @@ export const CalculationSection = ({ example, revision }: { example: WorkedExamp
   if (!example) return null;
   return (
     <section className={`${mk.band} ${mk.bandDark} relative overflow-hidden`} aria-labelledby="calculation-title">
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(50rem_24rem_at_85%_0%,rgba(45,212,191,0.12),transparent)]" />
       <div className={`${mk.container} relative grid grid-cols-1 gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center`}>
         <SectionIntro
           eyebrow="Accuracy"

@@ -13,13 +13,17 @@ import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
-import { GatedAnalysis, teaserFor } from "@/components/tariff-tracker/product/analysis/GatedAnalysis";
-import { SparklesIcon } from "@heroicons/react/20/solid";
-import * as tt from "@/components/ui/styles/tracker";
+import {
+  GatedAnalysis,
+  teaserFor,
+} from "@/components/tariff-tracker/product/analysis/GatedAnalysis";
 import { productFromFinder } from "@/components/tariff-tracker/report";
+import { provenPicks } from "@/components/tariff-tracker/product/analysis/analysis";
+import { Countries } from "@/constants/countries";
+import { CENSUS_NOTICE } from "../lib/census";
+import { formatImportValue, useUsImports } from "../lib/usImports";
 import { Segmented } from "../fields/Segmented";
 import { whatClaimingDoes, whatItWouldDo } from "../lib/explain";
-import { formatDate, formatMoney } from "../lib/format";
 import { plainReasons } from "../lib/plainReason";
 import { sortBySpecificity } from "../lib/questions";
 import { useLineChanges } from "../lib/useLineChanges";
@@ -39,13 +43,22 @@ import {
 import { DutyBreakdown, LinesDetail } from "./DutyBreakdown";
 import { EmptyState } from "./EmptyState";
 import { EntryBar } from "./EntryBar";
-import { AdjustmentsLadder, CompareHeader, RefundsButton } from "./PremiumTeasers";
+import {
+  AdjustmentsCta,
+  CompareBox,
+  QualifyHeaderLink,
+  QualifyLink,
+  RefundsButton,
+} from "./PremiumTeasers";
 import { useConversion } from "./ConversionDialog";
-import { accountPitch } from "../lib/summary";
 import { DutySummary } from "./DutySummary";
 import { AccountCta } from "./AccountCta";
 import { ResultsHeader } from "./ResultsHeader";
-import { useCanSeeWhy, WhyLocked } from "./WhyGate";
+import { useCanSeeWhy, WhyLocked, WhyUnlockContext } from "./WhyGate";
+import { ChangeSummary } from "../results/ChangeSummary";
+import { ArrowLink } from "./ArrowLink";
+import { RefundCheckCard } from "./RefundCheckCard";
+import { useTrackImport } from "../landing/TrackImportButton";
 import { ResultsSkeleton } from "./ResultsSkeleton";
 import { useStickyColumn } from "./useStickyColumn";
 
@@ -55,7 +68,8 @@ import { useStickyColumn } from "./useStickyColumn";
 //   applied at its foot) beside the possible adjustments (and the Tracker's qualification check,
 //   teased), which move with the page. What the
 //   last answer changed is marked in the breakdown.
-// - Duty Over Time: the rate history, full width, free; then the Tracker's refund check, teased
+// - Recent Changes: the rate history and every change in it, full width, free (the tab counts the
+//   changes); then the Tracker's refund check, teased
 // - Compare: other origins side by side, then the Analysis: this import's duty from every origin
 //   (a free account)
 
@@ -63,26 +77,26 @@ type ResultsTab = "duty" | "history" | "compare";
 
 const TABS: { id: ResultsTab; label: string }[] = [
   { id: "duty", label: "Duty" },
-  { id: "history", label: "Duty Over Time" },
+  { id: "history", label: "Recent Changes" },
   { id: "compare", label: "Compare" },
 ];
 
 export const CalculatorWorkspace = ({
   f,
-  leadingActions,
   actions,
   empty,
   page,
+  fixedProduct = false,
 }: {
   f: TariffFinder;
-  // In the results' heading: before Share (Download), and after it, the host's main action
-  // (Add to catalog, Track this import)
-  leadingActions?: ReactNode;
+  // In the results' heading, after Share: the host's main action (Add to catalog, Track this import)
   actions?: ReactNode;
   // In place of the results before there are any (the default prompt otherwise)
   empty?: ReactNode;
   // For analytics: where the account gates sit
-  page: "calculator" | "tracker_calculator";
+  page: "calculator" | "tracker_calculator" | "tracker_product";
+  // A catalog product's view: its code and origin can't be changed
+  fixedProduct?: boolean;
 }) => {
   const { htsElements } = useHts();
   const searchParams = useSearchParams();
@@ -147,14 +161,51 @@ export const CalculatorWorkspace = ({
     [tab, inputsKey, htsElements],
   );
 
+  // Compare starts on the countries that already ship this to the US, the cheaper ones first
+  // (Census), once per product and origin; after that the choice is the user's
+  const imports = useUsImports(tab === "compare" ? selectedElement?.htsno : undefined);
+  const autoPicked = useRef(new Map<string, string[]>());
+  const pickKey = `${selectedElement?.htsno}|${country?.code}`;
+  useEffect(() => {
+    if (tab !== "compare" || !product || !imports || autoPicked.current.has(pickKey)) return;
+    // Opened already comparing (a shared link): leave the choice as it is
+    if (f.countries.length !== 1) {
+      autoPicked.current.set(pickKey, []);
+      return;
+    }
+    const picks = provenPicks(product, imports, MAX_COMPARE - 1);
+    autoPicked.current.set(pickKey, picks);
+    if (picks.length) {
+      f.changeCountries([
+        ...f.countries,
+        ...Countries.filter((c) => picks.includes(c.code)).sort((a, b) => picks.indexOf(a.code) - picks.indexOf(b.code)),
+      ]);
+    }
+    // When Compare opens on a product, or its figures arrive
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, product, imports, pickKey]);
+  // The picked countries still compared, to say why they're there
+  const picked = (autoPicked.current.get(pickKey) ?? []).filter((code) => f.countries.some((c) => c.code === code));
+  const dutyOf = (code: string | undefined) => f.compareEntries.find((e) => e.country.code === code)?.result.totalDuty;
+  const pickedCheaper = picked.every((code) => (dutyOf(code) ?? Infinity) < (dutyOf(country?.code) ?? -Infinity) - 0.005);
+  const pickedNote =
+    imports && picked.length > 0
+      ? `${picked
+          .map((code) => {
+            const name = Countries.find((c) => c.code === code)?.name ?? code;
+            return `${name} (${formatImportValue(imports.byCountry.get(code)?.value ?? 0)})`;
+          })
+          .join(" and ")} ${picked.length === 1 ? "is" : "are"}${pickedCheaper ? ` cheaper than ${country?.name} and` : ""} among the largest suppliers of ${imports.level === 10 ? "this product" : "products like this"} to the US, by ${imports.year} imports.`
+      : null;
+
   const ready = Boolean(result && selectedElement && country && !f.loading);
   const sliceColors = result
     ? slices(result)
-        .filter((s) => s.amount > 0)
-        .reduce<Record<string, string>>(
-          (colors, s) => ({ ...colors, [s.label]: s.color }),
-          {},
-        )
+      .filter((s) => s.amount > 0)
+      .reduce<Record<string, string>>(
+        (colors, s) => ({ ...colors, [s.label]: s.color }),
+        {},
+      )
     : {};
 
   // The possible adjustments hold still while answering: every question the entry had before any
@@ -175,11 +226,11 @@ export const CalculatorWorkspace = ({
     () =>
       result
         ? Object.fromEntries(
-            stableQuestions.map((q) => [
-              q.input.id,
-              whatItWouldDo(q, result, unadjusted ?? null) ?? "",
-            ]),
-          )
+          stableQuestions.map((q) => [
+            q.input.id,
+            whatItWouldDo(q, result, unadjusted ?? null) ?? "",
+          ]),
+        )
         : {},
     [stableQuestions, result, unadjusted],
   );
@@ -194,17 +245,46 @@ export const CalculatorWorkspace = ({
   });
   const prefImpacts = f.claimedPreference
     ? {
-        ...f.preferenceChanges,
-        [f.claimedPreference]: rememberedPrefs.current[f.claimedPreference],
-      }
+      ...f.preferenceChanges,
+      [f.claimedPreference]: rememberedPrefs.current[f.claimedPreference],
+    }
     : f.preferenceChanges;
-  // Possible Adjustments in three tiers: anyone sees each adjustment and what it could change the
-  // total by; a free account adds what each would change (WhyGate: signed out, one locked line for
-  // the whole panel); the Tracker's guided check works out which should (AdjustmentsLadder)
+  // Possible Adjustments in two tiers: anyone sees each adjustment, its amount and what it would
+  // change; the Tracker works out which ones the goods qualify for (AdjustmentsCta, QualifyLink).
+  // The rest of the plain-English why takes a free account (WhyGate)
   const { canSee: canSeeWhy, loading: whyLoading } = useCanSeeWhy();
   // The way up from each tab (PremiumTeasers): its pitches, in one dialog
   const conversion = useConversion(page);
   const signedOut = !whyLoading && !canSeeWhy;
+  // How often the duty on this import changed: counted in the Recent Changes tab
+  const historyChanges = f.history.filter((x) => x.changes.length > 0).length;
+  // Recent Changes' way up on /duty-calculator: alerts on this import (tracking it, a free account)
+  const track = useTrackImport(f, "recent-changes-alerts");
+  // A locked "why" opens the free account's pitch, led by what was clicked
+  const unlockWhy = (where: string) =>
+    conversion.openAccount(
+      where === "not_applied"
+        ? {
+          title: "See why the other tariffs don't apply, free",
+          highlight: "ruled-out",
+          cta: "Create my free account",
+        }
+        : {
+          title: "See why each tariff applies, free",
+          highlight: "why",
+          cta: "Create my free account",
+        },
+      `why-${where}`,
+    );
+  // What the last change did, under the adjustment that was changed
+  const changeSummaryFor = (kind: "question" | "preference") => {
+    const changes = lineChanges.changes;
+    if (!result || !changes?.source || changes.source.kind !== kind) return undefined;
+    return {
+      id: changes.source.id,
+      node: <ChangeSummary result={result} changes={changes} onClear={lineChanges.clear} where="breakdown" />,
+    };
+  };
   // Shown while there's anything to adjust, before or after answering
   const hasAdjustments = stableQuestions.length > 0 || preferences.length > 0;
   const explainReason = useMemo(
@@ -221,43 +301,13 @@ export const CalculatorWorkspace = ({
       .filter(([id]) => id.startsWith("confirm:") && !f.answers[id])
       .map(([, v]) => v),
   );
-  const openAdjustments =
-    f.openQuestions +
-    (result && result.availablePreferences.length > 0 && !f.claimedPreference
-      ? 1
-      : 0);
-  const toAdjustments = () =>
-    document
-      .getElementById("possible-adjustments")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  const totalNote =
-    bestSaving < -0.005 ? (
-      <button
-        type="button"
-        onClick={toAdjustments}
-        className="mt-2 inline-flex rounded-md bg-success/10 px-2 py-1 text-left text-xs font-semibold text-success hover:bg-success/15"
-      >
-        Could be up to {formatMoney(Math.abs(bestSaving))} lower if your goods
-        qualify →
-      </button>
-    ) : openAdjustments > 0 ? (
-      <button
-        type="button"
-        onClick={toAdjustments}
-        className="mt-2 inline-flex rounded-md bg-primary/10 px-2 py-1 text-left text-xs font-semibold text-primary hover:bg-primary/15"
-      >
-        {openAdjustments} possible{" "}
-        {openAdjustments === 1 ? "adjustment" : "adjustments"} could change this
-        →
-      </button>
-    ) : null;
-
   return (
     <div className="flex flex-col gap-4">
       <EntryBar
         f={f}
         title="Entry Details"
-        description="Enter the details of your import to get a duty estimate"
+        description={fixedProduct ? "Saved to this product as you change it" : "Enter the details of your import to get a duty estimate"}
+        fixedProduct={fixedProduct}
       />
 
       {f.loading ? (
@@ -265,204 +315,258 @@ export const CalculatorWorkspace = ({
       ) : !ready || !result || !selectedElement || !country ? (
         (empty ?? <EmptyState f={f} />)
       ) : (
-        <section
-          className="flex flex-col gap-4"
-          aria-labelledby="results-heading"
-          aria-live="polite"
-        >
-          <ResultsHeader
-            f={f}
-            result={result}
-            selectedElement={selectedElement}
-            country={country}
-            leadingActions={leadingActions}
-            actions={actions}
-            viewSwitch={
-              <div className="w-full min-w-0 basis-full sm:w-96 sm:basis-auto">
-                <Segmented
-                  label="Results"
-                  options={TABS}
-                  value={tab}
-                  onChange={changeTab}
-                  compact
-                  tone="accent"
-                />
-              </div>
-            }
-          />
-          <VerifiedNotice f={f} />
-          {/* A ban is about this country's goods; the comparison shows several countries */}
-          {tab !== "compare" && (
-            <ProhibitedNotice prohibitions={result.prohibitions} />
-          )}
-
-          {tab === "duty" && (
-            <>
-              <AccountCta f={f} result={result} bestSaving={bestSaving} page={page} />
-              <div className={ui.card}>
-                <SummaryStats
-                  result={result}
-                  customsValue={f.customsValue}
-                  standalone
-                  note={totalNote}
-                />
-                <CostBar
-                  result={result}
-                  highlight={highlight}
-                  onHighlight={setHighlight}
-                  className="border-t border-base-300 px-5 py-4 sm:px-6"
-                />
-              </div>
-              {result.warnings.length > 0 && (
-                <ul className={`${ui.notice("warning")} flex flex-col gap-1.5`}>
-                  {result.warnings.map((w) => (
-                    <li key={w} className={`${ui.bodySm} flex gap-2`}>
-                      <ExclamationTriangleIcon
-                        className="mt-px h-4 w-4 shrink-0 text-warning"
-                        aria-hidden
-                      />
-                      {w}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <div
-                className={
-                  hasAdjustments
-                    ? "grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
-                    : ""
-                }
-              >
-                <div className="min-w-0">
-                  <DutyBreakdown
-                    result={result}
-                    customsValue={f.customsValue}
-                    unitLabel={f.unitLabel}
-                    sliceColors={sliceColors}
-                    highlight={highlight}
-                    onHighlight={setHighlight}
-                    linesDetail={linesDetail}
-                    onLinesDetailChange={setLinesDetail}
-                    summary={<DutySummary f={f} result={result} bestSaving={bestSaving} />}
-                    headerAction={
-                      signedOut ? (
-                        <button
-                          type="button"
-                          className={tt.button("next", "sm", "rounded")}
-                          onClick={() => {
-                            const pitch = accountPitch(f, result, bestSaving);
-                            conversion.openAccount(
-                              { title: pitch.headline, thisImport: pitch.thisImport, cta: "Explain my duty, free" },
-                              "explain-this",
-                            );
-                          }}
-                        >
-                          <SparklesIcon className="h-4 w-4" aria-hidden />
-                          Explain this
-                        </button>
-                      ) : undefined
-                    }
-                    footer={
-                      <NotAppliedPanel
-                        lines={result.lines}
-                        bare
-                        explain={explainReason}
-                        lockedReason={canSeeWhy ? undefined : <WhyLocked label="See why it doesn't apply" where="not_applied" />}
-                      />
-                    }
-                    lockWhy={!canSeeWhy}
-                    changes={lineChanges.changes}
-                    onClearChanges={lineChanges.clear}
+        <WhyUnlockContext.Provider value={unlockWhy}>
+          <section
+            className="flex flex-col gap-4"
+            aria-labelledby="results-heading"
+            aria-live="polite"
+          >
+            <ResultsHeader
+              f={f}
+              result={result}
+              selectedElement={selectedElement}
+              country={country}
+              actions={actions}
+              viewSwitch={
+                <div className="w-full min-w-0 basis-full sm:w-[28rem] sm:basis-auto">
+                  <Segmented
+                    label="Results"
+                    options={TABS.map((t) => (t.id === "history" && historyChanges > 0 ? { ...t, count: historyChanges } : t))}
+                    value={tab}
+                    onChange={changeTab}
+                    compact
+                    tone="accent"
                   />
                 </div>
-                {hasAdjustments && (
-                  // Beside the duty lines, so an answer's effect shows in them; it moves with the
-                  // page while the breakdown is taller
-                  <aside
-                    id="possible-adjustments"
-                    ref={adjustmentsRef}
-                    className="min-w-0 scroll-mt-4 lg:sticky"
-                    style={{ top: adjustmentsTop }}
-                    aria-label="Possible adjustments"
-                  >
-                    <QuestionsPanel
-                      questions={result.questions}
-                      stableQuestions={stableQuestions}
-                      notes={canSeeWhy ? questionNotes : {}}
-                      notice={<AdjustmentsLadder conversion={conversion} canSeeWhy={canSeeWhy} />}
-                      answers={f.answers}
-                      impacts={f.impacts}
-                      lines={[...result.lines, ...(unadjusted?.lines ?? [])]}
-                      onAnswer={f.answer}
-                      asOf={result.asOf}
-                      htsCode={result.htsCode}
-                      preference={
-                        preferences.length > 0 ? (
-                          <PreferenceClaim
-                            options={preferences}
-                            value={f.preferences[country.code] ?? ""}
-                            onChange={(symbol) =>
-                              f.setPreference(country.code, symbol)
-                            }
-                            impacts={prefImpacts}
-                            stable
-                            notes={canSeeWhy ? Object.fromEntries(preferences.map((p) => [p.symbol, whatClaimingDoes(p.name)])) : {}}
-                          />
-                        ) : undefined
-                      }
-                    />
-                  </aside>
-                )}
-              </div>
-            </>
-          )}
-
-          {tab === "history" && (
-            // The history is free; opening a past date takes a free account; checking past entries
-            // for refunds, in bulk, is the Tracker's (the button in its heading)
-            <RateHistoryCard
-              f={f}
-              sliceColors={sliceColors}
-              highlight={highlight}
-              onHighlight={setHighlight}
-              headerAction={<RefundsButton conversion={conversion} history={f.history} customsValue={f.customsValue} />}
-              onPickDate={(date, source) =>
-                signedOut
-                  ? conversion.openAccount(
-                      { title: `See this import on ${formatDate(date)}, line by line`, highlight: "history", cta: "Create my free account" },
-                      source,
-                    )
-                  : f.setEntryDate(date, source)
               }
             />
-          )}
+            <VerifiedNotice f={f} />
+            {/* A ban is about this country's goods; the comparison shows several countries */}
+            {tab !== "compare" && (
+              <ProhibitedNotice prohibitions={result.prohibitions} />
+            )}
 
-          {tab === "compare" && (
-            <>
-              <CompareHeader
-                conversion={conversion}
-                max={MAX_COMPARE}
-                originsTeaser={signedOut && product ? teaserFor(product) : null}
-              />
-              <CompareView
-                entries={f.compareEntries}
-                countries={f.countries}
-                max={MAX_COMPARE}
-                onAdd={(added) => f.changeCountries([...f.countries, added])}
-                customsValue={f.customsValue}
-                onRemove={f.removeCountry}
-                onPreferenceChange={f.setPreference}
-                onViewDetails={(c) => {
-                  setHistoryOpen(false);
-                  f.viewCountryDetails(c);
-                }}
-              />
-              {product && <GatedAnalysis product={product} page={page} />}
-            </>
-          )}
-        </section>
+            {tab === "duty" && (
+              <>
+                {/* <AccountCta f={f} result={result} bestSaving={bestSaving} page={page} /> */}
+                <div className={ui.card}>
+                  <SummaryStats
+                    result={result}
+                    customsValue={f.customsValue}
+                    standalone
+                  />
+                  <CostBar
+                    result={result}
+                    highlight={highlight}
+                    onHighlight={setHighlight}
+                    className="border-t border-base-300 px-5 py-4 sm:px-6"
+                  />
+                </div>
+                {result.warnings.length > 0 && (
+                  <ul
+                    className={`${ui.notice("warning")} flex flex-col gap-1.5`}
+                  >
+                    {result.warnings.map((w) => (
+                      <li key={w} className={`${ui.bodySm} flex gap-2`}>
+                        <ExclamationTriangleIcon
+                          className="mt-px h-4 w-4 shrink-0 text-warning"
+                          aria-hidden
+                        />
+                        {w}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {/* Signed in only (it renders nothing otherwise): signed out, "Explain this" in the
+                  breakdown's heading opens the pitch instead */}
+                <DutySummary f={f} result={result} bestSaving={bestSaving} />
+                <div
+                  className={
+                    hasAdjustments
+                      ? "grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+                      : ""
+                  }
+                >
+                  <div className="min-w-0">
+                    <DutyBreakdown
+                      result={result}
+                      customsValue={f.customsValue}
+                      unitLabel={f.unitLabel}
+                      sliceColors={sliceColors}
+                      highlight={highlight}
+                      onHighlight={setHighlight}
+                      linesDetail={signedOut ? "full" : linesDetail}
+                      onLinesDetailChange={
+                        signedOut ? undefined : setLinesDetail
+                      }
+                      headerAction={
+                        signedOut ? (
+                          <ArrowLink
+                            onClick={() =>
+                              conversion.openAccount(
+                                {
+                                  title: "Get the full explanation, free",
+                                  highlight: "why",
+                                  cta: "Create my free account",
+                                },
+                                "explain-this",
+                              )
+                            }
+                          >
+                            Explain this
+                          </ArrowLink>
+                        ) : undefined
+                      }
+                      footer={
+                        <NotAppliedPanel
+                          lines={result.lines}
+                          bare
+                          explain={explainReason}
+                          lockedReason={
+                            canSeeWhy
+                              ? undefined
+                              : () => (
+                                <WhyLocked
+                                  label="See why it doesn't apply, with full legal text"
+                                  where="not_applied"
+                                />
+                              )
+                          }
+                        />
+                      }
+                      lockWhy={!canSeeWhy}
+                      changes={lineChanges.changes}
+                      onClearChanges={lineChanges.clear}
+                    />
+                  </div>
+                  {hasAdjustments && (
+                    // Beside the duty lines, so an answer's effect shows in them; it moves with the
+                    // page while the breakdown is taller
+                    <aside
+                      id="possible-adjustments"
+                      ref={adjustmentsRef}
+                      className="min-w-0 rounded-lg lg:sticky"
+                      style={{ top: adjustmentsTop }}
+                      aria-label="Possible adjustments"
+                    >
+                      <QuestionsPanel
+                        questions={result.questions}
+                        stableQuestions={stableQuestions}
+                        notes={questionNotes}
+                        qualifyLink={<QualifyLink conversion={conversion} />}
+                        notice={page !== "calculator" ? <AdjustmentsCta conversion={conversion} /> : undefined}
+                        hideLegal={!canSeeWhy}
+                        changeSummary={changeSummaryFor("question")}
+                        action={page === "calculator" ? <QualifyHeaderLink conversion={conversion} /> : undefined}
+                        answers={f.answers}
+                        impacts={f.impacts}
+                        lines={[...result.lines, ...(unadjusted?.lines ?? [])]}
+                        onAnswer={f.answer}
+                        asOf={result.asOf}
+                        htsCode={result.htsCode}
+                        preference={
+                          preferences.length > 0 ? (
+                            <PreferenceClaim
+                              options={preferences}
+                              value={f.preferences[country.code] ?? ""}
+                              onChange={(symbol) =>
+                                f.setPreference(country.code, symbol)
+                              }
+                              impacts={prefImpacts}
+                              stable
+                              notes={Object.fromEntries(
+                                preferences.map((p) => [
+                                  p.symbol,
+                                  whatClaimingDoes(p.name),
+                                ]),
+                              )}
+                              qualifyLink={
+                                <QualifyLink conversion={conversion} />
+                              }
+                              changeSummary={changeSummaryFor("preference")}
+                            />
+                          ) : undefined
+                        }
+                      />
+                    </aside>
+                  )}
+                </div>
+              </>
+            )}
+
+            {tab === "history" && (
+              // The history and every change in it are free. On /duty-calculator, alerts on this
+              // import in the heading, and the Tracker's refund check (audit checks) as its own card
+              // under it; in the Tracker, the refund check in the heading
+              <>
+                <RateHistoryCard
+                  f={f}
+                  sliceColors={sliceColors}
+                  highlight={highlight}
+                  onHighlight={setHighlight}
+                  headerAction={
+                    page === "calculator" ? (
+                      track && <ArrowLink onClick={track.start}>Get alerted when it changes</ArrowLink>
+                    ) : (
+                      <RefundsButton conversion={conversion} history={f.history} customsValue={f.customsValue} />
+                    )
+                  }
+                />
+                {page === "calculator" && (
+                  <RefundCheckCard
+                    history={f.history}
+                    customsValue={f.customsValue}
+                    onCheck={() =>
+                      conversion.openTrial("refunds", {
+                        title: "Find out if you overpaid, or underpaid, on past entries",
+                        subtitle:
+                          "Check every past entry against the duty in force on its date, across your entire product catalog, with the Tariff Tracker.",
+                        cta: "Check my entries free",
+                      })
+                    }
+                  />
+                )}
+              </>
+            )}
+
+            {tab === "compare" && (
+              <>
+                <CompareBox
+                  conversion={conversion}
+                  max={MAX_COMPARE}
+                  originsTeaser={
+                    signedOut && product ? teaserFor(product) : null
+                  }
+                >
+                  <CompareView
+                    entries={f.compareEntries}
+                    countries={f.countries}
+                    max={MAX_COMPARE}
+                    onAdd={(added) =>
+                      f.changeCountries([...f.countries, added])
+                    }
+                    customsValue={f.customsValue}
+                    onRemove={f.removeCountry}
+                    onPreferenceChange={f.setPreference}
+                    onViewDetails={(c) => {
+                      setHistoryOpen(false);
+                      f.viewCountryDetails(c);
+                    }}
+                  />
+                  {pickedNote && (
+                    <p className={ui.caption}>
+                      {pickedNote} Source: U.S. Census Bureau. {CENSUS_NOTICE}
+                    </p>
+                  )}
+                </CompareBox>
+                {product && <GatedAnalysis product={product} page={page} />}
+              </>
+            )}
+          </section>
+        </WhyUnlockContext.Provider>
       )}
       {conversion.dialog}
+      {track?.dialog}
     </div>
   );
 };

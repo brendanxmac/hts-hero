@@ -12,14 +12,16 @@ import {
   formatPrice,
   monthlyRate,
   TRACKER_MAX_LISTED_PAIRS,
+  TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { TRACKER_PLANS, TrackerAccess, TrackerPlan } from "@/libs/tariff-tracker/plan";
 import { useCatalog } from "../catalogStore";
 import { PREMIUM_FEATURES, PREMIUM_INCLUDES, PremiumFeature } from "./features";
 
-// The paid plans, sized by how many products they track. The one that fits the catalog is
-// picked out; checkout is Stripe's, billed monthly or annually.
+// The paid plans, sized by how many imports they cover. The one that fits the catalog is picked
+// out; checkout is Stripe's, billed monthly or annually. Opened from a used-up trial allowance or
+// a plan that's too small, and from "See plans" anywhere.
 
 const BILLING: { id: Billing; label: string }[] = [
   { id: "monthly", label: "Monthly" },
@@ -59,11 +61,25 @@ export const UpgradeDialog = ({
   const fits = TRACKER_PLANS.find((p) => items.length <= p.maxPairs);
   const { benefit } = PREMIUM_FEATURES[feature];
   const heading =
-    access.kind === "trial"
-      ? "Keep everything after your trial"
-      : access.kind === "paid"
-        ? "Track more products"
-        : "Unlock the full Tracker";
+    access.kind === "paid"
+      ? "Cover more imports"
+      : feature === "savings" || feature === "qualify"
+        ? "Check savings on every import"
+        : feature === "entries" || feature === "refunds"
+          ? "Audit every entry"
+          : feature === "alerts" || feature === "tracking"
+            ? "Get alerts on more imports"
+            : "Unlock the full Tracker";
+  const usedUp =
+    access.kind !== "trial"
+      ? null
+      : feature === "savings" || feature === "qualify"
+        ? `You've used your ${TRIAL_ALLOWANCE.savingsChecks} free savings checks.`
+        : feature === "entries" || feature === "refunds"
+          ? `You've used your ${TRIAL_ALLOWANCE.auditChecks} free audit checks.`
+          : feature === "alerts" || feature === "tracking"
+            ? `Your free alerts cover ${TRIAL_ALLOWANCE.alertImports} imports.`
+            : null;
 
   const buy = async (plan: TrackerPlan) => {
     setBusy(plan.plan);
@@ -85,7 +101,10 @@ export const UpgradeDialog = ({
             <div>
               <p className={ui.kicker}>Tariff Tracker plans</p>
               <Dialog.Title className="mt-1 text-xl font-semibold tracking-tight text-base-content">{heading}</Dialog.Title>
-              <p className={`${ui.bodySm} mt-1`}>{benefit}. Priced by how many products you track.</p>
+              <p className={`${ui.bodySm} mt-1`}>
+                {usedUp ? `${usedUp} ` : ""}
+                {benefit}. Priced by how many imports you cover, with unlimited audit checks.
+              </p>
             </div>
             <button type="button" className={ui.button({ variant: "ghost", size: "sm", icon: true })} onClick={onClose}>
               <XMarkIcon className="h-5 w-5" aria-hidden />
@@ -97,12 +116,12 @@ export const UpgradeDialog = ({
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className={ui.bodySm}>
                 Your catalog has <span className="font-semibold text-base-content tabular-nums">{items.length}</span>{" "}
-                {items.length === 1 ? "product" : "products"}.
+                {items.length === 1 ? "import" : "imports"}.
               </p>
               <SegmentedControl<Billing> label="Billing" options={BILLING} value={billing} onChange={setBilling} size="sm" />
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {TRACKER_PLANS.map((plan) => {
                 const recommended = plan === fits;
                 const current = access.paidPlan === plan.plan;
@@ -111,8 +130,8 @@ export const UpgradeDialog = ({
                     key={plan.plan}
                     className={`flex flex-col gap-4 rounded-lg border p-5 ${recommended ? "border-primary ring-1 ring-primary" : "border-base-300"}`}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <h3 className={ui.cardTitle}>Up to {plan.maxPairs} products</h3>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h3 className={ui.cardTitle}>Up to {plan.maxPairs} imports</h3>
                       {recommended && <span className={ui.badge("primary")}>Fits your catalog</span>}
                     </div>
                     <p className="flex items-baseline gap-1">
@@ -142,7 +161,7 @@ export const UpgradeDialog = ({
                 ))}
               </ul>
               <p className={ui.bodySm}>
-                More than {TRACKER_MAX_LISTED_PAIRS} products?{" "}
+                More than {TRACKER_MAX_LISTED_PAIRS} imports?{" "}
                 <a className={ui.link} href={`mailto:${config.resend.supportEmail}?subject=Tariff%20Tracker%20for%20a%20large%20catalog`}>
                   Let&apos;s talk
                 </a>

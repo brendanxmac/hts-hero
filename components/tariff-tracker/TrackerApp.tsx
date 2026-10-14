@@ -13,6 +13,8 @@ import { TrackerProvider } from "./TrackerContext";
 import { TrackerAccessProvider } from "./access/TrackerAccessProvider";
 import { InsightsProvider } from "./insights/InsightsContext";
 import { AlertSettingsProvider } from "./alerts/AlertSettingsContext";
+import { EntriesProvider } from "./entries/EntriesContext";
+import { OpportunitiesProvider } from "./opportunities/OpportunitiesContext";
 import { rememberSection } from "./overview/seenSections";
 
 // The Tariff Tracker: one page, with a tab per section. A tab's code loads the first time it's
@@ -34,6 +36,8 @@ const Overview = dynamic(() => import("./overview/Overview").then((m) => m.Overv
 const RateHistory = dynamic(() => import("./history/RateHistory").then((m) => m.RateHistory), { loading: PanelSkeleton });
 const Alerts = dynamic(() => import("./alerts/Alerts").then((m) => m.Alerts), { loading: PanelSkeleton });
 const Savings = dynamic(() => import("./savings/Savings").then((m) => m.Savings), { loading: PanelSkeleton });
+const EntryAudit = dynamic(() => import("./entries/EntryAudit").then((m) => m.EntryAudit), { loading: PanelSkeleton });
+const Sourcing = dynamic(() => import("./sourcing/Sourcing").then((m) => m.Sourcing), { loading: PanelSkeleton });
 const TrackerCalculator = dynamic(
   () => import("./calculator/TrackerCalculator").then((m) => m.TrackerCalculator),
   { loading: PanelSkeleton }
@@ -70,7 +74,9 @@ export const TrackerApp = () => {
     overview: () => <Overview />,
     history: () => <RateHistory />,
     savings: () => <Savings />,
+    sourcing: () => <Sourcing />,
     alerts: () => <Alerts />,
+    entries: () => <EntryAudit />,
   };
 
   // Bumped to start the calculator over from the address, for a calculator link opened in place
@@ -88,9 +94,9 @@ export const TrackerApp = () => {
         if (slug !== tab) window.history.pushState(null, "", sectionUrl(slug));
       },
       product,
-      openProduct: (key, fromList = false) => {
+      openProduct: (key, fromList = false, productTab) => {
         openedFromList.current = fromList;
-        window.history.pushState(null, "", productUrl(key));
+        window.history.pushState(null, "", productUrl(key, productTab));
       },
       closeProduct: () => {
         if (openedFromList.current) window.history.back();
@@ -109,31 +115,35 @@ export const TrackerApp = () => {
   return (
     <TrackerAccessProvider>
       <TrackerProvider>
-        <InsightsProvider>
-          <AlertSettingsProvider>
-            <TrackerNavContext.Provider value={nav}>
-              <TrackerShell>
-                {SECTIONS.filter((s) => visited.includes(s.slug)).map((section) => {
-                  const active = section.slug === tab;
-                  const panel = panels[section.slug];
-                  return (
-                    <div
-                      key={section.slug}
-                      role="tabpanel"
-                      id={`tt-panel-${section.slug}`}
-                      aria-labelledby={`tt-tab-${section.slug}`}
-                      hidden={!active}
-                    >
-                      <SectionPage section={section} showHeader={section.slug !== "overview" && !(section.slug === "catalog" && product)}>
-                        {panel ? panel(active) : <PlannedSection section={section} />}
-                      </SectionPage>
-                    </div>
-                  );
-                })}
-              </TrackerShell>
-            </TrackerNavContext.Provider>
-          </AlertSettingsProvider>
-        </InsightsProvider>
+        <OpportunitiesProvider>
+          <InsightsProvider>
+            <AlertSettingsProvider>
+              <EntriesProvider>
+                <TrackerNavContext.Provider value={nav}>
+                  <TrackerShell>
+                    {SECTIONS.filter((s) => visited.includes(s.slug)).map((section) => {
+                      const active = section.slug === tab;
+                      const panel = panels[section.slug];
+                      return (
+                        <div
+                          key={section.slug}
+                          role="tabpanel"
+                          id={`tt-panel-${section.slug}`}
+                          aria-labelledby={`tt-tab-${section.slug}`}
+                          hidden={!active}
+                        >
+                          <SectionPage section={section} showHeader={section.slug !== "overview" && !(section.slug === "catalog" && product)}>
+                            {panel ? panel(active) : <PlannedSection section={section} />}
+                          </SectionPage>
+                        </div>
+                      );
+                    })}
+                  </TrackerShell>
+                </TrackerNavContext.Provider>
+              </EntriesProvider>
+            </AlertSettingsProvider>
+          </InsightsProvider>
+        </OpportunitiesProvider>
       </TrackerProvider>
     </TrackerAccessProvider>
   );

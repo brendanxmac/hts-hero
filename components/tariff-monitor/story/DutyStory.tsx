@@ -18,7 +18,7 @@ export const DutyStory = ({ changes }: { changes: CaughtChange[] }) => (
         <Reveal>
           <figure className={`${mk.card} p-6 sm:p-8`}>
             <figcaption className="mb-4">
-              <p className="text-lg font-semibold text-slate-900">Duty on steel hardware from China</p>
+              <p className="text-lg font-semibold text-base-content">Duty on steel hardware from China</p>
               <p className={mk.small}>HTS 7326.90.86.88 · total US duty, % of value · HTS Hero tariff engine</p>
             </figcaption>
             <DutyChart />
@@ -26,22 +26,22 @@ export const DutyStory = ({ changes }: { changes: CaughtChange[] }) => (
         </Reveal>
 
         <div className={`${mk.card} flex flex-col`}>
-          <div className="border-b border-slate-200 px-6 py-5">
-            <p className="text-lg font-semibold text-slate-900">The latest US tariff changes</p>
+          <div className="border-b border-base-300 px-6 py-5">
+            <p className="text-lg font-semibold text-base-content">The latest US tariff changes</p>
             <p className={mk.small}>Each one alerted every catalog it touched</p>
           </div>
-          <ol className="flex-1 divide-y divide-slate-100">
+          <ol className="flex-1 divide-y divide-base-300">
             {changes.map((c) => (
               <li key={c.id} className="px-6 py-4">
-                <p className="text-sm font-semibold text-teal-700">
-                  {c.date} <span className="font-normal text-slate-400">· {c.revision}</span>
+                <p className="text-sm font-semibold text-primary">
+                  {c.date} <span className="font-normal text-base-content/60">· {c.revision}</span>
                 </p>
-                <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-slate-600">{c.summary}</p>
+                <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-base-content/70">{c.summary}</p>
               </li>
             ))}
           </ol>
-          <div className="border-t border-slate-200 px-6 py-4">
-            <Link href="/duty-calculator/changelog" className="inline-flex items-center gap-1 text-sm font-semibold text-teal-700 hover:text-teal-800">
+          <div className="border-t border-base-300 px-6 py-4">
+            <Link href="/duty-calculator/changelog" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary">
               Every change, in the tariff changelog <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>
           </div>

@@ -19,6 +19,8 @@ export const plainReasons = (result: CalculationResult, extraQuestions: Question
   return (reason: string): string => {
     let m = reason.match(/^Condition not met: (confirm:\S+) = true/);
     if (m) return "Only applies if you confirm your goods qualify (in Possible Adjustments)";
+    m = reason.match(/^Condition not met: claiming trade preference (.+)$/);
+    if (m) return `Only applies when you claim the trade program (${m[1]})`;
     m = reason.match(/^Condition not met: (\S+) = (true|false)( \(codes on .+\))?$/);
     if (m) return `Only applies if the answer to ${labelOf(m[1])} is ${m[2] === "true" ? "yes" : "no"}`;
     m = reason.match(/^Condition not met: base rate (\S+) (\S+)%$/);

@@ -75,9 +75,9 @@ export const SavingsFinder = ({ examples }: { examples: SavingsExample[] }) => {
   const asOf = new Date(`${e.asOf}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   return (
-    <div ref={ref} className="overflow-hidden rounded-2xl bg-white text-slate-900 shadow-2xl shadow-black/40 ring-1 ring-white/10">
+    <div ref={ref} className="overflow-hidden rounded-3xl border border-base-300 bg-base-100 text-base-content">
       {/* One tab per kind of find */}
-      <div className="grid grid-cols-3 gap-1 border-b border-slate-200 bg-slate-100 p-1.5" role="tablist" aria-label="Kinds of savings">
+      <div className="grid grid-cols-3 gap-1 border-b border-base-300 bg-tt-soft p-1.5" role="tablist" aria-label="Kinds of savings">
         {examples.map((x, i) => {
           const { tab, Icon } = KIND[x.kind];
           const active = i === idx;
@@ -88,12 +88,12 @@ export const SavingsFinder = ({ examples }: { examples: SavingsExample[] }) => {
               role="tab"
               aria-selected={active}
               onClick={() => setIdx(i)}
-              className={`relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-lg px-2 py-2 text-center text-xs font-semibold leading-tight transition-colors duration-300 sm:flex-row sm:gap-1.5 sm:text-sm ${active ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+              className={`relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-lg px-2 py-2 text-center text-xs font-semibold leading-tight transition-colors duration-300 sm:flex-row sm:gap-1.5 sm:text-sm ${active ? "bg-base-100 text-base-content shadow-sm" : "text-base-content/60 hover:text-base-content"}`}
             >
-              <Icon className={`h-4 w-4 shrink-0 ${active ? "text-teal-600" : "text-slate-400"}`} aria-hidden />
+              <Icon className={`h-4 w-4 shrink-0 ${active ? "text-primary" : "text-base-content/60"}`} aria-hidden />
               <span>{tab}</span>
               {active && running && (
-                <span key={idx} className="sf-progress absolute inset-x-0 bottom-0 h-0.5 bg-teal-500" style={{ animationDuration: `${steps * STEP_MS + HOLD_MS}ms` }} />
+                <span key={idx} className="sf-progress absolute inset-x-0 bottom-0 h-0.5 bg-primary" style={{ animationDuration: `${steps * STEP_MS + HOLD_MS}ms` }} />
               )}
             </button>
           );
@@ -104,7 +104,7 @@ export const SavingsFinder = ({ examples }: { examples: SavingsExample[] }) => {
       <div className="flex h-[23rem] flex-col p-4 sm:p-5">
         <p className="text-base font-semibold">
           {e.product}, from {e.countryName}
-          <span className={`${mono.className} ml-2 text-xs font-normal text-slate-400`}>{e.htsno}</span>
+          <span className={`${mono.className} ml-2 text-xs font-normal text-base-content/60`}>{e.htsno}</span>
         </p>
 
         <ul className="mt-4 flex flex-col gap-4">
@@ -116,16 +116,16 @@ export const SavingsFinder = ({ examples }: { examples: SavingsExample[] }) => {
                 <div className="flex items-end justify-between gap-3">
                   <span className="min-w-0">
                     <span className="block font-semibold">{o.label}</span>
-                    {o.detail && <span className="block truncate text-xs text-slate-500">{o.detail}</span>}
+                    {o.detail && <span className="block truncate text-xs text-base-content/60">{o.detail}</span>}
                   </span>
                   <span className="shrink-0 text-right tabular-nums">
-                    <span className={`block text-lg font-bold leading-tight ${o.current ? "text-rose-600" : "text-emerald-600"}`}>{usd(o.duty)}</span>
-                    {!o.current && save > 0 && <span className="block text-xs font-semibold text-emerald-600">save {usd(save)}</span>}
+                    <span className={`block text-lg font-bold leading-tight ${o.current ? "text-error" : "text-success"}`}>{usd(o.duty)}</span>
+                    {!o.current && save > 0 && <span className="block text-xs font-semibold text-success">save {usd(save)}</span>}
                   </span>
                 </div>
-                <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-slate-100">
+                <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-tt-soft">
                   <div
-                    className={`h-full origin-left rounded-full transition-transform duration-1000 ${EASE} ${o.current ? "bg-rose-500" : "bg-emerald-500"}`}
+                    className={`h-full origin-left rounded-full transition-transform duration-1000 ${EASE} ${o.current ? "bg-error" : "bg-success"}`}
                     style={{ transform: `scaleX(${on ? o.duty / max : 0})` }}
                   />
                 </div>
@@ -135,16 +135,16 @@ export const SavingsFinder = ({ examples }: { examples: SavingsExample[] }) => {
         </ul>
 
         <div
-          className={`mt-auto flex items-center justify-between gap-3 rounded-xl bg-slate-900 px-4 py-3.5 text-white transition-all duration-700 ${EASE} ${done ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}
+          className={`mt-auto flex items-center justify-between gap-3 hts-tracker-on-dark rounded-2xl bg-tt-side px-4 py-3.5 text-base-content transition-all duration-700 ${EASE} ${done ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}
         >
           <span className="flex min-w-0 items-center gap-2.5 font-semibold">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-slate-950">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-success text-success-content">
               <SparklesIcon className="h-4 w-4" aria-hidden />
             </span>
             {e.action}
           </span>
           <span className="shrink-0 text-right">
-            <span className="block text-2xl font-extrabold leading-tight tabular-nums text-emerald-300">
+            <span className="block text-2xl font-semibold [font-family:var(--font-tracker-display)] leading-tight tabular-nums text-success">
               {done && running ? (
                 <>
                   $<CountUp key={idx} to={Math.round(saving)} ms={1100} />
@@ -153,12 +153,12 @@ export const SavingsFinder = ({ examples }: { examples: SavingsExample[] }) => {
                 usd(saving)
               )}
             </span>
-            <span className="text-xs text-slate-400">saved a year</span>
+            <span className="text-xs text-base-content/60">saved a year</span>
           </span>
         </div>
       </div>
 
-      <p className="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
+      <p className="border-t border-base-300 px-5 py-3 text-xs text-base-content/60">
         Duty a year on {usd(e.yearlyValue)} of imports, from the HTS Hero engine, {asOf}.
       </p>
 

@@ -5,8 +5,6 @@ import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
 import * as mk from "@/components/ui/marketing/styles";
 import { LandingEmpty } from "../landing/LandingEmpty";
-import { DownloadPdfButton } from "../landing/ShareButtons";
-import { TrackImportButton } from "../landing/TrackImportButton";
 import { CalculatorWorkspace } from "./CalculatorWorkspace";
 import { Disclaimer } from "./Disclaimer";
 import { ExploreModal } from "./ExploreModal";
@@ -58,8 +56,6 @@ export const TariffFinderPage = ({
             f={f}
             page="calculator"
             empty={<LandingEmpty f={f} />}
-            leadingActions={<DownloadPdfButton />}
-            actions={<TrackImportButton f={f} size="sm" />}
           />
           <Disclaimer />
           <ExploreModal f={f} />

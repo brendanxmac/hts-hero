@@ -63,7 +63,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "Is this US tariff calculator free?",
         answer:
-          "Yes. The HTS Hero duty and tariff calculator is free to use with no sign-up. You get the full line-by-line breakdown: the base rate, every Chapter 99 tariff and exemption, trade preferences and customs fees. Duty Over Time and Analysis, which shows the duty from every country of origin, need a free account.",
+          "Yes. The HTS Hero duty and tariff calculator is free to use with no sign-up. You get the full line-by-line breakdown: the base rate, every Chapter 99 tariff and exemption, trade preferences and customs fees. Duty Over Time is free too. A free account adds the plain-English why behind every result (why each tariff applies and why others don't, with the legal text), and Analysis (the duty from every country of origin).",
       },
       {
         question: "Can I save or share a calculation?",

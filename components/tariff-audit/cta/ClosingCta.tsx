@@ -1,23 +1,24 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
 import { REQUEST_ANCHOR, SIGN_UP_TO_AUDIT } from "../lib/links";
 
 export const ClosingCta = () => (
-  <section className="relative overflow-hidden bg-slate-950 py-24 text-white" aria-labelledby="closing-title">
-    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_50%_0%,rgba(52,211,153,0.22),transparent)]" />
+  <section className={`${cta.band} ${cta.bandPad}`} aria-labelledby="closing-title">
     <div className={`${mk.container} relative flex flex-col items-center text-center`}>
-      <h2 id="closing-title" className={`${mk.h2Dark} max-w-3xl`}>
-        Refund deadlines run <span className={mk.accentDark}>entry by entry.</span>
+      <h2 id="closing-title" className={cta.title}>
+        Refund deadlines run <span className={cta.accent}>entry by entry.</span>
       </h2>
-      <p className={`${mk.leadDark} mt-5 max-w-2xl`}>
+      <p className={`${cta.lead} mt-6 max-w-2xl`}>
         Protests are due 180 days after liquidation, and many refunds depend on acting before it. Check your entries now.
       </p>
-      <div className="mt-10 flex flex-wrap justify-center gap-4">
-        <Link href={SIGN_UP_TO_AUDIT} className={mk.buttonOnDark}>
-          Audit free for 14 days <ArrowRightIcon className="h-4 w-4" aria-hidden />
+      <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <Link href={SIGN_UP_TO_AUDIT} className={cta.button}>
+          Get {TRIAL_ALLOWANCE.auditChecks} free audit checks <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
-        <a href={REQUEST_ANCHOR} className={mk.buttonGhostDark}>
+        <a href={REQUEST_ANCHOR} className={cta.secondary}>
           Request an audit
         </a>
       </div>

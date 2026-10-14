@@ -17,6 +17,7 @@ export const QuestionControl = ({
   note,
   muted,
   qualifyLink,
+  hideLegal,
 }: {
   question: Question;
   value: unknown;
@@ -28,6 +29,7 @@ export const QuestionControl = ({
   note?: React.ReactNode;
   muted?: boolean;
   qualifyLink?: React.ReactNode;
+  hideLegal?: boolean;
 }) => {
   const { input } = question;
   const code = heading?.code;
@@ -48,6 +50,7 @@ export const QuestionControl = ({
         note={note}
         muted={muted}
         qualifyLink={qualifyLink}
+        hideLegal={hideLegal}
       />
     );
   }

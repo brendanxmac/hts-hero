@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRightIcon, CloudArrowUpIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { REQUEST_ANCHOR, SELF_AUDIT_URL, SIGN_UP_TO_AUDIT } from "../lib/links";
@@ -7,8 +8,8 @@ import { REQUEST_ANCHOR, SELF_AUDIT_URL, SIGN_UP_TO_AUDIT } from "../lib/links";
 const PATHS = [
   {
     title: "Audit it yourself",
-    text: "Run the audit in the Tariff Tracker, free for 14 days with no credit card. Results appear as soon as your entries are checked, and stay in your account.",
-    cta: "Start your free trial",
+    text: `Run the audit in the Tariff Tracker: ${TRIAL_ALLOWANCE.auditChecks} free audit checks with any account, no credit card. Results appear as soon as your entries are checked, and stay in your account.`,
+    cta: "Start free",
     href: SIGN_UP_TO_AUDIT,
     Icon: UserCircleIcon,
     featured: true,
@@ -39,18 +40,17 @@ export const StartPaths = () => (
       <div className="mt-14 grid gap-6 md:grid-cols-3">
         {PATHS.map(({ title, text, cta, href, Icon, featured }) =>
           featured ? (
-            <article key={title} className="relative flex flex-col overflow-hidden rounded-2xl bg-slate-900 p-8 text-white shadow-2xl shadow-slate-900/20">
-              <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(24rem_14rem_at_100%_0%,rgba(45,212,191,0.25),transparent)]" />
-              <Icon className="relative h-8 w-8 text-teal-300" aria-hidden />
+            <article key={title} className="relative flex flex-col overflow-hidden hts-tracker-on-dark rounded-3xl bg-base-200 p-8 text-base-content">
+              <Icon className="relative h-8 w-8 text-primary" aria-hidden />
               <h3 className="relative mt-5 text-xl font-semibold">{title}</h3>
-              <p className="relative mt-2 flex-1 leading-relaxed text-slate-300">{text}</p>
+              <p className="relative mt-2 flex-1 leading-relaxed text-base-content/70">{text}</p>
               <Link href={href} className={`${mk.buttonOnDark} relative mt-8 w-full`}>
                 {cta} <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </Link>
             </article>
           ) : (
             <article key={title} className={`${mk.card} flex flex-col p-8`}>
-              <Icon className="h-8 w-8 text-teal-600" aria-hidden />
+              <Icon className="h-8 w-8 text-primary" aria-hidden />
               <h3 className={`${mk.h3} mt-5`}>{title}</h3>
               <p className={`${mk.body} mt-2 flex-1`}>{text}</p>
               <Link href={href} className={`${mk.buttonSecondary} mt-8 w-full`}>

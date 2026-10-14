@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import config from "@/config";
+import { CENSUS_NOTICE } from "@/components/duty-calculator/lib/census";
 import logo from "@/app/logo.svg";
 
 // Add the Footer to the bottom of your landing page and more.
@@ -36,6 +37,8 @@ const Footer = () => {
             <p className="mt-3 text-sm text-base-content/60">
               Copyright © {new Date().getFullYear()} - All rights reserved
             </p>
+            {/* Required by the Census Bureau's API terms (US import figures in the calculator) */}
+            <p className="mt-2 max-w-xs text-xs leading-snug text-base-content/50">{CENSUS_NOTICE}</p>
           </div>
           <div className="flex-grow flex flex-wrap justify-center -mb-10 md:mt-0 mt-10 text-center">
             <div className="lg:w-1/3 md:w-1/2 w-full px-4">

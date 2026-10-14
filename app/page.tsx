@@ -3,6 +3,7 @@ import config from "@/config";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { MarketingLayout } from "@/components/MarketingLayout";
+import { FollowTheme } from "@/components/ui/marketing/FollowTheme";
 import {
   DEFINITION,
   HOME_FAQS,
@@ -64,6 +65,8 @@ export default async function Home() {
   ]);
 
   return (
+    // The Tariff Tracker's look, following the site's light/dark setting (DESIGN_SYSTEM.md §15)
+    <FollowTheme>
     <MarketingLayout>
       {renderSchemaJsonLd({
         "@type": "WebSite",
@@ -118,5 +121,6 @@ export default async function Home() {
         <OfferCta />
       </main>
     </MarketingLayout>
+    </FollowTheme>
   );
 }

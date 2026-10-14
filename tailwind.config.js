@@ -86,6 +86,9 @@ module.exports = {
       // skin: the Tariff Tracker's look (its theme tokens, which follow light and dark) on the
       // same opted-in pages, in place of the marketing layer's slate and teal
       addVariant("skin", [".follow-theme &", "&.follow-theme"]);
+      // tracker: a shared component in the Tariff Tracker's look (DESIGN_SYSTEM.md §15) when it
+      // sits inside .hts-tracker (the Tracker, and public pages in its look such as /hts)
+      addVariant("tracker", [".hts-tracker &", "&.hts-tracker"]);
     }),
   ],
   daisyui: {

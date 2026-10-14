@@ -4,7 +4,7 @@ import { CheckIcon, LinkIcon } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
 import { TariffFinder } from "../lib/useTariffFinder";
 
-// Copy a link to the estimate (styled like Download beside it; only Track this import stands out)
+// Copy a link to the estimate (secondary; only Track this import stands out)
 export const ShareButtons = ({ f }: { f: TariffFinder }) => (
   <button
     type="button"

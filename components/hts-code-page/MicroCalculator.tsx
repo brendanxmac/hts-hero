@@ -11,6 +11,7 @@ import { markCalculatorHandoff } from "@/components/duty-calculator/lib/analytic
 import { formatDate, formatMoney } from "@/components/duty-calculator/lib/format";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { CostBar } from "./CostBar";
 import { EstimateStats } from "./EstimateStats";
 
@@ -104,11 +105,11 @@ export const MicroCalculator = ({
     <section
       id="estimate"
       aria-labelledby="estimate-title"
-      className={`${ui.cardOverflowVisible} scroll-mt-6`}
+      className={`${tt.panel} scroll-mt-6`}
     >
-      <div className="flex flex-col gap-3 border-b border-base-300 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-base-300 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h2 id="estimate-title" className={ui.cardTitle}>
+          <h2 id="estimate-title" className={tt.title}>
             Estimated Duty on {htsno}
           </h2>
           <p className={ui.caption}>
@@ -148,9 +149,9 @@ export const MicroCalculator = ({
       )}
 
       {/* The way on: what this quick estimate leaves out, and the calculator that doesn't */}
-      <div className="flex flex-col gap-3 rounded-b-lg border-t border-base-300 bg-base-200 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <div className="flex flex-col gap-3 rounded-b-3xl border-t border-base-300 bg-tt-soft px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="min-w-0">
-          <p className={`${ui.cardTitle} leading-snug`}>
+          <p className={`${tt.title} leading-snug`}>
             {shown && shown.totalDuty > 0
               ? `Is ${formatMoney(shown.totalDuty)} really what you'll owe?`
               : "Make sure this shipment really enters duty-free."}
@@ -163,7 +164,7 @@ export const MicroCalculator = ({
             href={calculatorHref}
             onClick={openInCalculator}
             rel="nofollow"
-            className={ui.button({ variant: "primary", size: "lg" })}
+            className={tt.button("next")}
           >
             Find my exact duty
             <ArrowRightIcon className="h-4 w-4" aria-hidden />

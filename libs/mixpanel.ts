@@ -94,11 +94,19 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_ANALYSIS_BASIS_CHANGED = "Tariff Tracker Analysis Basis Changed",
   TARIFF_TRACKER_ANALYSIS_ORIGIN_SELECTED = "Tariff Tracker Analysis Origin Selected",
   TARIFF_TRACKER_ANALYSIS_COUNTRIES_CHOSEN = "Tariff Tracker Analysis Countries Chosen",
+  TARIFF_TRACKER_ANALYSIS_SUPPLIERS_FILTERED = "Tariff Tracker Analysis Suppliers Filtered",
   /** Funnel (PRICING.md): a locked feature shown, and its call to action clicked */
   LOCKED_FEATURE_VIEWED = "Locked Feature Viewed",
   LOCKED_FEATURE_CTA_CLICKED = "Locked Feature CTA Clicked",
-  TARIFF_TRACKER_TRIAL_DIALOG_OPENED = "Tariff Tracker Trial Dialog Opened",
-  TARIFF_TRACKER_TRIAL_STARTED = "Tariff Tracker Trial Started",
+  TARIFF_TRACKER_COVERAGE_CHANGED = "Tariff Tracker Coverage Changed",
+  /** A trial allowance spent (a savings or audit check), and one that ran out */
+  TARIFF_TRACKER_CHECK_SPENT = "Tariff Tracker Check Spent",
+  TARIFF_TRACKER_ALLOWANCE_USED_UP = "Tariff Tracker Allowance Used Up",
+  TARIFF_TRACKER_ENTRY_AUDITED = "Tariff Tracker Entry Audited",
+  /** A savings opportunity tracked, or moved to a new status (product Savings tab) */
+  TARIFF_TRACKER_OPPORTUNITY_CHANGED = "Tariff Tracker Opportunity Changed",
+  TARIFF_TRACKER_SAVING_APPLIED = "Tariff Tracker Saving Applied",
+  TARIFF_TRACKER_PRODUCT_TAB_OPENED = "Tariff Tracker Product Tab Opened",
   TARIFF_TRACKER_UPGRADE_OPENED = "Tariff Tracker Upgrade Opened",
   TARIFF_TRACKER_CHECKOUT_STARTED = "Tariff Tracker Checkout Started",
   TARIFF_TRACKER_SETUP_STEP_CLICKED = "Tariff Tracker Setup Step Clicked",

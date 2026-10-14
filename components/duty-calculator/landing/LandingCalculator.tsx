@@ -17,7 +17,7 @@ import { CompareTab } from "./CompareTab";
 import { HistoryTab } from "./HistoryTab";
 import { InputBar } from "./InputBar";
 import { LandingEmpty } from "./LandingEmpty";
-import { DownloadPdfButton, ShareButton } from "./ShareButtons";
+import { ShareButton } from "./ShareButtons";
 import { TrackImportButton } from "./TrackImportButton";
 import { TrackThisImport } from "./TrackThisImport";
 
@@ -80,7 +80,6 @@ export const LandingCalculator = ({ f }: { f: TariffFinder }) => {
               onChange={changeTab}
               actions={
                 <>
-                  <DownloadPdfButton />
                   <ShareButton f={f} />
                   <TrackImportButton f={f} size="sm" />
                 </>

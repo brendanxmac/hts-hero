@@ -179,6 +179,8 @@ Output:
 
 It reuses `originRates()` and `rateTiers()` from the Tracker's Analysis tab (`components/tariff-tracker/product/analysis/analysis.ts`).
 
+Census import figures (added Oct 2026): each origin carries `us_imports` (`value_usd`, `share_pct`, `change_pct`), how much of the product the US imported from it last year. `proven_cheaper_origins` lists the largest suppliers that pay less than `country_of_origin`, and `only_us_suppliers: true` ranks only countries that already ship it. Ties on a rate break toward the larger supplier. `us_imports.notice` is the attribution Census's terms require wherever the figures are shown, and the widget prints it.
+
 UI: a ranked bar chart. Its link action goes to the Tracker product Analysis view, where the globe and flag swarm live. Those make a strong "see more in the app" moment.
 
 #### 3. `get_duty_history` — public, read-only
@@ -198,6 +200,8 @@ It wraps `calculateHistory` (`tariffs/engine-v2/history.ts:101`) and the Tracker
 Output: `{ hts_code, description, indent_path: [{ code, description }], base_rates: { general, special, other }, special_programs: [...], chapter_99_measures_that_may_apply: [{ code, name }], links.hts_page_url }`.
 
 It wraps `getHtsElementByCode` and `getHtsElementParentsServer` (`libs/hts-server.ts:72,79`).
+
+It also returns `us_imports`: the code's US imports last year with its top 10 supplying countries (U.S. Census Bureau, from `libs/us-imports-server.ts`), and the Census notice.
 
 #### 5. `get_recent_tariff_changes` — public, personalized when signed in
 > Use this when the user asks what has changed in US tariffs recently, or whether a recent HTS revision affects them.

@@ -19,7 +19,7 @@ export const HomeDirectory = () => (
         <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {POPULAR_HTS_CODES.map(({ category, codes }) => (
             <div key={category} className={`${mk.card} p-6`}>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-base-content/60">
                 {category}
               </h3>
               <ul className="mt-3 flex flex-col gap-2">
@@ -29,11 +29,11 @@ export const HomeDirectory = () => (
                       href={`/hts/${c.code}`}
                       className="group flex items-baseline justify-between gap-3 text-sm"
                     >
-                      <span className="text-slate-700 group-hover:text-teal-700 group-hover:underline">
+                      <span className="text-base-content/70 group-hover:text-primary group-hover:underline">
                         {c.label}
                       </span>
                       <span
-                        className={`${mono.className} shrink-0 text-xs text-slate-400`}
+                        className={`${mono.className} shrink-0 text-xs text-base-content/60`}
                       >
                         {c.code}
                       </span>

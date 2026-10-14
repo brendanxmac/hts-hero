@@ -52,6 +52,8 @@ module.exports = plugin(({ addBase }) => {
       ":root:not([data-theme]) .hts-theme": themeVars("dark"),
       // The Tracker's dark palette, more specific so it wins over the line above
       ":root:not([data-theme]) .hts-theme.hts-tracker": trackerVars("dark"),
+      // A call-to-action band inverts to light (rule below, by the OS setting)
+      ":root:not([data-theme]) .hts-tracker .hts-tracker-inverse": trackerVars("light"),
     },
     // Inside another page (explorer, classification): keep that page's background
     ".hts-theme.hts-theme-embedded": { backgroundColor: "transparent" },
@@ -80,5 +82,11 @@ module.exports = plugin(({ addBase }) => {
     ".hts-tracker .rounded-lg": { borderRadius: "1.25rem" },
     // The sidebar is dark in both modes: everything inside it takes the dark palette
     ".hts-tracker .hts-tracker-on-dark, [data-theme] .hts-tracker .hts-tracker-on-dark": trackerVars("dark"),
+    // Landing pages in the Tracker's look: their dark bands (mk.bandDark marks them .mk-dark) take
+    // the dark palette in both modes, so theme classes inside read light on dark
+    ".follow-theme .mk-dark, [data-theme] .follow-theme .mk-dark": trackerVars("dark"),
+    // A call-to-action band, inverted from the page: dark in light mode, light in dark mode
+    ".hts-tracker .hts-tracker-inverse": trackerVars("dark"),
+    '[data-theme="dark"] .hts-tracker .hts-tracker-inverse': trackerVars("light"),
   });
 });

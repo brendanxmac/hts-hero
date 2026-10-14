@@ -16,9 +16,9 @@ export const TryItSection = () => (
           and when. Then track it, free.
         </SectionIntro>
       </div>
-      <div className={`${THEME_LIGHT} rounded-2xl bg-slate-50 p-4 sm:p-5`}>
+      <div className={`${THEME_LIGHT} rounded-2xl bg-tt-soft p-4 sm:p-5`}>
         <BreadcrumbsProvider>
-          <Suspense fallback={<div className="h-[32rem] rounded-xl bg-white" />}>
+          <Suspense fallback={<div className="h-[32rem] rounded-xl bg-base-100" />}>
             <TryItCard />
           </Suspense>
         </BreadcrumbsProvider>

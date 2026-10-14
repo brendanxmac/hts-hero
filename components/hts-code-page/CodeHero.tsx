@@ -1,7 +1,7 @@
 import type { HtsElement } from "@/interfaces/hts";
 import { formatSummaryDate, HtsDutySummary } from "@/libs/hts-duty-summary";
 import { mono } from "@/components/ui/font";
-import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import type { SectionChapter } from "./types";
 
 // The top of the page: the code, its readable name, and where it sits in the schedule
@@ -27,7 +27,7 @@ export function CodeHero({
 
   return (
     <div className="flex flex-col gap-3">
-      <span className={ui.kicker}>
+      <span className={tt.eyebrow("primary")}>
         HTS Code{element.chapter ? ` · Chapter ${element.chapter}` : ""}
         {summary && <> · Updated {formatSummaryDate(summary.asOf)}</>}
       </span>
@@ -35,7 +35,7 @@ export function CodeHero({
         <span className={`${mono.className} text-3xl sm:text-4xl font-semibold leading-none tracking-tight text-primary`}>
           {element.htsno}
         </span>
-        <span className="text-2xl lg:text-3xl font-semibold leading-tight tracking-tight text-base-content">
+        <span className={`${tt.display} text-2xl lg:text-3xl font-semibold leading-tight tracking-tight text-base-content`}>
           {productName}
         </span>
       </h1>

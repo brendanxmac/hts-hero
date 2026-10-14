@@ -7,6 +7,7 @@ import { DEMO_ALERTS } from "@/components/tariff-monitor/lib/demoAlerts";
 import { LANES } from "@/components/tariff-monitor";
 import { CommandCenter } from "../command/CommandCenter";
 import { OFFER } from "../lib/offer";
+import { darkBand, display, followPage, glow, moneyButton } from "../lib/theme";
 
 // The homepage hero: a trading-floor ticker of real 2026 tariff changes runs across the top
 // of a dark hero; below, the promise beside the example account (monitoring, savings, audit). One button.
@@ -17,16 +18,16 @@ const TAPE = [
 ];
 
 const Tape = () => (
-  <div className="group relative overflow-hidden border-b border-white/10 bg-black/30 py-3" aria-label="Recent US tariff changes">
-    <div className="tariff-tape flex w-max gap-10">
+  <div className="group relative overflow-hidden border-b border-base-300 bg-base-200/60 py-2.5" aria-label="Recent US tariff changes">
+    <div className="tariff-tape flex w-max gap-3">
       {[...TAPE, ...TAPE].map((t, i) => (
-        <span key={`${t.key}-${i}`} className="flex shrink-0 items-center gap-2.5 whitespace-nowrap text-sm">
+        <span key={`${t.key}-${i}`} className="flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-full bg-tt-side-card px-3.5 py-1 text-sm">
           {/* Program color is data */}
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: t.color }} />
-          <span className="font-bold uppercase tracking-wide text-slate-300">{t.program}</span>
-          <span className="text-slate-400">{t.text}</span>
-          <span className={`font-bold tabular-nums ${t.up ? "text-rose-400" : "text-emerald-400"}`}>{t.change}</span>
-          <span className="text-slate-500">{t.date}</span>
+          <span className="font-bold uppercase tracking-wide text-base-content/80">{t.program}</span>
+          <span className="text-base-content/70">{t.text}</span>
+          <span className={`font-bold tabular-nums ${t.up ? "text-error" : "text-success"}`}>{t.change}</span>
+          <span className="text-base-content/60">{t.date}</span>
         </span>
       ))}
     </div>
@@ -55,30 +56,32 @@ const Tape = () => (
 );
 
 export const HeroTicker = () => (
-  <header className="relative overflow-hidden bg-[#070d1a] text-white">
-    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(50rem_26rem_at_80%_20%,rgba(45,212,191,0.18),transparent),radial-gradient(40rem_24rem_at_0%_100%,rgba(14,165,233,0.14),transparent)]" />
+  <header className={`relative overflow-hidden ${darkBand}`}>
+    <div aria-hidden className={glow} />
     <Tape />
     <div className="relative mx-auto grid max-w-screen-xl grid-cols-1 items-center gap-14 px-6 pb-24 pt-16 lg:grid-cols-[minmax(0,6fr)_minmax(0,6fr)] lg:px-8 lg:pt-10">
       <div>
-        <p className="text-sm font-bold uppercase tracking-[0.2em] text-teal-300">US Tariff Intelligence</p>
-        <h1 className="mt-4 text-5xl font-extrabold leading-[1.04] tracking-tight lg:text-[3.4rem]">
-          Monitor &amp; Audit US Import Tariffs{" "}
-          <span className="text-teal-300">on Autopilot</span>
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary">US Tariff Intelligence</p>
+        <h1 className={`${display} mt-4 text-5xl font-semibold leading-[1.04] tracking-tight lg:text-[3.4rem]`}>
+          Monitor &amp; Audit your US Tariffs{" "}
+          <span className="text-primary">on Autopilot</span>
         </h1>
-        <p className="mt-5 text-xl leading-relaxed text-slate-300">
-          HTS Hero calculates every duty, alerts you the moment a change hits your products, and audits every entry for money
-          back. Around the clock.
+        <p className="mt-5 text-xl leading-relaxed text-base-content/70">
+          HTS Hero calculates every duty, alerts you the moment a change hits your products, uncovers savings, and audits every import for money
+          back, 24/7.
         </p>
         <Link
           href={OFFER.href}
-          className="group mt-10 inline-flex h-16 items-center gap-3 rounded-2xl bg-teal-400 px-9 text-lg font-extrabold text-slate-950 shadow-[0_0_60px_-10px_rgba(45,212,191,0.9)] transition-colors hover:bg-teal-300"
+          className={`${moneyButton} mt-10`}
         >
           {OFFER.cta}
           <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
-        <p className="mt-4 max-w-md text-sm text-slate-400">{OFFER.note}</p>
+        <p className="mt-4 max-w-md text-sm text-base-content/60">{OFFER.note}</p>
       </div>
-      <CommandCenter />
+      <div className={followPage}>
+        <CommandCenter />
+      </div>
     </div>
   </header>
 );

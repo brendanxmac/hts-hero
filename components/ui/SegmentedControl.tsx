@@ -15,7 +15,8 @@ export function SegmentedControl<T extends string>({
 }: {
   // Names the group for screen readers
   label: string;
-  options: readonly { id: T; label: string; title?: string }[];
+  // count: a number in a small pill after the label (how many there are to see)
+  options: readonly { id: T; label: string; title?: string; count?: number }[];
   value: T;
   onChange: (value: T) => void;
   size?: "sm" | "md";
@@ -52,6 +53,15 @@ export function SegmentedControl<T extends string>({
             }`}
           >
             {option.label}
+            {option.count !== undefined && (
+              <span
+                className={`ml-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[11px] font-semibold tabular-nums ${
+                  active ? (accent ? "bg-primary-content/20 text-primary-content" : "bg-primary/10 text-primary") : "bg-base-content/10 text-base-content/70"
+                }`}
+              >
+                {option.count}
+              </span>
+            )}
           </button>
         );
       })}

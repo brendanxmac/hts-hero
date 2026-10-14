@@ -24,6 +24,8 @@ export const subtitle = "text-sm text-base-content/70";
 // Big numbers
 export const metric = `${display} text-[1.75rem] font-semibold leading-tight tabular-nums text-base-content`;
 export const metricLg = `${display} text-4xl font-semibold leading-none tabular-nums text-base-content`;
+// A smaller figure beside a big one (a stat row's other numbers)
+export const metricSm = `${display} text-xl font-semibold leading-tight tabular-nums text-base-content`;
 
 const EYEBROW_TONES: Record<Tone, string> = {
   primary: "text-primary",

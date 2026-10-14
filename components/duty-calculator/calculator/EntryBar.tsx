@@ -1,20 +1,41 @@
 "use client";
 
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { ReactNode } from "react";
+import { LockClosedIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import { Country } from "@/constants/countries";
 import { CountryField } from "../fields/CountryField";
 import { HtsCodeField } from "../fields/HtsCodeField";
 import { NumberField } from "../fields/NumberField";
-import { Segmented } from "../fields/Segmented";
-import { TRANSPORT_MODES } from "../lib/format";
+import { TransportField } from "../fields/TransportField";
 import { TariffFinder } from "../lib/useTariffFinder";
 import { RailField } from "./RailField";
 
 // Entry details across the top of the results (the Tariff Tracker's calculator): the title and
 // subtitle, then every field on one row on wide screens. One country of origin; others are
-// added to compare in the Compare tab, and stay there when the origin changes.
-export const EntryBar = ({ f, title, description }: { f: TariffFinder; title: string; description: string }) => {
+// added to compare in the Compare tab, and stay there when the origin changes. With fixedProduct
+// (a catalog product's view), the code and origin are the product's and can't be changed.
+
+// A field that shows its value without letting it change
+const Fixed = ({ children }: { children: ReactNode }) => (
+  <div className="flex h-10 items-center gap-2 rounded-lg border border-base-300 bg-base-200 px-3 text-sm text-base-content" title="Fixed for this product">
+    <span className="min-w-0 flex-1 truncate">{children}</span>
+    <LockClosedIcon className="h-3.5 w-3.5 shrink-0 text-base-content/40" aria-hidden />
+  </div>
+);
+
+export const EntryBar = ({
+  f,
+  title,
+  description,
+  fixedProduct = false,
+}: {
+  f: TariffFinder;
+  title: string;
+  description: string;
+  fixedProduct?: boolean;
+}) => {
   const { result } = f;
   const setOrigin = (picked: Country[]) => {
     const origin = picked[0];
@@ -33,11 +54,26 @@ export const EntryBar = ({ f, title, description }: { f: TariffFinder; title: st
         <div
           className={`grid grid-cols-1 items-end gap-4 sm:grid-cols-2 [&_input]:text-sm ${
             result?.requiresQuantity
-              ? "lg:grid-cols-[minmax(0,2fr)_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(14rem,1.6fr)]"
-              : "lg:grid-cols-[minmax(0,2fr)_minmax(0,1.4fr)_minmax(0,1.1fr)_minmax(0,1.2fr)_minmax(14rem,1.6fr)]"
+              ? "lg:grid-cols-[minmax(0,2fr)_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.1fr)]"
+              : "lg:grid-cols-[minmax(0,2fr)_minmax(0,1.4fr)_minmax(0,1.1fr)_minmax(0,1.2fr)_minmax(0,1.1fr)]"
           }`}
           data-density="compact"
         >
+          {fixedProduct ? (
+            <>
+              <RailField label="HTS code" htmlFor="dc-hts">
+                <Fixed>
+                  <span className={mono.className}>{f.selectedElement?.htsno}</span>
+                </Fixed>
+              </RailField>
+              <RailField label="Origin" htmlFor="dc-country">
+                <Fixed>
+                  {f.country?.flag} {f.country?.name}
+                </Fixed>
+              </RailField>
+            </>
+          ) : (
+            <>
           <RailField
             label="HTS code"
             htmlFor="dc-hts"
@@ -53,6 +89,8 @@ export const EntryBar = ({ f, title, description }: { f: TariffFinder; title: st
           <RailField label="Origin" htmlFor="dc-country">
             <CountryField id="dc-country" selected={f.countries.slice(0, 1)} onChange={setOrigin} max={1} />
           </RailField>
+            </>
+          )}
           <RailField label="Value" htmlFor="dc-value">
             <NumberField id="dc-value" prefix="$" suffix="USD" value={f.customsValue} onChange={f.setCustomsValue} />
           </RailField>
@@ -64,8 +102,8 @@ export const EntryBar = ({ f, title, description }: { f: TariffFinder; title: st
           <RailField label="Entry date" htmlFor="dc-date">
             <input id="dc-date" type="date" className={`${ui.input} tabular-nums`} value={f.entryDate} onChange={(e) => f.setEntryDate(e.target.value)} />
           </RailField>
-          <RailField label="Transport">
-            <Segmented label="Mode of transport" options={TRANSPORT_MODES} value={f.transportMode} onChange={f.setTransportMode} compact />
+          <RailField label="Mode of transport" htmlFor="dc-transport">
+            <TransportField id="dc-transport" value={f.transportMode} onChange={f.setTransportMode} />
           </RailField>
         </div>
       )}

@@ -50,8 +50,8 @@ export const RatesByCountry = ({ content }: { content: DutyCalculatorContent }) 
           </div>
         )}
 
-        {/* The charts keep the calculator's analytical look, framed as a card */}
-        <div className="min-w-0 rounded-3xl border border-slate-200 skin:border-base-300 bg-white skin:bg-base-100 p-4 shadow-sm sm:p-8">
+        {/* The charts bring their own cards */}
+        <div className="min-w-0">
           <CountryRateCharts
             products={matrix.products}
             rows={matrix.rows.map((row) => ({

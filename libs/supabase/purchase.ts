@@ -82,6 +82,7 @@ export const getProductForPlan = (plan: PricingPlan) => {
     case PricingPlan.TARIFF_IMPACT_STANDARD:
     case PricingPlan.TARIFF_IMPACT_PRO:
       return Product.TARIFF_IMPACT;
+    case PricingPlan.TARIFF_TRACKER_10:
     case PricingPlan.TARIFF_TRACKER_30:
     case PricingPlan.TARIFF_TRACKER_100:
     case PricingPlan.TARIFF_TRACKER_500:

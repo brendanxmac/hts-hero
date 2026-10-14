@@ -2,10 +2,8 @@
 import {
   ANNUAL_DISCOUNT,
   CLASSIFY_PLANS,
-  FREE_TRACKED_PAIRS,
   TRACKER_TIERS,
-  TRIAL_DAYS,
-  TRIAL_PAIRS,
+  TRIAL_ALLOWANCE,
   formatPrice,
 } from "@/components/pricing-calculator/lib/pricing";
 import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions";
@@ -31,7 +29,7 @@ export const HTS_HERO: Tool = {
     "A US tariff calculator built for importers who need the exact number: every Chapter 99 tariff stacked line by line with its legal source, entry audits by date, duty over time, alerts when a tariff change hits your products, and results by API and MCP for your own systems.",
   bestFor: "Importers, brokers and compliance teams who need exact, auditable US duty",
   price: `Calculator free; Tracker from ${formatPrice(TRACKER_TIERS[0].price)}/mo`,
-  priceDetail: `${FREE_TIER}. Tariff Tracker free for ${FREE_TRACKED_PAIRS} pairs, and you can try up to ${TRIAL_PAIRS} free for ${TRIAL_DAYS} days; paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo for your product catalog. Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo. Monthly plans, no contract, ${ANNUAL_DISCOUNT * 100}% off annually.`,
+  priceDetail: `${FREE_TIER}. Tariff Tracker starts free with no time limit: upload your whole catalog, check ${TRIAL_ALLOWANCE.savingsChecks} imports for savings, run ${TRIAL_ALLOWANCE.auditChecks} audit checks and get alerts on ${TRIAL_ALLOWANCE.alertImports} imports; paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo for up to ${TRACKER_TIERS[0].maxPairs} imports. Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo. Monthly plans, no contract, ${ANNUAL_DISCOUNT * 100}% off annually.`,
   features: {
     freeToTry: { support: "yes", note: FREE_TIER },
     selfServe: { support: "yes", note: "Every plan is self-serve, with no demo or contract" },
@@ -41,9 +39,9 @@ export const HTS_HERO: Tool = {
     adjustments: { support: "yes", note: "Answer each question and see the new total" },
     entryDate: { support: "yes", note: `Entry audits, with verified rates back to ${historyFrom}` },
     rateHistory: { support: "yes", note: "Duty Over Time, revision by revision, free with no account" },
-    catalogImpact: { support: "paid", note: "Tariff Tracker alerts, with the cost to each product" },
+    catalogImpact: { support: "paid", note: `Tariff Tracker alerts, with the cost to each product; free on ${TRIAL_ALLOWANCE.alertImports} imports` },
     countryCompare: { support: "yes" },
-    csvUpload: { support: "paid", note: "Tariff Tracker" },
+    csvUpload: { support: "yes", note: "Tariff Tracker: upload your whole catalog with any account" },
     classification: { support: "paid", note: "HTS Hero Classify, with CROSS rulings" },
     api: { support: "onRequest", note: "API and MCP; plugs into ERP, TMS and internal tools" },
     changelog: { support: "yes" },

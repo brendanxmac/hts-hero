@@ -8,9 +8,9 @@ const ENGINE = { x: 250, y: 40, w: 230, h: 280 };
 const INPUTS = ["ACE entry summary (ES-003)", "CBP Form 7501 data"];
 const CHECKS = ["Rules on the entry date", "Stacking and exemptions", "Trade preferences", "Refund status"];
 const FLAGS = [
-  { label: "Overpaid", color: "#059669" },
-  { label: "Refundable", color: "#0d9488" },
-  { label: "Underpaid", color: "#e11d48" },
+  { label: "Overpaid", color: "oklch(var(--su))" },
+  { label: "Refundable", color: "oklch(var(--p))" },
+  { label: "Underpaid", color: "oklch(var(--er))" },
 ];
 const BROKER = { x: 720, y: 120, w: 180, h: 120 };
 const inY = (i: number) => 130 + i * 100;
@@ -27,7 +27,7 @@ export const AuditFlowDiagram = () => (
     aria-label="Your entry data flows through HTS Hero's checks (rules on the entry date, stacking and exemptions, trade preferences, refund status) to overpaid, refundable and underpaid lines, then to your customs broker to file"
   >
     {INPUTS.map((_, i) => (
-      <path key={`i${i}`} d={inPath(i)} fill="none" stroke="#99f6e4" strokeWidth="1.5" strokeDasharray="4 4" />
+      <path key={`i${i}`} d={inPath(i)} fill="none" stroke="oklch(var(--p)/0.4)" strokeWidth="1.5" strokeDasharray="4 4" />
     ))}
     {FLAGS.map((f, i) => (
       <g key={`o${i}`}>
@@ -37,7 +37,7 @@ export const AuditFlowDiagram = () => (
     ))}
     <g className="motion-reduce:hidden">
       {INPUTS.map((_, i) => (
-        <circle key={`di${i}`} r="4" fill="#0d9488">
+        <circle key={`di${i}`} r="4" fill="oklch(var(--p))">
           <animateMotion dur="2.4s" begin={`${i * 0.8}s`} repeatCount="indefinite" path={inPath(i)} />
         </circle>
       ))}
@@ -49,39 +49,39 @@ export const AuditFlowDiagram = () => (
     </g>
     {INPUTS.map((label, i) => (
       <g key={label}>
-        <rect x="0" y={inY(i) - 22} width="200" height="44" rx="8" fill="white" stroke="#cbd5e1" />
-        <text x="14" y={inY(i) + 5} fontSize="12.5" fontWeight="600" fill="#0f172a">
+        <rect x="0" y={inY(i) - 22} width="200" height="44" rx="8" fill="oklch(var(--b1))" stroke="oklch(var(--b3))" />
+        <text x="14" y={inY(i) + 5} fontSize="12.5" fontWeight="600" fill="oklch(var(--bc))">
           {label}
         </text>
       </g>
     ))}
-    <rect x={ENGINE.x} y={ENGINE.y} width={ENGINE.w} height={ENGINE.h} rx="12" fill="white" stroke="#0f172a" strokeWidth="2" />
-    <text x={ENGINE.x + 18} y={ENGINE.y + 32} fontSize="12" fontWeight="700" letterSpacing="2" fill="#0d9488">
+    <rect x={ENGINE.x} y={ENGINE.y} width={ENGINE.w} height={ENGINE.h} rx="12" fill="oklch(var(--b1))" stroke="oklch(var(--bc))" strokeWidth="2" />
+    <text x={ENGINE.x + 18} y={ENGINE.y + 32} fontSize="12" fontWeight="700" letterSpacing="2" fill="oklch(var(--p))">
       HTS HERO AUDIT
     </text>
     {CHECKS.map((c, i) => (
       <g key={c}>
-        <rect x={ENGINE.x + 18} y={ENGINE.y + 50 + i * 54} width={ENGINE.w - 36} height="40" rx="8" fill="#f0fdfa" stroke="#99f6e4" />
-        <text x={ENGINE.x + 32} y={ENGINE.y + 75 + i * 54} fontSize="12.5" fontWeight="600" fill="#0f172a">
+        <rect x={ENGINE.x + 18} y={ENGINE.y + 50 + i * 54} width={ENGINE.w - 36} height="40" rx="8" fill="oklch(var(--p)/0.08)" stroke="oklch(var(--p)/0.4)" />
+        <text x={ENGINE.x + 32} y={ENGINE.y + 75 + i * 54} fontSize="12.5" fontWeight="600" fill="oklch(var(--bc))">
           {c}
         </text>
       </g>
     ))}
     {FLAGS.map((f, i) => (
       <g key={f.label}>
-        <rect x="530" y={flagY(i) - 22} width="140" height="44" rx="10" fill="white" stroke={f.color} strokeWidth="1.75" />
+        <rect x="530" y={flagY(i) - 22} width="140" height="44" rx="10" fill="oklch(var(--b1))" stroke={f.color} strokeWidth="1.75" />
         <circle cx="548" cy={flagY(i)} r="5" fill={f.color} />
         <text x="562" y={flagY(i) + 5} fontSize="13" fontWeight="700" fill={f.color}>
           {f.label}
         </text>
       </g>
     ))}
-    <rect x={BROKER.x} y={BROKER.y} width={BROKER.w} height={BROKER.h} rx="12" fill="#0f172a" />
-    <text x={BROKER.x + 16} y={BROKER.y + 34} fontSize="13" fontWeight="700" fill="white">
+    <rect x={BROKER.x} y={BROKER.y} width={BROKER.w} height={BROKER.h} rx="12" fill="oklch(var(--bc))" />
+    <text x={BROKER.x + 16} y={BROKER.y + 34} fontSize="13" fontWeight="700" fill="oklch(var(--b1))">
       Your broker
     </text>
     {["Post-summary correction", "Protest", "CAPE refund"].map((t, i) => (
-      <text key={t} x={BROKER.x + 16} y={BROKER.y + 60 + i * 18} fontSize="11" fill="#99f6e4">
+      <text key={t} x={BROKER.x + 16} y={BROKER.y + 60 + i * 18} fontSize="11" fill="oklch(var(--b1)/0.75)">
         {t}
       </text>
     ))}

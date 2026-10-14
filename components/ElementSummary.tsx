@@ -37,12 +37,10 @@ export const ElementSummary = ({ element, onClick }: Props) => {
   return (
     <div
       className={`group relative overflow-hidden rounded-xl transition-all duration-200 cursor-pointer ${isHeadingCandidate
-        ? "bg-gradient-to-br from-success/5 via-base-100 to-success/10 border border-success/30 shadow-sm"
-        : "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+        ? "bg-base-100 border border-success/40"
+        : "bg-base-100 border border-base-300 hover:border-primary/40"
         }`}
     >
-      {/* Subtle hover gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
       <div className="relative z-10 flex">
         {/* Add/Remove Button for Headings */}

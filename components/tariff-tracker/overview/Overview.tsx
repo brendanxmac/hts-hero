@@ -8,12 +8,12 @@ import { useUser } from "@/contexts/UserContext";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { addDays } from "../../../tariffs/engine-v2/history";
 import { useTrackerAccess } from "../access/accessContext";
-import { PremiumGate } from "../access/PremiumGate";
+import { AccountGate } from "../access/AccountGate";
 import { formatRate } from "../formatRate";
 import { averageRateSeries } from "../insights/catalogHistory";
 import { useInsights } from "../insights/InsightsContext";
 import { changesTeaser, wholeDollars } from "../insights/teasers";
-import { TrackingNotice } from "../plan";
+import { BeyondPlanTeaser, TrackingNotice } from "../plan";
 import { shortProgram } from "../report";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
@@ -29,6 +29,7 @@ import { OriginDistribution } from "./OriginDistribution";
 import { OverviewHeader } from "./OverviewHeader";
 import { ProductTiles } from "./ProductTiles";
 import { PulseEvent, RatePulse } from "./RatePulse";
+import { ReviewProgress } from "../opportunities/ReviewProgress";
 import { SavingsRing } from "./SavingsRing";
 import { StoryLine } from "./StoryLine";
 
@@ -44,7 +45,7 @@ export const Overview = () => {
   const t = useTracker();
   const nav = useTrackerNav();
   const insights = useInsights();
-  const { premium, unlock, unlockLabel } = useTrackerAccess();
+  const { signedIn, unlock, unlockLabel } = useTrackerAccess();
   const { user } = useUser();
   const today = todayIso();
 
@@ -102,7 +103,7 @@ export const Overview = () => {
       today,
       products: t.items.length,
       dutyUsd: duty,
-      potentialUsd: insights.savingsReady ? insights.totals.anyUsd : null,
+      potentialUsd: insights.savingsReady && insights.beyond.ready ? insights.totals.anyUsd + insights.beyond.anyUsd : null,
       changes: insights.changes,
       joinedAt: user?.created_at ? user.created_at.slice(0, 10) : null,
     });
@@ -140,17 +141,21 @@ export const Overview = () => {
       <MetricTiles metrics={data.metrics} />
 
       <div className="grid items-start gap-4 xl:grid-cols-12">
-        <div className="xl:col-span-4">
+        <div className="flex flex-col gap-4 xl:col-span-4">
+          {/* Across the whole catalog: what's checked, and what checking the rest could find */}
           <SavingsRing
-            potential={insights.totals.anyUsd}
+            potential={insights.totals.anyUsd + insights.beyond.anyUsd}
             duty={data.scopeDuty}
-            ready={insights.savingsReady}
+            ready={insights.savingsReady && insights.beyond.ready}
             action={
-              premium
+              signedIn
                 ? { label: "See potential savings", onClick: () => nav.openTab("savings"), money: true }
                 : { label: unlockLabel, onClick: () => unlock("savings"), money: true }
             }
           />
+          {/* On a plan: what the imports it doesn't cover could add */}
+          <BeyondPlanTeaser compact />
+          {signedIn && <ReviewProgress action={{ label: "Review savings", onClick: () => nav.openTab("savings") }} />}
         </div>
         <div className="xl:col-span-8">
           <RatePulse series={data.rateSeries} from={data.yearAgo} to={today} rise={data.rise} drop={data.drop} />
@@ -168,15 +173,16 @@ export const Overview = () => {
 
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <div className="xl:col-span-5">
-          <PremiumGate
+          <AccountGate
             feature="history"
+            page="tracker"
             title="What changed on your products"
             teaser={changesTeaser(insights) ?? "Going through your products' history…"}
             preview={<TableStandIn columns={["Product", "Origin", "Change", "Date"]} />}
             minHeight="min-h-96"
           >
             <LatestChanges changes={data.lastYearChanges} onOpen={open} onAll={() => nav.openTab("history")} />
-          </PremiumGate>
+          </AccountGate>
         </div>
         <div className="xl:col-span-7">
           {data.picks.length > 0 && (

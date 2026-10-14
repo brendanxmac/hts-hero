@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "@/components/ui/marketing/styles";
 import { DEFINITION } from "../lib/copy";
 import { REQUEST_ANCHOR, SIGN_UP_TO_AUDIT } from "../lib/links";
 import { AuditDashboard } from "./AuditDashboard";
 
-const PROMISES = ["14 days free, no card", "Every line checked at its entry date", "Ready to hand to your broker"];
+const PROMISES = [`${TRIAL_ALLOWANCE.auditChecks} free audit checks, no card`, "Every line checked at its entry date", "Ready to hand to your broker"];
 
 // The top of /tariff-audit: the promise and the answer-first definition beside a live audit
 // result. Server-rendered copy, so crawlers and AI assistants read it as is.
@@ -22,7 +23,7 @@ export const AuditHero = () => (
         <p className={`${mk.lead} mt-6`}>{DEFINITION}</p>
         <div className="mt-10 flex flex-wrap gap-4">
           <Link href={SIGN_UP_TO_AUDIT} className={mk.buttonPrimary}>
-            Audit free for 14 days <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            Start free <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
           <a href={REQUEST_ANCHOR} className={mk.buttonSecondary}>
             Request an audit
@@ -31,7 +32,7 @@ export const AuditHero = () => (
         <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
           {PROMISES.map((p) => (
             <li key={p} className={`${mk.small} flex items-center gap-1.5`}>
-              <CheckIcon className="h-4 w-4 text-teal-600" aria-hidden /> {p}
+              <CheckIcon className="h-4 w-4 text-primary" aria-hidden /> {p}
             </li>
           ))}
         </ul>

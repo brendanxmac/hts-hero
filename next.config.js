@@ -34,6 +34,13 @@ const nextConfig = {
       },
     ];
   },
+  // The HTS code pages read the Census import figures from these files on the server
+  experimental: {
+    outputFileTracingIncludes: {
+      "/hts/[code]": ["./public/data/us-imports/**"],
+      "/api/mcp": ["./public/data/us-imports/**"],
+    },
+  },
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     return config;

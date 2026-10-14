@@ -5,7 +5,7 @@ import * as ui from "@/components/ui/styles";
 import { ChartStandIn } from "@/components/ui/stand-ins";
 import { shortDate } from "../../duty-calculator/rate-history/format";
 import { todayIso } from "../../duty-calculator/lib/format";
-import { PremiumGate } from "../access/PremiumGate";
+import { AccountGate } from "../access/AccountGate";
 import { formatRate } from "../formatRate";
 import { averageRateSeries, changeDays } from "../insights/catalogHistory";
 import { useInsights } from "../insights/InsightsContext";
@@ -20,7 +20,7 @@ import { CatalogRateChart } from "./CatalogRateChart";
 import { ChangeFeed } from "./ChangeFeed";
 import { RatesSince } from "./RatesSince";
 
-// The Rate history tab: how the rates on the tracked products have moved over the verified
+// The Rate history tab: how the rates on the catalog's products have moved over the verified
 // tariff data, for each product's own shipment. The catalog's average, every change by day,
 // and any past date against today.
 
@@ -45,7 +45,7 @@ const HistoryReport = () => {
           {
             label: "Products affected",
             value: affected.toLocaleString("en-US"),
-            note: `Of ${products.length.toLocaleString("en-US")} tracked`,
+            note: `Of ${products.length.toLocaleString("en-US")} in your catalog`,
           },
           {
             label: "Average rate",
@@ -86,8 +86,9 @@ export const RateHistory = () => {
     );
   }
   return (
-    <PremiumGate
+    <AccountGate
       feature="history"
+      page="tracker"
       title="See every tariff change on your products"
       teaser={changesTeaser(insights) ?? "Going through your products' history…"}
       points={section.planned}
@@ -95,6 +96,6 @@ export const RateHistory = () => {
       minHeight="min-h-[28rem]"
     >
       <HistoryReport />
-    </PremiumGate>
+    </AccountGate>
   );
 };

@@ -23,6 +23,9 @@ export const QuestionsPanel = ({
   notes = {},
   qualifyLink,
   notice,
+  hideLegal,
+  changeSummary,
+  action,
 }: {
   questions: Question[];
   answers: Record<string, unknown>;
@@ -44,8 +47,14 @@ export const QuestionsPanel = ({
   notes?: Record<string, ReactNode>;
   // On each row that could save money: find out whether the goods qualify
   qualifyLink?: ReactNode;
-  // Above the sections, once for the whole panel (the locked "what each would do", signed out)
+  // Above the sections, once for the whole panel (the Tracker's "See what you qualify for")
   notice?: ReactNode;
+  // Signed out: no legal text on the rows (it takes a free account)
+  hideLegal?: boolean;
+  // What the last answer did, under the question it answered (by its id)
+  changeSummary?: { id: string; node: ReactNode };
+  // Across from the title (the calculator's "See which ones apply")
+  action?: ReactNode;
 }) => {
   const [showAll, setShowAll] = useState(false);
   // Questions that change the amount, can lift an import ban, or are already answered come first; the rest
@@ -70,8 +79,9 @@ export const QuestionsPanel = ({
     <Panel
       bare={bare}
       title="Possible Adjustments"
-      badge={open > 0 ? `${open} could change the total` : undefined}
-      description="Review the conditions below to get a more accurate duty calculation for your import"
+      count={open}
+      action={action}
+      description="Programs and provisions that could change what you owe"
     >
       <div className="flex flex-col gap-6">
         {notice}
@@ -109,7 +119,9 @@ export const QuestionsPanel = ({
                         note={notes[q.input.id]}
                         muted={stable && !current.has(q.input.id)}
                         qualifyLink={qualifyLink}
+                        hideLegal={hideLegal}
                       />
+                      {changeSummary?.id === q.input.id && <div className="mt-3">{changeSummary.node}</div>}
                     </li>
                   ))}
                 </ul>

@@ -49,7 +49,7 @@ export const NextStep = () => {
   const { items, products } = useTracker();
   const insights = useInsights();
   const alerts = useAlertSettings();
-  const { signedIn, premium, unlock, unlockLabel, email } = useTrackerAccess();
+  const { signedIn, paid, access, savingsLeft, auditsLeft, unlock, unlockLabel, email } = useTrackerAccess();
   const nav = useTrackerNav();
   const [seen, setSeen] = useState<Set<string>>(new Set());
   useEffect(() => setSeen(readSeenSections()), [nav.tab]);
@@ -59,13 +59,15 @@ export const NextStep = () => {
     products: items.length,
     alertsOn: alerts.configured,
     valuesSet,
-    savingsSeen: premium && seen.has("savings"),
+    savingsSeen: insights.unlocked.size > 0 && seen.has("savings"),
+    entriesAudited: access.usage.auditsChecked.length > 0 || (paid && seen.has("entries")),
   });
-  const potential = insights.savingsReady ? insights.totals.anyUsd : null;
+  // Across the whole catalog, checked or not
+  const potential = insights.savingsReady && insights.beyond.ready ? insights.totals.anyUsd + insights.beyond.anyUsd : null;
   const upcoming = tariffNews(todayIso(), 20).filter((n) => n.date > todayIso()).length;
   const firstDefault = products.find((p) => p.adjustments.customsValue === undefined);
 
-  const content: Record<Exclude<StepId, "products" | "audit">, { title: string; body: ReactNode; extra?: ReactNode; action: ReactNode }> = {
+  const content: Record<Exclude<StepId, "products">, { title: string; body: ReactNode; extra?: ReactNode; action: ReactNode }> = {
     alerts: {
       title: `Turn on alerts for your ${items.length.toLocaleString("en-US")} products`,
       body: "Hear about a tariff change the day it's announced, before it reaches your next entry. Pick where alerts go:",
@@ -103,7 +105,7 @@ export const NextStep = () => {
         <button
           type="button"
           className={tt.button("next")}
-          onClick={() => (firstDefault ? nav.openProduct(firstDefault.key) : nav.openTab("catalog"))}
+          onClick={() => (firstDefault ? nav.openProduct(firstDefault.key, false, "duty") : nav.openTab("catalog"))}
         >
           Set values
         </button>
@@ -113,16 +115,39 @@ export const NextStep = () => {
       title: "See your potential savings",
       body:
         potential !== null && potential > 0
-          ? `Up to ${wholeDollars(potential)} per shipment across ${insights.totals.productsWithSavings.toLocaleString("en-US")} products, if you qualify: trade programs and lower-duty origins.`
+          ? `Up to ${wholeDollars(potential)} per shipment across ${(insights.totals.productsWithSavings + insights.beyond.productsWithSavings).toLocaleString("en-US")} products, if you qualify: trade programs and lower-duty origins.`
           : "Trade programs and lower-duty origins for every product, in dollars.",
-      action: premium ? (
-        <button type="button" className={tt.button("next")} onClick={() => nav.openTab("savings")}>
-          See potential savings
-        </button>
+      action: signedIn ? (
+        <>
+          <button type="button" className={tt.button("money")} onClick={() => nav.openTab("savings")}>
+            {paid || savingsLeft === 0 ? "See potential savings" : "Check savings free"}
+          </button>
+          {!paid && savingsLeft > 0 && (
+            <span className="text-sm text-base-content/70">
+              {savingsLeft} free {savingsLeft === 1 ? "check" : "checks"} left
+            </span>
+          )}
+        </>
       ) : (
         <button type="button" className={tt.button("money")} onClick={() => unlock("savings")}>
           {unlockLabel}
         </button>
+      ),
+    },
+    audit: {
+      title: "Audit your past entries",
+      body: "Log an entry's date, value and the duty you paid. We check it against the duty in force that day, so you can spot a refund to request through your broker, or an underpayment to fix.",
+      action: (
+        <>
+          <button type="button" className={tt.button("next")} onClick={() => nav.openTab("entries")}>
+            Audit an entry
+          </button>
+          {!paid && (
+            <span className="text-sm text-base-content/70">
+              {auditsLeft} free audit {auditsLeft === 1 ? "check" : "checks"} left
+            </span>
+          )}
+        </>
       ),
     },
   };
@@ -151,7 +176,7 @@ export const NextStep = () => {
             You&apos;re all set up
           </span>
           <p className="m-0 text-[0.95rem] text-base-content/70">
-            Your products are tracked, alerts are on and your potential savings are in view. Auditing past entries is next, coming soon.
+            Your products are tracked, alerts are on, your potential savings are in view and you&apos;ve audited your entries.
           </p>
         </div>
       )}
@@ -176,12 +201,7 @@ export const NextStep = () => {
               </>
             )}
             {s.id === "alerts" && <span className="text-sm text-base-content/70">Email, Slack or Teams, the day a tariff is announced.</span>}
-            {s.soon && (
-              <>
-                <span className="text-sm text-base-content/70">Find duty you may have overpaid and could recover.</span>
-                <span className={`${tt.chip("warning")} self-start`}>Coming soon</span>
-              </>
-            )}
+            {s.id === "audit" && <span className="text-sm text-base-content/70">Find duty you may have overpaid and could recover.</span>}
           </div>
         ))}
       </div>

@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import config from "@/config";
-import { FREE_TRACKED_PAIRS, TRIAL_DAYS, TRIAL_PAIRS } from "@/components/pricing-calculator/lib/pricing";
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "@/components/ui/marketing/styles";
 import { DEFINITION } from "../lib/copy";
 import { ExposureDashboard } from "./ExposureDashboard";
 
-const PROMISES = [`Free for ${FREE_TRACKED_PAIRS} products`, `${TRIAL_PAIRS} free for ${TRIAL_DAYS} days`, "No credit card"];
+const PROMISES = [`Free alerts on ${TRIAL_ALLOWANCE.alertImports} imports`, `Check ${TRIAL_ALLOWANCE.savingsChecks} imports for savings free`, "No credit card"];
 
 // The top of /tariff-monitor: the promise and the answer-first definition beside a live
 // dashboard. The copy is server-rendered, so crawlers and AI assistants read it as is.
@@ -32,7 +32,7 @@ export const MonitorHero = () => (
         <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
           {PROMISES.map((p) => (
             <li key={p} className={`${mk.small} flex items-center gap-1.5`}>
-              <CheckIcon className="h-4 w-4 text-teal-600" aria-hidden /> {p}
+              <CheckIcon className="h-4 w-4 text-primary" aria-hidden /> {p}
             </li>
           ))}
         </ul>

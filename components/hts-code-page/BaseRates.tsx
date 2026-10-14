@@ -3,6 +3,7 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import type { HtsElement } from "@/interfaces/hts";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { specialRates } from "./specialRates";
 
 // The line's rates from the schedule itself (general, special, Column 2), in the hero's rail
@@ -26,9 +27,9 @@ export function BaseRates({
   const inherited = tariffElement !== element && tariffElement.htsno;
 
   return (
-    <section id="base-rates" aria-labelledby="base-rates-title" className={`${ui.card} scroll-mt-6`}>
-      <div className="px-4 pt-3.5 pb-3 border-b border-base-300">
-        <h2 id="base-rates-title" className={ui.cardTitle}>
+    <section id="base-rates" aria-labelledby="base-rates-title" className={`${tt.panel} overflow-hidden scroll-mt-6`}>
+      <div className="px-6 pt-5 pb-4 border-b border-base-300">
+        <h2 id="base-rates-title" className={tt.title}>
           Base Duty Rates for {element.htsno}
         </h2>
         <p className={`${ui.caption} mt-0.5`}>
@@ -51,7 +52,7 @@ export function BaseRates({
         {hasDutyData && (
           <>
             <RateRow label="General Rate of Duty" value={tariffElement.general} strong />
-            <div className="px-4 py-2.5">
+            <div className="px-6 py-3">
               <div className="flex items-baseline justify-between gap-3">
                 <dt className="text-base-content/70">Special Rate of Duty</dt>
                 <dd className="font-semibold text-right">
@@ -67,7 +68,7 @@ export function BaseRates({
                   {special.flatMap((s) => s.programs).map((p, i) => (
                     <span
                       key={`${p}-${i}`}
-                      className={`${ui.badge("neutral")} ${mono.className}`}
+                      className={`${tt.chip("neutral")} ${mono.className}`}
                     >
                       {p}
                     </span>
@@ -84,8 +85,8 @@ export function BaseRates({
       </dl>
 
       {showCalculatorLink && element.htsno && !element.htsno.startsWith("99") && (
-        <div className="border-t border-base-300 px-5 py-4 flex flex-col gap-1">
-          <p className={ui.cardTitle}>Importing under {element.htsno}?</p>
+        <div className="border-t border-base-300 bg-tt-soft px-6 py-5 flex flex-col gap-1">
+          <p className={tt.title}>Importing under {element.htsno}?</p>
           <p className={ui.bodySm}>
             Calculate total import duties, tariffs, and trade agreement exemptions for your shipment.
           </p>
@@ -103,9 +104,9 @@ function RateRow({ label, value, strong = false }: { label: string; value: strin
   // Chapter 99 lines carry sentences in the rate columns
   const long = (value?.length ?? 0) > 24;
   return (
-    <div className={`px-4 py-2.5 ${long ? "" : "flex items-baseline justify-between gap-3"}`}>
+    <div className={`px-6 py-3 ${long ? "" : "flex items-baseline justify-between gap-3"}`}>
       <dt className="text-base-content/70">{label}</dt>
-      <dd className={`font-semibold ${long ? "mt-1" : "text-right"} ${strong && !long ? "text-lg leading-none" : ""}`}>
+      <dd className={`font-semibold ${long ? "mt-1" : "text-right"} ${strong && !long ? `${tt.display} text-lg leading-none` : ""}`}>
         <RateValue value={value} />
       </dd>
     </div>

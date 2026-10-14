@@ -46,8 +46,8 @@ export const Section = ({
   return (
     <div
       className={`group relative overflow-hidden rounded-2xl transition-all duration-300 cursor-pointer ${isExpanded
-        ? "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-primary/20 shadow-lg"
-        : "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5"
+        ? "bg-base-100 border border-primary/40"
+        : "bg-base-100 border border-base-300 hover:border-primary/40"
         }`}
       onClick={(e) => {
         e.preventDefault();
@@ -57,8 +57,6 @@ export const Section = ({
         setShowDetails(newExpanded);
       }}
     >
-      {/* Subtle hover gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
       <div className="relative z-10 p-5">
         {/* Header */}

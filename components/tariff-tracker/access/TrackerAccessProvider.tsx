@@ -6,34 +6,33 @@ import { useUser } from "@/contexts/UserContext";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import {
   ANONYMOUS_ACCESS,
-  canStartTrial,
-  isPremium,
+  canSpendCheck,
+  CheckKind,
+  checksLeft,
+  hasChecked,
+  isPaid,
+  NO_USAGE,
   TrackerAccess,
   trackerAccessFrom,
-  trialDaysLeft,
 } from "@/libs/tariff-tracker/plan";
-import { TRIAL_DAYS } from "@/components/pricing-calculator/lib/pricing";
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { TrackerAccessContext, TrackerAccessValue } from "./accessContext";
 import { PREMIUM_FEATURES, PremiumFeature } from "./features";
 import { currentPath, signupHref } from "./signup";
-import { StartTrialDialog } from "./StartTrialDialog";
 import { UpgradeDialog } from "./UpgradeDialog";
 
-// Loads the visitor's plan (from /api/tracker/access, which decides), and owns the two ways up:
-// the trial dialog and the plans dialog. Around the whole Tracker.
+// Loads the visitor's plan (from /api/tracker/access, which decides), spends the usage-based
+// trial's checks (through /api/tracker/checks, which enforces them) and owns the way up: the
+// plans dialog. Around the whole Tracker.
 
-const FREE_ACCESS = trackerAccessFrom({ trial: null, activePlans: [] });
+const TRIAL_ACCESS = trackerAccessFrom({ usage: NO_USAGE, activePlans: [] });
 
 export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => {
   const { user, isLoading: userLoading } = useUser();
   const [access, setAccess] = useState<TrackerAccess>(ANONYMOUS_ACCESS);
   const [loading, setLoading] = useState(true);
   // Kept after closing, so the dialog's text doesn't change while it fades out
-  const [dialog, setDialog] = useState<{ kind: "trial" | "upgrade"; feature: PremiumFeature; open: boolean }>({
-    kind: "trial",
-    feature: "plan",
-    open: false,
-  });
+  const [dialog, setDialog] = useState<{ feature: PremiumFeature; open: boolean }>({ feature: "plan", open: false });
   const closeDialog = () => setDialog((d) => ({ ...d, open: false }));
   const userId = user?.id ?? null;
 
@@ -56,8 +55,8 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
       .then((next) => !cancelled && setAccess(next))
       .catch((e) => {
         console.error("Error loading Tariff Tracker access:", e);
-        // Signed in, plan unknown: the free plan, so nothing is unlocked by mistake
-        if (!cancelled) setAccess(FREE_ACCESS);
+        // Signed in, plan unknown: the trial with nothing spent; spending a check asks the server
+        if (!cancelled) setAccess(TRIAL_ACCESS);
       })
       .finally(() => !cancelled && setLoading(false));
     return () => {
@@ -83,86 +82,92 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     return () => clearTimeout(retry);
   }, [userId, load]);
 
-  const startTrial = async (feature: PremiumFeature) => {
-    try {
-      const res = await fetch("/api/tracker/start-trial", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ source: feature }),
-      });
-      const body = (await res.json()) as TrackerAccess & { error?: string; access?: TrackerAccess };
-      if (!res.ok) {
-        if (body.access) setAccess(body.access);
-        toast.error(body.error ?? "Couldn't start your trial.");
-        return false;
-      }
-      setAccess(body);
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_TRIAL_STARTED, { feature, trial_days: TRIAL_DAYS });
-      return true;
-    } catch {
-      toast.error("Couldn't start your trial. Please try again.");
-      return false;
-    }
-  };
-
   const value: TrackerAccessValue = useMemo(() => {
     const signedIn = Boolean(userId);
-    const startable = canStartTrial(access);
-    const openTrial = (feature: PremiumFeature) => {
-      setDialog({ kind: "trial", feature, open: true });
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_TRIAL_DIALOG_OPENED, { feature });
-    };
     const openUpgrade = (feature: PremiumFeature) => {
-      setDialog({ kind: "upgrade", feature, open: true });
+      setDialog({ feature, open: true });
       trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature, plan: access.kind });
     };
+    const toSignup = () => (window.location.href = signupHref(currentPath()));
+
+    const spendCheck = async (kind: CheckKind, ref: string, feature: PremiumFeature) => {
+      if (!signedIn) {
+        toSignup();
+        return false;
+      }
+      if (isPaid(access) || hasChecked(access, kind, ref)) return true;
+      if (!canSpendCheck(access, kind, ref)) {
+        trackEvent(MixpanelEvent.TARIFF_TRACKER_ALLOWANCE_USED_UP, { kind, feature });
+        openUpgrade(feature);
+        return false;
+      }
+      try {
+        const res = await fetch("/api/tracker/checks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ kind, ref }),
+        });
+        const body = (await res.json()) as TrackerAccess & { error?: string; access?: TrackerAccess };
+        if (!res.ok) {
+          if (body.access) setAccess(body.access);
+          if (res.status === 402) openUpgrade(feature);
+          else toast.error(body.error ?? "Couldn't run that check.");
+          return false;
+        }
+        setAccess(body);
+        trackEvent(MixpanelEvent.TARIFF_TRACKER_CHECK_SPENT, { kind, feature, left: checksLeft(body, kind) });
+        return true;
+      } catch {
+        toast.error("Couldn't run that check. Please try again.");
+        return false;
+      }
+    };
+
     return {
       loading: loading || userLoading,
       signedIn,
       email: user?.email ?? null,
       access,
-      premium: isPremium(access),
-      canStartTrial: startable,
-      daysLeft: trialDaysLeft(access),
-      openTrial,
+      paid: isPaid(access),
+      savingsLeft: checksLeft(access, "savings"),
+      auditsLeft: checksLeft(access, "audit"),
+      spendCheck,
       openUpgrade,
       unlock: (feature) => {
         trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature, plan: access.kind, page: "tracker" });
-        if (!signedIn) window.location.href = signupHref(currentPath());
-        else if (startable) openTrial(feature);
+        if (!signedIn) toSignup();
         else openUpgrade(feature);
       },
-      unlockLabel: !signedIn ? "Create a free account" : startable ? `Start ${TRIAL_DAYS}-day free trial` : "See plans",
+      unlockLabel: !signedIn ? "Create a free account" : "See plans",
     };
   }, [access, loading, userLoading, userId, user?.email]);
 
-  // From the calculator's "Start my free trial" (`trial=<feature>`, or `trial=start` for tracking,
-  // through sign-up): once access is known, offer the trial for that feature where they landed
-  // (or plans, if it's been used)
+  // Back from the calculator's sign-up for a Tracker feature (`trial=<feature>`): the trial is
+  // already on, so say what it includes. `upgrade=<feature>` opens the plans for that feature,
+  // unless the plan has it already.
   useEffect(() => {
     if (value.loading || !value.signedIn || typeof window === "undefined") return;
     const url = new URL(window.location.href);
-    const asked = url.searchParams.get("trial");
-    if (!asked) return;
-    const feature: PremiumFeature = asked in PREMIUM_FEATURES ? (asked as PremiumFeature) : "tracking";
+    const upgrade = url.searchParams.get("upgrade");
+    const trial = url.searchParams.has("trial");
+    if (!upgrade && !trial) return;
+    url.searchParams.delete("upgrade");
     url.searchParams.delete("trial");
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
-    if (value.premium) return;
-    if (value.canStartTrial) value.openTrial(feature);
-    else value.openUpgrade(feature);
+    if (trial && !value.paid) {
+      toast.success(
+        `Your free trial is on: ${TRIAL_ALLOWANCE.savingsChecks} savings checks, ${TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on ${TRIAL_ALLOWANCE.alertImports} imports.`,
+        { duration: 6000 }
+      );
+    }
+    if (upgrade && !value.paid) value.openUpgrade(upgrade in PREMIUM_FEATURES ? (upgrade as PremiumFeature) : "plan");
   }, [value]);
 
   return (
     <TrackerAccessContext.Provider value={value}>
       {children}
-      <StartTrialDialog
-        open={dialog.open && dialog.kind === "trial"}
-        feature={dialog.feature}
-        onClose={closeDialog}
-        onStart={() => startTrial(dialog.feature)}
-      />
       <UpgradeDialog
-        open={dialog.open && dialog.kind === "upgrade"}
+        open={dialog.open}
         feature={dialog.feature}
         access={access}
         onClose={closeDialog}

@@ -120,7 +120,7 @@ export const GINGER_CONTROL: Tool = {
       {
         question: "What's a good GingerControl alternative with published pricing?",
         answer:
-          "HTS Hero publishes every plan's price and every plan is self-serve, starting with a free plan.",
+          "HTS Hero publishes every plan's price and every plan is self-serve, and you can start free.",
       },
     ],
   },

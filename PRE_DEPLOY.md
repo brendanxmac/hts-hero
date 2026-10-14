@@ -5,10 +5,6 @@ add new ones as they come up.
 
 ## Must do
 
-- [ ] **PDF download.** The calculator's "Download PDF" button (free with an account).
-      Sign-up returns to the import with `export=pdf`, but nothing builds the PDF yet. Build it in
-      the Tracker calculator: on `export=pdf`, open a print-ready, branded view of the results
-      (with a link back) and start the download.
 - [ ] **Qualification check (guided workflow).** The paid tier of Possible Adjustments: visitors
       see every adjustment and what it could change the total by; free accounts see a plain-English
       line on why each could apply; paying (and trial) users step through a guided workflow that
@@ -16,21 +12,37 @@ add new ones as they come up.
       The calculator teases it as the third step of the strip atop Possible Adjustments ("Which
       apply to your goods"); trial and paid users see "coming soon". Build the workflow in the
       Tracker.
-- [ ] **Refund check (bulk entry audit).** Duty Over Time's heading has "Check past entries for
-      refunds", promising to check every past entry against the duty in force on its date, in
-      bulk. Trial and paid users see "Coming soon". Build it (it overlaps the Tracker's Entry
-      audit, still marked Soon).
-- [ ] **Sourcing.** Compare's heading offers signed-in users "Find cheaper origins for all your
-      imports" (the Tracker's Sourcing, trial or paid). Build it, or drop the button.
+- [ ] **Refund check (bulk entry audit).** Entry audit v1 is built (one entry line at a time,
+      each spending an audit check; the calculator's "Check my entries" opens it). Still to do: bulk
+      upload of entries (CSV / ACE ES-003 report), and log in the Tracker's own calculator.
+- [ ] **Savings requirements (strategy needed).** A product's Savings tab shows general steps for
+      each kind of saving (`components/tariff-tracker/opportunities/requirements.ts`, TODO). Each
+      trade program and exemption needs its exact requirements (rules of origin, certification,
+      evidence, the SPI / Chapter 99 statement to claim) from its legal source. Agree how to build
+      and review that data first.
+- [ ] **Test the product page signed in** (2026-10-13): Duty (locked code/origin, saves to the
+      product), Savings (check → options → compare → track → secure applies to the catalog and logs
+      it; a change of origin adds the new product and marks the old one "moving"), Audit (Beta).
+- [ ] **Test the usage-based trial signed in** (2026-10-13): savings checks (5), audit checks
+      (10), alerts slots (10), the plans dialog when each runs out, and a paid plan's coverage.
+- [ ] **Sourcing.** Compare's heading offers signed-in users "Get Advanced Comparisons" (the
+      Tracker's Sourcing, trial or paid). Build it, or drop the link.
 - [ ] **Apply the migration** `supabase/migrations/tariff_tracker_accounts.sql` (tracker_catalogs,
-      tracker_trials, tracker_alert_settings).
+      tracker_checks, tracker_entries, tracker_opportunities, tracker_opportunity_events,
+      tracker_alert_settings; drops the old tracker_trials).
 - [ ] **Stripe prices.** Create the products and set
-      `STRIPE_TARIFF_TRACKER_<30|100|500>_<MONTHLY|ANNUAL>_PRICE_ID`.
+      `STRIPE_TARIFF_TRACKER_<10|30|100|500>_<MONTHLY|ANNUAL>_PRICE_ID`.
 - [ ] **Alert sending job.** Alert settings are saved, but nothing sends alerts yet.
 - [ ] **Onboarding email sequence** (plan in ONBOARDING_PLAN.md, worktree
       claude/vibrant-maxwell-5fa15d, awaiting answers).
 
 ## Should do
+
+- [ ] **Census import data refresh.** `public/data/us-imports/` (which countries ship each HTS code to
+      the US, for the Compare tab) comes from `npm run sync-hts-imports`, which needs
+      `CENSUS_API_KEY` in `.env.local`. It's 2025 vs 2024 today; rerun when Census publishes a new
+      year (or monthly, to switch to a trailing 12 months) and commit the files. Keep the Census
+      notice in the footer and next to the figures (their API terms).
 
 - [ ] **Track this Import email** on the calculator: the form shows "Coming soon" and does
       nothing. Wire it to alerts, or hide it.

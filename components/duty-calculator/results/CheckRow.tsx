@@ -23,6 +23,7 @@ export const CheckRow = ({
   note,
   muted = false,
   qualifyLink,
+  hideLegal = false,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
@@ -45,8 +46,11 @@ export const CheckRow = ({
   muted?: boolean;
   // A link to find out whether the goods qualify, on a stable row that could save money
   qualifyLink?: ReactNode;
+  // Signed out: no legal text (it takes a free account)
+  hideLegal?: boolean;
 }) => {
   const [expanded, setExpanded] = useState(false);
+  if (hideLegal) help = undefined;
   const noChange =
     showNoChange &&
     !checked &&

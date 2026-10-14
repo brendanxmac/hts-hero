@@ -38,12 +38,14 @@ export const RateHistoryHeadline = ({
   const changes = history.length - 1;
 
   return (
-    <div>
-      <div className={ui.label}>{label}</div>
-      <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1.5">
-        <span className={ui.metric.primaryCompact}>{show(current.result.totalDuty)}</span>
+    <div
+      className={`grid gap-px overflow-hidden rounded-[8px] border border-base-300 bg-base-300 ${changes > 0 ? "grid-cols-3 lg:grid-cols-[1.6fr_1fr_1fr_1fr]" : "grid-cols-1"}`}
+    >
+      <div className={`${changes > 0 ? "col-span-3 lg:col-span-1" : ""} bg-base-100 p-4 sm:p-5`}>
+        <div className={ui.label}>{label}</div>
+        <div className={`${ui.metric.primary} mt-2`}>{show(current.result.totalDuty)}</div>
         <span
-          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${TREND_PILL[trendOf(delta)]}`}
+          className={`mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${TREND_PILL[trendOf(delta)]}`}
         >
           {Math.abs(delta) < 0.005 ? (
             <>No change since {shortDate(first.from)}</>
@@ -61,20 +63,18 @@ export const RateHistoryHeadline = ({
           )}
         </span>
       </div>
-      {changes > 0 && (
-        <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
-          {[
-            ["Low", show(Math.min(...totals))],
-            ["High", show(Math.max(...totals))],
-            ["Changes", String(changes)],
-          ].map(([term, detail]) => (
-            <div key={term} className="rounded-md bg-base-200 px-2.5 py-1.5">
-              <dt className="text-base-content/60">{term}</dt>
-              <dd className="font-semibold tabular-nums text-base-content">{detail}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
+      {changes > 0 &&
+        [
+          ["Low", show(Math.min(...totals)), "Lowest since " + shortDate(first.from)],
+          ["High", show(Math.max(...totals)), "Highest since " + shortDate(first.from)],
+          ["Changes", String(changes), changes === 1 ? "Tariff change" : "Tariff changes"],
+        ].map(([term, detail, note]) => (
+          <div key={term} className="bg-base-100 p-4 sm:p-5">
+            <div className={ui.label}>{term}</div>
+            <div className={`${ui.metric.secondary} mt-2`}>{detail}</div>
+            <div className="mt-1.5 text-xs text-base-content/60">{note}</div>
+          </div>
+        ))}
     </div>
   );
 };

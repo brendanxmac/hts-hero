@@ -69,7 +69,10 @@ export default async function RootLayout({
           </HtsSectionsProvider>
           {/* </GuideProvider> */}
         </UserProvider>
-        <GoogleAnalytics gaId="G-V2DRE5Y0NV" />
+        {/* Only the production deployment reports to GA — not local dev or Vercel previews */}
+        {process.env.VERCEL_ENV === "production" && (
+          <GoogleAnalytics gaId="G-V2DRE5Y0NV" />
+        )}
       </body>
     </html>
   );

@@ -2,11 +2,14 @@
 
 import * as tt from "@/components/ui/styles/tracker";
 import { TableStandIn } from "@/components/ui/stand-ins";
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { AccountGate } from "../access/AccountGate";
+import { TrackingNotice } from "../plan/TrackingNotice";
 import { AlertSettingsPanel } from "./AlertSettingsPanel";
 
-// The Alerts section: where alerts go, and what sets one off. Alerts come with every account
-// (PRICING.md: the free plan includes monitoring and alerts for its tracked products).
+// The Alerts section: where alerts go, what sets one off, and which imports get them. Alerts come
+// with every account (PRICING.md: the trial covers TRIAL_ALLOWANCE.alertImports imports; a plan,
+// its size).
 const TRIGGERS = [
   { title: "A new HTS revision", body: "When a revision changes the rate on one of your products", tone: "primary" as const },
   { title: "An announced tariff", body: "Proclamations, executive orders and Federal Register notices, before they reach the HTS", tone: "warning" as const },
@@ -18,10 +21,11 @@ export const Alerts = () => (
     feature="alerts"
     page="tracker_alerts"
     title="Get alerts when tariffs change on your products"
-    teaser="Alerts come free with your account, for every product you track."
+    teaser={`Alerts come free with your account, on up to ${TRIAL_ALLOWANCE.alertImports} imports.`}
     preview={<TableStandIn columns={["Alert", "Products", "Change", "Date"]} />}
   >
     <div className="flex flex-col gap-4">
+      <TrackingNotice />
       <AlertSettingsPanel />
       <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-alert-triggers">
         <h2 id="tt-alert-triggers" className={tt.title}>

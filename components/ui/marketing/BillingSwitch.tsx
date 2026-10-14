@@ -14,7 +14,7 @@ export const BillingSwitch = ({
   size?: "sm" | "md";
 }) => (
   <div
-    className={`inline-flex items-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 ${size === "sm" ? "p-1" : "p-1.5"}`}
+    className={`inline-flex items-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 skin:bg-base-100 skin:ring-base-300 ${size === "sm" ? "p-1" : "p-1.5"}`}
     role="radiogroup"
     aria-label="Billing period"
   >
@@ -28,12 +28,12 @@ export const BillingSwitch = ({
           role="radio"
           aria-checked={active}
           onClick={() => onChange(b)}
-          className={`flex items-center gap-2.5 rounded-full font-semibold transition-colors ${pad} ${active ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}
+          className={`flex items-center gap-2.5 rounded-full font-semibold transition-colors ${pad} ${active ? "bg-slate-900 text-white skin:bg-base-content skin:text-base-100" : "text-slate-600 hover:text-slate-900 skin:text-base-content/70 skin:hover:text-base-content"}`}
         >
           {b === "monthly" ? "Monthly" : "Annual"}
           {b === "annual" && (
             <span
-              className={`rounded-full px-2.5 py-1 text-xs font-bold transition-colors ${active ? "bg-emerald-400 text-slate-950" : "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200"}`}
+              className={`rounded-full px-2.5 py-1 text-xs font-bold transition-colors ${active ? "bg-emerald-400 text-slate-950 skin:bg-success skin:text-success-content" : "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200 skin:bg-success/10 skin:text-success skin:ring-success/30"}`}
             >
               Save {ANNUAL_DISCOUNT * 100}%
             </span>

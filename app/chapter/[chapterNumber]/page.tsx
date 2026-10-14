@@ -8,7 +8,7 @@ import {
 import { HtsElement, HtsSection } from "../../../interfaces/hts";
 import config from "@/config";
 import { HtsPageShell } from "../../../components/hts-page/HtsPageShell";
-import { PlaybookBanner } from "../../../components/hts-page/PlaybookBanner";
+import { PlaybookCard } from "@/components/hts-code-page/PlaybookCard";
 import { CtaGrid } from "../../../components/hts-page/CtaGrid";
 import { ChildrenList } from "../../../components/hts-page/ChildrenList";
 
@@ -77,9 +77,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
   const siblingChapters = section.chapters.filter((c) => c.number !== chapterNum);
 
   return (
-    <main className="w-full min-h-screen bg-base-100">
+    <main className="w-full flex-1 bg-base-200">
       <HtsPageShell
-        bannerMessage="Looking for the right HTS code for your product?"
         breadcrumbs={[
           { label: `Section ${toRoman(section.number)}`, href: `/section/${section.number}` },
           { label: `Chapter ${chapter.number}` },
@@ -112,33 +111,30 @@ function ChapterContent({
   return (
     <>
       {/* Hero */}
-      <section className="relative rounded-2xl bg-gradient-to-br from-primary/[0.07] via-base-200/60 to-secondary/[0.05] border border-primary/15 p-6 sm:p-8 md:p-10 mb-8">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col gap-3">
+      <section className="rounded-[28px] border border-base-300 bg-base-100 p-7 sm:p-10 mb-4">
+        <div className="flex flex-col gap-3">
           <h1 className="flex flex-col gap-1.5">
-            <span className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
+            <span className="text-primary text-3xl lg:text-4xl font-semibold tracking-tight [font-family:var(--font-tracker-display)]">
               Chapter {chapter.number}
             </span>
-            <span className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug max-w-4xl">
+            <span className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug max-w-4xl [font-family:var(--font-tracker-display)]">
               {chapter.description}
             </span>
-            <span className="text-[11px] text-base-content/25 font-medium tracking-wider uppercase mt-0.5">
+            <span className="text-xs text-base-content/60 font-bold tracking-wider uppercase mt-1">
               US Harmonized Tariff Schedule
             </span>
           </h1>
 
-          <h2 className="text-xs sm:text-sm text-base-content/40 font-medium">
+          <h2 className="text-sm text-base-content/60 font-medium">
             U.S. Import Duty, Tariffs, and Classification Details for Chapter {chapter.number}
           </h2>
 
-          <h3 className="text-sm text-base-content/50 leading-relaxed max-w-4xl">
+          <h3 className="text-sm text-base-content/70 leading-relaxed max-w-4xl">
             {chapter.description}, classified under{" "}
-            <Link href={`/section/${section.number}`} className="text-primary/70 hover:text-primary hover:underline transition-colors">
+            <Link href={`/section/${section.number}`} className="text-primary hover:underline">
               Section {roman}
             </Link>
-            <span className="text-base-content/40"> ({section.description})</span>
+            <span className="text-base-content/60"> ({section.description})</span>
             {" "}in the Harmonized Tariff Schedule
             {topLevelElements.length > 0 && (
               <> — covering {topLevelElements.length} heading{topLevelElements.length !== 1 ? "s" : ""}</>
@@ -148,7 +144,7 @@ function ChapterContent({
 
           {siblingChapters.length > 0 && (
             <div className="mt-2">
-              <h2 className="text-xs font-bold text-base-content/40 uppercase tracking-wider mb-2">
+              <h2 className="text-xs font-bold text-base-content/60 uppercase tracking-wider mb-2">
                 Other Chapters in Section {roman}
               </h2>
               <div className="flex flex-wrap gap-1.5">
@@ -156,11 +152,11 @@ function ChapterContent({
                   <Link
                     key={c.number}
                     href={`/chapter/${c.number}`}
-                    className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-base-100/80 border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 transition-all"
+                    className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-tt-soft hover:bg-primary/10 transition-colors"
                     title={c.description}
                   >
                     <span className="text-xs font-bold text-primary group-hover:underline">Ch. {c.number}</span>
-                    <span className="text-xs text-base-content/40 max-w-[180px] truncate">{c.description}</span>
+                    <span className="text-xs text-base-content/60 max-w-[180px] truncate">{c.description}</span>
                   </Link>
                 ))}
               </div>
@@ -181,7 +177,7 @@ function ChapterContent({
         }))}
       />
 
-      <PlaybookBanner />
+      <div className="mt-12"><PlaybookCard /></div>
       <CtaGrid contextLabel={`Chapter ${chapter.number} Codes`} />
     </>
   );

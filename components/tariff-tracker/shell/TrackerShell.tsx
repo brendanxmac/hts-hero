@@ -1,6 +1,6 @@
 "use client";
 
-import { MouseEvent, ReactNode } from "react";
+import { MouseEvent, ReactNode, useEffect } from "react";
 import { LockClosedIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,8 +17,9 @@ import { NavMeta, useNavMeta } from "./useNavMeta";
 import { useTrackerNav } from "./TrackerNav";
 
 // The Tariff Tracker as an app (DESIGN_SYSTEM.md §15): a floating sidebar, dark in both modes,
-// beside the open section. Each tab's dot and count say what's waiting there; premium tabs
-// carry a lock until the trial or a plan unlocks them, and still open onto what they'd show.
+// beside the open section. Each tab's dot and count say what's waiting there (free checks left,
+// on the trial); paid-only tabs carry a lock until a plan unlocks them, and still open onto what
+// they'd show.
 // The plan, the account and light/dark sit at its foot. On narrow screens the sidebar becomes a
 // row of tabs across the top. Tabs are real links, but a plain click switches tabs in place.
 
@@ -63,14 +64,13 @@ const SidebarTab = ({ section, meta, locked }: { section: TrackerSection; meta?:
     <a
       {...props}
       id={`tt-tab-${section.slug}`}
-      className={`flex h-10 items-center gap-3 rounded-xl px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-        active ? "bg-tt-side-active font-semibold text-base-content" : "font-medium text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
-      } ${section.ready ? "" : "opacity-60"}`}
+      className={`flex h-10 items-center gap-3 rounded-xl px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${active ? "bg-tt-side-active font-semibold text-base-content" : "font-medium text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
+        } ${section.ready ? "" : "opacity-60"}`}
     >
       <span className={`h-2 w-2 shrink-0 rounded-full ${active ? "bg-success" : meta && meta.tone !== "neutral" ? DOTS[meta.tone] : "bg-base-content/25"}`} aria-hidden />
       <span className="flex-1 truncate">{section.label}</span>
       {locked ? (
-        <LockClosedIcon className="h-3.5 w-3.5 text-base-content/60" aria-label="Premium" />
+        <LockClosedIcon className="h-3.5 w-3.5 text-base-content/60" aria-label="Paid plans" />
       ) : (
         meta && <span className={`text-xs font-semibold ${META_TEXT[meta.tone]}`}>{meta.text}</span>
       )}
@@ -91,17 +91,31 @@ const TopTab = ({ section }: { section: TrackerSection }) => {
 };
 
 const GROUPS = [
-  { label: "Workspace", premium: false },
-  { label: "Intelligence", premium: true },
-];
+  { label: "Workspace", id: "workspace" },
+  { label: "Intelligence", id: "intelligence" },
+] as const;
+
+// While the app is open the page itself never scrolls: only the section does. Anything added to
+// the page outside the app (tooltips, chat) can't stretch it.
+const useLockPageScroll = () => {
+  useEffect(() => {
+    const targets = [document.documentElement, document.body];
+    targets.forEach((el) => el.classList.add("overflow-hidden"));
+    return () => targets.forEach((el) => el.classList.remove("overflow-hidden"));
+  }, []);
+};
 
 export const TrackerShell = ({ children }: { children: ReactNode }) => {
-  const { premium, loading } = useTrackerAccess();
+  useLockPageScroll();
+  const { paid, loading } = useTrackerAccess();
   const meta = useNavMeta();
 
   return (
-    <div className={`${THEME} hts-tracker ${trackerSans.className} flex h-svh flex-col bg-base-200 lg:flex-row lg:gap-4 lg:p-4`}>
-      <aside className="hts-tracker-on-dark hidden w-64 shrink-0 flex-col gap-5 rounded-3xl bg-tt-side p-4 text-base-content lg:flex">
+    // Exactly the screen's height, and the box everything inside is positioned in (relative,
+    // overflow hidden): an absolutely positioned dropdown, popover or screen-reader label far down
+    // a scrolled section would otherwise be placed against the page and stretch it past the app
+    <div className={`${THEME} hts-tracker ${trackerSans.className} relative flex h-svh flex-col overflow-hidden bg-base-200 lg:flex-row lg:gap-4 lg:p-4`}>
+      <aside className="hts-tracker-on-dark relative hidden w-64 shrink-0 flex-col gap-5 rounded-3xl bg-tt-side p-4 text-base-content lg:flex">
         <div className="flex items-center gap-2.5 px-2 pt-1">
           <Link href="/" className="flex shrink-0 items-center rounded-full bg-base-content p-1" aria-label={`${config.appName} home`}>
             <Image src={logo} alt="" className="w-6" priority width={24} height={24} />
@@ -111,12 +125,12 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
             <span className="truncate text-xs text-base-content/60">{config.appName}</span>
           </div>
         </div>
-        <nav role="tablist" aria-orientation="vertical" aria-label="Tariff Tracker" className="flex flex-1 flex-col gap-4 overflow-y-auto">
+        <nav role="tablist" aria-orientation="vertical" aria-label="Tariff Tracker" className="relative flex flex-1 flex-col gap-4 overflow-y-auto">
           {GROUPS.map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
               <span className="px-3 pb-1 text-[0.7rem] font-bold uppercase tracking-wider text-base-content/60">{group.label}</span>
-              {SECTIONS.filter((s) => s.premium === group.premium).map((section) => (
-                <SidebarTab key={section.slug} section={section} meta={meta[section.slug]} locked={section.premium && section.ready && !premium && !loading} />
+              {SECTIONS.filter((s) => s.group === group.id).map((section) => (
+                <SidebarTab key={section.slug} section={section} meta={meta[section.slug]} locked={section.paidOnly && section.ready && !paid && !loading} />
               ))}
             </div>
           ))}
@@ -137,7 +151,9 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
         ))}
       </nav>
 
-      <main className="min-w-0 flex-1 overflow-y-auto lg:rounded-3xl">
+      {/* The one scroller: positioned, so what's absolutely positioned inside scrolls (and is
+          clipped) with it */}
+      <main className="relative min-h-0 min-w-0 flex-1 overflow-y-auto">
         <div className="px-4 pt-4 empty:hidden sm:px-6 lg:px-2 lg:pt-0">
           <PlanBanner />
         </div>

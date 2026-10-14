@@ -5,7 +5,6 @@ import { useState } from "react";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import { formatMoney, formatPct } from "../lib/format";
-import { EffectiveDate } from "./EffectiveDate";
 import { LegalPanel } from "./LegalPanel";
 import { LegalToggle } from "./LegalToggle";
 import { linkClass, RowLink, RowProps } from "./rowTypes";
@@ -14,8 +13,6 @@ import { Swatch } from "./Swatch";
 export const MobileRow = ({
   code,
   name,
-  program,
-  effectiveFrom,
   detail,
   legal,
   basis,
@@ -65,12 +62,6 @@ export const MobileRow = ({
           </span>
         )}
       </div>
-      {full && (program || effectiveFrom) && (
-        <div className={ui.caption}>
-          {program}
-          <EffectiveDate from={effectiveFrom} />
-        </div>
-      )}
       {full && detail && <div className={ui.bodySm}>{detail}</div>}
       {full && legal && (
         <LegalToggle

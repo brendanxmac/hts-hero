@@ -1,8 +1,6 @@
 import {
-  FREE_TRACKED_PAIRS,
   TRACKER_TIERS,
-  TRIAL_DAYS,
-  TRIAL_PAIRS,
+  TRIAL_ALLOWANCE,
   formatPrice,
 } from "@/components/pricing-calculator/lib/pricing";
 
@@ -105,7 +103,7 @@ export const COMPARISON_ROWS: { label: string; values: [string, string, string, 
   },
   {
     label: "Cost",
-    values: [`Free for ${FREE_TRACKED_PAIRS}, then from ${from}/mo`, "Free", "Free", "Your team's time"],
+    values: [`Free on ${TRIAL_ALLOWANCE.alertImports} imports, then from ${from}/mo`, "Free", "Free", "Your team's time"],
   },
 ];
 
@@ -116,7 +114,7 @@ export const MONITOR_FAQS = [
   },
   {
     question: "How do I get alerts when tariffs change on my products?",
-    answer: `Create a free HTS Hero account, add your products as HTS code and country of origin pairs (paste them or upload a CSV), and choose where alerts go: email, the in-app feed, Slack or Microsoft Teams. From then on, any tariff change that touches one of your pairs sends an alert.`,
+    answer: `Create a free HTS Hero account, add your products as HTS code and country of origin pairs (paste them or upload a CSV), and choose where alerts go: email, the in-app feed, Slack or Microsoft Teams. From then on, any tariff change that touches one of your imports sends an alert. Alerts are free on ${TRIAL_ALLOWANCE.alertImports} imports, and a paid plan covers the rest.`,
   },
   {
     question: "Which sources does the Tariff Tracker watch?",
@@ -135,7 +133,7 @@ export const MONITOR_FAQS = [
   },
   {
     question: "How much does the Tariff Tracker cost?",
-    answer: `It's free for ${FREE_TRACKED_PAIRS} HTS code and country pairs, with monitoring and alerts. You can try the full Tracker for up to ${TRIAL_PAIRS} pairs free for ${TRIAL_DAYS} days, no credit card. Paid plans start at ${from} a month for ${TRACKER_TIERS[0].maxPairs} pairs and add rate history, entry audit and savings discovery.`,
+    answer: `It's free to start, with no time limit and no credit card. Every account can upload its whole catalog, with rate history and sourcing for all of it, alerts on ${TRIAL_ALLOWANCE.alertImports} imports (an import is one HTS code from one country of origin), savings checks on ${TRIAL_ALLOWANCE.savingsChecks} imports and ${TRIAL_ALLOWANCE.auditChecks} audit checks of past entries. Paid plans start at ${from} a month for up to ${TRACKER_TIERS[0].maxPairs} imports and cover alerts and savings on each one, with unlimited audit checks.`,
   },
   {
     question: "What's the difference between the Tariff Calculator and the Tariff Tracker?",

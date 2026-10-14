@@ -1,20 +1,25 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { PricingPlan } from "@/types";
-import { TRACKER_PLANS, TrackerAccess, trackerAccessFrom, TrackerTrial } from "./plan";
+import { TRACKER_PLANS, TrackerAccess, trackerAccessFrom, TrackerUsage } from "./plan";
 
 // A signed-in account's Tariff Tracker access, read with the service role (server only)
 
 // Same grace as the other plans: renewals can land a day or two after a period ends
 const RENEWAL_GRACE_DAYS = 2;
 
-export const readTrial = async (admin: SupabaseClient, userId: string): Promise<TrackerTrial | null> => {
+// The checks the account has spent (tracker_checks), oldest first
+export const readUsage = async (admin: SupabaseClient, userId: string): Promise<TrackerUsage> => {
   const { data, error } = await admin
-    .from("tracker_trials")
-    .select("started_at, ends_at")
+    .from("tracker_checks")
+    .select("kind, ref")
     .eq("user_id", userId)
-    .maybeSingle<{ started_at: string; ends_at: string }>();
+    .order("created_at", { ascending: true });
   if (error) throw error;
-  return data ? { startedAt: data.started_at, endsAt: data.ends_at } : null;
+  const rows = (data ?? []) as { kind: string; ref: string }[];
+  return {
+    savingsChecked: rows.filter((r) => r.kind === "savings").map((r) => r.ref),
+    auditsChecked: rows.filter((r) => r.kind === "audit").map((r) => r.ref),
+  };
 };
 
 const readActivePlans = async (admin: SupabaseClient, userId: string): Promise<PricingPlan[]> => {
@@ -33,6 +38,6 @@ const readActivePlans = async (admin: SupabaseClient, userId: string): Promise<P
 };
 
 export const readTrackerAccess = async (admin: SupabaseClient, userId: string): Promise<TrackerAccess> => {
-  const [trial, activePlans] = await Promise.all([readTrial(admin, userId), readActivePlans(admin, userId)]);
-  return trackerAccessFrom({ trial, activePlans });
+  const [usage, activePlans] = await Promise.all([readUsage(admin, userId), readActivePlans(admin, userId)]);
+  return trackerAccessFrom({ usage, activePlans });
 };

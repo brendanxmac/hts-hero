@@ -122,7 +122,7 @@ export const FLEXPORT: Tool = {
       {
         question: "Is there a free alternative to Flexport's tariff simulator?",
         answer:
-          "Yes. HTS Hero has a free plan with the full line-by-line duty breakdown, and several other free calculators are listed on this page.",
+          "Yes. HTS Hero's Tariff Calculator is free, with the full line-by-line duty breakdown, and several other free calculators are listed on this page.",
       },
     ],
   },

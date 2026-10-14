@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRightIcon, CalculatorIcon, ChevronRightIcon, MagnifyingGlassIcon, SignalIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
-import { ANNUAL_DISCOUNT, CLASSIFY_PLANS, FREE_TRACKED_PAIRS, TRACKER_TIERS, formatPrice } from "../lib/pricing";
+import { ANNUAL_DISCOUNT, CLASSIFY_PLANS, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice } from "../lib/pricing";
 
 const PRODUCTS = [
   {
@@ -15,7 +15,7 @@ const PRODUCTS = [
   {
     href: "#tariffs",
     name: "Tariff Tracker",
-    summary: `Alerts, audits and savings · free for ${FREE_TRACKED_PAIRS} products`,
+    summary: `Alerts, audits and savings · ${TRIAL_ALLOWANCE.auditChecks} free audit checks`,
     price: formatPrice(TRACKER_TIERS[0].price),
     Icon: SignalIcon,
     tint: "bg-teal-100 text-teal-700",
@@ -48,7 +48,7 @@ export const PricingHero = () => (
           </span>
         </h1>
         <p className={`${mk.lead} mt-6 max-w-2xl`}>
-          The Tariff Calculator is free and unlimited. When you want to track your own products, catch tariff changes, audit your entries and find savings, you can give Tariff Tracker a try.
+          The Tariff Calculator is free and unlimited. When you want to track your own products, catch tariff changes, audit your entries and find savings, you can start Tariff Tracker free, with no credit card.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <a href="#estimate" className={`${mk.buttonPrimary} h-14 px-8 text-lg`}>

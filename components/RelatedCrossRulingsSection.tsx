@@ -131,7 +131,7 @@ export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }
                   type="button"
                   onClick={() => setShowAll(true)}
                   // Bare, the section sits on a page with the analytical theme
-                  className={bare ? `${ui.button({ size: "sm" })} justify-self-center md:col-span-2` : "btn btn-outline btn-sm self-center"}
+                  className={bare ? `${ui.button({ size: "sm" })} justify-self-center md:col-span-2 tracker:rounded-full tracker:shadow-none` : "btn btn-outline btn-sm self-center"}
                 >
                   Show all {rulings.length} rulings
                 </button>

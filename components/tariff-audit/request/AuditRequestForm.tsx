@@ -51,8 +51,8 @@ export const AuditRequestForm = () => {
   if (status === "sent") {
     return (
       <div className={`${mk.card} flex flex-col items-start gap-3 p-8 sm:p-10`} role="status">
-        <CheckCircleIcon className="h-10 w-10 text-teal-600" aria-hidden />
-        <h3 className="text-2xl font-semibold text-slate-900">Thanks, your request is in.</h3>
+        <CheckCircleIcon className="h-10 w-10 text-primary" aria-hidden />
+        <h3 className="text-2xl font-semibold text-base-content">Thanks, your request is in.</h3>
         <p className={mk.body}>
           We&apos;ll email you to set up the audit and tell you exactly which entry data to send.
         </p>
@@ -61,7 +61,7 @@ export const AuditRequestForm = () => {
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-900/5 sm:p-10">
+    <form onSubmit={submit} className="flex flex-col gap-6 rounded-2xl border border-base-300 bg-base-100 p-8 sm:p-10">
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5">
           <span className={mk.fieldLabel}>Your name</span>
@@ -94,7 +94,7 @@ export const AuditRequestForm = () => {
         <legend className={`${mk.fieldLabel} mb-2`}>What should we look at?</legend>
         <div className="grid gap-2 sm:grid-cols-2">
           {AUDIT_TOPICS.map((topic) => (
-            <label key={topic.id} className="flex items-center gap-2.5 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 has-[:checked]:border-teal-400 has-[:checked]:bg-teal-50">
+            <label key={topic.id} className="flex items-center gap-2.5 rounded-lg border border-base-300 px-3 py-2.5 text-sm text-base-content/70 has-[:checked]:border-primary/40 has-[:checked]:bg-primary/10">
               <input
                 type="checkbox"
                 className={mk.checkbox}
@@ -109,7 +109,7 @@ export const AuditRequestForm = () => {
 
       <label className="flex flex-col gap-1.5">
         <span className={mk.fieldLabel}>
-          Anything else? <span className="font-normal text-slate-400">Optional</span>
+          Anything else? <span className="font-normal text-base-content/60">Optional</span>
         </span>
         <textarea
           name="notes"
@@ -123,7 +123,7 @@ export const AuditRequestForm = () => {
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
       {error && (
-        <p className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-200" role="alert">
+        <p className="rounded-lg bg-error/10 px-4 py-3 text-sm text-error ring-1 ring-error/20" role="alert">
           {error}
         </p>
       )}

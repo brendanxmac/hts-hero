@@ -26,8 +26,8 @@ export const NotAppliedPanel = ({
   lines: DutyLine[];
   bare?: boolean;
   explain?: (reason: string) => string;
-  // Signed out: in place of each reason (the plain-English why takes a free account)
-  lockedReason?: ReactNode;
+  // Signed out: in place of each reason, given the plain-English reason (it takes a free account)
+  lockedReason?: (reason: string) => ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
   const notApplied = lines.filter((l) => l.status !== "applies");
@@ -75,9 +75,12 @@ export const NotAppliedPanel = ({
                 >
                   {STATUS[line.status]}
                 </span>
-                {lockedReason ?? (line.reasons[0] && (
-                  <span className={ui.caption}>{line.reasons.map(explain).join(" · ")}</span>
-                ))}
+                {line.reasons[0] &&
+                  (lockedReason ? (
+                    lockedReason(line.reasons.map(explain).join(" · "))
+                  ) : (
+                    <span className={ui.caption}>{line.reasons.map(explain).join(" · ")}</span>
+                  ))}
               </div>
             </li>
           ))}

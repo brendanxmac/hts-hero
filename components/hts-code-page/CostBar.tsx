@@ -9,7 +9,7 @@ import { CHART_COLORS, FEES_COLOR } from "@/components/ui/theme";
 export const CostBar = ({ slices }: { slices: MicroEstimate["slices"] }) => (
   <StackedBar
     size="sm"
-    className="px-5 py-3"
+    className="px-6 py-4"
     formatValue={formatMoney}
     parts={slices.map((s, i) => ({
       ...s,

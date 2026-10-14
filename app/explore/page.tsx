@@ -47,12 +47,12 @@ export default async function Home() {
   // The heading, intro and section links are server-rendered so crawlers see them;
   // the explorer itself loads the HTS in the browser
   return (
-    <main className="w-full min-h-0 flex flex-col bg-base-100">
-      <header className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 md:pt-8">
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+    <main className="w-full flex-1 min-h-0 flex flex-col bg-base-200">
+      <header className="mx-auto w-full max-w-screen-xl px-6 lg:px-8 pt-8 md:pt-10">
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-base-content [font-family:var(--font-tracker-display)]">
           HTS Code Lookup
         </h1>
-        <p className="mt-2 max-w-3xl text-sm md:text-base text-base-content/60 leading-relaxed">
+        <p className="mt-3 max-w-3xl text-sm md:text-base text-base-content/70 leading-relaxed">
           Search the US Harmonized Tariff Schedule (HTSUS) by code or product
           description, then open any HTS code to see its duty rates and notes,
           or{" "}
@@ -63,18 +63,22 @@ export default async function Home() {
         </p>
       </header>
 
-      <BreadcrumbsProvider>
-        <Explore explorerSurface="explore_page" />
-      </BreadcrumbsProvider>
+      <div className="mx-auto w-full max-w-screen-xl px-6 lg:px-8 mt-6">
+        <div className="rounded-3xl border border-base-300 bg-base-100 overflow-hidden">
+          <BreadcrumbsProvider>
+            <Explore explorerSurface="explore_page" />
+          </BreadcrumbsProvider>
+        </div>
+      </div>
 
-      <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <h2 className="text-lg font-bold">Browse the HTS by section</h2>
-        <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      {/* <section className="mx-auto w-full max-w-screen-xl px-6 lg:px-8 py-12 sm:py-16">
+        <h2 className="text-2xl font-semibold tracking-tight text-base-content [font-family:var(--font-tracker-display)]">Browse the HTS by section</h2>
+        <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map((s) => (
             <li key={s.number}>
               <Link
                 href={`/section/${s.number}`}
-                className="group flex h-full flex-col gap-0.5 px-3 py-2 rounded-lg border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 transition-all"
+                className="group flex h-full flex-col gap-1 rounded-2xl border border-base-300 bg-base-100 px-5 py-4 transition-colors hover:border-primary/40"
               >
                 <span className="text-xs font-bold text-primary group-hover:underline">
                   Section {toRoman(s.number)}
@@ -86,7 +90,7 @@ export default async function Home() {
             </li>
           ))}
         </ul>
-      </section>
+      </section> */}
     </main>
   );
 }

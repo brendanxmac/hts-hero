@@ -76,15 +76,16 @@ export const FAQ = ({ faqItems }: Props) => {
 
         {/* Still have questions? */}
         <div className="mt-12">
-          <div className="relative overflow-hidden rounded-3xl border border-base-content/10 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 px-6 py-10 sm:px-10 sm:py-12 shadow-lg">
+          {/* In the Tariff Tracker's look (tracker:) a bold call to action, inverted from the page */}
+          <div className="hts-tracker-inverse relative overflow-hidden rounded-3xl border border-base-content/10 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 px-6 py-10 sm:px-10 sm:py-12 shadow-lg tracker:border-0 tracker:bg-none tracker:bg-base-100 tracker:py-16 tracker:shadow-none">
             {/* Decorative blurs */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none tracker:hidden">
               <div className="absolute -top-16 -right-10 w-56 h-56 bg-primary/10 rounded-full blur-3xl" />
               <div className="absolute -bottom-20 -left-10 w-56 h-56 bg-secondary/10 rounded-full blur-3xl" />
             </div>
 
             <div className="relative z-10 flex flex-col items-center text-center">
-              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-base-content">
+              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-base-content tracker:text-4xl tracker:font-semibold tracker:[font-family:var(--font-tracker-display)] sm:tracker:text-5xl">
                 Still have questions?
               </h3>
               <p className="mt-3 text-sm sm:text-base text-base-content/70 max-w-xl">
@@ -95,7 +96,7 @@ export const FAQ = ({ faqItems }: Props) => {
               {/* Primary CTA */}
               <button
                 onClick={handleBookDemoClick}
-                className="group mt-8 inline-flex items-center justify-center gap-2 px-10 sm:px-14 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30 hover:shadow-xl"
+                className="group mt-8 inline-flex items-center justify-center gap-2 px-10 sm:px-14 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30 hover:shadow-xl tracker:h-16 tracker:rounded-full tracker:bg-success tracker:font-semibold tracker:text-success-content tracker:shadow-none tracker:hover:bg-success/90"
               >
                 <span>Book a Demo</span>
                 <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
@@ -109,14 +110,14 @@ export const FAQ = ({ faqItems }: Props) => {
                 <button
                   type="button"
                   onClick={handleSupportClick}
-                  className="btn btn-outline btn-sm gap-2 w-full sm:w-auto"
+                  className="btn btn-outline btn-sm gap-2 w-full sm:w-auto tracker:rounded-full"
                 >
                   <ChatBubbleLeftRightIcon className="w-4 h-4" />
                   Talk with Support
                 </button>
                 <a
                   href={`mailto:${config.resend?.supportEmail ?? ""}?subject=Question about ${config.appName}`}
-                  className="btn btn-outline btn-sm gap-2 w-full sm:w-auto"
+                  className="btn btn-outline btn-sm gap-2 w-full sm:w-auto tracker:rounded-full"
                 >
                   <EnvelopeIcon className="w-4 h-4" />
                   Send Us An Email

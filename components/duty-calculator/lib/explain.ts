@@ -9,7 +9,7 @@ import { programName } from "../results/labels";
 // switches off, and which exemptions could still switch it off. And for the Possible Adjustments
 // list, what checking a box would do.
 
-const tariffOn = (code: string, asOf: string): Tariff | undefined => {
+export const tariffOn = (code: string, asOf: string): Tariff | undefined => {
   const versions = AllRules.tariffs.filter((t) => t.code === code);
   return versions.find((t) => isEffectiveOn(t.effective, asOf)) ?? versions[versions.length - 1];
 };

@@ -24,7 +24,7 @@ export const revalidate = 86400;
 const URL = `https://${config.domainName}/tariff-audit`;
 const TITLE = "Tariff Audit: Find Overpaid Import Duty & Refunds | HTS Hero";
 const DESCRIPTION =
-  "Audit past US import entries for overpaid duty, missed exemptions and refundable tariffs like IEEPA. Self-audit free for 14 days, or request one. Ready for your broker.";
+  "Audit past US import entries for overpaid duty, missed exemptions and refundable tariffs like IEEPA. 10 free audit checks, or request one. Ready for your broker.";
 
 export const metadata: Metadata = {
   title: TITLE,

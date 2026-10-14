@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
-import { SwarmStandIn } from "@/components/ui/stand-ins";
+import { ReactNode, useMemo } from "react";
+import { formatPct } from "@/components/duty-calculator/lib/format";
+import { UsImports, useUsImports } from "@/components/duty-calculator/lib/usImports";
 import { useUser } from "@/contexts/UserContext";
 import { AccountGate } from "../../access/AccountGate";
 import { TrackedProduct } from "../../report";
@@ -22,17 +23,56 @@ export const teaserFor = (product: TrackedProduct) => {
   return agreements ? `${lead} ${agreements} have a trade agreement that can lower it.` : lead;
 };
 
+// The gate's pitch, short: sourcing insight, from the product itself. How many origins pay less
+// (and, from Census imports, how many of those already ship it to the US) and how low it goes,
+// without naming them (the account answers that).
+const pitchFor = (product: TrackedProduct, imports: UsImports | null): { teaser: ReactNode; points: string[] } => {
+  const facts = analysisFacts(originRates(product), "agreements");
+  const cheaper = facts.cheaper.length;
+  // The cheaper ones that already ship it to the US (Census): proven suppliers, not just rates
+  const proven = imports ? facts.cheaper.filter((r) => (imports.byCountry.get(r.country.code)?.value ?? 0) > 0).length : 0;
+  const pct = (n: number) => formatPct(Math.round(n * 10) / 10);
+  if (!cheaper)
+    return {
+      teaser: <>See how {product.entry.country.name} compares with every other country you could source from.</>,
+      points: [],
+    };
+  return {
+    teaser: (
+      <>
+        <span className="block text-base">Find a cheaper country to source this from.</span>
+        <span className="mt-1 block font-normal text-base-content/80">
+          {proven > 0 ? (
+            <>
+              <b className="text-base-content">{proven}</b> {proven === 1 ? "country already ships" : "countries already ship"} this to the US and{" "}
+              {proven === 1 ? "pays" : "pay"} less duty than {product.entry.country.name}, some as low as <b className="text-success">{pct(facts.lowest.pct)}</b>.
+            </>
+          ) : (
+            <>
+              {cheaper} {cheaper === 1 ? "country pays" : "countries pay"} less duty than {product.entry.country.name}, some as low as{" "}
+              <b className="text-success">{pct(facts.lowest.pct)}</b>.
+            </>
+          )}
+        </span>
+      </>
+    ),
+    points: [],
+  };
+};
+
 export const GatedAnalysis = ({ product, page }: { product: TrackedProduct; page: string }) => {
   const { user, isLoading } = useUser();
-  const teaser = useMemo(() => (user || isLoading ? null : teaserFor(product)), [user, isLoading, product]);
+  const imports = useUsImports(user || isLoading ? undefined : product.entry.element.htsno);
+  const pitch = useMemo(() => (user || isLoading ? null : pitchFor(product, imports)), [user, isLoading, product, imports]);
   return (
     <AccountGate
       feature="analysis"
       page={page}
-      title="See this product's duty from every country"
-      teaser={teaser}
-      points={["Every origin ranked by duty, on a map", "Trade agreements that lower it", "Which rates have been stable, and which haven't"]}
-      preview={<SwarmStandIn />}
+      title="Get Advanced Comparisons, 100% Free"
+      teaser={pitch?.teaser}
+      points={pitch?.points ?? []}
+      // The real Analysis, blurred: what they'd unlock is the best pitch for it
+      preview={<AnalysisTab product={product} />}
       minHeight="min-h-[30rem]"
     >
       <AnalysisTab product={product} />

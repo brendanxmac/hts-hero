@@ -35,32 +35,32 @@ export const RefundTimeline = ({ verifiedFrom }: { verifiedFrom: string }) => (
     role="img"
     aria-label="IEEPA tariffs applied from Feb 4, 2025 to Feb 23, 2026 and are being refunded; the Section 122 surcharge applied from Feb 24 to Jul 24, 2026 and its refund is under appeal"
   >
-    <rect x={x(verifiedFrom)} y={30} width={x("2026-10-31") - x(verifiedFrom)} height={110} rx={10} fill="#ccfbf1" opacity={0.6} />
-    <text x={x(verifiedFrom) + 10} y={24} fontSize="12" fontWeight="700" fill="#0f766e">
+    <rect x={x(verifiedFrom)} y={30} width={x("2026-10-31") - x(verifiedFrom)} height={110} rx={10} fill="oklch(var(--p)/0.12)" opacity={0.6} />
+    <text x={x(verifiedFrom) + 10} y={24} fontSize="12" fontWeight="700" fill="oklch(var(--p))">
       Verified by HTS Hero from {new Date(`${verifiedFrom}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}
     </text>
     {BARS.map((b) => (
       <g key={b.label}>
         <rect x={x(b.from)} y={b.y} width={x(b.to) - x(b.from)} height={28} rx={8} fill={b.color} />
-        <text x={x(b.from) + 12} y={b.y + 19} fontSize="13" fontWeight="700" fill="white">
+        <text x={x(b.from) + 12} y={b.y + 19} fontSize="13" fontWeight="700" fill="oklch(var(--b1))">
           {b.label}
         </text>
       </g>
     ))}
-    <line x1={PAD.l} x2={W - PAD.r} y1={160} y2={160} stroke="#cbd5e1" />
+    <line x1={PAD.l} x2={W - PAD.r} y1={160} y2={160} stroke="oklch(var(--b3))" />
     {TICKS.map((t) => (
       <g key={t}>
-        <line x1={x(t)} x2={x(t)} y1={156} y2={164} stroke="#cbd5e1" />
-        <text x={x(t)} y={190} textAnchor="middle" fontSize="11" fill="#94a3b8">
+        <line x1={x(t)} x2={x(t)} y1={156} y2={164} stroke="oklch(var(--b3))" />
+        <text x={x(t)} y={190} textAnchor="middle" fontSize="11" fill="oklch(var(--bc)/0.6)">
           {tickLabel(t)}
         </text>
       </g>
     ))}
     {TIMELINE_EVENTS.map((e, i) => (
       <g key={e.at}>
-        <line x1={x(e.at)} x2={x(e.at)} y1={40} y2={150} stroke="#0f172a" strokeDasharray="2 3" />
-        <circle cx={x(e.at)} cy={160} r={10} fill="#0f172a" />
-        <text x={x(e.at)} y={164} textAnchor="middle" fontSize="11" fontWeight="700" fill="white">
+        <line x1={x(e.at)} x2={x(e.at)} y1={40} y2={150} stroke="oklch(var(--bc))" strokeDasharray="2 3" />
+        <circle cx={x(e.at)} cy={160} r={10} fill="oklch(var(--bc))" />
+        <text x={x(e.at)} y={164} textAnchor="middle" fontSize="11" fontWeight="700" fill="oklch(var(--b1))">
           {i + 1}
         </text>
       </g>

@@ -44,25 +44,25 @@ export const DutyChart = () => (
   >
     <defs>
       <linearGradient id="duty-area" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#0d9488" stopOpacity="0.22" />
-        <stop offset="100%" stopColor="#0d9488" stopOpacity="0" />
+        <stop offset="0%" stopColor="oklch(var(--p))" stopOpacity="0.22" />
+        <stop offset="100%" stopColor="oklch(var(--p))" stopOpacity="0" />
       </linearGradient>
     </defs>
     {[0, 25, 50, 75, 100].map((p) => (
       <g key={p}>
-        <line x1={PAD.l} x2={W - PAD.r} y1={y(p)} y2={y(p)} stroke="#e2e8f0" strokeDasharray={p ? "3 5" : undefined} />
-        <text x={PAD.l - 8} y={y(p) + 4} textAnchor="end" fontSize="11" fill="#94a3b8">
+        <line x1={PAD.l} x2={W - PAD.r} y1={y(p)} y2={y(p)} stroke="oklch(var(--b3))" strokeDasharray={p ? "3 5" : undefined} />
+        <text x={PAD.l - 8} y={y(p) + 4} textAnchor="end" fontSize="11" fill="oklch(var(--bc)/0.6)">
           {p}%
         </text>
       </g>
     ))}
     {TICKS.map(([d, label]) => (
-      <text key={d} x={x(d)} y={H - 12} textAnchor="middle" fontSize="11" fill="#94a3b8">
+      <text key={d} x={x(d)} y={H - 12} textAnchor="middle" fontSize="11" fill="oklch(var(--bc)/0.6)">
         {label}
       </text>
     ))}
     <path d={area} fill="url(#duty-area)" />
-    <path d={line} fill="none" stroke="#0f172a" strokeWidth="3" strokeLinejoin="round" />
+    <path d={line} fill="none" stroke="oklch(var(--bc))" strokeWidth="3" strokeLinejoin="round" />
     {NOTES.map((n) => (
       <g key={n.at}>
         <circle cx={x(n.at)} cy={y(n.pct)} r="6" fill={n.color} stroke="white" strokeWidth="2" />
@@ -73,10 +73,10 @@ export const DutyChart = () => (
         ))}
       </g>
     ))}
-    <text x={x(STEPS[0].from) + 4} y={y(47.9) - 10} fontSize="13" fontWeight="700" fill="#0f172a">
+    <text x={x(STEPS[0].from) + 4} y={y(47.9) - 10} fontSize="13" fontWeight="700" fill="oklch(var(--bc))">
       47.9%
     </text>
-    <text x={x(END) - 4} y={y(77.9) - 10} textAnchor="end" fontSize="13" fontWeight="700" fill="#0f172a">
+    <text x={x(END) - 4} y={y(77.9) - 10} textAnchor="end" fontSize="13" fontWeight="700" fill="oklch(var(--bc))">
       77.9%
     </text>
   </svg>

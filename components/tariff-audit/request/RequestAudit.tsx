@@ -21,9 +21,9 @@ export const RequestAudit = () => (
         </SectionIntro>
         <ul className="mt-8 flex flex-col gap-3">
           {WHAT_YOU_GET.map((item) => (
-            <li key={item} className="flex gap-3 text-base text-slate-700">
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-50 ring-1 ring-teal-200">
-                <CheckIcon className="h-4 w-4 text-teal-600" aria-hidden />
+            <li key={item} className="flex gap-3 text-base text-base-content/70">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
+                <CheckIcon className="h-4 w-4 text-primary" aria-hidden />
               </span>
               {item}
             </li>

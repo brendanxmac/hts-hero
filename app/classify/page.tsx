@@ -4,9 +4,8 @@ import { renderSchemaJsonLd } from "@/libs/seo";
 import { PricingPlan } from "@/types";
 import { FAQ } from "@/components/FAQ";
 import { bundleFaqList } from "@/constants/faq";
-import { ClassifyHero, ClassifyPlans, HowItWorks, Testimonials, VideoBand } from "@/components/classify-landing";
+import { ClassifyHero, ClassifyPlans, ClosingCta, HowItWorks, Testimonials, VideoBand } from "@/components/classify-landing";
 import * as mk from "@/components/ui/marketing/styles";
-import { THEME_LIGHT } from "@/components/ui/theme";
 
 // The classification assistant's landing page: the original homepage's content and copy, in the
 // marketing theme. The examples and the FAQ are the existing components, kept light.
@@ -48,14 +47,13 @@ export default function ClassifyPage() {
       <ClassifyHero />
       <Testimonials />
       <HowItWorks />
-      <div className={`${THEME_LIGHT} bg-white pt-20`}>
+      <div className="pt-20">
         <ClassificationExamplesSection />
       </div>
       <VideoBand />
       <ClassifyPlans />
-      <div className={THEME_LIGHT}>
-        <FAQ faqItems={bundleFaqList} />
-      </div>
+      <FAQ faqItems={bundleFaqList} />
+      <ClosingCta />
     </main>
   );
 }

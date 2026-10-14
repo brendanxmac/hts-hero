@@ -1,31 +1,37 @@
 import Link from "next/link";
 import { ArrowRightIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
+import * as tt from "@/components/ui/styles/tracker";
 
-// The call to action: every rate depends on the code, so send people to find theirs. A dark
-// band, for contrast between the two white sections around it.
+// The call to action: every rate depends on the code, so send people to find theirs. A dark band
+// in the Tariff Tracker's dark palette (hts-tracker-on-dark: navy, indigo), for contrast between
+// the light sections around it, in light mode and dark.
 export const FindHtsCode = () => (
   <section
     id="find-hts-code"
     aria-labelledby="find-hts-code-title"
-    className={`${mk.band} relative scroll-mt-6 overflow-hidden bg-[#0b1220] text-white`}
+    className={`${mk.band} hts-tracker-on-dark relative scroll-mt-6 overflow-hidden bg-tt-side text-base-content`}
   >
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_85%_0%,rgba(45,212,191,0.18),transparent)]"
+      className="pointer-events-none absolute inset-0 bg-[radial-gradient(44rem_22rem_at_85%_0%,oklch(var(--p)/0.3),transparent),radial-gradient(30rem_18rem_at_0%_100%,oklch(var(--p)/0.12),transparent)]"
     />
     <div className={`${mk.container} relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center`}>
-      <SectionIntro dark eyebrow="Classification" title="Find the right HTS code for your products" id="find-hts-code-title">
-        Every rate on this page depends on the 10-digit classification. The wrong code can mean the
-        wrong tariffs, missed exemptions, and penalties.
-      </SectionIntro>
-      <div className="flex flex-wrap gap-4">
-        <Link href="/explore" className={mk.buttonGhostDark}>
+      <div className="flex max-w-3xl flex-col gap-4">
+        <span className={tt.eyebrow("primary")}>Classification</span>
+        <h2 id="find-hts-code-title" className={`${tt.display} m-0 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl`}>
+          Find the right HTS code for your products
+        </h2>
+        <p className="m-0 text-lg leading-relaxed text-base-content/70">
+          Every rate on this page depends on the 10-digit classification. The wrong code can mean the wrong tariffs, missed exemptions, and penalties.
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-3">
+        <Link href="/explore" className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-base-content/20 px-6 font-semibold text-base-content transition-colors hover:bg-base-content/10">
           <MagnifyingGlassIcon className="h-4 w-4" aria-hidden />
           Search the HTS
         </Link>
-        <Link href="/classify" className={mk.buttonOnDark}>
+        <Link href="/classify" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-primary-content transition-colors hover:bg-primary/90">
           Classify a product
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </Link>

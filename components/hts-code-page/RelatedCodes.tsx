@@ -4,6 +4,7 @@ import type { HtsElement } from "@/interfaces/hts";
 import { mono } from "@/components/ui/font";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 
 // The codes under this one and beside it. Plain links, so crawlers reach every line of the schedule
 export function RelatedCodes({
@@ -23,7 +24,7 @@ export function RelatedCodes({
       />
 
       {children.length > 0 && (
-        <ul className={`${ui.card} grid md:grid-cols-2`}>
+        <ul className={`${tt.panel} overflow-hidden grid md:grid-cols-2`}>
           {children.map((child) => {
             const rate = child.general && child.general.length <= 20 ? child.general : null;
             const body = (
@@ -35,7 +36,7 @@ export function RelatedCodes({
                   <span className={`${ui.bodySm} block`}>{child.description}</span>
                 </span>
                 {rate && (
-                  <span className="shrink-0 rounded bg-base-200 px-2 py-0.5 text-xs font-semibold tabular-nums text-base-content">
+                  <span className="shrink-0 rounded-full bg-tt-soft px-2.5 py-0.5 text-xs font-semibold tabular-nums text-base-content">
                     {rate}
                   </span>
                 )}
@@ -47,11 +48,11 @@ export function RelatedCodes({
             return (
               <li key={child.uuid} className="-mb-px border-b border-base-300 md:odd:border-r">
                 {child.htsno ? (
-                  <Link href={`/hts/${child.htsno}`} className="group flex h-full items-center gap-3 px-5 py-3 transition-colors hover:bg-base-200">
+                  <Link href={`/hts/${child.htsno}`} className="group flex h-full items-center gap-3 px-6 py-4 transition-colors hover:bg-tt-soft">
                     {body}
                   </Link>
                 ) : (
-                  <div className="flex h-full items-center gap-3 px-5 py-3">{body}</div>
+                  <div className="flex h-full items-center gap-3 px-6 py-4">{body}</div>
                 )}
               </li>
             );
@@ -62,7 +63,7 @@ export function RelatedCodes({
       {siblings.length > 0 && (
         <div className="flex flex-col gap-3">
           {children.length > 0 && (
-            <h3 className={ui.label}>
+            <h3 className={tt.eyebrow()}>
               Other HTS Codes at This Level
             </h3>
           )}
@@ -73,7 +74,7 @@ export function RelatedCodes({
                   key={sib.uuid}
                   href={`/hts/${sib.htsno}`}
                   title={sib.description}
-                  className="group inline-flex max-w-full items-center gap-2 rounded-md border border-base-300 bg-base-100 px-3 py-1.5 transition-colors hover:border-primary/40"
+                  className="group inline-flex max-w-full items-center gap-2 rounded-full border border-base-300 bg-base-100 px-4 py-2 transition-colors hover:border-primary/40"
                 >
                   <span className={`${mono.className} text-sm font-semibold text-primary`}>{sib.htsno}</span>
                   <span className="max-w-60 truncate text-sm text-base-content/70 group-hover:text-base-content">{sib.description}</span>
@@ -82,7 +83,7 @@ export function RelatedCodes({
                 <span
                   key={sib.uuid}
                   title={sib.description}
-                  className="inline-flex items-center rounded-md border border-base-300 px-3 py-1.5 text-sm text-base-content/60"
+                  className="inline-flex items-center rounded-full border border-base-300 px-4 py-2 text-sm text-base-content/60"
                 >
                   {sib.description.length > 30 ? sib.description.slice(0, 27) + "..." : sib.description}
                 </span>

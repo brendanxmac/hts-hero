@@ -145,11 +145,6 @@ export default function ClassificationExamplesSection({
   return (
     <section className="relative pb-20 md:pb-28">
       {/* Ambient background glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-secondary/[0.08] rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-primary/[0.08] rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary/[0.04] rounded-full blur-3xl" />
-      </div>
 
       <div className="relative max-w-7xl mx-auto px-5 sm:px-6">
         {/* Section header */}

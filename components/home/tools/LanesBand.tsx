@@ -11,7 +11,7 @@ export const LanesBand = ({ facts }: { facts: MonitorFacts }) => (
   <>
     {/* Monitor 24/7 */}
     <section
-      className={`${mk.band} bg-[#0b1220] text-white`}
+      className={`${mk.band} bg-[#0b1220] text-base-content`}
       aria-labelledby="tool-monitor-title"
     >
       <div className={mk.container}>
@@ -58,8 +58,8 @@ export const LanesBand = ({ facts }: { facts: MonitorFacts }) => (
                   {l.change}
                 </span>
               </div>
-              <p className="mt-2 text-sm text-slate-300">{l.detail}</p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-2 text-sm text-base-content/40">{l.detail}</p>
+              <p className="mt-1 text-xs text-base-content/60">
                 {l.program} · {l.date}
               </p>
             </li>

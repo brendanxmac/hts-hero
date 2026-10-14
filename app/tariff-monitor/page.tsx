@@ -5,7 +5,7 @@ import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
-import { FREE_TRACKED_PAIRS, TRACKER_TIERS } from "@/components/pricing-calculator/lib/pricing";
+import { TRACKER_TIERS, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "@/components/ui/marketing/styles";
 import {
   AlertsSection,
@@ -32,7 +32,7 @@ export const revalidate = 3600;
 
 const URL = `https://${config.domainName}/tariff-monitor`;
 const TITLE = "Tariff Tracking Software: Alerts by HTS Code | HTS Hero";
-const DESCRIPTION = `Monitor US tariffs on every HTS code and country you import. Get alerts by email, in-app, Slack or Teams when a tariff changes. Free for ${FREE_TRACKED_PAIRS} products.`;
+const DESCRIPTION = `Monitor US tariffs on every HTS code and country you import. Get alerts by email, in-app, Slack or Teams when a tariff changes. Free alerts on ${TRIAL_ALLOWANCE.alertImports} imports.`;
 
 export const metadata: Metadata = {
   title: TITLE,

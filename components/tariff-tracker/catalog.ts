@@ -12,7 +12,17 @@ export interface CatalogItem {
   code: string;
   // Two-letter country code
   country: string;
+  // Picked by the user for their plan's coverage (true), or taken out of it (false). Unset, it
+  // can fill a spare slot (highest duty first). See TrackerContext.
+  covered?: boolean;
+  // How many shipments of it a year, for yearly savings (1 when unset)
+  shipmentsPerYear?: number;
+  // A secured change of origin: the country it's moving to (the new origin is its own product)
+  movingTo?: string;
 }
+
+// What's kept about a product besides its code and origin
+export type CatalogItemMeta = Pick<CatalogItem, "shipmentsPerYear" | "movingTo">;
 
 // A product on its way into the catalog, with any adjustments it brings (from a CSV upload)
 export interface NewProduct extends CatalogItem {

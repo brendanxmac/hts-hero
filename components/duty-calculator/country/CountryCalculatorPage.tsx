@@ -15,6 +15,8 @@ import { CountryTariffTables } from "./CountryTariffTables";
 import { FaqDisclosures } from "./FaqDisclosures";
 import { ExampleComparison, tariffSummary, titleName } from "./countryCopy";
 import { ImportFactsCard } from "./ImportFactsCard";
+import { CountryTopImports } from "./CountryTopImports";
+import { TOP_IMPORTS_PRIOR, TOP_IMPORTS_YEAR, type TopImport } from "@/libs/country-pages/topImports";
 import type { ImportFacts } from "@/libs/country-pages/importStats";
 import { COUNTRY_PRODUCTS } from "@/libs/country-pages/countryProducts";
 
@@ -30,6 +32,7 @@ export function CountryCalculatorPage({
   asOfLabel,
   facts,
   comparison,
+  topImports = [],
 }: {
   country: CountryPage;
   tariffs: CountryTariffs;
@@ -38,17 +41,24 @@ export function CountryCalculatorPage({
   asOfLabel: string;
   facts: ImportFacts | null;
   comparison: ExampleComparison | null;
+  // What the US imports most from this country (Census), with today's duty
+  topImports?: TopImport[];
 }) {
   const name = titleName(country);
   const path = `/duty-calculator/${country.slug}`;
   const hasExamples = examples.length > 0;
-  // The calculator's "Try an example" list: what the US imports most from this country, falling
-  // back to this page's example products
+  const hasTopImports = topImports.length > 0;
+  // The calculator's "Try an example" list: what the US imports most from this country (Census),
+  // else the hand-picked list, else this page's example products
   const calculatorExamples = (
-    COUNTRY_PRODUCTS[country.code] ?? examples.slice(0, 5).map((e) => ({ code: e.htsno, label: e.label }))
+    hasTopImports
+      ? topImports.slice(0, 5).map((t) => ({ code: t.htsno, label: t.label }))
+      : COUNTRY_PRODUCTS[country.code] ?? examples.slice(0, 5).map((e) => ({ code: e.htsno, label: e.label }))
   ).map((p) => ({ code: p.code, country: country.code, label: p.label, origin: name }));
-  // Tariffs is muted; each later band flips, so two of a kind never touch when examples are missing
-  const faqMuted = hasExamples;
+  // Tariffs is muted; each later band flips, so two of a kind never touch whichever are missing
+  const topMuted = false;
+  const examplesMuted = hasTopImports ? !topMuted : false;
+  const faqMuted = hasExamples ? !examplesMuted : hasTopImports ? !topMuted : false;
   const band = (muted: boolean) => `${mk.band} ${muted ? mk.bandMuted : "bg-white skin:bg-base-100"}`;
 
   return (
@@ -95,8 +105,21 @@ export function CountryCalculatorPage({
         </div>
       </section>
 
+      {hasTopImports && (
+        <section className={band(topMuted)}>
+          <div className={mk.container}>
+            <SectionIntro eyebrow="US imports" title={`What the US imports most from ${country.name}`}>
+              The products the US imported most from {country.name} in {TOP_IMPORTS_YEAR}, by HTS code, and the duty each pays today.
+            </SectionIntro>
+            <div className="mt-10">
+              <CountryTopImports rows={topImports} countryName={country.name} calculatorPath={path} year={TOP_IMPORTS_YEAR} prior={TOP_IMPORTS_PRIOR} />
+            </div>
+          </div>
+        </section>
+      )}
+
       {hasExamples && (
-        <section className={band(false)}>
+        <section className={band(examplesMuted)}>
           <div className={mk.container}>
             <SectionIntro eyebrow="Examples" title={`What common products from ${country.name} pay`}>
               {comparison ? `The same products from ${comparison.name} alongside, for comparison.` : null}

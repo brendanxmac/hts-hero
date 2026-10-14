@@ -1,10 +1,8 @@
 import {
   ANNUAL_DISCOUNT,
   CLASSIFY_PLANS,
-  FREE_TRACKED_PAIRS,
   TRACKER_TIERS,
-  TRIAL_DAYS,
-  TRIAL_PAIRS,
+  TRIAL_ALLOWANCE,
   formatPrice,
 } from "@/components/pricing-calculator/lib/pricing";
 
@@ -29,7 +27,7 @@ export const HOME_FAQS = [
   },
   {
     question: "How do I get alerts when tariffs change on my products?",
-    answer: `Add your products to the Tariff Tracker as HTS code and country of origin pairs. When a tariff is announced, and again when it reaches the HTS, you get an alert by email, in the app, or in Slack or Microsoft Teams. It's free for ${FREE_TRACKED_PAIRS} products, and you can try up to ${TRIAL_PAIRS} free for ${TRIAL_DAYS} days.`,
+    answer: `Add your products to the Tariff Tracker as HTS code and country of origin pairs. When a tariff is announced, and again when it reaches the HTS, you get an alert by email, in the app, or in Slack or Microsoft Teams. Alerts are free on ${TRIAL_ALLOWANCE.alertImports} imports with any account, no credit card.`,
   },
   {
     question: "Can HTS Hero find duty I overpaid?",
@@ -38,7 +36,7 @@ export const HOME_FAQS = [
   },
   {
     question: "How much does HTS Hero cost?",
-    answer: `The Tariff Calculator is free. The Tariff Tracker is free for ${FREE_TRACKED_PAIRS} products, then from ${trackerFrom} a month. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. Monthly plans, no contract, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
+    answer: `The Tariff Calculator is free. The Tariff Tracker is free to start: check ${TRIAL_ALLOWANCE.savingsChecks} imports for savings, run ${TRIAL_ALLOWANCE.auditChecks} audit checks and get alerts on ${TRIAL_ALLOWANCE.alertImports} imports, then from ${trackerFrom} a month. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. Monthly plans, no contract, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
   },
   {
     question: "Where does HTS Hero's tariff data come from?",

@@ -19,7 +19,7 @@ export interface NavMeta {
 export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
   const { items } = useTracker();
   const insights = useInsights();
-  const { signedIn } = useTrackerAccess();
+  const { signedIn, paid, savingsLeft, auditsLeft } = useTrackerAccess();
   const alerts = useAlertSettings();
   const meta: Partial<Record<SectionSlug, NavMeta>> = {};
   if (items.length) meta.catalog = { text: items.length.toLocaleString("en-US"), tone: "neutral" };
@@ -29,7 +29,10 @@ export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
     const { count } = changesLastYear(insights.changes, todayIso());
     if (count) meta.history = { text: `${count} changes`, tone: "error" };
   }
-  if (insights.savingsReady && insights.totals.anyUsd > 0) meta.savings = { text: `up to ${wholeDollars(insights.totals.anyUsd)}`, tone: "success" };
-  meta.entries = { text: "Soon", tone: "neutral" };
+  // On the trial, what's still free; once the checks are spent (or on a plan), what they found
+  const found = insights.totals.anyUsd + insights.beyond.anyUsd;
+  if (signedIn && !paid && savingsLeft > 0) meta.savings = { text: `${savingsLeft} free`, tone: "primary" };
+  else if (insights.savingsReady && found > 0) meta.savings = { text: `up to ${wholeDollars(found)}`, tone: "success" };
+  if (signedIn && !paid) meta.entries = auditsLeft > 0 ? { text: `${auditsLeft} free`, tone: "primary" } : { text: "Used", tone: "neutral" };
   return meta;
 };

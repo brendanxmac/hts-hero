@@ -16,7 +16,7 @@ import { useCanSeeWhy } from "./WhyGate";
 // or country of origin. The locked lines further down still offer the account.
 
 // What every free account gets, whatever the import
-const EVERY_ACCOUNT = ACCOUNT_BENEFITS.filter((b) => ["analysis", "alerts", "pdf"].includes(b.id)).map((b) => b.text);
+const EVERY_ACCOUNT = ACCOUNT_BENEFITS.filter((b) => ["analysis", "alerts"].includes(b.id)).map((b) => b.text);
 
 export const AccountCta = ({ f, result, bestSaving, page }: { f: TariffFinder; result: CalculationResult; bestSaving: number; page: string }) => {
   const { canSee, loading } = useCanSeeWhy();
@@ -62,7 +62,7 @@ export const AccountCta = ({ f, result, bestSaving, page }: { f: TariffFinder; r
           <button type="button" className={`${ui.button({ variant: "primary", size: "lg" })} w-full`} onClick={signUp}>
             Explain my duty, free
           </button>
-          <span className={`${ui.caption} lg:text-center`}>Free forever. Less than 30 seconds, no credit card. You come right back here.</span>
+          <span className={`${ui.caption} lg:text-center`}>Less than 30 seconds, no credit card. You come right back here.</span>
         </div>
       </div>
     </section>

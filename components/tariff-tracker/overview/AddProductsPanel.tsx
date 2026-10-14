@@ -17,7 +17,7 @@ const BENEFITS = [
   { n: "1", title: "Every tariff on every product", body: "Base duty, Section 232, 301, 122 and reciprocal, line by line", tone: "primary" as const },
   { n: "2", title: "What changed, and what it cost you", body: "Every tariff change on your products over the last 12 months", tone: "error" as const },
   { n: "3", title: "Where you might pay less", body: "Potential savings from trade programs and lower-duty origins, in dollars", tone: "success" as const },
-  { n: "4", title: "Alerts before the next change lands", body: "Email, Slack or Teams, the day a tariff is announced", tone: "warning" as const },
+  { n: "4", title: "Alerts any time a new change lands", body: "Email, Slack or Teams, the day a tariff is announced", tone: "warning" as const },
 ];
 
 export const AddProductsPanel = () => {
@@ -40,7 +40,7 @@ export const AddProductsPanel = () => {
       <div className="flex min-w-0 flex-col gap-5">
         <span className={`${tt.chip("primary")} self-start`}>Step 1 · takes about a minute</span>
         <h2 className={`${tt.display} m-0 text-3xl font-semibold leading-tight tracking-tight text-base-content lg:text-4xl`}>
-          Add the products you import. We&apos;ll watch every tariff on them.
+          Add the products you import, and we&apos;ll work our magic.
         </h2>
         <p className="m-0 text-base leading-relaxed text-base-content/70">An HTS code and a country of origin is all it takes. The moment they&apos;re in, you&apos;ll see:</p>
         <ul className="flex flex-col gap-2.5">
