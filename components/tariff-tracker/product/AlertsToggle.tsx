@@ -1,7 +1,7 @@
 "use client";
 
 import { BellAlertIcon, BellSlashIcon } from "@heroicons/react/20/solid";
-import * as tt from "@/components/ui/styles/tracker";
+import * as ui from "@/components/ui/styles";
 import { useTrackerAccess } from "../access/accessContext";
 import { useTracker } from "../TrackerContext";
 
@@ -21,7 +21,7 @@ export const AlertsToggle = ({ productKey }: { productKey: string }) => {
       onClick={toggle}
       aria-pressed={on}
       title={on ? "Alerts are on: turn them off for this import" : "Get an alert when a tariff change hits this import"}
-      className={on ? `${tt.button("secondary", "sm")} border-success/40 text-success` : tt.button("next", "sm")}
+      className={on ? `${ui.button({ variant: "secondary", size: "sm" })} border-success/40 text-success` : ui.button({ variant: "primary", size: "sm" })}
     >
       {on ? <BellAlertIcon className="h-4 w-4" aria-hidden /> : <BellSlashIcon className="h-4 w-4" aria-hidden />}
       {on ? "Alerts on" : "Turn on alerts"}

@@ -6,7 +6,7 @@ import type { MicroEstimate } from "@/libs/hts-micro-estimate";
 import { THEME } from "@/components/ui/theme";
 import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as mk from "@/components/ui/marketing/styles";
-import * as tt from "@/components/ui/styles/tracker";
+import * as ui from "@/components/ui/styles";
 import { BaseRates } from "./BaseRates";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { CalculatorPrompt } from "./CalculatorPrompt";
@@ -112,11 +112,11 @@ export function HtsCodePage({
               ) : (
                 element.htsno && !element.htsno.startsWith("99") && (
                   <div className="flex flex-wrap items-center gap-3">
-                    <Link href={`/duty-calculator?code=${element.htsno}`} className={tt.button("primary")}>
+                    <Link href={`/duty-calculator?code=${element.htsno}`} className={ui.button({ variant: "primary" })}>
                       Calculate Total Duty
                       <ArrowRightIcon className="h-4 w-4" aria-hidden />
                     </Link>
-                    <Link href="/explore" className={tt.button("secondary")}>
+                    <Link href="/explore" className={ui.button({ variant: "secondary" })}>
                       Explore the HTS
                     </Link>
                   </div>

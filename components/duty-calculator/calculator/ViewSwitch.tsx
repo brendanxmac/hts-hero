@@ -27,7 +27,6 @@ export const ViewSwitch = ({
       value={f.view}
       onChange={f.changeView}
       compact
-      tone="accent"
     />
   </div>
 );

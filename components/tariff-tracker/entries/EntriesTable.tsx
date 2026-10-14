@@ -150,7 +150,7 @@ const columnsFor = ({
           )}
         </span>
       ) : product ? (
-        <button type="button" className={tt.button("secondary", "sm")} onClick={() => onUnlock(row)}>
+        <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => onUnlock(row)}>
           <LockClosedIcon className="h-3.5 w-3.5" aria-hidden />
           Check
         </button>

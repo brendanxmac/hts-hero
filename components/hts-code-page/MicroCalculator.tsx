@@ -169,7 +169,7 @@ export const MicroCalculator = ({
         </div>
         <div className="flex shrink-0 flex-col items-stretch sm:items-center gap-1">
           {onUseCode ? (
-            <button type="button" onClick={onUseCode} className={tt.button("next")}>
+            <button type="button" onClick={onUseCode} className={ui.button({ variant: "primary" })}>
               Use this code
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </button>
@@ -180,7 +180,7 @@ export const MicroCalculator = ({
                 href={calculatorHref}
                 onClick={openInCalculator}
                 rel="nofollow"
-                className={tt.button("next")}
+                className={ui.button({ variant: "primary" })}
               >
                 Find my exact duty
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />

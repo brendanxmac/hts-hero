@@ -8,7 +8,6 @@ import {
 } from "@heroicons/react/20/solid";
 import { ColumnFiltersState, Row, Table, Updater } from "@tanstack/react-table";
 import * as ui from "@/components/ui/styles";
-import * as tt from "@/components/ui/styles/tracker";
 import {
   DataTable,
   SelectionBar,
@@ -150,7 +149,7 @@ export const ImportsTable = ({
           <>
             <button
               type="button"
-              className={tt.button("secondary", "sm")}
+              className={ui.button({ variant: "secondary", size: "sm" })}
               onClick={() => alertsOn(picked)}
             >
               <BellAlertIcon className="h-4 w-4" aria-hidden />
@@ -158,7 +157,7 @@ export const ImportsTable = ({
             </button>
             <button
               type="button"
-              className={tt.button("secondary", "sm")}
+              className={ui.button({ variant: "secondary", size: "sm" })}
               onClick={() => alertsOff(picked)}
             >
               <BellSlashIcon className="h-4 w-4" aria-hidden />
@@ -166,7 +165,7 @@ export const ImportsTable = ({
             </button>
             <button
               type="button"
-              className={`${tt.button("secondary", "sm")} hover:text-error`}
+              className={`${ui.button({ variant: "secondary", size: "sm" })} hover:text-error`}
               onClick={() => remove(picked)}
             >
               <TrashIcon className="h-4 w-4" aria-hidden />
@@ -196,7 +195,7 @@ export const ImportsTable = ({
             </p>
             <button
               type="button"
-              className={tt.button("secondary", "sm")}
+              className={ui.button({ variant: "secondary", size: "sm" })}
               onClick={() => {
                 table.resetColumnFilters(true);
                 table.setGlobalFilter("");

@@ -10,6 +10,7 @@ import {
   SparklesIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
+import { useCardClass } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
 import { CalculationResult } from "@/tariffs/engine-v2/types";
 import { formatMoney, formatPct } from "../lib/format";
@@ -96,6 +97,7 @@ export const DutySummary = ({
   bestSaving: number;
   onClose?: () => void;
 }) => {
+  const cardClass = useCardClass();
   const { canSee, loading } = useCanSeeWhy();
   if (loading || !canSee) return null;
   const sections = summarySections(f, result, bestSaving);
@@ -104,7 +106,7 @@ export const DutySummary = ({
   const strong = (text: string) => <span className="font-semibold text-base-content">{text}</span>;
 
   return (
-    <section className={`${ui.card} flex flex-col gap-5 px-5 py-5 sm:px-6`} aria-labelledby="duty-summary-title">
+    <section className={`${cardClass} flex flex-col gap-5 px-5 py-5 sm:px-6`} aria-labelledby="duty-summary-title">
       <div className="flex items-start justify-between gap-3">
         <h3 id="duty-summary-title" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
           <SparklesIcon className="h-3.5 w-3.5" aria-hidden />

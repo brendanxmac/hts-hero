@@ -15,6 +15,7 @@ import { notes } from "@/public/notes/notes";
 import { THEME } from "@/components/ui/theme";
 import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { Inspector } from "./Inspector";
 import { NotesView } from "./NotesView";
@@ -327,14 +328,14 @@ const Layout = ({
             <span className="loading loading-spinner loading-sm mr-2 text-primary" aria-label="Searching" />
           ) : (
             searching && (
-              <button type="button" onClick={clearSearch} className={tt.button("ghost", "sm")}>
+              <button type="button" onClick={clearSearch} className={ui.button({ variant: "ghost", size: "sm" })}>
                 Clear
               </button>
             )
           )}
         </span>
       </label>
-      <SegmentedControl label="What to search" options={TABS} value={tab} onChange={changeTab} tone="accent" />
+      <SegmentedControl label="What to search" options={TABS} value={tab} onChange={changeTab} />
     </div>
   );
 
@@ -360,7 +361,7 @@ const Layout = ({
         {searching ? (
           results.length > 0 && <span className="hidden text-xs text-base-content/60 xl:inline">↑ ↓ then Enter</span>
         ) : (
-          <button type="button" className={tt.button("ghost", "sm")} onClick={() => setExpanded(() => new Set())}>
+          <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => setExpanded(() => new Set())}>
             Collapse all
           </button>
         )}

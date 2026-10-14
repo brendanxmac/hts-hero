@@ -4,12 +4,18 @@
 // of panel: never a tinted one (see "Tints" in DESIGN_SYSTEM.md). It clips its contents to
 // its rounded corners, so a header, table or stat grid with its own background can never
 // paint square corners over the card's border.
-export const card = "overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm";
+// In the Tracker's look (the Tracker, the calculator, /hts) it's the same card as tt.panel: 20px
+// corners and no shadow.
+export const card = "overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm tracker:shadow-none";
 
 // The same card for one that holds a dropdown (a combobox, a menu), which must be free to
 // extend past the card. Nothing inside may paint into its corners: a header or footer with a
 // background rounds itself (rounded-t-lg / rounded-b-lg).
 export const cardOverflowVisible = card.replace("overflow-hidden ", "");
+
+// A section of a card made of sections (CardSections in components/ui/Card): a notice, a note or a
+// strip of text and a button, inset from the card's edges
+export const cardSection = "px-5 py-4 sm:px-6";
 
 // The row across the top of a card, holding its title (and any controls on the right)
 export const cardHeader = "flex items-start justify-between gap-3 border-b border-base-300 px-5 py-4";
@@ -41,7 +47,7 @@ const NOTICE_TONES: Record<Exclude<Tone, "neutral">, string> = {
 // A message about the data on screen (unverified dates, caveats, errors): a card marked by a
 // colored left rule, not a tinted fill. The icon takes the tone's color; text stays base-content.
 export const notice = (tone: Exclude<Tone, "neutral"> = "warning") =>
-  `rounded-md border border-base-300 border-l-4 ${NOTICE_TONES[tone]} bg-base-100 px-4 py-3 shadow-sm`;
+  `rounded-md border border-base-300 border-l-4 ${NOTICE_TONES[tone]} bg-base-100 px-4 py-3 shadow-sm tracker:rounded-xl tracker:shadow-none`;
 
 // A floating list under a control: dropdowns, comboboxes, menus. Position it yourself
 // ("absolute z-30 mt-2 w-full …"); options inside are rounded-md rows

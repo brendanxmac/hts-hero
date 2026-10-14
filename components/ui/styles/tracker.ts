@@ -5,14 +5,15 @@ import { trackerDisplay } from "../font";
 
 type Tone = "primary" | "success" | "error" | "warning" | "neutral";
 
-// A panel on the ground: big rounded corners, a 1px border, no shadow
-export const panel = "rounded-3xl border border-base-300 bg-base-100";
+// A panel on the ground: the one card (ui.card's look here: 20px corners, a 1px border, no
+// shadow), without clipping, so a dropdown inside can reach past it
+export const panel = "rounded-lg border border-base-300 bg-base-100";
 
 // Padding inside a panel
 export const panelPad = "p-6 lg:p-7";
 
-// A tile inside a panel: soft fill, no border
-export const tile = "rounded-2xl bg-tt-soft";
+// A tile inside a panel: soft fill, no border, smaller corners than the panel's
+export const tile = "rounded-xl bg-tt-soft";
 
 // Sora, for headlines and every big number
 export const display = trackerDisplay.className;
@@ -52,24 +53,3 @@ export const chip = (tone: Tone = "neutral") =>
 
 // A number inside a sentence
 export const numberChip = (tone: Tone = "primary") => `rounded-xl px-2 ${CHIP_TONES[tone]}`;
-
-type Button = "primary" | "money" | "next" | "secondary" | "ghost";
-
-const BUTTONS: Record<Button, string> = {
-  // The main action: the text color as a fill
-  primary: "bg-base-content text-base-100 hover:bg-base-content/90",
-  // Money: savings, the trial, plans
-  money: "bg-success text-success-content hover:bg-success/90",
-  // The next step
-  next: "bg-primary text-primary-content hover:bg-primary/90",
-  secondary: "border border-base-300 bg-base-100 text-base-content hover:bg-tt-soft",
-  ghost: "text-base-content/70 hover:bg-tt-soft hover:text-base-content",
-};
-
-// Buttons are pills (or, beside tabs, "rounded" to match their slightly rounded corners). One
-// green or cobalt button per panel.
-export const button = (variant: Button = "secondary", size: "sm" | "md" = "md", shape: "pill" | "rounded" = "pill") =>
-  `inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap ${shape === "pill" ? "rounded-full" : "rounded-[8px]"} font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:pointer-events-none disabled:opacity-50 ${
-    size === "sm" ? "h-8 px-3.5 text-xs" : "h-10 px-5 text-sm"
-  } ${BUTTONS[variant]}`;
-

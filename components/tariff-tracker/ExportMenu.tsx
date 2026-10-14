@@ -3,7 +3,6 @@
 import { Menu } from "@headlessui/react";
 import { ArrowDownTrayIcon, ChevronDownIcon, DocumentTextIcon, TableCellsIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
-import * as tt from "@/components/ui/styles/tracker";
 import { ExportFormat } from "./export";
 
 const EXPORTS: { format: ExportFormat; label: string; note: string; Icon: typeof TableCellsIcon }[] = [
@@ -14,7 +13,7 @@ const EXPORTS: { format: ExportFormat; label: string; note: string; Icon: typeof
 // Downloads the report as a spreadsheet, in the format picked from the menu
 export const ExportMenu = ({ onExport }: { onExport: (format: ExportFormat) => void }) => (
   <Menu as="div" className="relative flex-1 sm:flex-none">
-    <Menu.Button className={`${tt.button("secondary")} w-full`}>
+    <Menu.Button className={`${ui.button({ variant: "secondary" })} w-full`}>
       <ArrowDownTrayIcon className="h-4 w-4" aria-hidden />
       Export
       <ChevronDownIcon className="-mr-1 h-4 w-4 text-base-content/60" aria-hidden />

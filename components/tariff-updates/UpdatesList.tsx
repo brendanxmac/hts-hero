@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"
+import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import type { PublicUpdate } from "@/libs/tariff-updates/public"
 import type { Authority } from "@/libs/tariff-updates/types"
@@ -96,7 +97,7 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
   }, [shown])
 
   const filterButton = (active: boolean) =>
-    `${tt.button(active ? "primary" : "secondary", "sm")} ${active ? "" : "font-medium"}`
+    `${ui.button({ variant: active ? "primary" : "secondary", size: "sm" })} ${active ? "" : "font-medium"}`
 
   return (
     <div className="flex flex-col gap-6">

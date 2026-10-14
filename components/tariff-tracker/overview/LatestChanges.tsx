@@ -2,6 +2,7 @@
 
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { formatDate } from "../../duty-calculator/lib/format";
 import { formatRate } from "../formatRate";
@@ -15,7 +16,7 @@ export const LatestChanges = ({ changes, onOpen, onAll }: { changes: CatalogChan
       <h2 id="tt-latest" className={tt.title}>
         Changes on your products
       </h2>
-      <button type="button" className={tt.button("ghost", "sm")} onClick={onAll}>
+      <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={onAll}>
         Rate history
       </button>
     </div>

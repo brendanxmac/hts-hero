@@ -6,6 +6,7 @@ import { useClassification } from "@/contexts/ClassificationContext";
 import { HtsElement } from "@/interfaces/hts";
 import { MarkdownProse } from "@/components/MarkdownProse";
 import { mono } from "@/components/ui/font";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { isTariffLevel, useExplorer } from "./useExplorer";
 
@@ -91,7 +92,7 @@ export const CodeRow = ({
         {applyCode && isTariffLevel(element) && (
           <button
             type="button"
-            className={`${tt.button("secondary", "sm")} group-hover:border-primary/40 group-hover:text-primary`}
+            className={`${ui.button({ variant: "secondary", size: "sm" })} group-hover:border-primary/40 group-hover:text-primary`}
             onClick={(e) => {
               e.stopPropagation();
               applyCode(element);

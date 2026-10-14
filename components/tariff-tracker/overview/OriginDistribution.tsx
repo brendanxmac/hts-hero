@@ -40,7 +40,6 @@ export const OriginDistribution = ({ products }: { products: TrackedProduct[] })
           value={byValue ? "value" : "products"}
           onChange={(v) => setByValue(v === "value")}
           size="sm"
-          tone="accent"
         />
       </div>
       <ul className="flex flex-col gap-3">

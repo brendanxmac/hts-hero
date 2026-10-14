@@ -1,7 +1,7 @@
 "use client";
 
 import { SparklesIcon } from "@heroicons/react/20/solid";
-import * as tt from "@/components/ui/styles/tracker";
+import * as ui from "@/components/ui/styles";
 import { HistorySegment } from "@/tariffs/engine-v2/history";
 import { formatDate, formatPct } from "../lib/format";
 import { ArrowLink } from "./ArrowLink";
@@ -71,7 +71,7 @@ export const RefundsButton = ({ conversion, history, customsValue: _customsValue
       {fact && <span className="hidden text-right text-xs font-medium text-warning md:block">{fact}</span>}
       <button
         type="button"
-        className={tt.button("next", "sm", "rounded")}
+        className={ui.button({ variant: "primary", size: "sm" })}
         onClick={() =>
           conversion.openTrial("refunds", {
             title: "Find out if you overpaid, or underpaid, on past entries",

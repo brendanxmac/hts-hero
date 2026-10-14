@@ -13,13 +13,13 @@ import { ExclamationTriangleIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
-import * as tt from "@/components/ui/styles/tracker";
 import { ComparePanel } from "../compare/ComparePanel";
 import { productFromFinder } from "@/components/tariff-tracker/report";
 import { provenPicks } from "@/components/tariff-tracker/product/analysis/analysis";
 import { Countries } from "@/constants/countries";
 import { CENSUS_NOTICE } from "../lib/census";
 import { formatImportValue, useUsImports } from "../lib/usImports";
+import { CardRow } from "@/components/ui/Card";
 import { TabBar } from "@/components/ui/TabBar";
 import { whatClaimingDoes, whatItWouldDo } from "../lib/explain";
 import { plainReasons } from "../lib/plainReason";
@@ -49,7 +49,6 @@ import {
 } from "./PremiumTeasers";
 import { useConversion } from "./ConversionDialog";
 import { DutySummary, ExplainToggle } from "./DutySummary";
-import { AccountCta } from "./AccountCta";
 import { ShareButtons } from "./ShareButtons";
 import { useCanSeeWhy, WhyLocked, WhyUnlockContext } from "./WhyGate";
 import { ChangeSummary } from "../results/ChangeSummary";
@@ -274,15 +273,15 @@ export const CalculatorWorkspace = ({
   // the Tracker, where its savings and past entries are checked)
   const track = useTrackImport(f, "track-import");
   const trackButton = page === "calculator" && track && (
-    <button type="button" className={tt.button("next", "sm", "rounded")} onClick={() => track.start()}>
+    <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => track.start()}>
       <PlusIcon className="h-4 w-4" aria-hidden />
       Track this import free
     </button>
   );
   // Under each tab on /duty-calculator: what tracking it would add
   const trackStrip = page === "calculator" && track && (
-    <div className={`${ui.card} results-keep-fill flex flex-col items-start gap-3 bg-primary/5 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 tracker:border-primary/20`}>
-      <p className="m-0 text-sm text-base-content/80">
+    <div className={`${ui.cardSection} flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between`}>
+      <p className="m-0 text-sm text-base-content/70">
         <span className="font-semibold text-base-content">Track this import free.</span> See what you could save on it (trade programs, exemptions, cheaper
         origins) and check your past entries for duty you may have overpaid.
       </p>
@@ -364,37 +363,35 @@ export const CalculatorWorkspace = ({
               )
             }
           >
-            <div className="results-pad">
+            <div className={ui.cardSection}>
               <VerifiedNotice f={f} />
             </div>
             {/* A ban is about this country's goods; the comparison shows several countries */}
             {tab !== "compare" && (
-              <div className="results-pad">
+              <div className={ui.cardSection}>
                 <ProhibitedNotice prohibitions={result.prohibitions} />
               </div>
             )}
 
             {tab === "duty" && (
               <>
-                {/* <AccountCta f={f} result={result} bestSaving={bestSaving} page={page} /> */}
                 {/* Signed in only (it renders nothing otherwise): signed out, "Explain this" in the
                   breakdown's heading opens the pitch instead */}
                 {explainOpen && <DutySummary f={f} result={result} bestSaving={bestSaving} onClose={() => setExplainOpen(false)} />}
-                <div className={ui.card}>
+                <div>
                   <SummaryStats
                     result={result}
                     customsValue={f.customsValue}
-                    standalone
                   />
                   <CostBar
                     result={result}
                     highlight={highlight}
                     onHighlight={setHighlight}
-                    className="border-t border-base-300 px-5 py-4 sm:px-6"
+                    className={ui.cardSection}
                   />
                 </div>
                 {result.warnings.length > 0 && (
-                  <div className="results-pad">
+                  <div className={ui.cardSection}>
                   <ul
                     className={`${ui.notice("warning")} flex flex-col gap-1.5`}
                   >
@@ -410,13 +407,7 @@ export const CalculatorWorkspace = ({
                   </ul>
                   </div>
                 )}
-                <div
-                  className={
-                    hasAdjustments
-                      ? "results-row grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
-                      : "results-row"
-                  }
-                >
+                <CardRow className={hasAdjustments ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]" : ""}>
                   <div className="min-w-0">
                     <DutyBreakdown
                       result={result}
@@ -474,13 +465,8 @@ export const CalculatorWorkspace = ({
                   {hasAdjustments && (
                     // Beside the duty lines, so an answer's effect shows in them; it moves with the
                     // page while the breakdown is taller
-                    <aside
-                      id="possible-adjustments"
-                      ref={adjustmentsRef}
-                      className="min-w-0 rounded-lg lg:sticky"
-                      style={{ top: adjustmentsTop }}
-                      aria-label="Possible adjustments"
-                    >
+                    <aside id="possible-adjustments" className="min-w-0" aria-label="Possible adjustments">
+                      <div ref={adjustmentsRef} className="lg:sticky" style={{ top: adjustmentsTop }}>
                       <QuestionsPanel
                         questions={result.questions}
                         stableQuestions={stableQuestions}
@@ -525,9 +511,10 @@ export const CalculatorWorkspace = ({
                           ) : undefined
                         }
                       />
+                      </div>
                     </aside>
                   )}
-                </div>
+                </CardRow>
               </>
             )}
 

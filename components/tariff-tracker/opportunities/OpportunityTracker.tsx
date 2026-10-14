@@ -100,10 +100,10 @@ export const OpportunityTracker = ({
       <div className="flex flex-col gap-3">
         <p className={ui.bodySm}>Track it to keep a record as you research it, do the paperwork and secure it.</p>
         <div className="flex flex-wrap gap-2">
-          <button type="button" className={tt.button("next", "sm")} disabled={busy || !option} onClick={() => start("researching")}>
+          <button type="button" className={ui.button({ variant: "primary", size: "sm" })} disabled={busy || !option} onClick={() => start("researching")}>
             Start researching
           </button>
-          <button type="button" className={tt.button("secondary", "sm")} disabled={busy || !option} onClick={() => start("found")}>
+          <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} disabled={busy || !option} onClick={() => start("found")}>
             Save for later
           </button>
         </div>
@@ -166,10 +166,10 @@ export const OpportunityTracker = ({
             placeholder={pending === "not_eligible" ? "Why it doesn't apply (required)" : "A note for the record (optional): who you spoke to, what's needed…"}
           />
           <div className="flex flex-wrap gap-2">
-            <button type="button" className={tt.button(pending === "secured" ? "money" : "next", "sm")} disabled={busy} onClick={confirm}>
+            <button type="button" className={ui.button({ variant: "primary", size: "sm" })} disabled={busy} onClick={confirm}>
               {busy ? "Saving…" : pending === "secured" ? "Secure and apply" : `Move to ${statusInfo(pending).label}`}
             </button>
-            <button type="button" className={tt.button("ghost", "sm")} onClick={() => setPending(null)}>
+            <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => setPending(null)}>
               Cancel
             </button>
           </div>

@@ -3,6 +3,7 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { ArrowLeftIcon, CheckIcon, LockClosedIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
@@ -141,7 +142,7 @@ export const ConversionDialog = ({
                 </ul>
               </div>
               <div className="flex flex-col gap-2">
-                <button type="button" className={`${tt.button("money", "md", "rounded")} h-12 w-full text-base`} onClick={onStartTrial}>
+                <button type="button" className={`${ui.button({ variant: "primary" })} h-12 w-full text-base`} onClick={onStartTrial}>
                   {trial.cta ?? "Start free"}
                 </button>
                 <p className="text-center text-xs text-base-content/60">
@@ -215,7 +216,7 @@ export const ConversionDialog = ({
                 </>
               )}
               <div className="flex flex-col gap-2">
-                <button type="button" className={`${tt.button("next", "md", "rounded")} h-12 w-full text-base`} onClick={onCreateAccount}>
+                <button type="button" className={`${ui.button({ variant: "primary" })} h-12 w-full text-base`} onClick={onCreateAccount}>
                   {initialView === "trial" ? DEFAULT_ACCOUNT.cta : account.cta}
                 </button>
                 <p className="text-center text-xs text-base-content/60">

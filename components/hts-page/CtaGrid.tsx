@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CalculatorIcon, ShieldCheckIcon } from "@heroicons/react/20/solid";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 
 // The tools for a section or chapter page: the classification assistant and the duty calculator
@@ -33,7 +34,7 @@ export function CtaGrid({ htsCode, contextLabel }: CtaGridProps) {
             Produce <strong className="font-semibold text-base-content">audit-ready classifications</strong> in minutes — AI-powered candidate discovery, Legal Note &amp; GRI analysis, CROSS
             validation, and one-click professional reports.
           </p>
-          <Link href="/classify" className={`${tt.button("secondary")} self-start`}>
+          <Link href="/classify" className={`${ui.button({ variant: "secondary" })} self-start`}>
             Classify a Product Now
           </Link>
         </section>
@@ -50,7 +51,7 @@ export function CtaGrid({ htsCode, contextLabel }: CtaGridProps) {
             any HTS code from any country — base duties, Section 122, 232, and 301 tariffs,
             exemptions, and trade programs.
           </p>
-          <Link href={htsCode ? `/duty-calculator?code=${htsCode}` : "/duty-calculator"} className={`${tt.button("primary")} self-start`}>
+          <Link href={htsCode ? `/duty-calculator?code=${htsCode}` : "/duty-calculator"} className={`${ui.button({ variant: "primary" })} self-start`}>
             Calculate Duty Rates
           </Link>
         </section>

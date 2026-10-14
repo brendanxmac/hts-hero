@@ -2,6 +2,7 @@
 
 import { ArrowLeftIcon, ArrowPathIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { TabBar } from "@/components/ui/TabBar";
 import { TrackedProduct } from "../report";
@@ -52,12 +53,12 @@ export const ProductHeader = ({
           <div className="flex items-center gap-2">
             <AlertsToggle productKey={row.key} />
             {onReset && (
-              <button type="button" className={tt.button("ghost", "sm")} onClick={onReset} title="Clear the value, mode, program and answers set on it">
+              <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={onReset} title="Clear the value, mode, program and answers set on it">
                 <ArrowPathIcon className="h-4 w-4" aria-hidden />
                 Reset
               </button>
             )}
-            <button type="button" className={`${tt.button("ghost", "sm")} hover:text-error`} onClick={onRemove}>
+            <button type="button" className={`${ui.button({ variant: "ghost", size: "sm" })} hover:text-error`} onClick={onRemove}>
               <TrashIcon className="h-4 w-4" aria-hidden />
               Remove
             </button>

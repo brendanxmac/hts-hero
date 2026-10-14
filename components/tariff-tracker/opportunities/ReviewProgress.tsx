@@ -1,5 +1,6 @@
 "use client";
 
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { useInsights } from "../insights/InsightsContext";
 
@@ -38,7 +39,7 @@ export const ReviewProgress = ({ action }: { action?: { label: string; onClick: 
           </p>
         </div>
         {action && (
-          <button type="button" className={tt.button("secondary", "sm")} onClick={action.onClick}>
+          <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={action.onClick}>
             {action.label}
           </button>
         )}

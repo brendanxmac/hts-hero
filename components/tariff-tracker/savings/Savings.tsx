@@ -17,7 +17,7 @@ import { InsightsProgress } from "../insights/InsightsProgress";
 import { savingsTeaser, wholeDollars } from "../insights/teasers";
 import { sectionBySlug } from "../sections";
 import { NeedsProducts } from "../shell/NeedsProducts";
-import { StatRow } from "../shell/StatRow";
+import { StatStrip } from "@/components/ui/StatStrip";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { SavingRow, SavingsTable } from "./SavingsTable";
@@ -180,7 +180,7 @@ const SavingsReport = () => {
       <ReviewProgress />
       <SavingsTally />
       <InsightsProgress label="Checking" />
-      <StatRow
+      <StatStrip
         stats={[
           {
             label: "Potential savings",
@@ -208,7 +208,7 @@ const SavingsReport = () => {
       {paid && <BeyondPlanTeaser />}
       {checked > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <SegmentedControl<Show> label="Show savings" options={SHOWS} value={show} onChange={setShow} size="sm" tone="accent" />
+          <SegmentedControl<Show> label="Show savings" options={SHOWS} value={show} onChange={setShow} size="sm" />
           <p className={ui.caption}>
             Per shipment, at each product&apos;s value and quantity. Open a product to change them.
           </p>

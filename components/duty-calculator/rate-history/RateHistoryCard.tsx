@@ -3,6 +3,7 @@
 import { ReactNode, useMemo, useState } from "react";
 import { addDays } from "@/tariffs/engine-v2/history";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { useCardClass } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
 import { formatDate, formatMoney, formatPct } from "../lib/format";
 import { TariffFinder } from "../lib/useTariffFinder";
@@ -38,6 +39,7 @@ export const RateHistoryCard = ({
   // Wraps "What changed" (the calculator's account gate, signed out)
   changesGate?: (changes: ReactNode) => ReactNode;
 }) => {
+  const cardClass = useCardClass();
   const { history, historyRange, customsValue, entryDate } = f;
   const [metric, setMetric] = useState<Metric>("pct");
 
@@ -61,7 +63,7 @@ export const RateHistoryCard = ({
   const pickDate = (date: string, source: string) => (onPickDate ? onPickDate(date, source) : f.setEntryDate(date, source));
 
   return (
-    <section className={`${ui.card} p-5 flex flex-col gap-4`} aria-labelledby="rate-history-title">
+    <section className={`${cardClass} flex flex-col gap-4 p-5 sm:p-6`} aria-labelledby="rate-history-title">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <div className="min-w-0">
@@ -82,7 +84,6 @@ export const RateHistoryCard = ({
             ] as const}
             value={metric}
             onChange={setMetric}
-            tone="accent"
           />
         </div>
         {headerAction}

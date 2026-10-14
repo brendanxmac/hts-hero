@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { useTrackerAccess } from "../access/accessContext";
 import { useAlertSettings } from "../alerts/AlertSettingsContext";
@@ -59,7 +60,7 @@ export const NextStep = () => {
       payoff: onEstimate > 0 ? `${onEstimate.toLocaleString("en-US")} still on the estimate` : "Every number is yours",
       go: openValues,
       action: (
-        <button type="button" className={tt.button("next")} onClick={openValues}>
+        <button type="button" className={ui.button({ variant: "primary" })} onClick={openValues}>
           Set values
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </button>
@@ -74,7 +75,7 @@ export const NextStep = () => {
       payoff: "Hear about a change the day it's published",
       go: openAlerts,
       action: (
-        <button type="button" className={tt.button("next")} onClick={openAlerts}>
+        <button type="button" className={ui.button({ variant: "primary" })} onClick={openAlerts}>
           {signedIn ? "Set up alerts" : unlockLabel}
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </button>
@@ -90,7 +91,7 @@ export const NextStep = () => {
       go: openSavings,
       action: (
         <>
-          <button type="button" className={tt.button("money")} onClick={openSavings}>
+          <button type="button" className={ui.button({ variant: "primary" })} onClick={openSavings}>
             {!signedIn ? unlockLabel : paid || savingsLeft === 0 ? "See potential savings" : "Check savings free"}
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </button>
@@ -109,7 +110,7 @@ export const NextStep = () => {
       go: () => nav.openTab("entries"),
       action: (
         <>
-          <button type="button" className={tt.button("next")} onClick={() => nav.openTab("entries")}>
+          <button type="button" className={ui.button({ variant: "primary" })} onClick={() => nav.openTab("entries")}>
             Audit an entry
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </button>

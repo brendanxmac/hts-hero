@@ -5,7 +5,7 @@ import { PlusIcon } from "@heroicons/react/20/solid";
 import { useUser } from "@/contexts/UserContext";
 import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { signupHref } from "@/components/tariff-tracker/access/signup";
-import * as tt from "@/components/ui/styles/tracker";
+import * as ui from "@/components/ui/styles";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { itemKey } from "@/components/tariff-tracker/catalog";
@@ -26,7 +26,7 @@ export const TrackImportButton = ({ f, size = "md" }: { f: TariffFinder; size?: 
     <>
       <a
         href={track.url}
-        className={tt.button("next", size, "rounded")}
+        className={ui.button({ variant: "primary", size: size })}
         onClick={(e) => {
           e.preventDefault();
           track.start();

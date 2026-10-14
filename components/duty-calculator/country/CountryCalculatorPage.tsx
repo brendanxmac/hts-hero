@@ -5,6 +5,7 @@ import type { CountryPage } from "@/libs/country-pages/countries";
 import type { CountryTariffs, ExampleDuty } from "@/libs/country-pages/countryTariffs";
 import { SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { BreadcrumbsProvider } from "@/contexts/BreadcrumbsContext";
 import { OFFER } from "@/components/home/lib/offer";
@@ -173,7 +174,7 @@ export function CountryCalculatorPage({
                 and what it costs you.
               </p>
               <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
-                <Link href={OFFER.href} className={`${tt.button("next")} h-12 px-7 text-base`}>
+                <Link href={OFFER.href} className={`${ui.button({ variant: "primary" })} h-12 px-7 text-base`}>
                   {OFFER.cta}
                   <ArrowRightIcon className="h-5 w-5" aria-hidden />
                 </Link>

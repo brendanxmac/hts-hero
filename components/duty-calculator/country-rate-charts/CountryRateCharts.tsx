@@ -62,7 +62,6 @@ export const CountryRateCharts = ({
               ] as const}
               value={markers}
               onChange={setMarkers}
-              tone="accent"
             />
           }
         />

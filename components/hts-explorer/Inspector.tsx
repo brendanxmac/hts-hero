@@ -33,6 +33,7 @@ import { RelatedCrossRulingsSection } from "@/components/RelatedCrossRulingsSect
 import { UsitcHtsDocumentLink } from "@/components/UsitcHtsDocumentLink";
 import { copyToClipboard } from "@/utilities/data";
 import { mono } from "@/components/ui/font";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CodeNotes, CodePath } from "./CodePath";
 import { RatesPanel } from "./RatesPanel";
@@ -121,13 +122,13 @@ const ChapterDetail = ({ chapter }: { chapter: HtsSectionAndChapterBase }) => {
       <div className="flex flex-wrap items-center gap-2">
         <ChapterNotes chapter={chapter.number} />
         {notesFile && section && (
-          <UsitcHtsDocumentLink fileName={notesFile} className={tt.button("secondary", "sm")} title={`Section ${section.number} notes (USITC)`}>
+          <UsitcHtsDocumentLink fileName={notesFile} className={ui.button({ variant: "secondary", size: "sm" })} title={`Section ${section.number} notes (USITC)`}>
             <DocumentTextIcon className="h-3.5 w-3.5 text-primary" aria-hidden />
             Section {toRoman(section.number)} notes
           </UsitcHtsDocumentLink>
         )}
         {showInSchedule && (
-          <button type="button" className={tt.button("ghost", "sm")} onClick={showInSchedule}>
+          <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={showInSchedule}>
             <ListBulletIcon className="h-3.5 w-3.5" aria-hidden />
             Show in the schedule
           </button>
@@ -157,7 +158,7 @@ const ChapterNotes = ({ chapter }: { chapter: number }) => {
     return (
       <button
         type="button"
-        className={tt.button("secondary", "sm")}
+        className={ui.button({ variant: "secondary", size: "sm" })}
         onClick={() => openNote(notes.find((n) => n.title === `Chapter ${chapter}`), "No notes found for this chapter")}
       >
         <DocumentTextIcon className="h-3.5 w-3.5 text-primary" aria-hidden />
@@ -168,7 +169,7 @@ const ChapterNotes = ({ chapter }: { chapter: number }) => {
 
   return (
     <Menu as="div" className="relative">
-      <Menu.Button className={tt.button("secondary", "sm")}>
+      <Menu.Button className={ui.button({ variant: "secondary", size: "sm" })}>
         <DocumentTextIcon className="h-3.5 w-3.5 text-primary" aria-hidden />
         Chapter notes
         <ChevronDownIcon className="h-3.5 w-3.5 text-base-content/60" aria-hidden />
@@ -299,7 +300,7 @@ const CopyLink = ({ htsno }: { htsno: string }) => {
     }
   };
   return (
-    <button type="button" className={`${tt.button("ghost", "sm")} -mr-2 -mt-1`} onClick={copy}>
+    <button type="button" className={`${ui.button({ variant: "ghost", size: "sm" })} -mr-2 -mt-1`} onClick={copy}>
       {copied ? <CheckIcon className="h-3.5 w-3.5 text-success" aria-hidden /> : <LinkIcon className="h-3.5 w-3.5" aria-hidden />}
       {copied ? "Copied" : "Copy link"}
     </button>
@@ -317,7 +318,7 @@ const LineActions = ({ element, usable }: { element: HtsElement; usable: boolean
   return (
     <div className="flex flex-wrap items-center gap-2">
       {usable && applyCode && (
-        <button type="button" className={tt.button("next")} onClick={() => applyCode(element)}>
+        <button type="button" className={ui.button({ variant: "primary" })} onClick={() => applyCode(element)}>
           <PlusIcon className="h-4 w-4" aria-hidden />
           Use this code
         </button>
@@ -327,7 +328,7 @@ const LineActions = ({ element, usable }: { element: HtsElement; usable: boolean
           href={`/duty-calculator?code=${htsno}`}
           rel="nofollow"
           onClick={() => markCalculatorHandoff(htsno, estimateSurface("explorer"))}
-          className={tt.button("next")}
+          className={ui.button({ variant: "primary" })}
         >
           Calculate total duty
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
@@ -337,7 +338,7 @@ const LineActions = ({ element, usable }: { element: HtsElement; usable: boolean
         <Link
           href={`/classifications/new?${new URLSearchParams({ code: htsno })}`}
           target="_blank"
-          className={tt.button("secondary")}
+          className={ui.button({ variant: "secondary" })}
           title="Check this code against your product with the classification assistant"
         >
           <ShieldCheckIcon className="h-4 w-4 text-success" aria-hidden />
@@ -346,7 +347,7 @@ const LineActions = ({ element, usable }: { element: HtsElement; usable: boolean
         </Link>
       )}
       {showInSchedule && (
-        <button type="button" className={tt.button("ghost")} onClick={showInSchedule}>
+        <button type="button" className={ui.button({ variant: "ghost" })} onClick={showInSchedule}>
           <ListBulletIcon className="h-4 w-4" aria-hidden />
           Show in the schedule
         </button>

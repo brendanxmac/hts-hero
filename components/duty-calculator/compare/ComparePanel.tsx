@@ -3,6 +3,7 @@
 import { ReactNode, useMemo } from "react";
 import { ArrowRightIcon, GlobeAltIcon } from "@heroicons/react/20/solid";
 import { Country } from "@/constants/countries";
+import { useCardClass } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { ratesOn } from "@/components/tariff-tracker/product/analysis/history";
@@ -53,6 +54,7 @@ export const ComparePanel = ({
   // Under the table: why the picked countries are on it (Census)
   note?: ReactNode;
 }) => {
+  const cardClass = useCardClass();
   const origins = useOrigins(product);
   const { rates, histories, ready } = origins;
   // Every origin's rates on the entry date, when it isn't today
@@ -89,11 +91,11 @@ export const ComparePanel = ({
         onRemove={onRemove}
         onViewDetails={onViewDetails}
       />
-      {note && <div className="results-pad">{note}</div>}
+      {note && <div className={ui.cardSection}>{note}</div>}
 
       {/* The way to every other country: the import's Sourcing */}
       {goToSourcing && (
-        <div className={`${ui.card} flex flex-col items-start gap-4 px-5 py-4 sm:flex-row sm:items-center sm:px-6`}>
+        <div className={`${cardClass} ${ui.cardSection} flex flex-col items-start gap-4 sm:flex-row sm:items-center`}>
           <span className={`${tt.chip("primary")} h-10 w-10 shrink-0 justify-center rounded-xl`} aria-hidden>
             <GlobeAltIcon className="h-5 w-5 shrink-0" />
           </span>
@@ -103,7 +105,7 @@ export const ComparePanel = ({
               ? `${cheaper} of ${rates.length} countries could pay less than ${yours?.country.name ?? "yours"}. See them all ranked, on a globe, with who already ships it to the US and how steady each rate has been.`
               : `See all ${rates.length} countries ranked, on a globe, with who already ships it to the US.`}
           </p>
-          <button type="button" className={tt.button("next", "sm", "rounded")} onClick={goToSourcing}>
+          <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={goToSourcing}>
             {page === "calculator" ? "Track this import free" : "Open Sourcing"}
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </button>

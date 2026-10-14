@@ -1,7 +1,7 @@
 "use client";
 
 import { SparkPoint, Sparkline } from "@/components/ui/charts/kit";
-import * as tt from "@/components/ui/styles/tracker";
+import { StatStrip } from "@/components/ui/StatStrip";
 import { ERROR_MARK, PRIMARY_MARK } from "@/components/ui/theme";
 
 // The Overview's headline numbers, each with a small trend line (the chart kit's Sparkline) in
@@ -21,14 +21,17 @@ export interface Metric {
 const NOTE_TONES = { error: "text-error", success: "text-success", neutral: "text-base-content/60" };
 
 export const MetricTiles = ({ metrics }: { metrics: Metric[] }) => (
-  <section aria-label="Key numbers" className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-    {metrics.map((m) => (
-      <div key={m.label} className={`${tt.panel} flex flex-col gap-1.5 p-5`}>
-        <span className="text-sm text-base-content/70">{m.label}</span>
-        <span className={tt.metric}>{m.value}</span>
-        <Sparkline points={m.spark ?? []} color={m.sparkTone === "error" ? ERROR_MARK : PRIMARY_MARK} step={m.sparkStep} to={m.sparkTo} height={32} />
-        <span className={`text-xs font-semibold ${NOTE_TONES[m.noteTone]}`}>{m.note}</span>
-      </div>
-    ))}
-  </section>
+  <StatStrip
+    label="Key numbers"
+    stats={metrics.map((m) => ({
+      label: m.label,
+      value: m.value,
+      extra: (
+        <div className="flex flex-col gap-1.5">
+          <Sparkline points={m.spark ?? []} color={m.sparkTone === "error" ? ERROR_MARK : PRIMARY_MARK} step={m.sparkStep} to={m.sparkTo} height={32} />
+          <span className={`text-xs font-semibold ${NOTE_TONES[m.noteTone]}`}>{m.note}</span>
+        </div>
+      ),
+    }))}
+  />
 );

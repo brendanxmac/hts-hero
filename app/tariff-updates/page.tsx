@@ -9,6 +9,7 @@ import { trackerDisplay, trackerSans } from "@/components/ui/font"
 import { FaqList } from "@/components/ui/FaqList"
 import { SectionHeader } from "@/components/ui/SectionHeader"
 import * as mk from "@/components/ui/marketing/styles"
+import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { UpdatesList } from "@/components/tariff-updates/UpdatesList"
 import { formatDay } from "@/components/tariff-updates/labels"
@@ -90,7 +91,7 @@ export default async function TariffUpdatesPage() {
               </div>
             </div>
             {latest && <p className="text-sm text-base-content/70">Latest update: {formatDay(latest)}</p>}
-            <a href="/tariff-updates/feed.xml" className={`${tt.button("secondary", "sm")} self-start`}>
+            <a href="/tariff-updates/feed.xml" className={`${ui.button({ variant: "secondary", size: "sm" })} self-start`}>
               <RssIcon className="h-4 w-4" aria-hidden />
               RSS feed
             </a>
@@ -122,7 +123,7 @@ export default async function TariffUpdatesPage() {
               Enter an HTS code and country of origin to see every duty that applies today, line by line. Free, no account needed.
             </p>
           </div>
-          <Link href="/duty-calculator" className={tt.button("primary")}>
+          <Link href="/duty-calculator" className={ui.button({ variant: "primary" })}>
             Open the Tariff Calculator
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>

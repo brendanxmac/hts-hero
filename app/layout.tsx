@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Inter } from "next/font/google";
+import { trackerDisplay } from "@/components/ui/font";
 import { Viewport } from "next";
 import Script from "next/script";
 import { getSEOTags } from "@/libs/seo";
@@ -31,7 +32,7 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="en" className={font.className}>
+    <html lang="en" className={`${font.className} ${trackerDisplay.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{

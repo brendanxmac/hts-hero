@@ -118,7 +118,7 @@ export const UpgradeDialog = ({
                 You have <span className="font-semibold text-base-content tabular-nums">{items.length}</span>{" "}
                 {items.length === 1 ? "import" : "imports"}.
               </p>
-              <SegmentedControl<Billing> label="Billing" options={BILLING} value={billing} onChange={setBilling} size="sm" tone="accent" />
+              <SegmentedControl<Billing> label="Billing" options={BILLING} value={billing} onChange={setBilling} size="sm" />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

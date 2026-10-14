@@ -1,4 +1,6 @@
-// Buttons, and links that look like buttons. A function rather than a component, so the
+// Buttons, and links that look like buttons. Three kinds, the same everywhere: primary (the brand
+// fill; one per screen), secondary (outlined) and ghost. In the Tracker's look (the Tracker, the
+// calculator, /hts) they're pills with no shadow; tt.button is this same button. A function rather than a component, so the
 // same look applies to <button>, <Link> and <a>:
 //   <Link href="/classify" className={button({ variant: "primary", size: "lg" })}>
 
@@ -6,13 +8,13 @@ type ButtonVariant = "primary" | "secondary" | "ghost";
 type ButtonSize = "sm" | "md" | "lg";
 
 const BASE =
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium tracker:rounded-full tracker:font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 disabled:pointer-events-none disabled:opacity-50";
 
 const VARIANTS: Record<ButtonVariant, string> = {
   // The one main action in a region
-  primary: "bg-primary text-primary-content shadow-sm hover:bg-primary/90",
+  primary: "bg-primary text-primary-content shadow-sm tracker:shadow-none hover:bg-primary/90",
   // Everything else
-  secondary: "border border-base-content/15 bg-base-100 text-base-content shadow-sm hover:bg-base-200",
+  secondary: "border border-base-content/15 bg-base-100 text-base-content shadow-sm tracker:border-base-300 tracker:shadow-none hover:bg-base-200",
   // Nav items, dismiss and icon buttons
   ghost: "text-base-content/70 hover:bg-base-200 hover:text-base-content",
 };

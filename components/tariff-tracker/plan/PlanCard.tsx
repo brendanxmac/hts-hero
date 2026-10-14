@@ -46,7 +46,7 @@ export const PlanCard = () => {
       <div className={BOX}>
         <span className={tt.eyebrow("primary")}>Save your imports</span>
         <span className={`${tt.display} text-base font-semibold leading-snug`}>Keep your products and unlock Analysis</span>
-        <Link href={signupHref(currentPath())} className={tt.button("next", "sm")}>
+        <Link href={signupHref(currentPath())} className={ui.button({ variant: "primary", size: "sm" })}>
           Create free account
         </Link>
       </div>
@@ -63,7 +63,7 @@ export const PlanCard = () => {
         </span>
         <Meter value={covered} max={access.pairLimit} />
         {nearLimit && (
-          <button type="button" className={tt.button("secondary", "sm")} onClick={() => openUpgrade("tracking")}>
+          <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => openUpgrade("tracking")}>
             Cover more imports
           </button>
         )}
@@ -80,7 +80,7 @@ export const PlanCard = () => {
         <Allowance label="Audit checks" used={access.usage.auditsChecked.length} max={TRIAL_ALLOWANCE.auditChecks} />
         <Allowance label="Imports with alerts" used={covered} max={TRIAL_ALLOWANCE.alertImports} />
       </div>
-      <button type="button" className={tt.button("money", "sm")} onClick={() => openUpgrade("plan")}>
+      <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => openUpgrade("plan")}>
         Upgrade · from {fromPrice}/mo
       </button>
     </div>

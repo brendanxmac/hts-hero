@@ -1,6 +1,7 @@
 "use client";
 
 import { LockClosedIcon } from "@heroicons/react/20/solid";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { formatMoney } from "@/components/duty-calculator/lib/format";
 import { useTrackerAccess } from "../access/accessContext";
@@ -21,7 +22,7 @@ export const BeyondPlanTeaser = ({ compact = false }: { compact?: boolean }) => 
   return (
     <section
       aria-label="Savings on imports you haven't unlocked"
-      className={`${tt.panel} flex ${compact ? "flex-col" : "flex-col sm:flex-row sm:items-center sm:justify-between"} gap-4 border-success/30 bg-success/[0.06] p-5`}
+      className={`${tt.panel} flex ${compact ? "flex-col" : "flex-col sm:flex-row sm:items-center sm:justify-between"} gap-4 p-5`}
     >
       <div className="flex min-w-0 items-start gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success/15 text-success">
@@ -51,7 +52,7 @@ export const BeyondPlanTeaser = ({ compact = false }: { compact?: boolean }) => 
       </div>
       <button
         type="button"
-        className={`${tt.button("money", "sm")} ${compact ? "self-start" : ""}`}
+        className={`${ui.button({ variant: "primary", size: "sm" })} ${compact ? "self-start" : ""}`}
         onClick={() => (free ? nav.openTab("savings") : openUpgrade("savings"))}
       >
         {free ? "Check savings free" : paid ? "Cover more imports" : "See plans"}

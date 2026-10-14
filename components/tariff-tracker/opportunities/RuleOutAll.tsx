@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import toast from "react-hot-toast";
 import * as ui from "@/components/ui/styles";
-import * as tt from "@/components/ui/styles/tracker";
 import { formatDate } from "../../duty-calculator/lib/format";
 import { TrackedProduct } from "../report";
 import { Opportunity, useOpportunities } from "./OpportunitiesContext";
@@ -100,7 +99,7 @@ export const RuleOutAll = ({
 
   if (!open) {
     return (
-      <button type="button" className={`${tt.button("ghost", "sm")} self-start`} onClick={() => setOpen(true)}>
+      <button type="button" className={`${ui.button({ variant: "ghost", size: "sm" })} self-start`} onClick={() => setOpen(true)}>
         <XCircleIcon className="h-4 w-4" aria-hidden />
         {copy.button}
       </button>
@@ -130,10 +129,10 @@ export const RuleOutAll = ({
         placeholder="Anything to add for the record (optional): why, who decided…"
       />
       <div className="flex flex-wrap gap-2">
-        <button type="button" className={tt.button("primary", "sm")} disabled={busy} onClick={confirm}>
+        <button type="button" className={ui.button({ variant: "primary", size: "sm" })} disabled={busy} onClick={confirm}>
           {busy ? "Ruling out…" : "Rule them all out"}
         </button>
-        <button type="button" className={tt.button("ghost", "sm")} onClick={() => setOpen(false)}>
+        <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => setOpen(false)}>
           Cancel
         </button>
       </div>

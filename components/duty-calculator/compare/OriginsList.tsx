@@ -280,7 +280,6 @@ export const OriginsList = ({
           value={view}
           onChange={setView}
           size="sm"
-          tone="accent"
         />
       </div>
       <TableToolbar table={table} placeholder="Find a country" facets={["show"]} noun={["option", "options"]} />

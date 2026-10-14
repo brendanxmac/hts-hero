@@ -7,6 +7,7 @@ import { useHts } from "@/contexts/HtsContext";
 import { useHtsSections } from "@/contexts/HtsSectionsContext";
 import { HtsElement, HtsSection, HtsSectionAndChapterBase } from "@/interfaces/hts";
 import { mono } from "@/components/ui/font";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CandidateToggle } from "./CodeRow";
 import { chapterKey, isTariffLevel, lineKey, sectionKey, useExplorer } from "./useExplorer";
@@ -293,7 +294,7 @@ const LineRow = ({ row }: { row: Extract<Row, { kind: "line" }> }) => {
           {applyCode && isTariffLevel(line) && (
             <button
               type="button"
-              className={`${tt.button("secondary", "sm")} h-7 px-3 group-hover:border-primary/40 group-hover:text-primary`}
+              className={`${ui.button({ variant: "secondary", size: "sm" })} h-7 px-3 group-hover:border-primary/40 group-hover:text-primary`}
               onClick={() => applyCode(line)}
               title={`Use ${line.htsno} in the calculator`}
             >

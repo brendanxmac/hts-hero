@@ -5,6 +5,7 @@ import { ChevronLeftIcon, ChevronRightIcon, LockClosedIcon, MagnifyingGlassIcon 
 import { useHts } from "@/contexts/HtsContext";
 import { describe } from "@/components/tariff-tracker/report";
 import { mono } from "@/components/ui/font";
+import { CardSections } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
 import { Country } from "@/constants/countries";
 import { CountryField } from "../fields/CountryField";
@@ -193,8 +194,8 @@ export const ResultsBox = ({
         {/* The tabs, along the header's bottom edge */}
         {tabs && <div className="mt-2">{tabs}</div>}
       </div>
-      {/* Every section of the open tab, one surface (the .results-body rules in globals.css) */}
-      <div className="results-body flex flex-col">{children}</div>
+      {/* Every section of the open tab: panels that are cards elsewhere are its sections here */}
+      <CardSections>{children}</CardSections>
     </section>
   );
 };

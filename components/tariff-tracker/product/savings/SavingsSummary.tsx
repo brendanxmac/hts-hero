@@ -15,7 +15,7 @@ import { ShipmentsPerYearField } from "./ShipmentsPerYearField";
 // secured and is in progress on it, and the switch between percentages and dollars
 
 export const MeasureToggle = ({ value, onChange }: { value: Measure; onChange: (m: Measure) => void }) => (
-  <SegmentedControl<Measure> label="Show amounts as" options={MEASURES} value={value} onChange={onChange} size="sm" tone="accent" />
+  <SegmentedControl<Measure> label="Show amounts as" options={MEASURES} value={value} onChange={onChange} size="sm" />
 );
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;

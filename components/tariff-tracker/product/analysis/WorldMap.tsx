@@ -584,7 +584,6 @@ export const WorldMap = ({
                 live.current.dirty = true;
               }}
               size="sm"
-              tone="accent"
             />
           </div>
         }

@@ -201,7 +201,7 @@ export function DutyByCountry({
             </Link>
             .
           </p>
-          <Link href={calculatorHref(htsno)} className={`${tt.button("primary", "sm")} shrink-0`}>
+          <Link href={calculatorHref(htsno)} className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`}>
             Calculate Duty for Your Shipment
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>

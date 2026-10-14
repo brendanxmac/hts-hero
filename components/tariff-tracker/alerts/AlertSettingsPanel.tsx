@@ -74,7 +74,7 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <button type="submit" className={tt.button("next")} disabled={state.saving}>
+        <button type="submit" className={ui.button({ variant: "primary" })} disabled={state.saving}>
           {state.saving ? "Saving…" : configured ? "Save alert settings" : "Turn on alerts"}
         </button>
         {state.saved && (

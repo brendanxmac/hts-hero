@@ -1,5 +1,6 @@
 "use client";
 
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { useTrackerAccess } from "../access/accessContext";
 import { useAlertSettings } from "../alerts/AlertSettingsContext";
@@ -46,7 +47,7 @@ const HealthCard = ({
   status?: { text: string; tone: Tone };
   segments: Segment[];
   note: string;
-  action: { label: string; onClick: () => void; variant: "next" | "money" | "secondary" };
+  action: { label: string; onClick: () => void };
 }) => {
   const total = segments.reduce((sum, s) => sum + s.count, 0);
   return (
@@ -77,7 +78,7 @@ const HealthCard = ({
       </div>
       <p className="m-0 text-sm leading-snug text-base-content/70">{note}</p>
       <div className="mt-auto pt-1">
-        <button type="button" className={tt.button(action.variant, "sm")} onClick={action.onClick}>
+        <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={action.onClick}>
           {action.label}
         </button>
       </div>
@@ -160,8 +161,8 @@ export const TariffHealth = () => {
           }
           action={
             !signedIn
-              ? { label: unlockLabel, onClick: () => unlock("alerts"), variant: "next" }
-              : { label: alertsSet ? "Manage alerts" : "Set up alerts", onClick: () => nav.openTab("alerts"), variant: alertsSet ? "secondary" : "next" }
+              ? { label: unlockLabel, onClick: () => unlock("alerts") }
+              : { label: alertsSet ? "Manage alerts" : "Set up alerts", onClick: () => nav.openTab("alerts") }
           }
         />
         <HealthCard
@@ -182,8 +183,8 @@ export const TariffHealth = () => {
           }
           action={
             signedIn
-              ? { label: "Review savings", onClick: () => nav.openTab("savings"), variant: "money" }
-              : { label: unlockLabel, onClick: () => unlock("savings"), variant: "money" }
+              ? { label: "Review savings", onClick: () => nav.openTab("savings") }
+              : { label: unlockLabel, onClick: () => unlock("savings") }
           }
         />
         <HealthCard
@@ -206,8 +207,8 @@ export const TariffHealth = () => {
           }
           action={
             signedIn
-              ? { label: "Audit an entry", onClick: () => nav.openTab("entries"), variant: "next" }
-              : { label: unlockLabel, onClick: () => unlock("entries"), variant: "next" }
+              ? { label: "Audit an entry", onClick: () => nav.openTab("entries") }
+              : { label: unlockLabel, onClick: () => unlock("entries") }
           }
         />
       </div>

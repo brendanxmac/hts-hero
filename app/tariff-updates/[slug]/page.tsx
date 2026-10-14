@@ -10,6 +10,7 @@ import { STAGE_ORDER } from "@/libs/tariff-updates/types"
 import { THEME } from "@/components/ui/theme"
 import { mono, trackerDisplay, trackerSans } from "@/components/ui/font"
 import * as mk from "@/components/ui/marketing/styles"
+import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { AuthorityChip, Countries } from "@/components/tariff-updates/UpdatesList"
 import { authorityLabel, formatDay, kindLabel, STAGE_DETAIL, STAGE_LABELS } from "@/components/tariff-updates/labels"
@@ -218,7 +219,7 @@ export default async function TariffUpdatePage({ params }: { params: { slug: str
             <section className={`${tt.panel} flex flex-col gap-3 p-6`}>
               <h2 className={tt.title}>Check your import</h2>
               <p className="text-sm text-base-content/70">See every duty on your HTS code and country of origin today, line by line. Free.</p>
-              <Link href="/duty-calculator" className={`${tt.button("primary")} self-start`}>
+              <Link href="/duty-calculator" className={`${ui.button({ variant: "primary" })} self-start`}>
                 Open the Tariff Calculator
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </Link>
@@ -242,7 +243,7 @@ export default async function TariffUpdatePage({ params }: { params: { slug: str
                 </li>
               ))}
             </ul>
-            <Link href="/tariff-updates" className={`${tt.button("secondary")} self-start`}>
+            <Link href="/tariff-updates" className={`${ui.button({ variant: "secondary" })} self-start`}>
               All tariff updates
             </Link>
           </section>

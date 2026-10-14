@@ -39,7 +39,7 @@ export function PlaybookCard() {
             <div>
               <Link
                 href="/the-audit-ready-classifications-playbook"
-                className={`${tt.button("primary")} mt-1`}
+                className={`${ui.button({ variant: "primary" })} mt-1`}
               >
                 Download Free Playbook
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />

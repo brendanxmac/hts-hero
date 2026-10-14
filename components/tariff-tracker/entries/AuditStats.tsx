@@ -1,6 +1,6 @@
 import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { useTrackerAccess } from "../access/accessContext";
-import { StatRow } from "../shell/StatRow";
+import { StatStrip } from "@/components/ui/StatStrip";
 import { money } from "./EntriesTable";
 import { AuditTotals } from "./useAuditRows";
 
@@ -8,7 +8,7 @@ import { AuditTotals } from "./useAuditRows";
 export const AuditStats = ({ totals }: { totals: AuditTotals }) => {
   const { access } = useTrackerAccess();
   return (
-    <StatRow
+    <StatStrip
       stats={[
         { label: "Entries audited", value: totals.audited.toLocaleString("en-US"), note: `Of ${totals.logged.toLocaleString("en-US")} logged · ${money(totals.paid)} paid` },
         { label: "Possible overpayments", value: money(totals.overpaid), note: "A refund to ask your broker about", tone: "success" },

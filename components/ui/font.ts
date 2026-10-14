@@ -18,6 +18,7 @@ export const trackerDisplay = Sora({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   display: "swap",
-  // For the marketing headings on pages in the Tracker's look (skin:, components/ui/marketing)
+  // Set on <html> (app/layout.tsx), so a `tracker:` class anywhere can name it: card titles and
+  // big numbers in the Tracker's look, and the marketing headings (skin:, components/ui/marketing)
   variable: "--font-tracker-display",
 });

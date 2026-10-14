@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { Countries } from "@/constants/countries";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
@@ -90,7 +91,7 @@ export const RecentLookups = () => {
         })}
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <button type="button" className={tt.button("money")} onClick={add} disabled={!picked.length}>
+        <button type="button" className={ui.button({ variant: "primary" })} onClick={add} disabled={!picked.length}>
           {picked.length ? `Add ${picked.length} ${picked.length === 1 ? "product" : "products"} to your imports` : "Pick products to add"}
         </button>
         <span className="text-sm text-base-content/60">You can add more, or remove any, later.</span>

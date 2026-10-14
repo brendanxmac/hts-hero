@@ -5,7 +5,6 @@ import { EllipsisHorizontalIcon, ExclamationTriangleIcon, PlusIcon, TrashIcon } 
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { DateNotice } from "../duty-calculator/notices/DateNotice";
 import * as ui from "@/components/ui/styles";
-import * as tt from "@/components/ui/styles/tracker";
 import { itemKey } from "./catalog";
 import { downloadReport } from "./export";
 import { ExportMenu } from "./ExportMenu";
@@ -64,7 +63,7 @@ export const TariffReport = ({
                     }}
                   />
                   <Menu as="div" className="relative">
-                    <Menu.Button className={`${tt.button("secondary").replace("px-5", "")} w-10`}>
+                    <Menu.Button className={`${ui.button({ variant: "secondary" }).replace("px-5", "")} w-10`}>
                       <EllipsisHorizontalIcon className="h-4 w-4" aria-hidden />
                       <span className="sr-only">More import actions</span>
                     </Menu.Button>
@@ -89,7 +88,7 @@ export const TariffReport = ({
                       </Menu.Item>
                     </Menu.Items>
                   </Menu>
-                  <button type="button" className={tt.button("primary")} onClick={onAdd}>
+                  <button type="button" className={ui.button({ variant: "primary" })} onClick={onAdd}>
                     <PlusIcon className="h-4 w-4" aria-hidden />
                     Add products
                   </button>
@@ -109,7 +108,7 @@ export const TariffReport = ({
               </p>
               <button
                 type="button"
-                className={tt.button("secondary", "sm")}
+                className={ui.button({ variant: "secondary", size: "sm" })}
                 onClick={() => removeProducts(missing.map(itemKey))}
               >
                 Remove {missing.length === 1 ? "it" : "them"}

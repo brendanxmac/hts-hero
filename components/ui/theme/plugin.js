@@ -79,7 +79,9 @@ module.exports = plugin(({ addBase }) => {
     // A page that follows the site's light/dark setting (.follow-theme): anything inside it held
     // light (the footer, themed blocks in marketing sections) follows too
     '[data-theme="dark"] .follow-theme .hts-theme.hts-theme-light, [data-theme="dark"] .follow-theme.hts-theme.hts-theme-light': themeVars("dark"),
-    ".hts-tracker .rounded-lg": { borderRadius: "1.25rem" },
+    // Cards round to 20px in the Tracker's look (ui.card, tt.panel), including a card that is
+    // itself the .hts-tracker root (a dialog's panel)
+    ".hts-tracker .rounded-lg, .hts-tracker.rounded-lg": { borderRadius: "1.25rem" },
     // The sidebar is dark in both modes: everything inside it takes the dark palette
     ".hts-tracker .hts-tracker-on-dark, [data-theme] .hts-tracker .hts-tracker-on-dark": trackerVars("dark"),
     // Landing pages in the Tracker's look: their dark bands (mk.bandDark marks them .mk-dark) take

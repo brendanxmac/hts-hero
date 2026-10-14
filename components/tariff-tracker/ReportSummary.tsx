@@ -1,4 +1,4 @@
-import * as tt from "@/components/ui/styles/tracker";
+import { StatStrip, StatItem } from "@/components/ui/StatStrip";
 import { formatRate } from "./formatRate";
 import { TrackedProduct } from "./report";
 
@@ -9,7 +9,7 @@ export const ReportSummary = ({ rows }: { rows: TrackedProduct[] }) => {
   const highest = rows.reduce((top, r) => (r.totalPct > top.totalPct ? r : top), rows[0]);
   const countries = new Set(rows.map((r) => r.entry.country.code)).size;
   const couldBeLower = rows.filter((r) => r.bestSavingPct > 0.005).length;
-  const tiles: { label: string; value: string; note: string; tone?: "primary" | "success" }[] = [
+  const tiles: StatItem[] = [
     {
       label: "Imports",
       value: rows.length.toLocaleString("en-US"),
@@ -28,18 +28,5 @@ export const ReportSummary = ({ rows }: { rows: TrackedProduct[] }) => {
       tone: couldBeLower ? "success" : undefined,
     },
   ];
-  return (
-    // 1px gaps over the border color draw the dividers
-    <dl className={`${tt.panel} grid grid-cols-2 gap-px overflow-hidden bg-base-300 lg:grid-cols-4`}>
-      {tiles.map((t) => (
-        <div key={t.label} className="flex flex-col gap-2 bg-base-100 px-6 py-5">
-          <dt className={tt.eyebrow(t.tone)}>{t.label}</dt>
-          <dd className={`${tt.metric} ${t.tone === "primary" ? "text-primary" : t.tone === "success" ? "text-success" : ""}`}>{t.value}</dd>
-          <dd className="truncate text-xs text-base-content/60" title={t.note}>
-            {t.note}
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
+  return <StatStrip label="Your imports at a glance" stats={tiles} />;
 };

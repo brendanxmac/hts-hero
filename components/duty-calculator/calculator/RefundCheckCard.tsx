@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ArrowPathIcon, CheckIcon } from "@heroicons/react/20/solid";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { addDays, HistorySegment } from "@/tariffs/engine-v2/history";
@@ -15,8 +16,7 @@ import { shortDate } from "../rate-history/format";
 // before it, against what it owed; the bars grow in turn, each row gets its verdict, and the
 // total counts up. It plays once scrolled into view (instantly with reduced motion) and can be
 // replayed. Examples are labeled as such; refunds are only ever "may" (DESIGN_SYSTEM.md §15).
-// Like the landing pages' calls to action, it's inverted from the page (dark in light mode, light
-// in dark mode, .hts-tracker-inverse), with the audit itself following the page again inside it.
+// A section of the results card: the pitch on the left, the audit playing on the right.
 
 const pct = (n: number) => formatPct(Math.round(n * 10) / 10);
 
@@ -82,7 +82,7 @@ export const RefundCheckCard = ({
   return (
     <section
       aria-labelledby="refund-check-title"
-      className="hts-tracker-inverse grid grid-cols-1 gap-8 rounded-3xl bg-base-100 p-6 text-base-content sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center"
+      className="grid grid-cols-1 gap-8 p-5 text-base-content sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center"
     >
       {/* The pitch */}
       <div className="flex min-w-0 flex-col gap-4">
@@ -114,7 +114,7 @@ export const RefundCheckCard = ({
           ))}
         </ul>
         <div className="flex items-center gap-3">
-          <button type="button" className={tt.button("money", "md")} onClick={onCheck}>
+          <button type="button" className={ui.button({ variant: "primary" })} onClick={onCheck}>
             Check my entries
           </button>
           <span className="text-xs text-base-content/50">{TRIAL_ALLOWANCE.auditChecks} free audit checks</span>
@@ -122,8 +122,7 @@ export const RefundCheckCard = ({
       </div>
 
       {/* The audit, playing */}
-      {/* Follows the page's light/dark again: a product view inside the inverted card */}
-      <div ref={played.ref} className="hts-theme hts-tracker flex min-w-0 flex-col rounded-2xl border border-base-300 bg-base-100 text-base-content">
+      <div ref={played.ref} className="flex min-w-0 flex-col rounded-xl border border-base-300 bg-base-100 text-base-content">
         <div className="flex items-center justify-between gap-3 border-b border-base-300 px-4 py-3">
           <div className="flex items-center gap-2">
             <span className={`h-2 w-2 rounded-full transition-colors ${played.on ? "bg-success" : "bg-base-content/20"}`} aria-hidden />

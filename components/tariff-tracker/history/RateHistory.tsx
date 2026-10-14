@@ -13,7 +13,7 @@ import { InsightsProgress } from "../insights/InsightsProgress";
 import { changesTeaser } from "../insights/teasers";
 import { sectionBySlug } from "../sections";
 import { NeedsProducts } from "../shell/NeedsProducts";
-import { StatRow } from "../shell/StatRow";
+import { StatStrip } from "@/components/ui/StatStrip";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { CatalogRateChart } from "./CatalogRateChart";
@@ -39,7 +39,7 @@ const HistoryReport = () => {
   return (
     <div className="flex flex-col gap-4">
       <InsightsProgress label="Going through the history of" />
-      <StatRow
+      <StatStrip
         stats={[
           { label: "Rate changes", value: changes.length.toLocaleString("en-US"), note: `Since ${shortDate(range.from, true)}` },
           {
