@@ -23,7 +23,7 @@ const monthOf = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLoc
 // What it does to the user's imports, in a few words and the color of it
 const effectOn = (m: ImportMatch | undefined) => {
   if (!m || m.confirmed + m.likely === 0) return null;
-  if (m.confirmed) return { text: `Hits ${m.confirmed + m.likely} of your imports`, tone: m.deltaUsd < -0.5 ? "text-success" : "text-error" };
+  if (m.confirmed) return { text: `Hit ${m.confirmed + m.likely} of your imports`, tone: m.deltaUsd < -0.5 ? "text-success" : "text-error" };
   return { text: `May affect ${m.likely} of your imports`, tone: "text-warning" };
 };
 

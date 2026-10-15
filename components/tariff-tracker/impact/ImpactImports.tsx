@@ -13,7 +13,7 @@ import { formatRate } from "../formatRate";
 import { BASE_PART, rateParts, shortProgram, type RatePart, type TrackedProduct } from "../report";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
-import { day, groupOf, money, rateChange, reasonText, signedRate, type ImpactGroup } from "./format";
+import { day, groupOf, rateChange, reasonText, signedRate, type ImpactGroup } from "./format";
 
 // The imports an action affects, laid out like Your imports (DESIGN_SYSTEM §15): the product, its
 // origin, its tariffs after the change as one bar (what the action adds marked new, what it ends
@@ -37,19 +37,20 @@ const linesOf = (p: DutyAt): Line[] => [
 ];
 
 // The duty, line by line, the day before and the day of the change
-const DutyDiff = ({ impact }: { impact: ImportImpact }) => {
+const DutyDiff = ({ impact, customsValue }: { impact: ImportImpact; customsValue: number }) => {
   const before = linesOf(impact.before!);
   const after = linesOf(impact.after!);
   const codes = Array.from(new Set([...before.map((l) => l.code), ...after.map((l) => l.code)]));
   const find = (lines: Line[], code: string) => lines.find((l) => l.code === code);
-  const cell = (l?: Line) => (l ? `${l.pct === null ? "" : `${formatRate(l.pct)} · `}${money(l.amount)}` : "—");
+  // Each line as a rate on the shipment (a per-unit duty worked out on its value)
+  const cell = (l?: Line) => (l ? formatRate(l.pct ?? (l.amount / customsValue) * 100) : "—");
   return (
     <table className="w-full text-sm">
       <thead>
         <tr className="text-left">
           <th className={`${tt.eyebrow()} pb-2`}>Duty line</th>
-          <th className={`${tt.eyebrow()} pb-2 text-right`}>Day before</th>
-          <th className={`${tt.eyebrow()} pb-2 text-right`}>From {day(impact.date!, false)}</th>
+          <th className={`${tt.eyebrow()} whitespace-nowrap pb-2 pl-4 text-right`}>Day before</th>
+          <th className={`${tt.eyebrow()} whitespace-nowrap pb-2 pl-4 text-right`}>From {day(impact.date!, false)}</th>
         </tr>
       </thead>
       <tbody>
@@ -76,8 +77,8 @@ const DutyDiff = ({ impact }: { impact: ImportImpact }) => {
         })}
         <tr className="border-t border-base-300">
           <td className="py-2.5 font-semibold text-base-content">Total duty</td>
-          <td className="py-2.5 text-right tabular-nums text-base-content/60">{money(impact.before!.result.totalDuty)}</td>
-          <td className="py-2.5 text-right font-semibold tabular-nums text-base-content">{money(impact.after!.result.totalDuty)}</td>
+          <td className="py-2.5 text-right tabular-nums text-base-content/60">{formatRate(impact.beforePct!)}</td>
+          <td className="py-2.5 text-right font-semibold tabular-nums text-base-content">{formatRate(impact.afterPct!)}</td>
         </tr>
       </tbody>
     </table>
@@ -151,7 +152,7 @@ interface RowData {
   pct: number;
 }
 
-const Row = ({ r, colors, maxPct, effective, today, perYear }: { r: RowData; colors: Record<string, string>; maxPct: number; effective: string | null; today: string; perYear: number | null }) => {
+const Row = ({ r, colors, maxPct, effective, today }: { r: RowData; colors: Record<string, string>; maxPct: number; effective: string | null; today: string }) => {
   const [open, setOpen] = useState(false);
   const { openProduct } = useTrackerNav();
   const { impact, product } = r;
@@ -200,7 +201,7 @@ const Row = ({ r, colors, maxPct, effective, today, perYear }: { r: RowData; col
             <p className="text-sm text-base-content/70">
               {confirmed &&
                 impact.reason !== "ban" &&
-                `Worked out by the duty engine on your saved value, ${money(product.customsValue)} a shipment${perYear ? `, ${perYear} shipments a year` : ""}.`}
+                "Worked out by the duty engine on your saved shipment details, the day before and the day it changes."}
               {impact.reason === "ban" && "From that day these goods can't be entered, unless an exception applies to them."}
               {impact.reason === "named" && "Its scope names this code and country. We'll confirm the exact duty once the change is in the HTS, and alert you."}
               {impact.reason === "answer" && "The duty engine has this tariff; whether it applies depends on an answer about your goods."}
@@ -210,7 +211,7 @@ const Row = ({ r, colors, maxPct, effective, today, perYear }: { r: RowData; col
               {impact.reason === "answer" ? "Answer it on the import's page" : "Open this import"}
             </button>
           </div>
-          {impact.before && impact.after && impact.reason !== "ban" ? <DutyDiff impact={impact} /> : <div />}
+          {impact.before && impact.after && impact.reason !== "ban" ? <DutyDiff impact={impact} customsValue={product.customsValue} /> : <div />}
         </div>
       )}
     </li>
@@ -236,7 +237,7 @@ export const ImpactImports = ({
   show: Show;
   onShow: (show: Show) => void;
 }) => {
-  const { products, itemFor } = useTracker();
+  const { products } = useTracker();
   const byKey = useMemo(() => new Map(products.map((p) => [p.key, p])), [products]);
   const [query, setQuery] = useState("");
 
@@ -328,10 +329,9 @@ export const ImpactImports = ({
       </div>
       {rows.length ? (
         <ul>
-          {rows.map((r) => {
-            const perYear = itemFor(r.impact.key)?.shipmentsPerYear ?? null;
-            return <Row key={r.impact.key} r={r} colors={colors} maxPct={maxPct} effective={effective} today={today} perYear={perYear && perYear > 1 ? perYear : null} />;
-          })}
+          {rows.map((r) => (
+            <Row key={r.impact.key} r={r} colors={colors} maxPct={maxPct} effective={effective} today={today} />
+          ))}
         </ul>
       ) : (
         <p className="px-6 py-10 text-center text-sm text-base-content/60">
