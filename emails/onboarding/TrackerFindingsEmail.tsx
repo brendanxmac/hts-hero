@@ -156,7 +156,9 @@ export default function TrackerFindingsEmail({ variant, numbers: n, alertsOn = t
               <strong>
                 In the last {months(stakes.days)}, {plural(stakes.actions, "US tariff action")} hit {plural(stakes.imports, "of your imports", "of your imports")}
               </strong>
-              {stakes.extraUsd > 0 ? `, together adding ${usd(stakes.extraUsd)} in duty to one shipment of each.` : "."}
+              {stakes.top && stakes.top.beforePct !== null && stakes.top.afterPct !== null && stakes.top.beforePct !== stakes.top.afterPct
+                ? `; the biggest moved ${stakes.top.code} (${stakes.top.country}) from ${pct(stakes.top.beforePct)} to ${pct(stakes.top.afterPct)}.`
+                : "."}
             </P>
           </Panel>
         ) : (
