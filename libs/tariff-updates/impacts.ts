@@ -66,6 +66,9 @@ export const recentUpdates = async (db: Db, { ids }: { ids?: string[] } = {}) =>
     .select("id, slug, hts_codes, countries, authority, kind, effective_on, scope_codes, scope_excluded_codes, scope_countries, scope_excluded_countries, scope_headings")
     .eq("status", "published")
     .eq("needs_review", false)
+    // An HTS revision carries out actions that have their own updates: it only confirms them
+    // (through the engine), never alerts by itself
+    .neq("kind", "hts_revision")
   query = ids ? query.in("id", ids) : query.gte("last_activity_at", new Date(Date.now() - RECENT_DAYS * 86_400_000).toISOString())
   const { data, error } = await query
   if (error) throw new Error(`Loading updates: ${error.message}`)

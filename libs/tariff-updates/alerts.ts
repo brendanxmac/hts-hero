@@ -42,7 +42,8 @@ interface AlertRow {
   user_id: string
   product_key: string
   level: "confirmed" | "likely" | "removed"
-  delta_usd: number | null
+  before_pct: number | null
+  after_pct: number | null
   covered: boolean
 }
 
@@ -59,8 +60,8 @@ export interface PlannedAlert {
 }
 
 // Updates from before alerts started are history: shown on the site, never alerted
-export const impactAlertable = (u: { last_activity_at: string; status?: string }) =>
-  u.last_activity_at >= NEWS_ALERTS_FROM.slice(0, 10) && u.status !== "hidden"
+export const impactAlertable = (u: { last_activity_at: string; status?: string; kind?: string }) =>
+  u.last_activity_at >= NEWS_ALERTS_FROM.slice(0, 10) && u.status !== "hidden" && u.kind !== "hts_revision"
 
 // Every row a query returns, a page at a time (a query returns at most 1,000 rows)
 const allRows = async <T>(page: (from: number, to: number) => PromiseLike<{ data: unknown[] | null; error: { message: string } | null }>) => {
@@ -73,11 +74,14 @@ const allRows = async <T>(page: (from: number, to: number) => PromiseLike<{ data
   }
 }
 
+// Worth telling again: new, back after being removed, now confirmed, or a different rate. Not a
+// different dollar amount alone: that's the user changing their import's value, not the tariff.
+const moved = (a: number | null, b: number | null) => Math.abs(Number(a ?? 0) - Number(b ?? 0)) >= 0.01
 const changed = (prior: AlertRow | undefined, now: ImpactRow) =>
   !prior ||
   prior.level === "removed" ||
   (prior.level === "likely" && now.level === "confirmed") ||
-  (now.level === "confirmed" && Math.abs(Number(prior.delta_usd ?? 0) - Number(now.delta_usd ?? 0)) >= 1)
+  (prior.level === "confirmed" && now.level === "confirmed" && (moved(prior.before_pct, now.before_pct) || moved(prior.after_pct, now.after_pct)))
 
 // What approving the update's impact check would send, account by account (nothing is saved)
 export const planImpactAlerts = async (db: Db, updateId: string, htsElements: HtsElement[]): Promise<PlannedAlert[]> => {
@@ -89,7 +93,7 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
       db.from("tariff_update_impacts").select("user_id, product_key, level, before_pct, after_pct, delta_usd").eq("update_id", updateId).in("level", ["confirmed", "likely"]).order("user_id").order("product_key").range(from, to)
     ),
     allRows<AlertRow>((from, to) =>
-      db.from("tariff_impact_alerts").select("user_id, product_key, level, delta_usd, covered").eq("update_id", updateId).order("user_id").order("product_key").range(from, to)
+      db.from("tariff_impact_alerts").select("user_id, product_key, level, before_pct, after_pct, covered").eq("update_id", updateId).order("user_id").order("product_key").range(from, to)
     ),
   ])
   const byUser = new Map<string, ImpactRow[]>()
@@ -184,25 +188,10 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
   return plans
 }
 
-// Approves the update's impact check: works its matches out again, then sends each affected account
-// its alert (straight to the outbox, approved) and records what each was told
-export const approveImpact = async (db: Db, updateId: string, htsElements: HtsElement[], { approvedBy }: { approvedBy: string }) => {
-  await refreshImpacts(db, htsElements, { deadline: Date.now() + 120_000, updateIds: [updateId] })
-  const { data: update, error } = await db.from("tariff_updates").select(UPDATE_EMAIL_COLUMNS).eq("id", updateId).single()
-  if (error || !update) throw new Error(`Loading the update: ${error?.message ?? "not found"}`)
-  const u = update as UpdateRowForEmail
-  const { data: gate } = await db.from("tariff_updates").select("last_activity_at, status, impact_first_approved_at").eq("id", updateId).single()
-  if (!gate || !impactAlertable(gate)) throw new Error("This update is from before alerts started (or hidden), so it can't send impact alerts.")
-  const plans = await planImpactAlerts(db, updateId, htsElements)
-  const approvedAt = new Date().toISOString()
-  const approval = { impact_approved_at: approvedAt, impact_approved_by: approvedBy, impact_first_approved_at: gate.impact_first_approved_at ?? approvedAt }
-  if (!plans.length) {
-    await db.from("tariff_updates").update({ ...approval, impact_alerted: 0 }).eq("id", updateId)
-    return { accounts: 0, messages: 0 }
-  }
-
+// Sends each plan's alert (straight to the outbox, approved) and records what each account was told
+const sendPlans = async (db: Db, u: UpdateRowForEmail, plans: PlannedAlert[], { title, at }: { title: string; at: string }) => {
   const summary = updateSummary(u)
-  const reached = await reachedStages(db, updateId)
+  const reached = await reachedStages(db, u.id)
   const messages: OutboxMessage[] = []
   for (const plan of plans) {
     // Only changes outside the alert slots that were already gone: recorded, nothing to say
@@ -230,17 +219,75 @@ export const approveImpact = async (db: Db, updateId: string, htsElements: HtsEl
 
   const batchId = await createBatch(db, {
     kind: "tariff_impact",
-    title: `Impact alert: ${u.title} · ${plans.length} account${plans.length === 1 ? "" : "s"}`,
-    ref: { update_id: updateId, approved_at: approvedAt },
-    dedupeKey: `tariff_impact:${updateId}:${approvedAt}`,
+    title: `${title}: ${u.title} · ${plans.length} account${plans.length === 1 ? "" : "s"}`,
+    ref: { update_id: u.id, approved_at: at },
+    dedupeKey: `tariff_impact:${u.id}:${at}`,
     autoSend: true,
     messages,
   })
-  const rows = plans.flatMap((p) => p.record.map((r) => ({ ...r, update_id: updateId, user_id: p.userId, batch_id: batchId, sent_at: approvedAt })))
+  const rows = plans.flatMap((p) => p.record.map((r) => ({ ...r, update_id: u.id, user_id: p.userId, batch_id: batchId, sent_at: at })))
   for (let i = 0; i < rows.length; i += 500) {
     const { error: saveError } = await db.from("tariff_impact_alerts").upsert(rows.slice(i, i + 500), { onConflict: "update_id,user_id,product_key" })
     if (saveError) throw new Error(`Recording alerts: ${saveError.message}`)
   }
+  return { messages: messages.length, batchId }
+}
+
+const loadUpdate = async (db: Db, updateId: string) => {
+  const { data, error } = await db.from("tariff_updates").select(`${UPDATE_EMAIL_COLUMNS}, last_activity_at, status, impact_first_approved_at`).eq("id", updateId).single()
+  if (error || !data) throw new Error(`Loading the update: ${error?.message ?? "not found"}`)
+  return data as unknown as UpdateRowForEmail & { last_activity_at: string; status: string; impact_first_approved_at: string | null }
+}
+
+// Approves the update's impact check: works its matches out again, then sends each affected account
+// its alert and records what each was told
+export const approveImpact = async (db: Db, updateId: string, htsElements: HtsElement[], { approvedBy }: { approvedBy: string }) => {
+  await refreshImpacts(db, htsElements, { deadline: Date.now() + 120_000, updateIds: [updateId] })
+  const u = await loadUpdate(db, updateId)
+  if (!impactAlertable(u)) throw new Error("This update can't send impact alerts: it's from before alerts started, hidden, or an HTS revision.")
+  const plans = await planImpactAlerts(db, updateId, htsElements)
+  const approvedAt = new Date().toISOString()
+  const approval = { impact_approved_at: approvedAt, impact_approved_by: approvedBy, impact_first_approved_at: u.impact_first_approved_at ?? approvedAt }
+  const sent = plans.length ? await sendPlans(db, u, plans, { title: "Impact alert", at: approvedAt }) : { messages: 0, batchId: undefined }
   await db.from("tariff_updates").update({ ...approval, impact_alerted: plans.length }).eq("id", updateId)
-  return { accounts: plans.length, messages: messages.length, batchId }
+  return { accounts: plans.length, ...sent }
+}
+
+// Once an update's impact check is approved, the engine catching up (an HTS revision carrying the
+// action out) confirms imports that were alerted as "may apply". Those confirmations go out by
+// themselves, and only those: anything else new waits for the admin to approve again.
+export const sendConfirmations = async (db: Db, htsElements: HtsElement[], { deadline }: { deadline: number }) => {
+  const likely = await allRows<{ update_id: string; user_id: string; product_key: string }>((from, to) =>
+    db.from("tariff_impact_alerts").select("update_id, user_id, product_key").eq("level", "likely").order("update_id").order("user_id").order("product_key").range(from, to)
+  )
+  const updateIds = Array.from(new Set(likely.map((r) => r.update_id)))
+  if (!updateIds.length) return { updates: 0, accounts: 0 }
+  const confirmed = await allRows<{ update_id: string; user_id: string; product_key: string }>((from, to) =>
+    db.from("tariff_update_impacts").select("update_id, user_id, product_key").in("update_id", updateIds).eq("level", "confirmed").order("update_id").order("user_id").order("product_key").range(from, to)
+  )
+  const isConfirmed = new Set(confirmed.map((r) => `${r.update_id}|${r.user_id}|${r.product_key}`))
+  const wasLikely = new Set(likely.map((r) => `${r.update_id}|${r.user_id}|${r.product_key}`))
+  const ready = Array.from(new Set(likely.filter((r) => isConfirmed.has(`${r.update_id}|${r.user_id}|${r.product_key}`)).map((r) => r.update_id)))
+
+  let updates = 0
+  let accounts = 0
+  for (const updateId of ready) {
+    if (Date.now() > deadline) break
+    const u = await loadUpdate(db, updateId)
+    if (!u.impact_first_approved_at || !impactAlertable(u)) continue
+    const plans = (await planImpactAlerts(db, updateId, htsElements)).flatMap((p) => {
+      // Alerted as likely, confirmed now: sent when in the alert slots, recorded either way (so
+      // approving again doesn't repeat them)
+      const record = p.record.filter((r) => r.level === "confirmed" && wasLikely.has(`${updateId}|${p.userId}|${r.product_key}`))
+      if (!record.length) return []
+      const keys = new Set(record.map((r) => r.product_key))
+      const plan: PlannedAlert = { ...p, imports: p.imports.filter((i) => keys.has(i.key)), removed: [], beyond: [], record }
+      return [plan]
+    })
+    if (!plans.length) continue
+    await sendPlans(db, u, plans, { title: "Now confirmed", at: new Date().toISOString() })
+    updates++
+    accounts += plans.filter((p) => p.imports.length).length
+  }
+  return { updates, accounts }
 }

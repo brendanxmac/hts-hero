@@ -48,6 +48,9 @@ export const impactAlertSubject = (p: ImpactAlertEmailProps) => {
   const title = p.update.title.length > 70 ? `${p.update.title.slice(0, 67).trim()}…` : p.update.title
   if (!n && p.removed.length) return `Update: ${title} no longer affects ${plural(p.removed.length, "of your imports", "of your imports")}`
   const sure = p.imports.some((i) => i.level === "confirmed")
+  // Only confirmations of an earlier "may apply" alert
+  if (p.imports.length && p.imports.every((i) => i.nowConfirmed) && !p.beyond && !p.removed.length)
+    return `Confirmed: ${title} affects ${n} of your imports`
   return `Tariff alert: ${title} ${sure ? "affects" : "may affect"} ${n} of your imports`
 }
 
@@ -72,14 +75,17 @@ const Change = ({ i }: { i: AlertedImport }) => {
 export default function ImpactAlertEmail({ update, reached, current, imports, removed, beyond, paid, footer }: ImpactAlertEmailProps) {
   const campaign = "impact-alert"
   const total = imports.length + beyond
+  const confirmation = imports.length > 0 && imports.every((i) => i.nowConfirmed) && !beyond && !removed.length
   const extra = imports.filter((i) => i.level === "confirmed").reduce((sum, i) => sum + Number(i.deltaUsd ?? 0), 0)
   return (
     <EmailLayout preview={total ? `${plural(total, "of your imports", "of your imports")}${extra > 0 ? `, up to ${usd(extra)} more per shipment` : ""}. ${update.summary.slice(0, 90)}` : update.summary.slice(0, 140)} footer={footer}>
-      <Eyebrow tone="up">Tariff alert</Eyebrow>
+      <Eyebrow tone="up">{confirmation ? "Now confirmed" : "Tariff alert"}</Eyebrow>
       <Title size={24}>
-        {total
-          ? `This affects ${plural(total, "of your imports", "of your imports")}`
-          : `This no longer affects ${plural(removed.length, "of your imports", "of your imports")}`}
+        {confirmation
+          ? `Confirmed: this affects ${plural(total, "of your imports", "of your imports")}`
+          : total
+            ? `This affects ${plural(total, "of your imports", "of your imports")}`
+            : `This no longer affects ${plural(removed.length, "of your imports", "of your imports")}`}
       </Title>
       <UpdateBlock update={update} campaign={campaign} />
       <StageTrack reached={reached} current={current} />

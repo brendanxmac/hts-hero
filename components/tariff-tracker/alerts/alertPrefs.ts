@@ -6,7 +6,9 @@ import { KINDS, type Kind } from "../../../libs/tariff-updates/types";
 // Alerts are on from the moment an account adds an import: with no saved settings they go to the
 // account's email. They're off only once the account turns every channel off (after a warning).
 // Each account also picks which kinds of tariff update alert it; unsaved, the ones that change
-// what an import pays (DEFAULT_ALERT_KINDS).
+// what an import pays (DEFAULT_ALERT_KINDS). Only updates that affect the account's own imports
+// ever alert. HTS revisions and deadlines aren't choices: a revision only confirms the actions it
+// carries out (their alerts say so), and a deadline doesn't change what anyone pays.
 
 export interface AlertSettingsRow {
   email_enabled: boolean;
@@ -27,15 +29,14 @@ export const ALERT_KIND_OPTIONS: { kind: Kind; label: string; note: string }[] =
   { kind: "deal", label: KINDS.deal, note: "A trade deal changes what you pay" },
   { kind: "other", label: "Bans, quotas and other actions", note: "Import bans, quotas and limits" },
   { kind: "guidance", label: KINDS.guidance, note: "CBP filing instructions for an action" },
-  { kind: "investigation", label: KINDS.investigation, note: "Investigations and proposals that could lead to a tariff" },
-  { kind: "deadline", label: KINDS.deadline, note: "Comment and filing deadlines" },
-  { kind: "hts_revision", label: KINDS.hts_revision, note: "The change reaching the published HTS" },
+  { kind: "investigation", label: KINDS.investigation, note: "Early warning: an investigation or proposal that could lead to a tariff" },
 ];
 
 export const DEFAULT_ALERT_KINDS: Kind[] = ["new_tariff", "rate_change", "scope_change", "exclusion", "pause", "end", "deal", "other"];
 
+const CHOOSABLE = new Set<string>(ALERT_KIND_OPTIONS.map((o) => o.kind));
 export const alertKinds = (s: Pick<AlertSettingsRow, "alert_kinds"> | null | undefined): Kind[] =>
-  (s?.alert_kinds ?? DEFAULT_ALERT_KINDS).filter((k): k is Kind => k in KINDS);
+  (s?.alert_kinds ?? DEFAULT_ALERT_KINDS).filter((k): k is Kind => CHOOSABLE.has(k));
 
 // On unless the account turned every channel off
 export const alertsOn = (s: AlertSettingsRow | null | undefined) => !s || s.email_enabled || !!s.slack_webhook || !!s.teams_webhook;

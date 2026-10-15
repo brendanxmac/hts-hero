@@ -18,7 +18,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   if (denied) return denied
   const [{ data, error }, { data: update }] = await Promise.all([
     db.from("tariff_update_impacts").select("user_id, product_key, level, before_pct, after_pct, delta_usd, computed_at").eq("update_id", params.id),
-    db.from("tariff_updates").select("impact_approved_at, impact_approved_by, impact_alerted, last_activity_at, status").eq("id", params.id).single(),
+    db.from("tariff_updates").select("impact_approved_at, impact_approved_by, impact_alerted, last_activity_at, status, kind").eq("id", params.id).single(),
   ])
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   const rows = data ?? []

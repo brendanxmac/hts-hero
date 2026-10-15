@@ -90,7 +90,7 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
 
       <fieldset className="flex flex-col gap-3" disabled={!draftOn}>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <legend className="text-sm font-semibold text-base-content">What to alert me about</legend>
+          <legend className="text-sm font-semibold text-base-content">Which updates that affect your imports should alert you</legend>
           <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => set({ kinds: [...DEFAULT_ALERT_KINDS] })}>
             Reset to recommended
           </button>
