@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { requireRevisionTool } from "@/libs/hts-revision-diff/access"
+import { requireAdmin } from "@/libs/admin/access"
 import { revalidateTariffUpdates } from "@/libs/tariff-updates/revalidate"
 
 export const dynamic = "force-dynamic"
@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic"
 // Edits an update from /tariff-sources: its title and summary (kept from then on), whether it's
 // published, and its review flag
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { db, denied } = await requireRevisionTool()
+  const { db, denied } = await requireAdmin()
   if (denied) return denied
   const body = await req.json()
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() }

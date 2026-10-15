@@ -173,6 +173,8 @@ const config: ConfigProps = {
   appDescription: "Engineered Trade Compliance",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
   domainName: "htshero.com",
+  // The postal address commercial email must show (CAN-SPAM), in every email's footer
+  mailingAddress: "1309 Coffeen Avenue, STE 1200, Sheridan, WY 82801",
   bookCallUrl: "https://calendly.com/brendan-htshero/30min",
   crisp: {
     // Crisp website ID. IF YOU DON'T USE CRISP: just remove this => Then add a support email in this config file (resend.supportEmail) otherwise customer support won't work.

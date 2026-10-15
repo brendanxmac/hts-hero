@@ -7,6 +7,7 @@ const TOOLS = [
   { href: "/revision-checker", label: "Revision checker" },
   { href: "/coverage-checker", label: "Coverage checker" },
   { href: "/tariff-sources", label: "Tariff sources" },
+  { href: "/email-outbox", label: "Outbox" },
   { href: "/social-studio", label: "Social studio" },
 ]
 

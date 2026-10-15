@@ -1,7 +1,7 @@
 import TariffSourcesDashboard from "@/components/tariff-sources/TariffSourcesDashboard"
 import type { SourceItemRow, SourceRunRow, UpdateRow } from "@/components/tariff-sources/types"
 import { createAdminClient } from "../api/supabase/server"
-import { guardRevisionTool } from "../revision-checker/guard"
+import { guardAdmin } from "@/libs/admin/access"
 
 export const dynamic = "force-dynamic"
 export const metadata = {
@@ -33,7 +33,7 @@ const loadAll = async <T,>(db: Db, table: string, columns: string, orderBy: stri
 }
 
 export default async function TariffSourcesPage() {
-  await guardRevisionTool()
+  await guardAdmin()
   const db = createAdminClient()
   const [items, updates, runs] = await Promise.all([
     loadAll<SourceItemRow>(

@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/app/api/supabase/server";
 import { AUDIT_TOPICS, parseAuditRequest } from "@/libs/audit-request";
-import { sendEmail } from "@/libs/resend";
+import { sendTransactional } from "@/libs/email/outbox";
 
 export const dynamic = "force-dynamic";
 
 // Audit requests from /tariff-audit go to this inbox
 const NOTIFY = "brendan@htshero.com";
 
-const escapeHtml = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-
-// Saves an audit request, then emails the team. Saving comes first so a lead is never lost to a
-// failed email.
+// Saves an audit request, then emails the team and confirms to the requester. Saving comes first
+// so a lead is never lost to a failed email.
 export async function POST(req: NextRequest) {
   const body: Record<string, unknown> | null = await req.json().catch((): null => null);
   if (!body || typeof body !== "object") {
@@ -29,43 +26,51 @@ export async function POST(req: NextRequest) {
   }
   const r = parsed.request;
 
-  const { error: dbError } = await createAdminClient()
-    .from("audit_requests")
-    .insert({
-      name: r.name,
-      email: r.email,
-      company: r.company,
-      import_value: r.importValue,
-      topics: r.topics,
-      notes: r.notes || null,
-      page_url: req.headers.get("referer"),
-      user_agent: req.headers.get("user-agent"),
-    });
+  const db = createAdminClient();
+  const { error: dbError } = await db.from("audit_requests").insert({
+    name: r.name,
+    email: r.email,
+    company: r.company,
+    import_value: r.importValue,
+    topics: r.topics,
+    notes: r.notes || null,
+    page_url: req.headers.get("referer"),
+    user_agent: req.headers.get("user-agent"),
+  });
   if (dbError) console.error("Failed to save audit request:", dbError);
 
   const topics = r.topics.map((id) => AUDIT_TOPICS.find((t) => t.id === id)?.label ?? id);
-  const lines = [
-    ["Name", r.name],
-    ["Email", r.email],
-    ["Company", r.company],
-    ["US imports a year", r.importValue],
-    ["Look at", topics.join(", ") || "Not specified"],
-    ["Notes", r.notes || "None"],
+  const rows = [
+    { label: "Name", value: r.name },
+    { label: "Email", value: r.email },
+    { label: "Company", value: r.company },
+    { label: "US imports a year", value: r.importValue },
+    { label: "Look at", value: topics.join(", ") || "Not specified" },
+    { label: "Notes", value: r.notes || "None" },
   ];
 
   try {
-    await sendEmail({
-      to: NOTIFY,
-      replyTo: r.email,
-      subject: `Tariff audit request: ${r.company}`,
-      text: lines.map(([k, v]) => `${k}: ${v}`).join("\n"),
-      html: `<div style="font-family: Arial, sans-serif; max-width: 600px;">
-        <h2>New tariff audit request</h2>
-        ${lines
-          .map(([k, v]) => `<p style="margin: 6px 0;"><strong>${k}:</strong> <span style="white-space: pre-wrap;">${escapeHtml(v)}</span></p>`)
-          .join("")}
-      </div>`,
-    });
+    // A notice to Brendan (replies go to the requester) and a confirmation to the requester
+    await Promise.all([
+      sendTransactional(
+        db,
+        {
+          recipient: NOTIFY,
+          template: "internal_notice",
+          props: { eyebrow: "New tariff audit request", title: `Tariff audit request: ${r.company}`, rows },
+        },
+        { replyTo: r.email }
+      ),
+      sendTransactional(db, {
+        recipient: r.email,
+        template: "audit_request_received",
+        props: {
+          name: r.name.split(" ")[0] || r.name,
+          company: r.company,
+          footer: { reason: "You're getting this because you requested a tariff audit from HTS Hero with this email." },
+        },
+      }),
+    ]);
   } catch (e) {
     console.error("Failed to email audit request:", e);
     // Saved but not emailed is still a lead; only fail when both went wrong

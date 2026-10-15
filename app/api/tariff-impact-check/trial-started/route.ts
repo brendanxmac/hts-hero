@@ -1,8 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
-import { sendEmailFromComponent } from "../../../../libs/resend";
-import TariffImpactTrialSartedEmail from "../../../../emails/TariffImpactTrialSartedEmail";
-import React from "react";
 import { updateUserProfile } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
@@ -37,17 +34,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await Promise.all([
-      updateUserProfile(user.id, {
-        tariff_impact_trial_started_at: new Date().toISOString(),
-      }),
-      sendEmailFromComponent({
-        to: email,
-        subject: "Trial Activated!",
-        emailComponent: React.createElement(TariffImpactTrialSartedEmail),
-        replyTo: "support@htshero.com",
-      }),
-    ]);
+    // The retired Tariff Impact Checker's trial: recorded, no longer emailed
+    await updateUserProfile(user.id, {
+      tariff_impact_trial_started_at: new Date().toISOString(),
+    });
 
     return NextResponse.json({ message: "Success" }, { status: 200 });
   } catch (e) {

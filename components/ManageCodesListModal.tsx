@@ -10,7 +10,6 @@ import {
 import { HtsCodeSet } from "../interfaces/hts";
 import { validateTariffableHtsCode } from "../libs/hts";
 import { User } from "@supabase/supabase-js";
-import { sentEmailWithExampleOfTariffImpactCheck } from "../libs/tariff-impact-check";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table";
 
@@ -29,12 +28,10 @@ interface Props {
 }
 
 export const ManageCodeListModal = ({
-  user,
   isOpen,
   setIsOpen,
   onSetCreated,
   codes: passedCodes,
-  usersCodeSets,
 }: Props) => {
   const validateCodes = (codes: string[]) => {
     return codes.map((htsCode) => ({
@@ -75,25 +72,7 @@ export const ManageCodeListModal = ({
         console.error(e);
       }
 
-      if (!usersCodeSets || usersCodeSets.length === 0) {
-        if (user) {
-          try {
-            await sentEmailWithExampleOfTariffImpactCheck(user.email);
-            toast.success(
-              "List Created! Check your email for an example of an impact notification. (Be sure to check spam too!)",
-              { duration: 10000 }
-            );
-          } catch (error) {
-            console.error("Error sending tariff impact check example email");
-            console.error(error);
-            toast.success("List Created!");
-          }
-        } else {
-          toast.success("List Created!");
-        }
-      } else {
-        toast.success("List Created!");
-      }
+      toast.success("List Created!");
       onSetCreated(newHtsCodeSet);
       setIsOpen(false);
       setName("");

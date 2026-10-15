@@ -37,11 +37,7 @@ add new ones as they come up.
       tariff_source_runs) for the tariff source collectors (/tariff-sources admin view).
 - [ ] **Apply the migration** `supabase/migrations/tariff_updates.sql` (tariff_updates, and the
       sorting/grouping columns on tariff_source_items), after tariff_sources.sql.
-- [ ] **Review tariff updates in production.** /tariff-sources (where updates are reviewed,
-      edited, hidden and regrouped) uses the revision checker's gate, which only opens where
-      `HTS_REVISION_TOOL_ENABLED=true` (local dev). Production's cron fills production's tables, so
-      decide how the review screen reaches them (enable it on production for the admin email, or
-      point local at production).
+- [ ] **Apply the migration** `supabase/migrations/email_outbox.sql` (email_batches, email_messages).
 - [ ] **Vercel plan allows the 15-minute crons** `/api/cron/tariff-sources` and
       `/api/cron/tariff-updates` (vercel.json; the second runs up to 5 minutes). Hobby only runs
       crons daily and rejects the deploy; CBP's CSMS feeds keep only ~3 weeks, so the cron has to

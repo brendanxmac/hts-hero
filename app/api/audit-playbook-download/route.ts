@@ -1,10 +1,8 @@
-import React from "react"
 import { NextResponse, NextRequest } from "next/server"
 import { createAdminClient, getSignedUrl } from "../supabase/server"
-import { sendEmailFromComponent } from "@/libs/resend"
+import { sendTransactional } from "@/libs/email/outbox"
 import { addOrUpdateMailchimpContact } from "@/libs/mailchimp"
 import config from "@/config"
-import PlaybookDownloadEmail from "@/emails/playbook-download/PlaybookDownloadEmail"
 import {
   createEbookDownload,
   generateEbookDownloadToken,
@@ -95,13 +93,10 @@ export async function POST(req: NextRequest) {
     const downloadUrl = `${baseUrl}/playbook-download?token=${token}`
 
     await Promise.all([
-      sendEmailFromComponent({
-        to: email,
-        subject: "Delivered: Audit-Ready Classifications",
-        emailComponent: React.createElement(PlaybookDownloadEmail, {
-          downloadUrl,
-        }),
-        replyTo: "support@htshero.com",
+      sendTransactional(supabase, {
+        recipient: email,
+        template: "playbook",
+        props: { downloadUrl, footer: { reason: "You're getting this because you asked for the playbook with this email." } },
       }),
       addOrUpdateMailchimpContact(email, ["playbook-requested"]),
     ])

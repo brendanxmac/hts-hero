@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { requireRevisionTool } from "@/libs/hts-revision-diff/access"
+import { requireAdmin } from "@/libs/admin/access"
 import { moveItem, setItemCategory } from "@/libs/tariff-updates/process"
 import { revalidateTariffUpdates } from "@/libs/tariff-updates/revalidate"
 import { CATEGORIES, type Category } from "@/libs/tariff-updates/types"
@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"
 // Fixes a source item from /tariff-sources: { updateId } moves it to that update (null: an update
 // of its own); { category } re-sorts it, so it's read and grouped again on the next run
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const { db, denied } = await requireRevisionTool()
+  const { db, denied } = await requireAdmin()
   if (denied) return denied
   const body = await req.json()
   try {

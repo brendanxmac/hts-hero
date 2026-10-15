@@ -20,19 +20,19 @@ export const FindHtsCode = () => (
       <div className="flex max-w-3xl flex-col gap-4">
         <span className={tt.eyebrow("primary")}>Classification</span>
         <h2 id="find-hts-code-title" className={`${tt.display} m-0 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl`}>
-          Find the right HTS code for your products
+          Find the right HTS code for your imports, fast.
         </h2>
         <p className="m-0 text-lg leading-relaxed text-base-content/70">
           Every rate on this page depends on the 10-digit classification. The wrong code can mean the wrong tariffs, missed exemptions, and penalties.
         </p>
       </div>
       <div className="flex flex-wrap gap-3">
-        <Link href="/explore" className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-base-content/20 px-6 font-semibold text-base-content transition-colors hover:bg-base-content/10">
+        {/* <Link href="/explore" className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-base-content/20 px-6 font-semibold text-base-content transition-colors hover:bg-base-content/10">
           <MagnifyingGlassIcon className="h-4 w-4" aria-hidden />
           Search the HTS
-        </Link>
-        <Link href="/classify" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-primary-content transition-colors hover:bg-primary/90">
-          Classify a product
+        </Link> */}
+        <Link href="/classify" className="btn-wide inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-primary-content transition-colors hover:bg-primary/90">
+          Find Code
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </Link>
       </div>

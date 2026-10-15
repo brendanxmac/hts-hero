@@ -1,9 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createAdminClient } from "../../../supabase/server";
 import { UserProfile } from "../../../../../libs/supabase/user";
-import WelcomeEmail from "../../../../../emails/WelcomeEmail";
-import React from "react";
-import { sendEmailFromComponent } from "../../../../../libs/resend";
+import { sendTransactional } from "@/libs/email/outbox";
+import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "@/libs/email/tariff-news";
 import { MixpanelEvent } from "../../../../../libs/mixpanel";
 import {
   identifyUserServer,
@@ -77,13 +76,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Not Found" }, { status: 404 });
     }
 
-    // Send Welcome Email to User
-    await sendEmailFromComponent({
-      to: user.email,
-      subject: "Welcome to HTS Hero!",
-      emailComponent: React.createElement(WelcomeEmail),
-      replyTo: "support@htshero.com",
-    });
+    // The welcome email, with the latest tariff action so the first email already teaches
+    // something. Sent at once: it answers the sign-up (libs/email/outbox.ts)
+    try {
+      const { data: latest } = await supabase
+        .from("tariff_updates")
+        .select(UPDATE_EMAIL_COLUMNS)
+        .eq("status", "published")
+        .neq("kind", "hts_revision")
+        .order("last_activity_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      await sendTransactional(supabase, {
+        recipient: user.email,
+        userId: user.id,
+        template: "welcome",
+        props: {
+          latestUpdate: latest ? updateSummary(latest as UpdateRowForEmail) : null,
+          footer: { reason: "You're getting this because you created an HTS Hero account with this email." },
+        },
+      });
+    } catch (e) {
+      console.error("Failed to send the welcome email:", e);
+    }
 
     try {
       identifyUserServer(user.id, {

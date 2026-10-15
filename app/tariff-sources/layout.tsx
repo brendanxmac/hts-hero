@@ -1,11 +1,11 @@
 import { ReactNode } from "react"
 import AdminShell from "@/components/hts-revision-diff/AdminShell"
-import { guardRevisionTool } from "../revision-checker/guard"
+import { guardAdmin } from "@/libs/admin/access"
 
 export const dynamic = "force-dynamic"
 
-// Same admin gate as the revision checker
+// Admin only, live and local (libs/admin/access.ts)
 export default async function TariffSourcesLayout({ children }: { children: ReactNode }) {
-  await guardRevisionTool()
+  await guardAdmin()
   return <AdminShell>{children}</AdminShell>
 }
