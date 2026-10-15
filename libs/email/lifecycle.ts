@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { readCatalog } from "../../components/tariff-tracker/catalog"
-import type { FindingsNumbers, FindingsVariant } from "../../emails/onboarding/TrackerFindingsEmail"
+import { findCountry } from "../../components/tariff-tracker/parse"
+import type { AlertStakes, FindingsNumbers, FindingsVariant } from "../../emails/onboarding/TrackerFindingsEmail"
+import { normalizeHtsCode } from "../hts-code"
 import { createBatch, type OutboxMessage } from "./outbox"
 import { appUrl, ensureAccountSubscriber, SUBSCRIBER_COLUMNS, subscriberFooter, type Subscriber } from "./subscribers"
 import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./tariff-news"
@@ -10,14 +12,20 @@ import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./t
 // account at most once (lifecycle_emails), at most one every two days, and never to an account
 // that turned these emails off or unsubscribed.
 //
+// The sequence drives each account to the next activation step, in order: add imports, turn on
+// alerts, check savings, audit an entry. Every CTA lands on that step in the Tracker.
+//
 // No imports yet (accounts from ONBOARDING_FROM on), each stopping once an import is added:
-//   no_imports_1  day 1   what one import shows you
-//   no_imports_2  day 4   what the Tracker finds: savings, audits, alerts, and this month's actions
+//   no_imports_1  day 1   paste your codes: what you get back in a minute, and this week's actions
+//   no_imports_2  day 4   this month's actions, and what an alert on your imports looks like
 //   no_imports_3  day 10  a note from Brendan: need a hand? want it managed for you?
 // Imports added (first seen by the snapshot job from ONBOARDING_FROM on), from their own numbers:
-//   first_look    the morning after   duty, this year's changes, potential savings
-//   savings_nudge days 3-14, no savings check yet
-//   audit_nudge   days 7-21, no audit check yet
+//   first_look    the morning after   duty, this year's changes, potential savings; the CTA is
+//                                     the next step (alerts if they're off, else savings)
+//   alerts_nudge  days 2-21, alerts off: the recent tariff actions that hit their imports
+//                 (tariff_update_impacts) and an alert drawn with their own numbers
+//   savings_nudge days 3-21, no savings check yet, once alerts are on or were asked about
+//   audit_nudge   days 7-28, no audit check yet, after the savings step
 // Any account on the trial, once:
 //   savings_used_up / audits_used_up   the free checks are spent: what they found, and a plan
 // Accounts from before ONBOARDING_FROM get the one-time meet_tracker email instead (queued by
@@ -38,6 +46,9 @@ const NO_IMPORTS_STEPS = [
 // Past this, an account that never added an import gets no more onboarding email
 const NO_IMPORTS_UNTIL_DAY = 14
 const MIN_DAYS_BETWEEN = 2
+
+// How far back "recent tariff actions" reach for the alerts emails
+const STAKES_DAYS = 90
 
 const ACCOUNT_REASON = "You're getting this because you have an HTS Hero account."
 
@@ -96,6 +107,7 @@ interface SnapshotRow {
   products_hit_12m: number
   biggest_change: FindingsNumbers["biggestChange"]
   top_import: FindingsNumbers["topImport"]
+  top_saving: FindingsNumbers["topSaving"]
   savings_usd: number
   savings_products: number
   locked_savings_usd: number
@@ -116,15 +128,92 @@ const numbersOf = (s: SnapshotRow): FindingsNumbers => ({
   productsHit12m: s.products_hit_12m,
   biggestChange: s.biggest_change,
   topImport: s.top_import,
+  topSaving: s.top_saving,
   savingsUsd: Number(s.savings_usd),
   savingsProducts: s.savings_products,
   lockedSavingsUsd: Number(s.locked_savings_usd),
   lockedSavingsProducts: s.locked_savings_products,
 })
 
+// Alerts are on once the account saved a valid place for them to go: the Tracker's own test
+// (AlertSettingsContext: validateAlertSettings), so the email and the sidebar's On/Off agree
+interface AlertSettingsRow {
+  user_id: string
+  email_enabled: boolean
+  email: string | null
+  slack_webhook: string | null
+  teams_webhook: string | null
+}
+export const alertsConfigured = (s: AlertSettingsRow | undefined) =>
+  !!s &&
+  (!s.email_enabled || /^\S+@\S+\.\S+$/.test(s.email ?? "")) &&
+  (!s.slack_webhook || s.slack_webhook.startsWith("https://hooks.slack.com/")) &&
+  (!s.teams_webhook || s.teams_webhook.startsWith("https://")) &&
+  (s.email_enabled || !!s.slack_webhook || !!s.teams_webhook)
+
+// The published tariff actions of the last STAKES_DAYS that hit each account's imports
+// (tariff_update_impacts, confirmed or likely), for the alerts emails
+export const alertStakes = async (db: Db, userIds: string[], now: Date) => {
+  const stakes = new Map<string, AlertStakes>()
+  if (!userIds.length) return stakes
+  const since = new Date(now.getTime() - STAKES_DAYS * DAY).toISOString()
+  const { data: updates } = await db
+    .from("tariff_updates")
+    .select("id, slug, title")
+    .eq("status", "published")
+    .neq("kind", "hts_revision")
+    .gte("first_seen_at", since)
+  const byId = new Map((updates ?? []).map((u) => [u.id as string, u as { id: string; slug: string; title: string }]))
+  if (!byId.size) return stakes
+  const { data: rows } = await db
+    .from("tariff_update_impacts")
+    .select("update_id, user_id, product_key, level, before_pct, after_pct, delta_usd")
+    .in("user_id", userIds)
+    .in("update_id", Array.from(byId.keys()))
+    .in("level", ["confirmed", "likely"])
+  const byUser = new Map<string, NonNullable<typeof rows>>()
+  for (const r of rows ?? []) byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r])
+  byUser.forEach((list, userId) => {
+    // The change per shipment, counting each import once (its biggest rise)
+    const rise = new Map<string, number>()
+    for (const r of list) if (r.level === "confirmed") rise.set(r.product_key, Math.max(rise.get(r.product_key) ?? 0, Number(r.delta_usd ?? 0)))
+    // The one to show: the biggest confirmed change in duty, else any match
+    const weight = (r: (typeof list)[number]) => (r.level === "confirmed" ? Math.abs(Number(r.delta_usd ?? 0)) + 1 : 0)
+    const top = [...list].sort((a, b) => weight(b) - weight(a))[0]
+    const update = byId.get(top.update_id)!
+    const [code, countryCode] = String(top.product_key).split("-")
+    stakes.set(userId, {
+      days: STAKES_DAYS,
+      actions: new Set(list.map((r) => r.update_id)).size,
+      imports: new Set(list.map((r) => r.product_key)).size,
+      extraUsd: Math.round(Array.from(rise.values()).reduce((sum, v) => sum + Math.max(0, v), 0)),
+      top: {
+        key: top.product_key,
+        code: normalizeHtsCode(code),
+        country: findCountry(countryCode ?? "")?.name ?? countryCode ?? "",
+        updateTitle: update.title,
+        updateSlug: update.slug,
+        level: top.level,
+        beforePct: top.before_pct === null ? null : Number(top.before_pct),
+        afterPct: top.after_pct === null ? null : Number(top.after_pct),
+        deltaUsd: top.delta_usd === null ? null : Number(top.delta_usd),
+      },
+    })
+  })
+  return stakes
+}
+
 // The one email an account's stage calls for today, if any (latest-stage-first, at most once each)
-const pickEmail = (
-  { account, snapshot, imports, sent, now, scoped }: { account: Account; snapshot?: SnapshotRow; imports: number; sent: Set<string>; now: Date; scoped: boolean }
+export const pickEmail = (
+  {
+    account,
+    snapshot,
+    imports,
+    alertsOn,
+    sent,
+    now,
+    scoped,
+  }: { account: Account; snapshot?: SnapshotRow; imports: number; alertsOn: boolean; sent: Set<string>; now: Date; scoped: boolean }
 ): { key: string; variant?: FindingsVariant; step?: (typeof NO_IMPORTS_STEPS)[number] } | null => {
   const fresh = snapshot && now.getTime() - new Date(snapshot.computed_at).getTime() < 2 * DAY
   if (snapshot && fresh && snapshot.products > 0) {
@@ -137,9 +226,13 @@ const pickEmail = (
       const days = (now.getTime() - first) / DAY
       const startOfToday = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
       if (!sent.has("first_look") && first < startOfToday && days <= 7) return { key: "first_look", variant: "first_look" }
-      if (snapshot.plan === "trial" && snapshot.savings_checks_used === 0 && !sent.has("savings_nudge") && days >= 3 && days <= 14)
+      // Alerts before anything else: asked once, then the sequence moves on either way
+      if (!alertsOn && !sent.has("alerts_nudge") && days >= 2 && days <= 21) return { key: "alerts_nudge", variant: "alerts_nudge" }
+      const alertsStepDone = alertsOn || sent.has("alerts_nudge")
+      if (alertsStepDone && snapshot.plan === "trial" && snapshot.savings_checks_used === 0 && !sent.has("savings_nudge") && days >= 3 && days <= 21)
         return { key: "savings_nudge", variant: "savings_nudge" }
-      if (snapshot.plan === "trial" && snapshot.audit_checks_used === 0 && !sent.has("audit_nudge") && days >= 7 && days <= 21)
+      const savingsStepDone = sent.has("savings_nudge") || snapshot.savings_checks_used > 0 || snapshot.plan !== "trial"
+      if (alertsStepDone && savingsStepDone && snapshot.plan === "trial" && snapshot.audit_checks_used === 0 && !sent.has("audit_nudge") && days >= 7 && days <= 28)
         return { key: "audit_nudge", variant: "audit_nudge" }
     }
     return null
@@ -177,11 +270,17 @@ export const queueDailyOnboarding = async (db: Db, now = new Date(), { onlyUserI
   if (!accounts.length) return { queued: 0 }
 
   const ids = accounts.map((a) => a.id)
-  const [{ data: catalogs }, { data: sentRows }, subscribers] = await Promise.all([
+  const withImports = ids.filter((id) => (snapshots.get(id)?.products ?? 0) > 0)
+  const [{ data: catalogs }, { data: sentRows }, subscribers, { data: alertRows }, stakes] = await Promise.all([
     db.from("tracker_catalogs").select("user_id, items").in("user_id", ids),
     db.from("lifecycle_emails").select("user_id, email_key, queued_at").in("user_id", ids),
     subscribersFor(db, accounts),
+    withImports.length
+      ? db.from("tracker_alert_settings").select("user_id, email_enabled, email, slack_webhook, teams_webhook").in("user_id", withImports)
+      : Promise.resolve({ data: [] as AlertSettingsRow[] }),
+    alertStakes(db, withImports, now),
   ])
+  const alertSettings = new Map(((alertRows ?? []) as AlertSettingsRow[]).map((r) => [r.user_id, r]))
   const imports = new Map((catalogs ?? []).map((c) => [c.user_id as string, readCatalog(JSON.stringify(c.items))?.length ?? 0]))
   const sentKeys = new Map<string, Set<string>>()
   const lastSent = new Map<string, number>()
@@ -197,13 +296,14 @@ export const queueDailyOnboarding = async (db: Db, now = new Date(), { onlyUserI
     if (!reachable(subscriber)) continue
     if (now.getTime() - (lastSent.get(account.id) ?? 0) < MIN_DAYS_BETWEEN * DAY) continue
     const snapshot = snapshots.get(account.id)
-    const pick = pickEmail({ account, snapshot, imports: imports.get(account.id) ?? 0, sent: sentKeys.get(account.id) ?? new Set(), now, scoped })
+    const alertsOn = alertsConfigured(alertSettings.get(account.id))
+    const pick = pickEmail({ account, snapshot, imports: imports.get(account.id) ?? 0, alertsOn, sent: sentKeys.get(account.id) ?? new Set(), now, scoped })
     if (!pick) continue
     const footer = subscriberFooter(subscriber, ACCOUNT_REASON)
     const base = { channel: "email" as const, recipient: account.email, userId: account.id, subscriberId: subscriber.id }
     const days = Math.floor((now.getTime() - new Date(account.created_at).getTime()) / DAY)
     const message: OutboxMessage = pick.variant
-      ? { ...base, template: "tracker_findings", props: { variant: pick.variant, numbers: numbersOf(snapshot!), footer } }
+      ? { ...base, template: "tracker_findings", props: { variant: pick.variant, numbers: numbersOf(snapshot!), alertsOn, stakes: stakes.get(account.id) ?? null, footer } }
       : pick.key === "no_imports_3"
         ? { ...base, template: "founder_note", props: { daysSinceSignup: days, footer } }
         : {

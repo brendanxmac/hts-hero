@@ -44,7 +44,7 @@ export const TEMPLATES = {
     subject: tariffNewsSubject,
     email: (p) => <TariffNewsEmail {...p} />,
     chat: (p) => ({
-      title: `US tariff update: ${p.update.title}`,
+      title: `US tariff update${p.step ? ` · ${p.step}` : ""}: ${p.update.title}`,
       lines: [p.note, p.update.summary, [p.update.authorityLabel, p.update.stageLabel, p.update.effectiveOn ? `effective ${p.update.effectiveOn}` : null].filter(Boolean).join(" · ")].filter(Boolean) as string[],
       url: updateUrl(p.update.slug, "tariff-news-chat"),
       linkLabel: "Read the update",

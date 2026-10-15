@@ -63,7 +63,7 @@ export function SubscribeForm({ source, compact = false }: { source: string; com
           <p className="mt-1 text-sm text-base-content/70">
             Add your HTS codes and countries to the free Tariff Tracker, and we&apos;ll alert you every time an update affects one of them.
           </p>
-          <Link href="/tariff-tracker?welcome=1" className={`${ui.button({ variant: "primary", size: "sm" })} mt-3`}>
+          <Link href="/tariff-tracker?tab=catalog&add=paste" className={`${ui.button({ variant: "primary", size: "sm" })} mt-3`}>
             Add my imports, free
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>

@@ -1,27 +1,30 @@
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Cta, Divider, Eyebrow, P, Panel, Title, UpdateBlock, UpdateSummary } from "../kit/parts"
 import { SITE } from "../kit/brand"
+import { TrackerLine } from "./TariffNewsEmail"
 
-// The weekly tariff digest: every update from the week that matches the subscriber's choices,
-// newest first, approved in the outbox like every other email.
+// The weekly tariff digest, on Mondays: every update from the week before that matches the
+// subscriber's choices, newest first, approved in the outbox before it goes.
 
 export interface TariffDigestEmailProps {
   // "Oct 8 – Oct 14, 2026"
   period: string
   updates: UpdateSummary[]
+  // The reader has an account: the next step is their Tracker, not signing up
+  signedIn?: boolean
   note?: string | null
   footer: EmailFooter
 }
 
 export const tariffDigestSubject = (p: TariffDigestEmailProps) =>
-  `${p.updates.length} US tariff ${p.updates.length === 1 ? "update" : "updates"} this week: ${p.updates[0]?.title ?? ""}`.slice(0, 120)
+  `${p.updates.length} US tariff ${p.updates.length === 1 ? "update" : "updates"} last week: ${p.updates[0]?.title ?? ""}`.slice(0, 120)
 
-export default function TariffDigestEmail({ period, updates, note, footer }: TariffDigestEmailProps) {
+export default function TariffDigestEmail({ period, updates, signedIn, note, footer }: TariffDigestEmailProps) {
   return (
     <EmailLayout preview={updates.map((u) => u.title).join(" · ").slice(0, 140)} footer={footer}>
       <Eyebrow>Weekly tariff digest · {period}</Eyebrow>
       <Title>
-        {updates.length} US tariff {updates.length === 1 ? "update" : "updates"} this week
+        {updates.length} US tariff {updates.length === 1 ? "update" : "updates"} last week
       </Title>
       {note && (
         <Panel>
@@ -36,6 +39,7 @@ export default function TariffDigestEmail({ period, updates, note, footer }: Tar
       ))}
       <Divider />
       <Cta href={`${SITE}/tariff-updates?utm_source=email&utm_medium=email&utm_campaign=tariff-digest`}>See every tariff update</Cta>
+      <TrackerLine signedIn={signedIn} campaign="tariff-digest" />
     </EmailLayout>
   )
 }

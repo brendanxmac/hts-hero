@@ -1,12 +1,12 @@
-import { Column, Row, Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { Checklist, Cta, Divider, Eyebrow, P, Panel, PlanStrip, Signature, Title, UpdateBlock, UpdateSummary } from "../kit/parts"
-import { C, FONT_DISPLAY, siteLink } from "../kit/brand"
+import { AlertSample, Checklist, Cta, Divider, Eyebrow, P, Panel, PlanStrip, Signature, Title, UpdateBlock, UpdateSummary } from "../kit/parts"
+import { siteLink } from "../kit/brand"
 import { TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
 
-// The "no imports yet" onboarding emails, each showing a little more of what the account can do:
-// step 1 (day 1) what one import shows, step 2 (day 4) what the Tracker finds across them. Both
-// lead to adding imports, with this month's real tariff actions as the proof it matters.
+// The "no imports yet" onboarding emails. Both lead to one thing, adding imports, and land on the
+// Tracker's Add products dialog (?tab=catalog&add=paste):
+//   step 1 (day 1)  how fast it is (paste two columns) and what comes back, with this week's actions
+//   step 2 (day 4)  this month's real tariff actions, and what an alert on your imports looks like
 
 export interface OnboardingEmailProps {
   step: 1 | 2
@@ -17,16 +17,16 @@ export interface OnboardingEmailProps {
 }
 
 export const onboardingSubject = (p: OnboardingEmailProps) =>
-  p.step === 1 ? "Your first import takes a minute. Here's what it shows you" : `${p.actionsThisMonth} US tariff actions this month. Are your imports in them?`
+  p.step === 1
+    ? "Paste your HTS codes, see every duty in a minute"
+    : p.actionsThisMonth > 0
+      ? `${p.actionsThisMonth} US tariff actions in 30 days. Would you know if one hit your imports?`
+      : "Would you know if a tariff change hit your imports?"
 
 const CAMPAIGN = (step: number) => `onboarding-${step}`
 
-const Feature = ({ title, body }: { title: string; body: string }) => (
-  <Section style={{ backgroundColor: C.soft, borderRadius: 16, padding: "14px 16px", marginBottom: 10 }}>
-    <Text style={{ margin: 0, fontFamily: FONT_DISPLAY, fontSize: 15, lineHeight: "21px", fontWeight: 600, color: C.text }}>{title}</Text>
-    <Text style={{ margin: "4px 0 0", fontSize: 14, lineHeight: "21px", color: C.muted }}>{body}</Text>
-  </Section>
-)
+// Opens the Add products dialog on the paste step (ProductCatalog's ?add=)
+export const ADD_IMPORTS_URL = "/tariff-tracker?tab=catalog&add=paste"
 
 const Recent = ({ recent, campaign, label }: { recent: UpdateSummary[]; campaign: string; label: string }) =>
   recent.length ? (
@@ -43,22 +43,25 @@ export default function OnboardingEmail({ step, actionsThisMonth, recent, footer
   const campaign = CAMPAIGN(step)
   if (step === 1) {
     return (
-      <EmailLayout preview="Add one HTS code and its country, and your Tracker fills in the rest." footer={footer}>
+      <EmailLayout preview="Two columns from your spreadsheet, HTS code and country. Your Tracker does the rest." footer={footer}>
         <Eyebrow>Getting started</Eyebrow>
-        <Title>See everything on your first import</Title>
-        <P>Add one HTS code and its country of origin, and your Tracker fills in:</P>
+        <Title>Two columns, one paste, every duty on your imports</Title>
+        <P>
+          Copy the HTS code and country of origin columns from any spreadsheet or ACE report and paste them in. No template, no formatting. About a minute
+          later, every import shows:
+        </P>
         <Checklist
           items={[
             "Every duty on it, line by line, with the legal reason each one applies",
-            "How its rate has changed, and what's coming",
-            "Countries you could source it from for less",
-            "An alert when a tariff change hits it",
+            "How its rate changed this year, and what's been announced next",
+            "Countries that already make it for the US at a lower rate",
+            "Trade programs and exemptions it may qualify for",
           ]}
         />
-        <Cta href={siteLink("/tariff-tracker?welcome=1", campaign)} variant="next">
-          Add my first import
+        <Cta href={siteLink(ADD_IMPORTS_URL, campaign)} variant="next">
+          Paste my HTS codes
         </Cta>
-        <P muted small>Got a spreadsheet? Reply with it and we&apos;ll load it for you.</P>
+        <P muted small>Have values and quantities too? Upload a CSV from the same screen. Or reply with your file and I&apos;ll load it for you.</P>
         <Recent recent={recent} campaign={campaign} label="This week in US tariffs" />
         <Signature />
         <PlanStrip campaign={campaign} />
@@ -66,32 +69,33 @@ export default function OnboardingEmail({ step, actionsThisMonth, recent, footer
     )
   }
   return (
-    <EmailLayout preview="Your Tracker checks each one against your imports, and finds savings and refunds too." footer={footer}>
-      <Eyebrow>What your Tracker can find</Eyebrow>
-      <Title>{actionsThisMonth} US tariff actions in the last 30 days</Title>
-      <P>Your Tracker checks every one against your imports. Add them, and your account also gets you:</P>
-      <Feature
-        title={`${TRIAL_ALLOWANCE.savingsChecks} free savings checks`}
-        body="Trade programs, exemptions and lower-duty origins your imports may qualify for, and what each could save per shipment."
+    <EmailLayout preview="Your Tracker checks every new action against your imports, and tells you when one hits." footer={footer}>
+      <Eyebrow tone="up">Tariff alerts</Eyebrow>
+      <Title>{actionsThisMonth > 0 ? `${actionsThisMonth} US tariff actions in the last 30 days` : "US tariffs keep moving"}</Title>
+      <P>
+        Each one changes the duty on some products from some countries. Once your imports are in your Tracker, we check every action against them and alert
+        you when one hits, like this:
+      </P>
+      <AlertSample
+        label="Example alert"
+        updateTitle="Section 232: more steel derivative products added"
+        code="7326.90.86.88"
+        country="Germany"
+        description="Other articles of iron or steel"
+        beforePct={12.9}
+        afterPct={52.9}
+        deltaUsd={4000}
       />
-      <Feature
-        title={`${TRIAL_ALLOWANCE.auditChecks} free audit checks`}
-        body="What you paid on past entries against the duty in force that day: overpayments worth a refund, underpayments worth fixing."
-      />
-      <Feature
-        title={`Alerts on ${TRIAL_ALLOWANCE.alertImports} imports`}
-        body="By email, Slack or Teams, the day a tariff change is announced, and again when it reaches the HTS."
-      />
-      <Row style={{ marginTop: 8 }}>
-        <Column>
-          <Cta href={siteLink("/tariff-tracker?welcome=1", campaign)} variant="next">
-            Add my imports
-          </Cta>
-        </Column>
-      </Row>
+      <P>
+        Alerts are free on up to {TRIAL_ALLOWANCE.alertImports} imports, by email, Slack or Teams. Your account also checks {TRIAL_ALLOWANCE.savingsChecks}{" "}
+        imports for savings and {TRIAL_ALLOWANCE.auditChecks} past entries for overpaid duty, free.
+      </P>
+      <Cta href={siteLink(ADD_IMPORTS_URL, campaign)} variant="next">
+        Add my imports
+      </Cta>
       <Panel>
         <P small>
-          <strong>Short on time?</strong> Reply with your product list, a spreadsheet or an ACE report, and we&apos;ll load it into your Tracker for you.
+          <strong>Short on time?</strong> Reply with your product list, a spreadsheet or an ACE report, and I&apos;ll load it into your Tracker for you.
         </P>
       </Panel>
       <Recent recent={recent} campaign={campaign} label="The latest actions" />

@@ -51,6 +51,17 @@ export interface PlannedAlert {
   paid: boolean
 }
 
+// Every row a query returns, a page at a time (a query returns at most 1,000 rows)
+const allRows = async <T>(page: (from: number, to: number) => PromiseLike<{ data: unknown[] | null; error: { message: string } | null }>) => {
+  const rows: T[] = []
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await page(from, from + 999)
+    if (error) throw new Error(`Loading impacts: ${error.message}`)
+    rows.push(...((data ?? []) as T[]))
+    if ((data ?? []).length < 1000) return rows
+  }
+}
+
 const changed = (prior: AlertRow | undefined, now: ImpactRow) =>
   !prior ||
   prior.level === "removed" ||
@@ -59,25 +70,38 @@ const changed = (prior: AlertRow | undefined, now: ImpactRow) =>
 
 // What approving the update's impact check would send, account by account (nothing is saved)
 export const planImpactAlerts = async (db: Db, updateId: string, htsElements: HtsElement[]): Promise<PlannedAlert[]> => {
-  const [{ data: impacts }, { data: prior }] = await Promise.all([
-    db.from("tariff_update_impacts").select("user_id, product_key, level, before_pct, after_pct, delta_usd").eq("update_id", updateId).in("level", ["confirmed", "likely"]),
-    db.from("tariff_impact_alerts").select("user_id, product_key, level, delta_usd, covered").eq("update_id", updateId),
+  const [impacts, prior] = await Promise.all([
+    allRows<ImpactRow>((from, to) =>
+      db.from("tariff_update_impacts").select("user_id, product_key, level, before_pct, after_pct, delta_usd").eq("update_id", updateId).in("level", ["confirmed", "likely"]).order("user_id").order("product_key").range(from, to)
+    ),
+    allRows<AlertRow>((from, to) =>
+      db.from("tariff_impact_alerts").select("user_id, product_key, level, delta_usd, covered").eq("update_id", updateId).order("user_id").order("product_key").range(from, to)
+    ),
   ])
   const byUser = new Map<string, ImpactRow[]>()
-  for (const r of (impacts ?? []) as ImpactRow[]) byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r])
+  for (const r of impacts) byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r])
   const priorByUser = new Map<string, Map<string, AlertRow>>()
-  for (const r of (prior ?? []) as AlertRow[]) priorByUser.set(r.user_id, (priorByUser.get(r.user_id) ?? new Map()).set(r.product_key, r))
+  for (const r of prior) priorByUser.set(r.user_id, (priorByUser.get(r.user_id) ?? new Map()).set(r.product_key, r))
   const userIds = Array.from(new Set(Array.from(byUser.keys()).concat(Array.from(priorByUser.keys()))))
   if (!userIds.length) return []
 
-  const [{ data: catalogs }, { data: users }] = await Promise.all([
-    db.from("tracker_catalogs").select("user_id, items, adjustments").in("user_id", userIds),
-    db.from("users").select("id, email").in("id", userIds),
-  ])
-  const emails = new Map((users ?? []).map((u) => [u.id as string, (u.email as string) ?? null]))
+  // A hundred accounts at a time: the ids go in the request's URL
+  const catalogs: { user_id: string; items: unknown; adjustments: unknown }[] = []
+  const users: { id: string; email: string | null }[] = []
+  for (let i = 0; i < userIds.length; i += 100) {
+    const ids = userIds.slice(i, i + 100)
+    const [{ data: c, error: catalogError }, { data: u, error: userError }] = await Promise.all([
+      db.from("tracker_catalogs").select("user_id, items, adjustments").in("user_id", ids),
+      db.from("users").select("id, email").in("id", ids),
+    ])
+    if (catalogError || userError) throw new Error(`Loading accounts: ${(catalogError ?? userError)!.message}`)
+    catalogs.push(...(c ?? []))
+    users.push(...(u ?? []))
+  }
+  const emails = new Map(users.map((u) => [u.id, u.email ?? null]))
   const plans: PlannedAlert[] = []
   for (const userId of userIds) {
-    const catalog = (catalogs ?? []).find((c) => c.user_id === userId)
+    const catalog = catalogs.find((c) => c.user_id === userId)
     const items = catalog ? (readCatalog(JSON.stringify(catalog.items)) ?? []) : []
     const products = trackedProducts(items, catalog ? readAdjustments(JSON.stringify(catalog.adjustments)) : {}, htsElements)
     const byKey = new Map(products.map((p) => [p.key, p]))

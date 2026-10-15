@@ -421,11 +421,12 @@ const groupPending = async (db: Db, deadline: number, costs: StepCosts, asked: S
           asked.group++
         }
         if (choice.update_id) {
-          await attach(db, item, choice.update_id, "claude", choice.confidence)
-          await recomputeUpdate(db, choice.update_id)
+          // Flagged before joining, so the news alerts never see the unsure step unflagged
           if (choice.confidence < MATCH_CONFIDENCE) {
             await flagForReview(db, choice.update_id, `Unsure "${item.title}" belongs here (${choice.confidence}): ${choice.reason}`)
           }
+          await attach(db, item, choice.update_id, "claude", choice.confidence)
+          await recomputeUpdate(db, choice.update_id)
         } else {
           const reviewNote = choice.confidence < MATCH_CONFIDENCE ? `Might belong to an existing update: ${choice.reason}` : undefined
           await attach(db, item, await createUpdate(db, item, { reviewNote }), "claude", choice.confidence)

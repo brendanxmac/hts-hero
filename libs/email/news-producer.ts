@@ -11,7 +11,8 @@ import { newsEmailProps, UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForE
 // An update's events are the stages its sources reached, each at its earliest source's date. A
 // subscriber on "every step" gets every event; one on "new actions" gets the update's first event
 // and the moment it becomes law (its first signed or published event). Instant subscribers get a
-// batch per event; weekly ones a digest every Monday of the week's updates.
+// batch per update each time it reaches new stages (stages that arrive together, or while it waits
+// for review, go as one email); weekly ones a digest every Monday of the week's updates.
 
 type Db = SupabaseClient
 
@@ -108,35 +109,68 @@ const loadUpdatesWithEvents = async (db: Db, since: string) => {
 
 const stageName = (stage: Stage) => STAGES[stage].replace(" in the Federal Register", "")
 
-// One batch per new event, for instant subscribers whose choices it matches
+// What a follow-up alert says happened, ahead of the title ("Published in the Federal Register: …")
+const STEP_LABELS: Record<Stage, string> = {
+  announced: "Announced",
+  signed: "Signed",
+  filed: "Filed with the Federal Register",
+  published: "Published in the Federal Register",
+  cbp_guidance: "CBP guidance out",
+  in_hts: "Now in the HTS",
+}
+
+// The stages each update has already had an alert for (a batch covers every stage in ref.stages)
+const alertedStages = async (db: Db, updateIds: string[]) => {
+  const alerted = new Map<string, Set<string>>()
+  if (!updateIds.length) return alerted
+  const { data, error } = await db.from("email_batches").select("ref").eq("kind", "tariff_news").in("ref->>update_id", updateIds)
+  if (error) throw new Error(`Loading sent alerts: ${error.message}`)
+  for (const { ref } of (data ?? []) as { ref: { update_id: string; stage: string; stages?: string[] } }[]) {
+    const stages = alerted.get(ref.update_id) ?? new Set<string>()
+    for (const stage of [ref.stage, ...(ref.stages ?? [])]) stages.add(stage)
+    alerted.set(ref.update_id, stages)
+  }
+  return alerted
+}
+
+// One batch per update with new events, for instant subscribers whose choices they match. Several
+// new stages at once (a backlog, or an update cleared after review) make one alert, not one each.
 // `from` overrides the start (tests and previews; the cron never passes it)
 export const produceInstantNews = async (db: Db, { from }: { from?: string } = {}) => {
   const since = from ?? new Date(Math.max(new Date(NEWS_ALERTS_FROM).getTime(), Date.now() - INSTANT_WINDOW_DAYS * 86_400_000)).toISOString()
   const [updates, subscribers] = await Promise.all([loadUpdatesWithEvents(db, since), activeSubscribers(db, "instant")])
-  const settings = await channelSettings(db, subscribers.flatMap((s) => (s.user_id ? [s.user_id] : [])))
+  const [settings, alerted] = await Promise.all([
+    channelSettings(db, subscribers.flatMap((s) => (s.user_id ? [s.user_id] : []))),
+    alertedStages(db, updates.map(({ update }) => update.id)),
+  ])
   let batches = 0
   for (const { update, events } of updates) {
-    for (const event of events.filter((e) => e.at >= since)) {
-      const recipients = subscribers.filter((s) => matchesPreferences(update, s) && (s.news_scope === "all_steps" || event.isAction))
-      if (!recipients.length) continue
-      const base = await newsEmailProps(db, update, { reason: "" })
-      const messages = recipients.flatMap((s) =>
-        messagesFor(s, settings, "tariff_news", {
-          ...base,
-          footer: subscriberFooter(s, "You're getting this because you subscribed to US tariff updates from HTS Hero."),
-        } as unknown as Record<string, unknown>)
-      )
-      const id = await createBatch(db, {
-        kind: "tariff_news",
-        title: `${update.title} · ${stageName(event.stage)}`,
-        ref: { update_id: update.id, stage: event.stage, slug: update.slug },
-        dedupeKey: `tariff_news:${update.id}:${event.stage}`,
-        // Sent without review: the update itself was published with confidence (or reviewed)
-        autoSend: true,
-        messages,
-      })
-      if (id) batches++
-    }
+    const before = alerted.get(update.id)
+    const fresh = events.filter((e) => e.at >= since && !before?.has(e.stage))
+    if (!fresh.length) continue
+    const latest = fresh[fresh.length - 1]
+    const recipients = subscribers.filter((s) => matchesPreferences(update, s) && (s.news_scope === "all_steps" || fresh.some((e) => e.isAction)))
+    if (!recipients.length) continue
+    const base = await newsEmailProps(db, update, { reason: "" })
+    const messages = recipients.flatMap((s) =>
+      messagesFor(s, settings, "tariff_news", {
+        ...base,
+        // An update that's been alerted before says what's new
+        step: before ? STEP_LABELS[latest.stage] : null,
+        signedIn: !!s.user_id,
+        footer: subscriberFooter(s, "You're getting this because you subscribed to US tariff updates from HTS Hero."),
+      } as unknown as Record<string, unknown>)
+    )
+    const id = await createBatch(db, {
+      kind: "tariff_news",
+      title: `${update.title} · ${stageName(latest.stage)}`,
+      ref: { update_id: update.id, stage: latest.stage, stages: fresh.map((e) => e.stage), slug: update.slug },
+      dedupeKey: `tariff_news:${update.id}:${latest.stage}`,
+      // Sent without review: the update itself was published with confidence (or reviewed)
+      autoSend: true,
+      messages,
+    })
+    if (id) batches++
   }
   return { batches }
 }
@@ -147,26 +181,41 @@ const periodLabel = (from: Date, to: Date) => {
   return `${day(from)} – ${day(to)}, ${to.getUTCFullYear()}`
 }
 
-// The weekly digest: the last seven days up to `until` (exclusive), one batch for every weekly
-// subscriber with at least one matching update
+// The weekly digest: the week (Monday to Sunday, UTC) before `until`, one batch for every weekly
+// subscriber with at least one matching update. Run late in the week, it still makes last week's
+// digest (and the dedupe key stops a second one). Events from the week before that the last digest
+// didn't have (cleared after review, or found late) come along too, so none fall between weeks.
 export const produceWeeklyDigest = async (db: Db, until = new Date(), { ignoreStartDate = false }: { ignoreStartDate?: boolean } = {}) => {
-  const end = new Date(Date.UTC(until.getUTCFullYear(), until.getUTCMonth(), until.getUTCDate()))
+  const midnight = Date.UTC(until.getUTCFullYear(), until.getUTCMonth(), until.getUTCDate())
+  const end = new Date(midnight - ((until.getUTCDay() + 6) % 7) * 86_400_000)
   const start = new Date(end.getTime() - 7 * 86_400_000)
-  const from = new Date(ignoreStartDate ? start.getTime() : Math.max(start.getTime(), new Date(NEWS_ALERTS_FROM).getTime())).toISOString()
-  const [updates, subscribers] = await Promise.all([loadUpdatesWithEvents(db, from), activeSubscribers(db, "weekly")])
-  const inWeek = (e: UpdateEvent) => e.at >= from && e.at < end.toISOString()
+  const previousStart = new Date(start.getTime() - 7 * 86_400_000)
+  const floor = (d: Date) => new Date(ignoreStartDate ? d.getTime() : Math.max(d.getTime(), new Date(NEWS_ALERTS_FROM).getTime())).toISOString()
+  const from = floor(start)
+  const carryFrom = floor(previousStart)
+  const { data: previous, error } = await db.from("email_batches").select("ref").eq("dedupe_key", `tariff_digest:${previousStart.toISOString().slice(0, 10)}`).maybeSingle()
+  if (error) throw new Error(`Loading last week's digest: ${error.message}`)
+  // The events last week's digest had. None made: all of them; one from before events were
+  // recorded covered its whole week.
+  const had = previous ? (previous.ref as { events?: string[] }).events : []
+  const missedLastWeek = (key: string) => !!had && !had.includes(key)
+
+  const [updates, subscribers] = await Promise.all([loadUpdatesWithEvents(db, carryFrom), activeSubscribers(db, "weekly")])
+  const inDigest = (u: UpdateRow, e: UpdateEvent) =>
+    e.at < end.toISOString() && (e.at >= from || (e.at >= carryFrom && missedLastWeek(`${u.id}:${e.stage}`)))
   const settings = await channelSettings(db, subscribers.flatMap((s) => (s.user_id ? [s.user_id] : [])))
   const period = periodLabel(start, new Date(end.getTime() - 86_400_000))
 
   const messages = subscribers.flatMap((s) => {
     const picked: UpdateSummary[] = updates
-      .filter(({ update, events }) => matchesPreferences(update, s) && events.some((e) => inWeek(e) && (s.news_scope === "all_steps" || e.isAction)))
+      .filter(({ update, events }) => matchesPreferences(update, s) && events.some((e) => inDigest(update, e) && (s.news_scope === "all_steps" || e.isAction)))
       .sort((a, b) => b.update.last_activity_at.localeCompare(a.update.last_activity_at))
       .map(({ update }) => updateSummary(update))
     if (!picked.length) return []
     return messagesFor(s, settings, "tariff_digest", {
       period,
       updates: picked,
+      signedIn: !!s.user_id,
       footer: subscriberFooter(s, "You're getting this because you get the weekly US tariff digest from HTS Hero."),
     })
   })
@@ -174,7 +223,8 @@ export const produceWeeklyDigest = async (db: Db, until = new Date(), { ignoreSt
   const id = await createBatch(db, {
     kind: "tariff_digest",
     title: `Weekly tariff digest · ${period}`,
-    ref: { from, until: end.toISOString() },
+    // Every event this digest had, for next week's to leave out
+    ref: { from, until: end.toISOString(), events: updates.flatMap(({ update, events }) => events.filter((e) => inDigest(update, e)).map((e) => `${update.id}:${e.stage}`)) },
     dedupeKey: `tariff_digest:${start.toISOString().slice(0, 10)}`,
     messages,
   })

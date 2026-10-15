@@ -32,7 +32,7 @@ export default function MeetTrackerEmail({ optInUrl, recent, footer }: MeetTrack
           "Tariff updates: every new US tariff action, in plain English, with the official documents",
         ]}
       />
-      <Cta href={siteLink("/tariff-tracker?welcome=1", CAMPAIGN)} variant="next">
+      <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
         Add my imports
       </Cta>
       <Panel>

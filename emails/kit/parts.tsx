@@ -214,3 +214,52 @@ export const Stats = ({ items }: { items: { label: string; value: string; note?:
 export const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
 // "23.4%"
 export const pct = (n: number) => `${Math.round(n * 10) / 10}%`
+
+// What a personal tariff alert looks like, drawn small inside another email (the onboarding
+// emails show one, with the reader's own numbers when there are any). The label says whether
+// it's an example or their own.
+export interface AlertSampleProps {
+  label: string
+  updateTitle: string
+  code: string
+  country: string
+  description?: string
+  beforePct: number | null
+  afterPct: number | null
+  deltaUsd: number | null
+}
+
+export const AlertSample = ({ label, updateTitle, code, country, description, beforePct, afterPct, deltaUsd }: AlertSampleProps) => {
+  const delta = Number(deltaUsd ?? 0)
+  const tone = delta > 0 ? TONES.up.fg : TONES.down.fg
+  const confirmed = beforePct !== null && afterPct !== null
+  return (
+    <Section style={{ border: `1px solid ${C.border}`, borderLeft: `4px solid ${TONES.up.fg}`, borderRadius: 14, padding: "14px 16px", margin: "6px 0 18px" }}>
+      <Text style={{ margin: "0 0 6px", fontSize: 11, lineHeight: "15px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>{label}</Text>
+      <Text style={{ margin: "0 0 4px", fontSize: 12, lineHeight: "16px", fontWeight: 700, color: TONES.up.fg }}>Tariff alert</Text>
+      <Text style={{ margin: "0 0 10px", fontFamily: FONT_DISPLAY, fontSize: 16, lineHeight: "22px", fontWeight: 600, color: C.text }}>{updateTitle}</Text>
+      <Text style={{ margin: 0, fontSize: 14, lineHeight: "20px", fontWeight: 600, color: C.text }}>
+        {code} from {country}
+      </Text>
+      {description && <Text style={{ margin: "2px 0 0", fontSize: 13, lineHeight: "19px", color: C.muted }}>{description}</Text>}
+      <Text style={{ margin: "4px 0 0", fontSize: 13, lineHeight: "19px", color: C.text }}>
+        {confirmed && deltaUsd !== null && Math.abs(delta) < 0.5 && Number(beforePct) === Number(afterPct) ? (
+          <span style={{ color: C.muted }}>New Chapter 99 number to report, same duty ({pct(Number(afterPct))})</span>
+        ) : confirmed ? (
+          <>
+            {pct(Number(beforePct))} → <strong style={{ color: tone }}>{pct(Number(afterPct))}</strong>
+            {Math.abs(delta) >= 0.5 && (
+              <span style={{ color: tone }}>
+                {" "}
+                · {delta > 0 ? "+" : "−"}
+                {usd(Math.abs(delta))} per shipment
+              </span>
+            )}
+          </>
+        ) : (
+          <span style={{ color: TONES["heads-up"].fg }}>May apply: confirmed once it&apos;s in the HTS</span>
+        )}
+      </Text>
+    </Section>
+  )
+}

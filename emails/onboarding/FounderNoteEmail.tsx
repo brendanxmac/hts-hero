@@ -39,7 +39,7 @@ export default function FounderNoteEmail({ daysSinceSignup, footer }: FounderNot
       </Para>
       <Para>
         Either way, just hit reply. Or{" "}
-        <Link href={siteLink("/tariff-tracker?welcome=1", "onboarding-3")} style={{ color: C.cobalt, fontWeight: 600 }}>
+        <Link href={siteLink("/tariff-tracker?tab=catalog&add=paste", "onboarding-3")} style={{ color: C.cobalt, fontWeight: 600 }}>
           add your imports yourself
         </Link>
         .

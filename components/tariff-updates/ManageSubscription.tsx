@@ -119,7 +119,7 @@ export function ManageSubscription({
               Add your HTS codes and countries to the free Tariff Tracker. You&apos;ll see every duty on each import today, and we&apos;ll alert you
               every time an update affects one of them.
             </p>
-            <Link href="/tariff-tracker?welcome=1" className={`${ui.button({ variant: "secondary" })} self-start`}>
+            <Link href="/tariff-tracker?tab=catalog&add=paste" className={`${ui.button({ variant: "secondary" })} self-start`}>
               Add my imports, free
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>

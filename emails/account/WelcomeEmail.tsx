@@ -32,7 +32,7 @@ export default function WelcomeEmail({ latestUpdate, footer }: WelcomeEmailProps
           "Or reply to this email with your spreadsheet, and we'll load it for you",
         ]}
       />
-      <Cta href={siteLink("/tariff-tracker?welcome=1", CAMPAIGN)} variant="next">
+      <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
         Add my imports
       </Cta>
       {latestUpdate && (
