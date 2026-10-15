@@ -88,7 +88,7 @@ const DutyDiff = ({ impact }: { impact: ImportImpact }) => {
 const DutyBar = ({ label, parts, pct, colors, maxPct, faded, rateClass }: { label: string; parts: RatePart[]; pct: number; colors: Record<string, string>; maxPct: number; faded?: boolean; rateClass: string }) => (
   <span className="grid grid-cols-[3.5rem_minmax(0,1fr)_3.75rem] items-center gap-3">
     <span className="text-[11px] font-bold uppercase tracking-wider text-base-content/50">{label}</span>
-    <span className={faded ? "opacity-55" : ""}>
+    <span className={faded ? "opacity-60" : ""}>
       <StackedBar
         parts={parts.map((p) => ({ label: p.key, amount: p.pct, color: colors[p.key] }))}
         formatValue={formatRate}
