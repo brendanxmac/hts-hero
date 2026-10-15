@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { Countries } from "@/constants/countries";
 import * as mk from "@/components/ui/marketing/styles";
+import { Select } from "@/components/ui/Select";
 
 // The hero's way into the free calculator: an HTS code and a country of origin open the full
 // result on /duty-calculator. Kept light (no HTS data download) so the homepage stays fast.
@@ -46,17 +47,15 @@ export const QuickLookup = () => {
         </label>
         <label className="flex min-w-0 flex-col border-base-300 px-2 sm:w-52 sm:border-l sm:pl-4">
           <span className="text-xs font-semibold uppercase tracking-wider text-base-content/60">Country of origin</span>
-          <select
+          <Select<string>
             value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="h-9 w-full bg-transparent text-lg text-base-content focus:outline-none"
-          >
-            {ORIGINS.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            onChange={setCountry}
+            options={ORIGINS.map((c) => ({ value: c.code, label: c.name }))}
+            variant="ghost"
+            className="w-full"
+            buttonClassName="!h-9 !px-0 !text-lg hover:!bg-transparent"
+            menuClassName="w-64"
+          />
         </label>
         <button type="submit" className={`${mk.buttonPrimary} shrink-0`}>
           Calculate duty <ArrowRightIcon className="h-4 w-4" aria-hidden />

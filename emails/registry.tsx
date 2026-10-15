@@ -10,6 +10,7 @@ import NewsConfirmEmail, { newsConfirmSubject, type NewsConfirmEmailProps } from
 import NewsManageLinkEmail, { newsManageLinkSubject, type NewsManageLinkEmailProps } from "./tariff-updates/NewsManageLinkEmail"
 import OnboardingEmail, { onboardingSubject, type OnboardingEmailProps } from "./onboarding/OnboardingEmail"
 import FounderNoteEmail, { founderNoteSubject, type FounderNoteEmailProps } from "./onboarding/FounderNoteEmail"
+import TrackerFindingsEmail, { trackerFindingsSubject, type TrackerFindingsEmailProps } from "./onboarding/TrackerFindingsEmail"
 import MeetTrackerEmail, { meetTrackerSubject, type MeetTrackerEmailProps } from "./onboarding/MeetTrackerEmail"
 import TariffDigestEmail, { tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
 import TariffNewsEmail, { tariffNewsSubject, type TariffNewsEmailProps } from "./tariff-updates/TariffNewsEmail"
@@ -67,6 +68,7 @@ export const TEMPLATES = {
   news_manage_link: template<NewsManageLinkEmailProps>({ subject: newsManageLinkSubject, email: (p) => <NewsManageLinkEmail {...p} /> }),
   onboarding: template<OnboardingEmailProps>({ subject: onboardingSubject, email: (p) => <OnboardingEmail {...p} /> }),
   founder_note: template<FounderNoteEmailProps>({ subject: founderNoteSubject, email: (p) => <FounderNoteEmail {...p} /> }),
+  tracker_findings: template<TrackerFindingsEmailProps>({ subject: trackerFindingsSubject, email: (p) => <TrackerFindingsEmail {...p} /> }),
   meet_tracker: template<MeetTrackerEmailProps>({ subject: meetTrackerSubject, email: (p) => <MeetTrackerEmail {...p} /> }),
   internal_notice: template<InternalNoticeEmailProps>({ subject: internalNoticeSubject, email: (p) => <InternalNoticeEmail {...p} /> }),
 }

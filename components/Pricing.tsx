@@ -2,6 +2,7 @@ import config from "@/config";
 import { classNames } from "../utilities/style";
 import { PricingFeatureI } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
+import { Select } from "@/components/ui/Select";
 import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
 import { useState } from "react";
@@ -213,19 +214,19 @@ const Pricing = ({ customerType }: PricingProps) => {
                         </h3>
                         {/* Tier selector - inline with price */}
                         {hasMultipleTiers && (
-                          <select
+                          <Select
                             value={currentTierIndex}
-                            onChange={(e) =>
-                              handleTierChange(index, parseInt(e.target.value))
-                            }
-                            className="select select-sm ml-auto bg-base-200/50 text-base-content text-xs font-medium border border-base-content/10 focus:border-secondary focus:outline-none"
-                          >
-                            {plan.priceTiers!.map((tier, i) => (
-                              <option key={i} value={i}>
-                                {tier}
-                              </option>
-                            ))}
-                          </select>
+                            onChange={(i) => handleTierChange(index, i)}
+                            options={plan.priceTiers!.map((tier, i) => ({
+                              value: i,
+                              label: tier,
+                            }))}
+                            label="Choose a tier"
+                            size="sm"
+                            className="ml-auto"
+                            buttonClassName="bg-base-200/50 text-xs"
+                            align="right"
+                          />
                         )}
                       </div>
                     </div>

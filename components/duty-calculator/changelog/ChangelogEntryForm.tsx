@@ -7,6 +7,7 @@ import {
   ChangelogTypes,
 } from "@/libs/supabase/tariff-changelog";
 import * as mk from "@/components/ui/marketing/styles";
+import { Select } from "@/components/ui/Select";
 
 // A labelled control with an optional hint, in the marketing look
 const Field = ({
@@ -72,29 +73,27 @@ export const ChangelogEntryForm = ({
           />
         </Field>
         <Field label="Type" htmlFor="cl-type">
-          <select
+          <Select<ChangelogEntryInput["type"]>
             id="cl-type"
-            className={`${mk.input} cursor-pointer`}
+            className="w-full"
+            buttonClassName="!h-11 !rounded-lg !px-3.5 !text-base"
             value={draft.type}
-            onChange={(e) => set("type", e.target.value as ChangelogEntryInput["type"])}
-          >
-            {ChangelogTypes.map((type) => (
-              <option key={type} value={type}>
-                {ChangelogTypeLabels[type]}
-              </option>
-            ))}
-          </select>
+            onChange={(type) => set("type", type)}
+            options={ChangelogTypes.map((type) => ({ value: type, label: ChangelogTypeLabels[type] }))}
+          />
         </Field>
         <Field label="Status" htmlFor="cl-status">
-          <select
+          <Select<ChangelogEntryInput["status"]>
             id="cl-status"
-            className={`${mk.input} cursor-pointer`}
+            className="w-full"
+            buttonClassName="!h-11 !rounded-lg !px-3.5 !text-base"
             value={draft.status}
-            onChange={(e) => set("status", e.target.value as ChangelogEntryInput["status"])}
-          >
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-          </select>
+            onChange={(status) => set("status", status)}
+            options={[
+              { value: "published", label: "Published" },
+              { value: "draft", label: "Draft" },
+            ]}
+          />
         </Field>
       </div>
       {draft.type === "revision" && (

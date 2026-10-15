@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { ColumnDef } from "@tanstack/react-table"
 import toast from "react-hot-toast"
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table"
+import { Select } from "@/components/ui/Select"
 import { SOURCE_IDS, SOURCES, type SourceId } from "@/libs/tariff-sources/types"
 import { CATEGORIES, type Category } from "@/libs/tariff-updates/types"
 import { formatTime } from "../hts-revision-diff/shared"
@@ -22,31 +23,30 @@ const CategorySelect = ({ item }: { item: SourceItemRow }) => {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   return (
-    <select
-      className="select select-ghost select-xs h-6 min-h-6 max-w-[11rem] px-1 text-xs font-medium"
-      value={item.category ?? ""}
-      disabled={saving}
-      title={item.category_reason ?? "Not sorted yet"}
-      onChange={async (e) => {
-        setSaving(true)
-        try {
-          await adminCall(`/api/tariff-updates/items/${item.id}`, "POST", { category: e.target.value })
-          toast.success("Re-sorted. It's read and grouped on the next run.")
-          router.refresh()
-        } catch (err) {
-          toast.error(err instanceof Error ? err.message : "Couldn't change the category")
-        } finally {
-          setSaving(false)
-        }
-      }}
-    >
-      {!item.category && <option value="">Not sorted yet</option>}
-      {Object.entries(CATEGORIES).map(([value, label]) => (
-        <option key={value} value={value}>
-          {label}
-        </option>
-      ))}
-    </select>
+    <div title={item.category_reason ?? "Not sorted yet"} className="max-w-[11rem]">
+      <Select
+        size="xs"
+        variant="ghost"
+        label="Category"
+        placeholder="Not sorted yet"
+        value={item.category ?? ""}
+        disabled={saving}
+        options={Object.entries(CATEGORIES).map(([value, label]) => ({ value, label }))}
+        menuClassName="w-56"
+        onChange={async (category) => {
+          setSaving(true)
+          try {
+            await adminCall(`/api/tariff-updates/items/${item.id}`, "POST", { category })
+            toast.success("Re-sorted. It's read and grouped on the next run.")
+            router.refresh()
+          } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Couldn't change the category")
+          } finally {
+            setSaving(false)
+          }
+        }}
+      />
+    </div>
   )
 }
 
@@ -174,7 +174,7 @@ export default function ItemsTable({ items }: { items: SourceItemRow[] }) {
             facets={["source", "category", "type", "terms"]}
             noun={["item", "items"]}
             actions={
-              <Segmented
+              <Segmented<Scope>
                 options={[
                   { value: "terms", label: "With tariff words" },
                   { value: "all", label: "Everything" },

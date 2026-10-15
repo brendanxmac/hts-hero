@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { forwardRef, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import { Select } from "@/components/ui/Select"
 import type {
   Category,
   ChangeRow,
@@ -34,7 +35,6 @@ import {
   Pill,
   ProgressBar,
   SectionLabel,
-  selectCls,
   Spinner,
   Stat,
   StatGrid,
@@ -490,21 +490,33 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                   onChange={(e) => setSearch(e.target.value)}
                 />
                 <div className="grid grid-cols-2 gap-2">
-                  <select className={`${selectCls} select-xs h-8 min-h-8`} value={decisionFilter} onChange={(e) => setDecisionFilter(e.target.value as any)}>
-                    <option value="all">Any decision</option>
-                    <option value="pending">Pending ({count("pending")})</option>
-                    <option value="approve">Approved ({count("approve")})</option>
-                    <option value="defer">Deferred ({count("defer")})</option>
-                    <option value="skip">Skipped ({count("skip")})</option>
-                  </select>
-                  <select className={`${selectCls} select-xs h-8 min-h-8`} value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value as any)}>
-                    <option value="all">Any source</option>
-                    {(Object.keys(SOURCE_LABELS) as ChangeSource[]).map((s) => (
-                      <option key={s} value={s}>
-                        {SOURCE_LABELS[s]} ({changes.filter((c) => c.source === s).length})
-                      </option>
-                    ))}
-                  </select>
+                  <Select<Decision | "all">
+                    size="sm"
+                    label="Decision"
+                    value={decisionFilter}
+                    onChange={setDecisionFilter}
+                    options={[
+                      { value: "all", label: "Any decision" },
+                      { value: "pending", label: `Pending (${count("pending")})` },
+                      { value: "approve", label: `Approved (${count("approve")})` },
+                      { value: "defer", label: `Deferred (${count("defer")})` },
+                      { value: "skip", label: `Skipped (${count("skip")})` },
+                    ]}
+                  />
+                  <Select<ChangeSource | "all">
+                    size="sm"
+                    label="Source"
+                    align="right"
+                    value={sourceFilter}
+                    onChange={setSourceFilter}
+                    options={[
+                      { value: "all", label: "Any source" },
+                      ...(Object.keys(SOURCE_LABELS) as ChangeSource[]).map((s) => ({
+                        value: s,
+                        label: `${SOURCE_LABELS[s]} (${changes.filter((c) => c.source === s).length})`,
+                      })),
+                    ]}
+                  />
                 </div>
               </div>
               <div className="flex items-center justify-between px-3 py-1.5 text-[11px] text-base-content/45">
@@ -742,17 +754,20 @@ function ChangeDetail({
           </div>
           <label className="flex items-center gap-2 text-xs text-base-content/55">
             Category
-            <select
-              className={`${selectCls} select-xs h-8 min-h-8`}
+            <Select<Category | "">
+              size="sm"
+              label="Category"
+              className="w-36"
               value={change.category ?? ""}
-              onChange={(e) => onSave({ category: (e.target.value || null) as Category | null })}
-            >
-              <option value="">Not set</option>
-              <option value="data">Data</option>
-              <option value="logic">Logic</option>
-              <option value="mixed">Mixed</option>
-              <option value="none">None (noise)</option>
-            </select>
+              onChange={(v) => onSave({ category: v || null })}
+              options={[
+                { value: "", label: "Not set" },
+                { value: "data", label: "Data" },
+                { value: "logic", label: "Logic" },
+                { value: "mixed", label: "Mixed" },
+                { value: "none", label: "None (noise)" },
+              ]}
+            />
           </label>
           {saving && (
             <span className="flex items-center gap-1.5 text-xs text-base-content/50" role="status">

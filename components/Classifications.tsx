@@ -33,6 +33,7 @@ import {
 } from "../libs/supabase/importers";
 import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { EmptyResultsConfig } from "./EmptyResults";
+import { Select } from "@/components/ui/Select";
 import { deleteClassification } from "../libs/classification";
 import {
   canCreateClassification,
@@ -766,9 +767,9 @@ export const Classifications = () => {
           </div>}
 
           {/* Filtering Section */}
-          {classifications && classifications.length > 0 && <div id="onboarding-filters" className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
-            {/* Subtle decorative elements */}
-            <div className="absolute inset-0 pointer-events-none">
+          {classifications && classifications.length > 0 && <div id="onboarding-filters" className="relative rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
+            {/* Subtle decorative elements (clipped here, so the filter menus can open past the box) */}
+            <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
               <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
             </div>
 
@@ -819,18 +820,19 @@ export const Classifications = () => {
                       </button>
                     )}
                   </div>
-                  <select
+                  <Select
                     value={selectedUserId}
-                    onChange={(e) => setSelectedUserId(e.target.value)}
-                    className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
-                  >
-                    <option value="">All Users</option>
-                    {teamUsers.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {userProfile.id === user.id ? "Me" : user.name || user.email}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(v) => setSelectedUserId(v)}
+                    options={[
+                      { value: "", label: "All Users" },
+                      ...teamUsers.map((user) => ({
+                        value: user.id,
+                        label: userProfile.id === user.id ? "Me" : user.name || user.email,
+                      })),
+                    ]}
+                    label="Classifier"
+                    buttonClassName="!h-[42px] !rounded-xl !px-4"
+                  />
                 </div>
               )}
 
@@ -852,19 +854,20 @@ export const Classifications = () => {
                     </button>
                   )}
                 </div>
-                <select
+                <Select
                   value={selectedImporterId}
-                  onChange={(e) => setSelectedImporterId(e.target.value)}
-                  className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
-                >
-                  <option value="">Select Tag</option>
-                  <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
-                  {importers.map((importer) => (
-                    <option key={importer.id} value={importer.id}>
-                      {importer.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => setSelectedImporterId(v)}
+                  options={[
+                    { value: UNASSIGNED_IMPORTER_VALUE, label: "Unassigned" },
+                    ...importers.map((importer) => ({
+                      value: importer.id,
+                      label: importer.name,
+                    })),
+                  ]}
+                  label="Tag"
+                  placeholder="Select Tag"
+                  buttonClassName="!h-[42px] !rounded-xl !px-4"
+                />
               </div>
             </div>
           </div>}

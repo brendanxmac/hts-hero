@@ -1,6 +1,7 @@
 "use client";
 
 import { ClassificationStatus } from "../../interfaces/hts";
+import { Select } from "@/components/ui/Select";
 
 export interface StatusDropdownProps {
   status: ClassificationStatus;
@@ -16,23 +17,26 @@ export function StatusDropdown({
   onChange,
 }: StatusDropdownProps) {
   const statusStyles = {
-    [ClassificationStatus.FINAL]: "text-success border-success/30",
-    [ClassificationStatus.REVIEW]: "text-warning border-warning/30",
-    [ClassificationStatus.DRAFT]: "text-base-content/70",
+    [ClassificationStatus.FINAL]: "!border-success/30",
+    [ClassificationStatus.REVIEW]: "!border-warning/30",
+    [ClassificationStatus.DRAFT]: "",
   };
 
   return (
     <div className="relative">
-      <select
-        className={`select select-sm h-9 bg-base-100 rounded-lg border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer font-semibold text-xs ${statusStyles[status]}`}
+      <Select
         value={status}
+        onChange={onChange}
+        options={[
+          { value: ClassificationStatus.DRAFT, label: <span className="text-base-content/70">Draft</span> },
+          { value: ClassificationStatus.REVIEW, label: <span className="text-warning">Review</span> },
+          { value: ClassificationStatus.FINAL, label: <span className="text-success">Final</span> },
+        ]}
+        label="Classification status"
+        size="sm"
         disabled={isUpdating || disabled}
-        onChange={(e) => onChange(e.target.value as ClassificationStatus)}
-      >
-        <option value={ClassificationStatus.DRAFT}>Draft</option>
-        <option value={ClassificationStatus.REVIEW}>Review</option>
-        <option value={ClassificationStatus.FINAL}>Final</option>
-      </select>
+        buttonClassName={`!h-9 !rounded-lg text-xs font-semibold ${statusStyles[status]}`}
+      />
       {isUpdating && (
         <span className="loading loading-spinner loading-xs absolute right-8 top-1/2 -translate-y-1/2 text-primary" />
       )}

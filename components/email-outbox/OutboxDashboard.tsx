@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import { formatTime } from "../hts-revision-diff/shared"
-import { Callout, EmptyState, PageHeader, Pill, Segmented, Spinner, btn, selectCls, type Tone } from "../hts-revision-diff/ui"
+import { Callout, EmptyState, PageHeader, Pill, Segmented, Spinner, btn, type Tone } from "../hts-revision-diff/ui"
+import { Select } from "@/components/ui/Select"
 
 // The outbox: every batch of email, Slack and Teams messages waiting for the admin. Pick a batch,
 // step through each recipient's message exactly as it will arrive (← →), take recipients out, add
@@ -185,14 +186,17 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
         }
         actions={
           <>
-            <select className={`${selectCls} max-w-xs`} value={draftFrom} onChange={(e) => setDraftFrom(e.target.value)} aria-label="Draft a test from an update">
-              <option value="">Draft a test news alert from…</option>
-              {updates.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.title}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={draftFrom}
+              onChange={(v) => setDraftFrom(v)}
+              options={updates.map((u) => ({ value: u.id, label: u.title }))}
+              label="Draft a test from an update"
+              placeholder="Draft a test news alert from…"
+              size="sm"
+              className="w-72"
+              menuClassName="w-96"
+              align="right"
+            />
             <button
               type="button"
               className={btn.secondary}

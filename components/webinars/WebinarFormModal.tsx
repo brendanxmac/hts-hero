@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Webinar } from "@/libs/supabase/webinars";
+import { Select } from "@/components/ui/Select";
 
 interface Props {
   isOpen: boolean;
@@ -343,17 +344,20 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
               <label className="label">
                 <span className="label-text font-medium">Status</span>
               </label>
-              <select
+              <Select
                 name="status"
                 value={form.status}
-                onChange={handleChange}
-                className="select select-bordered w-full"
-              >
-                <option value="upcoming">Upcoming</option>
-                <option value="live">Live</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+                onChange={(status) => setForm((prev) => ({ ...prev, status }))}
+                options={[
+                  { value: "upcoming", label: "Upcoming" },
+                  { value: "live", label: "Live" },
+                  { value: "completed", label: "Completed" },
+                  { value: "cancelled", label: "Cancelled" },
+                ]}
+                label="Status"
+                className="w-full"
+                buttonClassName="!h-12 !rounded-lg !px-4"
+              />
             </div>
             <div>
               <label className="label">

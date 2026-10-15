@@ -5,6 +5,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid"
 import { Countries } from "@/constants/countries"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
+import { Select } from "@/components/ui/Select"
 import { AUTHORITIES } from "@/libs/tariff-updates/types"
 
 // What a subscriber gets: how often, how much of each action, and which laws and countries (none
@@ -124,23 +125,20 @@ export function NewsPreferencesFields({
                   </span>
                 )
               })}
-              <select
-                aria-label="Add a country"
+              <Select
+                label="Add a country"
                 value={countryPick}
-                onChange={(e) => {
-                  const code = e.target.value
+                onChange={(code) => {
                   setCountryPick("")
                   if (code && !value.countries.includes(code)) set({ countries: [...value.countries, code] })
                 }}
-                className="h-8 rounded-full border border-base-300 bg-base-100 px-3 text-xs text-base-content focus:border-primary focus:outline-none"
-              >
-                <option value="">Add a country…</option>
-                {countries.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.flag} {c.name}
-                  </option>
-                ))}
-              </select>
+                options={countries.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}` }))}
+                placeholder="Add a country…"
+                size="sm"
+                variant="pill"
+                buttonClassName="!text-xs"
+                menuClassName="w-64"
+              />
             </div>
             <p className="text-xs text-base-content/60">Actions that apply to every country always come through.</p>
           </fieldset>

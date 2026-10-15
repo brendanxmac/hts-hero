@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
+import { Select } from "@/components/ui/Select"
 import { AUTHORITIES, KINDS, STAGES } from "@/libs/tariff-updates/types"
 import { formatTime } from "../hts-revision-diff/shared"
-import { Callout, DefList, Field, Modal, Pill, Spinner, btn, inputCls, selectCls } from "../hts-revision-diff/ui"
+import { Callout, DefList, Field, Modal, Pill, Spinner, btn, inputCls } from "../hts-revision-diff/ui"
 import { sourceLabel } from "./ItemsTable"
 import { adminCall, type SourceItemRow, type UpdateRow } from "./types"
 
@@ -52,15 +53,18 @@ const ItemRow = ({ item, others }: { item: SourceItemRow; others: UpdateRow[] })
       </a>
       {item.extraction?.notes && <p className="text-xs text-base-content/60">Note: {item.extraction.notes}</p>}
       <div className="flex flex-wrap items-center gap-2">
-        <select className={`${selectCls} select-xs max-w-md`} value={target} onChange={(e) => setTarget(e.target.value)}>
-          <option value="">Move to…</option>
-          <option value={NEW}>An update of its own</option>
-          {others.map((u) => (
-            <option key={u.id} value={u.id}>
-              {day(u.last_activity_at)} · {u.title}
-            </option>
-          ))}
-        </select>
+        <Select<string>
+          size="xs"
+          label="Move to another update"
+          placeholder="Move to…"
+          className="w-full max-w-md"
+          value={target}
+          onChange={setTarget}
+          options={[
+            { value: NEW, label: "An update of its own" },
+            ...others.map((u) => ({ value: u.id, label: `${day(u.last_activity_at)} · ${u.title}` })),
+          ]}
+        />
         {target && (
           <button type="button" className={btn.xsSecondary} onClick={move} disabled={moving}>
             {moving && <Spinner />}

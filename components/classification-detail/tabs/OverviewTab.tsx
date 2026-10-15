@@ -204,8 +204,8 @@ export const OverviewTab = ({
       </div>
 
       {/* Hero Banner */}
-      <div className="relative rounded-2xl border border-base-300 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/30 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
+      <div className="relative rounded-2xl border border-base-300 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/30">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
           <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/[0.04] blur-3xl" />
           <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-success/[0.04] blur-3xl" />
         </div>

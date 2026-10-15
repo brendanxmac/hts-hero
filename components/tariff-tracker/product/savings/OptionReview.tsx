@@ -18,6 +18,7 @@ import { SavingOption } from "../../opportunities/options";
 import { OpportunityStatus, statusInfo } from "../../opportunities/statuses";
 import { StatusChip } from "../../opportunities/StatusChip";
 import { TrackedProduct } from "../../report";
+import { exemptionName } from "./OptionList";
 import { SavingsCompare } from "./SavingsCompare";
 import { WhatItTakes } from "./WhatItTakes";
 
@@ -271,7 +272,7 @@ const Securing = ({
   };
 
   return (
-    <div className={`${tt.panel} ${tt.panelPad} flex flex-col gap-6`}>
+    <div className="flex flex-col gap-6 border-t border-base-300 pt-6">
       {/* Where it's got to */}
       <ol className="grid grid-cols-3 gap-2" aria-label="Progress">
         {PATH.map((p, i) => (
@@ -355,7 +356,7 @@ export const OptionReview = ({
   const [showCompare, setShowCompare] = useState(false);
 
   const kind = option?.kind ?? opportunity?.kind ?? "program";
-  const title = option?.title ?? opportunity?.title ?? "";
+  const title = option?.kind === "exemption" ? `Exemption: ${exemptionName(option)}` : (option?.title ?? opportunity?.title ?? "");
   const usd = option ? option.usd : opportunity ? ((opportunity.rateBefore - opportunity.rateAfter) / 100) * product.customsValue : 0;
   const perShipment = option?.usd ?? opportunity?.usdPerShipment ?? 0;
 
@@ -385,8 +386,8 @@ export const OptionReview = ({
   const compare = option && <SavingsCompare product={product} option={option} imports={imports} measure={measure} />;
 
   return (
-    <div className="flex flex-col gap-4">
-      <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-6`} aria-label={title}>
+    <div className="flex flex-col gap-6">
+      <section className="flex flex-col gap-6" aria-label={title}>
         {/* What it is, and what it could save */}
         <header className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -487,7 +488,7 @@ export const OptionReview = ({
       {stage === "review" && option && <Decide kind={kind} busy={busy} onAccept={accept} onReject={reject} />}
       {stage === "securing" && opportunity && <Securing opportunity={opportunity} option={option} product={product} busy={busy} onMove={move} />}
       {opportunity && eventsFor(opportunity.id).length > 0 && (
-        <div className={`${tt.panel} px-6 py-4`}>
+        <div className="border-t border-base-300 pt-4">
           <History events={eventsFor(opportunity.id)} />
         </div>
       )}

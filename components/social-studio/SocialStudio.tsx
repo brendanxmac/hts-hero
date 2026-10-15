@@ -6,7 +6,8 @@ import { Format, FORMATS, Theme } from "@/social/brand"
 import { captionsFor } from "@/social/captions"
 import type { Post } from "@/social/types"
 import type { Idea } from "@/libs/social-studio/ideas"
-import { btn, Callout, CopyCommand, EmptyState, Field, inputCls, PageHeader, Panel, Pill, Segmented, selectCls, Spinner, Tabs } from "../hts-revision-diff/ui"
+import { btn, Callout, CopyCommand, EmptyState, Field, inputCls, PageHeader, Panel, Pill, Segmented, Spinner, Tabs } from "../hts-revision-diff/ui"
+import { Select } from "@/components/ui/Select"
 import IdeaCard from "./IdeaCard"
 import PostCard from "./PostCard"
 
@@ -402,13 +403,14 @@ export default function SocialStudio() {
         <Panel title="A fact across the schedule" bodyClassName="flex flex-col gap-4 p-4">
           <div className="flex flex-wrap items-end gap-3">
             <Field label="Fact" className="w-96">
-              <select className={`${selectCls} w-full`} value={fact} onChange={(e) => setFact(e.target.value)}>
-                {FACTS.map((f) => (
-                  <option key={f.kind} value={f.kind}>
-                    {f.label}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={fact}
+                onChange={(v) => setFact(v)}
+                options={FACTS.map((f) => ({ value: f.kind, label: f.label }))}
+                label="Fact"
+                size="sm"
+                className="w-full"
+              />
             </Field>
             <button className={btn.primary} disabled={loading} onClick={() => build({ mode: "fact", kind: fact })}>
               {loading && <Spinner />} Make post

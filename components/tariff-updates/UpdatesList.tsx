@@ -5,6 +5,7 @@ import Link from "next/link"
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
+import { Select } from "@/components/ui/Select"
 import type { PublicUpdate } from "@/libs/tariff-updates/public"
 import type { Authority } from "@/libs/tariff-updates/types"
 import { authorityColor, authorityLabel, countryOf, formatDay, kindLabel, STAGE_LABELS } from "./labels"
@@ -116,18 +117,14 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
           </label>
           <label className="flex items-center gap-2 text-sm text-base-content/70">
             Country
-            <select
+            <Select<string>
               value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className="h-10 rounded-full border border-base-300 bg-base-100 px-4 text-sm text-base-content focus:border-primary focus:outline-none"
-            >
-              <option value="">Any country</option>
-              {countries.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.flag} {c.name}
-                </option>
-              ))}
-            </select>
+              onChange={setCountry}
+              options={[{ value: "", label: "Any country" }, ...countries.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}` }))]}
+              variant="pill"
+              buttonClassName="!px-4"
+              menuClassName="w-max max-w-xs"
+            />
           </label>
         </div>
         <div className="flex flex-wrap items-center gap-2">

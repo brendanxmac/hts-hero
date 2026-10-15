@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import * as ui from "@/components/ui/styles";
+import { Select } from "@/components/ui/Select";
 import { formatDate, todayIso } from "../../duty-calculator/lib/format";
 import { useTrackerAccess } from "../access/accessContext";
 import { historyRange } from "../product/analysis/history";
@@ -91,13 +92,7 @@ export const AuditForm = ({ fixedProduct }: { fixedProduct?: TrackedProduct }) =
         {!fixedProduct && (
         <label className="flex flex-col gap-1.5 sm:col-span-2 lg:col-span-1">
           <span className={ui.fieldLabel}>Product</span>
-          <select className={ui.select} value={product?.key ?? ""} onChange={(e) => set({ productKey: e.target.value })}>
-            {products.map((p) => (
-              <option key={p.key} value={p.key}>
-                {productLabel(p)}
-              </option>
-            ))}
-          </select>
+          <Select className="w-full" value={product?.key ?? ""} onChange={(productKey) => set({ productKey })} options={products.map((p) => ({ value: p.key, label: productLabel(p) }))} />
         </label>
         )}
         <label className="flex flex-col gap-1.5">

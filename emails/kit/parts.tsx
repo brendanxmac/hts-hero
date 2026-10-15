@@ -191,3 +191,26 @@ export const PlanStrip = ({ campaign, signedUp = true }: { campaign: string; sig
     </Text>
   </Section>
 )
+
+// A row of numbers, e.g. duty per shipment · changes · potential savings. tone colors the value
+// (red a cost or a change, green money that could be saved)
+export const Stats = ({ items }: { items: { label: string; value: string; note?: string; tone?: Tone }[] }) => (
+  <Section style={{ margin: "6px 0 18px" }}>
+    <Row>
+      {items.map((s, i) => (
+        <Column key={s.label} style={{ width: `${100 / items.length}%`, verticalAlign: "top", paddingLeft: i ? 8 : 0 }}>
+          <Section style={{ backgroundColor: C.soft, borderRadius: 16, padding: "14px 14px 12px" }}>
+            <Text style={{ margin: 0, fontSize: 11, lineHeight: "15px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>{s.label}</Text>
+            <Text style={{ margin: "6px 0 0", fontFamily: FONT_DISPLAY, fontSize: 22, lineHeight: "28px", fontWeight: 600, color: s.tone ? TONES[s.tone].fg : C.text }}>{s.value}</Text>
+            {s.note && <Text style={{ margin: "2px 0 0", fontSize: 12, lineHeight: "17px", color: C.muted }}>{s.note}</Text>}
+          </Section>
+        </Column>
+      ))}
+    </Row>
+  </Section>
+)
+
+// "$51,480"
+export const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
+// "23.4%"
+export const pct = (n: number) => `${Math.round(n * 10) / 10}%`

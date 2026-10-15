@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as mk from "@/components/ui/marketing/styles";
+import { Select } from "@/components/ui/Select";
 import { AUDIT_TOPICS, AuditTopic, IMPORT_VALUES } from "@/libs/audit-request";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -14,6 +15,7 @@ export const AuditRequestForm = () => {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [topics, setTopics] = useState<AuditTopic[]>(["overpaid"]);
+  const [importValue, setImportValue] = useState("");
 
   const toggleTopic = (id: AuditTopic) =>
     setTopics((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]));
@@ -77,16 +79,16 @@ export const AuditRequestForm = () => {
         </label>
         <label className="flex flex-col gap-1.5">
           <span className={mk.fieldLabel}>US imports a year</span>
-          <select name="importValue" required defaultValue="" className={mk.input}>
-            <option value="" disabled>
-              Choose a range
-            </option>
-            {IMPORT_VALUES.map((v) => (
-              <option key={v} value={v}>
-                {v}
-              </option>
-            ))}
-          </select>
+          <Select<string>
+            name="importValue"
+            required
+            value={importValue}
+            onChange={setImportValue}
+            options={IMPORT_VALUES.map((v) => ({ value: v, label: v }))}
+            placeholder="Choose a range"
+            className="w-full"
+            buttonClassName="!h-11 !rounded-lg !px-3.5 !text-base"
+          />
         </label>
       </div>
 

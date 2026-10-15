@@ -4,6 +4,7 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { Country } from "@/constants/countries";
 import { TransportMode } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
+import { Select } from "@/components/ui/Select";
 import { CountryField } from "../fields/CountryField";
 import { Field } from "../fields/Field";
 import { NumberField } from "../fields/NumberField";
@@ -85,20 +86,13 @@ export const EstimateInputs = ({
           htmlFor={`${ids}-mode`}
           className="lg:col-span-2"
         >
-          <select
+          <Select<TransportMode>
             id={`${ids}-mode`}
-            className={ui.select}
+            className="w-full"
             value={estimate.transportMode}
-            onChange={(e) =>
-              estimate.setTransportMode(e.target.value as TransportMode)
-            }
-          >
-            {TRANSPORT_MODES.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.label}
-              </option>
-            ))}
-          </select>
+            onChange={estimate.setTransportMode}
+            options={TRANSPORT_MODES.map((m) => ({ value: m.id as TransportMode, label: m.label }))}
+          />
         </Field>
       )}
       {result?.requiresQuantity && (

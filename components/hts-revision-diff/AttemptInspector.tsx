@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
+import { Select } from "@/components/ui/Select"
 import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table"
 import type { AttemptRow, DocumentRow, ParsedNotes, RevisionRow } from "@/libs/hts-revision-diff/types"
 import { hasParseResults } from "@/libs/hts-revision-diff/types"
@@ -20,7 +21,6 @@ import {
   PageSpinner,
   Panel,
   Pill,
-  selectCls,
   Spinner,
   Stat,
   StatGrid,
@@ -239,14 +239,17 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
           count={warnings.length}
           actions={
             warningKinds.length > 1 && (
-              <select className={`${selectCls} select-xs h-8 min-h-8`} value={warningKind} onChange={(e) => setWarningKind(e.target.value)}>
-                <option value="all">All kinds</option>
-                {warningKinds.map((k) => (
-                  <option key={k} value={k}>
-                    {k.replace(/_/g, " ")} ({warnings.filter((w) => w.kind === k).length})
-                  </option>
-                ))}
-              </select>
+              <Select<string>
+                size="sm"
+                label="Warning kind"
+                align="right"
+                value={warningKind}
+                onChange={setWarningKind}
+                options={[
+                  { value: "all", label: "All kinds" },
+                  ...warningKinds.map((k) => ({ value: k, label: `${k.replace(/_/g, " ")} (${warnings.filter((w) => w.kind === k).length})` })),
+                ]}
+              />
             )
           }
         >

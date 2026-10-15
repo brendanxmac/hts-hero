@@ -36,9 +36,9 @@ export const AUTHORITIES = {
   section_338: "Section 338",
   section_201: "Section 201",
   ieepa: "IEEPA",
-  trade_agreement: "Trade agreement",
-  quota: "Tariff-rate quota",
-  hts: "HTS",
+  trade_agreement: "Trade Agreements",
+  quota: "Tariff Rate Quotas",
+  hts: "HTS Revisions",
   other: "Other",
 } as const
 export type Authority = keyof typeof AUTHORITIES
@@ -56,14 +56,16 @@ export type Stage = keyof typeof STAGES
 export const STAGE_ORDER = Object.keys(STAGES) as Stage[]
 
 export const stageOfSource = (source: SourceId): Stage =>
-  ({
-    ustr: "announced",
-    white_house: "signed",
-    federal_register_pi: "filed",
-    federal_register: "published",
-    csms: "cbp_guidance",
-    usitc: "in_hts",
-  } as const)[source]
+  (
+    ({
+      ustr: "announced",
+      white_house: "signed",
+      federal_register_pi: "filed",
+      federal_register: "published",
+      csms: "cbp_guidance",
+      usitc: "in_hts",
+    }) as const
+  )[source]
 
 // Which item an update's title and summary come from: the most authoritative text
 export const LEAD_PRIORITY: Record<SourceId, number> = {

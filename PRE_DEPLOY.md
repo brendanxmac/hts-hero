@@ -42,6 +42,8 @@ add new ones as they come up.
       and every reader's email choices).
 - [ ] **Apply the migration** `supabase/migrations/lifecycle_emails.sql` (which onboarding email
       each account has been queued).
+- [ ] **Apply the migration** `supabase/migrations/tracker_snapshots.sql` (each account's numbers,
+      worked out on the server daily for the onboarding emails).
 - [ ] **Supabase redirect URLs allow `/api/auth/callback`** with any `?redirect=` (Authentication →
       URL Configuration), in both projects: sign-in links now come back through it.
 - [ ] **Queue "Meet the Tariff Tracker"** for existing accounts after the release is live:

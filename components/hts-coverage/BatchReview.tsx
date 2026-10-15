@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { Select } from "@/components/ui/Select"
 import { DATES_MODE_LABELS, STATUS_LABELS, SUGGEST_CHUNK, type BatchDecision, type DatesMode } from "@/libs/hts-coverage/constants"
 import type { CoverageBatch, CoverageBatchItem, CoverageItem } from "@/libs/hts-coverage/types"
 import { formatTime } from "../hts-revision-diff/shared"
@@ -25,7 +26,6 @@ import {
   StatusDot,
   btn,
   inputCls,
-  selectCls,
 } from "../hts-revision-diff/ui"
 import { coverageApi } from "./api"
 import { BATCH_STATUS_LABELS, BATCH_STATUS_TONES } from "./batch-ui"
@@ -524,12 +524,19 @@ export default function BatchReview({ batchId }: { batchId: string }) {
           <aside className="flex flex-col overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-sm lg:sticky lg:top-[4.25rem] lg:max-h-[calc(100vh-5.5rem)]">
             <div className="flex flex-col gap-2 border-b border-base-content/10 p-3">
               <input className={`${inputCls} w-full`} placeholder="Search code, text, instructions" value={search} onChange={(e) => setSearch(e.target.value)} />
-              <select className={`${selectCls} select-xs h-8 min-h-8`} value={decisionFilter} onChange={(e) => setDecisionFilter(e.target.value as BatchDecision | "all")}>
-                <option value="all">Any decision ({rows.length})</option>
-                <option value="pending">Undecided ({count("pending")})</option>
-                <option value="include">Included ({count("include")})</option>
-                <option value="skip">Skipped ({count("skip")})</option>
-              </select>
+              <Select<BatchDecision | "all">
+                size="sm"
+                label="Decision"
+                className="w-full"
+                value={decisionFilter}
+                onChange={setDecisionFilter}
+                options={[
+                  { value: "all", label: `Any decision (${rows.length})` },
+                  { value: "pending", label: `Undecided (${count("pending")})` },
+                  { value: "include", label: `Included (${count("include")})` },
+                  { value: "skip", label: `Skipped (${count("skip")})` },
+                ]}
+              />
             </div>
             <ul className="flex-1 divide-y divide-base-content/5 overflow-y-auto">
               {visible.map((r) => {

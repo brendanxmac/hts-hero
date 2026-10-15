@@ -7,6 +7,7 @@ import { Countries } from "@/constants/countries";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Select } from "@/components/ui/Select";
 import { AUTHORITIES, KINDS, STAGE_ORDER, type Authority } from "@/libs/tariff-updates/types";
 import { STAGE_LABELS } from "@/components/tariff-updates/labels";
 import { useTrackerAccess } from "../access/accessContext";
@@ -198,19 +199,15 @@ export const TariffNews = () => {
             value={scope}
             onChange={setScope}
           />
-          <select
-            aria-label="Filter by law"
+          <Select<Authority | "">
+            label="Filter by law"
             value={law}
-            onChange={(e) => setLaw(e.target.value as Authority | "")}
-            className="h-8 rounded-full border border-base-300 bg-base-100 px-3 text-sm text-base-content focus:border-primary focus:outline-none"
-          >
-            <option value="">Every law</option>
-            {laws.map((a) => (
-              <option key={a} value={a}>
-                {AUTHORITIES[a] ?? a}
-              </option>
-            ))}
-          </select>
+            onChange={setLaw}
+            options={[{ value: "", label: "Every category" }, ...laws.map((a) => ({ value: a, label: AUTHORITIES[a] ?? a }))]}
+            size="sm"
+            variant="pill"
+            menuClassName="w-max max-w-xs"
+          />
           <label className="relative min-w-[14rem] flex-1">
             <span className="sr-only">Search tariff news</span>
             <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" aria-hidden />

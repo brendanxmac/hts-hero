@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { Select } from "@/components/ui/Select"
 import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table"
 import {
   CATEGORIES,
@@ -32,7 +33,6 @@ import {
   StatGrid,
   btn,
   inputCls,
-  selectCls,
 } from "../hts-revision-diff/ui"
 import { coverageApi } from "./api"
 import { BatchesPanel, BatchModal } from "./batch-ui"
@@ -165,53 +165,41 @@ const BulkBar = ({
       {suggesting && <Spinner />}
       {suggesting ? `Suggesting ${suggesting.done}/${suggesting.total}…` : "Suggest with Claude"}
     </button>
-    <select className={`${selectCls} select-xs`} value="" onChange={(e) => e.target.value && onApply({ status: e.target.value as CoverageStatus })}>
-      <option value="">Set status…</option>
-      {STATUSES.map((s) => (
-        <option key={s} value={s}>
-          {s === "open" ? "In effect" : STATUS_LABELS[s]}
-        </option>
-      ))}
-    </select>
-    <select
-      className={`${selectCls} select-xs`}
+    <Select<CoverageStatus | "">
+      size="xs"
+      label="Set status"
+      placeholder="Set status…"
+      menuClassName="w-48"
       value=""
-      onChange={(e) => e.target.value && onApply({ category: e.target.value === "-" ? null : (e.target.value as Category) })}
-    >
-      <option value="">Set category…</option>
-      <option value="-">Use suggestion</option>
-      {CATEGORIES.map((c) => (
-        <option key={c} value={c}>
-          {CATEGORY_LABELS[c]}
-        </option>
-      ))}
-    </select>
-    <select
-      className={`${selectCls} select-xs`}
+      onChange={(v) => v && onApply({ status: v })}
+      options={STATUSES.map((s) => ({ value: s, label: s === "open" ? "In effect" : STATUS_LABELS[s] }))}
+    />
+    <Select<Category | "-" | "">
+      size="xs"
+      label="Set category"
+      placeholder="Set category…"
+      menuClassName="w-56"
       value=""
-      onChange={(e) => e.target.value && onApply({ priority: e.target.value === "-" ? null : (e.target.value as Priority) })}
-    >
-      <option value="">Set priority…</option>
-      <option value="-">None</option>
-      {PRIORITIES.map((p) => (
-        <option key={p} value={p}>
-          {p}
-        </option>
-      ))}
-    </select>
-    <select
-      className={`${selectCls} select-xs`}
+      onChange={(v) => v && onApply({ category: v === "-" ? null : v })}
+      options={[{ value: "-", label: "Use suggestion" }, ...CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABELS[c] }))]}
+    />
+    <Select<Priority | "-" | "">
+      size="xs"
+      label="Set priority"
+      placeholder="Set priority…"
       value=""
-      onChange={(e) => e.target.value && onApply({ program: e.target.value === "-" ? null : e.target.value })}
-    >
-      <option value="">Set program…</option>
-      <option value="-">Automatic</option>
-      {programs.map((p) => (
-        <option key={p.id} value={p.id}>
-          {p.name}
-        </option>
-      ))}
-    </select>
+      onChange={(v) => v && onApply({ priority: v === "-" ? null : v })}
+      options={[{ value: "-", label: "None" }, ...PRIORITIES.map((p) => ({ value: p, label: p }))]}
+    />
+    <Select
+      size="xs"
+      label="Set program"
+      placeholder="Set program…"
+      menuClassName="w-72"
+      value=""
+      onChange={(v) => v && onApply({ program: v === "-" ? null : v })}
+      options={[{ value: "-", label: "Automatic" }, ...programs.map((p) => ({ value: p.id, label: p.name }))]}
+    />
     {busy && <Spinner />}
     <button className={`${btn.xsGhost} ml-auto`} onClick={onClear}>
       Clear selection
@@ -627,40 +615,47 @@ export default function CoverageDashboard() {
                 value={filters.q}
                 onChange={(e) => setFilter("q", e.target.value)}
               />
-              <select className={`${selectCls} select-xs`} value={filters.subchapter} onChange={(e) => setFilter("subchapter", e.target.value)}>
-                <option value="">All subchapters</option>
-                {subchapters.map((s) => (
-                  <option key={s} value={s}>
-                    {s} · {subchapterLabel(s)}
-                  </option>
-                ))}
-              </select>
-              <select className={`${selectCls} select-xs`} value={filters.category} onChange={(e) => setFilter("category", e.target.value)}>
-                <option value="">All categories</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {CATEGORY_LABELS[c]}
-                  </option>
-                ))}
-              </select>
-              <select className={`${selectCls} select-xs`} value={filters.program} onChange={(e) => setFilter("program", e.target.value)}>
-                <option value="">All programs</option>
-                <option value={UNMAPPED}>Unmapped</option>
-                {data.programs.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-              <select className={`${selectCls} select-xs`} value={filters.priority} onChange={(e) => setFilter("priority", e.target.value)}>
-                <option value="">Any priority</option>
-                <option value={UNMAPPED}>No priority</option>
-                {PRIORITIES.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
+              <Select
+                size="xs"
+                label="Subchapter"
+                className="max-w-[16rem]"
+                menuClassName="w-80"
+                value={filters.subchapter}
+                onChange={(v) => setFilter("subchapter", v)}
+                options={[{ value: "", label: "All subchapters" }, ...subchapters.map((s) => ({ value: s, label: `${s} · ${subchapterLabel(s)}` }))]}
+              />
+              <Select
+                size="xs"
+                label="Category"
+                menuClassName="w-56"
+                value={filters.category}
+                onChange={(v) => setFilter("category", v)}
+                options={[{ value: "", label: "All categories" }, ...CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABELS[c] }))]}
+              />
+              <Select
+                size="xs"
+                label="Program"
+                className="max-w-[16rem]"
+                menuClassName="w-72"
+                value={filters.program}
+                onChange={(v) => setFilter("program", v)}
+                options={[
+                  { value: "", label: "All programs" },
+                  { value: UNMAPPED, label: "Unmapped" },
+                  ...data.programs.map((p) => ({ value: p.id, label: p.name })),
+                ]}
+              />
+              <Select
+                size="xs"
+                label="Priority"
+                value={filters.priority}
+                onChange={(v) => setFilter("priority", v)}
+                options={[
+                  { value: "", label: "Any priority" },
+                  { value: UNMAPPED, label: "No priority" },
+                  ...PRIORITIES.map((p) => ({ value: p, label: p })),
+                ]}
+              />
               <label className="flex cursor-pointer items-center gap-1.5 text-xs text-base-content/70">
                 <input
                   type="checkbox"

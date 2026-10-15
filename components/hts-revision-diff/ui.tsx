@@ -54,7 +54,6 @@ export const btn = {
 }
 
 export const inputCls = "input input-sm input-bordered border-base-content/15 bg-base-100 placeholder:text-base-content/35"
-export const selectCls = "select select-sm select-bordered border-base-content/15 bg-base-100 font-normal"
 
 export const Spinner = ({ className = "" }: { className?: string }) => (
   <span className={`loading loading-spinner loading-xs ${className}`} />

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import toast from "react-hot-toast"
+import { Select } from "@/components/ui/Select"
 import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table"
 import { HtsRevisions } from "@/tariffs/engine-v2/revisions"
 import {
@@ -32,7 +33,6 @@ import {
   Panel,
   Pill,
   ProgressBar,
-  selectCls,
   Spinner,
   StatusDot,
 } from "./ui"
@@ -628,13 +628,15 @@ function CompareModal({
     })
 
   const select = (value: string, onChange: (id: string) => void) => (
-    <select className={`${selectCls} w-full font-mono`} value={value} onChange={(e) => onChange(e.target.value)}>
-      {ready.map((r) => (
-        <option key={r.id} value={r.id}>
-          {r.name}
-        </option>
-      ))}
-    </select>
+    <Select
+      size="sm"
+      className="w-full"
+      buttonClassName="font-mono"
+      menuClassName="font-mono"
+      value={value}
+      onChange={onChange}
+      options={ready.map((r) => ({ value: r.id, label: r.name }))}
+    />
   )
 
   return (

@@ -1,12 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Select } from "@/components/ui/Select"
 import { CATEGORIES, CATEGORY_LABELS, PRIORITIES, STATUS_LABELS, STATUSES, type Category, type CoverageStatus, type Priority } from "@/libs/hts-coverage/constants"
 import type { CitedNote, NoteSubtreeNode } from "@/libs/hts-coverage/server"
 import type { CoverageItem, CoveragePatch } from "@/libs/hts-coverage/types"
 import { describePeriod } from "@/tariffs/engine-v2/dates"
 import type { Tariff } from "@/tariffs/engine-v2/types"
-import { Callout, DefList, Field, Pill, SectionLabel, Segmented, Spinner, btn, inputCls, selectCls } from "../hts-revision-diff/ui"
+import { Callout, DefList, Field, Pill, SectionLabel, Segmented, Spinner, btn, inputCls } from "../hts-revision-diff/ui"
 import { coverageApi } from "./api"
 import { formatDay, noteKeysOf, programFromNotes, resolvedProgram, type DashboardData } from "./derive"
 
@@ -212,13 +213,13 @@ export const TrackingFields = ({
       {error && <Callout tone="error">{error}</Callout>}
       <div className={`grid gap-3 ${compact ? "sm:grid-cols-4" : "sm:grid-cols-2"}`}>
         <Field label="Status">
-          <select className={selectCls} value={item.status} onChange={(e) => patch({ status: e.target.value as CoverageStatus })}>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {s === "open" ? "In effect" : STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
+          <Select<CoverageStatus>
+            size="sm"
+            className="w-full"
+            value={item.status}
+            onChange={(status) => patch({ status })}
+            options={STATUSES.map((s) => ({ value: s, label: s === "open" ? "In effect" : STATUS_LABELS[s] }))}
+          />
         </Field>
         <Field label="Priority">
           <Segmented
@@ -228,14 +229,16 @@ export const TrackingFields = ({
           />
         </Field>
         <Field label="Category">
-          <select className={selectCls} value={item.category ?? ""} onChange={(e) => patch({ category: (e.target.value || null) as Category | null })}>
-            <option value="">{suggestedCategory ? `Suggested (${CATEGORY_LABELS[suggestedCategory]})` : "—"}</option>
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {CATEGORY_LABELS[c]}
-              </option>
-            ))}
-          </select>
+          <Select<Category | "">
+            size="sm"
+            className="w-full"
+            value={item.category ?? ""}
+            onChange={(v) => patch({ category: v || null })}
+            options={[
+              { value: "", label: suggestedCategory ? `Suggested (${CATEGORY_LABELS[suggestedCategory]})` : "—" },
+              ...CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABELS[c] })),
+            ]}
+          />
         </Field>
         <Field
           label="Program"
@@ -251,14 +254,17 @@ export const TrackingFields = ({
                     : "Not mapped from its notes"
           }
         >
-          <select className={selectCls} value={item.program ?? ""} onChange={(e) => patch({ program: e.target.value || null })}>
-            <option value="">{`Automatic (${programName(resolvedProgram({ ...item, program: null }, data.notePrograms))})`}</option>
-            {data.programs.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            size="sm"
+            className="w-full"
+            menuClassName="min-w-[16rem]"
+            value={item.program ?? ""}
+            onChange={(v) => patch({ program: v || null })}
+            options={[
+              { value: "", label: `Automatic (${programName(resolvedProgram({ ...item, program: null }, data.notePrograms))})` },
+              ...data.programs.map((p) => ({ value: p.id, label: p.name })),
+            ]}
+          />
         </Field>
         {!compact && (
           <>
@@ -400,18 +406,17 @@ export const NotesSection = ({
                 <span>
                   Program for every heading citing note <span className="font-mono">{key}</span>:
                 </span>
-                <select
-                  className={`${selectCls} select-xs`}
+                <Select
+                  size="xs"
+                  label={`Program for note ${key}`}
+                  menuClassName="w-72"
                   value={data.notePrograms.overrides[key] ?? ""}
-                  onChange={(e) => onNoteProgram(key, e.target.value || null)}
-                >
-                  <option value="">{data.notePrograms.suggested[key] ? `Suggested (${programName(data.notePrograms.suggested[key])})` : "Not mapped"}</option>
-                  {data.programs.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => onNoteProgram(key, v || null)}
+                  options={[
+                    { value: "", label: data.notePrograms.suggested[key] ? `Suggested (${programName(data.notePrograms.suggested[key])})` : "Not mapped" },
+                    ...data.programs.map((p) => ({ value: p.id, label: p.name })),
+                  ]}
+                />
               </div>
             ))}
         </>

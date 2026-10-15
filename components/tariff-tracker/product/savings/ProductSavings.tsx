@@ -75,6 +75,8 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
   };
   const review = insights.review.get(product.key) ?? "to_review";
   const toReview = items.filter(undecided).length;
+  const reviewable = items.filter((i) => i.option).length;
+  const decided = reviewable - toReview;
 
   return (
     <div className="flex flex-col gap-4">
@@ -87,38 +89,43 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
           </p>
         </div>
       ) : (
-        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,23rem)_minmax(0,1fr)]">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3">
+        // One box: the options down a soft rail on the left, the one picked on the right
+        <section className={`${tt.panel} grid xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]`} aria-label="Possible savings options">
+          <div className="flex flex-col gap-5 border-b border-base-300 p-3 pb-5 xl:border-b-0 xl:border-r">
+            <div className="flex flex-col gap-3 px-3 pt-3">
               <div className="flex items-center justify-between gap-3">
-                <h2 className={`${tt.title} m-0`}>Ways to save</h2>
+                <h2 className={`${tt.title} m-0 whitespace-nowrap`}>Possible Savings Options</h2>
                 <SegmentedControl<Measure> label="Show amounts as" options={MEASURES} value={measure} onChange={setMeasure} size="sm" />
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="flex items-center gap-2 text-xs text-base-content/60">
+              {/* How far the review has got */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between gap-2 text-xs">
                   <span className={tt.chip(REVIEW_LABELS[review].tone)}>{REVIEW_LABELS[review].label}</span>
-                  {toReview > 0 ? `${toReview} to review` : "All reviewed"}
-                </span>
-                {measure === "usd" && (
-                  <span className="flex items-center gap-2 text-xs text-base-content/60">
-                    Shipments a year <ShipmentsPerYearField productKey={product.key} />
-                  </span>
-                )}
+                  <span className="tabular-nums text-base-content/60">{toReview > 0 ? `${decided} of ${reviewable} decided` : "All decided"}</span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-base-300" aria-hidden>
+                  {/* Runtime width (DESIGN_SYSTEM §10) */}
+                  <div className="h-full rounded-full bg-success transition-[width]" style={{ width: `${reviewable ? (decided / reviewable) * 100 : 100}%` }} />
+                </div>
               </div>
+              {measure === "usd" && (
+                <span className="flex items-center justify-between gap-2 text-xs text-base-content/60">
+                  Shipments a year <ShipmentsPerYearField productKey={product.key} />
+                </span>
+              )}
             </div>
             <OptionList
-              items={items}
+              items={listed}
               selectedId={selectedId}
               imports={imports}
               customsValue={product.customsValue}
-              todayPct={product.totalPct}
               measure={measure}
               onSelect={select}
               afterQuickWins={<RuleOutAll scope="quick" product={product} items={items} />}
               afterSourcing={<RuleOutAll scope="sourcing" product={product} items={items} />}
             />
           </div>
-          <div ref={detail} className="scroll-mt-4">
+          <div ref={detail} className="min-w-0 scroll-mt-4 p-6 lg:p-7">
             {selected && (
               <OptionReview
                 key={selected.id}
@@ -132,7 +139,7 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
               />
             )}
           </div>
-        </div>
+        </section>
       )}
       {imports && <p className={ui.caption}>Import figures: U.S. Census Bureau. {CENSUS_NOTICE}</p>}
     </div>
