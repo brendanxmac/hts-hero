@@ -8,6 +8,7 @@ import { AUTHORITIES, KINDS, STAGES } from "@/libs/tariff-updates/types"
 import { formatTime } from "../hts-revision-diff/shared"
 import { Callout, DefList, Field, Modal, Pill, Spinner, btn, inputCls } from "../hts-revision-diff/ui"
 import { sourceLabel } from "./ItemsTable"
+import ScopeEditor from "./ScopeEditor"
 import { adminCall, type SourceItemRow, type UpdateRow } from "./types"
 
 // One update, for review: edit its title and summary, publish or hide it, clear its review flag,
@@ -198,6 +199,7 @@ export default function UpdateDetail({
               { label: "First seen", value: formatTime(update.first_seen_at) },
             ]}
           />
+          <ScopeEditor update={update} />
           <section className="rounded-lg border border-base-content/10 p-3 text-sm">
             <h4 className="mb-1 text-xs font-semibold uppercase tracking-wider text-base-content/50">Users&apos; imports it touches</h4>
             {!impact ? (

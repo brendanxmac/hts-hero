@@ -23,9 +23,15 @@ export interface TrackerUpdate {
   stage: Stage;
   first_seen_at: string;
   last_activity_at: string;
+  scope_codes: string[] | null;
+  scope_excluded_codes: string[] | null;
+  scope_countries: string[] | null;
+  scope_excluded_countries: string[] | null;
+  scope_headings: string[] | null;
 }
 
-const COLUMNS = "id, slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, first_seen_at, last_activity_at";
+const COLUMNS =
+  "id, slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, first_seen_at, last_activity_at, scope_codes, scope_excluded_codes, scope_countries, scope_excluded_countries, scope_headings";
 
 const VIEWS = {
   recent: { days: 45, limit: 12 },

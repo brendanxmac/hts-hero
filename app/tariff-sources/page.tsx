@@ -45,7 +45,7 @@ export default async function TariffSourcesPage() {
     loadAll<UpdateRow>(
       db,
       "tariff_updates",
-      "id, slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, first_seen_at, last_activity_at, lead_item_id, status, needs_review, review_notes, edited",
+      "id, slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, first_seen_at, last_activity_at, lead_item_id, status, needs_review, review_notes, edited, scope_codes, scope_excluded_codes, scope_countries, scope_excluded_countries, scope_headings, scope_source, scope_read_at, scope_notes, scope_documents",
       "last_activity_at"
     ),
     db.from("tariff_source_runs").select("source, trigger, started_at, finished_at, found, added, error").order("started_at", { ascending: false }).limit(300),

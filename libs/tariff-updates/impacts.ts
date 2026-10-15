@@ -41,7 +41,7 @@ const round = (n: number) => Math.round(n * 100) / 100
 export const recentUpdates = async (db: Db, { ids }: { ids?: string[] } = {}) => {
   let query = db
     .from("tariff_updates")
-    .select("id, slug, hts_codes, countries, authority, kind, effective_on")
+    .select("id, slug, hts_codes, countries, authority, kind, effective_on, scope_codes, scope_excluded_codes, scope_countries, scope_excluded_countries, scope_headings")
     .eq("status", "published")
     .eq("needs_review", false)
   query = ids ? query.in("id", ids) : query.gte("last_activity_at", new Date(Date.now() - RECENT_DAYS * 86_400_000).toISOString())

@@ -43,6 +43,8 @@ const nextConfig = {
       "/api/mcp": ["./public/data/us-imports/**"],
       // Tracker snapshots work out origin savings from the same Census files
       "/api/cron/tracker-snapshots": ["./public/data/us-imports/**"],
+      "/api/cron/tariff-updates": ["./public/data/us-imports/**"],
+      "/api/tariff-updates/[id]": ["./public/data/us-imports/**"],
       // The social studio's posts and daily ideas read them too
       "/api/social-studio/**": ["./public/data/us-imports/**"],
       "/api/cron/social-ideas": ["./public/data/us-imports/**"],

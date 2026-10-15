@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/libs/admin/access"
+import { getHtsElementsServer } from "@/libs/hts-server"
+import { refreshImpacts } from "@/libs/tariff-updates/impacts"
+import { readUpdateScope } from "@/libs/tariff-updates/scope"
 import { revalidateTariffUpdates } from "@/libs/tariff-updates/revalidate"
 
 export const dynamic = "force-dynamic"
+export const maxDuration = 300
 
 // Which of the users' imports the update may affect (tariff_update_impacts), for its review
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
@@ -40,4 +44,45 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   revalidateTariffUpdates()
   return NextResponse.json({ ok: true })
+}
+
+const codeList = (v: unknown) =>
+  Array.isArray(v) ? Array.from(new Set(v.filter((x): x is string => typeof x === "string").map((x) => x.trim()).filter(Boolean))) : []
+
+// The update's scope, from review:
+// { action: "read-scope" } has the reader read its PDFs again (replacing an admin's scope);
+// { action: "save-scope", codes, excludedCodes, countries, excludedCountries, headings } sets it
+// by hand (kept from then on). Either way the users' matches are worked out again.
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  const { db, denied } = await requireAdmin()
+  if (denied) return denied
+  const body = await req.json().catch(() => ({}))
+  try {
+    let result: unknown = null
+    if (body.action === "read-scope") {
+      result = await readUpdateScope(db, params.id, { force: true })
+    } else if (body.action === "save-scope") {
+      const iso = (v: unknown) => codeList(v).map((c) => c.toUpperCase()).filter((c) => c === "ALL" || /^[A-Z]{2}$/.test(c))
+      const { error } = await db
+        .from("tariff_updates")
+        .update({
+          scope_codes: codeList(body.codes),
+          scope_excluded_codes: codeList(body.excludedCodes),
+          scope_countries: iso(body.countries),
+          scope_excluded_countries: iso(body.excludedCountries).filter((c) => c !== "ALL"),
+          scope_headings: codeList(body.headings),
+          scope_source: "admin",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", params.id)
+      if (error) throw new Error(error.message)
+    } else {
+      return NextResponse.json({ error: "Unknown action" }, { status: 400 })
+    }
+    const impacts = await refreshImpacts(db, await getHtsElementsServer(), { deadline: Date.now() + 45_000, updateIds: [params.id] })
+    revalidateTariffUpdates()
+    return NextResponse.json({ ok: true, result, impacts })
+  } catch (e) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 })
+  }
 }

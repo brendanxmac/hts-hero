@@ -42,6 +42,8 @@ export const callJson = async <T>(params: {
   user: string
   // A PDF to read alongside the text (base64)
   pdfBase64?: string
+  // Several PDFs, each with a title Claude can refer to
+  pdfs?: { base64: string; title: string }[]
   schema: Record<string, unknown>
   maxTokens: number
   effort: "low" | "medium" | "high"
@@ -66,13 +68,14 @@ export const callJson = async <T>(params: {
         messages: [
           {
             role: "user",
-            content: params.pdfBase64
+            content: params.pdfBase64 || params.pdfs?.length
               ? [
-                  {
-                    type: "document",
-                    source: { type: "base64", media_type: "application/pdf", data: params.pdfBase64 },
-                  },
-                  { type: "text", text: params.user },
+                  ...(params.pdfBase64 ? [{ base64: params.pdfBase64, title: undefined as string | undefined }] : (params.pdfs ?? [])).map((d) => ({
+                    type: "document" as const,
+                    source: { type: "base64" as const, media_type: "application/pdf" as const, data: d.base64 },
+                    ...(d.title ? { title: d.title } : {}),
+                  })),
+                  { type: "text" as const, text: params.user },
                 ]
               : params.user,
           },

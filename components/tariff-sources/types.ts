@@ -54,6 +54,16 @@ export interface UpdateRow {
   needs_review: boolean
   review_notes: string | null
   edited: boolean
+  // What it covers, read from its PDFs or set in review (libs/tariff-updates/scope.ts)
+  scope_codes: string[] | null
+  scope_excluded_codes: string[] | null
+  scope_countries: string[] | null
+  scope_excluded_countries: string[] | null
+  scope_headings: string[] | null
+  scope_source: "reader" | "admin" | null
+  scope_read_at: string | null
+  scope_notes: string | null
+  scope_documents: string[] | null
 }
 
 export const adminCall = async <T = unknown>(path: string, method: string, body?: unknown): Promise<T> => {
