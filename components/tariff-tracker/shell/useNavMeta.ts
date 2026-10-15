@@ -8,6 +8,7 @@ import { wholeDollars } from "../insights/teasers";
 import { changesLastYear } from "../overview/lib/metrics";
 import { useEffect, useState } from "react";
 import { newsSeenAt, onNewsSeen, useTariffUpdates } from "../overview/useTariffUpdates";
+import { useImportMatches } from "../news/useImportMatches";
 import { SectionSlug } from "../sections";
 import { useTracker } from "../TrackerContext";
 
@@ -30,7 +31,11 @@ export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
     setSeenAt(newsSeenAt());
     return onNewsSeen(() => setSeenAt(newsSeenAt()));
   }, []);
+  // Recent tariff actions (the last 45 days) that affect, or may affect, the user's imports
+  const matches = useImportMatches(updates);
   const meta: Partial<Record<SectionSlug, NavMeta>> = {};
+  const hitting = (updates ?? []).filter((u) => u.kind !== "hts_revision" && (matches.get(u.slug)?.confirmed ?? 0) + (matches.get(u.slug)?.likely ?? 0) > 0).length;
+  if (hitting) meta.impact = { text: `${hitting} recent`, tone: "error" };
   const since = seenAt ?? new Date(Date.now() - 7 * 86_400_000).toISOString();
   const fresh = (updates ?? []).filter((u) => u.first_seen_at > since).length;
   if (fresh) meta.news = { text: `${fresh} new`, tone: "error" };

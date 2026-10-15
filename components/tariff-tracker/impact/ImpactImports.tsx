@@ -22,7 +22,7 @@ import { day, groupOf, money, reasonText, type ImpactGroup } from "./format";
 
 export type Show = "affected" | "confirmed" | "likely" | "possible";
 
-const GRID = "grid grid-cols-[minmax(0,1.25fr)_minmax(0,1.35fr)_6.5rem_7rem_1.25rem] items-center gap-5";
+const GRID = "grid grid-cols-[minmax(0,1fr)_minmax(0,1.75fr)_7.5rem_1.25rem] items-center gap-6";
 
 interface Line {
   code: string;
@@ -84,36 +84,68 @@ const DutyDiff = ({ impact }: { impact: ImportImpact }) => {
   );
 };
 
-// The tariffs on the import after the change, as the bar and legend Your imports uses
-const Tariffs = ({ parts, ended, added, colors, fill }: { parts: RatePart[]; ended: string[]; added: Set<string>; colors: Record<string, string>; fill: number }) => (
-  <span className="flex min-w-0 flex-col gap-2">
-    <StackedBar parts={parts.map((p) => ({ label: p.key, amount: p.pct, color: colors[p.key] }))} formatValue={formatRate} size="xs" shape="pill" fill={fill} legend={false} />
-    <span className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-base-content/70">
-      {parts.length === 0 && <span className="text-base-content/60">Duty free</span>}
-      {parts.map((p) => (
-        <span key={p.key} className="inline-flex items-center gap-1.5 whitespace-nowrap" title={p.key}>
-          {/* Tariff color (DESIGN_SYSTEM §10) */}
-          <span className="h-2 w-2 rounded-sm" style={{ background: colors[p.key] }} aria-hidden />
-          <span className={added.has(p.key) ? "font-semibold text-error" : ""}>{p.key === BASE_PART ? "Base" : shortProgram(p.key)}</span>
-          <span className="font-semibold tabular-nums text-base-content">{formatRate(p.pct)}</span>
-          {added.has(p.key) && <span className="text-[10px] font-bold uppercase tracking-wide text-error">New</span>}
-        </span>
-      ))}
-      {ended.map((key) => (
-        <span key={key} className="inline-flex items-center gap-1.5 whitespace-nowrap text-success">
-          <span className="line-through">{shortProgram(key)}</span>
-          <span className="text-[10px] font-bold uppercase tracking-wide">Ends</span>
-        </span>
-      ))}
+// One bar of the duty on the import, on the list's shared scale, with its rate at the end
+const DutyBar = ({ label, parts, pct, colors, maxPct, faded, rateClass }: { label: string; parts: RatePart[]; pct: number; colors: Record<string, string>; maxPct: number; faded?: boolean; rateClass: string }) => (
+  <span className="grid grid-cols-[3.5rem_minmax(0,1fr)_3.75rem] items-center gap-3">
+    <span className="text-[11px] font-bold uppercase tracking-wider text-base-content/50">{label}</span>
+    <span className={faded ? "opacity-55" : ""}>
+      <StackedBar
+        parts={parts.map((p) => ({ label: p.key, amount: p.pct, color: colors[p.key] }))}
+        formatValue={formatRate}
+        size="xs"
+        shape="pill"
+        fill={maxPct > 0 ? Math.max(pct / maxPct, pct > 0 ? 0.02 : 0) : 0}
+        legend={false}
+      />
     </span>
+    <span className={`text-right tabular-nums ${rateClass}`}>{formatRate(pct)}</span>
   </span>
 );
+
+// The duty the day before and from the change, as two bars on one scale, then what's in the
+// second: what the action adds marked new, what it ends struck
+const BeforeAfter = ({ r, colors, maxPct }: { r: RowData; colors: Record<string, string>; maxPct: number }) => {
+  const { impact, group } = r;
+  const tone = group === "up" ? "text-error" : group === "down" ? "text-success" : "text-base-content";
+  return (
+    <span className="flex min-w-0 flex-col gap-1.5">
+      {r.beforeParts ? (
+        <>
+          <DutyBar label="Before" parts={r.beforeParts} pct={impact.beforePct!} colors={colors} maxPct={maxPct} faded rateClass="text-sm text-base-content/60" />
+          <DutyBar label={impact.date ? day(impact.date, false) : "After"} parts={r.parts} pct={impact.afterPct!} colors={colors} maxPct={maxPct} rateClass={`${tt.display} text-base font-semibold ${tone}`} />
+        </>
+      ) : (
+        <DutyBar label="Today" parts={r.parts} pct={r.product.totalPct} colors={colors} maxPct={maxPct} rateClass={`${tt.display} text-base font-semibold text-base-content`} />
+      )}
+      <span className="flex flex-wrap gap-x-3 gap-y-1 pl-[4.25rem] text-xs text-base-content/70">
+        {r.parts.length === 0 && <span className="text-base-content/60">Duty free</span>}
+        {r.parts.map((p) => (
+          <span key={p.key} className="inline-flex items-center gap-1.5 whitespace-nowrap" title={p.key}>
+            {/* Tariff color (DESIGN_SYSTEM §10) */}
+            <span className="h-2 w-2 rounded-sm" style={{ background: colors[p.key] }} aria-hidden />
+            <span className={r.added.has(p.key) ? "font-semibold text-error" : ""}>{p.key === BASE_PART ? "Base" : shortProgram(p.key)}</span>
+            <span className="font-semibold tabular-nums text-base-content">{formatRate(p.pct)}</span>
+            {r.added.has(p.key) && <span className="text-[10px] font-bold uppercase tracking-wide text-error">New</span>}
+          </span>
+        ))}
+        {r.ended.map((key) => (
+          <span key={key} className="inline-flex items-center gap-1.5 whitespace-nowrap text-success">
+            <span className="line-through">{shortProgram(key)}</span>
+            <span className="text-[10px] font-bold uppercase tracking-wide">Ends</span>
+          </span>
+        ))}
+      </span>
+    </span>
+  );
+};
 
 interface RowData {
   impact: ImportImpact;
   product: TrackedProduct;
   group: ImpactGroup;
   parts: RatePart[];
+  // The day before, when it's confirmed
+  beforeParts: RatePart[] | null;
   added: Set<string>;
   ended: string[];
   pct: number;
@@ -122,7 +154,7 @@ interface RowData {
 const Row = ({ r, colors, maxPct, effective, today, perYear }: { r: RowData; colors: Record<string, string>; maxPct: number; effective: string | null; today: string; perYear: number | null }) => {
   const [open, setOpen] = useState(false);
   const { openProduct } = useTrackerNav();
-  const { impact, product, group } = r;
+  const { impact, product } = r;
   const confirmed = impact.level === "confirmed";
   const future = confirmed && !!impact.date && impact.date > today;
   const delta = impact.deltaUsd ?? 0;
@@ -138,22 +170,7 @@ const Row = ({ r, colors, maxPct, effective, today, perYear }: { r: RowData; col
           </span>
           <span className="line-clamp-2 text-xs text-base-content/60">{product.description}</span>
         </span>
-        <Tariffs parts={r.parts} ended={r.ended} added={r.added} colors={colors} fill={maxPct > 0 ? Math.max(r.pct / maxPct, r.pct > 0 ? 0.02 : 0) : 0} />
-        <span className="flex flex-col items-end gap-0.5">
-          {confirmed ? (
-            <>
-              <span className={`${tt.display} text-xl font-semibold tabular-nums ${group === "up" ? "text-error" : group === "down" ? "text-success" : "text-base-content"}`}>
-                {formatRate(impact.afterPct!)}
-              </span>
-              <span className="text-xs tabular-nums text-base-content/60">from {formatRate(impact.beforePct!)}</span>
-            </>
-          ) : (
-            <>
-              <span className={`${tt.display} text-xl font-semibold tabular-nums text-base-content`}>{formatRate(product.totalPct)}</span>
-              <span className="text-xs text-base-content/60">today</span>
-            </>
-          )}
-        </span>
+        <BeforeAfter r={r} colors={colors} maxPct={maxPct} />
         <span className="flex flex-col items-end gap-1">
           {confirmed && impact.reason === "ban" ? (
             <span className={tt.chip("error")}>Import ban</span>
@@ -231,7 +248,8 @@ export const ImpactImports = ({
         if (!product) return [];
         const confirmed = impact.level === "confirmed" && !!impact.after && !!impact.before;
         const parts = confirmed ? rateParts(impact.after!.result, product.customsValue) : product.parts;
-        const before = confirmed ? rateParts(impact.before!.result, product.customsValue).map((p) => p.key) : [];
+        const beforeParts = confirmed ? rateParts(impact.before!.result, product.customsValue) : null;
+        const before = (beforeParts ?? []).map((p) => p.key);
         const after = new Set(parts.map((p) => p.key));
         return [
           {
@@ -239,9 +257,10 @@ export const ImpactImports = ({
             product,
             group: groupOf(impact),
             parts,
+            beforeParts,
             added: new Set(confirmed ? parts.map((p) => p.key).filter((k) => !before.includes(k)) : []),
             ended: before.filter((k) => !after.has(k)),
-            pct: confirmed ? impact.afterPct! : product.totalPct,
+            pct: confirmed ? Math.max(impact.afterPct!, impact.beforePct!) : product.totalPct,
           },
         ];
       }),
@@ -301,7 +320,7 @@ export const ImpactImports = ({
         )}
       </div>
       <div className={`${GRID} border-y border-base-300 px-6 py-2.5`}>
-        {["Product and origin", "Tariffs after", "Duty rate", "Change", ""].map((h, i) => (
+        {["Product and origin", "Duty before and after", "Change", ""].map((h, i) => (
           <span key={i} className={`${tt.eyebrow()} ${i >= 2 ? "text-right" : ""}`}>
             {h}
           </span>
