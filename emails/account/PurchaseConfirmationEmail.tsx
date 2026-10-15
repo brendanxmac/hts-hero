@@ -19,18 +19,18 @@ export interface PurchaseConfirmationEmailProps {
   footer: EmailFooter
 }
 
-export const purchaseConfirmationSubject = (p: PurchaseConfirmationEmailProps) => `You're on ${p.planName}: here's what to do first`
+export const purchaseConfirmationSubject = (p: PurchaseConfirmationEmailProps) => `Purchase Confirmed: ${p.planName}`
 
 const CAMPAIGN = "purchase"
 
 export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailProps) {
   const tracker = p.product === "tracker"
   return (
-    <EmailLayout preview={`Your ${p.planName} plan is active. Three things to do first.`} footer={p.footer}>
-      <Eyebrow tone="down">Payment confirmed</Eyebrow>
-      <Title>You&apos;re on {p.planName}</Title>
+    <EmailLayout preview={`Your ${p.planName} plan is active. Here's what to do next.`} footer={p.footer}>
+      <Eyebrow tone="down">Purchase confirmed</Eyebrow>
+      <Title>{p.planName}</Title>
       <P>
-        Thank you for choosing HTS Hero.{" "}
+        Thank you for choosing HTS Hero!{" "}
         {tracker
           ? `Alerts, savings and audits now cover ${p.importsCovered ? `up to ${p.importsCovered} imports` : "your imports"}.`
           : "Your classification plan is active."}
@@ -49,13 +49,13 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
           tracker
             ? [
               "Add the rest of your imports, so every one is covered",
-              "Turn on alerts by email, Slack or Teams, so the next tariff change reaches you the day it's announced",
+              "Turn on alerts, so you're notified the next time a tariff change hits your imports",
               "Check for savings on your imports: trade programs, exemptions and lower-duty origins you may qualify for",
             ]
             : [
               "Start a classification from a product description",
-              "Review the candidates against the legal notes and CROSS rulings",
-              "Download the audit-ready report for your files",
+              "Quickly see candidates, legal notes, and CROSS rulings",
+              "Generate an audit-ready report for your files",
             ]
         }
       />

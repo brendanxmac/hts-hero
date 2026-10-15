@@ -17,9 +17,9 @@ export const AUTH_EMAILS: Record<AuthKind, { subject: string; eyebrow: string; t
     subject: "Confirm your email to open your Tariff Tracker",
     eyebrow: "One step left",
     title: "Confirm your email",
-    body: "Confirm this address and your Tariff Tracker opens: add your HTS codes and countries, and see every duty, change and possible saving on each import.",
-    button: "Confirm and open my Tracker",
-    preview: "Confirm your email and your Tariff Tracker opens.",
+    body: "Confirm this address to access Tariff Tracker. Then, add your HTS codes and countries, and see every duty, change, and possible saving on each import.",
+    button: "Confirm and open Tariff Tracker",
+    preview: "Confirm your email to access Tariff Tracker.",
   },
   magic_link: {
     subject: "Your HTS Hero sign-in link",

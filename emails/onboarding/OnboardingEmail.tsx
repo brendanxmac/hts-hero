@@ -37,9 +37,9 @@ export default function OnboardingEmail(props: OnboardingEmailProps) {
   if (step === 1) {
     return (
       <EmailLayout preview={preview(props)} footer={footer}>
-        <Eyebrow>Your Tariff Tracker</Eyebrow>
-        <Title>You just made tariffs easy</Title>
-        <P>No more digging through the HTS, Federal Register notices and CBP messages. Your Tariff Tracker does it for you:</P>
+        <Eyebrow>Welcome to Tariff Tracker</Eyebrow>
+        <Title>You just made tariffs a whole lot easier</Title>
+        <P>No more digging through the HTS, Federal Register notices and CBP messages. Tariff Tracker does it for you:</P>
         <Checklist
           items={[
             <><strong>Every rate, always current.</strong> The full duty on each import, line by line, updated the moment anything changes.</>,
@@ -50,7 +50,7 @@ export default function OnboardingEmail(props: OnboardingEmailProps) {
         />
         <P>It all starts with your imports. Paste your HTS codes and countries, and you&apos;re set in about a minute.</P>
         <Cta href={siteLink(ADD_IMPORTS_URL, campaign)} variant="next">
-          Add my imports
+          Add your imports &rarr;
         </Cta>
         <Signature />
         <PlanStrip campaign={campaign} />
