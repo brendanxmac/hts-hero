@@ -1,11 +1,11 @@
 import { Column, Link, Row, Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { Cta, Divider, Eyebrow, P, Panel, Signature, StageTrack, Title, UpdateBlock, UpdateSummary, pct, usd } from "../kit/parts"
+import { Cta, Eyebrow, P, Title, UpdateSummary, pct, updateUrl } from "../kit/parts"
 import { C, FONT_DISPLAY, siteLink, TONES } from "../kit/brand"
 
-// A personal tariff alert: one tariff update and the account's own imports it affects, sent after
-// the admin approved the update's impact check. Each import shows what changes for it: confirmed
-// by the duty engine (rate before and after, and the change on one shipment), or likely (the
+// A personal tariff alert, short: how many of the account's imports one tariff update affects, sent
+// after the admin approved the update's impact check. Each import shows its rate before and after
+// (rates only, never dollars), confirmed by the duty engine, or likely (the
 // update names its code and country; confirmed once it's in the HTS). Imports outside the plan's
 // alert slots are counted, not detailed (the upgrade). A later approval sends only what's new or
 // changed, and says which imports it no longer affects.
@@ -41,64 +41,52 @@ const short = (description: string) => {
   return last.length > 60 ? `${last.slice(0, 57).trim()}…` : last
 }
 
-const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
+const imports = (n: number) => `${n} of your imports`
 
 export const impactAlertSubject = (p: ImpactAlertEmailProps) => {
   const n = p.imports.length + p.beyond
-  const title = p.update.title.length > 70 ? `${p.update.title.slice(0, 67).trim()}…` : p.update.title
-  if (!n && p.removed.length) return `Update: ${title} no longer affects ${plural(p.removed.length, "of your imports", "of your imports")}`
-  const sure = p.imports.some((i) => i.level === "confirmed")
+  if (!n && p.removed.length) return `Good news: a tariff update no longer affects ${imports(p.removed.length)}`
   // Only confirmations of an earlier "may apply" alert
   if (p.imports.length && p.imports.every((i) => i.nowConfirmed) && !p.beyond && !p.removed.length)
-    return `Confirmed: ${title} affects ${n} of your imports`
-  return `Tariff alert: ${title} ${sure ? "affects" : "may affect"} ${n} of your imports`
+    return `Confirmed: ${imports(n)} ${n === 1 ? "is" : "are"} affected by a new tariff`
+  const sure = p.imports.some((i) => i.level === "confirmed")
+  return sure
+    ? `${imports(n)} ${n === 1 ? "is" : "are"} affected by a new tariff announcement`
+    : `${imports(n)} may be affected by a new tariff announcement`
 }
 
+// The rate before and after, never dollars
 const Change = ({ i }: { i: AlertedImport }) => {
-  if (i.level === "likely") return <Text style={{ margin: 0, fontSize: 13, lineHeight: "19px", color: TONES["heads-up"].fg }}>May apply: we&apos;ll confirm once it&apos;s in the HTS</Text>
-  const delta = Number(i.deltaUsd ?? 0)
-  if (Math.abs(delta) < 0.5)
-    return <Text style={{ margin: 0, fontSize: 13, lineHeight: "19px", color: C.muted }}>New Chapter 99 number to report, same duty ({pct(Number(i.afterPct))})</Text>
-  const tone = delta > 0 ? TONES.up.fg : TONES.down.fg
+  if (i.level === "likely") return <Text style={{ margin: 0, fontSize: 13, lineHeight: "19px", color: TONES["heads-up"].fg }}>May apply, confirmed once it&apos;s in the HTS</Text>
+  if (Number(i.beforePct) === Number(i.afterPct))
+    return <Text style={{ margin: 0, fontSize: 13, lineHeight: "19px", color: C.muted }}>Same duty ({pct(Number(i.afterPct))}), new Chapter 99 number to report</Text>
+  const tone = Number(i.afterPct) > Number(i.beforePct) ? TONES.up.fg : TONES.down.fg
   return (
     <Text style={{ margin: 0, fontSize: 13, lineHeight: "19px", color: C.text }}>
       {pct(Number(i.beforePct))} → <strong style={{ color: tone }}>{pct(Number(i.afterPct))}</strong>
-      <span style={{ color: tone }}>
-        {" "}
-        · {delta > 0 ? "+" : "−"}
-        {usd(Math.abs(delta))} per shipment
-      </span>
     </Text>
   )
 }
 
-export default function ImpactAlertEmail({ update, reached, current, imports, removed, beyond, paid, footer }: ImpactAlertEmailProps) {
+export default function ImpactAlertEmail(props: ImpactAlertEmailProps) {
+  const { update, imports: alerted, removed, beyond, paid, footer } = props
   const campaign = "impact-alert"
-  const total = imports.length + beyond
-  const confirmation = imports.length > 0 && imports.every((i) => i.nowConfirmed) && !beyond && !removed.length
-  const extra = imports.filter((i) => i.level === "confirmed").reduce((sum, i) => sum + Number(i.deltaUsd ?? 0), 0)
   return (
-    <EmailLayout preview={total ? `${plural(total, "of your imports", "of your imports")}${extra > 0 ? `, up to ${usd(extra)} more per shipment` : ""}. ${update.summary.slice(0, 90)}` : update.summary.slice(0, 140)} footer={footer}>
-      <Eyebrow tone="up">{confirmation ? "Now confirmed" : "Tariff alert"}</Eyebrow>
-      <Title size={24}>
-        {confirmation
-          ? `Confirmed: this affects ${plural(total, "of your imports", "of your imports")}`
-          : total
-            ? `This affects ${plural(total, "of your imports", "of your imports")}`
-            : `This no longer affects ${plural(removed.length, "of your imports", "of your imports")}`}
-      </Title>
-      <UpdateBlock update={update} campaign={campaign} />
-      <StageTrack reached={reached} current={current} />
+    <EmailLayout preview={`${update.title}. See the new rate on each one.`.slice(0, 160)} footer={footer}>
+      <Eyebrow tone="up">Tariff alert</Eyebrow>
+      <Title size={24}>{impactAlertSubject(props)}</Title>
+      <P>
+        <Link href={updateUrl(update.slug, campaign)} style={{ color: C.text, fontWeight: 600 }}>
+          {update.title}
+        </Link>
+      </P>
 
-      {imports.length > 0 && (
+      {alerted.length > 0 && (
         <Section style={{ margin: "4px 0 18px" }}>
-          {imports.map((i) => (
+          {alerted.map((i) => (
             <Row key={i.key} style={{ borderTop: `1px solid ${C.border}` }}>
               <Column style={{ padding: "12px 0", verticalAlign: "top" }}>
-                <Text style={{ margin: 0, fontFamily: FONT_DISPLAY, fontSize: 15, lineHeight: "21px", fontWeight: 600, color: C.text }}>
-                  {short(i.description)}
-                  {i.nowConfirmed && <span style={{ marginLeft: 6, fontSize: 11, color: TONES.up.fg }}>NOW CONFIRMED</span>}
-                </Text>
+                <Text style={{ margin: 0, fontFamily: FONT_DISPLAY, fontSize: 15, lineHeight: "21px", fontWeight: 600, color: C.text }}>{short(i.description)}</Text>
                 <Text style={{ margin: "2px 0 4px", fontSize: 12, lineHeight: "17px", color: C.muted }}>
                   {i.code} · {i.country}
                 </Text>
@@ -110,45 +98,26 @@ export default function ImpactAlertEmail({ update, reached, current, imports, re
       )}
 
       {beyond > 0 && (
-        <Panel>
-          <Text style={{ margin: 0, fontSize: 14, lineHeight: "21px", color: C.text }}>
-            <strong>It may also affect {plural(beyond, "more of your imports", "more of your imports")}</strong>, outside the imports your alerts cover.{" "}
-            {paid ? "Add them to your plan to see each one." : "Alerts cover up to 10 imports on your free account; a plan covers them all."}{" "}
-            <Link href={siteLink("/tariff-tracker?upgrade=alerts", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
-              See plans
-            </Link>
-          </Text>
-        </Panel>
+        <P small>
+          Plus {beyond} more outside the imports your alerts cover.{" "}
+          <Link href={siteLink("/tariff-tracker?upgrade=alerts", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
+            {paid ? "Cover them too" : "See plans"}
+          </Link>
+        </P>
       )}
 
       {removed.length > 0 && (
-        <>
-          <Divider />
-          <Eyebrow tone="down">No longer affected</Eyebrow>
-          <P small>
-            On a closer look at the official documents, this update doesn&apos;t apply to {removed.map((r) => `${short(r.description)} (${r.code}, ${r.country})`).join("; ")}.
-          </P>
-        </>
+        <P small>No longer affected: {removed.map((r) => `${short(r.description)} (${r.code}, ${r.country})`).join("; ")}.</P>
       )}
 
       <Cta href={siteLink(`/tariff-tracker?tab=impact&update=${encodeURIComponent(update.slug)}`, campaign)} variant="next">
         See the impact on my imports
       </Cta>
-      {imports.length > 0 && (
-        <P muted small>
-          Confirmed changes come from the duty engine, worked out on your import&apos;s saved value.
-          {imports.some((i) => i.level === "likely") &&
-            " \"May apply\" means the update names your import's code and country; we'll confirm the exact duty once it's in the HTS."}
-        </P>
-      )}
       <P muted small>
-        Choose which kinds of update alert you, add Slack or Teams, or turn alerts off in your{" "}
-        <Link href={siteLink("/tariff-tracker?tab=alerts", campaign)} style={{ color: C.cobalt }}>
-          alert settings
+        <Link href={siteLink("/tariff-tracker?tab=alerts", campaign)} style={{ color: C.muted }}>
+          Alert settings
         </Link>
-        .
       </P>
-      <Signature />
     </EmailLayout>
   )
 }

@@ -1,11 +1,10 @@
 import { Link } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { Checklist, Cta, Divider, Eyebrow, P, Panel, PlanStrip, Signature, Title, UpdateBlock, UpdateSummary } from "../kit/parts"
+import { Checklist, Cta, Eyebrow, P, Panel, PlanStrip, Signature, Title, UpdateSummary } from "../kit/parts"
 import { C, siteLink } from "../kit/brand"
-import { TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
 
-// One time, to accounts from before the Tariff Tracker: what their account includes now, the
-// latest tariff actions, and a one-click opt-in to the weekly digest (they're not on it unless
+// One time, to accounts from before the Tariff Tracker: what their account includes now, and a
+// one-click opt-in to the weekly digest (they're not on it unless
 // they click).
 
 export interface MeetTrackerEmailProps {
@@ -14,22 +13,22 @@ export interface MeetTrackerEmailProps {
   footer: EmailFooter
 }
 
-export const meetTrackerSubject = () => "Your HTS Hero account now tracks every tariff on your imports"
+export const meetTrackerSubject = () => "New in your account: Tariff Tracker"
 
 const CAMPAIGN = "meet-tracker"
 
-export default function MeetTrackerEmail({ optInUrl, recent, footer }: MeetTrackerEmailProps) {
+export default function MeetTrackerEmail({ optInUrl, footer }: MeetTrackerEmailProps) {
   return (
-    <EmailLayout preview="The Tariff Tracker comes with your account: every duty on your imports, savings, audits and alerts." footer={footer}>
+    <EmailLayout preview="Add your imports once and get alerted when a new tariff hits one. Free with your account." footer={footer}>
       <Eyebrow>New in your account</Eyebrow>
       <Title>Meet the Tariff Tracker</Title>
-      <P>HTS Hero has grown into a full tariff toolkit since you signed up, and your account already includes it:</P>
+      <P>US tariffs change every week. Your account now watches your imports for you. Add them once (just HTS codes and countries) to:</P>
       <Checklist
         items={[
-          "The Tariff Calculator: every duty on any HTS code and country of origin, line by line. Free and unlimited",
-          "The Tariff Tracker: add your imports and see each one's duty, rate history and cheaper origins",
-          `${TRIAL_ALLOWANCE.savingsChecks} savings checks, ${TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on ${TRIAL_ALLOWANCE.alertImports} imports, on us`,
-          "Tariff updates: every new US tariff action, in plain English, with the official documents",
+          "Track the duty rate on every import",
+          "Get alerted when a new tariff hits one",
+          "Find savings you may qualify for",
+          "Audit past entries for overpaid duty",
         ]}
       />
       <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
@@ -43,15 +42,6 @@ export default function MeetTrackerEmail({ optInUrl, recent, footer }: MeetTrack
           </Link>
         </P>
       </Panel>
-      {recent.length > 0 && (
-        <>
-          <Divider />
-          <Eyebrow tone="neutral">The latest US tariff actions</Eyebrow>
-          {recent.map((u) => (
-            <UpdateBlock key={u.slug} update={u} campaign={CAMPAIGN} compact />
-          ))}
-        </>
-      )}
       <Signature />
       <PlanStrip campaign={CAMPAIGN} />
     </EmailLayout>

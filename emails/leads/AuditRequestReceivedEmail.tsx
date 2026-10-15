@@ -24,7 +24,7 @@ export default function AuditRequestReceivedEmail({ name, company, footer }: Aud
       <P>I&apos;ll reply personally with next steps. It helps to have these ready:</P>
       <Checklist
         items={[
-          "Your ACE entry summary report (ES-003) for the period, or a list of entries",
+          "The entries you want checked: dates, HTS codes and the duty paid",
           "The HTS codes and countries of origin you import most",
           "Any refunds or protests already filed",
         ]}

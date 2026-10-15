@@ -70,9 +70,9 @@ export const TEMPLATES = {
         ...p.imports.slice(0, 6).map((i) =>
           i.level === "likely"
             ? `• ${i.code} from ${i.country}: may apply`
-            : Math.abs(Number(i.deltaUsd ?? 0)) < 0.5
+            : Number(i.beforePct) === Number(i.afterPct)
               ? `• ${i.code} from ${i.country}: new Chapter 99 number, same duty`
-              : `• ${i.code} from ${i.country}: ${i.beforePct}% → ${i.afterPct}% (${Number(i.deltaUsd) > 0 ? "+" : "−"}$${Math.abs(Math.round(Number(i.deltaUsd))).toLocaleString("en-US")} per shipment)`
+              : `• ${i.code} from ${i.country}: ${i.beforePct}% → ${i.afterPct}%`
         ),
         ...(p.imports.length > 6 ? [`…and ${p.imports.length - 6} more`] : []),
         ...(p.beyond ? [`It may also affect ${p.beyond} more of your imports outside your alerts.`] : []),

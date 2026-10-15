@@ -29,10 +29,15 @@ import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./t
 //   audit_nudge   days 7-28, no audit check yet, after the savings step
 // Any account on the trial, once:
 //   savings_used_up / audits_used_up   the free checks are spent: what they found, and a plan
+// The imports-added emails (tracker_findings) are off for now (FINDINGS_EMAILS): their dollar stats
+// are going, and a replacement is undecided.
 // Accounts from before ONBOARDING_FROM get the one-time meet_tracker email instead (queued by
 // `npm run email:meet-tracker`), with a one-click opt-in to the weekly digest.
 
 type Db = SupabaseClient
+
+// The imports-added emails (first look, nudges, free checks used up). Off until they're redone
+const FINDINGS_EMAILS = false
 
 // Accounts created from here on get the "no imports yet" emails
 export const ONBOARDING_FROM = "2026-10-16T00:00:00Z"
@@ -209,7 +214,7 @@ export const pickEmail = (
   }: { account: Account; snapshot?: SnapshotRow; imports: number; sent: Set<string>; now: Date; scoped: boolean }
 ): { key: string; variant?: FindingsVariant; step?: (typeof NO_IMPORTS_STEPS)[number] } | null => {
   const fresh = snapshot && now.getTime() - new Date(snapshot.computed_at).getTime() < 2 * DAY
-  if (snapshot && fresh && snapshot.products > 0) {
+  if (FINDINGS_EMAILS && snapshot && fresh && snapshot.products > 0) {
     // Free checks spent on the trial: the first paid ask, after what they found
     if (snapshot.plan === "trial" && snapshot.savings_checks_left === 0 && !sent.has("savings_used_up")) return { key: "savings_used_up", variant: "savings_used_up" }
     if (snapshot.plan === "trial" && snapshot.audit_checks_left === 0 && !sent.has("audits_used_up")) return { key: "audits_used_up", variant: "audits_used_up" }

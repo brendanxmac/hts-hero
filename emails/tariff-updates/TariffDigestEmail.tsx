@@ -16,12 +16,15 @@ export interface TariffDigestEmailProps {
   footer: EmailFooter
 }
 
-export const tariffDigestSubject = (p: TariffDigestEmailProps) =>
-  `${p.updates.length} US tariff ${p.updates.length === 1 ? "update" : "updates"} last week: ${p.updates[0]?.title ?? ""}`.slice(0, 120)
+export const tariffDigestSubject = (p: TariffDigestEmailProps) => {
+  const first = p.updates[0]?.title ?? ""
+  const lead = first.length > 80 ? `${first.slice(0, 77).trim()}…` : first
+  return p.updates.length > 1 ? `${lead}, + ${p.updates.length - 1} more tariff ${p.updates.length === 2 ? "change" : "changes"}` : lead
+}
 
 export default function TariffDigestEmail({ period, updates, signedIn, note, footer }: TariffDigestEmailProps) {
   return (
-    <EmailLayout preview={updates.map((u) => u.title).join(" · ").slice(0, 140)} footer={footer}>
+    <EmailLayout preview={`Also: ${updates.slice(1).map((u) => u.title).join(" · ") || updates[0]?.summary || ""}`.slice(0, 150)} footer={footer}>
       <Eyebrow>Weekly tariff digest · {period}</Eyebrow>
       <Title>
         {updates.length} US tariff {updates.length === 1 ? "update" : "updates"} last week

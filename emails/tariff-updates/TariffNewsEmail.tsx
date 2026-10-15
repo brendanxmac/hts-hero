@@ -1,6 +1,6 @@
 import { Link } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { C, siteLink } from "../kit/brand"
+import { C, formatDay, siteLink } from "../kit/brand"
 import { Cta, Eyebrow, P, Panel, StageTrack, UpdateBlock, UpdateSummary, updateUrl } from "../kit/parts"
 
 // A tariff news alert: one update from /tariff-updates, as soon as it's found (or cleared after
@@ -21,22 +21,27 @@ export interface TariffNewsEmailProps {
   footer: EmailFooter
 }
 
-export const tariffNewsSubject = (p: TariffNewsEmailProps) => (p.step ? `${p.step}: ${p.update.title}` : p.update.title)
+export const tariffNewsSubject = (p: TariffNewsEmailProps) => (p.step ? `${p.step}: ${p.update.title}` : `New tariff: ${p.update.title}`)
+
+// The facts first (when, who), then the summary: enough to open, not enough to skip the click
+const newsPreview = (u: UpdateSummary) =>
+  [[u.effectiveOn ? `Effective ${formatDay(u.effectiveOn)}` : null, u.countriesLabel].filter(Boolean).join(" · "), u.summary]
+    .filter(Boolean)
+    .join(". ")
+    .slice(0, 150)
 
 // After the news, the way to the reader's own imports: their Tracker, or a free one
 export const TrackerLine = ({ signedIn, campaign }: { signedIn?: boolean; campaign: string }) =>
   signedIn ? (
     <P muted small>
-      See whether it changes the duty on your own imports in{" "}
+      Does it hit your imports?{" "}
       <Link href={siteLink("/tariff-tracker?tab=news", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
-        your Tariff Tracker
+        Check in your Tariff Tracker
       </Link>
-      .
     </P>
   ) : (
     <P muted small>
-      Want to know when a change like this hits your own imports? Add your HTS codes and countries to the free Tariff Tracker and we&apos;ll alert you
-      when an update affects one of them.{" "}
+      Get alerted when a change like this hits your own imports.{" "}
       <Link href={siteLink("/tariff-tracker?tab=catalog&add=paste", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
         Add my imports, free
       </Link>
@@ -45,7 +50,7 @@ export const TrackerLine = ({ signedIn, campaign }: { signedIn?: boolean; campai
 
 export default function TariffNewsEmail({ update, reached, current, step, signedIn, note, footer }: TariffNewsEmailProps) {
   return (
-    <EmailLayout preview={update.summary.slice(0, 140)} footer={footer}>
+    <EmailLayout preview={newsPreview(update)} footer={footer}>
       <Eyebrow>{step ? `US tariff update · ${step}` : "US tariff update"}</Eyebrow>
       {note && (
         <Panel>
@@ -54,10 +59,7 @@ export default function TariffNewsEmail({ update, reached, current, step, signed
       )}
       <UpdateBlock update={update} campaign="tariff-news" />
       <StageTrack reached={reached} current={current} />
-      <Cta href={updateUrl(update.slug, "tariff-news")}>Read the full update</Cta>
-      <P muted small>
-        Every update links to the official documents it&apos;s based on: proclamations, Federal Register notices and CBP guidance.
-      </P>
+      <Cta href={updateUrl(update.slug, "tariff-news")}>See what&apos;s changing</Cta>
       <TrackerLine signedIn={signedIn} campaign="tariff-news" />
     </EmailLayout>
   )

@@ -3,7 +3,7 @@ import { Checklist, Cta, Eyebrow, P, Panel, PlanStrip, Signature, Title, UpdateB
 import { siteLink } from "../kit/brand"
 
 // Sent the moment an account is created. Value first: what the Tracker shows once imports are in,
-// three ways to add them in a minute (one of them: send us the spreadsheet), and the latest tariff
+// two ways to add them in a minute, and the latest tariff
 // action, so the first email already teaches something. One button: add my imports.
 
 export interface WelcomeEmailProps {
@@ -29,20 +29,19 @@ export default function WelcomeEmail({ latestUpdate, footer }: WelcomeEmailProps
         items={[
           "Paste your HTS codes and countries of origin",
           "Upload a CSV, with values and quantities if you have them",
-          "Or reply to this email with your spreadsheet, and we'll load it for you",
         ]}
       />
       <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
         Add my imports
       </Cta>
-      {latestUpdate && (
+      {/* {latestUpdate && (
         <>
           <Panel>
             <Eyebrow tone="neutral">The latest US tariff action</Eyebrow>
             <UpdateBlock update={latestUpdate} campaign={CAMPAIGN} compact />
           </Panel>
         </>
-      )}
+      )} */}
       <Signature />
       <PlanStrip campaign={CAMPAIGN} />
     </EmailLayout>

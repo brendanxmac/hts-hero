@@ -1,23 +1,28 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowRightIcon, ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { ChevronRightIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { StackedBar } from "@/components/ui/charts/StackedBar";
+import { partColors } from "@/components/ui/charts/partColors";
 import type { DutyAt, ImportImpact } from "@/libs/tariff-updates/impactOf";
 import type { DutyLine } from "@/tariffs/engine-v2/types";
 import { formatRate } from "../formatRate";
-import type { TrackedProduct } from "../report";
+import { BASE_PART, rateParts, shortProgram, type RatePart, type TrackedProduct } from "../report";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
-import { day, groupOf, GROUPS, money, reasonText, type ImpactGroup } from "./format";
+import { day, groupOf, money, reasonText, type ImpactGroup } from "./format";
 
-// Every import the update affects or may affect, biggest change first. A row opens to the duty
-// line by line, the day before and the day it changes (what starts, what stops, what moves), or,
-// when it isn't confirmed, why it may apply; each opens the import's own page.
+// The imports an action affects, laid out like Your imports (DESIGN_SYSTEM §15): the product, its
+// origin, its tariffs after the change as one bar (what the action adds marked new, what it ends
+// struck), the rate before and after, and the change on a shipment. Biggest change first. A row
+// opens to the duty line by line, the day before and the day of the change, or why it may apply.
 
 export type Show = "affected" | "confirmed" | "likely" | "possible";
+
+const GRID = "grid grid-cols-[minmax(0,1.5fr)_8rem_minmax(0,1.6fr)_7rem_8rem_1.25rem] items-center gap-5";
 
 interface Line {
   code: string;
@@ -39,133 +44,159 @@ const DutyDiff = ({ impact }: { impact: ImportImpact }) => {
   const find = (lines: Line[], code: string) => lines.find((l) => l.code === code);
   const cell = (l?: Line) => (l ? `${l.pct === null ? "" : `${formatRate(l.pct)} · `}${money(l.amount)}` : "—");
   return (
-    <div className={`${tt.tile} overflow-hidden`}>
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="text-left">
-            <th className={`${tt.eyebrow()} px-4 py-2.5`}>Duty line</th>
-            <th className={`${tt.eyebrow()} px-4 py-2.5 text-right`}>{day(impact.date!, false)} before</th>
-            <th className={`${tt.eyebrow()} px-4 py-2.5 text-right`}>From {day(impact.date!, false)}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {codes.map((code) => {
-            const b = find(before, code);
-            const a = find(after, code);
-            const state = !b ? "added" : !a ? "removed" : Math.abs(a.amount - b.amount) > 0.5 ? "changed" : "same";
-            const tone = state === "added" ? "text-error" : state === "removed" ? "text-success" : state === "changed" ? (a!.amount > b!.amount ? "text-error" : "text-success") : "text-base-content/70";
-            return (
-              <tr key={code} className="border-t border-base-300/70">
-                <td className="px-4 py-2">
-                  <span className={state === "same" ? "text-base-content/80" : "font-semibold text-base-content"}>{(a ?? b)!.name}</span>
-                  {code !== "BASE" && <span className="ml-2 font-mono text-xs text-base-content/50">{code}</span>}
-                  {state === "added" && <span className={`${tt.chip("error")} ml-2`}>New</span>}
-                  {state === "removed" && <span className={`${tt.chip("success")} ml-2`}>Ends</span>}
-                </td>
-                <td className={`px-4 py-2 text-right tabular-nums ${state === "removed" ? "text-base-content/50 line-through" : "text-base-content/70"}`}>{cell(b)}</td>
-                <td className={`px-4 py-2 text-right font-semibold tabular-nums ${tone}`}>{cell(a)}</td>
-              </tr>
-            );
-          })}
-          <tr className="border-t border-base-300">
-            <td className="px-4 py-2.5 font-semibold text-base-content">Total duty</td>
-            <td className="px-4 py-2.5 text-right tabular-nums text-base-content/70">
-              {formatRate(impact.beforePct!)} · {money(impact.before!.result.totalDuty)}
-            </td>
-            <td className="px-4 py-2.5 text-right font-semibold tabular-nums text-base-content">
-              {formatRate(impact.afterPct!)} · {money(impact.after!.result.totalDuty)}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="text-left">
+          <th className={`${tt.eyebrow()} pb-2`}>Duty line</th>
+          <th className={`${tt.eyebrow()} pb-2 text-right`}>Day before</th>
+          <th className={`${tt.eyebrow()} pb-2 text-right`}>From {day(impact.date!, false)}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {codes.map((code) => {
+          const b = find(before, code);
+          const a = find(after, code);
+          const state = !b ? "added" : !a ? "removed" : Math.abs(a.amount - b.amount) > 0.5 ? "changed" : "same";
+          return (
+            <tr key={code} className="border-t border-base-300">
+              <td className="py-2 pr-4">
+                <span className={state === "same" ? "text-base-content/70" : "font-semibold text-base-content"}>{(a ?? b)!.name}</span>
+                {code !== "BASE" && <span className="ml-2 font-mono text-xs text-base-content/50">{code}</span>}
+              </td>
+              <td className={`py-2 text-right tabular-nums ${state === "removed" ? "text-base-content/50 line-through" : "text-base-content/60"}`}>{cell(b)}</td>
+              <td
+                className={`py-2 text-right tabular-nums ${
+                  state === "added" || (state === "changed" && a!.amount > b!.amount) ? "font-semibold text-error" : state === "changed" ? "font-semibold text-success" : "text-base-content/70"
+                }`}
+              >
+                {state === "removed" ? <span className="font-semibold text-success">Ends</span> : cell(a)}
+              </td>
+            </tr>
+          );
+        })}
+        <tr className="border-t border-base-300">
+          <td className="py-2.5 font-semibold text-base-content">Total duty</td>
+          <td className="py-2.5 text-right tabular-nums text-base-content/60">{money(impact.before!.result.totalDuty)}</td>
+          <td className="py-2.5 text-right font-semibold tabular-nums text-base-content">{money(impact.after!.result.totalDuty)}</td>
+        </tr>
+      </tbody>
+    </table>
   );
 };
 
-const Row = ({ impact, product, effective, today, perYear }: { impact: ImportImpact; product: TrackedProduct; effective: string | null; today: string; perYear: number | null }) => {
+// The tariffs on the import after the change, as the bar and legend Your imports uses
+const Tariffs = ({ parts, ended, added, colors, fill }: { parts: RatePart[]; ended: string[]; added: Set<string>; colors: Record<string, string>; fill: number }) => (
+  <span className="flex min-w-0 flex-col gap-2">
+    <StackedBar parts={parts.map((p) => ({ label: p.key, amount: p.pct, color: colors[p.key] }))} formatValue={formatRate} size="xs" shape="pill" fill={fill} legend={false} />
+    <span className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-base-content/70">
+      {parts.length === 0 && <span className="text-base-content/60">Duty free</span>}
+      {parts.map((p) => (
+        <span key={p.key} className="inline-flex items-center gap-1.5 whitespace-nowrap" title={p.key}>
+          {/* Tariff color (DESIGN_SYSTEM §10) */}
+          <span className="h-2 w-2 rounded-sm" style={{ background: colors[p.key] }} aria-hidden />
+          <span className={added.has(p.key) ? "font-semibold text-error" : ""}>{p.key === BASE_PART ? "Base" : shortProgram(p.key)}</span>
+          <span className="font-semibold tabular-nums text-base-content">{formatRate(p.pct)}</span>
+          {added.has(p.key) && <span className="text-[10px] font-bold uppercase tracking-wide text-error">New</span>}
+        </span>
+      ))}
+      {ended.map((key) => (
+        <span key={key} className="inline-flex items-center gap-1.5 whitespace-nowrap text-success">
+          <span className="line-through">{shortProgram(key)}</span>
+          <span className="text-[10px] font-bold uppercase tracking-wide">Ends</span>
+        </span>
+      ))}
+    </span>
+  </span>
+);
+
+interface RowData {
+  impact: ImportImpact;
+  product: TrackedProduct;
+  group: ImpactGroup;
+  parts: RatePart[];
+  added: Set<string>;
+  ended: string[];
+  pct: number;
+}
+
+const Row = ({ r, colors, maxPct, effective, today, perYear }: { r: RowData; colors: Record<string, string>; maxPct: number; effective: string | null; today: string; perYear: number | null }) => {
   const [open, setOpen] = useState(false);
   const { openProduct } = useTrackerNav();
-  const group = groupOf(impact);
-  const g = GROUPS[group];
+  const { impact, product, group } = r;
   const confirmed = impact.level === "confirmed";
   const future = confirmed && !!impact.date && impact.date > today;
   const delta = impact.deltaUsd ?? 0;
   return (
     <li className="border-t border-base-300 first:border-t-0">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        className="grid w-full grid-cols-[minmax(0,1fr)_8rem_9.5rem_7rem_1.25rem] items-center gap-4 px-6 py-3.5 text-left transition-colors hover:bg-tt-soft"
-      >
-        <span className="flex min-w-0 items-center gap-3">
-          <span className="h-9 w-1.5 shrink-0 rounded-full" style={{ background: g.mark }} aria-hidden />
-          <span className="flex min-w-0 flex-col">
-            <span className="truncate text-sm font-semibold text-base-content">{product.description}</span>
-            <span className="truncate text-xs text-base-content/60">
-              <span className="font-mono">{product.entry.element.htsno}</span> · {product.entry.country.flag} {product.entry.country.name}
-            </span>
-          </span>
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={`${GRID} w-full px-6 py-4 text-left transition-colors hover:bg-tt-soft`}>
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-sm font-semibold tabular-nums text-base-content">{product.entry.element.htsno}</span>
+          <span className="line-clamp-2 text-xs text-base-content/60">{product.description}</span>
         </span>
-        <span className="flex flex-col items-start gap-1">
-          <span className={SOLID[group]}>{g.short}</span>
-          {future && <span className="text-[11px] font-semibold text-warning">From {day(impact.date!, false)}</span>}
+        <span className="flex min-w-0 items-center gap-2 text-sm text-base-content">
+          <span aria-hidden>{product.entry.country.flag}</span>
+          <span className="truncate">{product.entry.country.name}</span>
         </span>
-        <span className="text-sm tabular-nums">
+        <Tariffs parts={r.parts} ended={r.ended} added={r.added} colors={colors} fill={maxPct > 0 ? Math.max(r.pct / maxPct, r.pct > 0 ? 0.02 : 0) : 0} />
+        <span className="flex flex-col items-end gap-0.5">
           {confirmed ? (
             <>
-              <span className="text-base-content/60">{formatRate(impact.beforePct!)}</span>
-              <span className="mx-1.5 text-base-content/40">→</span>
-              <span className={`font-semibold ${group === "up" ? "text-error" : group === "down" ? "text-success" : "text-base-content"}`}>{formatRate(impact.afterPct!)}</span>
+              <span className={`${tt.display} text-xl font-semibold tabular-nums ${group === "up" ? "text-error" : group === "down" ? "text-success" : "text-base-content"}`}>
+                {formatRate(impact.afterPct!)}
+              </span>
+              <span className="text-xs tabular-nums text-base-content/60">from {formatRate(impact.beforePct!)}</span>
             </>
           ) : (
-            <span className="text-base-content/60">Now {formatRate(product.totalPct)}</span>
-          )}
-        </span>
-        <span className="flex flex-col items-end">
-          {confirmed && Math.abs(delta) > 0.5 ? (
             <>
-              <span className={`${tt.display} text-base font-semibold tabular-nums ${delta > 0 ? "text-error" : "text-success"}`}>{money(delta, true)}</span>
-              <span className="text-[11px] text-base-content/60">{perYear ? `${money(delta * perYear, true)} a year` : "per shipment"}</span>
+              <span className={`${tt.display} text-xl font-semibold tabular-nums text-base-content`}>{formatRate(product.totalPct)}</span>
+              <span className="text-xs text-base-content/60">today</span>
             </>
-          ) : (
-            <span className="text-xs text-base-content/50">{confirmed ? "No change" : "—"}</span>
           )}
         </span>
-        <ChevronDownIcon className={`h-5 w-5 text-base-content/40 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
+        <span className="flex flex-col items-end gap-1">
+          {confirmed && impact.reason === "ban" ? (
+            <span className={tt.chip("error")}>Import ban</span>
+          ) : confirmed && Math.abs(delta) > 0.5 ? (
+            <>
+              <span className={`${tt.chip(delta > 0 ? "error" : "success")} tabular-nums`}>{money(delta, true)}</span>
+              <span className="text-xs text-base-content/60">{perYear ? `${money(delta * perYear, true)} a year` : "per shipment"}</span>
+            </>
+          ) : confirmed ? (
+            <>
+              <span className={tt.chip()}>Same duty</span>
+              <span className="text-xs text-base-content/60">New number</span>
+            </>
+          ) : impact.level === "likely" ? (
+            <span className={tt.chip("warning")}>May apply</span>
+          ) : (
+            <span className="text-xs text-base-content/60">Country only</span>
+          )}
+          {future && <span className="text-xs font-semibold text-warning">From {day(impact.date!, false)}</span>}
+        </span>
+        <ChevronRightIcon className={`h-5 w-5 text-base-content/40 transition-transform ${open ? "rotate-90" : ""}`} aria-hidden />
       </button>
       {open && (
-        <div className="flex flex-col gap-3 px-6 pb-5 pl-10">
-          <p className="text-sm text-base-content/80">
-            <span className="font-semibold text-base-content">{reasonText(impact, effective, today)}.</span>{" "}
-            {impact.level === "confirmed" &&
-              impact.reason !== "ban" &&
-              `Worked out by the duty engine on your saved value (${money(product.customsValue)} a shipment)${perYear ? ` and ${perYear} shipments a year` : ""}.`}
-            {impact.reason === "ban" && "From that day these goods can't be entered, unless an exception applies to them."}
-            {impact.reason === "named" && "Its scope names this code and country. We'll confirm the exact duty once the change is in the HTS, and tell you."}
-            {impact.reason === "answer" && "The duty engine has this tariff, and whether it applies depends on an answer about your goods. Answer it on the import's page."}
-            {impact.reason === "country" && "It's worth a look if this import could fall under it; the scope doesn't name this code."}
-          </p>
-          {impact.before && impact.after && impact.reason !== "ban" && <DutyDiff impact={impact} />}
-          <div className="flex flex-wrap gap-2">
-            <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => openProduct(product.key, false, "duty")}>
+        <div className="grid gap-6 border-t border-base-300 bg-tt-soft/60 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+          <div className="flex flex-col gap-3">
+            <p className="text-sm font-semibold text-base-content">{reasonText(impact, effective, today)}.</p>
+            <p className="text-sm text-base-content/70">
+              {confirmed &&
+                impact.reason !== "ban" &&
+                `Worked out by the duty engine on your saved value, ${money(product.customsValue)} a shipment${perYear ? `, ${perYear} shipments a year` : ""}.`}
+              {impact.reason === "ban" && "From that day these goods can't be entered, unless an exception applies to them."}
+              {impact.reason === "named" && "Its scope names this code and country. We'll confirm the exact duty once the change is in the HTS, and alert you."}
+              {impact.reason === "answer" && "The duty engine has this tariff; whether it applies depends on an answer about your goods."}
+              {impact.reason === "country" && "The scope doesn't name this code. Worth a look if your goods could fall under it."}
+            </p>
+            <button type="button" className={`${ui.button({ variant: "secondary", size: "sm" })} self-start`} onClick={() => openProduct(product.key, false, "duty")}>
               {impact.reason === "answer" ? "Answer it on the import's page" : "Open this import"}
-              <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
             </button>
           </div>
+          {impact.before && impact.after && impact.reason !== "ban" ? <DutyDiff impact={impact} /> : <div />}
         </div>
       )}
     </li>
   );
-};
-
-// Status chips filled in their color, so the list reads at a glance
-const SOLID: Record<ImpactGroup, string> = {
-  up: "inline-flex rounded-full bg-error px-2.5 py-0.5 text-xs font-bold text-error-content",
-  down: "inline-flex rounded-full bg-success px-2.5 py-0.5 text-xs font-bold text-success-content",
-  same: "inline-flex rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-content",
-  likely: "inline-flex rounded-full bg-warning px-2.5 py-0.5 text-xs font-bold text-warning-content",
-  possible: "inline-flex rounded-full bg-base-300 px-2.5 py-0.5 text-xs font-bold text-base-content/70",
 };
 
 const groupRank: Record<ImpactGroup, number> = { up: 0, down: 1, same: 2, likely: 3, possible: 4 };
@@ -189,38 +220,67 @@ export const ImpactImports = ({
 }) => {
   const { products, itemFor } = useTracker();
   const byKey = useMemo(() => new Map(products.map((p) => [p.key, p])), [products]);
-  const counts = useMemo(() => {
-    const c = { confirmed: 0, likely: 0, possible: 0 };
-    impacts.forEach((i) => c[i.level]++);
-    return c;
-  }, [impacts]);
   const [query, setQuery] = useState("");
+
+  // Every row's tariffs after the change (or today, when it isn't confirmed), and what changed
+  const all: RowData[] = useMemo(
+    () =>
+      impacts.flatMap((impact) => {
+        const product = byKey.get(impact.key);
+        if (!product) return [];
+        const confirmed = impact.level === "confirmed" && !!impact.after && !!impact.before;
+        const parts = confirmed ? rateParts(impact.after!.result, product.customsValue) : product.parts;
+        const before = confirmed ? rateParts(impact.before!.result, product.customsValue).map((p) => p.key) : [];
+        const after = new Set(parts.map((p) => p.key));
+        return [
+          {
+            impact,
+            product,
+            group: groupOf(impact),
+            parts,
+            added: new Set(confirmed ? parts.map((p) => p.key).filter((k) => !before.includes(k)) : []),
+            ended: before.filter((k) => !after.has(k)),
+            pct: confirmed ? impact.afterPct! : product.totalPct,
+          },
+        ];
+      }),
+    [impacts, byKey]
+  );
+  const colors = useMemo(() => partColors(Array.from(new Set(all.flatMap((r) => [...r.parts.map((p) => p.key), ...r.ended])))), [all]);
+  const maxPct = Math.max(0, ...all.map((r) => r.pct));
+
+  const counts = { confirmed: 0, likely: 0, possible: 0 };
+  impacts.forEach((i) => counts[i.level]++);
 
   const rows = useMemo(() => {
     const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-    return impacts
-      .filter((i) => {
-        if (show === "affected" && i.level === "possible") return false;
-        if (show !== "affected" && i.level !== show) return false;
-        const p = byKey.get(i.key);
-        if (!p) return false;
-        if (country && p.entry.country.code !== country) return false;
-        const text = `${p.description} ${p.entry.element.htsno} ${p.entry.country.name}`.toLowerCase();
+    return all
+      .filter(({ impact, product }) => {
+        if (show === "affected" && impact.level === "possible") return false;
+        if (show !== "affected" && impact.level !== show) return false;
+        if (country && product.entry.country.code !== country) return false;
+        const text = `${product.description} ${product.entry.element.htsno} ${product.entry.country.name}`.toLowerCase();
         return words.every((w) => text.includes(w));
       })
-      .sort((a, b) => groupRank[groupOf(a)] - groupRank[groupOf(b)] || Math.abs(b.deltaUsd ?? 0) - Math.abs(a.deltaUsd ?? 0));
-  }, [impacts, show, query, byKey, country]);
+      .sort((a, b) => groupRank[a.group] - groupRank[b.group] || Math.abs(b.impact.deltaUsd ?? 0) - Math.abs(a.impact.deltaUsd ?? 0));
+  }, [all, show, query, country]);
 
   const countryName = country ? products.find((p) => p.entry.country.code === country)?.entry.country.name : null;
 
   return (
-    <section className={`${tt.panel} overflow-hidden`} aria-labelledby="tt-impact-imports" id="tt-impact-imports-list">
+    <section className={`${tt.panel} overflow-hidden`} aria-label="Your imports it affects" id="tt-impact-imports-list">
       <div className="flex flex-wrap items-center gap-3 px-6 py-4">
-        <div className="mr-auto">
-          <h2 id="tt-impact-imports" className={tt.title}>
-            Your imports
-          </h2>
-        </div>
+        <label className="relative w-72">
+          <span className="sr-only">Search these imports</span>
+          <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" aria-hidden />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search code, product or country"
+            className="h-9 w-full rounded-full border border-base-300 bg-tt-soft pl-10 pr-3 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:bg-base-100 focus:outline-none"
+          />
+        </label>
         <SegmentedControl
           label="Which imports"
           size="sm"
@@ -233,43 +293,33 @@ export const ImpactImports = ({
           value={show}
           onChange={(v) => onShow(v as Show)}
         />
-        <label className="relative w-56">
-          <span className="sr-only">Search your affected imports</span>
-          <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" aria-hidden />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search imports"
-            className="h-8 w-full rounded-full border border-base-300 bg-base-100 pl-9 pr-3 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none"
-          />
-        </label>
-      </div>
-      {country && (
-        <div className="flex items-center gap-2 px-6 pb-3 text-sm">
-          <span className={tt.chip("primary")}>From {countryName ?? country}</span>
-          <button type="button" className={`${ui.link} text-xs`} onClick={onClearCountry}>
-            Show every country
+        {country && (
+          <button type="button" className={tt.chip("primary")} onClick={onClearCountry} title="Show every country">
+            From {countryName ?? country} ✕
           </button>
-        </div>
-      )}
-      <div className="grid grid-cols-[minmax(0,1fr)_8rem_9.5rem_7rem_1.25rem] gap-4 border-y border-base-300 bg-tt-soft px-6 py-2">
-        <span className={tt.eyebrow()}>Import</span>
-        <span className={tt.eyebrow()}>Impact</span>
-        <span className={tt.eyebrow()}>Duty rate</span>
-        <span className={`${tt.eyebrow()} text-right`}>Change</span>
-        <span />
+        )}
+        <span className="ml-auto text-sm tabular-nums text-base-content/60">
+          {rows.length} import{rows.length === 1 ? "" : "s"}
+        </span>
+      </div>
+      <div className={`${GRID} border-y border-base-300 px-6 py-2.5`}>
+        {["Product", "Origin", "Tariffs after", "Duty rate", "Change", ""].map((h, i) => (
+          <span key={i} className={`${tt.eyebrow()} ${i >= 3 ? "text-right" : ""}`}>
+            {h}
+          </span>
+        ))}
       </div>
       {rows.length ? (
         <ul>
-          {rows.map((i) => {
-            const p = byKey.get(i.key)!;
-            const perYear = itemFor(i.key)?.shipmentsPerYear ?? null;
-            return <Row key={i.key} impact={i} product={p} effective={effective} today={today} perYear={perYear && perYear > 1 ? perYear : null} />;
+          {rows.map((r) => {
+            const perYear = itemFor(r.impact.key)?.shipmentsPerYear ?? null;
+            return <Row key={r.impact.key} r={r} colors={colors} maxPct={maxPct} effective={effective} today={today} perYear={perYear && perYear > 1 ? perYear : null} />;
           })}
         </ul>
       ) : (
-        <p className="px-6 py-8 text-sm text-base-content/60">{query || country ? "No imports match." : "None of your imports in this group."}</p>
+        <p className="px-6 py-10 text-center text-sm text-base-content/60">
+          {query || country ? "No imports match." : show === "affected" ? "None of your imports are affected by this action." : "None of your imports in this group."}
+        </p>
       )}
     </section>
   );

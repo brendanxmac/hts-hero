@@ -113,7 +113,7 @@ const Closing = ({ campaign }: { campaign: string }) => (
 const OwnAlert = ({ n, stakes }: { n: FindingsNumbers; stakes?: AlertStakes | null }) => {
   if (hitBy(stakes) && stakes.top) {
     const t = stakes.top
-    return <AlertSample label="Your imports, a recent action" updateTitle={t.updateTitle} code={t.code} country={t.country} beforePct={t.beforePct} afterPct={t.afterPct} deltaUsd={t.deltaUsd} />
+    return <AlertSample label="Your imports, a recent action" updateTitle={t.updateTitle} code={t.code} country={t.country} beforePct={t.beforePct} afterPct={t.afterPct} />
   }
   if (n.biggestChange) {
     const b = n.biggestChange
@@ -126,7 +126,6 @@ const OwnAlert = ({ n, stakes }: { n: FindingsNumbers; stakes?: AlertStakes | nu
         description={short(b.description)}
         beforePct={b.fromPct}
         afterPct={b.toPct}
-        deltaUsd={null}
       />
     )
   }

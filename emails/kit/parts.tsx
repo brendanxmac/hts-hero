@@ -33,21 +33,24 @@ type ButtonVariant = "primary" | "next" | "money"
 
 const BUTTON_COLORS: Record<ButtonVariant, string> = { primary: C.navy, next: C.cobalt, money: C.green }
 
-// One per email: the next step. Primary is the text color as a fill; next (cobalt) and money
-// (green) as in the Tracker.
+// One per email: the next step, full width with room below it. Primary is the text color as a
+// fill; next (cobalt) and money (green) as in the Tracker.
 export const Cta = ({ href, children, variant = "primary" }: { href: string; children: ReactNode; variant?: ButtonVariant }) => (
-  <Section style={{ margin: "8px 0 4px" }}>
+  <Section style={{ margin: "12px 0 26px" }}>
     <Button
       href={href}
       style={{
         backgroundColor: BUTTON_COLORS[variant],
         color: "#FFFFFF",
         borderRadius: 999,
-        padding: "13px 24px",
-        fontSize: 15,
+        padding: "15px 24px",
+        fontSize: 16,
         fontWeight: 600,
         textDecoration: "none",
-        display: "inline-block",
+        textAlign: "center",
+        display: "block",
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
       {children}
@@ -215,9 +218,8 @@ export const usd = (n: number) => n.toLocaleString("en-US", { style: "currency",
 // "23.4%"
 export const pct = (n: number) => `${Math.round(n * 10) / 10}%`
 
-// What a personal tariff alert looks like, drawn small inside another email (the onboarding
-// emails show one, with the reader's own numbers when there are any). The label says whether
-// it's an example or their own.
+// What a personal tariff alert looks like, drawn small inside another email. The label says
+// whether it's an example or their own. Rates only, never dollars.
 export interface AlertSampleProps {
   label: string
   updateTitle: string
@@ -226,35 +228,25 @@ export interface AlertSampleProps {
   description?: string
   beforePct: number | null
   afterPct: number | null
-  deltaUsd: number | null
 }
 
-export const AlertSample = ({ label, updateTitle, code, country, description, beforePct, afterPct, deltaUsd }: AlertSampleProps) => {
-  const delta = Number(deltaUsd ?? 0)
-  const tone = delta > 0 ? TONES.up.fg : TONES.down.fg
+export const AlertSample = ({ label, updateTitle, code, country, description, beforePct, afterPct }: AlertSampleProps) => {
   const confirmed = beforePct !== null && afterPct !== null
+  const tone = Number(afterPct) > Number(beforePct) ? TONES.up.fg : TONES.down.fg
   return (
     <Section style={{ border: `1px solid ${C.border}`, borderLeft: `4px solid ${TONES.up.fg}`, borderRadius: 14, padding: "14px 16px", margin: "6px 0 18px" }}>
       <Text style={{ margin: "0 0 6px", fontSize: 11, lineHeight: "15px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>{label}</Text>
-      <Text style={{ margin: "0 0 4px", fontSize: 12, lineHeight: "16px", fontWeight: 700, color: TONES.up.fg }}>Tariff alert</Text>
       <Text style={{ margin: "0 0 10px", fontFamily: FONT_DISPLAY, fontSize: 16, lineHeight: "22px", fontWeight: 600, color: C.text }}>{updateTitle}</Text>
       <Text style={{ margin: 0, fontSize: 14, lineHeight: "20px", fontWeight: 600, color: C.text }}>
         {code} from {country}
       </Text>
       {description && <Text style={{ margin: "2px 0 0", fontSize: 13, lineHeight: "19px", color: C.muted }}>{description}</Text>}
       <Text style={{ margin: "4px 0 0", fontSize: 13, lineHeight: "19px", color: C.text }}>
-        {confirmed && deltaUsd !== null && Math.abs(delta) < 0.5 && Number(beforePct) === Number(afterPct) ? (
+        {confirmed && Number(beforePct) === Number(afterPct) ? (
           <span style={{ color: C.muted }}>New Chapter 99 number to report, same duty ({pct(Number(afterPct))})</span>
         ) : confirmed ? (
           <>
             {pct(Number(beforePct))} → <strong style={{ color: tone }}>{pct(Number(afterPct))}</strong>
-            {Math.abs(delta) >= 0.5 && (
-              <span style={{ color: tone }}>
-                {" "}
-                · {delta > 0 ? "+" : "−"}
-                {usd(Math.abs(delta))} per shipment
-              </span>
-            )}
           </>
         ) : (
           <span style={{ color: TONES["heads-up"].fg }}>May apply: confirmed once it&apos;s in the HTS</span>
