@@ -114,7 +114,11 @@ export const useCatalog = () => useSyncExternalStore(subscribe, getSnapshot, () 
 // ones already there keep what they have.
 export const addToCatalog = (incoming: NewProduct[]) => {
   const current = getSnapshot();
-  const { items, added, duplicates } = mergeItems(current.items, incoming);
+  const now = new Date().toISOString();
+  const { items, added, duplicates } = mergeItems(
+    current.items,
+    incoming.map((p) => ({ ...p, addedAt: now }))
+  );
   const existing = new Set(current.items.map(itemKey));
   const brought = incoming.filter((p) => p.adjustments && !existing.has(itemKey(p)));
   let adjustments = current.adjustments;

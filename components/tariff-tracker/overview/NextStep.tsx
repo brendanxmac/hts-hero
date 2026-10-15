@@ -39,7 +39,7 @@ export const NextStep = () => {
   const { steps, next } = pathSteps({
     products: items.length,
     valuesSet,
-    alertsSet: signedIn && alerts.configured,
+    alertsSet: signedIn && alerts.on,
     savingsSeen: insights.unlocked.size > 0 && seen.has("savings"),
     entriesAudited: access.usage.auditsChecked.length > 0 || (paid && seen.has("entries")),
   });

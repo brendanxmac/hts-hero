@@ -36,7 +36,7 @@ export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
   if (fresh) meta.news = { text: `${fresh} new`, tone: "error" };
   if (items.length) meta.catalog = { text: items.length.toLocaleString("en-US"), tone: "neutral" };
   else meta.catalog = { text: "Start here", tone: "primary" };
-  if (signedIn && !alerts.loading) meta.alerts = alerts.configured ? { text: "On", tone: "success" } : { text: "Off", tone: "warning" };
+  if (signedIn && !alerts.loading) meta.alerts = alerts.on ? { text: "On", tone: "success" } : { text: "Off", tone: "warning" };
   if (insights.historyReady && items.length) {
     const { count } = changesLastYear(insights.changes, todayIso());
     if (count) meta.history = { text: `${count} changes`, tone: "error" };

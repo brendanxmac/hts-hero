@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
+import { alertsOn as alertsOnFor } from "../../components/tariff-tracker/alerts/alertPrefs"
 import { readCatalog } from "../../components/tariff-tracker/catalog"
 import { findCountry } from "../../components/tariff-tracker/parse"
 import type { AlertStakes, FindingsNumbers, FindingsVariant } from "../../emails/onboarding/TrackerFindingsEmail"
@@ -12,19 +13,19 @@ import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./t
 // account at most once (lifecycle_emails), at most one every two days, and never to an account
 // that turned these emails off or unsubscribed.
 //
-// The sequence drives each account to the next activation step, in order: add imports, turn on
-// alerts, check savings, audit an entry. Every CTA lands on that step in the Tracker.
+// The sequence drives each account to the next activation step, in order: add imports (alerts are
+// on from then, alertPrefs.ts), check savings, audit an entry. Every CTA lands on that step in the
+// Tracker.
 //
 // No imports yet (accounts from ONBOARDING_FROM on), each stopping once an import is added:
 //   no_imports_1  day 1   paste your codes: what you get back in a minute, and this week's actions
 //   no_imports_2  day 4   this month's actions, and what an alert on your imports looks like
 //   no_imports_3  day 10  a note from Brendan: need a hand? want it managed for you?
 // Imports added (first seen by the snapshot job from ONBOARDING_FROM on), from their own numbers:
-//   first_look    the morning after   duty, this year's changes, potential savings; the CTA is
-//                                     the next step (alerts if they're off, else savings)
-//   alerts_nudge  days 2-21, alerts off: the recent tariff actions that hit their imports
-//                 (tariff_update_impacts) and an alert drawn with their own numbers
-//   savings_nudge days 3-21, no savings check yet, once alerts are on or were asked about
+//   first_look    the morning after   duty, this year's changes, potential savings, and that
+//                                     alerts are on for them (an alert drawn with their own
+//                                     numbers, from tariff_update_impacts); the CTA is savings
+//   savings_nudge days 3-21, no savings check yet
 //   audit_nudge   days 7-28, no audit check yet, after the savings step
 // Any account on the trial, once:
 //   savings_used_up / audits_used_up   the free checks are spent: what they found, and a plan
@@ -144,13 +145,6 @@ interface AlertSettingsRow {
   slack_webhook: string | null
   teams_webhook: string | null
 }
-export const alertsConfigured = (s: AlertSettingsRow | undefined) =>
-  !!s &&
-  (!s.email_enabled || /^\S+@\S+\.\S+$/.test(s.email ?? "")) &&
-  (!s.slack_webhook || s.slack_webhook.startsWith("https://hooks.slack.com/")) &&
-  (!s.teams_webhook || s.teams_webhook.startsWith("https://")) &&
-  (s.email_enabled || !!s.slack_webhook || !!s.teams_webhook)
-
 // The published tariff actions of the last STAKES_DAYS that hit each account's imports
 // (tariff_update_impacts, confirmed or likely), for the alerts emails
 export const alertStakes = async (db: Db, userIds: string[], now: Date) => {
@@ -209,11 +203,10 @@ export const pickEmail = (
     account,
     snapshot,
     imports,
-    alertsOn,
     sent,
     now,
     scoped,
-  }: { account: Account; snapshot?: SnapshotRow; imports: number; alertsOn: boolean; sent: Set<string>; now: Date; scoped: boolean }
+  }: { account: Account; snapshot?: SnapshotRow; imports: number; sent: Set<string>; now: Date; scoped: boolean }
 ): { key: string; variant?: FindingsVariant; step?: (typeof NO_IMPORTS_STEPS)[number] } | null => {
   const fresh = snapshot && now.getTime() - new Date(snapshot.computed_at).getTime() < 2 * DAY
   if (snapshot && fresh && snapshot.products > 0) {
@@ -226,13 +219,10 @@ export const pickEmail = (
       const days = (now.getTime() - first) / DAY
       const startOfToday = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
       if (!sent.has("first_look") && first < startOfToday && days <= 7) return { key: "first_look", variant: "first_look" }
-      // Alerts before anything else: asked once, then the sequence moves on either way
-      if (!alertsOn && !sent.has("alerts_nudge") && days >= 2 && days <= 21) return { key: "alerts_nudge", variant: "alerts_nudge" }
-      const alertsStepDone = alertsOn || sent.has("alerts_nudge")
-      if (alertsStepDone && snapshot.plan === "trial" && snapshot.savings_checks_used === 0 && !sent.has("savings_nudge") && days >= 3 && days <= 21)
+      if (snapshot.plan === "trial" && snapshot.savings_checks_used === 0 && !sent.has("savings_nudge") && days >= 3 && days <= 21)
         return { key: "savings_nudge", variant: "savings_nudge" }
       const savingsStepDone = sent.has("savings_nudge") || snapshot.savings_checks_used > 0 || snapshot.plan !== "trial"
-      if (alertsStepDone && savingsStepDone && snapshot.plan === "trial" && snapshot.audit_checks_used === 0 && !sent.has("audit_nudge") && days >= 7 && days <= 28)
+      if (savingsStepDone && snapshot.plan === "trial" && snapshot.audit_checks_used === 0 && !sent.has("audit_nudge") && days >= 7 && days <= 28)
         return { key: "audit_nudge", variant: "audit_nudge" }
     }
     return null
@@ -296,8 +286,8 @@ export const queueDailyOnboarding = async (db: Db, now = new Date(), { onlyUserI
     if (!reachable(subscriber)) continue
     if (now.getTime() - (lastSent.get(account.id) ?? 0) < MIN_DAYS_BETWEEN * DAY) continue
     const snapshot = snapshots.get(account.id)
-    const alertsOn = alertsConfigured(alertSettings.get(account.id))
-    const pick = pickEmail({ account, snapshot, imports: imports.get(account.id) ?? 0, alertsOn, sent: sentKeys.get(account.id) ?? new Set(), now, scoped })
+    const alertsOn = alertsOnFor(alertSettings.get(account.id))
+    const pick = pickEmail({ account, snapshot, imports: imports.get(account.id) ?? 0, sent: sentKeys.get(account.id) ?? new Set(), now, scoped })
     if (!pick) continue
     const footer = subscriberFooter(subscriber, ACCOUNT_REASON)
     const base = { channel: "email" as const, recipient: account.email, userId: account.id, subscriberId: subscriber.id }

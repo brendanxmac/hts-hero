@@ -1,22 +1,22 @@
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { AlertSample, Checklist, Cta, Eyebrow, P, Panel, PlanStrip, Signature, Stats, Title, pct, usd } from "../kit/parts"
-import { siteLink } from "../kit/brand"
+import { Link } from "@react-email/components"
+import { C, siteLink } from "../kit/brand"
 import { TRACKER_TIERS, TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
 
 // The onboarding emails once imports are in, built from the account's own numbers (worked out on
 // the server: libs/tariff-tracker/snapshot.ts) and the tariff actions that hit them
-// (tariff_update_impacts). Each one leads to the next activation step, in order: alerts, then a
-// savings check, then an entry audit. Value first, every time:
-//   first_look       the morning after: what the Tracker found; the button is the next step
-//   alerts_nudge     alerts off: the recent actions that hit their imports, and an alert drawn
-//                    with their own numbers
+// (tariff_update_impacts). Alerts are on from the first import (alertPrefs.ts); each email leads
+// to the next activation step, in order: a savings check, then an entry audit. Value first:
+//   first_look       the morning after: what the Tracker found, that alerts are on for these
+//                    imports (an alert drawn with their own numbers); the button is savings
 //   savings_nudge    no savings check yet: the import with the most potential savings
 //   audit_nudge      no audit yet: the rate change behind possible overpayments, on that import
 //   savings_used_up  the free savings checks are spent: what they found, what's left, a plan
 //   audits_used_up   the free audit checks are spent: a plan for the rest
 // Savings are always potential ("up to", "could", "if you qualify").
 
-export type FindingsVariant = "first_look" | "alerts_nudge" | "savings_nudge" | "audit_nudge" | "savings_used_up" | "audits_used_up"
+export type FindingsVariant = "first_look" | "savings_nudge" | "audit_nudge" | "savings_used_up" | "audits_used_up"
 
 export interface FindingsNumbers {
   products: number
@@ -85,15 +85,10 @@ const productUrl = (key: string, tab: string) => `/tariff-tracker?tab=catalog&pr
 
 const hitBy = (s: AlertStakes | null | undefined): s is AlertStakes => !!s && s.imports > 0
 
-export const trackerFindingsSubject = ({ variant, numbers: n, stakes }: TrackerFindingsEmailProps) => {
+export const trackerFindingsSubject = ({ variant, numbers: n }: TrackerFindingsEmailProps) => {
   switch (variant) {
     case "first_look":
       return `We checked your ${plural(n.products, "import")}: here's what we found`
-    case "alerts_nudge":
-      if (hitBy(stakes)) return `${plural(stakes.actions, "tariff action")} hit ${stakes.imports} of your imports lately. Turn on alerts`
-      return n.changes12m
-        ? `Tariffs on your imports changed ${plural(n.changes12m, "time")} this year. Hear about the next one first`
-        : "Know the day a tariff change hits your imports"
     case "savings_nudge":
       if (n.topSaving) return `Your import from ${n.topSaving.country} may qualify for up to ${usd(n.topSaving.usd)} less duty per shipment`
       return n.topImport ? `Your highest-duty import pays ${pct(n.topImport.ratePct)}` : "Check your imports for savings, free"
@@ -138,7 +133,7 @@ const OwnAlert = ({ n, stakes }: { n: FindingsNumbers; stakes?: AlertStakes | nu
   return null
 }
 
-export default function TrackerFindingsEmail({ variant, numbers: n, alertsOn = false, stakes, footer }: TrackerFindingsEmailProps) {
+export default function TrackerFindingsEmail({ variant, numbers: n, alertsOn = true, stakes, footer }: TrackerFindingsEmailProps) {
   const campaign = `onboarding-${variant.replace(/_/g, "-")}`
   const totalPotential = n.savingsUsd + n.lockedSavingsUsd
   const estimated = n.valuesDefault > 0 && n.valuesDefault === n.products
@@ -176,17 +171,23 @@ export default function TrackerFindingsEmail({ variant, numbers: n, alertsOn = f
           )
         )}
         {estimated && <P muted small>Worked out at $10,000 per import. Set your real values in the Tracker and every number becomes exact.</P>}
-        {!alertsOn ? (
+        {alertsOn ? (
           <>
             <P>
-              <strong>Next: turn on alerts.</strong> When a tariff action hits one of these imports, you get the rate before and after and what it adds to each
-              shipment, by email, Slack or Teams. Free on up to {alertSlots} imports, and it takes about 30 seconds.
+              <strong>Alerts are on for {n.products > alertSlots ? `${alertSlots} of these imports` : "these imports"}.</strong> When a tariff action hits one, we
+              email you the rate before and after and what it adds to each shipment.
+              {(hitBy(stakes) && stakes.top) || n.biggestChange ? " Here's what one looks like, with your numbers:" : ""}
             </P>
-            <Cta href={siteLink(ALERTS_URL, campaign)} variant="next">
-              Turn on alerts
-            </Cta>
+            <OwnAlert n={n} stakes={stakes} />
+            <P muted small>
+              Want them in Slack or Teams too, or only some kinds of update?{" "}
+              <Link href={siteLink(ALERTS_URL, campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
+                Choose where alerts go
+              </Link>
+            </P>
           </>
-        ) : n.topSaving ? (
+        ) : null}
+        {n.topSaving ? (
           <>
             <P>
               <strong>Next: check savings.</strong> {named(n.topSaving.description, n.topSaving.code)} from {n.topSaving.country} may qualify for up to {usd(n.topSaving.usd)} less duty
@@ -201,50 +202,6 @@ export default function TrackerFindingsEmail({ variant, numbers: n, alertsOn = f
             See my dashboard
           </Cta>
         )}
-        <Closing campaign={campaign} />
-      </EmailLayout>
-    )
-  }
-
-  if (variant === "alerts_nudge") {
-    const hit = hitBy(stakes)
-    return (
-      <EmailLayout
-        preview={
-          hit
-            ? `${plural(stakes!.imports, "of your imports", "of your imports")} hit${stakes!.extraUsd > 0 ? `, ${usd(stakes!.extraUsd)} more duty per shipment of each` : ""}. Choose where your alerts go.`
-            : "Pick email, Slack or Teams, and hear about the next tariff change on your imports the day it lands."
-        }
-        footer={footer}
-      >
-        <Eyebrow tone="up">Tariff alerts</Eyebrow>
-        <Title>
-          {hit
-            ? `${plural(stakes!.actions, "tariff action")} hit ${plural(stakes!.imports, "of your imports", "of your imports")} in the last ${months(stakes!.days)}`
-            : n.changes12m
-              ? `Tariffs on your imports changed ${plural(n.changes12m, "time")} in the last 12 months`
-              : "Know the day a tariff change hits your imports"}
-        </Title>
-        <P>
-          {hit
-            ? `${stakes!.extraUsd > 0 ? `Together they add ${usd(stakes!.extraUsd)} in duty to one shipment of each import they hit. ` : ""}US tariffs are moving every week, and the next action could land on the rest of your list.`
-            : n.changes12m
-              ? `That's ${n.productsHit12m} of your ${plural(n.products, "import")} whose duty moved, some more than once. The next change is a matter of when.`
-              : "US tariffs are moving every week. When the next action touches your imports, you should hear about it first."}{" "}
-          Here&apos;s what an alert looks like, with your numbers:
-        </P>
-        <OwnAlert n={n} stakes={stakes} />
-        <Checklist
-          items={[
-            "Choose where alerts go: your inbox, a Slack channel or a Teams channel",
-            "Each one names the action, the imports it hits, the rate before and after, and what it adds per shipment",
-            `Free on up to ${alertSlots} imports${n.products > alertSlots ? ", your highest-duty ones first" : ""}`,
-          ]}
-        />
-        <Cta href={siteLink(ALERTS_URL, campaign)} variant="next">
-          Turn on alerts
-        </Cta>
-        <P muted small>Takes about 30 seconds.</P>
         <Closing campaign={campaign} />
       </EmailLayout>
     )
@@ -387,7 +344,7 @@ TrackerFindingsEmail.PreviewProps = {
     lockedSavingsUsd: 22480,
     lockedSavingsProducts: 19,
   },
-  alertsOn: false,
+  alertsOn: true,
   stakes: {
     days: 90,
     actions: 3,

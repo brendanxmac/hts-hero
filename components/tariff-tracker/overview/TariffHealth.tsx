@@ -99,7 +99,7 @@ export const TariffHealth = () => {
 
   // Alerts: the imports covered, and whether there's anywhere for alerts to go
   const covered = Math.min(trackedKeys.size, imports);
-  const alertsSet = signedIn && alerts.configured;
+  const alertsSet = signedIn && alerts.on;
   const alertsPct = alertsSet ? share(covered, imports) : 0;
 
   // Savings review

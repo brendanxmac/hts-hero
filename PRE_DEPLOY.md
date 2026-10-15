@@ -51,6 +51,9 @@ add new ones as they come up.
 - [ ] **Apply the migration** `supabase/migrations/tariff_impact_alerts.sql` (the impact check
       approval on tariff_updates, and tariff_impact_alerts: which account was alerted about which
       import, so approving again sends only what's new or changed).
+- [ ] **Apply the migration** `supabase/migrations/tariff_alert_preferences.sql` (which kinds of
+      update alert each account; when each update's impact check was first approved), after
+      tariff_impact_alerts.sql.
 - [ ] **Supabase redirect URLs allow `/api/auth/callback`** with any `?redirect=` (Authentication →
       URL Configuration), in both projects: sign-in links now come back through it.
 - [ ] **Queue "Meet the Tariff Tracker"** for existing accounts after the release is live:

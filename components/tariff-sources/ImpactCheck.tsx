@@ -20,6 +20,8 @@ interface Impact {
   products: { key: string; level: string; accounts: number; beforePct: number | null; afterPct: number | null; deltaUsd: number | null }[]
   pending: number
   approvedAt: string | null
+  // From launch on (older updates are history: never alerted)
+  eligible: boolean
   alerted: number | null
 }
 
@@ -63,14 +65,16 @@ export default function ImpactCheck({ updateId, version }: { updateId: string; v
     <section className="flex flex-col gap-3 rounded-lg border border-base-content/10 p-3 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         <h4 className="text-xs font-semibold uppercase tracking-wider text-base-content/50">Impact check</h4>
-        {impact?.approvedAt ? (
+        {impact && !impact.eligible ? (
+          <Pill tone="neutral">Before alerts started: not alerted</Pill>
+        ) : impact?.approvedAt ? (
           <Pill tone="success">
             Approved {formatTime(impact.approvedAt)} · {impact.alerted ?? 0} alerted
           </Pill>
         ) : (
           <Pill tone="warning">Not approved yet</Pill>
         )}
-        {impact && (
+        {impact?.eligible && (
           <button type="button" className={`${btn.xsPrimary} ml-auto`} disabled={busy || !impact.pending} onClick={approve}>
             {busy && <Spinner />}
             {impact.pending ? `Approve and alert ${impact.pending} account${impact.pending === 1 ? "" : "s"}` : "Nothing new to alert"}

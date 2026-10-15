@@ -135,6 +135,13 @@ export default function ImpactAlertEmail({ update, reached, current, imports, re
             " \"May apply\" means the update names your import's code and country; we'll confirm the exact duty once it's in the HTS."}
         </P>
       )}
+      <P muted small>
+        Choose which kinds of update alert you, add Slack or Teams, or turn alerts off in your{" "}
+        <Link href={siteLink("/tariff-tracker?tab=alerts", campaign)} style={{ color: C.cobalt }}>
+          alert settings
+        </Link>
+        .
+      </P>
       <Signature />
     </EmailLayout>
   )

@@ -4,21 +4,25 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useState 
 import { useUser } from "@/contexts/UserContext";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+import type { Kind } from "@/libs/tariff-updates/types";
+import { alertKinds, alertsOn } from "./alertPrefs";
 
-// Where a signed-in user's tariff alerts go (tracker_alert_settings), shared by the Alerts
-// section, where they're edited, and the Overview's next step, which asks for them
+// Where a signed-in user's tariff alerts go and which updates set one off (tracker_alert_settings),
+// shared by the Alerts section, where they're edited, and the Overview. Alerts are on from the
+// start, to the account's email (alertPrefs.ts); they're off only once every channel is turned off.
 
 export interface AlertSettings {
   emailEnabled: boolean;
   email: string;
   slackWebhook: string;
   teamsWebhook: string;
+  kinds: Kind[];
 }
 
 interface AlertSettingsValue {
   loading: boolean;
-  // Saved at least once, with somewhere to send alerts
-  configured: boolean;
+  // Alerts go somewhere (true until the account turns every channel off)
+  on: boolean;
   settings: AlertSettings;
   save: (next: AlertSettings) => Promise<string | null>;
 }
@@ -31,16 +35,19 @@ export const useAlertSettings = () => {
   return value;
 };
 
-const EMPTY: AlertSettings = { emailEnabled: true, email: "", slackWebhook: "", teamsWebhook: "" };
+const EMPTY: AlertSettings = { emailEnabled: true, email: "", slackWebhook: "", teamsWebhook: "", kinds: alertKinds(null) };
 
 export const SLACK_PREFIX = "https://hooks.slack.com/";
+
+// Whether these settings send alerts anywhere
+export const settingsOn = (s: AlertSettings) => alertsOn({ email_enabled: s.emailEnabled, email: s.email, slack_webhook: s.slackWebhook || null, teams_webhook: s.teamsWebhook || null });
 
 // A message to show, or null when the settings can be saved
 export const validateAlertSettings = (s: AlertSettings) => {
   if (s.emailEnabled && !/^\S+@\S+\.\S+$/.test(s.email)) return "Enter an email address for alerts.";
   if (s.slackWebhook && !s.slackWebhook.startsWith(SLACK_PREFIX)) return `A Slack webhook starts with ${SLACK_PREFIX}`;
   if (s.teamsWebhook && !s.teamsWebhook.startsWith("https://")) return "A Teams webhook starts with https://";
-  if (!s.emailEnabled && !s.slackWebhook && !s.teamsWebhook) return "Choose at least one place for alerts to go.";
+  if (!s.kinds.length) return "Choose at least one kind of update to be alerted about.";
   return null;
 };
 
@@ -60,15 +67,21 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
     setLoading(true);
     createSupabaseClient()
       .from("tracker_alert_settings")
-      .select("email_enabled, email, slack_webhook, teams_webhook")
+      .select("email_enabled, email, slack_webhook, teams_webhook, alert_kinds")
       .eq("user_id", userId)
-      .maybeSingle<{ email_enabled: boolean; email: string | null; slack_webhook: string | null; teams_webhook: string | null }>()
+      .maybeSingle<{ email_enabled: boolean; email: string | null; slack_webhook: string | null; teams_webhook: string | null; alert_kinds: string[] | null }>()
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) console.error("Error loading alert settings:", error);
         setSaved(
           data
-            ? { emailEnabled: data.email_enabled, email: data.email ?? "", slackWebhook: data.slack_webhook ?? "", teamsWebhook: data.teams_webhook ?? "" }
+            ? {
+                emailEnabled: data.email_enabled,
+                email: data.email ?? "",
+                slackWebhook: data.slack_webhook ?? "",
+                teamsWebhook: data.teams_webhook ?? "",
+                kinds: alertKinds(data),
+              }
             : null
         );
         setLoading(false);
@@ -91,6 +104,7 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
           email: next.email.trim() || null,
           slack_webhook: next.slackWebhook.trim() || null,
           teams_webhook: next.teamsWebhook.trim() || null,
+          alert_kinds: next.kinds,
           updated_at: new Date().toISOString(),
         });
       if (error) {
@@ -102,6 +116,8 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
         email: next.emailEnabled,
         slack: Boolean(next.slackWebhook),
         teams: Boolean(next.teamsWebhook),
+        on: settingsOn(next),
+        kinds: next.kinds.length,
       });
       return null;
     },
@@ -111,7 +127,7 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
   const settings = saved ?? { ...EMPTY, email: user?.email ?? "" };
   return (
     <AlertSettingsContext.Provider
-      value={{ loading, configured: Boolean(saved) && !validateAlertSettings(saved!), settings, save }}
+      value={{ loading, on: !saved || settingsOn(saved), settings, save }}
     >
       {children}
     </AlertSettingsContext.Provider>

@@ -3,7 +3,7 @@ import { requireAdmin } from "@/libs/admin/access"
 import { getHtsElementsServer } from "@/libs/hts-server"
 import { refreshImpacts } from "@/libs/tariff-updates/impacts"
 import { readUpdateScope } from "@/libs/tariff-updates/scope"
-import { approveImpact, planImpactAlerts } from "@/libs/tariff-updates/alerts"
+import { approveImpact, impactAlertable, planImpactAlerts } from "@/libs/tariff-updates/alerts"
 import { sendApproved } from "@/libs/email/outbox"
 import { REVISION_DIFF_ADMIN_EMAIL } from "@/libs/hts-revision-diff/constants"
 import { revalidateTariffUpdates } from "@/libs/tariff-updates/revalidate"
@@ -18,7 +18,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   if (denied) return denied
   const [{ data, error }, { data: update }] = await Promise.all([
     db.from("tariff_update_impacts").select("user_id, product_key, level, before_pct, after_pct, delta_usd, computed_at").eq("update_id", params.id),
-    db.from("tariff_updates").select("impact_approved_at, impact_approved_by, impact_alerted").eq("id", params.id).single(),
+    db.from("tariff_updates").select("impact_approved_at, impact_approved_by, impact_alerted, last_activity_at, status").eq("id", params.id).single(),
   ])
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   const rows = data ?? []
@@ -41,6 +41,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     computedAt: rows.reduce((latest: string | null, r) => (!latest || r.computed_at > latest ? r.computed_at : latest), null),
     products: Array.from(products.values()).sort((a, b) => (a.level === b.level ? b.accounts - a.accounts : a.level === "confirmed" ? -1 : 1)),
     pending: plans.filter((p) => p.imports.length || p.beyond.length || p.removed.length).length,
+    eligible: !!update && impactAlertable(update),
     approvedAt: update?.impact_approved_at ?? null,
     approvedBy: update?.impact_approved_by ?? null,
     alerted: update?.impact_alerted ?? null,

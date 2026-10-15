@@ -2,7 +2,9 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type { HtsElement } from "../../interfaces/hts"
 import type { AlertedImport, ImpactAlertEmailProps } from "../../emails/tariff-updates/ImpactAlertEmail"
 import { readAdjustments } from "../../components/tariff-tracker/adjustments"
+import { alertKinds, alertsOn, type AlertSettingsRow } from "../../components/tariff-tracker/alerts/alertPrefs"
 import { readCatalog } from "../../components/tariff-tracker/catalog"
+import { NEWS_ALERTS_FROM } from "../email/news-producer"
 import { createBatch, type OutboxMessage } from "../email/outbox"
 import { accountSubscriber, subscriberFooter } from "../email/subscribers"
 import { reachedStages, UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "../email/tariff-news"
@@ -20,6 +22,10 @@ import { STAGE_ORDER } from "./types"
 // highest-duty ones: TrackerContext's coverage), the rest as a count (the upgrade). Each import is
 // alerted once per level: approving again later sends only what's new, what moved from likely to
 // confirmed or changed amount, and which imports it no longer affects (tariff_impact_alerts).
+//
+// Not who: accounts that turned alerts off or don't want this kind of update (alertPrefs.ts), and
+// imports added after the update was first approved (the Tracker shows them the update instead).
+// Only updates with official activity from launch on (NEWS_ALERTS_FROM) can be approved.
 
 type Db = SupabaseClient
 
@@ -47,9 +53,14 @@ export interface PlannedAlert {
   removed: { key: string; code: string; country: string; description: string }[]
   beyond: string[]
   // Rows to record once sent
+  channels: { email: string | null; slack: string | null; teams: string | null }
   record: { product_key: string; level: "confirmed" | "likely" | "removed"; before_pct: number | null; after_pct: number | null; delta_usd: number | null; covered: boolean }[]
   paid: boolean
 }
+
+// Updates from before alerts started are history: shown on the site, never alerted
+export const impactAlertable = (u: { last_activity_at: string; status?: string }) =>
+  u.last_activity_at >= NEWS_ALERTS_FROM.slice(0, 10) && u.status !== "hidden"
 
 // Every row a query returns, a page at a time (a query returns at most 1,000 rows)
 const allRows = async <T>(page: (from: number, to: number) => PromiseLike<{ data: unknown[] | null; error: { message: string } | null }>) => {
@@ -70,6 +81,9 @@ const changed = (prior: AlertRow | undefined, now: ImpactRow) =>
 
 // What approving the update's impact check would send, account by account (nothing is saved)
 export const planImpactAlerts = async (db: Db, updateId: string, htsElements: HtsElement[]): Promise<PlannedAlert[]> => {
+  const { data: update, error: updateError } = await db.from("tariff_updates").select("kind, impact_first_approved_at").eq("id", updateId).single()
+  if (updateError || !update) throw new Error(`Loading the update: ${updateError?.message ?? "not found"}`)
+  const firstApproved: string | null = update.impact_first_approved_at
   const [impacts, prior] = await Promise.all([
     allRows<ImpactRow>((from, to) =>
       db.from("tariff_update_impacts").select("user_id, product_key, level, before_pct, after_pct, delta_usd").eq("update_id", updateId).in("level", ["confirmed", "likely"]).order("user_id").order("product_key").range(from, to)
@@ -88,27 +102,36 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
   // A hundred accounts at a time: the ids go in the request's URL
   const catalogs: { user_id: string; items: unknown; adjustments: unknown }[] = []
   const users: { id: string; email: string | null }[] = []
+  const settings: (AlertSettingsRow & { user_id: string })[] = []
   for (let i = 0; i < userIds.length; i += 100) {
     const ids = userIds.slice(i, i + 100)
-    const [{ data: c, error: catalogError }, { data: u, error: userError }] = await Promise.all([
+    const [{ data: c, error: catalogError }, { data: u, error: userError }, { data: a, error: settingsError }] = await Promise.all([
       db.from("tracker_catalogs").select("user_id, items, adjustments").in("user_id", ids),
       db.from("users").select("id, email").in("id", ids),
+      db.from("tracker_alert_settings").select("user_id, email_enabled, email, slack_webhook, teams_webhook, alert_kinds").in("user_id", ids),
     ])
-    if (catalogError || userError) throw new Error(`Loading accounts: ${(catalogError ?? userError)!.message}`)
+    if (catalogError || userError || settingsError) throw new Error(`Loading accounts: ${(catalogError ?? userError ?? settingsError)!.message}`)
     catalogs.push(...(c ?? []))
     users.push(...(u ?? []))
+    settings.push(...((a ?? []) as (AlertSettingsRow & { user_id: string })[]))
   }
   const emails = new Map(users.map((u) => [u.id, u.email ?? null]))
   const plans: PlannedAlert[] = []
   for (const userId of userIds) {
+    // Alerts off, or not this kind of update: nothing sent, nothing recorded
+    const prefs = settings.find((s) => s.user_id === userId)
+    if (!alertsOn(prefs) || !alertKinds(prefs).includes(update.kind)) continue
     const catalog = catalogs.find((c) => c.user_id === userId)
     const items = catalog ? (readCatalog(JSON.stringify(catalog.items)) ?? []) : []
     const products = trackedProducts(items, catalog ? readAdjustments(JSON.stringify(catalog.adjustments)) : {}, htsElements)
     const byKey = new Map(products.map((p) => [p.key, p]))
     const access = await readTrackerAccess(db, userId)
     const covered = coveredKeys(items, products, access.pairLimit)
-    const now = (byUser.get(userId) ?? []).filter((r) => byKey.has(r.product_key))
     const before = priorByUser.get(userId) ?? new Map<string, AlertRow>()
+    // Imports added after the update was first approved aren't alerted about it
+    const addedAt = new Map(items.map((i) => [`${i.code}-${i.country}`, i.addedAt]))
+    const late = (key: string) => !!firstApproved && !before.has(key) && (addedAt.get(key) ?? "") > firstApproved
+    const now = (byUser.get(userId) ?? []).filter((r) => byKey.has(r.product_key) && !late(r.product_key))
     const facts = (key: string) => {
       const p = byKey.get(key)
       return { code: p?.entry.element.htsno ?? key.split("-")[0], country: p?.entry.country.name ?? key.split("-")[1], description: p?.description ?? "" }
@@ -124,6 +147,12 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
     plans.push({
       userId,
       email: emails.get(userId) ?? null,
+      // Where it goes: the account's alert settings, else its account email
+      channels: {
+        email: prefs?.email_enabled === false ? null : prefs?.email || emails.get(userId) || null,
+        slack: prefs?.slack_webhook ?? null,
+        teams: prefs?.teams_webhook ?? null,
+      },
       paid: access.kind === "paid",
       imports: inSlots
         .sort((a, b) => Number(b.delta_usd ?? -1) - Number(a.delta_usd ?? -1))
@@ -155,13 +184,6 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
   return plans
 }
 
-// Where an account's alerts go: its alert settings (email, Slack, Teams), else its account email
-const channelsFor = async (db: Db, plan: PlannedAlert) => {
-  const { data: settings } = await db.from("tracker_alert_settings").select("email_enabled, email, slack_webhook, teams_webhook").eq("user_id", plan.userId).maybeSingle()
-  const email = settings?.email_enabled === false ? null : settings?.email || plan.email
-  return { email, slack: settings?.slack_webhook ?? null, teams: settings?.teams_webhook ?? null }
-}
-
 // Approves the update's impact check: works its matches out again, then sends each affected account
 // its alert (straight to the outbox, approved) and records what each was told
 export const approveImpact = async (db: Db, updateId: string, htsElements: HtsElement[], { approvedBy }: { approvedBy: string }) => {
@@ -169,10 +191,13 @@ export const approveImpact = async (db: Db, updateId: string, htsElements: HtsEl
   const { data: update, error } = await db.from("tariff_updates").select(UPDATE_EMAIL_COLUMNS).eq("id", updateId).single()
   if (error || !update) throw new Error(`Loading the update: ${error?.message ?? "not found"}`)
   const u = update as UpdateRowForEmail
+  const { data: gate } = await db.from("tariff_updates").select("last_activity_at, status, impact_first_approved_at").eq("id", updateId).single()
+  if (!gate || !impactAlertable(gate)) throw new Error("This update is from before alerts started (or hidden), so it can't send impact alerts.")
   const plans = await planImpactAlerts(db, updateId, htsElements)
   const approvedAt = new Date().toISOString()
+  const approval = { impact_approved_at: approvedAt, impact_approved_by: approvedBy, impact_first_approved_at: gate.impact_first_approved_at ?? approvedAt }
   if (!plans.length) {
-    await db.from("tariff_updates").update({ impact_approved_at: approvedAt, impact_approved_by: approvedBy, impact_alerted: 0 }).eq("id", updateId)
+    await db.from("tariff_updates").update({ ...approval, impact_alerted: 0 }).eq("id", updateId)
     return { accounts: 0, messages: 0 }
   }
 
@@ -182,7 +207,7 @@ export const approveImpact = async (db: Db, updateId: string, htsElements: HtsEl
   for (const plan of plans) {
     // Only changes outside the alert slots that were already gone: recorded, nothing to say
     if (!plan.imports.length && !plan.beyond.length && !plan.removed.length) continue
-    const channels = await channelsFor(db, plan)
+    const { channels } = plan
     const subscriber = plan.email ? await accountSubscriber(db, { userId: plan.userId, email: plan.email }) : null
     const props: ImpactAlertEmailProps = {
       update: summary,
@@ -216,6 +241,6 @@ export const approveImpact = async (db: Db, updateId: string, htsElements: HtsEl
     const { error: saveError } = await db.from("tariff_impact_alerts").upsert(rows.slice(i, i + 500), { onConflict: "update_id,user_id,product_key" })
     if (saveError) throw new Error(`Recording alerts: ${saveError.message}`)
   }
-  await db.from("tariff_updates").update({ impact_approved_at: approvedAt, impact_approved_by: approvedBy, impact_alerted: plans.length }).eq("id", updateId)
+  await db.from("tariff_updates").update({ ...approval, impact_alerted: plans.length }).eq("id", updateId)
   return { accounts: plans.length, messages: messages.length, batchId }
 }

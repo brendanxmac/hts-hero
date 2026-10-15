@@ -19,6 +19,8 @@ export interface CatalogItem {
   shipmentsPerYear?: number;
   // A secured change of origin: the country it's moving to (the new origin is its own product)
   movingTo?: string;
+  // When it was added (ISO). Tariff updates already alerted before then aren't alerted for it.
+  addedAt?: string;
 }
 
 // What's kept about a product besides its code and origin
@@ -39,7 +41,7 @@ export const mergeItems = (existing: CatalogItem[], incoming: CatalogItem[]) => 
     const key = itemKey(item);
     if (keys.has(key)) return;
     keys.add(key);
-    added.push({ code: item.code, country: item.country });
+    added.push({ code: item.code, country: item.country, ...(item.addedAt && { addedAt: item.addedAt }) });
   });
   return { items: [...existing, ...added], added: added.length, duplicates: incoming.length - added.length };
 };
