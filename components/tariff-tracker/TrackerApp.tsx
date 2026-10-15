@@ -38,6 +38,7 @@ const Alerts = dynamic(() => import("./alerts/Alerts").then((m) => m.Alerts), { 
 const Savings = dynamic(() => import("./savings/Savings").then((m) => m.Savings), { loading: PanelSkeleton });
 const EntryAudit = dynamic(() => import("./entries/EntryAudit").then((m) => m.EntryAudit), { loading: PanelSkeleton });
 const Sourcing = dynamic(() => import("./sourcing/Sourcing").then((m) => m.Sourcing), { loading: PanelSkeleton });
+const ExpertHelp = dynamic(() => import("./expert-help/ExpertHelp").then((m) => m.ExpertHelp), { loading: PanelSkeleton });
 const TrackerCalculator = dynamic(
   () => import("./calculator/TrackerCalculator").then((m) => m.TrackerCalculator),
   { loading: PanelSkeleton }
@@ -67,8 +68,8 @@ export const TrackerApp = () => {
     document.title = section && tab !== DEFAULT_SECTION ? `${section.title} · ${BASE_TITLE}` : BASE_TITLE;
   }, [tab]);
 
-  // The built tabs; the rest show what's planned
-  const panels: Partial<Record<SectionSlug, (active: boolean) => ReactNode>> = {
+  // The built tabs; the rest (and those held back as coming soon) show what's planned
+  const built: Partial<Record<SectionSlug, (active: boolean) => ReactNode>> = {
     calculator: (active) => <TrackerCalculator key={calculatorRun} active={active} />,
     catalog: () => <ProductCatalog />,
     overview: () => <Overview />,
@@ -77,7 +78,11 @@ export const TrackerApp = () => {
     sourcing: () => <Sourcing />,
     alerts: () => <Alerts />,
     entries: () => <EntryAudit />,
+    "expert-help": () => <ExpertHelp />,
   };
+  const panels = Object.fromEntries(
+    Object.entries(built).filter(([slug]) => sectionBySlug(slug)?.ready)
+  ) as typeof built;
 
   // Bumped to start the calculator over from the address, for a calculator link opened in place
   const [calculatorRun, setCalculatorRun] = useState(0);
@@ -132,7 +137,7 @@ export const TrackerApp = () => {
                           aria-labelledby={`tt-tab-${section.slug}`}
                           hidden={!active}
                         >
-                          <SectionPage section={section} showHeader={section.slug !== "overview" && section.slug !== "catalog"}>
+                          <SectionPage section={section} showHeader={section.slug !== "overview" && section.slug !== "catalog" && section.slug !== "expert-help"}>
                             {panel ? panel(active) : <PlannedSection section={section} />}
                           </SectionPage>
                         </div>

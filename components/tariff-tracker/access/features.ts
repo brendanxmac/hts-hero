@@ -11,8 +11,6 @@ export type PremiumFeature =
       | "alerts"
       | "entries"
       | "sourcing"
-      | "trends"
-      | "charts"
       | "expert-help"
     >
   | "tracking"
@@ -46,14 +44,6 @@ export const PREMIUM_FEATURES: Record<
   sourcing: {
     name: "Sourcing",
     benefit: "Find the countries with the lowest duty on each of your products",
-  },
-  trends: {
-    name: "Trends",
-    benefit: "Follow the duty rate and exposure across your imports over time",
-  },
-  charts: {
-    name: "Charts",
-    benefit: "Share clear charts of your tariffs with your team",
   },
   "expert-help": {
     name: "Expert help",

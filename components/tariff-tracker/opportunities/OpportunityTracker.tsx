@@ -146,14 +146,15 @@ export const OpportunityTracker = ({
       )}
 
       {pending ? (
-        <div className="flex flex-col gap-3 rounded-2xl border border-base-300 p-4">
+        // A soft tile inside the step's card, not a box of its own
+        <div className="flex flex-col gap-3 rounded-xl bg-tt-soft p-4">
           <p className="m-0 text-sm font-semibold text-base-content">
             Move to {statusInfo(pending).label}
             <span className="font-normal text-base-content/60"> · {statusInfo(pending).description}</span>
           </p>
           {pending === "secured" && option && (
-            <p className={`${ui.notice("primary")} text-sm`}>
-              <CheckIcon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+            <p className="m-0 flex items-start gap-2 text-sm text-base-content/70">
+              <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
               Securing it {applyText(option, product)}. The change is kept in this saving&apos;s history.
             </p>
           )}

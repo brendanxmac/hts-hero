@@ -33,7 +33,7 @@ export const ExamplePreview = () => {
     trackEvent(MixpanelEvent.TARIFF_TRACKER_EXAMPLE_USED, { from: "overview_preview" });
   };
   return (
-    <section aria-labelledby="tt-example" className="flex flex-col gap-4 rounded-3xl border-2 border-dashed border-base-300 p-6">
+    <section aria-labelledby="tt-example" className="flex flex-col gap-4 rounded-lg border-2 border-dashed border-base-300 p-6">
       <div className="flex flex-wrap items-center gap-3">
         <span className={tt.chip("warning")}>Example</span>
         <h2 id="tt-example" className={`${tt.title} flex-1`}>

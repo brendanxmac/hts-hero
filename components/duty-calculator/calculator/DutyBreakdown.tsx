@@ -42,7 +42,7 @@ export const DutyBreakdown = ({
   onLinesDetailChange?: (detail: LinesDetail) => void;
   // Inside the card, between its heading and the lines (In plain English)
   summary?: ReactNode;
-  // In the heading, right of Compact / Detailed: "Explain this" (the plain-English explanation,
+  // In the heading, right of Compact / Detailed: "Summarize" (the plain-English explanation,
   // or the pitch for it signed out)
   headerAction?: ReactNode;
   // Inside the card, under the lines (the headings checked but not applied)

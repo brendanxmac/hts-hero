@@ -7,7 +7,7 @@ import { AccountGate } from "../access/AccountGate";
 import { sectionBySlug } from "../sections";
 import { NeedsProducts } from "../shell/NeedsProducts";
 import { useTracker } from "../TrackerContext";
-import { AuditChecksNotice } from "./AuditChecksNotice";
+import { FreeChecksNotice } from "../access/FreeChecksNotice";
 import { AuditDisclaimer } from "./AuditDisclaimer";
 import { AuditForm } from "./AuditForm";
 import { AuditStats } from "./AuditStats";
@@ -25,7 +25,7 @@ const AuditReport = () => {
   const { rows, totals, loading } = useAuditRows();
   return (
     <div className="flex flex-col gap-4">
-      <AuditChecksNotice />
+      <FreeChecksNotice kind="audits" />
       <AuditStats totals={totals} />
       <Upload7501Card />
       <AuditForm />

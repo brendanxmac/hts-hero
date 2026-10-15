@@ -21,7 +21,7 @@ export const CitedNote = ({
   const picked = versions?.length ? versionOn(versions, asOf) : undefined;
   const version = picked?.version;
   return (
-    <div className="flex flex-col gap-2.5 rounded-md border border-base-300 bg-base-200 p-3.5">
+    <div className="flex flex-col gap-2.5 border-l-2 border-base-300 pl-3.5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <span className="text-sm font-semibold text-base-content">
           {citation.label}

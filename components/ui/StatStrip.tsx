@@ -3,7 +3,7 @@ import * as ui from "@/components/ui/styles";
 
 // A row of headline numbers divided by 1px rules: the one way to show a few stats side by side
 // (DESIGN_SYSTEM "Stat strip"). On its own it's a card; inside a card (`framed={false}`) it's one
-// of the card's sections, with a rule under it. The first stat can lead (a bigger number, a wider
+// of the card's sections, drawing no rule of its own (CardSections draws them). The first stat can lead (a bigger number, a wider
 // cell) when it's the answer and the rest explain it.
 
 export interface StatItem {
@@ -46,7 +46,7 @@ export const StatStrip = ({
     aria-label={label}
     className={`m-0 grid gap-px bg-base-300 ${
       lead && stats.length === 4 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr]" : (COLUMNS[stats.length] ?? "grid-cols-1 sm:grid-cols-3")
-    } ${framed ? `${ui.card} !bg-base-300` : "border-b border-base-300"} ${className}`}
+    } ${framed ? `${ui.card} !bg-base-300` : ""} ${className}`}
   >
     {stats.map((s, i) => {
       const big = lead && i === 0;

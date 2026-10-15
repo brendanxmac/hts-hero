@@ -1,32 +1,32 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { MapPinIcon } from "@heroicons/react/20/solid";
-import { MapPinIcon as MapPinOutline } from "@heroicons/react/24/outline";
+import { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { barWidth, Sparkline, time } from "@/components/ui/charts/kit";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Sparkline, time } from "@/components/ui/charts/kit";
+import { StackedBar } from "@/components/ui/charts/StackedBar";
 import * as ui from "@/components/ui/styles";
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table";
-import { MUTED_MARK } from "@/components/ui/theme";
+import { PRIMARY_MARK } from "@/components/ui/theme";
 import { SUMMARY_COUNTRY_CODES } from "@/libs/hts-duty-summary";
 import { rateKey } from "@/components/tariff-tracker/product/analysis/analysis";
 import { OriginHistory, RateSegment, volatility } from "@/components/tariff-tracker/product/analysis/history";
 import { formatRate } from "@/components/tariff-tracker/formatRate";
 import { formatImportValue } from "../lib/usImports";
-import { todayIso } from "../lib/format";
+import { formatMoney, todayIso } from "../lib/format";
 import { CompareOption, optionsFor, ProgramMode, segmentsFor, shortAgreement } from "./options";
-import { RateDots } from "./RateDots";
 import { Origins } from "./useOrigins";
 
-// Every origin as one ranked list, under the shortlist: each chart is a column (the rate on one
-// scale, the difference from yours, US imports from Census, the trend since the verified data
-// starts, how much it has swung), so the whole field reads at a glance and sorts like a
-// spreadsheet, or as one chart (RateDots: every option as a dot at its rate), the same search
-// and filter applying to both. Pin a country to put it on the shortlist (or take it off); shortlisted rows carry
-// their color. A country that can claim a trade agreement has a second row (with both choices of
-// the control bar), the agreement applied, named as a tag so the row reads on its own. Search, and filter to the countries that already ship it, are cheaper, are
-// agreement options or are top US sources.
+// Every origin as one ranked list that sorts like a spreadsheet. Columns: its rank by rate (#,
+// ties share one); the country (yours marked and in the primary color); the duty rate, then a
+// bar of the tariffs that make it up in the calculator's colors on one scale (the highest rate
+// fills it; hover lists each tariff); with a customs value, the duty per shipment; the
+// difference from yours (in dollars a shipment with the rate difference under it, or the rate
+// difference alone), green when cheaper; US imports from Census with the country's share of the
+// total; the trend since the verified data starts; and how much it has swung. Rank, trend and
+// swing drop out on small screens. Read-only. A country that can claim a trade agreement has a
+// second row (with both choices of the control bar), the agreement applied, named as a tag so
+// the row reads on its own. Search, and filter to the countries that already ship it, are
+// cheaper, are agreement options or are top US sources.
 
 type Tag = "suppliers" | "cheaper" | "agreements" | "sources";
 
@@ -43,6 +43,10 @@ interface Row {
   origin: CompareOption["origin"];
   pct: number;
   diff: number;
+  // Its place by rate, cheapest first (ties share one)
+  rank: number;
+  // Duty a shipment at the customs value, when there is one
+  duty: number | null;
   imports: number;
   history?: OriginHistory;
   segments: RateSegment[];
@@ -51,84 +55,83 @@ interface Row {
   tags: Tag[];
 }
 
+// The import's own origin at its own rate (not its agreement option)
+const isYours = (r: Row) => r.origin.isOrigin && !r.option.agreement;
+
+const money = (n: number) => formatMoney(Math.round(n)).replace(/\.00$/, "");
+// "12%", or "<1%" for a sliver
+const shareOf = (part: number, total: number) => {
+  const pct = (part / total) * 100;
+  return pct > 0 && pct < 1 ? "<1%" : `${Math.round(pct)}%`;
+};
+
 export const OriginsList = ({
   origins,
   mode,
-  shortlist,
-  colors,
-  onToggle,
+  customsValue,
 }: {
   origins: Origins;
   // Trade programs: without, with (each country at its agreement rate), or both (the agreement
   // option as a row under its country)
   mode: ProgramMode;
-  shortlist: ReadonlySet<string>;
-  colors: Record<string, string>;
-  onToggle: (code: string) => void;
+  // The product's customs value, for the dollar columns (left out: rates only)
+  customsValue?: number;
 }) => {
-  const { rates, imports, histories } = origins;
+  const { rates, imports, histories, colors } = origins;
   const yours = rates.find((r) => r.isOrigin);
   // Yours on the same footing: with its own agreement when the choice is "with"
   const yourPct = yours ? (mode === "with" && yours.agreement ? yours.agreement.pct : yours.pct) : 0;
 
-  const rows = useMemo<Row[]>(
-    () =>
-      rates.flatMap((r) => optionsFor(r, mode)).map((option) => {
-        const { origin, pct } = option;
-        const history = histories.get(origin.country.code);
-        const v = history ? volatility(history, option.agreement ? "agreements" : "standard") : null;
-        const value = imports?.byCountry.get(origin.country.code)?.value ?? 0;
-        const tags: Tag[] = [];
-        if (value > 0) tags.push("suppliers");
-        if (!(origin.isOrigin && !option.agreement) && rateKey(pct) < rateKey(yourPct)) tags.push("cheaper");
-        if (option.agreement) tags.push("agreements");
-        if (SUMMARY_COUNTRY_CODES.includes(origin.country.code)) tags.push("sources");
-        return {
-          option,
-          origin,
-          pct,
-          diff: pct - yourPct,
-          imports: value,
-          history,
-          segments: segmentsFor(option, history),
-          swing: v?.swing ?? null,
-          changes: v?.changes ?? null,
-          tags,
-        };
-      }),
-    [rates, mode, histories, imports, yourPct]
-  );
+  const rows = useMemo<Row[]>(() => {
+    const options = rates.flatMap((r) => optionsFor(r, mode));
+    const keys = options.map((o) => rateKey(o.pct)).sort((a, b) => a - b);
+    // Rank: one more than the number of options strictly cheaper
+    const rankOf = (pct: number) => {
+      const k = rateKey(pct);
+      let lo = 0;
+      while (lo < keys.length && keys[lo] < k) lo++;
+      return lo + 1;
+    };
+    return options.map((option) => {
+      const { origin, pct } = option;
+      const history = histories.get(origin.country.code);
+      const v = history ? volatility(history, option.agreement ? "agreements" : "standard") : null;
+      const value = imports?.byCountry.get(origin.country.code)?.value ?? 0;
+      const tags: Tag[] = [];
+      if (value > 0) tags.push("suppliers");
+      if (!(origin.isOrigin && !option.agreement) && rateKey(pct) < rateKey(yourPct)) tags.push("cheaper");
+      if (option.agreement) tags.push("agreements");
+      if (SUMMARY_COUNTRY_CODES.includes(origin.country.code)) tags.push("sources");
+      return {
+        option,
+        origin,
+        pct,
+        diff: pct - yourPct,
+        rank: rankOf(pct),
+        duty: customsValue && customsValue > 0 ? (pct / 100) * customsValue : null,
+        imports: value,
+        history,
+        segments: segmentsFor(option, history),
+        swing: v?.swing ?? null,
+        changes: v?.changes ?? null,
+        tags,
+      };
+    });
+  }, [rates, mode, histories, imports, yourPct, customsValue]);
   const topPct = Math.max(...rows.map((r) => r.pct), 1);
-  const topImports = Math.max(...rows.map((r) => r.imports), 1);
+  const totalImports = imports?.totalValue ?? 0;
   const today = time(todayIso());
+  // Dollars only with a value to work them out from
+  const value = customsValue && customsValue > 0 ? customsValue : null;
 
   const columns = useMemo<ColumnDef<Row, any>[]>(
     () => [
       {
-        id: "pin",
-        header: () => <span className="sr-only">On your shortlist</span>,
-        enableSorting: false,
-        meta: { width: "w-10" },
-        cell: ({ row: { original: r } }) => {
-          const on = shortlist.has(r.origin.country.code);
-          const Icon = on ? MapPinIcon : MapPinOutline;
-          return r.origin.isOrigin ? (
-            <span className="block h-5 w-5 rounded-full" style={{ background: colors[r.origin.country.code] }} title="Your origin" aria-label="Your origin" />
-          ) : (
-            <button
-              type="button"
-              onClick={() => onToggle(r.origin.country.code)}
-              aria-pressed={on}
-              aria-label={on ? `Take ${r.origin.country.name} off your shortlist` : `Add ${r.origin.country.name} to your shortlist`}
-              title={on ? "On your shortlist: select to take it off" : "Add to your shortlist"}
-              className={`flex h-7 w-7 items-center justify-center rounded-full transition-colors hover:bg-base-200 ${on ? "" : "text-base-content/40 hover:text-primary"}`}
-              // A shortlisted pin wears the country's color (runtime color, DESIGN_SYSTEM §10)
-              style={on ? { color: colors[r.origin.country.code] } : undefined}
-            >
-              <Icon className="h-5 w-5" aria-hidden />
-            </button>
-          );
-        },
+        id: "rank",
+        accessorFn: (r) => r.rank,
+        header: "#",
+        meta: { align: "right", width: "hidden w-12 md:table-cell" },
+        cell: ({ row: { original: r } }) => <span className="tabular-nums text-base-content/60">{r.rank}</span>,
       },
       {
         id: "country",
@@ -140,9 +143,9 @@ export const OriginsList = ({
         cell: ({ row: { original: r } }) => (
           <span className="flex items-center gap-2 whitespace-nowrap text-base-content">
             <span aria-hidden>{r.origin.country.flag}</span>
-            <span className={shortlist.has(r.origin.country.code) ? "font-semibold" : ""}>{r.origin.country.name}</span>
+            <span className={isYours(r) ? "font-semibold" : ""}>{r.origin.country.name}</span>
             {r.option.agreement && <span className={ui.badge("success")}>with {shortAgreement(r.option.agreement.name)}</span>}
-            {r.origin.isOrigin && !r.option.agreement && <span className={ui.badge("primary")}>Yours</span>}
+            {isYours(r) && <span className={ui.badge("primary")}>Yours</span>}
           </span>
         ),
       },
@@ -161,49 +164,102 @@ export const OriginsList = ({
         },
       },
       {
+        // The rate first, then the tariffs that make it up in the calculator's colors, on one
+        // scale (the highest rate in the table fills the track)
         id: "rate",
         accessorFn: (r) => r.pct,
         header: "Duty rate",
-        meta: { align: "right", width: "w-[22%]" },
+        meta: { width: "w-[26%]" },
         cell: ({ row: { original: r } }) => (
-          <span className="flex items-center justify-end gap-3">
-            <span className="hidden h-2 flex-1 overflow-hidden rounded-full bg-base-200 sm:block" aria-hidden>
+          <span className="flex items-center gap-3">
+            <span className={`w-16 shrink-0 font-semibold tabular-nums ${isYours(r) ? "text-primary" : "text-base-content"}`}>{formatRate(r.pct)}</span>
+            <span className="group relative hidden min-w-0 flex-1 py-2 sm:block">
+              {/* What it's made of, on hover */}
               <span
-                className="block h-full rounded-full"
-                style={{ width: barWidth(r.pct, topPct), background: shortlist.has(r.origin.country.code) ? colors[r.origin.country.code] : MUTED_MARK }}
+                role="tooltip"
+                className={`${ui.tooltip} invisible absolute left-0 top-full z-30 mt-1 flex w-72 flex-col gap-1.5 p-3 text-xs opacity-0 transition-opacity group-hover:visible group-hover:opacity-100`}
+              >
+                <span className="font-semibold text-base-content">
+                  {r.origin.country.flag} {r.origin.country.name}
+                  {r.option.agreement ? ` with ${shortAgreement(r.option.agreement.name)}` : ""}: {formatRate(r.pct)}
+                </span>
+                {r.option.parts.length ? (
+                  r.option.parts.map((p) => (
+                    <span key={p.key} className="flex items-center justify-between gap-3 text-base-content/80">
+                      <span className="flex min-w-0 items-center gap-1.5">
+                        <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colors[p.key] }} aria-hidden />
+                        <span className="truncate">{p.key}</span>
+                      </span>
+                      <span className="tabular-nums">{formatRate(p.pct)}</span>
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-base-content/70">Duty free</span>
+                )}
+              </span>
+              <StackedBar
+                parts={r.option.parts.map((p) => ({ label: p.key, amount: p.pct, color: colors[p.key] }))}
+                formatValue={formatRate}
+                size="xs"
+                shape="pill"
+                legend={false}
+                fill={r.pct / topPct}
+                className="pointer-events-none"
               />
             </span>
-            <span className="w-14 font-semibold">{formatRate(r.pct)}</span>
           </span>
         ),
       },
+      ...(value
+        ? [
+            {
+              id: "duty",
+              accessorFn: (r: Row) => r.duty,
+              header: "Duty per shipment",
+              meta: { align: "right" as const },
+              cell: ({ row: { original: r } }: { row: { original: Row } }) => <span className="tabular-nums text-base-content">{money(r.duty ?? 0)}</span>,
+            },
+          ]
+        : []),
       {
+        // In dollars a shipment when there's a value (the rate difference under it), else the
+        // rate difference
         id: "diff",
         accessorFn: (r) => r.diff,
         header: "Vs yours",
         meta: { align: "right" },
         cell: ({ row: { original: r } }) => {
+          if (isYours(r)) return <span className="text-base-content/60">—</span>;
           const same = Math.abs(r.diff) < 0.005;
-          return (
-            <span className={(r.origin.isOrigin && !r.option.agreement) || same ? "text-base-content/50" : r.diff < 0 ? "text-success" : "text-error"}>
-              {r.origin.isOrigin && !r.option.agreement ? "—" : same ? "Same" : `${r.diff < 0 ? "−" : "+"}${formatRate(Math.abs(r.diff))}`}
+          if (same) return <span className="text-base-content/60">Same</span>;
+          const tone = r.diff < 0 ? "text-success" : "text-error";
+          const sign = r.diff < 0 ? "−" : "+";
+          const rate = `${sign}${formatRate(Math.abs(r.diff))}`;
+          return value ? (
+            <span className="tabular-nums">
+              <span className={`font-semibold ${tone}`}>
+                {sign}
+                {money(Math.abs(r.diff / 100) * value)}
+              </span>
+              <span className="block text-xs text-base-content/60">{rate}</span>
             </span>
+          ) : (
+            <span className={`tabular-nums ${tone}`}>{rate}</span>
           );
         },
       },
       {
+        // Census value with its share of everything the US imports of it
         id: "imports",
         accessorFn: (r) => r.imports,
         header: imports ? `US imports, ${imports.year}` : "US imports",
         sortDescFirst: true,
-        meta: { align: "right", width: "w-[18%]" },
+        meta: { align: "right" },
         cell: ({ row: { original: r } }) =>
           r.imports > 0 ? (
-            <span className="flex items-center justify-end gap-3">
-              <span className="hidden h-2 flex-1 overflow-hidden rounded-full bg-base-200 sm:block" aria-hidden>
-                <span className="block h-full rounded-full bg-base-content/30" style={{ width: barWidth(r.imports, topImports) }} />
-              </span>
-              <span className="w-16">{formatImportValue(r.imports)}</span>
+            <span className="tabular-nums">
+              {formatImportValue(r.imports)}
+              {totalImports > 0 && <span className="block text-xs text-base-content/60">{shareOf(r.imports, totalImports)} of imports</span>}
             </span>
           ) : (
             <span className="text-base-content/40">—</span>
@@ -213,12 +269,12 @@ export const OriginsList = ({
         id: "trend",
         header: "Trend",
         enableSorting: false,
-        meta: { width: "w-28" },
+        meta: { width: "hidden w-28 lg:table-cell" },
         cell: ({ row: { original: r } }) =>
           r.segments.length ? (
             <Sparkline
               points={r.segments.map((s) => ({ x: time(s.from), y: s.pct }))}
-              color={shortlist.has(r.origin.country.code) ? colors[r.origin.country.code] : "oklch(var(--bc) / 0.45)"}
+              color={isYours(r) ? PRIMARY_MARK : "oklch(var(--bc) / 0.45)"}
               step
               to={today}
               height={24}
@@ -232,7 +288,7 @@ export const OriginsList = ({
         id: "stability",
         accessorFn: (r) => r.swing ?? -1,
         header: "Swing",
-        meta: { align: "right" },
+        meta: { align: "right", width: "hidden lg:table-cell" },
         cell: ({ row: { original: r } }) =>
           r.swing === null ? (
             <span className="text-base-content/40">…</span>
@@ -248,7 +304,7 @@ export const OriginsList = ({
           ),
       },
     ],
-    [shortlist, colors, onToggle, topPct, topImports, imports, today]
+    [topPct, totalImports, imports, today, colors, value]
   );
 
   const table = useDataTable<Row>({
@@ -260,47 +316,25 @@ export const OriginsList = ({
     initialSorting: [{ id: "rate", desc: false }],
   });
 
-  const [view, setView] = useState<"table" | "chart">("chart");
+  // No title: Compare's Table tab names it
+  // Every tariff in any row, for the legend of the bars' colors
+  const partKeys = Array.from(new Set(rows.flatMap((r) => r.option.parts.map((p) => p.key))));
   const toolbar = (
     <>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h4 className={ui.cardTitle}>Every origin</h4>
-          <p className={`${ui.caption} mt-0.5`}>
-            All {rates.length} countries this could come from{mode === "both" ? ", each trade agreement option beside its country" : ""}. Select one to add it to
-            your shortlist.
-          </p>
-        </div>
-        <SegmentedControl<"table" | "chart">
-          label="Show every origin as"
-          options={[
-            { id: "chart", label: "Chart" },
-            { id: "table", label: "Table" },
-          ]}
-          value={view}
-          onChange={setView}
-          size="sm"
-        />
-      </div>
       <TableToolbar table={table} placeholder="Find a country" facets={["show"]} noun={["option", "options"]} />
+      {partKeys.length > 0 && (
+        <ul className="m-0 flex list-none flex-wrap items-center gap-x-4 gap-y-1 p-0 text-xs text-base-content/70" aria-label="What the duty rate bars are made of">
+          <li className={ui.label}>Duty rate bars</li>
+          {partKeys.map((key) => (
+            <li key={key} className="inline-flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full" style={{ background: colors[key] }} aria-hidden />
+              {key}
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
-
-  // The chart draws what the table would show: the same search and filter
-  if (view === "chart")
-    return (
-      <section className={`${ui.card} flex flex-col gap-4 px-5 py-4 sm:px-6`} aria-label="Every origin">
-        {toolbar}
-        <RateDots
-          options={table.getRowModel().rows.map((r) => r.original.option)}
-          yourPct={yourPct}
-          shortlist={shortlist}
-          colors={colors}
-          imports={imports?.byCountry ?? null}
-          onToggle={onToggle}
-        />
-      </section>
-    );
 
   return (
     <DataTable

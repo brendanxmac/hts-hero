@@ -10,6 +10,7 @@ export const EstimateStats = ({ estimate, customsValue }: { estimate: MicroEstim
     <StatStrip
       framed={false}
       lead
+      className="border-b border-base-300"
       stats={[
         { label: "Total duty", value: formatMoney(estimate.totalDuty), note: `${formatPct(Math.round(effectiveRate * 100) / 100)} effective rate` },
         { label: "Fees", value: formatMoney(estimate.totalFees), note: estimate.fees },

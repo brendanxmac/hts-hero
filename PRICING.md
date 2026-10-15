@@ -123,6 +123,31 @@ Included in every tier:
 - Reports and exports to share with the team
 - Everything in the free Tariff Calculator
 
+## HTS Hero Managed: premium service
+
+_Added 2026-10-15; prices are placeholders until confirmed._
+
+Sold from the Tracker's **Expert help** tab. HTS Hero is onboarded to the client's company and
+manages every tariff on their imports: a shared Slack channel with their team, a weekly check-in
+call, every import kept in the lowest-duty position it can claim, new savings strategies explored
+continually, and every entry, entry summary and delivery report audited. Priced by the imports
+managed (`MANAGED_TIERS` in `components/pricing-calculator/lib/pricing.ts`), and includes the
+Tariff Tracker on every managed import. Sold through an intro call (`config.bookCallUrl`), not
+self-serve.
+
+| Imports managed | Price / month |
+|---|---|
+| Up to 50 | $2,500 |
+| Up to 200 | $4,500 |
+| Up to 500 | $7,500 |
+| 500+ | Quoted |
+
+Annual billing takes **20% off** (`MANAGED_ANNUAL_DISCOUNT`): $2,000, $3,600 and $6,000 a month,
+billed yearly. The page has a Monthly / Annual toggle.
+
+As with audits, HTS Hero finds and documents; corrections, protests and refunds are filed by the
+client's licensed customs broker or counsel, and we work with them directly.
+
 ## Free tariff audit check (lead magnet)
 
 The self-audit in the Tracker (Entry audit) uses audit checks: 10 free with every account, unlimited on a paid plan. Copy says "10 free audit checks". The two free paths on `/tariff-audit` are this one-time check and a requested audit.

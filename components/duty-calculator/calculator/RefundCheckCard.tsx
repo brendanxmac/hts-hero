@@ -117,7 +117,7 @@ export const RefundCheckCard = ({
           <button type="button" className={ui.button({ variant: "primary" })} onClick={onCheck}>
             Check my entries
           </button>
-          <span className="text-xs text-base-content/50">{TRIAL_ALLOWANCE.auditChecks} free audit checks</span>
+          <span className="text-xs text-base-content/60">{TRIAL_ALLOWANCE.auditChecks} free audit checks</span>
         </div>
       </div>
 
@@ -132,7 +132,7 @@ export const RefundCheckCard = ({
           <button
             type="button"
             onClick={played.replay}
-            className="inline-flex items-center gap-1 rounded text-xs font-medium text-base-content/50 hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            className="inline-flex items-center gap-1 rounded text-xs font-medium text-base-content/60 hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             <ArrowPathIcon className="h-3.5 w-3.5" aria-hidden />
             Replay
@@ -221,7 +221,7 @@ const Bar = ({
       />
     </span>
     <span className="text-right tabular-nums text-base-content/70">
-      {formatMoney(amount)} <span className="text-base-content/40">· {pct(rate)}</span>
+      {formatMoney(amount)} <span className="text-base-content/60">· {pct(rate)}</span>
     </span>
   </div>
 );

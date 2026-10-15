@@ -13,8 +13,8 @@ export function TabBar<T extends string>({
   // Names the tabs for screen readers
   label: string;
   // count: a number in a small pill after the label (how many there are to see); badge: a short
-  // word after it ("Beta")
-  options: readonly { id: T; label: string; title?: string; count?: number; badge?: string }[];
+  // word or figure after it ("Beta" in amber, "Up to $3,750" in green)
+  options: readonly { id: T; label: string; title?: string; count?: number; badge?: string; badgeTone?: "warning" | "success" }[];
   value: T;
   onChange: (value: T) => void;
 }) {
@@ -45,7 +45,11 @@ export function TabBar<T extends string>({
               </span>
             )}
             {option.badge && (
-              <span className="ml-1.5 inline-flex items-center rounded-full bg-warning/15 px-1.5 text-[11px] font-semibold leading-[18px] text-warning">{option.badge}</span>
+              <span
+                className={`ml-1.5 inline-flex items-center rounded-full px-1.5 text-[11px] font-semibold leading-[18px] ${option.badgeTone === "success" ? "bg-success/10 text-success" : "bg-warning/15 text-warning"}`}
+              >
+                {option.badge}
+              </span>
             )}
           </button>
         );

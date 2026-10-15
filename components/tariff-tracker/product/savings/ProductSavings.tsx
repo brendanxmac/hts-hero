@@ -11,6 +11,7 @@ import { RuleOutAll } from "../../opportunities/RuleOutAll";
 import { tallyOpportunities } from "../../opportunities/tallies";
 import { TrackedProduct } from "../../report";
 import { useTracker } from "../../TrackerContext";
+import { FreeChecksNotice } from "../../access/FreeChecksNotice";
 import { LockedSavings } from "./LockedSavings";
 import { OptionDetail } from "./OptionDetail";
 import { ListItem, OptionList } from "./OptionList";
@@ -99,5 +100,10 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
 
 export const ProductSavings = ({ product }: { product: TrackedProduct }) => {
   const { unlocked } = useInsights();
-  return unlocked.has(product.key) ? <SavingsExplorer product={product} /> : <LockedSavings product={product} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <FreeChecksNotice kind="savings" />
+      {unlocked.has(product.key) ? <SavingsExplorer product={product} /> : <LockedSavings product={product} />}
+    </div>
+  );
 };

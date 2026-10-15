@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
   geoCentroid,
   geoContains,
@@ -16,10 +16,10 @@ import type { Feature, FeatureCollection, Geometry } from "geojson";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import countries110m from "world-atlas/countries-110m.json";
 import { numericToAlpha2 } from "i18n-iso-countries";
-import { ArrowPathIcon, MinusIcon, PauseIcon, PlayIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { ArrowPathIcon, ArrowsPointingInIcon, ArrowsPointingOutIcon, MinusIcon, PauseIcon, PlayIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { formatDate } from "@/components/duty-calculator/lib/format";
-import { ChartCaption } from "@/components/duty-calculator/country-rate-charts/ChartCaption";
-import { axis, figureCard } from "@/components/duty-calculator/country-rate-charts/scale";
+import { useCardClass } from "@/components/ui/Card";
+import { axis, figurePad } from "@/components/duty-calculator/country-rate-charts/scale";
 import { useWidth } from "@/components/duty-calculator/rate-history/useWidth";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
@@ -51,6 +51,8 @@ const SHAPES: Shape[] = (
   .map((f) => ({ ...f, code: f.id ? numericToAlpha2(String(f.id)) : undefined }));
 const SHAPE_BY_CODE = new Map(SHAPES.filter((s) => s.code).map((s) => [s.code!, s]));
 const GRATICULE = geoGraticule10();
+// How far the globe's glow reaches, as a share of its radius (a little room past the glow itself)
+const GLOW = 1.26;
 const SPHERE = { type: "Sphere" } as const;
 
 // ── Color ──
@@ -132,6 +134,9 @@ export const WorldMap = ({
   selected,
   onSelect,
   timeline,
+  card,
+  onShowCard,
+  showCardLabel,
 }: {
   // Every origin, and the ones the analysis is showing (as of the timeline's date)
   rates: OriginRate[];
@@ -141,13 +146,32 @@ export const WorldMap = ({
   onSelect: (code: string) => void;
   // The analysis's shared date, when there's history to move through
   timeline?: Timeline;
+  // The selected country's summary, in a column left of the map (dismissable); and, once it's
+  // hidden, the way to bring it back ("Show Brazil (yours)")
+  card?: ReactNode;
+  onShowCard?: () => void;
+  showCardLabel?: string;
 }) => {
+  // A card on its own; a section of the Compare box inside it
+  const cardClass = useCardClass();
   const { ref: wrapRef, width } = useWidth();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mode = useMode();
   const [view, setView] = useState<View>("globe");
   const [hover, setHover] = useState<{ code: string; x: number; y: number } | null>(null);
-  const height = Math.max(Math.min(Math.round(width * (view === "globe" ? 0.62 : 0.5)), 560), 280);
+  // Full screen: the whole figure, the map as tall as the screen allows
+  const figureRef = useRef<HTMLElement>(null);
+  const [full, setFull] = useState(false);
+  useEffect(() => {
+    const onChange = () => setFull(document.fullscreenElement === figureRef.current);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+  const hasCard = card !== undefined || Boolean(onShowCard);
+  const toggleFull = () => (full ? document.exitFullscreen() : figureRef.current?.requestFullscreen());
+  const height = full
+    ? Math.max(Math.round(window.innerHeight - 140), 360)
+    : Math.max(Math.min(Math.round(width * (view === "globe" ? 0.92 : 0.6)), 640), 340);
 
   const byCode = useMemo(() => new Map(shown.map((o) => [o.country.code, o])), [shown]);
   const { top, ticks } = useMemo(() => axis(Math.max(...rates.map((r) => rateOf(r, "standard")), 1)), [rates]);
@@ -184,6 +208,8 @@ export const WorldMap = ({
   const live = useRef({
     rotation: initial,
     zoom: 1,
+    // Where the zoom is easing to (the wheel and the buttons move this; each frame closes the gap)
+    zoomTarget: 1,
     velocity: 0,
     dragging: false,
     pointerInside: false,
@@ -227,7 +253,8 @@ export const WorldMap = ({
           SPHERE
         );
     }
-    const r = (Math.min(w, h) / 2 - 18) * zoom;
+    // Small enough at rest that its glow (out to 1.22 of the radius) fits inside the canvas
+    const r = (Math.min(w, h) / 2 / GLOW) * zoom;
     return geoOrthographic().scale(r).translate([w / 2, h / 2]).rotate(rotation).clipAngle(90);
   };
 
@@ -251,8 +278,8 @@ export const WorldMap = ({
     const [cx, cy] = [d.width / 2, d.height / 2];
     const r = projection.scale();
 
-    // The atmosphere: a soft glow around the globe
-    if (globe) {
+    // The atmosphere: a soft glow around the globe; only at rest, when it fits the canvas
+    if (globe && live.current.zoom <= 1.02) {
       const glow = ctx.createRadialGradient(cx, cy, r * 0.92, cx, cy, r * 1.22);
       glow.addColorStop(0, alpha(c.primary, 0.28));
       glow.addColorStop(1, alpha(c.primary, 0));
@@ -370,6 +397,11 @@ export const WorldMap = ({
       last = now;
       const s = live.current;
       if (visible) {
+        // Smooth zoom: ease toward the target, a little closer every frame
+        if (Math.abs(s.zoomTarget - s.zoom) > 0.001) {
+          s.zoom = reduceMotion ? s.zoomTarget : s.zoom + (s.zoomTarget - s.zoom) * (1 - Math.pow(0.78, dt / 16));
+          s.dirty = true;
+        }
         if (s.fly) {
           const t = Math.min((now - s.fly.start) / FLY_MS, 1);
           const e = easeInOut(t);
@@ -521,13 +553,27 @@ export const WorldMap = ({
 
   const zoomBy = (factor: number) => {
     const s = live.current;
-    s.zoom = Math.max(1, Math.min(3, s.zoom * factor));
+    s.zoomTarget = Math.max(1, Math.min(4, s.zoomTarget * factor));
     s.lastInteraction = performance.now();
     s.dirty = true;
   };
+  // The mouse wheel zooms the globe smoothly (and doesn't scroll the page while over it)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const onWheel = (e: WheelEvent) => {
+      if (data.current.view !== "globe") return;
+      e.preventDefault();
+      zoomBy(Math.exp(-e.deltaY * 0.0015));
+    };
+    canvas.addEventListener("wheel", onWheel, { passive: false });
+    return () => canvas.removeEventListener("wheel", onWheel);
+    // zoomBy reads through refs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const reset = () => {
     const s = live.current;
-    s.zoom = 1;
+    s.zoomTarget = 1;
     s.velocity = 0;
     s.fly = { from: s.rotation, to: initial, start: performance.now() };
   };
@@ -554,46 +600,79 @@ export const WorldMap = ({
   }, [shown, basis]);
 
   return (
-    <figure className={figureCard}>
-      <ChartCaption
-        title="Where it's cheapest"
-        action={
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2" aria-hidden>
-              <span className="h-2.5 w-2.5 rounded-sm" style={{ background: colors.free }} />
-              <span className={`${ui.caption} mr-1`}>Duty free</span>
-              <span className={ui.caption}>Low</span>
-              <span
-                className="h-2 w-28 rounded-full"
-                style={{
-                  background: `linear-gradient(to right, ${[0.01, 0.25, 0.5, 0.75, 1].map((f) => colors.rate(f * top, top)).join(", ")})`,
-                }}
-              />
-              <span className={ui.caption}>{ticks[ticks.length - 1]}%</span>
-            </div>
-            <SegmentedControl<View>
-              label="Map view"
-              options={[
-                { id: "globe", label: "Globe" },
-                { id: "flat", label: "Flat" },
-              ]}
-              value={view}
-              onChange={(next) => {
-                setView(next);
-                live.current.zoom = 1;
-                live.current.dirty = true;
-              }}
-              size="sm"
-            />
+    <figure ref={figureRef} className={`${cardClass} ${figurePad} ${full ? "overflow-auto bg-base-100" : ""}`}>
+      {/* No title: Compare's Globe tab names it. The legend, and the view */}
+      <figcaption className="flex flex-wrap items-center justify-between gap-3">
+        <span className="sr-only">
+          Around the World: this product&apos;s rate from every country, the stronger the color the more it pays.
+          {missing > 0 && ` ${missing} small origins are too small to draw; they're in the table.`}
+        </span>
+        <div className="flex items-center gap-2" aria-hidden>
+          <span className="h-2.5 w-2.5 rounded-sm" style={{ background: colors.free }} />
+          <span className={`${ui.caption} mr-1`}>Duty free</span>
+          <span className={ui.caption}>Low</span>
+          <span
+            className="h-2 w-28 rounded-full"
+            style={{
+              background: `linear-gradient(to right, ${[0.01, 0.25, 0.5, 0.75, 1].map((f) => colors.rate(f * top, top)).join(", ")})`,
+            }}
+          />
+          <span className={ui.caption}>{ticks[ticks.length - 1]}%</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* The map's controls, together: zoom (small steps; the wheel zooms too), back to yours, full screen */}
+          <div className="flex items-center gap-1" role="group" aria-label="Map controls">
+            {view === "globe" && (
+              <>
+                <button type="button" className={ui.button({ size: "sm", icon: true })} onClick={() => zoomBy(1 / 1.15)} aria-label="Zoom out" title="Zoom out (or scroll)">
+                  <MinusIcon className="h-4 w-4" aria-hidden />
+                </button>
+                <button type="button" className={ui.button({ size: "sm", icon: true })} onClick={() => zoomBy(1.15)} aria-label="Zoom in" title="Zoom in (or scroll)">
+                  <PlusIcon className="h-4 w-4" aria-hidden />
+                </button>
+                <button type="button" className={ui.button({ size: "sm", icon: true })} onClick={reset} aria-label="Back to your origin" title="Back to your origin">
+                  <ArrowPathIcon className="h-4 w-4" aria-hidden />
+                </button>
+              </>
+            )}
+            <button type="button" className={ui.button({ size: "sm", icon: true })} onClick={toggleFull} aria-label={full ? "Exit full screen" : "Full screen"} title={full ? "Exit full screen" : "Full screen"}>
+              {full ? <ArrowsPointingInIcon className="h-4 w-4" aria-hidden /> : <ArrowsPointingOutIcon className="h-4 w-4" aria-hidden />}
+            </button>
           </div>
-        }
-      >
-        This product&apos;s rate from every country: the stronger the color, the more it pays. Drag to spin it, select a
-        country to compare it with yours.
-        {missing > 0 && ` ${missing} small origins are too small to draw; they're in the table below.`}
-      </ChartCaption>
+          <SegmentedControl<View>
+            label="Map view"
+            options={[
+              { id: "globe", label: "Globe" },
+              { id: "flat", label: "Flat" },
+            ]}
+            value={view}
+            onChange={(next) => {
+              setView(next);
+              live.current.zoom = 1;
+              live.current.zoomTarget = 1;
+              live.current.dirty = true;
+            }}
+            size="sm"
+          />
+        </div>
+      </figcaption>
 
-      <div className="mt-4 grid items-center gap-4 xl:grid-cols-[minmax(0,1fr)_15rem]">
+      {/* Side by side, nothing on top of the map: the picked country's card, the map, the cheapest */}
+      <div className={`mt-4 grid items-start gap-5 ${hasCard ? "lg:grid-cols-[18rem_minmax(0,1fr)] xl:grid-cols-[18rem_minmax(0,1fr)_13rem]" : "xl:grid-cols-[minmax(0,1fr)_13rem]"}`}>
+        {hasCard && (
+          <div className="flex flex-col gap-3">
+            {card ? (
+              <div className="rounded-xl bg-tt-soft p-4">{card}</div>
+            ) : (
+              onShowCard && (
+                <button type="button" className={`${ui.button({ size: "sm" })} self-start`} onClick={onShowCard}>
+                  {showCardLabel ?? "Show the summary"}
+                </button>
+              )
+            )}
+            <p className={`${ui.caption} m-0`}>Select a country on the map to see its duty here.</p>
+          </div>
+        )}
         <div ref={wrapRef} className="relative" style={{ height }}>
           <canvas
             ref={canvasRef}
@@ -603,7 +682,7 @@ export const WorldMap = ({
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerLeave={onPointerLeave}
-            onDoubleClick={() => view === "globe" && zoomBy(1.5)}
+            onDoubleClick={() => view === "globe" && zoomBy(1.3)}
             role="img"
             aria-label="Map of this product's rate by country"
           />
@@ -633,19 +712,6 @@ export const WorldMap = ({
             </div>
           )}
 
-          {view === "globe" && (
-            <div className="absolute bottom-2 right-2 flex flex-col gap-1">
-              <button type="button" className={ui.button({ size: "sm", icon: true })} onClick={() => zoomBy(1.4)} aria-label="Zoom in">
-                <PlusIcon className="h-4 w-4" aria-hidden />
-              </button>
-              <button type="button" className={ui.button({ size: "sm", icon: true })} onClick={() => zoomBy(1 / 1.4)} aria-label="Zoom out">
-                <MinusIcon className="h-4 w-4" aria-hidden />
-              </button>
-              <button type="button" className={ui.button({ size: "sm", icon: true })} onClick={reset} aria-label="Back to your origin">
-                <ArrowPathIcon className="h-4 w-4" aria-hidden />
-              </button>
-            </div>
-          )}
 
           {hover && hovered && (
             <div
@@ -680,7 +746,7 @@ export const WorldMap = ({
         </div>
 
         {/* Where to look: the cheapest origins, each a click away on the globe */}
-        <div className="flex flex-col gap-2">
+        <div className={`flex flex-col gap-2 ${hasCard ? "lg:col-span-2 xl:col-span-1" : ""}`}>
           <span className={ui.label}>Cheapest origins</span>
           <ol className="flex flex-col">
             {cheapest.map((o) => (

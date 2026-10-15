@@ -11,6 +11,7 @@ export const SectionHeader = ({ section, actions }: { section: TrackerSection; a
       <h1 className={`${tt.display} m-0 flex items-center gap-3 text-2xl font-semibold tracking-tight text-base-content`}>
         {section.title}
         {section.beta && <BetaChip />}
+        {section.comingSoon && <span className={tt.chip("primary")}>Coming soon</span>}
       </h1>
       <p className={tt.subtitle}>{section.summary}</p>
     </div>

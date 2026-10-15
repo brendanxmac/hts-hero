@@ -18,7 +18,7 @@ export const PlannedSection = ({ section }: { section: TrackerSection }) => {
   const { Icon } = section;
   const headingId = `tt-planned-${section.slug}`;
   const teaser =
-    section.slug === "alerts" || section.slug === "trends"
+    section.slug === "alerts"
       ? changesTeaser(insights)
       : section.slug === "sourcing"
         ? sourcingTeaser(insights)
@@ -56,7 +56,7 @@ export const PlannedSection = ({ section }: { section: TrackerSection }) => {
               What&apos;s coming
             </h2>
           </div>
-          <span className={ui.badge("primary")}>In development</span>
+          <span className={ui.badge("primary")}>{section.comingSoon ? "Coming soon" : "In development"}</span>
         </div>
         <ul className="flex flex-col gap-3 px-5 py-4">
           {section.planned.map((item) => (

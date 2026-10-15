@@ -19,11 +19,11 @@ import { TariffFinder } from "../lib/useTariffFinder";
 import { useCanSeeWhy } from "./WhyGate";
 
 // The duty breakdown explained in plain English (summarySections), shown on request from the
-// breakdown's heading (ExplainToggle, "Explain this") above the totals: what's owed in one sentence, what you pay line
+// results' header (ExplainToggle, "Summarize") above the totals: what's owed in one sentence, what you pay line
 // by line beside it, then every other section (exemptions at work, the user's adjustments, what
 // was ruled out, what could change it) as a card of its own, each with a few items and the rest
 // on request. It all takes a free account (the "why" is the product's edge), and isn't rendered
-// for anyone signed out: "Explain this", in the breakdown's heading, opens the pitch instead.
+// for anyone signed out: "Summarize", in the results' header, opens the pitch instead.
 
 const pct = (n: number) => formatPct(Math.round(n * 100) / 100);
 
@@ -67,9 +67,9 @@ const Section = ({ title, items, all = false }: { title: string; items: string[]
   );
 };
 
-// "Explain this": the button that shows and hides it, in the Duty Breakdown's heading right of
-// Compact / Detailed. Nothing for anyone who can't see the explanation (signed out: the
-// breakdown's own "Explain this" link opens the pitch).
+// "Summarize": the button that shows and hides it, in the results' header beside the main action.
+// Nothing for anyone who can't see the explanation (signed out, the header's own "Summarize"
+// opens the pitch).
 export const ExplainToggle = ({ open, onToggle }: { open: boolean; onToggle: () => void }) => {
   const { canSee, loading } = useCanSeeWhy();
   if (loading || !canSee) return null;
@@ -81,7 +81,7 @@ export const ExplainToggle = ({ open, onToggle }: { open: boolean; onToggle: () 
       className={`${ui.button({ variant: open ? "primary" : "secondary", size: "sm" })} shrink-0`}
     >
       <SparklesIcon className="h-4 w-4" aria-hidden />
-      Explain this
+      Summarize
     </button>
   );
 };

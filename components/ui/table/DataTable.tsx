@@ -1,5 +1,6 @@
 "use client";
 
+import { useInCard } from "@/components/ui/Card";
 import "./meta";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { ChevronDownIcon, ChevronUpDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
@@ -141,6 +142,7 @@ export const DataTable = <T,>({
   virtualizeFrom?: number;
   estimateRowHeight?: number;
 }) => {
+  const inCard = useInCard();
   const rows = table.getRowModel().rows;
   const tableRef = useRef<HTMLTableElement>(null);
   const [scroller, setScroller] = useState<HTMLElement | null>(null);
@@ -160,13 +162,14 @@ export const DataTable = <T,>({
   const after = items.length ? virtualizer.getTotalSize() - (items[items.length - 1].end - virtualizer.options.scrollMargin) : 0;
 
   return (
-    <div className={s.frameOpen}>
+    // A card of its own; a section of the card it sits in (CardSections), with no frame
+    <div className={inCard ? "" : s.frameOpen}>
       {toolbar && <div className="flex flex-col gap-3 px-5 py-4 sm:px-6">{toolbar}</div>}
       <div>
         {/* The last row's corner cells round with the card, so a hover never paints past it */}
         <table
           ref={tableRef}
-          className={`${s.table} [&_tbody>tr:last-child>*:first-child]:rounded-bl-lg [&_tbody>tr:last-child>*:last-child]:rounded-br-lg tracker:[&_tbody>tr:last-child>*:first-child]:rounded-bl-3xl tracker:[&_tbody>tr:last-child>*:last-child]:rounded-br-3xl`}
+          className={`${s.table} [&_tbody>tr:last-child>*:first-child]:rounded-bl-lg [&_tbody>tr:last-child>*:last-child]:rounded-br-lg tracker:[&_tbody>tr:last-child>*:first-child]:rounded-bl-[1.25rem] tracker:[&_tbody>tr:last-child>*:last-child]:rounded-br-[1.25rem]`}
           aria-label={label}
           aria-rowcount={rows.length + 1}
         >

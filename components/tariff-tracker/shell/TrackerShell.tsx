@@ -66,14 +66,14 @@ const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSect
       <a
         {...props}
         id={`tt-tab-${section.slug}`}
-        title={meta ? `${section.label} · ${meta.text}` : section.label}
+        title={section.comingSoon ? `${section.label} · Coming soon` : meta ? `${section.label} · ${meta.text}` : section.label}
         aria-label={section.label}
         className={`relative flex h-10 w-10 items-center justify-center self-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
           active ? "bg-tt-side-active text-base-content" : "text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
         } ${section.ready ? "" : "opacity-60"}`}
       >
         <section.Icon className="h-5 w-5" aria-hidden />
-        {meta && meta.tone !== "neutral" && <span className={`absolute right-1.5 top-1.5 h-2 w-2 rounded-full ${DOTS[meta.tone]}`} aria-hidden />}
+        {!section.comingSoon && meta && meta.tone !== "neutral" && <span className={`absolute right-1.5 top-1.5 h-2 w-2 rounded-full ${DOTS[meta.tone]}`} aria-hidden />}
       </a>
     );
   return (
@@ -83,9 +83,11 @@ const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSect
       className={`flex h-10 items-center gap-3 rounded-xl px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${active ? "bg-tt-side-active font-semibold text-base-content" : "font-medium text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
         } ${section.ready ? "" : "opacity-60"}`}
     >
-      <span className={`h-2 w-2 shrink-0 rounded-full ${active ? "bg-success" : meta && meta.tone !== "neutral" ? DOTS[meta.tone] : "bg-base-content/25"}`} aria-hidden />
+      <span className={`h-2 w-2 shrink-0 rounded-full ${active ? "bg-success" : !section.comingSoon && meta && meta.tone !== "neutral" ? DOTS[meta.tone] : "bg-base-content/25"}`} aria-hidden />
       <span className="flex-1 truncate">{section.label}</span>
-      {locked ? (
+      {section.comingSoon ? (
+        <span className="rounded-full bg-tt-side-active px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-base-content/60">Soon</span>
+      ) : locked ? (
         <LockClosedIcon className="h-3.5 w-3.5 text-base-content/60" aria-label="Paid plans" />
       ) : (
         meta && <span className={`text-xs font-semibold ${META_TEXT[meta.tone]}`}>{meta.text}</span>
@@ -152,7 +154,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
     // a scrolled section would otherwise be placed against the page and stretch it past the app
     <div className={`${THEME} hts-tracker ${trackerSans.className} relative flex h-svh flex-col overflow-hidden bg-base-200 lg:flex-row lg:gap-4 lg:p-4`}>
       <aside
-        className={`hts-tracker-on-dark relative hidden shrink-0 flex-col gap-5 rounded-3xl bg-tt-side text-base-content transition-[width] lg:flex ${collapsed ? "w-[4.5rem] px-2 py-4" : "w-64 p-4"}`}
+        className={`hts-tracker-on-dark relative hidden shrink-0 flex-col gap-5 rounded-lg bg-tt-side text-base-content transition-[width] lg:flex ${collapsed ? "w-[4.5rem] px-2 py-4" : "w-64 p-4"}`}
       >
         <div className={`flex items-center gap-2.5 pt-1 ${collapsed ? "flex-col" : "px-2"}`}>
           <Link href="/" className="flex shrink-0 items-center rounded-full bg-base-content p-1" aria-label={`${config.appName} home`}>

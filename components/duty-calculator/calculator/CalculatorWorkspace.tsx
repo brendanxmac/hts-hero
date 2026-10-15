@@ -8,8 +8,9 @@ import {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
-import { ExclamationTriangleIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { ExclamationTriangleIcon, PlusIcon, SparklesIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
@@ -55,6 +56,7 @@ import { ChangeSummary } from "../results/ChangeSummary";
 import { ArrowLink } from "./ArrowLink";
 import { RefundCheckCard } from "./RefundCheckCard";
 import { useTrackImport } from "../landing/TrackImportButton";
+import { EntryDatePicker } from "./EntryDatePicker";
 import { ResultsSkeleton } from "./ResultsSkeleton";
 import { useStickyColumn } from "./useStickyColumn";
 
@@ -86,6 +88,7 @@ export const CalculatorWorkspace = ({
   onCheckSavings,
   tab: hostTab,
   onTabChange,
+  explainSlot,
 }: {
   f: TariffFinder;
   // In the results' heading, after Share: the host's main action (Add to catalog, Track this import)
@@ -94,7 +97,10 @@ export const CalculatorWorkspace = ({
   empty?: ReactNode;
   // For analytics: where the account gates sit
   page: "calculator" | "tracker_calculator" | "tracker_product";
-  // A catalog product's view: its code and origin can't be changed
+  // Where "Summarize" goes when the results have no header of their own (an import's page)
+  explainSlot?: HTMLElement | null;
+  // A catalog product's own page: its header says what it is and holds the fields that can change
+  // (ImportInputs), so there's no Entry details and the results have no heading of their own
   fixedProduct?: boolean;
   // In the Tracker: where "Check Possible Savings" goes (this import's savings); the Tracker's
   // Savings section when left out
@@ -133,7 +139,7 @@ export const CalculatorWorkspace = ({
 
   // Kept here, so they survive switching tabs
   const [highlight, setHighlight] = useState<string | null>(null);
-  // The plain-English explanation, shown on request ("Explain this" in the breakdown's heading)
+  // The plain-English explanation, shown on request ("Summarize" in the results' header)
   // above the totals
   const [explainOpen, setExplainOpen] = useState(false);
   const [linesDetail, setLinesDetail] = useState<LinesDetail>("compact");
@@ -172,7 +178,7 @@ export const CalculatorWorkspace = ({
     [tab, inputsKey, htsElements],
   );
 
-  // Compare starts on the countries that already ship this to the US, the cheaper ones first
+  // Compare starts on two of the countries that already ship this to the US, the cheaper ones first
   // (Census), once per product and origin; after that the choice is the user's
   const imports = useUsImports(tab === "compare" ? selectedElement?.htsno : undefined);
   const autoPicked = useRef(new Map<string, string[]>());
@@ -184,7 +190,8 @@ export const CalculatorWorkspace = ({
       autoPicked.current.set(pickKey, []);
       return;
     }
-    const picks = provenPicks(product, imports, MAX_COMPARE - 1);
+    // Two, so yours plus two leaves room to add one: "Add a country" is always in view
+    const picks = provenPicks(product, imports, 2);
     autoPicked.current.set(pickKey, picks);
     if (picks.length) {
       f.changeCountries([
@@ -288,6 +295,29 @@ export const CalculatorWorkspace = ({
       {trackButton}
     </div>
   );
+  // "Summarize", in the results' header (on an import's page, in its header, through
+  // explainSlot): the plain-English explanation of the duty, opening on the Duty tab; signed out,
+  // the free account's pitch for it
+  const explainButton = signedOut ? (
+    <button
+      type="button"
+      className={ui.button({ variant: "secondary", size: "sm" })}
+      onClick={() => conversion.openAccount({ title: "Get the full explanation, free", highlight: "why", cta: "Create my free account" }, "explain-this")}
+    >
+      <SparklesIcon className="h-4 w-4" aria-hidden />
+      Summarize
+    </button>
+  ) : (
+    <ExplainToggle
+      open={explainOpen && tab === "duty"}
+      onToggle={() => {
+        if (tab !== "duty") {
+          changeTab("duty");
+          setExplainOpen(true);
+        } else setExplainOpen((x) => !x);
+      }}
+    />
+  );
   // A locked "why" opens the free account's pitch, led by what was clicked
   const unlockWhy = (where: string) =>
     conversion.openAccount(
@@ -331,11 +361,8 @@ export const CalculatorWorkspace = ({
   );
   return (
     <div className="flex flex-col gap-4">
-      <EntryDetails
-        f={f}
-        fixedProduct={fixedProduct}
-        description={fixedProduct ? "Saved to this import as you change it" : "Enter the details of your import to get a duty estimate"}
-      />
+      {/* On an import's own page, its header holds what it is and the fields that can change */}
+      {!fixedProduct && <EntryDetails f={f} description="Enter the details of your import to get a duty estimate" />}
 
       {f.loading ? (
         <ResultsSkeleton />
@@ -345,9 +372,11 @@ export const CalculatorWorkspace = ({
         <WhyUnlockContext.Provider value={unlockWhy}>
           <ResultsBox
             f={f}
+            headless={fixedProduct}
             actions={
               <>
                 <ShareButtons f={f} />
+                {explainButton}
                 {actions}
                 {trackButton}
               </>
@@ -375,7 +404,7 @@ export const CalculatorWorkspace = ({
 
             {tab === "duty" && (
               <>
-                {/* Signed in only (it renders nothing otherwise): signed out, "Explain this" in the
+                {/* Signed in only (it renders nothing otherwise): signed out, "Summarize" in the
                   breakdown's heading opens the pitch instead */}
                 {explainOpen && <DutySummary f={f} result={result} bestSaving={bestSaving} onClose={() => setExplainOpen(false)} />}
                 <div>
@@ -387,7 +416,7 @@ export const CalculatorWorkspace = ({
                     result={result}
                     highlight={highlight}
                     onHighlight={setHighlight}
-                    className={ui.cardSection}
+                    className={`${ui.cardSection} border-t border-base-300`}
                   />
                 </div>
                 {result.warnings.length > 0 && (
@@ -419,26 +448,6 @@ export const CalculatorWorkspace = ({
                       linesDetail={signedOut ? "full" : linesDetail}
                       onLinesDetailChange={
                         signedOut ? undefined : setLinesDetail
-                      }
-                      headerAction={
-                        signedOut ? (
-                          <ArrowLink
-                            onClick={() =>
-                              conversion.openAccount(
-                                {
-                                  title: "Get the full explanation, free",
-                                  highlight: "why",
-                                  cta: "Create my free account",
-                                },
-                                "explain-this",
-                              )
-                            }
-                          >
-                            Explain this
-                          </ArrowLink>
-                        ) : (
-                          <ExplainToggle open={explainOpen} onToggle={() => setExplainOpen((x) => !x)} />
-                        )
                       }
                       footer={
                         <NotAppliedPanel
@@ -558,21 +567,26 @@ export const CalculatorWorkspace = ({
                 <ComparePanel
                   product={product}
                   page={page}
+                  dateControl={<EntryDatePicker f={f} />}
                   countries={f.countries}
                   max={MAX_COMPARE}
-                  // Each country's program, as the calculator has it (claimed here or on its Duty tab)
-                  claimed={Object.fromEntries(
-                    f.countries.map((c) => [
-                      c.code,
-                      f.compareEntries.find((e) => e.country.code === c.code)?.claimedPreference ??
-                        (c.code === country.code ? f.claimedPreference : ""),
-                    ]),
-                  )}
-                  onClaim={f.setPreference}
                   entryDate={f.entryDate}
                   onTrack={() => track?.start("compare")}
+                  onCreateAccount={
+                    conversion.signedIn
+                      ? undefined
+                      : () =>
+                          conversion.openAccount(
+                            { title: "Get advanced comparisons, 100% free", highlight: "analysis", cta: "Create my free account" },
+                            "compare-advanced",
+                          )
+                  }
                   onAdd={(added) => f.changeCountries([...f.countries, added])}
                   onRemove={f.removeCountry}
+                  onReplace={(code, next) => {
+                    if (f.countries.some((c) => c.code === next.code)) return;
+                    f.changeCountries(f.countries.map((c) => (c.code === code ? next : c)));
+                  }}
                   onViewDetails={(c, preference) => {
                     setHistoryOpen(false);
                     if (preference) f.setPreference(c.code, preference);
@@ -594,6 +608,7 @@ export const CalculatorWorkspace = ({
           </ResultsBox>
         </WhyUnlockContext.Provider>
       )}
+      {explainSlot && ready && createPortal(explainButton, explainSlot)}
       {conversion.dialog}
       {track?.dialog}
     </div>

@@ -1,13 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { SparklesIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
 import { TableStandIn } from "@/components/ui/stand-ins";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { useTrackerAccess } from "../access/accessContext";
+import { FreeChecksNotice } from "../access/FreeChecksNotice";
 import { AccountGate } from "../access/AccountGate";
 import { BeyondPlanTeaser } from "../plan/BeyondPlanTeaser";
 import { ReviewProgress } from "../opportunities/ReviewProgress";
@@ -34,31 +33,6 @@ const SHOWS: { id: Show; label: string }[] = [
   { id: "keep", label: "Keep my suppliers" },
   { id: "origin", label: "Sourcing" },
 ];
-
-// The trial's checks, at the top: how many are left, and what one does
-const ChecksNotice = () => {
-  const { paid, savingsLeft, access } = useTrackerAccess();
-  if (paid) return null;
-  const used = access.usage.savingsChecked.length;
-  return (
-    <div
-      role="status"
-      className={`${ui.notice(savingsLeft > 0 ? "primary" : "warning")} flex flex-col gap-3 sm:flex-row sm:items-center`}
-    >
-      <SparklesIcon className={`h-5 w-5 shrink-0 ${savingsLeft > 0 ? "text-primary" : "text-warning"}`} aria-hidden />
-      <p className={`${ui.bodySm} flex-1`}>
-        <span className="font-semibold text-base-content">
-          {savingsLeft > 0
-            ? `${savingsLeft} of ${TRIAL_ALLOWANCE.savingsChecks} free savings checks left.`
-            : `You've used your ${TRIAL_ALLOWANCE.savingsChecks} free savings checks.`}
-        </span>{" "}
-        {savingsLeft > 0
-          ? `Each one shows every way to save on one import: trade programs, lower-duty origins, exemptions and whether you could qualify.${used ? " Checked imports stay unlocked." : ""}`
-          : "A plan checks savings on every import it covers."}
-      </p>
-    </div>
-  );
-};
 
 // The products whose savings aren't unlocked yet, most potential first: what a check could find,
 // and the check
@@ -176,7 +150,7 @@ const SavingsReport = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <ChecksNotice />
+      <FreeChecksNotice kind="savings" />
       <ReviewProgress />
       <SavingsTally />
       <InsightsProgress label="Checking" />

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CheckIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { useTrackerAccess } from "../../access/accessContext";
 import { useInsights } from "../../insights/InsightsContext";
 import { wholeDollars } from "../../insights/teasers";
@@ -40,7 +39,7 @@ export const LockedSavings = ({ product }: { product: TrackedProduct }) => {
     <section className={`${tt.panel} grid gap-8 p-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:p-8`} aria-labelledby="tt-locked-savings">
       <div className="flex flex-col gap-4">
         <span className={tt.eyebrow("success")}>Savings check</span>
-        <h2 id="tt-locked-savings" className={`${tt.display} m-0 text-3xl font-semibold leading-tight text-base-content`}>
+        <h2 id="tt-locked-savings" className={`${tt.display} m-0 text-2xl font-semibold leading-snug text-base-content`}>
           {found === undefined
             ? "Looking for ways to pay less…"
             : found > 0.005
@@ -61,13 +60,6 @@ export const LockedSavings = ({ product }: { product: TrackedProduct }) => {
             {!free && <LockClosedIcon className="h-4 w-4" aria-hidden />}
             {busy ? "Checking…" : free ? "Check savings free" : paid ? "Cover this import" : "See plans"}
           </button>
-          <span className="text-sm text-base-content/70">
-            {free
-              ? `${savingsLeft} of ${TRIAL_ALLOWANCE.savingsChecks} free checks left. Checked imports stay unlocked.`
-              : paid
-                ? "Your plan checks savings on every import it covers."
-                : `You've used your ${TRIAL_ALLOWANCE.savingsChecks} free savings checks.`}
-          </span>
         </div>
       </div>
       <ul className="flex flex-col gap-2.5 self-center">

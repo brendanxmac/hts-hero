@@ -82,7 +82,7 @@ export const StatementRow = ({
           className={`tabular-nums ${pad} pl-3 pr-5 sm:pr-6 text-base font-semibold text-right whitespace-nowrap`}
         >
           {change?.before !== undefined && (
-            <span className="block text-xs font-normal text-base-content/50 line-through">{formatMoney(change.before)}</span>
+            <span className="block text-xs font-normal text-base-content/60 line-through">{formatMoney(change.before)}</span>
           )}
           {formatMoney(amount)}
         </td>

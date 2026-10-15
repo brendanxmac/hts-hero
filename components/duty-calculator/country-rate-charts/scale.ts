@@ -18,3 +18,5 @@ export const pct = (v: number) => `${Math.round(v * 10) / 10}%`;
 
 // A chart card. <figure> comes with a margin.
 export const figureCard = `${ui.card} m-0 p-5 sm:p-6`;
+// The same figure's padding, for one that's a section of a card when inside one (useCardClass)
+export const figurePad = "m-0 p-5 sm:p-6";

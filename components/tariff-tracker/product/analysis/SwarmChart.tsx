@@ -1,8 +1,9 @@
 "use client";
 
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useWidth } from "@/components/duty-calculator/rate-history/useWidth";
-import { axis, figureCard } from "@/components/duty-calculator/country-rate-charts/scale";
+import { useCardClass } from "@/components/ui/Card";
+import { axis, figurePad } from "@/components/duty-calculator/country-rate-charts/scale";
 import { ChartCaption } from "@/components/duty-calculator/country-rate-charts/ChartCaption";
 import * as ui from "@/components/ui/styles";
 import { formatRate } from "../../formatRate";
@@ -31,7 +32,8 @@ const Mosaic = ({ origins, size }: { origins: OriginRate[]; size: number }) => {
 // landscape for this product at a glance. Flags rise into place, and glide to their new rates
 // when the basis changes (no motion for those who ask for less). Ties among many origins become
 // a pile: a mosaic of their flags, bigger the more countries share the rate, with the count;
-// open it to see every country in it. The product's own origin is ringed.
+// open it to see every country in it. Hover or focus a flag for its tariffs. The product's own
+// origin is ringed.
 
 const FLAG = 30;
 // Ties among this many origins or more become a pile
@@ -41,6 +43,8 @@ const PAD = 48;
 // Room under the marks for the scale, and above them for the "You" label
 const AXIS = 28;
 const HEADROOM = 22;
+// The time-lapse's least height, tall enough for most frames, so it rarely has to grow at all
+const STEADY_MIN = 260;
 
 // A pile's size grows with its count, slowly, so 190 countries don't swamp the chart
 const pileSize = (count: number) => Math.round(Math.min(96, 34 + 8 * Math.log2(count)));
@@ -88,25 +92,29 @@ const Tooltip = ({ origin, basis }: { origin: OriginRate; basis: RateBasis }) =>
 export const SwarmChart = ({
   rates,
   basis,
-  selected,
-  onSelect,
   maxPct,
   title = "Every origin, by its rate",
-  description = "Each flag is a country this product could come from. Hover for its tariffs, select one to add it to your shortlist. Piles hold countries that pay the same rate.",
+  description = "Each flag is a country this product could come from. Hover for its tariffs. Piles hold countries that pay the same rate.",
   footer,
+  steadyHeight = false,
+  hideCaption = false,
 }: {
   rates: OriginRate[];
   basis: RateBasis;
-  // The shortlist: lit everywhere
-  selected: ReadonlySet<string>;
-  onSelect: (code: string) => void;
   // A fixed top for the scale, so the axis stays put while the rates change (the time-lapse)
   maxPct?: number;
   title?: string;
   description?: ReactNode;
   // Under the chart, inside its card: the time-lapse's controls
   footer?: ReactNode;
+  // Never shorter than its tallest frame so far, and room for a tall one from the start: the
+  // time-lapse, whose frames change while the page shouldn't move
+  steadyHeight?: boolean;
+  // The title and description for screen readers only (where a tab already names it)
+  hideCaption?: boolean;
 }) => {
+  // A card on its own; a section of the Compare box inside it
+  const cardClass = useCardClass();
   const { ref, width } = useWidth();
   const [hover, setHover] = useState<string | null>(null);
   const [openPile, setOpenPile] = useState<string | null>(null);
@@ -135,14 +143,23 @@ export const SwarmChart = ({
     [rates, basis, width, top]
   );
   // Tall enough for the highest mark, and never squat
-  const height = Math.max(...placed.map((p) => p.y + p.size), 3 * FLAG) + HEADROOM;
+  const natural = Math.max(...placed.map((p) => p.y + p.size), 3 * FLAG) + HEADROOM;
+  const tallest = useRef(0);
+  if (steadyHeight) tallest.current = Math.max(tallest.current, natural, STEADY_MIN);
+  const height = steadyHeight ? tallest.current : natural;
   const pile = placed.find((p) => p.node.key === openPile)?.node;
 
   return (
-    <figure className={`${figureCard} relative`}>
-      <ChartCaption title={title}>{description}</ChartCaption>
+    <figure className={`${cardClass} ${figurePad} relative`}>
+      {hideCaption ? (
+        <figcaption className="sr-only">
+          {title}: {description}
+        </figcaption>
+      ) : (
+        <ChartCaption title={title}>{description}</ChartCaption>
+      )}
 
-      <div ref={ref} className="relative mt-6 select-none" style={{ height: height + AXIS }}>
+      <div ref={ref} className={`relative select-none ${hideCaption ? "mt-8" : "mt-6"}`} style={{ height: height + AXIS }}>
         {/* Gridlines and the scale */}
         {width > 0 &&
           ticks.map((t) => (
@@ -166,21 +183,19 @@ export const SwarmChart = ({
 
           if (node.kind === "pile") {
             const open = openPile === node.key;
-            // Shortlisted countries inside the pile: it's lit like one of them
-            const picked = node.origins.filter((o) => !o.isOrigin && selected.has(o.country.code));
             return (
               <button
                 key={node.key}
                 type="button"
                 className={`${motionClass} z-10 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${
-                  open || hover === node.key ? "ring-2 ring-primary" : picked.length ? "ring-2 ring-success" : ""
+                  open || hover === node.key ? "ring-2 ring-primary" : ""
                 }`}
                 style={{ ...motion, width: size, height: size }}
                 onClick={() => setOpenPile(open ? null : node.key)}
                 onMouseEnter={() => setHover(node.key)}
                 onMouseLeave={() => setHover(null)}
                 aria-expanded={open}
-                aria-label={`${node.origins.length} countries at ${formatRate(node.pct)}${picked.length ? `, including ${picked.map((o) => o.country.name).join(" and ")}` : ""}`}
+                aria-label={`${node.origins.length} countries at ${formatRate(node.pct)}`}
               >
                 <Mosaic origins={node.origins} size={size} />
                 <span
@@ -196,7 +211,7 @@ export const SwarmChart = ({
                     className={`${ui.tooltip} absolute bottom-full left-1/2 z-40 mb-2 -translate-x-1/2 whitespace-nowrap px-2 py-1 text-xs`}
                   >
                     <span className="font-semibold">{node.origins.length} countries</span> at {formatRate(node.pct)}
-                    {picked.length > 0 && <> · incl. {picked.map((o) => o.country.name).join(", ")}</>} · select to see them
+                    · select to see them
                   </span>
                 )}
               </button>
@@ -205,26 +220,19 @@ export const SwarmChart = ({
 
           const o = node.origin;
           const code = o.country.code;
-          const isSelected = selected.has(code);
-          const ring = o.isOrigin
-            ? "ring-2 ring-primary"
-            : isSelected
-              ? "ring-2 ring-success"
-              : hover === code
-                ? "ring-2 ring-base-content/40"
-                : "ring-base-300";
+          const ring = o.isOrigin ? "ring-2 ring-primary" : hover === code ? "ring-2 ring-base-content/40" : "ring-base-300";
+          // Not a control: focusable only so its tariffs show from the keyboard too
           return (
-            <button
+            <span
               key={node.key}
-              type="button"
-              className={`${motionClass} ${hover === code || isSelected || o.isOrigin ? "z-30" : "z-20"} rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary`}
+              tabIndex={0}
+              role="img"
+              className={`${motionClass} ${hover === code || o.isOrigin ? "z-30" : "z-20"} rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary`}
               style={motion}
-              onClick={() => onSelect(code)}
               onMouseEnter={() => setHover(code)}
               onMouseLeave={() => setHover(null)}
               onFocus={() => setHover(code)}
               onBlur={() => setHover(null)}
-              aria-pressed={isSelected}
               aria-label={`${o.country.name}: ${formatRate(rateOf(o, basis))}${o.isOrigin ? ", this product's origin" : ""}`}
             >
               {flagFace(o, ring)}
@@ -234,7 +242,7 @@ export const SwarmChart = ({
                 </span>
               )}
               {hover === code && <Tooltip origin={o} basis={basis} />}
-            </button>
+            </span>
           );
         })}
       </div>
@@ -252,17 +260,9 @@ export const SwarmChart = ({
           </div>
           <ul className="mt-3 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-5">
             {pile.origins.map((o) => (
-              <li key={o.country.code}>
-                <button
-                  type="button"
-                  className={`flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-sm transition-colors hover:bg-base-100 ${
-                    selected.has(o.country.code) ? "bg-base-100 font-semibold text-success" : "text-base-content/80"
-                  }`}
-                  onClick={() => onSelect(o.country.code)}
-                >
-                  <span aria-hidden>{o.country.flag}</span>
-                  <span className="truncate">{o.country.name}</span>
-                </button>
+              <li key={o.country.code} className="flex items-center gap-2 px-2 py-1 text-sm text-base-content/80">
+                <span aria-hidden>{o.country.flag}</span>
+                <span className="truncate">{o.country.name}</span>
               </li>
             ))}
           </ul>

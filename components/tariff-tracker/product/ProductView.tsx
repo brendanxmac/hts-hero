@@ -6,8 +6,9 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { BreadcrumbsProvider } from "@/contexts/BreadcrumbsContext";
 import { Countries } from "@/constants/countries";
 import { CalculatorWorkspace } from "@/components/duty-calculator/calculator/CalculatorWorkspace";
+import { ImportInputs } from "@/components/duty-calculator/calculator/CalculatorTop";
 import { Disclaimer } from "@/components/duty-calculator/calculator/Disclaimer";
-import { ExploreModal } from "@/components/duty-calculator/calculator/ExploreModal";
+import { ShareButtons } from "@/components/duty-calculator/calculator/ShareButtons";
 import { FinderStart, useTariffFinder } from "@/components/duty-calculator/lib/useTariffFinder";
 import * as ui from "@/components/ui/styles";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
@@ -19,12 +20,11 @@ import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ProductAudit } from "./audit/ProductAudit";
 import { ProductHeader } from "./ProductHeader";
-import { ProductSourcing } from "./sourcing/ProductSourcing";
 import { ProductSavings } from "./savings/ProductSavings";
 
 // One import, opened from its row: a small header (what it is, and its one row of tabs), then
 // - Duty (where it opens), Compare, History: the calculator's own tabs, for this product (its
-//   code and origin fixed), held by the header's tabs. Compare adds every country for the import under the side by side.
+//   code and origin fixed), held by the header's tabs.
 //   Everything set here is saved as the product's adjustments, so the catalog row shows it on
 //   the way back.
 // - Savings: every way to pay less on it, guided, once its savings are unlocked
@@ -118,6 +118,8 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f.entryDate]);
 
+  const calculatorTab = tab === "duty" || tab === "compare" || tab === "history";
+  const [explainSlot, setExplainSlot] = useState<HTMLElement | null>(null);
   const remove = () => {
     removeProducts([row.key]);
     nav.closeProduct();
@@ -132,13 +134,24 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
         onBack={nav.closeProduct}
         onRemove={remove}
         onReset={isAdjusted(row.adjustments) ? onReset : undefined}
+        actions={
+          f.result ? (
+            <>
+              {/* "Summarize" lands here from the calculator (its results have no header here) */}
+              {calculatorTab && <span ref={setExplainSlot} className="contents" />}
+              <ShareButtons f={f} />
+            </>
+          ) : undefined
+        }
+        inputs={calculatorTab ? <ImportInputs f={f} /> : undefined}
+        historyChanges={f.history.filter((x) => x.changes.length > 0).length}
       />
       <MovingNotice row={row} movingTo={itemFor(row.key)?.movingTo} hasNew={(key) => products.some((p) => p.key === key)} />
 
       {/* The calculator, on the menu's Duty, Compare or History (and every country under Compare).
           Kept mounted, so it keeps its state while another view is open. A class, not the
           hidden attribute: `flex` would override that and keep it showing */}
-      <div className={tab === "duty" || tab === "compare" || tab === "history" ? "flex flex-col gap-4" : "hidden"}>
+      <div className={calculatorTab ? "flex flex-col gap-4" : "hidden"}>
         <CalculatorWorkspace
           f={f}
           page="tracker_product"
@@ -146,10 +159,9 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
           onCheckSavings={() => openTab("savings")}
           tab={tab === "compare" ? "compare" : tab === "history" ? "history" : "duty"}
           onTabChange={openTab}
+          explainSlot={calculatorTab ? explainSlot : null}
         />
-        {tab === "compare" && <ProductSourcing product={row} f={f} />}
         <Disclaimer />
-        <ExploreModal f={f} />
       </div>
       {tab === "savings" && <ProductSavings product={row} />}
       {tab === "audit" && <ProductAudit product={row} />}

@@ -54,7 +54,7 @@ export const CompareView = ({
   const single = entries.length === 1;
   const canAdd = countries.length < max;
   const cards = entries.length + (canAdd ? 1 : 0);
-  // Up to four across: the shortlist, then the card that adds the next one
+  // Up to four across: the countries being compared, then the card that adds the next one
   const columns =
     cards >= 4
       ? "md:grid-cols-2 xl:grid-cols-4"

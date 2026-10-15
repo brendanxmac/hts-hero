@@ -45,7 +45,7 @@ export const PreferencePicker = ({
                 <>
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className={`text-base-content ${selected ? "font-semibold" : ""}`}>{p.name}</span>
-                    {p.symbol && <span className="text-xs text-base-content/50">HTS special program “{p.symbol}”</span>}
+                    {p.symbol && <span className="text-xs text-base-content/60">HTS special program “{p.symbol}”</span>}
                   </span>
                   {selected && <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-label="Selected" />}
                 </>

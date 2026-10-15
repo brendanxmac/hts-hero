@@ -3,6 +3,7 @@
 import { ReactNode, useEffect, useRef } from "react";
 import Link from "next/link";
 import { LockClosedIcon } from "@heroicons/react/20/solid";
+import { useInCard } from "./Card";
 import * as ui from "./styles";
 
 // A feature the visitor can't use yet: a blurred stand-in for it (or, in the calculator's account
@@ -38,6 +39,7 @@ export const LockedPreview = ({
   // Called once, when it's first shown
   onShown?: () => void;
 }) => {
+  const inCard = useInCard();
   const shown = useRef(false);
   useEffect(() => {
     if (shown.current) return;
@@ -53,7 +55,9 @@ export const LockedPreview = ({
   }, []);
 
   return (
-    <section className={`${framed ? `${ui.card} ` : ""}relative overflow-clip ${minHeight}`} aria-label={title}>
+    // No card of its own inside a card's sections (CardSections): it's one of them
+    // At most a screen of the preview: enough to see what's behind it, never a page of blur
+    <section className={`${framed && !inCard ? `${ui.card} ` : ""}relative max-h-[44rem] overflow-clip ${minHeight}`} aria-label={title}>
       {/* Behind the blur: nothing in it can be read by assistive tech, selected or focused */}
       <div ref={behind} className={`pointer-events-none select-none opacity-60 blur-sm ${framed ? "p-5" : ""}`} aria-hidden>
         {preview}

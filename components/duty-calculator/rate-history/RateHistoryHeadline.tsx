@@ -42,7 +42,7 @@ export const RateHistoryHeadline = ({
     <StatStrip
       framed={false}
       lead
-      className="-mx-5 border-t sm:-mx-6"
+      className="-mx-5 border-y border-base-300 sm:-mx-6"
       stats={[
         {
           label,

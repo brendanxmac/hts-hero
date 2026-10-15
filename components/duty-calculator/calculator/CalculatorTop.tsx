@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ChevronLeftIcon, ChevronRightIcon, LockClosedIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { describe } from "@/components/tariff-tracker/report";
 import { mono } from "@/components/ui/font";
@@ -21,14 +21,6 @@ import { RailField } from "./RailField";
 // changed; in an import's own page the HTS code and origin are fixed) and, once there's an answer,
 // the results (ResultsBox: what's being looked at, the tabs and the actions, then everything the
 // open tab shows).
-
-// A field that shows its value without letting it change
-const Fixed = ({ children }: { children: ReactNode }) => (
-  <div className="flex h-10 items-center gap-2 rounded-lg border border-base-300 bg-base-200 px-3 text-sm text-base-content" title="Fixed for this import">
-    <span className="min-w-0 flex-1 truncate">{children}</span>
-    <LockClosedIcon className="h-3.5 w-3.5 shrink-0 text-base-content/40" aria-hidden />
-  </div>
-);
 
 // The dates this import's rates changed (from its history), for the date's arrows
 const changeDates = (f: TariffFinder) =>
@@ -75,7 +67,39 @@ const DateField = ({ f }: { f: TariffFinder }) => {
   );
 };
 
-export const EntryDetails = ({ f, fixedProduct = false, description }: { f: TariffFinder; fixedProduct?: boolean; description: string }) => {
+// The fields that can change on any import: its value (and quantity, when its duty is per unit),
+// the entry date and the mode of transport. In Entry details on the calculator; on an import's own
+// page, in its header (DESIGN_SYSTEM §15), where the code and origin are the import itself.
+export const EntryInputs = ({ f }: { f: TariffFinder }) => (
+  <>
+    <RailField label="Value" htmlFor="dc-value">
+      <NumberField id="dc-value" prefix="$" suffix="USD" value={f.customsValue} onChange={f.setCustomsValue} />
+    </RailField>
+    {f.result?.requiresQuantity && (
+      <RailField label="Quantity" htmlFor="dc-qty">
+        <NumberField id="dc-qty" suffix={f.unitLabel} value={f.quantity} onChange={f.setQuantity} />
+      </RailField>
+    )}
+    <RailField label="Entry date" htmlFor="dc-date">
+      <DateField f={f} />
+    </RailField>
+    <RailField label="Mode of transport" htmlFor="dc-transport">
+      <TransportField id="dc-transport" value={f.transportMode} onChange={f.setTransportMode} />
+    </RailField>
+  </>
+);
+
+// The fields of an import's page header, in one compact row
+export const ImportInputs = ({ f }: { f: TariffFinder }) => (
+  <div
+    className={`grid grid-cols-2 items-end gap-3 [&_input]:text-sm ${f.result?.requiresQuantity ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_minmax(0,1fr)]" : "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1fr)]"}`}
+    data-density="compact"
+  >
+    <EntryInputs f={f} />
+  </div>
+);
+
+export const EntryDetails = ({ f, description }: { f: TariffFinder; description: string }) => {
   const { result } = f;
   const setOrigin = (picked: Country[]) => {
     const origin = picked[0];
@@ -98,52 +122,22 @@ export const EntryDetails = ({ f, fixedProduct = false, description }: { f: Tari
           }`}
           data-density="compact"
         >
-          {fixedProduct ? (
-            <>
-              <RailField label="HTS code" htmlFor="dc-hts">
-                <Fixed>
-                  <span className={mono.className}>{f.selectedElement?.htsno}</span>
-                </Fixed>
-              </RailField>
-              <RailField label="Origin" htmlFor="dc-country">
-                <Fixed>
-                  {f.country?.flag} {f.country?.name}
-                </Fixed>
-              </RailField>
-            </>
-          ) : (
-            <>
-              <RailField
-                label="HTS code"
-                htmlFor="dc-hts"
-                action={
-                  <button type="button" className={`${ui.link} inline-flex items-center gap-1 text-xs`} onClick={() => f.openExplore()}>
-                    <MagnifyingGlassIcon className="h-3 w-3" />
-                    Search
-                  </button>
-                }
-              >
-                <HtsCodeField id="dc-hts" selectedElement={f.selectedElement} onSelect={(el) => f.selectElement(el, "hts_selector")} autoFocus={!f.codeParam} hidePath />
-              </RailField>
-              <RailField label="Origin" htmlFor="dc-country">
-                <CountryField id="dc-country" selected={f.countries.slice(0, 1)} onChange={setOrigin} max={1} />
-              </RailField>
-            </>
-          )}
-          <RailField label="Value" htmlFor="dc-value">
-            <NumberField id="dc-value" prefix="$" suffix="USD" value={f.customsValue} onChange={f.setCustomsValue} />
+          <RailField
+            label="HTS code"
+            htmlFor="dc-hts"
+            action={
+              <button type="button" className={`${ui.link} inline-flex items-center gap-1 text-xs`} onClick={() => f.openExplore()}>
+                <MagnifyingGlassIcon className="h-3 w-3" />
+                Search
+              </button>
+            }
+          >
+            <HtsCodeField id="dc-hts" selectedElement={f.selectedElement} onSelect={(el) => f.selectElement(el, "hts_selector")} autoFocus={!f.codeParam} hidePath />
           </RailField>
-          {result?.requiresQuantity && (
-            <RailField label="Quantity" htmlFor="dc-qty">
-              <NumberField id="dc-qty" suffix={f.unitLabel} value={f.quantity} onChange={f.setQuantity} />
-            </RailField>
-          )}
-          <RailField label="Entry date" htmlFor="dc-date">
-            <DateField f={f} />
+          <RailField label="Origin" htmlFor="dc-country">
+            <CountryField id="dc-country" selected={f.countries.slice(0, 1)} onChange={setOrigin} max={1} />
           </RailField>
-          <RailField label="Mode of transport" htmlFor="dc-transport">
-            <TransportField id="dc-transport" value={f.transportMode} onChange={f.setTransportMode} />
-          </RailField>
+          <EntryInputs f={f} />
         </div>
       )}
     </section>
@@ -158,12 +152,15 @@ export const ResultsBox = ({
   f,
   actions,
   tabs,
+  headless = false,
   children,
 }: {
   f: TariffFinder;
   actions?: ReactNode;
-  // Left out where the host's own menu holds them (an import's page in the Tracker)
   tabs?: ReactNode;
+  // No title, actions or tabs of its own: on an import's page, whose header already says what it
+  // is and holds the tabs, it's just the answer
+  headless?: boolean;
   children: ReactNode;
 }) => {
   const { selectedElement, country } = f;
@@ -172,7 +169,8 @@ export const ResultsBox = ({
   const words = selectedElement ? describe(selectedElement, htsElements) : "";
   if (!selectedElement || !country) return null;
   return (
-    <section id="duty-results" className={`${ui.cardOverflowVisible} flex scroll-mt-4 flex-col`} aria-labelledby="results-heading" aria-live="polite">
+    <section id="duty-results" className={`${ui.cardOverflowVisible} flex scroll-mt-4 flex-col overflow-clip`} aria-labelledby={headless ? undefined : "results-heading"} aria-label={headless ? "Results" : undefined} aria-live="polite">
+      {!headless && (
       <div className="flex flex-col border-b border-base-300 px-5 sm:px-6">
         <div className={`flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-4 ${tabs ? "pb-1" : "pb-4"}`}>
           <div className="min-w-0 flex-1">
@@ -194,7 +192,10 @@ export const ResultsBox = ({
         {/* The tabs, along the header's bottom edge */}
         {tabs && <div className="mt-2">{tabs}</div>}
       </div>
-      {/* Every section of the open tab: panels that are cards elsewhere are its sections here */}
+      )}
+      {/* Every section of the open tab: panels that are cards elsewhere are its sections here. The
+          box clips to its corners (overflow: clip, which keeps sticky panels working), so a first
+          section with a fill, with no header above it, never paints square corners */}
       <CardSections>{children}</CardSections>
     </section>
   );

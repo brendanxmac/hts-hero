@@ -31,6 +31,6 @@ export const useOrigins = (product: TrackedProduct) => {
 
 export type Origins = ReturnType<typeof useOrigins>;
 
-// Each shortlisted country's own color, by its place on the shortlist (the import's own origin
-// first, so it's always the first series color), the same in every view
-export const shortlistColors = (codes: string[]) => Object.fromEntries(codes.map((code, i) => [code, SERIES_COLORS[i % SERIES_COLORS.length]]));
+// Each compared country's own color, by its place in Compare (the import's own origin first, so
+// it's always the first series color), the same in every view
+export const compareColors = (codes: string[]) => Object.fromEntries(codes.map((code, i) => [code, SERIES_COLORS[i % SERIES_COLORS.length]]));

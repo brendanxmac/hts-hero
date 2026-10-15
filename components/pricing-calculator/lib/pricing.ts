@@ -30,6 +30,18 @@ export const TRACKER_MAX_LISTED_PAIRS = TRACKER_TIERS[TRACKER_TIERS.length - 1].
 
 export type TrackerTier = (typeof TRACKER_TIERS)[number];
 
+// HTS Hero Managed (the Tracker's Expert help): we manage every tariff on the client's imports, as
+// their team. A premium service, priced by the imports (pairs) we manage; above the last tier
+// it's quoted. Includes the Tariff Tracker on every managed import.
+export const MANAGED_TIERS = [
+  { maxPairs: 50, price: 2500 },
+  { maxPairs: 200, price: 4500 },
+  { maxPairs: 500, price: 7500 },
+] as const;
+
+// Paying for a year of HTS Hero Managed up front takes 20% off (more than the plans' 15%)
+export const MANAGED_ANNUAL_DISCOUNT = 0.2;
+
 export type ClassifyPlanId = "starter" | "pro" | "team";
 
 export const CLASSIFY_PLANS: Record<

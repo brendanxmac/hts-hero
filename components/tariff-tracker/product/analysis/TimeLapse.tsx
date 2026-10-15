@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { ArrowPathIcon, PauseIcon, PlayIcon } from "@heroicons/react/20/solid";
 import { formatDate } from "@/components/duty-calculator/lib/format";
 import * as ui from "@/components/ui/styles";
+import { TimelineList } from "@/components/ui/TimelineList";
 import { IsoDate } from "@/tariffs/engine-v2/types";
 import { OriginRate, RateBasis } from "./analysis";
 import { ChangeEvent, daysBetween, OriginHistory, ratesOn } from "./history";
@@ -23,22 +24,57 @@ const tone = (e: ChangeEvent) =>
 const describe = (e: ChangeEvent) =>
   [e.up ? `${e.up} up` : "", e.down ? `${e.down} down` : ""].filter(Boolean).join(", ");
 
-const EventNote = ({ event }: { event: ChangeEvent }) => (
+const EventNote = ({ event, limit = 3, more = true }: { event: ChangeEvent; limit?: number; more?: boolean }) => (
   <div className="flex flex-col gap-1">
     <div className="flex items-center gap-2 text-sm font-semibold text-base-content">
       <span className={`h-2 w-2 rounded-full ${tone(event)}`} aria-hidden />
       {formatDate(event.date)} · {describe(event) || "rates changed"}
     </div>
     <ul className="flex flex-col gap-0.5">
-      {event.changes.slice(0, 3).map((c) => (
+      {event.changes.slice(0, limit).map((c) => (
         <li key={`${c.code}:${c.kind}`} className={ui.bodySm}>
           <span className="font-medium text-base-content">{c.code === "BASE" ? "Base duty" : c.code}</span> {c.name}{" "}
           {c.kind === "added" ? "added" : c.kind === "removed" ? "removed" : "changed"} ·{" "}
           {c.countries} {c.countries === 1 ? "origin" : "origins"}
         </li>
       ))}
-      {event.changes.length > 3 && <li className={ui.caption}>and {event.changes.length - 3} more changes</li>}
+      {more && event.changes.length > limit && <li className={ui.caption}>and {event.changes.length - limit} more changes</li>}
     </ul>
+  </div>
+);
+
+// What one change was, in a line: the code and name, added, removed or changed, for how many origins
+const changeLine = (c: ChangeEvent["changes"][number]) => (
+  <>
+    <span className="font-medium text-base-content">{c.code === "BASE" ? "Base duty" : c.code}</span> {c.name}{" "}
+    {c.kind === "added" ? "added" : c.kind === "removed" ? "removed" : "changed"} · {c.countries}{" "}
+    {c.countries === 1 ? "origin" : "origins"}
+  </>
+);
+
+// Every change in the time lapse, oldest first, on the shared timeline (TimelineList): each date
+// with what moved, the one on screen lit, the ones after it faded. Select one to jump there. As
+// tall as its dates (no scroll of its own), and it never scrolls the page while playing.
+const ChangeList = ({ events, current, onPick }: { events: ChangeEvent[]; current?: ChangeEvent; onPick: (e: ChangeEvent) => void }) => (
+  <div className="flex flex-col gap-2">
+    <h4 className={ui.label}>Every change</h4>
+    {events.length === 0 ? (
+      <p className={ui.bodySm}>No rate has changed for these origins.</p>
+    ) : (
+      <TimelineList
+        ariaLabel="Every tariff change, oldest first"
+        entries={events.map((e) => ({
+          key: e.date,
+          date: formatDate(e.date),
+          summary: <span className="text-base-content/70">{describe(e) || "rates changed"}</span>,
+          tone: e.up && !e.down ? "up" : e.down && !e.up ? "down" : e.up || e.down ? "mixed" : "neutral",
+          lines: e.changes.map((c) => changeLine(c)),
+          active: e.date === current?.date,
+          faded: Boolean(current) && e.date > current!.date,
+          onSelect: () => onPick(e),
+        }))}
+      />
+    )}
   </div>
 );
 
@@ -49,8 +85,6 @@ export const TimeLapse = ({
   progress,
   ready,
   basis,
-  selected,
-  onSelect,
 }: {
   rates: OriginRate[];
   histories: Map<string, OriginHistory>;
@@ -59,9 +93,6 @@ export const TimeLapse = ({
   progress: number;
   ready: boolean;
   basis: RateBasis;
-  // The shortlist: lit everywhere
-  selected: ReadonlySet<string>;
-  onSelect: (code: string) => void;
 }) => {
   const { range, total, day, date, playing, events, current, frameDate } = timeline;
 
@@ -175,11 +206,9 @@ export const TimeLapse = ({
             <span>Today</span>
           </div>
 
-          {current && (
-            <div className="rounded-lg border border-base-300 bg-base-200 p-3" aria-live="polite">
-              <EventNote event={current} />
-            </div>
-          )}
+          {/* Every change, oldest first: the one on screen lit, the ones still to come faded. Full
+              height, below the steady-height chart, so playing or scrubbing never moves the chart */}
+          <ChangeList events={events} current={current} onPick={(e) => timeline.scrub(daysBetween(range.from, e.date))} />
         </>
       )}
     </div>
@@ -189,10 +218,12 @@ export const TimeLapse = ({
     <SwarmChart
       rates={frame}
       basis={basis}
-      selected={selected}
-      onSelect={onSelect}
       maxPct={maxPct}
-      title="Time-lapse"
+      title="Tariff Time Lapse"
+      // The chart keeps the height of its tallest frame, so scrubbing never moves the page
+      steadyHeight
+      // Compare's Chart tab names it
+      hideCaption
       description={`Every origin's rate on any date since ${formatDate(range.from)}, the start of the verified tariff data. Press play and watch the flags move as tariffs change.`}
       footer={footer}
     />

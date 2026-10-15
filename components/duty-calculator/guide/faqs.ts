@@ -2,7 +2,7 @@ import config from "@/config";
 import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions";
 
 // The duty calculator's questions, in sections for /duty-calculator/faq. The calculator page
-// shows a shortlist (dutyCalculatorFaqs). Both pages put the same text in their FAQPage JSON-LD.
+// shows a selection of them (dutyCalculatorFaqs). Both pages put the same text in their FAQPage JSON-LD.
 
 export type Faq = { question: string; answer: string };
 export type FaqSection = { id: string; title: string; description: string; faqs: Faq[] };
@@ -230,7 +230,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
   },
 ];
 
-// The shortlist on the calculator page
+// The questions shown on the calculator page
 const PAGE_QUESTIONS = [
   "How do I calculate US import duty?",
   "Is this US tariff calculator free?",

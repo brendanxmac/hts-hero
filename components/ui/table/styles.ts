@@ -31,7 +31,8 @@ export const staticCell = `${bodyCell} ${pad} ${flushPad} group-data-[dense]/t:p
 export const rowHover = "transition-colors hover:bg-base-200/60 tracker:hover:bg-tt-soft";
 export const rowSelected = "bg-primary/5";
 
-// The card around a table: round in the Tracker; clipped, so a static table's corners are clean
-export const frame = `${ui.card} tracker:rounded-3xl tracker:shadow-none`;
+// The card around a table (ui.card: 20px in the Tracker's look); clipped, so a static table's
+// corners are clean
+export const frame = ui.card;
 // For DataTable: free to overflow, so the header row can stick and menus can drop out of it
-export const frameOpen = `${ui.cardOverflowVisible} tracker:rounded-3xl tracker:shadow-none`;
+export const frameOpen = ui.cardOverflowVisible;

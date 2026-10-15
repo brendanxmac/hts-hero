@@ -1,8 +1,6 @@
 import {
-  ArrowTrendingUpIcon,
   CalculatorIcon,
   BellAlertIcon,
-  ChartPieIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
   GlobeAltIcon,
@@ -13,9 +11,9 @@ import {
 } from "@heroicons/react/20/solid"
 
 // The Tariff Tracker's sections, in sidebar order: tabs on the one /tariff-tracker page, picked
-// with ?tab=. Sections that aren't built yet show what's planned. Every built section is open to
-// an account; Savings and Entry audit spend the usage-based trial's checks, and the paid-only
-// sections need a plan (PRICING.md).
+// with ?tab=. Sections that aren't built yet, or are held back as coming soon, show what's
+// planned. Every built section is open to an account; the paid-only sections need a plan
+// (PRICING.md). Expert help sells the managed service, sold apart from the plans.
 
 export type SectionSlug =
   | "overview"
@@ -25,9 +23,7 @@ export type SectionSlug =
   | "alerts"
   | "entries"
   | "sourcing"
-  | "trends"
   | "savings"
-  | "charts"
   | "expert-help"
 
 export interface TrackerSection {
@@ -45,6 +41,9 @@ export interface TrackerSection {
   paidOnly: boolean
   // Still experimental
   beta?: boolean
+  // Held back for now: marked Coming soon, and shows what's planned (Savings and Entry audit
+  // are built; flip ready back to true to open them again)
+  comingSoon?: boolean
   // What the section will do, until it's built
   planned: string[]
 }
@@ -127,7 +126,8 @@ export const SECTIONS: TrackerSection[] = [
     Icon: ReceiptPercentIcon,
     title: "Savings",
     summary: "Ways you could pay less duty on the products you already import.",
-    ready: true,
+    ready: false,
+    comingSoon: true,
     group: "intelligence",
     paidOnly: false,
     planned: [
@@ -153,45 +153,14 @@ export const SECTIONS: TrackerSection[] = [
     ],
   }),
   section({
-    slug: "trends",
-    label: "Trends",
-    Icon: ArrowTrendingUpIcon,
-    title: "Trends",
-    summary:
-      "How tariffs on your imports, and across the whole schedule, have moved over time.",
-    ready: false,
-    group: "intelligence",
-    paidOnly: true,
-    planned: [
-      "The average duty rate across your imports over time",
-      "Your exposure by program (Section 232, 301, 122 and more) and by country",
-      "Tariff trends across every HTS code and country, beyond your own products",
-    ],
-  }),
-  section({
-    slug: "charts",
-    label: "Charts",
-    Icon: ChartPieIcon,
-    title: "Charts",
-    summary:
-      "Clear, shareable charts of your tariffs for your team or your audience.",
-    ready: false,
-    group: "intelligence",
-    paidOnly: true,
-    planned: [
-      "Charts of your rates, history, exposure and savings, ready to share",
-      "Links for your team, and images sized for LinkedIn and X",
-    ],
-  }),
-  section({
     slug: "entries",
     label: "Entry audit",
     Icon: ClipboardDocumentCheckIcon,
     title: "Entry audit",
-    beta: true,
+    comingSoon: true,
     summary:
       "Check the duty paid on every shipment against the rates in force that day.",
-    ready: true,
+    ready: false,
     group: "intelligence",
     paidOnly: false,
     planned: [
@@ -205,14 +174,11 @@ export const SECTIONS: TrackerSection[] = [
     label: "Expert help",
     Icon: ChatBubbleLeftRightIcon,
     title: "Expert help",
-    summary: "Work with the HTS Hero team on your tariff strategy.",
-    ready: false,
+    summary: "HTS Hero as your tariff team: we manage every tariff on your imports, with you.",
+    ready: true,
     group: "intelligence",
-    paidOnly: true,
-    planned: [
-      "A review of your imports by the HTS Hero team",
-      "Help confirming you're on the right track, and finding ways to save",
-    ],
+    paidOnly: false,
+    planned: [],
   }),
 ]
 

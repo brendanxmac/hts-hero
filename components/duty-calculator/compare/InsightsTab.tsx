@@ -1,67 +1,56 @@
 "use client";
 
 import { ReactNode, useMemo } from "react";
-import { MapPinIcon } from "@heroicons/react/20/solid";
-import { MapPinIcon as MapPinOutline } from "@heroicons/react/24/outline";
 import { barWidth, Sparkline, time } from "@/components/ui/charts/kit";
+import { CardRow, useCardClass } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
+import { PRIMARY_MARK } from "@/components/ui/theme";
 import { analysisFacts, rateKey, rateOf, rateTiers } from "@/components/tariff-tracker/product/analysis/analysis";
-import { changeEvents, OriginHistory, volatility } from "@/components/tariff-tracker/product/analysis/history";
-import { TimeLapse } from "@/components/tariff-tracker/product/analysis/TimeLapse";
-import { Timeline } from "@/components/tariff-tracker/product/analysis/useTimeline";
+import { volatility } from "@/components/tariff-tracker/product/analysis/history";
 import { formatRate } from "@/components/tariff-tracker/formatRate";
 import { shortDate } from "../rate-history/format";
 import { formatMoney, todayIso } from "../lib/format";
 import { formatImportValue } from "../lib/usImports";
-import { basisFor, CompareOption, optionsFor, optionsOf, ProgramMode, segmentsFor, shortAgreement } from "./options";
+import { basisFor, CompareOption, optionsFor, optionsOf, ProgramMode, shortAgreement } from "./options";
 import { Origins } from "./useOrigins";
 
 // Compare's insights, as a report read top to bottom: nothing to open. The verdict first, with
-// the three numbers behind it, then three sections. Where you stand (your rank on the field's
+// the three numbers behind it, then two sections. Where you stand (your rank on the field's
 // range, how the rates group, your own rate over time), cheaper options (the cheapest, the biggest
 // and the fastest-growing cheaper suppliers, how much of US imports already comes from cheaper
-// countries, what trade agreements could cut) and risk and change (the steadiest and the riskiest
-// cheaper options, the latest changes), each as a panel with its answer and a short list or a
-// small chart; then the time-lapse. Every country in a list is a button that adds it to the
-// shortlist (or takes it off). The control bar applies: the rates are those on its date, and trade
+// countries, what trade agreements could cut), each as a panel with its answer and a short list or a
+// small chart; then the Tariff Time Lapse, with every change. Read-only: the lists name countries, nothing to select. The
+// control bar applies: the rates are those on its date, and trade
 // programs count unless it says without them. Savings are always potential ("could", "up to").
 
 const money = (n: number) => formatMoney(Math.round(n)).replace(/\.00$/, "");
 const TOP = 5;
 
-const Panel = ({ title, answer, tone, children, className = "" }: { title: string; answer?: ReactNode; tone?: "success" | "error"; children: ReactNode; className?: string }) => (
-  <section className={`${ui.card} flex flex-col gap-3 p-5 ${className}`} aria-label={title}>
+// One of a group's three columns: a card on its own, a column of the Compare box here
+const Panel = ({ title, answer, tone, children, className = "" }: { title: string; answer?: ReactNode; tone?: "success" | "error"; children: ReactNode; className?: string }) => {
+  const cardClass = useCardClass();
+  return (
+  <section className={`${cardClass} flex flex-col gap-3 p-5 sm:p-6 ${className}`} aria-label={title}>
     <div>
       <h5 className={ui.label}>{title}</h5>
       {answer && <p className={`${ui.metric.secondary} m-0 mt-1.5 ${tone === "success" ? "text-success" : tone === "error" ? "text-error" : ""}`}>{answer}</p>}
     </div>
     {children}
   </section>
-);
-
-// A country in a list: select to shortlist it
-const Row = ({ option, shortlisted, onToggle, children }: { option: CompareOption; shortlisted: boolean; onToggle: () => void; children: ReactNode }) => {
-  const Icon = shortlisted ? MapPinIcon : MapPinOutline;
-  return (
-    <li>
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-pressed={shortlisted}
-        title={shortlisted ? "On your shortlist: select to take it off" : "Add to your shortlist"}
-        className={`group flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-base-200 ${shortlisted ? "bg-primary/5" : ""}`}
-      >
-        <Icon className={`h-4 w-4 shrink-0 ${shortlisted ? "text-primary" : "text-base-content/30 group-hover:text-primary"}`} aria-hidden />
-        <span aria-hidden>{option.origin.country.flag}</span>
-        <span className="min-w-0 flex-1 truncate">
-          <span className="font-medium text-base-content">{option.origin.country.name}</span>
-          {option.agreement && <span className="ml-1.5 text-xs text-success">with {shortAgreement(option.agreement.name)}</span>}
-        </span>
-        {children}
-      </button>
-    </li>
   );
 };
+
+// A country in a list: its flag and name (and agreement), then the figures
+const Row = ({ option, children }: { option: CompareOption; children: ReactNode }) => (
+  <li className="flex w-full items-center gap-2.5 px-2 py-1.5 text-sm">
+    <span aria-hidden>{option.origin.country.flag}</span>
+    <span className="min-w-0 flex-1 truncate">
+      <span className="font-medium text-base-content">{option.origin.country.name}</span>
+      {option.agreement && <span className="ml-1.5 text-xs text-success">with {shortAgreement(option.agreement.name)}</span>}
+    </span>
+    {children}
+  </li>
+);
 
 const List = ({ children, empty }: { children: ReactNode[]; empty: string }) =>
   children.length ? <ul className="-mx-2 m-0 flex list-none flex-col p-0">{children}</ul> : <p className="m-0 text-sm text-base-content/60">{empty}</p>;
@@ -69,32 +58,17 @@ const List = ({ children, empty }: { children: ReactNode[]; empty: string }) =>
 export const InsightsTab = ({
   origins,
   mode,
-  timeline,
   customsValue,
-  shortlist,
-  colors: shortlistColors,
-  onToggle,
-  afterAnswer,
 }: {
   origins: Origins;
   mode: ProgramMode;
-  // The control bar's date
-  timeline: Timeline;
   customsValue: number;
-  shortlist: ReadonlySet<string>;
-  // The shortlist's colors
-  colors: Record<string, string>;
-  onToggle: (code: string) => void;
-  // Between the answer and the sections (the explorer's globe and every origin)
-  afterAnswer?: ReactNode;
 }) => {
-  const { rates, imports, histories, range, ready, progress } = origins;
+  const { rates, imports, histories, range, progress } = origins;
   const basis = basisFor(mode);
   const facts = useMemo(() => analysisFacts(rates, basis), [rates, basis]);
   const tiers = useMemo(() => rateTiers(rates, basis), [rates, basis]);
   const options = useMemo(() => rates.flatMap((r) => optionsFor(r, mode)), [rates, mode]);
-  const all = useMemo(() => rates.map((r) => histories.get(r.country.code)).filter((h): h is OriginHistory => Boolean(h)), [rates, histories]);
-  const events = useMemo(() => (ready ? changeEvents(all, "standard") : []), [ready, all]);
   const today = time(todayIso());
   const working = `Working out every rate's history… ${Math.round(progress * 100)}%`;
 
@@ -103,8 +77,6 @@ export const InsightsTab = ({
   const yourPct = yours ? rateOf(yours, basis) : 0;
   const value = (code: string) => imports?.byCountry.get(code)?.value ?? 0;
   const saving = (o: CompareOption) => ((yourPct - o.pct) / 100) * customsValue;
-  const toggle = (o: CompareOption) => () => onToggle(o.origin.country.code);
-  const picked = (o: CompareOption) => shortlist.has(o.origin.country.code);
 
   // Each cheaper country at its best option (its agreement, when that's lower)
   const best = new Map<string, CompareOption>();
@@ -139,19 +111,6 @@ export const InsightsTab = ({
         .sort((a, b) => b.cut - a.cut),
     [rates]
   );
-  const stability = ready
-    ? cheaper
-        .map((o) => {
-          const h = histories.get(o.origin.country.code);
-          return h ? { o, v: volatility(h, o.agreement ? "agreements" : "standard") } : null;
-        })
-        .filter((s): s is NonNullable<typeof s> => Boolean(s))
-    : [];
-  const steadiest = [...stability].sort((a, b) => a.v.swing - b.v.swing || a.o.pct - b.o.pct).slice(0, TOP);
-  const riskiest = [...stability]
-    .filter((s) => s.v.swing > 0.005 && value(s.o.origin.country.code) > 0)
-    .sort((a, b) => b.v.swing - a.v.swing)
-    .slice(0, TOP);
   const yourHistory = yours ? histories.get(yours.country.code) : undefined;
   const yourSwing = yourHistory ? volatility(yourHistory, "standard") : null;
   const sortedPcts = rates.map((r) => rateOf(r, basis)).sort((a, b) => a - b);
@@ -160,12 +119,11 @@ export const InsightsTab = ({
   const topTiers = [...tiers].sort((a, b) => b.origins.length - a.origins.length).slice(0, 6).sort((a, b) => a.pct - b.pct);
   const tierMax = Math.max(...topTiers.map((t) => t.origins.length), 1);
   const lead = suppliers[0] ?? byRate[0];
-  const spark = (o: CompareOption) => segmentsFor(o, histories.get(o.origin.country.code)).map((s) => ({ x: time(s.from), y: s.pct }));
 
   return (
-    <div className="flex flex-col gap-6">
+    <>
       {/* The verdict, and the three numbers behind it */}
-      <section className={`${ui.card} flex flex-col gap-4 p-5 sm:p-6`} aria-label="The answer">
+      <section className="flex flex-col gap-4 p-5 sm:p-6" aria-label="The answer">
         <p className="m-0 text-lg leading-relaxed text-base-content/80">
           {lead ? (
             <>
@@ -186,8 +144,8 @@ export const InsightsTab = ({
             </>
           )}
         </p>
-        <dl className="m-0 grid gap-px overflow-hidden rounded-lg bg-base-300 sm:grid-cols-3">
-          <div className="bg-base-100 p-4">
+        <dl className="-mx-5 -mb-5 grid gap-px border-t border-base-300 bg-base-300 sm:-mx-6 sm:-mb-6 sm:grid-cols-3">
+          <div className="bg-base-100 px-5 py-4 sm:px-6">
             <dt className={ui.label}>Countries that pay less</dt>
             <dd className={`${ui.metric.secondary} m-0 mt-1`}>{best.size}</dd>
             <dd className="m-0 mt-1 text-xs text-base-content/60">
@@ -195,12 +153,12 @@ export const InsightsTab = ({
               {mode === "without" ? " at standard rates" : ""}
             </dd>
           </div>
-          <div className="bg-base-100 p-4">
+          <div className="bg-base-100 px-5 py-4 sm:px-6">
             <dt className={ui.label}>Already supplied by them</dt>
             <dd className={`${ui.metric.secondary} m-0 mt-1`}>{cheaperShare !== null ? `${Math.round(cheaperShare * 100)}%` : "—"}</dd>
             <dd className="m-0 mt-1 text-xs text-base-content/60">{imports ? `Of US imports of this in ${imports.year}` : "No US import figures for this code"}</dd>
           </div>
-          <div className="bg-base-100 p-4">
+          <div className="bg-base-100 px-5 py-4 sm:px-6">
             <dt className={ui.label}>Most an option could save</dt>
             <dd className={`${ui.metric.secondary} m-0 mt-1 ${byRate[0] ? "text-success" : ""}`}>{byRate[0] ? money(saving(byRate[0])) : "—"}</dd>
             <dd className="m-0 mt-1 text-xs text-base-content/60">{byRate[0] ? "Up to, per shipment, at the lowest rate" : "No option pays less than yours"}</dd>
@@ -208,11 +166,10 @@ export const InsightsTab = ({
         </dl>
       </section>
 
-      {afterAnswer}
 
-      <div className="flex flex-col gap-3">
-        <h4 className={ui.cardTitle}>Where you stand</h4>
-        <div className="grid gap-3 lg:grid-cols-3">
+      <section className="flex flex-col" aria-label="Where you stand">
+        <h4 className={`${ui.cardTitle} px-5 pt-5 sm:px-6`}>Where you stand</h4>
+        <CardRow className="lg:grid-cols-3">
           <Panel title="Your rank" answer={`#${facts.rank} of ${facts.total}`}>
             {/* The field's range, with the middle and yours on it */}
             <div className="relative mt-2 h-10" aria-label={`${yours?.country.name} pays ${formatRate(yourPct)}; the middle country pays ${formatRate(median)}`}>
@@ -248,7 +205,7 @@ export const InsightsTab = ({
           <Panel title={`${yours?.country.name ?? "Your origin"} over time`} answer={yourSwing ? (yourSwing.changes ? `${yourSwing.changes} ${yourSwing.changes === 1 ? "change" : "changes"}` : "Steady") : "…"}>
             {yourHistory ? (
               <>
-                <Sparkline points={yourHistory.standard.map((s) => ({ x: time(s.from), y: s.pct }))} color={shortlistColors[yours!.country.code]} step to={today} height={56} label="Your rate over time" />
+                <Sparkline points={yourHistory.standard.map((s) => ({ x: time(s.from), y: s.pct }))} color={PRIMARY_MARK} step to={today} height={56} label="Your rate over time" />
                 <p className="m-0 text-xs text-base-content/60">
                   From {formatRate(yourSwing!.min)} to {formatRate(yourSwing!.max)} since {shortDate(range.from, true)}
                 </p>
@@ -257,16 +214,16 @@ export const InsightsTab = ({
               <p className="m-0 text-sm text-base-content/60">{working}</p>
             )}
           </Panel>
-        </div>
-      </div>
+        </CardRow>
+      </section>
 
-      <div className="flex flex-col gap-3">
-        <h4 className={ui.cardTitle}>Cheaper options</h4>
-        <div className="grid gap-3 lg:grid-cols-3">
+      <section className="flex flex-col" aria-label="Cheaper options">
+        <h4 className={`${ui.cardTitle} px-5 pt-5 sm:px-6`}>Cheaper options</h4>
+        <CardRow className="lg:grid-cols-3">
           <Panel title="Cheapest" answer={byRate[0] ? formatRate(byRate[0].pct) : "None"} tone={byRate[0] ? "success" : undefined}>
             <List empty="No option pays less than yours">
               {byRate.slice(0, TOP).map((o) => (
-                <Row key={o.key} option={o} shortlisted={picked(o)} onToggle={toggle(o)}>
+                <Row key={o.key} option={o}>
                   <span className="tabular-nums font-semibold text-success">{formatRate(o.pct)}</span>
                   <span className="w-16 text-right text-xs tabular-nums text-base-content/60">−{money(saving(o))}</span>
                 </Row>
@@ -276,7 +233,7 @@ export const InsightsTab = ({
           <Panel title="Biggest cheaper suppliers" answer={suppliers[0] ? suppliers[0].origin.country.name : "None"}>
             <List empty={imports ? "No cheaper country ships this to the US yet" : "No US import figures for this code"}>
               {suppliers.slice(0, TOP).map((o) => (
-                <Row key={o.key} option={o} shortlisted={picked(o)} onToggle={toggle(o)}>
+                <Row key={o.key} option={o}>
                   <span className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-base-200 sm:block" aria-hidden>
                     <span className="block h-full rounded-full bg-base-content/40" style={{ width: barWidth(value(o.origin.country.code), value(suppliers[0].origin.country.code)) }} />
                   </span>
@@ -289,8 +246,16 @@ export const InsightsTab = ({
             <List empty="No cheaper supplier with a big enough share to call">
               {growing.slice(0, TOP).map((o) => {
                 const g = growth(o) ?? 0;
+                // Each bar against the fastest shown, so the growth compares at a glance
+                const fastest = Math.max(...growing.slice(0, TOP).map((x) => Math.abs(growth(x) ?? 0)), 0.01);
                 return (
-                  <Row key={o.key} option={o} shortlisted={picked(o)} onToggle={toggle(o)}>
+                  <Row key={o.key} option={o}>
+                    <span className="h-2 w-24 shrink-0 overflow-hidden rounded-full bg-base-200" aria-hidden>
+                      <span
+                        className={`block h-full rounded-full ${g >= 0 ? "bg-success" : "bg-base-content/30"}`}
+                        style={{ width: `${Math.max((Math.abs(g) / fastest) * 100, 3)}%` }}
+                      />
+                    </span>
                     <span className={`w-14 text-right tabular-nums font-semibold ${g >= 0 ? "text-success" : "text-base-content/70"}`}>
                       {g >= 0 ? "+" : "−"}
                       {Math.abs(Math.round(g * 100))}%
@@ -332,7 +297,7 @@ export const InsightsTab = ({
           <Panel title="What trade agreements could cut" answer={`${agreementCuts.length} ${agreementCuts.length === 1 ? "option" : "options"}`}>
             <List empty="No country can lower this with an agreement">
               {agreementCuts.slice(0, TOP).map(({ option: o, cut }) => (
-                <Row key={o.key} option={o} shortlisted={picked(o)} onToggle={toggle(o)}>
+                <Row key={o.key} option={o}>
                   <span className="tabular-nums text-xs text-base-content/60">{formatRate(o.origin.pct)} →</span>
                   <span className="w-12 text-right tabular-nums font-semibold text-success">{formatRate(o.pct)}</span>
                   <span className="sr-only">, {formatRate(cut)} off</span>
@@ -340,77 +305,10 @@ export const InsightsTab = ({
               ))}
             </List>
           </Panel>
-        </div>
-      </div>
+        </CardRow>
+      </section>
 
-      <div className="flex flex-col gap-3">
-        <h4 className={ui.cardTitle}>Risk and change</h4>
-        <div className="grid gap-3 lg:grid-cols-3">
-          <Panel title="Steadiest cheaper options" answer={steadiest[0] ? steadiest[0].o.origin.country.name : ready ? "None" : "…"}>
-            {ready ? (
-              <List empty="No option pays less than yours">
-                {steadiest.map(({ o, v }) => (
-                  <Row key={o.key} option={o} shortlisted={picked(o)} onToggle={toggle(o)}>
-                    <span className="hidden w-16 sm:block">
-                      <Sparkline points={spark(o)} color={shortlistColors[o.origin.country.code] ?? "oklch(var(--bc) / 0.45)"} step to={today} height={20} />
-                    </span>
-                    <span className="w-14 text-right text-xs tabular-nums text-base-content/70">{v.swing < 0.005 ? "Steady" : `±${formatRate(v.swing / 2)}`}</span>
-                  </Row>
-                ))}
-              </List>
-            ) : (
-              <p className="m-0 text-sm text-base-content/60">{working}</p>
-            )}
-          </Panel>
-          <Panel title="Riskiest cheaper suppliers" answer={riskiest[0] ? riskiest[0].o.origin.country.name : ready ? "None" : "…"} tone={riskiest[0] ? "error" : undefined}>
-            {ready ? (
-              <List empty="No cheaper supplier's rate has moved">
-                {riskiest.map(({ o, v }) => (
-                  <Row key={o.key} option={o} shortlisted={picked(o)} onToggle={toggle(o)}>
-                    <span className="hidden w-16 sm:block">
-                      <Sparkline points={spark(o)} color={shortlistColors[o.origin.country.code] ?? "oklch(var(--er))"} step to={today} height={20} />
-                    </span>
-                    <span className="w-14 text-right text-xs tabular-nums text-error">±{formatRate(v.swing / 2)}</span>
-                  </Row>
-                ))}
-              </List>
-            ) : (
-              <p className="m-0 text-sm text-base-content/60">{working}</p>
-            )}
-          </Panel>
-          <Panel title="Latest changes" answer={events.length ? shortDate(events[events.length - 1].date, true) : ready ? "None" : "…"}>
-            {ready ? (
-              events.length ? (
-                <ul className="m-0 flex list-none flex-col gap-2 p-0">
-                  {[...events]
-                    .reverse()
-                    .slice(0, TOP)
-                    .map((e) => (
-                      <li key={e.date} className="flex items-baseline justify-between gap-3 text-sm">
-                        <span className="min-w-0">
-                          <span className="font-medium text-base-content">{shortDate(e.date, true)}</span>
-                          {e.changes[0] && <span className="block truncate text-xs text-base-content/60">{e.changes[0].name}</span>}
-                        </span>
-                        <span className="shrink-0 text-xs tabular-nums">
-                          {e.up > 0 && <span className="text-error">{e.up} up</span>}
-                          {e.up > 0 && e.down > 0 && <span className="text-base-content/40"> · </span>}
-                          {e.down > 0 && <span className="text-success">{e.down} down</span>}
-                        </span>
-                      </li>
-                    ))}
-                </ul>
-              ) : (
-                <p className="m-0 text-sm text-base-content/60">No rate has changed since the verified data starts.</p>
-              )
-            ) : (
-              <p className="m-0 text-sm text-base-content/60">{working}</p>
-            )}
-          </Panel>
-        </div>
-      </div>
 
-      {/* Every origin moving through time, on the control bar's date */}
-      <TimeLapse rates={rates} histories={histories} timeline={timeline} progress={progress} ready={ready} basis={basis} selected={shortlist} onSelect={onToggle} />
-    </div>
+    </>
   );
 };

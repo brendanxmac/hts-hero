@@ -147,7 +147,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
     cell: ({ row: { original: r } }) => (
       <span className="flex min-w-0 flex-col gap-2">
         <StackedBar
-          parts={r.parts.map((p) => ({ label: shortProgram(p.key), amount: p.pct, color: ctx.colors[p.key] }))}
+          parts={r.parts.map((p) => ({ label: p.key, amount: p.pct, color: ctx.colors[p.key] }))}
           formatValue={formatRate}
           size="xs"
           shape="pill"

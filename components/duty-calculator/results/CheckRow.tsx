@@ -66,7 +66,7 @@ export const CheckRow = ({
           onChange={(e) => onChange(e.target.checked)}
         />
         <span className="flex flex-col gap-1 min-w-0">
-          <span className={`text-sm leading-snug ${muted ? "text-base-content/50" : "text-base-content"}`}>
+          <span className={`text-sm leading-snug ${muted ? "text-base-content/60" : "text-base-content"}`}>
             {code && (
               <span
                 className={`${mono.className} mr-1.5 text-sm font-semibold text-primary`}

@@ -2,7 +2,7 @@
 
 import * as ui from "@/components/ui/styles";
 import { todayIso } from "../../../duty-calculator/lib/format";
-import { AuditChecksNotice } from "../../entries/AuditChecksNotice";
+import { FreeChecksNotice } from "../../access/FreeChecksNotice";
 import { AuditDisclaimer } from "../../entries/AuditDisclaimer";
 import { AuditForm } from "../../entries/AuditForm";
 import { AuditStats } from "../../entries/AuditStats";
@@ -23,7 +23,7 @@ export const ProductAudit = ({ product }: { product: TrackedProduct }) => {
   const history = histories.get(product.key);
   return (
     <div className="flex flex-col gap-4">
-      <AuditChecksNotice />
+      <FreeChecksNotice kind="audits" />
       <AuditStats totals={totals} />
       {history && <RateTimeline history={history} rows={rows} to={todayIso()} />}
       <div className="grid items-start gap-4 xl:grid-cols-2">

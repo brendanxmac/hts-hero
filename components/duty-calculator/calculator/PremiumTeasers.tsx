@@ -16,7 +16,7 @@ import { useConversion } from "./ConversionDialog";
 //   atop it, in the Tracker) and a link on each row that could save
 // - Duty Over Time: the history (free) / any past date in full (account) / past entries checked
 //   for refunds in bulk (Tracker), the last from a button in the card's heading
-// - Compare: a shortlist of up to 4 origins (free) / every origin ranked (account) / cheaper origins across the
+// - Compare: up to 4 origins side by side (free) / every origin ranked (account) / cheaper origins across the
 //   catalog (Tracker)
 
 type Conversion = ReturnType<typeof useConversion>;
