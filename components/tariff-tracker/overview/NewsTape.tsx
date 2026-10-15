@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { AUTHORITIES, type Kind } from "@/libs/tariff-updates/types";
+import { AUTHORITIES } from "@/libs/tariff-updates/types";
+import { NEWS_DOTS as DOTS, newsToneOf as toneOf } from "../news/tone";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { shortDate } from "../../duty-calculator/rate-history/format";
 import { tariffNews } from "./lib/news";
@@ -13,19 +14,6 @@ import { useTariffUpdates } from "./useTariffUpdates";
 // USTR, HTS revisions), newest first, each opening its update; then tariffs coming into effect
 // soon, from the verified tariff data. Color is meaning: red a new or higher tariff, green one
 // lifted, amber a heads-up, cobalt the rest.
-
-type Tone = "error" | "success" | "warning" | "primary";
-
-const DOTS: Record<Tone, string> = { error: "bg-error", success: "bg-success", warning: "bg-warning", primary: "bg-primary" };
-
-const toneOf = (kind: Kind): Tone =>
-  ["new_tariff", "rate_change", "scope_change"].includes(kind)
-    ? "error"
-    : ["end", "exclusion", "pause"].includes(kind)
-      ? "success"
-      : ["investigation", "deadline"].includes(kind)
-        ? "warning"
-        : "primary";
 
 const PILL = "flex h-9 shrink-0 items-center gap-2 rounded-full border border-base-300 bg-base-100 px-3.5 text-sm";
 // Coming tariffs from the engine, at most this many, after the latest actions

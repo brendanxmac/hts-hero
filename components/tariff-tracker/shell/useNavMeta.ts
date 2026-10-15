@@ -6,6 +6,8 @@ import { useAlertSettings } from "../alerts/AlertSettingsContext";
 import { useInsights } from "../insights/InsightsContext";
 import { wholeDollars } from "../insights/teasers";
 import { changesLastYear } from "../overview/lib/metrics";
+import { useEffect, useState } from "react";
+import { newsSeenAt, onNewsSeen, useTariffUpdates } from "../overview/useTariffUpdates";
 import { SectionSlug } from "../sections";
 import { useTracker } from "../TrackerContext";
 
@@ -21,7 +23,17 @@ export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
   const insights = useInsights();
   const { signedIn, paid, savingsLeft, auditsLeft } = useTrackerAccess();
   const alerts = useAlertSettings();
+  // Tariff actions first seen since the news tab was last opened (the last week, before it ever was)
+  const updates = useTariffUpdates("recent");
+  const [seenAt, setSeenAt] = useState<string | null>(null);
+  useEffect(() => {
+    setSeenAt(newsSeenAt());
+    return onNewsSeen(() => setSeenAt(newsSeenAt()));
+  }, []);
   const meta: Partial<Record<SectionSlug, NavMeta>> = {};
+  const since = seenAt ?? new Date(Date.now() - 7 * 86_400_000).toISOString();
+  const fresh = (updates ?? []).filter((u) => u.first_seen_at > since).length;
+  if (fresh) meta.news = { text: `${fresh} new`, tone: "error" };
   if (items.length) meta.catalog = { text: items.length.toLocaleString("en-US"), tone: "neutral" };
   else meta.catalog = { text: "Start here", tone: "primary" };
   if (signedIn && !alerts.loading) meta.alerts = alerts.configured ? { text: "On", tone: "success" } : { text: "Off", tone: "warning" };

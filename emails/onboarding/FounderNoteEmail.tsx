@@ -31,8 +31,11 @@ export default function FounderNoteEmail({ daysSinceSignup, footer }: FounderNot
       </Para>
       <Para>
         <strong>Want someone to handle tariffs for you?</strong> We also offer dedicated tariff management: we watch your whole catalog, flag every change
-        that hits you, audit your entries for overpayments, find savings, and tell you what to do about each. Reply &quot;managed&quot; and I&apos;ll
-        send you the details.
+        that hits you, audit your entries for overpayments, find savings, and tell you what to do about each.{" "}
+        <Link href={siteLink("/tariff-tracker?tab=expert-help", "onboarding-3")} style={{ color: C.cobalt, fontWeight: 600 }}>
+          See how HTS Hero Managed works
+        </Link>
+        , or reply &quot;managed&quot; and I&apos;ll send you the details.
       </Para>
       <Para>
         Either way, just hit reply. Or{" "}

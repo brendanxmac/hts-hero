@@ -6,6 +6,7 @@ import {
   GlobeAltIcon,
   ChatBubbleLeftRightIcon,
   HomeIcon,
+  NewspaperIcon,
   ReceiptPercentIcon,
   Squares2X2Icon,
 } from "@heroicons/react/20/solid"
@@ -21,6 +22,7 @@ export type SectionSlug =
   | "catalog"
   | "history"
   | "alerts"
+  | "news"
   | "entries"
   | "sourcing"
   | "savings"
@@ -104,6 +106,17 @@ export const SECTIONS: TrackerSection[] = [
       "What changed, which products it hits, and the difference in duty",
       "Badges on affected products until you've reviewed them",
     ],
+  }),
+  section({
+    slug: "news",
+    label: "Tariff news",
+    Icon: NewspaperIcon,
+    title: "Tariff news",
+    summary: "Every new US tariff action, as it happens, with the official documents behind it.",
+    ready: true,
+    group: "workspace",
+    paidOnly: false,
+    planned: [],
   }),
   section({
     slug: "history",
