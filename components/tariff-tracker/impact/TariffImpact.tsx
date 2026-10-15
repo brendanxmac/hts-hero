@@ -20,7 +20,7 @@ import { sectionBySlug, TRACKER_PATH } from "../sections";
 import { NeedsProducts } from "../shell/NeedsProducts";
 import { SectionHeader } from "../shell/SectionPage";
 import { useTracker } from "../TrackerContext";
-import { ActionPicker } from "./ActionPicker";
+import { ActionList } from "./ActionList";
 import { OriginBars, RateShift, type OriginRow, type ShiftRow } from "./ImpactCharts";
 import { ImpactImports, type Show } from "./ImpactImports";
 import { day, groupOf, GROUP_ORDER, GROUPS, money, relativeDays } from "./format";
@@ -28,7 +28,7 @@ import { useReviewList, type ImpactCheck } from "./useReviewList";
 import { useUpdateImpact } from "./useUpdateImpact";
 
 // Tariff Impacts: pick any tariff action and see exactly which of your imports it hits. The
-// action (from the picker in the header) as one card: what it is, then the answer for the catalog
+// actions down the left (ActionList); the open one on the right as one card: what it is, then the answer for the catalog
 // as a stat strip like the Overview's. Under it, the imports it affects laid out like Your imports,
 // then the rates it moves and the countries it lands on. Worked out live with the code the
 // alerts use, so it's where an alert's link lands (?tab=impact&update=slug) and where the admin
@@ -105,7 +105,6 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
       </div>
       <StatStrip
         framed={false}
-        lead
         label="What it does to your imports"
         className="border-t border-base-300"
         stats={[
@@ -118,13 +117,13 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
               : confirmed.length
                 ? hasYears
                   ? `${money(yearly, true)} a year, at your shipments`
-                  : `One shipment of each of the ${confirmed.length} it changes`
+                  : "One shipment of each"
                 : likely
                   ? "Confirmed once it's in the HTS"
                   : "Nothing it changes",
           },
           {
-            label: "Your imports affected",
+            label: "Imports hit",
             value: pending ? (
               "…"
             ) : (
@@ -133,15 +132,15 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
                 <span className="text-base font-medium text-base-content/50"> of {total.toLocaleString("en-US")}</span>
               </>
             ),
-            note: pending ? "" : `${confirmed.length} confirmed · ${likely} may apply`,
+            note: pending ? "" : likely ? `${confirmed.length} confirmed · ${likely} may apply` : "All confirmed",
           },
           {
-            label: "Average rate on them",
+            label: "Rate on them",
             value: pending ? "…" : rated.length ? formatRate(avg((i) => i.afterPct!)) : "—",
-            note: rated.length ? `From ${formatRate(avg((i) => i.beforePct!))}` : "Confirmed imports only",
+            note: rated.length ? `Average, from ${formatRate(avg((i) => i.beforePct!))}` : "Confirmed imports only",
           },
           {
-            label: upcoming ? "Takes effect" : "In effect since",
+            label: upcoming ? "Takes effect" : "In effect",
             value: effective ? day(effective) : "Not set",
             tone: upcoming ? "primary" : undefined,
             note: effective ? relativeDays(effective, today) : "No date announced yet",
@@ -227,12 +226,7 @@ export const TariffImpact = () => {
     return Array.from(rows.values()).sort((a, b) => Math.abs(b.deltaUsd) - Math.abs(a.deltaUsd) || Object.values(b.counts).reduce((s, n) => s + n, 0) - Object.values(a.counts).reduce((s, n) => s + n, 0));
   }, [impacts, byKey]);
 
-  const header = (
-    <SectionHeader
-      section={section}
-      actions={updates && <ActionPicker updates={updates} selected={update} hits={hits} inReview={inReview} today={today} onPick={select} />}
-    />
-  );
+  const header = <SectionHeader section={section} />;
 
   if (!loading && !items.length)
     return (
@@ -248,68 +242,77 @@ export const TariffImpact = () => {
   return (
     <>
       {header}
-      {!update ? (
-        <div className={`${ui.skeleton} h-64 w-full`} />
-      ) : (
-        <>
-          <ActionCard update={update} check={review?.checks[update.id]} today={today} impacts={impacts} total={products.length} />
-          {!impacts ? (
-            <section className={`${tt.panel} flex flex-col gap-3 px-6 py-5`} aria-busy="true">
-              <p className="text-sm text-base-content/70">
-                Working out each import&apos;s duty the day before and the day it takes effect
-                {products.length > 40 ? ` (${Math.round(progress * products.length).toLocaleString("en-US")} of ${products.length.toLocaleString("en-US")})` : ""}…
-              </p>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-tt-soft">
-                <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: `${Math.max(4, progress * 100)}%` }} />
-              </div>
-            </section>
+      <div className="grid gap-4 xl:grid-cols-[19.5rem_minmax(0,1fr)] xl:items-start">
+        {updates ? (
+          <ActionList updates={updates} selected={slug} matches={matches} inReview={inReview} today={today} onPick={select} />
+        ) : (
+          <div className={`${ui.skeleton} h-[36rem] w-full`} />
+        )}
+        <div className="flex min-w-0 flex-col gap-4">
+          {!update ? (
+            <div className={`${ui.skeleton} h-64 w-full`} />
           ) : (
             <>
-              <ImpactImports impacts={impacts} effective={update.effective_on} today={today} country={country} onClearCountry={() => setCountry(null)} show={show} onShow={setShow} />
-              {(shifts.length > 2 || origins.length > 1) && (
-                <div className={`grid gap-4 ${shifts.length > 2 && origins.length > 1 ? "xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]" : ""}`}>
-                  {shifts.length > 2 && (
-                    <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-impact-shift">
-                      <div>
-                        <h2 id="tt-impact-shift" className={tt.title}>
-                          Rate before and after
-                        </h2>
-                        <p className={tt.subtitle}>Each import whose rate it moves, the biggest change in dollars first</p>
-                      </div>
-                      <RateShift rows={shifts} onPick={showImports} />
-                    </section>
+              <ActionCard update={update} check={review?.checks[update.id]} today={today} impacts={impacts} total={products.length} />
+              {!impacts ? (
+                <section className={`${tt.panel} flex flex-col gap-3 px-6 py-5`} aria-busy="true">
+                  <p className="text-sm text-base-content/70">
+                    Working out each import&apos;s duty the day before and the day it takes effect
+                    {products.length > 40 ? ` (${Math.round(progress * products.length).toLocaleString("en-US")} of ${products.length.toLocaleString("en-US")})` : ""}…
+                  </p>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-tt-soft">
+                    <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: `${Math.max(4, progress * 100)}%` }} />
+                  </div>
+                </section>
+              ) : (
+                <>
+                  <ImpactImports impacts={impacts} effective={update.effective_on} today={today} country={country} onClearCountry={() => setCountry(null)} show={show} onShow={setShow} />
+                  {(shifts.length > 2 || origins.length > 1) && (
+                    <div className={`grid gap-4 ${shifts.length > 2 && origins.length > 1 ? "xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]" : ""}`}>
+                      {shifts.length > 2 && (
+                        <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-impact-shift">
+                          <div>
+                            <h2 id="tt-impact-shift" className={tt.title}>
+                              Rate before and after
+                            </h2>
+                            <p className={tt.subtitle}>Each import whose rate it moves, the biggest change in dollars first</p>
+                          </div>
+                          <RateShift rows={shifts} onPick={showImports} />
+                        </section>
+                      )}
+                      {origins.length > 1 && (
+                        <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-impact-origins">
+                          <div>
+                            <h2 id="tt-impact-origins" className={tt.title}>
+                              Where it lands
+                            </h2>
+                            <p className={tt.subtitle}>Your affected imports by country of origin, and the change per shipment</p>
+                          </div>
+                          <OriginBars
+                            rows={origins}
+                            onPick={(c) => {
+                              setCountry(c);
+                              showImports();
+                            }}
+                          />
+                          <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-base-content/70">
+                            {GROUP_ORDER.filter((g) => origins.some((o) => o.counts[g])).map((g) => (
+                              <li key={g} className="inline-flex items-center gap-1.5">
+                                <span className="h-2 w-2 rounded-full" style={{ background: GROUPS[g].mark }} aria-hidden />
+                                {GROUPS[g].label}
+                              </li>
+                            ))}
+                          </ul>
+                        </section>
+                      )}
+                    </div>
                   )}
-                  {origins.length > 1 && (
-                    <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-impact-origins">
-                      <div>
-                        <h2 id="tt-impact-origins" className={tt.title}>
-                          Where it lands
-                        </h2>
-                        <p className={tt.subtitle}>Your affected imports by country of origin, and the change per shipment</p>
-                      </div>
-                      <OriginBars
-                        rows={origins}
-                        onPick={(c) => {
-                          setCountry(c);
-                          showImports();
-                        }}
-                      />
-                      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-base-content/70">
-                        {GROUP_ORDER.filter((g) => origins.some((o) => o.counts[g])).map((g) => (
-                          <li key={g} className="inline-flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full" style={{ background: GROUPS[g].mark }} aria-hidden />
-                            {GROUPS[g].label}
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-                </div>
+                </>
               )}
             </>
           )}
-        </>
-      )}
+        </div>
+      </div>
     </>
   );
 };

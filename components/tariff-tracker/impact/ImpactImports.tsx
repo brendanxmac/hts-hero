@@ -22,7 +22,7 @@ import { day, groupOf, money, reasonText, type ImpactGroup } from "./format";
 
 export type Show = "affected" | "confirmed" | "likely" | "possible";
 
-const GRID = "grid grid-cols-[minmax(0,1.5fr)_8rem_minmax(0,1.6fr)_7rem_8rem_1.25rem] items-center gap-5";
+const GRID = "grid grid-cols-[minmax(0,1.25fr)_minmax(0,1.35fr)_6.5rem_7rem_1.25rem] items-center gap-5";
 
 interface Line {
   code: string;
@@ -130,12 +130,13 @@ const Row = ({ r, colors, maxPct, effective, today, perYear }: { r: RowData; col
     <li className="border-t border-base-300 first:border-t-0">
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={`${GRID} w-full px-6 py-4 text-left transition-colors hover:bg-tt-soft`}>
         <span className="flex min-w-0 flex-col gap-0.5">
-          <span className="text-sm font-semibold tabular-nums text-base-content">{product.entry.element.htsno}</span>
+          <span className="flex min-w-0 items-baseline gap-2 text-sm">
+            <span className="font-semibold tabular-nums text-base-content">{product.entry.element.htsno}</span>
+            <span className="truncate text-base-content/70">
+              <span aria-hidden>{product.entry.country.flag}</span> {product.entry.country.name}
+            </span>
+          </span>
           <span className="line-clamp-2 text-xs text-base-content/60">{product.description}</span>
-        </span>
-        <span className="flex min-w-0 items-center gap-2 text-sm text-base-content">
-          <span aria-hidden>{product.entry.country.flag}</span>
-          <span className="truncate">{product.entry.country.name}</span>
         </span>
         <Tariffs parts={r.parts} ended={r.ended} added={r.added} colors={colors} fill={maxPct > 0 ? Math.max(r.pct / maxPct, r.pct > 0 ? 0.02 : 0) : 0} />
         <span className="flex flex-col items-end gap-0.5">
@@ -270,7 +271,7 @@ export const ImpactImports = ({
   return (
     <section className={`${tt.panel} overflow-hidden`} aria-label="Your imports it affects" id="tt-impact-imports-list">
       <div className="flex flex-wrap items-center gap-3 px-6 py-4">
-        <label className="relative w-72">
+        <label className="relative min-w-[13rem] flex-1">
           <span className="sr-only">Search these imports</span>
           <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" aria-hidden />
           <input
@@ -298,13 +299,10 @@ export const ImpactImports = ({
             From {countryName ?? country} ✕
           </button>
         )}
-        <span className="ml-auto text-sm tabular-nums text-base-content/60">
-          {rows.length} import{rows.length === 1 ? "" : "s"}
-        </span>
       </div>
       <div className={`${GRID} border-y border-base-300 px-6 py-2.5`}>
-        {["Product", "Origin", "Tariffs after", "Duty rate", "Change", ""].map((h, i) => (
-          <span key={i} className={`${tt.eyebrow()} ${i >= 3 ? "text-right" : ""}`}>
+        {["Product and origin", "Tariffs after", "Duty rate", "Change", ""].map((h, i) => (
+          <span key={i} className={`${tt.eyebrow()} ${i >= 2 ? "text-right" : ""}`}>
             {h}
           </span>
         ))}

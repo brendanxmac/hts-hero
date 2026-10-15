@@ -4,7 +4,8 @@ import { siteLink } from "../kit/brand"
 
 // The "no imports yet" onboarding emails. Both lead to one thing, adding imports, and land on the
 // Tracker's Add products dialog (?tab=catalog&add=paste):
-//   step 1 (day 1)  welcome: the problem (tariffs keep changing), then add your imports
+//   step 1 (day 1)  excitement: everything the Tracker does for them, then add your imports (only
+//                   sent while they have none)
 //   step 2 (day 4)  the Tracker is still empty: what an alert on your imports looks like
 
 export interface OnboardingEmailProps {
@@ -18,11 +19,11 @@ export interface OnboardingEmailProps {
 const actions = (n: number) => (n > 0 ? `${n} US tariff changes in the last 30 days` : "US tariffs change every week")
 
 export const onboardingSubject = (p: OnboardingEmailProps) =>
-  p.step === 1 ? "Welcome to Tariff Tracker" : "Which new tariffs hit your imports?"
+  p.step === 1 ? "You just made tariffs easy" : "Which new tariffs hit your imports?"
 
 const preview = (p: OnboardingEmailProps) =>
   p.step === 1
-    ? `${actions(p.actionsThisMonth)}. Add your imports and we'll watch every one for you.`
+    ? "No more tracking rates by hand. Here's everything your Tariff Tracker does for you."
     : `${actions(p.actionsThisMonth)}. Your Tracker can tell you which ones hit you, once your imports are in.`
 
 const CAMPAIGN = (step: number) => `onboarding-${step}`
@@ -30,27 +31,24 @@ const CAMPAIGN = (step: number) => `onboarding-${step}`
 // Opens the Add products dialog on the paste step (ProductCatalog's ?add=)
 export const ADD_IMPORTS_URL = "/tariff-tracker?tab=catalog&add=paste"
 
-const WHAT_YOU_GET = [
-  "Track the duty rate on every import",
-  "Get alerted when a new tariff hits one",
-  "Find savings you may qualify for",
-  "Audit past entries for overpaid duty",
-]
-
 export default function OnboardingEmail(props: OnboardingEmailProps) {
   const { step, actionsThisMonth, footer } = props
   const campaign = CAMPAIGN(step)
   if (step === 1) {
     return (
       <EmailLayout preview={preview(props)} footer={footer}>
-        <Eyebrow>Welcome</Eyebrow>
-        <Title>Welcome to Tariff Tracker!</Title>
-        <P>
-          {actionsThisMonth > 0 ? `There were ${actionsThisMonth} US tariff changes in the last 30 days.` : "US tariffs change every week."} Any one of them
-          can raise the duty on what you import, and most importers find out when the bill arrives.
-        </P>
-        <P>Add your imports once (just HTS codes and countries) and your Tracker watches them for you:</P>
-        <Checklist items={WHAT_YOU_GET} />
+        <Eyebrow>Your Tariff Tracker</Eyebrow>
+        <Title>You just made tariffs easy</Title>
+        <P>No more digging through the HTS, Federal Register notices and CBP messages. Your Tariff Tracker does it for you:</P>
+        <Checklist
+          items={[
+            <><strong>Every rate, always current.</strong> The full duty on each import, line by line, updated the moment anything changes.</>,
+            <><strong>Alerts before it costs you.</strong> When a new tariff hits one of your imports, you hear about it first, by email, Slack or Teams.</>,
+            <><strong>Savings you may qualify for.</strong> Trade programs, exclusions and lower-duty countries, checked for every import.</>,
+            <><strong>Duty you may have overpaid.</strong> Audit past entries against the rates in force on the day.</>,
+          ]}
+        />
+        <P>It all starts with your imports. Paste your HTS codes and countries, and you&apos;re set in about a minute.</P>
         <Cta href={siteLink(ADD_IMPORTS_URL, campaign)} variant="next">
           Add my imports
         </Cta>
