@@ -169,9 +169,13 @@ export const unsubscribe = async (db: Db, token: string) => {
   return s
 }
 
-// A new account's row: confirmed (they signed up with the address), weekly digest on. An address
-// that already subscribed keeps its choices and is linked to the account.
-export const ensureAccountSubscriber = async (db: Db, { userId, email }: { userId: string; email: string }) => {
+// An account's row: confirmed (they signed up with the address), on the weekly digest unless told
+// otherwise (accounts from before subscriptions start with news off and are offered an opt-in).
+// An address that already subscribed keeps its choices and is linked to the account.
+export const ensureAccountSubscriber = async (
+  db: Db,
+  { userId, email, newsFrequency = "weekly" }: { userId: string; email: string; newsFrequency?: NewsFrequency }
+) => {
   const existing = await byEmail(db, email)
   if (existing) {
     await db
@@ -180,7 +184,13 @@ export const ensureAccountSubscriber = async (db: Db, { userId, email }: { userI
       .eq("id", existing.id)
     return
   }
-  await db.from("email_subscribers").insert({ email: email.trim().toLowerCase(), user_id: userId, confirmed_at: new Date().toISOString(), source: "account" })
+  await db.from("email_subscribers").insert({
+    email: email.trim().toLowerCase(),
+    user_id: userId,
+    confirmed_at: new Date().toISOString(),
+    news_frequency: newsFrequency,
+    source: "account",
+  })
 }
 
 // The signed-in user's row, made on first use (accounts from before subscriptions existed)

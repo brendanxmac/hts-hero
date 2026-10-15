@@ -1,26 +1,28 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { CENSUS_NOTICE } from "../../../duty-calculator/lib/census";
 import { useInsights } from "../../insights/InsightsContext";
 import { useOpportunities } from "../../opportunities/OpportunitiesContext";
-import { Measure } from "../../opportunities/measure";
+import { Measure, MEASURES } from "../../opportunities/measure";
+import { REVIEW_LABELS } from "../../opportunities/review";
 import { optionId, productOptions } from "../../opportunities/options";
 import { RuleOutAll } from "../../opportunities/RuleOutAll";
-import { tallyOpportunities } from "../../opportunities/tallies";
 import { TrackedProduct } from "../../report";
 import { useTracker } from "../../TrackerContext";
 import { FreeChecksNotice } from "../../access/FreeChecksNotice";
 import { LockedSavings } from "./LockedSavings";
-import { OptionDetail } from "./OptionDetail";
 import { ListItem, OptionList } from "./OptionList";
-import { SavingsSummary } from "./SavingsSummary";
+import { OptionReview } from "./OptionReview";
+import { ShipmentsPerYearField } from "./ShipmentsPerYearField";
 
 // A product's Savings tab: once its savings are unlocked (a savings check, or a plan: PRICING.md),
-// a guided look at every way to pay less on it. A summary, the options on one side and the open
-// one on the other: side by side with today, what it takes, and its progress. Amounts show as
-// percentages of the value first, or in dollars. Under the quick wins, and under sourcing it
+// every way to pay less on it: the options down one side (under the %/$ switch), and the open one
+// beside them, to review against today and accept or reject, then secure (OptionReview). Amounts
+// show as percentages of the value first, or in dollars. Under the quick wins, and under sourcing it
 // elsewhere, the way to rule that group out. Origins come from Census first (the catalog's
 // figures, loaded with the insights). Securing one applies it to the catalog and keeps the record
 // (opportunities/).
@@ -45,18 +47,25 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
     const past = mine.filter((o) => !ids.has(optionId(o.kind, o.optionRef))).map((o) => ({ id: optionId(o.kind, o.optionRef), opportunity: o }));
     return [...live, ...past];
   }, [options, mine]);
-  const tally = useMemo(() => tallyOpportunities(mine, () => shipmentsPerYear), [mine, shipmentsPerYear]);
-  const best = options.find((o) => o.counted);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   useEffect(() => {
     if (!selectedId && items.length) setSelectedId(items[0].id);
   }, [items, selectedId]);
   const selected = items.find((i) => i.id === selectedId);
+  // Still to review: an option nobody has accepted or rejected yet
+  const undecided = (i: ListItem) => !!i.option && (!i.opportunity || i.opportunity.status === "found");
+  // After a rejection, on to the next option still to review (the list wraps round)
+  const next = () => {
+    const at = items.findIndex((i) => i.id === selectedId);
+    const after = [...items.slice(at + 1), ...items.slice(0, at)].find(undecided);
+    if (after) setSelectedId(after.id);
+  };
+  const review = insights.review.get(product.key) ?? "to_review";
+  const toReview = items.filter(undecided).length;
 
   return (
     <div className="flex flex-col gap-4">
-      <SavingsSummary review={insights.review.get(product.key) ?? "to_review"} product={product} best={best} options={options} shipmentsPerYear={shipmentsPerYear} tally={tally} measure={measure} onMeasure={setMeasure} />
       {imports === undefined ? (
         <div className={`${ui.skeleton} h-72 w-full`} aria-busy="true" />
       ) : items.length === 0 ? (
@@ -69,6 +78,23 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
       ) : (
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,23rem)_minmax(0,1fr)]">
           <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className={`${tt.title} m-0`}>Ways to save</h2>
+                <SegmentedControl<Measure> label="Show amounts as" options={MEASURES} value={measure} onChange={setMeasure} size="sm" />
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="flex items-center gap-2 text-xs text-base-content/60">
+                  <span className={tt.chip(REVIEW_LABELS[review].tone)}>{REVIEW_LABELS[review].label}</span>
+                  {toReview > 0 ? `${toReview} to review` : "All reviewed"}
+                </span>
+                {measure === "usd" && (
+                  <span className="flex items-center gap-2 text-xs text-base-content/60">
+                    Shipments a year <ShipmentsPerYearField productKey={product.key} />
+                  </span>
+                )}
+              </div>
+            </div>
             <OptionList
               items={items}
               selectedId={selectedId}
@@ -82,13 +108,15 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
             />
           </div>
           {selected && (
-            <OptionDetail
+            <OptionReview
               key={selected.id}
               product={product}
               option={selected.option}
               opportunity={selected.opportunity}
+              imports={imports}
               shipmentsPerYear={shipmentsPerYear}
               measure={measure}
+              onRejected={next}
             />
           )}
         </div>

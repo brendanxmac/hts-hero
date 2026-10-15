@@ -19,6 +19,7 @@ export function ManageSubscription({
   justConfirmed,
   initial,
   unsubscribed,
+  lifecycle: initialLifecycle,
 }: {
   token: string
   email: string
@@ -26,11 +27,14 @@ export function ManageSubscription({
   justConfirmed: boolean
   initial: NewsPreferencesValue
   unsubscribed: boolean
+  lifecycle: boolean
 }) {
   const [prefs, setPrefs] = useState(initial)
   const [saved, setSaved] = useState(initial)
   const [saving, setSaving] = useState(false)
-  const changed = JSON.stringify(prefs) !== JSON.stringify(saved)
+  const [lifecycle, setLifecycle] = useState(initialLifecycle)
+  const [savedLifecycle, setSavedLifecycle] = useState(initialLifecycle)
+  const changed = JSON.stringify(prefs) !== JSON.stringify(saved) || lifecycle !== savedLifecycle
 
   const save = async (next = prefs) => {
     setSaving(true)
@@ -38,12 +42,13 @@ export function ManageSubscription({
       const response = await fetch("/api/email/preferences", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, ...next }),
+        body: JSON.stringify({ token, ...next, ...(hasAccount ? { lifecycle } : {}) }),
       })
       const body = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(body.error ?? "Couldn't save")
       setSaved(next)
       setPrefs(next)
+      setSavedLifecycle(lifecycle)
       toast.success(next.frequency === "off" ? "Tariff news is off" : "Saved")
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Couldn't save")
@@ -76,6 +81,15 @@ export function ManageSubscription({
           <p className="text-sm text-base-content/70">For {email}</p>
         </div>
         <NewsPreferencesFields value={prefs} onChange={setPrefs} allowOff />
+        {hasAccount && (
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-base-300 px-4 py-3">
+            <input type="checkbox" className="checkbox checkbox-primary checkbox-sm mt-0.5" checked={lifecycle} onChange={(e) => setLifecycle(e.target.checked)} />
+            <span className="flex flex-col gap-0.5">
+              <span className="text-sm font-semibold text-base-content">Tips for getting the most from your account</span>
+              <span className="text-xs text-base-content/60">A few emails while you set up your Tariff Tracker, and the occasional note on what&apos;s new.</span>
+            </span>
+          </label>
+        )}
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" className={ui.button({ variant: "primary" })} disabled={!changed || saving} onClick={() => save()}>
             {saving ? "Saving…" : "Save"}

@@ -234,16 +234,23 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
     [logEvent]
   );
 
+  // ZZ-TEMP local shim
+  /* eslint-disable */
+  const zz = typeof window !== "undefined" && !!localStorage.getItem("zz-unlock");
+  const zzEvent = (id: string, from: any, to: any, note: any, applied?: any) => setEvents((p: any) => [...p, { id: crypto.randomUUID(), opportunityId: id, fromStatus: from, toStatus: to, note, applied: applied ?? null, createdAt: new Date().toISOString() }]);
+  const zzTrack = async (productKey: string, option: any, status: any, rateBefore: number, note: any = null) => { const now = new Date().toISOString(); const o: any = { id: crypto.randomUUID(), productKey, kind: option.kind, optionRef: option.ref, title: option.title, status, rateBefore, rateAfter: option.ratePct, usdPerShipment: option.usd, note, securedAt: null, createdAt: now, updatedAt: now }; setOpportunities((p: any) => [...p, o]); zzEvent(o.id, null, status, note); return o; };
+  const zzSet = async (opp: any, status: any, note: any, applied?: any) => { const now = new Date().toISOString(); setOpportunities((p: any) => p.map((o: any) => (o.id === opp.id ? { ...o, status, note, updatedAt: now, securedAt: status === "secured" ? now : null } : o))); zzEvent(opp.id, opp.status, status, note, applied); return true; };
+  /* eslint-enable */
   const value = useMemo<OpportunitiesValue>(
     () => ({
       loading,
       opportunities,
       eventsFor: (id) => events.filter((e) => e.opportunityId === id),
       find: (productKey, optionId) => opportunities.find((o) => o.productKey === productKey && `${o.kind}:${o.optionRef}` === optionId),
-      track,
-      setStatus,
+      track: zz ? zzTrack : track,
+      setStatus: zz ? zzSet : setStatus,
     }),
-    [loading, opportunities, events, track, setStatus]
+    [loading, opportunities, events, track, setStatus, zz]
   );
 
   return <OpportunitiesContext.Provider value={value}>{children}</OpportunitiesContext.Provider>;

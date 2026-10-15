@@ -6,7 +6,7 @@ import { Country } from "@/constants/countries";
 import * as ui from "@/components/ui/styles";
 import { TrackedProduct } from "@/components/tariff-tracker/report";
 import { rateOf } from "@/components/tariff-tracker/product/analysis/analysis";
-import { CountryCard, linesOf, supplyOf } from "./CountryCard";
+import { CountryCard, linesOf, optionSub, supplyOf } from "./CountryCard";
 import { CountryPicker, PickOption } from "./CountryPicker";
 import { CompareOption, optionResult } from "./options";
 import { Origins } from "./useOrigins";
@@ -119,7 +119,8 @@ export const SideBySide = ({
         {ordered.map((r, i) => (
           <div key={r.option.origin.country.code} className="p-5 sm:px-6">
             <CountryCard
-              option={r.option}
+              country={r.option.origin.country}
+              sub={optionSub(r.option)}
               result={r.result}
               value={value}
               colors={origins.colors}

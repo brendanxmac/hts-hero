@@ -45,6 +45,7 @@ export default async function SubscriptionPage({ searchParams }: { searchParams:
               countries: s.news_countries,
             }}
             unsubscribed={!!s.unsubscribed_at}
+            lifecycle={s.lifecycle}
           />
         ) : (
           <section className={`${tt.panel} flex flex-col gap-4 p-7`}>

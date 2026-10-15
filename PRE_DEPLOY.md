@@ -40,6 +40,12 @@ add new ones as they come up.
 - [ ] **Apply the migration** `supabase/migrations/email_outbox.sql` (email_batches, email_messages).
 - [ ] **Apply the migration** `supabase/migrations/email_subscribers.sql` (tariff news subscriptions
       and every reader's email choices).
+- [ ] **Apply the migration** `supabase/migrations/lifecycle_emails.sql` (which onboarding email
+      each account has been queued).
+- [ ] **Supabase redirect URLs allow `/api/auth/callback`** with any `?redirect=` (Authentication →
+      URL Configuration), in both projects: sign-in links now come back through it.
+- [ ] **Queue "Meet the Tariff Tracker"** for existing accounts after the release is live:
+      `npm run email:meet-tracker` against production, then review and approve it in /email-outbox.
 - [ ] **Paste the Supabase Auth email templates** from `supabase/email-templates/` (subjects in
       `SUBJECTS.txt`; regenerate with `npm run email:auth`) into Authentication → Email Templates,
       in both projects.

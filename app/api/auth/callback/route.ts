@@ -17,11 +17,10 @@ export async function GET(req: NextRequest) {
 
   // URL to redirect to after sign in process completes
   // Use the redirectTo parameter if provided, otherwise fallback to default callback URL
-  const finalRedirectUrl = redirectTo
-    ? requestUrl.origin + decodeURIComponent(redirectTo)
-    : requestUrl.origin + config.auth.callbackUrl;
-
-  console.log("Final redirect URL", finalRedirectUrl);
+  // Only paths on this site ("/tariff-tracker"), never another host ("//evil.com")
+  const path = redirectTo ? decodeURIComponent(redirectTo) : "";
+  const safe = path.startsWith("/") && !path.startsWith("//") && !path.startsWith("/\\") ? path : config.auth.callbackUrl;
+  const finalRedirectUrl = requestUrl.origin + safe;
 
   return NextResponse.redirect(finalRedirectUrl);
 }

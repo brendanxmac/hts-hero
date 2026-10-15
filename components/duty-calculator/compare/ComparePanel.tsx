@@ -15,7 +15,7 @@ import { useTimeline } from "@/components/tariff-tracker/product/analysis/useTim
 import { TrackedProduct } from "@/components/tariff-tracker/report";
 import { todayIso } from "../lib/format";
 import { InsightsTab } from "./InsightsTab";
-import { CountryCard, supplyOf } from "./CountryCard";
+import { CountryCard, optionSub, supplyOf } from "./CountryCard";
 import { optionResult, optionsFor, ProgramMode } from "./options";
 import { OriginsList } from "./OriginsList";
 import { RatesShown, SideBySide } from "./SideBySide";
@@ -131,7 +131,8 @@ export const ComparePanel = ({
     const value = product.customsValue > 0 ? product.customsValue : 1;
     return (
       <CountryCard
-        option={option}
+        country={option.origin.country}
+        sub={optionSub(option)}
         result={result}
         value={value}
         colors={origins.colors}

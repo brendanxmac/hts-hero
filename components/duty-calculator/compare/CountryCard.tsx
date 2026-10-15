@@ -1,5 +1,6 @@
 "use client";
 
+import { ReactNode } from "react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { Country } from "@/constants/countries";
 import { StackedBar } from "@/components/ui/charts/StackedBar";
@@ -22,7 +23,8 @@ import { CompareOption, shortAgreement } from "./options";
 // column with their tariff rows lined up (`lines`: every tariff in any column, so the same tariff
 // sits on the same row, "—" where it doesn't apply); the Globe shows one beside the map. Rows are
 // tariff programs (Base duty, Section 301 – Forced Labor), so the same program lines up whichever
-// country's heading it is.
+// country's heading it is. Savings puts today's and a cheaper origin's side by side: given a
+// `baseline` (today's result), every row says what changes against it (less, more, gone, new).
 
 // How much of this the US already imports from a country (Census): the yearly value, its rank
 // among the suppliers and its share of all US imports of it
@@ -53,6 +55,10 @@ export interface LineKey {
   part: string;
 }
 
+// Under a country's name: "Yours", the agreement it claims, or its standard rate
+export const optionSub = (option: CompareOption) =>
+  [option.origin.isOrigin && "Yours", option.agreement && `With ${shortAgreement(option.agreement.name)}`].filter(Boolean).join(" · ") || "Standard rate";
+
 const applied = (result: CalculationResult) => result.lines.filter((l) => l.status === "applies" && l.amount > 0);
 
 // Every tariff program that applies to a result, base duty first: one row per program (Section 301
@@ -70,15 +76,36 @@ export const linesOf = (result: CalculationResult): LineKey[] => [
 ];
 
 // A program's amount and rate on a result: its lines added up
-const amountOf = (result: CalculationResult, key: string): Pick<DutyLine, "amount" | "ratePct"> | null => {
+export const amountOf = (result: CalculationResult, key: string): Pick<DutyLine, "amount" | "ratePct"> | null => {
   if (key === BASE_PART) return result.base;
   const lines = applied(result).filter((l) => programName(l.program) === key);
   if (!lines.length) return null;
   return { amount: lines.reduce((sum, l) => sum + l.amount, 0), ratePct: lines.every((l) => l.ratePct !== undefined) ? lines.reduce((sum, l) => sum + (l.ratePct ?? 0), 0) : undefined };
 };
 
+// What one row changed against the baseline, as a small pill: less (green), more (red), gone or new
+const Change = ({ line, before, value, byPct }: { line: Pick<DutyLine, "amount"> | null; before: Pick<DutyLine, "amount"> | null; value: number; byPct: boolean }) => {
+  const now = line?.amount ?? 0;
+  const was = before?.amount ?? 0;
+  const delta = now - was;
+  if (Math.abs(delta) < 0.005) return null;
+  const amount = byPct ? formatRate(Math.abs((delta / value) * 100)) : money(Math.abs(delta));
+  const label = !line ? "Removed" : !before ? `New +${amount}` : `${delta < 0 ? "−" : "+"}${amount}`;
+  return (
+    <span
+      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums ${delta < 0 ? "bg-success/10 text-success" : "bg-error/10 text-error"}`}
+      title={!line ? `Was ${byPct ? formatRate((was / value) * 100) : money(was)}` : undefined}
+    >
+      {label}
+    </span>
+  );
+};
+
 export const CountryCard = ({
-  option,
+  country,
+  sub,
+  eyebrow,
+  baseline,
   result,
   value,
   colors,
@@ -96,7 +123,13 @@ export const CountryCard = ({
   onOpen,
   onClose,
 }: {
-  option: CompareOption;
+  country: Country;
+  // Under its name: "Yours", the agreement it claims (optionSub), or what it is in Savings
+  sub: string;
+  // Over its name, e.g. "Today" or "Option"
+  eyebrow?: ReactNode;
+  // What each row is compared against (Savings: today's result), so the changes show
+  baseline?: CalculationResult;
   result: CalculationResult;
   // The shipment's customs value
   value: number;
@@ -126,20 +159,19 @@ export const CountryCard = ({
   // Hide the card (the Globe's)
   onClose?: () => void;
 }) => {
-  const { origin } = option;
   const pct = (result.totalDuty / value) * 100;
   const byPct = show === "pct";
   // The difference from yours in the lead unit: rate (of the value) or dollars
   const diffLead = diff === undefined ? undefined : byPct ? formatRate(Math.abs((diff / value) * 100)) : money(Math.abs(diff));
   const parts = rateParts(result, value);
   const rows = lines ?? linesOf(result);
-  const sub = [origin.isOrigin && "Yours", option.agreement && `With ${shortAgreement(option.agreement.name)}`].filter(Boolean).join(" · ") || "Standard rate";
 
   return (
-    <article className="flex min-w-0 flex-col gap-4" aria-label={`${origin.country.name}: ${money(result.totalDuty)} duty`}>
+    <article className="flex min-w-0 flex-col gap-4" aria-label={`${country.name}: ${money(result.totalDuty)} duty`}>
       {/* Who */}
       <header className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
+          {eyebrow}
           <h4 className="m-0">
             {onChange && pickOptions ? (
               // Its name opens the country picker, to swap it for another
@@ -147,21 +179,21 @@ export const CountryCard = ({
                 options={pickOptions}
                 onPick={onChange}
                 align={pickAlign}
-                label={`Pick another country instead of ${origin.country.name}`}
+                label={`Pick another country instead of ${country.name}`}
                 buttonClassName="group -mx-1.5 flex max-w-full items-center gap-2 rounded-lg px-1.5 py-0.5 text-left text-base font-semibold text-base-content transition-colors hover:bg-tt-soft ui-open:bg-tt-soft"
               >
                 <span className="text-xl leading-none" aria-hidden>
-                  {origin.country.flag}
+                  {country.flag}
                 </span>
-                <span className="truncate">{origin.country.name}</span>
+                <span className="truncate">{country.name}</span>
                 <ChevronDownIcon className="h-4 w-4 shrink-0 text-base-content/40 group-hover:text-base-content/70" aria-hidden />
               </CountryPicker>
             ) : (
               <span className="flex items-center gap-2 text-base font-semibold text-base-content">
                 <span className="text-xl leading-none" aria-hidden>
-                  {origin.country.flag}
+                  {country.flag}
                 </span>
-                <span className="truncate">{origin.country.name}</span>
+                <span className="truncate">{country.name}</span>
               </span>
             )}
           </h4>
@@ -173,7 +205,7 @@ export const CountryCard = ({
           <button
             type="button"
             className="rounded p-1 text-base-content/40 hover:bg-base-200 hover:text-base-content"
-            aria-label={onClose ? "Hide" : `Remove ${origin.country.name} from the comparison`}
+            aria-label={onClose ? "Hide" : `Remove ${country.name} from the comparison`}
             title={onClose ? "Hide" : "Remove"}
             onClick={onClose ?? onRemove}
           >
@@ -208,6 +240,7 @@ export const CountryCard = ({
       <dl className="m-0 flex flex-col text-sm">
         {rows.map((row) => {
           const line = amountOf(result, row.key);
+          const before = baseline ? amountOf(baseline, row.key) : null;
           return (
             <div key={row.key} className="flex h-12 items-center justify-between gap-3 border-t border-base-300">
               <dt className={`flex min-w-0 items-center gap-2 ${line ? "text-base-content" : "text-base-content/60"}`}>
@@ -219,7 +252,9 @@ export const CountryCard = ({
                   {row.code && <span className={`${mono.className} text-[11px] text-base-content/60`}>{row.code}</span>}
                 </span>
               </dt>
-              <dd className="m-0 flex shrink-0 flex-col items-end leading-tight">
+              <dd className="m-0 flex shrink-0 items-center gap-2">
+                {baseline && <Change line={line} before={before} value={value} byPct={byPct} />}
+                <span className="flex flex-col items-end leading-tight">
                 {line ? (
                   <>
                     <span className="font-medium tabular-nums text-base-content">{byPct ? formatRate(line.ratePct ?? (line.amount / value) * 100) : money(line.amount)}</span>
@@ -228,6 +263,7 @@ export const CountryCard = ({
                 ) : (
                   <span className="text-base-content/30">—</span>
                 )}
+                </span>
               </dd>
             </div>
           );
@@ -235,9 +271,12 @@ export const CountryCard = ({
         <div className="flex h-12 items-center justify-between gap-3 border-t border-base-300 font-semibold text-base-content">
           <dt>Total duty</dt>
           {/* Like the tariff rows: the lead figure on top, the other under it */}
-          <dd className="m-0 flex flex-col items-end leading-tight">
-            <span className="tabular-nums">{byPct ? formatRate(pct) : money(result.totalDuty)}</span>
-            <span className="text-[11px] font-normal tabular-nums text-base-content/60">{byPct ? money(result.totalDuty) : formatRate(pct)}</span>
+          <dd className="m-0 flex items-center gap-2">
+            {baseline && <Change line={{ amount: result.totalDuty }} before={{ amount: baseline.totalDuty }} value={value} byPct={byPct} />}
+            <span className="flex flex-col items-end leading-tight">
+              <span className="tabular-nums">{byPct ? formatRate(pct) : money(result.totalDuty)}</span>
+              <span className="text-[11px] font-normal tabular-nums text-base-content/60">{byPct ? money(result.totalDuty) : formatRate(pct)}</span>
+            </span>
           </dd>
         </div>
         <div className="flex h-9 items-center justify-between gap-3 border-t border-base-300 text-base-content/70">
@@ -254,7 +293,7 @@ export const CountryCard = ({
       {supply && (
         // How much of this the US already buys from there: the value, its rank among the
         // suppliers and a bar of its share (the biggest share shown fills it)
-        <section className="mt-2 flex h-[6.5rem] flex-col justify-center gap-1.5 rounded-xl bg-tt-soft px-3.5" title={`US imports of this from ${origin.country.name} in ${supply.year} (U.S. Census Bureau)`}>
+        <section className="mt-2 flex h-[6.5rem] flex-col justify-center gap-1.5 rounded-xl bg-tt-soft px-3.5" title={`US imports of this from ${country.name} in ${supply.year} (U.S. Census Bureau)`}>
           <h5 className="m-0 flex items-center justify-between gap-2">
             <span className={ui.label}>US Import Volume</span>
             {supply.value > 0 && (
