@@ -66,7 +66,7 @@ interface ItemForDocuments {
 export const documentUrls = async (items: ItemForDocuments[]) => {
   const urls: { url: string; title: string }[] = []
   for (const item of items.filter((i) => i.source === "white_house")) {
-    const html = await fetchText(item.url).catch(() => null)
+    const html = await fetchText(item.url).catch((): null => null)
     for (const [, href] of Array.from((html ?? "").matchAll(/href="([^"]+\.pdf)"/gi))) {
       const url = new URL(href, item.url).toString()
       if (url.includes("/wp-content/uploads/")) urls.push({ url, title: decodeURIComponent(url.split("/").pop() ?? "Annex") })

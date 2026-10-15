@@ -35,7 +35,7 @@ const COLUMNS =
 
 const VIEWS = {
   recent: { days: 45, limit: 12 },
-  all: { days: null, limit: 500 },
+  all: { days: null as number | null, limit: 500 },
 } as const;
 
 type View = keyof typeof VIEWS;

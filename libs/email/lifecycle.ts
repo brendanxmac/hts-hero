@@ -6,7 +6,7 @@ import { appUrl, ensureAccountSubscriber, SUBSCRIBER_COLUMNS, subscriberFooter, 
 import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./tariff-news"
 
 // Onboarding (lifecycle) emails. Once a day the job works out, per account, the one email its
-// stage calls for and queues them all as one outbox batch for review. Each email goes to an
+// stage calls for and queues them all as one outbox batch, sent without review. Each email goes to an
 // account at most once (lifecycle_emails), at most one every two days, and never to an account
 // that turned these emails off or unsubscribed.
 //
@@ -172,7 +172,7 @@ export const queueDailyOnboarding = async (db: Db, now = new Date(), { onlyUserI
   const snapshots = new Map(((snapshotRows ?? []) as SnapshotRow[]).map((s) => [s.user_id, s]))
   const known = new Set((recentRows ?? []).map((a) => a.id))
   const missing = Array.from(snapshots.keys()).filter((id) => !known.has(id))
-  const { data: moreRows } = missing.length ? await db.from("users").select("id, email, created_at").in("id", missing) : { data: [] }
+  const { data: moreRows }: { data: Account[] | null } = missing.length ? await db.from("users").select("id, email, created_at").in("id", missing) : { data: [] }
   const accounts = ([...(recentRows ?? []), ...(moreRows ?? [])] as Account[]).filter((a) => a.email)
   if (!accounts.length) return { queued: 0 }
 
@@ -220,6 +220,7 @@ export const queueDailyOnboarding = async (db: Db, now = new Date(), { onlyUserI
     title: `Onboarding · ${today} · ${picks.length} email${picks.length === 1 ? "" : "s"}`,
     ref: { date: today },
     dedupeKey: `lifecycle:${today}`,
+    autoSend: true,
     messages: picks.map((p) => p.message),
   })
   if (!batchId) return { queued: 0 }
@@ -251,6 +252,7 @@ export const queueMeetTracker = async (db: Db, { limit = 2000, onlyUserIds }: { 
     title: `Meet the Tariff Tracker · ${picks.length} existing account${picks.length === 1 ? "" : "s"}`,
     ref: { email_key: "meet_tracker" },
     dedupeKey: `meet_tracker:${new Date().toISOString().slice(0, 10)}`,
+    autoSend: true,
     messages: picks.map(({ account, s }) => ({
       channel: "email" as const,
       recipient: account.email,

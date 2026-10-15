@@ -117,7 +117,7 @@ const EmailCard = () => {
     fetch("/api/tracker/news")
       .then((r) => (r.ok ? r.json() : null))
       .then((p) => p && setFrequency(p.frequency))
-      .catch(() => null);
+      .catch((): null => null);
   }, [signedIn]);
   const now = frequency === "instant" ? "Each action as it happens" : frequency === "weekly" ? "A weekly digest, Mondays" : frequency === "off" ? "Off" : null;
   return (
@@ -207,7 +207,7 @@ export const TariffNews = () => {
               { id: "mine", label: "Your countries", count: myCountries.size ? mineCount : undefined, title: "Actions that apply to the countries you import from" },
             ]}
             value={scope}
-            onChange={setScope}
+            onChange={(v) => setScope(v as Scope)}
           />
           <Select<Authority | "">
             label="Filter by law"

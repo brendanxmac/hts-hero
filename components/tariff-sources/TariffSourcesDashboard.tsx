@@ -133,7 +133,7 @@ export default function TariffSourcesDashboard({
           { value: "items", label: "Source items", count: items.length },
         ]}
         value={tab}
-        onChange={setTab}
+        onChange={(v) => setTab(v as Tab)}
       />
 
       {tab === "updates" ? <UpdatesTable updates={updates} items={items} /> : <ItemsTable items={items} />}

@@ -12,7 +12,7 @@ export async function GET() {
   const { data: batches, error } = await db.from("email_batches").select("*").order("created_at", { ascending: false }).limit(200)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   const ids = (batches ?? []).map((b) => b.id)
-  const { data: messages } = ids.length
+  const { data: messages }: { data: { batch_id: string; channel: string; status: string }[] | null } = ids.length
     ? await db.from("email_messages").select("batch_id, channel, status").in("batch_id", ids)
     : { data: [] }
   const counts = new Map<string, Record<string, number>>()

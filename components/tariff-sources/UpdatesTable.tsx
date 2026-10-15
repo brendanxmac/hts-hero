@@ -140,7 +140,7 @@ export default function UpdatesTable({ updates, items }: { updates: UpdateRow[];
                     { value: "all", label: "All" },
                   ]}
                   value={scope}
-                  onChange={setScope}
+                  onChange={(v) => setScope(v as Scope)}
                   size="xs"
                 />
               }

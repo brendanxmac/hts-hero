@@ -8,6 +8,7 @@ import { AUTHORITIES, KINDS, STAGES } from "@/libs/tariff-updates/types"
 import { formatTime } from "../hts-revision-diff/shared"
 import { Callout, DefList, Field, Modal, Pill, Spinner, btn, inputCls } from "../hts-revision-diff/ui"
 import { sourceLabel } from "./ItemsTable"
+import ImpactCheck from "./ImpactCheck"
 import ScopeEditor from "./ScopeEditor"
 import { adminCall, type SourceItemRow, type UpdateRow } from "./types"
 
@@ -122,14 +123,6 @@ export default function UpdateDetail({
     }
   }
 
-  // Which of the users' imports it may affect (worked out daily)
-  const [impact, setImpact] = useState<{ levels: Record<string, number>; accounts: number; alertable: number; deltaUsd: number; computedAt: string | null } | null>(null)
-  useEffect(() => {
-    setImpact(null)
-    if (!update) return
-    adminCall<typeof impact>(`/api/tariff-updates/${update.id}`, "GET").then(setImpact).catch(() => setImpact(null))
-  }, [update])
-
   const textChanged = !!update && (title.trim() !== update.title || summary.trim() !== update.summary)
 
   return (
@@ -200,20 +193,7 @@ export default function UpdateDetail({
             ]}
           />
           <ScopeEditor update={update} />
-          <section className="rounded-lg border border-base-content/10 p-3 text-sm">
-            <h4 className="mb-1 text-xs font-semibold uppercase tracking-wider text-base-content/50">Users&apos; imports it touches</h4>
-            {!impact ? (
-              <span className="text-base-content/50">Loading…</span>
-            ) : impact.accounts === 0 ? (
-              <span className="text-base-content/60">None {impact.computedAt ? "" : "(not worked out yet: the daily job runs at 11:00 UTC)"}</span>
-            ) : (
-              <span>
-                {impact.levels.confirmed} confirmed, {impact.levels.likely} likely and {impact.levels.possible} possible imports, across {impact.accounts} account
-                {impact.accounts === 1 ? "" : "s"} ({impact.alertable} with a confirmed or likely match)
-                {impact.levels.confirmed ? `. Confirmed duty change: ${impact.deltaUsd >= 0 ? "+" : "−"}$${Math.abs(Math.round(impact.deltaUsd)).toLocaleString()} per shipment, added up` : ""}.
-              </span>
-            )}
-          </section>
+          <ImpactCheck updateId={update.id} version={`${update.scope_read_at ?? ""}${update.scope_source ?? ""}${(update.scope_codes ?? []).length}`} />
           <section>
             <h4 className="mb-1 text-xs font-semibold uppercase tracking-wider text-base-content/50">Sources ({own.length})</h4>
             <ul>

@@ -131,7 +131,7 @@ const sortPending = async (db: Db, deadline: number, costs: StepCosts, asked: St
       addCost(costs, "sort", usage)
       asked.sort += batch.length
       const answers = new Map(list.map((a) => [a.index, a]))
-      for (const [index, item] of batch.entries()) {
+      for (const [index, item] of Array.from(batch.entries())) {
         const answer = answers.get(index)
         if (!answer) continue
         must(

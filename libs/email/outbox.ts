@@ -3,8 +3,10 @@ import { CreateEmailOptions, Resend } from "resend"
 import config from "../../config"
 import { renderChat, renderEmail, slackPayload, subjectOf, teamsPayload } from "../../emails/registry"
 
-// The outbox: nothing but transactional email leaves without the admin's approval.
-// - Producers call createBatch with every message they want sent; it waits as "pending".
+// The outbox: every message's record, and the review queue for what needs one.
+// - Producers call createBatch with every message they want sent. Batches the admin reviews (the
+//   weekly digest) wait as "pending"; the rest (autoSend: instant news, onboarding, impact alerts
+//   after their impact check is approved) start approved and go with the next send.
 // - The admin reviews each rendered message in /email-outbox, then approves or skips the batch.
 // - sendApproved sends approved messages (the cron, and right after approval) and records the
 //   result on each one.
@@ -30,6 +32,8 @@ export interface NewBatch {
   ref?: Record<string, unknown>
   // A producer never makes the same batch twice: "tariff_news:<update>:<stage>"
   dedupeKey?: string
+  // Approved at once (no review): sent by the next sendApproved
+  autoSend?: boolean
   messages: OutboxMessage[]
 }
 
@@ -56,7 +60,13 @@ export const createBatch = async (db: Db, batch: NewBatch): Promise<string | nul
   const created = must<{ id: string }>(
     await db
       .from("email_batches")
-      .insert({ kind: batch.kind, title: batch.title, ref: batch.ref ?? {}, dedupe_key: batch.dedupeKey ?? null })
+      .insert({
+        kind: batch.kind,
+        title: batch.title,
+        ref: batch.ref ?? {},
+        dedupe_key: batch.dedupeKey ?? null,
+        ...(batch.autoSend ? { status: "approved", approved_at: new Date().toISOString(), approved_by: "auto" } : {}),
+      })
       .select("id")
       .single(),
     "Creating a batch"

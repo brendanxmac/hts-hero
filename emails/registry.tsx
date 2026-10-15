@@ -12,6 +12,7 @@ import OnboardingEmail, { onboardingSubject, type OnboardingEmailProps } from ".
 import FounderNoteEmail, { founderNoteSubject, type FounderNoteEmailProps } from "./onboarding/FounderNoteEmail"
 import TrackerFindingsEmail, { trackerFindingsSubject, type TrackerFindingsEmailProps } from "./onboarding/TrackerFindingsEmail"
 import MeetTrackerEmail, { meetTrackerSubject, type MeetTrackerEmailProps } from "./onboarding/MeetTrackerEmail"
+import ImpactAlertEmail, { impactAlertSubject, type ImpactAlertEmailProps } from "./tariff-updates/ImpactAlertEmail"
 import TariffDigestEmail, { tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
 import TariffNewsEmail, { tariffNewsSubject, type TariffNewsEmailProps } from "./tariff-updates/TariffNewsEmail"
 import { updateUrl } from "./kit/parts"
@@ -59,6 +60,28 @@ export const TEMPLATES = {
       linkLabel: "See every tariff update",
     }),
   }),
+  impact_alert: template<ImpactAlertEmailProps>({
+    subject: impactAlertSubject,
+    email: (p) => <ImpactAlertEmail {...p} />,
+    chat: (p) => ({
+      title: impactAlertSubject(p),
+      lines: [
+        p.update.summary,
+        ...p.imports.slice(0, 6).map((i) =>
+          i.level === "likely"
+            ? `• ${i.code} from ${i.country}: may apply`
+            : Math.abs(Number(i.deltaUsd ?? 0)) < 0.5
+              ? `• ${i.code} from ${i.country}: new Chapter 99 number, same duty`
+              : `• ${i.code} from ${i.country}: ${i.beforePct}% → ${i.afterPct}% (${Number(i.deltaUsd) > 0 ? "+" : "−"}$${Math.abs(Math.round(Number(i.deltaUsd))).toLocaleString("en-US")} per shipment)`
+        ),
+        ...(p.imports.length > 6 ? [`…and ${p.imports.length - 6} more`] : []),
+        ...(p.beyond ? [`It may also affect ${p.beyond} more of your imports outside your alerts.`] : []),
+        ...(p.removed.length ? [`No longer affected: ${p.removed.map((r) => `${r.code} from ${r.country}`).join(", ")}`] : []),
+      ],
+      url: `${SITE}/tariff-tracker?tab=news&utm_source=chat&utm_medium=chat&utm_campaign=impact-alert`,
+      linkLabel: "See it in my Tracker",
+    }),
+  }),
   welcome: template<WelcomeEmailProps>({ subject: welcomeSubject, email: (p) => <WelcomeEmail {...p} /> }),
   purchase_confirmation: template<PurchaseConfirmationEmailProps>({ subject: purchaseConfirmationSubject, email: (p) => <PurchaseConfirmationEmail {...p} /> }),
   demo_request: template<DemoRequestEmailProps>({ subject: demoRequestSubject, email: (p) => <DemoRequestEmail {...p} /> }),
@@ -82,7 +105,7 @@ const withNote = (props: Record<string, unknown>, note: string | null | undefine
 
 export const renderEmail = async (name: string, props: Record<string, unknown>, note?: string | null) => {
   if (!isTemplate(name)) throw new Error(`No email template named ${name}`)
-  const t = TEMPLATES[name] as Template<Record<string, unknown>>
+  const t = TEMPLATES[name] as unknown as Template<Record<string, unknown>>
   const p = withNote(props, note)
   const element = t.email(p)
   const [html, text] = await Promise.all([render(element), render(element, { plainText: true })])
@@ -91,12 +114,12 @@ export const renderEmail = async (name: string, props: Record<string, unknown>, 
 
 export const subjectOf = (name: string, props: Record<string, unknown>) => {
   if (!isTemplate(name)) throw new Error(`No email template named ${name}`)
-  return (TEMPLATES[name] as Template<Record<string, unknown>>).subject(props)
+  return (TEMPLATES[name] as unknown as Template<Record<string, unknown>>).subject(props)
 }
 
 export const renderChat = (name: string, props: Record<string, unknown>, note?: string | null): ChatMessage => {
   if (!isTemplate(name)) throw new Error(`No template named ${name}`)
-  const chat = (TEMPLATES[name] as Template<Record<string, unknown>>).chat
+  const chat = (TEMPLATES[name] as unknown as Template<Record<string, unknown>>).chat
   if (!chat) throw new Error(`${name} only goes by email`)
   return chat(withNote(props, note))
 }

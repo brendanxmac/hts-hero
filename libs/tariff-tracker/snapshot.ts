@@ -80,7 +80,7 @@ export const trackedProducts = (items: CatalogItem[], adjustments: Record<string
 
 // The imports a plan covers: the user's picks up to the limit, then the highest-duty ones they
 // didn't take out (TrackerContext's trackedKeys)
-const coveredKeys = (items: CatalogItem[], products: TrackedProduct[], limit: number) => {
+export const coveredKeys = (items: CatalogItem[], products: TrackedProduct[], limit: number) => {
   const keyOf = (i: CatalogItem) => `${i.code}-${i.country}`
   const covered = new Set(items.filter((i) => i.covered === true).map(keyOf).slice(0, limit))
   const takenOut = new Set(items.filter((i) => i.covered === false).map(keyOf))

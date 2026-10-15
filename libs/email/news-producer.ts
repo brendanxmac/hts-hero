@@ -5,8 +5,8 @@ import { createBatch, type OutboxMessage } from "./outbox"
 import { SUBSCRIBER_COLUMNS, subscriberFooter, type Subscriber } from "./subscribers"
 import { newsEmailProps, UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./tariff-news"
 
-// Turns tariff updates into outbox batches for subscribers. Nothing here sends: every batch waits
-// for review in /email-outbox.
+// Turns tariff updates into outbox batches for subscribers. Instant alerts send on their own; the
+// weekly digest waits for review in /email-outbox.
 //
 // An update's events are the stages its sources reached, each at its earliest source's date. A
 // subscriber on "every step" gets every event; one on "new actions" gets the update's first event
@@ -131,6 +131,8 @@ export const produceInstantNews = async (db: Db, { from }: { from?: string } = {
         title: `${update.title} · ${stageName(event.stage)}`,
         ref: { update_id: update.id, stage: event.stage, slug: update.slug },
         dedupeKey: `tariff_news:${update.id}:${event.stage}`,
+        // Sent without review: the update itself was published with confidence (or reviewed)
+        autoSend: true,
         messages,
       })
       if (id) batches++
