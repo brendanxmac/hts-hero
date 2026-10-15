@@ -20,27 +20,33 @@ const Para = ({ children }: { children: React.ReactNode }) => (
 export default function FounderNoteEmail({ daysSinceSignup, footer }: FounderNoteEmailProps) {
   return (
     <EmailLayout preview="Is something stopping you from adding them? Just hit reply and tell me." footer={footer}>
-      <Para>Hi,</Para>
+      <Para>Howdy! It&apos;s Brendan, the founder of HTS Hero.</Para>
       <Para>
-        It&apos;s Brendan, the founder of HTS Hero. You opened your Tariff Tracker {daysSinceSignup} days ago but haven&apos;t added any imports yet, so I
-        wanted to check in.
+        I noticed you signed up for Tariff Tracker {daysSinceSignup} days ago but haven&apos;t uploaded your imports yet. I wanted to check in to see if you needed a hand or if you were having trouble.
       </Para>
       <Para>
-        Adding them takes about a minute: paste your HTS codes and countries, and your Tracker starts watching every one for new tariffs, savings you may
-        qualify for and overpaid duty.
+        Adding them takes usually takes a minute or two and you can either import via csv or paste your HTS code + country pairs direclty.
       </Para>
+      <Para>
+        Once that&apos;s done, we immediately analyze each one for savings you may
+        qualify for and let you quickly check for overpaid duty. We also alert you any new tariff affects your imports, so you can take action before it's too late.
+      </Para>
+
+      <Para>
+        To get started, just click the button below!
+      </Para>
+
       <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", "onboarding-3")} variant="next">
-        Add my imports
+        Add your imports
       </Cta>
       <Para>
-        <strong>Want someone to handle tariffs for you?</strong> We also offer dedicated tariff management: we watch your whole catalog, flag every change
-        that hits you, audit your entries for overpayments, find savings, and tell you what to do about each.{" "}
+        <strong>Want someone to manage your tariffs for you?</strong> We can watch your whole catalog, flag every change
+        that hits you, walk you through the impacts, audit your entries for overpayments, find savings, and much more...{" "}
         <Link href={siteLink("/tariff-tracker?tab=expert-help", "onboarding-3")} style={{ color: C.cobalt, fontWeight: 600 }}>
           See how HTS Hero Managed works
         </Link>
-        , or reply &quot;managed&quot; and I&apos;ll send you the details.
+        , or reply here with your business details we can setup a time to talk.
       </Para>
-      <Para>If something&apos;s in the way, just hit reply and tell me. I read every one.</Para>
       <Signature />
     </EmailLayout>
   )

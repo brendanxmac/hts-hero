@@ -12,7 +12,6 @@ import { AUTHORITIES, KINDS } from "@/libs/tariff-updates/types";
 import type { ImportImpact } from "@/libs/tariff-updates/impactOf";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { useTrackerAccess } from "../access/accessContext";
-import { formatRate } from "../formatRate";
 import { newsToneOf } from "../news/tone";
 import { useImportMatches } from "../news/useImportMatches";
 import { useTariffUpdates, type TrackerUpdate } from "../overview/useTariffUpdates";
@@ -23,7 +22,7 @@ import { useTracker } from "../TrackerContext";
 import { ActionList } from "./ActionList";
 import { OriginBars, RateShift, type OriginRow, type ShiftRow } from "./ImpactCharts";
 import { ImpactImports, type Show } from "./ImpactImports";
-import { day, groupOf, GROUP_ORDER, GROUPS, money, relativeDays } from "./format";
+import { day, groupOf, GROUP_ORDER, GROUPS, rateChange, relativeDays, signedRate } from "./format";
 import { useReviewList, type ImpactCheck } from "./useReviewList";
 import { useUpdateImpact } from "./useUpdateImpact";
 
@@ -45,7 +44,7 @@ const urlFor = (slug: string) => `${TRACKER_PATH}?tab=impact&update=${encodeURIC
 
 // The action, and what it does to the catalog
 const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerUpdate; check?: ImpactCheck; today: string; impacts: ImportImpact[] | null; total: number }) => {
-  const { itemFor } = useTracker();
+  const { products } = useTracker();
   const [more, setMore] = useState(false);
   useEffect(() => setMore(false), [update.id]);
   const effective = update.effective_on;
@@ -54,11 +53,13 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
 
   const confirmed = (impacts ?? []).filter((i) => i.level === "confirmed");
   const likely = (impacts ?? []).filter((i) => i.level === "likely").length;
-  const net = confirmed.reduce((sum, i) => sum + (i.deltaUsd ?? 0), 0);
-  const yearly = confirmed.reduce((sum, i) => sum + (i.deltaUsd ?? 0) * Math.max(1, itemFor(i.key)?.shipmentsPerYear ?? 1), 0);
-  const hasYears = confirmed.some((i) => (itemFor(i.key)?.shipmentsPerYear ?? 1) > 1);
-  const rated = confirmed.filter((i) => i.beforePct !== null && i.afterPct !== null);
-  const avg = (pick: (i: ImportImpact) => number) => rated.reduce((sum, i) => sum + pick(i), 0) / Math.max(1, rated.length);
+  // The changes in the duty rate it confirms: on average, and the biggest
+  const rated = confirmed.filter((i) => i.beforePct !== null && i.afterPct !== null && Math.abs(rateChange(i)) > 0.005);
+  const average = rated.reduce((sum, i) => sum + rateChange(i), 0) / Math.max(1, rated.length);
+  const biggest = rated.reduce<ImportImpact | null>((top, i) => (!top || Math.abs(rateChange(i)) > Math.abs(rateChange(top)) ? i : top), null);
+  const biggestProduct = biggest ? products.find((p) => p.key === biggest.key) : null;
+  const ups = rated.filter((i) => rateChange(i) > 0).length;
+  const downs = rated.length - ups;
   const pending = impacts === null;
   const meta = [update.countries.length ? countryLabel(update.countries) : null, update.products].filter(Boolean).join(" · ");
   const long = update.summary.length > 240;
@@ -109,18 +110,20 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
         className="border-t border-base-300"
         stats={[
           {
-            label: "Duty per shipment",
-            value: pending ? "…" : confirmed.length ? (Math.abs(net) > 0.5 ? money(net, true) : "No change") : "—",
-            tone: net > 0.5 ? "error" : net < -0.5 ? "success" : undefined,
+            label: "Rate change",
+            value: pending ? "…" : rated.length ? signedRate(average) : confirmed.length ? "None" : "—",
+            tone: average > 0.005 ? "error" : average < -0.005 ? "success" : undefined,
             note: pending
               ? "Checking your imports"
-              : confirmed.length
-                ? hasYears
-                  ? `${money(yearly, true)} a year, at your shipments`
-                  : "One shipment of each"
-                : likely
-                  ? "Confirmed once it's in the HTS"
-                  : "Nothing it changes",
+              : rated.length
+                ? ups && downs
+                  ? `Average: ${ups} up, ${downs} down`
+                  : `Average of ${rated.length}`
+                : confirmed.length
+                  ? "New Chapter 99 numbers, same rates"
+                  : likely
+                    ? "Confirmed once it's in the HTS"
+                    : "Nothing it changes",
           },
           {
             label: "Imports hit",
@@ -135,9 +138,10 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
             note: pending ? "" : likely ? `${confirmed.length} confirmed · ${likely} may apply` : "All confirmed",
           },
           {
-            label: "Rate on them",
-            value: pending ? "…" : rated.length ? formatRate(avg((i) => i.afterPct!)) : "—",
-            note: rated.length ? `Average, from ${formatRate(avg((i) => i.beforePct!))}` : "Confirmed imports only",
+            label: "Biggest change",
+            value: pending ? "…" : biggest ? signedRate(rateChange(biggest)) : "—",
+            tone: biggest ? (rateChange(biggest) > 0 ? "error" : "success") : undefined,
+            note: biggest && biggestProduct ? `${biggestProduct.entry.element.htsno} · ${biggestProduct.entry.country.code}` : "Confirmed imports only",
           },
           {
             label: upcoming ? "Takes effect" : "In effect",
@@ -203,27 +207,31 @@ export const TariffImpact = () => {
     () =>
       (impacts ?? [])
         .filter((i) => i.level === "confirmed" && i.reason !== "ban" && i.beforePct !== null && i.afterPct !== null && Math.abs(i.afterPct - i.beforePct) > 0.001)
-        .sort((a, b) => Math.abs(b.deltaUsd ?? 0) - Math.abs(a.deltaUsd ?? 0))
+        .sort((a, b) => Math.abs(rateChange(b)) - Math.abs(rateChange(a)))
         .map((i) => {
           const p = byKey.get(i.key)!;
-          return { key: i.key, label: p.entry.element.htsno, sub: p.entry.country.name, before: i.beforePct!, after: i.afterPct!, deltaUsd: i.deltaUsd ?? 0, group: groupOf(i) };
+          return { key: i.key, label: p.entry.element.htsno, sub: p.entry.country.name, before: i.beforePct!, after: i.afterPct!, group: groupOf(i) };
         }),
     [impacts, byKey]
   );
   const origins: OriginRow[] = useMemo(() => {
-    const rows = new Map<string, OriginRow>();
+    const rows = new Map<string, OriginRow & { changed: number }>();
     for (const i of impacts ?? []) {
       if (i.level === "possible") continue;
       const p = byKey.get(i.key);
       if (!p) continue;
       const c = p.entry.country;
-      const row = rows.get(c.code) ?? { code: c.code, name: c.name, flag: c.flag, counts: {}, deltaUsd: 0 };
+      const row = rows.get(c.code) ?? { code: c.code, name: c.name, flag: c.flag, counts: {}, ratePct: 0, changed: 0 };
       const g = groupOf(i);
       row.counts[g] = (row.counts[g] ?? 0) + 1;
-      row.deltaUsd += i.level === "confirmed" ? (i.deltaUsd ?? 0) : 0;
+      if (i.level === "confirmed" && i.beforePct !== null && i.afterPct !== null) {
+        // A running average of the change in rate on its confirmed imports
+        row.ratePct = (row.ratePct * row.changed + rateChange(i)) / (row.changed + 1);
+        row.changed++;
+      }
       rows.set(c.code, row);
     }
-    return Array.from(rows.values()).sort((a, b) => Math.abs(b.deltaUsd) - Math.abs(a.deltaUsd) || Object.values(b.counts).reduce((s, n) => s + n, 0) - Object.values(a.counts).reduce((s, n) => s + n, 0));
+    return Array.from(rows.values()).sort((a, b) => Math.abs(b.ratePct) - Math.abs(a.ratePct) || Object.values(b.counts).reduce((s, n) => s + n, 0) - Object.values(a.counts).reduce((s, n) => s + n, 0));
   }, [impacts, byKey]);
 
   const header = <SectionHeader section={section} />;
@@ -275,7 +283,7 @@ export const TariffImpact = () => {
                             <h2 id="tt-impact-shift" className={tt.title}>
                               Rate before and after
                             </h2>
-                            <p className={tt.subtitle}>Each import whose rate it moves, the biggest change in dollars first</p>
+                            <p className={tt.subtitle}>Each import whose rate it moves, the biggest change first</p>
                           </div>
                           <RateShift rows={shifts} onPick={showImports} />
                         </section>
@@ -286,7 +294,7 @@ export const TariffImpact = () => {
                             <h2 id="tt-impact-origins" className={tt.title}>
                               Where it lands
                             </h2>
-                            <p className={tt.subtitle}>Your affected imports by country of origin, and the change per shipment</p>
+                            <p className={tt.subtitle}>Your affected imports by country of origin, and the average change in their rate</p>
                           </div>
                           <OriginBars
                             rows={origins}

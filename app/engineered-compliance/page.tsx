@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Footer from "../../components/Footer";
-import LetsTalkModal from "../../components/LetsTalkModal";
+import { openBookCall } from "@/libs/book-call";
 import { ClassificationCTA } from "../../components/ClassificationCTA";
 import { useUser } from "../../contexts/UserContext";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
@@ -22,7 +21,6 @@ const StoryConnector = () => (
 
 export default function EngineeredCompliancePage() {
   const { user } = useUser();
-  const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
 
   const handleBookDemoClick = () => {
     const userEmail = user?.email || "";
@@ -39,8 +37,8 @@ export default function EngineeredCompliancePage() {
       console.error("Error tracking book demo click:", e);
     }
 
-    // Open the modal
-    setIsBookDemoModalOpen(true);
+    // Straight to Calendly
+    openBookCall({ name: user?.user_metadata?.full_name, email: user?.email });
   };
 
   return (
@@ -416,11 +414,6 @@ export default function EngineeredCompliancePage() {
       </main>
 
       <Footer />
-
-      <LetsTalkModal
-        isOpen={isBookDemoModalOpen}
-        onClose={() => setIsBookDemoModalOpen(false)}
-      />
     </div>
   );
 }

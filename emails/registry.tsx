@@ -2,7 +2,6 @@ import { ReactElement } from "react"
 import { render } from "@react-email/render"
 import WelcomeEmail, { welcomeSubject, type WelcomeEmailProps } from "./account/WelcomeEmail"
 import PurchaseConfirmationEmail, { purchaseConfirmationSubject, type PurchaseConfirmationEmailProps } from "./account/PurchaseConfirmationEmail"
-import DemoRequestEmail, { demoRequestSubject, type DemoRequestEmailProps } from "./leads/DemoRequestEmail"
 import PlaybookEmail, { playbookSubject, type PlaybookEmailProps } from "./leads/PlaybookEmail"
 import AuditRequestReceivedEmail, { auditRequestReceivedSubject, type AuditRequestReceivedEmailProps } from "./leads/AuditRequestReceivedEmail"
 import InternalNoticeEmail, { internalNoticeSubject, type InternalNoticeEmailProps } from "./internal/InternalNoticeEmail"
@@ -84,7 +83,6 @@ export const TEMPLATES = {
   }),
   welcome: template<WelcomeEmailProps>({ subject: welcomeSubject, email: (p) => <WelcomeEmail {...p} /> }),
   purchase_confirmation: template<PurchaseConfirmationEmailProps>({ subject: purchaseConfirmationSubject, email: (p) => <PurchaseConfirmationEmail {...p} /> }),
-  demo_request: template<DemoRequestEmailProps>({ subject: demoRequestSubject, email: (p) => <DemoRequestEmail {...p} /> }),
   playbook: template<PlaybookEmailProps>({ subject: playbookSubject, email: (p) => <PlaybookEmail {...p} /> }),
   audit_request_received: template<AuditRequestReceivedEmailProps>({ subject: auditRequestReceivedSubject, email: (p) => <AuditRequestReceivedEmail {...p} /> }),
   news_confirm: template<NewsConfirmEmailProps>({ subject: newsConfirmSubject, email: (p) => <NewsConfirmEmail {...p} /> }),

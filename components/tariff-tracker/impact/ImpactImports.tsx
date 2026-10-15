@@ -13,7 +13,7 @@ import { formatRate } from "../formatRate";
 import { BASE_PART, rateParts, shortProgram, type RatePart, type TrackedProduct } from "../report";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
-import { day, groupOf, money, reasonText, type ImpactGroup } from "./format";
+import { day, groupOf, money, rateChange, reasonText, signedRate, type ImpactGroup } from "./format";
 
 // The imports an action affects, laid out like Your imports (DESIGN_SYSTEM §15): the product, its
 // origin, its tariffs after the change as one bar (what the action adds marked new, what it ends
@@ -157,7 +157,7 @@ const Row = ({ r, colors, maxPct, effective, today, perYear }: { r: RowData; col
   const { impact, product } = r;
   const confirmed = impact.level === "confirmed";
   const future = confirmed && !!impact.date && impact.date > today;
-  const delta = impact.deltaUsd ?? 0;
+  const delta = rateChange(impact);
   return (
     <li className="border-t border-base-300 first:border-t-0">
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={`${GRID} w-full px-6 py-4 text-left transition-colors hover:bg-tt-soft`}>
@@ -174,10 +174,10 @@ const Row = ({ r, colors, maxPct, effective, today, perYear }: { r: RowData; col
         <span className="flex flex-col items-end gap-1">
           {confirmed && impact.reason === "ban" ? (
             <span className={tt.chip("error")}>Import ban</span>
-          ) : confirmed && Math.abs(delta) > 0.5 ? (
+          ) : confirmed && Math.abs(delta) > 0.005 ? (
             <>
-              <span className={`${tt.chip(delta > 0 ? "error" : "success")} tabular-nums`}>{money(delta, true)}</span>
-              <span className="text-xs text-base-content/60">{perYear ? `${money(delta * perYear, true)} a year` : "per shipment"}</span>
+              <span className={`${tt.chip(delta > 0 ? "error" : "success")} tabular-nums`}>{signedRate(delta)}</span>
+              <span className="text-xs text-base-content/60">duty rate</span>
             </>
           ) : confirmed ? (
             <>
@@ -282,7 +282,7 @@ export const ImpactImports = ({
         const text = `${product.description} ${product.entry.element.htsno} ${product.entry.country.name}`.toLowerCase();
         return words.every((w) => text.includes(w));
       })
-      .sort((a, b) => groupRank[a.group] - groupRank[b.group] || Math.abs(b.impact.deltaUsd ?? 0) - Math.abs(a.impact.deltaUsd ?? 0));
+      .sort((a, b) => groupRank[a.group] - groupRank[b.group] || Math.abs(rateChange(b.impact)) - Math.abs(rateChange(a.impact)));
   }, [all, show, query, country]);
 
   const countryName = country ? products.find((p) => p.entry.country.code === country)?.entry.country.name : null;

@@ -7,7 +7,7 @@ import { StripePaymentMode } from "../libs/stripe";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
 import { getActivePriorityTariffPurchase } from "../libs/supabase/purchase";
-import LetsTalkModal from "./LetsTalkModal";
+import { openBookCall } from "@/libs/book-call";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import {
   CheckIcon,
@@ -70,7 +70,6 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
 const TariffImpactPricing = () => {
   const [currentPlan, setCurrentPlan] = useState<PricingPlan | null>(null);
   const { user } = useUser();
-  const [isEnterpriseModalOpen, setIsEnterpriseModalOpen] = useState(false);
   // Track the selected price tier index for each plan
   const [selectedTierIndices, setSelectedTierIndices] = useState<{
     [key: number]: number;
@@ -98,8 +97,8 @@ const TariffImpactPricing = () => {
       console.error("Error tracking tariff team click:", e);
     }
 
-    // Open the modal
-    setIsEnterpriseModalOpen(true);
+    // Straight to Calendly
+    openBookCall({ name: user?.user_metadata?.full_name, email: user?.email });
   };
 
   useEffect(() => {
@@ -416,11 +415,6 @@ const TariffImpactPricing = () => {
           </div>
         </div>
       </div>
-
-      <LetsTalkModal
-        isOpen={isEnterpriseModalOpen}
-        onClose={() => setIsEnterpriseModalOpen(false)}
-      />
     </section>
   );
 };

@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { Crisp } from "crisp-sdk-web";
 import { ArrowRightIcon, ChatBubbleLeftRightIcon, EnvelopeIcon } from "@heroicons/react/24/solid";
 import config from "../config";
 import { useUser } from "../contexts/UserContext";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
-import LetsTalkModal from "./LetsTalkModal";
+import { openBookCall } from "@/libs/book-call";
 import { FaqItem, FAQItem } from "./FAQItem";
 
 interface Props {
@@ -15,7 +14,6 @@ interface Props {
 
 export const FAQ = ({ faqItems }: Props) => {
   const { user } = useUser();
-  const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
 
   const handleBookDemoClick = () => {
     try {
@@ -28,7 +26,7 @@ export const FAQ = ({ faqItems }: Props) => {
       console.error("Error tracking book demo click:", e);
     }
 
-    setIsBookDemoModalOpen(true);
+    openBookCall({ name: user?.user_metadata?.full_name, email: user?.email });
   };
 
   const handleSupportClick = () => {
@@ -127,11 +125,6 @@ export const FAQ = ({ faqItems }: Props) => {
           </div>
         </div>
       </div>
-
-      <LetsTalkModal
-        isOpen={isBookDemoModalOpen}
-        onClose={() => setIsBookDemoModalOpen(false)}
-      />
     </section>
   );
 };

@@ -1,5 +1,6 @@
 import { ERROR_MARK, PRIMARY_MARK, SUCCESS_MARK, WARNING_MARK, MUTED_MARK } from "@/components/ui/theme";
 import type { ImportImpact } from "@/libs/tariff-updates/impactOf";
+import { formatRate } from "../formatRate";
 
 // How the Tariff impact tab names and colors what an update does to an import
 
@@ -45,18 +46,14 @@ export const reasonText = (i: ImportImpact, effective: string | null, today: str
   }
 };
 
+// A change in the duty rate, signed: "+25%", "−2.5%" (never "points": the rate moves by that %)
+export const rateChange = (i: Pick<ImportImpact, "beforePct" | "afterPct">) => (i.afterPct ?? 0) - (i.beforePct ?? 0);
+export const signedRate = (n: number) => `${n > 0.005 ? "+" : n < -0.005 ? "−" : ""}${formatRate(Math.abs(n))}`;
+
 export const money = (n: number, signed = false) => {
   const whole = Math.round(Math.abs(n));
   const sign = signed ? (n > 0.5 ? "+" : n < -0.5 ? "−" : "") : n < -0.5 ? "−" : "";
   return `${sign}$${whole.toLocaleString("en-US")}`;
-};
-
-export const compactMoney = (n: number, signed = false) => {
-  const abs = Math.abs(n);
-  const sign = signed ? (n > 0.5 ? "+" : n < -0.5 ? "−" : "") : n < -0.5 ? "−" : "";
-  if (abs >= 1_000_000) return `${sign}$${(abs / 1_000_000).toFixed(abs >= 10_000_000 ? 0 : 1)}M`;
-  if (abs >= 10_000) return `${sign}$${Math.round(abs / 1000)}k`;
-  return `${sign}$${Math.round(abs).toLocaleString("en-US")}`;
 };
 
 export const day = (iso: string, withYear = true) =>

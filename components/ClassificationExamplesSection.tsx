@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,7 +8,7 @@ import {
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { GRIDefenseHeroMarketing } from "./GRIDefenseHeroMarketing";
-import LetsTalkModal from "./LetsTalkModal";
+import { openBookCall } from "@/libs/book-call";
 import { HeroClassifyInput } from "./HeroClassifyInput";
 import { CLASSIFICATION_EXAMPLES, type ClassificationExample } from "../constants/classification-examples";
 
@@ -140,7 +139,6 @@ export default function ClassificationExamplesSection({
 }: {
   bottomCta?: "classify" | "book-demo";
 }) {
-  const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
 
   return (
     <section className="relative pb-20 md:pb-28">
@@ -213,7 +211,7 @@ export default function ClassificationExamplesSection({
         {/* Bottom CTA — pass bottomCta="book-demo" to restore the demo button */}
         <div className="flex flex-col items-center mt-16">
           <button
-            onClick={() => setIsBookDemoModalOpen(true)}
+            onClick={() => openBookCall()}
             className="inline-flex items-center gap-3 px-10 py-4 rounded-xl font-bold text-lg bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
             Book a Demo
@@ -227,11 +225,6 @@ export default function ClassificationExamplesSection({
         </div>
 
       </div>
-
-      <LetsTalkModal
-        isOpen={isBookDemoModalOpen}
-        onClose={() => setIsBookDemoModalOpen(false)}
-      />
 
       <style jsx>{`
         .examples-bounce-arrow {

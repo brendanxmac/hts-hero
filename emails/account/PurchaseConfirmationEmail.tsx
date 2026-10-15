@@ -48,15 +48,15 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
         items={
           tracker
             ? [
-                "Add the rest of your imports, so every one is covered",
-                "Turn on alerts by email, Slack or Teams, so the next tariff change reaches you the day it's announced",
-                "Check savings on your highest-duty imports: trade programs, exemptions and lower-duty origins you may qualify for",
-              ]
+              "Add the rest of your imports, so every one is covered",
+              "Turn on alerts by email, Slack or Teams, so the next tariff change reaches you the day it's announced",
+              "Check for savings on your imports: trade programs, exemptions and lower-duty origins you may qualify for",
+            ]
             : [
-                "Start a classification from a product description",
-                "Review the candidates against the legal notes and CROSS rulings",
-                "Download the audit-ready report for your files",
-              ]
+              "Start a classification from a product description",
+              "Review the candidates against the legal notes and CROSS rulings",
+              "Download the audit-ready report for your files",
+            ]
         }
       />
       <Cta href={siteLink(tracker ? "/tariff-tracker" : "/classifications", CAMPAIGN)} variant="next">

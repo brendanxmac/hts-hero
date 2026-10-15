@@ -5,7 +5,7 @@ import { BottomAxis, ChartFrame, linearScale, niceMax, Tooltip, TooltipRow } fro
 import * as tt from "@/components/ui/styles/tracker";
 import { MUTED_MARK } from "@/components/ui/theme";
 import { formatRate } from "../formatRate";
-import { compactMoney, GROUP_ORDER, GROUPS, money, type ImpactGroup } from "./format";
+import { GROUP_ORDER, GROUPS, signedRate, type ImpactGroup } from "./format";
 
 // The Tariff impact tab's charts (DESIGN_SYSTEM §15: few marks, round ends, no gridlines)
 
@@ -20,7 +20,6 @@ export interface ShiftRow {
   sub: string;
   before: number;
   after: number;
-  deltaUsd: number;
   group: ImpactGroup;
 }
 
@@ -49,7 +48,7 @@ export const RateShift = ({ rows, onPick }: { rows: ShiftRow[]; onPick?: (key: s
               <p className="mb-1 font-semibold text-base-content">{r.label}</p>
               <TooltipRow color={MUTED_MARK} label="Before" value={formatRate(r.before)} />
               <TooltipRow color={GROUPS[r.group].mark} label="After" value={formatRate(r.after)} />
-              <TooltipRow label="Per shipment" value={money(r.deltaUsd, true)} />
+              <TooltipRow label="Change" value={signedRate(r.after - r.before)} />
             </Tooltip>
           );
         }}
@@ -105,7 +104,8 @@ export interface OriginRow {
   name: string;
   flag: string;
   counts: Partial<Record<ImpactGroup, number>>;
-  deltaUsd: number;
+  // The average change in the duty rate on its confirmed imports
+  ratePct: number;
 }
 
 export const OriginBars = ({ rows, onPick }: { rows: OriginRow[]; onPick?: (country: string) => void }) => {
@@ -128,8 +128,8 @@ export const OriginBars = ({ rows, onPick }: { rows: OriginRow[]; onPick?: (coun
                 <span key={g} className="h-full rounded-full" style={{ width: `${((r.counts[g] ?? 0) / max) * 100}%`, minWidth: 6, background: GROUPS[g].mark }} />
               ))}
             </span>
-            <span className={`text-right text-xs font-semibold tabular-nums ${r.deltaUsd > 0.5 ? "text-error" : r.deltaUsd < -0.5 ? "text-success" : "text-base-content/60"}`}>
-              {Math.abs(r.deltaUsd) > 0.5 ? compactMoney(r.deltaUsd, true) : `${total(r)}`}
+            <span className={`text-right text-xs font-semibold tabular-nums ${r.ratePct > 0.005 ? "text-error" : r.ratePct < -0.005 ? "text-success" : "text-base-content/60"}`}>
+              {Math.abs(r.ratePct) > 0.005 ? signedRate(r.ratePct) : `${total(r)}`}
             </span>
           </button>
         </li>

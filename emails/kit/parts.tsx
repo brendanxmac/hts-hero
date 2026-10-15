@@ -176,7 +176,7 @@ export const Signature = ({ line = "Founder, HTS Hero" }: { line?: string }) => 
   <Text style={{ margin: "18px 0 0", fontSize: 15, lineHeight: "22px", color: C.text }}>
     Brendan
     <br />
-    <span style={{ color: C.muted, fontSize: 13 }}>{line} · Just reply to reach me</span>
+    <span style={{ color: C.muted, fontSize: 13 }}>{line} · Just reply to reach me directly</span>
   </Text>
 )
 
