@@ -131,8 +131,8 @@ export default function ImpactAlertEmail({ update, reached, current, imports, re
         </>
       )}
 
-      <Cta href={siteLink("/tariff-tracker?tab=news", campaign)} variant="next">
-        See it in my Tracker
+      <Cta href={siteLink(`/tariff-tracker?tab=impact&update=${encodeURIComponent(update.slug)}`, campaign)} variant="next">
+        See the impact on my imports
       </Cta>
       {imports.length > 0 && (
         <P muted small>

@@ -38,6 +38,7 @@ const Alerts = dynamic(() => import("./alerts/Alerts").then((m) => m.Alerts), { 
 const Savings = dynamic(() => import("./savings/Savings").then((m) => m.Savings), { loading: PanelSkeleton });
 const EntryAudit = dynamic(() => import("./entries/EntryAudit").then((m) => m.EntryAudit), { loading: PanelSkeleton });
 const Sourcing = dynamic(() => import("./sourcing/Sourcing").then((m) => m.Sourcing), { loading: PanelSkeleton });
+const TariffImpact = dynamic(() => import("./impact/TariffImpact").then((m) => m.TariffImpact), { loading: PanelSkeleton });
 const TariffNews = dynamic(() => import("./news/TariffNews").then((m) => m.TariffNews), { loading: PanelSkeleton });
 const ExpertHelp = dynamic(() => import("./expert-help/ExpertHelp").then((m) => m.ExpertHelp), { loading: PanelSkeleton });
 const TrackerCalculator = dynamic(
@@ -79,6 +80,7 @@ export const TrackerApp = () => {
     sourcing: () => <Sourcing />,
     alerts: () => <Alerts />,
     news: () => <TariffNews />,
+    impact: () => <TariffImpact />,
     entries: () => <EntryAudit />,
     "expert-help": () => <ExpertHelp />,
   };

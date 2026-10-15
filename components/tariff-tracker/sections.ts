@@ -1,4 +1,5 @@
 import {
+  BoltIcon,
   CalculatorIcon,
   BellAlertIcon,
   ClipboardDocumentCheckIcon,
@@ -23,6 +24,7 @@ export type SectionSlug =
   | "history"
   | "alerts"
   | "news"
+  | "impact"
   | "entries"
   | "sourcing"
   | "savings"
@@ -113,6 +115,17 @@ export const SECTIONS: TrackerSection[] = [
     Icon: NewspaperIcon,
     title: "Tariff news",
     summary: "Every new US tariff action, as it happens, with the official documents behind it.",
+    ready: true,
+    group: "workspace",
+    paidOnly: false,
+    planned: [],
+  }),
+  section({
+    slug: "impact",
+    label: "Tariff impact",
+    Icon: BoltIcon,
+    title: "Tariff impact",
+    summary: "Pick any tariff action and see exactly which of your imports it hits, and by how much.",
     ready: true,
     group: "workspace",
     paidOnly: false,

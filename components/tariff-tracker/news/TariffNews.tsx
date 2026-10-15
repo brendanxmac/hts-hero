@@ -98,6 +98,11 @@ const Row = ({ update, isNew, match }: { update: TrackerUpdate; isNew: boolean; 
           </dl>
           <StageTrack current={STAGE_ORDER.indexOf(update.stage)} />
           <div className="flex flex-wrap gap-2">
+            {update.kind !== "hts_revision" && (
+              <Link href={`${sectionUrl("impact")}&update=${encodeURIComponent(update.slug)}`} className={ui.button({ variant: label ? "primary" : "secondary", size: "sm" })}>
+                See the impact on my imports
+              </Link>
+            )}
             <a href={`/tariff-updates/${update.slug}`} target="_blank" rel="noopener" className={ui.button({ variant: "secondary", size: "sm" })}>
               Full update and sources
               <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" aria-hidden />
