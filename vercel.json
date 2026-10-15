@@ -15,6 +15,14 @@
     {
       "path": "/api/cron/email-outbox",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/tariff-news",
+      "schedule": "10,25,40,55 * * * *"
+    },
+    {
+      "path": "/api/cron/tariff-digest",
+      "schedule": "0 13 * * 1"
     }
   ]
 }

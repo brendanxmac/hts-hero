@@ -38,6 +38,13 @@ add new ones as they come up.
 - [ ] **Apply the migration** `supabase/migrations/tariff_updates.sql` (tariff_updates, and the
       sorting/grouping columns on tariff_source_items), after tariff_sources.sql.
 - [ ] **Apply the migration** `supabase/migrations/email_outbox.sql` (email_batches, email_messages).
+- [ ] **Apply the migration** `supabase/migrations/email_subscribers.sql` (tariff news subscriptions
+      and every reader's email choices).
+- [ ] **Paste the Supabase Auth email templates** from `supabase/email-templates/` (subjects in
+      `SUBJECTS.txt`; regenerate with `npm run email:auth`) into Authentication → Email Templates,
+      in both projects.
+- [ ] **`BASE_URL` is the live site in production.** Email links (confirm, manage, unsubscribe) use
+      it, so a dev value would send readers to localhost.
 - [ ] **Vercel plan allows the 15-minute crons** `/api/cron/tariff-sources` and
       `/api/cron/tariff-updates` (vercel.json; the second runs up to 5 minutes). Hobby only runs
       crons daily and rejects the deploy; CBP's CSMS feeds keep only ~3 weeks, so the cron has to

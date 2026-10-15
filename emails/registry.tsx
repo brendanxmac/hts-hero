@@ -6,6 +6,8 @@ import DemoRequestEmail, { demoRequestSubject, type DemoRequestEmailProps } from
 import PlaybookEmail, { playbookSubject, type PlaybookEmailProps } from "./leads/PlaybookEmail"
 import AuditRequestReceivedEmail, { auditRequestReceivedSubject, type AuditRequestReceivedEmailProps } from "./leads/AuditRequestReceivedEmail"
 import InternalNoticeEmail, { internalNoticeSubject, type InternalNoticeEmailProps } from "./internal/InternalNoticeEmail"
+import NewsConfirmEmail, { newsConfirmSubject, type NewsConfirmEmailProps } from "./tariff-updates/NewsConfirmEmail"
+import NewsManageLinkEmail, { newsManageLinkSubject, type NewsManageLinkEmailProps } from "./tariff-updates/NewsManageLinkEmail"
 import TariffDigestEmail, { tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
 import TariffNewsEmail, { tariffNewsSubject, type TariffNewsEmailProps } from "./tariff-updates/TariffNewsEmail"
 import { updateUrl } from "./kit/parts"
@@ -58,6 +60,8 @@ export const TEMPLATES = {
   demo_request: template<DemoRequestEmailProps>({ subject: demoRequestSubject, email: (p) => <DemoRequestEmail {...p} /> }),
   playbook: template<PlaybookEmailProps>({ subject: playbookSubject, email: (p) => <PlaybookEmail {...p} /> }),
   audit_request_received: template<AuditRequestReceivedEmailProps>({ subject: auditRequestReceivedSubject, email: (p) => <AuditRequestReceivedEmail {...p} /> }),
+  news_confirm: template<NewsConfirmEmailProps>({ subject: newsConfirmSubject, email: (p) => <NewsConfirmEmail {...p} /> }),
+  news_manage_link: template<NewsManageLinkEmailProps>({ subject: newsManageLinkSubject, email: (p) => <NewsManageLinkEmail {...p} /> }),
   internal_notice: template<InternalNoticeEmailProps>({ subject: internalNoticeSubject, email: (p) => <InternalNoticeEmail {...p} /> }),
 }
 

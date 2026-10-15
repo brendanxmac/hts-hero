@@ -125,6 +125,8 @@ export enum MixpanelEvent {
   EXPLORER_COMPLETED_NOTES_SEARCH = "Explorer Completed a Notes Search",
   /** Hierarchy moves: deeper, back, breadcrumb, chapter, search, URL code, etc. */
   EXPLORER_NAVIGATED_TO_LEVEL = "Explorer Navigated to Level",
+  // Subscribed to tariff news on /tariff-updates (source: the page it was on)
+  TARIFF_UPDATES_SUBSCRIBED = "Tariff Updates Subscribed",
 }
 
 // Browser-side tracking functions

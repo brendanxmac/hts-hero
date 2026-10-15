@@ -137,6 +137,7 @@ module.exports = {
     // Feeds and machine-readable files aren't pages
     "/blog/feed.xml",
     "/tariff-updates/feed.xml",
+    "/tariff-updates/subscription",
     "/llms.txt",
     // Retired or stale: the Tariff Impact Checker (being sunset; its tool stays up for existing
     // users), the old tariff coverage and pending-announcement pages, and /about/tariffs, which

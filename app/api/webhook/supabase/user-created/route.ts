@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { createAdminClient } from "../../../supabase/server";
 import { UserProfile } from "../../../../../libs/supabase/user";
 import { sendTransactional } from "@/libs/email/outbox";
+import { ensureAccountSubscriber } from "@/libs/email/subscribers";
 import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "@/libs/email/tariff-news";
 import { MixpanelEvent } from "../../../../../libs/mixpanel";
 import {
@@ -74,6 +75,16 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error("Failed to fetch user profile:", error);
       return NextResponse.json({ message: "Not Found" }, { status: 404 });
+    }
+
+    // Every account gets the weekly tariff digest (choices in the Tracker's Alerts section, or
+    // any email's manage link)
+    if (user.email) {
+      try {
+        await ensureAccountSubscriber(supabase, { userId: user.id, email: user.email });
+      } catch (e) {
+        console.error("Failed to add the account's email choices:", e);
+      }
     }
 
     // The welcome email, with the latest tariff action so the first email already teaches

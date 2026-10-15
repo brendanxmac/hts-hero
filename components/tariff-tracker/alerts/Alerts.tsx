@@ -5,6 +5,7 @@ import { TableStandIn } from "@/components/ui/stand-ins";
 import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { AccountGate } from "../access/AccountGate";
 import { AlertSettingsPanel } from "./AlertSettingsPanel";
+import { TariffNewsSettings } from "./TariffNewsSettings";
 
 // The Alerts section: where alerts go, what sets one off, and which imports get them. Alerts come
 // with every account (PRICING.md: the trial covers TRIAL_ALLOWANCE.alertImports imports; a plan,
@@ -25,6 +26,7 @@ export const Alerts = () => (
   >
     <div className="flex flex-col gap-4">
       <AlertSettingsPanel />
+      <TariffNewsSettings />
       <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-alert-triggers">
         <h2 id="tt-alert-triggers" className={tt.title}>
           What sets off an alert

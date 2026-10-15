@@ -12,6 +12,7 @@ import * as mk from "@/components/ui/marketing/styles"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { UpdatesList } from "@/components/tariff-updates/UpdatesList"
+import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm"
 import { formatDay } from "@/components/tariff-updates/labels"
 import { SOURCE_LIST, UPDATES_DEFINITION, UPDATES_FAQS } from "@/components/tariff-updates/content"
 
@@ -97,6 +98,19 @@ export default async function TariffUpdatesPage() {
             </a>
           </div>
         </header>
+
+        <section aria-labelledby="subscribe" className={`${tt.panel} grid gap-6 p-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-start`}>
+          <div className="flex flex-col gap-2">
+            <h2 id="subscribe" className={tt.title}>
+              Get every new US tariff action by email
+            </h2>
+            <p className="text-sm leading-relaxed text-base-content/70">
+              A plain-English summary of each action, with the official documents, as it happens or in a weekly digest. Pick the laws and countries you
+              care about. Free.
+            </p>
+          </div>
+          <SubscribeForm source="tariff-updates" />
+        </section>
 
         <UpdatesList updates={updates} />
 

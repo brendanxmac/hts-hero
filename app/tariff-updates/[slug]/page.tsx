@@ -13,6 +13,7 @@ import * as mk from "@/components/ui/marketing/styles"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { AuthorityChip, Countries } from "@/components/tariff-updates/UpdatesList"
+import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm"
 import { authorityLabel, formatDay, kindLabel, STAGE_DETAIL, STAGE_LABELS } from "@/components/tariff-updates/labels"
 
 // One tariff update: what changed in plain English, the stages it has reached with the official
@@ -215,6 +216,14 @@ export default async function TariffUpdatePage({ params }: { params: { slug: str
                 </Link>
               </section>
             )}
+
+            <section aria-labelledby="subscribe" className={`${tt.panel} flex flex-col gap-3 p-6`}>
+              <h2 id="subscribe" className={tt.title}>
+                Get the next one by email
+              </h2>
+              <p className="text-sm text-base-content/70">Every new US tariff action, in plain English, as it happens or weekly. Free.</p>
+              <SubscribeForm source="update-page" compact />
+            </section>
 
             <section className={`${tt.panel} flex flex-col gap-3 p-6`}>
               <h2 className={tt.title}>Check your import</h2>
