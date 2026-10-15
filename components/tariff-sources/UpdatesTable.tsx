@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table"
 import { AUTHORITIES, KINDS, STAGE_ORDER, STAGES, type Authority, type Stage } from "@/libs/tariff-updates/types"
@@ -105,6 +105,11 @@ export default function UpdatesTable({ updates, items }: { updates: UpdateRow[];
   const reviewCount = updates.filter((u) => u.needs_review).length
   const [scope, setScope] = useState<Scope>(reviewCount ? "review" : "all")
   const [openId, setOpenId] = useState<string | null>(null)
+  // ?update=<id> opens that update (the Tracker's Tariff Impacts tab links here to review one)
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("update")
+    if (id && updates.some((u) => u.id === id)) setOpenId(id)
+  }, [updates])
   const sourceCounts = useMemo(() => {
     const counts = new Map<string, number>()
     for (const i of items) if (i.update_id) counts.set(i.update_id, (counts.get(i.update_id) ?? 0) + 1)

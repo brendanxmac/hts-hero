@@ -122,9 +122,9 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "impact",
-    label: "Tariff impact",
+    label: "Tariff Impacts",
     Icon: BoltIcon,
-    title: "Tariff impact",
+    title: "Tariff Impacts",
     summary: "Pick any tariff action and see exactly which of your imports it hits, and by how much.",
     ready: true,
     group: "workspace",

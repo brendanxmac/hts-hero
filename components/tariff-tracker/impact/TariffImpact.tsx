@@ -8,7 +8,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { Countries } from "@/constants/countries";
 import { STAGE_LABELS } from "@/components/tariff-updates/labels";
-import { AUTHORITIES, KINDS, STAGE_ORDER } from "@/libs/tariff-updates/types";
+import { AUTHORITIES, KINDS } from "@/libs/tariff-updates/types";
 import type { ImportImpact } from "@/libs/tariff-updates/impactOf";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { useTrackerAccess } from "../access/accessContext";
@@ -19,7 +19,7 @@ import { TRACKER_PATH } from "../sections";
 import { NeedsProducts } from "../shell/NeedsProducts";
 import { useTracker } from "../TrackerContext";
 import { CatalogShare, OriginBars, RateShift, type OriginRow, type ShiftRow } from "./ImpactCharts";
-import { ImpactImports } from "./ImpactImports";
+import { ImpactImports, type Show } from "./ImpactImports";
 import { day, groupOf, GROUP_ORDER, GROUPS, money, relativeDays, type ImpactGroup } from "./format";
 import { useReviewList, type ImpactCheck } from "./useReviewList";
 import { useUpdateImpact } from "./useUpdateImpact";
@@ -119,7 +119,7 @@ const Picker = ({
           />
         </label>
       </div>
-      <ul className="min-h-0 flex-1 overflow-y-auto p-2">
+      <ul className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto bg-tt-soft p-2">
         {shown.map((u) => {
           const m = matches.get(u.slug);
           const label = m && m.confirmed + m.likely > 0 ? matchLabel(m) : null;
@@ -131,7 +131,9 @@ const Picker = ({
                 type="button"
                 onClick={() => onSelect(u.slug)}
                 aria-current={active ? "true" : undefined}
-                className={`flex w-full flex-col gap-1.5 rounded-xl px-3 py-3 text-left transition-colors ${active ? "bg-primary/10 ring-1 ring-inset ring-primary/30" : "hover:bg-tt-soft"}`}
+                className={`relative flex w-full flex-col gap-1.5 overflow-hidden rounded-xl px-3.5 py-3 text-left transition-colors ${
+                  active ? "bg-base-100 shadow-sm ring-2 ring-inset ring-primary" : "hover:bg-base-100"
+                }`}
               >
                 <span className="flex flex-wrap items-center gap-1.5 text-xs text-base-content/60">
                   <span className={`h-2 w-2 rounded-full ${NEWS_DOTS[newsToneOf(u.kind)]}`} aria-hidden />
@@ -141,7 +143,8 @@ const Picker = ({
                   {check?.inReview && <span className={tt.chip("warning")}>In review</span>}
                   {check?.hidden && <span className={tt.chip()}>Hidden</span>}
                 </span>
-                <span className={`line-clamp-2 text-sm leading-snug ${active ? "font-semibold text-primary" : "font-semibold text-base-content"}`}>{u.title}</span>
+                {active && <span className="absolute inset-y-0 left-0 w-1 bg-primary" aria-hidden />}
+                <span className={`line-clamp-2 text-sm font-semibold leading-snug ${active ? "text-primary" : "text-base-content"}`}>{u.title}</span>
                 {(label || (check && check.eligible)) && (
                   <span className="flex flex-wrap items-center gap-1.5">
                     {label && <span className={tt.chip(label.tone)}>{label.text}</span>}
@@ -162,64 +165,41 @@ const Picker = ({
 
 // ── The picked action ──
 
-const StageTrack = ({ current }: { current: number }) => (
-  <ol className="flex flex-wrap items-center gap-1.5" aria-label="Where it stands">
-    {STAGE_ORDER.map((stage, i) => (
-      <li key={stage} aria-current={i === current ? "step" : undefined} className={i === current ? tt.chip("primary") : `${tt.chip()} opacity-60`}>
-        {i === current ? "● " : ""}
-        {STAGE_LABELS[stage]}
-      </li>
-    ))}
-  </ol>
-);
+const TONE_PANEL: Record<"error" | "success" | "warning" | "primary" | "neutral", string> = {
+  error: "border-error/30 bg-error/[0.06]",
+  success: "border-success/30 bg-success/[0.07]",
+  warning: "border-warning/30 bg-warning/[0.07]",
+  primary: "border-primary/25 bg-primary/[0.05]",
+  neutral: "border-base-300 bg-base-100",
+};
+
+const TONE_TEXT = { error: "text-error", success: "text-success", warning: "text-warning", primary: "text-primary", neutral: "text-base-content" } as const;
 
 const UpdateHeader = ({ update, check, today }: { update: TrackerUpdate; check?: ImpactCheck; today: string }) => {
   const tone = newsToneOf(update.kind);
   const effective = update.effective_on;
+  const upcoming = !!effective && effective > today;
+  const [more, setMore] = useState(false);
+  useEffect(() => setMore(false), [update.id]);
   return (
-    <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-impact-title">
+    <section className={`${tt.panel} flex flex-col gap-3 px-6 py-5`} aria-labelledby="tt-impact-title">
       <div className="flex flex-wrap items-center gap-2">
-        <span className={tt.chip(tone)}>
-          <span className={`mr-1.5 h-2 w-2 rounded-full ${NEWS_DOTS[tone]}`} aria-hidden />
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold text-white ${NEWS_DOTS[tone]}`}>
           {AUTHORITIES[update.authority] ?? update.authority}
         </span>
         <span className={tt.chip()}>{KINDS[update.kind] ?? update.kind}</span>
+        <span className={tt.chip("primary")}>● {STAGE_LABELS[update.stage]}</span>
         {check?.inReview && <span className={tt.chip("warning")}>In review: users don&apos;t see it yet</span>}
         {check?.hidden && <span className={tt.chip()}>Hidden</span>}
         {check?.eligible && !check.inReview && (
           <span className={tt.chip(check.approvedAt ? "success" : "warning")}>
-            {check.approvedAt ? `Impact check approved ${day(check.approvedAt, false)} · ${check.alerted ?? 0} alerted` : "Impact check not approved"}
+            {check.approvedAt ? `Alerts sent ${day(check.approvedAt, false)} · ${check.alerted ?? 0} accounts` : "Alerts not approved yet"}
           </span>
         )}
-        {check && !check.eligible && !check.inReview && <span className={tt.chip()}>Before alerts started</span>}
-      </div>
-      <div className="flex flex-col gap-2">
-        <h2 id="tt-impact-title" className={`${tt.display} text-2xl font-semibold leading-tight text-base-content`}>
-          {update.title}
-        </h2>
-        <p className="max-w-4xl text-sm leading-relaxed text-base-content/75">{update.summary}</p>
-      </div>
-      <dl className="grid gap-3 sm:grid-cols-3">
-        <div className={`${tt.tile} flex flex-col gap-0.5 px-4 py-3`}>
-          <dt className={tt.eyebrow(effective && effective > today ? "warning" : "neutral")}>{effective && effective > today ? "Takes effect" : "In effect since"}</dt>
-          <dd className={`${tt.display} text-lg font-semibold text-base-content`}>{effective ? day(effective) : "Not set yet"}</dd>
-          {effective && <dd className="text-xs text-base-content/60">{relativeDays(effective, today)}</dd>}
-        </div>
-        <div className={`${tt.tile} flex flex-col gap-0.5 px-4 py-3`}>
-          <dt className={tt.eyebrow()}>Countries</dt>
-          <dd className="text-sm font-semibold leading-snug text-base-content">{update.countries.length ? countryLabel(update.countries) : "Not limited to countries"}</dd>
-        </div>
-        <div className={`${tt.tile} flex flex-col gap-0.5 px-4 py-3`}>
-          <dt className={tt.eyebrow()}>Covers</dt>
-          <dd className="line-clamp-3 text-sm leading-snug text-base-content">{update.products ?? (update.hts_codes.length ? update.hts_codes.slice(0, 6).join(", ") : "See the full update")}</dd>
-        </div>
-      </dl>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <StageTrack current={STAGE_ORDER.indexOf(update.stage)} />
-        <div className="flex flex-wrap gap-2">
+        <span className="ml-auto flex flex-wrap gap-2">
           {check && (
-            <a href="/tariff-sources" target="_blank" rel="noopener" className={ui.button({ variant: "ghost", size: "sm" })}>
-              Impact check
+            <a href={`/tariff-sources?update=${update.id}`} target="_blank" rel="noopener" className={ui.button({ variant: "ghost", size: "sm" })}>
+              Review its alerts
               <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" aria-hidden />
             </a>
           )}
@@ -227,14 +207,60 @@ const UpdateHeader = ({ update, check, today }: { update: TrackerUpdate; check?:
             Full update and sources
             <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" aria-hidden />
           </a>
-        </div>
+        </span>
       </div>
+      <h2 id="tt-impact-title" className={`${tt.display} text-[1.375rem] font-semibold leading-snug text-base-content`}>
+        {update.title}
+      </h2>
+      <p className={`text-sm leading-relaxed text-base-content/75 ${more ? "" : "line-clamp-2"}`}>
+        {update.summary}{" "}
+      </p>
+      {update.summary.length > 220 && (
+        <button type="button" className={`${ui.link} -mt-2 self-start text-xs`} onClick={() => setMore((m) => !m)}>
+          {more ? "Less" : "Read more"}
+        </button>
+      )}
+      <dl className="flex flex-wrap gap-x-8 gap-y-2 border-t border-base-300 pt-3 text-sm">
+        <div className="flex items-baseline gap-2">
+          <dt className={tt.eyebrow(upcoming ? "warning" : "neutral")}>{upcoming ? "Takes effect" : "In effect"}</dt>
+          <dd className={`font-semibold ${upcoming ? "text-warning" : "text-base-content"}`}>
+            {effective ? `${day(effective)} · ${relativeDays(effective, today)}` : "Not set yet"}
+          </dd>
+        </div>
+        <div className="flex min-w-0 items-baseline gap-2">
+          <dt className={tt.eyebrow()}>Countries</dt>
+          <dd className="truncate font-semibold text-base-content">{update.countries.length ? countryLabel(update.countries) : "Any"}</dd>
+        </div>
+        {(update.products || update.hts_codes.length > 0) && (
+          <div className="flex min-w-0 flex-1 items-baseline gap-2">
+            <dt className={tt.eyebrow()}>Covers</dt>
+            <dd className="line-clamp-1 text-base-content" title={update.products ?? undefined}>
+              {update.products ?? update.hts_codes.slice(0, 6).join(", ")}
+            </dd>
+          </div>
+        )}
+      </dl>
     </section>
   );
 };
 
-// The answer for the catalog: one sentence, the numbers, and the catalog split by what it does
-const Verdict = ({ impacts, total, effective, today, onShow }: { impacts: ImportImpact[]; total: number; effective: string | null; today: string; onShow: () => void }) => {
+// The answer for the catalog: one sentence and the one number that matters, the counts (each
+// filters the list below), and the catalog split by what it does
+const Verdict = ({
+  impacts,
+  total,
+  effective,
+  today,
+  show,
+  onShow,
+}: {
+  impacts: ImportImpact[];
+  total: number;
+  effective: string | null;
+  today: string;
+  show: Show;
+  onShow: (show: Show) => void;
+}) => {
   const { itemFor } = useTracker();
   const counts = Object.fromEntries(GROUP_ORDER.map((g) => [g, 0])) as Record<ImpactGroup, number>;
   impacts.forEach((i) => counts[groupOf(i)]++);
@@ -248,65 +274,71 @@ const Verdict = ({ impacts, total, effective, today, onShow }: { impacts: Import
   const headline = confirmed.length
     ? `${future ? "Will change" : "Changes"} the duty on ${confirmed.length} of your ${total.toLocaleString("en-US")} imports`
     : likely
-      ? `May affect ${likely} of your imports`
+      ? `May affect ${likely} of your ${total.toLocaleString("en-US")} imports`
       : counts.possible
         ? `Covers the countries of ${counts.possible} of your imports, not their codes`
         : "None of your imports are affected";
   const tone = confirmed.length ? (net > 0.5 ? "error" : net < -0.5 ? "success" : "primary") : likely ? "warning" : "neutral";
+  const sub = confirmed.length
+    ? `${future ? `From ${day(effective!)}` : "One shipment of each, at your values"}${likely ? `. It may also apply to ${likely} more.` : "."}`
+    : likely
+      ? "Its scope names their codes and countries. We'll confirm the exact duty once it's in the HTS, and alert you."
+      : counts.possible
+        ? "Worth a look if any of them could fall under it."
+        : "Nothing in your catalog falls under it.";
+
+  const pills: { id: Show; n: number; label: string; detail?: string; group: ImpactGroup }[] = [
+    {
+      id: "confirmed",
+      n: confirmed.length,
+      label: "confirmed",
+      detail: [counts.up && `${counts.up} up`, counts.down && `${counts.down} down`, counts.same && `${counts.same} same duty`].filter(Boolean).join(" · "),
+      group: counts.up ? "up" : counts.down ? "down" : "same",
+    },
+    { id: "likely", n: likely, label: "may apply", group: "likely" },
+    { id: "possible", n: counts.possible, label: "country only", group: "possible" },
+  ];
 
   return (
-    <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-5`} aria-labelledby="tt-impact-verdict">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex max-w-2xl flex-col gap-1.5">
+    <section className={`flex flex-col gap-4 rounded-lg border px-6 py-5 ${TONE_PANEL[tone]}`} aria-labelledby="tt-impact-verdict">
+      <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3">
+        <div className="flex min-w-0 flex-col gap-1">
           <span className={tt.eyebrow(tone)}>Impact on your imports</span>
           <h2 id="tt-impact-verdict" className={`${tt.display} text-xl font-semibold leading-snug text-base-content`}>
             {headline}
           </h2>
-          <p className="text-sm text-base-content/70">
-            {confirmed.length
-              ? Math.abs(net) > 0.5
-                ? `${money(net, true)} in duty per shipment of each${future ? `, from ${day(effective!)}` : ""}${likely ? `, and it may apply to ${likely} more` : ""}.`
-                : `New Chapter 99 numbers to report, at the same duty${likely ? `; it may apply to ${likely} more` : ""}.`
-              : likely
-                ? "Its scope names their codes and countries. We'll confirm the exact duty once it's in the HTS, and alert you."
-                : counts.possible
-                  ? "Worth a look if any of them could fall under it."
-                  : "Nothing in your catalog falls under it."}
-          </p>
+          <p className="text-sm text-base-content/70">{sub}</p>
         </div>
-        {(counts.up + counts.down + counts.same + likely > 0 || counts.possible > 0) && (
-          <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={onShow}>
-            See each import
-          </button>
+        {confirmed.length > 0 && (
+          <div className="flex flex-col items-end">
+            <span className={`${tt.metricLg} ${TONE_TEXT[tone]}`}>{Math.abs(net) > 0.5 ? money(net, true) : "Same duty"}</span>
+            <span className="text-xs font-semibold text-base-content/60">
+              {Math.abs(net) > 0.5 ? (hasYears ? `per shipment · ${money(yearly, true)} a year` : "in duty per shipment") : "new Chapter 99 numbers to report"}
+            </span>
+          </div>
         )}
       </div>
-
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <div className={`${tt.tile} flex flex-col gap-1 px-5 py-4`}>
-          <span className={tt.eyebrow(net > 0.5 ? "error" : net < -0.5 ? "success" : "neutral")}>Duty per shipment</span>
-          <span className={`${tt.metric} ${net > 0.5 ? "text-error" : net < -0.5 ? "text-success" : ""}`}>{confirmed.length ? money(net, true) : "—"}</span>
-          <span className="text-xs text-base-content/60">{hasYears ? `${money(yearly, true)} a year, at your shipments` : "One shipment of each, at your values"}</span>
-        </div>
-        <div className={`${tt.tile} flex flex-col gap-1 px-5 py-4`}>
-          <span className={tt.eyebrow(counts.up ? "error" : "neutral")}>Confirmed</span>
-          <span className={tt.metric}>{confirmed.length}</span>
-          <span className="text-xs text-base-content/60">
-            {confirmed.length ? [counts.up && `${counts.up} up`, counts.down && `${counts.down} down`, counts.same && `${counts.same} same duty`].filter(Boolean).join(" · ") : "By the duty engine"}
-          </span>
-        </div>
-        <div className={`${tt.tile} flex flex-col gap-1 px-5 py-4`}>
-          <span className={tt.eyebrow(likely ? "warning" : "neutral")}>May apply</span>
-          <span className={tt.metric}>{likely}</span>
-          <span className="text-xs text-base-content/60">Named in its scope, not in the HTS yet</span>
-        </div>
-        <div className={`${tt.tile} flex flex-col gap-1 px-5 py-4`}>
-          <span className={tt.eyebrow()}>Your country only</span>
-          <span className={tt.metric}>{counts.possible}</span>
-          <span className="text-xs text-base-content/60">It names the country, not the code</span>
-        </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {pills.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            disabled={!p.n}
+            onClick={() => onShow(show === p.id ? "affected" : p.id)}
+            aria-pressed={show === p.id}
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors disabled:opacity-40 ${
+              show === p.id ? "border-base-content/40 bg-base-100 shadow-sm" : "border-base-300 bg-base-100/70 hover:bg-base-100"
+            }`}
+          >
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: GROUPS[p.group].mark }} aria-hidden />
+            <span className={`${tt.display} font-semibold tabular-nums text-base-content`}>{p.n}</span>
+            <span className="text-base-content/70">{p.label}</span>
+            {p.detail && <span className="text-xs text-base-content/50">{p.detail}</span>}
+          </button>
+        ))}
+        <span className="ml-auto text-xs text-base-content/60">{(total - impacts.length).toLocaleString("en-US")} not affected</span>
       </div>
-
-      <CatalogShare counts={counts} total={total} />
+      <CatalogShare counts={counts} total={total} legend={false} />
     </section>
   );
 };
@@ -347,7 +379,11 @@ export const TariffImpact = () => {
 
   const { impacts, progress } = useUpdateImpact(update);
   const [country, setCountry] = useState<string | null>(null);
-  useEffect(() => setCountry(null), [slug]);
+  const [show, setShow] = useState<Show>("affected");
+  useEffect(() => {
+    setCountry(null);
+    setShow("affected");
+  }, [slug]);
   const showImports = () => document.getElementById("tt-impact-imports-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   const byKey = useMemo(() => new Map(products.map((p) => [p.key, p])), [products]);
@@ -409,9 +445,19 @@ export const TariffImpact = () => {
               </section>
             ) : (
               <>
-                <Verdict impacts={impacts} total={products.length} effective={update.effective_on} today={today} onShow={showImports} />
+                <Verdict
+                  impacts={impacts}
+                  total={products.length}
+                  effective={update.effective_on}
+                  today={today}
+                  show={show}
+                  onShow={setShow}
+                />
+                {impacts.length > 0 && (
+                  <ImpactImports impacts={impacts} effective={update.effective_on} today={today} country={country} onClearCountry={() => setCountry(null)} show={show} onShow={setShow} />
+                )}
                 {(shifts.length > 0 || origins.length > 0) && (
-                  <div className={`grid gap-4 ${shifts.length && origins.length ? "2xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]" : ""}`}>
+                  <div className={`grid gap-4 ${shifts.length && origins.length ? "xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]" : ""}`}>
                     {shifts.length > 0 && (
                       <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-impact-shift">
                         <div>
@@ -455,7 +501,6 @@ export const TariffImpact = () => {
                     )}
                   </div>
                 )}
-                {impacts.length > 0 && <ImpactImports key={update.id} impacts={impacts} effective={update.effective_on} today={today} country={country} onClearCountry={() => setCountry(null)} />}
                 <p className="px-1 text-xs leading-relaxed text-base-content/60">
                   Confirmed changes come from the duty engine: each import worked out the day before and the day the action takes effect, on its saved value.
                   &quot;May apply&quot; means the action&apos;s scope names the import&apos;s code and country, before the change is in the HTS. The same check

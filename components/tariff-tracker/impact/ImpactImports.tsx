@@ -17,7 +17,7 @@ import { day, groupOf, GROUPS, money, reasonText, type ImpactGroup } from "./for
 // line by line, the day before and the day it changes (what starts, what stops, what moves), or,
 // when it isn't confirmed, why it may apply; each opens the import's own page.
 
-type Show = "affected" | "confirmed" | "likely" | "possible";
+export type Show = "affected" | "confirmed" | "likely" | "possible";
 
 interface Line {
   code: string;
@@ -99,7 +99,7 @@ const Row = ({ impact, product, effective, today, perYear }: { impact: ImportImp
         className="grid w-full grid-cols-[minmax(0,1fr)_8rem_9.5rem_7rem_1.25rem] items-center gap-4 px-6 py-3.5 text-left transition-colors hover:bg-tt-soft"
       >
         <span className="flex min-w-0 items-center gap-3">
-          <span className="h-8 w-1 shrink-0 rounded-full" style={{ background: g.mark }} aria-hidden />
+          <span className="h-9 w-1.5 shrink-0 rounded-full" style={{ background: g.mark }} aria-hidden />
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-sm font-semibold text-base-content">{product.description}</span>
             <span className="truncate text-xs text-base-content/60">
@@ -108,7 +108,7 @@ const Row = ({ impact, product, effective, today, perYear }: { impact: ImportImp
           </span>
         </span>
         <span className="flex flex-col items-start gap-1">
-          <span className={tt.chip(g.tone)}>{g.short}</span>
+          <span className={SOLID[group]}>{g.short}</span>
           {future && <span className="text-[11px] font-semibold text-warning">From {day(impact.date!, false)}</span>}
         </span>
         <span className="text-sm tabular-nums">
@@ -125,7 +125,7 @@ const Row = ({ impact, product, effective, today, perYear }: { impact: ImportImp
         <span className="flex flex-col items-end">
           {confirmed && Math.abs(delta) > 0.5 ? (
             <>
-              <span className={`${tt.display} text-sm font-semibold tabular-nums ${delta > 0 ? "text-error" : "text-success"}`}>{money(delta, true)}</span>
+              <span className={`${tt.display} text-base font-semibold tabular-nums ${delta > 0 ? "text-error" : "text-success"}`}>{money(delta, true)}</span>
               <span className="text-[11px] text-base-content/60">{perYear ? `${money(delta * perYear, true)} a year` : "per shipment"}</span>
             </>
           ) : (
@@ -159,9 +159,34 @@ const Row = ({ impact, product, effective, today, perYear }: { impact: ImportImp
   );
 };
 
+// Status chips filled in their color, so the list reads at a glance
+const SOLID: Record<ImpactGroup, string> = {
+  up: "inline-flex rounded-full bg-error px-2.5 py-0.5 text-xs font-bold text-error-content",
+  down: "inline-flex rounded-full bg-success px-2.5 py-0.5 text-xs font-bold text-success-content",
+  same: "inline-flex rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-content",
+  likely: "inline-flex rounded-full bg-warning px-2.5 py-0.5 text-xs font-bold text-warning-content",
+  possible: "inline-flex rounded-full bg-base-300 px-2.5 py-0.5 text-xs font-bold text-base-content/70",
+};
+
 const groupRank: Record<ImpactGroup, number> = { up: 0, down: 1, same: 2, likely: 3, possible: 4 };
 
-export const ImpactImports = ({ impacts, effective, today, country, onClearCountry }: { impacts: ImportImpact[]; effective: string | null; today: string; country: string | null; onClearCountry: () => void }) => {
+export const ImpactImports = ({
+  impacts,
+  effective,
+  today,
+  country,
+  onClearCountry,
+  show,
+  onShow,
+}: {
+  impacts: ImportImpact[];
+  effective: string | null;
+  today: string;
+  country: string | null;
+  onClearCountry: () => void;
+  show: Show;
+  onShow: (show: Show) => void;
+}) => {
   const { products, itemFor } = useTracker();
   const byKey = useMemo(() => new Map(products.map((p) => [p.key, p])), [products]);
   const counts = useMemo(() => {
@@ -169,7 +194,6 @@ export const ImpactImports = ({ impacts, effective, today, country, onClearCount
     impacts.forEach((i) => c[i.level]++);
     return c;
   }, [impacts]);
-  const [show, setShow] = useState<Show>(counts.confirmed + counts.likely ? "affected" : "possible");
   const [query, setQuery] = useState("");
 
   const rows = useMemo(() => {
@@ -191,12 +215,11 @@ export const ImpactImports = ({ impacts, effective, today, country, onClearCount
 
   return (
     <section className={`${tt.panel} overflow-hidden`} aria-labelledby="tt-impact-imports" id="tt-impact-imports-list">
-      <div className="flex flex-wrap items-center gap-3 px-6 pb-4 pt-5">
+      <div className="flex flex-wrap items-center gap-3 px-6 py-4">
         <div className="mr-auto">
           <h2 id="tt-impact-imports" className={tt.title}>
             Your imports
           </h2>
-          <p className={tt.subtitle}>Open one for its duty line by line, before and after.</p>
         </div>
         <SegmentedControl
           label="Which imports"
@@ -208,7 +231,7 @@ export const ImpactImports = ({ impacts, effective, today, country, onClearCount
             { id: "possible", label: "Country only", count: counts.possible },
           ]}
           value={show}
-          onChange={(v) => setShow(v as Show)}
+          onChange={(v) => onShow(v as Show)}
         />
         <label className="relative w-56">
           <span className="sr-only">Search your affected imports</span>

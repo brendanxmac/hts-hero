@@ -99,24 +99,24 @@ export const RateShift = ({ rows, onPick }: { rows: ShiftRow[]; onPick?: (key: s
 // ── Your imports, by what it does to them ──
 // One bar across the whole catalog, a segment per group, unaffected imports a quiet gray
 
-export const CatalogShare = ({ counts, total }: { counts: Record<ImpactGroup, number>; total: number }) => {
+export const CatalogShare = ({ counts, total, legend = true }: { counts: Record<ImpactGroup, number>; total: number; legend?: boolean }) => {
   const unaffected = Math.max(0, total - GROUP_ORDER.reduce((sum, g) => sum + counts[g], 0));
   const parts = [...GROUP_ORDER.filter((g) => counts[g]).map((g) => ({ id: g, n: counts[g], color: GROUPS[g].mark, label: GROUPS[g].label })), { id: "none", n: unaffected, color: "oklch(var(--bc) / 0.1)", label: "Not affected" }].filter((p) => p.n);
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="flex h-3 w-full gap-[3px] overflow-hidden rounded-full" role="img" aria-label={parts.map((p) => `${p.label}: ${p.n}`).join(", ")}>
+      <div className="flex h-2.5 w-full gap-[3px] overflow-hidden rounded-full bg-base-100/60" role="img" aria-label={parts.map((p) => `${p.label}: ${p.n}`).join(", ")}>
         {parts.map((p) => (
           <span key={p.id} className="h-full rounded-full first:rounded-l-full" style={{ width: `${(p.n / Math.max(1, total)) * 100}%`, minWidth: 6, background: p.color }} />
         ))}
       </div>
-      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-base-content/70">
+      {legend && <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-base-content/70">
         {parts.map((p) => (
           <li key={p.id} className="inline-flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full" style={{ background: p.color }} aria-hidden />
             {p.label} <span className="font-semibold tabular-nums text-base-content">{p.n.toLocaleString("en-US")}</span>
           </li>
         ))}
-      </ul>
+      </ul>}
     </div>
   );
 };
