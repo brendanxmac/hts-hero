@@ -133,7 +133,7 @@ const NoteBox = ({ value, onChange, placeholder, reasons, invalid }: { value: st
   </div>
 );
 
-// Undecided: Accept or Reject, with a note
+// Undecided: Accept or Reject, with a note, in one slim bar that stays in view under the comparison
 const Decide = ({ onAccept, onReject, kind, busy }: { onAccept: (note: string) => void; onReject: (note: string) => void; kind: SavingKind; busy: boolean }) => {
   const [note, setNote] = useState("");
   const [rejecting, setRejecting] = useState(false);
@@ -144,46 +144,70 @@ const Decide = ({ onAccept, onReject, kind, busy }: { onAccept: (note: string) =
     onReject(note.trim());
   };
   return (
-    <div className={`${tt.panel} sticky bottom-4 z-10 flex flex-col gap-3 p-5 shadow-lg`}>
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className={`${tt.title} m-0`}>{rejecting ? "Why doesn't it work for you?" : "Worth pursuing?"}</p>
-        <p className="m-0 text-xs text-base-content/60">{rejecting ? "Kept on record, so the next person knows why" : "Accept to start securing it, or reject it with a reason"}</p>
+    <div className={`${tt.panel} sticky bottom-4 z-10 flex flex-col gap-3 px-5 py-4 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.35)]`}>
+      {rejecting && (
+        <div className="flex flex-col gap-2">
+          <p className="m-0 text-sm font-semibold text-base-content">
+            Why doesn&apos;t it work for you? <span className="font-normal text-base-content/60">Kept on record.</span>
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {REASONS[kind].map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => {
+                  setNote(r);
+                  setMissing(false);
+                }}
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${note === r ? "border-error bg-error/10 text-error" : "border-base-300 text-base-content/70 hover:border-base-content/40 hover:text-base-content"}`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="flex flex-wrap items-center gap-3">
+        {!rejecting && <p className={`${tt.title} m-0 shrink-0 !text-base`}>Worth pursuing?</p>}
+        <input
+          className={`${ui.input} !h-9 min-w-[12rem] flex-1 text-sm ${missing ? "!border-error" : ""}`}
+          maxLength={500}
+          value={note}
+          onChange={(e) => {
+            setNote(e.target.value);
+            setMissing(false);
+          }}
+          onKeyDown={(e) => e.key === "Enter" && (rejecting ? reject() : onAccept(note.trim()))}
+          placeholder={rejecting ? "Pick a reason or write your own (required)" : "Add a note (optional)"}
+          aria-label={rejecting ? "Why it doesn't work for you" : "A note"}
+          aria-invalid={missing}
+        />
+        <div className="flex shrink-0 gap-2">
+          {rejecting ? (
+            <>
+              <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => setRejecting(false)}>
+                Back
+              </button>
+              <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} !border-error !bg-error !text-error-content`} disabled={busy} onClick={reject}>
+                <XMarkIcon className="h-4 w-4" aria-hidden />
+                {busy ? "Saving…" : "Reject"}
+              </button>
+            </>
+          ) : (
+            <>
+              <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} disabled={busy} onClick={reject}>
+                <XMarkIcon className="h-4 w-4" aria-hidden />
+                Reject
+              </button>
+              <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} !border-success !bg-success !text-success-content`} disabled={busy} onClick={() => onAccept(note.trim())}>
+                <CheckIcon className="h-4 w-4" aria-hidden />
+                {busy ? "Saving…" : "Accept"}
+              </button>
+            </>
+          )}
+        </div>
       </div>
-      <NoteBox
-        value={note}
-        onChange={(v) => {
-          setNote(v);
-          setMissing(false);
-        }}
-        reasons={rejecting ? REASONS[kind] : undefined}
-        invalid={missing}
-        placeholder={rejecting ? "Pick a reason above or write your own (required)" : "Add a note (optional): who you'll ask, what to check…"}
-      />
       {missing && <p className="m-0 -mt-1 text-xs text-error">Add a reason to reject it.</p>}
-      <div className="flex flex-wrap gap-2">
-        {rejecting ? (
-          <>
-            <button type="button" className={ui.button({ variant: "primary", size: "sm" })} disabled={busy} onClick={reject}>
-              <XMarkIcon className="h-4 w-4" aria-hidden />
-              {busy ? "Saving…" : "Reject"}
-            </button>
-            <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => setRejecting(false)}>
-              Back
-            </button>
-          </>
-        ) : (
-          <>
-            <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} !bg-success !text-success-content hover:!brightness-95`} disabled={busy} onClick={() => onAccept(note.trim())}>
-              <CheckIcon className="h-4 w-4" aria-hidden />
-              {busy ? "Saving…" : "Accept"}
-            </button>
-            <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} disabled={busy} onClick={reject}>
-              <XMarkIcon className="h-4 w-4" aria-hidden />
-              Reject
-            </button>
-          </>
-        )}
-      </div>
     </div>
   );
 };

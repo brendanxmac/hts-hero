@@ -86,7 +86,7 @@ export const InsightsProvider = ({ children }: { children: ReactNode }) => {
   const { products, trackedKeys } = useTracker();
   const { access } = useTrackerAccess();
   const { opportunities } = useOpportunities();
-  const unlocked = useMemo(() => (typeof window !== "undefined" && localStorage.getItem("zz-unlock") ? new Set(products.map((p) => p.key)) : savingsUnlocked(access, trackedKeys)), [access, trackedKeys, products]); // ZZ-TEMP
+  const unlocked = useMemo(() => savingsUnlocked(access, trackedKeys), [access, trackedKeys]);
   // Every product; savings on the unlocked ones first, then the rest for the teasers
   const scope = products;
   const open = useMemo(() => products.filter((p) => unlocked.has(p.key)), [products, unlocked]);

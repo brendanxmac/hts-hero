@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
@@ -49,17 +49,29 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
   }, [options, mine]);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  useEffect(() => {
-    if (!selectedId && items.length) setSelectedId(items[0].id);
-  }, [items, selectedId]);
-  const selected = items.find((i) => i.id === selectedId);
+  // Picking one far down the list brings its review into view
+  const detail = useRef<HTMLDivElement>(null);
+  const select = (id: string) => {
+    setSelectedId(id);
+    if ((detail.current?.getBoundingClientRect().top ?? 0) < 0) detail.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   // Still to review: an option nobody has accepted or rejected yet
   const undecided = (i: ListItem) => !!i.option && (!i.opportunity || i.opportunity.status === "found");
+  // The items in the list's order: trade programs, exemptions, other origins, then tracked earlier
+  const listed = useMemo(() => {
+    const order = (i: ListItem) => (i.option ? ["program", "exemption", "origin"].indexOf(i.option.kind) : 3);
+    return [...items].sort((a, b) => order(a) - order(b));
+  }, [items]);
+  // Opens on the first option still to review, or the first one
+  useEffect(() => {
+    if (!selectedId && listed.length) setSelectedId((listed.find(undecided) ?? listed[0]).id);
+  }, [listed, selectedId]);
+  const selected = items.find((i) => i.id === selectedId);
   // After a rejection, on to the next option still to review (the list wraps round)
   const next = () => {
-    const at = items.findIndex((i) => i.id === selectedId);
-    const after = [...items.slice(at + 1), ...items.slice(0, at)].find(undecided);
-    if (after) setSelectedId(after.id);
+    const at = listed.findIndex((i) => i.id === selectedId);
+    const after = [...listed.slice(at + 1), ...listed.slice(0, at)].find(undecided);
+    if (after) select(after.id);
   };
   const review = insights.review.get(product.key) ?? "to_review";
   const toReview = items.filter(undecided).length;
@@ -71,8 +83,7 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
       ) : items.length === 0 ? (
         <div className={`${ui.card} p-6`}>
           <p className={ui.bodySm}>
-            No trade program, exemption or cheaper country of origin would lower the duty on this import today. We&apos;ll keep
-            checking as tariffs change.
+            No trade program, exemption or cheaper country of origin would lower the duty on this import today. We&apos;ll keep checking as tariffs change.
           </p>
         </div>
       ) : (
@@ -102,23 +113,25 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
               customsValue={product.customsValue}
               todayPct={product.totalPct}
               measure={measure}
-              onSelect={setSelectedId}
+              onSelect={select}
               afterQuickWins={<RuleOutAll scope="quick" product={product} items={items} />}
               afterSourcing={<RuleOutAll scope="sourcing" product={product} items={items} />}
             />
           </div>
-          {selected && (
-            <OptionReview
-              key={selected.id}
-              product={product}
-              option={selected.option}
-              opportunity={selected.opportunity}
-              imports={imports}
-              shipmentsPerYear={shipmentsPerYear}
-              measure={measure}
-              onRejected={next}
-            />
-          )}
+          <div ref={detail} className="scroll-mt-4">
+            {selected && (
+              <OptionReview
+                key={selected.id}
+                product={product}
+                option={selected.option}
+                opportunity={selected.opportunity}
+                imports={imports}
+                shipmentsPerYear={shipmentsPerYear}
+                measure={measure}
+                onRejected={next}
+              />
+            )}
+          </div>
         </div>
       )}
       {imports && <p className={ui.caption}>Import figures: U.S. Census Bureau. {CENSUS_NOTICE}</p>}
