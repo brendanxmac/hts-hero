@@ -44,6 +44,8 @@ add new ones as they come up.
       each account has been queued).
 - [ ] **Apply the migration** `supabase/migrations/tracker_snapshots.sql` (each account's numbers,
       worked out on the server daily for the onboarding emails).
+- [ ] **Apply the migration** `supabase/migrations/tariff_update_impacts.sql` (which of each
+      account's imports each tariff update may affect: confirmed, likely, possible).
 - [ ] **Supabase redirect URLs allow `/api/auth/callback`** with any `?redirect=` (Authentication →
       URL Configuration), in both projects: sign-in links now come back through it.
 - [ ] **Queue "Meet the Tariff Tracker"** for existing accounts after the release is live:

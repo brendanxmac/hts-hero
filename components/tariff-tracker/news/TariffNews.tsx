@@ -15,13 +15,14 @@ import { useTracker } from "../TrackerContext";
 import { sectionUrl } from "../sections";
 import { markNewsSeen, newsSeenAt, useTariffUpdates, type TrackerUpdate } from "../overview/useTariffUpdates";
 import { NEWS_DOTS, newsToneOf } from "./tone";
+import { matchLabel, useImportMatches, type ImportMatch } from "./useImportMatches";
 
 // Tariff news: every US tariff action from /tariff-updates, in the Tracker. Newest first by month,
 // filterable to the countries the user imports from, by law and by words. A row opens in place
 // (summary, where it stands, what it covers) with the full update a click away. Beside it, how to
 // get them by email. Opening the tab clears the sidebar's "new".
 
-type Scope = "all" | "mine";
+type Scope = "all" | "imports" | "mine";
 
 const byCode = new Map(Countries.map((c) => [c.code, c]));
 const countryLabel = (codes: string[]) => {
@@ -47,7 +48,8 @@ const StageTrack = ({ current }: { current: number }) => (
   </ol>
 );
 
-const Row = ({ update, isNew, mine }: { update: TrackerUpdate; isNew: boolean; mine: boolean }) => {
+const Row = ({ update, isNew, match }: { update: TrackerUpdate; isNew: boolean; match?: ImportMatch }) => {
+  const label = match ? matchLabel(match) : null;
   const [open, setOpen] = useState(false);
   return (
     <li className="border-t border-base-300 first:border-t-0">
@@ -66,7 +68,7 @@ const Row = ({ update, isNew, mine }: { update: TrackerUpdate; isNew: boolean; m
             </span>
             <span className="text-xs text-base-content/60">{STAGE_LABELS[update.stage]}</span>
             {isNew && <span className={tt.chip("error")}>New</span>}
-            {mine && <span className={tt.chip("primary")}>Your countries</span>}
+            {label && <span className={tt.chip(label.tone)}>{label.text}</span>}
           </span>
           <span className="text-sm font-semibold leading-snug text-base-content">{update.title}</span>
           {!open && <span className="line-clamp-1 text-xs text-base-content/60">{update.summary}</span>}
@@ -158,6 +160,11 @@ export const TariffNews = () => {
   }, []);
 
   const myCountries = useMemo(() => new Set(items.map((i) => i.country)), [items]);
+  const matches = useImportMatches(updates);
+  const affectsImports = (u: TrackerUpdate) => {
+    const m = matches.get(u.slug);
+    return !!m && m.confirmed + m.likely > 0;
+  };
   const isMine = (u: TrackerUpdate) => myCountries.size > 0 && (u.countries.includes("ALL") || u.countries.some((c) => myCountries.has(c)));
   const isNew = (u: TrackerUpdate) => !!seenAt && u.first_seen_at > seenAt;
 
@@ -166,12 +173,13 @@ export const TariffNews = () => {
     const words = query.toLowerCase().split(/\s+/).filter(Boolean);
     return (updates ?? []).filter((u) => {
       if (scope === "mine" && !isMine(u)) return false;
+      if (scope === "imports" && !affectsImports(u)) return false;
       if (law && u.authority !== law) return false;
       const text = `${u.title} ${u.summary} ${u.products ?? ""} ${u.hts_codes.join(" ")}`.toLowerCase();
       return words.every((w) => text.includes(w));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updates, scope, law, query, myCountries]);
+  }, [updates, scope, law, query, myCountries, matches]);
 
   const months = useMemo(() => {
     const groups: { month: string; updates: TrackerUpdate[] }[] = [];
@@ -184,6 +192,7 @@ export const TariffNews = () => {
   }, [shown]);
 
   const mineCount = (updates ?? []).filter(isMine).length;
+  const importsCount = (updates ?? []).filter(affectsImports).length;
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
@@ -194,6 +203,7 @@ export const TariffNews = () => {
             size="sm"
             options={[
               { id: "all", label: "All actions", count: updates?.length },
+              { id: "imports", label: "Your imports", count: items.length ? importsCount : undefined, title: "Actions that affect, or may affect, the imports you added" },
               { id: "mine", label: "Your countries", count: myCountries.size ? mineCount : undefined, title: "Actions that apply to the countries you import from" },
             ]}
             value={scope}
@@ -223,7 +233,7 @@ export const TariffNews = () => {
 
         {updates === null ? (
           <div className={`${ui.skeleton} h-96 w-full`} />
-        ) : scope === "mine" && !myCountries.size ? (
+        ) : scope !== "all" && !myCountries.size ? (
           <div className={`${tt.panel} ${tt.panelPad} flex flex-col gap-3`}>
             <p className="text-sm text-base-content/70">Add your imports, and this shows only the actions that apply to the countries you buy from.</p>
             <Link href={sectionUrl("catalog")} className={`${ui.button({ variant: "primary", size: "sm" })} self-start`}>
@@ -236,7 +246,7 @@ export const TariffNews = () => {
               <h2 className={`${tt.eyebrow()} px-1`}>{month}</h2>
               <ul className={`${tt.panel} overflow-hidden`}>
                 {monthUpdates.map((u) => (
-                  <Row key={u.slug} update={u} isNew={isNew(u)} mine={scope === "all" && isMine(u) && !u.countries.includes("ALL")} />
+                  <Row key={u.slug} update={u} isNew={isNew(u)} match={matches.get(u.slug)} />
                 ))}
               </ul>
             </section>

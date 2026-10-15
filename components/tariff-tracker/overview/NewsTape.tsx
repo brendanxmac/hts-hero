@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import * as tt from "@/components/ui/styles/tracker";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { AUTHORITIES } from "@/libs/tariff-updates/types";
 import { NEWS_DOTS as DOTS, newsToneOf as toneOf } from "../news/tone";
@@ -8,6 +9,7 @@ import { todayIso } from "../../duty-calculator/lib/format";
 import { shortDate } from "../../duty-calculator/rate-history/format";
 import { tariffNews } from "./lib/news";
 import { useTariffUpdates } from "./useTariffUpdates";
+import { matchLabel, useImportMatches } from "../news/useImportMatches";
 
 // The tariff news tape across the top of the Overview, as pills with a colored dot: the latest
 // tariff actions from /tariff-updates (proclamations, Federal Register notices, CBP guidance,
@@ -24,6 +26,7 @@ export const NewsTape = () => {
   const today = todayIso();
   const coming = useMemo(() => tariffNews(today).filter((n) => n.date > today).slice(0, COMING), [today]);
   const updates = useTariffUpdates();
+  const matches = useImportMatches(updates);
   const date = (iso: string) => shortDate(iso.slice(0, 10), iso.slice(0, 4) !== today.slice(0, 4));
 
   if (!coming.length && !updates?.length) return null;
@@ -43,6 +46,12 @@ export const NewsTape = () => {
           <b className="shrink-0 font-semibold text-base-content">{AUTHORITIES[u.authority] ?? u.authority}</b>
           <span className="max-w-[22rem] truncate text-base-content/70">{u.title}</span>
           <span className="shrink-0 text-base-content/50">· {date(u.last_activity_at)}</span>
+          {(() => {
+            const m = matches.get(u.slug);
+            if (!m || m.confirmed + m.likely === 0) return null;
+            const label = matchLabel(m);
+            return <span className={`${tt.chip(label.tone)} shrink-0`}>{label.text}</span>;
+          })()}
         </a>
       ))}
       {coming.length > 0 && <span className="shrink-0 pl-2 pr-1 text-xs font-bold uppercase tracking-wider text-base-content/60">Coming</span>}

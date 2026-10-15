@@ -10,6 +10,7 @@ import type { Authority, Kind, Stage } from "@/libs/tariff-updates/types";
 // summaries (the Tariff news tab).
 
 export interface TrackerUpdate {
+  id: string;
   slug: string;
   title: string;
   summary: string;
@@ -24,7 +25,7 @@ export interface TrackerUpdate {
   last_activity_at: string;
 }
 
-const COLUMNS = "slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, first_seen_at, last_activity_at";
+const COLUMNS = "id, slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, first_seen_at, last_activity_at";
 
 const VIEWS = {
   recent: { days: 45, limit: 12 },
