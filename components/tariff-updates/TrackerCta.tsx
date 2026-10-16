@@ -7,7 +7,7 @@ import * as tt from "@/components/ui/styles/tracker"
 // The Tariff Tracker's offer beside tariff news: the updates, matched to the reader's own imports.
 // Free, so the ask is an account, and it opens straight on adding imports. Two sizes: a row in the
 // /tariff-updates list, and a card on an HTS code page (named for the code, with what an alert
-// looks like).
+// looks like), inverted from the page so it stands out.
 
 const HREF = "/tariff-tracker?tab=catalog&add=paste"
 
@@ -36,7 +36,12 @@ const POINTS = [
 
 export function TrackerCtaFeature({ htsno }: { htsno: string }) {
   return (
-    <section aria-labelledby="tracker-cta" className={`${tt.panel} grid gap-8 overflow-hidden p-7 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-center lg:p-9`}>
+    // Inverted from the page (dark on a light page, light on a dark one), so it stands out; theme
+    // classes inside follow (.hts-tracker-inverse)
+    <section
+      aria-labelledby="tracker-cta"
+      className={`${tt.panel} hts-tracker-inverse grid gap-8 overflow-hidden border-transparent p-7 text-base-content lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-center lg:p-9`}
+    >
       <div className="flex flex-col gap-4">
         <span className={`${tt.eyebrow("primary")} flex items-center gap-2`}>
           <BellAlertIcon className="h-4 w-4" aria-hidden />
