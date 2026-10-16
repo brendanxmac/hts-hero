@@ -34,6 +34,7 @@ export type TrackerTier = (typeof TRACKER_TIERS)[number];
 // their team. A premium service, priced by the imports (pairs) we manage; above the last tier
 // it's quoted. Includes the Tariff Tracker on every managed import.
 export const MANAGED_TIERS = [
+  { maxPairs: 25, price: 1200 },
   { maxPairs: 50, price: 2500 },
   { maxPairs: 200, price: 4500 },
   { maxPairs: 500, price: 7500 },

@@ -10,9 +10,9 @@ export const bundleFaqList: FAQItem[] = [
       <div className="pt-2">
         <p>
           Absolutely, you can{" "}
-          <Link href="#" className="link link-primary">
+          <a href={config.bookCallUrl} target="_blank" rel="noopener noreferrer" className="link link-primary">
             book a quick demo here.
-          </Link>
+          </a>
         </p>
       </div>
     ),

@@ -21,7 +21,6 @@ const NAV = [
   { href: "/tariff-audit", label: "Tariff Audit" },
   { href: "/tariff-updates", label: "Tariff Updates" },
   { href: "/classify", label: "Classification" },
-  { href: "/pricing-calculator", label: "Pricing" },
 ];
 
 export const MarketingHeader = () => {

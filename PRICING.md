@@ -137,12 +137,13 @@ self-serve.
 
 | Imports managed | Price / month |
 |---|---|
+| Up to 25 | $1,200 |
 | Up to 50 | $2,500 |
 | Up to 200 | $4,500 |
 | Up to 500 | $7,500 |
 | 500+ | Quoted |
 
-Annual billing takes **20% off** (`MANAGED_ANNUAL_DISCOUNT`): $2,000, $3,600 and $6,000 a month,
+Annual billing takes **20% off** (`MANAGED_ANNUAL_DISCOUNT`): $960, $2,000, $3,600 and $6,000 a month,
 billed yearly. The page has a Monthly / Annual toggle.
 
 As with audits, HTS Hero finds and documents; corrections, protests and refunds are filed by the

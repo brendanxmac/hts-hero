@@ -88,7 +88,7 @@ const STEPS = [
   },
   {
     title: "Onboarding",
-    body: "We join your Slack, meet your broker, and load your products and past entries.",
+    body: "We join your Slack, meet your team, and load your products.",
   },
   {
     title: "Your First Review",
@@ -112,6 +112,7 @@ const INCLUDED = [
 ];
 
 const TIER_NOTES = [
+  "For a small catalog that needs expert hands on every tariff",
   "For focused importers with a core product line",
   "For growing catalogs across several countries",
   "For complex supply chains and many suppliers",
@@ -283,7 +284,7 @@ export const ExpertHelp = () => {
             />
           </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
           {MANAGED_TIERS.map((tier, i) => (
             <div key={tier.maxPairs} className="flex flex-col gap-4 rounded-xl border border-base-300 p-6">
               <span className={tt.eyebrow("neutral")}>Up to {tier.maxPairs.toLocaleString("en-US")} imports</span>
