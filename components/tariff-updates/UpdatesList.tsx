@@ -101,8 +101,10 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
     `${ui.button({ variant: active ? "primary" : "secondary", size: "sm" })} ${active ? "" : "font-medium"}`
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className={`${tt.panel} flex flex-col gap-4 p-5`}>
+    // One card: the search and filters on top (pinned under the site's sticky header while the
+    // list scrolls), then the updates by month, each month a band of its own
+    <div className={`${tt.panel} overflow-clip`}>
+      <div className="sticky top-[65px] z-20 flex flex-col gap-4 rounded-t-lg border-b border-base-300 bg-base-100 p-5">
         <div className="flex flex-wrap items-center gap-3">
           <label className="relative min-w-[16rem] flex-1">
             <span className="sr-only">Search tariff updates</span>
@@ -146,10 +148,10 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
       {months.length ? (
         months.map(({ month, updates: monthUpdates }) => (
           <section key={month} aria-labelledby={`month-${month}`}>
-            <h2 id={`month-${month}`} className={`${tt.eyebrow()} mb-3 px-1`}>
+            <h2 id={`month-${month}`} className={`${tt.eyebrow()} border-b border-base-300 bg-tt-soft px-6 py-2.5`}>
               {month}
             </h2>
-            <ul className={`${tt.panel} divide-y divide-base-300 overflow-hidden`}>
+            <ul className="divide-y divide-base-300 border-b border-base-300 last:border-b-0">
               {monthUpdates.map((u) => (
                 <UpdateRow key={u.slug} update={u} />
               ))}
@@ -157,7 +159,7 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
           </section>
         ))
       ) : (
-        <p className={`${tt.panel} p-6 text-sm text-base-content/70`}>No updates match. Try another search or filter.</p>
+        <p className="p-6 text-sm text-base-content/70">No updates match. Try another search or filter.</p>
       )}
     </div>
   )
