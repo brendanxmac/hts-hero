@@ -69,7 +69,7 @@ export const ProductHeader = ({
         <div className="flex items-center justify-between gap-3">
           <button type="button" onClick={onBack} className="inline-flex items-center gap-1 text-sm font-semibold text-base-content/70 hover:text-base-content">
             <ArrowLeftIcon className="h-4 w-4" aria-hidden />
-            Your imports
+            Back
           </button>
           <div className="flex items-center gap-2">
             {actions}

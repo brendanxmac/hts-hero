@@ -94,9 +94,15 @@ export const TrackerApp = () => {
   // Bumped to start the calculator over from the address, for a calculator link opened in place
   const [calculatorRun, setCalculatorRun] = useState(0);
 
-  // Whether the open product was opened from the list, so going back returns to it (scroll and
-  // filters intact) rather than adding another history entry
-  const openedFromList = useRef(false);
+  // Whether the user has moved around the Tracker since the page loaded: then an import's Back
+  // returns to wherever they came from (scroll and filters intact). Landing straight on an import
+  // (a shared link, an alert email) has nowhere to go back to in the Tracker, so Back opens Your
+  // Imports instead.
+  const moved = useRef(false);
+  const firstView = useRef(`${tab}:${product ?? ""}`);
+  useEffect(() => {
+    if (`${tab}:${product ?? ""}` !== firstView.current) moved.current = true;
+  }, [tab, product]);
 
   const nav: TrackerNav = useMemo(
     () => ({
@@ -106,14 +112,12 @@ export const TrackerApp = () => {
         if (slug !== tab) window.history.pushState(null, "", sectionUrl(slug));
       },
       product,
-      openProduct: (key, fromList = false, productTab) => {
-        openedFromList.current = fromList;
+      openProduct: (key, _fromList = false, productTab) => {
         window.history.pushState(null, "", productUrl(key, productTab));
       },
       closeProduct: () => {
-        if (openedFromList.current) window.history.back();
+        if (moved.current) window.history.back();
         else window.history.pushState(null, "", sectionUrl("catalog"));
-        openedFromList.current = false;
       },
       openCalculator: (url) => {
         const { pathname, search } = new URL(url, window.location.origin);
