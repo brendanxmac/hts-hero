@@ -71,3 +71,27 @@ describe("Tariff Tracker: plans", () => {
     expect(trackerTierFor(501)).toBe(null)
   })
 })
+
+// Which imports are tracked (snapshot.ts coveredKeys, the same rule as TrackerContext's trackedKeys)
+import { coveredKeys } from "../libs/tariff-tracker/snapshot"
+
+describe("Tariff Tracker: tracked imports", () => {
+  const item = (code: string, covered?: boolean) => ({ code, country: "CN", ...(covered === undefined ? {} : { covered }) }) as any
+  const product = (code: string, duty: number) => ({ key: `${code}-CN`, result: { totalDuty: duty } }) as any
+  const products = [product("1", 10), product("2", 50), product("3", 30), product("4", 40)]
+
+  it("before any choice, the highest-duty imports up to the limit", () => {
+    const keys = coveredKeys(["1", "2", "3", "4"].map((c) => item(c)), products, 2)
+    expect([...Array.from(keys)].sort().join()).toBe("2-CN,4-CN")
+  })
+
+  it("once the user chooses, exactly their picks: untracking frees a slot", () => {
+    const keys = coveredKeys([item("1"), item("2", false), item("3"), item("4", true)], products, 2)
+    expect(Array.from(keys).join()).toBe("4-CN")
+  })
+
+  it("picks never go past the limit", () => {
+    const keys = coveredKeys([item("1", true), item("2", true), item("3", true)], products, 2)
+    expect(keys.size).toBe(2)
+  })
+})

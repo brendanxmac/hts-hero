@@ -71,7 +71,7 @@ export const ImportsTable = ({
         covered: (key) => trackedKeys.has(key),
         picked: (key) => pickedKeys.has(key),
         setCovered: (key, on) => {
-          if (!setCovered(key, on)) openUpgrade("tracking");
+          if (!setCovered(key, on)) openUpgrade("limit");
         },
         review: (key) => review.get(key) ?? "unchecked",
         unlocked: (key) => unlocked.has(key),
@@ -125,7 +125,7 @@ export const ImportsTable = ({
     const full = picked.find(
       (r) => !trackedKeys.has(r.id) && !setCovered(r.id, true),
     );
-    if (full) openUpgrade("tracking");
+    if (full) openUpgrade("limit");
   };
   const alertsOff = (picked: Row<TrackedProduct>[]) =>
     picked.forEach((r) => setCovered(r.id, false));

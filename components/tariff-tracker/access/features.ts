@@ -15,6 +15,8 @@ export type PremiumFeature =
       | "expert-help"
     >
   | "tracking"
+  // Tracking one more import than the plan allows
+  | "limit"
   | "plan"
   | "qualify"
   | "refunds"
@@ -51,6 +53,10 @@ export const PREMIUM_FEATURES: Record<
     benefit: "Work with the HTS Hero team on your tariff strategy",
   },
   tracking: {
+    name: "Alerts",
+    benefit: "Get alerts and impact checks on every one of your imports, not just the first few",
+  },
+  limit: {
     name: "Alerts",
     benefit: "Get alerts and impact checks on every one of your imports, not just the first few",
   },
@@ -93,6 +99,7 @@ export const featureTab = (feature: PremiumFeature): SectionSlug => {
     case "entries":
       return AUDITS_ENABLED ? "entries" : "catalog"
     case "tracking":
+    case "limit":
     case "alerts":
       return "alerts"
     case "plan":

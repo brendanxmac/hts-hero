@@ -206,26 +206,26 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
     return out;
   }, [matched, htsElements, entryDate, deferredAdjustments]);
 
-  // Alerts cover the products the user picked, up to the limit, then fill any spare slots with the
-  // highest-duty products they haven't taken out (PRICING.md)
+  // The imports tracked (alerts and impact checks, PRICING.md): until the user chooses, the
+  // highest-duty ones up to the plan's limit; once they've chosen (tracked or untracked any), exactly
+  // their picks, up to the limit, so untracking one frees a slot (libs/tariff-tracker/snapshot.ts
+  // coveredKeys is the same rule, for alerts)
   const pickedKeys = useMemo(() => new Set(items.filter((i) => i.covered === true).map(itemKey)), [items]);
+  const chosen = useMemo(() => items.some((i) => i.covered !== undefined), [items]);
   const trackedKeys = useMemo(() => {
     const limit = access.pairLimit;
-    const covered = new Set(items.filter((i) => i.covered === true).map(itemKey).slice(0, limit));
-    const takenOut = new Set(items.filter((i) => i.covered === false).map(itemKey));
-    const spare = [...products]
-      .filter((p) => !covered.has(p.key) && !takenOut.has(p.key))
-      .sort((a, b) => b.result.totalDuty - a.result.totalDuty);
-    for (const p of spare) {
-      if (covered.size >= limit) break;
-      covered.add(p.key);
-    }
-    return covered;
-  }, [items, products, access.pairLimit]);
+    if (chosen) return new Set(items.filter((i) => i.covered === true).map(itemKey).slice(0, limit));
+    return new Set([...products].sort((a, b) => b.result.totalDuty - a.result.totalDuty).slice(0, limit).map((p) => p.key));
+  }, [items, products, access.pairLimit, chosen]);
+  // False when it would go past the plan's limit (the caller shows the plans)
   const setCovered = (key: string, covered: boolean) => {
-    if (covered && !pickedKeys.has(key) && pickedKeys.size >= access.pairLimit) return false;
-    store.setProductCovered(key, covered);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_COVERAGE_CHANGED, { covered, picked: pickedKeys.size + (covered ? 1 : -1), limit: access.pairLimit });
+    const on = trackedKeys.has(key);
+    if (covered === on) return true;
+    if (covered && trackedKeys.size >= access.pairLimit) return false;
+    // The first choice keeps what was picked automatically, with this one changed
+    if (!chosen) store.setProductsCovered({ ...Object.fromEntries(Array.from(trackedKeys, (k) => [k, true])), [key]: covered });
+    else store.setProductCovered(key, covered);
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_COVERAGE_CHANGED, { covered, picked: trackedKeys.size + (covered ? 1 : -1), limit: access.pairLimit });
     return true;
   };
   const trackedProducts = useMemo(() => products.filter((p) => trackedKeys.has(p.key)), [products, trackedKeys]);
@@ -247,7 +247,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
         trackedKeys,
         pickedKeys,
         setCovered,
-        untrackedCount: Math.max(0, items.length - access.pairLimit),
+        untrackedCount: Math.max(0, items.length - trackedKeys.size),
         trackedProducts,
         itemFor: (key) => items.find((i) => itemKey(i) === key),
         setProductMeta: store.setProductMeta,

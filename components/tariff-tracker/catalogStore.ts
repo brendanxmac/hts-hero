@@ -147,6 +147,12 @@ export const setProductCovered = (key: string, covered: boolean) => {
   save({ ...current, items: current.items.map((item) => (itemKey(item) === key ? { ...item, covered } : item)) });
 };
 
+// Several imports' tracking at once (product key → tracked or not)
+export const setProductsCovered = (changes: Record<string, boolean>) => {
+  const current = getSnapshot();
+  save({ ...current, items: current.items.map((item) => (itemKey(item) in changes ? { ...item, covered: changes[itemKey(item)] } : item)) });
+};
+
 // Shipments a year, or the origin it's moving to; undefined clears one
 export const setProductMeta = (key: string, patch: CatalogItemMeta) => {
   const current = getSnapshot();

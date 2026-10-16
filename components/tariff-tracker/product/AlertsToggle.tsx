@@ -13,7 +13,7 @@ export const AlertsToggle = ({ productKey }: { productKey: string }) => {
   const on = trackedKeys.has(productKey);
   const toggle = () => {
     if (!signedIn) return unlock("alerts");
-    if (!setCovered(productKey, !on)) openUpgrade("tracking");
+    if (!setCovered(productKey, !on)) openUpgrade("limit");
   };
   return (
     <button

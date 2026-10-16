@@ -78,17 +78,12 @@ export const trackedProducts = (items: CatalogItem[], adjustments: Record<string
   return products
 }
 
-// The imports a plan covers: the user's picks up to the limit, then the highest-duty ones they
-// didn't take out (TrackerContext's trackedKeys)
+// The imports a plan covers (TrackerContext's trackedKeys): until the user chooses, the
+// highest-duty ones up to the limit; once they've tracked or untracked any, exactly their picks
 export const coveredKeys = (items: CatalogItem[], products: TrackedProduct[], limit: number) => {
   const keyOf = (i: CatalogItem) => `${i.code}-${i.country}`
-  const covered = new Set(items.filter((i) => i.covered === true).map(keyOf).slice(0, limit))
-  const takenOut = new Set(items.filter((i) => i.covered === false).map(keyOf))
-  for (const p of [...products].filter((p) => !covered.has(p.key) && !takenOut.has(p.key)).sort((a, b) => b.result.totalDuty - a.result.totalDuty)) {
-    if (covered.size >= limit) break
-    covered.add(p.key)
-  }
-  return covered
+  if (items.some((i) => i.covered !== undefined)) return new Set(items.filter((i) => i.covered === true).map(keyOf).slice(0, limit))
+  return new Set([...products].sort((a, b) => b.result.totalDuty - a.result.totalDuty).slice(0, limit).map((p) => p.key))
 }
 
 export const computeSnapshot = async (db: Db, userId: string, htsElements: HtsElement[]): Promise<TrackerSnapshot | null> => {
