@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import * as ui from "@/components/ui/styles";
@@ -28,17 +28,8 @@ export const ProductCatalog = () => {
     method: "paste",
   });
 
-  // The app's scroll area: a product view starts at the top; the list returns to where it was
+  // (Scroll positions are kept per view in TrackerApp: the list returns to where it was)
   const anchor = useRef<HTMLDivElement>(null);
-  const listScroll = useRef(0);
-  const previous = useRef(nav.product);
-  useLayoutEffect(() => {
-    const scroller = anchor.current?.closest("main");
-    if (!scroller || previous.current === nav.product) return;
-    if (!previous.current) listScroll.current = scroller.scrollTop;
-    scroller.scrollTop = nav.product ? 0 : listScroll.current;
-    previous.current = nav.product;
-  }, [nav.product]);
 
   const openDialog = (method: AddMethod) => setDialog({ open: true, method });
 

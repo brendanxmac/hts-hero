@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import * as ui from "@/components/ui/styles";
@@ -104,20 +104,73 @@ export const TrackerApp = () => {
     if (`${tab}:${product ?? ""}` !== firstView.current) moved.current = true;
   }, [tab, product]);
 
+  // Each view's scroll position (the Tracker's one scroller is its <main>), kept as the user
+  // scrolls. Going back or forward (the browser's buttons, or an import's Back) returns to where
+  // that view was; a new view opens at the top.
+  const scrolls = useRef(new Map<string, number>());
+  const viewKey = `${tab}:${product ?? ""}`;
+  const currentView = useRef(viewKey);
+  // The views visited, in order: arriving at the one before the current is going back
+  const viewStack = useRef<string[]>([viewKey]);
+  // Between leaving a view and the next one settling, scroll events are the browser clamping the
+  // old view's position, so they aren't kept
+  const settling = useRef(false);
+  const leaveView = () => {
+    const main = document.querySelector("main");
+    if (main && !settling.current) scrolls.current.set(currentView.current, main.scrollTop);
+    settling.current = true;
+    // In case the view doesn't change after all (the same import on another tab)
+    window.setTimeout(() => (settling.current = false), 1500);
+  };
+  useEffect(() => {
+    const main = document.querySelector("main");
+    if (!main) return;
+    const onScroll = () => {
+      if (!settling.current) scrolls.current.set(currentView.current, main.scrollTop);
+    };
+    main.addEventListener("scroll", onScroll, { passive: true });
+    return () => main.removeEventListener("scroll", onScroll);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => {
+    if (currentView.current === viewKey) return;
+    currentView.current = viewKey;
+    const main = document.querySelector("main");
+    if (!main) return;
+    const stack = viewStack.current;
+    const back = stack.length > 1 && stack[stack.length - 2] === viewKey;
+    if (back) stack.pop();
+    else stack.push(viewKey);
+    const target = back ? (scrolls.current.get(viewKey) ?? 0) : 0;
+    // The view may still be filling in (charts, rows): try for a few frames until it's tall enough
+    let frames = 0;
+    const restore = () => {
+      main.scrollTop = target;
+      if (Math.abs(main.scrollTop - target) > 2 && frames++ < 30) requestAnimationFrame(restore);
+      else settling.current = false;
+    };
+    restore();
+  }, [viewKey]);
+
   const nav: TrackerNav = useMemo(
     () => ({
       tab,
       // pushState without a navigation: Next.js keeps useSearchParams in step, and nothing reloads
       openTab: (slug) => {
-        if (slug !== tab) window.history.pushState(null, "", sectionUrl(slug));
+        if (slug === tab && !product) return;
+        leaveView();
+        window.history.pushState(null, "", sectionUrl(slug));
       },
       product,
       openProduct: (key, _fromList = false, productTab) => {
+        leaveView();
         window.history.pushState(null, "", productUrl(key, productTab));
       },
       closeProduct: () => {
         if (moved.current) window.history.back();
-        else window.history.pushState(null, "", sectionUrl("catalog"));
+        else {
+          leaveView();
+          window.history.pushState(null, "", sectionUrl("catalog"));
+        }
       },
       openCalculator: (url) => {
         const { pathname, search } = new URL(url, window.location.origin);
