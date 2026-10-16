@@ -5,6 +5,7 @@
   "scripts": {
     "email": "email dev",
     "email:meet-tracker": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/meet-tracker.ts",
+    "stripe:check-tracker": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx --env-file=.env.local scripts/stripe/check-tracker-prices.ts",
     "email:auth": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/export-auth.tsx",
     "dev": "next dev",
     "dev-test": "APP_ENV=test next dev",

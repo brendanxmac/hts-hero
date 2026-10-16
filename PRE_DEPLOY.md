@@ -43,6 +43,9 @@ add new ones as they come up.
       Checkout finds the price by its lookup key and the webhook maps any price by its metadata
       (`libs/tariff-tracker/prices.ts`), so no Tracker price env vars are needed. To change a price
       later: new price on the same product, same lookup key with "transfer lookup key", archive the old.
+      Check the setup with `npm run stripe:check-tracker` (it reads STRIPE_SECRET_KEY from
+      .env.local; run it once with the live key). Also confirm the live Classify prices match the
+      site ($39 / $89): the sandbox has $29 / $80.
 - [ ] **Tracker MVP trim** (2026-10-16): savings and audits are off (`libs/tariff-tracker/features.ts`);
       every change is in `MVP_TRIM.md`. Re-run `npm run email:auth` and paste the auth templates
       into Supabase (they changed). `app/zz-tracker/` (the Tracker without sign-in) is untracked and

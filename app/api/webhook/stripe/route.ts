@@ -4,7 +4,6 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { PricingPlan } from "../../../../types";
-import { getIsoDateInFuture } from "../../../../utilities/time";
 import { createPurchase } from "../../../../libs/supabase/purchase";
 import {
   fetchUser,
@@ -14,40 +13,7 @@ import {
   UserProfile,
 } from "../../../../libs/supabase/user";
 import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
-import { trackerPlanForPriceId } from "@/libs/tariff-tracker/prices";
-
-// priceId: Tariff Tracker plans can be annual, which last a year
-const getPlanExpirationDate = async (plan: PricingPlan, priceId?: string) => {
-  const tracker = priceId ? await trackerPlanForPriceId(priceId) : null;
-  if (tracker) return getIsoDateInFuture(tracker.billing === "annual" ? 366 : 31);
-  switch (plan) {
-    case PricingPlan.CLASSIFY_STARTER:
-    case PricingPlan.CLASSIFY_PRO:
-    case PricingPlan.TARIFF_IMPACT_STANDARD:
-    case PricingPlan.TARIFF_IMPACT_PRO:
-      return getIsoDateInFuture(31);
-  }
-};
-
-// Tracker prices map by their Stripe metadata (libs/tariff-tracker/prices.ts), so every version of
-// a Tracker price keeps working after a price change
-const getPlanFromPriceId = async (priceId: string): Promise<PricingPlan | null> => {
-  const tracker = await trackerPlanForPriceId(priceId);
-  if (tracker) return tracker.plan;
-  switch (priceId) {
-    case process.env.STRIPE_TARIFF_IMPACT_STANDARD_PRICE_ID:
-      return PricingPlan.TARIFF_IMPACT_STANDARD;
-    case process.env.STRIPE_TARIFF_IMPACT_PRO_PRICE_ID:
-      return PricingPlan.TARIFF_IMPACT_PRO;
-    case process.env.STRIPE_CLASSIFY_STARTER_PRICE_ID:
-      return PricingPlan.CLASSIFY_STARTER;
-    case process.env.STRIPE_CLASSIFY_PRO_PRICE_ID:
-    case process.env.STRIPE_CLASSIFY_PRO_PRICE_ID_OLD:
-      return PricingPlan.CLASSIFY_PRO;
-    default:
-      return null;
-  }
-};
+import { getPlanExpirationDate, getPlanFromPriceId } from "@/libs/stripe-plans";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-05-28.basil",
