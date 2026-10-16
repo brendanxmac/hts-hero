@@ -21,14 +21,15 @@ import { monitorFacts } from "@/components/tariff-monitor";
 import { getAuditExample } from "@/libs/tariff-audit-example";
 import { getSavingsExamples } from "@/libs/tariff-savings-example";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import * as mk from "@/components/ui/marketing/styles";
 
 // Static, refreshed daily with the tariff data
 export const revalidate = 86400;
 
-const TITLE = "HTS Hero: US Tariff Calculator, Tariff Monitoring & Duty Audits";
+const TITLE = "HTS Hero: US Tariff Calculator & Tariff Tracking for Your Imports";
 const DESCRIPTION =
-  "Calculate the US duty on any HTS code free, get alerts when tariffs change on your imports, and find duty you overpaid. For importers and customs brokers.";
+  "Calculate the US duty on any HTS code free, track every tariff on your imports, get alerts when tariffs change, and see exactly how each new tariff affects you. For importers and customs brokers.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -61,8 +62,9 @@ export default async function Home() {
   const facts = monitorFacts();
   const [{ example }, audit, savings] = await Promise.all([
     getDutyCalculatorContent(),
-    getAuditExample(),
-    getSavingsExamples(),
+    // Only fetched while the homepage shows the audit and savings blocks (MVP_TRIM.md)
+    AUDITS_ENABLED ? getAuditExample() : null,
+    SAVINGS_ENABLED ? getSavingsExamples() : [],
   ]);
 
   return (

@@ -24,7 +24,7 @@ export const STEPS = [
   },
   {
     title: "Get alerted when it changes",
-    text: "When a tariff is announced, and again when it reaches the HTS, you see which products it hits, the old and new rate, and what it costs.",
+    text: "When a tariff is announced, and again when it reaches the HTS, you see which products it hits, the old and new rate, and the change in %.",
   },
 ];
 
@@ -46,7 +46,7 @@ export const CHANNELS = [
 export const FEATURES: { title: string; text: string; href?: string; linkText?: string }[] = [
   {
     title: "Tariff alerts by HTS code",
-    text: "Alerts only for changes that touch your codes and countries, with the old rate, the new rate, the date it takes effect and the cost per product.",
+    text: "Alerts only for changes that touch your codes and countries, with the old rate, the new rate, the change in % and the date it takes effect.",
   },
   {
     title: "Early warning on announcements",
@@ -57,18 +57,16 @@ export const FEATURES: { title: string; text: string; href?: string; linkText?: 
     text: "Every change to each product's duty, revision by revision, with the program behind it. Compare any two dates side by side.",
   },
   {
-    title: "Entry audit",
-    text: "Log your entries and see the duty that applied on each entry date, so overpaid and underpaid duty stands out.",
-    href: "/tariff-audit",
-    linkText: "How tariff audits work",
+    title: "Impact checks",
+    text: "Pick any tariff action and see exactly how it affects each of your imports, with the rate before and after.",
   },
   {
-    title: "Savings discovery",
-    text: "The rate on each product from every other country of origin, plus the trade programs and exemptions that could lower it.",
+    title: "Export to CSV or Excel",
+    text: "Export every tariff on every import, with each one's rate history, to share or work with in your own tools.",
   },
   {
     title: "Built for teams",
-    text: "Upload your catalog as CSV, route alerts to the right Slack or Teams channel, and export reports to share.",
+    text: "Upload your catalog as CSV, route alerts to the right Slack or Teams channel, and share exports with your team.",
   },
 ];
 
@@ -97,7 +95,7 @@ export const COMPARISON_ROWS: { label: string; values: [string, string, string, 
     values: ["Yes", "Yes", "Yes", "Sometimes"],
   },
   {
-    label: "Rate history and entry audit",
+    label: "Rate history and impact checks",
     values: ["Yes", "No", "No", "No"],
     win: true,
   },
@@ -110,7 +108,7 @@ export const COMPARISON_ROWS: { label: string; values: [string, string, string, 
 export const MONITOR_FAQS = [
   {
     question: "What is tariff tracking software?",
-    answer: `Tariff tracking software watches the US duty on the products you import and tells you when it changes. ${DEFINITION} Each alert lists the products affected, the old and new rate, the date it takes effect and what it costs.`,
+    answer: `Tariff tracking software watches the US duty on the products you import and tells you when it changes. ${DEFINITION} Each alert lists the products affected, the old and new rate, the change in % and the date it takes effect.`,
   },
   {
     question: "How do I get alerts when tariffs change on my products?",
@@ -133,7 +131,7 @@ export const MONITOR_FAQS = [
   },
   {
     question: "How much does the Tariff Tracker cost?",
-    answer: `It's free to start, with no time limit and no credit card. Every account can upload its whole catalog, with rate history and sourcing for all of it, alerts on ${TRIAL_ALLOWANCE.alertImports} imports (an import is one HTS code from one country of origin), savings checks on ${TRIAL_ALLOWANCE.savingsChecks} imports and ${TRIAL_ALLOWANCE.auditChecks} audit checks of past entries. Paid plans start at ${from} a month for up to ${TRACKER_TIERS[0].maxPairs} imports and cover alerts and savings on each one, with unlimited audit checks.`,
+    answer: `It's free to start, with no time limit and no credit card. Every account can upload its whole catalog, with every tariff, rate history and exports to CSV or Excel for all of it, and tracks ${TRIAL_ALLOWANCE.alertImports} imports free (an import is one HTS code from one country of origin), with alerts and impact checks on each. Paid plans start at ${from} a month to track up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly.`,
   },
   {
     question: "What's the difference between the Tariff Calculator and the Tariff Tracker?",

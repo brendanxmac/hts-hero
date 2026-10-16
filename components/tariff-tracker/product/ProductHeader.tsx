@@ -7,7 +7,7 @@ import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { TabBar } from "@/components/ui/TabBar";
 import { TrackedProduct } from "../report";
-import { ProductTab } from "../sections";
+import { PRODUCT_TABS, ProductTab } from "../sections";
 import { useInsights } from "../insights/InsightsContext";
 import { wholeDollars } from "../insights/teasers";
 import { AlertsToggle } from "./AlertsToggle";
@@ -55,13 +55,14 @@ export const ProductHeader = ({
   const { entry } = row;
   const saving = useBestSaving(row.key);
   // Each view, with what's waiting on it: savings found (always "up to"), the history's changes
-  const tabs: { id: ProductTab; label: string; count?: number; badge?: string; badgeTone?: "success" | "warning" }[] = [
+  const allTabs: { id: ProductTab; label: string; count?: number; badge?: string; badgeTone?: "success" | "warning" }[] = [
     { id: "duty", label: "Duty" },
     { id: "compare", label: "Compare" },
     { id: "history", label: "History", count: historyChanges > 0 ? historyChanges : undefined },
     { id: "savings", label: "Savings", badge: saving > 0.005 ? `Up to ${wholeDollars(saving)}` : undefined, badgeTone: "success" },
     { id: "audit", label: "Audit", badge: "Beta" },
   ];
+  const tabs = allTabs.filter((t) => PRODUCT_TABS.includes(t.id));
   return (
     <header className={`${tt.panel} flex flex-col`} aria-label={`${entry.element.htsno} from ${entry.country.name}`}>
       <div className="flex flex-col gap-4 px-5 pb-4 pt-4 sm:px-6">

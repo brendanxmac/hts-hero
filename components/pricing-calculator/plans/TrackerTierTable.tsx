@@ -1,11 +1,11 @@
-import { Billing, TRACKER_MAX_LISTED_PAIRS, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice, monthlyRate } from "../lib/pricing";
+import { Billing, TRACKER_MAX_LISTED_PAIRS, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice, monthlyRate, trackerBilling } from "../lib/pricing";
 
-// Tariff Tracker's price for each size of catalog, from the free usage-based trial up, as one row
-// on the Tracker's dark card
+// Tariff Tracker's price for each size of catalog, from the free tier up, as one row on the
+// Tracker's dark card. Monthly prices only while Tracker annual billing is off (trackerBilling)
 export const TrackerTierTable = ({ billing }: { billing: Billing }) => {
   const stops = [
     { label: "Start", price: "Free", tone: "text-success" },
-    ...TRACKER_TIERS.map((tier) => ({ label: `Up to ${tier.maxPairs}`, price: formatPrice(monthlyRate(tier.price, billing)), tone: "text-base-content" })),
+    ...TRACKER_TIERS.map((tier) => ({ label: `Up to ${tier.maxPairs}`, price: formatPrice(monthlyRate(tier.price, trackerBilling(billing))), tone: "text-base-content" })),
     { label: `${TRACKER_MAX_LISTED_PAIRS}+`, price: "Let's talk", tone: "text-primary" },
   ];
   return (
@@ -19,8 +19,8 @@ export const TrackerTierTable = ({ billing }: { billing: Billing }) => {
         ))}
       </dl>
       <p className="m-0 text-xs text-base-content/50">
-        Free: {TRIAL_ALLOWANCE.savingsChecks} savings checks, {TRIAL_ALLOWANCE.auditChecks} audit checks, alerts on {TRIAL_ALLOWANCE.alertImports} imports.
-        Prices per month; 1 import = 1 HTS code from 1 country of origin.
+        Free: track {TRIAL_ALLOWANCE.alertImports} imports, with alerts and impact checks on each.
+        Billed monthly; 1 import = 1 HTS code from 1 country of origin.
       </p>
     </div>
   );

@@ -10,7 +10,7 @@ import { useRecentLookups } from "./useRecentLookups";
 /* const SHOWS = [
   { title: "Every line", body: "Each tariff, exemption and fee on your import, with its legal source.", tone: "primary" as const },
   { title: "Compare countries", body: "Your import from three countries side by side, and sourcing intelligence across all of them.", tone: "success" as const },
-  { title: "Duty over time", body: "When the rate changed, and whether you might be owed a refund.", tone: "warning" as const },
+  { title: "Duty over time", body: "When the rate changed, and by how much.", tone: "warning" as const },
 ]; */
 
 export const LandingEmpty = ({ f }: { f: TariffFinder }) => {

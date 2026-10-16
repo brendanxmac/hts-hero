@@ -26,6 +26,7 @@ import { OriginDistribution } from "./OriginDistribution";
 import { ProductTiles } from "./ProductTiles";
 import { PulseEvent, RatePulse } from "./RatePulse";
 import { HealthSummary, ImpactsSummary, NewsSummary } from "./SummaryBoxes";
+import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The Overview (DESIGN_SYSTEM.md §15): the Tracker's home. A rotating line about the catalog, the
 // path to lower duty on a strip of its own, then the numbers, potential savings, the rate pulse, where the catalog comes
@@ -167,7 +168,8 @@ export const Overview = () => {
       yearAgo,
       rise: rise && rise.date ? rise : undefined,
       drop: drop && drop.date && drop.date !== rise?.date ? drop : undefined,
-      picks: productsToLookAt(insights.products, insights.savings, insights.changes),
+      // Savings are off for the Tracker MVP: only the latest increases
+      picks: productsToLookAt(insights.products, SAVINGS_ENABLED ? insights.savings : new Map(), insights.changes),
       lastYearChanges: insights.changes.filter((c) => c.date >= yearAgo),
     };
   }, [t.products, t.items.length, insights, today]);

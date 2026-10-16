@@ -11,6 +11,7 @@ import {
   ReceiptPercentIcon,
   Squares2X2Icon,
 } from "@heroicons/react/20/solid"
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The Tariff Tracker's sections, in sidebar order: tabs on the one /tariff-tracker page, picked
 // with ?tab=. Sections that aren't built yet, or are held back as coming soon, show what's
@@ -223,7 +224,11 @@ export const sectionUrl = (slug: SectionSlug) =>
 // A catalog product's own view's tabs, in order; Duty is where it opens
 export type ProductTab = "duty" | "compare" | "history" | "savings" | "audit"
 
-export const PRODUCT_TABS: ProductTab[] = ["duty", "compare", "history", "savings", "audit"]
+// Savings and Audit are off for the Tracker MVP (libs/tariff-tracker/features.ts); a link to either
+// opens Duty instead
+export const PRODUCT_TABS: ProductTab[] = (["duty", "compare", "history", "savings", "audit"] as ProductTab[]).filter(
+  (t) => (t !== "savings" || SAVINGS_ENABLED) && (t !== "audit" || AUDITS_ENABLED),
+)
 
 export const isProductTab = (tab: string | null): tab is ProductTab => PRODUCT_TABS.includes(tab as ProductTab)
 

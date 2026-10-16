@@ -1,6 +1,7 @@
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { AlertSample, Checklist, Cta, Eyebrow, P, PlanStrip, Signature, Title, UpdateSummary } from "../kit/parts"
 import { siteLink } from "../kit/brand"
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
 
 // The "no imports yet" onboarding emails. Both lead to one thing, adding imports, and land on the
 // Tracker's Add products dialog (?tab=catalog&add=paste):
@@ -44,8 +45,16 @@ export default function OnboardingEmail(props: OnboardingEmailProps) {
           items={[
             <><strong>Every rate, always current.</strong> The full duty on each import, line by line, updated the moment anything changes.</>,
             <><strong>Alerts before it costs you.</strong> When a new tariff hits one of your imports, you hear about it first, by email, Slack or Teams.</>,
-            <><strong>Savings you may qualify for.</strong> Trade programs, exclusions and lower-duty countries, checked for every import.</>,
-            <><strong>Duty you may have overpaid.</strong> Audit past entries against the rates in force on the day.</>,
+            // The Tracker MVP (features.ts): impact checks and exports in place of savings and audits
+            ...(SAVINGS_ENABLED || AUDITS_ENABLED
+              ? [
+                <><strong>Savings you may qualify for.</strong> Trade programs, exclusions and lower-duty countries, checked for every import.</>,
+                <><strong>Duty you may have overpaid.</strong> Audit past entries against the rates in force on the day.</>,
+              ]
+              : [
+                <><strong>Impact checks.</strong> Pick any tariff action and see exactly how it affects each of your imports.</>,
+                <><strong>Every tariff, exported.</strong> The full duty on every import, to CSV or Excel in one click.</>,
+              ]),
           ]}
         />
         <P>It all starts with your imports. Paste your HTS codes and countries, and you&apos;re set in about a minute.</P>

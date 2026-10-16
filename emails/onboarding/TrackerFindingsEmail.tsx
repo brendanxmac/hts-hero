@@ -2,9 +2,11 @@ import { Link, Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Checklist, Cta, Eyebrow, P, Signature, Title } from "../kit/parts"
 import { C, FONT_DISPLAY, siteLink } from "../kit/brand"
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
 
 // The morning after an account first adds imports, once: well done, here's what that gets you
-// (the best rate, alerts when a new tariff hits, easy audits), then HTS Hero Managed for those
+// (the best rate, alerts when a new tariff hits, easy audits; impact checks in place of audits
+// while they are off, features.ts), then HTS Hero Managed for those
 // who'd rather we handle all of it. No numbers, no dollars.
 
 export interface TrackerFindingsEmailProps {
@@ -21,21 +23,40 @@ const CAMPAIGN = "first-look"
 
 export default function TrackerFindingsEmail({ imports, footer }: TrackerFindingsEmailProps) {
   return (
-    <EmailLayout preview="The best rate, alerts on new tariffs and easy audits. Your Tracker handles it from here." footer={footer}>
+    <EmailLayout
+      preview={
+        SAVINGS_ENABLED || AUDITS_ENABLED
+          ? "The best rate, alerts on new tariffs and easy audits. Your Tracker handles it from here."
+          : "Every rate kept current, alerts on new tariffs and impact checks. Your Tracker handles it from here."
+      }
+      footer={footer}
+    >
       <Eyebrow>You&apos;re all set</Eyebrow>
       <Title>Great job adding your imports!</Title>
       <P>Your Tariff Tracker is now watching {covered(imports)}. The hard part is done. From here on, you&apos;ll:</P>
       <Checklist
         items={[
-          <>
-            <strong>Always know your best rate.</strong> Every duty on each import, kept current, plus lower-duty options you may qualify for.
-          </>,
+          SAVINGS_ENABLED ? (
+            <>
+              <strong>Always know your best rate.</strong> Every duty on each import, kept current, plus lower-duty options you may qualify for.
+            </>
+          ) : (
+            <>
+              <strong>Always know your rate.</strong> Every duty on each import, kept current, with how it changed and why.
+            </>
+          ),
           <>
             <strong>Know when a new tariff hits you.</strong> We check every new US tariff action against your imports and alert you when one applies.
           </>,
-          <>
-            <strong>Audit every entry with ease.</strong> Check what you paid against the rates in force that day, in a few clicks.
-          </>,
+          AUDITS_ENABLED ? (
+            <>
+              <strong>Audit every entry with ease.</strong> Check what you paid against the rates in force that day, in a few clicks.
+            </>
+          ) : (
+            <>
+              <strong>See the impact of any tariff action.</strong> Pick one and see exactly how it affects each of your imports, in a few clicks.
+            </>
+          ),
         ]}
       />
       <Cta href={siteLink("/tariff-tracker", CAMPAIGN)} variant="next">

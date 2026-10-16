@@ -6,6 +6,7 @@ import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { itemsFromText } from "../catalog";
 import { EXAMPLE_LIST } from "../exampleList";
 import { useTracker } from "../TrackerContext";
+import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // What the Overview looks like with a catalog in it. Illustrative numbers for a made-up
 // 48-product catalog, labeled EXAMPLE on the page; loading the real example catalog replaces it.
@@ -13,7 +14,9 @@ const KPIS = [
   { label: "Rate change, 12 months", value: "+4.2%", note: "Average rate 18.8% → 23.0%", tone: "text-error" },
   { label: "Average rate", value: "23.0%", note: "▲ 1.1% in 90 days", tone: "text-error" },
   { label: "Changes, last 12 months", value: "6", note: "Hit 3 products", tone: "text-base-content/60" },
-  { label: "Potential savings", value: "Up to $6,700", note: "Per shipment, if you qualify", tone: "text-success" },
+  SAVINGS_ENABLED
+    ? { label: "Potential savings", value: "Up to $6,700", note: "Per shipment, if you qualify", tone: "text-success" }
+    : { label: "Imports tracked", value: "48", note: "Alerts and impact checks on each", tone: "text-base-content/60" },
 ];
 
 const ORIGINS = [

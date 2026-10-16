@@ -11,6 +11,7 @@ import { wholeDollars } from "../insights/teasers";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { pathSteps, Step, StepId } from "./lib/steps";
+import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { readSeenSections } from "./seenSections";
 
 // The path to lower duty, as one slim row under the news (DESIGN_SYSTEM.md §15): the whole path
@@ -40,6 +41,7 @@ export const NextStep = () => {
     products: items.length,
     valuesSet,
     alertsSet: signedIn && alerts.on,
+    impactSeen: seen.has("impact"),
     savingsSeen: insights.unlocked.size > 0 && seen.has("savings"),
     entriesAudited: access.usage.auditsChecked.length > 0 || (paid && seen.has("entries")),
   });
@@ -51,12 +53,13 @@ export const NextStep = () => {
   const openValues = () => (firstDefault ? nav.openProduct(firstDefault.key, false, "duty") : nav.openTab("catalog"));
   const openSavings = () => (signedIn ? nav.openTab("savings") : unlock("savings"));
   const openAlerts = () => (signedIn ? nav.openTab("alerts") : unlock("alerts"));
+  const openImpact = () => nav.openTab("impact");
   const covered = trackedKeys.size;
 
   const content: Record<Exclude<StepId, "products">, StepContent> = {
     values: {
       title: "Set your import values",
-      body: `${onEstimate.toLocaleString("en-US")} of your ${items.length.toLocaleString("en-US")} imports use the default $10,000 estimate. Your own values make every duty and potential saving yours.`,
+      body: `${onEstimate.toLocaleString("en-US")} of your ${items.length.toLocaleString("en-US")} imports use the default $10,000 estimate. Your own values make every duty${SAVINGS_ENABLED ? " and potential saving" : ""} yours.`,
       payoff: onEstimate > 0 ? `${onEstimate.toLocaleString("en-US")} still on the estimate` : "Every number is yours",
       go: openValues,
       action: (
@@ -76,6 +79,18 @@ export const NextStep = () => {
       action: (
         <button type="button" className={ui.button({ variant: "primary" })} onClick={openAlerts}>
           {signedIn ? "Set up alerts" : unlockLabel}
+          <ArrowRightIcon className="h-4 w-4" aria-hidden />
+        </button>
+      ),
+    },
+    impact: {
+      title: "Run an impact check",
+      body: "Pick any tariff action, from a new Section 232 tariff to a rate cut, and see exactly which of your imports it hits and how each rate changes.",
+      payoff: "See how each tariff action hits your imports",
+      go: openImpact,
+      action: (
+        <button type="button" className={ui.button({ variant: "primary" })} onClick={openImpact}>
+          Open Tariff Impacts
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </button>
       ),
@@ -191,7 +206,7 @@ export const NextStep = () => {
         ) : (
           <p className="m-0 text-sm leading-snug text-base-content/70">
             <span className={`${tt.display} font-semibold text-base-content`}>You&apos;re getting everything the Tracker finds.</span> Your
-            imports are in with your own values, alerts are set up, your potential savings are in view and you&apos;ve audited your entries.
+            imports are in with your own values, alerts are set up and you&apos;ve seen how tariff actions hit them.
           </p>
         )}
       </div>

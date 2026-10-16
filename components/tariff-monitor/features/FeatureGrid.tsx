@@ -1,10 +1,10 @@
 import Link from "next/link";
 import {
   ArrowRightIcon,
+  ArrowDownTrayIcon,
   BellAlertIcon,
+  BoltIcon,
   ChartBarIcon,
-  ClipboardDocumentCheckIcon,
-  GlobeAmericasIcon,
   MegaphoneIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
@@ -17,8 +17,8 @@ const LOOK = [
   { Icon: BellAlertIcon, tint: "bg-primary/10 text-primary" },
   { Icon: MegaphoneIcon, tint: "bg-warning/10 text-warning" },
   { Icon: ChartBarIcon, tint: "bg-warning/10 text-warning" },
-  { Icon: ClipboardDocumentCheckIcon, tint: "bg-error/10 text-error" },
-  { Icon: GlobeAmericasIcon, tint: "bg-success/10 text-success" },
+  { Icon: BoltIcon, tint: "bg-error/10 text-error" },
+  { Icon: ArrowDownTrayIcon, tint: "bg-success/10 text-success" },
   { Icon: UserGroupIcon, tint: "bg-tt-soft text-base-content/70" },
 ];
 
@@ -26,8 +26,8 @@ export const FeatureGrid = () => (
   <section className={mk.band} aria-labelledby="features-title">
     <div className={mk.container}>
       <SectionIntro eyebrow="Features" title="More than an alert" id="features-title" center>
-        The full picture for every product you import: what you pay today, how it got there, what you may have overpaid,
-        and where it could be lower.
+        The full picture for every product you import: what you pay today, how it got there, and exactly how each new
+        tariff action affects it.
       </SectionIntro>
       <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map((f, i) => {

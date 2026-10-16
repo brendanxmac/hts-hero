@@ -7,8 +7,10 @@ import {
   ANNUAL_DISCOUNT,
   TRACKER_MAX_LISTED_PAIRS,
   TRACKER_TIERS,
+  TRIAL_ALLOWANCE,
   formatPrice,
 } from "@/components/pricing-calculator/lib/pricing";
+import { SAVINGS_AUDITS_SOON, TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { TRACKER_FEATURES, TRACKER_TRIAL_FEATURES } from "@/components/pricing-calculator/tariff-pricing/plans";
 
 const Features = ({ items, dark = false }: { items: string[]; dark?: boolean }) => (
@@ -22,14 +24,14 @@ const Features = ({ items, dark = false }: { items: string[]; dark?: boolean }) 
   </ul>
 );
 
-// The Tracker's plans in brief: the free usage-based trial every account starts on, then every paid
-// tier, with the full estimator one click away
+// The Tracker's plans in brief: what every account gets free, then every paid tier (monthly only
+// while TRACKER_ANNUAL_ENABLED is off), with the full estimator one click away
 export const MonitorPricing = () => (
   <section id="pricing" className={`${mk.band} scroll-mt-6`} aria-labelledby="pricing-title">
     <div className={mk.container}>
       <SectionIntro eyebrow="Pricing" title="Start free. Pay as your catalog grows." id="pricing-title" center>
-        Every account starts free, with no time limit and no credit card. When you&apos;ve used your free checks, pick a
-        plan for the size of your catalog.
+        Every account tracks {TRIAL_ALLOWANCE.alertImports} imports free, with no time limit and no credit card. To track more,
+        pick a plan for the size of your catalog.
       </SectionIntro>
 
       <div className="mx-auto mt-14 grid grid-cols-1 max-w-5xl gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
@@ -53,7 +55,7 @@ export const MonitorPricing = () => (
               <h3 id="plan-tracker-title" className="text-xl font-semibold">
                 Tariff Tracker
               </h3>
-              <p className="mt-1 text-sm text-base-content/60">Your whole catalog watched, audited and optimized</p>
+              <p className="mt-1 text-sm text-base-content/60">Every tariff on your imports, tracked</p>
             </div>
             <span className="rounded-full bg-success px-3 py-1 text-xs font-semibold text-success-content">
               Upgrade any time
@@ -88,7 +90,8 @@ export const MonitorPricing = () => (
         </article>
       </div>
       <p className={`${mk.small} mx-auto mt-6 max-w-5xl text-center`}>
-        An import is one HTS code from one country of origin. Prices in USD; save {ANNUAL_DISCOUNT * 100}% with annual billing. The{" "}
+        An import is one HTS code from one country of origin. Prices in USD;{" "}
+        {TRACKER_ANNUAL_ENABLED ? `save ${ANNUAL_DISCOUNT * 100}% with annual billing.` : "billed monthly."} {SAVINGS_AUDITS_SOON} The{" "}
         <Link href="/duty-calculator" className={mk.link}>
           Tariff Calculator
         </Link>{" "}

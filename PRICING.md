@@ -5,7 +5,7 @@ for product code, plan copy, landing pages, comparison pages, blog FAQs, `llms.t
 tools. If code or copy disagrees with this file, this file wins. Change this file first when
 pricing changes.
 
-_Last updated 2026-10-13._
+_Last updated 2026-10-16 (Tracker MVP)._
 
 ## The rule
 
@@ -58,6 +58,46 @@ There is no paid Tariff Calculator plan. Never describe a lookup limit or an "un
 calculations" upgrade.
 
 ## Tariff Tracker: account required
+
+### Tracker MVP: what's live now (2026-10-16)
+
+The Tracker launches as tracking only. **Savings (savings checks, the qualification check) and
+audits (entry audit, refund check) are switched off** (`libs/tariff-tracker/features.ts`) and come
+back soon **as their own subscription**. Copy says "Savings and audits are coming soon, as their own
+plan." Every change made for the MVP is listed in `MVP_TRIM.md`, so it can be put back.
+
+What the Tracker sells now:
+
+- **Track your imports**: paste or upload the whole catalog, with every tariff on each import
+- **Alerts** when a tariff change hits a tracked import, and by how much (before → after, +X%)
+- **Impact checks**: pick any tariff action and see exactly how it affects each import
+- **Tariff News**: every tariff action from CBP, the Federal Register, USTR, USITC and the White House
+- **Rate history**: how each import's duty changed, and why
+- **Export** every tariff on every import to CSV or Excel
+
+| | Free (every account) | Paid tiers |
+|---|---|---|
+| Catalog, current duty, rate history, export | Unlimited | Unlimited |
+| Tracked imports (alerts and impact checks) | 5 | The tier's imports |
+| Impact checks on untracked imports | A count only ("also hits N imports you're not tracking") | n/a |
+
+| Imports tracked | Price / month |
+|---|---|
+| Up to 10 | $12 |
+| Up to 30 | $29 |
+| Up to 100 | $89 |
+| Up to 500 | $149 |
+| 500+ | Quoted ("Let's talk") |
+
+**Monthly only** for now (`TRACKER_ANNUAL_ENABLED`): no annual Tracker plan or toggle.
+Classification and Managed keep their annual billing. Copy: "Start free", "Track 5 imports free",
+"No credit card".
+
+### Paused until savings and audits return
+
+Everything below this line in the Tariff Tracker section describes the plan before the MVP
+(usage-based trial with savings and audit checks, $19 / $49 / $149 / $249). It is kept for the
+relaunch; it is not what's live.
 
 ### Usage-based trial: every account, no time limit
 

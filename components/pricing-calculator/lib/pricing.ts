@@ -1,6 +1,8 @@
 // Every price on /pricing-calculator, and the math that turns choices into an estimate.
 // Prices are monthly list prices in USD; annual billing takes ANNUAL_DISCOUNT off each one.
 
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
+
 export type Billing = "monthly" | "annual";
 
 export const ANNUAL_DISCOUNT = 0.15;
@@ -15,16 +17,18 @@ export const TRIAL_ALLOWANCE = {
   savingsChecks: 5,
   // Past entries checked against the duty in force on their date (entry audit, refund check)
   auditChecks: 10,
-  // Imports with alerts on; the slots can be moved
-  alertImports: 10,
+  // Tracked imports: alerts and impact checks run on these; the slots can be moved. 10 before the
+  // Tracker MVP (MVP_TRIM.md)
+  alertImports: 5,
 } as const;
 
-// Tariff Tracker is priced by the number of imports (HTS code + country of origin pairs) it covers
+// Tariff Tracker is priced by the number of imports (HTS code + country of origin pairs) it covers.
+// Before the Tracker MVP (MVP_TRIM.md), with savings and audits included: $19 / $49 / $149 / $249
 export const TRACKER_TIERS = [
-  { maxPairs: 10, price: 19 },
-  { maxPairs: 30, price: 49 },
-  { maxPairs: 100, price: 149 },
-  { maxPairs: 500, price: 249 },
+  { maxPairs: 10, price: 12 },
+  { maxPairs: 30, price: 29 },
+  { maxPairs: 100, price: 89 },
+  { maxPairs: 500, price: 149 },
 ] as const;
 export const TRACKER_MAX_LISTED_PAIRS = TRACKER_TIERS[TRACKER_TIERS.length - 1].maxPairs;
 
@@ -98,6 +102,10 @@ export const TEAM_BREAK_EVEN_SEATS = Math.ceil(CLASSIFY_PLANS.team.price / CLASS
 // float error (e.g. 53.99999…) from flooring a whole-dollar result a dollar too low.
 export const monthlyRate = (listPrice: number, billing: Billing) =>
   billing === "annual" ? Math.floor(listPrice * (1 - ANNUAL_DISCOUNT) + 1e-9) : listPrice;
+
+// The billing period a Tracker price follows: monthly only while TRACKER_ANNUAL_ENABLED is off
+// (MVP_TRIM.md), whatever the page's toggle says. Classification and Managed keep annual billing.
+export const trackerBilling = (billing: Billing): Billing => (TRACKER_ANNUAL_ENABLED ? billing : "monthly");
 
 // Null above the largest tier: those lists are quoted
 export const trackerTierFor = (pairs: number): TrackerTier | null =>
@@ -185,9 +193,11 @@ export type Estimate = {
 };
 
 export const estimate = (input: EstimateInput, billing: Billing): Estimate => {
+  // The Tracker line follows its own billing period (trackerBilling)
+  const lineBilling = (line: LineItem, period: Billing) => (line.id === "tracker" ? trackerBilling(period) : period);
   const lines = lineItems(input, billing).map((line) => ({
     ...line,
-    monthly: line.listMonthly === null ? null : monthlyRate(line.listMonthly, billing),
+    monthly: line.listMonthly === null ? null : monthlyRate(line.listMonthly, lineBilling(line, billing)),
   }));
   const monthly = round2(lines.reduce((sum, line) => sum + (line.monthly ?? 0), 0));
   const listMonthly = round2(lines.reduce((sum, line) => sum + (line.listMonthly ?? 0), 0));
@@ -196,7 +206,7 @@ export const estimate = (input: EstimateInput, billing: Billing): Estimate => {
     monthly,
     listMonthly,
     annualSavings: round2(
-      lines.reduce((sum, line) => sum + (line.listMonthly === null ? 0 : line.listMonthly - monthlyRate(line.listMonthly, "annual")), 0) * 12
+      lines.reduce((sum, line) => sum + (line.listMonthly === null ? 0 : line.listMonthly - monthlyRate(line.listMonthly, lineBilling(line, "annual"))), 0) * 12
     ),
     hasQuote: lines.some((line) => line.monthly === null),
   };

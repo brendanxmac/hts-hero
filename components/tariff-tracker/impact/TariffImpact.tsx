@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
+import { ArrowTopRightOnSquareIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { StatStrip } from "@/components/ui/StatStrip";
@@ -159,9 +159,33 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
   );
 };
 
+// What the action also hits outside the imports tracked: a count, and the way to track them
+const UntrackedHits = ({ count }: { count: number }) => {
+  const { signedIn, access, openUpgrade, unlock, unlockLabel } = useTrackerAccess();
+  const imports = `${count.toLocaleString("en-US")} ${count === 1 ? "import" : "imports"}`;
+  return (
+    <section role="status" className={`${ui.notice("primary")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
+      <LockClosedIcon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+      <p className={`${ui.bodySm} flex-1`}>
+        <span className="font-semibold text-base-content">It also hits {imports} you&apos;re not tracking.</span>{" "}
+        {signedIn
+          ? `Your plan tracks ${access.pairLimit.toLocaleString("en-US")} imports. Track more to see how it hits each one.`
+          : "Create a free account to track your imports and see how it hits each one."}
+      </p>
+      <button
+        type="button"
+        className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`}
+        onClick={() => (signedIn ? openUpgrade("tracking") : unlock("tracking"))}
+      >
+        {signedIn ? "Track more imports" : unlockLabel}
+      </button>
+    </section>
+  );
+};
+
 export const TariffImpact = () => {
   const params = useSearchParams();
-  const { items, products, loading } = useTracker();
+  const { items, products, loading, trackedKeys } = useTracker();
   const { signedIn } = useTrackerAccess();
   const published = useTariffUpdates("all");
   const review = useReviewList(signedIn);
@@ -197,7 +221,7 @@ export const TariffImpact = () => {
     if (next !== slug) window.history.pushState(null, "", urlFor(next));
   };
 
-  const { impacts, progress } = useUpdateImpact(update);
+  const { impacts, progress, untracked } = useUpdateImpact(update);
   const [country, setCountry] = useState<string | null>(null);
   const [show, setShow] = useState<Show>("affected");
   useEffect(() => {
@@ -265,7 +289,7 @@ export const TariffImpact = () => {
             <div className={`${ui.skeleton} h-64 w-full`} />
           ) : (
             <>
-              <ActionCard update={update} check={review?.checks[update.id]} today={today} impacts={impacts} total={products.length} />
+              <ActionCard update={update} check={review?.checks[update.id]} today={today} impacts={impacts} total={Math.min(trackedKeys.size, products.length)} />
               {!impacts ? (
                 <section className={`${tt.panel} flex flex-col gap-3 px-6 py-5`} aria-busy="true">
                   <p className="text-sm text-base-content/70">
@@ -278,6 +302,7 @@ export const TariffImpact = () => {
                 </section>
               ) : (
                 <>
+                  {untracked > 0 && <UntrackedHits count={untracked} />}
                   <ImpactImports impacts={impacts} effective={update.effective_on} today={today} country={country} onClearCountry={() => setCountry(null)} show={show} onShow={setShow} />
                   {(shifts.length > 2 || origins.length > 1) && (
                     <div className={`grid gap-4 ${shifts.length > 2 && origins.length > 1 ? "xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]" : ""}`}>

@@ -4,6 +4,7 @@ import { formatPct } from "@/components/duty-calculator/lib/format"
 import { mono } from "@/components/ui/font"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing"
 
 // The Tariff Tracker's offer beside tariff news: the updates, matched to the reader's own imports.
 // Free, so the ask is an account, and it opens straight on adding imports. Two sizes: a row in the
@@ -39,7 +40,7 @@ export function TrackerCtaRow({ boxed = false }: { boxed?: boolean }) {
 const POINTS = [
   "Every new US tariff action checked against your imports, every 15 minutes",
   "An alert with the rate before and after, by email, Slack or Teams",
-  "Potential savings and entry audits on the same imports",
+  "Impact checks: see exactly how any tariff action affects each import",
 ]
 
 // The example alert starts from the code's real duty today (the page's estimate), plus a made-up
@@ -81,7 +82,7 @@ export function TrackerCtaFeature({ htsno, today }: { htsno: string; today?: { p
             Track my imports free
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
-          <span className="text-xs text-base-content/60">Free account · Alerts on up to 10 imports</span>
+          <span className="text-xs text-base-content/60">Free account · Track up to {TRIAL_ALLOWANCE.alertImports} imports</span>
         </div>
       </div>
 

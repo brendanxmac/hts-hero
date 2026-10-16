@@ -16,7 +16,7 @@ export const RequestAudit = () => (
     <div className={`${mk.container} grid grid-cols-1 gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]`}>
       <div className="lg:sticky lg:top-8 lg:self-start">
         <SectionIntro eyebrow="Request an audit" title="Have us audit your entries" id="request-title">
-          Tell us about your company and we&apos;ll review your entries and send you a report of what you can recover.
+          Tell us about your company and we&apos;ll review your entries and send you a report of what you may be able to recover.
           Free, with no obligation.
         </SectionIntro>
         <ul className="mt-8 flex flex-col gap-3">

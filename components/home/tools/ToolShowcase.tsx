@@ -9,6 +9,7 @@ import {
   TRIAL_ALLOWANCE,
   formatPrice,
 } from "@/components/pricing-calculator/lib/pricing";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import type { WorkedExample } from "@/libs/duty-calculator-content";
 import type { AuditExample } from "@/libs/tariff-audit-example";
 import type { SavingsExample } from "@/libs/tariff-savings-example";
@@ -19,7 +20,8 @@ import { darkBand, followPage, glow, moneyButtonMd } from "../lib/theme";
 
 // The four capabilities, one block each, every one with a real visual and its own call to action:
 // calculate (with the lookup), alert, discover savings, audit; then classification. The order
-// follows the hero's scan: changes, savings, audits.
+// follows the hero's scan: changes, savings, audits. Tracker MVP (MVP_TRIM.md): the savings and
+// audit blocks only render with SAVINGS_ENABLED / AUDITS_ENABLED, so it's calculate, then alert.
 
 // Theme classes only, so the same markup reads right in the dark band
 const Points = ({ items }: { items: string[] }) => (
@@ -119,13 +121,15 @@ export const ToolShowcase = ({
           <Points
             items={[
               "Filtered to your HTS codes and countries",
-              "The new duty already worked out",
-              `Free alerts on ${TRIAL_ALLOWANCE.alertImports} imports, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo`,
+              "The rate before and after, and the change in %",
+              "Impact checks: see exactly how any tariff action hits each import",
+              "Tariff News, rate history and exports to CSV or Excel",
+              `Track ${TRIAL_ALLOWANCE.alertImports} imports free, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo`,
             ]}
           />
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link href={OFFER.href} className={mk.buttonPrimary}>
-              Get Alerts <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              Track {TRIAL_ALLOWANCE.alertImports} imports free <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>
             <Link href="/tariff-monitor" className={mk.link}>
               How the Tariff Tracker works
@@ -136,7 +140,7 @@ export const ToolShowcase = ({
     </section>
 
     {/* Discover savings */}
-    {savings.length > 0 && (
+    {SAVINGS_ENABLED && savings.length > 0 && (
       <section
         className={`relative overflow-hidden ${mk.band} ${darkBand}`}
         aria-labelledby="tool-savings-title"
@@ -187,45 +191,46 @@ export const ToolShowcase = ({
     )}
 
     {/* Audit */}
-    <section className={mk.band} aria-labelledby="tool-audit-title">
-      <div
-        className={`${mk.container} grid grid-cols-1 items-center gap-14 lg:grid-cols-2`}
-      >
-        <div>
-          <Step n="4" verb="Audit" />
-          <h2 id="tool-audit-title" className={`${mk.h2} mt-4`}>
-            Find the duty you overpaid.{" "}
-            <span className={mk.accent}>Get it back.</span>
-          </h2>
-          <p className={`${mk.lead} mt-4`}>
-            Every past entry recalculated with the rules in force on its entry
-            date: wrong stacking, missed exemptions, and refundable tariffs like
-            IEEPA, flagged for your broker to file.
-          </p>
-          <Points
-            items={[
-              "Paid vs. owed, line by line",
-              "Where IEEPA and Section 122 refunds stand",
-              `${TRIAL_ALLOWANCE.auditChecks} free audit checks, or we'll do it for you`,
-            ]}
-          />
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/tariff-audit" className={mk.buttonPrimary}>
-              Run a free audit{" "}
-              <ArrowRightIcon className="h-4 w-4" aria-hidden />
-            </Link>
-            <Link href="/tariff-audit#request" className={mk.link}>
-              Request an audit
-            </Link>
+    {AUDITS_ENABLED && (
+      <section className={mk.band} aria-labelledby="tool-audit-title">
+        <div
+          className={`${mk.container} grid grid-cols-1 items-center gap-14 lg:grid-cols-2`}
+        >
+          <div>
+            <Step n="4" verb="Audit" />
+            <h2 id="tool-audit-title" className={`${mk.h2} mt-4`}>
+              Find the duty you overpaid.{" "}
+              <span className={mk.accent}>Get it back.</span>
+            </h2>
+            <p className={`${mk.lead} mt-4`}>
+              Every past entry recalculated with the rules in force on its entry
+              date: wrong stacking, missed exemptions, and refundable tariffs like
+              IEEPA, flagged for your broker to file.
+            </p>
+            <Points
+              items={[
+                "Paid vs. owed, line by line",
+                "Where IEEPA and Section 122 refunds stand",
+                `${TRIAL_ALLOWANCE.auditChecks} free audit checks, or we'll do it for you`,
+              ]}
+            />
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link href="/tariff-audit" className={mk.buttonPrimary}>
+                Run a free audit{" "}
+                <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              </Link>
+              <Link href="/tariff-audit#request" className={mk.link}>
+                Request an audit
+              </Link>
+            </div>
           </div>
+          {audit && (
+            <Reveal>
+              <RecalcTerminal example={audit} />
+            </Reveal>
+          )}
         </div>
-        {audit && (
-          <Reveal>
-            <RecalcTerminal example={audit} />
-          </Reveal>
-        )}
-      </div>
-    </section>
-
+      </section>
+    )}
   </>
 );

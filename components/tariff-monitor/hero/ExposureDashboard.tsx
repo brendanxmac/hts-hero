@@ -106,8 +106,8 @@ export const ExposureDashboard = () => (
       <Kpi label="Hit this quarter" tone="text-error">
         <CountUp to={31} />
       </Kpi>
-      <Kpi label="Refundable found" tone="text-success">
-        $<CountUp to={212} />K
+      <Kpi label="Impact checks run" tone="text-primary">
+        <CountUp to={57} />
       </Kpi>
     </div>
     <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_13rem]">

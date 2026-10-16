@@ -1,6 +1,7 @@
 "use client";
 
 import * as mk from "@/components/ui/marketing/styles";
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { PAIRS_SLIDER_MAX_PAIRS, pairsAt, positionOf } from "../lib/pairsScale";
 import {
   Billing,
@@ -9,6 +10,7 @@ import {
   TRIAL_ALLOWANCE,
   formatPrice,
   monthlyRate,
+  trackerBilling,
   trackerTierFor,
 } from "../lib/pricing";
 import { MAX_PAIRS } from "../lib/estimateParams";
@@ -33,7 +35,7 @@ export const TrackerControls = ({
     ...TRACKER_TIERS.map((t) => ({
       key: String(t.maxPairs),
       label: `Up to ${t.maxPairs}`,
-      price: formatPrice(monthlyRate(t.price, billing)),
+      price: formatPrice(monthlyRate(t.price, trackerBilling(billing))),
       pairs: t.maxPairs,
       active: tier === t,
     })),
@@ -49,8 +51,8 @@ export const TrackerControls = ({
           </label>
           <p className={`${mk.small} mt-1 max-w-md leading-relaxed`}>
             One HTS code from one country of origin. The same code from China and Vietnam is two imports.
-            Every account starts free: savings checks on {TRIAL_ALLOWANCE.savingsChecks} imports,{" "}
-            {TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on {TRIAL_ALLOWANCE.alertImports}, no credit card.
+            Every account tracks {TRIAL_ALLOWANCE.alertImports} imports free, with alerts and impact checks on each, no credit card.
+            {!TRACKER_ANNUAL_ENABLED && " Tracker plans are billed monthly."}
           </p>
         </div>
         <NumberInput id="tracker-pairs" value={pairs} onChange={onPairsChange} min={1} max={MAX_PAIRS} className="w-28 text-right" />

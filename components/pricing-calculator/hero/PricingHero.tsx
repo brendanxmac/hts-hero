@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRightIcon, CalculatorIcon, ChevronRightIcon, MagnifyingGlassIcon, SignalIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { ANNUAL_DISCOUNT, CLASSIFY_PLANS, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice } from "../lib/pricing";
 
 const PRODUCTS = [
@@ -15,7 +16,7 @@ const PRODUCTS = [
   {
     href: "#tariffs",
     name: "Tariff Tracker",
-    summary: `Alerts, audits and savings · ${TRIAL_ALLOWANCE.auditChecks} free audit checks`,
+    summary: `Alerts and impact checks on your imports · track ${TRIAL_ALLOWANCE.alertImports} free`,
     price: formatPrice(TRACKER_TIERS[0].price),
     Icon: SignalIcon,
     tint: "bg-primary/15 text-primary",
@@ -44,7 +45,7 @@ export const PricingHero = () => (
           </span>
         </h1>
         <p className={`${mk.lead} mt-6 max-w-2xl`}>
-          The Tariff Calculator is free and unlimited. When you want to track your own products, catch tariff changes, audit your entries and find savings, you can start Tariff Tracker free, with no credit card.
+          The Tariff Calculator is free and unlimited. When you want to track every tariff on your own imports, get alerted when a change hits one, and run impact checks to see exactly how each new tariff affects them, start the Tariff Tracker free, with no credit card.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <a href="#estimate" className={`${mk.buttonPrimary} h-14 px-8 text-lg`}>
@@ -93,7 +94,7 @@ export const PricingHero = () => (
           <span className="rounded-full bg-success/15 px-2.5 py-0.5 text-xs font-bold text-success ring-1 ring-success/30">
             Save {ANNUAL_DISCOUNT * 100}%
           </span>
-          on every paid plan with annual billing
+          {TRACKER_ANNUAL_ENABLED ? "on every paid plan with annual billing" : "on Classify with annual billing"}
         </p>
       </nav>
     </div>

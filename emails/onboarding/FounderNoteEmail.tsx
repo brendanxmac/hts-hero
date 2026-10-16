@@ -2,6 +2,7 @@ import { Link, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Cta, Signature } from "../kit/parts"
 import { C, siteLink } from "../kit/brand"
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
 
 // Day 10 with no imports: a short note from Brendan, plain like a personal email. One link back to
 // adding imports, and an offer of dedicated tariff management done for them.
@@ -27,10 +28,18 @@ export default function FounderNoteEmail({ daysSinceSignup, footer }: FounderNot
       <Para>
         Adding them usually takes a minute or two. You can either import a CSV or paste your HTS code + country pairs directly.
       </Para>
-      <Para>
-        Once that&apos;s done, we immediately analyze each one for savings you may
-        qualify for and let you quickly check for overpaid duty. We also alert you when any new tariff affects your imports, so you can take action before it&apos;s too late.
-      </Para>
+      {SAVINGS_ENABLED || AUDITS_ENABLED ? (
+        <Para>
+          Once that&apos;s done, we immediately analyze each one for savings you may
+          qualify for and let you quickly check for overpaid duty. We also alert you when any new tariff affects your imports, so you can take action before it&apos;s too late.
+        </Para>
+      ) : (
+        // The Tracker MVP (features.ts): tracking, alerts and impact checks
+        <Para>
+          Once that&apos;s done, we alert you the moment any new tariff affects one of your imports, with the rate before and after, so you can take
+          action before it&apos;s too late. You can also pick any tariff action and see exactly how it affects each import.
+        </Para>
+      )}
 
       <Para>
         To get started, just click the button below!

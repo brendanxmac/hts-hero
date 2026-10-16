@@ -21,6 +21,7 @@ import { useTracker } from "../TrackerContext";
 import { ProductAudit } from "./audit/ProductAudit";
 import { ProductHeader } from "./ProductHeader";
 import { ProductSavings } from "./savings/ProductSavings";
+import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // One import, opened from its row: a small header (what it is, and its one row of tabs), then
 // - Duty (where it opens), Compare, History: the calculator's own tabs, for this product (its
@@ -156,7 +157,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
           f={f}
           page="tracker_product"
           fixedProduct
-          onCheckSavings={() => openTab("savings")}
+          onCheckSavings={SAVINGS_ENABLED ? () => openTab("savings") : undefined}
           tab={tab === "compare" ? "compare" : tab === "history" ? "history" : "duty"}
           onTabChange={openTab}
           explainSlot={calculatorTab ? explainSlot : null}

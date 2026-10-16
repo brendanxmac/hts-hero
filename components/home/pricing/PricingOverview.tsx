@@ -16,27 +16,30 @@ import {
   TRIAL_ALLOWANCE,
   formatPrice,
   monthlyRate,
+  trackerBilling,
 } from "@/components/pricing-calculator/lib/pricing";
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 
-// Pricing at a glance: what's free (the calculator and the Tracker's usage-based trial), and the
-// Tariff Tracker priced by catalog size, with a tier picker and the annual discount. Below the cards, a worked example of how a catalog is counted
+// Pricing at a glance: what's free (the calculator and the Tracker's free imports), and the
+// Tariff Tracker priced by catalog size, with a tier picker (monthly only while TRACKER_ANNUAL_ENABLED
+// is off; the billing switch still serves the classification line). Below the cards, a worked example of how a catalog is counted
 // (one import per HTS code + country of origin), then classification as its own line. Every number
 // comes from the price list (PRICING.md).
 
 const FREE_INCLUDES = [
   "Tariff Calculator: unlimited lookups, no account",
-  "Tariff Tracker: upload your whole catalog, with rate history and sourcing",
-  `Savings checks on ${TRIAL_ALLOWANCE.savingsChecks} imports and ${TRIAL_ALLOWANCE.auditChecks} audit checks`,
-  `Alerts on ${TRIAL_ALLOWANCE.alertImports} imports`,
+  "Tariff Tracker: upload your whole catalog, with every tariff, rate history and exports to CSV or Excel",
+  `Track ${TRIAL_ALLOWANCE.alertImports} imports: alerts and impact checks on each`,
+  "Tariff News: every new US tariff action",
   "Works in AI assistants over MCP",
 ];
 
 const TRACKER_INCLUDES = [
   "Alerts by email, in-app, Slack and Teams",
+  "Impact checks: how any tariff action hits each import",
+  "Tariff News from every official source",
   "Rate history for every product",
-  "Entry audit: overpaid and underpaid duty",
-  "Savings from other origins and programs",
-  "CSV catalog upload and team reports",
+  "Export every tariff on every import to CSV or Excel",
 ];
 
 type Tier = { label: string; pairs: number | null; price: number | null };
@@ -63,7 +66,9 @@ const Includes = ({ items }: { items: string[] }) => (
 export const PricingOverview = () => {
   const [billing, setBilling] = useState<Billing>("monthly");
   const [tier, setTier] = useState<Tier>(TIERS[0]);
-  const price = tier.price === null ? null : monthlyRate(tier.price, billing);
+  // The Tracker's own billing period: monthly while Tracker annual billing is off
+  const trackerPeriod = trackerBilling(billing);
+  const price = tier.price === null ? null : monthlyRate(tier.price, trackerPeriod);
 
   return (
     <section id="pricing" className={`${mk.band} ${mk.bandMuted} scroll-mt-20`} aria-labelledby="home-pricing-title">
@@ -100,7 +105,7 @@ export const PricingOverview = () => {
                 <h3 id="price-tracker-title" className={`${display} text-2xl font-semibold`}>
                   Tariff Tracker
                 </h3>
-                <p className="mt-1 text-base-content/70">Your whole catalog watched, audited and optimized.</p>
+                <p className="mt-1 text-base-content/70">Every tariff on your imports, tracked.</p>
               </div>
               <span className="rounded-full bg-success px-3.5 py-1.5 text-sm font-bold text-success-content">Free to start</span>
             </div>
@@ -117,7 +122,7 @@ export const PricingOverview = () => {
                     </>
                   )}
                 </p>
-                {billing === "monthly" && tier.price !== null && (
+                {TRACKER_ANNUAL_ENABLED && billing === "monthly" && tier.price !== null && (
                   <button
                     type="button"
                     onClick={() => setBilling("annual")}
@@ -129,7 +134,7 @@ export const PricingOverview = () => {
                 <p className="mt-2 text-sm text-base-content/60">
                   {tier.pairs === null
                     ? `Over ${TRACKER_MAX_LISTED_PAIRS} imports, priced to your catalog`
-                    : `Up to ${tier.pairs} imports${billing === "annual" && price !== null ? ` · ${formatPrice(price * 12)} billed yearly` : ""}`}
+                    : `Up to ${tier.pairs} imports${trackerPeriod === "annual" && price !== null ? ` · ${formatPrice(price * 12)} billed yearly` : " · billed monthly"}`}
                 </p>
 
                 <p className="mt-8 text-xs font-bold uppercase tracking-wider text-base-content/60">Imports covered</p>
@@ -173,7 +178,7 @@ export const PricingOverview = () => {
                   Start free <ArrowRightIcon className="h-5 w-5" aria-hidden />
                 </Link>
               )}
-              <span className="text-sm text-base-content/60">No credit card. Check {TRIAL_ALLOWANCE.savingsChecks} imports for savings free.</span>
+              <span className="text-sm text-base-content/60">No credit card. Track {TRIAL_ALLOWANCE.alertImports} imports free.</span>
             </div>
           </article>
         </div>
@@ -212,7 +217,7 @@ export const PricingOverview = () => {
             </span>
             <span>
               <span className="block text-lg font-bold text-base-content">HTS Hero Managed Tariffs</span>
-              <span className="text-base-content/70">Overwhelmed by tariffs? Our team can manage every tariff on your imports: monitoring, audits, savings, and alerts for every new action, with a person you can message the same day.</span>
+              <span className="text-base-content/70">Overwhelmed by tariffs? We watch every tariff on your imports, audit every entry, and brief you and your broker on what we find. Your broker files.</span>
             </span>
           </span>
           <span className="flex items-center gap-4">

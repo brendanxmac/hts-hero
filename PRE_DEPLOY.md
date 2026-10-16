@@ -5,17 +5,17 @@ add new ones as they come up.
 
 ## Must do
 
-- [ ] **Qualification check (guided workflow).** The paid tier of Possible Adjustments: visitors
+- [ ] **Qualification check (guided workflow).** _Deferred to the savings and audits relaunch (MVP_TRIM.md)._ The paid tier of Possible Adjustments: visitors
       see every adjustment and what it could change the total by; free accounts see a plain-English
       line on why each could apply; paying (and trial) users step through a guided workflow that
       works out exactly which adjustments SHOULD apply to their goods, and the proof they'd need.
       The calculator teases it as the third step of the strip atop Possible Adjustments ("Which
       apply to your goods"); trial and paid users see "coming soon". Build the workflow in the
       Tracker.
-- [ ] **Refund check (bulk entry audit).** Entry audit v1 is built (one entry line at a time,
+- [ ] **Refund check (bulk entry audit).** _Deferred to the savings and audits relaunch (MVP_TRIM.md)._ Entry audit v1 is built (one entry line at a time,
       each spending an audit check; the calculator's "Check my entries" opens it). Still to do: bulk
       upload of entries (CSV / ACE ES-003 report), and log in the Tracker's own calculator.
-- [ ] **Savings requirements (strategy needed).** A product's Savings tab shows general steps for
+- [ ] **Savings requirements (strategy needed).** _Deferred to the savings and audits relaunch (MVP_TRIM.md)._ A product's Savings tab shows general steps for
       each kind of saving (`components/tariff-tracker/opportunities/requirements.ts`, TODO). Each
       trade program and exemption needs its exact requirements (rules of origin, certification,
       evidence, the SPI / Chapter 99 statement to claim) from its legal source. Agree how to build
@@ -31,7 +31,12 @@ add new ones as they come up.
       tracker_checks, tracker_entries, tracker_opportunities, tracker_opportunity_events,
       tracker_alert_settings; drops the old tracker_trials).
 - [ ] **Stripe prices.** Create the products and set
-      `STRIPE_TARIFF_TRACKER_<10|30|100|500>_<MONTHLY|ANNUAL>_PRICE_ID`.
+      `STRIPE_TARIFF_TRACKER_<10|30|100|500>_MONTHLY_PRICE_ID` at **$12 / $29 / $89 / $149** a month
+      (Tracker MVP, 2026-10-16: monthly only, so the `_ANNUAL_` ones can wait).
+- [ ] **Tracker MVP trim** (2026-10-16): savings and audits are off (`libs/tariff-tracker/features.ts`);
+      every change is in `MVP_TRIM.md`. Re-run `npm run email:auth` and paste the auth templates
+      into Supabase (they changed). `app/zz-tracker/` (the Tracker without sign-in) is untracked and
+      must never be committed or deployed.
 - [ ] **Alert sending job.** Alert settings are saved, but nothing sends alerts yet.
 - [ ] **Apply the migration** `supabase/migrations/tariff_sources.sql` (tariff_source_items,
       tariff_source_runs) for the tariff source collectors (/tariff-sources admin view).

@@ -36,7 +36,7 @@ export const FEATURES: { key: FeatureKey; label: string; help: string }[] = [
   },
   {
     key: "entryDate",
-    label: "Audit past entries by date",
+    label: "Duty on a past entry date",
     help: "Calculate the duty that applied on an entry date, to check what you paid.",
   },
   {
@@ -47,7 +47,7 @@ export const FEATURES: { key: FeatureKey; label: string; help: string }[] = [
   {
     key: "catalogImpact",
     label: "Alerts when a tariff change hits your products",
-    help: "Load your catalog once and hear when a change affects it, with the duty impact on each product.",
+    help: "Load your catalog once and hear when a change affects it, with the rate before and after on each product.",
   },
   {
     key: "countryCompare",

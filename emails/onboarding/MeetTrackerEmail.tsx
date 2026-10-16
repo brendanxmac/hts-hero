@@ -1,6 +1,6 @@
 import { Link } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { Checklist, Cta, Eyebrow, P, Panel, PlanStrip, Signature, Title, UpdateSummary } from "../kit/parts"
+import { Checklist, Cta, Eyebrow, P, Panel, PlanStrip, Signature, Title, TRACKER_POINTS, UpdateSummary } from "../kit/parts"
 import { C, siteLink } from "../kit/brand"
 
 // One time, to accounts from before the Tariff Tracker: what their account includes now, and a
@@ -23,14 +23,7 @@ export default function MeetTrackerEmail({ optInUrl, footer }: MeetTrackerEmailP
       <Eyebrow>New in your account</Eyebrow>
       <Title>Meet the Tariff Tracker</Title>
       <P>US tariffs change every week. Your account now watches your imports for you. Add them once (just HTS codes and countries) to:</P>
-      <Checklist
-        items={[
-          "Track the duty rate on every import",
-          "Get alerted when a new tariff hits one",
-          "Find savings you may qualify for",
-          "Audit past entries for overpaid duty",
-        ]}
-      />
+      <Checklist items={TRACKER_POINTS} />
       <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
         Add my imports
       </Cta>

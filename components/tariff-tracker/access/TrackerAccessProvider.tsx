@@ -20,6 +20,7 @@ import { TrackerAccessContext, TrackerAccessValue } from "./accessContext";
 import { PREMIUM_FEATURES, PremiumFeature } from "./features";
 import { currentPath, signupHref } from "./signup";
 import { UpgradeDialog } from "./UpgradeDialog";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // Loads the visitor's plan (from /api/tracker/access, which decides), spends the usage-based
 // trial's checks (through /api/tracker/checks, which enforces them) and owns the way up: the
@@ -156,7 +157,9 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
     if (trial && !value.paid) {
       toast.success(
-        `Your free trial is on: ${TRIAL_ALLOWANCE.savingsChecks} savings checks, ${TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on ${TRIAL_ALLOWANCE.alertImports} imports.`,
+        SAVINGS_ENABLED && AUDITS_ENABLED
+          ? `Your free trial is on: ${TRIAL_ALLOWANCE.savingsChecks} savings checks, ${TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on ${TRIAL_ALLOWANCE.alertImports} imports.`
+          : `Your free plan is on: alerts and impact checks on ${TRIAL_ALLOWANCE.alertImports} imports.`,
         { duration: 6000 }
       );
     }

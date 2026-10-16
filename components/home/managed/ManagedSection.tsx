@@ -13,18 +13,19 @@ import * as mk from "@/components/ui/marketing/styles";
 import { formatPrice, MANAGED_TIERS } from "@/components/pricing-calculator/lib/pricing";
 import { darkBand, display, glow } from "../lib/theme";
 
-// HTS Hero Managed on the homepage (PRICING.md): the HTS Hero team joins the importer's company
-// and runs every tariff on their imports. A dark band of its own so it stands apart from the
-// self-serve tools: the promise, what the team takes on, an example of the shared channel, the
-// starting price and the intro call. The full page is the Tracker's Expert Help.
+// HTS Hero Managed on the homepage (PRICING.md): the HTS Hero team watches every tariff on the
+// importer's imports, audits their entries and briefs them and their broker. HTS Hero isn't a
+// licensed customs broker: it never decides codes or files anything; the broker files. A dark
+// band of its own so it stands apart from the self-serve tools: the promise, what the team takes
+// on, an example of the shared channel, the starting price and the intro call. The full page is the Tracker's Expert Help.
 
 const TAKES_ON = [
-  { Icon: ChatBubbleLeftRightIcon, title: "A shared Slack channel", body: "Message the people running your tariffs. Same-day answers, not a ticket queue." },
-  { Icon: VideoCameraIcon, title: "A weekly check-in call", body: "What changed, what it costs, what we're doing about it, and what we need from you." },
-  { Icon: ShieldCheckIcon, title: "Every tariff optimized", body: "Classification, origin and programs reviewed on every import, kept at its lowest duty." },
-  { Icon: LightBulbIcon, title: "Always hunting for savings", body: "Programs, exemptions and sourcing moves, each brought to you with what it could save." },
-  { Icon: ClipboardDocumentCheckIcon, title: "Every entry audited", body: "Overpayments caught for refund, underpayments fixed before Customs finds them." },
-  { Icon: BellAlertIcon, title: "Every tariff change, handled", body: "When a new tariff lands, you hear from us first, with the plan." },
+  { Icon: ChatBubbleLeftRightIcon, title: "A shared Slack channel", body: "Message the people watching your tariffs. Same-day answers, not a ticket queue." },
+  { Icon: VideoCameraIcon, title: "A weekly check-in call", body: "What changed, how it affects your imports, and what to raise with your broker." },
+  { Icon: ShieldCheckIcon, title: "Every tariff watched", body: "Every tariff on every import, checked against each new tariff action." },
+  { Icon: LightBulbIcon, title: "Briefings for you and your broker", body: "What we find, written up for you and your broker. Your broker decides and files." },
+  { Icon: ClipboardDocumentCheckIcon, title: "Every entry audited", body: "Each entry checked against the duty in force on its date, with anything that looks off flagged for your broker." },
+  { Icon: BellAlertIcon, title: "Every tariff change, briefed", body: "When a new tariff lands, you hear from us first, with how it affects each import." },
 ];
 
 const Message = ({ who, team, children }: { who: string; team?: boolean; children: string }) => (
@@ -52,11 +53,11 @@ export const ManagedSection = () => {
           <div>
             <p className={mk.eyebrow}>HTS Hero Managed</p>
             <h2 id="managed-title" className={`${mk.h2} mt-4`}>
-              Your Dedicated Tariff Team, <span className={mk.accent}>Without the Headcout.</span>
+              Your Dedicated Tariff Team, <span className={mk.accent}>Without the Headcount.</span>
             </h2>
             <p className={`${mk.lead} mt-5`}>
-              Our team joins yours and manages every tariff on your imports: monitoring, audits, savings and every new action, with a person you can
-              message the same day.
+              We watch every tariff on your imports, audit every entry, and brief you and your broker on what we find. Your broker files. And
+              there&apos;s a person you can message the same day.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
               <a
@@ -83,11 +84,11 @@ export const ManagedSection = () => {
             </div>
             <div className="flex flex-col gap-5">
               <Message who="HTS Hero · Sam" team>
-                Quick heads up, the new Section 232 action covers 14 of your imports from Oct 1. Average rate goes from 12.5% to 37.5%. Plan attached.
+                Quick heads up, the new Section 232 action covers 14 of your imports from Oct 1. Average rate goes from 12.5% to 37.5% (+25%). Briefing attached for you and your broker.
               </Message>
               <Message who="Dana, Acme">Can we move the steel brackets to the Mexico supplier?</Message>
               <Message who="HTS Hero · Sam" team>
-                Maybe. They qualify for USMCA, which would mean 0% duty. We&apos;ll walk you through it on Thursday&apos;s call.
+                Worth asking your broker. If they qualify for USMCA, they could enter at 0%. We&apos;ll go through it on Thursday&apos;s call.
               </Message>
             </div>
           </div>

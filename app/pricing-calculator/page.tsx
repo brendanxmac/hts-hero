@@ -10,15 +10,15 @@ import {
   PricingHero,
   parseEstimateParams,
 } from "@/components/pricing-calculator";
+import { CLASSIFY_PLANS, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice } from "@/components/pricing-calculator/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Pricing — Tariff Calculator, Tariff Tracker & Classify | HTS Hero",
-  description:
-    "HTS Hero pricing. The Tariff Calculator is free and unlimited with no account. Tariff Tracker starts free: check 5 imports for savings, 10 free audit checks, then from $19/mo. Classify from $39/mo. Save 15% with annual billing.",
+  description: `HTS Hero pricing. The Tariff Calculator is free and unlimited with no account. Tariff Tracker starts free: track ${TRIAL_ALLOWANCE.alertImports} imports with alerts and impact checks, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo. Classify from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo.`,
   openGraph: {
     title: "HTS Hero Pricing",
     description:
-      "The Tariff Calculator is free. Build your Tariff Tracker and Classify plan, see your price before you sign up, and save 15% with annual billing.",
+      "The Tariff Calculator is free. Track your imports free with the Tariff Tracker, build your plan, and see your price before you sign up.",
     url: `https://${config.domainName}/pricing-calculator`,
     siteName: "HTS Hero",
     type: "website",

@@ -21,7 +21,7 @@ describe("Tariff Tracker: plans", () => {
   it("a new account is on the trial, with every check left", () => {
     const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [] })
     expect(access.kind).toBe("trial")
-    expect(access.pairLimit).toBe(10)
+    expect(access.pairLimit).toBe(5)
     expect(checksLeft(access, "savings")).toBe(5)
     expect(checksLeft(access, "audit")).toBe(10)
   })
@@ -62,12 +62,12 @@ describe("Tariff Tracker: plans", () => {
     expect(access.kind).toBe("trial")
   })
 
-  it("tiers: $19 to 10, $49 to 30, $149 to 100, $249 to 500, then quoted", () => {
-    expect(trackerTierFor(3)?.price).toBe(19)
-    expect(trackerTierFor(10)?.price).toBe(19)
-    expect(trackerTierFor(11)?.price).toBe(49)
-    expect(trackerTierFor(100)?.price).toBe(149)
-    expect(trackerTierFor(500)?.price).toBe(249)
+  it("tiers: $12 to 10, $29 to 30, $89 to 100, $149 to 500, then quoted", () => {
+    expect(trackerTierFor(3)?.price).toBe(12)
+    expect(trackerTierFor(10)?.price).toBe(12)
+    expect(trackerTierFor(11)?.price).toBe(29)
+    expect(trackerTierFor(100)?.price).toBe(89)
+    expect(trackerTierFor(500)?.price).toBe(149)
     expect(trackerTierFor(501)).toBe(null)
   })
 })

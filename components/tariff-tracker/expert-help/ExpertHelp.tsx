@@ -52,32 +52,32 @@ const OFFER = [
   {
     Icon: VideoCameraIcon,
     title: "A Weekly Check-in Call",
-    body: "What changed, what it costs you, what we're doing about it, and the decisions we need from you. Thirty minutes, every week.",
+    body: "What changed, how it hits your imports, what we found in your entries, and what to raise with your broker. Thirty minutes, every week.",
   },
   {
     Icon: ShieldCheckIcon,
-    title: "Every Tariff Optimized",
-    body: "We review the classification, origin and programs behind every rate, and keep each import in the lowest-duty position it can claim.",
+    title: "Every Tariff Watched",
+    body: "We watch every rate on every import, explain each tariff that applies and why, and flag anything worth a second look from your broker.",
   },
   {
     Icon: LightBulbIcon,
-    title: "Always Hunting for Savings",
-    body: "Trade programs, exemptions, sourcing moves and more: we keep exploring strategies and bring you each one with what it could save.",
+    title: "Savings Options to Explore",
+    body: "Trade programs, exemptions and sourcing moves your goods may qualify for, with what each requires, for you and your broker to evaluate.",
   },
   {
     Icon: ClipboardDocumentCheckIcon,
     title: "Every Entry Audited",
-    body: "The duty on every entry checked against the rates in force that day, so overpayments are caught for refund and underpayments fixed early.",
+    body: "The duty on every entry checked against the rates in force that day. We flag potential overpayments and underpayments for your broker to review.",
   },
   {
     Icon: DocumentMagnifyingGlassIcon,
     title: "Entry Summaries and Delivery Reports",
-    body: "We review your broker's entry summaries and delivery reports as they come in, and sort out errors with your broker before they cost you.",
+    body: "We read your entry summaries and delivery reports as they come in and flag possible errors, so your broker can look into them early.",
   },
   {
     Icon: BellAlertIcon,
-    title: "Every Tariff Change, Handled",
-    body: "When a new tariff lands, you hear from us first: which imports it hits, what it costs, and the plan, before it reaches your invoices.",
+    title: "Every Tariff Change, Briefed",
+    body: "When a new tariff lands, you hear from us first: which imports it hits and by how much, before it reaches your invoices.",
   },
 ];
 
@@ -92,11 +92,11 @@ const STEPS = [
   },
   {
     title: "Your First Review",
-    body: "A full audit of your tariffs and entries, and a savings plan ranked by what each step could save.",
+    body: "A full audit of your tariffs and entries, and a ranked list of savings options to evaluate with your broker.",
   },
   {
     title: "Every Week After",
-    body: "Monitoring, audits, new strategies and a weekly call, on every import we manage.",
+    body: "Monitoring, audits, briefings and a weekly call, on every import we watch.",
   },
 ];
 
@@ -104,11 +104,11 @@ const INCLUDED = [
   "A dedicated HTS Hero team, onboarded to your company",
   "A shared Slack channel with your team",
   "A weekly check-in call",
-  "Every tariff reviewed and kept optimized",
-  "Savings strategies explored continually",
+  "Every tariff watched and explained",
+  "Savings options flagged for you and your broker",
   "Every entry, entry summary and delivery report audited",
-  "Tariff changes explained, with a plan, as they happen",
-  "The Tariff Tracker on every import we manage",
+  "Tariff changes briefed as they happen",
+  "The Tariff Tracker on every import we watch",
 ];
 
 const TIER_NOTES = [
@@ -188,12 +188,12 @@ export const ExpertHelp = () => {
           <div className="flex flex-col gap-6">
             <span className={`${tt.chip("primary")} self-start`}>HTS Hero Managed</span>
             <h1 id="tt-managed-title" className={`${tt.display} m-0 text-4xl font-semibold leading-[1.1] tracking-tight xl:text-5xl`}>
-              We Become Your Tariff Team.
+              Tariff Experts on Your Team.
             </h1>
             <p className="max-w-xl text-lg leading-relaxed text-base-content/75">
-              HTS Hero joins your company and manages every tariff on every import: we watch every change, keep every
-              rate optimized, audit every entry and keep looking for ways to save. You talk to us in Slack, and we meet
-              every week.
+              HTS Hero joins your team on every tariff on every import: we watch every change, audit every entry and
+              brief you and your broker on what we find. Your broker files. You talk to us in Slack, and we meet every
+              week.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <BookCall />
@@ -334,8 +334,8 @@ export const ExpertHelp = () => {
         </div>
         <p className="text-xs text-base-content/60">
           Savings depend on what your goods qualify for, and some need a process (certificates of origin, rulings or a
-          supplier move) to lock in. HTS Hero finds and documents; corrections, protests and refunds are filed by your
-          licensed customs broker or counsel, and we work with them directly.
+          supplier move) to lock in. HTS Hero is not a customs broker: we find, flag and explain. Your licensed customs
+          broker decides on and files any classification, correction, protest or refund.
         </p>
       </section>
 

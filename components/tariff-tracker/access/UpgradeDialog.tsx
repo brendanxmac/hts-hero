@@ -16,6 +16,7 @@ import {
 } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { TRACKER_PLANS, TrackerAccess, TrackerPlan } from "@/libs/tariff-tracker/plan";
+import { AUDITS_ENABLED, SAVINGS_AUDITS_SOON, SAVINGS_ENABLED, TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { useCatalog } from "../catalogStore";
 import { PREMIUM_FEATURES, PREMIUM_INCLUDES, PremiumFeature } from "./features";
 
@@ -56,29 +57,34 @@ export const UpgradeDialog = ({
   onClose: () => void;
 }) => {
   const { items } = useCatalog();
-  const [billing, setBilling] = useState<Billing>("annual");
+  const [billing, setBilling] = useState<Billing>(TRACKER_ANNUAL_ENABLED ? "annual" : "monthly");
   const [busy, setBusy] = useState<string | null>(null);
   const fits = TRACKER_PLANS.find((p) => items.length <= p.maxPairs);
-  const { benefit } = PREMIUM_FEATURES[feature];
+  // Savings and audits are off for the Tracker MVP, so their upsells talk about tracking
+  const shown: PremiumFeature =
+    (!SAVINGS_ENABLED && (feature === "savings" || feature === "qualify")) || (!AUDITS_ENABLED && (feature === "entries" || feature === "refunds"))
+      ? "plan"
+      : feature;
+  const { benefit } = PREMIUM_FEATURES[shown];
   const heading =
     access.kind === "paid"
-      ? "Cover more imports"
-      : feature === "savings" || feature === "qualify"
+      ? "Track more imports"
+      : shown === "savings" || feature === "qualify"
         ? "Check savings on every import"
-        : feature === "entries" || feature === "refunds"
+        : shown === "entries" || shown === "refunds"
           ? "Audit every entry"
-          : feature === "alerts" || feature === "tracking"
-            ? "Get alerts on more imports"
-            : "Unlock the full Tracker";
+          : shown === "alerts" || shown === "tracking"
+            ? "Track more imports"
+            : "Track all your imports";
   const usedUp =
     access.kind !== "trial"
       ? null
-      : feature === "savings" || feature === "qualify"
+      : shown === "savings" || shown === "qualify"
         ? `You've used your ${TRIAL_ALLOWANCE.savingsChecks} free savings checks.`
-        : feature === "entries" || feature === "refunds"
+        : shown === "entries" || shown === "refunds"
           ? `You've used your ${TRIAL_ALLOWANCE.auditChecks} free audit checks.`
-          : feature === "alerts" || feature === "tracking"
-            ? `Your free alerts cover ${TRIAL_ALLOWANCE.alertImports} imports.`
+          : shown === "alerts" || shown === "tracking"
+            ? `Your free plan tracks ${TRIAL_ALLOWANCE.alertImports} imports.`
             : null;
 
   const buy = async (plan: TrackerPlan) => {
@@ -103,7 +109,7 @@ export const UpgradeDialog = ({
               <Dialog.Title className="mt-1 text-xl font-semibold tracking-tight text-base-content">{heading}</Dialog.Title>
               <p className={`${ui.bodySm} mt-1`}>
                 {usedUp ? `${usedUp} ` : ""}
-                {benefit}. Priced by how many imports you cover, with unlimited audit checks.
+                {benefit}. Priced by how many imports you track.{AUDITS_ENABLED ? " With unlimited audit checks." : ""}
               </p>
             </div>
             <button type="button" className={ui.button({ variant: "ghost", size: "sm", icon: true })} onClick={onClose}>
@@ -118,7 +124,9 @@ export const UpgradeDialog = ({
                 You have <span className="font-semibold text-base-content tabular-nums">{items.length}</span>{" "}
                 {items.length === 1 ? "import" : "imports"}.
               </p>
-              <SegmentedControl<Billing> label="Billing" options={BILLING} value={billing} onChange={setBilling} size="sm" />
+              {TRACKER_ANNUAL_ENABLED && (
+                <SegmentedControl<Billing> label="Billing" options={BILLING} value={billing} onChange={setBilling} size="sm" />
+              )}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -169,7 +177,9 @@ export const UpgradeDialog = ({
               </p>
             </div>
           </div>
-          <div className={`${ui.cardFooter} ${ui.caption}`}>Cancel anytime. No contract, no sales call.</div>
+          <div className={`${ui.cardFooter} ${ui.caption}`}>
+            {TRACKER_ANNUAL_ENABLED ? "" : "Billed monthly. "}Cancel anytime. No contract, no sales call.{SAVINGS_ENABLED && AUDITS_ENABLED ? "" : ` ${SAVINGS_AUDITS_SOON}`}
+          </div>
         </Dialog.Panel>
       </div>
     </Dialog>

@@ -1,6 +1,7 @@
 import { StatStrip, StatItem } from "@/components/ui/StatStrip";
 import { formatRate } from "./formatRate";
 import { TrackedProduct } from "./report";
+import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The imports showing at a glance: how many, the average and highest rates, and how many could be
 // lower. In the Tracker's look (DESIGN_SYSTEM §15): cobalt for the user's figure, green for money.
@@ -8,6 +9,7 @@ export const ReportSummary = ({ rows }: { rows: TrackedProduct[] }) => {
   const average = rows.reduce((sum, r) => sum + r.totalPct, 0) / rows.length;
   const highest = rows.reduce((top, r) => (r.totalPct > top.totalPct ? r : top), rows[0]);
   const countries = new Set(rows.map((r) => r.entry.country.code)).size;
+  const lowest = rows.reduce((low, r) => (r.totalPct < low.totalPct ? r : low), rows[0]);
   const couldBeLower = rows.filter((r) => r.bestSavingPct > 0.005).length;
   const tiles: StatItem[] = [
     {
@@ -21,11 +23,15 @@ export const ReportSummary = ({ rows }: { rows: TrackedProduct[] }) => {
       value: formatRate(highest.totalPct),
       note: `${highest.entry.element.htsno} · ${highest.entry.country.flag} ${highest.entry.country.name}`,
     },
-    {
+    SAVINGS_ENABLED ? {
       label: "Could be lower",
       value: couldBeLower.toLocaleString("en-US"),
       note: couldBeLower ? "May qualify for an exemption" : "No exemptions to check",
       tone: couldBeLower ? "success" : undefined,
+    } : {
+      label: "Lowest rate",
+      value: formatRate(lowest.totalPct),
+      note: `${lowest.entry.element.htsno} · ${lowest.entry.country.flag} ${lowest.entry.country.name}`,
     },
   ];
   return <StatStrip label="Your imports at a glance" stats={tiles} />;

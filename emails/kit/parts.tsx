@@ -1,6 +1,7 @@
 import { ReactNode } from "react"
 import { Button, Column, Heading, Hr, Link, Row, Section, Text } from "@react-email/components"
 import { TRACKER_TIERS, TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
 import { C, FONT_DISPLAY, formatDay, SITE, TONES, Tone } from "./brand"
 
 // The pieces every email is made of, in the Tracker's look: a small bold eyebrow in a role color,
@@ -171,6 +172,24 @@ export const Checklist = ({ items }: { items: ReactNode[] }) => (
   </Section>
 )
 
+// What the Tariff Tracker does, as a checklist (the welcome and meet-the-Tracker emails). The
+// Tracker MVP (features.ts) sells tracking, alerts and impact checks; the savings and audit lines
+// come back with them.
+export const TRACKER_POINTS =
+  SAVINGS_ENABLED || AUDITS_ENABLED
+    ? [
+      "Track the duty rate on every import",
+      "Get alerted when a new tariff hits one",
+      "Find savings you may qualify for",
+      "Audit past entries for overpaid duty",
+    ]
+    : [
+      "Track the duty rate on every import",
+      "Get alerted when a new tariff hits one, with the rate before and after",
+      "See exactly how any tariff action affects each import",
+      "Export every tariff on every import to CSV or Excel",
+    ]
+
 // Signed by the founder: every email is from a person, and replies reach him
 export const Signature = ({ line = "Founder, HTS Hero" }: { line?: string }) => (
   <Text style={{ margin: "18px 0 0", fontSize: 15, lineHeight: "22px", color: C.text }}>
@@ -181,13 +200,24 @@ export const Signature = ({ line = "Founder, HTS Hero" }: { line?: string }) => 
 )
 
 // The way up, always in view but never the ask: what the free account already does, and where
-// the plans are. Value first, then the door.
+// the plans are. Value first, then the door. The Tracker MVP (features.ts) sells tracking only, so
+// savings and audit checks drop out of it while they're off.
 export const PlanStrip = ({ campaign, signedUp = true }: { campaign: string; signedUp?: boolean }) => (
   <Section style={{ marginTop: 24, borderTop: `1px solid ${C.border}`, paddingTop: 18 }}>
     <Text style={{ margin: 0, fontSize: 13, lineHeight: "20px", color: C.muted }}>
-      {signedUp ? "Your free account" : "A free HTS Hero account"} gives you the duty on every import you add, its rate history and sourcing, {TRIAL_ALLOWANCE.savingsChecks} savings checks,{" "}
-      {TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on {TRIAL_ALLOWANCE.alertImports} imports. Plans that cover more imports start at $
-      {TRACKER_TIERS[0].price}/mo.{" "}
+      {signedUp ? "Your free account" : "A free HTS Hero account"}{" "}
+      {SAVINGS_ENABLED || AUDITS_ENABLED ? (
+        <>
+          gives you the duty on every import you add, its rate history and sourcing, {TRIAL_ALLOWANCE.savingsChecks} savings checks,{" "}
+          {TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on {TRIAL_ALLOWANCE.alertImports} imports.
+        </>
+      ) : (
+        <>
+          gives you the duty on every import you add and its rate history, and tracks {TRIAL_ALLOWANCE.alertImports} imports: an alert when a tariff change hits
+          one, and impact checks on each.
+        </>
+      )}{" "}
+      Plans that track more imports start at ${TRACKER_TIERS[0].price}/mo.{" "}
       <Link href={`${SITE}/pricing-calculator?utm_source=email&utm_medium=email&utm_campaign=${campaign}`} style={{ color: C.cobalt, fontWeight: 600 }}>
         See plans
       </Link>

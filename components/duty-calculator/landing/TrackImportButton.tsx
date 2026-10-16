@@ -8,6 +8,7 @@ import { signupHref } from "@/components/tariff-tracker/access/signup";
 import * as ui from "@/components/ui/styles";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { itemKey } from "@/components/tariff-tracker/catalog";
 import { addToCatalog } from "@/components/tariff-tracker/catalogStore";
 import { ProductTab, productUrl } from "@/components/tariff-tracker/sections";
@@ -15,7 +16,7 @@ import { ConversionDialog } from "../calculator/ConversionDialog";
 import { TariffFinder } from "../lib/useTariffFinder";
 
 // "Track this import": saves it to the Tariff Tracker catalog (kept on this device until they
-// sign up) and opens it there, where alerts, history and savings live. The way from a quick
+// sign up) and opens it there, where alerts, impact checks and rate history live. The way from a quick
 // answer into the product. Signed out, it opens the free account's pitch (ConversionDialog), not
 // the trial's: the calculator's job is turning visitors into accounts; the Tracker, its emails and
 // its teasers sell the plans. The import is saved, and sign-up lands on it in the Tracker.
@@ -80,8 +81,12 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
     <ConversionDialog
       open={open}
       view="account"
-      account={{ title: "Track this import, free", highlight: "savings", cta: "Create my free account" }}
-      accountNote={`This import is saved to your Tracker, with ${TRIAL_ALLOWANCE.savingsChecks} free savings checks and ${TRIAL_ALLOWANCE.auditChecks} free entry audits.`}
+      account={{ title: "Track this import, free", highlight: SAVINGS_ENABLED ? "savings" : "alerts", cta: "Create my free account" }}
+      accountNote={
+        SAVINGS_ENABLED
+          ? `This import is saved to your Tracker, with ${TRIAL_ALLOWANCE.savingsChecks} free savings checks and ${TRIAL_ALLOWANCE.auditChecks} free entry audits.`
+          : `This import is saved to your Tracker, one of ${TRIAL_ALLOWANCE.alertImports} you can track free.`
+      }
       onClose={() => setOpen(false)}
       onCreateAccount={() => {
         save();

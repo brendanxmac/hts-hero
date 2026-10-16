@@ -10,7 +10,7 @@ import { OFFER } from "../lib/offer";
 import { darkBand, display, followPage, glow, moneyButton } from "../lib/theme";
 
 // The homepage hero: a trading-floor ticker of real 2026 tariff changes runs across the top
-// of a dark hero; below, the promise beside the example account (monitoring, savings, audit). One button.
+// of a dark hero; below, the promise beside the example account (monitoring). One button.
 
 const TAPE = [
   ...DEMO_ALERTS.map((a) => ({ key: a.id, program: a.program as string, color: PROGRAM[a.program], text: a.title, change: a.change, date: a.date, up: a.kind === "increase" })),
@@ -63,12 +63,12 @@ export const HeroTicker = () => (
       <div>
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary">US Tariff Intelligence</p>
         <h1 className={`${display} mt-4 text-5xl font-semibold leading-[1.04] tracking-tight lg:text-[3.4rem]`}>
-          Monitor &amp; Audit your US Tariffs{" "}
-          <span className="text-primary">on Autopilot</span>
+          Monitor Every Tariff{" "}
+          <span className="text-primary">on Your Imports</span>
         </h1>
         <p className="mt-5 text-xl leading-relaxed text-base-content/70">
-          HTS Hero calculates every duty, alerts you the moment a change hits your products, uncovers savings, and audits every import for money
-          back, 24/7.
+          HTS Hero tracks every tariff on your imports, alerts you the moment a change hits one, and runs impact checks so you see exactly how
+          each new tariff action affects you, 24/7.
         </p>
         <Link
           href={OFFER.href}

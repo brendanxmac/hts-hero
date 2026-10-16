@@ -6,7 +6,7 @@ import * as mk from "@/components/ui/marketing/styles";
 import { DEFINITION } from "../lib/copy";
 import { ExposureDashboard } from "./ExposureDashboard";
 
-const PROMISES = [`Free alerts on ${TRIAL_ALLOWANCE.alertImports} imports`, `Check ${TRIAL_ALLOWANCE.savingsChecks} imports for savings free`, "No credit card"];
+const PROMISES = [`Track ${TRIAL_ALLOWANCE.alertImports} imports free`, "Alerts and impact checks on each", "No credit card"];
 
 // The top of /tariff-monitor: the promise and the answer-first definition beside a live
 // dashboard. The copy is server-rendered, so crawlers and AI assistants read it as is.

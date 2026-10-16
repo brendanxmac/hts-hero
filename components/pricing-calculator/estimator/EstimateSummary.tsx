@@ -4,6 +4,7 @@ import Link from "next/link";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
 import { BillingSwitch } from "@/components/ui/marketing";
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { estimateEmailBody } from "../lib/estimateEmail";
 import { LINKS, contactLink, estimateUrl } from "../lib/links";
 import { Billing, Estimate, TRACKER_MAX_LISTED_PAIRS, formatPrice } from "../lib/pricing";
@@ -13,7 +14,8 @@ const ghostOnDark =
   "inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg px-5 text-base font-semibold text-base-content/70 transition-colors hover:bg-base-content/10 hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60";
 
 // The running total beside the estimator: a line per product, the monthly total and what
-// annual billing saves
+// annual billing saves. While Tracker annual billing is off (MVP_TRIM.md), the Tracker line stays
+// monthly: the billing switch shows only when another product can be billed yearly
 export const EstimateSummary = ({
   est,
   billing,
@@ -26,7 +28,11 @@ export const EstimateSummary = ({
   query: string;
 }) => {
   const isEmpty = est.lines.length === 0;
-  const annualTotal = est.monthly * 12;
+  // The Tracker line, when it's billed monthly whatever the switch says
+  const monthlyTracker = TRACKER_ANNUAL_ENABLED ? undefined : est.lines.find((line) => line.id === "tracker");
+  const canBillAnnually = TRACKER_ANNUAL_ENABLED || est.lines.some((line) => line.id !== "tracker");
+  const annual = billing === "annual" && canBillAnnually;
+  const annualTotal = (est.monthly - (monthlyTracker?.monthly ?? 0)) * 12;
   const needsConversation = est.lines.some((line) => line.viaSales);
   const emailLink = contactLink("My HTS Hero plan", estimateEmailBody(est, billing, estimateUrl(query)));
 
@@ -47,9 +53,11 @@ export const EstimateSummary = ({
           </h3>
           {!isEmpty && <CopyLinkButton query={query} />}
         </div>
-        <div>
-          <BillingSwitch billing={billing} onChange={onBillingChange} size="sm" />
-        </div>
+        {canBillAnnually && (
+          <div>
+            <BillingSwitch billing={billing} onChange={onBillingChange} size="sm" />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-2 px-6 pb-6 pt-7 sm:px-7">
@@ -59,7 +67,7 @@ export const EstimateSummary = ({
             {formatPrice(est.monthly)}
           </span>
           {est.hasQuote && <span className="text-base font-medium text-base-content/70">+ custom</span>}
-          {billing === "annual" && est.annualSavings > 0 && (
+          {annual && est.annualSavings > 0 && (
             <span className="text-lg tabular-nums text-base-content/50 line-through">
               <span className="sr-only">was </span>
               {formatPrice(est.listMonthly)}
@@ -67,9 +75,9 @@ export const EstimateSummary = ({
           )}
         </div>
         {!isEmpty &&
-          (billing === "annual" ? (
+          (annual ? (
             <p className="text-sm tabular-nums text-base-content/70">
-              {formatPrice(annualTotal)} billed yearly ·{" "}
+              {formatPrice(annualTotal)} billed yearly{monthlyTracker && ", Tariff Tracker billed monthly"} ·{" "}
               <span className="font-semibold text-success">you save {formatPrice(est.annualSavings)} a year</span>
             </p>
           ) : (

@@ -1,6 +1,7 @@
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Checklist, Cta, Eyebrow, Facts, P, Signature, Title } from "../kit/parts"
 import { siteLink } from "../kit/brand"
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
 
 // After a purchase: the receipt facts, then the three things that get the most out of the plan
 // right away, and one button into the product.
@@ -25,6 +26,8 @@ const CAMPAIGN = "purchase"
 
 export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailProps) {
   const tracker = p.product === "tracker"
+  // The Tracker MVP (features.ts) sells tracking, alerts and impact checks
+  const savingsAudits = SAVINGS_ENABLED || AUDITS_ENABLED
   return (
     <EmailLayout preview={`Your ${p.planName} plan is active. Here's what to do next.`} footer={p.footer}>
       <Eyebrow tone="down">Purchase confirmed</Eyebrow>
@@ -32,7 +35,7 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
       <P>
         Thank you for choosing HTS Hero!{" "}
         {tracker
-          ? `Alerts, savings and audits now cover ${p.importsCovered ? `up to ${p.importsCovered} imports` : "your imports"}.`
+          ? `${savingsAudits ? "Alerts, savings and audits" : "Tracking, alerts and impact checks"} now cover ${p.importsCovered ? `up to ${p.importsCovered} imports` : "your imports"}.`
           : "Your classification plan is active."}
       </P>
       <Facts
@@ -50,7 +53,9 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
             ? [
               "Add the rest of your imports, so every one is covered",
               "Turn on alerts, so you're notified the next time a tariff change hits your imports",
-              "Check for savings on your imports: trade programs, exemptions and lower-duty origins you may qualify for",
+              savingsAudits
+                ? "Check for savings on your imports: trade programs, exemptions and lower-duty origins you may qualify for"
+                : "Run an impact check: pick a recent tariff action and see exactly how it affects each of your imports",
             ]
             : [
               "Start a classification from a product description",

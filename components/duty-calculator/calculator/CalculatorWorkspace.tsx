@@ -58,6 +58,7 @@ import { RefundCheckCard } from "./RefundCheckCard";
 import { useTrackImport } from "../landing/TrackImportButton";
 import { EntryDatePicker } from "./EntryDatePicker";
 import { ResultsSkeleton } from "./ResultsSkeleton";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { useStickyColumn } from "./useStickyColumn";
 
 // The Tariff Calculator, as on /duty-calculator, the country pages and the Tariff Tracker's
@@ -277,11 +278,12 @@ export const CalculatorWorkspace = ({
   // How often the duty on this import changed: counted in the Recent Changes tab
   const historyChanges = f.history.filter((x) => x.changes.length > 0).length;
   // The calculator's one main way up: track this import (a free account, and the import saved to
-  // the Tracker, where its savings and past entries are checked)
+  // the Tracker, where it's watched for tariff changes; its savings and past entries are checked
+  // there too once savings and audits are back, features.ts)
   const track = useTrackImport(f, "track-import");
   const trackButton = page === "calculator" && track && (
     <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => track.start()}>
-      Find ways to save
+      {SAVINGS_ENABLED ? "Find ways to save" : "Track this import"}
       <ArrowRightIcon className="h-4 w-4" aria-hidden />
     </button>
   );
@@ -289,8 +291,10 @@ export const CalculatorWorkspace = ({
   const trackStrip = page === "calculator" && track && (
     <div className={`${ui.cardSection} flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between`}>
       <p className="m-0 text-sm text-base-content/70">
-        <span className="font-semibold text-base-content">Track this import free.</span> See what you could save on it (trade programs, exemptions, cheaper
-        origins) and check your past entries for duty you may have overpaid.
+        <span className="font-semibold text-base-content">Track this import free.</span>{" "}
+        {SAVINGS_ENABLED || AUDITS_ENABLED
+          ? "See what you could save on it (trade programs, exemptions, cheaper origins) and check your past entries for duty you may have overpaid."
+          : "Get an alert the moment a tariff change hits it, with the rate before and after, and see exactly how any tariff action affects it."}
       </p>
       {trackButton}
     </div>
@@ -545,7 +549,7 @@ export const CalculatorWorkspace = ({
                     )
                   }
                 />
-                {page === "calculator" && (
+                {page === "calculator" && AUDITS_ENABLED && (
                   <RefundCheckCard
                     history={f.history}
                     customsValue={f.customsValue}

@@ -2,14 +2,17 @@
 
 import { useMemo } from "react";
 import { SectionIntro } from "@/components/ui/marketing";
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import {
   Billing,
   CLASSIFY_PLANS,
   EstimateInput,
   TRACKER_TIERS,
+  TRIAL_ALLOWANCE,
   estimate,
   formatPrice,
   monthlyRate,
+  trackerBilling,
 } from "../lib/pricing";
 import { ClassifyControls } from "./ClassifyControls";
 import { EstimateSummary } from "./EstimateSummary";
@@ -52,7 +55,7 @@ export const Estimator = ({
           />
           <ProductCard
             name="Tariff Tracker"
-            summary={`Start free, then from ${rate(TRACKER_TIERS[0].price)}/mo · alerts, audits and savings on your catalog`}
+            summary={`Track ${TRIAL_ALLOWANCE.alertImports} imports free, then from ${formatPrice(monthlyRate(TRACKER_TIERS[0].price, trackerBilling(billing)))}/mo${TRACKER_ANNUAL_ENABLED ? "" : ", billed monthly"} · alerts and impact checks on your imports`}
             enabled={input.tracker}
             onToggle={(tracker) => update({ tracker })}
           >

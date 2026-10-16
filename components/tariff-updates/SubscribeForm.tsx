@@ -18,7 +18,7 @@ import { DEFAULT_NEWS_PREFERENCES, NewsPreferencesFields, type NewsPreferencesVa
 const UPSELL = [
   "See which of your imports each new tariff update affects",
   "Get alerted with the rate before and after, by email, Slack or Teams",
-  "Find potential savings and audit what you paid",
+  "Run impact checks to see exactly how any tariff action affects each import",
 ]
 
 // The address they subscribed with, for the sign-up page to fill in (this tab only, never in a URL)
@@ -84,7 +84,7 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
           </p>
           <div className="flex flex-col gap-2 rounded-xl border border-primary/20 bg-primary/[0.06] p-3.5">
             <p className="m-0 text-sm font-semibold text-base-content">Next: see when an update hits your own imports</p>
-            <p className="m-0 text-xs leading-relaxed text-base-content/70">Track your imports free, get alerted with the rate before and after, and find potential savings.</p>
+            <p className="m-0 text-xs leading-relaxed text-base-content/70">Track your imports free, get alerted with the rate before and after, and see exactly how each update affects them.</p>
             <Link href={signup} onClick={() => upsellClicked(source)} className={`${ui.button({ variant: "primary", size: "sm" })} self-start`}>
               Create my free account
               <ArrowRightIcon className="h-4 w-4" aria-hidden />

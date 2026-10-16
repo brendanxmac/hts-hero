@@ -11,7 +11,8 @@ import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./t
 //
 // The sequence drives each account to the next activation step, in order: add imports (alerts are
 // on from then, alertPrefs.ts), check savings, audit an entry. Every CTA lands on that step in the
-// Tracker.
+// Tracker. For the Tracker MVP (libs/tariff-tracker/features.ts) savings and audits are off: no step
+// here targets them, and the emails' copy sells tracking, alerts and impact checks instead.
 //
 // No imports yet (accounts from ONBOARDING_FROM on), each stopping once an import is added:
 //   no_imports_1  day 1   paste your codes: what you get back in a minute, and this week's actions

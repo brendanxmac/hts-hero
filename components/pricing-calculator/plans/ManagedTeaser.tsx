@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRightIcon, UserGroupIcon } from "@heroicons/react/20/solid";
 import { MANAGED_TIERS, formatPrice } from "../lib/pricing";
 
-// HTS Hero Managed, under the tariff plans: for importers who'd rather our team ran it all. A teaser
+// HTS Hero Managed, under the tariff plans: for importers who'd rather have our team watching their tariffs for them. A teaser
 // only (it's priced on a call, so it stays out of the estimator); the homepage section has the rest.
 export const ManagedTeaser = () => (
   <Link
@@ -15,7 +15,7 @@ export const ManagedTeaser = () => (
       </span>
       <span>
         <span className="block text-lg font-bold text-base-content">HTS Hero Managed Tariffs</span>
-        <span className="text-base-content/70">Overwhelmed by tariffs? Our team can manage every tariff on your imports: monitoring, audits, savings, and alerts for every new action, with a person you can message the same day.</span>
+        <span className="text-base-content/70">Overwhelmed by tariffs? We watch every tariff on your imports, audit every entry, and brief you and your broker on what we find. Your broker files.</span>
       </span>
     </span>
     <span className="flex items-center gap-4">

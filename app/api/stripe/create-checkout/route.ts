@@ -6,6 +6,7 @@ import { fetchUser, UserProfile } from "../../../../libs/supabase/user";
 import { Billing } from "@/components/pricing-calculator/lib/pricing";
 import { isTrackerPlan } from "@/libs/tariff-tracker/plan";
 import { trackerPriceId } from "@/libs/tariff-tracker/prices";
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 
 interface CreateCheckoutDto {
   itemId: PricingPlan;
@@ -41,7 +42,8 @@ export async function POST(req: NextRequest) {
     }
 
     const getPriceId = (itemId: PricingPlan) => {
-      if (isTrackerPlan(itemId)) return trackerPriceId(itemId, billing);
+      // Tracker plans are monthly only for now (libs/tariff-tracker/features.ts)
+      if (isTrackerPlan(itemId)) return trackerPriceId(itemId, TRACKER_ANNUAL_ENABLED ? billing : "monthly");
       switch (itemId) {
         case PricingPlan.CLASSIFY_STARTER:
           return process.env.STRIPE_CLASSIFY_STARTER_PRICE_ID;

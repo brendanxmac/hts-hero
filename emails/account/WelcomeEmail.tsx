@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 import { Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { Checklist, Cta, Eyebrow, P, Title, UpdateSummary } from "../kit/parts"
+import { Checklist, Cta, Eyebrow, P, Title, TRACKER_POINTS, UpdateSummary } from "../kit/parts"
 import { C, FONT_DISPLAY, siteLink } from "../kit/brand"
 
 // Sent the moment an account is created. General, like the old one: welcome to HTS Hero, then the
@@ -34,14 +34,7 @@ export default function WelcomeEmail({ footer }: WelcomeEmailProps) {
       <P>Thanks for signing up. There are two ways to get started:</P>
 
       <Card title="Tariff Tracker" intro="Add your imports once and we watch them for you.">
-        <Checklist
-          items={[
-            "Track the duty rate on every import",
-            "Get alerted when a new tariff hits one",
-            "Find savings you may qualify for",
-            "Audit past entries for overpaid duty",
-          ]}
-        />
+        <Checklist items={TRACKER_POINTS} />
         <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
           Open the Tariff Tracker
         </Cta>

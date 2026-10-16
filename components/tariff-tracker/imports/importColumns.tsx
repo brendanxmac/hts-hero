@@ -14,6 +14,7 @@ import { REVIEW_LABELS, ReviewState } from "../opportunities/review";
 import { BASE_PART, shortProgram, TrackedProduct } from "../report";
 import { productUrl } from "../sections";
 import { countryFacet, openColumn } from "../tableColumns";
+import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The columns of the user's imports (ImportsTable): what each shows, how it sorts, and the ones
 // people filter by (origin, HTS chapter, tariff, savings, alerts), each with its values' labels
@@ -44,6 +45,8 @@ const Status = ({ row, ctx }: { row: TrackedProduct; ctx: ImportColumnContext })
   const review = ctx.review(row.key);
   const locked = ctx.signedIn && !ctx.unlocked(row.key);
   const lower = row.bestSavingPct > 0.005;
+  // Savings are off for the Tracker MVP (libs/tariff-tracker/features.ts): alerts only
+  if (!SAVINGS_ENABLED) return ctx.signedIn && !ctx.covered(row.key) ? <span className={tt.chip()}>Not tracked</span> : null;
   return (
     <span className="flex flex-wrap items-center justify-end gap-1">
       {ctx.signedIn && !ctx.covered(row.key) && <span className={tt.chip()}>No alerts</span>}
@@ -184,7 +187,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
       </span>
     ),
   },
-  ...(ctx.signedIn
+  ...(ctx.signedIn && SAVINGS_ENABLED
     ? [
         {
           id: "savings",

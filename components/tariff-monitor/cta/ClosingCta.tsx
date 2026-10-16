@@ -12,7 +12,7 @@ export const ClosingCta = () => (
         Be the first to know, <span className={cta.accent}>every time.</span>
       </h2>
       <p className={`${cta.lead} mt-6 max-w-2xl`}>
-        Upload your whole catalog and get free alerts on {TRIAL_ALLOWANCE.alertImports} imports. No credit card, no sales call.
+        Upload your whole catalog and track {TRIAL_ALLOWANCE.alertImports} imports free, with alerts and impact checks. No credit card, no sales call.
       </p>
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
         <Link href={config.auth.loginUrl} className={cta.button}>

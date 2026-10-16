@@ -2,6 +2,7 @@ import { EmailLayout } from "../kit/Layout"
 import { Cta, Eyebrow, P, Title } from "../kit/parts"
 import { C } from "../kit/brand"
 import { Link, Text } from "@react-email/components"
+import { SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
 
 // The emails Supabase Auth sends (confirm sign-up, magic link, password reset, email change,
 // invite), in the HTS Hero look. Supabase fills the {{ .ConfirmationURL }}-style placeholders, so
@@ -17,7 +18,10 @@ export const AUTH_EMAILS: Record<AuthKind, { subject: string; eyebrow: string; t
     subject: "Confirm your email to open your Tariff Tracker",
     eyebrow: "One step left",
     title: "Confirm your email",
-    body: "Confirm this address to access Tariff Tracker. Then, add your HTS codes and countries, and see every duty, change, and possible saving on each import.",
+    // The Tracker MVP (features.ts): no savings line while savings are off
+    body: SAVINGS_ENABLED
+      ? "Confirm this address to access Tariff Tracker. Then, add your HTS codes and countries, and see every duty, change, and possible saving on each import."
+      : "Confirm this address to access Tariff Tracker. Then, add your HTS codes and countries, see every duty on each import, and get an alert when a tariff change hits one.",
     button: "Confirm and open Tariff Tracker",
     preview: "Confirm your email to access Tariff Tracker.",
   },
@@ -49,7 +53,9 @@ export const AUTH_EMAILS: Record<AuthKind, { subject: string; eyebrow: string; t
     subject: "You're invited to HTS Hero",
     eyebrow: "Invitation",
     title: "You've been invited to HTS Hero",
-    body: "Accept to set up your account. The Tariff Tracker shows every duty on the imports you add, alerts you when tariffs change, and finds where you could pay less.",
+    body: SAVINGS_ENABLED
+      ? "Accept to set up your account. The Tariff Tracker shows every duty on the imports you add, alerts you when tariffs change, and finds where you could pay less."
+      : "Accept to set up your account. The Tariff Tracker shows every duty on the imports you add, alerts you when tariffs change, and shows exactly how any tariff action affects each one.",
     button: "Accept the invitation",
     preview: "Accept your invitation to HTS Hero.",
   },

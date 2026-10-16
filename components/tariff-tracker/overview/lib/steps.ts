@@ -2,7 +2,9 @@
 // rest can be done in any order, so they aren't numbered. The first one not done yet is suggested
 // up front with its payoff, and the whole path is a track beside it.
 
-export type StepId = "products" | "values" | "alerts" | "savings" | "audit"
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
+
+export type StepId = "products" | "values" | "alerts" | "impact" | "savings" | "audit"
 
 export interface Step {
   id: StepId
@@ -15,6 +17,7 @@ export const pathSteps = ({
   products,
   valuesSet,
   alertsSet,
+  impactSeen,
   savingsSeen,
   entriesAudited,
 }: {
@@ -23,6 +26,8 @@ export const pathSteps = ({
   valuesSet: number
   // Has said where alerts go (signed in, settings saved)
   alertsSet: boolean
+  // Has opened Tariff Impacts
+  impactSeen: boolean
   // Has checked an import's savings (or has a plan) and opened Savings
   savingsSeen: boolean
   // Has audited an entry
@@ -45,15 +50,13 @@ export const pathSteps = ({
       done: products > 0 && valuesSet >= products,
     },
     {
-      id: "savings",
-      label: "See potential savings",
-      done: savingsSeen,
+      id: "impact",
+      label: "Run an impact check",
+      done: impactSeen,
     },
-    {
-      id: "audit",
-      label: "Audit past entries",
-      done: entriesAudited,
-    },
+    // Off for the Tracker MVP (libs/tariff-tracker/features.ts)
+    ...(SAVINGS_ENABLED ? [{ id: "savings" as const, label: "See potential savings", done: savingsSeen }] : []),
+    ...(AUDITS_ENABLED ? [{ id: "audit" as const, label: "Audit past entries", done: entriesAudited }] : []),
   ]
   return { steps, next: steps.find((s) => !s.done && !s.soon) ?? null }
 }

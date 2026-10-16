@@ -14,8 +14,10 @@ import { useImportMatches, type ImportMatch } from "../news/useImportMatches";
 import { sectionUrl, type SectionSlug } from "../sections";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
+import { useTrackerAccess } from "../access/accessContext";
 import { useTariffHealth } from "./TariffHealth";
 import { useTariffUpdates, type TrackerUpdate } from "./useTariffUpdates";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The Overview's summaries of the Tracker's other pages (DESIGN_SYSTEM §15): Tariff health, the
 // latest tariff impacts on the user's imports and the latest tariff news, side by side. Each is the
@@ -67,46 +69,83 @@ const SummaryBox = ({
 export const HealthSummary = () => {
   const h = useTariffHealth();
   const { openTab } = useTrackerNav();
+  const { access, openUpgrade } = useTrackerAccess();
   const n = (count: number) => count.toLocaleString("en-US");
-  const rows = [
+  const full = SAVINGS_ENABLED && AUDITS_ENABLED;
+  const alertsRow = {
+    label: "Alerts",
+    pct: h.alertsPct,
+    bar: "bg-primary",
+    text: !h.signedIn
+      ? "With a free account, you hear about every tariff change on your imports."
+      : !h.alertsSet
+        ? "Alerts are off: you won't hear when a tariff on your imports changes."
+        : h.covered < h.imports
+          ? `${n(h.covered)} of ${n(h.imports)} imports get an alert when a tariff on them changes.`
+          : "Every import gets an alert when a tariff on it changes.",
+    link: h.signedIn ? "Alert settings" : h.unlockLabel,
+    go: () => (h.signedIn ? openTab("alerts") : h.unlock("alerts")),
+  };
+  // The Tracker MVP: imports tracked (alerts and impact checks run on them) and alerts on
+  const readinessRows = [
     {
-      label: "Alerts",
-      pct: h.alertsPct,
+      label: "Imports Tracked",
+      pct: h.trackedPct,
       bar: "bg-primary",
+      text:
+        h.covered < h.imports
+          ? `${n(h.covered)} of ${n(h.imports)} imports get alerts and impact checks.`
+          : "Every import gets alerts and impact checks.",
+      link: !h.signedIn ? h.unlockLabel : h.covered < h.imports ? "Track more imports" : "See Your imports",
+      go: () =>
+        !h.signedIn ? h.unlock("tracking") : h.covered < h.imports && access.kind !== "paid" ? openUpgrade("tracking") : openTab("catalog"),
+    },
+    {
+      label: "Alerts On",
+      pct: h.deliveryPct,
+      bar: "bg-success",
       text: !h.signedIn
         ? "With a free account, you hear about every tariff change on your imports."
-        : !h.alertsSet
-          ? "Alerts are off: you won't hear when a tariff on your imports changes."
-          : h.covered < h.imports
-            ? `${n(h.covered)} of ${n(h.imports)} imports get an alert when a tariff on them changes.`
-            : "Every import gets an alert when a tariff on it changes.",
+        : h.alertsSet
+          ? "Alerts go out by email, Slack or Teams as soon as a tariff on a tracked import changes."
+          : "Alerts are off: you won't hear when a tariff on your imports changes.",
       link: h.signedIn ? "Alert settings" : h.unlockLabel,
       go: () => (h.signedIn ? openTab("alerts") : h.unlock("alerts")),
     },
-    {
-      label: "Savings Reviewed",
-      pct: h.savingsPct,
-      bar: "bg-success",
-      text: `${n(h.stats.reviewed)} of ${n(h.stats.total)} imports, each once every way it could pay less is secured or ruled out.`,
-      link: "Review in Your imports",
-      go: () => openTab("catalog"),
-    },
-    {
-      label: "Entries Audited",
-      pct: h.auditPct,
-      bar: "bg-primary",
-      text: `${n(h.auditedImports)} of ${n(h.imports)} imports have an entry checked against the rate in force that day.`,
-      link: "Audit in Your imports",
-      go: () => openTab("catalog"),
-    },
   ];
+  const rows = full
+    ? [
+        alertsRow,
+        {
+          label: "Savings Reviewed",
+          pct: h.savingsPct,
+          bar: "bg-success",
+          text: `${n(h.stats.reviewed)} of ${n(h.stats.total)} imports, each once every way it could pay less is secured or ruled out.`,
+          link: "Review in Your imports",
+          go: () => openTab("catalog"),
+        },
+        {
+          label: "Entries Audited",
+          pct: h.auditPct,
+          bar: "bg-primary",
+          text: `${n(h.auditedImports)} of ${n(h.imports)} imports have an entry checked against the rate in force that day.`,
+          link: "Audit in Your imports",
+          go: () => openTab("catalog"),
+        },
+      ]
+    : readinessRows;
+  const title = full ? "Tariff Health" : "Tariff Readiness";
   return (
     <SummaryBox
       id="tt-health-summary"
-      title="Tariff Health"
-      info="How well your imports are looked after, across the three things the Tracker does: alerts on for them, potential savings reviewed, and past entries audited. Each is the share of your imports there; the score is the average of the three."
+      title={title}
+      info={
+        full
+          ? "How well your imports are looked after, across the three things the Tracker does: alerts on for them, potential savings reviewed, and past entries audited. Each is the share of your imports there; the score is the average of the three."
+          : "How ready you are for the next tariff change: the share of your imports that get alerts and impact checks, and whether your alerts are on. The score is the average of the two."
+      }
     >
-      <p className="m-0 flex items-baseline gap-2" aria-label={`Tariff health ${h.overall}%`}>
+      <p className="m-0 flex items-baseline gap-2" aria-label={`${title} ${h.overall}%`}>
         <span className={`${tt.metric} ${h.overall >= 80 ? "text-success" : "text-primary"}`}>{h.overall}%</span>
         <span className="text-sm text-base-content/60">overall, across your {n(h.imports)} imports</span>
       </p>
@@ -128,6 +167,12 @@ export const HealthSummary = () => {
             </button>
           </li>
         ))}
+        {!full && (
+          <li className="flex items-baseline justify-between gap-3 border-t border-base-300 pt-3 text-sm">
+            <span className="text-base-content/60">Savings and Audits</span>
+            <span className={ui.badge("neutral")}>Coming soon</span>
+          </li>
+        )}
       </ul>
     </SummaryBox>
   );

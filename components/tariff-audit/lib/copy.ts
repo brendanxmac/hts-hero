@@ -1,11 +1,12 @@
 import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { AUDITS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The audit page's fixed copy. The FAQ is shown on the page and in its FAQPage schema, so the two
 // always match.
 
 // The one-sentence answer to "what is it?", written so it can be quoted on its own
 export const DEFINITION =
-  "HTS Hero's tariff audit recalculates the US duty on each of your past entries using the rates in force on its entry date, and flags overpaid duty, missed exemptions and tariffs you can get refunded.";
+  "HTS Hero's tariff audit recalculates the US duty on each of your past entries using the rates in force on its entry date, and flags potential overpaid duty, missed exemptions and tariffs that may be refundable.";
 
 // Why importers overpay, in the order they're most often found
 export const CAUSES = [
@@ -70,7 +71,7 @@ export const AUDIT_FAQS = [
   {
     question: "Does HTS Hero file the refund for me?",
     answer:
-      "No. HTS Hero finds and documents overpaid duty. Corrections and refunds are filed by your licensed customs broker or attorney: a post-summary correction before the entry liquidates, a protest within 180 days after liquidation, or a post-importation trade-agreement claim within one year of import.",
+      "No. HTS Hero finds and flags potential overpaid duty, and documents why. Corrections and refunds are filed by your licensed customs broker or attorney: a post-summary correction before the entry liquidates, a protest within 180 days after liquidation, or a post-importation trade-agreement claim within one year of import.",
   },
   {
     question: "What if the audit finds duty I underpaid?",
@@ -79,7 +80,9 @@ export const AUDIT_FAQS = [
   },
   {
     question: "Is the audit free?",
-    answer:
-      `Self-audits run in the Tariff Tracker. Every account gets ${TRIAL_ALLOWANCE.auditChecks} free audit checks (one per past entry) with no credit card, and paid Tracker plans include unlimited audit checks. Two ways are free outright: upload your entries for a one-time check with the results emailed to you, or request an audit and we'll review your entries and send you a report.`,
+    // Self-serve audits are off for the Tracker MVP (features.ts); the request is done by hand
+    answer: AUDITS_ENABLED
+      ? `Self-audits run in the Tariff Tracker. Every account gets ${TRIAL_ALLOWANCE.auditChecks} free audit checks (one per past entry) with no credit card, and paid Tracker plans include unlimited audit checks. Two ways are free outright: upload your entries for a one-time check with the results emailed to you, or request an audit and we'll review your entries and send you a report.`
+      : "Requesting an audit is free, with no obligation: tell us about your company and we'll review your entries and send you a report of potential overpaid and underpaid duty, for your customs broker to review. Self-serve audits in the Tariff Tracker are coming soon.",
   },
 ];

@@ -3,12 +3,13 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { LINKS } from "../lib/links";
-import { Billing, TRACKER_TIERS, TRIAL_ALLOWANCE } from "../lib/pricing";
+import { Billing, TRACKER_TIERS, TRIAL_ALLOWANCE, trackerBilling } from "../lib/pricing";
 import { CALCULATOR_FEATURES, TRACKER_FEATURES } from "../tariff-pricing/plans";
 import { CoverageGrid } from "./CoverageGrid";
 import { ManagedTeaser } from "./ManagedTeaser";
 import { PlanCard } from "./PlanCard";
 import { PlanPrice } from "./PlanPrice";
+import { TrackerCore } from "./TrackerCore";
 import { TrackerTierTable } from "./TrackerTierTable";
 
 export const TariffPlans = ({
@@ -20,13 +21,13 @@ export const TariffPlans = ({
 }) => (
   <section id="tariffs" className="scroll-mt-24" aria-labelledby="tariffs-title">
     <div className="flex flex-col gap-8">
-      <SectionIntro eyebrow="Tariffs" title="Monitor your imports and unlock savings." id="tariffs-title">
+      <SectionIntro eyebrow="Tariffs" title="Track every tariff on your imports." id="tariffs-title">
         The Tariff Calculator is free for everyone. The{" "}
         <Link href="/tariff-monitor" className={mk.link}>
           Tariff Tracker
         </Link>{" "}
-        watches your catalog, audits your entries and finds savings, and it&apos;s free to start: check{" "}
-        {TRIAL_ALLOWANCE.savingsChecks} imports for savings and get {TRIAL_ALLOWANCE.auditChecks} free audit checks.
+        tracks every tariff on your imports and runs impact checks to show exactly how each tariff action hits them. It&apos;s free
+        to start: track {TRIAL_ALLOWANCE.alertImports} imports free, no credit card.
       </SectionIntro>
       <div className="shrink-0">
         <BillingSwitch billing={billing} onChange={onBillingChange} />
@@ -56,13 +57,13 @@ export const TariffPlans = ({
         badge="Free to start"
         dark
         compact
-        description="For importers who want to discover tariff savings, know when tariff changes hit their products, and audit prior entries."
+        description="For importers who want every tariff on their imports tracked, an alert when a change hits one, and impact checks on every new tariff action."
         price={
           <PlanPrice
             listPrice={TRACKER_TIERS[0].price}
-            billing={billing}
+            billing={trackerBilling(billing)}
             prefix="From"
-            note="Start free, no credit card"
+            note="Start free, no credit card · billed monthly"
             dark
             compact
           />
@@ -77,6 +78,7 @@ export const TariffPlans = ({
         <TrackerTierTable billing={billing} />
       </PlanCard>
     </div>
+    <TrackerCore />
     <ManagedTeaser />
   </section>
 );

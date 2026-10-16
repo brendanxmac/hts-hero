@@ -7,6 +7,7 @@ import { TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice } from "@/components/pricin
 import { useTrackerAccess } from "../access/accessContext";
 import { currentPath, signupHref } from "../access/signup";
 import { useTracker } from "../TrackerContext";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The plan at the foot of the sidebar (dark in both modes): what it is, how much of it is used
 // (on the trial, each allowance), and the next step up. Always in view, so more value is never more than a click away.
@@ -35,7 +36,7 @@ const Allowance = ({ label, used, max }: { label: string; used: number; max: num
 
 export const PlanCard = () => {
   const { loading, signedIn, access, openUpgrade } = useTrackerAccess();
-  const { items } = useTracker();
+  const { items, trackedKeys } = useTracker();
   if (loading) return <div className={`${ui.skeleton} h-32 w-full`} />;
 
   const covered = Math.min(items.length, access.pairLimit);
@@ -59,26 +60,27 @@ export const PlanCard = () => {
       <div className={BOX}>
         <span className={tt.eyebrow("success")}>Tracker {access.pairLimit}</span>
         <span className="text-xs text-base-content/70">
-          {covered.toLocaleString("en-US")} of {access.pairLimit.toLocaleString("en-US")} imports covered
+          {covered.toLocaleString("en-US")} of {access.pairLimit.toLocaleString("en-US")} imports tracked
         </span>
         <Meter value={covered} max={access.pairLimit} />
         {nearLimit && (
           <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => openUpgrade("tracking")}>
-            Cover more imports
+            Track more imports
           </button>
         )}
       </div>
     );
   }
 
-  // The usage-based trial: what's been used of each allowance
+  // The usage-based trial: what's been used of each allowance (for the Tracker MVP, only the
+  // imports tracked: alerts and impact checks run on those)
   return (
     <div className={BOX}>
-      <span className={tt.eyebrow("success")}>Free trial</span>
+      <span className={tt.eyebrow("success")}>Free plan</span>
       <div className="flex flex-col gap-2.5">
-        <Allowance label="Savings checks" used={access.usage.savingsChecked.length} max={TRIAL_ALLOWANCE.savingsChecks} />
-        <Allowance label="Audit checks" used={access.usage.auditsChecked.length} max={TRIAL_ALLOWANCE.auditChecks} />
-        <Allowance label="Imports with alerts" used={covered} max={TRIAL_ALLOWANCE.alertImports} />
+        {SAVINGS_ENABLED && <Allowance label="Savings checks" used={access.usage.savingsChecked.length} max={TRIAL_ALLOWANCE.savingsChecks} />}
+        {AUDITS_ENABLED && <Allowance label="Audit checks" used={access.usage.auditsChecked.length} max={TRIAL_ALLOWANCE.auditChecks} />}
+        <Allowance label="Imports tracked" used={trackedKeys.size} max={TRIAL_ALLOWANCE.alertImports} />
       </div>
       <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => openUpgrade("plan")}>
         Upgrade · from {fromPrice}/mo

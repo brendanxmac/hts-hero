@@ -21,6 +21,7 @@ import { programColors } from "../programColors";
 import { TrackedProduct } from "../report";
 import { useTracker } from "../TrackerContext";
 import { importColumns } from "./importColumns";
+import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The user's imports as a table, on the shared table (components/ui/table): search by code,
 // description or country; filter by origin, HTS chapter, tariff, savings and alerts, each with
@@ -31,7 +32,7 @@ import { importColumns } from "./importColumns";
 // covers what's showing; the summary sums it up). The search, filters and bulk actions sit in the
 // table's panel, over the rows they act on.
 
-const FACETS = ["country", "chapter", "tariffs", "savings", "alerts"];
+const FACETS = ["country", "chapter", "tariffs", ...(SAVINGS_ENABLED ? ["savings"] : []), "alerts"];
 
 export const ImportsTable = ({
   rows,

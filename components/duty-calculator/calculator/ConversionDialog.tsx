@@ -15,6 +15,7 @@ import { sectionUrl } from "@/components/tariff-tracker/sections";
 import { TrackerNavContext } from "@/components/tariff-tracker/shell/TrackerNav";
 import { currentPath, signupHref } from "@/components/tariff-tracker/access/signup";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { thisPageWith } from "../landing/redirect";
 
 // The calculator's two sign-up pitches, as a dialog for signed-out visitors:
@@ -26,19 +27,21 @@ import { thisPageWith } from "../landing/redirect";
 // Each view's button runs the host's own action (where sign-up should come back to).
 // useConversion opens it from anywhere, sending signed-in users the right way instead.
 
-export type AccountBenefit = "why" | "legal" | "ruled-out" | "history" | "analysis" | "alerts" | "savings" | "audits";
+export type AccountBenefit = "why" | "legal" | "ruled-out" | "history" | "analysis" | "alerts" | "impacts" | "savings" | "audits";
 
-// What every free account gets (the AccountCta's "For every import" is analysis and alerts)
-export const ACCOUNT_BENEFITS: { id: AccountBenefit; text: string }[] = [
+// What every free account gets (the AccountCta's "For every import" is analysis and alerts).
+// Savings and audits are off for the Tracker MVP (features.ts), so their lines drop out
+export const ACCOUNT_BENEFITS: { id: AccountBenefit; text: string }[] = ([
   { id: "why", text: "The plain-english 'why' behind every tariff on every import" },
   { id: "legal", text: "The legal text behind every tariff and exemption, with the notes it cites" },
   { id: "ruled-out", text: "Why other tariffs don't apply, so you know nothing was missed" },
   { id: "history", text: "Any import's full duty on any past date, line by line" },
   { id: "analysis", text: "Any import's duty from every country of origin" },
-  { id: "alerts", text: `Alerts when tariffs change on up to ${TRIAL_ALLOWANCE.alertImports} imports` },
+  { id: "alerts", text: `Track ${TRIAL_ALLOWANCE.alertImports} imports, with an alert when a tariff change hits one (before → after)` },
+  { id: "impacts", text: "Impact checks: see exactly how any tariff action affects each import you track" },
   { id: "savings", text: `What you could save on ${TRIAL_ALLOWANCE.savingsChecks} imports: trade programs, exemptions and cheaper origins` },
   { id: "audits", text: `${TRIAL_ALLOWANCE.auditChecks} past entries checked for duty you may have overpaid` },
-];
+] as { id: AccountBenefit; text: string }[]).filter((b) => (b.id !== "savings" || SAVINGS_ENABLED) && (b.id !== "audits" || AUDITS_ENABLED));
 
 export type ConversionView = "account" | "trial";
 
@@ -65,15 +68,21 @@ export type TrialPitch = {
 const DEFAULT_ACCOUNT: AccountPitch = { title: "Understand every import, free", cta: "Create my free account" };
 const DEFAULT_TRIAL: TrialPitch = {
   title: "Know the moment a tariff change hits this import",
-  subtitle: "Upload your whole catalog, get alerts on your top imports, and find every way you could pay less duty on them.",
+  subtitle: `Track ${TRIAL_ALLOWANCE.alertImports} imports free, get an alert the moment a tariff change hits one, and see exactly how any tariff action affects each.`,
 };
 
-// What every account's trial includes, for the trial view's list (PRICING.md)
-const TRIAL_INCLUDES = [
+// What every account's trial includes, for the trial view's list (PRICING.md). The Tracker MVP
+// (features.ts) sells tracking only; the savings and audit list comes back with them
+const TRIAL_INCLUDES = SAVINGS_ENABLED || AUDITS_ENABLED ? [
   `Savings checks on ${TRIAL_ALLOWANCE.savingsChecks} imports: trade programs, cheaper origins and what you could qualify for`,
   `${TRIAL_ALLOWANCE.auditChecks} audit checks: what you paid on past entries against what you owed`,
   `Alerts when a tariff change hits up to ${TRIAL_ALLOWANCE.alertImports} of your imports`,
   "Rate history, sourcing and insights across your whole catalog",
+] : [
+  `Track ${TRIAL_ALLOWANCE.alertImports} imports, with every tariff on each one`,
+  "An alert when a tariff change hits one of them: the rate before and after",
+  "Impact checks: see exactly how any tariff action affects each import",
+  "Tariff News, rate history, and every tariff exported to CSV or Excel",
 ];
 
 export const ConversionDialog = ({
@@ -126,7 +135,7 @@ export const ConversionDialog = ({
           {view === "trial" ? (
             <div className="flex flex-col gap-5">
               <div className="pr-8">
-                <p className={tt.eyebrow("success")}>{trial.eyebrow ?? "Tariff Tracker · Free trial"}</p>
+                <p className={tt.eyebrow("success")}>{trial.eyebrow ?? "Tariff Tracker · Free"}</p>
                 <Dialog.Title className={`${tt.display} mt-2 text-2xl font-semibold leading-tight text-base-content`}>{trial.title}</Dialog.Title>
                 <p className={`${tt.subtitle} mt-2`}>{trial.subtitle}</p>
               </div>
@@ -146,7 +155,7 @@ export const ConversionDialog = ({
                   {trial.cta ?? "Start free"}
                 </button>
                 <p className="text-center text-xs text-base-content/60">
-                  No credit card, no time limit. Your free account (less than 30 seconds) comes with the trial.
+                  No credit card, no time limit. A free account takes less than 30 seconds.
                 </p>
               </div>
               <button
@@ -167,7 +176,7 @@ export const ConversionDialog = ({
                     className="mb-3 inline-flex items-center gap-1 text-xs font-medium text-base-content/60 hover:text-base-content"
                   >
                     <ArrowLeftIcon className="h-3.5 w-3.5" aria-hidden />
-                    Back to the trial
+                    Back to the Tariff Tracker
                   </button>
                 )}
                 <p className={tt.eyebrow("primary")}>Create Free account</p>

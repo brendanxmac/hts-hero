@@ -5,6 +5,7 @@ import { InformationCircleIcon, SparklesIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import { useTrackerAccess } from "../access/accessContext";
 import { currentPath, signupHref } from "../access/signup";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // One line across the top of the app when the plan needs attention: signed out (the catalog is
 // only on this device), or the trial's checks all used
@@ -29,7 +30,7 @@ export const PlanBanner = () => {
   }
 
   // Both checks used up on the trial: the one nudge to a plan
-  if (access.kind === "trial" && savingsLeft === 0 && auditsLeft === 0) {
+  if (SAVINGS_ENABLED && AUDITS_ENABLED && access.kind === "trial" && savingsLeft === 0 && auditsLeft === 0) {
     return (
       <div role="status" className={`${ui.notice("warning")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
         <SparklesIcon className="h-5 w-5 shrink-0 text-warning" aria-hidden />

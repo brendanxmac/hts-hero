@@ -12,12 +12,16 @@ import {
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The homepage hero's picture of the product, for an example account: one catalog table, scanned
 // three times. Each pass (monitoring, savings, audit) sweeps the rows and fills its own column as
 // the scan line passes, while that layer's tile counts up live. Earlier layers stay filled, so by
 // the end the table shows the whole picture. Then the results are shared to each channel over
 // the table, and it starts over.
+//
+// Tracker MVP (MVP_TRIM.md): the savings and audit passes are switched off with SAVINGS_ENABLED and
+// AUDITS_ENABLED, so only the monitoring pass runs; their cells stay in ROWS for the relaunch.
 //
 // Tariff changes and audit reasons are real 2026 rules; products, volumes and amounts are
 // illustrative. Each tile's total is the sum of its own column.
@@ -117,7 +121,7 @@ const ROWS: {
 ];
 const CATALOG_SIZE = 248;
 
-const LAYERS = [
+const ALL_LAYERS = [
   {
     key: "monitor" as const,
     label: "Changes",
@@ -149,6 +153,12 @@ const LAYERS = [
     scanColor: "via-warning/20",
   },
 ];
+const LAYERS = ALL_LAYERS.filter(
+  ({ key }) => (key !== "savings" || SAVINGS_ENABLED) && (key !== "audit" || AUDITS_ENABLED),
+);
+type LayerKey = (typeof ALL_LAYERS)[number]["key"];
+// The tiles' grid, by how many passes are on
+const TILE_COLS = ["grid-cols-1", "grid-cols-1", "grid-cols-2", "grid-cols-3"];
 
 const ROW_MS = 380;
 const HOLD_MS = 1800;
@@ -293,27 +303,34 @@ export const CommandCenter = () => {
   const scanning = rows < ROWS.length;
   const current = LAYERS[layer];
 
-  const changesFound = ROWS.slice(0, filled(0)).filter(
+  // How far a pass is filled, by its key (0 for a pass that's switched off)
+  const filledOf = (key: LayerKey) => {
+    const i = LAYERS.findIndex((l) => l.key === key);
+    return i < 0 ? 0 : filled(i);
+  };
+  const changesFound = ROWS.slice(0, filledOf("monitor")).filter(
     (r) => r.monitor.tone !== "none",
   ).length;
-  const tileValue = [
-    String(changesFound),
-    usd(sumOf("savings", filled(1))),
-    usd(sumOf("audit", filled(2))),
-  ];
-  const tileSub = [
-    "since last week",
-    filled(1) === ROWS.length
-      ? "a year, ready for review"
-      : filled(1)
-        ? "found so far…"
-        : "pending...",
-    filled(2) === ROWS.length
-      ? "overpaid duty found"
-      : filled(2)
-        ? "found so far…"
-        : "pending...",
-  ];
+  const tileValue: Record<LayerKey, string> = {
+    monitor: String(changesFound),
+    savings: usd(sumOf("savings", filledOf("savings"))),
+    audit: usd(sumOf("audit", filledOf("audit"))),
+  };
+  const tileSub: Record<LayerKey, string> = {
+    monitor: "since last week",
+    savings:
+      filledOf("savings") === ROWS.length
+        ? "a year, ready for review"
+        : filledOf("savings")
+          ? "found so far…"
+          : "pending...",
+    audit:
+      filledOf("audit") === ROWS.length
+        ? "overpaid duty found"
+        : filledOf("audit")
+          ? "found so far…"
+          : "pending...",
+  };
 
   return (
     <div
@@ -335,7 +352,7 @@ export const CommandCenter = () => {
         </div>
 
         <div
-          className="grid grid-cols-3 gap-2.5"
+          className={`grid ${TILE_COLS[LAYERS.length]} gap-2.5`}
           role="tablist"
           aria-label="What HTS Hero does for this account"
         >
@@ -356,10 +373,10 @@ export const CommandCenter = () => {
                 <span
                   className={`mt-1.5 block text-2xl font-semibold [font-family:var(--font-tracker-display)] tabular-nums transition-colors ${filled(i) ? accent : "text-base-content/40"}`}
                 >
-                  {tileValue[i]}
+                  {tileValue[key]}
                 </span>
                 <span className="block text-xs text-base-content/60">
-                  {tileSub[i]}
+                  {tileSub[key]}
                 </span>
                 {/* How much of this layer's scan is done; the width is a runtime value */}
                 <span

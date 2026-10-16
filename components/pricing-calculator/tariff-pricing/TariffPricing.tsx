@@ -6,6 +6,7 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { LINKS, contactLink } from "../lib/links";
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { ANNUAL_DISCOUNT, Billing, TRACKER_TIERS, TRIAL_ALLOWANCE } from "../lib/pricing";
 import { PlanPrice } from "../plans/PlanPrice";
 import { CALCULATOR_FEATURES, TRACKER_FEATURES, TRACKER_OPTIONS, TrackerOption } from "./plans";
@@ -13,8 +14,9 @@ import { TierCard } from "./TierCard";
 import { TrackerTierPicker } from "./TrackerTierPicker";
 
 // The pricing band on /duty-calculator: the free calculator and the Tariff Tracker side by side,
-// with one billing switch. The Tracker card's picker runs through the paid tiers, and the card's
-// price and button follow the stop picked; every account starts on the free usage-based trial. See PRICING.md.
+// with one billing switch (only while Tracker annual billing is on; MVP_TRIM.md). The Tracker card's
+// picker runs through the paid tiers, and the card's price and button follow the stop picked; every
+// account tracks a few imports free. See PRICING.md.
 // The headline plan's button, in the Tracker's primary color on its dark card
 const BUTTON_ON_DARK =
   "inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-content transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50";
@@ -34,14 +36,15 @@ export const TariffPricing = () => {
     <section id="pricing" className={`${mk.band} ${mk.bandMuted} scroll-mt-20`} aria-labelledby="pricing-title">
       <div className={mk.container}>
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <SectionIntro eyebrow="Pricing" title="Calculate for free. Unlock savings, alerts, and audits when you're ready." id="pricing-title">
-            This calculator is free and unlimited. Put your own imports under watch with the Tariff Tracker: start free with{" "}
-            {TRIAL_ALLOWANCE.savingsChecks} savings checks, {TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on{" "}
-            {TRIAL_ALLOWANCE.alertImports} imports. No credit card.
+          <SectionIntro eyebrow="Pricing" title="Calculate for free. Track your imports when you're ready." id="pricing-title">
+            This calculator is free and unlimited. Track your own imports with the Tariff Tracker and run impact checks to see
+            exactly how each tariff action hits them: track {TRIAL_ALLOWANCE.alertImports} imports free. No credit card.
           </SectionIntro>
-          <div className="shrink-0">
-            <BillingSwitch billing={billing} onChange={setBilling} />
-          </div>
+          {TRACKER_ANNUAL_ENABLED && (
+            <div className="shrink-0">
+              <BillingSwitch billing={billing} onChange={setBilling} />
+            </div>
+          )}
         </div>
 
         <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-[5fr_7fr] lg:gap-y-0">
@@ -64,7 +67,7 @@ export const TariffPricing = () => {
             name="Tariff Tracker"
             badge="Free to start"
             dark
-            description="Your whole catalog under watch, entry auditing, and savings discovery."
+            description="Every tariff on your imports tracked, with alerts and impact checks."
             price={
               isCustom ? (
                 <div>
@@ -104,7 +107,8 @@ export const TariffPricing = () => {
         </div>
 
         <p className={`${mk.small} mt-8`}>
-          Prices in USD. Annual plans are billed once a year at {ANNUAL_DISCOUNT * 100}% off.{" "}
+          Prices in USD.{" "}
+          {TRACKER_ANNUAL_ENABLED ? `Annual plans are billed once a year at ${ANNUAL_DISCOUNT * 100}% off. ` : "Tracker plans are billed monthly. "}
           <Link href="/tariff-monitor" className={mk.link}>
             See how the Tariff Tracker works
           </Link>{" "}

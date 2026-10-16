@@ -6,12 +6,15 @@ import { entryProductKey } from "../entries/entries";
 import { useAuditRows } from "../entries/useAuditRows";
 import { useInsights } from "../insights/InsightsContext";
 import { useTracker } from "../TrackerContext";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // Tariff health: how well the user's imports are looked after on the three things the Tracker does
 // for them. Alerts (the share of imports covered, and whether alerts have somewhere to go), the
 // savings review (the share whose quick wins are all secured or ruled out, review.ts) and the audit
 // review (the share with an entry audited, by what the audits found), and their average as one
 // score. Shown on the Overview (SummaryBoxes.tsx).
+// For the Tracker MVP (savings and audits off, libs/tariff-tracker/features.ts) it's Tariff
+// Readiness: the share of imports tracked and whether alerts have somewhere to go, averaged.
 
 const share = (part: number, total: number) => (total > 0 ? Math.round((part / total) * 100) : 0);
 
@@ -50,6 +53,13 @@ export const useTariffHealth = () => {
   const auditedImports = verdicts.size;
   const auditPct = share(auditedImports, imports);
 
-  const overall = Math.round((alertsPct + savingsPct + auditPct) / 3);
-  return { imports, count, covered, alertsSet, alertsPct, stats, savingsPct, potential, audited, auditedImports, auditPct, totals, overall, signedIn, unlock, unlockLabel };
+  // Tariff Readiness (Tracker MVP): the imports tracked, and alerts on somewhere
+  const trackedPct = share(covered, imports);
+  const deliveryPct = alertsSet ? 100 : 0;
+
+  const overall =
+    SAVINGS_ENABLED && AUDITS_ENABLED
+      ? Math.round((alertsPct + savingsPct + auditPct) / 3)
+      : Math.round((trackedPct + deliveryPct) / 2);
+  return { imports, count, covered, alertsSet, alertsPct, trackedPct, deliveryPct, stats, savingsPct, potential, audited, auditedImports, auditPct, totals, overall, signedIn, unlock, unlockLabel };
 };
