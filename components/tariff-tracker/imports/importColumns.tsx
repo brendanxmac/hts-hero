@@ -208,7 +208,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
       ]
     : []),
   // Imports with alerts on are the tracked ones: alerts and impact checks (the plan's slots,
-  // PRICING.md). One toggle per row: a green "Alerts On" pill, or an outline "Alerts Off" one
+  // PRICING.md). One toggle per row: a green "Alerts On" pill, or a red "Alerts Off" one
   ...(ctx.signedIn
     ? [
         {
@@ -244,7 +244,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
                 className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                   on
                     ? "bg-success/10 text-success hover:bg-success/15"
-                    : "border border-base-300 text-base-content/60 hover:border-success/40 hover:text-success"
+                    : "bg-error/10 text-error hover:bg-error/15"
                 }`}
               >
                 {on ? <BellAlertIcon className="h-3.5 w-3.5" aria-hidden /> : <BellSlashIcon className="h-3.5 w-3.5" aria-hidden />}
