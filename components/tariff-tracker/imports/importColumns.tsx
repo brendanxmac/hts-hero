@@ -207,19 +207,19 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
         } satisfies ColumnDef<TrackedProduct, any>,
       ]
     : []),
-  // Tracked imports get alerts and impact checks (the plan's slots, PRICING.md): one toggle per row,
-  // a filled cobalt pill when tracked, an outline one when not
+  // Imports with alerts on are the tracked ones: alerts and impact checks (the plan's slots,
+  // PRICING.md). One toggle per row: a green "Alerts On" pill, or an outline "Alerts Off" one
   ...(ctx.signedIn
     ? [
         {
           id: "alerts",
           accessorFn: (r: TrackedProduct) => (ctx.covered(r.key) ? "on" : "off"),
-          header: "Tracking",
+          header: "Alerts",
           filterFn: "facet",
           meta: {
             align: "center",
             width: "w-36",
-            facet: { label: "Tracking", describe: (value: string) => ({ label: value === "on" ? "Tracked" : "Not tracked" }) },
+            facet: { label: "Alerts", describe: (value: string) => ({ label: value === "on" ? "Alerts On" : "Alerts Off" }) },
           },
           cell: ({ row: { original: r } }: { row: { original: TrackedProduct } }) => {
             const on = ctx.covered(r.key);
@@ -236,19 +236,19 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
                 title={
                   on
                     ? mine
-                      ? "Tracked (your pick): alerts and impact checks run on it. Click to stop tracking and free the slot."
-                      : "Tracked (picked for you: high duty): alerts and impact checks run on it. Click to stop tracking."
-                    : "Not tracked: no alerts or impact checks. Click to track it."
+                      ? "Alerts on (your pick): you get alerts and impact checks on it. Click to turn them off and free the slot."
+                      : "Alerts on (picked for you: high duty): you get alerts and impact checks on it. Click to turn them off."
+                    : "Alerts off: no alerts or impact checks. Click to turn them on."
                 }
-                aria-label={`Track ${r.entry.element.htsno} from ${r.entry.country.name}`}
+                aria-label={`Alerts on ${r.entry.element.htsno} from ${r.entry.country.name}`}
                 className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                   on
-                    ? "bg-primary/10 text-primary hover:bg-primary/15"
-                    : "border border-base-300 text-base-content/60 hover:border-primary/40 hover:text-primary"
+                    ? "bg-success/10 text-success hover:bg-success/15"
+                    : "border border-base-300 text-base-content/60 hover:border-success/40 hover:text-success"
                 }`}
               >
                 {on ? <BellAlertIcon className="h-3.5 w-3.5" aria-hidden /> : <BellSlashIcon className="h-3.5 w-3.5" aria-hidden />}
-                {on ? "Tracking" : "Not tracked"}
+                {on ? "Alerts On" : "Alerts Off"}
               </button>
             );
           },

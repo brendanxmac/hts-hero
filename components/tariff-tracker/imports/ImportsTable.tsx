@@ -57,6 +57,8 @@ export const ImportsTable = ({
     setCovered,
     removeProducts,
     items,
+    moreToTrack,
+    trackMore,
   } = useTracker();
   const { signedIn, access, openUpgrade } = useTrackerAccess();
   const { unlocked, review } = useInsights();
@@ -156,7 +158,7 @@ export const ImportsTable = ({
               onClick={() => alertsOn(picked)}
             >
               <BellAlertIcon className="h-4 w-4" aria-hidden />
-              Track
+              Turn alerts on
             </button>
             <button
               type="button"
@@ -164,7 +166,7 @@ export const ImportsTable = ({
               onClick={() => alertsOff(picked)}
             >
               <BellSlashIcon className="h-4 w-4" aria-hidden />
-              Stop tracking
+              Turn alerts off
             </button>
             <button
               type="button"
@@ -184,20 +186,29 @@ export const ImportsTable = ({
     <div className="flex flex-col gap-5">
       {header?.(table)}
       {shown > 0 && summary?.(table)}
-      {/* How many imports are tracked, when not all of them are: only those get alerts and impact checks */}
+      {/* How many imports have alerts, when not all of them do: only those get alerts and impact
+          checks. Spare room on the plan is one click to fill; past it, the plans */}
       {signedIn && items.length > trackedKeys.size && (
         <div className={`${tt.tile} flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center`}>
-          <BellAlertIcon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+          <BellAlertIcon className="h-5 w-5 shrink-0 text-success" aria-hidden />
           <p className="m-0 flex-1 text-sm text-base-content/70">
             <span className="font-semibold text-base-content">
-              Tracking {trackedKeys.size.toLocaleString("en-US")} of {items.length.toLocaleString("en-US")} imports.
+              Alerts are on for {trackedKeys.size.toLocaleString("en-US")} of your {items.length.toLocaleString("en-US")} imports.
             </span>{" "}
-            Only tracked imports get alerts and impact checks. Choose which ones in the Tracking column
-            {access.kind === "paid" ? ", or move up a plan to track more." : `: your free plan tracks ${access.pairLimit.toLocaleString("en-US")}.`}
+            {moreToTrack > 0
+              ? `Your plan has room for ${moreToTrack.toLocaleString("en-US")} more.`
+              : `Only these get alerts and impact checks; ${access.kind === "paid" ? "move up a plan to cover more." : `your free plan covers ${access.pairLimit.toLocaleString("en-US")}.`}`}
           </p>
-          <button type="button" className={`${ui.button({ variant: "secondary", size: "sm" })} shrink-0`} onClick={() => openUpgrade("tracking")}>
-            Track more imports
-          </button>
+          {moreToTrack > 0 ? (
+            <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={trackMore}>
+              <BellAlertIcon className="h-4 w-4" aria-hidden />
+              Turn on alerts for {moreToTrack.toLocaleString("en-US")} more
+            </button>
+          ) : (
+            <button type="button" className={`${ui.button({ variant: "secondary", size: "sm" })} shrink-0`} onClick={() => openUpgrade("limit")}>
+              Get alerts on more imports
+            </button>
+          )}
         </div>
       )}
       <DataTable

@@ -51,6 +51,10 @@ export interface Tracker {
   setCovered: (key: string, covered: boolean) => boolean;
   // Products in the catalog beyond that limit
   untrackedCount: number;
+  // How many more imports alerts could be turned on for (spare room on the plan, and imports not
+  // turned off by the user), and turning them on, highest duty first
+  moreToTrack: number;
+  trackMore: () => number;
   // Tracked products only, in catalog order
   trackedProducts: TrackedProduct[];
   // The catalog item for a product key, and what's kept about it (shipments a year, a move of origin)
@@ -230,6 +234,47 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   };
   const trackedProducts = useMemo(() => products.filter((p) => trackedKeys.has(p.key)), [products, trackedKeys]);
 
+  // Spare room on the plan, filled with the highest-duty imports the user hasn't turned off. Done on
+  // request (trackMore), for imports added while there's room, and when the plan grows (an upgrade);
+  // never after the user turns one off, so that still frees a slot
+  const turnedOff = useMemo(() => new Set(items.filter((i) => i.covered === false).map(itemKey)), [items]);
+  const candidates = useMemo(
+    () => [...products].filter((p) => !trackedKeys.has(p.key) && !turnedOff.has(p.key)).sort((a, b) => b.result.totalDuty - a.result.totalDuty),
+    [products, trackedKeys, turnedOff]
+  );
+  const room = Math.max(0, access.pairLimit - trackedKeys.size);
+  const moreToTrack = Math.min(room, candidates.length);
+  const fill = (keys: string[]) => {
+    if (!keys.length) return 0;
+    const on = Object.fromEntries(keys.map((k) => [k, true]));
+    // The first choice keeps what was picked automatically
+    store.setProductsCovered(chosen ? on : { ...Object.fromEntries(Array.from(trackedKeys, (k) => [k, true])), ...on });
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_COVERAGE_CHANGED, { covered: true, added: keys.length, picked: trackedKeys.size + keys.length, limit: access.pairLimit });
+    return keys.length;
+  };
+  const trackMore = () => fill(candidates.slice(0, room).map((p) => p.key));
+
+  // Imports added while there's room get alerts (once the user has chosen; before that they're
+  // picked automatically anyway). Not the catalog arriving on load.
+  const seenKeys = useRef<Set<string> | null>(null);
+  useEffect(() => {
+    if (loading) return;
+    const keys = new Set(items.map(itemKey));
+    const before = seenKeys.current;
+    seenKeys.current = keys;
+    if (!before || !chosen) return;
+    const added = items.map(itemKey).filter((k) => !before.has(k) && !turnedOff.has(k) && !trackedKeys.has(k));
+    fill(added.slice(0, Math.max(0, access.pairLimit - trackedKeys.size)));
+  }, [items, loading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // A bigger plan (an upgrade) fills its new room straight away
+  const lastLimit = useRef(access.pairLimit);
+  useEffect(() => {
+    const before = lastLimit.current;
+    lastLimit.current = access.pairLimit;
+    if (before > 0 && access.pairLimit > before && chosen && !loading) trackMore();
+  }, [access.pairLimit]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <TrackerContext.Provider
       value={{
@@ -248,6 +293,8 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
         pickedKeys,
         setCovered,
         untrackedCount: Math.max(0, items.length - trackedKeys.size),
+        moreToTrack,
+        trackMore,
         trackedProducts,
         itemFor: (key) => items.find((i) => itemKey(i) === key),
         setProductMeta: store.setProductMeta,
