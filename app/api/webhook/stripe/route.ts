@@ -17,8 +17,8 @@ import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confi
 import { trackerPlanForPriceId } from "@/libs/tariff-tracker/prices";
 
 // priceId: Tariff Tracker plans can be annual, which last a year
-const getPlanExpirationDate = (plan: PricingPlan, priceId?: string) => {
-  const tracker = priceId ? trackerPlanForPriceId(priceId) : null;
+const getPlanExpirationDate = async (plan: PricingPlan, priceId?: string) => {
+  const tracker = priceId ? await trackerPlanForPriceId(priceId) : null;
   if (tracker) return getIsoDateInFuture(tracker.billing === "annual" ? 366 : 31);
   switch (plan) {
     case PricingPlan.CLASSIFY_STARTER:
@@ -29,8 +29,10 @@ const getPlanExpirationDate = (plan: PricingPlan, priceId?: string) => {
   }
 };
 
-const getPlanFromPriceId = (priceId: string): PricingPlan | null => {
-  const tracker = trackerPlanForPriceId(priceId);
+// Tracker prices map by their Stripe metadata (libs/tariff-tracker/prices.ts), so every version of
+// a Tracker price keeps working after a price change
+const getPlanFromPriceId = async (priceId: string): Promise<PricingPlan | null> => {
+  const tracker = await trackerPlanForPriceId(priceId);
   if (tracker) return tracker.plan;
   switch (priceId) {
     case process.env.STRIPE_TARIFF_IMPACT_STANDARD_PRICE_ID:
@@ -102,7 +104,7 @@ export async function POST(req: NextRequest) {
         const customerId = checkoutSession?.customer;
         const priceId = checkoutSession?.line_items?.data[0]?.price.id;
         const userId = stripeObject.client_reference_id;
-        const plan = getPlanFromPriceId(priceId);
+        const plan = await getPlanFromPriceId(priceId);
 
         const customer = (await stripe.customers.retrieve(
           customerId as string
@@ -150,7 +152,7 @@ export async function POST(req: NextRequest) {
             customer_id: checkoutSession.customer as string,
             price_id: checkoutSession.line_items?.data[0]?.price.id,
             product_name: plan,
-            expires_at: getPlanExpirationDate(plan, priceId),
+            expires_at: await getPlanExpirationDate(plan, priceId),
           },
           "checkout.session.completed"
         );
@@ -277,7 +279,7 @@ export async function POST(req: NextRequest) {
             );
           }
 
-          const plan = getPlanFromPriceId(updatedPlan.id);
+          const plan = await getPlanFromPriceId(updatedPlan.id);
 
           if (!plan) {
             console.error(
@@ -389,7 +391,7 @@ export async function POST(req: NextRequest) {
         //   break;
         // }
 
-        const plan = getPlanFromPriceId(priceId);
+        const plan = await getPlanFromPriceId(priceId);
 
         if (!plan) {
           console.error("Plan not found for priceId: ", priceId);
@@ -404,7 +406,7 @@ export async function POST(req: NextRequest) {
             customer_id: customerId as string,
             price_id: priceId,
             product_name: plan,
-            expires_at: getPlanExpirationDate(plan, priceId),
+            expires_at: await getPlanExpirationDate(plan, priceId),
           },
           "invoice.paid"
         );

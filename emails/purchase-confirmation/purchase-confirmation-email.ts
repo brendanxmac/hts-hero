@@ -10,7 +10,7 @@ import { formatDay } from "../kit/brand"
 export const sendPurchaseConfirmationEmail = async (recipient: string, purchase: Purchase, mode: StripePaymentMode) => {
   const tracker = trackerPlanFor(purchase.product_name)
   const billing =
-    mode === StripePaymentMode.PAYMENT ? "One-time" : trackerPlanForPriceId(purchase.price_id)?.billing === "annual" ? "Annual" : "Monthly"
+    mode === StripePaymentMode.PAYMENT ? "One-time" : (await trackerPlanForPriceId(purchase.price_id))?.billing === "annual" ? "Annual" : "Monthly"
   const until = purchase.expires_at ? formatDay(purchase.expires_at) : null
   await sendTransactional(createAdminClient(), {
     recipient,

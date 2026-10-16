@@ -36,9 +36,13 @@ add new ones as they come up.
 - [ ] **Apply the migration** `supabase/migrations/tariff_tracker_accounts.sql` (tracker_catalogs,
       tracker_checks, tracker_entries, tracker_opportunities, tracker_opportunity_events,
       tracker_alert_settings; drops the old tracker_trials).
-- [ ] **Stripe prices.** Create the products and set
-      `STRIPE_TARIFF_TRACKER_<10|30|100|500>_MONTHLY_PRICE_ID` at **$12 / $29 / $89 / $149** a month
-      (Tracker MVP, 2026-10-16: monthly only, so the `_ANNUAL_` ones can wait).
+- [ ] **Stripe prices (live mode).** Done in the sandbox 2026-10-16. In live mode, create the same
+      four products ("Tariff Tracker · 10 imports" … "· 500 imports") with a monthly price each
+      ($12 / $29 / $89 / $149), lookup keys `tracker_<10|30|100|500>_monthly` and metadata
+      `plan` = "Tariff Tracker <10|30|100|500>", `billing` = monthly, `version` = 2026-10-mvp.
+      Checkout finds the price by its lookup key and the webhook maps any price by its metadata
+      (`libs/tariff-tracker/prices.ts`), so no Tracker price env vars are needed. To change a price
+      later: new price on the same product, same lookup key with "transfer lookup key", archive the old.
 - [ ] **Tracker MVP trim** (2026-10-16): savings and audits are off (`libs/tariff-tracker/features.ts`);
       every change is in `MVP_TRIM.md`. Re-run `npm run email:auth` and paste the auth templates
       into Supabase (they changed). `app/zz-tracker/` (the Tracker without sign-in) is untracked and

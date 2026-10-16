@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       userProfile = await fetchUser(user.id);
     }
 
-    const getPriceId = (itemId: PricingPlan) => {
+    const getPriceId = async (itemId: PricingPlan) => {
       // Tracker plans are monthly only for now (libs/tariff-tracker/features.ts)
       if (isTrackerPlan(itemId)) return trackerPriceId(itemId, TRACKER_ANNUAL_ENABLED ? billing : "monthly");
       switch (itemId) {
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     };
 
     const successUrl = `${process.env.BASE_URL}${successEndpoint ? successEndpoint : "/"}`;
-    const priceId = getPriceId(itemId);
+    const priceId = await getPriceId(itemId);
     const mode = getMode(itemId);
 
     if (!priceId) {
