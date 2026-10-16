@@ -91,7 +91,7 @@ export const CatalogEmptyState = ({
       <Option
         Icon={ClipboardDocumentListIcon}
         title="Paste a List"
-        description="One product per line: the HTS code, then the country. Copy two columns straight from a spreadsheet."
+        description="One import per line: the HTS code, then the country. Copy two columns straight from a spreadsheet."
         example={<pre className={`${mono.className} text-xs leading-relaxed text-base-content`}>{EXAMPLE_LIST}</pre>}
         onClick={() => onAdd("paste")}
       />

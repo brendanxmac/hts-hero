@@ -5,6 +5,8 @@ import { Dialog } from "@headlessui/react";
 import { CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
+import { trackerSans } from "@/components/ui/font";
+import { THEME } from "@/components/ui/theme";
 import type { Kind } from "@/libs/tariff-updates/types";
 import { ALERT_KIND_OPTIONS, DEFAULT_ALERT_KINDS } from "./alertPrefs";
 import { AlertSettings, settingsOn, SLACK_PREFIX, useAlertSettings } from "./AlertSettingsContext";
@@ -128,11 +130,14 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
       <Dialog open={confirmOff} onClose={() => setConfirmOff(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/40" aria-hidden />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className={`${ui.card} hts-theme flex w-full max-w-md flex-col gap-4 p-5`}>
+          {/* It portals out of the Tracker, so it carries the Tracker's look itself (DESIGN_SYSTEM §15) */}
+          <Dialog.Panel className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} flex w-full max-w-md flex-col gap-5 p-6 shadow-2xl`}>
             <div className="flex items-start gap-3">
-              <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden />
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-warning/10 text-warning" aria-hidden>
+                <ExclamationTriangleIcon className="h-5 w-5" />
+              </span>
               <div className="flex flex-col gap-1.5">
-                <Dialog.Title className="text-lg font-semibold tracking-tight text-base-content">Turn off tariff alerts?</Dialog.Title>
+                <Dialog.Title className={`${tt.title} m-0`}>Turn Off Tariff Alerts?</Dialog.Title>
                 <p className={ui.bodySm}>
                   With no email, Slack or Teams, you won&apos;t hear when a new tariff, rate change or exemption hits one of your imports. You&apos;d only find out from
                   your next customs bill, or by checking the Tracker yourself.
@@ -140,7 +145,7 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
               </div>
             </div>
             <div className="flex flex-wrap justify-end gap-2">
-              <button type="button" className={ui.button({ variant: "ghost" })} onClick={() => void commit()}>
+              <button type="button" className={ui.button({ variant: "secondary" })} onClick={() => void commit()}>
                 Turn alerts off
               </button>
               <button type="button" className={ui.button({ variant: "primary" })} onClick={() => setConfirmOff(false)}>

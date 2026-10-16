@@ -95,7 +95,7 @@ export const AddProductsPanel = () => {
         )}
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" className={ui.button({ variant: "primary" })} onClick={add} disabled={!text.trim()}>
-            Add products
+            Add imports
           </button>
           <button
             type="button"

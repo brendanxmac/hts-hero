@@ -7,6 +7,9 @@ import toast from "react-hot-toast";
 import config from "@/config";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
+import { trackerSans } from "@/components/ui/font";
+import { THEME } from "@/components/ui/theme";
 import {
   Billing,
   formatPrice,
@@ -98,57 +101,89 @@ export const UpgradeDialog = ({
     }
   };
 
+  const tracked = Math.min(items.length, TRIAL_ALLOWANCE.alertImports);
+  const number = (n: number) => n.toLocaleString("en-US");
+
+  // A dialog portals out of the Tracker, so it carries the Tracker's look itself (DESIGN_SYSTEM §15)
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/40" aria-hidden />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className={`${ui.card} hts-theme flex max-h-[90vh] w-full max-w-4xl flex-col`}>
-          <div className={ui.cardHeader}>
-            <div>
-              <p className={ui.kicker}>Tariff Tracker plans</p>
-              <Dialog.Title className="mt-1 text-xl font-semibold tracking-tight text-base-content">{heading}</Dialog.Title>
-              <p className={`${ui.bodySm} mt-1`}>
-                {usedUp ? `${usedUp} ` : ""}
-                {benefit}. Priced by how many imports you track.{AUDITS_ENABLED ? " With unlimited audit checks." : ""}
-              </p>
-            </div>
-            <button type="button" className={ui.button({ variant: "ghost", size: "sm", icon: true })} onClick={onClose}>
-              <XMarkIcon className="h-5 w-5" aria-hidden />
-              <span className="sr-only">Close</span>
-            </button>
+        <Dialog.Panel
+          className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden shadow-2xl`}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-4 top-4 rounded-full p-1.5 text-base-content/50 hover:bg-tt-soft hover:text-base-content"
+          >
+            <XMarkIcon className="h-5 w-5" aria-hidden />
+            <span className="sr-only">Close</span>
+          </button>
+
+          <div className="flex flex-col gap-2 px-6 pb-5 pt-6 sm:px-7">
+            <span className={tt.eyebrow("primary")}>Tariff Tracker Plans</span>
+            <Dialog.Title className={`${tt.display} m-0 pr-8 text-2xl font-semibold leading-tight text-base-content`}>{heading}</Dialog.Title>
+            <p className={`${tt.subtitle} m-0 max-w-2xl`}>
+              {usedUp ? `${usedUp} ` : ""}
+              {benefit}. Priced by how many imports you track.{AUDITS_ENABLED ? " With unlimited audit checks." : ""}
+            </p>
           </div>
 
-          <div className="flex flex-col gap-5 overflow-y-auto px-5 py-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className={ui.bodySm}>
-                You have <span className="font-semibold text-base-content tabular-nums">{items.length}</span>{" "}
-                {items.length === 1 ? "import" : "imports"}.
+          <div className="flex flex-col gap-5 overflow-y-auto px-6 pb-6 sm:px-7">
+            <div className={`${tt.tile} flex flex-wrap items-center justify-between gap-3 px-4 py-3`}>
+              <p className="m-0 text-sm text-base-content/70">
+                You have <span className={`${tt.numberChip("primary")} font-semibold tabular-nums`}>{number(items.length)}</span>{" "}
+                {items.length === 1 ? "import" : "imports"}
+                {access.kind === "paid" ? (
+                  <>
+                    , and your plan tracks <span className={`${tt.numberChip("success")} font-semibold tabular-nums`}>{number(access.pairLimit)}</span>.
+                  </>
+                ) : (
+                  <>
+                    ; <span className={`${tt.numberChip("success")} font-semibold tabular-nums`}>{number(tracked)}</span> {tracked === 1 ? "is" : "are"} tracked
+                    free.
+                  </>
+                )}
               </p>
               {TRACKER_ANNUAL_ENABLED && (
                 <SegmentedControl<Billing> label="Billing" options={BILLING} value={billing} onChange={setBilling} size="sm" />
               )}
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {TRACKER_PLANS.map((plan) => {
                 const recommended = plan === fits;
                 const current = access.paidPlan === plan.plan;
+                const monthly = monthlyRate(plan.price, billing);
                 return (
                   <div
                     key={plan.plan}
-                    className={`flex flex-col gap-4 rounded-lg border p-5 ${recommended ? "border-primary ring-1 ring-primary" : "border-base-300"}`}
+                    className={`flex flex-col gap-4 rounded-xl border p-5 ${recommended ? "border-primary bg-primary/[0.04] ring-1 ring-primary" : "border-base-300 bg-base-100"}`}
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h3 className={ui.cardTitle}>Up to {plan.maxPairs} Imports</h3>
-                      {recommended && <span className={ui.badge("primary")}>Fits your imports</span>}
+                    {/* Every card keeps the chip's row, so the prices line up */}
+                    <div className="flex flex-col items-start gap-1.5">
+                      <span className={tt.eyebrow(recommended ? "primary" : "neutral")}>Up to {number(plan.maxPairs)} imports</span>
+                      {current ? (
+                        <span className={tt.chip("success")}>Your plan</span>
+                      ) : recommended ? (
+                        <span className={tt.chip("primary")}>Fits your imports</span>
+                      ) : (
+                        <span className="h-5" aria-hidden />
+                      )}
                     </div>
-                    <p className="flex items-baseline gap-1">
-                      <span className={ui.metric.primaryCompact}>{formatPrice(monthlyRate(plan.price, billing))}</span>
-                      <span className={ui.caption}>/ month{billing === "annual" ? ", billed yearly" : ""}</span>
-                    </p>
+                    <div className="flex flex-col gap-1">
+                      <p className="m-0 flex items-baseline gap-1">
+                        <span className={tt.metric}>{formatPrice(monthly)}</span>
+                        <span className="text-sm text-base-content/60">/mo{billing === "annual" ? ", billed yearly" : ""}</span>
+                      </p>
+                      <span className="text-xs text-base-content/60 tabular-nums">
+                        {formatPrice(Math.round((monthly / plan.maxPairs) * 100) / 100)} per import
+                      </span>
+                    </div>
                     <button
                       type="button"
-                      className={ui.button({ variant: recommended ? "primary" : "secondary" })}
+                      className={`${ui.button({ variant: recommended ? "primary" : "secondary" })} w-full`}
                       disabled={current || busy !== null}
                       onClick={() => buy(plan)}
                     >
@@ -159,25 +194,33 @@ export const UpgradeDialog = ({
               })}
             </div>
 
-            <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-              <ul className="flex flex-col gap-2">
-                {PREMIUM_INCLUDES.map((item) => (
-                  <li key={item} className={`${ui.bodySm} flex gap-2.5`}>
-                    <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <p className={ui.bodySm}>
-                More than {TRACKER_MAX_LISTED_PAIRS} imports?{" "}
-                <a className={ui.link} href={`mailto:${config.resend.supportEmail}?subject=Tariff%20Tracker%20for%20many%20imports`}>
-                  Let&apos;s talk
-                </a>
-                .
-              </p>
+            <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] md:items-start">
+              <div className="flex flex-col gap-3">
+                <span className={tt.eyebrow()}>Every plan includes</span>
+                <ul className="m-0 grid list-none gap-2.5 p-0 sm:grid-cols-2">
+                  {PREMIUM_INCLUDES.map((item) => (
+                    <li key={item} className="flex gap-2.5 text-sm text-base-content/80">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/10 text-success" aria-hidden>
+                        <CheckIcon className="h-3.5 w-3.5" />
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className={`${tt.tile} flex flex-col gap-1 p-4`}>
+                <span className="text-sm font-semibold text-base-content">More than {number(TRACKER_MAX_LISTED_PAIRS)} imports?</span>
+                <span className="text-sm text-base-content/70">
+                  We&apos;ll set up a plan that fits.{" "}
+                  <a className={ui.link} href={`mailto:${config.resend.supportEmail}?subject=Tariff%20Tracker%20for%20many%20imports`}>
+                    Let&apos;s talk
+                  </a>
+                </span>
+              </div>
             </div>
           </div>
-          <div className={`${ui.cardFooter} ${ui.caption}`}>
+
+          <div className="border-t border-base-300 bg-tt-soft px-6 py-3 text-xs text-base-content/60 sm:px-7">
             {TRACKER_ANNUAL_ENABLED ? "" : "Billed monthly. "}Cancel anytime. No contract, no sales call.{SAVINGS_ENABLED && AUDITS_ENABLED ? "" : ` ${SAVINGS_AUDITS_SOON}`}
           </div>
         </Dialog.Panel>

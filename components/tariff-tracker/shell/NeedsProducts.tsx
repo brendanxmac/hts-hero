@@ -13,7 +13,7 @@ export const NeedsProducts = ({ title, body }: { title: string; body: string }) 
       <p className={ui.bodySm}>{body}</p>
       <button type="button" className={ui.button({ variant: "primary" })} onClick={() => openTab("catalog")}>
         <PlusIcon className="h-4 w-4" aria-hidden />
-        Add products
+        Add imports
       </button>
     </section>
   );

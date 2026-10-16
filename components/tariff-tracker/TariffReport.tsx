@@ -90,7 +90,7 @@ export const TariffReport = ({
                   </Menu>
                   <button type="button" className={ui.button({ variant: "primary" })} onClick={onAdd}>
                     <PlusIcon className="h-4 w-4" aria-hidden />
-                    Add products
+                    Add imports
                   </button>
                 </>
               }

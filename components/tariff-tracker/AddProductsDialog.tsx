@@ -8,7 +8,9 @@ import { HtsElement } from "../../interfaces/hts";
 import { htsCodeDigitsOnly } from "../../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
-import { mono } from "@/components/ui/font";
+import { mono, trackerSans } from "@/components/ui/font";
+import * as tt from "@/components/ui/styles/tracker";
+import { THEME } from "@/components/ui/theme";
 import * as ui from "@/components/ui/styles";
 import { RowHeader, Table, TBody, Td, Tr } from "@/components/ui/table";
 import { adjustmentTags } from "./adjustments";
@@ -40,7 +42,7 @@ const PREVIEW_ROWS = 6;
 const PasteInput = ({ text, onChange }: { text: string; onChange: (text: string) => void }) => (
   <div className="flex flex-col gap-2">
     <label htmlFor="tt-add-paste" className={ui.fieldLabel}>
-      One product per line: HTS code, country of origin
+      One import per line: HTS code, country of origin
     </label>
     <textarea
       id="tt-add-paste"
@@ -291,20 +293,26 @@ export const AddProductsDialog = ({
     <Dialog open={open} onClose={close} className="relative z-50">
       <div className="fixed inset-0 bg-black/40" aria-hidden />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className={`${ui.card} hts-theme flex max-h-[88vh] w-full max-w-3xl flex-col`}>
-          <div className={ui.cardHeader}>
-            <div>
-              <Dialog.Title className="text-lg font-semibold text-base-content">Add products</Dialog.Title>
-              <p className={ui.caption}>Each product is an HTS code and a country of origin</p>
+        {/* It portals out of the Tracker, so it carries the Tracker's look itself (DESIGN_SYSTEM §15) */}
+        <Dialog.Panel className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} flex max-h-[88vh] w-full max-w-3xl flex-col overflow-hidden shadow-2xl`}>
+          <div className="flex items-start justify-between gap-4 px-6 pb-4 pt-6">
+            <div className="flex flex-col gap-1">
+              <span className={tt.eyebrow("primary")}>Your Imports</span>
+              <Dialog.Title className={`${tt.display} m-0 text-xl font-semibold text-base-content`}>Add Imports</Dialog.Title>
+              <p className={`${tt.subtitle} m-0`}>Each import is an HTS code and a country of origin</p>
             </div>
-            <button type="button" className={ui.button({ variant: "ghost", size: "sm", icon: true })} onClick={close}>
+            <button
+              type="button"
+              className="rounded-full p-1.5 text-base-content/50 hover:bg-tt-soft hover:text-base-content"
+              onClick={close}
+            >
               <XMarkIcon className="h-5 w-5" aria-hidden />
               <span className="sr-only">Close</span>
             </button>
           </div>
 
-          <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-5">
-            <SegmentedControl<AddMethod> label="How to add products" options={METHODS} value={method} onChange={setMethod} fullWidth />
+          <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-6 pb-5">
+            <SegmentedControl<AddMethod> label="How to add imports" options={METHODS} value={method} onChange={setMethod} fullWidth />
 
             {method === "paste" && (
               <PasteInput
@@ -341,7 +349,7 @@ export const AddProductsDialog = ({
                 : parsed.entries.length + parsed.errors.length === 0
                   ? "Nothing to add yet"
                   : [
-                      `${ready.toLocaleString("en-US")} ${ready === 1 ? "product" : "products"} ready`,
+                      `${ready.toLocaleString("en-US")} ${ready === 1 ? "import" : "imports"} ready`,
                       repeated ? `${repeated.toLocaleString("en-US")} already in your imports` : "",
                       parsed.errors.length ? `${parsed.errors.length.toLocaleString("en-US")} skipped` : "",
                     ]
@@ -359,7 +367,7 @@ export const AddProductsDialog = ({
                 onClick={add}
               >
                 Add {ready > 0 ? `${ready.toLocaleString("en-US")} ` : ""}
-                {ready === 1 ? "product" : "products"}
+                {ready === 1 ? "import" : "imports"}
               </button>
             </div>
           </div>
