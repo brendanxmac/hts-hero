@@ -86,15 +86,14 @@ const HealthCard = ({
   );
 };
 
-export const TariffHealth = () => {
+// The three shares and the score, for the Tariff health tab and the Overview's summary of it
+export const useTariffHealth = () => {
   const { items, trackedKeys } = useTracker();
   const insights = useInsights();
   const alerts = useAlertSettings();
   const { rows: auditRows, totals } = useAuditRows();
   const { signedIn, unlock, unlockLabel } = useTrackerAccess();
-  const nav = useTrackerNav();
   const imports = items.length;
-  if (!imports) return null;
   const count = (n: number, one: string, many: string) => `${n.toLocaleString("en-US")} ${n === 1 ? one : many}`;
 
   // Alerts: the imports covered, and whether there's anywhere for alerts to go
@@ -123,15 +122,25 @@ export const TariffHealth = () => {
   const auditPct = share(auditedImports, imports);
 
   const overall = Math.round((alertsPct + savingsPct + auditPct) / 3);
+  return { imports, count, covered, alertsSet, alertsPct, stats, savingsPct, potential, audited, auditedImports, auditPct, totals, overall, signedIn, unlock, unlockLabel };
+};
+
+// The full panel: the score, and a card for each of the three. On the Tariff health tab the page
+// names it, so the panel's own title goes (heading={false}).
+export const TariffHealth = ({ heading = true }: { heading?: boolean }) => {
+  const h = useTariffHealth();
+  const nav = useTrackerNav();
+  const { imports, count, covered, alertsSet, alertsPct, stats, savingsPct, potential, audited, auditedImports, auditPct, totals, overall, signedIn, unlock, unlockLabel } = h;
+  if (!imports) return null;
 
   return (
     <section aria-labelledby="tt-health" className={`${tt.panel} overflow-hidden`}>
       <div className="flex flex-wrap items-end justify-between gap-3 px-5 pb-4 pt-5 lg:px-6">
         <div>
-          <h2 id="tt-health" className={tt.title}>
+          <h2 id="tt-health" className={heading ? tt.title : "sr-only"}>
             Tariff health
           </h2>
-          <p className={tt.subtitle}>Alerts on, savings reviewed and entries audited, across your imports</p>
+          {heading && <p className={tt.subtitle}>Alerts on, savings reviewed and entries audited, across your imports</p>}
         </div>
         <p className="m-0 flex items-baseline gap-2" aria-label={`Tariff health ${overall}%`}>
           <span className={`${tt.metric} ${overall >= 80 ? "text-success" : "text-primary"}`}>{overall}%</span>

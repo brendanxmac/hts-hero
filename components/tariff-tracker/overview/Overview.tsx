@@ -21,12 +21,11 @@ import { ExposureMap } from "./ExposureMap";
 import { LatestChanges } from "./LatestChanges";
 import { averageRate, changesLastYear, countryCount, dutyPerShipment, monthlyChanges, productsToLookAt } from "./lib/metrics";
 import { Metric, MetricTiles } from "./MetricTiles";
-import { NewsTape } from "./NewsTape";
 import { NextStep } from "./NextStep";
 import { OriginDistribution } from "./OriginDistribution";
 import { ProductTiles } from "./ProductTiles";
 import { PulseEvent, RatePulse } from "./RatePulse";
-import { TariffHealth } from "./TariffHealth";
+import { HealthSummary, ImpactsSummary, NewsSummary } from "./SummaryBoxes";
 
 // The Overview (DESIGN_SYSTEM.md §15): the Tracker's home. A rotating line about the catalog, the
 // path to lower duty on a strip of its own, then the numbers, potential savings, the rate pulse, where the catalog comes
@@ -182,14 +181,24 @@ export const Overview = () => {
     <div className="flex flex-col gap-4">
       {/* No visible title: the page opens on the tariff news */}
       <h1 className="sr-only">Overview</h1>
-      <NewsTape />
       <NextStep />
-
-      <TariffHealth />
       {/* On a plan: what the imports it doesn't cover could add */}
-      <BeyondPlanTeaser compact />
+      {/* <BeyondPlanTeaser compact /> */}
 
       <MetricTiles metrics={data.metrics} />
+
+      {/* The other pages in short, each with a way in */}
+      <div className="grid gap-4 xl:grid-cols-3">
+        <div className={ROW}>
+          <HealthSummary />
+        </div>
+        <div className={ROW}>
+          <ImpactsSummary />
+        </div>
+        <div className={ROW}>
+          <NewsSummary />
+        </div>
+      </div>
 
       {/* Side by side, each row's panels stretch to the taller one, so no gaps open under them */}
       <div className="grid gap-4 xl:grid-cols-12">

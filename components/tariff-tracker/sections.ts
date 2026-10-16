@@ -5,6 +5,7 @@ import {
   ClipboardDocumentCheckIcon,
   ClockIcon,
   GlobeAltIcon,
+  HeartIcon,
   ChatBubbleLeftRightIcon,
   HomeIcon,
   NewspaperIcon,
@@ -19,6 +20,7 @@ import {
 
 export type SectionSlug =
   | "overview"
+  | "health"
   | "calculator"
   | "catalog"
   | "history"
@@ -67,6 +69,17 @@ export const SECTIONS: TrackerSection[] = [
     title: "Overview",
     summary:
       "Your imports' tariffs at a glance: what you pay, what changed and where to save.",
+    ready: true,
+    group: "workspace",
+    paidOnly: false,
+    planned: [],
+  }),
+  section({
+    slug: "health",
+    label: "Tariff health",
+    Icon: HeartIcon,
+    title: "Tariff health",
+    summary: "How well your imports are covered: alerts on, savings reviewed and entries audited.",
     ready: true,
     group: "workspace",
     paidOnly: false,
