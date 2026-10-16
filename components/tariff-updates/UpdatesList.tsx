@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"
-import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { Select } from "@/components/ui/Select"
 import type { PublicUpdate } from "@/libs/tariff-updates/public"
@@ -97,15 +96,24 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
     return groups
   }, [shown])
 
-  const filterButton = (active: boolean) =>
-    `${ui.button({ variant: active ? "primary" : "secondary", size: "sm" })} ${active ? "" : "font-medium"}`
+  // Small chips, so every law fits on one line; if they ever don't, the line scrolls sideways
+  const chip = (active: boolean) =>
+    `inline-flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 text-xs font-semibold transition-colors ${
+      active ? "border-primary bg-primary text-primary-content" : "border-base-300 bg-base-100 text-base-content/80 hover:border-base-content/30"
+    }`
 
   return (
-    // One card: the search and filters on top (pinned under the site's sticky header while the
-    // list scrolls), then the updates by month, each month a band of its own
+    // One card: its title, the search and filters on top (pinned under the site's sticky header
+    // while the list scrolls), then the updates by month, each month a band of its own
     <div className={`${tt.panel} overflow-clip`}>
-      <div className="sticky top-[65px] z-20 flex flex-col gap-4 rounded-t-lg border-b border-base-300 bg-base-100 p-5">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="sticky top-[65px] z-20 flex flex-col gap-3 rounded-t-lg border-b border-base-300 bg-base-100 px-5 py-4">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+          <h2 className={`${tt.title} m-0 flex items-baseline gap-2`}>
+            All Tariff Updates
+            <span className="text-sm font-normal tabular-nums text-base-content/50">
+              {shown.length === updates.length ? updates.length : `${shown.length} of ${updates.length}`}
+            </span>
+          </h2>
           <label className="relative min-w-[16rem] flex-1">
             <span className="sr-only">Search tariff updates</span>
             <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" aria-hidden />
@@ -114,7 +122,7 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by product, HTS code or keyword"
-              className="h-10 w-full rounded-full border border-base-300 bg-base-100 pl-10 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="h-9 w-full rounded-full border border-base-300 bg-base-100 pl-10 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </label>
           <label className="flex items-center gap-2 text-sm text-base-content/70">
@@ -129,19 +137,16 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
             />
           </label>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button type="button" className={filterButton(!authority)} onClick={() => setAuthority("")}>
+        <div className="-mx-5 flex items-center gap-1.5 overflow-x-auto px-5 [scrollbar-width:none]" role="group" aria-label="Filter by law">
+          <button type="button" className={chip(!authority)} onClick={() => setAuthority("")} aria-pressed={!authority}>
             All
           </button>
           {authorities.map((a) => (
-            <button key={a} type="button" className={filterButton(authority === a)} onClick={() => setAuthority(authority === a ? "" : a)}>
+            <button key={a} type="button" className={chip(authority === a)} onClick={() => setAuthority(authority === a ? "" : a)} aria-pressed={authority === a}>
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: authorityColor(a) }} aria-hidden />
               {authorityLabel(a)}
             </button>
           ))}
-          <span className="ml-auto text-xs text-base-content/60">
-            {shown.length === updates.length ? `${updates.length} updates` : `Showing ${shown.length} of ${updates.length}`}
-          </span>
         </div>
       </div>
 
