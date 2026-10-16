@@ -1,0 +1,118 @@
+import Link from "next/link";
+import {
+  ArrowRightIcon,
+  BellAlertIcon,
+  ChatBubbleLeftRightIcon,
+  ClipboardDocumentCheckIcon,
+  LightBulbIcon,
+  ShieldCheckIcon,
+  VideoCameraIcon,
+} from "@heroicons/react/20/solid";
+import config from "@/config";
+import * as mk from "@/components/ui/marketing/styles";
+import { formatPrice, MANAGED_TIERS } from "@/components/pricing-calculator/lib/pricing";
+import { darkBand, display, glow } from "../lib/theme";
+
+// HTS Hero Managed on the homepage (PRICING.md): the HTS Hero team joins the importer's company
+// and runs every tariff on their imports. A dark band of its own so it stands apart from the
+// self-serve tools: the promise, what the team takes on, an example of the shared channel, the
+// starting price and the intro call. The full page is the Tracker's Expert Help.
+
+const TAKES_ON = [
+  { Icon: ChatBubbleLeftRightIcon, title: "A shared Slack channel", body: "Message the people running your tariffs. Same-day answers, not a ticket queue." },
+  { Icon: VideoCameraIcon, title: "A weekly check-in call", body: "What changed, what it costs, what we're doing about it, and what we need from you." },
+  { Icon: ShieldCheckIcon, title: "Every tariff optimized", body: "Classification, origin and programs reviewed on every import, kept at its lowest duty." },
+  { Icon: LightBulbIcon, title: "Always hunting for savings", body: "Programs, exemptions and sourcing moves, each brought to you with what it could save." },
+  { Icon: ClipboardDocumentCheckIcon, title: "Every entry audited", body: "Overpayments caught for refund, underpayments fixed before Customs finds them." },
+  { Icon: BellAlertIcon, title: "Every tariff change, handled", body: "When a new tariff lands, you hear from us first, with the plan." },
+];
+
+const Message = ({ who, team, children }: { who: string; team?: boolean; children: string }) => (
+  <div className="flex gap-3">
+    <span
+      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold ${team ? "bg-primary text-primary-content" : "bg-base-content/10 text-base-content"}`}
+      aria-hidden
+    >
+      {team ? "HH" : "You"}
+    </span>
+    <div className="flex min-w-0 flex-col gap-0.5">
+      <span className="text-xs font-bold text-base-content">{who}</span>
+      <p className="m-0 text-sm leading-relaxed text-base-content/80">{children}</p>
+    </div>
+  </div>
+);
+
+export const ManagedSection = () => {
+  const from = MANAGED_TIERS[0];
+  return (
+    <section id="managed" className={`relative overflow-hidden ${mk.band} ${darkBand} scroll-mt-20`} aria-labelledby="managed-title">
+      <div aria-hidden className={glow} />
+      <div className={`${mk.container} relative`}>
+        <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+          <div>
+            <p className={mk.eyebrow}>HTS Hero Managed</p>
+            <h2 id="managed-title" className={`${mk.h2} mt-4`}>
+              Hand us your tariffs. <span className={mk.accent}>We&apos;ll run them.</span>
+            </h2>
+            <p className={`${mk.lead} mt-5`}>
+              Our team joins yours and manages every tariff on your imports: monitoring, audits, savings and every new action, with a person you can
+              message the same day.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <a
+                href={config.bookCallUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-14 items-center gap-2 rounded-full bg-primary px-8 text-lg font-semibold text-primary-content transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              >
+                Book an intro call
+                <ArrowRightIcon className="h-5 w-5" aria-hidden />
+              </a>
+              <span className="text-base text-base-content/70">
+                From <strong className={`${display} text-2xl font-semibold text-base-content`}>{formatPrice(from.price)}</strong>/mo · up to{" "}
+                {from.maxPairs} imports
+              </span>
+            </div>
+          </div>
+
+          {/* What working together looks like: the shared channel, as an example */}
+          <div className="rounded-3xl border border-base-content/10 bg-base-100/60 p-6 shadow-2xl backdrop-blur-sm" aria-label="An example of the shared Slack channel">
+            <div className="mb-5 flex items-center justify-between border-b border-base-content/10 pb-4">
+              <span className="text-sm font-bold text-base-content"># acme-tariffs</span>
+              <span className="text-xs text-base-content/50">Example</span>
+            </div>
+            <div className="flex flex-col gap-5">
+              <Message who="HTS Hero · Sam" team>
+                Heads up: the new Section 232 action covers 14 of your imports from Oct 1. Average rate goes from 12.5% to 37.5%. Plan attached.
+              </Message>
+              <Message who="Dana, Acme">Can we move the steel brackets to the Mexico supplier?</Message>
+              <Message who="HTS Hero · Sam" team>
+                Yes. They qualify for USMCA, so those 6 could stay duty free. We&apos;ll walk you through it on Thursday&apos;s call.
+              </Message>
+            </div>
+          </div>
+        </div>
+
+        <ul className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {TAKES_ON.map(({ Icon, title, body }) => (
+            <li key={title} className="flex gap-4 rounded-2xl border border-base-content/10 bg-base-100/40 p-5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary" aria-hidden>
+                <Icon className="h-5 w-5" />
+              </span>
+              <span className="flex flex-col gap-1">
+                <span className="font-semibold text-base-content">{title}</span>
+                <span className="text-sm leading-relaxed text-base-content/70">{body}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-10 text-center">
+          <Link href="/tariff-tracker?tab=expert-help" className="font-semibold text-primary underline-offset-4 hover:underline">
+            See everything HTS Hero Managed includes
+          </Link>
+        </p>
+      </div>
+    </section>
+  );
+};

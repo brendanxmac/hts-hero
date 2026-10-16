@@ -1,6 +1,8 @@
 // The homepage: US tariff intelligence, with a section per tool
 export { HeroTicker } from "./hero/HeroTicker";
 export { ToolShowcase } from "./tools/ToolShowcase";
+export { ClassifySection } from "./classify/ClassifySection";
+export { ManagedSection } from "./managed/ManagedSection";
 // Not on the homepage now; kept for reuse
 export { LanesBand } from "./tools/LanesBand";
 export { PricingOverview } from "./pricing/PricingOverview";

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRightIcon, CheckIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, CheckIcon, MagnifyingGlassIcon, UserGroupIcon } from "@heroicons/react/20/solid";
 import config from "@/config";
 import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
@@ -10,6 +10,7 @@ import { darkBand, display, moneyButtonMd } from "../lib/theme";
 import {
   Billing,
   CLASSIFY_PLANS,
+  MANAGED_TIERS,
   TRACKER_MAX_LISTED_PAIRS,
   TRACKER_TIERS,
   TRIAL_ALLOWANCE,
@@ -199,6 +200,29 @@ export const PricingOverview = () => {
             <ArrowRightIcon className="h-5 w-5 text-primary transition-transform group-hover:translate-x-0.5" aria-hidden />
           </span>
         </Link>
+
+        {/* HTS Hero Managed, for those who'd rather we run it all (the section above has the rest) */}
+        <a
+          href="#managed"
+          className="group mx-auto mt-4 flex max-w-6xl flex-col gap-4 rounded-3xl border border-primary/25 bg-primary/[0.05] p-6 transition-colors hover:border-primary/50 sm:flex-row sm:items-center sm:justify-between sm:px-10"
+        >
+          <span className="flex items-center gap-4">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-content">
+              <UserGroupIcon className="h-6 w-6" aria-hidden />
+            </span>
+            <span>
+              <span className="block text-lg font-bold text-base-content">HTS Hero Managed</span>
+              <span className="text-base-content/70">Rather hand it off? Our team runs every tariff on your imports, with a Slack channel and a weekly call</span>
+            </span>
+          </span>
+          <span className="flex items-center gap-4">
+            <span className="whitespace-nowrap text-2xl font-semibold [font-family:var(--font-tracker-display)] text-base-content">
+              From {formatPrice(MANAGED_TIERS[0].price)}
+              <span className="text-base font-medium text-base-content/60">/mo</span>
+            </span>
+            <ArrowRightIcon className="h-5 w-5 text-primary transition-transform group-hover:translate-x-0.5" aria-hidden />
+          </span>
+        </a>
 
         <p className="mt-8 text-center">
           <Link href="/pricing-calculator" className={mk.link}>

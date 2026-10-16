@@ -13,6 +13,8 @@ import {
   OfferCta,
   PricingOverview,
   ToolShowcase,
+  ClassifySection,
+  ManagedSection,
 } from "@/components/home";
 import { Testimonials } from "@/components/classify-landing";
 import { monitorFacts } from "@/components/tariff-monitor";
@@ -112,7 +114,9 @@ export default async function Home() {
             savings={savings}
             facts={facts}
           />
+          <ClassifySection />
           <Testimonials />
+          <ManagedSection />
           <PricingOverview />
           <HomeDirectory />
           <HomeFaq />
