@@ -203,19 +203,23 @@ export const ImportsTable = ({
           checks. Spare room on the plan is one click to fill; past it, what's at risk (the changes
           that hit the imports without alerts this past year), the launch deadline, and the plans */}
       {signedIn && items.length > trackedKeys.size &&
-        (moreToTrack > 0 ? (
+        (trackedKeys.size < access.pairLimit ? (
           <div className={`${tt.tile} flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center`}>
             <BellAlertIcon className="h-5 w-5 shrink-0 text-success" aria-hidden />
             <p className="m-0 flex-1 text-sm text-base-content/70">
               <span className="font-semibold text-base-content">
                 Alerts are on for {n(trackedKeys.size)} of your {n(items.length)} imports.
               </span>{" "}
-              Your plan has room for {n(moreToTrack)} more.
+              {moreToTrack > 0
+                ? `Your plan has room for ${n(moreToTrack)} more.`
+                : `Your plan has room for ${n(access.pairLimit - trackedKeys.size)} more: turn alerts back on for the ones you switched off.`}
             </p>
-            <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={trackMore}>
-              <BellAlertIcon className="h-4 w-4" aria-hidden />
-              Turn on alerts for {n(moreToTrack)} more
-            </button>
+            {moreToTrack > 0 && (
+              <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={trackMore}>
+                <BellAlertIcon className="h-4 w-4" aria-hidden />
+                Turn on alerts for {n(moreToTrack)} more
+              </button>
+            )}
           </div>
         ) : (
           <div role="status" className="flex flex-col gap-3 rounded-xl border border-error/25 bg-error/[0.06] px-4 py-3.5 sm:flex-row sm:items-center sm:gap-4">
