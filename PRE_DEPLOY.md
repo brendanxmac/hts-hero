@@ -25,8 +25,14 @@ add new ones as they come up.
       it; a change of origin adds the new product and marks the old one "moving"), Audit (Beta).
 - [ ] **Test the usage-based trial signed in** (2026-10-13): savings checks (5), audit checks
       (10), alerts slots (10), the plans dialog when each runs out, and a paid plan's coverage.
-- [ ] **Sourcing.** Compare's heading offers signed-in users "Get Advanced Comparisons" (the
+- [x] **Sourcing.** _Done 2026-10-16: the Compare upsell now pitches the free Analysis (signed out) or tracking the import (signed in); nothing links to the hidden Sourcing section._ Compare's heading offers signed-in users "Get Advanced Comparisons" (the
       Tracker's Sourcing, trial or paid). Build it, or drop the link.
+- [ ] **Migration order** (foreign keys): `email_outbox` before `lifecycle_emails` and
+      `tariff_impact_alerts`; `tariff_sources` → `tariff_updates` → `tariff_update_scopes`,
+      `tariff_update_impacts`, `tariff_impact_alerts` → `tariff_alert_preferences` (which also needs
+      `tariff_tracker_accounts`); `social_ideas` → `social_ideas_sources`.
+- [ ] **Apply the migrations** `audit_requests.sql` (the /tariff-audit request form) and
+      `social_ideas.sql` + `social_ideas_sources.sql` (the daily `/api/cron/social-ideas` in vercel.json).
 - [ ] **Apply the migration** `supabase/migrations/tariff_tracker_accounts.sql` (tracker_catalogs,
       tracker_checks, tracker_entries, tracker_opportunities, tracker_opportunity_events,
       tracker_alert_settings; drops the old tracker_trials).
@@ -37,7 +43,7 @@ add new ones as they come up.
       every change is in `MVP_TRIM.md`. Re-run `npm run email:auth` and paste the auth templates
       into Supabase (they changed). `app/zz-tracker/` (the Tracker without sign-in) is untracked and
       must never be committed or deployed.
-- [ ] **Alert sending job.** Alert settings are saved, but nothing sends alerts yet.
+- [x] **Alert sending job.** _Built (`libs/tariff-updates/alerts.ts`): approving an impact check in /tariff-sources queues the alerts in the outbox._
 - [ ] **Apply the migration** `supabase/migrations/tariff_sources.sql` (tariff_source_items,
       tariff_source_runs) for the tariff source collectors (/tariff-sources admin view).
 - [ ] **Apply the migration** `supabase/migrations/tariff_updates.sql` (tariff_updates, and the
