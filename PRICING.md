@@ -89,6 +89,14 @@ What the Tracker sells now:
 | Up to 500 | $149 |
 | 500+ | Quoted ("Let's talk") |
 
+**Launch pricing** (`LAUNCH_PRICING` in `components/pricing-calculator/lib/pricing.ts`): these
+are tracking-only launch prices until **Fri, Oct 23, 2026**. Anyone who subscribes before then
+keeps their price for as long as they stay subscribed (old Stripe prices keep working: see
+`libs/tariff-tracker/prices.ts`) and can add savings and audits when they arrive. From Oct 23,
+savings and audits join the Tracker and new subscribers pay **$19 / $49 / $149 / $249**. The plans
+dialog shows the deadline, a countdown and those coming prices struck through; it all disappears
+on its own after Oct 23.
+
 **Monthly only** for now (`TRACKER_ANNUAL_ENABLED`): no annual Tracker plan or toggle.
 Classification and Managed keep their annual billing. Copy: "Start free", "Track 5 imports free",
 "No credit card".

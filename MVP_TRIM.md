@@ -61,6 +61,12 @@ Managed (legal wording, not a flag; HTS Hero is not a customs broker):
 
 - `expert-help/ExpertHelp.tsx`: "We Become Your Tariff Team" → "Tariff Experts on Your Team"; "Every Tariff Optimized / lowest-duty position" → "Every Tariff Watched"; "Always Hunting for Savings" → "Savings Options to Explore"; audits and entry-summary reviews "flag … for your broker"; "Every Tariff Change, Handled" → "Briefed"; included list and footnote say HTS Hero finds, flags and explains and the broker decides and files.
 
+## Launch pricing (added 2026-10-16)
+
+- `components/pricing-calculator/lib/pricing.ts`: `LAUNCH_PRICING` (ends Fri, Oct 23, 2026; next prices $19 / $49 / $149 / $249) and `launchPricingActive()`.
+- `access/UpgradeDialog.tsx`: the plans dialog rebuilt to convert: an amber deadline bar with a countdown and the price lock, a headline about the user's untracked imports, their last 12 months of tariff changes, launch prices with the coming price struck through, "Lock in $X/mo" buttons, outcome-led benefits, reassurance (cancel anytime, no contract, catalog stays free, Stripe). Everything launch-related hides itself after Oct 23. When savings and audits return, update `LAUNCH_PRICING` (or remove it) and the footer line.
+- `access/upgradeStats.ts` + `access/UpgradeStatsBridge.tsx` (new, mounted in `TrackerApp.tsx`): hand the dialog the user's import and change counts.
+
 ## Copy changed
 
 Most of these are gated: the old copy is still in the code as the `SAVINGS_ENABLED` /

@@ -30,6 +30,18 @@ export const TRACKER_TIERS = [
   { maxPairs: 100, price: 89 },
   { maxPairs: 500, price: 149 },
 ] as const;
+// Launch pricing (PRICING.md): today's tiers are the tracking-only launch prices, locked in for as
+// long as a subscriber stays subscribed. From `endsAt`, savings and audits join the Tracker and new
+// subscribers pay `nextPrices` (by tier imports). Shown in the plans dialog until it ends.
+export const LAUNCH_PRICING = {
+  endsAt: "2026-10-23T23:59:59-04:00",
+  endsLabel: "Fri, Oct 23",
+  endsDay: "Oct 23",
+  nextPrices: { 10: 19, 30: 49, 100: 149, 500: 249 } as Record<number, number>,
+} as const;
+
+export const launchPricingActive = (now = Date.now()) => now < Date.parse(LAUNCH_PRICING.endsAt);
+
 export const TRACKER_MAX_LISTED_PAIRS = TRACKER_TIERS[TRACKER_TIERS.length - 1].maxPairs;
 
 export type TrackerTier = (typeof TRACKER_TIERS)[number];

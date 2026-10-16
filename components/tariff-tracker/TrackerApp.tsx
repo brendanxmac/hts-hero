@@ -11,6 +11,7 @@ import { TrackerNav, TrackerNavContext } from "./shell/TrackerNav";
 import { TrackerShell } from "./shell/TrackerShell";
 import { TrackerProvider } from "./TrackerContext";
 import { TrackerAccessProvider } from "./access/TrackerAccessProvider";
+import { UpgradeStatsBridge } from "./access/UpgradeStatsBridge";
 import { InsightsProvider } from "./insights/InsightsContext";
 import { AlertSettingsProvider } from "./alerts/AlertSettingsContext";
 import { EntriesProvider } from "./entries/EntriesContext";
@@ -129,6 +130,7 @@ export const TrackerApp = () => {
             <AlertSettingsProvider>
               <EntriesProvider>
                 <TrackerNavContext.Provider value={nav}>
+                  <UpgradeStatsBridge />
                   <TrackerShell>
                     {SECTIONS.filter((s) => visited.includes(s.slug)).map((section) => {
                       const active = section.slug === tab;
