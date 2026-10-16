@@ -7,8 +7,7 @@ import config from "@/config";
 import { THEME } from "../../components/ui/theme";
 import * as mk from "@/components/ui/marketing/styles";
 import { Hero } from "@/components/duty-calculator/hero";
-import { createClient } from "@/app/api/supabase/server";
-import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
+import { getLatestUpdates, type PublicUpdate } from "@/libs/tariff-updates/public";
 import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { TariffGuide } from "@/components/duty-calculator/guide";
 import { dutyCalculatorFaqs } from "@/components/duty-calculator/guide/faqs";
@@ -74,8 +73,9 @@ export const metadata: Metadata = {
 };
 
 export default async function DutyCalculatorPage() {
-  const [latestUpdates, content] = await Promise.all([
-    getChangelogEntries(createClient(), { limit: 3 }),
+  const [latestNews, content] = await Promise.all([
+    // The latest tariff actions for the hero; the page still works if they can't be loaded
+    getLatestUpdates(4).catch((): PublicUpdate[] => []),
     getDutyCalculatorContent(),
   ]);
   const faqs = dutyCalculatorFaqs(content.revisionTitle);
@@ -126,7 +126,7 @@ export default async function DutyCalculatorPage() {
         >
           <div id="calculator" className="scroll-mt-16">
             <TariffFinderPage>
-              <Hero latestUpdates={latestUpdates} revisionTitle={content.revisionTitle} />
+              <Hero latestNews={latestNews} revisionTitle={content.revisionTitle} />
             </TariffFinderPage>
           </div>
         </Suspense>

@@ -37,6 +37,19 @@ const COLUMNS = "slug, title, summary, kind, authority, countries, hts_codes, pr
 // Supabase returns at most 1,000 rows a request
 const PAGE = 1000
 
+// The newest few, for a page that shows the latest (the duty calculator's Tariff News)
+export const getLatestUpdates = async (limit: number): Promise<PublicUpdate[]> => {
+  const { data, error } = await createPublicClient()
+    .from("tariff_updates")
+    .select(COLUMNS)
+    .eq("status", "published")
+    .neq("kind", "hts_revision")
+    .order("last_activity_at", { ascending: false })
+    .limit(limit)
+  if (error) throw new Error(`Loading tariff updates: ${error.message}`)
+  return (data ?? []) as PublicUpdate[]
+}
+
 export const getPublishedUpdates = async (): Promise<PublicUpdate[]> => {
   const db = createPublicClient()
   const updates: PublicUpdate[] = []
