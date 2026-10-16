@@ -9,6 +9,9 @@ import {
 import { ColumnFiltersState, Row, Table, Updater } from "@tanstack/react-table";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
+import { formatPrice, LAUNCH_PRICING, launchPricingActive } from "@/components/pricing-calculator/lib/pricing";
+import { TRACKER_PLANS } from "@/libs/tariff-tracker/plan";
+import { todayIso } from "../../duty-calculator/lib/format";
 import {
   DataTable,
   SelectionBar,
@@ -61,7 +64,17 @@ export const ImportsTable = ({
     trackMore,
   } = useTracker();
   const { signedIn, access, openUpgrade } = useTrackerAccess();
-  const { unlocked, review } = useInsights();
+  const { unlocked, review, changes } = useInsights();
+  const n = (count: number) => count.toLocaleString("en-US");
+  // What the imports without alerts missed this past year, and the plan that would cover them all
+  const missedHits = useMemo(() => {
+    const today = todayIso();
+    const yearAgo = `${Number(today.slice(0, 4)) - 1}${today.slice(4)}`;
+    return changes.filter((c) => c.date >= yearAgo && c.date <= today && !trackedKeys.has(c.product.key)).length;
+  }, [changes, trackedKeys]);
+  const coverAllPlan = TRACKER_PLANS.find((p) => items.length <= p.maxPairs && p.maxPairs > access.pairLimit);
+  const coverAll = coverAllPlan ? { perImport: Math.round((coverAllPlan.price / coverAllPlan.maxPairs) * 100) / 100 } : null;
+  const launch = launchPricingActive();
 
   const columns = useMemo(
     () =>
@@ -187,30 +200,49 @@ export const ImportsTable = ({
       {header?.(table)}
       {shown > 0 && summary?.(table)}
       {/* How many imports have alerts, when not all of them do: only those get alerts and impact
-          checks. Spare room on the plan is one click to fill; past it, the plans */}
-      {signedIn && items.length > trackedKeys.size && (
-        <div className={`${tt.tile} flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center`}>
-          <BellAlertIcon className="h-5 w-5 shrink-0 text-success" aria-hidden />
-          <p className="m-0 flex-1 text-sm text-base-content/70">
-            <span className="font-semibold text-base-content">
-              Alerts are on for {trackedKeys.size.toLocaleString("en-US")} of your {items.length.toLocaleString("en-US")} imports.
-            </span>{" "}
-            {moreToTrack > 0
-              ? `Your plan has room for ${moreToTrack.toLocaleString("en-US")} more.`
-              : `Only these get alerts and impact checks; ${access.kind === "paid" ? "move up a plan to cover more." : `your free plan covers ${access.pairLimit.toLocaleString("en-US")}.`}`}
-          </p>
-          {moreToTrack > 0 ? (
+          checks. Spare room on the plan is one click to fill; past it, what's at risk (the changes
+          that hit the imports without alerts this past year), the launch deadline, and the plans */}
+      {signedIn && items.length > trackedKeys.size &&
+        (moreToTrack > 0 ? (
+          <div className={`${tt.tile} flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center`}>
+            <BellAlertIcon className="h-5 w-5 shrink-0 text-success" aria-hidden />
+            <p className="m-0 flex-1 text-sm text-base-content/70">
+              <span className="font-semibold text-base-content">
+                Alerts are on for {n(trackedKeys.size)} of your {n(items.length)} imports.
+              </span>{" "}
+              Your plan has room for {n(moreToTrack)} more.
+            </p>
             <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={trackMore}>
               <BellAlertIcon className="h-4 w-4" aria-hidden />
-              Turn on alerts for {moreToTrack.toLocaleString("en-US")} more
+              Turn on alerts for {n(moreToTrack)} more
             </button>
-          ) : (
-            <button type="button" className={`${ui.button({ variant: "secondary", size: "sm" })} shrink-0`} onClick={() => openUpgrade("limit")}>
-              Get alerts on more imports
+          </div>
+        ) : (
+          <div role="status" className="flex flex-col gap-3 rounded-xl border border-error/25 bg-error/[0.06] px-4 py-3.5 sm:flex-row sm:items-center sm:gap-4">
+            <span className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error/10 text-error sm:flex" aria-hidden>
+              <BellSlashIcon className="h-5 w-5" />
+            </span>
+            <div className="flex flex-1 flex-col gap-0.5">
+              <p className="m-0 text-sm font-semibold text-base-content">
+                <span className="text-error">
+                  {n(items.length - trackedKeys.size)} of your {n(items.length)} imports have no alerts.
+                </span>{" "}
+                {missedHits > 0
+                  ? `${n(missedHits)} tariff ${missedHits === 1 ? "change" : "changes"} hit them in the last 12 months.`
+                  : "A new tariff could hit any of them."}
+              </p>
+              <p className="m-0 text-sm text-base-content/70">
+                Next time, you&apos;ll find out from your customs bill.
+                {coverAll ? ` Cover all ${n(items.length)} for ${formatPrice(coverAll.perImport)} per import a month` : ""}
+                {coverAll && launch ? `, at launch pricing until ${LAUNCH_PRICING.endsLabel}.` : coverAll ? "." : ""}
+              </p>
+            </div>
+            <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={() => openUpgrade("tracking")}>
+              <BellAlertIcon className="h-4 w-4" aria-hidden />
+              {coverAll ? `Get alerts on all ${n(items.length)}` : "Get alerts on more imports"}
             </button>
-          )}
-        </div>
-      )}
+          </div>
+        ))}
       <DataTable
         table={table}
         label="Your imports"
