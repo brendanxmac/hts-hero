@@ -10,7 +10,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
-import { ExclamationTriangleIcon, PlusIcon, SparklesIcon } from "@heroicons/react/20/solid";
+import { ExclamationTriangleIcon, SparklesIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
@@ -209,11 +209,11 @@ export const CalculatorWorkspace = ({
   const pickedNote =
     imports && picked.length > 0
       ? `${picked
-          .map((code) => {
-            const name = Countries.find((c) => c.code === code)?.name ?? code;
-            return `${name} (${formatImportValue(imports.byCountry.get(code)?.value ?? 0)})`;
-          })
-          .join(" and ")} ${picked.length === 1 ? "is" : "are"}${pickedCheaper ? ` cheaper than ${country?.name} and` : ""} among the largest suppliers of ${imports.level === 10 ? "this product" : "products like this"} to the US, by ${imports.year} imports.`
+        .map((code) => {
+          const name = Countries.find((c) => c.code === code)?.name ?? code;
+          return `${name} (${formatImportValue(imports.byCountry.get(code)?.value ?? 0)})`;
+        })
+        .join(" and ")} ${picked.length === 1 ? "is" : "are"}${pickedCheaper ? ` cheaper than ${country?.name} and` : ""} among the largest suppliers of ${imports.level === 10 ? "this product" : "products like this"} to the US, by ${imports.year} imports.`
       : null;
 
   const ready = Boolean(result && selectedElement && country && !f.loading);
@@ -281,8 +281,8 @@ export const CalculatorWorkspace = ({
   const track = useTrackImport(f, "track-import");
   const trackButton = page === "calculator" && track && (
     <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => track.start()}>
-      <PlusIcon className="h-4 w-4" aria-hidden />
-      Track this import free
+      Find ways to save
+      <ArrowRightIcon className="h-4 w-4" aria-hidden />
     </button>
   );
   // Under each tab on /duty-calculator: what tracking it would add
@@ -421,19 +421,19 @@ export const CalculatorWorkspace = ({
                 </div>
                 {result.warnings.length > 0 && (
                   <div className={ui.cardSection}>
-                  <ul
-                    className={`${ui.notice("warning")} flex flex-col gap-1.5`}
-                  >
-                    {result.warnings.map((w) => (
-                      <li key={w} className={`${ui.bodySm} flex gap-2`}>
-                        <ExclamationTriangleIcon
-                          className="mt-px h-4 w-4 shrink-0 text-warning"
-                          aria-hidden
-                        />
-                        {w}
-                      </li>
-                    ))}
-                  </ul>
+                    <ul
+                      className={`${ui.notice("warning")} flex flex-col gap-1.5`}
+                    >
+                      {result.warnings.map((w) => (
+                        <li key={w} className={`${ui.bodySm} flex gap-2`}>
+                          <ExclamationTriangleIcon
+                            className="mt-px h-4 w-4 shrink-0 text-warning"
+                            aria-hidden
+                          />
+                          {w}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
                 <CardRow className={hasAdjustments ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]" : ""}>
@@ -476,50 +476,50 @@ export const CalculatorWorkspace = ({
                     // page while the breakdown is taller
                     <aside id="possible-adjustments" className="min-w-0" aria-label="Possible adjustments">
                       <div ref={adjustmentsRef} className="lg:sticky" style={{ top: adjustmentsTop }}>
-                      <QuestionsPanel
-                        questions={result.questions}
-                        stableQuestions={stableQuestions}
-                        notes={questionNotes}
-                        qualifyLink={<QualifyLink conversion={conversion} />}
-                        hideLegal={!canSeeWhy}
-                        changeSummary={changeSummaryFor("question")}
-                        action={
-                          page === "calculator" ? (
-                            <QualifyHeaderLink conversion={conversion} />
-                          ) : (
-                            <CheckSavingsLink onClick={onCheckSavings ?? (() => conversion.openTrial("qualify", QUALIFY_TRIAL))} />
-                          )
-                        }
-                        answers={f.answers}
-                        impacts={f.impacts}
-                        lines={[...result.lines, ...(unadjusted?.lines ?? [])]}
-                        onAnswer={f.answer}
-                        asOf={result.asOf}
-                        htsCode={result.htsCode}
-                        preference={
-                          preferences.length > 0 ? (
-                            <PreferenceClaim
-                              options={preferences}
-                              value={f.preferences[country.code] ?? ""}
-                              onChange={(symbol) =>
-                                f.setPreference(country.code, symbol)
-                              }
-                              impacts={prefImpacts}
-                              stable
-                              notes={Object.fromEntries(
-                                preferences.map((p) => [
-                                  p.symbol,
-                                  whatClaimingDoes(p.name),
-                                ]),
-                              )}
-                              qualifyLink={
-                                <QualifyLink conversion={conversion} />
-                              }
-                              changeSummary={changeSummaryFor("preference")}
-                            />
-                          ) : undefined
-                        }
-                      />
+                        <QuestionsPanel
+                          questions={result.questions}
+                          stableQuestions={stableQuestions}
+                          notes={questionNotes}
+                          qualifyLink={<QualifyLink conversion={conversion} />}
+                          hideLegal={!canSeeWhy}
+                          changeSummary={changeSummaryFor("question")}
+                          action={
+                            page === "calculator" ? (
+                              <QualifyHeaderLink conversion={conversion} />
+                            ) : (
+                              <CheckSavingsLink onClick={onCheckSavings ?? (() => conversion.openTrial("qualify", QUALIFY_TRIAL))} />
+                            )
+                          }
+                          answers={f.answers}
+                          impacts={f.impacts}
+                          lines={[...result.lines, ...(unadjusted?.lines ?? [])]}
+                          onAnswer={f.answer}
+                          asOf={result.asOf}
+                          htsCode={result.htsCode}
+                          preference={
+                            preferences.length > 0 ? (
+                              <PreferenceClaim
+                                options={preferences}
+                                value={f.preferences[country.code] ?? ""}
+                                onChange={(symbol) =>
+                                  f.setPreference(country.code, symbol)
+                                }
+                                impacts={prefImpacts}
+                                stable
+                                notes={Object.fromEntries(
+                                  preferences.map((p) => [
+                                    p.symbol,
+                                    whatClaimingDoes(p.name),
+                                  ]),
+                                )}
+                                qualifyLink={
+                                  <QualifyLink conversion={conversion} />
+                                }
+                                changeSummary={changeSummaryFor("preference")}
+                              />
+                            ) : undefined
+                          }
+                        />
                       </div>
                     </aside>
                   )}
@@ -576,10 +576,10 @@ export const CalculatorWorkspace = ({
                     conversion.signedIn
                       ? undefined
                       : () =>
-                          conversion.openAccount(
-                            { title: "Get advanced comparisons, 100% free", highlight: "analysis", cta: "Create my free account" },
-                            "compare-advanced",
-                          )
+                        conversion.openAccount(
+                          { title: "Get advanced comparisons, 100% free", highlight: "analysis", cta: "Create my free account" },
+                          "compare-advanced",
+                        )
                   }
                   onAdd={(added) => f.changeCountries([...f.countries, added])}
                   onRemove={f.removeCountry}

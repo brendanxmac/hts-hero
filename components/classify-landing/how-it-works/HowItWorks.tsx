@@ -91,9 +91,8 @@ const Repeat = ({ heading }: { heading: string }) => {
         {levels.map((l) => (
           <li
             key={l.label}
-            className={`rounded-xl border px-3 py-3 text-center ${
-              l.state === "done" ? "border-success/40 bg-success/10" : l.state === "next" ? "border-primary/40 bg-primary/10 ring-2 ring-primary" : "border-base-300 bg-tt-soft"
-            }`}
+            className={`rounded-xl border px-3 py-3 text-center ${l.state === "done" ? "border-success/40 bg-success/10" : l.state === "next" ? "border-primary/40 bg-primary/10 ring-2 ring-primary" : "border-base-300 bg-tt-soft"
+              }`}
           >
             <p className={`text-[11px] font-bold uppercase tracking-wider ${l.state === "done" ? "text-success" : l.state === "next" ? "text-primary" : "text-base-content/60"}`}>
               {l.label}
@@ -147,9 +146,8 @@ export const HowItWorks = () => {
                   key={p.label}
                   type="button"
                   onClick={() => setProductIndex(i)}
-                  className={`shrink-0 whitespace-nowrap rounded-full px-2 py-1 text-xs font-semibold transition-colors ${
-                    i === productIndex ? "bg-base-content text-base-100" : "bg-base-100 text-base-content/70 ring-1 ring-base-300 hover:text-base-content"
-                  }`}
+                  className={`shrink-0 whitespace-nowrap rounded-full px-2 py-1 text-xs font-semibold transition-colors ${i === productIndex ? "bg-base-content text-base-100" : "bg-base-100 text-base-content/70 ring-1 ring-base-300 hover:text-base-content"
+                    }`}
                 >
                   {p.label}
                 </button>
@@ -164,11 +162,10 @@ export const HowItWorks = () => {
                       type="button"
                       onClick={() => pick(i)}
                       aria-current={active ? "step" : undefined}
-                      className={`relative flex w-full items-start gap-4 overflow-hidden rounded-xl px-4 py-3.5 text-left transition-colors ${
-                        active ? "bg-base-100 ring-2 ring-primary" : "hover:bg-base-100/70"
-                      }`}
+                      className={`relative flex w-full items-start gap-4 overflow-hidden rounded-xl px-4 py-3.5 text-left transition-colors ${active ? "bg-base-100 ring-2 ring-primary" : "hover:bg-base-100/70"
+                        }`}
                     >
-                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? "bg-primary text-base-content" : "bg-base-300 text-base-content/70"}`}>
+                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? "bg-primary text-white" : "bg-base-300 text-base-content/70"}`}>
                         {i + 1}
                       </span>
                       <span className="min-w-0">

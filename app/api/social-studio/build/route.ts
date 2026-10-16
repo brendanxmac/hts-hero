@@ -4,7 +4,7 @@ import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 import { DutyInputError } from "@/libs/mcp/duty"
 import { buildCountryPosts, buildFactPosts, buildProductPosts, FACT_KINDS, FactKind } from "@/libs/social-studio/build"
 import { saveIdea } from "@/libs/social-studio/ideas"
-import { newsIdea, newsPost, UPDATE_COLUMNS, UpdateRow, writeNewsWords } from "@/libs/social-studio/news"
+import { newsIdea, newsPost, officialSources, UPDATE_COLUMNS, UpdateRow, writeNewsWords } from "@/libs/social-studio/news"
 
 export const dynamic = "force-dynamic"
 
@@ -22,16 +22,20 @@ export async function POST(req: NextRequest) {
       const update = data as UpdateRow
       const notes: string[] = []
       let words = {}
+      let costUsd: number | null = null
       try {
-        words = (await writeNewsWords(update)).words
+        const written = await writeNewsWords(update)
+        words = written.words
+        costUsd = written.usage.cost_usd
       } catch (e) {
         notes.push(`Claude couldn't write the headline (${(e as Error).message}); the update's title is used.`)
       }
       // Saved as an idea, so it lasts, shows in the News table and in Ideas
-      const post = newsPost(update, theme, words)
+      const post = newsPost(update, theme, words, await officialSources(db, update))
       const saved = await saveIdea(db, newsIdea(update, post))
       if (saved.error) notes.push(saved.error)
-      return NextResponse.json({ title: update.title, posts: [post], notes, idea: saved.idea })
+      notes.push(...saved.warnings)
+      return NextResponse.json({ title: update.title, posts: [post], notes, idea: saved.idea, costUsd })
     }
     if (body.mode === "fact") {
       if (!(body.kind in FACT_KINDS)) return errorResponse(new Error("Unknown fact"), 400)

@@ -2,11 +2,11 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import { todayIso } from "../../components/duty-calculator/lib/format"
 import type { Theme } from "../../social/brand"
 import { captionsFor, Captions } from "../../social/captions"
-import type { Post, TemplateId } from "../../social/types"
+import type { Post, SourceLink, TemplateId } from "../../social/types"
 import { callJson } from "../hts-revision-diff/claude"
 import type { ClaudeUsage } from "../hts-revision-diff/types"
 import { Candidate, mineCandidates } from "./miners"
-import { newsFacts, newsPhase, newsPost, newsScore, recentUpdates, UpdateRow } from "./news"
+import { newsFacts, newsPhase, newsPost, newsScore, officialSources, recentUpdates, UpdateRow } from "./news"
 import { numbersCheck } from "./numbers"
 
 // The daily ideas: mine candidates, keep the best few of each kind that haven't run lately, and
@@ -31,6 +31,8 @@ export interface Idea {
   score: number
   dedupe_key: string
   props: Post["props"]
+  // Where every figure in the post can be checked
+  sources: SourceLink[]
   captions: Captions
   status: "new" | "used" | "skipped"
   model: string | null
@@ -123,11 +125,22 @@ export const shortlist = (candidates: Candidate[], recentKeys: Set<string>, news
 }
 
 // Saves one idea, replacing an unused one for the same story; returns it with its id
-export const saveIdea = async (db: SupabaseClient, idea: Idea): Promise<{ idea: Idea; error: string | null }> => {
+// Inserts ideas; before supabase/migrations/social_ideas_sources.sql is applied, without their
+// sources (with a warning) rather than not at all
+const insertIdeas = async (db: SupabaseClient, ideas: Idea[], warnings: string[]) => {
+  const first = await db.from(IDEAS_TABLE).insert(ideas).select("id, position")
+  if (!first.error || !/sources/.test(first.error.message)) return first
+  warnings.push("Sources weren't saved: apply supabase/migrations/social_ideas_sources.sql.")
+  return db.from(IDEAS_TABLE).insert(ideas.map(({ sources, ...idea }) => idea)).select("id, position")
+}
+
+export const saveIdea = async (db: SupabaseClient, idea: Idea): Promise<{ idea: Idea; error: string | null; warnings: string[] }> => {
+  const warnings: string[] = []
   await db.from(IDEAS_TABLE).delete().eq("dedupe_key", idea.dedupe_key).eq("status", "new")
-  const { data, error } = await db.from(IDEAS_TABLE).insert(idea).select("id").single()
-  if (error) return { idea, error: `Couldn't save (${error.message}). Has supabase/migrations/social_ideas.sql been applied?` }
-  return { idea: { ...idea, id: (data as { id: string }).id }, error: null }
+  const { data: rows, error } = await insertIdeas(db, [idea], warnings)
+  const data = rows?.[0]
+  if (error || !data) return { idea, error: `Couldn't save (${error?.message}). Has supabase/migrations/social_ideas.sql been applied?`, warnings }
+  return { idea: { ...idea, id: (data as { id: string }).id }, error: null, warnings }
 }
 
 export interface RunResult {
@@ -176,12 +189,14 @@ export const runDailyIdeas = async ({
   const newsTitles = news.map((u) => u.title)
 
   const candidates = await mineCandidates({ theme, log })
-  news.forEach((u) => {
+  const official = new Map<string, Awaited<ReturnType<typeof officialSources>>>()
+  for (const u of news) {
     const score = newsScore(u)
-    if (score === null) return
-    const post = newsPost(u, theme)
+    if (score === null) continue
+    official.set(u.id, await officialSources(db, u))
+    const post = newsPost(u, theme, {}, official.get(u.id))
     candidates.push({ id: `news:${post.key}`, kind: "news", dedupeKey: `news:${u.slug}:${newsPhase(u)}`, score, facts: `${post.title}\n${newsFacts(u)}`, post, update: u })
-  })
+  }
   const short = shortlist(candidates, recentKeys, newsCodes)
   log(`shortlist: ${short.length}`)
 
@@ -214,7 +229,9 @@ export const runDailyIdeas = async ({
     if (!c) return warnings.push(`Claude picked an unknown candidate: ${pick.id}`)
     const key = HEADLINE_KEY[c.post.template]
     // News is rebuilt with Claude's words, which newsPost checks against the update itself
-    const base = c.update ? newsPost(c.update, theme, { headline: pick.headline, rate_before: pick.rate_before, rate_after: pick.rate_after, rate_note: pick.rate_note }) : c.post
+    const base = c.update
+      ? newsPost(c.update, theme, { headline: pick.headline, rate_before: pick.rate_before, rate_after: pick.rate_after, rate_note: pick.rate_note }, official.get(c.update.id))
+      : c.post
     const props = { ...base.props } as Record<string, unknown>
     if (pick.product && "product" in props && pick.product.length <= 40 && numbersCheck(pick.product, c.facts)) props.product = pick.product
     if (c.update) {
@@ -238,6 +255,7 @@ export const runDailyIdeas = async ({
       score: Math.round(c.score * 10) / 10,
       dedupe_key: c.dedupeKey,
       props: props as unknown as Post["props"],
+      sources: base.sources,
       captions,
       status: "new",
       model: usage?.model ?? null,
@@ -248,7 +266,7 @@ export const runDailyIdeas = async ({
     // A rerun replaces the day's ideas that haven't been used or skipped
     // (posts made by hand from the News tab have position -1 and stay)
     await db.from(IDEAS_TABLE).delete().eq("run_on", runOn).eq("status", "new").gte("position", 0)
-    const { data, error } = await db.from(IDEAS_TABLE).insert(ideas).select("id, position")
+    const { data, error } = await insertIdeas(db, ideas, warnings)
     if (error) warnings.push(`Couldn't save ideas (${error.message}). Has supabase/migrations/social_ideas.sql been applied?`)
     else data?.forEach((row: { id: string; position: number }) => (ideas[row.position].id = row.id))
   }

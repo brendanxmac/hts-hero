@@ -55,6 +55,21 @@ const FACTS: { kind: string; label: string }[] = [
 
 const STATUS_TONE = { new: "info", used: "success", skipped: "neutral" } as const
 
+// What an action costs: Claude calls are billed to the Anthropic API key (ANTHROPIC_API_KEY);
+// everything else runs on HTS Hero's own data and in the browser, for free
+const Cost = ({ claude }: { claude?: string }) =>
+  claude ? (
+    <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[11px] font-semibold text-warning" title="Calls Claude, billed to the Anthropic API key">
+      Claude · {claude}
+    </span>
+  ) : (
+    <span className="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success" title="No Claude call, no cost">
+      Free
+    </span>
+  )
+
+const money = (usd: number) => (usd < 0.01 ? `${(usd * 100).toFixed(2)}¢` : `$${usd.toFixed(3)}`)
+
 const withTheme = (post: Post, theme: Theme): Post => ({ ...post, props: { ...post.props, theme } } as Post)
 
 export default function SocialStudio() {
@@ -122,7 +137,7 @@ export default function SocialStudio() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? res.statusText)
       setRunNotes([
-        `${data.ideas.length} ideas from ${data.shortlisted} shortlisted of ${data.candidates} candidates${data.usage ? ` · Claude $${data.usage.cost_usd}` : ""}`,
+        `${data.ideas.length} ideas from ${data.shortlisted} shortlisted of ${data.candidates} candidates${data.usage ? ` · this run cost ${money(data.usage.cost_usd)} in Claude usage` : ""}`,
         ...data.warnings,
       ])
       // Saved ideas come back from the table; unsaved ones (no table yet) are shown as they are
@@ -164,6 +179,7 @@ export default function SocialStudio() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? res.statusText)
       setNewsIdea(slug, data.idea)
+      if (data.costUsd !== null) toast.success(`Post saved · Claude ${money(data.costUsd)}`)
       data.notes.forEach((n: string) => toast(n))
     } catch (e) {
       setError((e as Error).message)
@@ -209,9 +225,25 @@ export default function SocialStudio() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Social studio"
+        title="Content Studio"
         meta="Branded posts from the tariff engine and Census data. Every number is computed; edit the words, then download."
       />
+      <div className="flex flex-wrap items-start gap-x-8 gap-y-2 rounded-lg border border-base-content/10 bg-base-100 px-4 py-3 text-sm">
+        <div className="font-semibold">What costs money</div>
+        <div className="flex flex-col gap-1 text-base-content/70">
+          <span>
+            <Cost claude="about 5–7¢" /> Daily ideas, automatically every morning (about $2 a month), and each <b>Find ideas now</b>
+          </span>
+          <span>
+            <Cost claude="under 1¢" /> <b>Make post</b> or <b>Remake</b> on the News tab
+          </span>
+          <span>
+            <Cost /> Everything else: the Product, Country and Facts tabs, previews, editing, saving, Mark used / Skip, and PNG and MP4 downloads
+            (rendered in your browser)
+          </span>
+        </div>
+        <div className="basis-full text-xs text-base-content/45">Claude calls are billed to the Anthropic API key (ANTHROPIC_API_KEY), not a Claude subscription.</div>
+      </div>
       <Tabs<Tab>
         value={tab}
         onChange={(t) => {
@@ -234,9 +266,12 @@ export default function SocialStudio() {
           <Panel
             title="Daily ideas"
             actions={
-              <button className={btn.primary} disabled={finding} onClick={findIdeas}>
-                {finding && <Spinner />} {finding ? "Finding ideas…" : "Find ideas now"}
-              </button>
+              <div className="flex items-center gap-2">
+                <Cost claude="about 5–7¢" />
+                <button className={btn.primary} disabled={finding} onClick={findIdeas}>
+                  {finding && <Spinner />} {finding ? "Finding ideas…" : "Find ideas now"}
+                </button>
+              </div>
             }
             bodyClassName="flex flex-col gap-3 p-4 text-sm text-base-content/70"
           >
@@ -279,7 +314,16 @@ export default function SocialStudio() {
       )}
 
       {tab === "news" && (
-        <Panel title="Tariff updates, last 30 days" count={news?.length} bodyClassName="divide-y divide-base-content/10">
+        <Panel
+          title="Tariff updates, last 30 days"
+          count={news?.length}
+          actions={
+            <span className="flex items-center gap-2 text-xs text-base-content/50">
+              Make post and Remake: <Cost claude="under 1¢ each" />
+            </span>
+          }
+          bodyClassName="divide-y divide-base-content/10"
+        >
           {!news && !error && (
             <div className="p-4">
               <Spinner />
@@ -356,6 +400,7 @@ export default function SocialStudio() {
             <button className={btn.primary} disabled={loading || !htsCode.trim()} onClick={() => buildProduct()}>
               {loading && <Spinner />} Make posts
             </button>
+            <Cost />
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-base-content/55">
             Try:
@@ -378,6 +423,7 @@ export default function SocialStudio() {
             <button className={btn.primary} disabled={loading || !country.trim()} onClick={() => build({ mode: "country", country })}>
               {loading && <Spinner />} Make posts
             </button>
+            <Cost />
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-base-content/55">
             Try:
@@ -415,6 +461,7 @@ export default function SocialStudio() {
             <button className={btn.primary} disabled={loading} onClick={() => build({ mode: "fact", kind: fact })}>
               {loading && <Spinner />} Make post
             </button>
+            <Cost />
           </div>
           {error && <Callout tone="error">{error}</Callout>}
         </Panel>

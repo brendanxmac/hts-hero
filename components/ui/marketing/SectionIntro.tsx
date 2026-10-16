@@ -17,7 +17,7 @@ export const SectionIntro = ({
   center?: boolean;
   dark?: boolean;
 }) => (
-  <div className={`flex max-w-4xl flex-col gap-4 ${center ? "mx-auto items-center text-center" : ""}`}>
+  <div className={`flex max-w-5xl flex-col gap-4 ${center ? "mx-auto items-center text-center" : ""}`}>
     {eyebrow && <p className={dark ? mk.eyebrowDark : mk.eyebrow}>{eyebrow}</p>}
     <h2 id={id} className={dark ? mk.h2Dark : mk.h2}>
       {title}

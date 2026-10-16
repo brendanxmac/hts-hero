@@ -25,11 +25,11 @@ export default function FounderNoteEmail({ daysSinceSignup, footer }: FounderNot
         I noticed you signed up for Tariff Tracker {daysSinceSignup} days ago but haven&apos;t uploaded your imports yet. I wanted to check in to see if you needed a hand or if you were having trouble.
       </Para>
       <Para>
-        Adding them takes usually takes a minute or two and you can either import via csv or paste your HTS code + country pairs direclty.
+        Adding them usually takes a minute or two. You can either import a CSV or paste your HTS code + country pairs directly.
       </Para>
       <Para>
         Once that&apos;s done, we immediately analyze each one for savings you may
-        qualify for and let you quickly check for overpaid duty. We also alert you any new tariff affects your imports, so you can take action before it's too late.
+        qualify for and let you quickly check for overpaid duty. We also alert you when any new tariff affects your imports, so you can take action before it&apos;s too late.
       </Para>
 
       <Para>
@@ -45,7 +45,7 @@ export default function FounderNoteEmail({ daysSinceSignup, footer }: FounderNot
         <Link href={siteLink("/tariff-tracker?tab=expert-help", "onboarding-3")} style={{ color: C.cobalt, fontWeight: 600 }}>
           See how HTS Hero Managed works
         </Link>
-        , or reply here with your business details we can setup a time to talk.
+        , or reply here with your business details and we can set up a time to talk.
       </Para>
       <Signature />
     </EmailLayout>

@@ -53,6 +53,8 @@ export interface PlannedAlert {
   imports: AlertedImport[]
   removed: { key: string; code: string; country: string; description: string }[]
   beyond: string[]
+  // How many imports the plan alerts on
+  limit: number
   // Rows to record once sent
   channels: { email: string | null; slack: string | null; teams: string | null }
   record: { product_key: string; level: "confirmed" | "likely" | "removed"; before_pct: number | null; after_pct: number | null; delta_usd: number | null; covered: boolean }[]
@@ -172,6 +174,7 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
       // Told about it before and still imported: say it no longer applies
       removed: removed.filter((r) => r.covered && byKey.has(r.product_key)).map((r) => ({ key: r.product_key, ...facts(r.product_key) })),
       beyond: outside.map((r) => r.product_key),
+      limit: access.pairLimit,
       record: [
         ...fresh.map((r) => ({
           product_key: r.product_key,
@@ -205,6 +208,7 @@ const sendPlans = async (db: Db, u: UpdateRowForEmail, plans: PlannedAlert[], { 
       imports: plan.imports,
       removed: plan.removed,
       beyond: plan.beyond.length,
+      limit: plan.limit,
       paid: plan.paid,
       footer: subscriber
         ? subscriberFooter(subscriber, "You're getting this because alerts are on for your imports in the HTS Hero Tariff Tracker.")

@@ -54,7 +54,7 @@ export default function IdeaCard({ idea, format, onChange }: { idea: Idea; forma
 
   return (
     <PostCard
-      post={{ key: `${idea.kind}-${idea.id ?? idea.position}`, template: idea.template, title: idea.title, props: idea.props } as Post}
+      post={{ key: `${idea.kind}-${idea.id ?? idea.position}`, template: idea.template, title: idea.title, props: idea.props, sources: idea.sources ?? [] } as Post}
       format={format}
       captions={idea.captions}
       onProps={(props) => edit({ props })}

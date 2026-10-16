@@ -8,7 +8,7 @@ import { calculate } from "../../tariffs/engine-v2/calculate"
 import { AllRules } from "../../tariffs/engine-v2/data"
 import { addDays, calculateHistory, LineChange } from "../../tariffs/engine-v2/history"
 import { getVerifiedRange } from "../../tariffs/engine-v2/revisions"
-import type { CalculationResult } from "../../tariffs/engine-v2/types"
+import type { CalculationResult, DutyLine } from "../../tariffs/engine-v2/types"
 import type { CountrySide, PostCountry, RateEvent, RatePoint } from "../../social/types"
 import { shortLabel } from "../country-pages/topImports"
 import { htsProductName } from "../hts-duty-summary"
@@ -45,6 +45,8 @@ const programShort = (id?: string) => {
 
 export interface Side extends CountrySide {
   parts: { label: string; pct: number }[]
+  // The Chapter 99 lines that charge something, with their legal sources
+  lines: DutyLine[]
   perUnit: boolean
   priorValue?: number
 }
@@ -61,6 +63,7 @@ const rateOf = (result: CalculationResult) => {
   const parts = [{ label: "Base duty", pct: (result.base.amount / VALUE) * 100 }, ...Array.from(byProgram, ([label, pct]) => ({ label, pct }))]
   return {
     pct: (result.totalDuty / VALUE) * 100,
+    lines: result.lines.filter((l) => l.status === "applies" && l.amount > 0),
     parts: parts.filter((x) => x.pct > 0).map((x) => ({ ...x, pct: round1(x.pct) })),
     perUnit: result.requiresQuantity,
   }
@@ -132,6 +135,7 @@ export const productData = async ({
       priorValue: figures?.prior,
       importChangePct: figures && figures.prior > 0 ? ((figures.value - figures.prior) / figures.prior) * 100 : undefined,
       parts: rate.parts,
+      lines: rate.lines,
       perUnit: rate.perUnit,
     })
   })
@@ -174,6 +178,8 @@ const eventLabel = (changes: LineChange[]) => {
 export interface RateHistory {
   points: RatePoint[]
   events: RateEvent[] // the biggest moves, at most `maxEvents`, in date order
+  // For each event, the duty lines that started, changed or ended (their legal sources)
+  eventLines: DutyLine[][]
   changes: number // every date the rate moved
 }
 
@@ -186,12 +192,13 @@ export const rateHistory = (data: ProductData, code: string, maxEvents = 4): Rat
     .slice(1)
     .map((s, i) => ({ s, delta: points[i + 1].pct - points[i].pct }))
     .filter(({ s, delta }) => delta !== 0 && s.changes.length)
-  const events = [...moves]
+  const top = [...moves]
     .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
     .slice(0, maxEvents)
     .sort((a, b) => a.s.from.localeCompare(b.s.from))
-    .map(({ s, delta }) => ({ date: s.from, label: eventLabel(s.changes), tone: delta > 0 ? ("up" as const) : ("down" as const) }))
-  return { points, events, changes: moves.length }
+  const events = top.map(({ s, delta }) => ({ date: s.from, label: eventLabel(s.changes), tone: delta > 0 ? ("up" as const) : ("down" as const) }))
+  const eventLines = top.map(({ s }) => s.changes.flatMap((c) => [c.after, c.before]).filter((l): l is DutyLine => !!l && l.code !== "BASE"))
+  return { points, events, eventLines, changes: moves.length }
 }
 
 // Chapters that aren't products an importer prices: fuels, art, US goods returned, Chapter 99

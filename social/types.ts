@@ -176,10 +176,21 @@ export interface TemplatePropsMap {
   News: NewsProps
 }
 
-// One post: a template and its props, plus a name for the studio's list
+// Where a claim in a post can be checked: an official document or dataset, or the HTS Hero
+// calculator showing the duty breakdown
+export interface SourceLink {
+  claim: string // what it verifies: "China: 37.5% today"
+  label: string // what the link opens
+  url: string // absolute, or relative to HTS Hero
+  official: boolean // a government source (USITC, Federal Register, CBP, Census…)
+}
+
+// One post: a template and its props, plus a name for the studio's list and the sources that
+// verify every figure in it
 export interface Post<T extends TemplateId = TemplateId> {
   key: string // unique within a batch
   template: T
   title: string
   props: TemplatePropsMap[T]
+  sources: SourceLink[]
 }

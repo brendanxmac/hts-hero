@@ -1,14 +1,12 @@
-import { Column, Link, Row, Section, Text } from "@react-email/components"
+import { Link, Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { Cta, Eyebrow, P, Title, UpdateSummary, pct, updateUrl } from "../kit/parts"
+import { Cta, Eyebrow, P, Title, UpdateSummary, updateUrl } from "../kit/parts"
 import { C, FONT_DISPLAY, siteLink, TONES } from "../kit/brand"
 
-// A personal tariff alert, short: how many of the account's imports one tariff update affects, sent
-// after the admin approved the update's impact check. Each import shows its rate before and after
-// (rates only, never dollars), confirmed by the duty engine, or likely (the
-// update names its code and country; confirmed once it's in the HTS). Imports outside the plan's
-// alert slots are counted, not detailed (the upgrade). A later approval sends only what's new or
-// changed, and says which imports it no longer affects.
+// A personal tariff alert, short: the update and how many of the account's imports it affects, sent
+// after the admin approved the update's impact check. The imports and their rates are in the
+// Tracker, one click away. Imports outside the plan's alert slots are counted (the upgrade). A
+// later approval sends only what's new or changed, and says which imports it no longer affects.
 
 export interface AlertedImport {
   key: string
@@ -32,13 +30,10 @@ export interface ImpactAlertEmailProps {
   removed: { code: string; country: string; description: string }[]
   // Affected imports outside the plan's alert slots
   beyond: number
+  // How many imports the plan alerts on (missing on alerts queued before it was sent)
+  limit?: number
   paid: boolean
   footer: EmailFooter
-}
-
-const short = (description: string) => {
-  const last = description.split(" › ").pop() ?? description
-  return last.length > 60 ? `${last.slice(0, 57).trim()}…` : last
 }
 
 const imports = (n: number) => `${n} of your imports`
@@ -55,65 +50,58 @@ export const impactAlertSubject = (p: ImpactAlertEmailProps) => {
     : `${imports(n)} may be affected by a new tariff announcement`
 }
 
-// The rate before and after, never dollars
-const Change = ({ i }: { i: AlertedImport }) => {
-  if (i.level === "likely") return <Text style={{ margin: 0, fontSize: 13, lineHeight: "19px", color: TONES["heads-up"].fg }}>May apply, confirmed once it&apos;s in the HTS</Text>
-  if (Number(i.beforePct) === Number(i.afterPct))
-    return <Text style={{ margin: 0, fontSize: 13, lineHeight: "19px", color: C.muted }}>Same duty ({pct(Number(i.afterPct))}), new Chapter 99 number to report</Text>
-  const tone = Number(i.afterPct) > Number(i.beforePct) ? TONES.up.fg : TONES.down.fg
-  return (
-    <Text style={{ margin: 0, fontSize: 13, lineHeight: "19px", color: C.text }}>
-      {pct(Number(i.beforePct))} → <strong style={{ color: tone }}>{pct(Number(i.afterPct))}</strong>
+// The affected count, in red under the headline, and how many of those the alerts don't cover
+const Affected = ({ n, beyond, removed }: { n: number; beyond: number; removed: number }) => (
+  <Section style={{ margin: "0 0 20px" }}>
+    <Text style={{ margin: 0, fontFamily: FONT_DISPLAY, fontSize: 18, lineHeight: "24px", fontWeight: 700, color: n ? TONES.up.fg : TONES.down.fg }}>
+      {n ? `${n} of your imports ${n === 1 ? "is" : "are"} affected` : `No longer affects ${removed} of your imports`}
     </Text>
-  )
-}
+    {/* {beyond > 0 && (
+      <Text style={{ margin: "2px 0 0", fontSize: 14, lineHeight: "20px", color: C.muted }}>
+        {beyond} of them {beyond === 1 ? "isn't" : "aren't"} covered by your alerts
+      </Text>
+    )} */}
+  </Section>
+)
+
+// Affected imports past the plan's alert slots, in small print under the button so it doesn't
+// compete with it. Free accounts are told it's the free limit, paid ones their plan's.
+const NotCovered = ({ beyond, limit, paid, campaign }: { beyond: number; limit?: number; paid: boolean; campaign: string }) => (
+  <Text style={{ margin: "-8px 0 14px", fontSize: 13, lineHeight: "19px", color: C.muted }}>
+    {paid
+      ? `${beyond} affected ${beyond === 1 ? "import isn't" : "imports aren't"} covered: your plan alerts on ${limit ? `${limit} imports` : "fewer imports than you track"}.`
+      : `${beyond} affected ${beyond === 1 ? "import isn't" : "imports aren't"} covered: free accounts get alerts on ${limit ?? "a limited number of"} imports, and these stay unalerted until you upgrade.`}{" "}
+    <Link href={siteLink("/tariff-tracker?upgrade=alerts", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
+      {paid ? "Cover all my imports" : "Upgrade to cover them"}
+    </Link>
+  </Text>
+)
 
 export default function ImpactAlertEmail(props: ImpactAlertEmailProps) {
-  const { update, imports: alerted, removed, beyond, paid, footer } = props
+  const { update, imports: alerted, removed, beyond, limit, paid, footer } = props
   const campaign = "impact-alert"
   return (
-    <EmailLayout preview={`${update.title}. See the new rate on each one.`.slice(0, 160)} footer={footer}>
+    <EmailLayout preview={impactAlertSubject(props).slice(0, 160)} footer={footer}>
       <Eyebrow tone="up">Tariff alert</Eyebrow>
-      <Title size={24}>{impactAlertSubject(props)}</Title>
-      <P>
-        <Link href={updateUrl(update.slug, campaign)} style={{ color: C.text, fontWeight: 600 }}>
-          {update.title}
-        </Link>
-      </P>
+      <Title size={26}>{update.title}</Title>
 
-      {alerted.length > 0 && (
-        <Section style={{ margin: "4px 0 18px" }}>
-          {alerted.map((i) => (
-            <Row key={i.key} style={{ borderTop: `1px solid ${C.border}` }}>
-              <Column style={{ padding: "12px 0", verticalAlign: "top" }}>
-                <Text style={{ margin: 0, fontFamily: FONT_DISPLAY, fontSize: 15, lineHeight: "21px", fontWeight: 600, color: C.text }}>{short(i.description)}</Text>
-                <Text style={{ margin: "2px 0 4px", fontSize: 12, lineHeight: "17px", color: C.muted }}>
-                  {i.code} · {i.country}
-                </Text>
-                <Change i={i} />
-              </Column>
-            </Row>
-          ))}
-        </Section>
-      )}
+      <Affected n={alerted.length + beyond} beyond={beyond} removed={removed.length} />
 
-      {beyond > 0 && (
-        <P small>
-          Plus {beyond} more outside the imports your alerts cover.{" "}
-          <Link href={siteLink("/tariff-tracker?upgrade=alerts", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
-            {paid ? "Cover them too" : "See plans"}
-          </Link>
-        </P>
-      )}
-
-      {removed.length > 0 && (
-        <P small>No longer affected: {removed.map((r) => `${short(r.description)} (${r.code}, ${r.country})`).join("; ")}.</P>
+      {removed.length > 0 && alerted.length + beyond > 0 && (
+        <P small>No longer affected: {removed.map((r) => `${r.code} from ${r.country}`).join("; ")}.</P>
       )}
 
       <Cta href={siteLink(`/tariff-tracker?tab=impact&update=${encodeURIComponent(update.slug)}`, campaign)} variant="next">
         See the impact on my imports
       </Cta>
+
+      {beyond > 0 && <NotCovered beyond={beyond} limit={limit} paid={paid} campaign={campaign} />}
+
       <P muted small>
+        <Link href={updateUrl(update.slug, campaign)} style={{ color: C.muted }}>
+          Read the update
+        </Link>
+        {" · "}
         <Link href={siteLink("/tariff-tracker?tab=alerts", campaign)} style={{ color: C.muted }}>
           Alert settings
         </Link>
@@ -141,6 +129,7 @@ ImpactAlertEmail.PreviewProps = {
   ],
   removed: [],
   beyond: 3,
+  limit: 10,
   paid: false,
   footer: { reason: "You're getting this because alerts are on for your imports in the HTS Hero Tariff Tracker.", manageUrl: "https://htshero.com/tariff-updates/subscription?token=example", unsubscribeUrl: "https://htshero.com/api/email/unsubscribe?token=example" },
 } satisfies ImpactAlertEmailProps

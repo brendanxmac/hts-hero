@@ -5,7 +5,7 @@ import { createAdminClient } from "../../supabase/server"
 export const dynamic = "force-dynamic"
 export const maxDuration = 300
 
-// Every morning (vercel.json): today's social post ideas for /social-studio
+// Every morning (vercel.json): today's post ideas for the Content Studio (/content-studio)
 export async function GET(req: NextRequest) {
   if (req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response("Unauthorized", { status: 401 })

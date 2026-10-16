@@ -61,7 +61,7 @@ export const NextStep = () => {
       go: openValues,
       action: (
         <button type="button" className={ui.button({ variant: "primary" })} onClick={openValues}>
-          Set values
+          Set import values
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </button>
       ),
@@ -69,9 +69,8 @@ export const NextStep = () => {
     alerts: {
       title: "Set up your tariff alerts",
       // Signed out nothing is covered yet, so it speaks to every import
-      body: `Say where to tell you when a tariff changes on ${
-        !signedIn || covered === 0 || covered === items.length ? "your" : `${covered.toLocaleString("en-US")} of your`
-      } ${items.length.toLocaleString("en-US")} imports: email, Slack or Microsoft Teams.`,
+      body: `Say where to tell you when a tariff changes on ${!signedIn || covered === 0 || covered === items.length ? "your" : `${covered.toLocaleString("en-US")} of your`
+        } ${items.length.toLocaleString("en-US")} imports: email, Slack or Microsoft Teams.`,
       payoff: "Hear about a change the day it's published",
       go: openAlerts,
       action: (
@@ -136,17 +135,15 @@ export const NextStep = () => {
       <>
         {/* No numbers: past adding imports, the steps can be done in any order */}
         <span
-          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
-            step.done ? "bg-success text-success-content" : isNext ? "bg-primary ring-4 ring-primary/15" : "border-2 border-base-300"
-          }`}
+          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${step.done ? "bg-success text-success-content" : isNext ? "bg-primary ring-4 ring-primary/15" : "border-2 border-base-300"
+            }`}
           aria-hidden
         >
           {step.done && <CheckIcon className="h-3 w-3" />}
         </span>
         <span
-          className={`whitespace-nowrap text-xs font-semibold ${
-            step.done ? "text-base-content/50 line-through decoration-base-content/30" : isNext ? "text-primary" : "text-base-content/70"
-          }`}
+          className={`whitespace-nowrap text-xs font-semibold ${step.done ? "text-base-content/50 line-through decoration-base-content/30" : isNext ? "text-primary" : "text-base-content/70"
+            }`}
         >
           {step.label}
         </span>

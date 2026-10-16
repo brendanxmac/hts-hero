@@ -27,6 +27,8 @@ const nextConfig = {
       // Blog categories retired in the 2026 blog redesign
       { source: "/blog/category/feature", destination: "/blog/category/product", permanent: true },
       { source: "/blog/category/tutorial", destination: "/blog", permanent: true },
+      // The Social Studio was renamed the Content Studio
+      { source: "/social-studio", destination: "/content-studio", permanent: true },
       // The Tariff Watcher tab on the calculator is now the Tariff Tracker
       {
         source: "/duty-calculator",
@@ -45,7 +47,7 @@ const nextConfig = {
       "/api/cron/tracker-snapshots": ["./public/data/us-imports/**"],
       "/api/cron/tariff-updates": ["./public/data/us-imports/**"],
       "/api/tariff-updates/[id]": ["./public/data/us-imports/**"],
-      // The social studio's posts and daily ideas read them too
+      // The Content Studio's posts and daily ideas read them too
       "/api/social-studio/**": ["./public/data/us-imports/**"],
       "/api/cron/social-ideas": ["./public/data/us-imports/**"],
     },

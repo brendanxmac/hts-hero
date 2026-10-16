@@ -8,7 +8,7 @@ import { TrackerBanner } from "@/components/ui/marketing/TrackerBanner"
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <FollowTheme>
-      <MarketingLayout banner={<TrackerBanner />}>{children}</MarketingLayout>
+      <MarketingLayout>{children}</MarketingLayout>
     </FollowTheme>
   )
 }

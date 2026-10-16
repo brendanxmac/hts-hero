@@ -1,15 +1,43 @@
 import type { Theme } from "../../social/brand"
-import type { CountrySide, Post, TemplateId, TemplatePropsMap } from "../../social/types"
+import type { CountrySide, Post, SourceLink, TemplateId, TemplatePropsMap } from "../../social/types"
 import { inSentence } from "../hts-duty-summary"
 import { pctText, ProductData, RateHistory, round1, Side, SOURCE_BOTH, SOURCE_ENGINE } from "./data"
+import { calculatorLink, censusCodeLink, dedupe, htsLink, legalLinks } from "./sources"
 
 // Each template's post for one product, from its figures. A function returns null when the
 // product has nothing worth drawing for that template (one origin, no Census figures, no
 // cheaper supplier). Headlines are first drafts; the studio and the daily ideas rewrite them.
+// Every post lists the sources that verify its figures.
 
-const post = <T extends TemplateId>(key: string, template: T, title: string, props: TemplatePropsMap[T]): Post<T> => ({ key, template, title, props })
+const post = <T extends TemplateId>(key: string, template: T, title: string, props: TemplatePropsMap[T], sources: (SourceLink | null)[]): Post<T> => ({
+  key,
+  template,
+  title,
+  props,
+  sources: dedupe(sources),
+})
 
-const plain = ({ parts, perUnit, priorValue, ...side }: Side): CountrySide => side
+const plain = ({ parts, perUnit, priorValue, lines, ...side }: Side): CountrySide => side
+
+// An origin's rate today: the calculator's breakdown, and the legal documents for each duty
+const rateSources = (d: ProductData, s: Side) => [
+  calculatorLink(`${s.country.name}: ${pctText(s.ratePct)} today`, d.htsno, s.country.code),
+  ...legalLinks(`The additional duties on ${s.country.name}`, s.lines),
+]
+
+// The base rate and the product's description, in the official schedule
+const scheduleSource = (d: ProductData) => htsLink(`HTS ${d.htsno}: the product and its base rate`, d.htsno)
+
+// The Census import figures, this year and the year before (for a family when the line has none)
+const importSources = (d: ProductData) => {
+  if (!d.imports) return []
+  const code = d.htsno.replace(/\D/g, "").slice(0, d.imports.level)
+  const family = d.imports.level !== 10 ? ` (its ${d.imports.level}-digit family)` : ""
+  return [
+    censusCodeLink(`US imports by country in ${d.imports.year}${family}`, code, d.imports.year),
+    censusCodeLink(`US imports by country in ${d.imports.prior}${family}`, code, d.imports.prior),
+  ]
+}
 
 const base = (d: ProductData, theme: Theme, source = SOURCE_ENGINE) => ({ theme, asOf: d.asOf, source })
 
@@ -52,7 +80,12 @@ export const timelinePost = (d: ProductData, h: RateHistory, theme: Theme) => {
     points: h.points,
     end: d.asOf,
     events: h.events,
-  })
+  }, [
+    calculatorLink(`${where}: ${pctText(last)} today`, d.htsno, main.country.code),
+    ...h.points.slice(0, -1).map((p) => calculatorLink(`${where}: ${pctText(p.pct)} from ${p.from}`, d.htsno, main.country.code, p.from)),
+    ...h.events.flatMap((e, i) => legalLinks(`${e.date}: ${e.label}`, h.eventLines[i] ?? [])),
+    scheduleSource(d),
+  ])
 }
 
 export const bigNumberPost = (d: ProductData, theme: Theme) => {
@@ -66,7 +99,7 @@ export const bigNumberPost = (d: ProductData, theme: Theme) => {
     tone: main.ratePct >= 25 ? "up" : "brand",
     parts: main.parts,
     footnote: main.perUnit ? "Per-unit base rate, worked out on a $10,000 shipment of 1,000 units." : undefined,
-  })
+  }, [...rateSources(d, main), scheduleSource(d)])
 }
 
 export const headToHeadPost = (d: ProductData, theme: Theme) => {
@@ -81,7 +114,7 @@ export const headToHeadPost = (d: ProductData, theme: Theme) => {
     left: plain(main),
     right: plain(rival),
     year: d.imports?.year,
-  })
+  }, [...rateSources(d, main), ...rateSources(d, rival), ...importSources(d), scheduleSource(d)])
 }
 
 export const rankingPost = (d: ProductData, theme: Theme) => {
@@ -95,7 +128,7 @@ export const rankingPost = (d: ProductData, theme: Theme) => {
     product: d.product,
     htsCode: d.htsno,
     rows: rows.map(plain),
-  })
+  }, [...rows.flatMap((r) => rateSources(d, r)), scheduleSource(d)])
 }
 
 export const tradeShiftPost = (d: ProductData, theme: Theme) => {
@@ -119,7 +152,7 @@ export const tradeShiftPost = (d: ProductData, theme: Theme) => {
     year: d.imports.year,
     prior: d.imports.prior,
     rows,
-  })
+  }, [...importSources(d), ...Array.from(d.sides.values()).filter((s) => rows.some((r) => r.country.code === s.country.code)).map((s) => calculatorLink(`${s.country.name}: ${pctText(s.ratePct)} today`, d.htsno, s.country.code))])
 }
 
 // The cheaper origins the US really buys from, lowest rate first
@@ -142,7 +175,7 @@ export const sourcingPost = (d: ProductData, theme: Theme) => {
     from: plain(main),
     options: options.map((o) => ({ ...plain(o), savingPts: round1(main.ratePct - o.ratePct) })),
     year: d.imports?.year,
-  })
+  }, [...rateSources(d, main), ...options.flatMap((o) => rateSources(d, o)), ...importSources(d), scheduleSource(d)])
 }
 
 export const spreadPost = (d: ProductData, theme: Theme) => {
@@ -156,7 +189,7 @@ export const spreadPost = (d: ProductData, theme: Theme) => {
     product: d.product,
     htsCode: d.htsno,
     rows: rows.map(plain),
-  })
+  }, [...rows.flatMap((r) => rateSources(d, r)), scheduleSource(d)])
 }
 
 export const quizPost = (d: ProductData, theme: Theme) => {
@@ -176,5 +209,5 @@ export const quizPost = (d: ProductData, theme: Theme) => {
       ratio && ratio >= 1.5
         ? `${hi.country.name}: ${pctText(hi.ratePct)}, ${round1(ratio)}× ${lo.country.name}'s ${pctText(lo.ratePct)} on the same product.`
         : `${hi.country.name} pays ${round1(hi.ratePct - lo.ratePct)}% more: ${pctText(hi.ratePct)} vs ${pctText(lo.ratePct)}.`,
-  })
+  }, [...rateSources(d, main), ...rateSources(d, rival), scheduleSource(d)])
 }

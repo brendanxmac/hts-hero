@@ -6,6 +6,8 @@ import { callJson } from "../hts-revision-diff/claude"
 import type { ClaudeUsage } from "../hts-revision-diff/types"
 import { AUTHORITIES, KINDS, STAGE_ORDER, type Authority, type Kind, type Stage } from "../tariff-updates/types"
 import { importsUnder, isKnownCountry, postCountry } from "./data"
+import { censusCodeLink, dedupe, htsLink } from "./sources"
+import type { SourceLink } from "../../social/types"
 import { numbersCheck } from "./numbers"
 import { captionsFor } from "../../social/captions"
 import type { Idea } from "./ideas"
@@ -16,6 +18,7 @@ import type { Idea } from "./ideas"
 // the update doesn't state is dropped.
 
 export interface UpdateRow {
+  id: string
   slug: string
   title: string
   summary: string
@@ -29,7 +32,7 @@ export interface UpdateRow {
   last_activity_at: string
 }
 
-export const UPDATE_COLUMNS = "slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, last_activity_at"
+export const UPDATE_COLUMNS = "id, slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, last_activity_at"
 
 export const recentUpdates = async (db: SupabaseClient, days: number): Promise<UpdateRow[]> => {
   const since = new Date(Date.now() - days * 86400e3).toISOString()
@@ -90,6 +93,57 @@ export const newsScore = (u: UpdateRow, today = todayIso()) => {
   return weight * size * (ageDays <= 1 ? 1.5 : 1)
 }
 
+// The official documents behind an update (Federal Register, CBP CSMS, White House, USTR,
+// USITC), newest first, as collected by the tariff sources pipeline
+export interface OfficialSource {
+  title: string
+  url: string
+  source: string
+  published_at: string
+}
+
+const SOURCE_NAMES: Record<string, string> = {
+  federal_register: "Federal Register",
+  federal_register_pi: "Federal Register (public inspection)",
+  white_house: "White House",
+  csms: "CBP CSMS",
+  ustr: "USTR",
+  usitc: "USITC",
+}
+
+export const officialSources = async (db: SupabaseClient, u: UpdateRow): Promise<OfficialSource[]> => {
+  const { data } = await db.from("tariff_source_items").select("title, url, source, published_at").eq("update_id", u.id).order("published_at", { ascending: false })
+  return (data ?? []) as OfficialSource[]
+}
+
+// Every claim on a news post: the documents for what changed and when, the update page that
+// gathers them, the schedule for the codes named, and Census for the imports at stake
+const newsSources = (u: UpdateRow, official: OfficialSource[], countries: string[], imports: { value: number; year: number } | null): SourceLink[] => {
+  const codes = Array.from(new Set(u.hts_codes.map((c) => c.replace(/\D/g, "")).filter((d) => [2, 4, 6, 8, 10].includes(d.length) && !d.startsWith("99"))))
+  return dedupe([
+    ...official.map((o) => ({
+      claim: "What changes, for whom, from when",
+      label: `${SOURCE_NAMES[o.source] ?? o.source} · ${o.title}`,
+      url: o.url,
+      official: true,
+    })),
+    { claim: "Every source for this action, and its stage", label: "HTS Hero tariff updates · this action", url: `/tariff-updates/${u.slug}`, official: false },
+    ...codes.slice(0, 5).map((c) => htsLink(`HTS ${c}, named in the action`, c)),
+    ...(imports
+      ? codes
+          .filter((c) => c.length >= 4)
+          .slice(0, 5)
+          .map((c) =>
+            censusCodeLink(
+              `At stake: US imports in ${imports.year} under ${c}${countries.length ? ` from ${countries.join(", ")}` : ""} (add up the codes named)`,
+              c,
+              imports.year
+            )
+          )
+      : []),
+  ])
+}
+
 // What Claude may write on top of the update's fields
 export interface NewsWords {
   headline?: string
@@ -110,7 +164,7 @@ export const newsFacts = (u: UpdateRow) =>
 
 const shortTitle = (title: string) => (title.length <= 90 ? title : `${title.slice(0, 89).replace(/\s+\S*$/, "")}…`)
 
-export const newsPost = (u: UpdateRow, theme: Theme, words: NewsWords = {}): Post<"News"> => {
+export const newsPost = (u: UpdateRow, theme: Theme, words: NewsWords = {}, official: OfficialSource[] = []): Post<"News"> => {
   const facts = newsFacts(u)
   // Claude's words only if every number in them is in the update
   const ok = (text?: string) => (text && numbersCheck(text, facts) ? text.trim() : undefined)
@@ -137,7 +191,13 @@ export const newsPost = (u: UpdateRow, theme: Theme, words: NewsWords = {}): Pos
     slug: u.slug,
   }
   const phase = newsPhase(u)
-  return { key: `news-${u.slug}-${phase}`, template: "News", title: `${phase === "in-effect" ? "Now in effect" : "Announced"}: ${u.title}`, props }
+  return {
+    key: `news-${u.slug}-${phase}`,
+    template: "News",
+    title: `${phase === "in-effect" ? "Now in effect" : "Announced"}: ${u.title}`,
+    props,
+    sources: newsSources(u, official, countries, props.imports ?? null),
+  }
 }
 
 // The dedupe key a news post is saved under: one post per update and moment
@@ -155,6 +215,7 @@ export const newsIdea = (u: UpdateRow, post: Post<"News">): Idea => ({
   score: newsScore(u) ?? 0,
   dedupe_key: newsKey(u),
   props: post.props,
+  sources: post.sources,
   captions: captionsFor("News", post.props),
   status: "new",
   model: null,

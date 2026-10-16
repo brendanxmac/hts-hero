@@ -114,10 +114,10 @@ export default async function Home() {
             savings={savings}
             facts={facts}
           />
-          <ClassifySection />
-          <Testimonials />
-          <ManagedSection />
+          {/* <Testimonials /> */}
           <PricingOverview />
+          <ManagedSection />
+          <ClassifySection />
           <HomeDirectory />
           <HomeFaq />
           <OfferCta />

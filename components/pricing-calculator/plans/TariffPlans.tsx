@@ -56,7 +56,7 @@ export const TariffPlans = ({
         badge="Free to start"
         dark
         compact
-        description="For importers who need to know the moment a tariff change hits their products, and what they overpaid."
+        description="For importers who want to discover tariff savings, know when tariff changes hit their products, and audit prior entries."
         price={
           <PlanPrice
             listPrice={TRACKER_TIERS[0].price}

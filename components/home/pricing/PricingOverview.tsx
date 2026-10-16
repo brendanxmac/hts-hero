@@ -211,8 +211,8 @@ export const PricingOverview = () => {
               <UserGroupIcon className="h-6 w-6" aria-hidden />
             </span>
             <span>
-              <span className="block text-lg font-bold text-base-content">HTS Hero Managed</span>
-              <span className="text-base-content/70">Rather hand it off? Our team runs every tariff on your imports, with a Slack channel and a weekly call</span>
+              <span className="block text-lg font-bold text-base-content">HTS Hero Managed Tariffs</span>
+              <span className="text-base-content/70">Overwhelmed by tariffs? Our team can manage every tariff on your imports: monitoring, audits, savings, and alerts for every new action, with a person you can message the same day.</span>
             </span>
           </span>
           <span className="flex items-center gap-4">

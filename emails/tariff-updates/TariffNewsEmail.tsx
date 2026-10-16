@@ -41,9 +41,9 @@ export const TrackerLine = ({ signedIn, campaign }: { signedIn?: boolean; campai
     </P>
   ) : (
     <P muted small>
-      Get alerted when a change like this hits your own imports.{" "}
+      Want to get alerted when a change like this hits your own imports?{" "}
       <Link href={siteLink("/tariff-tracker?tab=catalog&add=paste", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
-        Add my imports, free
+        Track your imports here, free.
       </Link>
     </P>
   )
@@ -59,7 +59,7 @@ export default function TariffNewsEmail({ update, reached, current, step, signed
       )}
       <UpdateBlock update={update} campaign="tariff-news" />
       <StageTrack reached={reached} current={current} />
-      <Cta href={updateUrl(update.slug, "tariff-news")}>See what&apos;s changing</Cta>
+      <Cta href={updateUrl(update.slug, "tariff-news")}>Learn More &rarr;</Cta>
       <TrackerLine signedIn={signedIn} campaign="tariff-news" />
     </EmailLayout>
   )

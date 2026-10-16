@@ -7,6 +7,7 @@ import { countryTopImports, TOP_IMPORTS_YEAR } from "../country-pages/topImports
 import { getHtsElementParentsServer, getHtsElementsServer } from "../hts-server"
 import { DutyInputError, findOrigin } from "../mcp/duty"
 import { dotted, isKnownCountry, pctText, postCountry, productData, productNameOf, rateHistory, round1, SOURCE_CENSUS, topImportedCodes } from "./data"
+import { calculatorLink, censusCodeLink, censusCountryLink, censusWorldLink, dedupe, htsLink } from "./sources"
 import { bigNumberPost, headToHeadPost, quizPost, rankingPost, sourcingPost, spreadPost, timelinePost, tradeShiftPost } from "./posts"
 
 // The studio's three ways to make posts by hand: from a product (an HTS code and origins), from
@@ -51,6 +52,12 @@ const COUNTRY_STATS = stats.countries as Record<string, CountryStats>
 export const signed = (n: number) => `${n >= 0 ? "+" : "−"}${Math.abs(round1(n))}%`
 // Millions of USD → "$150B", "$812M"
 export const millions = (m: number) => (m >= 1000 ? `$${round1(m / 1000)}B` : `$${Math.round(m)}M`)
+
+// One of a country's top products: its Census import value, and its rate today
+const productSources = (t: { label: string; htsno: string; value: number; total: string }, c: { name: string }, code: string) => [
+  censusCodeLink(`${t.label}: ${millions(t.value / 1e6)} from ${c.name} in ${TOP_IMPORTS_YEAR}`, t.htsno, TOP_IMPORTS_YEAR),
+  calculatorLink(`${t.label} from ${c.name}: ${t.total} today`, t.htsno, code),
+]
 
 export const buildCountryPosts = async ({ country, theme = "dark" }: { country: string; theme?: Theme }): Promise<BuildResult> => {
   const code = findOrigin(country).code
@@ -98,6 +105,10 @@ export const buildCountryPosts = async ({ country, theme = "dark" }: { country: 
         products: top.slice(0, 5).map((t) => ({ label: t.label, htsCode: t.htsno, value: t.value, rate: t.total })),
         year: TOP_IMPORTS_YEAR,
       },
+      sources: dedupe([
+        censusCountryLink(`${c.name}: US imports, rank and this year so far`, code),
+        ...top.slice(0, 5).flatMap((t) => productSources(t, c, code)),
+      ]),
     },
   ]
   if (top.length >= 3) {
@@ -115,6 +126,7 @@ export const buildCountryPosts = async ({ country, theme = "dark" }: { country: 
         subhead: `By ${TOP_IMPORTS_YEAR} import value, with today's tariff`,
         rows: top.map((t) => ({ label: t.label, sublabel: millions(t.value / 1e6), value: t.total, share: t.value / max })),
       },
+      sources: dedupe(top.flatMap((t) => productSources(t, c, code))),
     })
   }
   if (facts.ytd && facts.ytd.changePct !== null) {
@@ -133,6 +145,7 @@ export const buildCountryPosts = async ({ country, theme = "dark" }: { country: 
         parts: [],
         footnote: `${millions(facts.ytd.imports)} so far this year. Census general imports, not seasonally adjusted.`,
       },
+      sources: dedupe([censusCountryLink(`${c.name}: imports through ${facts.ytd.through} and the same months of ${facts.ytd.year - 1}`, code)]),
     })
   }
   return { title: `${c.flag} ${c.name}`, posts, notes: [] }
@@ -163,9 +176,9 @@ const percentOf = (general: string) => {
 
 export const buildFactPosts = async ({ kind, theme = "dark" }: { kind: FactKind; theme?: Theme }): Promise<BuildResult> => {
   const asOf = todayIso()
-  const list = (props: Omit<TopListProps, "theme" | "asOf">): BuildResult => ({
+  const list = (props: Omit<TopListProps, "theme" | "asOf">, sources: Parameters<typeof dedupe>[0]): BuildResult => ({
     title: FACT_KINDS[kind],
-    posts: [{ key: `fact-${kind}`, template: "TopList", title: FACT_KINDS[kind], props: { theme, asOf, ...props } }],
+    posts: [{ key: `fact-${kind}`, template: "TopList", title: FACT_KINDS[kind], props: { theme, asOf, ...props }, sources: dedupe(sources) }],
     notes: [],
   })
 
@@ -192,7 +205,7 @@ export const buildFactPosts = async ({ kind, theme = "dark" }: { kind: FactKind;
       subhead: "General rates, before any Chapter 99 duties",
       rows: rows.map((r, i) => ({ label: r.name, sublabel: r.code, value: pctText(r.pct), share: r.pct / max, tone: i === 0 ? "up" : "brand" })),
       footnote: "Many of these goods can enter at a lower in-quota or trade-agreement rate.",
-    })
+    }, rows.map((r) => htsLink(`${r.name}: ${pctText(r.pct)} general rate`, r.code)))
   }
 
   if (kind === "fastest-growing" || kind === "biggest-falls") {
@@ -214,7 +227,7 @@ export const buildFactPosts = async ({ kind, theme = "dark" }: { kind: FactKind;
         share: Math.abs(r.change) / max,
         tone: r.change >= 0 ? "brand" : "heads-up",
       })),
-    })
+    }, rows.map((r) => censusCountryLink(`${postCountry(r.code).name}: ${signed(r.change)} through ${stats.ytd.through}`, r.code)))
   }
 
   if (kind === "biggest-suppliers") {
@@ -236,7 +249,7 @@ export const buildFactPosts = async ({ kind, theme = "dark" }: { kind: FactKind;
         value: millions(c.imports2025!),
         share: c.imports2025! / max,
       })),
-    })
+    }, [censusWorldLink(`All US goods imports in ${TOP_IMPORTS_YEAR}: ${millions(world)}`), ...rows.map(([code, c]) => censusCountryLink(`${postCountry(code).name}: ${millions(c.imports2025!)} in ${TOP_IMPORTS_YEAR}`, code))])
   }
 
   // top-products
@@ -254,5 +267,5 @@ export const buildFactPosts = async ({ kind, theme = "dark" }: { kind: FactKind;
     headline: `What the US imported most in ${TOP_IMPORTS_YEAR}`,
     subhead: "By 10-digit HTS code, leaving out fuels, precious metals and US goods returned",
     rows: rows.map((r) => ({ label: r.name, sublabel: r.code, value: millions(r.value / 1e6), share: r.value / max })),
-  })
+  }, rows.map((r) => censusCodeLink(`${r.name}: ${millions(r.value / 1e6)} of US imports in ${TOP_IMPORTS_YEAR} (all countries)`, r.code, TOP_IMPORTS_YEAR)))
 }

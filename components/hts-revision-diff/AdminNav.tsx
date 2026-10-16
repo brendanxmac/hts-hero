@@ -8,7 +8,7 @@ const TOOLS = [
   { href: "/coverage-checker", label: "Coverage checker" },
   { href: "/tariff-sources", label: "Tariff sources" },
   { href: "/email-outbox", label: "Outbox" },
-  { href: "/social-studio", label: "Social studio" },
+  { href: "/content-studio", label: "Content Studio" },
 ]
 
 // Switches between the admin tools that share AdminShell

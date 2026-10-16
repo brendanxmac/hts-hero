@@ -52,7 +52,7 @@ export const ManagedSection = () => {
           <div>
             <p className={mk.eyebrow}>HTS Hero Managed</p>
             <h2 id="managed-title" className={`${mk.h2} mt-4`}>
-              Hand us your tariffs. <span className={mk.accent}>We&apos;ll run them.</span>
+              Your Dedicated Tariff Team, <span className={mk.accent}>Without the Headcout.</span>
             </h2>
             <p className={`${mk.lead} mt-5`}>
               Our team joins yours and manages every tariff on your imports: monitoring, audits, savings and every new action, with a person you can
@@ -83,11 +83,11 @@ export const ManagedSection = () => {
             </div>
             <div className="flex flex-col gap-5">
               <Message who="HTS Hero · Sam" team>
-                Heads up: the new Section 232 action covers 14 of your imports from Oct 1. Average rate goes from 12.5% to 37.5%. Plan attached.
+                Quick heads up, the new Section 232 action covers 14 of your imports from Oct 1. Average rate goes from 12.5% to 37.5%. Plan attached.
               </Message>
               <Message who="Dana, Acme">Can we move the steel brackets to the Mexico supplier?</Message>
               <Message who="HTS Hero · Sam" team>
-                Yes. They qualify for USMCA, so those 6 could stay duty free. We&apos;ll walk you through it on Thursday&apos;s call.
+                Maybe. They qualify for USMCA, which would mean 0% duty. We&apos;ll walk you through it on Thursday&apos;s call.
               </Message>
             </div>
           </div>

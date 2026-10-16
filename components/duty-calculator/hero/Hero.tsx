@@ -54,7 +54,7 @@ const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string
     >
       <span className="flex items-center gap-2">
         <BellAlertIcon className="h-4 w-4 text-primary" aria-hidden />
-        Get the best tariff news alerts
+        Want tariff news alerts in your inbox?
       </span>
       <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
     </Link>
