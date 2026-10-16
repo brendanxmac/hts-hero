@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { ArrowRightIcon, BellAlertIcon, CheckIcon } from "@heroicons/react/20/solid"
+import { formatPct } from "@/components/duty-calculator/lib/format"
 import { mono } from "@/components/ui/font"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
@@ -13,7 +14,8 @@ const HREF = "/tariff-tracker?tab=catalog&add=paste"
 
 export function TrackerCtaRow() {
   return (
-    <div className="flex flex-col gap-4 border-b border-base-300 bg-primary/[0.06] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+    // Inverted from the page, like the card on HTS code pages, so it stands out in the list
+    <div className="hts-tracker-inverse flex flex-col gap-4 bg-base-100 px-6 py-5 text-base-content sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden>
           <BellAlertIcon className="h-5 w-5" />
@@ -34,7 +36,13 @@ const POINTS = [
   "Potential savings and entry audits on the same imports",
 ]
 
-export function TrackerCtaFeature({ htsno }: { htsno: string }) {
+// The example alert starts from the code's real duty today (the page's estimate), plus a made-up
+// 10% tariff, labeled as an example
+const EXAMPLE_ADDED = 10
+const rate = (pct: number) => formatPct(Math.round(pct * 100) / 100)
+
+export function TrackerCtaFeature({ htsno, today }: { htsno: string; today?: { pct: number; country: string } | null }) {
+  const before = today?.pct ?? 25
   return (
     // Inverted from the page (dark on a light page, light on a dark one), so it stands out; theme
     // classes inside follow (.hts-tracker-inverse)
@@ -79,13 +87,16 @@ export function TrackerCtaFeature({ htsno }: { htsno: string }) {
           <div className="flex items-center justify-between gap-3 border-t border-base-300 pt-3">
             <span className="flex min-w-0 flex-col">
               <span className={`${mono.className} text-sm font-semibold text-base-content`}>{htsno}</span>
-              <span className="text-xs text-base-content/60">from your country of origin</span>
+              <span className="text-xs text-base-content/60">from {today?.country ?? "your country of origin"}</span>
             </span>
             <span className="shrink-0 text-sm tabular-nums">
-              <span className="text-base-content/50">25% → </span>
-              <span className="font-semibold text-error">35%</span>
+              <span className="text-base-content/50">{rate(before)} → </span>
+              <span className="font-semibold text-error">{rate(before + EXAMPLE_ADDED)}</span>
             </span>
           </div>
+          <p className="m-0 text-xs text-base-content/50">
+            {today ? `Its rate today, if a new ${EXAMPLE_ADDED}% tariff were added` : `If a new ${EXAMPLE_ADDED}% tariff were added`}
+          </p>
         </div>
       </div>
     </section>

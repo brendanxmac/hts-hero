@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import type { HtsElement } from "@/interfaces/hts";
 import { findRateElement, HtsDutySummary } from "@/libs/hts-duty-summary";
-import type { MicroEstimate } from "@/libs/hts-micro-estimate";
+import { MICRO_CUSTOMS_VALUE, type MicroEstimate } from "@/libs/hts-micro-estimate";
+import { Countries } from "@/constants/countries";
 import { THEME } from "@/components/ui/theme";
 import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as mk from "@/components/ui/marketing/styles";
@@ -55,6 +56,9 @@ export interface HtsCodePageProps {
   // The latest tariff updates naming the code or a heading above it
   tariffUpdates?: PublicUpdate[];
 }
+
+// "China" for "CN": the estimate's country, in the example alert
+const countryName = (code: string) => Countries.find((c) => c.code === code)?.name ?? code;
 
 export function HtsCodePage({
   element,
@@ -152,7 +156,12 @@ export function HtsCodePage({
         {summary && <DutyByCountry htsno={element.htsno} productName={productName} summary={summary} />}
 
         {/* Alerts when a tariff action hits this code, in the free Tariff Tracker */}
-        {element.htsno && !element.htsno.startsWith("99") && <TrackerCtaFeature htsno={element.htsno} />}
+        {element.htsno && !element.htsno.startsWith("99") && (
+          <TrackerCtaFeature
+            htsno={element.htsno}
+            today={estimate ? { pct: (estimate.totalDuty / MICRO_CUSTOMS_VALUE) * 100, country: countryName(estimate.country) } : null}
+          />
+        )}
 
         {imports && <ImportSources htsno={element.htsno} productName={productName} imports={imports} duty={importDuty ?? null} />}
 
