@@ -14,10 +14,12 @@ const HREF = "/tariff-tracker?tab=catalog&add=paste"
 
 export function TrackerCtaRow() {
   return (
-    // Inverted from the page, like the card on HTS code pages, so it stands out in the list
-    <div className="hts-tracker-inverse flex flex-col gap-4 bg-base-100 px-6 py-5 text-base-content sm:flex-row sm:items-center sm:justify-between">
+    // A cobalt band with an accent bar and a solid cobalt icon: it stands out in the list without
+    // the full inversion of the HTS page card
+    <div className="relative flex flex-col gap-4 border-b border-primary/20 bg-primary/[0.09] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+      <span className="absolute inset-y-0 left-0 w-1 bg-primary" aria-hidden />
       <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden>
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-content shadow-sm" aria-hidden>
           <BellAlertIcon className="h-5 w-5" />
         </span>
         <p className="m-0 self-center text-base font-semibold text-base-content">Get alerted the moment a new tariff update affects any of your imports</p>
