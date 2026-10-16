@@ -89,11 +89,14 @@ export const HealthSummary = () => {
   };
   // The Tracker MVP: the share of imports with alerts on, and one way to raise it (fill the plan's
   // spare room, or the plans)
+  // The score and its bar share one color: green from 80%, amber from 40%, red below
+  const scoreTone = h.trackedPct >= 80 ? "success" : h.trackedPct >= 40 ? "warning" : "error";
+  const scoreText = { success: "text-success", warning: "text-warning", error: "text-error" }[scoreTone];
   const readinessRows = [
     {
       label: "Imports With Alerts",
       pct: h.trackedPct,
-      bar: h.trackedPct >= 80 ? "bg-success" : h.trackedPct >= 40 ? "bg-warning" : "bg-error",
+      bar: { success: "bg-success", warning: "bg-warning", error: "bg-error" }[scoreTone],
       text:
         h.covered < h.imports
           ? `${n(h.covered)} of ${n(h.imports)} imports get alerts and impact checks. The other ${n(h.imports - h.covered)} don't.`
@@ -150,7 +153,7 @@ export const HealthSummary = () => {
       }
     >
       <p className="m-0 flex items-baseline gap-2" aria-label={`${title} ${h.overall}%`}>
-        <span className={`${tt.metric} ${alertsOff ? "text-error" : h.overall >= 80 ? "text-success" : "text-primary"}`}>{h.overall}%</span>
+        <span className={`${tt.metric} ${full ? (h.overall >= 80 ? "text-success" : "text-primary") : scoreText}`}>{h.overall}%</span>
         <span className="text-sm text-base-content/60">of your {n(h.imports)} imports have alerts</span>
       </p>
       {alertsOff && (
