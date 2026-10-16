@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ClassifyCta } from "@/components/ui/marketing/ClassifyCta";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
-import { QuickLookup } from "../hero/QuickLookup";
 import { CalculationTerminal, CatalogFrame } from "@/components/tariff-monitor";
 import { RecalcTerminal } from "@/components/tariff-audit";
 import { Reveal } from "@/components/ui/marketing";
@@ -78,8 +77,12 @@ export const ToolShowcase = ({
             exemptions, trade preferences and fees, for any HTS code and country
             of origin. Free and unlimited.
           </p>
-          <div className="mt-8">
-            <QuickLookup />
+          <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <Link href="/duty-calculator" className={`${mk.buttonPrimary} h-14 px-8 text-lg shadow-lg shadow-base-content/10`}>
+              Calculate duty
+              <ArrowRightIcon className="h-5 w-5" aria-hidden />
+            </Link>
+            <span className="text-sm text-slate-500 skin:text-base-content/60">Free and unlimited · No sign-up</span>
           </div>
         </div>
         {example && (
