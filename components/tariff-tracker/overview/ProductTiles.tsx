@@ -36,7 +36,7 @@ export const ProductTiles = ({
   <section className="flex flex-col gap-3" aria-labelledby="tt-look">
     <div className="flex items-baseline justify-between px-1">
       <h2 id="tt-look" className={tt.title}>
-        Products to look at first
+        Products to Look at First
       </h2>
       <button type="button" className="text-sm font-semibold text-primary hover:underline" onClick={onAll}>
         All {total.toLocaleString("en-US")} →

@@ -30,7 +30,7 @@ export const PaidVsOwedChart = ({ rows }: { rows: AuditRow[] }) => {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 id="tt-paid-owed" className={ui.cardTitle}>
-            Paid against owed, entry by entry
+            Paid Against Owed, Entry by Entry
           </h3>
           <p className={`${ui.caption} mt-0.5`}>
             {audited.length} audited {audited.length === 1 ? "entry" : "entries"}, oldest first.

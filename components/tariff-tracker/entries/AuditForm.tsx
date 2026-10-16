@@ -81,7 +81,7 @@ export const AuditForm = ({ fixedProduct }: { fixedProduct?: TrackedProduct }) =
       <div className={ui.cardHeader}>
         <div>
           <h2 id="tt-audit-form" className={ui.cardTitle}>
-            Audit an entry
+            Audit an Entry
           </h2>
           <p className={`${ui.caption} mt-0.5`}>
             {fixedProduct ? "One entry of this product" : "One line of a past entry: what it was"}, when it entered, and the duty you paid.

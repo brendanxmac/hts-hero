@@ -16,7 +16,7 @@ export const ExposureMap = ({ products, onOpen }: { products: TrackedProduct[]; 
     <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-exposure">
       <div>
         <h2 id="tt-exposure" className={tt.title}>
-          Exposure map
+          Exposure Map
         </h2>
         <p className={tt.subtitle}>What each tariff adds to your highest-duty products. Deeper blue costs more.</p>
       </div>

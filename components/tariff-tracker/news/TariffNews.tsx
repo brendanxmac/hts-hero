@@ -128,7 +128,7 @@ const EmailCard = () => {
   return (
     <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-3`} aria-labelledby="tt-news-email">
       <h2 id="tt-news-email" className={tt.title}>
-        Get these by email
+        Get These by Email
       </h2>
       <p className="text-sm text-base-content/70">Every new action in plain English, with the official documents. Pick the laws and countries you care about.</p>
       {signedIn ? (
@@ -264,7 +264,7 @@ export const TariffNews = () => {
       <aside className="flex flex-col gap-4">
         <EmailCard />
         <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-2`}>
-          <h2 className={tt.title}>Where these come from</h2>
+          <h2 className={tt.title}>Where These Come From</h2>
           <p className="text-sm text-base-content/70">
             The White House, the Federal Register, CBP, USTR and the USITC, checked every 15 minutes. Each action is followed from announcement into the
             HTS.

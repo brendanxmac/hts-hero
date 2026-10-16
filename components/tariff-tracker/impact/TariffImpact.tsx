@@ -245,7 +245,7 @@ export const TariffImpact = () => {
       <>
         {header}
         <NeedsProducts
-          title="See what every tariff action does to your imports"
+          title="See What Every Tariff Action Does to Your Imports"
           body="Add your imports, then pick any tariff action: you'll see which of them it hits, the rate before and after, and what it adds to each shipment."
         />
       </>
@@ -285,7 +285,7 @@ export const TariffImpact = () => {
                         <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-impact-shift">
                           <div>
                             <h2 id="tt-impact-shift" className={tt.title}>
-                              Rate before and after
+                              Rate Before and After
                             </h2>
                             <p className={tt.subtitle}>Each import whose rate it moves, the biggest change first</p>
                           </div>
@@ -296,7 +296,7 @@ export const TariffImpact = () => {
                         <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-impact-origins">
                           <div>
                             <h2 id="tt-impact-origins" className={tt.title}>
-                              Where it lands
+                              Where It Lands
                             </h2>
                             <p className={tt.subtitle}>Your affected imports by country of origin, and the average change in their rate</p>
                           </div>

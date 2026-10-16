@@ -20,16 +20,16 @@ export const Alerts = () => (
   <AccountGate
     feature="alerts"
     page="tracker_alerts"
-    title="Get alerts when tariffs change on your products"
+    title="Get Alerts When Tariffs Change on Your Products"
     teaser={`Alerts come free with your account, on up to ${TRIAL_ALLOWANCE.alertImports} imports.`}
     preview={<TableStandIn columns={["Alert", "Products", "Change", "Date"]} />}
   >
     <div className="flex flex-col gap-4">
       <AlertSettingsPanel />
       <TariffNewsSettings />
-      <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-alert-triggers">
+      {/* <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-alert-triggers">
         <h2 id="tt-alert-triggers" className={tt.title}>
-          What sets off an alert
+          What Sets Off an Alert
         </h2>
         <div className="grid gap-3 lg:grid-cols-3">
           {TRIGGERS.map((t) => (
@@ -39,7 +39,7 @@ export const Alerts = () => (
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
     </div>
   </AccountGate>
 );

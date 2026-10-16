@@ -187,8 +187,8 @@ export const OptionList = ({
   return (
     <div className="flex flex-col gap-6">
       {quick.length > 0 && (
-        <section className="flex flex-col gap-2" aria-label="Quick wins">
-          <TrackHeading title="Quick wins" note="No change of supplier. Decide each one to finish this import's review." rows={quick} />
+        <section className="flex flex-col gap-2" aria-label="Quick Wins">
+          <TrackHeading title="Quick Wins" note="No change of supplier. Decide each one to finish this import's review." rows={quick} />
           {sub("program")}
           {sub("exemption")}
           <div className="px-1">{afterQuickWins}</div>
@@ -197,7 +197,7 @@ export const OptionList = ({
       {sourcing.length > 0 && (
         <section className="flex flex-col gap-2" aria-label="Source it somewhere else">
           <TrackHeading
-            title="Source it elsewhere"
+            title="Source It Elsewhere"
             badge={<span className={tt.chip("neutral")}>Longer term</span>}
             note="A new supplier, with the goods made there. Countries that already make it for the US first (Census)."
             rows={sourcing}
@@ -207,9 +207,9 @@ export const OptionList = ({
         </section>
       )}
       {past.length > 0 && (
-        <section className="flex flex-col gap-2" aria-label="Tracked earlier">
+        <section className="flex flex-col gap-2" aria-label="Tracked Earlier">
           <div className="px-3">
-            <h3 className={tt.eyebrow()}>Tracked earlier</h3>
+            <h3 className={tt.eyebrow()}>Tracked Earlier</h3>
           </div>
           {rows(past)}
         </section>

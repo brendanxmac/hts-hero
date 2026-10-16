@@ -53,7 +53,7 @@ export const PlannedSection = ({ section }: { section: TrackerSection }) => {
               <Icon className="h-5 w-5" />
             </span>
             <h2 id={headingId} className={ui.cardTitle}>
-              What&apos;s coming
+              What&apos;s Coming
             </h2>
           </div>
           <span className={ui.badge("primary")}>{section.comingSoon ? "Coming soon" : "In development"}</span>

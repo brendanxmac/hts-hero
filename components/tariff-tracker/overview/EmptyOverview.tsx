@@ -11,7 +11,7 @@ import { RecentLookups } from "./RecentLookups";
 export const EmptyOverview = () => (
   <div className="flex flex-col gap-4">
     <NewsTape />
-    <OverviewHeader title="Let's build your tariff dashboard" />
+    <OverviewHeader title="Let's Build Your Tariff Dashboard" />
     <AddProductsPanel />
     <RecentLookups />
     <ExamplePreview />

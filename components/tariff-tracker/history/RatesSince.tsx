@@ -126,14 +126,14 @@ export const RatesSince = ({
     <section aria-labelledby="tt-rates-since">
       <DataTable
         table={table}
-        label="Then and now"
+        label="Then and Now"
         onRowClick={(r) => onOpen(r.p.key)}
         toolbar={
           <>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h3 id="tt-rates-since" className={ui.cardTitle}>
-                  Then and now
+                  Then and Now
                 </h3>
                 <p className={`${ui.caption} mt-0.5`}>Each product&apos;s rate on a past date, and today</p>
               </div>

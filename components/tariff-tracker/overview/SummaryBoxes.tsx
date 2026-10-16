@@ -84,7 +84,7 @@ export const HealthSummary = () => {
       go: () => (h.signedIn ? openTab("alerts") : h.unlock("alerts")),
     },
     {
-      label: "Savings reviewed",
+      label: "Savings Reviewed",
       pct: h.savingsPct,
       bar: "bg-success",
       text: `${n(h.stats.reviewed)} of ${n(h.stats.total)} imports, each once every way it could pay less is secured or ruled out.`,
@@ -92,7 +92,7 @@ export const HealthSummary = () => {
       go: () => openTab("catalog"),
     },
     {
-      label: "Entries audited",
+      label: "Entries Audited",
       pct: h.auditPct,
       bar: "bg-primary",
       text: `${n(h.auditedImports)} of ${n(h.imports)} imports have an entry checked against the rate in force that day.`,

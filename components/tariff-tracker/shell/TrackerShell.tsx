@@ -83,7 +83,8 @@ const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSect
       className={`flex h-10 items-center gap-3 rounded-xl px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${active ? "bg-tt-side-active font-semibold text-base-content" : "font-medium text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
         } ${section.ready ? "" : "opacity-60"}`}
     >
-      <span className={`h-2 w-2 shrink-0 rounded-full ${active ? "bg-success" : !section.comingSoon && meta && meta.tone !== "neutral" ? DOTS[meta.tone] : "bg-base-content/25"}`} aria-hidden />
+      {/* The section's icon, as in the collapsed sidebar; what's waiting shows on the right */}
+      <section.Icon className={`h-[18px] w-[18px] shrink-0 ${active ? "text-base-content" : "text-base-content/50"}`} aria-hidden />
       <span className="flex-1 truncate">{section.label}</span>
       {section.comingSoon ? (
         <span className="rounded-full bg-tt-side-active px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-base-content/60">Soon</span>

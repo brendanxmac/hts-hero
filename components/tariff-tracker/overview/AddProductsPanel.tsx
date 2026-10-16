@@ -45,7 +45,7 @@ export const AddProductsPanel = () => {
         <span className={`${tt.chip("primary")} self-start`}>Step 1 · takes about a minute</span>
         <div className="flex flex-col gap-4">
           <h2 id="tt-add-products" className={`${tt.display} m-0 text-3xl font-semibold leading-tight tracking-tight text-base-content lg:text-4xl`}>
-            Add the products you import, and <span className="text-primary">we&apos;ll work our magic.</span>
+            Add the Products You Import, and <span className="text-primary">we&apos;ll work our magic.</span>
           </h2>
           <p className="m-0 max-w-xl text-lg leading-relaxed text-base-content/70">
             An HTS code and a country of origin is all it takes. The moment they&apos;re in, you&apos;ll see:

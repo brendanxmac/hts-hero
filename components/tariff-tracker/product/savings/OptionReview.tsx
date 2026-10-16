@@ -322,7 +322,7 @@ const Securing = ({
       )}
 
       <div className="flex flex-col gap-3">
-        <h3 className={tt.title}>What it takes</h3>
+        <h3 className={tt.title}>What It Takes</h3>
         <WhatItTakes kind={kind} current={opportunity.status === "in_progress" ? 1 : 0} />
       </div>
     </div>

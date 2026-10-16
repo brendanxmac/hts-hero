@@ -93,7 +93,7 @@ const COUNTRY_COLUMNS: ColumnDef<CountryIdea, any>[] = [
 
 const CountriesTable = ({ countries }: { countries: CountryIdea[] }) => {
   const table = useDataTable<CountryIdea>({ data: countries, columns: COUNTRY_COLUMNS, getRowId: (c) => c.country.code });
-  return <DataTable table={table} label="Countries that already make your products for less" />;
+  return <DataTable table={table} label="Countries That Already Make Your Products for Less" />;
 };
 
 const ideaColumns = (year?: number): ColumnDef<SourcingIdea, any>[] => [
@@ -235,7 +235,7 @@ const SourcingReport = () => {
         <section className="flex flex-col gap-3" aria-labelledby="tt-sourcing-countries">
           <div className="flex flex-col gap-0.5 px-1">
             <h2 id="tt-sourcing-countries" className={tt.title}>
-              Countries that already make your products for less
+              Countries That Already Make Your Products for Less
             </h2>
             <p className={ui.caption}>
               Each already ships these products to the US and pays less duty on them than your current origins. One
@@ -275,7 +275,7 @@ export const Sourcing = () => {
   if (!items.length) {
     return (
       <NeedsProducts
-        title="Add products to find cheaper origins"
+        title="Add Products to Find Cheaper Origins"
         body="Sourcing finds the countries that pay less duty on each of your products and already ship them to the US."
       />
     );
@@ -284,7 +284,7 @@ export const Sourcing = () => {
     <AccountGate
       feature="sourcing"
       page="tracker"
-      title="Find cheaper countries that already make your products"
+      title="Find Cheaper Countries That Already Make Your Products"
       teaser={sourcingTeaser(insights) ?? "Checking every origin for your products…"}
       points={section.planned}
       preview={<TableStandIn />}

@@ -14,7 +14,7 @@ export const LatestChanges = ({ changes, onOpen, onAll }: { changes: CatalogChan
   <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-3`} aria-labelledby="tt-latest">
     <div className="flex items-center justify-between gap-3">
       <h2 id="tt-latest" className={tt.title}>
-        Changes on your products
+        Changes on Your Products
       </h2>
       <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={onAll}>
         Rate history

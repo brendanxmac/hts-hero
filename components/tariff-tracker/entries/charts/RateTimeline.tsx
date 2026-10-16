@@ -53,7 +53,7 @@ export const RateTimeline = ({ history, rows, to }: { history: ProductHistory; r
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 id="tt-rate-timeline" className={ui.cardTitle}>
-            Your entries against the rate in force
+            Your Entries Against the Rate in Force
           </h3>
           <p className={`${ui.caption} mt-0.5`}>The line is the duty rate in force; each dot is an entry, at the rate you paid.</p>
         </div>

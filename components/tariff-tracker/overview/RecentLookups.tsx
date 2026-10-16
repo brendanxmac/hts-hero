@@ -50,7 +50,7 @@ export const RecentLookups = () => {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="tt-recent-lookups" className={tt.title}>
-            Start from your recent lookups
+            Start from Your Recent Lookups
           </h2>
           <p className={tt.subtitle}>You looked these up in the calculator. Pick the ones you import.</p>
         </div>

@@ -46,7 +46,7 @@ export const TariffNewsSettings = () => {
     <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-5`} aria-labelledby="tt-tariff-news">
       <div className="flex flex-col gap-1">
         <h2 id="tt-tariff-news" className={tt.title}>
-          Tariff news
+          Tariff News
         </h2>
         <p className="text-sm text-base-content/70">
           Every new US tariff action from{" "}

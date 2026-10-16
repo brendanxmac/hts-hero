@@ -57,7 +57,7 @@ const changeLine = (c: ChangeEvent["changes"][number]) => (
 // tall as its dates (no scroll of its own), and it never scrolls the page while playing.
 const ChangeList = ({ events, current, onPick }: { events: ChangeEvent[]; current?: ChangeEvent; onPick: (e: ChangeEvent) => void }) => (
   <div className="flex flex-col gap-2">
-    <h4 className={ui.label}>Every change</h4>
+    <h4 className={ui.label}>Every Change</h4>
     {events.length === 0 ? (
       <p className={ui.bodySm}>No rate has changed for these origins.</p>
     ) : (

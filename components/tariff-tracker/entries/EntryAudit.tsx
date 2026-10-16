@@ -47,7 +47,7 @@ export const EntryAudit = () => {
   if (!items.length) {
     return (
       <NeedsProducts
-        title="Add products to audit your entries"
+        title="Add Products to Audit Your Entries"
         body="Entry audit checks the duty you paid on each past entry against the duty in force on its entry date."
       />
     );
@@ -56,7 +56,7 @@ export const EntryAudit = () => {
     <AccountGate
       feature="entries"
       page="tracker"
-      title="Check what you paid on past entries"
+      title="Check What You Paid on Past Entries"
       teaser={`Every account gets ${TRIAL_ALLOWANCE.auditChecks} free audit checks.`}
       points={section.planned}
       preview={<TableStandIn columns={["Entry", "Product", "Paid", "Owed"]} />}

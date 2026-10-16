@@ -27,7 +27,7 @@ export const OriginDistribution = ({ products }: { products: TrackedProduct[] })
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="tt-origins" className={tt.title}>
-            Origin distribution
+            Origin Distribution
           </h2>
           <p className={tt.subtitle}>Where your imports come from</p>
         </div>

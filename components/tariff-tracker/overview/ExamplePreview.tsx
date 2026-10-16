@@ -37,7 +37,7 @@ export const ExamplePreview = () => {
       <div className="flex flex-wrap items-center gap-3">
         <span className={tt.chip("warning")}>Example</span>
         <h2 id="tt-example" className={`${tt.title} flex-1`}>
-          What your dashboard looks like with 48 products
+          What Your Dashboard Looks Like with 48 Products
         </h2>
         <button type="button" className="text-sm font-semibold text-primary hover:underline" onClick={load}>
           Load example imports →

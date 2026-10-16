@@ -72,7 +72,7 @@ export const CatalogEmptyState = ({
   <section className="flex max-w-5xl flex-col gap-6" aria-labelledby="tt-empty-heading">
     <div className="flex flex-col gap-3">
       <h2 id="tt-empty-heading" className="text-2xl font-semibold tracking-tight text-base-content">
-        Add the products you import
+        Add the Products You Import
       </h2>
       <p className={`${ui.body} max-w-2xl`}>
         A product is an HTS code and a country of origin. Add yours to see what you pay on all of them in one place.
@@ -90,7 +90,7 @@ export const CatalogEmptyState = ({
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <Option
         Icon={ClipboardDocumentListIcon}
-        title="Paste a list"
+        title="Paste a List"
         description="One product per line: the HTS code, then the country. Copy two columns straight from a spreadsheet."
         example={<pre className={`${mono.className} text-xs leading-relaxed text-base-content`}>{EXAMPLE_LIST}</pre>}
         onClick={() => onAdd("paste")}

@@ -67,7 +67,7 @@ const ToCheck = () => {
       <div className={ui.cardHeader}>
         <div>
           <h2 id="tt-savings-to-check" className={ui.cardTitle}>
-            {paid ? "Imports your plan doesn't cover" : "Check your imports"}
+            {paid ? "Imports Your Plan Doesn't Cover" : "Check Your Imports"}
           </h2>
           <p className={`${ui.caption} mt-0.5`}>
             {insights.beyond.productsWithSavings > 0
@@ -215,7 +215,7 @@ export const Savings = () => {
   if (!items.length) {
     return (
       <NeedsProducts
-        title="Add products to find savings"
+        title="Add Products to Find Savings"
         body="Savings checks every trade program, exemption and country of origin for the products you import."
       />
     );
@@ -224,7 +224,7 @@ export const Savings = () => {
     <AccountGate
       feature="savings"
       page="tracker"
-      title="See where you could pay less duty"
+      title="See Where You Could Pay Less Duty"
       teaser={savingsTeaser(insights) ?? "Checking your imports for savings…"}
       points={section.planned}
       preview={<TableStandIn />}

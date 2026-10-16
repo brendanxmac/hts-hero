@@ -218,7 +218,7 @@ export const Overview = () => {
           <AccountGate
             feature="history"
             page="tracker"
-            title="What changed on your products"
+            title="What Changed on Your Products"
             teaser={changesTeaser(insights) ?? "Going through your products' history…"}
             preview={<TableStandIn columns={["Product", "Origin", "Change", "Date"]} />}
             minHeight="min-h-96"

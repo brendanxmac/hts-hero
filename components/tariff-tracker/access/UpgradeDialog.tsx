@@ -131,7 +131,7 @@ export const UpgradeDialog = ({
                     className={`flex flex-col gap-4 rounded-lg border p-5 ${recommended ? "border-primary ring-1 ring-primary" : "border-base-300"}`}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h3 className={ui.cardTitle}>Up to {plan.maxPairs} imports</h3>
+                      <h3 className={ui.cardTitle}>Up to {plan.maxPairs} Imports</h3>
                       {recommended && <span className={ui.badge("primary")}>Fits your imports</span>}
                     </div>
                     <p className="flex items-baseline gap-1">

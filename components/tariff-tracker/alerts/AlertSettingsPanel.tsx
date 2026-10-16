@@ -49,7 +49,7 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="tt-alert-settings" className={tt.title}>
-            Where alerts go
+            Where Alerts Go
           </h2>
           <p className={tt.subtitle}>When a tariff change hits a product you track, we tell you here, with what changed and by how much.</p>
         </div>
@@ -90,7 +90,7 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
 
       <fieldset className="flex flex-col gap-3" disabled={!draftOn}>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <legend className="text-sm font-semibold text-base-content">Which updates that affect your imports should alert you</legend>
+          <legend className="text-sm font-semibold text-base-content">Which Updates That Affect Your Imports Should Alert You</legend>
           <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => set({ kinds: [...DEFAULT_ALERT_KINDS] })}>
             Reset to recommended
           </button>

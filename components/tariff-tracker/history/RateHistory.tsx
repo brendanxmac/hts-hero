@@ -80,7 +80,7 @@ export const RateHistory = () => {
   if (!items.length) {
     return (
       <NeedsProducts
-        title="Add products to see their history"
+        title="Add Products to See Their History"
         body="Rate history shows every tariff change that hit your products: when, which tariff, and by how much."
       />
     );
@@ -89,10 +89,10 @@ export const RateHistory = () => {
     <AccountGate
       feature="history"
       page="tracker"
-      title="See every tariff change on your products"
+      title="See Every Tariff Change on Your Products"
       teaser={changesTeaser(insights) ?? "Going through your products' history…"}
       points={section.planned}
-      preview={<ChartStandIn title="Average duty rate across your imports" />}
+      preview={<ChartStandIn title="Average Duty Rate Across Your Imports" />}
       minHeight="min-h-[28rem]"
     >
       <HistoryReport />

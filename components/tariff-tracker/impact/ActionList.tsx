@@ -85,7 +85,7 @@ export const ActionList = ({
     <aside className={`${tt.panel} flex flex-col overflow-hidden xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)]`} aria-label="Tariff actions">
       <div className="flex flex-col gap-3 border-b border-base-300 px-4 pb-4 pt-5">
         <div className="flex items-baseline justify-between px-1">
-          <h2 className={tt.title}>Tariff actions</h2>
+          <h2 className={tt.title}>Tariff Actions</h2>
           <span className="text-sm tabular-nums text-base-content/50">{updates.length}</span>
         </div>
         <SegmentedControl

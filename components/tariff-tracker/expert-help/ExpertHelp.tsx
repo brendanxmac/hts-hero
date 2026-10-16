@@ -41,49 +41,49 @@ const BookCall = ({ children = "Book an intro call" }: { children?: ReactNode })
 const OFFER = [
   {
     Icon: UserGroupIcon,
-    title: "Onboarded to your team",
+    title: "Onboarded to Your Team",
     body: "We learn your products, suppliers, broker and how you buy, then load every import you bring in and every past entry into the Tracker.",
   },
   {
     Icon: ChatBubbleLeftRightIcon,
-    title: "A shared Slack channel",
+    title: "A Shared Slack Channel",
     body: "Message the people managing your tariffs directly. Real answers from your HTS Hero team, the same day, not a ticket queue.",
   },
   {
     Icon: VideoCameraIcon,
-    title: "A weekly check-in call",
+    title: "A Weekly Check-in Call",
     body: "What changed, what it costs you, what we're doing about it, and the decisions we need from you. Thirty minutes, every week.",
   },
   {
     Icon: ShieldCheckIcon,
-    title: "Every tariff optimized",
+    title: "Every Tariff Optimized",
     body: "We review the classification, origin and programs behind every rate, and keep each import in the lowest-duty position it can claim.",
   },
   {
     Icon: LightBulbIcon,
-    title: "Always hunting for savings",
+    title: "Always Hunting for Savings",
     body: "Trade programs, exemptions, sourcing moves and more: we keep exploring strategies and bring you each one with what it could save.",
   },
   {
     Icon: ClipboardDocumentCheckIcon,
-    title: "Every entry audited",
+    title: "Every Entry Audited",
     body: "The duty on every entry checked against the rates in force that day, so overpayments are caught for refund and underpayments fixed early.",
   },
   {
     Icon: DocumentMagnifyingGlassIcon,
-    title: "Entry summaries and delivery reports",
+    title: "Entry Summaries and Delivery Reports",
     body: "We review your broker's entry summaries and delivery reports as they come in, and sort out errors with your broker before they cost you.",
   },
   {
     Icon: BellAlertIcon,
-    title: "Every tariff change, handled",
+    title: "Every Tariff Change, Handled",
     body: "When a new tariff lands, you hear from us first: which imports it hits, what it costs, and the plan, before it reaches your invoices.",
   },
 ];
 
 const STEPS = [
   {
-    title: "Intro call",
+    title: "Intro Call",
     body: "Thirty minutes on your imports, where you stand, and whether we're the right fit.",
   },
   {
@@ -91,11 +91,11 @@ const STEPS = [
     body: "We join your Slack, meet your broker, and load your products and past entries.",
   },
   {
-    title: "Your first review",
+    title: "Your First Review",
     body: "A full audit of your tariffs and entries, and a savings plan ranked by what each step could save.",
   },
   {
-    title: "Every week after",
+    title: "Every Week After",
     body: "Monitoring, audits, new strategies and a weekly call, on every import we manage.",
   },
 ];
@@ -187,7 +187,7 @@ export const ExpertHelp = () => {
           <div className="flex flex-col gap-6">
             <span className={`${tt.chip("primary")} self-start`}>HTS Hero Managed</span>
             <h1 id="tt-managed-title" className={`${tt.display} m-0 text-4xl font-semibold leading-[1.1] tracking-tight xl:text-5xl`}>
-              We become your tariff team.
+              We Become Your Tariff Team.
             </h1>
             <p className="max-w-xl text-lg leading-relaxed text-base-content/75">
               HTS Hero joins your company and manages every tariff on every import: we watch every change, keep every
@@ -222,7 +222,7 @@ export const ExpertHelp = () => {
         <div id="tt-managed-offer">
           <SectionHeading
             eyebrow="What we take off your plate"
-            title="Your tariffs, fully managed"
+            title="Your Tariffs, Fully Managed"
             body="Everything it takes to stay in the best position on every import, done by a team that knows your products."
           />
         </div>
@@ -242,7 +242,7 @@ export const ExpertHelp = () => {
       {/* How it starts */}
       <section aria-labelledby="tt-managed-steps" className={`${tt.panel} ${tt.panelPad} flex flex-col gap-8`}>
         <div id="tt-managed-steps">
-          <SectionHeading eyebrow="How it works" title="From intro call to fully managed" />
+          <SectionHeading eyebrow="How it works" title="From Intro Call to Fully Managed" />
         </div>
         <ol className="grid gap-6 md:grid-cols-4">
           {STEPS.map((step, i) => (
@@ -266,7 +266,7 @@ export const ExpertHelp = () => {
           <div id="tt-managed-pricing">
             <SectionHeading
               eyebrow="Pricing"
-              title="Priced by the imports we manage"
+              title="Priced by the Imports We Manage"
               body="One monthly price for the whole service. An import is one HTS code from one country of origin."
             />
           </div>
@@ -345,7 +345,7 @@ export const ExpertHelp = () => {
       >
         <div className="flex max-w-2xl flex-col gap-2">
           <h2 id="tt-managed-close" className={`${tt.display} m-0 text-3xl font-semibold tracking-tight`}>
-            Stop drowning in tariff updates.
+            Stop Drowning in Tariff Updates.
           </h2>
           <p className="text-base text-base-content/75">
             Book a 30-minute intro call. We&apos;ll look at your imports and tell you where you stand.
