@@ -1,6 +1,7 @@
 "use client";
 
-import { Fragment, ReactNode } from "react";
+import { Fragment, ReactNode, RefObject, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
@@ -12,6 +13,8 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 // - "ghost": no box until hovered, for dense table cells and inline text
 // Sizes match the inputs: md 40px (ui.input), sm 32px (ui.inputSm), xs 28px.
 // `name` (and `required`) post it with a plain <form>, through a hidden input.
+// The menu opens in a layer of its own over the page (a portal), placed by the button, so a card
+// that clips its contents can't cut it off; it opens upward when there's no room below.
 
 export interface SelectOption<T extends string | number> {
   value: T;
@@ -34,6 +37,78 @@ const LOOK: Record<Variant, string> = {
   field: "rounded-md border border-base-content/20 bg-base-100 shadow-sm hover:border-base-content/30",
   pill: "rounded-full border border-base-300 bg-base-100 hover:border-base-content/30",
   ghost: "rounded-md border border-transparent bg-transparent hover:bg-base-content/5",
+};
+
+// Where the menu goes on screen, beside its button
+interface Place {
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+  minWidth: number;
+  maxHeight: number;
+  // The page's theme classes (palette, fonts), so the menu looks the same outside the page's tree
+  theme: string;
+}
+
+const MENU_MAX = 288;
+const GAP = 6;
+const THEME_CLASS = /^(hts-|follow-theme|__className|__variable)/;
+
+const usePlace = (open: boolean, button: RefObject<HTMLButtonElement>, align: "left" | "right") => {
+  const [place, setPlace] = useState<Place | null>(null);
+  useLayoutEffect(() => {
+    if (!open || !button.current) return setPlace(null);
+    const el = button.current;
+    const themeHost = el.closest<HTMLElement>("[class*='hts-theme']");
+    const theme = Array.from(themeHost?.classList ?? [])
+      .filter((c) => THEME_CLASS.test(c))
+      .join(" ");
+    const measure = () => {
+      const r = el.getBoundingClientRect();
+      const below = window.innerHeight - r.bottom - GAP * 2;
+      const above = r.top - GAP * 2;
+      const up = below < 180 && above > below;
+      setPlace({
+        ...(up ? { bottom: window.innerHeight - r.top + GAP } : { top: r.bottom + GAP }),
+        ...(align === "right" ? { right: window.innerWidth - r.right } : { left: r.left }),
+        minWidth: r.width,
+        maxHeight: Math.max(120, Math.min(MENU_MAX, up ? above : below)),
+        theme,
+      });
+    };
+    measure();
+    // Follow the button while the page (or anything around it) scrolls or resizes
+    window.addEventListener("scroll", measure, true);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("scroll", measure, true);
+      window.removeEventListener("resize", measure);
+    };
+  }, [open, button, align]);
+  return place;
+};
+
+// The menu, in a layer over the page
+const Menu = ({ open, button, align, className, children }: { open: boolean; button: RefObject<HTMLButtonElement>; align: "left" | "right"; className: string; children: ReactNode }) => {
+  const place = usePlace(open, button, align);
+  if (!place) return null;
+  const { theme, ...at } = place;
+  return createPortal(
+    <div className={theme}>
+      <Transition as={Fragment} show={open} leave="transition ease-in duration-75" leaveFrom="opacity-100" leaveTo="opacity-0">
+        <Listbox.Options
+          static
+          // Runtime position (DESIGN_SYSTEM §10)
+          style={{ position: "fixed", ...at }}
+          className={`z-[1000] overflow-auto rounded-xl border border-base-300 bg-base-100 p-1 text-sm text-base-content shadow-lg focus:outline-none ${className}`}
+        >
+          {children}
+        </Listbox.Options>
+      </Transition>
+    </div>,
+    document.body
+  );
 };
 
 export const Select = <T extends string | number>({
@@ -74,11 +149,13 @@ export const Select = <T extends string | number>({
   id?: string;
 }) => {
   const current = options.find((o) => o.value === value);
+  const button = useRef<HTMLButtonElement>(null);
   return (
     <Listbox value={value} onChange={onChange} disabled={disabled} name={name}>
       {({ open }) => (
         <div className={`relative min-w-0 ${className}`}>
           <Listbox.Button
+            ref={button}
             id={id}
             aria-label={label}
             className={`flex w-full min-w-0 items-center justify-between text-left text-base-content outline-none transition-colors focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 ${HEIGHT[size]} ${LOOK[variant]} ${
@@ -92,12 +169,7 @@ export const Select = <T extends string | number>({
           {required && name && value === "" && (
             <input tabIndex={-1} required value="" onChange={() => {}} aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px opacity-0" />
           )}
-          <Transition as={Fragment} leave="transition ease-in duration-75" leaveFrom="opacity-100" leaveTo="opacity-0">
-            <Listbox.Options
-              className={`absolute z-50 mt-1.5 max-h-72 min-w-full overflow-auto rounded-xl border border-base-300 bg-base-100 p-1 text-sm shadow-lg focus:outline-none ${
-                align === "right" ? "right-0" : "left-0"
-              } ${menuClassName}`}
-            >
+          <Menu open={open} button={button} align={align} className={menuClassName}>
               {options.map((o) => (
                 <Listbox.Option
                   key={String(o.value)}
@@ -118,8 +190,7 @@ export const Select = <T extends string | number>({
                   )}
                 </Listbox.Option>
               ))}
-            </Listbox.Options>
-          </Transition>
+          </Menu>
         </div>
       )}
     </Listbox>
