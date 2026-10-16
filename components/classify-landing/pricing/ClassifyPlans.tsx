@@ -4,63 +4,65 @@ import config from "@/config";
 import { PricingPlan } from "@/types";
 import { SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
-import { THEME_LIGHT } from "@/components/ui/theme";
+import { PlanCard } from "@/components/pricing-calculator/plans/PlanCard";
 
 // The classification plans, from the same Stripe plan config and checkout buttons as before
 // (config.stripe.classifierPlans): Starter and Pro check out through Stripe, Team books a demo.
 export const ClassifyPlans = () => (
-  <section id="pricing" className={`${mk.band} ${mk.bandMuted} scroll-mt-20`} aria-labelledby="pricing-title">
+  <section id="pricing" className={`${mk.band} scroll-mt-20`} aria-labelledby="pricing-title">
     <div className={mk.container}>
       <SectionIntro
-        title={<>Reduce Import Risk with Classifications you can <span className={mk.accent}>Defend</span></>}
+        eyebrow="Pricing"
+        title={<>Classifications you can <span className={mk.accent}>defend</span></>}
         id="pricing-title"
         center
-      />
-      <div className="mx-auto mt-14 grid max-w-6xl gap-6 lg:grid-cols-3">
+      >
+        Reduce import risk with audit-ready HTS codes, backed by the legal notes and CROSS rulings.
+      </SectionIntro>
+      <div className="mx-auto mt-14 grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-3">
         {config.stripe.classifierPlans.map((plan) => {
           const featured = Boolean(plan.isFeatured);
           const custom = plan.planIdentifier === PricingPlan.CLASSIFY_TEAM;
           return (
-            <article
+            <PlanCard
               key={plan.name}
-              className={`relative flex flex-col rounded-3xl p-8 ${featured ? "hts-tracker-on-dark bg-base-200 text-base-content" : mk.card}`}
-            >
-              {featured && (
-                <span className="absolute -top-3 left-8 rounded-full bg-primary px-3 py-1 text-xs font-bold text-base-content">Most Popular</span>
-              )}
-              <h3 className={`text-xl font-semibold ${featured ? "text-base-content" : "text-base-content"}`}>{plan.name}</h3>
-              <p className={`mt-1 text-sm ${featured ? "text-base-content/70" : "text-base-content/60"}`}>{plan.description}</p>
-              <div className="mt-6">
-                {custom ? (
-                  <p className="text-3xl font-bold tracking-tight">Custom Pricing</p>
-                ) : (
-                  <p className="flex items-baseline gap-2">
-                    <span className="text-5xl font-bold tracking-tight">${plan.prices[0]}</span>
-                    {plan.priceAnchors?.[0] && (
-                      <span className={`text-lg line-through ${featured ? "text-base-content/60" : "text-base-content/60"}`}>${plan.priceAnchors[0]}</span>
-                    )}
-                    <span className={featured ? "text-base-content/60" : "text-base-content/60"}>/mo</span>
-                  </p>
-                )}
-                {custom && <p className="mt-1 text-sm text-base-content/60">Based on Scale</p>}
-              </div>
-              <ul className="mt-8 flex flex-1 flex-col gap-3">
-                {plan.features.map((f) => (
-                  <li key={f.name} className={`flex gap-2.5 text-sm ${featured ? "text-base-content/70" : "text-base-content/70"}`}>
-                    <CheckIcon className={`mt-0.5 h-4 w-4 shrink-0 ${featured ? "text-primary" : "text-primary"}`} aria-hidden />
-                    {f.name}
-                  </li>
-                ))}
-              </ul>
-              {/* The shared checkout button is cobalt; on the dark featured card it takes the green of a free start */}
-              <div
-                className={`${THEME_LIGHT} mt-8 bg-transparent ${
-                  featured ? "[&_.btn-primary]:rounded-full [&_.btn-primary]:border-success [&_.btn-primary]:bg-success [&_.btn-primary]:text-success-content [&_.btn-primary:hover]:bg-success/90" : ""
-                }`}
-              >
-                <ButtonCheckout plan={plan} />
-              </div>
-            </article>
+              name={plan.name}
+              description={plan.description}
+              badge={featured ? "Most popular" : undefined}
+              featured={featured}
+              price={
+                <div>
+                  {custom ? (
+                    <p className="text-5xl font-extrabold tracking-tight text-base-content">Custom</p>
+                  ) : (
+                    <p className="flex flex-wrap items-baseline gap-x-2">
+                      <span className="text-6xl font-extrabold tracking-tight tabular-nums text-base-content">${plan.prices[0]}</span>
+                      <span className="text-lg text-base-content/60">/mo</span>
+                      {plan.priceAnchors?.[0] && (
+                        <span className="text-lg tabular-nums text-base-content/50 line-through">
+                          <span className="sr-only">was </span>${plan.priceAnchors[0]}
+                        </span>
+                      )}
+                    </p>
+                  )}
+                  <p className="mt-2 text-sm text-base-content/60">{custom ? "Priced to your volume" : "Billed monthly, cancel any time"}</p>
+                </div>
+              }
+              features={plan.features.map((f) => f.name)}
+              cta={
+                // The shared Stripe checkout button, restyled to the page's buttons: dark on the
+                // featured plan, outlined on the others
+                <div
+                  className={`[&_.btn]:h-14 [&_.btn]:min-h-0 [&_.btn]:rounded-full [&_.btn]:text-lg [&_.btn]:font-semibold [&_.btn]:normal-case ${
+                    featured
+                      ? "[&_.btn]:border-base-content [&_.btn]:bg-base-content [&_.btn]:text-base-100 [&_.btn:hover]:bg-base-content/90"
+                      : "[&_.btn]:border-base-300 [&_.btn]:bg-base-100 [&_.btn]:text-base-content [&_.btn:hover]:bg-tt-soft [&_svg]:hidden"
+                  }`}
+                >
+                  <ButtonCheckout plan={plan} />
+                </div>
+              }
+            />
           );
         })}
       </div>

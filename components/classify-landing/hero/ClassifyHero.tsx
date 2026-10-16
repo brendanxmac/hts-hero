@@ -7,17 +7,9 @@ import * as mk from "@/components/ui/marketing/styles";
 export const ClassifyHero = () => (
   <header id="try-classify" className={`relative overflow-hidden scroll-mt-20 ${mk.bandTint}`}>
     <div className={`${mk.container} flex flex-col items-center pb-20 pt-14 text-center lg:pt-20`}>
-      <p className="inline-flex items-center gap-2 rounded-full bg-base-100 px-4 py-1.5 text-sm font-medium text-base-content/70 shadow-sm ring-1 ring-base-300 md:text-base">
-        <span className="text-warning">★</span>
-        Trusted by <strong className="text-primary">300+</strong> Customs Brokers &amp; Importers
-        <span className="text-warning">★</span>
-      </p>
-      <h1 className={`${mk.display} mt-8 max-w-4xl`}>
-        Produce Audit-Ready Classifications in{" "}
-        <span className="relative isolate whitespace-nowrap text-primary">
-          Minutes
-          <span aria-hidden className="absolute -bottom-1 left-0 -z-10 h-3 w-full rounded-full bg-primary/15" />
-        </span>
+      <p className={mk.eyebrow}>Classification Assistant</p>
+      <h1 className={`${mk.display} mt-5 max-w-4xl`}>
+        Produce Audit-Ready Classifications in <span className={mk.accent}>Minutes</span>
       </h1>
       <p className={`${mk.lead} mx-auto mt-6 max-w-2xl`}>
         Quickly find candidates, eliminate blind spots, and back every code with legal notes and CROSS rulings.
@@ -25,6 +17,12 @@ export const ClassifyHero = () => (
       <div className="mt-10 w-full max-w-4xl text-left">
         <HeroClassifyInput />
       </div>
+      <p className="mt-8 inline-flex items-center gap-2 text-sm text-base-content/60">
+        <span className="tracking-widest text-warning" aria-hidden>
+          ★★★★★
+        </span>
+        Trusted by <strong className="font-semibold text-base-content">300+</strong> customs brokers &amp; importers
+      </p>
     </div>
   </header>
 );

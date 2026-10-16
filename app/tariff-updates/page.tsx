@@ -13,6 +13,7 @@ import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { UpdatesList } from "@/components/tariff-updates/UpdatesList"
 import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm"
+import { TrackerCtaRow } from "@/components/tariff-updates/TrackerCta"
 import { formatDay } from "@/components/tariff-updates/labels"
 import { SOURCE_LIST, UPDATES_DEFINITION, UPDATES_FAQS } from "@/components/tariff-updates/content"
 
@@ -101,6 +102,10 @@ export default async function TariffUpdatesPage() {
                   RSS
                 </a>
               </p>
+              {/* The Tariff Tracker's offer, right under the heading */}
+              <div className="mt-2">
+                <TrackerCtaRow boxed />
+              </div>
             </div>
             <section aria-labelledby="subscribe" className={`${tt.panel} flex flex-col gap-3 p-6`}>
               <h2 id="subscribe" className={`${tt.title} m-0`}>

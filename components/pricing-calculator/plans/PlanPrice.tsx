@@ -9,6 +9,7 @@ export const PlanPrice = ({
   unit = "/mo",
   note,
   dark = false,
+  compact = false,
 }: {
   listPrice: number;
   billing: Billing;
@@ -18,6 +19,8 @@ export const PlanPrice = ({
   // Replaces the billing line under the price
   note?: string;
   dark?: boolean;
+  // A smaller price, for the compact plan cards
+  compact?: boolean;
 }) => {
   const price = monthlyRate(listPrice, billing);
   const billingLine = note ?? (billing === "annual" ? `${formatPrice(price * 12)} billed yearly` : "Billed monthly");
@@ -26,7 +29,7 @@ export const PlanPrice = ({
     <div>
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
         {prefix && <span className={dark ? "text-base-content/50" : "text-base-content/60 skin:text-base-content/60"}>{prefix}</span>}
-        <span className={`text-6xl font-extrabold tracking-tight tabular-nums ${dark ? "text-base-content" : "text-base-content skin:text-base-content"}`} aria-live="polite">
+        <span className={`${compact ? "text-4xl" : "text-6xl"} font-extrabold tracking-tight tabular-nums ${dark ? "text-base-content" : "text-base-content skin:text-base-content"}`} aria-live="polite">
           {formatPrice(price)}
         </span>
         {unit && <span className={`text-lg ${dark ? "text-base-content/50" : "text-base-content/60 skin:text-base-content/60"}`}>{unit}</span>}
@@ -37,7 +40,7 @@ export const PlanPrice = ({
           </span>
         )}
       </div>
-      <p className={`mt-2 text-sm ${dark ? "text-base-content/50" : "text-base-content/60 skin:text-base-content/60"}`}>{billingLine}</p>
+      <p className={`${compact ? "mt-1" : "mt-2"} text-sm ${dark ? "text-base-content/50" : "text-base-content/60 skin:text-base-content/60"}`}>{billingLine}</p>
     </div>
   );
 };

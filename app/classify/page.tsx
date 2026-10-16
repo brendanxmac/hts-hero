@@ -1,14 +1,11 @@
-import ClassificationExamplesSection from "@/components/ClassificationExamplesSection";
 import config from "@/config";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import { PricingPlan } from "@/types";
-import { FAQ } from "@/components/FAQ";
-import { bundleFaqList } from "@/constants/faq";
-import { ClassifyHero, ClassifyPlans, ClosingCta, HowItWorks, Testimonials, VideoBand } from "@/components/classify-landing";
+import { ClassifyFaq, ClassifyHero, ClassifyPlans, ClosingCta, Examples, HowItWorks, Testimonials, VideoBand } from "@/components/classify-landing";
 import * as mk from "@/components/ui/marketing/styles";
 
-// The classification assistant's landing page: the original homepage's content and copy, in the
-// marketing theme. The examples and the FAQ are the existing components, kept light.
+// The classification assistant's landing page, in the Tariff Tracker's look (the layout's
+// FollowTheme): light and muted bands alternate, with the video on a dark one.
 export default function ClassifyPage() {
   return (
     <main className={`${mk.page} w-full flex-1 shrink-0`}>
@@ -47,12 +44,10 @@ export default function ClassifyPage() {
       <ClassifyHero />
       <Testimonials />
       <HowItWorks />
-      <div className="pt-20">
-        <ClassificationExamplesSection />
-      </div>
+      <Examples />
       <VideoBand />
       <ClassifyPlans />
-      <FAQ faqItems={bundleFaqList} />
+      <ClassifyFaq />
       <ClosingCta />
     </main>
   );

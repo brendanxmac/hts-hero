@@ -7,7 +7,6 @@ import * as tt from "@/components/ui/styles/tracker"
 import { Select } from "@/components/ui/Select"
 import type { PublicUpdate } from "@/libs/tariff-updates/public"
 import type { Authority } from "@/libs/tariff-updates/types"
-import { TrackerCtaRow } from "./TrackerCta"
 import { authorityColor, authorityLabel, countryOf, formatDay, kindLabel, STAGE_LABELS } from "./labels"
 
 // Every published update, latest activity first and grouped by month, with a search and filters
@@ -150,9 +149,6 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
           ))}
         </div>
       </div>
-
-      {/* The Tariff Tracker's offer, before the first update */}
-      <TrackerCtaRow />
 
       {months.length ? (
         months.map(({ month, updates: monthUpdates }) => (

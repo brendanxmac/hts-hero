@@ -132,7 +132,7 @@ export const HowItWorks = () => {
   ][step];
 
   return (
-    <section id="how-it-works" className={`${mk.band} ${mk.bandMuted} scroll-mt-20`} aria-labelledby="how-title">
+    <section id="how-it-works" className={`${mk.band} scroll-mt-20`} aria-labelledby="how-title">
       <div className={mk.container}>
         <SectionIntro eyebrow="Four steps" title="How It Works" id="how-title" center>
           From a product description to an evidence-backed classification in minutes.
