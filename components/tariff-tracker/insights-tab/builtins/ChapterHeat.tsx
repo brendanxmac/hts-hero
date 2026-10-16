@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import * as tt from "@/components/ui/styles/tracker";
 import { formatRate } from "../../formatRate";
 import { breakdown, chapterName, chapterOf, InsightsInput, rateOn } from "../lib/data";
-import { InsightPanel } from "../shared";
+import { InsightPanel, ShowAll } from "../shared";
 
 // Which tariffs hit which chapters: the catalog's biggest chapters down the side, its biggest
 // tariffs across, and what each tariff adds on average to the chapter's imports. One hue, cobalt,
@@ -13,9 +13,14 @@ import { InsightPanel } from "../shared";
 const heat = (pct: number) => `color-mix(in srgb, oklch(var(--p)) ${Math.min(92, 14 + pct * 2.8)}%, transparent)`;
 
 export const ChapterHeat = ({ input }: { input: InsightsInput }) => {
-  const { chapters, programs, cells, hottest } = useMemo(() => {
-    const chapters = breakdown(input, "chapter").sort((a, b) => b.imports - a.imports).slice(0, 8);
-    const programs = breakdown(input, "program").sort((a, b) => b.dutyShare - a.dutyShare).slice(0, 5);
+  const [all, setAll] = useState(false);
+  const { chapters, programs, cells, hottest, hidden } = useMemo(() => {
+    const allChapters = breakdown(input, "chapter").sort((a, b) => b.imports - a.imports);
+    // Tariffs that still apply today
+    const allPrograms = breakdown(input, "program").filter((r) => r.avgRate > 0.005).sort((a, b) => b.dutyShare - a.dutyShare);
+    const chapters = all ? allChapters : allChapters.slice(0, 8);
+    const programs = all ? allPrograms : allPrograms.slice(0, 5);
+    const hidden = { chapters: allChapters.length - 8, programs: allPrograms.length - 5 };
     const cells = chapters.map((ch) => {
       const inChapter = input.products.filter((p) => chapterOf(p) === ch.key);
       return programs.map((pr) => {
@@ -29,8 +34,12 @@ export const ChapterHeat = ({ input }: { input: InsightsInput }) => {
         if (programs[j].key !== "Base duty" && (!hottest || pct > hottest.pct)) hottest = { chapter: chapters[i].key, program: programs[j].label, pct };
       })
     );
-    return { chapters, programs, cells, hottest: hottest as { chapter: string; program: string; pct: number } | null };
-  }, [input]);
+    return { chapters, programs, cells, hidden, hottest: hottest as { chapter: string; program: string; pct: number } | null };
+  }, [input, all]);
+  const more = [
+    hidden.chapters > 0 ? `${hidden.chapters} more ${hidden.chapters === 1 ? "chapter" : "chapters"}` : null,
+    hidden.programs > 0 ? `${hidden.programs} more ${hidden.programs === 1 ? "tariff" : "tariffs"}` : null,
+  ].filter(Boolean);
 
   return (
     <InsightPanel
@@ -84,6 +93,7 @@ export const ChapterHeat = ({ input }: { input: InsightsInput }) => {
           </tbody>
         </table>
       </div>
+      {more.length > 0 && <ShowAll more={more.join(" and ")} open={all} onToggle={() => setAll(!all)} />}
     </InsightPanel>
   );
 };

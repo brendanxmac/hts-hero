@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import * as tt from "@/components/ui/styles/tracker";
 import { formatRate } from "../../formatRate";
 import { BarList } from "../charts";
 import { breakdown, concentration, InsightsInput } from "../lib/data";
-import { groupColors, InsightPanel } from "../shared";
+import { groupColors, InsightPanel, ShowAll } from "../shared";
 
 // How concentrated the catalog is by country of origin: each country's share of the imports and
 // its average rate, the top one's share, and how few countries make up most of the catalog
@@ -16,7 +16,8 @@ export const Origins = ({ input }: { input: InsightsInput }) => {
   const rows = useMemo(() => breakdown(input, "country").sort((a, b) => b.imports - a.imports || b.avgRate - a.avgRate), [input]);
   const { top, forEighty, countries } = concentration(rows);
   const colors = groupColors(rows, "country", true);
-  const shown = rows.slice(0, 8);
+  const [all, setAll] = useState(false);
+  const shown = all ? rows : rows.slice(0, 8);
   const priciest = [...rows].filter((r) => r.imports >= Math.min(2, rows[0]?.imports ?? 1)).sort((a, b) => b.avgRate - a.avgRate)[0];
 
   return (
@@ -71,7 +72,7 @@ export const Origins = ({ input }: { input: InsightsInput }) => {
           color: colors[r.key],
         }))}
       />
-      {rows.length > shown.length && <p className="m-0 text-xs text-base-content/60">And {rows.length - shown.length} more countries.</p>}
+      {rows.length > 8 && <ShowAll more={`${rows.length - 8} more countries`} open={all} onToggle={() => setAll(!all)} />}
     </InsightPanel>
   );
 };

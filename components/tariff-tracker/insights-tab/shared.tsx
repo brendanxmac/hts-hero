@@ -3,7 +3,7 @@
 import { ReactNode, useMemo } from "react";
 import { LightBulbIcon } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
-import { PRIMARY_MARK, SERIES_COLORS, MUTED_MARK } from "@/components/ui/theme";
+import { CHART_COLORS, PRIMARY_MARK, SERIES_COLORS, MUTED_MARK } from "@/components/ui/theme";
 import { useHtsSections } from "@/contexts/HtsSectionsContext";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { useInsights } from "../insights/InsightsContext";
@@ -29,8 +29,24 @@ export const useInsightsInput = (): InsightsInput & { ready: boolean } => {
 // a single measure across categories is one color
 export const groupColors = (rows: GroupRow[], dimension: DimensionId, distinct: boolean): Record<string, string> => {
   if (dimension === "program") return programColors([{ parts: rows.map((r) => ({ key: r.key, pct: 1 })) }]);
-  return Object.fromEntries(rows.map((r, i) => [r.key, distinct ? (SERIES_COLORS[i] ?? MUTED_MARK) : PRIMARY_MARK]));
+  // Past the five series colors (everything shown at once), the chart colors, then a quiet gray
+  const palette = [...SERIES_COLORS, ...CHART_COLORS];
+  return Object.fromEntries(rows.map((r, i) => [r.key, distinct ? (palette[i] ?? MUTED_MARK) : PRIMARY_MARK]));
 };
+
+// Under a chart that shows only the biggest few: the rest, drawn in the same chart, or back to
+// the few
+// `more` says what's hidden: "8 more countries"
+export const ShowAll = ({ more, open, onToggle }: { more: string; open: boolean; onToggle: () => void }) => (
+  <button
+    type="button"
+    onClick={onToggle}
+    aria-expanded={open}
+    className="self-start rounded-full text-xs font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+  >
+    {open ? "Show fewer" : `Show ${more}`}
+  </button>
+);
 
 // One insight: a panel with a title, what it shows, an optional control on the right, and the
 // lesson in one line at the foot

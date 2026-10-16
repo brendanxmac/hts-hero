@@ -31,7 +31,7 @@ import {
   trendSeries,
   yearAgo,
 } from "./lib/data";
-import { groupColors, Lesson } from "./shared";
+import { groupColors, Lesson, ShowAll } from "./shared";
 
 // Build your own chart from the catalog: what to see (a breakdown, a trend over time, or imports
 // compared), the measure, what to group by, the chart, and which imports to include. Every chart
@@ -92,7 +92,13 @@ export const Builder = ({ input, preview = false }: { input: InsightsInput; prev
   const { range } = useInsights();
   const [spec, setSpecState] = useState<ChartSpec>(DEFAULT_SPEC);
   const [search, setSearch] = useState("");
-  const set = (patch: Partial<ChartSpec>) => setSpecState((s) => ({ ...s, ...patch }));
+  // Every group drawn, not just the biggest few; back to the few whenever the chart changes
+  const [all, setAll] = useState(false);
+  const setSpec = (next: ChartSpec) => {
+    setSpecState(next);
+    setAll(false);
+  };
+  const set = (patch: Partial<ChartSpec>) => setSpec({ ...spec, ...patch });
 
   // The imports in play: the country and chapter filters
   const countries = useMemo(() => breakdown(input, "country").sort((a, b) => b.imports - a.imports), [input]);
@@ -186,7 +192,8 @@ export const Builder = ({ input, preview = false }: { input: InsightsInput; prev
 
     if (spec.mode === "trend") {
       const trendMetric = TREND_METRICS.includes(spec.metric) ? spec.metric : "avgRate";
-      const groups = sortRows(rows, METRICS[trendMetric], spec.groupBy).slice(0, 5);
+      const sorted = sortRows(rows, METRICS[trendMetric], spec.groupBy);
+      const groups = all ? sorted : sorted.slice(0, 5);
       const series = trendSeries(scoped, spec.groupBy, trendMetric, from, groups);
       const colors = groupColors(groups, spec.groupBy, true);
       const format = METRICS[trendMetric].format;
@@ -198,7 +205,7 @@ export const Builder = ({ input, preview = false }: { input: InsightsInput; prev
         body: (
           <div className="flex flex-col gap-2">
             <StepLines series={series} colors={colors} to={input.today} format={format} label={`${METRICS[trendMetric].title} over time`} />
-            {rows.length > 5 && <p className="m-0 text-xs text-base-content/60">The five largest of {rows.length} groups; filter to see others.</p>}
+            {rows.length > 5 && <ShowAll more={`${rows.length - 5} more ${rows.length - 5 === 1 ? "line" : "lines"}`} open={all} onToggle={() => setAll(!all)} />}
           </div>
         ),
         lesson:
@@ -208,7 +215,7 @@ export const Builder = ({ input, preview = false }: { input: InsightsInput; prev
       };
     }
 
-    const { rows: shown, rest } = topRows(rows, metric, spec.top);
+    const { rows: shown, rest } = topRows(rows, metric, all ? Infinity : spec.top);
     const distinct = spec.chart === "donut" || spec.groupBy === "program";
     const colors = groupColors(shown, spec.groupBy, distinct);
     const data: Datum[] = shown.map((r) => ({
@@ -220,7 +227,17 @@ export const Builder = ({ input, preview = false }: { input: InsightsInput; prev
       note: `${r.imports.toLocaleString("en-US")} ${r.imports === 1 ? "import" : "imports"}`,
       color: metric.signed ? changeColor(metric.value(r)) : colors[r.key],
     }));
-    if (rest) data.push({ key: "rest", label: rest.label, text: rest.label, value: rest.value, display: metric.format(rest.value), color: "oklch(var(--bc) / 0.18)" });
+    if (rest)
+      data.push({
+        key: "rest",
+        label: <span className="text-primary">{rest.label}</span>,
+        text: rest.label,
+        value: rest.value,
+        display: metric.format(rest.value),
+        color: "oklch(var(--bc) / 0.18)",
+        onClick: () => setAll(true),
+      });
+    const hidden = rows.length - spec.top;
     const kind = spec.chart === "donut" && !metric.share ? "bars" : spec.chart;
     return {
       title: `${metric.title} ${dimension.by}`,
@@ -234,6 +251,8 @@ export const Builder = ({ input, preview = false }: { input: InsightsInput; prev
         ) : (
           <BarList data={data} signed={metric.signed} />
         ),
+      more:
+        kind !== "table" && hidden > 0 ? <ShowAll more={`${hidden} more ${hidden === 1 ? "group" : "groups"}`} open={all} onToggle={() => setAll(!all)} /> : null,
       lesson: takeaway(rows, metric, spec.groupBy),
     };
   })();
@@ -250,7 +269,7 @@ export const Builder = ({ input, preview = false }: { input: InsightsInput; prev
             </h2>
             <p className={tt.subtitle}>Any measure, grouped any way, over any of your imports. Start from an idea or set it up yourself.</p>
           </div>
-          <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => setSpecState(DEFAULT_SPEC)} disabled={preview}>
+          <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => setSpec(DEFAULT_SPEC)} disabled={preview}>
             Start over
           </button>
         </div>
@@ -260,7 +279,7 @@ export const Builder = ({ input, preview = false }: { input: InsightsInput; prev
               key={idea.label}
               type="button"
               disabled={preview}
-              onClick={() => setSpecState({ ...DEFAULT_SPEC, country: spec.country, chapter: spec.chapter, ...idea.spec })}
+              onClick={() => setSpec({ ...DEFAULT_SPEC, country: spec.country, chapter: spec.chapter, ...idea.spec })}
               className="rounded-full border border-base-300 px-3 py-1 text-xs font-semibold text-base-content/80 hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               {idea.label}
@@ -414,6 +433,7 @@ export const Builder = ({ input, preview = false }: { input: InsightsInput; prev
                 </p>
               </div>
               {chart.body}
+              {"more" in chart && chart.more}
               {chart.lesson && <Lesson>{chart.lesson}</Lesson>}
             </>
           ) : (

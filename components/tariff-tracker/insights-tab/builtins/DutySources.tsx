@@ -7,7 +7,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { formatRate } from "../../formatRate";
 import { BarList } from "../charts";
 import { breakdown, chapterName, CatalogScale, DimensionId, estimatedValues, InsightsInput, METRICS, takeaway } from "../lib/data";
-import { groupColors, InsightPanel } from "../shared";
+import { groupColors, InsightPanel, ShowAll } from "../shared";
 
 // Where the catalog's duty comes from: the tariffs that make up its average rate, and each
 // tariff's, country's or chapter's share of the duty. A handful of imports only splits by tariff.
@@ -18,9 +18,10 @@ const percent = (share: number) => `${Math.round(share * 1000) / 10}%`;
 
 export const DutySources = ({ input, scale }: { input: InsightsInput; scale: CatalogScale }) => {
   const [view, setView] = useState<View>("program");
+  const [all, setAll] = useState(false);
   const rows = useMemo(() => breakdown(input, view).filter((r) => r.dutyShare > 0 || r.avgRate > 0).sort((a, b) => b.dutyShare - a.dutyShare), [input, view]);
   const programs = useMemo(() => (view === "program" ? rows : breakdown(input, "program")), [input, view, rows]);
-  const colors = groupColors(view === "program" ? rows : rows.slice(0, 8), view, false);
+  const colors = groupColors(rows, view, false);
   const programColors = groupColors(programs, "program", false);
   const n = input.products.length || 1;
   // The catalog's average rate, split by what each tariff adds to it
@@ -30,7 +31,7 @@ export const DutySources = ({ input, scale }: { input: InsightsInput; scale: Cat
     .sort((a, b) => b.amount - a.amount);
   const averageRate = average.reduce((s, p) => s + p.amount, 0);
   const estimated = estimatedValues(input.products);
-  const shown = rows.slice(0, 8);
+  const shown = all ? rows : rows.slice(0, 8);
 
   return (
     <InsightPanel
@@ -86,7 +87,7 @@ export const DutySources = ({ input, scale }: { input: InsightsInput; scale: Cat
           }))}
           labelWidth={view === "chapter" ? "13rem" : "11rem"}
         />
-        {rows.length > shown.length && <p className="m-0 text-xs text-base-content/60">And {rows.length - shown.length} more with smaller shares.</p>}
+        {rows.length > 8 && <ShowAll more={`${rows.length - 8} more with smaller shares`} open={all} onToggle={() => setAll(!all)} />}
       </div>
       <p className="m-0 text-xs text-base-content/60">
         {view === "program" ? "“Adds” is the rate the tariff adds where it applies. " : "“Avg” is the average rate. "}
