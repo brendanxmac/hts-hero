@@ -108,10 +108,10 @@ const TopTab = ({ section }: { section: TrackerSection }) => {
   );
 };
 
-const GROUPS = [
-  { label: "Workspace", id: "workspace" },
-  { label: "Intelligence", id: "intelligence" },
-] as const;
+const GROUPS = [{ label: "Workspace", id: "workspace" }] as const;
+
+// The sections in the sidebar (some are left out for now: sections.ts)
+const SHOWN = SECTIONS.filter((s) => !s.hidden);
 
 // While the app is open the page itself never scrolls: only the section does. Anything added to
 // the page outside the app (tooltips, chat) can't stretch it.
@@ -184,7 +184,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
               ) : (
                 <span className="px-3 pb-1 text-[0.7rem] font-bold uppercase tracking-wider text-base-content/60">{group.label}</span>
               )}
-              {SECTIONS.filter((s) => s.group === group.id).map((section) => (
+              {SHOWN.filter((s) => s.group === group.id).map((section) => (
                 <SidebarTab key={section.slug} section={section} meta={meta[section.slug]} locked={section.paidOnly && section.ready && !paid && !loading} collapsed={collapsed} />
               ))}
             </div>
@@ -203,7 +203,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
 
       {/* Phones and tablets; the sidebar's tabs carry the ids the panels point to */}
       <nav role="tablist" aria-label="Tariff Tracker" className="flex shrink-0 gap-1 overflow-x-auto border-b border-base-300 bg-base-100 px-2 py-2 lg:hidden">
-        {SECTIONS.map((section) => (
+        {SHOWN.map((section) => (
           <TopTab key={section.slug} section={section} />
         ))}
       </nav>

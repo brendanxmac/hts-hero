@@ -5,7 +5,6 @@ import {
   ClipboardDocumentCheckIcon,
   ClockIcon,
   GlobeAltIcon,
-  HeartIcon,
   ChatBubbleLeftRightIcon,
   HomeIcon,
   NewspaperIcon,
@@ -20,7 +19,6 @@ import {
 
 export type SectionSlug =
   | "overview"
-  | "health"
   | "calculator"
   | "catalog"
   | "history"
@@ -42,7 +40,7 @@ export interface TrackerSection {
   summary: string
   ready: boolean
   // Where it sits in the sidebar
-  group: "workspace" | "intelligence"
+  group: "workspace"
   // Needs a paid plan (the usage-based trial doesn't include it)
   paidOnly: boolean
   // Still experimental
@@ -52,6 +50,8 @@ export interface TrackerSection {
   comingSoon?: boolean
   // What the section will do, until it's built
   planned: string[]
+  // Left out of the sidebar for now (links into it still open it)
+  hidden?: boolean
 }
 
 export const TRACKER_PATH = "/tariff-tracker"
@@ -69,17 +69,6 @@ export const SECTIONS: TrackerSection[] = [
     title: "Overview",
     summary:
       "Your imports' tariffs at a glance: what you pay, what changed and where to save.",
-    ready: true,
-    group: "workspace",
-    paidOnly: false,
-    planned: [],
-  }),
-  section({
-    slug: "health",
-    label: "Tariff health",
-    Icon: HeartIcon,
-    title: "Tariff health",
-    summary: "How well your imports are covered: alerts on, savings reviewed and entries audited.",
     ready: true,
     group: "workspace",
     paidOnly: false,
@@ -151,7 +140,7 @@ export const SECTIONS: TrackerSection[] = [
     title: "Rate history",
     summary: "How the rate on each of your products has changed, and why.",
     ready: true,
-    group: "intelligence",
+    group: "workspace",
     paidOnly: false,
     planned: [
       "The rate on every one of your imports on any past date",
@@ -161,13 +150,14 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "savings",
+    hidden: true,
     label: "Savings",
     Icon: ReceiptPercentIcon,
     title: "Savings",
     summary: "Ways you could pay less duty on the products you already import.",
     ready: false,
     comingSoon: true,
-    group: "intelligence",
+    group: "workspace",
     paidOnly: false,
     planned: [
       "Trade programs your products can claim from the countries they come from",
@@ -177,13 +167,14 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "sourcing",
+    hidden: true,
     label: "Sourcing",
     Icon: GlobeAltIcon,
     title: "Sourcing",
     summary:
       "Find cheaper countries that already make your products for the US.",
     ready: true,
-    group: "intelligence",
+    group: "workspace",
     paidOnly: false,
     planned: [
       "Cheaper countries of origin for each product that already ship it to the US, with how much",
@@ -193,6 +184,7 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "entries",
+    hidden: true,
     label: "Entry audit",
     Icon: ClipboardDocumentCheckIcon,
     title: "Entry audit",
@@ -200,7 +192,7 @@ export const SECTIONS: TrackerSection[] = [
     summary:
       "Check the duty paid on every shipment against the rates in force that day.",
     ready: false,
-    group: "intelligence",
+    group: "workspace",
     paidOnly: false,
     planned: [
       "Log each entry you clear: product, country, entry date, value and the duty you paid",
@@ -215,7 +207,7 @@ export const SECTIONS: TrackerSection[] = [
     title: "Expert help",
     summary: "HTS Hero as your tariff team: we manage every tariff on your imports, with you.",
     ready: true,
-    group: "intelligence",
+    group: "workspace",
     paidOnly: false,
     planned: [],
   }),

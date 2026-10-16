@@ -4,6 +4,7 @@ import { ReactNode, useMemo, useState } from "react";
 import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
+import { InfoTip } from "@/components/ui/InfoTip";
 import { AUTHORITIES } from "@/libs/tariff-updates/types";
 import { formatRate } from "../formatRate";
 import { day, groupOf, GROUPS, rateChange, signedRate, type ImpactGroup } from "../impact/format";
@@ -22,55 +23,112 @@ import { useTariffUpdates, type TrackerUpdate } from "./useTariffUpdates";
 
 const openImpact = (slug: string) => window.history.pushState(null, "", `${sectionUrl("impact")}&update=${encodeURIComponent(slug)}`);
 
-// A box's frame: its title, the link to its page, then what it shows
-const SummaryBox = ({ id, title, page, link, children }: { id: string; title: string; page: SectionSlug; link: string; children: ReactNode }) => {
+// A box's frame: its title (Title Case) with an (i) that explains it, the link to its page, then
+// what it shows
+const SummaryBox = ({
+  id,
+  title,
+  info,
+  page,
+  link,
+  children,
+}: {
+  id: string;
+  title: string;
+  info: ReactNode;
+  page?: SectionSlug;
+  link?: string;
+  children: ReactNode;
+}) => {
   const { openTab } = useTrackerNav();
   return (
     <section className={`${tt.panel} flex flex-col`} aria-labelledby={id}>
       <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-5 lg:px-6">
-        <h2 id={id} className={tt.title}>
-          {title}
-        </h2>
-        <button type="button" className={`${ui.link} inline-flex items-center gap-1 text-sm font-semibold`} onClick={() => openTab(page)}>
-          {link}
-          <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
-        </button>
+        <span className="flex items-center gap-2">
+          <h2 id={id} className={tt.title}>
+            {title}
+          </h2>
+          <InfoTip label={`About ${title}`}>{info}</InfoTip>
+        </span>
+        {page && link && (
+          <button type="button" className={`${ui.link} inline-flex items-center gap-1 text-sm font-semibold`} onClick={() => openTab(page)}>
+            {link}
+            <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+          </button>
+        )}
       </div>
       <div className="flex flex-1 flex-col px-5 pb-5 lg:px-6">{children}</div>
     </section>
   );
 };
 
-// ── Tariff health: the score and the three shares behind it ──
+// ── Tariff Health: the score, and each of the three with what it means and where to act ──
 
 export const HealthSummary = () => {
   const h = useTariffHealth();
+  const { openTab } = useTrackerNav();
+  const n = (count: number) => count.toLocaleString("en-US");
   const rows = [
-    { label: "Alerts on", pct: h.alertsPct, bar: "bg-primary" },
-    { label: "Savings reviewed", pct: h.savingsPct, bar: "bg-success" },
-    { label: "Entries audited", pct: h.auditPct, bar: "bg-primary" },
+    {
+      label: "Alerts",
+      pct: h.alertsPct,
+      bar: "bg-primary",
+      text: !h.signedIn
+        ? "With a free account, you hear about every tariff change on your imports."
+        : !h.alertsSet
+          ? "Alerts are off: you won't hear when a tariff on your imports changes."
+          : h.covered < h.imports
+            ? `${n(h.covered)} of ${n(h.imports)} imports get an alert when a tariff on them changes.`
+            : "Every import gets an alert when a tariff on it changes.",
+      link: h.signedIn ? "Alert settings" : h.unlockLabel,
+      go: () => (h.signedIn ? openTab("alerts") : h.unlock("alerts")),
+    },
+    {
+      label: "Savings reviewed",
+      pct: h.savingsPct,
+      bar: "bg-success",
+      text: `${n(h.stats.reviewed)} of ${n(h.stats.total)} imports, each once every way it could pay less is secured or ruled out.`,
+      link: "Review in Your imports",
+      go: () => openTab("catalog"),
+    },
+    {
+      label: "Entries audited",
+      pct: h.auditPct,
+      bar: "bg-primary",
+      text: `${n(h.auditedImports)} of ${n(h.imports)} imports have an entry checked against the rate in force that day.`,
+      link: "Audit in Your imports",
+      go: () => openTab("catalog"),
+    },
   ];
   return (
-    <SummaryBox id="tt-health-summary" title="Tariff health" page="health" link="Open">
+    <SummaryBox
+      id="tt-health-summary"
+      title="Tariff Health"
+      info="How well your imports are looked after, across the three things the Tracker does: alerts on for them, potential savings reviewed, and past entries audited. Each is the share of your imports there; the score is the average of the three."
+    >
       <p className="m-0 flex items-baseline gap-2" aria-label={`Tariff health ${h.overall}%`}>
         <span className={`${tt.metric} ${h.overall >= 80 ? "text-success" : "text-primary"}`}>{h.overall}%</span>
-        <span className="text-sm text-base-content/60">overall</span>
+        <span className="text-sm text-base-content/60">overall, across your {n(h.imports)} imports</span>
       </p>
-      <ul className="mt-4 flex flex-col gap-3">
+      <ul className="mt-4 flex flex-col gap-4">
         {rows.map((r) => (
           <li key={r.label} className="flex flex-col gap-1.5">
             <span className="flex items-baseline justify-between text-sm">
-              <span className="text-base-content/70">{r.label}</span>
+              <span className="font-semibold text-base-content">{r.label}</span>
               <span className="font-semibold tabular-nums text-base-content">{r.pct}%</span>
             </span>
             <span className="block h-2 w-full overflow-hidden rounded-full bg-tt-soft" aria-hidden>
               {/* Runtime width (DESIGN_SYSTEM §10) */}
               <span className={`block h-full rounded-full ${r.bar}`} style={{ width: `${Math.max(r.pct, r.pct > 0 ? 3 : 0)}%` }} />
             </span>
+            <span className="text-xs leading-snug text-base-content/60">{r.text}</span>
+            <button type="button" className={`${ui.link} inline-flex items-center gap-1 self-start text-xs font-semibold`} onClick={r.go}>
+              {r.link}
+              <ArrowRightIcon className="h-3 w-3" aria-hidden />
+            </button>
           </li>
         ))}
       </ul>
-      <p className="mt-auto pt-4 text-xs text-base-content/60">The share of your {h.imports.toLocaleString("en-US")} imports at each, and their average.</p>
     </SummaryBox>
   );
 };
@@ -94,7 +152,13 @@ export const ImpactsSummary = () => {
     .sort((a, b) => order[groupOf(a)] - order[groupOf(b)] || Math.abs(rateChange(b)) - Math.abs(rateChange(a)));
 
   return (
-    <SummaryBox id="tt-impacts-summary" title="Tariff impacts" page="impact" link="All impacts">
+    <SummaryBox
+      id="tt-impacts-summary"
+      title="Tariff Impacts"
+      info="The latest tariff actions that affect, or may affect, your imports, newest first. Each shows its rate before and after on up to three of them; flip through the latest five, or open one for every import it hits."
+      page="impact"
+      link="All impacts"
+    >
       {!updates ? (
         <div className={`${ui.skeleton} h-40 w-full`} />
       ) : !current ? (
@@ -187,7 +251,13 @@ export const NewsSummary = () => {
   const matches = useImportMatches(updates);
   const { openTab } = useTrackerNav();
   return (
-    <SummaryBox id="tt-news-summary" title="Tariff news" page="news" link="All news">
+    <SummaryBox
+      id="tt-news-summary"
+      title="Tariff News"
+      info="The newest US tariff actions from the White House, the Federal Register, CBP, USTR and the USITC, checked every 15 minutes. Open one to see what it does to your imports."
+      page="news"
+      link="All news"
+    >
       {!updates ? (
         <div className={`${ui.skeleton} h-40 w-full`} />
       ) : !updates.length ? (
