@@ -9,7 +9,6 @@ import {
   CheckIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
-  LockClosedIcon,
   NewspaperIcon,
   SparklesIcon,
   XMarkIcon,
@@ -123,13 +122,8 @@ export const UpgradeDialog = ({
   const tracked = stats?.tracked ?? Math.min(items.length, access.pairLimit);
   const untracked = Math.max(0, imports - tracked);
   // The headline speaks to what's left out: imports nobody is watching
-  // Opened by tracking one more import than the plan allows
-  const atLimit = feature === "limit";
-  const title = atLimit
-    ? `Alerts are on for ${number(access.pairLimit)} of ${number(access.pairLimit)} imports`
-    : access.kind !== "paid" && untracked > 0
-      ? `${number(untracked)} of your ${number(imports)} imports ${untracked === 1 ? "isn't" : "aren't"} being watched`
-      : heading;
+  // The headline is the outcome, on their own imports; what's at risk follows in red
+  const title = untracked > 0 ? `Never miss a tariff change on any of your ${number(imports)} imports` : heading;
   const benefits = [
     ...BENEFITS,
     ...(SAVINGS_ENABLED ? [{ Icon: SparklesIcon, title: "Savings on every import", body: PREMIUM_INCLUDES[0] }] : []),
@@ -171,24 +165,19 @@ export const UpgradeDialog = ({
               <span className={tt.eyebrow("primary")}>Tariff Tracker Plans</span>
               <Dialog.Title className={`${tt.display} m-0 pr-8 text-2xl font-semibold leading-tight text-base-content sm:text-[1.75rem]`}>{title}</Dialog.Title>
               <p className={`${tt.subtitle} m-0 max-w-3xl text-base`}>
-                {usedUp && access.kind !== "paid" && untracked === 0 ? `${usedUp} ` : ""}
-                Tracked imports tell you the day a tariff changes, with exactly how much each rate moves, so you can reprice,
-                reorder or talk to your supplier before it reaches your invoices.
+                {untracked > 0 ? (
+                  <span className="font-semibold text-error">
+                    Right now, {number(untracked)} of them {untracked === 1 ? "has" : "have"} alerts off.{" "}
+                  </span>
+                ) : usedUp ? (
+                  `${usedUp} `
+                ) : (
+                  ""
+                )}
+                Get an alert the day a tariff changes, with exactly how much each rate moves, so you can reprice, reorder or talk
+                to your supplier before it reaches your invoices.
               </p>
             </div>
-
-            {atLimit && (
-              <div role="status" className="flex flex-col gap-1 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 sm:flex-row sm:items-center sm:gap-3">
-                <LockClosedIcon className="hidden h-5 w-5 shrink-0 text-warning sm:block" aria-hidden />
-                <p className="m-0 text-sm text-base-content/80">
-                  <span className="font-semibold text-base-content">
-                    You&apos;ve reached your {access.kind === "paid" ? `Tracker ${number(access.pairLimit)} plan's` : "free plan's"} limit of {number(access.pairLimit)} imports with alerts.
-                  </span>{" "}
-                  Pick a plan below to get alerts on more{untracked > 0 ? `, including the ${number(untracked)} with alerts off` : ""}, or turn alerts off for one in
-                  Your Imports to free a slot.
-                </p>
-              </div>
-            )}
 
             {stats && stats.changes12m > 0 && (
               <div className={`${tt.tile} flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:gap-3`}>
@@ -328,7 +317,7 @@ export const UpgradeDialog = ({
 };
 
 // Outcomes of tracking (the Tracker MVP: libs/tariff-tracker/features.ts)
-const BENEFITS = [
+export const BENEFITS = [
   { Icon: BellAlertIcon, title: "Hear the day a tariff hits", body: "Alerts by email, Slack or Teams, with each rate before and after." },
   { Icon: BoltIcon, title: "Know exactly what changed", body: "Impact checks show how any tariff action moves each of your imports." },
   { Icon: NewspaperIcon, title: "Every official source, one feed", body: "CBP, the Federal Register, USTR, USITC and the White House, sorted for you." },

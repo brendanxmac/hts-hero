@@ -19,6 +19,7 @@ import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { TrackerAccessContext, TrackerAccessValue } from "./accessContext";
 import { PREMIUM_FEATURES, PremiumFeature } from "./features";
 import { currentPath, signupHref } from "./signup";
+import { LimitDialog } from "./LimitDialog";
 import { UpgradeDialog } from "./UpgradeDialog";
 import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
@@ -169,8 +170,18 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
   return (
     <TrackerAccessContext.Provider value={value}>
       {children}
+      {/* At the limit, the limit first (LimitDialog), then the plans */}
+      <LimitDialog
+        open={dialog.open && dialog.feature === "limit"}
+        access={access}
+        onSeePlans={() => {
+          setDialog({ feature: "tracking", open: true });
+          trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature: "tracking", from: "limit", plan: access.kind });
+        }}
+        onClose={closeDialog}
+      />
       <UpgradeDialog
-        open={dialog.open}
+        open={dialog.open && dialog.feature !== "limit"}
         feature={dialog.feature}
         access={access}
         onClose={closeDialog}
