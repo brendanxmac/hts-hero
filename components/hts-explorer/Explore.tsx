@@ -55,6 +55,9 @@ interface ExploreProps {
   startAt?: HtsElement | null;
   // On a page: its title and intro, which the search sits beside
   heading?: ReactNode;
+  // On a page: something beside the heading (/explore: the tariff news sign-up); the search then
+  // gets a row of its own, over the schedule
+  aside?: ReactNode;
   // In a dialog: its title and close button; the outline and the panel scroll inside it
   dialog?: { title: string; onClose: () => void };
 }
@@ -150,6 +153,7 @@ const Layout = ({
   onSearchInputMount,
   startAt,
   heading,
+  aside,
   dialog,
   searchValue,
   setSearchValue,
@@ -415,6 +419,17 @@ const Layout = ({
       </>
     );
   }
+  if (aside)
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-center lg:gap-10">
+          <div className="min-w-0">{heading}</div>
+          {aside}
+        </div>
+        {search}
+        {body}
+      </div>
+    );
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,36rem)] lg:items-end lg:gap-10">

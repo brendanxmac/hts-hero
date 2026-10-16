@@ -53,6 +53,7 @@ export default async function Home() {
         <BreadcrumbsProvider>
           <Explore
             explorerSurface="explore_page"
+            aside={<NewsAlertsBox source="explore" />}
             heading={
               <>
                 <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-base-content [font-family:var(--font-tracker-display)]">
@@ -67,9 +68,6 @@ export default async function Home() {
                   </Link>{" "}
                   for a country of origin.
                 </p>
-                <div className="mt-5">
-                  <NewsAlertsBox source="explore" slim />
-                </div>
               </>
             }
           />
