@@ -27,6 +27,7 @@ import { RelatedRulings } from "./RelatedRulings";
 import { StructuredData } from "./StructuredData";
 import { CodeUpdates } from "@/components/tariff-updates/CodeUpdates";
 import { NewsAlertsBox } from "@/components/tariff-updates/NewsAlertsBox";
+import { TrackerCtaFeature } from "@/components/tariff-updates/TrackerCta";
 import type { PublicUpdate } from "@/libs/tariff-updates/public";
 import type { SectionChapter } from "./types";
 
@@ -149,6 +150,9 @@ export function HtsCodePage({
       {/* === Duties and related codes === */}
       <div className={`${mk.container} py-12 sm:py-16 flex flex-col gap-16 sm:gap-20`}>
         {summary && <DutyByCountry htsno={element.htsno} productName={productName} summary={summary} />}
+
+        {/* Alerts when a tariff action hits this code, in the free Tariff Tracker */}
+        {element.htsno && !element.htsno.startsWith("99") && <TrackerCtaFeature htsno={element.htsno} />}
 
         {imports && <ImportSources htsno={element.htsno} productName={productName} imports={imports} duty={importDuty ?? null} />}
 

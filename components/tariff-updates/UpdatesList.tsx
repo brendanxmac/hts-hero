@@ -1,13 +1,13 @@
 "use client"
 
-import { Fragment, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Link from "next/link"
-import { ArrowRightIcon, BellAlertIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid"
-import * as ui from "@/components/ui/styles"
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"
 import * as tt from "@/components/ui/styles/tracker"
 import { Select } from "@/components/ui/Select"
 import type { PublicUpdate } from "@/libs/tariff-updates/public"
 import type { Authority } from "@/libs/tariff-updates/types"
+import { TrackerCtaRow } from "./TrackerCta"
 import { authorityColor, authorityLabel, countryOf, formatDay, kindLabel, STAGE_LABELS } from "./labels"
 
 // Every published update, latest activity first and grouped by month, with a search and filters
@@ -61,32 +61,6 @@ const UpdateRow = ({ update }: { update: PublicUpdate }) => (
   </li>
 )
 
-// In the list: these updates, matched to the reader's own imports. Free, so the ask is an account,
-// and it opens straight on adding imports.
-const TrackerPromo = () => (
-  <li className="flex flex-col gap-4 bg-primary/[0.06] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-    <div className="flex items-start gap-3">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden>
-        <BellAlertIcon className="h-5 w-5" />
-      </span>
-      <div className="flex flex-col gap-1">
-        <p className="m-0 text-sm font-semibold text-base-content">Know the moment an update hits your imports</p>
-        <p className="m-0 text-sm text-base-content/70">
-          Add your HTS codes and countries to the free Tariff Tracker. When a new tariff action affects one of them, we alert you with the rate before
-          and after.
-        </p>
-      </div>
-    </div>
-    <Link
-      href="/tariff-tracker?tab=catalog&add=paste"
-      className={`${ui.button({ variant: "primary" })} shrink-0 self-start sm:self-center`}
-    >
-      Track my imports free
-      <ArrowRightIcon className="h-4 w-4" aria-hidden />
-    </Link>
-  </li>
-)
-
 export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
   const [query, setQuery] = useState("")
   const [authority, setAuthority] = useState<Authority | "">("")
@@ -128,9 +102,6 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
     `inline-flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 text-xs font-semibold transition-colors ${
       active ? "border-primary bg-primary text-primary-content" : "border-base-300 bg-base-100 text-base-content/80 hover:border-base-content/30"
     }`
-
-  // The Tariff Tracker's offer sits in the list after the third update shown
-  const promoAfter = shown[Math.min(2, shown.length - 1)]?.slug
 
   return (
     // One card: its title, the search and filters on top (pinned under the site's sticky header
@@ -180,6 +151,9 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
         </div>
       </div>
 
+      {/* The Tariff Tracker's offer, before the first update */}
+      <TrackerCtaRow />
+
       {months.length ? (
         months.map(({ month, updates: monthUpdates }) => (
           <section key={month} aria-labelledby={`month-${month}`}>
@@ -188,10 +162,7 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
             </h2>
             <ul className="divide-y divide-base-300 border-b border-base-300 last:border-b-0">
               {monthUpdates.map((u) => (
-                <Fragment key={u.slug}>
-                  <UpdateRow update={u} />
-                  {u.slug === promoAfter && <TrackerPromo />}
-                </Fragment>
+                <UpdateRow key={u.slug} update={u} />
               ))}
             </ul>
           </section>
