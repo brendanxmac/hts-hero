@@ -10,7 +10,7 @@ import { AccountGate } from "../access/AccountGate";
 import { formatRate } from "../formatRate";
 import { averageRateSeries } from "../insights/catalogHistory";
 import { useInsights } from "../insights/InsightsContext";
-import { changesTeaser, wholeDollars } from "../insights/teasers";
+import { changesTeaser } from "../insights/teasers";
 import { BeyondPlanTeaser } from "../plan";
 import { shortProgram } from "../report";
 import { useTrackerNav } from "../shell/TrackerNav";
@@ -18,7 +18,7 @@ import { useTracker } from "../TrackerContext";
 import { EmptyOverview } from "./EmptyOverview";
 import { ExposureMap } from "./ExposureMap";
 import { LatestChanges } from "./LatestChanges";
-import { averageRate, changesLastYear, countryCount, dutyPerShipment, dutySeries, monthlyChanges, productsToLookAt } from "./lib/metrics";
+import { averageRate, changesLastYear, countryCount, dutyPerShipment, monthlyChanges, productsToLookAt } from "./lib/metrics";
 import { Metric, MetricTiles } from "./MetricTiles";
 import { NewsTape } from "./NewsTape";
 import { NextStep } from "./NextStep";
@@ -47,18 +47,18 @@ export const Overview = () => {
   const data = useMemo(() => {
     const duty = dutyPerShipment(t.products);
     const rateSeries = averageRateSeries(insights.products, insights.histories);
-    const dSeries = dutySeries(insights.products, insights.histories);
     const yearAgo = addDays(today, -365);
     const quarterAgo = addDays(today, -90);
     const lastYear = changesLastYear(insights.changes, today);
 
     const rateThen = rateSeries.length ? valueOn(rateSeries, quarterAgo).pct : 0;
     const rateNow = averageRate(t.products);
-    const dutyThen = dSeries.length ? valueOn(dSeries, quarterAgo).usd : 0;
-    const dutyNow = dSeries.length ? dSeries[dSeries.length - 1].usd : duty;
+    // How much the average rate has moved in a year, as a rate (never dollars: they depend on values)
+    const rateYearAgo = rateSeries.length ? valueOn(rateSeries, yearAgo).pct : rateNow;
+    const yearChange = rateNow - rateYearAgo;
+    const yearTone = yearChange > 0.005 ? ("error" as const) : yearChange < -0.005 ? ("success" as const) : ("neutral" as const);
     const delta = (now: number, then: number, show: (n: number) => string) =>
       Math.abs(now - then) < 0.005 ? { note: "No change in 90 days", tone: "neutral" as const } : { note: `${now > then ? "▲" : "▼"} ${show(Math.abs(now - then))} in 90 days`, tone: now > then ? ("error" as const) : ("success" as const) };
-    const dutyDelta = delta(dutyNow, dutyThen, wholeDollars);
     const rateDelta = delta(rateNow, rateThen, (n) => `${Math.round(n * 100) / 100}%`);
     // The last year of a step series as points along real dates, starting with the value in force
     // a year ago
@@ -67,7 +67,16 @@ export const Overview = () => {
     const stepSpark = { sparkStep: true, sparkTo: time(today) };
 
     const metrics: Metric[] = [
-      { label: "Duty per shipment", value: wholeDollars(duty), note: dutyDelta.note, noteTone: dutyDelta.tone, spark: lastYearOf(dSeries, (p) => p.usd), ...stepSpark },
+      {
+        label: "Rate change, 12 months",
+        value: `${yearChange > 0.005 ? "+" : yearChange < -0.005 ? "−" : ""}${formatRate(Math.abs(yearChange))}`,
+        tone: yearTone === "neutral" ? undefined : yearTone,
+        note: yearTone === "neutral" ? "Average rate unchanged" : `Average rate ${formatRate(rateYearAgo)} → ${formatRate(rateNow)}`,
+        noteTone: "neutral",
+        spark: lastYearOf(rateSeries, (p) => p.pct),
+        sparkTone: yearTone === "error" ? "error" : "primary",
+        ...stepSpark,
+      },
       { label: "Average rate", value: formatRate(rateNow), note: rateDelta.note, noteTone: rateDelta.tone, spark: lastYearOf(rateSeries, (p) => p.pct), ...stepSpark },
       {
         label: "Changes, last 12 months",

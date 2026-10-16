@@ -11,6 +11,8 @@ export interface Metric {
   value: string;
   note: string;
   noteTone: "error" | "success" | "neutral";
+  // The number's color: a rise (error) or a drop (success)
+  tone?: "error" | "success";
   spark?: SparkPoint[];
   sparkTone?: "primary" | "error";
   // Steps (a rate or duty that holds until it changes), running on to sparkTo (today)
@@ -26,6 +28,7 @@ export const MetricTiles = ({ metrics }: { metrics: Metric[] }) => (
     stats={metrics.map((m) => ({
       label: m.label,
       value: m.value,
+      tone: m.tone,
       extra: (
         <div className="flex flex-col gap-1.5">
           <Sparkline points={m.spark ?? []} color={m.sparkTone === "error" ? ERROR_MARK : PRIMARY_MARK} step={m.sparkStep} to={m.sparkTo} height={32} />
