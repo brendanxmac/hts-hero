@@ -1,6 +1,5 @@
 import {
   ANNUAL_DISCOUNT,
-  CLASSIFY_PLANS,
   TRACKER_TIERS,
   TRIAL_ALLOWANCE,
   formatPrice,
@@ -36,7 +35,7 @@ export const HOME_FAQS = [
   },
   {
     question: "How much does HTS Hero cost?",
-    answer: `The Tariff Calculator is free. The Tariff Tracker is free to start: check ${TRIAL_ALLOWANCE.savingsChecks} imports for savings, run ${TRIAL_ALLOWANCE.auditChecks} audit checks and get alerts on ${TRIAL_ALLOWANCE.alertImports} imports, then from ${trackerFrom} a month. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. Monthly plans, no contract, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
+    answer: `The Tariff Calculator is free. The Tariff Tracker is free to start: check ${TRIAL_ALLOWANCE.savingsChecks} imports for savings, run ${TRIAL_ALLOWANCE.auditChecks} audit checks and get alerts on ${TRIAL_ALLOWANCE.alertImports} imports, then from ${trackerFrom} a month. Monthly plans, no contract, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
   },
   {
     question: "How do you count imports?",
