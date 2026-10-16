@@ -10,6 +10,8 @@ import { DEFAULT_NEWS_PREFERENCES, NewsPreferencesFields, type NewsPreferencesVa
 // Subscribe to US tariff updates by email, on /tariff-updates and every update page. Weekly digest
 // of new actions by default; "Choose what you get" opens the laws, countries and timing. After
 // subscribing, the next step is offered: alerts on their own imports, in the Tariff Tracker.
+// `inline` is the small one inside another box (the duty calculator's Tariff News): the email and
+// a button on one row, the weekly digest of every law and country, and a one-line confirmation.
 
 type Status = "idle" | "sending" | "confirm_sent" | "manage_link_sent" | "throttled"
 
@@ -19,7 +21,7 @@ const DONE: Record<"confirm_sent" | "manage_link_sent" | "throttled", { title: s
   throttled: { title: "Check your inbox", body: "We sent you an email a few minutes ago. Use the link in it." },
 }
 
-export function SubscribeForm({ source, compact = false }: { source: string; compact?: boolean }) {
+export function SubscribeForm({ source, compact = false, inline = false }: { source: string; compact?: boolean; inline?: boolean }) {
   const [email, setEmail] = useState("")
   const [website, setWebsite] = useState("")
   const [prefs, setPrefs] = useState<NewsPreferencesValue>(DEFAULT_NEWS_PREFERENCES)
@@ -49,6 +51,15 @@ export function SubscribeForm({ source, compact = false }: { source: string; com
 
   if (status !== "idle" && status !== "sending") {
     const done = DONE[status]
+    if (inline)
+      return (
+        <p className="flex items-start gap-2 text-sm text-base-content/80" role="status">
+          <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
+          <span>
+            <span className="font-semibold text-base-content">{done.title}.</span> {done.body}
+          </span>
+        </p>
+      )
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-start gap-3">
@@ -73,8 +84,8 @@ export function SubscribeForm({ source, compact = false }: { source: string; com
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-3">
-      <div className={`flex gap-2 ${compact ? "flex-col" : "flex-col sm:flex-row"}`}>
+    <form onSubmit={submit} className={`flex flex-col ${inline ? "gap-2" : "gap-3"}`}>
+      <div className={`flex gap-2 ${compact ? "flex-col" : inline ? "flex-row" : "flex-col sm:flex-row"}`}>
         <label className="relative flex-1">
           <span className="sr-only">Email address</span>
           <EnvelopeIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" aria-hidden />
@@ -85,22 +96,26 @@ export function SubscribeForm({ source, compact = false }: { source: string; com
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
             autoComplete="email"
-            className="h-10 w-full rounded-full border border-base-300 bg-base-100 pl-10 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className={`${inline ? "h-9" : "h-10"} w-full rounded-full border border-base-300 bg-base-100 pl-10 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30`}
           />
         </label>
         {/* Only bots fill this in */}
         <input type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} className="hidden" aria-hidden />
-        <button type="submit" className={ui.button({ variant: "primary" })} disabled={status === "sending"}>
-          {status === "sending" ? "Subscribing…" : "Get tariff updates"}
+        <button type="submit" className={`${ui.button({ variant: "primary", size: inline ? "sm" : undefined })} shrink-0`} disabled={status === "sending"}>
+          {status === "sending" ? "Subscribing…" : inline ? "Subscribe" : "Get tariff updates"}
         </button>
       </div>
-      <p className="text-xs text-base-content/60">
-        {prefs.frequency === "instant" ? "Each new action as it happens" : "A weekly digest every Monday"}
-        {prefs.authorities.length || prefs.countries.length ? ", for the laws and countries you picked" : ", every law and country"}.{" "}
-        <button type="button" className="font-semibold text-primary underline-offset-4 hover:underline" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-          {open ? "Done choosing" : "Choose what you get"}
-        </button>
-      </p>
+      {inline ? (
+        <p className="text-xs text-base-content/60">A free weekly digest every Monday. Unsubscribe anytime.</p>
+      ) : (
+        <p className="text-xs text-base-content/60">
+          {prefs.frequency === "instant" ? "Each new action as it happens" : "A weekly digest every Monday"}
+          {prefs.authorities.length || prefs.countries.length ? ", for the laws and countries you picked" : ", every law and country"}.{" "}
+          <button type="button" className="font-semibold text-primary underline-offset-4 hover:underline" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+            {open ? "Done choosing" : "Choose what you get"}
+          </button>
+        </p>
+      )}
       {open && (
         <div className="rounded-2xl border border-base-300 p-4">
           <NewsPreferencesFields value={prefs} onChange={setPrefs} />

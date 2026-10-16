@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRightIcon, EnvelopeIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm";
 import type { PublicUpdate } from "@/libs/tariff-updates/public";
 import { AUTHORITIES } from "@/libs/tariff-updates/types";
 import * as mk from "@/components/ui/marketing/styles";
@@ -15,11 +16,11 @@ import { CHANGELOG_PATH } from "../changelog/constants";
 
 const day = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
-// The newest tariff actions, each opening its update; color is meaning (red a new or higher
-// tariff, green one lifted, amber a heads-up)
+// The two newest tariff actions, each opening its update (color is meaning: red a new or higher
+// tariff, green one lifted, amber a heads-up), and the email sign-up for them
 const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string }) => (
   <section aria-labelledby="dc-news" className={`${tt.panel} flex w-full flex-col lg:max-w-md`}>
-    <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-5">
+    <div className="flex items-center justify-between gap-3 px-5 pb-1 pt-4">
       <h2 id="dc-news" className={`${tt.title} m-0 flex items-center gap-2.5`}>
         <span className="relative flex h-2 w-2" aria-hidden>
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
@@ -32,10 +33,10 @@ const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string
         <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
       </Link>
     </div>
-    <ul className="m-0 flex list-none flex-col px-2 pb-2">
+    <ul className="m-0 flex list-none flex-col px-2 pb-1.5">
       {updates.map((u) => (
         <li key={u.slug}>
-          <Link href={`/tariff-updates/${u.slug}`} className="flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-tt-soft">
+          <Link href={`/tariff-updates/${u.slug}`} className="flex items-start gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-tt-soft">
             <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${NEWS_DOTS[newsToneOf(u.kind)]}`} aria-hidden />
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="line-clamp-2 text-sm font-semibold leading-snug text-base-content">{u.title}</span>
@@ -48,13 +49,10 @@ const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string
         </li>
       ))}
     </ul>
-    <Link
-      href="/tariff-updates/subscription"
-      className="mt-auto flex items-center gap-2 border-t border-base-300 px-5 py-3 text-sm font-semibold text-base-content/70 transition-colors hover:text-primary"
-    >
-      <EnvelopeIcon className="h-4 w-4" aria-hidden />
-      Get new tariff actions by email
-    </Link>
+    <div className="mt-auto flex flex-col gap-2 rounded-b-lg border-t border-base-300 bg-tt-soft px-5 py-3.5">
+      <p className="m-0 text-sm font-semibold text-base-content">Get the best tariff news alerts</p>
+      <SubscribeForm source="duty-calculator-hero" inline />
+    </div>
   </section>
 );
 
