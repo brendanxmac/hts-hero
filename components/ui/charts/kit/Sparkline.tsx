@@ -33,10 +33,12 @@ export const Sparkline = ({
   // For screen readers; the tile around it usually says it already
   label?: string;
 }) => {
-  if (points.length < 2) return <div style={{ height }} aria-hidden />;
+  if (!points.length) return <div style={{ height }} aria-hidden />;
   const sorted = [...points].sort((a, b) => a.x - b.x);
   const end = Math.max(to ?? sorted[sorted.length - 1].x, sorted[sorted.length - 1].x);
+  // Run on to `to`, so one value that has held all along draws as a flat line
   const data = to !== undefined && end > sorted[sorted.length - 1].x ? [...sorted, { x: end, y: sorted[sorted.length - 1].y }] : sorted;
+  if (data.length < 2) return <div style={{ height }} aria-hidden />;
   const ys = data.map((p) => p.y);
   const lo = Math.min(...ys);
   const hi = Math.max(...ys);

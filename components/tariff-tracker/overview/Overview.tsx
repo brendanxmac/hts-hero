@@ -120,7 +120,16 @@ export const Overview = () => {
         value: t.items.length.toLocaleString("en-US"),
         note: `From ${countryCount(t.products)} countries`,
         noteTone: "neutral",
-        info: "The imports in your catalog (each HTS code and country of origin), and how many countries they come from.",
+        // The catalog's size over the last year: each import from the day it was added (ones
+        // added before dates were kept count from the start)
+        spark: (() => {
+          const added = t.items.map((i) => (i.addedAt ? i.addedAt.slice(0, 10) : "")).sort();
+          const countOn = (date: string) => added.filter((d) => d <= date).length;
+          const days = Array.from(new Set(added.filter((d) => d > yearAgo && d <= today)));
+          return [{ x: time(yearAgo), y: countOn(yearAgo) }, ...days.map((d) => ({ x: time(d), y: countOn(d) }))];
+        })(),
+        ...stepSpark,
+        info: "The imports in your catalog (each HTS code and country of origin), and how many countries they come from. The line is how many you've tracked over the last 12 months.",
       },
     ];
 
