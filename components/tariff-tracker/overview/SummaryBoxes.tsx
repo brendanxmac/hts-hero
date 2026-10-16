@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useMemo, useState } from "react";
-import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, BellSlashIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { InfoTip } from "@/components/ui/InfoTip";
@@ -69,7 +69,8 @@ const SummaryBox = ({
 export const HealthSummary = () => {
   const h = useTariffHealth();
   const { openTab } = useTrackerNav();
-  const { access, openUpgrade } = useTrackerAccess();
+  const { openUpgrade } = useTrackerAccess();
+  const { moreToTrack, trackMore } = useTracker();
   const n = (count: number) => count.toLocaleString("en-US");
   const full = SAVINGS_ENABLED && AUDITS_ENABLED;
   const alertsRow = {
@@ -86,33 +87,36 @@ export const HealthSummary = () => {
     link: h.signedIn ? "Alert settings" : h.unlockLabel,
     go: () => (h.signedIn ? openTab("alerts") : h.unlock("alerts")),
   };
-  // The Tracker MVP: imports tracked (alerts and impact checks run on them) and alerts on
+  // The Tracker MVP: the share of imports with alerts on, and one way to raise it (fill the plan's
+  // spare room, or the plans)
   const readinessRows = [
     {
-      label: "Imports Tracked",
+      label: "Imports With Alerts",
       pct: h.trackedPct,
-      bar: "bg-primary",
+      bar: h.trackedPct >= 80 ? "bg-success" : h.trackedPct >= 40 ? "bg-warning" : "bg-error",
       text:
         h.covered < h.imports
-          ? `${n(h.covered)} of ${n(h.imports)} imports get alerts and impact checks.`
+          ? `${n(h.covered)} of ${n(h.imports)} imports get alerts and impact checks. The other ${n(h.imports - h.covered)} don't.`
           : "Every import gets alerts and impact checks.",
-      link: !h.signedIn ? h.unlockLabel : h.covered < h.imports ? "Track more imports" : "See Your imports",
+      link: !h.signedIn
+        ? h.unlockLabel
+        : h.covered >= h.imports
+          ? "See Your imports"
+          : moreToTrack > 0
+            ? `Turn on alerts for ${n(moreToTrack)} more`
+            : `Get alerts on all ${n(h.imports)}`,
       go: () =>
-        !h.signedIn ? h.unlock("tracking") : h.covered < h.imports && access.kind !== "paid" ? openUpgrade("tracking") : openTab("catalog"),
-    },
-    {
-      label: "Alerts On",
-      pct: h.deliveryPct,
-      bar: "bg-success",
-      text: !h.signedIn
-        ? "With a free account, you hear about every tariff change on your imports."
-        : h.alertsSet
-          ? "Alerts go out by email, Slack or Teams as soon as a tariff on a tracked import changes."
-          : "Alerts are off: you won't hear when a tariff on your imports changes.",
-      link: h.signedIn ? "Alert settings" : h.unlockLabel,
-      go: () => (h.signedIn ? openTab("alerts") : h.unlock("alerts")),
+        !h.signedIn
+          ? h.unlock("tracking")
+          : h.covered >= h.imports
+            ? openTab("catalog")
+            : moreToTrack > 0
+              ? trackMore()
+              : openUpgrade("tracking"),
     },
   ];
+  // Alerts with nowhere to go (every channel off): the one thing that matters most, shown apart
+  const alertsOff = !full && h.signedIn && !h.alertsSet;
   const rows = full
     ? [
         alertsRow,
@@ -142,13 +146,27 @@ export const HealthSummary = () => {
       info={
         full
           ? "How well your imports are looked after, across the three things the Tracker does: alerts on for them, potential savings reviewed, and past entries audited. Each is the share of your imports there; the score is the average of the three."
-          : "How ready you are for the next tariff change: the share of your imports that get alerts and impact checks, and whether your alerts are on. The score is the average of the two."
+          : "How ready you are for the next tariff change: the share of your imports that get alerts and impact checks."
       }
     >
       <p className="m-0 flex items-baseline gap-2" aria-label={`${title} ${h.overall}%`}>
-        <span className={`${tt.metric} ${h.overall >= 80 ? "text-success" : "text-primary"}`}>{h.overall}%</span>
-        <span className="text-sm text-base-content/60">overall, across your {n(h.imports)} imports</span>
+        <span className={`${tt.metric} ${alertsOff ? "text-error" : h.overall >= 80 ? "text-success" : "text-primary"}`}>{h.overall}%</span>
+        <span className="text-sm text-base-content/60">of your {n(h.imports)} imports have alerts</span>
       </p>
+      {alertsOff && (
+        <div role="alert" className="mt-4 flex flex-col gap-2 rounded-xl border border-error/30 bg-error/10 p-4">
+          <span className="flex items-center gap-2 text-sm font-semibold text-error">
+            <BellSlashIcon className="h-5 w-5" aria-hidden />
+            Your alerts are turned off
+          </span>
+          <span className="text-sm text-base-content/75">
+            Email, Slack and Teams are all off, so you won&apos;t hear when a tariff changes on any of your imports.
+          </span>
+          <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} self-start`} onClick={() => openTab("alerts")}>
+            Turn alerts on
+          </button>
+        </div>
+      )}
       <ul className="mt-4 flex flex-col gap-4">
         {rows.map((r) => (
           <li key={r.label} className="flex flex-col gap-1.5">

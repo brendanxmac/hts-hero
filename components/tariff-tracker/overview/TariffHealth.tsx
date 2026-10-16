@@ -14,7 +14,8 @@ import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 // review (the share with an entry audited, by what the audits found), and their average as one
 // score. Shown on the Overview (SummaryBoxes.tsx).
 // For the Tracker MVP (savings and audits off, libs/tariff-tracker/features.ts) it's Tariff
-// Readiness: the share of imports tracked and whether alerts have somewhere to go, averaged.
+// Readiness: the share of imports with alerts on. Alerts with nowhere to go are shown as an issue
+// of their own, not averaged in.
 
 const share = (part: number, total: number) => (total > 0 ? Math.round((part / total) * 100) : 0);
 
@@ -60,6 +61,6 @@ export const useTariffHealth = () => {
   const overall =
     SAVINGS_ENABLED && AUDITS_ENABLED
       ? Math.round((alertsPct + savingsPct + auditPct) / 3)
-      : Math.round((trackedPct + deliveryPct) / 2);
+      : trackedPct;
   return { imports, count, covered, alertsSet, alertsPct, trackedPct, deliveryPct, stats, savingsPct, potential, audited, auditedImports, auditPct, totals, overall, signedIn, unlock, unlockLabel };
 };
