@@ -5,6 +5,7 @@ import * as ui from "@/components/ui/styles";
 import { TableStandIn } from "@/components/ui/stand-ins";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { time } from "@/components/ui/charts/kit";
+import { PRIMARY_MARK } from "@/components/ui/theme";
 import { addDays } from "../../../tariffs/engine-v2/history";
 import { AccountGate } from "../access/AccountGate";
 import { formatRate } from "../formatRate";
@@ -66,6 +67,18 @@ export const Overview = () => {
       s.length ? [{ x: time(yearAgo), y: value(valueOn(s, yearAgo)) }, ...s.filter((p) => p.date > yearAgo).map((p) => ({ x: time(p.date), y: value(p) }))] : [];
     const stepSpark = { sparkStep: true, sparkTo: time(today) };
 
+    // The catalog over the last year: each import, and its country, from the day it was added
+    // (imports added before dates were kept count from the start)
+    const importsSparks = (() => {
+      const added = t.items.map((i) => ({ date: i.addedAt ? i.addedAt.slice(0, 10) : "", country: i.country }));
+      const on = (date: string) => added.filter((a) => a.date <= date);
+      const days = [yearAgo, ...Array.from(new Set(added.map((a) => a.date).filter((d) => d > yearAgo && d <= today))).sort()];
+      return {
+        spark: days.map((d) => ({ x: time(d), y: on(d).length })),
+        spark2: days.map((d) => ({ x: time(d), y: new Set(on(d).map((a) => a.country)).size })),
+      };
+    })();
+
     const metrics: Metric[] = [
       {
         label: "Rate change, 12 months",
@@ -116,20 +129,17 @@ export const Overview = () => {
         ),
       },
       {
-        label: "Products",
+        label: "Imports",
         value: t.items.length.toLocaleString("en-US"),
         note: `From ${countryCount(t.products)} countries`,
         noteTone: "neutral",
-        // The catalog's size over the last year: each import from the day it was added (ones
-        // added before dates were kept count from the start)
-        spark: (() => {
-          const added = t.items.map((i) => (i.addedAt ? i.addedAt.slice(0, 10) : "")).sort();
-          const countOn = (date: string) => added.filter((d) => d <= date).length;
-          const days = Array.from(new Set(added.filter((d) => d > yearAgo && d <= today)));
-          return [{ x: time(yearAgo), y: countOn(yearAgo) }, ...days.map((d) => ({ x: time(d), y: countOn(d) }))];
-        })(),
+        ...importsSparks,
         ...stepSpark,
-        info: "The imports in your catalog (each HTS code and country of origin), and how many countries they come from. The line is how many you've tracked over the last 12 months.",
+        legend: [
+          { label: `${t.items.length.toLocaleString("en-US")} imports`, color: PRIMARY_MARK },
+          { label: `${countryCount(t.products)} countries`, color: "var(--tt-sky)" },
+        ],
+        info: "The imports in your catalog (each HTS code and country of origin) and the countries they come from. The lines are how many of each you've tracked over the last 12 months.",
       },
     ];
 
