@@ -7,8 +7,8 @@ import { ProductHistory, segmentOn } from "../../insights/catalogHistory";
 import { BASE_PART, RatePart, shortProgram, TrackedProduct } from "../../report";
 
 // The Insights tab's numbers: the catalog cut by country, tariff program, HTS chapter and more,
-// today, twelve months ago and over time. Plain data, so the built-in insights and the chart
-// builder share one set of sums and the components only draw them.
+// today, twelve months ago and over time. Plain data, so every insight shares one set of
+// sums and the components only draw them.
 //
 // Every figure is a duty rate (a % of the customs value), never dollars: rates are true for every
 // importer, while dollars depend on values most people haven't entered. The one exception is the
@@ -154,9 +154,6 @@ export const DIMENSIONS: Record<DimensionId, Dimension> = {
   },
 };
 
-// The ones a user can group by, in the builder's order
-export const GROUPINGS: DimensionId[] = ["country", "program", "chapter", "band", "movement", "alerts"];
-
 // ── Breakdowns: one row per group ──
 
 export interface GroupRow {
@@ -259,25 +256,11 @@ export const METRICS: Record<MetricId, Metric> = {
   importShare: { id: "importShare", label: "Share of imports", title: "Share of Imports", value: (r) => r.importShare, format: percent, share: true },
 };
 
-export const METRIC_ORDER: MetricId[] = ["dutyShare", "avgRate", "maxRate", "change", "imports", "importShare"];
-
 // The rows sorted for a metric: rate bands keep their order, everything else biggest first
 export const sortRows = (rows: GroupRow[], metric: Metric, dimensionId: DimensionId) =>
   dimensionId === "band"
     ? [...rows].sort((a, b) => RATE_BANDS.findIndex((x) => x.key === a.key) - RATE_BANDS.findIndex((x) => x.key === b.key))
     : [...rows].sort((a, b) => (metric.signed ? Math.abs(metric.value(b)) - Math.abs(metric.value(a)) : metric.value(b) - metric.value(a)) || a.label.localeCompare(b.label));
-
-// The biggest few, and the rest together when they're summable; averages leave the rest out
-export const topRows = (rows: GroupRow[], metric: Metric, count: number) => {
-  if (rows.length <= count) return { rows, rest: null as null | { label: string; value: number; groups: number } };
-  const shown = rows.slice(0, count);
-  const others = rows.slice(count);
-  const summable = metric.share || metric.id === "imports";
-  return {
-    rows: shown,
-    rest: summable ? { label: `${others.length} more`, value: others.reduce((sum, r) => sum + metric.value(r), 0), groups: others.length } : null,
-  };
-};
 
 // ── Over time ──
 

@@ -5,7 +5,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { formatRate } from "../../formatRate";
 import { BarList } from "../charts";
 import { breakdown, concentration, InsightsInput } from "../lib/data";
-import { groupColors, InsightPanel, ShowAll } from "../shared";
+import { groupColors, importsFilter, InsightPanel, ShowAll, ShowInImports, useShowInImports } from "../shared";
 
 // How concentrated the catalog is by country of origin: each country's share of the imports and
 // its average rate, the top one's share, and how few countries make up most of the catalog
@@ -18,6 +18,7 @@ export const Origins = ({ input }: { input: InsightsInput }) => {
   const colors = groupColors(rows, "country", true);
   const [all, setAll] = useState(false);
   const shown = all ? rows : rows.slice(0, 8);
+  const show = useShowInImports();
   const priciest = [...rows].filter((r) => r.imports >= Math.min(2, rows[0]?.imports ?? 1)).sort((a, b) => b.avgRate - a.avgRate)[0];
 
   return (
@@ -25,6 +26,7 @@ export const Origins = ({ input }: { input: InsightsInput }) => {
       id="ti-origins"
       title="Origin Concentration"
       subtitle="Where your imports come from, and the average rate from each"
+      lessonAction={top && <ShowInImports filters={importsFilter("country", (top.importShare < 0.25 && priciest ? priciest : top).key)} />}
       lesson={
         top && top.importShare < 0.25 ? (
           <>
@@ -70,6 +72,8 @@ export const Origins = ({ input }: { input: InsightsInput }) => {
           display: percent(r.importShare),
           note: `${formatRate(r.avgRate)} avg`,
           color: colors[r.key],
+          onClick: () => show({ country: [r.key] }),
+          hint: "Show these imports in Your Imports",
         }))}
       />
       {rows.length > 8 && <ShowAll more={`${rows.length - 8} more countries`} open={all} onToggle={() => setAll(!all)} />}

@@ -1,7 +1,7 @@
 "use client";
 
-import { ReactNode, useState } from "react";
-import { arc, pie } from "d3-shape";
+import { ReactNode } from "react";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import {
   Bar,
   bandScale,
@@ -24,16 +24,14 @@ import {
   useHovered,
   ValueAxis,
 } from "@/components/ui/charts/kit";
-import * as tt from "@/components/ui/styles/tracker";
-import { ERROR_MARK, MUTED_MARK, SUCCESS_MARK } from "@/components/ui/theme";
 import { shortDate } from "../../duty-calculator/rate-history/format";
 import { formatDate } from "../../duty-calculator/lib/format";
 import { Series } from "./lib/data";
 
 // The Insights tab's charts, on the shared chart kit: bars across (the default: long labels read
-// best), columns, a donut for shares of a whole, and step lines for rates over time (a rate holds
+// best), columns, and step lines for rates over time (a rate holds
 // until a tariff changes it, so never a smoothed curve). Colors come from the caller (the theme's
-// series and program colors); changes are red going up and green going down.
+// series and program colors).
 
 export interface Datum {
   key: string;
@@ -46,59 +44,49 @@ export interface Datum {
   // A second figure after the value
   note?: string;
   onClick?: () => void;
+  // What clicking does, on hover
+  hint?: string;
 }
 
-// A change's color: red up, green down
-export const changeColor = (value: number) => (value > 0.005 ? ERROR_MARK : value < -0.005 ? SUCCESS_MARK : MUTED_MARK);
-
-// Bars across, one row each: the label, a round bar (from the middle when values go both ways),
-// and the value
-export const BarList = ({ data, signed = false, labelWidth = "11rem" }: { data: Datum[]; signed?: boolean; labelWidth?: string }) => {
-  const max = Math.max(...data.map((d) => Math.abs(d.value)), 0.0001);
+// Bars across, one row each: the label, a round bar and the value. A row with somewhere to go
+// (its imports in Your Imports) is a button, with an arrow at its end.
+export const BarList = ({ data, labelWidth = "11rem" }: { data: Datum[]; labelWidth?: string }) => {
+  const max = Math.max(...data.map((d) => d.value), 0.0001);
+  const links = data.some((d) => d.onClick);
+  // Runtime label column (DESIGN_SYSTEM §10: a width the design depends on)
+  const cols = { gridTemplateColumns: `${labelWidth} minmax(0,1fr) 7.5rem${links ? " 1rem" : ""}` };
+  const grid = "grid w-full items-center gap-3 px-1 py-0.5 text-sm";
   return (
-    <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
+    <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
       {data.map((d) => {
         const row = (
           <>
             <span className="truncate text-left text-base-content">{d.label}</span>
-            {signed ? (
-              <span className="grid h-4 grid-cols-2 gap-0.5" aria-hidden>
-                <span className="flex justify-end overflow-hidden rounded-l-full bg-tt-soft">
-                  {/* Runtime width and theme color (DESIGN_SYSTEM §10) */}
-                  {d.value < 0 && <span className="block h-full rounded-l-full" style={{ width: barWidth(-d.value, max, 2), background: d.color }} />}
-                </span>
-                <span className="overflow-hidden rounded-r-full bg-tt-soft">
-                  {d.value > 0 && <span className="block h-full rounded-r-full" style={{ width: barWidth(d.value, max, 2), background: d.color }} />}
-                </span>
-              </span>
-            ) : (
-              <span className="h-4 overflow-hidden rounded-full bg-tt-soft" aria-hidden>
-                {/* Runtime width and theme color (DESIGN_SYSTEM §10) */}
-                <span className="block h-full rounded-full" style={{ width: barWidth(d.value, max, 1.5), background: d.color }} />
-              </span>
-            )}
+            <span className="h-4 overflow-hidden rounded-full bg-tt-soft" aria-hidden>
+              {/* Runtime width and theme color (DESIGN_SYSTEM §10) */}
+              <span className="block h-full rounded-full" style={{ width: barWidth(d.value, max, 1.5), background: d.color }} />
+            </span>
             <span className="text-right tabular-nums">
               <b className="text-base-content">{d.display}</b>
               {d.note && <span className="ml-1.5 text-xs text-base-content/60">{d.note}</span>}
             </span>
+            {links && (d.onClick ? <ArrowRightIcon className="h-4 w-4 text-base-content/40 group-hover:text-primary" aria-hidden /> : <span />)}
           </>
         );
-        const grid = "grid w-full items-center gap-3 text-sm";
-        // Runtime label column (DESIGN_SYSTEM §10: a width the design depends on)
-        const cols = { gridTemplateColumns: `${labelWidth} minmax(0,1fr) 7.5rem` };
         return (
           <li key={d.key}>
             {d.onClick ? (
               <button
                 type="button"
                 onClick={d.onClick}
-                className={`${grid} rounded-xl px-1 py-0.5 hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
+                title={d.hint}
+                className={`${grid} group rounded-xl hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
                 style={cols}
               >
                 {row}
               </button>
             ) : (
-              <div className={`${grid} px-1`} style={cols}>
+              <div className={grid} style={cols}>
                 {row}
               </div>
             )}
@@ -196,67 +184,6 @@ export const Columns = ({
         );
       }}
     </ChartFrame>
-  );
-};
-
-// A share of a whole: a ring with the total (or the biggest part) in the middle, and the parts
-// listed beside it
-export const Donut = ({ data, center, centerNote }: { data: Datum[]; center: string; centerNote: string }) => {
-  const [active, setActive] = useState<string | null>(null);
-  const size = 200;
-  const radius = size / 2;
-  const slices = pie<Datum>()
-    .value((d) => Math.max(0, d.value))
-    .sort(null)
-    .padAngle(0.012)(data);
-  const ring = arc<(typeof slices)[number]>()
-    .innerRadius(radius * 0.62)
-    .outerRadius(radius)
-    .cornerRadius(4);
-  const shown = data.find((d) => d.key === active);
-  return (
-    <div className="grid items-center gap-6 sm:grid-cols-[12.5rem_minmax(0,1fr)]" onMouseLeave={() => setActive(null)}>
-      <div className="relative mx-auto h-[12.5rem] w-[12.5rem]">
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${centerNote}: ${data.map((d) => `${d.text} ${d.display}`).join(", ")}`}>
-          <g transform={`translate(${radius},${radius})`}>
-            {slices.map((s) => (
-              <path
-                key={s.data.key}
-                d={ring(s) ?? ""}
-                // Theme color (DESIGN_SYSTEM §10)
-                fill={s.data.color}
-                opacity={active && active !== s.data.key ? 0.25 : 1}
-                onMouseEnter={() => setActive(s.data.key)}
-                className="cursor-default transition-opacity"
-              />
-            ))}
-          </g>
-        </svg>
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
-          <span className={`${tt.display} text-2xl font-semibold tabular-nums text-base-content`}>{shown ? shown.display : center}</span>
-          <span className="mt-0.5 line-clamp-2 text-xs text-base-content/60">{shown ? shown.text : centerNote}</span>
-        </div>
-      </div>
-      <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
-        {data.map((d) => (
-          <li
-            key={d.key}
-            className={`flex items-center justify-between gap-3 rounded-xl px-2 py-1 text-sm transition-opacity ${active && active !== d.key ? "opacity-50" : ""}`}
-            onMouseEnter={() => setActive(d.key)}
-          >
-            <span className="flex min-w-0 items-center gap-2">
-              {/* Theme color (DESIGN_SYSTEM §10) */}
-              <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: d.color }} aria-hidden />
-              <span className="truncate text-base-content">{d.label}</span>
-            </span>
-            <span className="shrink-0 tabular-nums">
-              <b className="text-base-content">{d.display}</b>
-              {d.note && <span className="ml-1.5 text-xs text-base-content/60">{d.note}</span>}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 };
 

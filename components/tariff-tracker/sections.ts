@@ -148,7 +148,7 @@ export const SECTIONS: TrackerSection[] = [
     planned: [
       "Where your duty comes from, by tariff, country of origin and HTS chapter",
       "How much of your catalog changed in the last 12 months, and which tariffs moved it",
-      "Your most exposed imports and countries, and charts you build yourself",
+      "Your most exposed imports and countries, one click from the imports behind them",
     ],
   }),
   section({

@@ -1,18 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { LockedPreview } from "@/components/ui/LockedPreview";
 import { ChartStandIn } from "@/components/ui/stand-ins";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { AccountGate } from "../access/AccountGate";
-import { useTrackerAccess } from "../access/accessContext";
 import { InsightsProgress } from "../insights/InsightsProgress";
 import { NeedsProducts } from "../shell/NeedsProducts";
 import { sectionBySlug } from "../sections";
 import { useTracker } from "../TrackerContext";
-import { Builder } from "./Builder";
 import { ChapterHeat } from "./builtins/ChapterHeat";
 import { DutySources } from "./builtins/DutySources";
 import { ImportsOverTime } from "./builtins/ImportsOverTime";
@@ -25,12 +20,10 @@ import { Takeaways } from "./builtins/Takeaways";
 import { catalogScale, InsightsInput, SCALE_NOTES } from "./lib/data";
 import { useInsightsInput } from "./shared";
 
-// The Insights tab: what the user's own imports teach them. Ready-made insights (free with an
-// account) are picked for the catalog's size: a handful of imports are each explained, dozens
-// are grouped, hundreds are ranked and concentrated. Build your own (paid plans) makes any chart
-// from the same numbers. Separate from Rate history for now; the two may merge.
-
-type View = "ready" | "build";
+// The Insights tab: what the user's own imports teach them, free with an account. The insights
+// are picked for the catalog's size: a handful of imports are each explained, dozens are grouped,
+// hundreds are ranked and concentrated. Charts of a group (a tariff, a country, a chapter) open
+// Your Imports filtered to it. Separate from Rate history for now; the two may merge.
 
 const SCALE_LABELS = { few: "1–4 imports", some: "5–49 imports", many: "50+ imports" };
 
@@ -75,27 +68,14 @@ const ReadyMade = ({ input }: { input: InsightsInput }) => {
 
 const InsightsReport = () => {
   const input = useInsightsInput();
-  const { paid, unlock, unlockLabel } = useTrackerAccess();
-  const [view, setView] = useState<View>("ready");
   const scale = catalogScale(input.products.length);
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <SegmentedControl<View>
-          label="Insights view"
-          value={view}
-          onChange={setView}
-          options={[
-            { id: "ready", label: "Ready-Made" },
-            { id: "build", label: "Build Your Own", badge: paid ? undefined : "Plans" },
-          ]}
-        />
-        <p className="m-0 flex items-center gap-2 text-sm text-base-content/70" title={SCALE_NOTES[scale]}>
-          <span className={tt.chip("primary")}>Tuned for {SCALE_LABELS[scale]}</span>
-          <span className="hidden max-w-xl lg:inline">{SCALE_NOTES[scale]}</span>
-        </p>
-      </div>
+      <p className="m-0 flex items-center gap-2 text-sm text-base-content/70">
+        <span className={tt.chip("primary")}>Tuned for {SCALE_LABELS[scale]}</span>
+        <span>{SCALE_NOTES[scale]}</span>
+      </p>
       <InsightsProgress label="Going through the history of" />
       {!input.ready ? (
         <div className="flex flex-col gap-4" aria-busy="true">
@@ -105,24 +85,8 @@ const InsightsReport = () => {
             <div className={`${ui.skeleton} h-96`} />
           </div>
         </div>
-      ) : view === "ready" ? (
-        <ReadyMade input={input} />
-      ) : paid ? (
-        <Builder input={input} />
       ) : (
-        <LockedPreview
-          title="Build Your Own Charts"
-          teaser={`Chart your ${input.products.length.toLocaleString("en-US")} imports any way you like: by tariff, country, chapter or rate band, today or over time.`}
-          points={[
-            "Any measure: share of duty, average or highest rate, 12-month change, number of imports",
-            "Grouped by tariff, country, HTS chapter, rate band or alerts, filtered to any country or chapter",
-            "Rates over time by group, or up to five imports side by side",
-          ]}
-          preview={<Builder input={input} preview />}
-          minHeight="min-h-[36rem]"
-          cta={{ label: unlockLabel, onClick: () => unlock("insights") }}
-          note="Included in every Tariff Tracker plan."
-        />
+        <ReadyMade input={input} />
       )}
     </div>
   );

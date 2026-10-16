@@ -8,7 +8,6 @@ export type PremiumFeature =
   | Extract<
       SectionSlug,
       | "history"
-      | "insights"
       | "savings"
       | "alerts"
       | "entries"
@@ -30,11 +29,6 @@ export const PREMIUM_FEATURES: Record<
     name: "Rate history",
     benefit:
       "See every tariff change that hit your products, when, and by how much",
-  },
-  insights: {
-    name: "Insights",
-    benefit:
-      "Build your own charts of your imports: any measure, grouped by tariff, country or chapter, today or over time",
   },
   savings: {
     name: "Savings",

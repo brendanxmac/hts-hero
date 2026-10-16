@@ -7,7 +7,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { formatRate } from "../../formatRate";
 import { BarList } from "../charts";
 import { breakdown, chapterName, CatalogScale, DimensionId, estimatedValues, InsightsInput, METRICS, takeaway } from "../lib/data";
-import { groupColors, InsightPanel, ShowAll } from "../shared";
+import { groupColors, importsFilter, InsightPanel, ShowAll, ShowInImports, useShowInImports } from "../shared";
 
 // Where the catalog's duty comes from: the tariffs that make up its average rate, and each
 // tariff's, country's or chapter's share of the duty. A handful of imports only splits by tariff.
@@ -32,6 +32,9 @@ export const DutySources = ({ input, scale }: { input: InsightsInput; scale: Cat
   const averageRate = average.reduce((s, p) => s + p.amount, 0);
   const estimated = estimatedValues(input.products);
   const shown = all ? rows : rows.slice(0, 8);
+  const show = useShowInImports();
+  // A row that opens its imports in Your Imports, where the table can filter to it
+  const withFilter = (filters: ReturnType<typeof importsFilter>) => (filters ? { onClick: () => show(filters), hint: "Show these imports in Your Imports" } : {});
 
   return (
     <InsightPanel
@@ -54,6 +57,7 @@ export const DutySources = ({ input, scale }: { input: InsightsInput; scale: Cat
         ) : undefined
       }
       lesson={takeaway(rows, METRICS.dutyShare, view)}
+      lessonAction={rows[0] && <ShowInImports filters={importsFilter(view, rows[0].key)} />}
     >
       {view === "program" && averageRate > 0 && (
         <div className={`${tt.tile} flex flex-col gap-3 px-4 py-4`}>
@@ -84,6 +88,7 @@ export const DutySources = ({ input, scale }: { input: InsightsInput; scale: Cat
             display: percent(r.dutyShare),
             note: view === "program" ? `adds ${formatRate(r.avgRate)}` : `${formatRate(r.avgRate)} avg`,
             color: colors[r.key],
+            ...withFilter(importsFilter(view, r.key)),
           }))}
           labelWidth={view === "chapter" ? "13rem" : "11rem"}
         />

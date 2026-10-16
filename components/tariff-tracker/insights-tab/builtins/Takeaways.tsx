@@ -1,13 +1,17 @@
 "use client";
 
 import { ReactNode, useMemo } from "react";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { addDays } from "../../../../tariffs/engine-v2/history";
 import { shortDate } from "../../../duty-calculator/rate-history/format";
 import { formatRate } from "../../formatRate";
 import { signedRate } from "../../impact/format";
 import { useInsights } from "../../insights/InsightsContext";
+import { FilterState } from "../../filters";
 import { shortProgram } from "../../report";
+import { importsFilter, useShowInImports } from "../shared";
 import {
   averageMove,
   breakdown,
@@ -30,12 +34,15 @@ interface Fact {
   value: string;
   tone: Tone;
   text: ReactNode;
+  // The imports it's about, in Your Imports
+  filters?: FilterState | null;
 }
 
 const percent = (share: number) => `${Math.round(share * 100)}%`;
 
 export const Takeaways = ({ input, scale }: { input: InsightsInput; scale: CatalogScale }) => {
   const { changes } = useInsights();
+  const show = useShowInImports();
   const facts = useMemo((): Fact[] => {
     const moves = importMoves(input);
     const avg = averageMove(moves);
@@ -62,6 +69,7 @@ export const Takeaways = ({ input, scale }: { input: InsightsInput; scale: Catal
         eyebrow: "Biggest driver",
         value: percent(driver.dutyShare),
         tone: "primary",
+        filters: importsFilter("program", driver.key),
         text: (
           <>
             of your duty comes from <b className="text-base-content">{driver.label}</b>
@@ -102,6 +110,7 @@ export const Takeaways = ({ input, scale }: { input: InsightsInput; scale: Catal
           eyebrow: "Top origin",
           value: percent(origins.top.importShare),
           tone: "neutral",
+          filters: importsFilter("country", origins.top.key),
           text: (
             <>
               of your imports come from {origins.top.label}. {origins.forEighty.toLocaleString("en-US")} of your{" "}
@@ -148,6 +157,12 @@ export const Takeaways = ({ input, scale }: { input: InsightsInput; scale: Catal
           <span className={tt.eyebrow(f.tone === "neutral" ? "primary" : f.tone)}>{f.eyebrow}</span>
           <span className={tt.metric}>{f.value}</span>
           <p className="m-0 text-sm text-base-content/70">{f.text}</p>
+          {f.filters && (
+            <button type="button" onClick={() => show(f.filters!)} className={`${ui.link} mt-auto inline-flex items-center gap-1 self-start text-sm`}>
+              Show in Your Imports
+              <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+            </button>
+          )}
         </div>
       ))}
     </section>
