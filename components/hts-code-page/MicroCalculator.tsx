@@ -8,7 +8,7 @@ import { Countries, Country } from "@/constants/countries";
 import type { MicroEstimate } from "@/libs/hts-micro-estimate";
 import { CountryField } from "@/components/duty-calculator/fields";
 import { estimateSurface, markCalculatorHandoff } from "@/components/duty-calculator/lib/analytics";
-import { formatDate, formatMoney } from "@/components/duty-calculator/lib/format";
+import { formatDate, formatMoney, formatPct } from "@/components/duty-calculator/lib/format";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
@@ -145,7 +145,7 @@ export const MicroCalculator = ({
       {shown ? (
         <div className={`transition-opacity ${loading ? "opacity-50" : ""}`} aria-busy={loading} aria-live="polite">
           <EstimateStats estimate={shown} customsValue={CUSTOMS_VALUE} />
-          <CostBar slices={shown.slices} />
+          <CostBar slices={shown.slices} customsValue={CUSTOMS_VALUE} />
         </div>
       ) : (
         <div className="flex min-h-36 items-center justify-center px-6 py-8 text-center text-base text-base-content/70" aria-live="polite">
@@ -162,7 +162,7 @@ export const MicroCalculator = ({
         <div className="min-w-0">
           <p className={`${tt.title} leading-snug`}>
             {shown && shown.totalDuty > 0
-              ? `Is ${formatMoney(shown.totalDuty)} really what you'll owe?`
+              ? `Is ${formatPct(Math.round((shown.totalDuty / CUSTOMS_VALUE) * 10000) / 100)} really what you'll owe?`
               : "Make sure this shipment really enters duty-free."}
           </p>
           <p className="mt-0.5 text-sm text-base-content/70">{hook}</p>

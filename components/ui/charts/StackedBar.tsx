@@ -20,6 +20,7 @@ export function StackedBar({
   shape = "rounded",
   fill = 1,
   legend = true,
+  showShare = true,
   highlight,
   onHighlight,
   className = "",
@@ -33,6 +34,8 @@ export function StackedBar({
   fill?: number;
   // The list of parts under the bar; off where the host lists them itself
   legend?: boolean;
+  // Each part's share of the whole in the legend, after its value (off when the values are rates)
+  showShare?: boolean;
   highlight?: string | null;
   onHighlight?: (label: string | null) => void;
   className?: string;
@@ -75,7 +78,7 @@ export function StackedBar({
               <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: p.color }} aria-hidden />
               <span className="text-base-content/70">{p.label}</span>
               <span className="font-semibold text-base-content">{formatValue(p.amount)}</span>
-              <span className="text-base-content/60">{share(p.amount)}</span>
+              {showShare && <span className="text-base-content/60">{share(p.amount)}</span>}
             </li>
           ))}
         </ul>

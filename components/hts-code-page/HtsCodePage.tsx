@@ -86,7 +86,8 @@ export function HtsCodePage({
   ].filter((s) => s.show);
 
   return (
-    <div className={`${THEME} hts-tracker ${trackerSans.className} ${trackerDisplay.variable} w-full flex-1 flex flex-col bg-base-200`}>
+    // Anything jumped to (#notes, a country's row) clears the site's sticky header (65px) with room to spare
+    <div className={`${THEME} hts-tracker ${trackerSans.className} ${trackerDisplay.variable} w-full flex-1 flex flex-col bg-base-200 [&_[id]]:scroll-mt-24`}>
       <StructuredData element={element} productName={productName} summary={summary} tariffElement={tariffElement} parentElements={parents} sectionChapter={sectionChapter} faqs={faqs} />
 
       {/* === Hero: the code, a quick estimate, and a rail with its base rates === */}
