@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { ColumnFiltersState, Row, Table, Updater } from "@tanstack/react-table";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import {
   DataTable,
   SelectionBar,
@@ -55,8 +56,9 @@ export const ImportsTable = ({
     pickedKeys,
     setCovered,
     removeProducts,
+    items,
   } = useTracker();
-  const { signedIn, openUpgrade } = useTrackerAccess();
+  const { signedIn, access, openUpgrade } = useTrackerAccess();
   const { unlocked, review } = useInsights();
 
   const columns = useMemo(
@@ -154,7 +156,7 @@ export const ImportsTable = ({
               onClick={() => alertsOn(picked)}
             >
               <BellAlertIcon className="h-4 w-4" aria-hidden />
-              Turn on alerts
+              Track
             </button>
             <button
               type="button"
@@ -162,7 +164,7 @@ export const ImportsTable = ({
               onClick={() => alertsOff(picked)}
             >
               <BellSlashIcon className="h-4 w-4" aria-hidden />
-              Turn off alerts
+              Stop tracking
             </button>
             <button
               type="button"
@@ -182,6 +184,22 @@ export const ImportsTable = ({
     <div className="flex flex-col gap-5">
       {header?.(table)}
       {shown > 0 && summary?.(table)}
+      {/* How many imports are tracked, when not all of them are: only those get alerts and impact checks */}
+      {signedIn && items.length > trackedKeys.size && (
+        <div className={`${tt.tile} flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center`}>
+          <BellAlertIcon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+          <p className="m-0 flex-1 text-sm text-base-content/70">
+            <span className="font-semibold text-base-content">
+              Tracking {trackedKeys.size.toLocaleString("en-US")} of {items.length.toLocaleString("en-US")} imports.
+            </span>{" "}
+            Only tracked imports get alerts and impact checks. Choose which ones in the Tracking column
+            {access.kind === "paid" ? ", or move up a plan to track more." : `: your free plan tracks ${access.pairLimit.toLocaleString("en-US")}.`}
+          </p>
+          <button type="button" className={`${ui.button({ variant: "secondary", size: "sm" })} shrink-0`} onClick={() => openUpgrade("tracking")}>
+            Track more imports
+          </button>
+        </div>
+      )}
       <DataTable
         table={table}
         label="Your imports"

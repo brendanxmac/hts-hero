@@ -1,6 +1,6 @@
 "use client";
 
-import { AdjustmentsHorizontalIcon, CheckCircleIcon, LockClosedIcon, SparklesIcon } from "@heroicons/react/20/solid";
+import { AdjustmentsHorizontalIcon, BellAlertIcon, BellSlashIcon, CheckCircleIcon, LockClosedIcon, SparklesIcon } from "@heroicons/react/20/solid";
 import { ColumnDef } from "@tanstack/react-table";
 import { StackedBar } from "@/components/ui/charts/StackedBar";
 import { mono } from "@/components/ui/font";
@@ -46,7 +46,8 @@ const Status = ({ row, ctx }: { row: TrackedProduct; ctx: ImportColumnContext })
   const locked = ctx.signedIn && !ctx.unlocked(row.key);
   const lower = row.bestSavingPct > 0.005;
   // Savings are off for the Tracker MVP (libs/tariff-tracker/features.ts): alerts only
-  if (!SAVINGS_ENABLED) return ctx.signedIn && !ctx.covered(row.key) ? <span className={tt.chip()}>Not tracked</span> : null;
+  // (whether it's tracked shows in the Tracking column)
+  if (!SAVINGS_ENABLED) return null;
   return (
     <span className="flex flex-wrap items-center justify-end gap-1">
       {ctx.signedIn && !ctx.covered(row.key) && <span className={tt.chip()}>No alerts</span>}
@@ -204,28 +205,51 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
             },
           },
         } satisfies ColumnDef<TrackedProduct, any>,
+      ]
+    : []),
+  // Tracked imports get alerts and impact checks (the plan's slots, PRICING.md): one toggle per row,
+  // a filled cobalt pill when tracked, an outline one when not
+  ...(ctx.signedIn
+    ? [
         {
           id: "alerts",
           accessorFn: (r: TrackedProduct) => (ctx.covered(r.key) ? "on" : "off"),
-          header: "Alerts",
+          header: "Tracking",
           filterFn: "facet",
           meta: {
             align: "center",
-            width: "w-20",
-            facet: { label: "Alerts", describe: (value: string) => ({ label: value === "on" ? "Alerts on" : "No alerts" }) },
+            width: "w-36",
+            facet: { label: "Tracking", describe: (value: string) => ({ label: value === "on" ? "Tracked" : "Not tracked" }) },
           },
           cell: ({ row: { original: r } }: { row: { original: TrackedProduct } }) => {
             const on = ctx.covered(r.key);
             const mine = ctx.picked(r.key);
             return (
-              <input
-                type="checkbox"
-                className={`${ui.checkbox} ${on && !mine ? "opacity-60" : ""}`}
-                checked={on}
-                onChange={(e) => ctx.setCovered(r.key, e.target.checked)}
-                title={on ? (mine ? "Alerts on (your pick). Uncheck to free the slot." : "Alerts on (picked for you: high duty). Uncheck to take it out.") : "No alerts. Check to turn them on."}
-                aria-label={`Alerts on ${r.entry.element.htsno} from ${r.entry.country.name}`}
-              />
+              <button
+                type="button"
+                role="switch"
+                aria-checked={on}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  ctx.setCovered(r.key, !on);
+                }}
+                title={
+                  on
+                    ? mine
+                      ? "Tracked (your pick): alerts and impact checks run on it. Click to stop tracking and free the slot."
+                      : "Tracked (picked for you: high duty): alerts and impact checks run on it. Click to stop tracking."
+                    : "Not tracked: no alerts or impact checks. Click to track it."
+                }
+                aria-label={`Track ${r.entry.element.htsno} from ${r.entry.country.name}`}
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                  on
+                    ? "bg-primary/10 text-primary hover:bg-primary/15"
+                    : "border border-base-300 text-base-content/60 hover:border-primary/40 hover:text-primary"
+                }`}
+              >
+                {on ? <BellAlertIcon className="h-3.5 w-3.5" aria-hidden /> : <BellSlashIcon className="h-3.5 w-3.5" aria-hidden />}
+                {on ? "Tracking" : "Not tracked"}
+              </button>
             );
           },
         } satisfies ColumnDef<TrackedProduct, any>,

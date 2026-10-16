@@ -5,7 +5,7 @@ import { TRACKER_PLANS, TrackerAccess, trackerAccessFrom, TrackerUsage } from ".
 // A signed-in account's Tariff Tracker access, read with the service role (server only)
 
 // Same grace as the other plans: renewals can land a day or two after a period ends
-const RENEWAL_GRACE_DAYS = 2;
+export const RENEWAL_GRACE_DAYS = 2;
 
 // The checks the account has spent (tracker_checks), oldest first
 export const readUsage = async (admin: SupabaseClient, userId: string): Promise<TrackerUsage> => {
