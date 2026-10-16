@@ -39,7 +39,7 @@ export function CodeHero({
           {productName}
         </span>
       </h1>
-      <p className="max-w-3xl text-sm leading-relaxed text-base-content/70">
+      <p className="text-sm leading-relaxed text-base-content/70">
         HTS Code {element.htsno} covers any article best defined as{" "}
         {path.map((text, i) => (
           <span key={i}>

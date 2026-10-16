@@ -43,7 +43,7 @@ export function ImportSources({
 
   return (
     <section id="us-imports" className={ui.section}>
-      <SectionHeader kicker={`Top origins · US imports ${imports.year}`} title={`Top Origins: Countries the US Imports HTS ${htsno} From`}>
+      <SectionHeader wide kicker={`Top origins · US imports ${imports.year}`} title={`Top Origins: Countries the US Imports HTS ${htsno} From`}>
         In {imports.year} the US imported {formatImportValue(imports.totalValue)} of {productName.toLowerCase()} ({scope})
         {totalTrend !== null && `, ${totalTrend >= 0 ? "up" : "down"} ${Math.abs(Math.round(totalTrend * 100))}% on ${imports.prior}`}, mostly from{" "}
         {joinNames(top)}. Each country&apos;s total duty today is shown beside its imports.

@@ -7,7 +7,7 @@ import * as ui from "@/components/ui/styles";
 export function RelatedRulings({ htsno }: { htsno: string }) {
   return (
     <section id="rulings" className={ui.section}>
-      <SectionHeader kicker="CBP rulings" title={`Related CROSS Rulings for HTS ${htsno}`}>
+      <SectionHeader wide kicker="CBP rulings" title={`Related CROSS Rulings for HTS ${htsno}`}>
         CBP classification rulings related to{" "}
         <span className={`${mono.className} font-medium text-base-content`}>{htsno}</span>.
         Open a ruling to read how Customs classified a similar product.

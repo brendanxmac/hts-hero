@@ -10,6 +10,7 @@ export function SectionHeader({
   titleId,
   children,
   className = "",
+  wide = false,
 }: {
   kicker: ReactNode;
   title: ReactNode;
@@ -17,9 +18,12 @@ export function SectionHeader({
   // The lead paragraph
   children?: ReactNode;
   className?: string;
+  // Spans the section's full width (a section whose content below is full width), instead of a
+  // reading measure
+  wide?: boolean;
 }) {
   return (
-    <div className={`flex flex-col gap-2 max-w-3xl ${className}`}>
+    <div className={`flex flex-col gap-2 ${wide ? "" : "max-w-3xl"} ${className}`}>
       <span className={`${ui.kicker} tracker:font-bold`}>{kicker}</span>
       <h2 id={titleId} className={`${ui.sectionTitle} tracker:font-[family-name:var(--font-tracker-display)]`}>
         {title}

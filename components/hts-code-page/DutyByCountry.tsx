@@ -49,7 +49,7 @@ export function DutyByCountry({
 
   return (
     <section id="duty-by-country" className={ui.section}>
-      <SectionHeader
+      <SectionHeader wide
         kicker={`Tariffs by country · ${formatSummaryDate(summary.asOf)}`}
         title={`US Import Duty on HTS ${htsno} by Country of Origin`}
       >
@@ -190,7 +190,7 @@ export function DutyByCountry({
         </details>
 
         <div className={`border-t border-base-300 bg-tt-soft px-6 py-4 sm:px-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4`}>
-          <p className={`${ui.caption} max-w-3xl leading-relaxed`}>
+          <p className={`${ui.caption} leading-relaxed`}>
             Duties on goods entered {formatSummaryDate(summary.asOf)} at the general rate (Column 2 where it
             applies), with tariff data verified through {summary.revision.title.replace(/^Revision (\d+) \((\d{4})\)$/, "$2 HTS Revision $1")}.
             Totals are before customs fees (MPF, HMF) and any antidumping or countervailing duties.

@@ -18,7 +18,7 @@ export function RelatedCodes({
 }) {
   return (
     <section id="related-codes" className={ui.section}>
-      <SectionHeader
+      <SectionHeader wide
         kicker="Related codes"
         title={children.length > 0 ? `HTS Codes Under ${element.htsno || "This Classification"}` : "Other HTS Codes at This Level"}
       />

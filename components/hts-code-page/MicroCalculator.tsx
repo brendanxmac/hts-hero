@@ -158,7 +158,7 @@ export const MicroCalculator = ({
       )}
 
       {/* The way on: what this quick estimate leaves out, and the calculator that doesn't */}
-      <div className="flex flex-col gap-3 rounded-b-[1.25rem] border-t border-base-300 bg-tt-soft px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <div className="flex flex-col gap-3 rounded-b-[1.25rem] border-t border-primary/15 bg-primary/[0.06] px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="min-w-0">
           <p className={`${tt.title} leading-snug`}>
             {shown && shown.totalDuty > 0
