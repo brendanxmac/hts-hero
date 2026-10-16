@@ -39,7 +39,6 @@ export const PlanCard = () => {
   const { items, trackedKeys } = useTracker();
   if (loading) return <div className={`${ui.skeleton} h-32 w-full`} />;
 
-  const covered = Math.min(items.length, access.pairLimit);
   const fromPrice = formatPrice(TRACKER_TIERS[0].price);
 
   if (!signedIn) {
@@ -55,14 +54,30 @@ export const PlanCard = () => {
   }
 
   if (access.kind === "paid") {
+    // The plan's tracking slots: how many are in use, and how many are left (or how many imports
+    // are left out, when the catalog is bigger than the plan)
+    const tracked = Math.min(trackedKeys.size, access.pairLimit);
+    const open = access.pairLimit - tracked;
+    const untracked = Math.max(0, items.length - access.pairLimit);
+    const n = (count: number) => count.toLocaleString("en-US");
     const nearLimit = items.length >= access.pairLimit * 0.8;
     return (
       <div className={BOX}>
         <span className={tt.eyebrow("success")}>Tracker {access.pairLimit}</span>
-        <span className="text-xs text-base-content/70">
-          {covered.toLocaleString("en-US")} of {access.pairLimit.toLocaleString("en-US")} imports tracked
-        </span>
-        <Meter value={covered} max={access.pairLimit} />
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-base-content/70">Imports tracked</span>
+            <span className="font-semibold tabular-nums text-base-content">
+              {n(tracked)} / {n(access.pairLimit)}
+            </span>
+          </div>
+          <Meter value={tracked} max={access.pairLimit} />
+          <span className="text-xs text-base-content/60">
+            {untracked > 0
+              ? `${n(untracked)} ${untracked === 1 ? "import isn't" : "imports aren't"} tracked`
+              : `${n(open)} more ${open === 1 ? "import" : "imports"} available to track`}
+          </span>
+        </div>
         {nearLimit && (
           <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => openUpgrade("tracking")}>
             Track more imports

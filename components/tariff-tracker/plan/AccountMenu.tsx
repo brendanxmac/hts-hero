@@ -15,7 +15,8 @@ const openBilling = async () => {
   const res = await fetch("/api/stripe/create-portal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ returnUrl: window.location.href }),
+    // The Tracker's own billing portal, which switches between Tracker plans only
+    body: JSON.stringify({ returnUrl: window.location.href, app: "tracker" }),
   });
   const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
   if (body.url) window.location.href = body.url;

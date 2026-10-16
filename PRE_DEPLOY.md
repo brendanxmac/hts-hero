@@ -43,6 +43,11 @@ add new ones as they come up.
       Checkout finds the price by its lookup key and the webhook maps any price by its metadata
       (`libs/tariff-tracker/prices.ts`), so no Tracker price env vars are needed. To change a price
       later: new price on the same product, same lookup key with "transfer lookup key", archive the old.
+      **Billing portal:** create a portal configuration named "Tariff Tracker" with metadata
+      `app` = `tracker`, subscription updates on (price; upgrades `always_invoice`, downgrades at
+      period end) listing the four Tracker products and their prices, and cancel at period end. The
+      Tracker's Billing button opens it (`libs/stripe.ts`), so customers can only switch between
+      Tracker tiers. When a price changes, add the new price to this configuration too.
       Check the setup with `npm run stripe:check-tracker` (it reads STRIPE_SECRET_KEY from
       .env.local; run it once with the live key). Also confirm the live Classify prices match the
       site ($39 / $89): the sandbox has $29 / $80.

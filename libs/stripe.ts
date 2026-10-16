@@ -93,18 +93,34 @@ export const createCheckout = async ({
 };
 
 // This is used to create Customer Portal sessions, so users can manage their subscriptions (payment methods, cancel, etc..)
+// The billing portal's settings for one product line: the active configuration whose
+// metadata.app matches (the Tariff Tracker's lists only its own tiers to switch between). Without
+// one, Stripe's default configuration is used.
+const portalConfigurations = new Map<string, string | null>();
+
+const portalConfigurationFor = async (stripe: Stripe, app: string) => {
+  if (portalConfigurations.has(app)) return portalConfigurations.get(app);
+  const { data } = await stripe.billingPortal.configurations.list({ active: true, limit: 100 });
+  const id = data.find((c) => c.metadata?.app === app)?.id ?? null;
+  portalConfigurations.set(app, id);
+  return id;
+};
+
 export const createCustomerPortal = async ({
   customerId,
   returnUrl,
-}: CreateCustomerPortalParams): Promise<string> => {
+  app,
+}: CreateCustomerPortalParams & { app?: string }): Promise<string> => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2025-05-28.basil",
     typescript: true,
   });
 
+  const configuration = app ? await portalConfigurationFor(stripe, app) : null;
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: customerId,
     return_url: returnUrl,
+    ...(configuration ? { configuration } : {}),
   });
 
   return portalSession.url;

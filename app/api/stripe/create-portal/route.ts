@@ -41,6 +41,8 @@ export async function POST(req: NextRequest) {
     const stripePortalUrl = await createCustomerPortal({
       customerId: userProfile.stripe_customer_id,
       returnUrl: body.returnUrl,
+      // "tracker": the Tariff Tracker's billing portal (switching between its tiers only)
+      app: body.app === "tracker" ? "tracker" : undefined,
     });
 
     return NextResponse.json({

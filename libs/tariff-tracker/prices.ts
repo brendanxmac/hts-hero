@@ -11,7 +11,8 @@ import { isTrackerPlan, TRACKER_PLANS, TrackerPlan } from "./plan";
 // metadata.billing. To change a price: create the new one under the same product with the same
 // lookup key and "transfer lookup key" on, then archive the old one. Checkout picks the new price
 // up by its lookup key, and subscribers still on an old price keep mapping to their plan by its
-// metadata. No env vars to change.
+// metadata. No env vars to change. Add the new price to the "Tariff Tracker" billing portal
+// configuration too (metadata.app = tracker, libs/stripe.ts), so customers can switch to it.
 //
 // STRIPE_TARIFF_TRACKER_<10|30|100|500>_<MONTHLY|ANNUAL>_PRICE_ID still works as an override
 // (comma-separated: the first is used for checkout, every one maps to the plan).
