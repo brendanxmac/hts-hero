@@ -8,7 +8,7 @@ import { Countries, Country } from "@/constants/countries";
 import type { MicroEstimate } from "@/libs/hts-micro-estimate";
 import { CountryField } from "@/components/duty-calculator/fields";
 import { estimateSurface, markCalculatorHandoff } from "@/components/duty-calculator/lib/analytics";
-import { formatDate, formatMoney, formatPct } from "@/components/duty-calculator/lib/format";
+import { formatDate, formatMoney } from "@/components/duty-calculator/lib/format";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
@@ -98,17 +98,24 @@ export const MicroCalculator = ({
     `/duty-calculator?code=${htsno}` +
     (country ? `&country=${country.code}&value=${CUSTOMS_VALUE}&date=${initial.asOf}&mode=ocean` : "");
 
-  // The hook to open the calculator: what this quick estimate leaves out
+  // The way on: what could lower the duty, and the calculator that checks it
   const exemptions = shown?.openQuestions ?? 0;
   const preference = shown?.preferences[0];
-  const hook =
+  const plural = (n: number) => `${n} exemption${n === 1 ? "" : "s"}`;
+  const headline =
+    exemptions > 0
+      ? `${plural(exemptions)} could lower this`
+      : preference
+        ? `${preference} could lower this`
+        : shown && shown.totalDuty > 0
+          ? "Make sure this is your best rate"
+          : "Make sure this shipment really enters duty-free";
+  const detail =
     exemptions > 0 && preference
-      ? `${exemptions} exemption${exemptions === 1 ? "" : "s"} and ${preference} could lower it. Check them against your real shipment details.`
-      : exemptions > 0
-        ? `${exemptions} exemption${exemptions === 1 ? "" : "s"} could lower it. Check them against your real shipment details.`
-        : preference
-          ? `${preference} could lower it. Check whether your shipment qualifies.`
-          : "Tariffs stack and change often. Check your exact shipment, line by line.";
+      ? `So could ${preference}. Check them against your real shipment details.`
+      : exemptions > 0 || preference
+        ? "Check them against your real shipment details."
+        : "Tariffs stack and change often. Check your exact shipment, line by line.";
 
   return (
     <section
@@ -158,14 +165,10 @@ export const MicroCalculator = ({
       )}
 
       {/* The way on: what this quick estimate leaves out, and the calculator that doesn't */}
-      <div className="flex flex-col gap-3 rounded-b-[1.25rem] border-t border-primary/15 bg-primary/[0.06] px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <div className="flex flex-col gap-3 rounded-b-[1.25rem] border-t border-base-300 bg-base-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="min-w-0">
-          <p className={`${tt.title} leading-snug`}>
-            {shown && shown.totalDuty > 0
-              ? `Is ${formatPct(Math.round((shown.totalDuty / CUSTOMS_VALUE) * 10000) / 100)} really what you'll owe?`
-              : "Make sure this shipment really enters duty-free."}
-          </p>
-          <p className="mt-0.5 text-sm text-base-content/70">{hook}</p>
+          <p className={`${tt.title} leading-snug`}>{headline}</p>
+          <p className="mt-0.5 text-sm text-base-content/70">{detail}</p>
         </div>
         <div className="flex shrink-0 flex-col items-stretch sm:items-center gap-1">
           {onUseCode ? (
@@ -182,7 +185,7 @@ export const MicroCalculator = ({
                 rel="nofollow"
                 className={ui.button({ variant: "primary" })}
               >
-                Find my exact duty
+                Find Best Rate
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </Link>
               <span className={`${ui.caption} text-center`}>Free · No sign-up</span>

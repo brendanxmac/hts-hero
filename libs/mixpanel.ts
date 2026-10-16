@@ -127,6 +127,8 @@ export enum MixpanelEvent {
   EXPLORER_NAVIGATED_TO_LEVEL = "Explorer Navigated to Level",
   // Subscribed to tariff news on /tariff-updates (source: the page it was on)
   TARIFF_UPDATES_SUBSCRIBED = "Tariff Updates Subscribed",
+  // After subscribing: "Create my free account" for the Tariff Tracker
+  TARIFF_UPDATES_TRACKER_UPSELL_CLICKED = "Tariff Updates Tracker Upsell Clicked",
 }
 
 // Browser-side tracking functions

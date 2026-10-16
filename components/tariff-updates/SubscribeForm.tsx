@@ -2,7 +2,8 @@
 
 import { FormEvent, useState } from "react"
 import Link from "next/link"
-import { ArrowRightIcon, CheckCircleIcon, EnvelopeIcon } from "@heroicons/react/20/solid"
+import { ArrowRightIcon, CheckCircleIcon, CheckIcon, EnvelopeIcon } from "@heroicons/react/20/solid"
+import { signupHref } from "@/components/tariff-tracker/access/signup"
 import * as ui from "@/components/ui/styles"
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel"
 import { DEFAULT_NEWS_PREFERENCES, NewsPreferencesFields, type NewsPreferencesValue } from "./NewsPreferencesFields"
@@ -12,6 +13,18 @@ import { DEFAULT_NEWS_PREFERENCES, NewsPreferencesFields, type NewsPreferencesVa
 // subscribing, the next step is offered: alerts on their own imports, in the Tariff Tracker.
 // `inline` is the small one inside another box (the duty calculator's Tariff News): the email and
 // a button on one row, the weekly digest of every law and country, and a one-line confirmation.
+
+// What the free Tariff Tracker adds to the news, offered right after subscribing
+const UPSELL = [
+  "See which of your imports each new tariff update affects",
+  "Get alerted with the rate before and after, by email, Slack or Teams",
+  "Find potential savings and audit what you paid",
+]
+
+// The address they subscribed with, for the sign-up page to fill in (this tab only, never in a URL)
+export const SIGNUP_EMAIL_KEY = "hts-hero-signup-email"
+
+const upsellClicked = (source: string) => trackEvent(MixpanelEvent.TARIFF_UPDATES_TRACKER_UPSELL_CLICKED, { source })
 
 type Status = "idle" | "sending" | "confirm_sent" | "manage_link_sent" | "throttled"
 
@@ -42,6 +55,11 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
       const body = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(body.error ?? "Something went wrong. Please try again.")
       setStatus(body.status)
+      try {
+        sessionStorage.setItem(SIGNUP_EMAIL_KEY, email.trim())
+      } catch {
+        // Private mode: they type it again
+      }
       trackEvent(MixpanelEvent.TARIFF_UPDATES_SUBSCRIBED, { source, frequency: prefs.frequency, scope: prefs.scope, filtered: prefs.authorities.length + prefs.countries.length > 0 })
     } catch (err) {
       setStatus("idle")
@@ -49,19 +67,33 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
     }
   }
 
+  // Subscribed: the confirmation, then straight on to the Tariff Tracker, which matches every update
+  // to their own imports. The account is created first (the address carried over), then the
+  // Tracker onboards them.
   if (status !== "idle" && status !== "sending") {
     const done = DONE[status]
+    const signup = signupHref("/tariff-tracker")
     if (inline)
       return (
-        <p className="flex items-start gap-2 text-sm text-base-content/80" role="status">
-          <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-          <span>
-            <span className="font-semibold text-base-content">{done.title}.</span> {done.body}
-          </span>
-        </p>
+        <div className="flex flex-col gap-3" role="status">
+          <p className="m-0 flex items-start gap-2 text-sm text-base-content/80">
+            <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
+            <span>
+              <span className="font-semibold text-base-content">{done.title}.</span> {done.body}
+            </span>
+          </p>
+          <div className="flex flex-col gap-2 rounded-xl border border-primary/20 bg-primary/[0.06] p-3.5">
+            <p className="m-0 text-sm font-semibold text-base-content">Next: see when an update hits your own imports</p>
+            <p className="m-0 text-xs leading-relaxed text-base-content/70">Track your imports free, get alerted with the rate before and after, and find potential savings.</p>
+            <Link href={signup} onClick={() => upsellClicked(source)} className={`${ui.button({ variant: "primary", size: "sm" })} self-start`}>
+              Create my free account
+              <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
+        </div>
       )
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4" role="status">
         <div className="flex items-start gap-3">
           <CheckCircleIcon className="mt-0.5 h-5 w-5 shrink-0 text-success" aria-hidden />
           <div>
@@ -69,15 +101,21 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
             <p className="text-sm text-base-content/70">{done.body}</p>
           </div>
         </div>
-        <div className="rounded-2xl bg-tt-soft p-4">
-          <p className="text-sm font-semibold text-base-content">Want to know when a tariff hits your own imports?</p>
-          <p className="mt-1 text-sm text-base-content/70">
-            Add your HTS codes and countries to the free Tariff Tracker, and we&apos;ll alert you every time an update affects one of them.
-          </p>
-          <Link href="/tariff-tracker?tab=catalog&add=paste" className={`${ui.button({ variant: "primary", size: "sm" })} mt-3`}>
-            Add my imports, free
+        <div className="flex flex-col gap-3 rounded-2xl border border-primary/20 bg-primary/[0.06] p-5">
+          <p className="m-0 text-base font-semibold text-base-content">Now see exactly when an update hits your imports</p>
+          <ul className="m-0 flex list-none flex-col gap-1.5 p-0 text-sm text-base-content/80">
+            {UPSELL.map((line) => (
+              <li key={line} className="flex items-start gap-2">
+                <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                {line}
+              </li>
+            ))}
+          </ul>
+          <Link href={signup} onClick={() => upsellClicked(source)} className={`${ui.button({ variant: "primary" })} self-start`}>
+            Create my free account
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
+          <p className="m-0 text-xs text-base-content/60">Free. Takes a minute; then add your HTS codes and countries.</p>
         </div>
       </div>
     )

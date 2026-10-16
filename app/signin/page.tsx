@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { SIGNUP_EMAIL_KEY } from "@/components/tariff-updates/SubscribeForm";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import { Provider } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
@@ -32,6 +33,15 @@ function LoginContent() {
 
   const supabase = createSupabaseClient();
   const [email, setEmail] = useState<string>("");
+  // Signing up right after subscribing to tariff news: the address they just gave (SubscribeForm)
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(SIGNUP_EMAIL_KEY);
+      if (saved) setEmail((now) => now || saved);
+    } catch {
+      // Storage blocked: nothing to fill in
+    }
+  }, []);
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
