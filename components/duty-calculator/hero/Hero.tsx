@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm";
+import { ArrowRightIcon, BellAlertIcon } from "@heroicons/react/20/solid";
 import type { PublicUpdate } from "@/libs/tariff-updates/public";
 import { AUTHORITIES } from "@/libs/tariff-updates/types";
 import * as mk from "@/components/ui/marketing/styles";
@@ -16,8 +15,8 @@ import { CHANGELOG_PATH } from "../changelog/constants";
 
 const day = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
-// The two newest tariff actions, each opening its update (color is meaning: red a new or higher
-// tariff, green one lifted, amber a heads-up), and the email sign-up for them
+// The three newest tariff actions, each opening its update (color is meaning: red a new or higher
+// tariff, green one lifted, amber a heads-up), and the way to the news page to sign up for them
 const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string }) => (
   <section aria-labelledby="dc-news" className={`${tt.panel} flex w-full flex-col lg:max-w-md`}>
     <div className="flex items-center justify-between gap-3 px-5 pb-1 pt-4">
@@ -49,10 +48,16 @@ const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string
         </li>
       ))}
     </ul>
-    <div className="mt-auto flex flex-col gap-2 rounded-b-lg border-t border-base-300 bg-tt-soft px-5 py-3.5">
-      <p className="m-0 text-sm font-semibold text-base-content">Get the best tariff news alerts</p>
-      <SubscribeForm source="duty-calculator-hero" inline />
-    </div>
+    <Link
+      href="/tariff-updates"
+      className="mt-auto flex items-center justify-between gap-2 rounded-b-lg border-t border-base-300 bg-tt-soft px-5 py-3 text-sm font-semibold text-base-content transition-colors hover:text-primary"
+    >
+      <span className="flex items-center gap-2">
+        <BellAlertIcon className="h-4 w-4 text-primary" aria-hidden />
+        Get the best tariff news alerts
+      </span>
+      <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+    </Link>
   </section>
 );
 
@@ -72,9 +77,9 @@ export const Hero = ({ latestNews, revisionTitle }: { latestNews: PublicUpdate[]
         </p>
         <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-base-content/60">
           <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
-          Up to date with {revisionTitle} and every US tariff action since.
+          Up to date with {revisionTitle}.
           <Link href={CHANGELOG_PATH} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
-            See what&apos;s changed
+            Track our updates
             <ArrowRightIcon className="h-3 w-3" aria-hidden />
           </Link>
         </p>

@@ -25,6 +25,7 @@ import { RelatedCodes } from "./RelatedCodes";
 import { RelatedRulings } from "./RelatedRulings";
 import { StructuredData } from "./StructuredData";
 import { CodeUpdates } from "@/components/tariff-updates/CodeUpdates";
+import { NewsAlertsBox } from "@/components/tariff-updates/NewsAlertsBox";
 import type { PublicUpdate } from "@/libs/tariff-updates/public";
 import type { SectionChapter } from "./types";
 
@@ -132,6 +133,7 @@ export function HtsCodePage({
               {offerCalculator && <CalculatorPrompt htsno={element.htsno} />}
               {summary && <DutyPreview summary={summary} />}
               <CodeUpdates updates={tariffUpdates} htsno={element.htsno} />
+              <NewsAlertsBox source="hts-code-page" />
               {sections.length > 1 && <OnThisPage sections={sections} />}
             </div>
           </div>

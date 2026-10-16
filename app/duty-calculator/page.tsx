@@ -75,7 +75,7 @@ export const metadata: Metadata = {
 export default async function DutyCalculatorPage() {
   const [latestNews, content] = await Promise.all([
     // The latest tariff actions for the hero; the page still works if they can't be loaded
-    getLatestUpdates(2).catch((): PublicUpdate[] => []),
+    getLatestUpdates(3).catch((): PublicUpdate[] => []),
     getDutyCalculatorContent(),
   ]);
   const faqs = dutyCalculatorFaqs(content.revisionTitle);
