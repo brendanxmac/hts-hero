@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ClassifyCta } from "@/components/ui/marketing/ClassifyCta";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { CalculationTerminal, CatalogFrame } from "@/components/tariff-monitor";
 import { RecalcTerminal } from "@/components/tariff-audit";
@@ -228,7 +227,5 @@ export const ToolShowcase = ({
       </div>
     </section>
 
-    {/* Classification */}
-    <ClassifyCta />
   </>
 );

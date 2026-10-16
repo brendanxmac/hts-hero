@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import config from "@/config";
-import { mono } from "@/components/ui/font";
 import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { darkBand, display, moneyButtonMd } from "../lib/theme";
@@ -60,73 +59,6 @@ const Includes = ({ items }: { items: string[] }) => (
 );
 
 // A small upload, counted: four shipments, three imports
-const EXAMPLE_UPLOAD = [
-  { code: "6109.10.00", product: "Cotton T-shirts", origin: "China", shipped: "Jan 14", counts: "1" },
-  { code: "6109.10.00", product: "Cotton T-shirts", origin: "Vietnam", shipped: "Feb 3", counts: "2" },
-  { code: "6109.10.00", product: "Cotton T-shirts", origin: "China", shipped: "Mar 9", counts: null },
-  { code: "9401.61.60", product: "Wood chairs", origin: "Mexico", shipped: "Mar 22", counts: "3" },
-];
-
-const HowProductsCount = () => (
-  <div
-    id="how-products-count"
-    className="mx-auto mt-6 grid max-w-6xl scroll-mt-24 grid-cols-1 gap-8 rounded-3xl border border-base-300 bg-base-100 p-6 sm:p-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center"
-  >
-    <div>
-      <p className={mk.eyebrow}>How we count imports</p>
-      <h3 className="mt-3 text-2xl font-semibold [font-family:var(--font-tracker-display)] tracking-tight text-base-content">One import = one HTS code from one country of origin</h3>
-      <p className="mt-3 text-base-content/70">
-        Upload your product catalog or your import history as a CSV. We group it by HTS code and country of origin, and each
-        pair counts as one import.
-      </p>
-      <p className="mt-3 text-base-content/70">
-        Repeat shipments, quantities and values don&apos;t add to your count. The same code from a second country does.
-      </p>
-    </div>
-
-    <div className="overflow-hidden rounded-2xl border border-base-300">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm sm:min-w-[26rem]">
-          <thead className="bg-tt-soft text-xs uppercase tracking-wider text-base-content/60">
-            <tr>
-              <th className="px-4 py-2.5 font-semibold">HTS code</th>
-              <th className="px-3 py-2.5 font-semibold">Origin</th>
-              <th className="hidden px-3 py-2.5 font-semibold sm:table-cell">Shipped</th>
-              <th className="px-4 py-2.5 text-right font-semibold">Counts as</th>
-            </tr>
-          </thead>
-          <tbody>
-            {EXAMPLE_UPLOAD.map((r) => (
-              <tr key={`${r.code}-${r.origin}-${r.shipped}`} className={`border-t border-base-300 ${r.counts ? "" : "text-base-content/60"}`}>
-                <td className="px-4 py-3">
-                  <span className={`${mono.className} block text-xs ${r.counts ? "text-base-content" : ""}`}>{r.code}</span>
-                  <span className="text-xs">{r.product}</span>
-                </td>
-                <td className={`px-3 py-3 ${r.counts ? "font-medium text-base-content" : ""}`}>{r.origin}</td>
-                <td className="hidden px-3 py-3 sm:table-cell">{r.shipped}</td>
-                <td className="px-4 py-3 text-right">
-                  {r.counts ? (
-                    <span className="inline-flex items-center gap-1.5 font-semibold text-primary">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs ring-1 ring-primary/20">{r.counts}</span>
-                      <span className="hidden sm:inline">import</span>
-                    </span>
-                  ) : (
-                    <span className="text-xs font-medium">Already counted</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p className="flex items-center justify-between gap-3 border-t border-base-300 bg-tt-soft px-4 py-3 text-sm">
-        <span className="text-base-content/70">{EXAMPLE_UPLOAD.length} shipments uploaded</span>
-        <span className="font-bold text-base-content">= {new Set(EXAMPLE_UPLOAD.map((r) => `${r.code}|${r.origin}`)).size} imports tracked</span>
-      </p>
-    </div>
-  </div>
-);
-
 export const PricingOverview = () => {
   const [billing, setBilling] = useState<Billing>("monthly");
   const [tier, setTier] = useState<Tier>(TIERS[0]);
@@ -222,7 +154,7 @@ export const PricingOverview = () => {
                 </div>
                 <p className="mt-3 text-sm text-base-content/60">
                   1 import = 1 HTS code from 1 country of origin.{" "}
-                  <a href="#how-products-count" className="font-semibold text-primary underline-offset-4 hover:underline">
+                  <a href="#faq" className="font-semibold text-primary underline-offset-4 hover:underline">
                     How we count
                   </a>
                 </p>
@@ -245,7 +177,6 @@ export const PricingOverview = () => {
           </article>
         </div>
 
-        <HowProductsCount />
 
         <Link
           href="/classify#pricing"

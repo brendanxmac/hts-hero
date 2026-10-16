@@ -39,6 +39,11 @@ export const HOME_FAQS = [
     answer: `The Tariff Calculator is free. The Tariff Tracker is free to start: check ${TRIAL_ALLOWANCE.savingsChecks} imports for savings, run ${TRIAL_ALLOWANCE.auditChecks} audit checks and get alerts on ${TRIAL_ALLOWANCE.alertImports} imports, then from ${trackerFrom} a month. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. Monthly plans, no contract, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
   },
   {
+    question: "How do you count imports?",
+    answer:
+      "One import is one HTS code from one country of origin. Upload your product catalog or your import history as a CSV; we group it by HTS code and country of origin, and each pair counts as one import. Repeat shipments, quantities and values don't add to your count. The same code from a second country does.",
+  },
+  {
     question: "Where does HTS Hero's tariff data come from?",
     answer:
       "From the official Harmonized Tariff Schedule published by the US International Trade Commission, with every revision's changes entered on the dates they take effect, plus the proclamations, executive orders, Federal Register notices and CBP messages behind them. Every change is logged in a public changelog.",

@@ -10,7 +10,6 @@ import {
   HeroTicker,
   HomeDirectory,
   HomeFaq,
-  LookupStrip,
   OfferCta,
   PricingOverview,
   ToolShowcase,
@@ -107,7 +106,6 @@ export default async function Home() {
         })}
         <main className={`${mk.page} w-full flex-1 shrink-0`}>
           <HeroTicker />
-          <LookupStrip />
           <ToolShowcase
             example={example}
             audit={audit}
