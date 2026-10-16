@@ -14,17 +14,11 @@ const HREF = "/tariff-tracker?tab=catalog&add=paste"
 export function TrackerCtaRow() {
   return (
     <div className="flex flex-col gap-4 border-b border-base-300 bg-primary/[0.06] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden>
           <BellAlertIcon className="h-5 w-5" />
         </span>
-        <div className="flex flex-col gap-1">
-          <p className="m-0 text-sm font-semibold text-base-content">Know the moment an update hits your imports</p>
-          <p className="m-0 text-sm text-base-content/70">
-            Add your HTS codes and countries to the free Tariff Tracker. When a new tariff action affects one of them, we alert you with the rate before
-            and after.
-          </p>
-        </div>
+        <p className="m-0 self-center text-base font-semibold text-base-content">Get alerted the moment a new tariff update affects any of your imports</p>
       </div>
       <Link href={HREF} className={`${ui.button({ variant: "primary" })} shrink-0 self-start sm:self-center`}>
         Track my imports free
