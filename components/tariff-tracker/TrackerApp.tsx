@@ -34,6 +34,7 @@ const ProductCatalog = dynamic(() => import("./ProductCatalog").then((m) => m.Pr
   loading: PanelSkeleton,
 });
 const Overview = dynamic(() => import("./overview/Overview").then((m) => m.Overview), { loading: PanelSkeleton });
+const Insights = dynamic(() => import("./insights-tab/Insights").then((m) => m.Insights), { loading: PanelSkeleton });
 const RateHistory = dynamic(() => import("./history/RateHistory").then((m) => m.RateHistory), { loading: PanelSkeleton });
 const Alerts = dynamic(() => import("./alerts/Alerts").then((m) => m.Alerts), { loading: PanelSkeleton });
 const Savings = dynamic(() => import("./savings/Savings").then((m) => m.Savings), { loading: PanelSkeleton });
@@ -76,6 +77,7 @@ export const TrackerApp = () => {
     calculator: (active) => <TrackerCalculator key={calculatorRun} active={active} />,
     catalog: () => <ProductCatalog />,
     overview: () => <Overview />,
+    insights: () => <Insights />,
     history: () => <RateHistory />,
     savings: () => <Savings />,
     sourcing: () => <Sourcing />,

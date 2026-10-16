@@ -46,6 +46,7 @@ export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
     const { count } = changesLastYear(insights.changes, todayIso());
     if (count) meta.history = { text: `${count} changes`, tone: "error" };
   }
+  if (items.length) meta.insights = { text: "New", tone: "primary" };
   // On the trial, what's still free; once the checks are spent (or on a plan), what they found
   const found = insights.totals.anyUsd + insights.beyond.anyUsd;
   if (signedIn && !paid && savingsLeft > 0) meta.savings = { text: `${savingsLeft} free`, tone: "primary" };

@@ -9,7 +9,7 @@ import { currentPath, signupHref } from "./signup";
 // A view that needs a free account (Duty over time, Analysis, and in the Tracker Rate history and
 // Sourcing: see PRICING.md). Signed-in visitors get it; everyone else gets its stand-in and a
 // sign-up that brings them back to it. Works anywhere, inside the Tracker or not.
-export type AccountFeature = "analysis" | "duty-over-time" | "alerts" | "history" | "sourcing" | "savings" | "entries";
+export type AccountFeature = "analysis" | "duty-over-time" | "alerts" | "history" | "insights" | "sourcing" | "savings" | "entries";
 
 export const AccountGate = ({
   feature,

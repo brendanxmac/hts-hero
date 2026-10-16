@@ -7,6 +7,7 @@ import {
   GlobeAltIcon,
   ChatBubbleLeftRightIcon,
   HomeIcon,
+  LightBulbIcon,
   NewspaperIcon,
   ReceiptPercentIcon,
   Squares2X2Icon,
@@ -23,6 +24,7 @@ export type SectionSlug =
   | "calculator"
   | "catalog"
   | "history"
+  | "insights"
   | "alerts"
   | "news"
   | "impact"
@@ -133,6 +135,21 @@ export const SECTIONS: TrackerSection[] = [
     group: "workspace",
     paidOnly: false,
     planned: [],
+  }),
+  section({
+    slug: "insights",
+    label: "Insights",
+    Icon: LightBulbIcon,
+    title: "Insights",
+    summary: "What your imports teach you: where your duty comes from, what moved it, and what to watch.",
+    ready: true,
+    group: "workspace",
+    paidOnly: false,
+    planned: [
+      "Where your duty comes from, by tariff, country of origin and HTS chapter",
+      "How much of your catalog changed in the last 12 months, and which tariffs moved it",
+      "Your most exposed imports and countries, and charts you build yourself",
+    ],
   }),
   section({
     slug: "history",
