@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { toRoman } from "@javascript-packages/roman-numerals";
 import { Explore } from "@/components/hts-explorer/Explore";
+import * as tt from "@/components/ui/styles/tracker";
 import { NewsAlertsBox } from "@/components/tariff-updates/NewsAlertsBox";
 import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import config from "@/config";
@@ -56,10 +57,11 @@ export default async function Home() {
             aside={<NewsAlertsBox source="explore" />}
             heading={
               <>
-                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-base-content [font-family:var(--font-tracker-display)]">
+                <span className={tt.eyebrow("primary")}>Harmonized Tariff Schedule</span>
+                <h1 className="mt-4 text-4xl sm:text-5xl font-semibold leading-tight text-base-content [font-family:var(--font-tracker-display)]">
                   HTS Code Lookup
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm md:text-base text-base-content/70 leading-relaxed">
+                <p className="mt-4 max-w-2xl text-base text-base-content/70 leading-relaxed">
                   Search the US Harmonized Tariff Schedule (HTSUS) by code or product
                   description, then open any HTS code to see its duty rates and notes,
                   or{" "}
