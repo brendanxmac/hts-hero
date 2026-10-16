@@ -7,6 +7,7 @@ import { THEME } from "@/components/ui/theme";
 import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as mk from "@/components/ui/marketing/styles";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { BaseRates } from "./BaseRates";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { CalculatorPrompt } from "./CalculatorPrompt";
@@ -77,7 +78,7 @@ export function HtsCodePage({
 
   const sections = [
     { id: "duty-by-country", label: "Duty by Country", show: !!summary },
-    { id: "us-imports", label: "Where It's Imported From", show: !!imports },
+    { id: "us-imports", label: "Top Origins", show: !!imports },
     { id: "related-codes", label: "Related Codes", show: hasRelated },
     { id: "notes", label: "Relevant Notes", show: !!(sectionChapter && element.chapter) },
     { id: "rulings", label: "Related CROSS Rulings", show: !!element.htsno },
@@ -95,14 +96,16 @@ export function HtsCodePage({
 
           <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_21rem]">
             <div className="min-w-0 flex flex-col gap-5">
-              <CodeHero
-                element={element}
-                productName={productName}
-                summary={summary}
-                parents={parents}
-                sectionChapter={sectionChapter}
-                subCodeCount={children.length}
-              />
+              <div className={`${tt.panel} p-6 lg:p-7`}>
+                <CodeHero
+                  element={element}
+                  productName={productName}
+                  summary={summary}
+                  parents={parents}
+                  sectionChapter={sectionChapter}
+                  subCodeCount={children.length}
+                />
+              </div>
 
               {estimate ? (
                 <MicroCalculator
@@ -134,9 +137,11 @@ export function HtsCodePage({
               {summary && <DutyPreview summary={summary} />}
               <CodeUpdates updates={tariffUpdates} htsno={element.htsno} />
               <NewsAlertsBox source="hts-code-page" />
-              {sections.length > 1 && <OnThisPage sections={sections} />}
             </div>
           </div>
+
+          {/* Jump to each part of the page, across the page under the hero */}
+          {sections.length > 1 && <OnThisPage sections={sections} />}
         </div>
       </div>
 

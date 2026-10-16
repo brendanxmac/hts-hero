@@ -74,45 +74,45 @@ export default async function TariffUpdatesPage() {
       })}
 
       <div className={`${mk.container} flex flex-col gap-16 pb-20 pt-10`}>
-        <header className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
-          <div className="flex max-w-3xl flex-col gap-4">
-            <span className={tt.eyebrow("primary")}>US tariff updates</span>
-            <h1 className={`${tt.display} text-4xl font-semibold leading-tight text-base-content sm:text-5xl`}>Latest US Tariff Updates</h1>
-            <p className="text-lg leading-relaxed text-base-content/70">{UPDATES_DEFINITION}</p>
-          </div>
-          <div className={`${tt.panel} flex flex-col gap-4 p-6`}>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className={tt.metric}>{updates.length}</div>
-                <div className="text-xs text-base-content/60">tariff actions{since ? ` since ${formatDay(since)}` : ""}</div>
-              </div>
-              <div>
-                <div className={tt.metric}>{SOURCE_LIST.length}</div>
-                <div className="text-xs text-base-content/60">official sources, checked every 15 minutes</div>
-              </div>
+        {/* The title and, beside it, the sign-up; the updates straight under them, in the first screen */}
+        <div className="flex flex-col gap-8">
+          <header className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
+            <div className="flex max-w-3xl flex-col gap-4">
+              <span className={tt.eyebrow("primary")}>US tariff updates</span>
+              <h1 className={`${tt.display} text-4xl font-semibold leading-tight text-base-content sm:text-5xl`}>Latest US Tariff Updates</h1>
+              <p className="text-base leading-relaxed text-base-content/70 sm:text-lg">{UPDATES_DEFINITION}</p>
+              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-base-content/60">
+                <span>
+                  <strong className="font-semibold text-base-content">{updates.length}</strong> tariff actions{since ? ` since ${formatDay(since)}` : ""}
+                </span>
+                <span aria-hidden>·</span>
+                <span>
+                  <strong className="font-semibold text-base-content">{SOURCE_LIST.length}</strong> official sources, checked every 15 minutes
+                </span>
+                {latest && (
+                  <>
+                    <span aria-hidden>·</span>
+                    <span>Latest {formatDay(latest)}</span>
+                  </>
+                )}
+                <span aria-hidden>·</span>
+                <a href="/tariff-updates/feed.xml" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                  <RssIcon className="h-3.5 w-3.5" aria-hidden />
+                  RSS
+                </a>
+              </p>
             </div>
-            {latest && <p className="text-sm text-base-content/70">Latest update: {formatDay(latest)}</p>}
-            <a href="/tariff-updates/feed.xml" className={`${ui.button({ variant: "secondary", size: "sm" })} self-start`}>
-              <RssIcon className="h-4 w-4" aria-hidden />
-              RSS feed
-            </a>
-          </div>
-        </header>
+            <section aria-labelledby="subscribe" className={`${tt.panel} flex flex-col gap-3 p-6`}>
+              <h2 id="subscribe" className={`${tt.title} m-0`}>
+                Get Every New Action by Email
+              </h2>
+              <p className="m-0 text-sm leading-relaxed text-base-content/70">A plain-English summary with the official documents, as it happens or weekly. Free.</p>
+              <SubscribeForm source="tariff-updates" compact />
+            </section>
+          </header>
 
-        <section aria-labelledby="subscribe" className={`${tt.panel} grid gap-6 p-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-start`}>
-          <div className="flex flex-col gap-2">
-            <h2 id="subscribe" className={tt.title}>
-              Get every new US tariff action by email
-            </h2>
-            <p className="text-sm leading-relaxed text-base-content/70">
-              A plain-English summary of each action, with the official documents, as it happens or in a weekly digest. Pick the laws and countries you
-              care about. Free.
-            </p>
-          </div>
-          <SubscribeForm source="tariff-updates" />
-        </section>
-
-        <UpdatesList updates={updates} />
+          <UpdatesList updates={updates} />
+        </div>
 
         <section aria-labelledby="sources" className="flex flex-col gap-6">
           <SectionHeader kicker="Sources" title="Where these updates come from" titleId="sources">

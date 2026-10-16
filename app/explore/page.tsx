@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { toRoman } from "@javascript-packages/roman-numerals";
 import { Explore } from "@/components/hts-explorer/Explore";
+import { NewsAlertsBox } from "@/components/tariff-updates/NewsAlertsBox";
 import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import config from "@/config";
 import { getHtsSectionsServer } from "../../libs/hts-server";
@@ -66,6 +67,9 @@ export default async function Home() {
                   </Link>{" "}
                   for a country of origin.
                 </p>
+                <div className="mt-5">
+                  <NewsAlertsBox source="explore" slim />
+                </div>
               </>
             }
           />
