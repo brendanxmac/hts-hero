@@ -22,7 +22,7 @@ import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 
 // Pricing at a glance: what's free (the calculator and the Tracker's free imports), and the
 // Tariff Tracker priced by catalog size, with a tier picker (monthly only while TRACKER_ANNUAL_ENABLED
-// is off; the billing switch still serves the classification line). Below the cards, a worked example of how a catalog is counted
+// is off, and so is the billing switch: the classification line shows its monthly price). Below the cards, a worked example of how a catalog is counted
 // (one import per HTS code + country of origin), then classification as its own line. Every number
 // comes from the price list (PRICING.md).
 
@@ -77,7 +77,8 @@ export const PricingOverview = () => {
           <SectionIntro eyebrow="Pricing" title="Pricing that matches your imports" id="home-pricing-title" center>
             No demo, no sales call and no contract. Start free, no credit card.
           </SectionIntro>
-          <BillingSwitch billing={billing} onChange={setBilling} />
+          {/* Hidden while Tracker plans are monthly only (MVP_TRIM.md); classification shows monthly */}
+          {TRACKER_ANNUAL_ENABLED && <BillingSwitch billing={billing} onChange={setBilling} />}
         </div>
 
         <div className="mx-auto mt-12 grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
@@ -152,7 +153,7 @@ export const PricingOverview = () => {
                       >
                         <span className="block text-lg font-bold tabular-nums">{t.label}</span>
                         {/* <span className={`block text-xs ${active ? "text-base-content/60" : "text-base-content/60"}`}>
-                          {t.price === null ? "custom" : `${formatPrice(monthlyRate(t.price, billing))}/mo`}
+                          {t.price === null ? "custom" : `${formatPrice(monthlyRate(t.price, trackerPeriod))}/mo`}
                         </span> */}
                       </button>
                     );

@@ -126,7 +126,7 @@ every price reads `TRACKER_TIERS`.
 - `hero/HeroTicker.tsx`: H1 "Monitor & Audit your US Tariffs on Autopilot" → "Monitor Every Tariff on Your Imports"; lead.
 - `command/CommandCenter.tsx`: only the monitoring pass renders (`ALL_LAYERS` filtered by the flags); savings/audit cells kept.
 - `tools/ToolShowcase.tsx`: "Discover savings" and "Audit" sections gated; alert points and button "Get Alerts" → "Track N imports free".
-- `pricing/PricingOverview.tsx`: free and Tracker lists; "watched, audited and optimized" → "tracked"; "Check 5 imports for savings free" → "Track N imports free"; annual button gated; Managed blurb.
+- `pricing/PricingOverview.tsx`: Monthly / Annual switch hidden while `TRACKER_ANNUAL_ENABLED` is off (classification shows monthly); tier picker prices monthly; free and Tracker lists; "watched, audited and optimized" → "tracked"; "Check 5 imports for savings free" → "Track N imports free"; annual button gated; Managed blurb.
 - `managed/ManagedSection.tsx`: legal wording throughout (watched, briefed, flagged for your broker; chat example "Worth asking your broker"); typo "Headcout" fixed.
 - `lib/copy.ts` (also JSON-LD and llms.txt): DEFINITION; FAQ "Can HTS Hero find duty I overpaid?" → "How do I see how a new tariff affects my imports?"; cost FAQ; broker FAQ.
 - `lib/offer.ts`: OFFER.note → "track N imports free, with alerts and impact checks".
