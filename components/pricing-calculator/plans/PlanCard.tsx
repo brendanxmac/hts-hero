@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 
 // One plan: its name and pitch, its price, what's included and a call to action. A dark card is
-// the headline plan of its group; a featured light card gets a teal ring.
+// the headline plan of its group; a featured light card gets a cobalt ring.
 export const PlanCard = ({
   id,
   name,
@@ -32,40 +32,40 @@ export const PlanCard = ({
     aria-labelledby={id ? `${id}-title` : undefined}
     className={`relative flex flex-col overflow-hidden rounded-3xl ${
       dark
-        ? "bg-slate-900 text-white shadow-2xl shadow-slate-900/25"
-        : `border bg-white shadow-sm ${featured ? "border-teal-500 ring-2 ring-teal-500" : "border-slate-200"}`
+        ? "hts-tracker-on-dark bg-base-200 text-base-content shadow-2xl shadow-black/25"
+        : `border bg-base-100 shadow-sm ${featured ? "border-primary ring-2 ring-primary" : "border-base-300"}`
     }`}
   >
     {dark && (
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(36rem_18rem_at_100%_0%,rgba(45,212,191,0.25),transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(36rem_18rem_at_100%_0%,oklch(var(--p)/0.3),transparent)]" />
     )}
     <div className="relative flex flex-1 flex-col gap-8 p-8 sm:p-10">
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 id={id ? `${id}-title` : undefined} className={`text-2xl font-bold ${dark ? "text-white" : "text-slate-900"}`}>
+          <h3 id={id ? `${id}-title` : undefined} className={`text-2xl font-bold ${dark ? "text-base-content" : "text-base-content"}`}>
             {name}
           </h3>
           {badge && (
             <span
               className={`rounded-full px-3.5 py-1.5 text-sm font-bold ${
-                dark ? "bg-teal-400 text-slate-950" : featured ? "bg-teal-600 text-white" : "bg-slate-100 text-slate-700"
+                dark ? "bg-primary text-primary-content" : featured ? "bg-primary text-primary-content" : "bg-tt-soft text-base-content/80"
               }`}
             >
               {badge}
             </span>
           )}
         </div>
-        <p className={dark ? "text-slate-300" : "text-slate-600"}>{description}</p>
+        <p className={dark ? "text-base-content/70" : "text-base-content/70"}>{description}</p>
       </div>
       {price}
       {children}
-      <ul className={`flex flex-col gap-3.5 border-t pt-8 ${dark ? "border-white/10" : "border-slate-100"}`}>
+      <ul className={`flex flex-col gap-3.5 border-t pt-8 ${dark ? "border-base-content/10" : "border-base-300"}`}>
         {features.map((f) => (
-          <li key={f} className={`flex gap-3 ${dark ? "text-slate-200" : "text-slate-700"}`}>
+          <li key={f} className={`flex gap-3 ${dark ? "text-base-content/80" : "text-base-content/80"}`}>
             <span
-              className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${dark ? "bg-teal-400/20" : "bg-teal-50 ring-1 ring-teal-200"}`}
+              className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${dark ? "bg-primary/20" : "bg-primary/10 ring-1 ring-primary/30"}`}
             >
-              <CheckIcon className={`h-3.5 w-3.5 ${dark ? "text-teal-300" : "text-teal-600"}`} aria-hidden />
+              <CheckIcon className={`h-3.5 w-3.5 ${dark ? "text-primary" : "text-primary"}`} aria-hidden />
             </span>
             {f}
           </li>

@@ -2,12 +2,13 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
 import { contactLink } from "../lib/links";
 
-// The page-level call to action: for catalogs and teams that want a plan built with us
+// The page-level call to action: for catalogs and teams that want a plan built with us. A band
+// that stays dark in both modes (the Tracker's dark palette), like the homepage's
 export const ClosingCta = () => (
-  <section className={`${mk.band} relative overflow-hidden bg-[#0b1220] text-white`} aria-labelledby="pricing-cta-title">
+  <section className={`${mk.band} hts-tracker-on-dark relative overflow-hidden bg-base-200 text-base-content`} aria-labelledby="pricing-cta-title">
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_50%_0%,rgba(45,212,191,0.22),transparent)]"
+      className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_50%_0%,oklch(var(--p)/0.3),transparent)]"
     />
     <div className={`${mk.container} relative flex flex-col items-center text-center`}>
       <p className={mk.eyebrowDark}>Large catalog or team?</p>

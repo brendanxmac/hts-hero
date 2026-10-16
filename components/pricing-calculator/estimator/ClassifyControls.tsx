@@ -22,7 +22,7 @@ const AUDIENCES = [
 ] as const;
 
 const badge = "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1";
-const priceUnit = "text-sm font-medium text-slate-500";
+const priceUnit = "text-sm font-medium text-base-content/60";
 
 type ClassifyInput = Pick<EstimateInput, "audience" | "individualPlan" | "seats" | "teamOption">;
 
@@ -40,7 +40,7 @@ export const ClassifyControls = ({
   const rate = (listPrice: number) => formatPrice(monthlyRate(listPrice, billing));
   const licensesTotal = input.seats * CLASSIFY_LICENSE_PRICE;
   const workspaceIsCheaper = CLASSIFY_PLANS.team.price < licensesTotal;
-  const bestValue = <span className={`${badge} bg-emerald-50 text-emerald-700 ring-emerald-200`}>Best value</span>;
+  const bestValue = <span className={`${badge} bg-success/10 text-success ring-success/30`}>Best value</span>;
 
   return (
     <>
@@ -51,7 +51,7 @@ export const ClassifyControls = ({
         <div
           role="radiogroup"
           aria-label="Who's classifying"
-          className="inline-flex shrink-0 gap-1 rounded-full bg-slate-100 p-1 ring-1 ring-inset ring-slate-200"
+          className="inline-flex shrink-0 gap-1 rounded-full bg-tt-soft p-1 ring-1 ring-inset ring-base-300"
         >
           {AUDIENCES.map((option) => {
             const active = option.id === input.audience;
@@ -62,8 +62,8 @@ export const ClassifyControls = ({
                 role="radio"
                 aria-checked={active}
                 onClick={() => onChange({ audience: option.id as ClassifyAudience })}
-                className={`h-9 whitespace-nowrap rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 ${
-                  active ? "bg-white text-slate-900 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-900"
+                className={`h-9 whitespace-nowrap rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
+                  active ? "bg-base-100 text-base-content shadow-sm ring-1 ring-base-300" : "text-base-content/70 hover:text-base-content"
                 }`}
               >
                 {option.label}
@@ -81,7 +81,7 @@ export const ClassifyControls = ({
               title={CLASSIFY_PLANS[id].name}
               price={<>{rate(CLASSIFY_PLANS[id].price)}<span className={priceUnit}> /mo</span></>}
               detail={CLASSIFY_PLANS[id].features[0]}
-              badge={id === "pro" ? <span className={`${badge} bg-teal-50 text-teal-700 ring-teal-200`}>Most popular</span> : undefined}
+              badge={id === "pro" ? <span className={`${badge} bg-primary/10 text-primary ring-primary/30`}>Most popular</span> : undefined}
               selected={input.individualPlan === id}
               onSelect={() => onChange({ individualPlan: id })}
             />

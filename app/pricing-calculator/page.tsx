@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import config from "@/config";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import * as mk from "@/components/ui/marketing/styles";
-import { THEME_LIGHT } from "@/components/ui/theme";
 import {
   ClosingCta,
   PRICING_FAQS,
@@ -35,9 +34,9 @@ export default function PricingCalculatorPage({
 }: {
   searchParams: Record<string, string | string[] | undefined>;
 }) {
-  // Always light, like the other landing pages; the light theme covers any shared control inside
+  // In the Tracker's look (the layout's FollowTheme), following light and dark
   return (
-    <main className={`${THEME_LIGHT} ${mk.page} flex w-full flex-1 flex-col`}>
+    <main className={`${mk.page} flex w-full flex-1 flex-col`}>
       {renderSchemaJsonLd({
         "@type": "FAQPage",
         mainEntity: PRICING_FAQS.map(({ question, answer }) => ({

@@ -31,7 +31,7 @@ export const TrackerTierPicker = ({
     <div
       role="radiogroup"
       aria-label="Imports (HTS code + country pairs) to cover"
-      className="grid grid-cols-5 gap-1.5 rounded-2xl bg-white/5 p-1.5 ring-1 ring-white/10"
+      className="grid grid-cols-5 gap-1.5 rounded-2xl bg-base-content/5 p-1.5 ring-1 ring-base-content/10"
     >
       {TRACKER_OPTIONS.map((option, index) => {
         const active = option.id === value.id;
@@ -52,12 +52,12 @@ export const TrackerTierPicker = ({
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(option)}
             onKeyDown={(event) => onKeyDown(event, index)}
-            className={`flex min-w-0 flex-col items-center gap-0.5 rounded-xl px-1 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60 ${
-              active ? "bg-white text-slate-900 skin:bg-primary skin:text-primary-content" : "text-slate-300 hover:bg-white/10"
+            className={`flex min-w-0 flex-col items-center gap-0.5 rounded-xl px-1 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
+              active ? "bg-base-100 text-base-content skin:bg-primary skin:text-primary-content" : "text-base-content/70 hover:bg-base-content/10"
             }`}
           >
             <span className="text-lg font-bold tabular-nums">{option.label}</span>
-            <span className={`whitespace-nowrap text-xs tabular-nums ${active ? "text-slate-500 skin:text-primary-content/70" : "text-slate-400"}`}>
+            <span className={`whitespace-nowrap text-xs tabular-nums ${active ? "text-base-content/60 skin:text-primary-content/70" : "text-base-content/50"}`}>
               {optionPrice(option, billing)}
             </span>
           </button>

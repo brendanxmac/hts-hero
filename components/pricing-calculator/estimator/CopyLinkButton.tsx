@@ -31,10 +31,10 @@ export const CopyLinkButton = ({ query }: { query: string }) => {
     <button
       type="button"
       onClick={copy}
-      className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60"
+      className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-base-content/70 transition-colors hover:bg-base-content/10 hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
     >
       {copied ? (
-        <CheckIcon className="h-4 w-4 text-emerald-400" aria-hidden />
+        <CheckIcon className="h-4 w-4 text-success" aria-hidden />
       ) : (
         <LinkIcon className="h-4 w-4" aria-hidden />
       )}

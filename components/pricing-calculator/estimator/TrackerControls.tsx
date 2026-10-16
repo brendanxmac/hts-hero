@@ -66,7 +66,7 @@ export const TrackerControls = ({
           onChange={(e) => onPairsChange(pairsAt(Number(e.target.value)))}
           aria-label="Imports (HTS code + country pairs)"
           aria-valuetext={pairs >= PAIRS_SLIDER_MAX_PAIRS ? `${pairs}+ imports` : `${pairs} imports`}
-          className="h-2 w-full cursor-pointer rounded-full accent-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 focus-visible:ring-offset-4"
+          className="h-2 w-full cursor-pointer rounded-full accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-4"
         />
         <div
           role="radiogroup"
@@ -80,14 +80,14 @@ export const TrackerControls = ({
               role="radio"
               aria-checked={t.active}
               onClick={() => onPairsChange(t.pairs)}
-              className={`flex flex-col items-start gap-0.5 rounded-xl border px-3.5 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 focus-visible:ring-offset-2 ${
-                t.active ? "border-teal-500 bg-teal-50 ring-1 ring-teal-500" : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+              className={`flex flex-col items-start gap-0.5 rounded-xl border px-3.5 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 ${
+                t.active ? "border-primary bg-primary/10 ring-1 ring-primary" : "border-base-300 bg-base-100 hover:border-base-300 hover:bg-tt-soft"
               }`}
             >
-              <span className={`text-xs font-medium tabular-nums ${t.active ? "text-teal-700" : "text-slate-500"}`}>
+              <span className={`text-xs font-medium tabular-nums ${t.active ? "text-primary" : "text-base-content/60"}`}>
                 {t.label} imports
               </span>
-              <span className={`text-base font-semibold tabular-nums ${t.active ? "text-teal-800" : "text-slate-900"}`}>
+              <span className={`text-base font-semibold tabular-nums ${t.active ? "text-primary" : "text-base-content"}`}>
                 {t.price}
               </span>
             </button>

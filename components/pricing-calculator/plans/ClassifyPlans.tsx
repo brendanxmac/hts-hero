@@ -72,11 +72,11 @@ export const ClassifyPlans = ({ billing }: { billing: Billing }) => (
     {/* Licenses: for teams that want separate accounts rather than a shared workspace */}
     <div className={`${mk.card} mt-6 flex flex-col gap-6 p-6 sm:p-8 md:flex-row md:items-center md:justify-between`}>
       <div className="flex gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-tt-soft text-base-content/80">
           <UsersIcon className="h-6 w-6" aria-hidden />
         </span>
         <div className="flex flex-col gap-1">
-          <h3 className="text-lg font-bold text-slate-900">Separate licenses for your team</h3>
+          <h3 className="text-lg font-bold text-base-content">Separate licenses for your team</h3>
           <p className={`${mk.body} max-w-2xl`}>
             Give each person their own Classify account at a per-person rate. No shared workspace or approvals, just one
             invoice.
@@ -85,10 +85,10 @@ export const ClassifyPlans = ({ billing }: { billing: Billing }) => (
       </div>
       <div className="flex shrink-0 items-center gap-5">
         <p className="whitespace-nowrap">
-          <span className="text-3xl font-extrabold tabular-nums text-slate-900">
+          <span className="text-3xl font-extrabold tabular-nums text-base-content">
             {formatPrice(monthlyRate(CLASSIFY_LICENSE_PRICE, billing))}
           </span>
-          <span className="text-slate-500"> /person/mo</span>
+          <span className="text-base-content/60"> /person/mo</span>
         </p>
         <a href={LINKS.estimate} className={mk.buttonSecondary}>
           Price your team

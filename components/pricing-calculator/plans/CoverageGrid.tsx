@@ -9,9 +9,9 @@ const FACTS = [
 export const CoverageGrid = () => (
   <dl className="grid grid-cols-2 gap-3">
     {FACTS.map((fact) => (
-      <div key={fact.label} className="flex flex-col-reverse gap-1 rounded-xl bg-slate-50 px-4 py-3.5 ring-1 ring-inset ring-slate-200">
-        <dt className="text-sm text-slate-500">{fact.label}</dt>
-        <dd className="text-lg font-bold text-slate-900">{fact.value}</dd>
+      <div key={fact.label} className="flex flex-col-reverse gap-1 rounded-xl bg-tt-soft px-4 py-3.5 ring-1 ring-inset ring-base-300">
+        <dt className="text-sm text-base-content/60">{fact.label}</dt>
+        <dd className="text-lg font-bold text-base-content">{fact.value}</dd>
       </div>
     ))}
   </dl>

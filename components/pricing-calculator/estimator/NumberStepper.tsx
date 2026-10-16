@@ -4,7 +4,7 @@ import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { NumberInput } from "./NumberInput";
 
 const stepButton =
-  "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white";
+  "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-base-300 bg-base-100 text-base-content/80 transition-colors hover:bg-tt-soft hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-base-100";
 
 // A whole number with − and + buttons either side, clamped to [min, max]
 export const NumberStepper = ({

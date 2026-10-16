@@ -25,19 +25,19 @@ export const PlanPrice = ({
   return (
     <div>
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        {prefix && <span className={dark ? "text-slate-400" : "text-slate-500 skin:text-base-content/60"}>{prefix}</span>}
-        <span className={`text-6xl font-extrabold tracking-tight tabular-nums ${dark ? "text-white" : "text-slate-900 skin:text-base-content"}`} aria-live="polite">
+        {prefix && <span className={dark ? "text-base-content/50" : "text-base-content/60 skin:text-base-content/60"}>{prefix}</span>}
+        <span className={`text-6xl font-extrabold tracking-tight tabular-nums ${dark ? "text-base-content" : "text-base-content skin:text-base-content"}`} aria-live="polite">
           {formatPrice(price)}
         </span>
-        {unit && <span className={`text-lg ${dark ? "text-slate-400" : "text-slate-500 skin:text-base-content/60"}`}>{unit}</span>}
+        {unit && <span className={`text-lg ${dark ? "text-base-content/50" : "text-base-content/60 skin:text-base-content/60"}`}>{unit}</span>}
         {price < listPrice && (
-          <span className={`text-lg tabular-nums line-through ${dark ? "text-slate-500 skin:text-base-content/60" : "text-slate-400"}`}>
+          <span className={`text-lg tabular-nums line-through ${dark ? "text-base-content/60 skin:text-base-content/60" : "text-base-content/50"}`}>
             <span className="sr-only">was </span>
             {formatPrice(listPrice)}
           </span>
         )}
       </div>
-      <p className={`mt-2 text-sm ${dark ? "text-slate-400" : "text-slate-500 skin:text-base-content/60"}`}>{billingLine}</p>
+      <p className={`mt-2 text-sm ${dark ? "text-base-content/50" : "text-base-content/60 skin:text-base-content/60"}`}>{billingLine}</p>
     </div>
   );
 };
