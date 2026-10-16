@@ -1,5 +1,6 @@
 "use client";
 
+import { ReactNode } from "react";
 import { SparkPoint, Sparkline } from "@/components/ui/charts/kit";
 import { StatStrip } from "@/components/ui/StatStrip";
 import { ERROR_MARK, PRIMARY_MARK } from "@/components/ui/theme";
@@ -13,6 +14,8 @@ export interface Metric {
   noteTone: "error" | "success" | "neutral";
   // The number's color: a rise (error) or a drop (success)
   tone?: "error" | "success";
+  // The number and its trend line explained in full, behind an (i)
+  info?: ReactNode;
   spark?: SparkPoint[];
   sparkTone?: "primary" | "error";
   // Steps (a rate or duty that holds until it changes), running on to sparkTo (today)
@@ -29,6 +32,7 @@ export const MetricTiles = ({ metrics }: { metrics: Metric[] }) => (
       label: m.label,
       value: m.value,
       tone: m.tone,
+      info: m.info,
       extra: (
         <div className="flex flex-col gap-1.5">
           <Sparkline points={m.spark ?? []} color={m.sparkTone === "error" ? ERROR_MARK : PRIMARY_MARK} step={m.sparkStep} to={m.sparkTo} height={32} />

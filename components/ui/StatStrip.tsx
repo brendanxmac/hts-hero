@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import * as ui from "@/components/ui/styles";
+import { InfoTip } from "./InfoTip";
 
 // A row of headline numbers divided by 1px rules: the one way to show a few stats side by side
 // (DESIGN_SYSTEM "Stat strip"). On its own it's a card; inside a card (`framed={false}`) it's one
@@ -17,6 +18,8 @@ export interface StatItem {
   extra?: ReactNode;
   // Spans two columns on a phone (the last of four after a leading one)
   wide?: boolean;
+  // What the number (and its trend line) means in full, behind an (i) in the stat's top right
+  info?: ReactNode;
 }
 
 const TONES = { primary: "text-primary", success: "text-success", error: "text-error" };
@@ -52,7 +55,14 @@ export const StatStrip = ({
       const big = lead && i === 0;
       return (
         <div key={s.label} className={`flex min-w-0 flex-col gap-2 bg-base-100 px-5 py-5 sm:px-6 ${big && stats.length === 4 ? "col-span-2 sm:col-span-3 lg:col-span-1" : ""} ${s.wide ? "col-span-2 sm:col-span-1" : ""}`}>
-          <dt className={ui.label}>{s.label}</dt>
+          <dt className={`${ui.label} flex items-start justify-between gap-2`}>
+            {s.label}
+            {s.info && (
+              <InfoTip label={`About ${s.label}`} className="-mr-1 -mt-0.5">
+                {s.info}
+              </InfoTip>
+            )}
+          </dt>
           <dd className={`m-0 ${big ? ui.metric.primary : ui.metric.secondary} ${s.tone ? TONES[s.tone] : ""}`}>{s.value}</dd>
           {s.note && (
             <dd className="m-0 truncate text-sm text-base-content/60" title={typeof s.note === "string" ? s.note : undefined}>

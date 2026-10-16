@@ -111,6 +111,7 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
         stats={[
           {
             label: "Rate change",
+            info: "The average change in duty rate on the imports this action changes: each one's rate from the day it takes effect, minus the day before. Imports where it only adds a new Chapter 99 number at the same rate aren't counted.",
             value: pending ? "…" : rated.length ? signedRate(average) : confirmed.length ? "None" : "—",
             tone: average > 0.005 ? "error" : average < -0.005 ? "success" : undefined,
             note: pending
@@ -127,6 +128,7 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
           },
           {
             label: "Imports hit",
+            info: "Your imports this action affects. Confirmed: the duty engine applies it to them. May apply: its scope names their code and country, before the change is in the HTS. Imports that only share a country it names aren't counted.",
             value: pending ? (
               "…"
             ) : (
@@ -139,12 +141,14 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
           },
           {
             label: "Biggest change",
+            info: "The import whose duty rate this action moves the most, up or down, and by how much.",
             value: pending ? "…" : biggest ? signedRate(rateChange(biggest)) : "—",
             tone: biggest ? (rateChange(biggest) > 0 ? "error" : "success") : undefined,
             note: biggest && biggestProduct ? `${biggestProduct.entry.element.htsno} · ${biggestProduct.entry.country.code}` : "Confirmed imports only",
           },
           {
             label: upcoming ? "Takes effect" : "In effect",
+            info: "The date the action applies from, to goods entered on or after it, as the official notice sets it.",
             value: effective ? day(effective) : "Not set",
             tone: upcoming ? "primary" : undefined,
             note: effective ? relativeDays(effective, today) : "No date announced yet",

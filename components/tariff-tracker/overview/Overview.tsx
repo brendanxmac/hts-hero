@@ -76,8 +76,28 @@ export const Overview = () => {
         spark: lastYearOf(rateSeries, (p) => p.pct),
         sparkTone: yearTone === "error" ? "error" : "primary",
         ...stepSpark,
+        info: (
+          <>
+            How much the average duty rate on your imports has moved since this day last year: today&apos;s average ({formatRate(rateNow)}) minus a year
+            ago ({formatRate(rateYearAgo)}). The line is that average over the last 12 months; each step is a day a tariff change landed on one of your
+            imports. Every import counts the same, whatever its value.
+          </>
+        ),
       },
-      { label: "Average rate", value: formatRate(rateNow), note: rateDelta.note, noteTone: rateDelta.tone, spark: lastYearOf(rateSeries, (p) => p.pct), ...stepSpark },
+      {
+        label: "Average rate",
+        value: formatRate(rateNow),
+        note: rateDelta.note,
+        noteTone: rateDelta.tone,
+        spark: lastYearOf(rateSeries, (p) => p.pct),
+        ...stepSpark,
+        info: (
+          <>
+            The average total duty rate on your imports today, every tariff included (base duty, Section 301, Section 232, IEEPA and the rest), each
+            import counted once. The note compares it with 90 days ago; the line shows the last 12 months.
+          </>
+        ),
+      },
       {
         label: "Changes, last 12 months",
         value: lastYear.count.toLocaleString("en-US"),
@@ -88,8 +108,20 @@ export const Overview = () => {
           .reduce<number[]>((acc, n) => [...acc, (acc[acc.length - 1] ?? 0) + n], [])
           .map((y, i) => ({ x: i, y })),
         sparkTone: "error",
+        info: (
+          <>
+            How many times a tariff change moved the duty rate on one of your imports in the last 12 months (one import changing on one day counts
+            once). The line adds them up month by month, so a steep stretch is a busy few months.
+          </>
+        ),
       },
-      { label: "Products", value: t.items.length.toLocaleString("en-US"), note: `From ${countryCount(t.products)} countries`, noteTone: "neutral" },
+      {
+        label: "Products",
+        value: t.items.length.toLocaleString("en-US"),
+        note: `From ${countryCount(t.products)} countries`,
+        noteTone: "neutral",
+        info: "The imports in your catalog (each HTS code and country of origin), and how many countries they come from.",
+      },
     ];
 
     // The rate pulse's biggest rise and drop in the last year, with the tariff behind each
