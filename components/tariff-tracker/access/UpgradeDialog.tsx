@@ -31,6 +31,7 @@ import {
 } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { TRACKER_PLANS, TrackerAccess, TrackerPlan } from "@/libs/tariff-tracker/plan";
+import { TRACKER_PATH } from "../sections";
 import { AUDITS_ENABLED, SAVINGS_AUDITS_SOON, SAVINGS_ENABLED, TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { useCatalog } from "../catalogStore";
 import { useUpgradeStats } from "./upgradeStats";
@@ -75,7 +76,9 @@ export const UpgradeDialog = ({
   const { items } = useCatalog();
   const [billing, setBilling] = useState<Billing>(TRACKER_ANNUAL_ENABLED ? "annual" : "monthly");
   const [busy, setBusy] = useState<string | null>(null);
-  const fits = TRACKER_PLANS.find((p) => items.length <= p.maxPairs);
+  // The plan that fits the catalog; with no imports yet, the second tier as the place to start
+  const noImports = items.length === 0;
+  const fits = noImports ? TRACKER_PLANS[1] : TRACKER_PLANS.find((p) => items.length <= p.maxPairs);
   // Savings and audits are off for the Tracker MVP, so their upsells talk about tracking
   const shown: PremiumFeature =
     (!SAVINGS_ENABLED && (feature === "savings" || feature === "qualify")) || (!AUDITS_ENABLED && (feature === "entries" || feature === "refunds"))
@@ -214,7 +217,7 @@ export const UpgradeDialog = ({
                   >
                     {recommended && !current && (
                       <span className="absolute -top-3 left-5 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-primary-content">
-                        Fits your {number(items.length)} imports
+                        {noImports ? "Recommended" : `Fits your ${number(items.length)} imports`}
                       </span>
                     )}
                     <div className="flex flex-col gap-1.5">
@@ -259,12 +262,36 @@ export const UpgradeDialog = ({
               })}
             </div>
 
+            {/* Under the tiers: help picking one with no imports yet, and the way past the last tier */}
+            <div className="-mt-1 flex flex-col gap-1.5 text-sm text-base-content/65 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+              {noImports ? (
+                <span>
+                  Not sure how many you need?{" "}
+                  <a className={ui.link} href={`${TRACKER_PATH}?tab=catalog&add=paste`}>
+                    Add your imports
+                  </a>{" "}
+                  first, free, and we&apos;ll show you the plan that fits.
+                </span>
+              ) : (
+                <span>
+                  An import is one HTS code from one country of origin.
+                </span>
+              )}
+              <span className="sm:text-right">
+                More than {number(TRACKER_MAX_LISTED_PAIRS)} imports?{" "}
+                <a className={ui.link} href={`mailto:${config.resend.supportEmail}?subject=Tariff%20Tracker%20for%20many%20imports`}>
+                  Let&apos;s talk
+                </a>{" "}
+                about a plan built around your catalog.
+              </span>
+            </div>
+
             {/* Outcomes, not features */}
             <div className="flex flex-col gap-3">
               <span className={tt.eyebrow()}>What every plan does for you</span>
-              <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+              <ul className={`m-0 grid list-none gap-4 p-0 sm:grid-cols-2 ${benefits.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-3"}`}>
                 {benefits.map(({ Icon, title, body }) => (
-                  <li key={title} className="flex gap-3">
+                  <li key={title} className="flex gap-3 lg:flex-col lg:gap-2.5">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden>
                       <Icon className="h-[18px] w-[18px]" />
                     </span>
@@ -274,15 +301,6 @@ export const UpgradeDialog = ({
                     </span>
                   </li>
                 ))}
-                <li className={`${tt.tile} flex flex-col justify-center gap-1 px-4 py-3`}>
-                  <span className="text-sm font-semibold text-base-content">More than {number(TRACKER_MAX_LISTED_PAIRS)} imports?</span>
-                  <span className="text-sm text-base-content/70">
-                    We&apos;ll build a plan around your catalog.{" "}
-                    <a className={ui.link} href={`mailto:${config.resend.supportEmail}?subject=Tariff%20Tracker%20for%20many%20imports`}>
-                      Let&apos;s talk
-                    </a>
-                  </span>
-                </li>
               </ul>
             </div>
 
