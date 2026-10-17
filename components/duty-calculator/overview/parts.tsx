@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ArrowRightIcon, ArrowTrendingDownIcon, CalendarDaysIcon, CheckBadgeIcon, LockClosedIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, ArrowTrendingDownIcon, CalendarDaysIcon, CheckBadgeIcon, CheckCircleIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import { TimeStepChart } from "@/components/ui/charts/kit";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
@@ -79,10 +79,38 @@ export const PayLess = ({
   onSourcing?: () => void;
 }) => {
   const savings = o.savings.slice(0, compact ? 2 : 3);
+  // What the user already claims: programs, confirmed exemptions, yes answers
+  const applied = o.on.filter((a) => a.byYou);
   return (
     <div className={wide ? "grid gap-x-10 gap-y-6 lg:grid-cols-2" : "flex flex-col gap-4"}>
       <div className="flex flex-col gap-2">
-        <span className={tt.eyebrow("success")}>Adjustments that could lower it</span>
+        {applied.length > 0 && (
+          <>
+            <span className={tt.eyebrow("primary")}>Already applied</span>
+            <ul className={`${OPTIONS} mb-3`}>
+              {applied.map((a) => (
+                <li key={a.title} className={TILE}>
+                  <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                  <span className="min-w-0 flex-1">
+                    <span className="line-clamp-2 text-sm font-semibold text-base-content" title={a.title}>
+                      {a.title}
+                    </span>
+                    <span className="block truncate text-xs text-base-content/70" title={a.detail}>
+                      {a.detail}
+                    </span>
+                  </span>
+                  {a.pct !== undefined && Math.abs(a.pct) >= 0.005 && (
+                    <span className={`shrink-0 text-right text-sm font-semibold tabular-nums ${a.pct < 0 ? "text-success" : "text-error"}`}>
+                      {a.pct < 0 ? "−" : "+"}
+                      {pct(Math.abs(a.pct))}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        <span className={tt.eyebrow("success")}>{applied.length ? "More that could lower it" : "Adjustments that could lower it"}</span>
         {savings.length ? (
           <ul className={OPTIONS}>
             {savings.map((s) => (
@@ -99,7 +127,14 @@ export const PayLess = ({
             ))}
           </ul>
         ) : (
-          <AllGood title="You're not leaving money on the table" body="We checked every exemption and trade program for this import: none would lower this duty." />
+          <AllGood
+            title="You're not leaving money on the table"
+            body={
+              applied.length
+                ? "You're already claiming what applies, and nothing else we checked would lower this duty."
+                : "We checked every exemption and trade program for this import: none would lower this duty."
+            }
+          />
         )}
         {o.savings.length > 1 && <p className="m-0 text-xs text-base-content/60">Each works on its own; some lift the same tariff, so they may not add up.</p>}
         {onSavings && <DetailsLink label="Find exemptions and savings" onClick={onSavings} />}

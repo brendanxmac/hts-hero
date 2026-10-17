@@ -31,6 +31,11 @@ export interface GlanceCharge {
 export interface GlanceOn {
   title: string;
   detail: string;
+  // The user's own doing (a claimed program, a confirmed exemption, a yes answered), not an
+  // exemption that applies on its own
+  byYou: boolean;
+  // What it does to the rate, in percent of the value (negative lowers it), when that's known
+  pct?: number;
 }
 
 // A way the duty could be lower, if the goods qualify
@@ -107,6 +112,8 @@ export const glance = (f: SummaryInput, result: CalculationResult): Glance => {
     const before = f.unadjustedResult?.base;
     on.push({
       title: `${preference} claimed`,
+      byYou: true,
+      pct: before ? ofValue(result.base.amount - before.amount) : undefined,
       detail:
         before && Math.abs(before.amount - result.base.amount) >= 0.005
           ? `Base duty ${pct(ofValue(before.amount))} → ${pct(ofValue(result.base.amount))}`
@@ -124,8 +131,11 @@ export const glance = (f: SummaryInput, result: CalculationResult): Glance => {
     .forEach((l) => {
       const offs = offsOf(l.code);
       const confirmed = f.answers[`confirm:${l.code}`] === true;
+      const effect = f.impacts[`confirm:${l.code}`];
       on.push({
         title: l.name,
+        byYou: confirmed,
+        pct: confirmed && effect !== undefined ? ofValue(effect) : undefined,
         detail: offs.length
           ? `${confirmed ? "You confirmed it. " : ""}Switches off ${offs.join(" and ")}`
           : confirmed
@@ -146,6 +156,8 @@ export const glance = (f: SummaryInput, result: CalculationResult): Glance => {
           : "No change to the duty";
       on.push({
         title: `Yes: ${(q?.input.label ?? id).replace(/\?$/, "")}`,
+        byYou: true,
+        pct: effect !== undefined ? ofValue(effect) : undefined,
         detail: offs.length ? `Switches off ${offs.join(" and ")}. ${change}` : change,
       });
     });
