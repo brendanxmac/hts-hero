@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { ExclamationTriangleIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
+import { ExclamationTriangleIcon, ArrowRightIcon, SparklesIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
@@ -49,7 +49,7 @@ import {
 } from "./PremiumTeasers";
 import { useConversion } from "./ConversionDialog";
 import { OverviewPanel } from "../overview/OverviewPanel";
-import { OverviewTeaser } from "../overview/OverviewTeaser";
+import { insightsPitch } from "../overview/insightsPitch";
 import { useOverview } from "../overview/useOverview";
 import { ShareButtons } from "./ShareButtons";
 import { useCanSeeWhy, WhyLocked, WhyUnlockContext } from "./WhyGate";
@@ -65,7 +65,7 @@ import { useStickyColumn } from "./useStickyColumn";
 // The Tariff Calculator, as on /duty-calculator, the country pages and the Tariff Tracker's
 // Calculator tab. The entry details run across the top; the results below have three tabs (an
 // import's page in the Tracker adds the Overview first: everything about this tariff at a high
-// level, ../overview; elsewhere it's teased under the Duty tab's totals):
+// level, ../overview; on /duty-calculator, "Get Insights" sells it, beside "Get Alerts & News"):
 // - Duty (where the results open): the totals full width, then the duty breakdown (with the headings checked but not
 //   applied at its foot) beside the possible adjustments (and the Tracker's qualification check,
 //   teased), which move with the page. What the
@@ -140,10 +140,9 @@ export const CalculatorWorkspace = ({
   // Kept here, so they survive switching tabs
   const [highlight, setHighlight] = useState<string | null>(null);
   // The Overview tab's story, worked out while it's open
-  // The Overview tab (an import's page in the Tracker), or its teaser under the Duty tab's totals
-  // everywhere else
-  const teaseOverview = page !== "tracker_product";
-  const overview = useOverview(f, tab === "overview" || (teaseOverview && tab === "duty"));
+  // The Overview tab (an import's page in the Tracker); on /duty-calculator, its numbers for
+  // Get Insights' pitch
+  const overview = useOverview(f, tab === "overview" || page === "calculator");
   const [linesDetail, setLinesDetail] = useState<LinesDetail>("compact");
   const [adjustmentsRef, adjustmentsTop] = useStickyColumn();
   // What the last answer or trade program changed, marked in the breakdown until the next change
@@ -281,15 +280,23 @@ export const CalculatorWorkspace = ({
   const track = useTrackImport(f, "track-import");
   const trackButton = page === "calculator" && track && (
     <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => track.start()}>
-      {SAVINGS_ENABLED ? "Find ways to save" : "Track this import"}
+      {SAVINGS_ENABLED ? "Find ways to save" : "Get Alerts & News"}
       <ArrowRightIcon className="h-4 w-4" aria-hidden />
+    </button>
+  );
+  // Beside it: the import's Overview (on its page in the Tracker), sold in its own numbers. Signed
+  // out, the free account's pitch; signed in, straight to the import's page, on its Overview
+  const insightsButton = page === "calculator" && track && (
+    <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => track.start("overview", insightsPitch(overview))}>
+      <SparklesIcon className="h-4 w-4" aria-hidden />
+      Get Insights
     </button>
   );
   // Under each tab on /duty-calculator: what tracking it would add
   const trackStrip = page === "calculator" && track && (
     <div className={`${ui.cardSection} flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between`}>
       <p className="m-0 text-sm text-base-content/70">
-        <span className="font-semibold text-base-content">Track this import free.</span>{" "}
+        <span className="font-semibold text-base-content">Get alerts and news for this import, free.</span>{" "}
         {SAVINGS_ENABLED || AUDITS_ENABLED
           ? "See what you could save on it (trade programs, exemptions, cheaper origins) and check your past entries for duty you may have overpaid."
           : "Get an alert the moment a tariff change hits it, with the rate before and after, and see exactly how any tariff action affects it."}
@@ -347,6 +354,7 @@ export const CalculatorWorkspace = ({
               <>
                 <ShareButtons f={f} />
                 {actions}
+                {insightsButton}
                 {trackButton}
               </>
             }
@@ -390,7 +398,6 @@ export const CalculatorWorkspace = ({
                     className={`${ui.cardSection} border-t border-base-300`}
                   />
                 </div>
-                {teaseOverview && track && <OverviewTeaser o={overview} signedOut={signedOut} onOpen={() => track.start("overview")} />}
                 {result.warnings.length > 0 && (
                   <div className={ui.cardSection}>
                     <ul

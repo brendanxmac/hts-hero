@@ -12,7 +12,7 @@ import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { itemKey } from "@/components/tariff-tracker/catalog";
 import { addToCatalog } from "@/components/tariff-tracker/catalogStore";
 import { ProductTab, productUrl } from "@/components/tariff-tracker/sections";
-import { ConversionDialog } from "../calculator/ConversionDialog";
+import { AccountPitch, ConversionDialog } from "../calculator/ConversionDialog";
 import { TariffFinder } from "../lib/useTariffFinder";
 
 // "Track this import": saves it to the Tariff Tracker catalog (kept on this device until they
@@ -34,7 +34,7 @@ export const TrackImportButton = ({ f, size = "md" }: { f: TariffFinder; size?: 
         }}
       >
         <PlusIcon className="h-4 w-4" aria-hidden />
-        Track this import
+        Get Alerts &amp; News
       </a>
       {track.dialog}
     </>
@@ -47,8 +47,10 @@ export const TrackImportButton = ({ f, size = "md" }: { f: TariffFinder; size?: 
 export const useTrackImport = (f: TariffFinder, source = "track-import") => {
   const { user } = useUser();
   const [open, setOpen] = useState(false);
-  // Which of the import's tabs to land on (its Summary when left out)
+  // Which of the import's tabs to land on (its Overview when left out)
   const [landOn, setLandOn] = useState<ProductTab | undefined>(undefined);
+  // What the account's pitch leads with, when the host has its own (Get Insights)
+  const [pitch, setPitch] = useState<AccountPitch | null>(null);
   if (!f.selectedElement || !f.country) return null;
   const product = { code: htsCodeDigitsOnly(f.selectedElement.htsno), country: f.country.code };
   const save = () => {
@@ -67,8 +69,9 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
     trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "calculator", hts_code: f.selectedElement?.htsno });
   };
   const url = productUrl(itemKey(product));
-  const start = (tab?: ProductTab) => {
+  const start = (tab?: ProductTab, account?: AccountPitch) => {
     setLandOn(tab);
+    setPitch(account ?? null);
     if (user) {
       save();
       window.location.href = productUrl(itemKey(product), tab);
@@ -81,7 +84,7 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
     <ConversionDialog
       open={open}
       view="account"
-      account={{ title: "Track this import, free", highlight: SAVINGS_ENABLED ? "savings" : "alerts", cta: "Create my free account" }}
+      account={pitch ?? { title: "Get alerts and news for this import, free", highlight: SAVINGS_ENABLED ? "savings" : "alerts", cta: "Create my free account" }}
       accountNote={
         SAVINGS_ENABLED
           ? `This import is saved to your Tracker, with ${TRIAL_ALLOWANCE.savingsChecks} free savings checks and ${TRIAL_ALLOWANCE.auditChecks} free entry audits.`
