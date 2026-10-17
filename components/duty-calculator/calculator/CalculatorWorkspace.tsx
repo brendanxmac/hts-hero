@@ -49,7 +49,10 @@ import {
   RefundsButton,
 } from "./PremiumTeasers";
 import { useConversion } from "./ConversionDialog";
-import { DutySummary, ExplainToggle } from "./DutySummary";
+import { ExplainToggle } from "./DutySummary";
+import { ExplainDrawer } from "../overview/ExplainDrawer";
+import { OverviewPanel } from "../overview/OverviewPanel";
+import { useOverview } from "../overview/useOverview";
 import { ShareButtons } from "./ShareButtons";
 import { useCanSeeWhy, WhyLocked, WhyUnlockContext } from "./WhyGate";
 import { ChangeSummary } from "../results/ChangeSummary";
@@ -62,7 +65,9 @@ import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 import { useStickyColumn } from "./useStickyColumn";
 
 // The Tariff Calculator, as on /duty-calculator, the country pages and the Tariff Tracker's
-// Calculator tab. The entry details run across the top; the results below have three tabs:
+// Calculator tab. The entry details run across the top; the results below have four tabs:
+// - Overview (first, and where the results open): everything about this tariff at a high level
+//   (../overview), which "Summarize" also opens as a drawer over any tab
 // - Duty: the totals full width, then the duty breakdown (with the headings checked but not
 //   applied at its foot) beside the possible adjustments (and the Tracker's qualification check,
 //   teased), which move with the page. What the
@@ -72,9 +77,10 @@ import { useStickyColumn } from "./useStickyColumn";
 // - Compare: other origins side by side, then the Analysis: this import's duty from every origin
 //   (a free account)
 
-type ResultsTab = "duty" | "history" | "compare";
+type ResultsTab = "overview" | "duty" | "history" | "compare";
 
 const TABS: { id: ResultsTab; label: string }[] = [
+  { id: "overview", label: "Overview" },
   { id: "duty", label: "Duty" },
   { id: "compare", label: "Compare" },
   { id: "history", label: "History" },
@@ -109,7 +115,8 @@ export const CalculatorWorkspace = ({
   // A host whose own menu holds the tabs (the Tracker's import page): which one is open (the
   // results then show no tab row of their own), and the way to change it
   tab?: ResultsTab;
-  onTabChange?: (tab: ResultsTab) => void;
+  // (the Tracker's import page has no Overview tab yet)
+  onTabChange?: (tab: Exclude<ResultsTab, "overview">) => void;
 }) => {
   const { htsElements } = useHts();
   const searchParams = useSearchParams();
@@ -117,14 +124,11 @@ export const CalculatorWorkspace = ({
 
   // Compare is the finder's own view (so a shared link opens on it); Duty Over Time is this
   // page's. `view=analysis` (links from the MCP server) opens on Compare, where the Analysis is.
-  const [historyOpen, setHistoryOpen] = useState(
-    () => searchParams.get("view") === "history",
+  // The results open on the Overview, unless a link asks for History
+  const [localTab, setLocalTab] = useState<Exclude<ResultsTab, "compare">>(() =>
+    searchParams.get("view") === "history" ? "history" : "overview",
   );
-  const ownTab: ResultsTab = historyOpen
-    ? "history"
-    : f.view === "compare"
-      ? "compare"
-      : "duty";
+  const ownTab: ResultsTab = f.view === "compare" ? "compare" : localTab;
   const tab: ResultsTab = hostTab ?? ownTab;
   useEffect(() => {
     if (searchParams.get("view") === "analysis") f.changeView("compare");
@@ -132,17 +136,18 @@ export const CalculatorWorkspace = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const changeTab = (next: ResultsTab) => {
-    if (onTabChange) return onTabChange(next);
-    setHistoryOpen(next === "history");
+    if (onTabChange) return next !== "overview" && onTabChange(next);
+    if (next !== "compare") setLocalTab(next);
     // The address says Compare only while it's open
     f.changeView(next === "compare" ? "compare" : "detailed");
   };
 
   // Kept here, so they survive switching tabs
   const [highlight, setHighlight] = useState<string | null>(null);
-  // The plain-English explanation, shown on request ("Summarize" in the results' header)
-  // above the totals
+  // The plain-English explanation in a drawer, on request ("Summarize" in the results' header);
+  // the Overview tab says the same on a page of its own. Worked out while either is open.
   const [explainOpen, setExplainOpen] = useState(false);
+  const overview = useOverview(f, tab === "overview" || explainOpen);
   const [linesDetail, setLinesDetail] = useState<LinesDetail>("compact");
   const [adjustmentsRef, adjustmentsTop] = useStickyColumn();
   // What the last answer or trade program changed, marked in the breakdown until the next change
@@ -312,15 +317,7 @@ export const CalculatorWorkspace = ({
       Summarize
     </button>
   ) : (
-    <ExplainToggle
-      open={explainOpen && tab === "duty"}
-      onToggle={() => {
-        if (tab !== "duty") {
-          changeTab("duty");
-          setExplainOpen(true);
-        } else setExplainOpen((x) => !x);
-      }}
-    />
+    <ExplainToggle open={explainOpen} onToggle={() => setExplainOpen((x) => !x)} />
   );
   // A locked "why" opens the free account's pitch, led by what was clicked
   const unlockWhy = (where: string) =>
@@ -397,11 +394,12 @@ export const CalculatorWorkspace = ({
               </div>
             )}
 
+            {tab === "overview" && (
+              <OverviewPanel o={overview} colors={sliceColors} canSee={canSeeWhy} onLocked={() => unlockWhy("overview")} onOpenTab={changeTab} />
+            )}
+
             {tab === "duty" && (
               <>
-                {/* Signed in only (it renders nothing otherwise): signed out, "Summarize" in the
-                  breakdown's heading opens the pitch instead */}
-                {explainOpen && <DutySummary f={f} result={result} onClose={() => setExplainOpen(false)} />}
                 <div>
                   <SummaryStats
                     result={result}
@@ -583,7 +581,7 @@ export const CalculatorWorkspace = ({
                     f.changeCountries(f.countries.map((c) => (c.code === code ? next : c)));
                   }}
                   onViewDetails={(c, preference) => {
-                    setHistoryOpen(false);
+                    setLocalTab("duty");
                     if (preference) f.setPreference(c.code, preference);
                     f.viewCountryDetails(c);
                   }}
@@ -604,6 +602,18 @@ export const CalculatorWorkspace = ({
         </WhyUnlockContext.Provider>
       )}
       {explainSlot && ready && createPortal(explainButton, explainSlot)}
+      {canSeeWhy && result && (
+        <ExplainDrawer
+          open={explainOpen}
+          onClose={() => setExplainOpen(false)}
+          title={`${result.htsCode} from ${country?.name ?? ""}`}
+          o={overview}
+          colors={sliceColors}
+          canSee={canSeeWhy}
+          onLocked={() => unlockWhy("overview")}
+          onOpenTab={changeTab}
+        />
+      )}
       {conversion.dialog}
       {track?.dialog}
     </div>
