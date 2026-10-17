@@ -169,7 +169,15 @@ export const ResultsBox = ({
   const words = selectedElement ? describe(selectedElement, htsElements) : "";
   if (!selectedElement || !country) return null;
   return (
-    <section id="duty-results" className={`${ui.cardOverflowVisible} flex scroll-mt-4 flex-col overflow-clip`} aria-labelledby={headless ? undefined : "results-heading"} aria-label={headless ? "Results" : undefined} aria-live="polite">
+    // The arrow over plain text (still selectable), so the pointer doesn't flick to a text cursor
+    // over every short line of figures; fields keep their text cursor, links and buttons their hand
+    <section
+      id="duty-results"
+      className={`${ui.cardOverflowVisible} flex scroll-mt-4 cursor-default flex-col overflow-clip [&_input:not([type=checkbox]):not([type=radio])]:cursor-text [&_textarea]:cursor-text`}
+      aria-labelledby={headless ? undefined : "results-heading"}
+      aria-label={headless ? "Results" : undefined}
+      aria-live="polite"
+    >
       {!headless && (
       <div className="flex flex-col border-b border-base-300 px-5 sm:px-6">
         <div className={`flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-4 ${tabs ? "pb-1" : "pb-4"}`}>
