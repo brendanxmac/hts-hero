@@ -49,6 +49,7 @@ import {
 } from "./PremiumTeasers";
 import { useConversion } from "./ConversionDialog";
 import { OverviewPanel } from "../overview/OverviewPanel";
+import { OverviewTeaser } from "../overview/OverviewTeaser";
 import { useOverview } from "../overview/useOverview";
 import { ShareButtons } from "./ShareButtons";
 import { useCanSeeWhy, WhyLocked, WhyUnlockContext } from "./WhyGate";
@@ -62,10 +63,10 @@ import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 import { useStickyColumn } from "./useStickyColumn";
 
 // The Tariff Calculator, as on /duty-calculator, the country pages and the Tariff Tracker's
-// Calculator tab. The entry details run across the top; the results below have four tabs:
-// - Overview (first, and where the results open): everything about this tariff at a high level
-//   (../overview), which "Summarize" also opens as a drawer over any tab
-// - Duty: the totals full width, then the duty breakdown (with the headings checked but not
+// Calculator tab. The entry details run across the top; the results below have three tabs (an
+// import's page in the Tracker adds the Overview first: everything about this tariff at a high
+// level, ../overview; elsewhere it's teased under the Duty tab's totals):
+// - Duty (where the results open): the totals full width, then the duty breakdown (with the headings checked but not
 //   applied at its foot) beside the possible adjustments (and the Tracker's qualification check,
 //   teased), which move with the page. What the
 //   last answer changed is marked in the breakdown.
@@ -76,8 +77,9 @@ import { useStickyColumn } from "./useStickyColumn";
 
 type ResultsTab = "overview" | "duty" | "history" | "compare";
 
+// The calculator's own tabs. The Overview is an import's page's first tab in the Tracker only:
+// here Duty comes first and fast, and the Overview is teased under its totals (OverviewTeaser)
 const TABS: { id: ResultsTab; label: string }[] = [
-  { id: "overview", label: "Overview" },
   { id: "duty", label: "Duty" },
   { id: "compare", label: "Compare" },
   { id: "history", label: "History" },
@@ -117,9 +119,9 @@ export const CalculatorWorkspace = ({
 
   // Compare is the finder's own view (so a shared link opens on it); Duty Over Time is this
   // page's. `view=analysis` (links from the MCP server) opens on Compare, where the Analysis is.
-  // The results open on the Overview, unless a link asks for History
+  // The results open on Duty, unless a link asks for History
   const [localTab, setLocalTab] = useState<Exclude<ResultsTab, "compare">>(() =>
-    searchParams.get("view") === "history" ? "history" : "overview",
+    searchParams.get("view") === "history" ? "history" : "duty",
   );
   const ownTab: ResultsTab = f.view === "compare" ? "compare" : localTab;
   const tab: ResultsTab = hostTab ?? ownTab;
@@ -138,7 +140,10 @@ export const CalculatorWorkspace = ({
   // Kept here, so they survive switching tabs
   const [highlight, setHighlight] = useState<string | null>(null);
   // The Overview tab's story, worked out while it's open
-  const overview = useOverview(f, tab === "overview");
+  // The Overview tab (an import's page in the Tracker), or its teaser under the Duty tab's totals
+  // everywhere else
+  const teaseOverview = page !== "tracker_product";
+  const overview = useOverview(f, tab === "overview" || (teaseOverview && tab === "duty"));
   const [linesDetail, setLinesDetail] = useState<LinesDetail>("compact");
   const [adjustmentsRef, adjustmentsTop] = useStickyColumn();
   // What the last answer or trade program changed, marked in the breakdown until the next change
@@ -385,6 +390,7 @@ export const CalculatorWorkspace = ({
                     className={`${ui.cardSection} border-t border-base-300`}
                   />
                 </div>
+                {teaseOverview && track && <OverviewTeaser o={overview} signedOut={signedOut} onOpen={() => track.start("overview")} />}
                 {result.warnings.length > 0 && (
                   <div className={ui.cardSection}>
                     <ul
