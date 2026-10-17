@@ -37,7 +37,7 @@ const AddCountry = ({ options, onAdd }: { options: PickOption[]; onAdd: (country
       <PlusIcon className="h-5 w-5" />
     </span>
     <span className="text-sm font-semibold text-base-content">Add a country</span>
-    <span className={ui.caption}>Compare any of {options.length} countries, up to 4 at once</span>
+    <span className={ui.caption}>The cheapest or biggest suppliers, or any of {options.length} countries; up to 4 at once</span>
   </CountryPicker>
 );
 
@@ -102,8 +102,11 @@ export const SideBySide = ({
     () =>
       origins.rates
         .filter((r) => !countries.some((c) => c.code === r.country.code))
-        .map((r) => ({ country: r.country, pct: rateOf(r, mode === "programs" ? "agreements" : "standard"), imports: origins.imports?.byCountry.get(r.country.code)?.value ?? 0 })),
-    [origins.rates, origins.imports, countries, mode]
+        .map((r) => {
+          const pct = rateOf(r, mode === "programs" ? "agreements" : "standard");
+          return { country: r.country, pct, imports: origins.imports?.byCountry.get(r.country.code)?.value ?? 0, vsYours: yours ? pct - yours.pct : undefined };
+        }),
+    [origins.rates, origins.imports, countries, mode, yours]
   );
   // The largest share of US imports among the columns, so their volume bars compare
   const supplyTop = Math.max(...rows.map((r) => supplyOf(origins.imports, r.option.origin.country.code)?.share ?? 0), 0);

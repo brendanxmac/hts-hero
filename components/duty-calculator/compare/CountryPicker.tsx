@@ -4,14 +4,17 @@ import { ReactNode, useMemo, useState } from "react";
 import { Popover } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Country } from "@/constants/countries";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
 import { formatRate } from "@/components/tariff-tracker/formatRate";
 import { formatImportValue } from "../lib/usImports";
 
 // Picking a country to compare: a dropdown under whatever opens it (a country's name in Side by
-// Side, or the "Add a country" tile), with a search box, the cheapest countries that already ship
-// this to the US first, then every country A to Z, each with its duty rate and US imports. A pick
-// closes it; so do a click outside and Escape. Nothing stays open half-done.
+// Side, or the "Add a country" tile), with a search box and three lists to switch between: the
+// countries that already ship this to the US, cheapest first, or biggest first (Census), and every
+// country A to Z. Each row has its duty rate, its US imports and how it compares with yours, so the
+// pick is easy. Searching looks through every country. A pick closes it; so do a click outside and
+// Escape. Nothing stays open half-done.
 
 export interface PickOption {
   country: Country;
@@ -19,20 +22,41 @@ export interface PickOption {
   pct: number;
   // US imports of this from there a year (Census); 0 when none
   imports: number;
+  // Its rate less yours, in percent of the value (negative is cheaper)
+  vsYours?: number;
 }
 
-const Row = ({ option, onPick }: { option: PickOption; onPick: () => void }) => (
-  <li>
-    <button type="button" onClick={onPick} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm hover:bg-tt-soft focus-visible:bg-tt-soft focus-visible:outline-none">
-      <span className="text-base leading-none" aria-hidden>
-        {option.country.flag}
-      </span>
-      <span className="min-w-0 flex-1 truncate text-base-content">{option.country.name}</span>
-      {option.imports > 0 && <span className="text-xs tabular-nums text-base-content/60">{formatImportValue(option.imports)}</span>}
-      <span className={`w-12 text-right font-semibold tabular-nums ${option.pct < 0.005 ? "text-success" : "text-base-content"}`}>{formatRate(option.pct)}</span>
-    </button>
-  </li>
-);
+type List = "cheapest" | "biggest" | "all";
+
+const LISTS: Record<List, string> = {
+  cheapest: "Ships it to the US, lowest duty first",
+  biggest: "Ships it to the US, most imports first",
+  all: "Every country, A to Z",
+};
+
+const Row = ({ option, onPick }: { option: PickOption; onPick: () => void }) => {
+  const d = option.vsYours;
+  return (
+    <li>
+      <button type="button" onClick={onPick} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm hover:bg-tt-soft focus-visible:bg-tt-soft focus-visible:outline-none">
+        <span className="text-base leading-none" aria-hidden>
+          {option.country.flag}
+        </span>
+        <span className="min-w-0 flex-1 truncate text-base-content">{option.country.name}</span>
+        {option.imports > 0 && <span className="text-xs tabular-nums text-base-content/60">{formatImportValue(option.imports)}</span>}
+        <span className={`w-12 text-right font-semibold tabular-nums ${option.pct < 0.005 ? "text-success" : "text-base-content"}`}>{formatRate(option.pct)}</span>
+        {d !== undefined && (
+          <span
+            className={`w-16 shrink-0 rounded-full px-1.5 py-0.5 text-center text-xs font-semibold tabular-nums ${d < -0.005 ? "bg-success/10 text-success" : d > 0.005 ? "bg-error/10 text-error" : "bg-tt-soft text-base-content/60"}`}
+            title="Against your rate"
+          >
+            {Math.abs(d) < 0.005 ? "Same" : `${d < 0 ? "−" : "+"}${formatRate(Math.abs(d))}`}
+          </span>
+        )}
+      </button>
+    </li>
+  );
+};
 
 export const CountryPicker = ({
   options,
@@ -57,17 +81,17 @@ export const CountryPicker = ({
   children: ReactNode;
 }) => {
   const [query, setQuery] = useState("");
+  const suppliers = useMemo(() => options.filter((o) => o.imports > 0), [options]);
+  // Opens on the cheapest suppliers; without US import figures, on every country
+  const [list, setList] = useState<List>("cheapest");
+  const shownList: List = suppliers.length ? list : "all";
   const q = query.trim().toLowerCase();
-  const matches = useMemo(
-    () => (q ? options.filter((o) => o.country.name.toLowerCase().includes(q) || o.country.code.toLowerCase() === q) : options),
-    [options, q]
-  );
-  // The cheapest that already ship this to the US, when not searching
-  const cheapest = useMemo(
-    () => (q ? [] : [...options].filter((o) => o.imports > 0).sort((a, b) => a.pct - b.pct || b.imports - a.imports).slice(0, 5)),
-    [options, q]
-  );
-  const all = useMemo(() => [...matches].sort((a, b) => a.country.name.localeCompare(b.country.name)), [matches]);
+  const rows = useMemo(() => {
+    if (q) return options.filter((o) => o.country.name.toLowerCase().includes(q) || o.country.code.toLowerCase() === q).sort((a, b) => a.country.name.localeCompare(b.country.name));
+    if (shownList === "cheapest") return [...suppliers].sort((a, b) => a.pct - b.pct || b.imports - a.imports);
+    if (shownList === "biggest") return [...suppliers].sort((a, b) => b.imports - a.imports);
+    return [...options].sort((a, b) => a.country.name.localeCompare(b.country.name));
+  }, [options, suppliers, q, shownList]);
 
   return (
     <Popover className={`relative ${className}`}>
@@ -76,49 +100,54 @@ export const CountryPicker = ({
           <Popover.Button className={buttonClassName} aria-label={label} onClick={() => setQuery("")}>
             {children}
           </Popover.Button>
-          <Popover.Panel className={`${ui.popover} absolute ${align === "right" ? "right-0" : "left-0"} z-40 mt-2 flex w-80 flex-col gap-1 tracker:rounded-2xl tracker:p-2`}>
-            <label className={`${ui.inputSm} mb-1 flex items-center gap-2 tracker:rounded-xl tracker:border-transparent tracker:bg-tt-soft tracker:shadow-none`}>
+          <Popover.Panel className={`${ui.popover} absolute ${align === "right" ? "right-0" : "left-0"} z-40 mt-2 flex w-[26rem] max-w-[calc(100vw-2rem)] flex-col gap-2 tracker:rounded-2xl tracker:p-2`}>
+            <label className={`${ui.inputSm} flex items-center gap-2 tracker:rounded-xl tracker:border-transparent tracker:bg-tt-soft tracker:shadow-none`}>
               <MagnifyingGlassIcon className="h-4 w-4 text-base-content/60" aria-hidden />
               <input
                 className="min-w-0 flex-1 bg-transparent outline-none"
                 // Ready to type as soon as it opens
                 autoFocus
-                placeholder={`Search ${options.length} countries`}
+                placeholder={`Search all ${options.length} countries`}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  // Enter picks the first match
-                  if (e.key === "Enter" && (cheapest[0] ?? all[0])) {
+                  // Enter picks the first in the list
+                  if (e.key === "Enter" && rows[0]) {
                     e.preventDefault();
-                    onPick((q ? all[0] : (cheapest[0] ?? all[0])).country);
+                    onPick(rows[0].country);
                     close();
                   }
                 }}
                 aria-label="Search countries"
               />
             </label>
-            <div className="flex max-h-80 flex-col overflow-y-auto">
-              {cheapest.length > 0 && (
-                <>
-                  <span className={`${ui.label} px-2.5 pb-1 pt-1`}>Cheapest suppliers</span>
-                  <ul className="m-0 list-none p-0">
-                    {cheapest.map((o) => (
-                      <Row key={o.country.code} option={o} onPick={() => (onPick(o.country), close())} />
-                    ))}
-                  </ul>
-                  <span className={`${ui.label} px-2.5 pb-1 pt-3`}>All countries</span>
-                </>
-              )}
-              {all.length ? (
-                <ul className="m-0 list-none p-0">
-                  {all.map((o) => (
-                    <Row key={o.country.code} option={o} onPick={() => (onPick(o.country), close())} />
-                  ))}
-                </ul>
-              ) : (
-                <p className={`${ui.bodySm} m-0 px-2.5 py-2`}>No country matches “{query}”.</p>
-              )}
+            {!q && suppliers.length > 0 && (
+              <SegmentedControl<List>
+                label="Which countries"
+                size="sm"
+                fullWidth
+                value={shownList}
+                onChange={setList}
+                options={[
+                  { id: "cheapest", label: "Cheapest", count: suppliers.length },
+                  { id: "biggest", label: "Biggest suppliers", count: suppliers.length },
+                  { id: "all", label: "A–Z", count: options.length },
+                ]}
+              />
+            )}
+            <div className="flex items-baseline justify-between gap-2 px-2.5">
+              <span className={ui.label}>{q ? `Matching “${query.trim()}”` : LISTS[shownList]}</span>
+              <span className="text-xs text-base-content/50">{options.some((o) => o.vsYours !== undefined) ? "Rate · vs yours" : "Rate"}</span>
             </div>
+            {rows.length ? (
+              <ul className="m-0 flex max-h-80 list-none flex-col overflow-y-auto p-0">
+                {rows.map((o) => (
+                  <Row key={o.country.code} option={o} onPick={() => (onPick(o.country), close())} />
+                ))}
+              </ul>
+            ) : (
+              <p className={`${ui.bodySm} m-0 px-2.5 py-2`}>No country matches “{query}”.</p>
+            )}
           </Popover.Panel>
         </>
       )}
