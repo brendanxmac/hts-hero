@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ArrowRightIcon, ArrowTrendingDownIcon, CalendarDaysIcon, LockClosedIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, ArrowTrendingDownIcon, CalendarDaysIcon, CheckBadgeIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import { TimeStepChart } from "@/components/ui/charts/kit";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
@@ -44,6 +44,20 @@ export const DetailsLink = ({ label, onClick }: { label: string; onClick: () => 
 
 // ── Could you pay less ──
 
+// Nothing could lower it: good news, said so (green is money and done here), at the height of the
+// options it stands in for, so the two halves still line up
+const AllGood = ({ title, body }: { title: string; body: string }) => (
+  <div className="flex min-h-[4.75rem] items-center gap-3 rounded-xl bg-success/10 px-4 py-3">
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success text-success-content" aria-hidden>
+      <CheckBadgeIcon className="h-5 w-5" />
+    </span>
+    <span className="min-w-0">
+      <span className="block text-sm font-semibold text-base-content">{title}</span>
+      <span className="block text-xs text-base-content/70">{body}</span>
+    </span>
+  </div>
+);
+
 // One option, an adjustment or a country: a row between thin rules, at least two lines of title
 // tall, so the two lists beside each other line up row for row
 const TILE = "flex min-h-[4.75rem] items-center gap-2.5 py-2.5";
@@ -85,7 +99,7 @@ export const PayLess = ({
             ))}
           </ul>
         ) : (
-          <p className="m-0 text-sm text-base-content/70">No adjustment we checked would lower this duty.</p>
+          <AllGood title="You're not leaving money on the table" body="We checked every exemption and trade program for this import: none would lower this duty." />
         )}
         {o.savings.length > 1 && <p className="m-0 text-xs text-base-content/60">Each works on its own; some lift the same tariff, so they may not add up.</p>}
         {onSavings && <DetailsLink label="Find exemptions and savings" onClick={onSavings} />}
@@ -119,7 +133,7 @@ export const PayLess = ({
             ))}
           </ul>
         ) : (
-          <p className="m-0 text-sm text-base-content/70">None of the largest US suppliers of this product pays less duty.</p>
+          <AllGood title="You already pay the lowest rate" body="None of the largest US suppliers of this product pays less duty than you do. Great sourcing." />
         )}
         {onSourcing && <DetailsLink label="Compare sourcing countries" onClick={onSourcing} />}
       </div>
@@ -241,6 +255,11 @@ export const Headline = ({ o }: { o: Overview }) => {
               <>It&apos;s back to where it was,</>
             )}{" "}
             {pct(o.history.fromPct)} on {shortDate(o.history.fromDate, true)}, after {o.changes === 1 ? "one change" : `${o.changes} changes`}.
+          </p>
+        )}
+        {!best && o.cheaper !== null && !cheapest && (
+          <p className="m-0">
+            {strong("Nothing we checked would lower it:", "text-success")} you&apos;re already paying the lowest duty we can find.
           </p>
         )}
         {(best || cheapest) && (
