@@ -35,7 +35,7 @@ import {
   NotAppliedPanel,
   PreferenceClaim,
   QuestionsPanel,
-  slices,
+  sliceColorsFor,
   SummaryStats,
 } from "../results";
 import { DutyBreakdown, LinesDetail } from "./DutyBreakdown";
@@ -223,14 +223,11 @@ export const CalculatorWorkspace = ({
       : null;
 
   const ready = Boolean(result && selectedElement && country && !f.loading);
-  const sliceColors = result
-    ? slices(result)
-      .filter((s) => s.amount > 0)
-      .reduce<Record<string, string>>(
-        (colors, s) => ({ ...colors, [s.label]: s.color }),
-        {},
-      )
-    : {};
+  // Each tariff's color, the same on every date (the chart, the cost bar, the breakdown)
+  const sliceColors = useMemo(
+    () => (result ? sliceColorsFor([...f.history.map((s) => s.result), result]) : {}),
+    [f.history, result],
+  );
 
   // The possible adjustments hold still while answering: every question the entry had before any
   // answer, plus any an answer brings up, in one order, each with what it would do in plain English
@@ -407,6 +404,7 @@ export const CalculatorWorkspace = ({
                   />
                   <CostBar
                     result={result}
+                    colors={sliceColors}
                     highlight={highlight}
                     onHighlight={setHighlight}
                     className={`${ui.cardSection} border-t border-base-300`}

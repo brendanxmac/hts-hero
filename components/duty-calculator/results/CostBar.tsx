@@ -11,16 +11,19 @@ export const CostBar = ({
   result,
   highlight,
   onHighlight,
+  colors,
   className = "",
 }: {
   result: CalculationResult;
+  // Each slice's color across the import's history (slices)
+  colors?: Record<string, string>;
   // The slice to bring forward, here or in the statement; the others fade
   highlight?: string | null;
   onHighlight?: (label: string | null) => void;
   className?: string;
 }) => (
   <StackedBar
-    parts={slices(result)}
+    parts={slices(result, colors)}
     formatValue={formatMoney}
     highlight={highlight}
     onHighlight={onHighlight}
