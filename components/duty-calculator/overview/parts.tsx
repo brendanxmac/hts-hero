@@ -174,6 +174,10 @@ export const Why = ({ o, colors, canSee, onLocked }: { o: Overview; colors: Reco
 
 // ── Could you pay less ──
 
+// One option, an adjustment or a country: the same green tile, at least two lines of title tall,
+// so the two lists beside each other line up row for row
+const TILE = "flex min-h-[4.75rem] items-center gap-2.5 rounded-xl bg-success/10 px-3.5 py-2.5";
+
 export const PayLess = ({
   o,
   compact = false,
@@ -197,7 +201,7 @@ export const PayLess = ({
         {savings.length ? (
           <ul className="m-0 flex list-none flex-col gap-2 p-0">
             {savings.map((s) => (
-              <li key={s.title} className="flex items-start gap-2.5 rounded-xl bg-success/10 px-3.5 py-2.5">
+              <li key={s.title} className={TILE}>
                 <ArrowTrendingDownIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
                 <span className="min-w-0 flex-1">
                   <span className="line-clamp-2 text-sm font-semibold text-base-content" title={s.title}>
@@ -221,19 +225,25 @@ export const PayLess = ({
         {o.cheaper === null ? (
           <div className={`${ui.skeleton} h-16 w-full`} />
         ) : o.cheaper.length ? (
+          // The same tiles as the adjustments beside them: the country, what it already ships to
+          // the US, and its rate with how much lower it is than yours
           <ul className="m-0 flex list-none flex-col gap-2 p-0">
             {o.cheaper.map((c) => (
-              <li key={c.country.code} className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 text-sm">
-                <span className="min-w-0">
-                  <span className="block font-semibold text-base-content">
-                    {c.country.flag} {c.country.name}
-                  </span>
-                  <span className="block truncate text-xs text-base-content/60" title={c.agreement ? `With ${c.agreement}` : undefined}>
+              <li key={c.country.code} className={TILE}>
+                <span className="mt-px text-base leading-none" aria-hidden>
+                  {c.country.flag}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="line-clamp-2 text-sm font-semibold text-base-content">{c.country.name}</span>
+                  <span className="block truncate text-xs text-base-content/70" title={c.agreement ? `With ${c.agreement}` : undefined}>
                     {compactUsd(c.value)} a year to the US{c.share >= 0.01 ? ` (${Math.round(c.share * 100)}%)` : ""}
                     {c.agreement ? ` · with ${c.agreement}` : ""}
                   </span>
                 </span>
-                <b className="tabular-nums text-success">{pct(c.pct)}</b>
+                <span className="shrink-0 text-right tabular-nums">
+                  <span className="block text-sm font-semibold text-success">{pct(c.pct)}</span>
+                  <span className="block text-xs text-base-content/60">−{pct(o.ratePct - c.pct)} vs yours</span>
+                </span>
               </li>
             ))}
           </ul>
