@@ -17,17 +17,16 @@ import { CompareOption, optionsFor, ProgramMode, segmentsFor, shortAgreement } f
 import { Origins } from "./useOrigins";
 import { valueLabel } from "../lib/valueBasis";
 
-// Every origin as one ranked list that sorts like a spreadsheet. Columns: its rank by rate (#,
-// ties share one); the country (yours marked and in the primary color); the duty rate, then a
-// bar of the tariffs that make it up in the calculator's colors on one scale (the highest rate
-// fills it; hover lists each tariff); with a customs value, the duty per shipment; the
-// difference from yours (in dollars a shipment with the rate difference under it, or the rate
-// difference alone), green when cheaper; US imports from Census with the country's share of the
-// total; the trend since the verified data starts; and how much it has swung. Rank, trend and
-// swing drop out on small screens. Read-only. A country that can claim a trade agreement has a
-// second row (with both choices of the control bar), the agreement applied, named as a tag so
-// the row reads on its own. Search, and filter to the countries that already ship it, are
-// cheaper, are agreement options or are top US sources.
+// Every origin as one list that sorts like a spreadsheet, cheapest first. Columns: the country
+// (yours marked and in the primary color); the duty rate, then a bar of the tariffs that make it
+// up in the calculator's colors on one scale (the highest rate fills it; hover lists each tariff);
+// with a customs value, the duty on it; the difference from yours (the rate difference, with its
+// dollars under it when there's a value), green when cheaper; US imports from Census with the
+// country's share of the total; the trend since the verified data starts; and how much it has
+// swung. Trend and swing drop out on small screens. Read-only. A country that can claim a trade
+// agreement has a second row (with both choices of the control bar), the agreement applied, named
+// as a tag so the row reads on its own. Search, and filter to the countries that already ship it,
+// are cheaper, are agreement options or are top US sources.
 
 type Tag = "suppliers" | "cheaper" | "agreements" | "sources";
 
@@ -44,8 +43,6 @@ interface Row {
   origin: CompareOption["origin"];
   pct: number;
   diff: number;
-  // Its place by rate, cheapest first (ties share one)
-  rank: number;
   // Duty a shipment at the customs value, when there is one
   duty: number | null;
   imports: number;
@@ -85,14 +82,6 @@ export const OriginsList = ({
 
   const rows = useMemo<Row[]>(() => {
     const options = rates.flatMap((r) => optionsFor(r, mode));
-    const keys = options.map((o) => rateKey(o.pct)).sort((a, b) => a - b);
-    // Rank: one more than the number of options strictly cheaper
-    const rankOf = (pct: number) => {
-      const k = rateKey(pct);
-      let lo = 0;
-      while (lo < keys.length && keys[lo] < k) lo++;
-      return lo + 1;
-    };
     return options.map((option) => {
       const { origin, pct } = option;
       const history = histories.get(origin.country.code);
@@ -108,7 +97,6 @@ export const OriginsList = ({
         origin,
         pct,
         diff: pct - yourPct,
-        rank: rankOf(pct),
         duty: customsValue && customsValue > 0 ? (pct / 100) * customsValue : null,
         imports: value,
         history,
@@ -127,13 +115,6 @@ export const OriginsList = ({
 
   const columns = useMemo<ColumnDef<Row, any>[]>(
     () => [
-      {
-        id: "rank",
-        accessorFn: (r) => r.rank,
-        header: "#",
-        meta: { align: "right", width: "hidden w-12 md:table-cell" },
-        cell: ({ row: { original: r } }) => <span className="tabular-nums text-base-content/60">{r.rank}</span>,
-      },
       {
         id: "country",
         accessorFn: (r) => r.origin.country.name,
