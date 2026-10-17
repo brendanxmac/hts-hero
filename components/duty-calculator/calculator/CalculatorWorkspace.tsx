@@ -431,7 +431,7 @@ export const CalculatorWorkspace = ({
                     </ul>
                   </div>
                 )}
-                <CardRow className={hasAdjustments ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]" : ""}>
+                <CardRow className={hasAdjustments ? "lg:grid-cols-2" : ""}>
                   <div className="min-w-0">
                     <DutyBreakdown
                       result={result}
