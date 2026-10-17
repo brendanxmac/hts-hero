@@ -11,8 +11,8 @@ import { formatImportValue } from "../lib/usImports";
 
 // Picking a country to compare: a dropdown under whatever opens it (a country's name in Side by
 // Side, or the "Add a country" tile), with a search box and three lists to switch between: the
-// countries that already ship this to the US, cheapest first, or biggest first (Census), and every
-// country A to Z. Each row has its duty rate, its US imports and how it compares with yours, so the
+// countries that already ship this to the US, biggest first (Census) or cheapest first, and every
+// country A to Z (All). Each row has its duty rate, its US imports and how it compares with yours, so the
 // pick is easy. The countries already on screen (yours, and those being compared) stay in their
 // place in each list, highlighted and tagged, so each list reads whole. Searching looks through every country. A pick closes it; so do a click outside and
 // Escape. Nothing stays open half-done.
@@ -97,8 +97,8 @@ export const CountryPicker = ({
 }) => {
   const [query, setQuery] = useState("");
   const suppliers = useMemo(() => options.filter((o) => o.imports > 0), [options]);
-  // Opens on the cheapest suppliers; without US import figures, on every country
-  const [list, setList] = useState<List>("cheapest");
+  // Opens on the biggest suppliers; without US import figures, on every country
+  const [list, setList] = useState<List>("biggest");
   const shownList: List = suppliers.length ? list : "all";
   const q = query.trim().toLowerCase();
   const rows = useMemo(() => {
@@ -145,9 +145,9 @@ export const CountryPicker = ({
                 value={shownList}
                 onChange={setList}
                 options={[
-                  { id: "cheapest", label: "Cheapest", count: suppliers.length },
                   { id: "biggest", label: "Biggest suppliers", count: suppliers.length },
-                  { id: "all", label: "A–Z", count: options.length },
+                  { id: "cheapest", label: "Cheapest", count: suppliers.length },
+                  { id: "all", label: "All", count: options.length },
                 ]}
               />
             )}
