@@ -576,3 +576,37 @@ describe("Tariff Tracker: proven suppliers and sourcing ideas", () => {
     expect(sourcing.ideas.length).toBe(0)
   })
 })
+
+// ── Saving the catalog to the account ──
+
+import { resolveCatalog } from "../components/tariff-tracker/catalogSync"
+
+describe("Tariff Tracker: syncing the catalog with the account", () => {
+  const item = (code: string) => ({ code, country: "CN" }) as never
+  const snap = (...codes: string[]) => ({ items: codes.map(item), adjustments: {} })
+  const account = snap("1111111111")
+  const device = snap("1111111111", "2222222222")
+
+  it("keeps the device's changes the account doesn't have yet, and saves them", () => {
+    const r = resolveCatalog({ account, device, owner: "u1", userId: "u1", unsaved: true })
+    expect(r.next).toBe(device)
+    expect(r.push).toBe(true)
+  })
+
+  it("takes the account's copy over a device cache with nothing new", () => {
+    const r = resolveCatalog({ account, device, owner: "u1", userId: "u1", unsaved: false })
+    expect(r.next).toBe(account)
+    expect(r.push).toBe(false)
+  })
+
+  it("replaces another account's catalog, even with unsaved changes", () => {
+    const r = resolveCatalog({ account, device, owner: "u2", userId: "u1", unsaved: true })
+    expect(r.next).toBe(account)
+  })
+
+  it("saves the device's catalog when the account has none", () => {
+    const r = resolveCatalog({ account: null, device, owner: "u1", userId: "u1", unsaved: false })
+    expect(r.next).toBe(device)
+    expect(r.push).toBe(true)
+  })
+})

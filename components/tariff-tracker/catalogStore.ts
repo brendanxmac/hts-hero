@@ -33,6 +33,12 @@ export interface CatalogSnapshot {
 
 const EMPTY: CatalogSnapshot = { items: [], adjustments: {} };
 
+// Set by every change made on this device, cleared once the account has it (catalogSync.ts): a
+// change made where the catalog isn't synced (the calculator's "Track this import", the Tariff
+// Monitor) or not saved yet (the page closed first, the save failed) is newer than the account's
+// copy, so it's kept and saved on the next sync instead of being replaced by the account's
+const UNSAVED_KEY = "hts-hero-tariff-tracker-unsaved";
+
 let snapshot: CatalogSnapshot | null = null;
 const listeners = new Set<() => void>();
 
@@ -61,13 +67,15 @@ const getSnapshot = () => (snapshot ??= load());
 
 const notify = () => listeners.forEach((l) => l());
 
-const save = (next: CatalogSnapshot) => {
+// `local`: a change made on this device, which the account doesn't have yet
+const save = (next: CatalogSnapshot, local = true) => {
   const previous = getSnapshot();
   snapshot = next;
   const s = storage();
   try {
     if (next.items !== previous.items) s?.setItem(CATALOG_ITEMS_KEY, writeCatalog(next.items));
     if (next.adjustments !== previous.adjustments) s?.setItem(ADJUSTMENTS_KEY, writeAdjustments(next.adjustments));
+    if (local) s?.setItem(UNSAVED_KEY, "1");
   } catch {
     // Full or unavailable: kept in memory
   }
@@ -102,8 +110,25 @@ export const subscribeCatalog = (listener: () => void) => {
   };
 };
 
-// The whole catalog at once: the account's saved copy, loaded on sign-in
-export const replaceCatalog = (next: CatalogSnapshot) => save(next);
+// The whole catalog at once: the account's saved copy, loaded on sign-in (nothing new to save)
+export const replaceCatalog = (next: CatalogSnapshot) => save(next, false);
+
+// Whether this device has changes the account doesn't have yet, and marking that it has them all
+export const hasUnsavedChanges = () => {
+  try {
+    return storage()?.getItem(UNSAVED_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
+export const markCatalogSaved = () => {
+  try {
+    storage()?.removeItem(UNSAVED_KEY);
+  } catch {
+    // Unavailable: nothing was kept
+  }
+};
 
 // The catalog, in a component. Empty on the server and while hydrating, then the saved one.
 export const useCatalog = () => useSyncExternalStore(subscribe, getSnapshot, () => EMPTY);

@@ -5,14 +5,18 @@ import { createSupabaseClient } from "@/libs/supabase/client";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { readAdjustments, writeAdjustments } from "./adjustments";
 import { mergeItems, readCatalog, writeCatalog } from "./catalog";
-import { CatalogSnapshot, getCatalog, replaceCatalog, subscribeCatalog } from "./catalogStore";
+import { CatalogSnapshot, getCatalog, hasUnsavedChanges, markCatalogSaved, replaceCatalog, subscribeCatalog } from "./catalogStore";
 
 // Saves a signed-in user's catalog to their account (tracker_catalogs), so it follows them
 // across devices. On sign-in:
 // - a catalog built on this device before signing up (no owner yet) is merged into the
 //   account's, so nothing made before the account is lost;
-// - a catalog this device already holds for the account is only a cache: the account's wins;
+// - a catalog this device already holds for the account is only a cache: the account's wins,
+//   unless the device has changes the account doesn't have yet (made outside the Tracker, or
+//   not saved before the page closed): then the device's is the newer copy, and it's saved;
 // - another account's catalog on this device is replaced.
+// After that, every change is saved a moment after it's made, and any save still waiting when the
+// Tracker closes is sent then.
 // Signed out, a catalog that belongs to an account is cleared from the device.
 
 const OWNER_KEY = "hts-hero-tariff-tracker-owner";
@@ -53,6 +57,29 @@ const merge = (account: CatalogSnapshot, device: CatalogSnapshot): CatalogSnapsh
   adjustments: { ...device.adjustments, ...account.adjustments },
 });
 
+// What the device should hold once the account's copy is in, and whether to save it to the account
+export const resolveCatalog = ({
+  account,
+  device,
+  owner,
+  userId,
+  unsaved,
+}: {
+  // The account's saved copy, or null when it has none yet
+  account: CatalogSnapshot | null;
+  device: CatalogSnapshot;
+  // Whose catalog the device holds: null for one made signed out
+  owner: string | null;
+  userId: string;
+  // The device has changes the account doesn't
+  unsaved: boolean;
+}): { next: CatalogSnapshot; push: boolean } => {
+  if (!account) return { next: device, push: true };
+  if (owner === null) return { next: merge(account, device), push: device.items.length > 0 };
+  if (owner === userId && unsaved) return { next: device, push: true };
+  return { next: account, push: false };
+};
+
 // userId: null when signed out; undefined while that's still being found out
 export const useCatalogSync = (userId: string | null | undefined) => {
   useEffect(() => {
@@ -71,10 +98,15 @@ export const useCatalogSync = (userId: string | null | undefined) => {
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     const save = async () => {
+      timer = undefined;
+      const saving = getCatalog();
       const { error } = await supabase
         .from("tracker_catalogs")
-        .upsert({ user_id: userId, ...toRow(getCatalog()), updated_at: new Date().toISOString() });
+        .upsert({ user_id: userId, ...toRow(saving), updated_at: new Date().toISOString() });
+      // Kept as unsaved, so the next sync tries again
       if (error) console.error("Error saving the catalog to the account:", error);
+      // Unless it changed again while saving (that change's own save follows)
+      else if (getCatalog() === saving) markCatalogSaved();
     };
 
     (async () => {
@@ -92,11 +124,12 @@ export const useCatalogSync = (userId: string | null | undefined) => {
       const device = getCatalog();
       const owner = readOwner();
       const account = data ? fromRow(data) : null;
-      const next = !account ? device : owner === null ? merge(account, device) : account;
+      const { next, push } = resolveCatalog({ account, device, owner, userId, unsaved: hasUnsavedChanges() });
       if (next !== device) replaceCatalog(next);
       writeOwner(userId);
       loaded = true;
-      if (!account || (owner === null && device.items.length > 0)) await save();
+      if (push) await save();
+      else markCatalogSaved();
       trackEvent(MixpanelEvent.TARIFF_TRACKER_CATALOG_SYNCED, {
         products: next.items.length,
         merged_from_device: owner === null && device.items.length > 0,
@@ -109,10 +142,22 @@ export const useCatalogSync = (userId: string | null | undefined) => {
       timer = setTimeout(save, SAVE_DELAY);
     });
 
+    // A save still waiting goes now: leaving the page, or the Tracker closing
+    const flush = () => {
+      if (timer === undefined) return;
+      clearTimeout(timer);
+      void save();
+    };
+    const onHide = () => document.visibilityState === "hidden" && flush();
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", flush);
+
     return () => {
       cancelled = true;
       unsubscribe();
-      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", flush);
+      flush();
     };
   }, [userId]);
 };
