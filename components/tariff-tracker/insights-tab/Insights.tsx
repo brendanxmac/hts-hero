@@ -2,7 +2,6 @@
 
 import { ChartStandIn } from "@/components/ui/stand-ins";
 import * as ui from "@/components/ui/styles";
-import * as tt from "@/components/ui/styles/tracker";
 import { AccountGate } from "../access/AccountGate";
 import { InsightsProgress } from "../insights/InsightsProgress";
 import { NeedsProducts } from "../shell/NeedsProducts";
@@ -17,7 +16,7 @@ import { Origins } from "./builtins/Origins";
 import { RateLadder } from "./builtins/RateLadder";
 import { RecentlyHit } from "./builtins/RecentlyHit";
 import { Takeaways } from "./builtins/Takeaways";
-import { catalogScale, InsightsInput, SCALE_NOTES } from "./lib/data";
+import { catalogScale, InsightsInput } from "./lib/data";
 import { useInsightsInput } from "./shared";
 
 // The Insights tab: what the user's own imports teach them, free with an account. The insights
@@ -25,23 +24,22 @@ import { useInsightsInput } from "./shared";
 // hundreds are ranked and concentrated. Charts of a group (a tariff, a country, a chapter) open
 // Your Imports filtered to it. Separate from Rate history for now; the two may merge.
 
-const SCALE_LABELS = { few: "1–4 imports", some: "5–49 imports", many: "50+ imports" };
-
 const ReadyMade = ({ input }: { input: InsightsInput }) => {
   const scale = catalogScale(input.products.length);
-  const pair = "grid items-start gap-4 xl:grid-cols-2";
+  const pair = "grid gap-4 xl:grid-cols-2";
   return (
     <div className="flex flex-col gap-4">
       <Takeaways input={input} scale={scale} />
       {scale === "few" ? (
         <>
           <MostExposed input={input} scale={scale} />
+          {/* Paired by height; the charts grow to end flush with their neighbour */}
           <div className={pair}>
-            <ImportsOverTime input={input} />
             <DutySources input={input} scale={scale} />
+            <LastTwelveMonths input={input} />
           </div>
           <div className={pair}>
-            <LastTwelveMonths input={input} />
+            <ImportsOverTime input={input} />
             <RecentlyHit input={input} count={6} />
           </div>
         </>
@@ -68,14 +66,9 @@ const ReadyMade = ({ input }: { input: InsightsInput }) => {
 
 const InsightsReport = () => {
   const input = useInsightsInput();
-  const scale = catalogScale(input.products.length);
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="m-0 flex items-center gap-2 text-sm text-base-content/70">
-        <span className={tt.chip("primary")}>Tuned for {SCALE_LABELS[scale]}</span>
-        <span>{SCALE_NOTES[scale]}</span>
-      </p>
       <InsightsProgress label="Going through the history of" />
       {!input.ready ? (
         <div className="flex flex-col gap-4" aria-busy="true">

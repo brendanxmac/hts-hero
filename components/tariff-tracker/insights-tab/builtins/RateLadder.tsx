@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { rampColor } from "@/components/ui/theme";
-import { Columns } from "../charts";
+import { Columns, Fill } from "../charts";
 import { breakdown, InsightsInput, RATE_BANDS } from "../lib/data";
 import { InsightPanel } from "../shared";
 
@@ -40,7 +40,7 @@ export const RateLadder = ({ input }: { input: InsightsInput }) => {
         </>
       }
     >
-      <Columns data={data} format={(v) => Math.round(v).toLocaleString("en-US")} label="Imports by rate band" height={220} integer />
+      <Fill min={220}>{(height) => <Columns data={data} format={(v) => Math.round(v).toLocaleString("en-US")} label="Imports by rate band" height={height} integer />}</Fill>
     </InsightPanel>
   );
 };

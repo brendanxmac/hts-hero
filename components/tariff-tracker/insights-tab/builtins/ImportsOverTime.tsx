@@ -5,7 +5,7 @@ import { SERIES_COLORS } from "@/components/ui/theme";
 import { shortDate } from "../../../duty-calculator/rate-history/format";
 import { formatRate } from "../../formatRate";
 import { useInsights } from "../../insights/InsightsContext";
-import { StepLines } from "../charts";
+import { Fill, StepLines } from "../charts";
 import { importSeries, InsightsInput } from "../lib/data";
 import { InsightPanel } from "../shared";
 
@@ -39,7 +39,12 @@ export const ImportsOverTime = ({ input }: { input: InsightsInput }) => {
         )
       }
     >
-      <StepLines series={series} colors={colors} to={input.today} format={formatRate} label="Each import's rate over time" />
+      {/* Less the legend's line above the chart */}
+      <Fill min={260}>
+        {(height) => (
+          <StepLines series={series} colors={colors} to={input.today} format={formatRate} height={height - (series.length > 1 ? 32 : 0)} label="Each import's rate over time" />
+        )}
+      </Fill>
     </InsightPanel>
   );
 };

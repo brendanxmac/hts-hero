@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import {
   Bar,
@@ -48,16 +48,36 @@ export interface Datum {
   hint?: string;
 }
 
+// A chart that grows to fill the room its panel has, so panels side by side end flush (the
+// taller one sets the row's height): the space left is measured, never below `min`
+export const Fill = ({ min, children }: { min: number; children: (height: number) => ReactNode }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(min);
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new ResizeObserver(([entry]) => setHeight(Math.max(min, Math.floor(entry.contentRect.height))));
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [min]);
+  return (
+    // Runtime minimum (DESIGN_SYSTEM §10: a size the design depends on)
+    <div ref={ref} className="relative flex-1" style={{ minHeight: min }}>
+      <div className="absolute inset-x-0 top-0">{children(height)}</div>
+    </div>
+  );
+};
+
 // Bars across, one row each: the label, a round bar and the value. A row with somewhere to go
 // (its imports in Your Imports) is a button, with an arrow at its end.
-export const BarList = ({ data, labelWidth = "11rem" }: { data: Datum[]; labelWidth?: string }) => {
+// `spread`: the rows share the panel's spare height, so it ends flush with the one beside it
+export const BarList = ({ data, labelWidth = "11rem", spread = false }: { data: Datum[]; labelWidth?: string; spread?: boolean }) => {
   const max = Math.max(...data.map((d) => d.value), 0.0001);
   const links = data.some((d) => d.onClick);
   // Runtime label column (DESIGN_SYSTEM §10: a width the design depends on)
   const cols = { gridTemplateColumns: `${labelWidth} minmax(0,1fr) 7.5rem${links ? " 1rem" : ""}` };
   const grid = "grid w-full items-center gap-3 px-1 py-0.5 text-sm";
   return (
-    <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+    <ul className={`m-0 flex list-none flex-col gap-1.5 p-0 ${spread ? "flex-1 justify-between" : ""}`}>
       {data.map((d) => {
         const row = (
           <>

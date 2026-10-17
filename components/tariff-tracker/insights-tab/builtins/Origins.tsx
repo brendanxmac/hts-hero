@@ -75,6 +75,7 @@ export const Origins = ({ input }: { input: InsightsInput }) => {
           onClick: () => show({ country: [r.key] }),
           hint: "Show these imports in Your Imports",
         }))}
+        spread
       />
       {rows.length > 8 && <ShowAll more={`${rows.length - 8} more countries`} open={all} onToggle={() => setAll(!all)} />}
     </InsightPanel>

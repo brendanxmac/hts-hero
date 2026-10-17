@@ -8,6 +8,7 @@ import { formatRate } from "../../formatRate";
 import { signedRate } from "../../impact/format";
 import { FilterState } from "../../filters";
 import { averageMove, breakdown, changeCauses, importMoves, InsightsInput, trendSeries, yearAgo } from "../lib/data";
+import { Fill } from "../charts";
 import { importsFilter, InsightPanel, ShowInImports, useShowInImports } from "../shared";
 
 // How much of the catalog changed in the last 12 months: the average rate then and now, how many
@@ -72,15 +73,19 @@ export const LastTwelveMonths = ({ input }: { input: InsightsInput }) => {
           </div>
         </div>
       </div>
-      <TimeStepChart
-        steps={steps}
-        to={input.today}
-        format={formatRate}
-        formatDate={(d) => shortDate(d, true)}
-        valueLabel="Average rate"
-        height={200}
-        label={`Average rate over the last 12 months, ${formatRate(avg.now)} today`}
-      />
+      <Fill min={150}>
+        {(height) => (
+          <TimeStepChart
+            steps={steps}
+            to={input.today}
+            format={formatRate}
+            formatDate={(d) => shortDate(d, true)}
+            valueLabel="Average rate"
+            height={height}
+            label={`Average rate over the last 12 months, ${formatRate(avg.now)} today`}
+          />
+        )}
+      </Fill>
       {causes.length > 0 && (
         <div className="flex flex-col gap-2">
           <span className={tt.eyebrow()}>What moved them</span>

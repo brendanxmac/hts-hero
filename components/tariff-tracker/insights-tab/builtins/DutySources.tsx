@@ -67,7 +67,7 @@ export const DutySources = ({ input, scale }: { input: InsightsInput; scale: Cat
           <StackedBar parts={average} formatValue={formatRate} shape="pill" size="sm" />
         </div>
       )}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-1 flex-col gap-2">
         <div className="flex items-center justify-between text-xs font-medium text-base-content/60">
           <span>{view === "program" ? "Tariff" : view === "country" ? "Country" : "HTS chapter"}</span>
           <span>Share of duty</span>
@@ -91,6 +91,7 @@ export const DutySources = ({ input, scale }: { input: InsightsInput; scale: Cat
             ...withFilter(importsFilter(view, r.key)),
           }))}
           labelWidth={view === "chapter" ? "13rem" : "11rem"}
+          spread
         />
         {rows.length > 8 && <ShowAll more={`${rows.length - 8} more with smaller shares`} open={all} onToggle={() => setAll(!all)} />}
       </div>
