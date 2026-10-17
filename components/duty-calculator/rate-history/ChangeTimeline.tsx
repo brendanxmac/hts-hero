@@ -6,10 +6,10 @@ import { HistorySegment } from "@/tariffs/engine-v2/history";
 import * as ui from "@/components/ui/styles";
 import { formatDate } from "../lib/format";
 import { TimelineEntry, TimelineList } from "@/components/ui/TimelineList";
-import { ChangeLine } from "./ChangeItem";
+import { ChangeLine, layerOf } from "./ChangeItem";
 import { shortDate, signedMoney, signedPct } from "./format";
-import { TREND_TEXT, trendOf } from "./trend";
-import { Metric } from "./types";
+import { TREND_PILL, trendOf } from "./trend";
+import { Layer, Metric } from "./types";
 
 // Changes shown before "Show all"
 const COLLAPSED_CHANGES = 3;
@@ -24,6 +24,7 @@ export const ChangeTimeline = ({
   metric,
   value,
   show,
+  layers = [],
   onPick,
 }: {
   history: HistorySegment[];
@@ -33,6 +34,8 @@ export const ChangeTimeline = ({
   metric: Metric;
   value: (amount: number) => number;
   show: (amount: number) => string;
+  // The chart's layers, so each changed line takes its tariff's color
+  layers?: Layer[];
   onPick: (date: string) => void;
 }) => {
   const [showAll, setShowAll] = useState(false);
@@ -65,9 +68,12 @@ export const ChangeTimeline = ({
       return {
         key: segment.from,
         date: formatDate(segment.from),
-        summary: <span className={TREND_TEXT[trend]}>{shown(delta)}</span>,
+        // The date's whole change, as a chip; each line's own change under it is smaller
+        summary: <span className={`rounded-full px-2.5 py-0.5 text-sm ${TREND_PILL[trend]}`}>{shown(delta)}</span>,
         tone: trend === "flat" ? "neutral" : trend,
-        lines: segment.changes.map((c) => <ChangeLine key={`${c.kind}-${c.code}`} change={c} shown={shown} />),
+        lines: segment.changes.map((c) => (
+          <ChangeLine key={`${c.kind}-${c.code}`} change={c} shown={shown} color={layers.find((l) => l.label === layerOf(c))?.color} />
+        )),
         active: isEntry,
         onSelect: () => onPick(segment.from),
         note: isEntry ? (

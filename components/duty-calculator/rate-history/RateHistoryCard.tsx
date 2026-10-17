@@ -125,6 +125,7 @@ export const RateHistoryCard = ({
           metric={metric}
           value={value}
           show={show}
+          layers={layers}
           onPick={(date) => pickDate(date, "rate_history_list")}
         />
       )}
