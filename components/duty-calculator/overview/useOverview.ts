@@ -13,10 +13,10 @@ import { Glance, glance } from "../lib/summary";
 import { useUsImports } from "../lib/usImports";
 import { TariffFinder } from "../lib/useTariffFinder";
 
-// Everything the Overview tab and the Explain drawer say about one import, at a high level: the
-// answer and why (glance), the rate over time and any change already scheduled, cheaper countries
-// that already ship this product to the US (Census, so they're real options), and recent tariff
-// news that may touch it. Worked out only while one of them is open.
+// Everything the Overview tab (and "Get Insights" in the calculator) says about one import, at a
+// high level: the answer and why (glance), the rate over time and any change already scheduled,
+// cheaper countries among its 20 biggest US suppliers (Census, so they're real options), and
+// recent tariff news that may touch it. Worked out only while it's needed.
 
 export interface CheaperOrigin {
   country: Country;
@@ -47,8 +47,9 @@ export interface Overview extends Glance {
   news: WatchItem[] | null;
 }
 
-// Suppliers worth checking for a cheaper rate: the largest ones (a few dozen calculations)
-const CANDIDATES = 15;
+// Only the 20 largest US suppliers of the product count as cheaper options: a tiny supplier with
+// a low rate is rarely a real option (little capacity to make it, harder to work with)
+export const TOP_SUPPLIERS = 20;
 
 export const useOverview = (f: TariffFinder, enabled: boolean): Overview | null => {
   const { htsElements } = useHts();
@@ -72,7 +73,7 @@ export const useOverview = (f: TariffFinder, enabled: boolean): Overview | null 
     const largest = Array.from(imports.byCountry.entries())
       .filter(([code, v]) => code !== own && code !== "US" && v.value > 0)
       .sort((a, b) => b[1].value - a[1].value)
-      .slice(0, CANDIDATES);
+      .slice(0, TOP_SUPPLIERS);
     if (!largest.length) return [];
     const rates = originRates(product, largest.map(([code]) => code));
     const origin = rates.find((r) => r.isOrigin);

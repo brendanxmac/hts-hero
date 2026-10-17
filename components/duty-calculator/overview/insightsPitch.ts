@@ -14,8 +14,8 @@ export const insightsPitch = (o: Overview | null): AccountPitch => {
     title: best > 0.005 ? `This duty could be up to ${pct(best)} lower. See how, free` : "See the full picture of this import, free",
     thisImport: [
       best > 0.005
-        ? `${ways} ${ways === 1 ? "way" : "ways"} this duty could be lower: exemptions to check, and cheaper countries that already ship it`
-        : "Every exemption to check, and cheaper countries that already ship it",
+        ? `${ways} ${ways === 1 ? "way" : "ways"} this duty could be lower: exemptions to check, and cheaper countries among its biggest US suppliers`
+        : "Every exemption to check, and cheaper countries among its biggest US suppliers",
       o && top ? `Where the ${pct(o.ratePct)} rate comes from, and why each tariff applies (${top.name} is the biggest)` : "Where the rate comes from, and why each tariff applies",
       o?.history
         ? `Its duty history: ${o.changes} rate ${o.changes === 1 ? "change" : "changes"} since ${shortDate(o.history.fromDate, true)}`

@@ -9,7 +9,7 @@ import { NEWS_DOTS, newsToneOf } from "@/components/tariff-tracker/news/tone";
 import { shortDate } from "../rate-history/format";
 import { formatMoney, formatPct } from "../lib/format";
 import { onShipment } from "../lib/valueBasis";
-import { Overview } from "./useOverview";
+import { Overview, TOP_SUPPLIERS } from "./useOverview";
 
 // The parts of a tariff's Overview tab: the rate and its story in plain English, where the rate
 // comes from (each tariff and why it applies), what could make it lower, its duty history, and
@@ -141,7 +141,7 @@ export const PayLess = ({
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className={tt.eyebrow("success")}>Cheaper countries that already ship it</span>
+        <span className={tt.eyebrow("success")}>Cheaper among the {TOP_SUPPLIERS} biggest US suppliers</span>
         {o.cheaper === null ? (
           <div className={`${ui.skeleton} h-16 w-full`} />
         ) : o.cheaper.length ? (
@@ -168,7 +168,7 @@ export const PayLess = ({
             ))}
           </ul>
         ) : (
-          <AllGood title="You already pay the lowest rate" body="None of the largest US suppliers of this product pays less duty than you do. Great sourcing." />
+          <AllGood title="You already pay the lowest rate" body={`None of the ${TOP_SUPPLIERS} biggest US suppliers of this product pays less duty than you do. Great sourcing.`} />
         )}
         {onSourcing && <DetailsLink label="Compare sourcing countries" onClick={onSourcing} />}
       </div>
