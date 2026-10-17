@@ -236,7 +236,7 @@ export const Watch = ({ o }: { o: Overview }) => (
         ))}
       </ul>
     ) : (
-      <p className="m-0 text-sm text-base-content/70">No tariff news in the last 45 days names this product or country.</p>
+      <AllGood title="All quiet: no news about this import" body="No tariff action in the last 45 days names this product or its country of origin." />
     )}
     {o.waiting > 0 && (
       <p className="m-0 text-sm text-base-content/70">
