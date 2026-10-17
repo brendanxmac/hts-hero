@@ -125,9 +125,9 @@ export const OriginsList = ({
         cell: ({ row: { original: r } }) => (
           <span className="flex items-center gap-2 whitespace-nowrap text-base-content">
             <span aria-hidden>{r.origin.country.flag}</span>
-            <span className={isYours(r) ? "font-semibold" : ""}>{r.origin.country.name}</span>
+            <span className={isYours(r) ? "font-bold text-primary" : ""}>{r.origin.country.name}</span>
             {r.option.agreement && <span className={ui.badge("success")}>with {shortAgreement(r.option.agreement.name)}</span>}
-            {isYours(r) && <span className={ui.badge("primary")}>Yours</span>}
+            {isYours(r) && <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-content">Yours</span>}
           </span>
         ),
       },
@@ -322,6 +322,9 @@ export const OriginsList = ({
       table={table}
       label="Every origin, ranked"
       estimateRowHeight={52}
+      // Yours stands out as the list scrolls past it: a brand tint across the row and a brand bar
+      // down its left edge
+      rowClassName={(r) => (isYours(r) ? "!bg-primary/15 hover:!bg-primary/20 [&>*:first-child]:shadow-[inset_4px_0_0_0_oklch(var(--p))]" : "")}
       toolbar={toolbar}
       empty={<p className="text-sm text-base-content/70">No country matches.</p>}
     />
