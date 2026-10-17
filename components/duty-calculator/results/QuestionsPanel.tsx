@@ -8,6 +8,7 @@ import { DutyLine, Question } from "@/tariffs/engine-v2/types";
 import { sortBySpecificity } from "../lib/questions";
 import { Panel } from "./Panel";
 import { QuestionControl } from "./QuestionControl";
+import { onShipment } from "../lib/valueBasis";
 
 export const QuestionsPanel = ({
   questions,
@@ -26,6 +27,7 @@ export const QuestionsPanel = ({
   hideLegal,
   changeSummary,
   action,
+  customsValue,
 }: {
   questions: Question[];
   answers: Record<string, unknown>;
@@ -55,6 +57,8 @@ export const QuestionsPanel = ({
   changeSummary?: { id: string; node: ReactNode };
   // Across from the title (the calculator's "See which ones apply")
   action?: ReactNode;
+  // The shipment's value, which the amounts on each row are for
+  customsValue?: number;
 }) => {
   const [showAll, setShowAll] = useState(false);
   // Questions that change the amount, can lift an import ban, or are already answered come first; the rest
@@ -81,7 +85,7 @@ export const QuestionsPanel = ({
       title="Possible Adjustments"
       count={open}
       action={action}
-      description="Programs and provisions that could change what you owe"
+      description={`Programs and provisions that could change what you owe${customsValue ? `; amounts ${onShipment(customsValue)}` : ""}`}
     >
       <div className="flex flex-col gap-6">
         {notice}

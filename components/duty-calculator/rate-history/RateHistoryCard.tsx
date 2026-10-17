@@ -14,6 +14,7 @@ import { layersFor } from "./layers";
 import { RateHistoryChart } from "./RateHistoryChart";
 import { RateHistoryHeadline } from "./RateHistoryHeadline";
 import { Metric } from "./types";
+import { onShipment } from "../lib/valueBasis";
 
 // "Duty Over Time": the selected entry's duty on every verified revision, as a stacked step
 // chart with one layer per program (colored like the Cost Breakdown), and what changed when.
@@ -72,6 +73,7 @@ export const RateHistoryCard = ({
             </h3>
             <p className={`${ui.caption} mt-0.5`}>
               {shortDate(historyRange.from)} – {formatDate(lastDate)}
+              {metric === "usd" && <> · dollars {onShipment(customsValue)}</>}
             </p>
           </div>
           {/* Beside the title: it changes how everything in the card reads */}

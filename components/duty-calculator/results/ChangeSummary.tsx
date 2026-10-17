@@ -1,7 +1,8 @@
 "use client";
 
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { formatMoney } from "../lib/format";
+import { formatMoney, formatPct } from "../lib/format";
+import { valueLabel } from "../lib/valueBasis";
 import { LineChanges } from "../lib/useLineChanges";
 import { TariffFinder } from "../lib/useTariffFinder";
 
@@ -13,6 +14,7 @@ export const ChangeSummary = ({
   changes,
   onClear,
   where,
+  customsValue,
   className = "",
 }: {
   result: NonNullable<TariffFinder["result"]>;
@@ -20,6 +22,8 @@ export const ChangeSummary = ({
   onClear?: () => void;
   // Where the marked lines are, from here
   where: "below" | "breakdown";
+  // The shipment's value: the change leads as a rate, then its dollars on this value
+  customsValue: number;
   className?: string;
 }) => {
   const diff = result.totalDuty - changes.totalDutyBefore;
@@ -33,7 +37,19 @@ export const ChangeSummary = ({
         <span className="text-base-content">
           {where === "below" && <>{changes.cause ?? "Your last change"} </>}
           {where === "breakdown" ? (Math.abs(diff) < 0.005 ? "Didn't change the total duty" : lower ? "Lowered the total duty by " : "Raised the total duty by ") : Math.abs(diff) < 0.005 ? "didn't change the total duty" : lower ? "lowered the total duty by " : "raised the total duty by "}
-          {Math.abs(diff) >= 0.005 && <b className={lower ? "text-success" : "text-error"}>{formatMoney(Math.abs(diff))}</b>}
+          {Math.abs(diff) >= 0.005 && (
+            <>
+              <b className={lower ? "text-success" : "text-error"}>
+                {customsValue > 0 ? formatPct(Math.round((Math.abs(diff) / customsValue) * 10000) / 100) : formatMoney(Math.abs(diff))}
+              </b>
+              {customsValue > 0 && (
+                <span className="text-base-content/60">
+                  {" "}
+                  ({formatMoney(Math.abs(diff))} on {valueLabel(customsValue)})
+                </span>
+              )}
+            </>
+          )}
           {changes.details.length > 0 && (
             <span className="text-base-content/60"> ({where === "below" ? "highlighted below" : "highlighted in the Duty Breakdown"}):</span>
           )}

@@ -15,6 +15,7 @@ import { formatImportValue } from "../lib/usImports";
 import { formatMoney, todayIso } from "../lib/format";
 import { CompareOption, optionsFor, ProgramMode, segmentsFor, shortAgreement } from "./options";
 import { Origins } from "./useOrigins";
+import { valueLabel } from "../lib/valueBasis";
 
 // Every origin as one ranked list that sorts like a spreadsheet. Columns: its rank by rate (#,
 // ties share one); the country (yours marked and in the primary color); the duty rate, then a
@@ -215,15 +216,14 @@ export const OriginsList = ({
             {
               id: "duty",
               accessorFn: (r: Row) => r.duty,
-              header: "Duty per shipment",
+              header: `Duty on ${valueLabel(value)}`,
               meta: { align: "right" as const },
               cell: ({ row: { original: r } }: { row: { original: Row } }) => <span className="tabular-nums text-base-content">{money(r.duty ?? 0)}</span>,
             },
           ]
         : []),
       {
-        // In dollars a shipment when there's a value (the rate difference under it), else the
-        // rate difference
+        // The rate difference, with its dollars on the shipment's value under it when there is one
         id: "diff",
         accessorFn: (r) => r.diff,
         header: "Vs yours",
@@ -237,11 +237,11 @@ export const OriginsList = ({
           const rate = `${sign}${formatRate(Math.abs(r.diff))}`;
           return value ? (
             <span className="tabular-nums">
-              <span className={`font-semibold ${tone}`}>
+              <span className={`font-semibold ${tone}`}>{rate}</span>
+              <span className="block text-xs text-base-content/60">
                 {sign}
                 {money(Math.abs(r.diff / 100) * value)}
               </span>
-              <span className="block text-xs text-base-content/60">{rate}</span>
             </span>
           ) : (
             <span className={`tabular-nums ${tone}`}>{rate}</span>

@@ -341,7 +341,7 @@ export const CalculatorWorkspace = ({
     if (!result || !changes?.source || changes.source.kind !== kind) return undefined;
     return {
       id: changes.source.id,
-      node: <ChangeSummary result={result} changes={changes} onClear={lineChanges.clear} where="breakdown" />,
+      node: <ChangeSummary result={result} changes={changes} onClear={lineChanges.clear} where="breakdown" customsValue={f.customsValue} />,
     };
   };
   // Shown while there's anything to adjust, before or after answering
@@ -485,6 +485,7 @@ export const CalculatorWorkspace = ({
                           }
                           answers={f.answers}
                           impacts={f.impacts}
+                          customsValue={f.customsValue}
                           lines={[...result.lines, ...(unadjusted?.lines ?? [])]}
                           onAnswer={f.answer}
                           asOf={result.asOf}

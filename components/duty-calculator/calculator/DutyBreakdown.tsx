@@ -6,10 +6,11 @@ import { useCardClass } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
 import { Statement } from "../results";
 import { sameBasis } from "../results/Statement";
-import { formatDate, formatMoney } from "../lib/format";
+import { formatDate } from "../lib/format";
 import { ChangeSummary } from "../results/ChangeSummary";
 import { LineChanges } from "../lib/useLineChanges";
 import { TariffFinder } from "../lib/useTariffFinder";
+import { valueLabel } from "../lib/valueBasis";
 
 // The duty lines as one tight row each, or with their program, dates and legal text
 export type LinesDetail = "compact" | "full";
@@ -68,7 +69,7 @@ export const DutyBreakdown = ({
             </h3>
             <p className={`${ui.caption} mt-0.5`}>
               Each duty and fee on this entry for {formatDate(result.asOf)}
-              {sameBasis(result, customsValue) ? `, all charged on ${formatMoney(customsValue)}` : ""}
+              {sameBasis(result, customsValue) ? `, all charged on ${valueLabel(customsValue)}` : ""}
               {linesDetail === "full"
                 ? ", with the reason it applies and its legal text"
                 : ""}
@@ -94,7 +95,7 @@ export const DutyBreakdown = ({
       {summary}
       {/* Under the adjustment that was changed, normally; here only when that isn't known */}
       {changes && !changes.source && (
-        <ChangeSummary result={result} changes={changes} onClear={onClearChanges} where="below" className="mx-5 sm:mx-6 mb-3 mt-2" />
+        <ChangeSummary result={result} changes={changes} onClear={onClearChanges} where="below" customsValue={customsValue} className="mx-5 sm:mx-6 mb-3 mt-2" />
       )}
       <Statement
         changes={changes}

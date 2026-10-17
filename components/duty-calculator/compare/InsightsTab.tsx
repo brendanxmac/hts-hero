@@ -9,7 +9,7 @@ import { analysisFacts, rateKey, rateOf, rateTiers } from "@/components/tariff-t
 import { volatility } from "@/components/tariff-tracker/product/analysis/history";
 import { formatRate } from "@/components/tariff-tracker/formatRate";
 import { shortDate } from "../rate-history/format";
-import { formatMoney, todayIso } from "../lib/format";
+import { todayIso } from "../lib/format";
 import { formatImportValue } from "../lib/usImports";
 import { basisFor, CompareOption, optionsFor, optionsOf, ProgramMode, shortAgreement } from "./options";
 import { Origins } from "./useOrigins";
@@ -23,7 +23,6 @@ import { Origins } from "./useOrigins";
 // control bar applies: the rates are those on its date, and trade
 // programs count unless it says without them. Savings are always potential ("could", "up to").
 
-const money = (n: number) => formatMoney(Math.round(n)).replace(/\.00$/, "");
 const TOP = 5;
 
 // One of a group's three columns: a card on its own, a column of the Compare box here
@@ -58,11 +57,9 @@ const List = ({ children, empty }: { children: ReactNode[]; empty: string }) =>
 export const InsightsTab = ({
   origins,
   mode,
-  customsValue,
 }: {
   origins: Origins;
   mode: ProgramMode;
-  customsValue: number;
 }) => {
   const { rates, imports, histories, range, progress } = origins;
   const basis = basisFor(mode);
@@ -76,7 +73,8 @@ export const InsightsTab = ({
   // Yours on the same footing: its standard rate, unless the choice is "with"
   const yourPct = yours ? rateOf(yours, basis) : 0;
   const value = (code: string) => imports?.byCountry.get(code)?.value ?? 0;
-  const saving = (o: CompareOption) => ((yourPct - o.pct) / 100) * customsValue;
+  // How much lower an option's rate is than yours: a rate, true at any shipment value
+  const saving = (o: CompareOption) => yourPct - o.pct;
 
   // Each cheaper country at its best option (its agreement, when that's lower)
   const best = new Map<string, CompareOption>();
@@ -128,8 +126,8 @@ export const InsightsTab = ({
           {lead ? (
             <>
               {lead.origin.country.flag} <span className="font-semibold text-base-content">{lead.origin.country.name}</span>
-              {lead.agreement ? ` with ${shortAgreement(lead.agreement.name)}` : ""} could save you up to{" "}
-              <span className="font-semibold text-success">{money(saving(lead))}</span> per shipment
+              {lead.agreement ? ` with ${shortAgreement(lead.agreement.name)}` : ""} could lower your duty rate by up to{" "}
+              <span className="font-semibold text-success">{formatRate(saving(lead))}</span>
               {value(lead.origin.country.code) > 0 && (
                 <>
                   , and the US already imports <span className="font-semibold text-base-content">{formatImportValue(value(lead.origin.country.code))}</span> of this
@@ -159,9 +157,9 @@ export const InsightsTab = ({
             <dd className="m-0 mt-1 text-xs text-base-content/60">{imports ? `Of US imports of this in ${imports.year}` : "No US import figures for this code"}</dd>
           </div>
           <div className="bg-base-100 px-5 py-4 sm:px-6">
-            <dt className={ui.label}>Most an option could save</dt>
-            <dd className={`${ui.metric.secondary} m-0 mt-1 ${byRate[0] ? "text-success" : ""}`}>{byRate[0] ? money(saving(byRate[0])) : "—"}</dd>
-            <dd className="m-0 mt-1 text-xs text-base-content/60">{byRate[0] ? "Up to, per shipment, at the lowest rate" : "No option pays less than yours"}</dd>
+            <dt className={ui.label}>Most an option could lower it</dt>
+            <dd className={`${ui.metric.secondary} m-0 mt-1 ${byRate[0] ? "text-success" : ""}`}>{byRate[0] ? `−${formatRate(saving(byRate[0]))}` : "—"}</dd>
+            <dd className="m-0 mt-1 text-xs text-base-content/60">{byRate[0] ? "Off your rate, at most, at the lowest rate" : "No option pays less than yours"}</dd>
           </div>
         </dl>
       </section>
@@ -225,7 +223,7 @@ export const InsightsTab = ({
               {byRate.slice(0, TOP).map((o) => (
                 <Row key={o.key} option={o}>
                   <span className="tabular-nums font-semibold text-success">{formatRate(o.pct)}</span>
-                  <span className="w-16 text-right text-xs tabular-nums text-base-content/60">−{money(saving(o))}</span>
+                  <span className="w-16 text-right text-xs tabular-nums text-base-content/60">−{formatRate(saving(o))}</span>
                 </Row>
               ))}
             </List>

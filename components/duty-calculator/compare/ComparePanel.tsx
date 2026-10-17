@@ -20,6 +20,7 @@ import { optionResult, optionsFor, ProgramMode } from "./options";
 import { OriginsList } from "./OriginsList";
 import { RatesShown, SideBySide } from "./SideBySide";
 import { Origins, useOrigins } from "./useOrigins";
+import { onShipment } from "../lib/valueBasis";
 
 // The map loads only when the Globe view opens
 const WorldMap = dynamic(() => import("@/components/tariff-tracker/product/analysis/WorldMap").then((m) => m.WorldMap), {
@@ -160,7 +161,9 @@ export const ComparePanel = ({
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4 sm:px-6">
         <div className="min-w-0">
           <h3 className={ui.cardTitle}>Duty Comparison</h3>
-          <p className={`${ui.caption} mt-0.5`}>See what it costs to import this from other countries</p>
+          <p className={`${ui.caption} mt-0.5`}>
+            See what it costs to import this from other countries; dollars {onShipment(product.customsValue)}
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegmentedControl<View> label="Compare as" options={viewsFor(Boolean(user))} value={view} onChange={setView} size="sm" />
@@ -219,7 +222,7 @@ export const ComparePanel = ({
       {view === "insights" &&
         gated(
           <div className="flex flex-col divide-y divide-base-300">
-            <InsightsTab origins={dated} mode={mode} customsValue={product.customsValue} />
+            <InsightsTab origins={dated} mode={mode} />
           </div>
         )}
       {view === "globe" &&

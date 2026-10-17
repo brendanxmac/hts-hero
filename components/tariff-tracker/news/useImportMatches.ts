@@ -64,13 +64,15 @@ export const useImportMatches = (updates: TrackerUpdate[] | null) => {
   }, [updates, items, confirmed]);
 };
 
-// "Affects 3 of your imports (+$7,500)", "May affect 2 of your imports", "Your countries"
+// "Raises duty on 3 of your imports", "May affect 2 of your imports", "Your countries". No
+// dollars: they'd add up each import's value (often the $10,000 default); the import pages show
+// each rate before and after
 export const matchLabel = (m: ImportMatch) => {
   const affected = m.confirmed + m.likely;
   if (m.confirmed) {
     const delta = Math.round(m.deltaUsd);
-    const money = delta ? ` (${delta > 0 ? "+" : "−"}$${Math.abs(delta).toLocaleString("en-US")})` : "";
-    return { text: `Affects ${affected} of your imports${money}`, tone: delta < 0 ? ("success" as const) : ("error" as const) };
+    const verb = delta > 0 ? "Raises duty on" : delta < 0 ? "Lowers duty on" : "Affects";
+    return { text: `${verb} ${affected} of your imports`, tone: delta < 0 ? ("success" as const) : ("error" as const) };
   }
   if (m.likely) return { text: `May affect ${m.likely} of your imports`, tone: "warning" as const };
   return { text: "Your countries", tone: "primary" as const };

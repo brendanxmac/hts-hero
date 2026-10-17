@@ -8,6 +8,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { NEWS_DOTS, newsToneOf } from "@/components/tariff-tracker/news/tone";
 import { shortDate } from "../rate-history/format";
 import { formatMoney, formatPct } from "../lib/format";
+import { onShipment } from "../lib/valueBasis";
 import { Overview } from "./useOverview";
 
 // The parts of a tariff's overview, shared by the Overview tab (roomy, side by side) and the
@@ -57,7 +58,7 @@ export const Answer = ({ o, colors, compact = false }: { o: Overview; colors: Re
         <p className={`m-0 ${compact ? "text-base" : "text-lg"} leading-relaxed text-base-content/80`}>
           {o.duty > 0.005 ? (
             <>
-              You pay <b className="text-base-content">{formatMoney(o.duty)}</b> in duty on this {formatMoney(o.value)} shipment
+              You pay <b className="text-base-content">{formatMoney(o.duty)}</b> in duty {onShipment(o.value)}
               {top && top.pct > o.ratePct / 2 ? (
                 <>
                   , mostly because of <b className="text-base-content">{top.name}</b>
@@ -67,7 +68,7 @@ export const Answer = ({ o, colors, compact = false }: { o: Overview; colors: Re
             </>
           ) : (
             <>
-              This import comes in <b className="text-success">duty free</b>. Only {formatMoney(o.fees)} in customs fees is due at entry.
+              This import comes in <b className="text-success">duty free</b>. Only {formatMoney(o.fees)} in customs fees is due at entry, {onShipment(o.value)}.
             </>
           )}
           {best && (
@@ -111,7 +112,7 @@ export const Stats = ({ o, compact = false }: { o: Overview; compact?: boolean }
   const best = o.savings[0];
   const cheapest = o.cheaper?.[0];
   const stats: { label: string; value: string; note: string; tone?: string }[] = [
-    { label: "Due at entry", value: formatMoney(o.duty + o.fees), note: `Duty ${formatMoney(o.duty)} + fees ${formatMoney(o.fees)}` },
+    { label: "Due at entry", value: formatMoney(o.duty + o.fees), note: `Duty + fees, ${onShipment(o.value)}` },
     {
       label: "Rate changes",
       value: o.changes.toLocaleString("en-US"),
@@ -153,7 +154,7 @@ export const Why = ({ o, colors, canSee, onLocked }: { o: Overview; colors: Reco
             <span className="flex items-baseline justify-between gap-3">
               <span className="font-semibold text-base-content">{c.name}</span>
               <span className="shrink-0 tabular-nums">
-                <b className="text-base-content">{pct(c.pct)}</b> <span className="text-xs text-base-content/60">{formatMoney(c.usd)}</span>
+                <b className="text-base-content">{pct(c.pct)}</b>
               </span>
             </span>
             {canSee ? (

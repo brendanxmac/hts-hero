@@ -3,14 +3,15 @@
 import { Popover } from "@headlessui/react";
 import { CalendarDaysIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
-import { formatDate, formatMoney, todayIso } from "../lib/format";
+import { formatDate, formatPct, todayIso } from "../lib/format";
 import { TariffFinder } from "../lib/useTariffFinder";
 
 // The import's entry date, picked the useful way: today, any date this import's rates changed (each
 // with what changed and what it did to the duty), or any other date. The same date as Entry details
 // and the import's header, so changing it here changes it everywhere.
 
-const signedMoney = (n: number) => `${n > 0 ? "+" : "−"}${formatMoney(Math.abs(Math.round(n * 100) / 100)).replace(/\.00$/, "")}`;
+// A change in duty as a change in the rate (true at any value): "+12.5%"
+const signedRate = (usd: number, value: number) => `${usd > 0 ? "+" : "−"}${formatPct(Math.round((Math.abs(usd) / (value || 1)) * 10000) / 100)}`;
 
 export const EntryDatePicker = ({ f, align = "right" }: { f: TariffFinder; align?: "left" | "right" }) => {
   const today = todayIso();
@@ -58,7 +59,7 @@ export const EntryDatePicker = ({ f, align = "right" }: { f: TariffFinder; align
                           <span className="flex items-baseline justify-between gap-3">
                             <span className={`text-sm tabular-nums ${on ? "font-semibold text-primary" : "font-medium text-base-content"}`}>{formatDate(s.from)}</span>
                             {Math.abs(delta) >= 0.005 && (
-                              <span className={`text-xs font-semibold tabular-nums ${delta > 0 ? "text-error" : "text-success"}`}>{signedMoney(delta)} duty</span>
+                              <span className={`text-xs font-semibold tabular-nums ${delta > 0 ? "text-error" : "text-success"}`}>{signedRate(delta, f.customsValue)}</span>
                             )}
                           </span>
                           <span className="truncate text-xs text-base-content/60">
