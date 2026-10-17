@@ -14,7 +14,7 @@ export const tariffOn = (code: string, asOf: string): Tariff | undefined => {
   return versions.find((t) => isEffectiveOn(t.effective, asOf)) ?? versions[versions.length - 1];
 };
 
-const countryNames = (sel: CountrySelector) => {
+export const countryNames = (sel: CountrySelector) => {
   if (sel === "all") return "every country";
   const names = sel.map((c) =>
     typeof c === "string" ? Countries.find((x) => x.code === c)?.name ?? c : AllRules.lists.find((l) => l.id === c.list)?.description ?? "the listed countries"

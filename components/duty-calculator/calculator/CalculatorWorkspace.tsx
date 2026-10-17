@@ -354,15 +354,6 @@ export const CalculatorWorkspace = ({
       result ? plainReasons(result, unadjusted?.questions) : (r: string) => r,
     [result, unadjusted],
   );
-  // Under the total: the most one adjustment could take off (a trade program, or confirming the
-  // goods qualify for an exemption), or how many could change it. Savings are only ever "could".
-  const bestSaving = Math.min(
-    0,
-    ...Object.values(f.preferenceChanges),
-    ...Object.entries(f.impacts)
-      .filter(([id]) => id.startsWith("confirm:") && !f.answers[id])
-      .map(([, v]) => v),
-  );
   return (
     <div className="flex flex-col gap-4">
       {/* On an import's own page, its header holds what it is and the fields that can change */}
@@ -410,7 +401,7 @@ export const CalculatorWorkspace = ({
               <>
                 {/* Signed in only (it renders nothing otherwise): signed out, "Summarize" in the
                   breakdown's heading opens the pitch instead */}
-                {explainOpen && <DutySummary f={f} result={result} bestSaving={bestSaving} onClose={() => setExplainOpen(false)} />}
+                {explainOpen && <DutySummary f={f} result={result} onClose={() => setExplainOpen(false)} />}
                 <div>
                   <SummaryStats
                     result={result}

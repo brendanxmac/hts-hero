@@ -1,150 +1,194 @@
-import { CalculationResult } from "@/tariffs/engine-v2/types";
-import { tariffOn, whyApplies } from "./explain";
-import { plainReasons } from "./plainReason";
+import { CalculationResult, DutyLine } from "@/tariffs/engine-v2/types";
+import { BASE_SLICE, sliceForProgram } from "../results/slices";
+import { countryNames, tariffOn } from "./explain";
 import { formatDate, formatMoney, formatPct } from "./format";
 import { TariffFinder } from "./useTariffFinder";
 
-// The duty breakdown after its first sentence, in plain English (DutySummary): what it's made of,
-// why the biggest tariff applies, what was claimed and ruled out, what could lower it, and how
-// it's moved
+// The duty breakdown at a glance (DutySummary), worked out from the engine's result and the
+// tariff rules alone (no model): the answer as a rate, each charge with a few words on why, what's
+// switched on (a claimed program, an exemption at work, a yes answered), what could lower it
+// (always "could": the importer may not qualify), and how the rate has moved.
 
 const pct = (n: number) => formatPct(Math.round(n * 100) / 100);
 
-// The duty breakdown explained, section by section, from the engine's result and the tariff
-// rules alone (no model): every charge and why it applies, every exemption at work and what it
-// switches off, what the user's own adjustments did, what was checked and ruled out, and what
-// could still change it
-export interface SummarySection {
-  title: string;
-  items: string[];
+type SummaryInput = Pick<
+  TariffFinder,
+  "history" | "customsValue" | "answers" | "impacts" | "preferenceChanges" | "unadjustedResult"
+>;
+
+export interface GlanceCharge {
+  code: string;
+  name: string;
+  // The slice it's drawn in (base duty, or its program), for its color
+  slice: string;
+  pct: number;
+  usd: number;
+  // Why it applies, in a few words
+  why: string;
 }
 
-type SummaryInput = Pick<TariffFinder, "openQuestions" | "history" | "customsValue" | "answers" | "impacts" | "unadjustedResult">;
+// Something switched on: a claimed trade program, an exemption at work, a yes answered
+export interface GlanceOn {
+  title: string;
+  detail: string;
+}
 
-const money = formatMoney;
-const rateOf = (r: CalculationResult["base"], fallback: number) => (r.ratePct === undefined ? pct(fallback) : r.ratePct === 0 ? "Free" : pct(r.ratePct));
+// A way the duty could be lower, if the goods qualify
+export interface GlanceSaving {
+  title: string;
+  how: string;
+  // Off the rate, in percent of the value, and in dollars on this shipment (both positive)
+  pct: number;
+  usd: number;
+}
+
+export interface Glance {
+  ratePct: number;
+  duty: number;
+  fees: number;
+  value: number;
+  charges: GlanceCharge[];
+  on: GlanceOn[];
+  savings: GlanceSaving[];
+  // The rate on the first verified date, when it's moved since
+  history: { fromDate: string; fromPct: number } | null;
+  // Tariffs checked that don't apply, and how many of those wait on an answer
+  ruledOut: number;
+  waiting: number;
+}
+
 const COLUMN_WHY: Record<CalculationResult["column"], string> = {
-  general: "the standard rate for goods from countries with normal trade relations (Column 1 General)",
-  special: "the trade program rate (Column 1 Special)",
-  column2: "the higher rate for countries without normal trade relations (Column 2)",
+  general: "The normal rate for this HTS code",
+  special: "The trade program rate for this HTS code",
+  column2: "The higher rate for countries without normal trade relations",
 };
 
-// What a heading that was switched off would have added, from its rule
-const wouldAdd = (code: string, asOf: string, customsValue: number) => {
-  const t = tariffOn(code, asOf);
-  const r = t?.rate as { kind?: string; pct?: number } | undefined;
-  return r?.kind === "adValorem" && r.pct ? ` which would otherwise add ${r.pct}% (about ${money((r.pct / 100) * customsValue)})` : "";
+// Why a charge applies, in a few words: what brought it in, or who and what it covers
+const shortWhy = (line: DutyLine, result: CalculationResult, nameOf: (code: string) => string) => {
+  const trigger = line.reasons.map((r) => r.match(/^Applies because (\S+) applies$/)?.[1]).find(Boolean);
+  if (trigger) return `Comes with ${nameOf(trigger)}`;
+  const t = tariffOn(line.code, result.asOf);
+  if (!t) return "Applies to this import";
+  const answered = (t.requires ?? []).some((c) => (c as { input?: string }).input);
+  if (answered) return "Applies because of your answer";
+  const from = t.scope.countries === "all" ? "every country" : countryNames(t.scope.countries);
+  return t.scope.codes === "all" ? `Every product from ${from}` : `Listed products from ${from}`;
 };
 
-export const summarySections = (f: SummaryInput, result: CalculationResult, bestSaving: number): SummarySection[] => {
-  const sections: SummarySection[] = [];
+export const glance = (f: SummaryInput, result: CalculationResult): Glance => {
+  const value = f.customsValue > 0 ? f.customsValue : 1;
+  const ofValue = (usd: number) => (usd / value) * 100;
   const nameOf = (code: string) => result.lines.find((l) => l.code === code)?.name ?? tariffOn(code, result.asOf)?.name ?? code;
-  const ref = (code: string) => `${code} (${nameOf(code)})`;
   const applied = result.lines.filter((l) => l.status === "applies");
   const charged = applied.filter((l) => l.amount > 0.005);
   const free = applied.filter((l) => l.amount <= 0.005);
   const switchedOffBy = (code: string) => result.lines.filter((l) => l.status !== "applies" && l.reasons.includes(`Excluded by ${code}`));
+
+  const charges: GlanceCharge[] = [
+    {
+      code: "BASE",
+      name: "Base duty",
+      slice: BASE_SLICE,
+      pct: result.base.amount > 0.005 ? ofValue(result.base.amount) : 0,
+      usd: result.base.amount,
+      why: COLUMN_WHY[result.column],
+    },
+    ...charged
+      .map((l) => ({ code: l.code, name: l.name, slice: sliceForProgram(l.program), pct: ofValue(l.amount), usd: l.amount, why: shortWhy(l, result, nameOf) }))
+      .sort((a, b) => b.usd - a.usd),
+  ];
+
+  // Switched on
+  const on: GlanceOn[] = [];
   const preference = result.claimedPreference
-    ? result.availablePreferences.find((p) => p.symbol === result.claimedPreference)?.name ?? result.claimedPreference
+    ? (result.availablePreferences.find((p) => p.symbol === result.claimedPreference)?.name ?? result.claimedPreference)
     : null;
-
-  // What you pay
-  const pay: string[] = [];
-  const baseRate = rateOf(result.base, result.baseRateEquivalentPct);
-  pay.push(
-    result.base.amount > 0.005
-      ? `Base duty: ${baseRate} of ${money(result.base.basisValue)} is ${money(result.base.amount)}, ${COLUMN_WHY[result.column]}.`
-      : `Base duty: ${baseRate === "Free" ? "free" : baseRate}, ${COLUMN_WHY[result.column]}.`
-  );
-  charged.forEach((l) => {
-    const why = whyApplies(l, result, result.questions)[0];
-    const basis = Math.abs(l.basisValue - f.customsValue) >= 0.005 ? ` on ${money(l.basisValue)} of the value` : "";
-    pay.push(`${ref(l.code)}: ${pct(l.ratePct ?? 0)}${basis} is ${money(l.amount)}.${why ? ` ${why}.` : ""}`);
-  });
-  if (!charged.length && result.base.amount <= 0.005) pay.push("No duty applies: every tariff checked is free or switched off for this import.");
-  sections.push({ title: "What you pay", items: pay });
-
-  // Exemptions and free headings at work
-  const exemptions: string[] = [];
-  free.forEach((l) => {
-    const trigger = l.reasons.map((r) => r.match(/^Applies because (\S+) applies$/)?.[1]).find(Boolean);
-    const why = trigger
-      ? `applies because ${ref(trigger)} applies to this import`
-      : whyApplies(l, result, result.questions).some((w) => w.startsWith("You confirmed"))
-        ? "applies because you confirmed your goods qualify"
-        : (whyApplies(l, result, result.questions).find((w) => w.startsWith("You answered")) ?? "applies to this import").replace(/^You answered/, "applies because you answered");
-    const offs = switchedOffBy(l.code);
-    // Headings this one brings in (they apply only alongside it)
-    const brings = applied.filter((x) => x.reasons.includes(`Applies because ${l.code} applies`));
-    const effect = offs.length
-      ? ` It switches off ${offs.map((o) => `${ref(o.code)},${wouldAdd(o.code, result.asOf, f.customsValue)}`).join("; and ")}.`.replace(/,\./g, ".").replace(/,;/g, ";")
-      : brings.length
-        ? ` It's duty-free itself, and brings in ${brings.map((x) => ref(x.code)).join(" and ")}.`
-        : " It adds no duty.";
-    exemptions.push(`${ref(l.code)} ${why}.${effect}`);
-  });
-  result.lines
-    .filter((l) => l.status !== "applies")
-    .forEach((l) => {
-      const notStacked = l.reasons.map((r) => r.match(/^Not stacked: (.+)$/)?.[1]).find(Boolean);
-      if (notStacked) exemptions.push(`${ref(l.code)} doesn't stack with another tariff here: ${notStacked}.`);
-    });
-  if (exemptions.length) sections.push({ title: "Exemptions at work", items: exemptions });
-
-  // The user's own adjustments
-  const adjustments: string[] = [];
   if (preference) {
     const before = f.unadjustedResult?.base;
-    adjustments.push(
-      before && Math.abs(before.amount - result.base.amount) >= 0.005
-        ? `You claimed ${preference}: the base duty goes from ${rateOf(before, f.unadjustedResult?.baseRateEquivalentPct ?? 0)} (${money(before.amount)}) to ${baseRate} (${money(result.base.amount)}).`
-        : `You claimed ${preference}. It doesn't change the base duty on this import.`
-    );
+    on.push({
+      title: `${preference} claimed`,
+      detail:
+        before && Math.abs(before.amount - result.base.amount) >= 0.005
+          ? `Base duty ${pct(ofValue(before.amount))} → ${pct(ofValue(result.base.amount))}`
+          : "No change to the base duty here",
+    });
   }
+  // The input a free heading needs answered yes, if any: such a heading is shown with its answer
+  const answerFor = (code: string) =>
+    (tariffOn(code, result.asOf)?.requires ?? [])
+      .map((c) => String((c as { input?: string }).input ?? ""))
+      .find((id) => id && !id.startsWith("confirm:") && f.answers[id] === true);
+  const offsOf = (code: string) => switchedOffBy(code).map((o) => o.name);
+  free
+    .filter((l) => !answerFor(l.code))
+    .forEach((l) => {
+      const offs = offsOf(l.code);
+      const confirmed = f.answers[`confirm:${l.code}`] === true;
+      on.push({
+        title: l.name,
+        detail: offs.length
+          ? `${confirmed ? "You confirmed it. " : ""}Switches off ${offs.join(" and ")}`
+          : confirmed
+            ? "You confirmed your goods qualify"
+            : "Applies, and adds no duty",
+      });
+    });
   Object.entries(f.answers)
-    .filter(([, v]) => v === true)
+    .filter(([id, v]) => v === true && !id.startsWith("confirm:"))
     .forEach(([id]) => {
       const q = result.questions.find((x) => x.input.id === id) ?? f.unadjustedResult?.questions.find((x) => x.input.id === id);
-      const label = id.startsWith("confirm:") ? `that your goods qualify for ${ref(id.slice("confirm:".length))}` : `yes to “${(q?.input.label ?? id).replace(/\?$/, "")}”`;
-      const saving = f.impacts[id];
-      adjustments.push(
-        `You ${id.startsWith("confirm:") ? "confirmed" : "answered"} ${label}${saving !== undefined && Math.abs(saving) >= 0.005 ? `, ${saving < 0 ? "saving" : "adding"} ${money(Math.abs(saving))}` : ", with no change to the duty"}.`
-      );
+      const effect = f.impacts[id];
+      // What the yes turned on, and what that switches off
+      const offs = free.filter((l) => answerFor(l.code) === id).flatMap((l) => offsOf(l.code));
+      const change =
+        effect !== undefined && Math.abs(effect) >= 0.005
+          ? `${effect < 0 ? "Lowers" : "Raises"} the rate by ${pct(Math.abs(ofValue(effect)))}`
+          : "No change to the duty";
+      on.push({
+        title: `Yes: ${(q?.input.label ?? id).replace(/\?$/, "")}`,
+        detail: offs.length ? `Switches off ${offs.join(" and ")}. ${change}` : change,
+      });
     });
-  if (adjustments.length) sections.push({ title: "Your adjustments", items: adjustments });
 
-  // Checked and ruled out (headings switched off by one at work are explained above)
-  const explained = new Set(free.flatMap((l) => switchedOffBy(l.code).map((o) => o.code)));
-  const ruled = result.lines.filter((l) => l.status !== "applies" && !explained.has(l.code) && !l.reasons.some((r) => r.startsWith("Not stacked")));
-  const waiting = ruled.filter((l) => l.status === "needsAnswer");
-  const other = ruled.filter((l) => l.status !== "needsAnswer");
-  const plain = plainReasons(result, f.unadjustedResult?.questions);
-  const out: string[] = [];
-  if (waiting.length)
-    out.push(
-      `${waiting.length === 1 ? "1 exemption needs" : `${waiting.length} exemptions need`} an answer before ${waiting.length === 1 ? "it" : "they"} can apply (see Possible Adjustments): ${waiting.map((l) => l.name.replace(/^Section \d+ /, "")).join("; ")}.`
-    );
-  other.forEach((l) => out.push(`${ref(l.code)} doesn't apply: ${plain(l.reasons[0] ?? "it doesn't cover this import").replace(/^Only/, "it only").replace(/^It only/, "it only")}.`));
-  if (out.length) sections.push({ title: "Checked, not applied", items: out });
+  // Could lower it: trade programs not claimed, and answers not given yet
+  const savings: GlanceSaving[] = [
+    ...Object.entries(f.preferenceChanges)
+      .filter(([, usd]) => usd < -0.005)
+      .map(([symbol, usd]) => ({
+        title: result.availablePreferences.find((p) => p.symbol === symbol)?.name ?? symbol,
+        how: "Claim it, if your goods meet its rules of origin",
+        pct: ofValue(-usd),
+        usd: -usd,
+      })),
+    ...Object.entries(f.impacts)
+      .filter(([id, usd]) => usd < -0.005 && f.answers[id] !== true)
+      .map(([id, usd]) => {
+        const q = result.questions.find((x) => x.input.id === id);
+        return id.startsWith("confirm:")
+          ? { title: nameOf(id.slice("confirm:".length)), how: "If your goods qualify", pct: ofValue(-usd), usd: -usd }
+          : { title: (q?.input.label ?? id).replace(/\?$/, ""), how: "If the answer is yes", pct: ofValue(-usd), usd: -usd };
+      }),
+  ].sort((a, b) => b.usd - a.usd);
 
-  // What could change it
-  const next: string[] = [];
-  if (bestSaving < -0.005) next.push(`If your goods qualify, a trade program or exemption could lower the duty by up to ${money(Math.abs(bestSaving))}.`);
-  else if (f.openQuestions > 0) next.push(`${f.openQuestions} possible ${f.openQuestions === 1 ? "adjustment" : "adjustments"} could still change it.`);
+  // How it's moved
   const today = new Date().toISOString().slice(0, 10);
   const past = f.history.filter((x) => x.from <= today);
   const first = past[0];
-  const last = past[past.length - 1];
-  if (first && last && first !== last && first.result.totalDuty > 0.005) {
-    const rate = (x: typeof first) => (f.customsValue > 0 ? pct((x.result.totalDuty / f.customsValue) * 100) : money(x.result.totalDuty));
-    next.push(
-      Math.abs(last.result.totalDuty - first.result.totalDuty) >= 0.005
-        ? `The duty rate went from ${rate(first)} on ${formatDate(first.from)} to ${rate(last)} now (see Duty Over Time).`
-        : `The duty hasn't changed since ${formatDate(first.from)}.`
-    );
-  }
-  if (next.length) sections.push({ title: "What could change it", items: next });
-  return sections;
+  const moved = first && past.length > 1 && Math.abs(first.result.totalDuty - result.totalDuty) >= 0.005;
+
+  const ruled = result.lines.filter((l) => l.status !== "applies");
+  return {
+    ratePct: ofValue(result.totalDuty),
+    duty: result.totalDuty,
+    fees: result.totalFees,
+    value: f.customsValue,
+    charges,
+    on,
+    savings,
+    history: moved ? { fromDate: first.from, fromPct: ofValue(first.result.totalDuty) } : null,
+    ruledOut: ruled.length,
+    waiting: ruled.filter((l) => l.status === "needsAnswer").length,
+  };
 };
 
 // The free account's pitch to a signed-out visitor (AccountCta): a headline with the most money at
