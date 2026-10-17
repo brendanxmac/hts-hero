@@ -37,7 +37,7 @@ const AddCountry = ({ options, onAdd }: { options: PickOption[]; onAdd: (country
       <PlusIcon className="h-5 w-5" />
     </span>
     <span className="text-sm font-semibold text-base-content">Add a country</span>
-    <span className={ui.caption}>The cheapest or biggest suppliers, or any of {options.length} countries; up to 4 at once</span>
+    <span className={ui.caption}>The cheapest or biggest suppliers, or any of {options.filter((o) => !o.selected).length} countries; up to 4 at once</span>
   </CountryPicker>
 );
 
@@ -97,15 +97,21 @@ export const SideBySide = ({
   // (no Chapter 99 code: the same program has a different heading in each country)
   const lines = Array.from(new Map(rows.flatMap((r) => linesOf(r.result)).map((l) => [l.key, { ...l, code: undefined as string | undefined }])).values());
   const canAdd = countries.length < max;
-  // Every country not compared yet, at the rates shown, for the pickers
+  // Every country, at the rates shown, for the pickers
   const pickOptions: PickOption[] = useMemo(
     () =>
-      origins.rates
-        .filter((r) => !countries.some((c) => c.code === r.country.code))
-        .map((r) => {
-          const pct = rateOf(r, mode === "programs" ? "agreements" : "standard");
-          return { country: r.country, pct, imports: origins.imports?.byCountry.get(r.country.code)?.value ?? 0, vsYours: yours ? pct - yours.pct : undefined };
-        }),
+      // Every country, the ones on screen marked (they stay in the lists, so each list reads whole)
+      origins.rates.map((r) => {
+        const pct = rateOf(r, mode === "programs" ? "agreements" : "standard");
+        const shown = countries.some((c) => c.code === r.country.code);
+        return {
+          country: r.country,
+          pct,
+          imports: origins.imports?.byCountry.get(r.country.code)?.value ?? 0,
+          vsYours: yours && !r.isOrigin ? pct - yours.pct : undefined,
+          selected: r.isOrigin ? ("yours" as const) : shown ? ("compared" as const) : undefined,
+        };
+      }),
     [origins.rates, origins.imports, countries, mode, yours]
   );
   // The largest share of US imports among the columns, so their volume bars compare

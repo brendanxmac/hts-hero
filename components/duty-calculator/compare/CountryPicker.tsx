@@ -13,7 +13,8 @@ import { formatImportValue } from "../lib/usImports";
 // Side, or the "Add a country" tile), with a search box and three lists to switch between: the
 // countries that already ship this to the US, cheapest first, or biggest first (Census), and every
 // country A to Z. Each row has its duty rate, its US imports and how it compares with yours, so the
-// pick is easy. Searching looks through every country. A pick closes it; so do a click outside and
+// pick is easy. The countries already on screen (yours, and those being compared) stay in their
+// place in each list, highlighted and tagged, so each list reads whole. Searching looks through every country. A pick closes it; so do a click outside and
 // Escape. Nothing stays open half-done.
 
 export interface PickOption {
@@ -24,6 +25,8 @@ export interface PickOption {
   imports: number;
   // Its rate less yours, in percent of the value (negative is cheaper)
   vsYours?: number;
+  // Already on screen: your own origin, or a country being compared (highlighted, not pickable)
+  selected?: "yours" | "compared";
 }
 
 type List = "cheapest" | "biggest" | "all";
@@ -36,13 +39,25 @@ const LISTS: Record<List, string> = {
 
 const Row = ({ option, onPick }: { option: PickOption; onPick: () => void }) => {
   const d = option.vsYours;
+  const on = option.selected;
   return (
     <li>
-      <button type="button" onClick={onPick} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm hover:bg-tt-soft focus-visible:bg-tt-soft focus-visible:outline-none">
+      <button
+        type="button"
+        onClick={onPick}
+        disabled={Boolean(on)}
+        aria-current={on ? "true" : undefined}
+        className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm focus-visible:outline-none ${on ? "cursor-default bg-primary/10 shadow-[inset_3px_0_0_0_oklch(var(--p))]" : "hover:bg-tt-soft focus-visible:bg-tt-soft"}`}
+      >
         <span className="text-base leading-none" aria-hidden>
           {option.country.flag}
         </span>
-        <span className="min-w-0 flex-1 truncate text-base-content">{option.country.name}</span>
+        <span className={`min-w-0 flex-1 truncate ${on ? "font-semibold text-primary" : "text-base-content"}`}>{option.country.name}</span>
+        {on && (
+          <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${on === "yours" ? "bg-primary text-primary-content" : "bg-primary/15 text-primary"}`}>
+            {on === "yours" ? "Yours" : "Comparing"}
+          </span>
+        )}
         {option.imports > 0 && <span className="text-xs tabular-nums text-base-content/60">{formatImportValue(option.imports)}</span>}
         <span className={`w-12 text-right font-semibold tabular-nums ${option.pct < 0.005 ? "text-success" : "text-base-content"}`}>{formatRate(option.pct)}</span>
         {d !== undefined && (
@@ -67,7 +82,7 @@ export const CountryPicker = ({
   align = "left",
   children,
 }: {
-  // Every country that can be picked (not the ones already compared)
+  // Every country, the ones already on screen marked `selected` (shown highlighted, not pickable)
   options: PickOption[];
   onPick: (country: Country) => void;
   // What the dropdown is for, for screen readers ("Pick another country instead of Mexico")
@@ -107,14 +122,15 @@ export const CountryPicker = ({
                 className="min-w-0 flex-1 bg-transparent outline-none"
                 // Ready to type as soon as it opens
                 autoFocus
-                placeholder={`Search all ${options.length} countries`}
+                placeholder={`Search all ${options.filter((o) => !o.selected).length} countries`}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => {
                   // Enter picks the first in the list
-                  if (e.key === "Enter" && rows[0]) {
+                  const first = rows.find((o) => !o.selected);
+                  if (e.key === "Enter" && first) {
                     e.preventDefault();
-                    onPick(rows[0].country);
+                    onPick(first.country);
                     close();
                   }
                 }}
