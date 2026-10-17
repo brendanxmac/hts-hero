@@ -8,9 +8,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
-import { ExclamationTriangleIcon, SparklesIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
+import { ExclamationTriangleIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
@@ -49,8 +48,6 @@ import {
   RefundsButton,
 } from "./PremiumTeasers";
 import { useConversion } from "./ConversionDialog";
-import { ExplainToggle } from "./DutySummary";
-import { ExplainDrawer } from "../overview/ExplainDrawer";
 import { OverviewPanel } from "../overview/OverviewPanel";
 import { useOverview } from "../overview/useOverview";
 import { ShareButtons } from "./ShareButtons";
@@ -95,7 +92,6 @@ export const CalculatorWorkspace = ({
   onCheckSavings,
   tab: hostTab,
   onTabChange,
-  explainSlot,
 }: {
   f: TariffFinder;
   // In the results' heading, after Share: the host's main action (Add to catalog, Track this import)
@@ -104,8 +100,6 @@ export const CalculatorWorkspace = ({
   empty?: ReactNode;
   // For analytics: where the account gates sit
   page: "calculator" | "tracker_calculator" | "tracker_product";
-  // Where "Summarize" goes when the results have no header of their own (an import's page)
-  explainSlot?: HTMLElement | null;
   // A catalog product's own page: its header says what it is and holds the fields that can change
   // (ImportInputs), so there's no Entry details and the results have no heading of their own
   fixedProduct?: boolean;
@@ -115,8 +109,7 @@ export const CalculatorWorkspace = ({
   // A host whose own menu holds the tabs (the Tracker's import page): which one is open (the
   // results then show no tab row of their own), and the way to change it
   tab?: ResultsTab;
-  // (the Tracker's import page has no Overview tab yet)
-  onTabChange?: (tab: Exclude<ResultsTab, "overview">) => void;
+  onTabChange?: (tab: ResultsTab) => void;
 }) => {
   const { htsElements } = useHts();
   const searchParams = useSearchParams();
@@ -136,7 +129,7 @@ export const CalculatorWorkspace = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const changeTab = (next: ResultsTab) => {
-    if (onTabChange) return next !== "overview" && onTabChange(next);
+    if (onTabChange) return onTabChange(next);
     if (next !== "compare") setLocalTab(next);
     // The address says Compare only while it's open
     f.changeView(next === "compare" ? "compare" : "detailed");
@@ -144,10 +137,8 @@ export const CalculatorWorkspace = ({
 
   // Kept here, so they survive switching tabs
   const [highlight, setHighlight] = useState<string | null>(null);
-  // The plain-English explanation in a drawer, on request ("Summarize" in the results' header);
-  // the Overview tab says the same on a page of its own. Worked out while either is open.
-  const [explainOpen, setExplainOpen] = useState(false);
-  const overview = useOverview(f, tab === "overview" || explainOpen);
+  // The Overview tab's story, worked out while it's open
+  const overview = useOverview(f, tab === "overview");
   const [linesDetail, setLinesDetail] = useState<LinesDetail>("compact");
   const [adjustmentsRef, adjustmentsTop] = useStickyColumn();
   // What the last answer or trade program changed, marked in the breakdown until the next change
@@ -301,21 +292,6 @@ export const CalculatorWorkspace = ({
       {trackButton}
     </div>
   );
-  // "Summarize", in the results' header (on an import's page, in its header, through
-  // explainSlot): the plain-English explanation of the duty, opening on the Duty tab; signed out,
-  // the free account's pitch for it
-  const explainButton = signedOut ? (
-    <button
-      type="button"
-      className={ui.button({ variant: "secondary", size: "sm" })}
-      onClick={() => conversion.openAccount({ title: "Get the full explanation, free", highlight: "why", cta: "Create my free account" }, "explain-this")}
-    >
-      <SparklesIcon className="h-4 w-4" aria-hidden />
-      Summarize
-    </button>
-  ) : (
-    <ExplainToggle open={explainOpen} onToggle={() => setExplainOpen((x) => !x)} />
-  );
   // A locked "why" opens the free account's pitch, led by what was clicked
   const unlockWhy = (where: string) =>
     conversion.openAccount(
@@ -365,7 +341,6 @@ export const CalculatorWorkspace = ({
             actions={
               <>
                 <ShareButtons f={f} />
-                {explainButton}
                 {actions}
                 {trackButton}
               </>
@@ -599,19 +574,6 @@ export const CalculatorWorkspace = ({
             {tab !== "compare" && trackStrip}
           </ResultsBox>
         </WhyUnlockContext.Provider>
-      )}
-      {explainSlot && ready && createPortal(explainButton, explainSlot)}
-      {canSeeWhy && result && (
-        <ExplainDrawer
-          open={explainOpen}
-          onClose={() => setExplainOpen(false)}
-          title={`${result.htsCode} from ${country?.name ?? ""}`}
-          o={overview}
-          colors={sliceColors}
-          canSee={canSeeWhy}
-          onLocked={() => unlockWhy("overview")}
-          onOpenTab={changeTab}
-        />
       )}
       {conversion.dialog}
       {track?.dialog}

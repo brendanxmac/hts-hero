@@ -11,10 +11,10 @@ import { formatMoney, formatPct } from "../lib/format";
 import { onShipment } from "../lib/valueBasis";
 import { Overview } from "./useOverview";
 
-// The parts of a tariff's overview, shared by the Overview tab (roomy, side by side) and the
-// Explain drawer (stacked, `compact`): the answer with its big numbers, why each tariff applies,
-// what could make it lower, how it has moved, and what to watch. Rates lead and dollars follow;
-// savings are always "could" (the importer may not qualify).
+// The parts of a tariff's Overview tab: the rate and its story in plain English, where the rate
+// comes from (each tariff and why it applies), what could make it lower, its duty history, and
+// news about it. Rates lead and dollars follow; savings are always "could" (the importer may not
+// qualify).
 
 export type OverviewTab = "duty" | "compare" | "history";
 
@@ -42,141 +42,12 @@ export const DetailsLink = ({ label, onClick }: { label: string; onClick: () => 
   </button>
 );
 
-// ── The answer ──
-
-export const Answer = ({ o, colors, compact = false }: { o: Overview; colors: Record<string, string>; compact?: boolean }) => {
-  const charged = o.charges.filter((c) => c.usd > 0.005).sort((a, b) => b.pct - a.pct);
-  const top = charged.find((c) => c.code !== "BASE");
-  const best = o.savings[0];
-  return (
-    <div className="flex flex-col gap-5">
-      <div className={`flex flex-col gap-4 ${compact ? "" : "lg:flex-row lg:items-end lg:gap-10"}`}>
-        <div className="shrink-0">
-          <span className={tt.eyebrow("primary")}>Duty rate</span>
-          <div className={`${tt.display} ${compact ? "text-5xl" : "text-7xl"} font-semibold leading-none tracking-tight tabular-nums text-base-content`}>{pct(o.ratePct)}</div>
-        </div>
-        <p className={`m-0 ${compact ? "text-base" : "text-lg"} leading-relaxed text-base-content/80`}>
-          {o.duty > 0.005 ? (
-            <>
-              You pay <b className="text-base-content">{formatMoney(o.duty)}</b> in duty {onShipment(o.value)}
-              {top && top.pct > o.ratePct / 2 ? (
-                <>
-                  , mostly because of <b className="text-base-content">{top.name}</b>
-                </>
-              ) : null}
-              . With {formatMoney(o.fees)} in customs fees, <b className="text-base-content">{formatMoney(o.duty + o.fees)}</b> is due at entry.
-            </>
-          ) : (
-            <>
-              This import comes in <b className="text-success">duty free</b>. Only {formatMoney(o.fees)} in customs fees is due at entry, {onShipment(o.value)}.
-            </>
-          )}
-          {best && (
-            <>
-              {" "}
-              It <b className="text-success">could be up to {pct(best.pct)} lower</b> if your goods qualify.
-            </>
-          )}
-        </p>
-      </div>
-
-      {/* Where the rate comes from: one big bar, each part named under it */}
-      {charged.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <div className="flex h-5 w-full gap-0.5 overflow-hidden rounded-full" aria-hidden>
-            {charged.map((c) => (
-              // Runtime share and part color (DESIGN_SYSTEM §10)
-              <div key={c.code} className="h-full first:rounded-l-full last:rounded-r-full" style={{ flexGrow: c.pct, flexBasis: 4, background: colors[c.slice] }} />
-            ))}
-          </div>
-          <ul className={`m-0 grid list-none gap-x-6 gap-y-2 p-0 ${compact ? "grid-cols-1" : "sm:grid-cols-2 lg:grid-cols-4"}`} aria-label="Where the rate comes from">
-            {charged.map((c) => (
-              <li key={c.code} className="flex min-w-0 items-baseline gap-2">
-                {/* Part color (DESIGN_SYSTEM §10) */}
-                <span className="h-2.5 w-2.5 shrink-0 self-center rounded-sm" style={{ background: colors[c.slice] }} aria-hidden />
-                <b className={`${tt.display} tabular-nums text-base-content`}>{pct(c.pct)}</b>
-                <span className="truncate text-sm text-base-content/70" title={c.name}>
-                  {c.name}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// The headline numbers under the answer
-export const Stats = ({ o, compact = false }: { o: Overview; compact?: boolean }) => {
-  const best = o.savings[0];
-  const cheapest = o.cheaper?.[0];
-  const stats: { label: string; value: string; note: string; tone?: string }[] = [
-    { label: "Due at entry", value: formatMoney(o.duty + o.fees), note: `Duty + fees, ${onShipment(o.value)}` },
-    {
-      label: "Rate changes",
-      value: o.changes.toLocaleString("en-US"),
-      note: o.history ? `Since ${shortDate(o.history.fromDate, true)}, from ${pct(o.history.fromPct)}` : "No change in the verified data",
-    },
-    best
-      ? { label: "Could be lower", value: `up to ${pct(best.pct)}`, note: `${o.savings.length} ${o.savings.length === 1 ? "way" : "ways"}, if your goods qualify`, tone: "text-success" }
-      : { label: "Could be lower", value: "—", note: "No adjustment found that lowers it" },
-    cheapest
-      ? { label: "Cheapest proven origin", value: pct(cheapest.pct), note: `${cheapest.country.flag} ${cheapest.country.name}, already ships it to the US`, tone: "text-success" }
-      : { label: "Cheaper origins", value: o.cheaper ? "None" : "…", note: o.cheaper ? "No large US supplier pays less" : "Checking US suppliers" },
-  ];
-  return (
-    <dl className={`m-0 grid gap-px overflow-hidden rounded-xl bg-base-300 ${compact ? "grid-cols-2" : "grid-cols-2 lg:grid-cols-4"}`}>
-      {stats.map((s) => (
-        <div key={s.label} className="flex min-w-0 flex-col gap-1 bg-tt-soft px-4 py-3.5">
-          <dt className="text-xs font-semibold text-base-content/60">{s.label}</dt>
-          <dd className={`m-0 ${tt.metricSm} ${s.tone ?? ""}`}>{s.value}</dd>
-          <dd className="m-0 truncate text-xs text-base-content/60" title={s.note}>
-            {s.note}
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-};
-
-// ── Why ──
-
-export const Why = ({ o, colors, canSee, onLocked }: { o: Overview; colors: Record<string, string>; canSee: boolean; onLocked: () => void }) => {
-  const charges = o.charges.filter((c) => c.usd > 0.005 || o.charges.length === 1).sort((a, b) => b.pct - a.pct);
-  return (
-    <ul className="m-0 flex list-none flex-col gap-3 p-0">
-      {charges.map((c) => (
-        <li key={c.code} className="flex items-start gap-3">
-          {/* Part color (DESIGN_SYSTEM §10) */}
-          <span className="mt-1 h-3 w-3 shrink-0 rounded-sm" style={{ background: colors[c.slice] }} aria-hidden />
-          <span className="min-w-0 flex-1">
-            <span className="flex items-baseline justify-between gap-3">
-              <span className="font-semibold text-base-content">{c.name}</span>
-              <span className="shrink-0 tabular-nums">
-                <b className="text-base-content">{pct(c.pct)}</b>
-              </span>
-            </span>
-            {canSee ? (
-              <span className="block text-sm text-base-content/70">{c.why}.</span>
-            ) : (
-              <button type="button" onClick={onLocked} className={`${ui.link} inline-flex items-center gap-1 text-xs`}>
-                <LockClosedIcon className="h-3 w-3" aria-hidden />
-                See why it applies, free
-              </button>
-            )}
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
-};
-
 // ── Could you pay less ──
 
-// One option, an adjustment or a country: the same green tile, at least two lines of title tall,
-// so the two lists beside each other line up row for row
-const TILE = "flex min-h-[4.75rem] items-center gap-2.5 rounded-xl bg-success/10 px-3.5 py-2.5";
+// One option, an adjustment or a country: a row between thin rules, at least two lines of title
+// tall, so the two lists beside each other line up row for row
+const TILE = "flex min-h-[4.75rem] items-center gap-2.5 py-2.5";
+const OPTIONS = "m-0 flex list-none flex-col divide-y divide-base-300 border-y border-base-300 p-0";
 
 export const PayLess = ({
   o,
@@ -199,7 +70,7 @@ export const PayLess = ({
       <div className="flex flex-col gap-2">
         <span className={tt.eyebrow("success")}>Adjustments that could lower it</span>
         {savings.length ? (
-          <ul className="m-0 flex list-none flex-col gap-2 p-0">
+          <ul className={OPTIONS}>
             {savings.map((s) => (
               <li key={s.title} className={TILE}>
                 <ArrowTrendingDownIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
@@ -225,9 +96,9 @@ export const PayLess = ({
         {o.cheaper === null ? (
           <div className={`${ui.skeleton} h-16 w-full`} />
         ) : o.cheaper.length ? (
-          // The same tiles as the adjustments beside them: the country, what it already ships to
+          // The same rows as the adjustments beside them: the country, what it already ships to
           // the US, and its rate with how much lower it is than yours
-          <ul className="m-0 flex list-none flex-col gap-2 p-0">
+          <ul className={OPTIONS}>
             {o.cheaper.map((c) => (
               <li key={c.country.code} className={TILE}>
                 <span className="mt-px text-base leading-none" aria-hidden>
@@ -256,7 +127,7 @@ export const PayLess = ({
   );
 };
 
-// ── How it's moved ──
+// ── Duty history ──
 
 export const Moved = ({ o, compact = false }: { o: Overview; compact?: boolean }) => (
   <div className="flex flex-col gap-3">
@@ -293,7 +164,7 @@ export const Moved = ({ o, compact = false }: { o: Overview; compact?: boolean }
   </div>
 );
 
-// ── What to watch ──
+// ── News about this import ──
 
 export const Watch = ({ o }: { o: Overview }) => (
   <div className="flex flex-col gap-3">
@@ -328,54 +199,57 @@ export const Watch = ({ o }: { o: Overview }) => (
 
 // ── The Overview tab's top: the answer on the left, where the rate comes from on the right ──
 
-// The rate, big, with two short lines and three headline numbers under it
+// The rate, big, then the whole story in plain English: what's due on this shipment, where most of
+// it comes from, how it has moved, and how much lower it could be (always "could")
 export const Headline = ({ o }: { o: Overview }) => {
   const best = o.savings[0];
   const cheapest = o.cheaper?.[0];
-  const facts: { label: string; value: string; note: string; tone?: string }[] = [
-    {
-      label: "Rate changes",
-      value: o.changes.toLocaleString("en-US"),
-      note: o.history ? `Since ${shortDate(o.history.fromDate, true)}` : "None in the verified data",
-    },
-    best
-      ? { label: "Could be lower", value: `up to ${pct(best.pct)}`, note: "If your goods qualify", tone: "text-success" }
-      : { label: "Could be lower", value: "—", note: "No adjustment found" },
-    cheapest
-      ? { label: "Cheapest supplier", value: pct(cheapest.pct), note: `${cheapest.country.flag} ${cheapest.country.name}`, tone: "text-success" }
-      : { label: "Cheapest supplier", value: o.cheaper ? "—" : "…", note: o.cheaper ? "None pays less" : "Checking US suppliers" },
-  ];
+  const top = o.charges.filter((c) => c.usd > 0.005 && c.code !== "BASE").sort((a, b) => b.pct - a.pct)[0];
+  const strong = (text: string, tone = "text-base-content") => <b className={tone}>{text}</b>;
   return (
-    <div className="flex h-full flex-col gap-5">
+    <div className="flex h-full flex-col gap-4">
       <div className="flex flex-col gap-2">
         <span className={tt.eyebrow("primary")}>Duty rate</span>
         <div className={`${tt.display} text-7xl font-semibold leading-none tracking-tight tabular-nums text-base-content`}>{pct(o.ratePct)}</div>
-        <p className="m-0 mt-1 text-base text-base-content/80">
+      </div>
+      <div className="flex flex-col gap-2.5 text-[0.9375rem] leading-relaxed text-base-content/80">
+        <p className="m-0">
           {o.duty > 0.005 ? (
             <>
-              <b className="text-base-content">{formatMoney(o.duty)}</b> in duty {onShipment(o.value)}
+              You pay {strong(formatMoney(o.duty))} in duty {onShipment(o.value)}. With {formatMoney(o.fees)} in customs fees, {strong(formatMoney(o.duty + o.fees))} is due at
+              entry.
             </>
           ) : (
             <>
-              <b className="text-success">Duty free</b> {onShipment(o.value)}
+              This import comes in {strong("duty free", "text-success")}; only {formatMoney(o.fees)} in customs fees is due at entry, {onShipment(o.value)}.
+            </>
+          )}
+          {top && top.pct > o.ratePct / 2 && (
+            <>
+              {" "}
+              Most of the rate, {strong(pct(top.pct))}, comes from {strong(top.name)}.
             </>
           )}
         </p>
-        <p className="m-0 text-sm text-base-content/60">
-          {formatMoney(o.duty + o.fees)} due at entry, with {formatMoney(o.fees)} in customs fees
-        </p>
+        {o.history && (
+          <p className="m-0">
+            {o.ratePct < o.history.fromPct ? (
+              <>It&apos;s {strong("down", "text-success")} from</>
+            ) : o.ratePct > o.history.fromPct ? (
+              <>It&apos;s {strong("up", "text-error")} from</>
+            ) : (
+              <>It&apos;s back to where it was,</>
+            )}{" "}
+            {pct(o.history.fromPct)} on {shortDate(o.history.fromDate, true)}, after {o.changes === 1 ? "one change" : `${o.changes} changes`}.
+          </p>
+        )}
+        {(best || cheapest) && (
+          <p className="m-0">
+            It could be {strong(`up to ${pct(Math.max(best?.pct ?? 0, cheapest ? o.ratePct - cheapest.pct : 0))} lower`, "text-success")}
+            {best && cheapest ? " if your goods qualify for an exemption, or if you source from a cheaper country" : best ? " if your goods qualify" : " if you source from a cheaper country"}.
+          </p>
+        )}
       </div>
-      <dl className="m-0 mt-auto grid grid-cols-3 gap-px overflow-hidden rounded-xl bg-base-300">
-        {facts.map((f) => (
-          <div key={f.label} className="flex min-w-0 flex-col gap-1 bg-tt-soft px-3.5 py-3">
-            <dt className="text-xs font-semibold text-base-content/60">{f.label}</dt>
-            <dd className={`m-0 ${tt.metricSm} ${f.tone ?? ""}`}>{f.value}</dd>
-            <dd className="m-0 truncate text-xs text-base-content/60" title={f.note}>
-              {f.note}
-            </dd>
-          </div>
-        ))}
-      </dl>
     </div>
   );
 };

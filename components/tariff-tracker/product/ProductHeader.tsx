@@ -56,6 +56,7 @@ export const ProductHeader = ({
   const saving = useBestSaving(row.key);
   // Each view, with what's waiting on it: savings found (always "up to"), the history's changes
   const allTabs: { id: ProductTab; label: string; count?: number; badge?: string; badgeTone?: "success" | "warning" }[] = [
+    { id: "overview", label: "Overview" },
     { id: "duty", label: "Duty" },
     { id: "compare", label: "Compare" },
     { id: "history", label: "History", count: historyChanges > 0 ? historyChanges : undefined },

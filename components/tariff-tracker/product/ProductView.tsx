@@ -61,7 +61,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
   // Sourcing is now part of Compare, and Summary is gone; old links still land somewhere
   const ptab = searchParams.get("ptab");
   const asked = ptab === "sourcing" ? "compare" : ptab;
-  const [tab, setTab] = useState<ProductTab>(isProductTab(asked) ? asked : "duty");
+  const [tab, setTab] = useState<ProductTab>(isProductTab(asked) ? asked : "overview");
   // Opened again on another tab (from Savings or Entry audit) while already open
   useEffect(() => {
     if (isProductTab(asked)) setTab(asked);
@@ -119,8 +119,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f.entryDate]);
 
-  const calculatorTab = tab === "duty" || tab === "compare" || tab === "history";
-  const [explainSlot, setExplainSlot] = useState<HTMLElement | null>(null);
+  const calculatorTab = tab === "overview" || tab === "duty" || tab === "compare" || tab === "history";
   const remove = () => {
     removeProducts([row.key]);
     nav.closeProduct();
@@ -136,13 +135,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
         onRemove={remove}
         onReset={isAdjusted(row.adjustments) ? onReset : undefined}
         actions={
-          f.result ? (
-            <>
-              {/* "Summarize" lands here from the calculator (its results have no header here) */}
-              {calculatorTab && <span ref={setExplainSlot} className="contents" />}
-              <ShareButtons f={f} />
-            </>
-          ) : undefined
+          f.result ? <ShareButtons f={f} /> : undefined
         }
         inputs={calculatorTab ? <ImportInputs f={f} /> : undefined}
         historyChanges={f.history.filter((x) => x.changes.length > 0).length}
@@ -158,9 +151,8 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
           page="tracker_product"
           fixedProduct
           onCheckSavings={SAVINGS_ENABLED ? () => openTab("savings") : undefined}
-          tab={tab === "compare" ? "compare" : tab === "history" ? "history" : "duty"}
+          tab={tab === "overview" || tab === "compare" || tab === "history" ? tab : "duty"}
           onTabChange={openTab}
-          explainSlot={calculatorTab ? explainSlot : null}
         />
         <Disclaimer />
       </div>

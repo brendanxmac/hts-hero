@@ -1,18 +1,48 @@
 "use client";
 
+import { ReactNode } from "react";
+import { AccountGate } from "@/components/tariff-tracker/access/AccountGate";
 import { CardRow } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
-import { DetailsLink, Headline, Moved, OverviewTab, PartHeader, PayLess, RateSources, Watch } from "./parts";
+import { DetailsLink, Headline, Moved, OverviewTab, PartHeader, PayLess, pct, RateSources, Watch } from "./parts";
 import { Overview } from "./useOverview";
 
 // The Overview tab: everything about this tariff at a high level, on one page, before the detail
-// tabs. On top, side by side: the answer (the rate, big, what it is on this shipment, three
-// headline numbers) and where the rate comes from (each tariff with why it applies). Under it,
-// could you pay less, full width with its two halves side by side (exemptions and savings, to the
-// Duty tab; other countries to source from, to Compare), then how it has moved (History) beside
-// what to watch (Tariff News). Sections of the results box, never cards inside it.
+// tabs. On /duty-calculator, and as the first tab of an import's page in the Tracker. On top, side
+// by side: the rate, big, with its story in plain English, and where the rate comes from (each
+// tariff with why it applies). Under it, could you pay less, full width with its two halves side
+// by side (exemptions and savings, to the Duty tab; other countries to source from, to Compare),
+// then its duty history beside news about it. Signed out, could you pay less and the news are
+// blurred behind a free account's teaser. Sections of the results box, never cards inside it.
 
 const COLUMN = `${ui.cardSection} flex min-w-0 flex-col gap-4 !py-5`;
+
+// Signed out, the parts that need a free account show blurred, with a teaser from this import's
+// own numbers and the sign-up (AccountGate, the accepted blur: DESIGN_SYSTEM §10.5)
+const Gate = ({ title, teaser, points, children }: { title: string; teaser: string; points: string[]; children: ReactNode }) => (
+  <AccountGate feature="overview" page="calculator_overview" title={title} teaser={teaser} points={points} preview={children} minHeight="min-h-[18rem]" framed={false}>
+    {children}
+  </AccountGate>
+);
+
+const PAY_LESS_POINTS = [
+  "Exemptions and trade programs that could lower this duty",
+  "Cheaper countries that already ship this to the US, with their rates",
+];
+
+const NEWS_POINTS = ["Tariff actions that name this product or its country", "Exemptions that depend on answers about your goods"];
+
+// Savings are always "could"
+const payLessTeaser = (o: Overview) => {
+  const ways = o.savings.length + (o.cheaper?.length ?? 0);
+  const best = Math.max(o.savings[0]?.pct ?? 0, o.cheaper?.[0] ? o.ratePct - o.cheaper[0].pct : 0);
+  return ways && best > 0.005
+    ? `This duty could be up to ${pct(best)} lower: ${ways} ${ways === 1 ? "way" : "ways"} to check.`
+    : "See every way this duty could be lower.";
+};
+
+const newsTeaser = (o: Overview) =>
+  o.news?.length ? `${o.news.length} recent tariff ${o.news.length === 1 ? "update names" : "updates name"} this product or country.` : "Know when tariff news touches this import.";
 
 export const OverviewPanel = ({
   o,
@@ -49,22 +79,28 @@ export const OverviewPanel = ({
       </CardRow>
       <section className={COLUMN}>
         <PartHeader title="Could You Pay Less?" hint="Potential savings, if your goods qualify" />
-        <PayLess o={o} onSavings={openAdjustments} onSourcing={() => onOpenTab("compare")} wide />
+        <Gate title="See How You Could Pay Less, Free" teaser={payLessTeaser(o)} points={PAY_LESS_POINTS}>
+          <PayLess o={o} onSavings={openAdjustments} onSourcing={() => onOpenTab("compare")} wide />
+        </Gate>
       </section>
       <CardRow className="lg:grid-cols-2">
         <section className={COLUMN}>
-          <PartHeader title="How It's Moved" hint="This import's duty rate over time" />
+          <PartHeader title="Duty History" hint="This import's duty rate over time" />
           <Moved o={o} />
           <div className="mt-auto">
             <DetailsLink label="See the full history" onClick={() => onOpenTab("history")} />
           </div>
         </section>
         <section className={COLUMN}>
-          <PartHeader title="What To Watch" hint="Recent tariff news that may touch this import" />
-          <Watch o={o} />
-          <a href="/tariff-updates" target="_blank" rel="noopener" className={`${ui.link} mt-auto text-sm`}>
-            All tariff news
-          </a>
+          <PartHeader title="News About This Import" hint="Recent tariff news that may touch this import" />
+          <Gate title="See the News About This Import, Free" teaser={newsTeaser(o)} points={NEWS_POINTS}>
+            <div className="flex flex-col gap-4">
+              <Watch o={o} />
+              <a href="/tariff-updates" target="_blank" rel="noopener" className={`${ui.link} text-sm`}>
+                All tariff news
+              </a>
+            </div>
+          </Gate>
         </section>
       </CardRow>
     </>
