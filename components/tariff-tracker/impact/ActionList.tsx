@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
 import { Countries } from "@/constants/countries";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { AUTHORITIES } from "@/libs/tariff-updates/types";
 import { NEWS_DOTS, newsToneOf } from "../news/tone";
 import type { ImportMatch } from "../news/useImportMatches";
@@ -65,7 +66,8 @@ export const ActionList = ({
   // HTS revisions take effect on a date too, but carry out actions already listed
   const upcoming = (u: TrackerUpdate) => u.kind !== "hts_revision" && !!u.effective_on && u.effective_on > today;
   const mine = updates.filter(hits).length;
-  const counts: Record<Filter, number | undefined> = { review: toReview.size, mine, upcoming: updates.filter(upcoming).length, all: undefined };
+  // Counts where they're the user's own (Needs Review, Affect You); they'd crowd the tabs elsewhere
+  const counts: Record<Filter, number | undefined> = { review: toReview.size, mine, upcoming: undefined, all: undefined };
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   // Open on the actions that hit the catalog, once that's known, unless the user picked a filter
@@ -114,40 +116,19 @@ export const ActionList = ({
           <h2 className={tt.title}>Tariff Actions</h2>
           <span className="text-sm tabular-nums text-base-content/60">{updates.length}</span>
         </div>
-        {/* Which actions: four filters as pills (they wrap in the narrow list), and what the open one means */}
+        {/* Which actions, and what the open one means */}
         <div className="flex flex-col gap-2">
-          <div role="tablist" aria-label="Which actions" className="flex flex-wrap gap-1.5">
-            {FILTERS.map((f) => {
-              const active = f.id === filter;
-              const count = counts[f.id];
-              return (
-                <button
-                  key={f.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => {
-                    setChose(true);
-                    setFilter(f.id);
-                  }}
-                  className={`inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
-                    active ? "bg-primary/10 font-semibold text-primary" : "bg-tt-soft text-base-content/75 hover:text-base-content"
-                  }`}
-                >
-                  {f.label}
-                  {count !== undefined && (
-                    <span
-                      className={`rounded-full px-1.5 text-[11px] font-semibold leading-[18px] tabular-nums ${
-                        f.id === "review" && count > 0 ? "bg-warning/15 text-warning" : active ? "bg-primary/10 text-primary" : "bg-base-content/10 text-base-content/70"
-                      }`}
-                    >
-                      {count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+          <SegmentedControl
+            label="Which actions"
+            size="sm"
+            fullWidth
+            options={FILTERS.map((f) => ({ id: f.id, label: f.label, count: counts[f.id] || undefined, title: f.hint }))}
+            value={filter}
+            onChange={(v) => {
+              setChose(true);
+              setFilter(v as Filter);
+            }}
+          />
           <p className={`${tt.caption} m-0 px-1`}>{FILTERS.find((f) => f.id === filter)!.hint}</p>
         </div>
         <label className="relative">

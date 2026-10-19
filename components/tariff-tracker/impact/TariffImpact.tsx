@@ -83,7 +83,7 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
   return (
     <section className={`${tt.panel} overflow-hidden`} aria-labelledby="tt-impact-title">
       {/* What it is on the left; where it stands on the right, as a timeline */}
-      <div className="grid gap-x-8 gap-y-5 px-6 py-5 xl:grid-cols-[minmax(0,1fr)_19rem]">
+      <div className="grid gap-x-8 gap-y-5 px-6 py-5 2xl:grid-cols-[minmax(0,1fr)_19rem]">
       <div className="flex min-w-0 flex-col gap-3">
         <div className="flex items-start justify-between gap-6">
           <div className="flex min-w-0 flex-col gap-2">
@@ -124,7 +124,7 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
           )}
         </div>
       </div>
-      <div className="border-base-300 xl:border-l xl:pl-8">
+      <div className="border-t border-base-300 pt-5 2xl:border-l 2xl:border-t-0 2xl:pl-8 2xl:pt-0">
         <StageTimeline update={update} today={today} />
       </div>
       </div>
@@ -298,7 +298,7 @@ export const TariffImpact = () => {
 
   return (
     <>
-      <div className="grid gap-4 xl:grid-cols-[21rem_minmax(0,1fr)] xl:items-start">
+      <div className="grid gap-4 xl:grid-cols-[27rem_minmax(0,1fr)] xl:items-start">
         {updates ? (
           <ActionList updates={updates} selected={slug} matches={matches} inReview={inReview} today={today} onPick={select} isNew={(u) => !!seenAt && u.first_seen_at > seenAt} toReview={toReview} reviewed={reviewedSlugs} />
         ) : (
