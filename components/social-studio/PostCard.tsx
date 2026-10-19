@@ -80,7 +80,7 @@ const CopyBox = ({ label, text, onChange }: { label: string; text: string; onCha
       readOnly={!onChange}
       value={text}
       onChange={(e) => onChange?.(e.target.value)}
-      className="textarea textarea-bordered h-36 w-full border-base-content/15 text-xs leading-relaxed"
+      className="textarea h-36 w-full border-base-content/15 text-xs leading-relaxed"
     />
   </div>
 )
@@ -118,7 +118,7 @@ const VerifyList = ({ sources }: { sources: SourceLink[] }) => {
             <input type="checkbox" className="checkbox checkbox-xs mt-0.5" checked={checked.has(s.url)} onChange={() => toggle(s.url)} aria-label={`Checked: ${s.claim}`} />
             <div className="min-w-0 flex-1">
               <div className="font-medium">{s.claim}</div>
-              <a href={s.url} target="_blank" rel="noreferrer" className="break-words text-xs text-info hover:underline">
+              <a href={s.url} target="_blank" rel="noreferrer" className="wrap-break-word text-xs text-info hover:underline">
                 {s.label} ↗
               </a>
             </div>

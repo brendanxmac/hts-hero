@@ -6,7 +6,7 @@ import { KINDS, type Kind } from "../../../libs/tariff-updates/types";
 // Alerts are on from the moment an account adds an import: with no saved settings they go to the
 // account's email. They're off only once the account turns every channel off (after a warning).
 // Each account also picks which kinds of tariff update alert it; unsaved, the ones that change
-// what an import pays (DEFAULT_ALERT_KINDS). Only updates that affect the account's own imports
+// what an import pays (DEFAULT_ALERT_KINDS); AD/CVD cases are a choice, off until picked. Only updates that affect the account's own imports
 // ever alert. HTS revisions and deadlines aren't choices: a revision only confirms the actions it
 // carries out (their alerts say so), and a deadline doesn't change what anyone pays.
 
@@ -30,6 +30,11 @@ export const ALERT_KIND_OPTIONS: { kind: Kind; label: string; note: string }[] =
   { kind: "other", label: "Bans, quotas and other actions", note: "Import bans, quotas and limits" },
   { kind: "guidance", label: KINDS.guidance, note: "CBP filing instructions for an action" },
   { kind: "investigation", label: KINDS.investigation, note: "Early warning: an investigation or proposal that could lead to a tariff" },
+  {
+    kind: "ad_cvd",
+    label: "AD/CVD cases",
+    note: "Antidumping and countervailing duty petitions, new investigations, preliminary and final decisions, orders, five-year reviews and scope rulings on your imports' products and countries",
+  },
 ];
 
 export const DEFAULT_ALERT_KINDS: Kind[] = ["new_tariff", "rate_change", "scope_change", "exclusion", "pause", "end", "deal", "other"];

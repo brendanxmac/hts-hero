@@ -2,8 +2,9 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
+import { FREE_FOREVER_LINE, SAVINGS_AUDITS_COMING } from "@/components/ui/marketing/comingSoon";
 import { LINKS } from "../lib/links";
-import { Billing, TRACKER_TIERS, TRIAL_ALLOWANCE, trackerBilling } from "../lib/pricing";
+import { Billing, LAUNCH_PRICING, LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice, launchPricingActive, trackerBilling } from "../lib/pricing";
 import { CALCULATOR_FEATURES, TRACKER_FEATURES } from "../tariff-pricing/plans";
 import { CoverageGrid } from "./CoverageGrid";
 import { ManagedTeaser } from "./ManagedTeaser";
@@ -26,8 +27,9 @@ export const TariffPlans = ({
         <Link href="/tariff-monitor" className={mk.link}>
           Tariff Tracker
         </Link>{" "}
-        tracks every tariff on your imports and runs impact checks to show exactly how each tariff action hits them. It&apos;s free
-        to start: track {TRIAL_ALLOWANCE.alertImports} imports free, no credit card.
+        tracks every tariff on your imports and runs impact checks to show exactly how each tariff action hits them. Try it free
+        for {REVERSE_TRIAL.days} days: everything, on up to {REVERSE_TRIAL.imports} imports, no credit card. {FREE_FOREVER_LINE}{" "}
+        {SAVINGS_AUDITS_COMING}
       </SectionIntro>
       <div className="shrink-0">
         <BillingSwitch billing={billing} onChange={onBillingChange} />
@@ -54,7 +56,7 @@ export const TariffPlans = ({
       <PlanCard
         id="plan-tariff-tracker"
         name="Tariff Tracker"
-        badge="Free to start"
+        badge={`Free for ${REVERSE_TRIAL.days} days`}
         dark
         compact
         description="For importers who want every tariff on their imports tracked, an alert when a change hits one, and impact checks on every new tariff action."
@@ -63,7 +65,11 @@ export const TariffPlans = ({
             listPrice={TRACKER_TIERS[0].price}
             billing={trackerBilling(billing)}
             prefix="From"
-            note="Start free, no credit card · billed monthly"
+            note={
+              launchPricingActive()
+                ? `As low as ${formatPrice(LOWEST_PER_IMPORT)} per import · ${REVERSE_TRIAL.days}-day free trial, no credit card · subscribe before ${LAUNCH_PRICING.endsDay} to lock in launch pricing`
+                : `As low as ${formatPrice(LOWEST_PER_IMPORT)} per import · ${REVERSE_TRIAL.days}-day free trial, no credit card · billed monthly`
+            }
             dark
             compact
           />
@@ -71,7 +77,7 @@ export const TariffPlans = ({
         features={TRACKER_FEATURES}
         cta={
           <Link href={LINKS.signUp} className={`${mk.buttonOnDark} h-12 px-6`}>
-            Start free <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            Start your free {REVERSE_TRIAL.days}-day trial <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
         }
       >

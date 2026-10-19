@@ -21,7 +21,7 @@ export function PlaybookCard() {
     <section className={`${tt.panel} overflow-hidden`}>
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          <div className="relative w-32 sm:w-36 aspect-[2/3] rounded-2xl overflow-hidden border border-base-300 shrink-0">
+          <div className="relative w-32 sm:w-36 aspect-2/3 rounded-2xl overflow-hidden border border-base-300 shrink-0">
             <Image
               src={`${STORAGE_BASE}/book-cover.jpg`}
               alt="The Audit-Ready Classifications Playbook"

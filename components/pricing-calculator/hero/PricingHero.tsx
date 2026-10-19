@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { ArrowRightIcon, CalculatorIcon, ChevronRightIcon, MagnifyingGlassIcon, SignalIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
+import { ComingChip } from "@/components/ui/marketing/ComingChip";
+import { AUTO_AUDITING, FREE_FOREVER_LINE, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
-import { ANNUAL_DISCOUNT, CLASSIFY_PLANS, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice } from "../lib/pricing";
+import { ANNUAL_DISCOUNT, CLASSIFY_PLANS, LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "../lib/pricing";
 
 const PRODUCTS = [
   {
@@ -10,14 +12,16 @@ const PRODUCTS = [
     name: "Tariff Calculator",
     summary: "Every duty on an import, unlimited, no account",
     price: null,
+    perImport: null,
     Icon: CalculatorIcon,
     tint: "bg-sky-100 text-primary",
   },
   {
     href: "#tariffs",
     name: "Tariff Tracker",
-    summary: `Alerts and impact checks on your imports · track ${TRIAL_ALLOWANCE.alertImports} free`,
+    summary: `Alerts and impact checks on your imports · free for ${REVERSE_TRIAL.days} days`,
     price: formatPrice(TRACKER_TIERS[0].price),
+    perImport: `as low as ${formatPrice(LOWEST_PER_IMPORT)} per import`,
     Icon: SignalIcon,
     tint: "bg-primary/15 text-primary",
   },
@@ -26,6 +30,7 @@ const PRODUCTS = [
     name: "Classify",
     summary: "HTS classifications you can defend",
     price: formatPrice(CLASSIFY_PLANS.starter.price),
+    perImport: null,
     Icon: MagnifyingGlassIcon,
     tint: "bg-amber-100 text-warning",
   },
@@ -45,7 +50,13 @@ export const PricingHero = () => (
           </span>
         </h1>
         <p className={`${mk.lead} mt-6 max-w-2xl`}>
-          The Tariff Calculator is free and unlimited. When you want to track every tariff on your own imports, get alerted when a change hits one, and run impact checks to see exactly how each new tariff affects them, start the Tariff Tracker free, with no credit card.
+          The Tariff Calculator is free and unlimited. When you want to track every tariff on your own imports, get alerted when a change hits one, and run impact checks to see exactly how each new tariff affects them, try the Tariff Tracker free for {REVERSE_TRIAL.days} days: everything, on up to {REVERSE_TRIAL.imports} imports, with no credit card. {FREE_FOREVER_LINE}
+        </p>
+        <p className={`${mk.body} mt-4 flex max-w-2xl flex-wrap items-center gap-x-2 gap-y-1`}>
+          <ComingChip />
+          <span>
+            {SAVINGS_DETECTION.name} and {AUTO_AUDITING.name.toLowerCase()}, included in the trial and every Tracker plan at no extra cost when they launch.
+          </span>
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <a href="#estimate" className={`${mk.buttonPrimary} h-14 px-8 text-lg`}>
@@ -63,11 +74,11 @@ export const PricingHero = () => (
           Three tools, one platform
         </p>
         <ul className="divide-y divide-base-300">
-          {PRODUCTS.map(({ href, name, summary, price, Icon, tint }) => (
+          {PRODUCTS.map(({ href, name, summary, price, perImport, Icon, tint }) => (
             <li key={name}>
               <Link
                 href={href}
-                className="group flex items-center gap-4 px-6 py-5 transition-colors hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60"
+                className="group flex items-center gap-4 px-6 py-5 transition-colors hover:bg-tt-soft focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60"
               >
                 <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${tint}`}>
                   <Icon className="h-5 w-5" aria-hidden />
@@ -83,6 +94,7 @@ export const PricingHero = () => (
                     <span className="block text-xs text-base-content/60">from</span>
                     <span className="text-xl font-bold tabular-nums text-base-content">{price}</span>
                     <span className="text-sm text-base-content/60">/mo</span>
+                    {perImport && <span className="block whitespace-nowrap text-xs text-base-content/60">{perImport}</span>}
                   </span>
                 )}
                 <ChevronRightIcon className="h-5 w-5 shrink-0 text-base-content/70 transition-colors group-hover:text-primary" aria-hidden />

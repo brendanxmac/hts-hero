@@ -91,7 +91,7 @@ const ToCheck = () => {
             </div>
             <span className="text-right text-sm tabular-nums">
               {usd === undefined ? (
-                <span className="text-base-content/50">Checking…</span>
+                <span className="text-base-content/60">Checking…</span>
               ) : usd > 0.005 ? (
                 <>
                   <span className="font-semibold text-success">Up to {wholeDollars(usd)}</span>
@@ -228,7 +228,7 @@ export const Savings = () => {
       teaser={savingsTeaser(insights) ?? "Checking your imports for savings…"}
       points={section.planned}
       preview={<TableStandIn />}
-      minHeight="min-h-[28rem]"
+      minHeight="min-h-112"
     >
       <SavingsReport />
     </AccountGate>

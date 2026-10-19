@@ -18,7 +18,7 @@ export const AlertsSection = () => (
       <div>
         <SectionIntro eyebrow="Alerts" title="Every change, wherever your team works" id="alerts-title">
           A heads-up when a tariff is announced, and a rate alert when it reaches the HTS, with the products it hits and
-          what it costs at your volumes.
+          what it costs you.
         </SectionIntro>
         <div className="mt-8">
           <p className="text-xs font-semibold uppercase tracking-wider text-base-content/60">Sent to</p>

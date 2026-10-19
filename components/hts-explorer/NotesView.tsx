@@ -59,7 +59,7 @@ const NoteCard = ({ note }: { note: NoteI }) => {
           <span className="mt-0.5 block text-sm font-semibold leading-snug text-base-content">{note.description}</span>
         </span>
         {file ? (
-          <ArrowTopRightOnSquareIcon className="mt-0.5 h-4 w-4 shrink-0 text-base-content/50 group-hover:text-primary" aria-hidden />
+          <ArrowTopRightOnSquareIcon className="mt-0.5 h-4 w-4 shrink-0 text-base-content/60 group-hover:text-primary" aria-hidden />
         ) : (
           <span className={tt.chip("neutral")}>N/A</span>
         )}

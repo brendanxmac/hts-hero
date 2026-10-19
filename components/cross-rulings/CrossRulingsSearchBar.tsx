@@ -39,7 +39,7 @@ export function CrossRulingsSearchBar({
         <input
           type="text"
           className={classNames(
-            "w-full rounded-lg border border-base-300 bg-base-100 text-base-content placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary",
+            "w-full rounded-lg border border-base-300 bg-base-100 text-base-content placeholder:text-base-content/40 focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary",
             compact ? "pl-8 pr-3 py-2 text-xs" : "pl-9 pr-3 py-2.5 text-sm"
           )}
           placeholder={placeholder}

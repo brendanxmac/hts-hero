@@ -122,7 +122,7 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by product, HTS code or keyword"
-              className="h-9 w-full rounded-full border border-base-300 bg-base-100 pl-10 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="h-9 w-full rounded-full border border-base-300 bg-base-100 pl-10 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-hidden focus:ring-2 focus:ring-primary/30"
             />
           </label>
           <label className="flex items-center gap-2 text-sm text-base-content/70">
@@ -132,12 +132,12 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
               onChange={setCountry}
               options={[{ value: "", label: "Any country" }, ...countries.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}` }))]}
               variant="pill"
-              buttonClassName="!px-4"
+              buttonClassName="px-4!"
               menuClassName="w-max max-w-xs"
             />
           </label>
         </div>
-        <div className="-mx-5 flex items-center gap-1.5 overflow-x-auto px-5 [scrollbar-width:none]" role="group" aria-label="Filter by law">
+        <div className="-mx-5 flex items-center gap-1.5 overflow-x-auto px-5 scrollbar-none" role="group" aria-label="Filter by law">
           <button type="button" className={chip(!authority)} onClick={() => setAuthority("")} aria-pressed={!authority}>
             All
           </button>

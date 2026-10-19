@@ -76,7 +76,7 @@ export const ChangelogEntryForm = ({
           <Select<ChangelogEntryInput["type"]>
             id="cl-type"
             className="w-full"
-            buttonClassName="!h-11 !rounded-lg !px-3.5 !text-base"
+            buttonClassName="h-11! rounded-lg! px-3.5! text-base!"
             value={draft.type}
             onChange={(type) => set("type", type)}
             options={ChangelogTypes.map((type) => ({ value: type, label: ChangelogTypeLabels[type] }))}
@@ -86,7 +86,7 @@ export const ChangelogEntryForm = ({
           <Select<ChangelogEntryInput["status"]>
             id="cl-status"
             className="w-full"
-            buttonClassName="!h-11 !rounded-lg !px-3.5 !text-base"
+            buttonClassName="h-11! rounded-lg! px-3.5! text-base!"
             value={draft.status}
             onChange={(status) => set("status", status)}
             options={[

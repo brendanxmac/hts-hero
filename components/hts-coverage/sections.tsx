@@ -135,7 +135,7 @@ const CitedNoteView = ({ note, htsno }: { note: CitedNote; htsno: string }) => {
         <span className="ml-auto text-xs font-normal text-base-content/40">{note.nodes.length > 1 ? `${note.nodes.length} subdivisions` : ""}</span>
       </button>
       {open && note.nodes.length > 0 && (
-        <div className="flex max-h-[28rem] flex-col gap-2.5 overflow-y-auto border-t border-base-content/10 px-3 py-2.5">
+        <div className="flex max-h-112 flex-col gap-2.5 overflow-y-auto border-t border-base-content/10 px-3 py-2.5">
           {note.nodes.map((n, i) => (
             <NoteNodeText key={i} node={n} htsno={htsno} />
           ))}
@@ -279,7 +279,7 @@ export const TrackingFields = ({
             </Field>
             <Field label="Notes" className="sm:col-span-2">
               <textarea
-                className="textarea textarea-bordered textarea-sm min-h-20 border-base-content/15 bg-base-100 text-sm"
+                className="textarea textarea-sm min-h-20 border-base-content/15 bg-base-100 text-sm"
                 value={notes}
                 placeholder="Anything to remember about this heading"
                 onChange={(e) => setNotes(e.target.value)}

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ColumnDef } from "@tanstack/react-table"
+import type { TableColumnDef } from "@/components/ui/table/features";
 import toast from "react-hot-toast"
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table"
 import { Select } from "@/components/ui/Select"
@@ -23,7 +23,7 @@ const CategorySelect = ({ item }: { item: SourceItemRow }) => {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   return (
-    <div title={item.category_reason ?? "Not sorted yet"} className="max-w-[11rem]">
+    <div title={item.category_reason ?? "Not sorted yet"} className="max-w-44">
       <Select
         size="xs"
         variant="ghost"
@@ -50,7 +50,7 @@ const CategorySelect = ({ item }: { item: SourceItemRow }) => {
   )
 }
 
-const columns: ColumnDef<SourceItemRow, any>[] = [
+const columns: TableColumnDef<SourceItemRow, any>[] = [
   {
     id: "published",
     accessorFn: (r) => r.published_at,

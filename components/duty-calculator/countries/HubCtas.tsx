@@ -48,7 +48,7 @@ export function HubCtaCards({ placement }: { placement: string }) {
           </Link>
         </div>
       </div>
-      <div className="relative flex flex-col gap-4 overflow-hidden rounded-2xl bg-[#0b1220] p-8 text-white shadow-sm sm:p-10">
+      <div className="relative flex flex-col gap-4 overflow-hidden rounded-2xl bg-[#0b1220] p-8 text-white shadow-xs sm:p-10">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(28rem_16rem_at_90%_0%,rgba(45,212,191,0.22),transparent)]"

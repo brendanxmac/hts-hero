@@ -102,7 +102,7 @@ const BatchSettings = ({ batch, editable, onSaved }: { batch: CoverageBatch; edi
       </div>
       <Field label="For the whole batch" hint="Context, priorities, what to model and what to leave out. Each heading can add its own below.">
         <textarea
-          className="textarea textarea-bordered min-h-28 border-base-content/15 bg-base-100 text-sm leading-relaxed"
+          className="textarea min-h-28 border-base-content/15 bg-base-100 text-sm leading-relaxed"
           value={instructions}
           disabled={!editable}
           placeholder="e.g. Model these as exclusions from 9903.88.15 (U.S. note 20(vvv)); the code lists are in note 20(www)…"
@@ -179,7 +179,7 @@ const HeadingReview = ({
         </div>
         <Field label={<>Instructions for this heading {saving && <Spinner />}</>}>
           <textarea
-            className="textarea textarea-bordered min-h-20 border-base-content/15 bg-base-100 text-sm leading-relaxed"
+            className="textarea min-h-20 border-base-content/15 bg-base-100 text-sm leading-relaxed"
             value={text}
             disabled={!editable}
             placeholder="Anything specific to this heading: how to model it, what to check, what to leave out"
@@ -521,7 +521,7 @@ export default function BatchReview({ batchId }: { batchId: string }) {
         </Panel>
       ) : (
         <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[20rem_minmax(0,1fr)]">
-          <aside className="flex flex-col overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-sm lg:sticky lg:top-[4.25rem] lg:max-h-[calc(100vh-5.5rem)]">
+          <aside className="flex flex-col overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs lg:sticky lg:top-17 lg:max-h-[calc(100vh-5.5rem)]">
             <div className="flex flex-col gap-2 border-b border-base-content/10 p-3">
               <input className={`${inputCls} w-full`} placeholder="Search code, text, instructions" value={search} onChange={(e) => setSearch(e.target.value)} />
               <Select<BatchDecision | "all">

@@ -23,12 +23,12 @@ export const bodyCell = "border-t border-base-300 py-3 align-middle tracker:py-3
 // tighter rows.
 export const tableGroup = "group/t";
 const flushPad =
-  "group-data-[edge=flush]/t:px-3 group-data-[edge=flush]/t:first:pl-0 group-data-[edge=flush]/t:last:pr-0 sm:group-data-[edge=flush]/t:first:pl-0 sm:group-data-[edge=flush]/t:last:pr-0";
+  "group-data-[edge=flush]/t:px-3 first:group-data-[edge=flush]/t:pl-0 last:group-data-[edge=flush]/t:pr-0 sm:first:group-data-[edge=flush]/t:pl-0 sm:last:group-data-[edge=flush]/t:pr-0";
 export const staticHead = `${headCell} ${pad} ${flushPad} group-data-[edge=flush]/t:bg-transparent group-data-[edge=flush]/t:pb-2 group-data-[edge=flush]/t:pt-0`;
 // valign="top" (data-valign): rows of several lines read from the top
-export const staticCell = `${bodyCell} ${pad} ${flushPad} group-data-[dense]/t:py-2 group-data-[valign=top]/t:align-top`;
+export const staticCell = `${bodyCell} ${pad} ${flushPad} group-data-dense/t:py-2! group-data-[valign=top]/t:align-top`;
 
-export const rowHover = "transition-colors hover:bg-base-200/60 tracker:hover:bg-tt-soft";
+export const rowHover = "transition-colors hover:bg-base-200/60 hover:tracker:bg-tt-soft";
 export const rowSelected = "bg-primary/5";
 
 // The card around a table (ui.card: 20px in the Tracker's look); clipped, so a static table's

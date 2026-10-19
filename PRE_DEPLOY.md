@@ -1,119 +1,186 @@
-# Before deploying the PLG / Tariff Tracker release
+# Deploying the PLG / Tariff Tracker release
 
-A running list of what has to be done before this release ships. Tick items off as they land;
-add new ones as they come up.
+The release on `release/2026-10-10` (170+ commits since `master`, Oct 8 to Oct 18): the free Tariff
+Calculator rework, the Tariff Tracker with alerts, impact checks, Insights, rate history and
+Tariff News, AD/CVD flags, the tariff sources and updates pipeline, the email outbox and lifecycle
+emails, the 14-day reverse trial, and launch pricing. Work through the steps in order; tick items
+as they land, and add new ones as they come up.
 
-## Must do
+## 1. Before merging
 
-- [ ] **Qualification check (guided workflow).** _Deferred to the savings and audits relaunch (MVP_TRIM.md)._ The paid tier of Possible Adjustments: visitors
-      see every adjustment and what it could change the total by; free accounts see a plain-English
-      line on why each could apply; paying (and trial) users step through a guided workflow that
-      works out exactly which adjustments SHOULD apply to their goods, and the proof they'd need.
-      The calculator teases it as the third step of the strip atop Possible Adjustments ("Which
-      apply to your goods"); trial and paid users see "coming soon". Build the workflow in the
-      Tracker.
-- [ ] **Refund check (bulk entry audit).** _Deferred to the savings and audits relaunch (MVP_TRIM.md)._ Entry audit v1 is built (one entry line at a time,
-      each spending an audit check; the calculator's "Check my entries" opens it). Still to do: bulk
-      upload of entries (CSV / ACE ES-003 report), and log in the Tracker's own calculator.
-- [ ] **Savings requirements (strategy needed).** _Deferred to the savings and audits relaunch (MVP_TRIM.md)._ A product's Savings tab shows general steps for
-      each kind of saving (`components/tariff-tracker/opportunities/requirements.ts`, TODO). Each
-      trade program and exemption needs its exact requirements (rules of origin, certification,
-      evidence, the SPI / Chapter 99 statement to claim) from its legal source. Agree how to build
-      and review that data first.
-- [ ] **Test the product page signed in** (2026-10-13): Duty (locked code/origin, saves to the
-      product), Savings (check → options → compare → track → secure applies to the catalog and logs
-      it; a change of origin adds the new product and marks the old one "moving"), Audit (Beta).
-- [ ] **Test the usage-based trial signed in** (2026-10-13): savings checks (5), audit checks
-      (10), alerts slots (10), the plans dialog when each runs out, and a paid plan's coverage.
-- [x] **Sourcing.** _Done 2026-10-16: the Compare upsell now pitches the free Analysis (signed out) or tracking the import (signed in); nothing links to the hidden Sourcing section._ Compare's heading offers signed-in users "Get Advanced Comparisons" (the
-      Tracker's Sourcing, trial or paid). Build it, or drop the link.
-- [ ] **Migration order** (foreign keys): `email_outbox` before `lifecycle_emails` and
-      `tariff_impact_alerts`; `tariff_sources` → `tariff_updates` → `tariff_update_scopes`,
-      `tariff_update_impacts`, `tariff_impact_alerts` → `tariff_alert_preferences` (which also needs
-      `tariff_tracker_accounts`); `social_ideas` → `social_ideas_sources`.
-- [ ] **Apply the migrations** `audit_requests.sql` (the /tariff-audit request form) and
-      `social_ideas.sql` + `social_ideas_sources.sql` (the daily `/api/cron/social-ideas` in vercel.json).
-- [ ] **Apply the migration** `supabase/migrations/tariff_tracker_accounts.sql` (tracker_catalogs,
-      tracker_checks, tracker_entries, tracker_opportunities, tracker_opportunity_events,
-      tracker_alert_settings; drops the old tracker_trials).
-- [ ] **Stripe prices (live mode).** Done in the sandbox 2026-10-16. In live mode, create the same
-      four products ("Tariff Tracker · 10 imports" … "· 500 imports") with a monthly price each
-      ($12 / $29 / $89 / $149), lookup keys `tracker_<10|30|100|500>_monthly` and metadata
-      `plan` = "Tariff Tracker <10|30|100|500>", `billing` = monthly, `version` = 2026-10-mvp.
-      Checkout finds the price by its lookup key and the webhook maps any price by its metadata
-      (`libs/tariff-tracker/prices.ts`), so no Tracker price env vars are needed. To change a price
-      later: new price on the same product, same lookup key with "transfer lookup key", archive the old.
-      **Billing portal:** create a portal configuration named "Tariff Tracker" with metadata
-      `app` = `tracker`, subscription updates on (price; upgrades `always_invoice`, downgrades at
-      period end) listing the four Tracker products and their prices, and cancel at period end. The
-      Tracker's Billing button opens it (`libs/stripe.ts`), so customers can only switch between
-      Tracker tiers. When a price changes, add the new price to this configuration too.
-      Check the setup with `npm run stripe:check-tracker` (it reads STRIPE_SECRET_KEY from
-      .env.local; run it once with the live key). Also confirm the live Classify prices match the
-      site ($39 / $89): the sandbox has $29 / $80.
-- [ ] **Tracker MVP trim** (2026-10-16): savings and audits are off (`libs/tariff-tracker/features.ts`);
-      every change is in `MVP_TRIM.md`. Re-run `npm run email:auth` and paste the auth templates
-      into Supabase (they changed). `app/zz-tracker/` (the Tracker without sign-in) is untracked and
-      must never be committed or deployed.
-- [x] **Alert sending job.** _Built (`libs/tariff-updates/alerts.ts`): approving an impact check in /tariff-sources queues the alerts in the outbox._
-- [ ] **Apply the migration** `supabase/migrations/tariff_sources.sql` (tariff_source_items,
-      tariff_source_runs) for the tariff source collectors (/tariff-sources admin view).
-- [ ] **Apply the migration** `supabase/migrations/tariff_updates.sql` (tariff_updates, and the
-      sorting/grouping columns on tariff_source_items), after tariff_sources.sql.
-- [ ] **Apply the migration** `supabase/migrations/email_outbox.sql` (email_batches, email_messages).
-- [ ] **Apply the migration** `supabase/migrations/email_subscribers.sql` (tariff news subscriptions
-      and every reader's email choices).
-- [ ] **Apply the migration** `supabase/migrations/lifecycle_emails.sql` (which onboarding email
-      each account has been queued).
-- [ ] **Apply the migration** `supabase/migrations/tracker_snapshots.sql` (each account's numbers,
-      worked out on the server daily for the onboarding emails).
-- [ ] **Apply the migration** `supabase/migrations/tariff_update_impacts.sql` (which of each
-      account's imports each tariff update may affect: confirmed, likely, possible).
-- [ ] **Apply the migration** `supabase/migrations/tariff_update_scopes.sql` (the full scope of each
-      tariff action, read from its PDFs or set in review).
-- [ ] **Apply the migration** `supabase/migrations/tariff_impact_alerts.sql` (the impact check
-      approval on tariff_updates, and tariff_impact_alerts: which account was alerted about which
-      import, so approving again sends only what's new or changed).
-- [ ] **Apply the migration** `supabase/migrations/tariff_alert_preferences.sql` (which kinds of
-      update alert each account; when each update's impact check was first approved), after
-      tariff_impact_alerts.sql.
-- [ ] **Supabase redirect URLs allow `/api/auth/callback`** with any `?redirect=` (Authentication →
-      URL Configuration), in both projects: sign-in links now come back through it.
-- [ ] **Queue "Meet the Tariff Tracker"** for existing accounts after the release is live:
-      `npm run email:meet-tracker` against production, then review and approve it in /email-outbox.
-- [ ] **Paste the Supabase Auth email templates** from `supabase/email-templates/` (subjects in
-      `SUBJECTS.txt`; regenerate with `npm run email:auth`) into Authentication → Email Templates,
-      in both projects.
-- [ ] **`BASE_URL` is the live site in production.** Email links (confirm, manage, unsubscribe) use
-      it, so a dev value would send readers to localhost.
-- [ ] **Vercel plan allows the 15-minute crons** `/api/cron/tariff-sources` and
-      `/api/cron/tariff-updates` (vercel.json; the second runs up to 5 minutes). Hobby only runs
-      crons daily and rejects the deploy; CBP's CSMS feeds keep only ~3 weeks, so the cron has to
-      keep up.
-- [ ] **Full tariff sources backfill** (added 2026-10-14). Dev starts with a few months
-      (`npm run tariff-sources:collect -- --since 2026-07-01`) so Brendan can look at and play with
-      it first. Once he's happy, backfill to January 2025 (`--since 2025-01-01`; the CSMS archive
-      PDFs and USTR monthly listings cover it) so /tariff-updates launches with the whole history.
-- [ ] **Onboarding email sequence** (plan in ONBOARDING_PLAN.md, worktree
-      claude/vibrant-maxwell-5fa15d, awaiting answers).
+- [ ] **Commit everything except** `.vscode/` and every `app/zz-*` folder (`app/zz-tracker/`,
+      `app/zz-adcvd/`: local previews without sign-in). They must never be committed or deployed.
+- [ ] **Set the trial's fresh start to the deploy day**: `REVERSE_TRIAL.freshStartOn` in
+      `components/pricing-calculator/lib/pricing.ts` (now `2026-10-20`). Existing accounts get 14 days
+      from it; a date before the deploy shortens their trial.
+- [ ] **Confirm the launch-pricing deadline**: `LAUNCH_PRICING` (now Fri, Nov 13, 2026). Savings
+      detection and auditing are sold everywhere as "Coming Oct 2026" (`SAVINGS_AUDITS_LABEL`); if
+      they slip, change the label.
+- [ ] **Regenerate the auth emails** (their copy changed for the trial): `npm run email:auth`.
+- [ ] **Run the checks**: `npm run tests`, `npx tsc --noEmit -p .`, and a production build
+      (`npm run build`).
+- [ ] **Test signed in, in dev** (needs a real account):
+  - [ ] A new account: the sidebar shows "Free Trial · 14 days left", alerts cover up to 200
+        imports, Insights opens.
+  - [ ] The trial's last 3 days: banner, countdown in amber, the "Here's what you'll lose" dialog
+        once a day. Set the account's `users.created_at` back 12 days in dev to see it.
+  - [ ] After the trial (`created_at` 15+ days back, or `?trialPreview=ended`): free plan, no alerts
+        on any import (Tariff News alerts still on), "Insights Was Part of Your Free Trial", the ended
+        banner and dialog, "Get it all back" opens the plans.
+  - [ ] Checkout of a Tracker plan in the Stripe sandbox, then the plan card and coverage.
+  - [ ] The AD/CVD tab on a flagged import (e.g. 7317.00.55.02 from Vietnam) and on a clean one.
+  - [ ] The product page: Overview, Duty, AD/CVD, Compare, History, News.
+
+## 2. Production database (Supabase, prod project)
+
+Paste each migration into the SQL editor, in this order (foreign keys):
+
+- [ ] `tariff_sources.sql` (tariff_source_items, tariff_source_runs)
+- [ ] `tariff_updates.sql`
+- [ ] `tariff_update_scopes.sql`
+- [ ] `tariff_update_impacts.sql`
+- [ ] `email_outbox.sql` (email_batches, email_messages)
+- [ ] `email_subscribers.sql`
+- [ ] `lifecycle_emails.sql`
+- [ ] `tariff_impact_alerts.sql`
+- [ ] `tariff_tracker_accounts.sql` (tracker_catalogs, tracker_checks, tracker_entries,
+      tracker_opportunities, tracker_opportunity_events, tracker_alert_settings; drops tracker_trials)
+- [ ] `tariff_alert_preferences.sql`
+- [ ] `slack_app.sql` (the Slack channel and workspace "Add to Slack" connected)
+- [ ] `tracker_snapshots.sql`
+- [ ] `adcvd.sql` (AD/CVD cases, events, months, settings, ai_usage)
+- [ ] `audit_requests.sql`
+- [ ] `social_ideas.sql`, then `social_ideas_sources.sql`
+
+No migration is needed for the 14-day trial: it's worked out from each account's sign-up date.
+
+## 3. Copy the processed data to prod
+
+- [ ] Add `PROD_SUPABASE_URL` and `PROD_SUPABASE_SERVICE_ROLE_KEY` to `.env.local`.
+- [ ] `npm run adcvd:copy-to-prod` (dry run: counts per table), then
+      `npm run adcvd:copy-to-prod -- --apply`. It copies the tariff sources, tariff updates and
+      AD/CVD data; nothing is re-processed or paid for twice.
+
+## 4. Services and settings
+
+- [ ] **Stripe, live mode.** Create the four products ("Tariff Tracker · 10 imports" … "· 500
+      imports") with a monthly price each ($12 / $29 / $89 / $149), lookup keys
+      `tracker_<10|30|100|500>_monthly` and metadata `plan` = "Tariff Tracker <10|30|100|500>",
+      `billing` = monthly, `version` = 2026-10-mvp. Checkout finds the price by its lookup key and
+      the webhook maps any price by its metadata (`libs/tariff-tracker/prices.ts`), so no Tracker
+      price env vars are needed. No Stripe trial: the 14 days are the app's own, with no card.
+      **Billing portal:** a configuration named "Tariff Tracker" with metadata `app` = `tracker`,
+      subscription updates on (price; upgrades `always_invoice`, downgrades at period end) listing
+      the four Tracker products, and cancel at period end. Check it all with
+      `npm run stripe:check-tracker` using the live key. Also confirm the live Classify prices match
+      the site ($39 / $89; the sandbox has $29 / $80).
+- [ ] **Supabase Auth, both projects:** redirect URLs allow `/api/auth/callback` with any
+      `?redirect=`; paste the email templates from `supabase/email-templates/` (subjects in
+      `SUBJECTS.txt`) into Authentication → Email Templates.
+- [ ] **Vercel env:** `BASE_URL` is the live site (email links use it); `CRON_SECRET` is set; the
+      Anthropic key the AD/CVD and tariff-updates pipelines use is set.
+- [ ] **Slack app (HTS Hero):** Redirect URLs include `https://htshero.com/api/slack/callback`,
+      public distribution is activated, and the logo is uploaded. Vercel env has
+      `SLACK_CLIENT_ID` and `SLACK_CLIENT_SECRET`. Then run Add to Slack once on the live site.
+- [ ] **Vercel plan allows 15-minute crons** (`tariff-sources`, `tariff-updates`, `adcvd`); Hobby
+      only runs daily crons and rejects the deploy.
+
+## 5. Deploy
+
+- [ ] Merge `release/2026-10-10` into `master` and deploy.
+- [ ] Every cron in `vercel.json` shows in Vercel: tariff-sources, tariff-updates, adcvd,
+      social-ideas, email-outbox, tariff-news, tariff-digest, lifecycle (onboarding and trial
+      emails), tracker-snapshots.
+
+## 6. After deploying
+
+- [ ] **Smoke test prod:** the home page, /duty-calculator (a lookup signed out, the AD/CVD flag),
+      /tariff-monitor, /pricing-calculator, /tariff-updates, sign up with a new account (lands in
+      the Tracker on the trial), one Stripe checkout and refund.
+- [ ] **The "everything is unlocked" email** (`trial_unlocked`): the lifecycle cron queues it for
+      every existing account on `freshStartOn`. That batch is held for review: check it in
+      /email-outbox and approve it. It replaces the older "Meet the Tariff Tracker" email; don't
+      also run `npm run email:meet-tracker`.
+- [ ] **Trial emails from then on** send themselves daily: 3 days before the trial ends, its last
+      day, and the day after (`libs/email/lifecycle.ts`). Existing accounts' trials all end on the
+      same day (`freshStartOn` + 14), so expect one large batch then, and every free account's import
+      alerts stop that day.
+- [ ] **Full tariff sources backfill** to January 2025 (`npm run tariff-sources:collect -- --since
+      2025-01-01`), if prod should launch with the whole history.
+- [ ] **Watch the first days:** /adcvd (AI spend per month), /email-outbox, Vercel cron logs.
+
+## What you manage by hand after launch
+
+Everything else runs on its own (collectors, AD/CVD updates, snapshots, onboarding and trial
+emails). These need you:
+
+**Every day or two**
+
+- [ ] **/tariff-sources: approve impact checks.** Alerts to users about a tariff update go out only
+      after you approve that update's impact check. Updates the pipeline wasn't confident about wait
+      there for review (`needs_review`) before they publish. Confident official ones publish, and
+      their Tariff News emails send, on their own.
+- [ ] **/email-outbox: approve held batches.** Held: the one-time "everything is unlocked" trial
+      email to existing accounts. Sent on their own: onboarding and trial emails, Tariff News, and
+      impact alerts (after your approval above). Spot-check those now and then.
+- [ ] **Replies and leads.** Every lifecycle email is from you and replies reach you; /tariff-audit
+      audit requests arrive as an internal notice; HTS Hero Managed intro calls come through your
+      Calendly.
+
+**Every month**
+
+- [ ] **/adcvd: the AI budget and spend.** Set the monthly budget in prod; when it's reached, the AI
+      steps pause until next month (regex linking keeps going). The Problems tab retries itself,
+      with nothing to do. If the AD/CVD updates stop running, an internal notice email tells you.
+- [ ] **New HTS revisions** through the revision checker and coverage checker (local), as before.
+
+**On a date**
+
+- [ ] **When savings and audits ship (October):** flip `SAVINGS_ENABLED` / `AUDITS_ENABLED`
+      (`libs/tariff-tracker/features.ts`), then remove the "Coming Oct 2026" labels
+      (search for `SAVINGS_AUDITS_LABEL`).
+- [ ] **Before Nov 13 (`LAUNCH_PRICING.endsAt`).** When it passes, the countdown and the struck-through
+      prices disappear on their own, but **prices don't change on their own**: update `TRACKER_TIERS`
+      and the Stripe prices when savings and audits ship, or move the date.
+- [ ] **`freshStartOn` + 14 days.** Every existing account's trial ends that day: one large "trial
+      ended" batch goes out, and every account that hasn't paid loses its import alerts at once. Watch the outbox
+      and Stripe that week.
+- [ ] **Once a year:** refresh the Census import data (below).
+
+**To see the trial screens yourself:** open the Tracker signed in as brendan@htshero.com (or any
+account in local dev) with `?trialPreview=trial`, `?trialPreview=ending` or `?trialPreview=ended`.
+It changes only what you see (not what your alerts cover), stays on while you move around, and
+`?trialPreview=off` (or the "Previewing · Stop" link on the plan card) ends it.
+
+## Within two weeks: savings, audits and the price change
+
+- [ ] **Automatic entry auditing**, then switch savings and audits back on
+      (`libs/tariff-tracker/features.ts`; `MVP_TRIM.md` lists every change to put back).
+- [ ] **New prices** for new subscribers ($19 / $49 / $149 / $249) when `LAUNCH_PRICING` ends;
+      launch subscribers keep theirs. Create the new Stripe prices with the same lookup keys
+      ("transfer lookup key").
+- [ ] **Qualification check (guided workflow)**: works out which adjustments should apply to the
+      goods, and the proof needed.
+- [ ] **Refund check (bulk entry audit)**: bulk upload of entries (CSV / ACE ES-003 report).
+- [ ] **Savings requirements**: each trade program's and exemption's exact requirements from its
+      legal source (`components/tariff-tracker/opportunities/requirements.ts`).
+- [ ] **One-time offers** (not on offer yet): finding savings on, and auditing, an importer's prior
+      entries.
 
 ## Should do
 
-- [ ] **Census import data refresh.** `public/data/us-imports/` (which countries ship each HTS code to
-      the US, for the Compare tab) comes from `npm run sync-hts-imports`, which needs
-      `CENSUS_API_KEY` in `.env.local`. It's 2025 vs 2024 today; rerun when Census publishes a new
-      year (or monthly, to switch to a trailing 12 months) and commit the files. Keep the Census
-      notice in the footer and next to the figures (their API terms).
-
-- [ ] **Track this Import email** on the calculator: the form shows "Coming soon" and does
-      nothing. Wire it to alerts, or hide it.
-- [ ] **`view=history` in the Tracker calculator.** The Duty Over Time teaser signs people up
-      back to `view=history`; the Tracker should open on the duty history for it.
+- [ ] **AD/CVD in the trial emails' numbers.** The emails count imports losing alerts but not how
+      many are AD/CVD-flagged (the in-app dialog does). Add the count to `tracker_snapshots`.
+- [ ] **Census import data refresh.** `public/data/us-imports/` comes from
+      `npm run sync-hts-imports` (needs `CENSUS_API_KEY`). It's 2025 vs 2024 today; rerun when
+      Census publishes a new year and commit the files. Keep the Census notice next to the figures.
+- [ ] **Track this Import email** on the calculator: if the form still shows "Coming soon" and does
+      nothing, wire it to alerts or hide it.
+- [ ] **`view=history` in the Tracker calculator.** The Duty Over Time teaser signs people up back
+      to `view=history`; the Tracker should open on the duty history for it.
 
 ## Consider
 
-- [ ] **Notify team members about savings opportunities.** Consider adding the ability to
-      notify team members about tariff saving opportunities: for example when someone audits
-      old imports, or when they toggle certain adjustments on their imports.
-- [ ] **Notify the customs broker.** Also, or as an additional option, let users notify their
-      customs broker about the same opportunities.
+- [ ] **Notify team members about savings opportunities**, e.g. when someone audits old imports or
+      turns on adjustments.
+- [ ] **Notify the customs broker** about the same opportunities.

@@ -37,6 +37,10 @@ export interface CollectOptions {
   since: Date
   // Read archives too (page through feeds, monthly listings), not just the latest items
   backfill: boolean
+  // Items published after this are left out (a month at a time: /adcvd)
+  until?: Date
+  // Federal Register only: just these agencies' documents (slugs), and no presidential documents
+  agencies?: string[]
 }
 
 export interface Collector {

@@ -70,7 +70,7 @@ export const AnonymousClassificationResult = ({
   return (
     <div className="flex flex-col gap-6">
       {/* Enhanced Sign-Up CTA */}
-      <div className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 shadow-xl shadow-primary/5">
+      <div className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-linear-to-br from-primary/5 via-base-100 to-secondary/5 shadow-xl shadow-primary/5">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 -right-24 w-80 h-80 bg-primary/15 rounded-full blur-3xl" />
           <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-secondary/15 rounded-full blur-3xl" />
@@ -87,7 +87,7 @@ export const AnonymousClassificationResult = ({
         <div className="relative z-10 p-8 md:p-10 flex flex-col items-center text-center gap-8">
           {/* Icon */}
           <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-30 blur-xl animate-pulse" />
+            <div className="absolute inset-0 rounded-full bg-linear-to-r from-primary to-secondary opacity-30 blur-xl animate-pulse" />
             <div className="relative p-5 rounded-full bg-base-100 shadow-lg border border-primary/20">
               <LockClosedIcon className="w-10 h-10 text-primary" />
             </div>
@@ -98,7 +98,7 @@ export const AnonymousClassificationResult = ({
             <h3 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-base-content">
               Your HTS Code is Ready!
             </h3>
-            <p className="text-base-content/70 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
+            <p className="text-base-content/70 text-base md:text-lg md:leading-7 leading-relaxed max-w-xl mx-auto">
               You just classified{" "}
               <span className="font-bold text-base-content">
                 {classification.articleDescription}
@@ -242,8 +242,8 @@ export const AnonymousClassificationResult = ({
             <div key={index} className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-success/20 shrink-0" />
               <div className="flex-1">
-                <div className="h-4 w-3/4 rounded bg-base-content/10 mb-2" />
-                <div className="h-3 w-1/2 rounded bg-base-content/7" />
+                <div className="h-4 w-3/4 rounded-sm bg-base-content/10 mb-2" />
+                <div className="h-3 w-1/2 rounded-sm bg-base-content/7" />
               </div>
             </div>
           ))}
@@ -282,7 +282,7 @@ export const AnonymousClassificationResult = ({
         title="Share Classification"
       >
         <div className="flex items-center justify-between">
-          <div className="h-4 w-48 rounded bg-base-content/10" />
+          <div className="h-4 w-48 rounded-sm bg-base-content/10" />
           <div className="h-6 w-12 rounded-full bg-base-content/10" />
         </div>
       </BlurredMockSection>
@@ -305,11 +305,11 @@ export const AnonymousClassificationResult = ({
         title="Add Notes"
       >
         <div className="space-y-2">
-          <div className="h-4 w-full rounded bg-base-content/10" />
-          <div className="h-4 w-5/6 rounded bg-base-content/8" />
-          <div className="h-4 w-4/6 rounded bg-base-content/7" />
-          <div className="h-4 w-full rounded bg-base-content/9" />
-          <div className="h-4 w-3/4 rounded bg-base-content/8" />
+          <div className="h-4 w-full rounded-sm bg-base-content/10" />
+          <div className="h-4 w-5/6 rounded-sm bg-base-content/8" />
+          <div className="h-4 w-4/6 rounded-sm bg-base-content/7" />
+          <div className="h-4 w-full rounded-sm bg-base-content/9" />
+          <div className="h-4 w-3/4 rounded-sm bg-base-content/8" />
         </div>
       </BlurredMockSection>
 
@@ -321,11 +321,11 @@ export const AnonymousClassificationResult = ({
         title="Related CROSS Rulings"
       >
         <div className="space-y-2">
-          <div className="h-4 w-full rounded bg-base-content/10" />
-          <div className="h-4 w-5/6 rounded bg-base-content/8" />
-          <div className="h-4 w-4/6 rounded bg-base-content/7" />
-          <div className="h-4 w-full rounded bg-base-content/9" />
-          <div className="h-4 w-3/4 rounded bg-base-content/8" />
+          <div className="h-4 w-full rounded-sm bg-base-content/10" />
+          <div className="h-4 w-5/6 rounded-sm bg-base-content/8" />
+          <div className="h-4 w-4/6 rounded-sm bg-base-content/7" />
+          <div className="h-4 w-full rounded-sm bg-base-content/9" />
+          <div className="h-4 w-3/4 rounded-sm bg-base-content/8" />
         </div>
       </BlurredMockSection>
 
@@ -336,11 +336,11 @@ export const AnonymousClassificationResult = ({
         title="Classification Report"
       >
         <div className="space-y-2">
-          <div className="h-4 w-full rounded bg-base-content/10" />
-          <div className="h-4 w-5/6 rounded bg-base-content/8" />
-          <div className="h-4 w-4/6 rounded bg-base-content/7" />
-          <div className="h-4 w-full rounded bg-base-content/9" />
-          <div className="h-4 w-3/4 rounded bg-base-content/8" />
+          <div className="h-4 w-full rounded-sm bg-base-content/10" />
+          <div className="h-4 w-5/6 rounded-sm bg-base-content/8" />
+          <div className="h-4 w-4/6 rounded-sm bg-base-content/7" />
+          <div className="h-4 w-full rounded-sm bg-base-content/9" />
+          <div className="h-4 w-3/4 rounded-sm bg-base-content/8" />
         </div>
       </BlurredMockSection>
     </div>

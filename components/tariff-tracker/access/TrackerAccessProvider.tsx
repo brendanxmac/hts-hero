@@ -15,19 +15,20 @@ import {
   TrackerAccess,
   trackerAccessFrom,
 } from "@/libs/tariff-tracker/plan";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { TrackerAccessContext, TrackerAccessValue } from "./accessContext";
 import { PREMIUM_FEATURES, PremiumFeature } from "./features";
 import { currentPath, signupHref } from "./signup";
 import { LimitDialog } from "./LimitDialog";
 import { UpgradeDialog } from "./UpgradeDialog";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // Loads the visitor's plan (from /api/tracker/access, which decides), spends the usage-based
 // trial's checks (through /api/tracker/checks, which enforces them) and owns the way up: the
 // plans dialog. Around the whole Tracker.
 
-const TRIAL_ACCESS = trackerAccessFrom({ usage: NO_USAGE, activePlans: [] });
+// Signed in, plan unknown (the request failed): the free plan, without a trial date (so nothing
+// says the trial ended); the server decides what's actually covered
+const FALLBACK_ACCESS: TrackerAccess = { ...trackerAccessFrom({ usage: NO_USAGE, activePlans: [], now: Infinity }), trialEndsAt: null };
 
 export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => {
   const { user, isLoading: userLoading } = useUser();
@@ -39,7 +40,11 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
   const userId = user?.id ?? null;
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/tracker/access", { cache: "no-store" });
+    // An admin's trial preview (?trialPreview=, see the access route), kept while they move around
+    const stage = new URL(window.location.href).searchParams.get("trialPreview");
+    if (stage) window.sessionStorage.setItem("tracker-trial-preview", stage);
+    const preview = stage ?? window.sessionStorage.getItem("tracker-trial-preview");
+    const res = await fetch(`/api/tracker/access${preview && preview !== "off" ? `?trialPreview=${encodeURIComponent(preview)}` : ""}`, { cache: "no-store" });
     if (!res.ok) throw new Error(`Access request failed (${res.status})`);
     return (await res.json()) as TrackerAccess;
   }, []);
@@ -57,8 +62,8 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
       .then((next) => !cancelled && setAccess(next))
       .catch((e) => {
         console.error("Error loading Tariff Tracker access:", e);
-        // Signed in, plan unknown: the trial with nothing spent; spending a check asks the server
-        if (!cancelled) setAccess(TRIAL_ACCESS);
+        // Spending a check asks the server
+        if (!cancelled) setAccess(FALLBACK_ACCESS);
       })
       .finally(() => !cancelled && setLoading(false));
     return () => {
@@ -158,9 +163,9 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
     if (trial && !value.paid) {
       toast.success(
-        SAVINGS_ENABLED && AUDITS_ENABLED
-          ? `Your free trial is on: ${TRIAL_ALLOWANCE.savingsChecks} savings checks, ${TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on ${TRIAL_ALLOWANCE.alertImports} imports.`
-          : `Your free plan is on: alerts and impact checks on ${TRIAL_ALLOWANCE.alertImports} imports.`,
+        value.access.kind === "trial"
+          ? `Your ${REVERSE_TRIAL.days}-day free trial is on: everything in the Tariff Tracker, on up to ${REVERSE_TRIAL.imports} imports.`
+          : "Your free plan is on: Tariff News alerts, sourcing insights and your whole catalog.",
         { duration: 6000 }
       );
     }

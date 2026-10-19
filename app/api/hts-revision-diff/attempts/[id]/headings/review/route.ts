@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic"
 const CHUNK = 200
 
 // Marks several of the attempt's rows reviewed (or not) at once: { ids: string[], reviewed: boolean }
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

@@ -59,8 +59,10 @@ import {
   readAdjustments,
   writeAdjustments,
 } from "../components/tariff-tracker/adjustments"
-import { ColumnDef, ColumnFiltersState, createTable, getCoreRowModel, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel } from "@tanstack/react-table"
-import { facetFilter, normalizeSearch, pruneColumnFilters } from "../components/ui/table/useDataTable"
+import { ColumnFiltersState, constructTable, tableFeatures } from "@tanstack/react-table";
+import { storeReactivityBindings } from "@tanstack/table-core/store-reactivity-bindings";
+import { features, type TableColumnDef } from "../components/ui/table/features";
+import { normalizeSearch, pruneColumnFilters } from "../components/ui/table/useDataTable"
 import { TrackedProduct } from "../components/tariff-tracker/report"
 
 // A top-level HTS line carrying its own base rate (no parents to look up)
@@ -174,23 +176,19 @@ describe("Tariff Tracker: filtering your imports", () => {
   const steelVN = product("7326.90.86.88", "2.9%", "VN")
   const watchCN = product("9103.10.40", "24¢ each", "CN")
   const all = [steelCN, steelVN, watchCN]
-  const columns: ColumnDef<TrackedProduct, any>[] = [
-    { id: "country", accessorFn: (r) => r.entry.country.code, filterFn: facetFilter as any },
-    { id: "chapter", accessorFn: (r) => String(r.entry.element.chapter), filterFn: facetFilter as any },
-    { id: "tags", accessorFn: (r) => (r.entry.country.code === "CN" ? ["China", "Asia"] : ["Asia"]), getUniqueValues: (r) => (r.entry.country.code === "CN" ? ["China", "Asia"] : ["Asia"]), filterFn: facetFilter as any },
+  const columns: TableColumnDef<TrackedProduct, any>[] = [
+    { id: "country", accessorFn: (r) => r.entry.country.code, filterFn: "facet" },
+    { id: "chapter", accessorFn: (r) => String(r.entry.element.chapter), filterFn: "facet" },
+    { id: "tags", accessorFn: (r) => (r.entry.country.code === "CN" ? ["China", "Asia"] : ["Asia"]), getUniqueValues: (r) => (r.entry.country.code === "CN" ? ["China", "Asia"] : ["Asia"]), filterFn: "facet" },
   ]
   const table = (filters: ColumnFiltersState) =>
-    createTable<TrackedProduct>({
+    constructTable({
+      // Outside React: TanStack Store holds the state
+      features: tableFeatures({ ...features, coreReactivityFeature: storeReactivityBindings() }),
       data: all,
       columns,
-      getRowId: (r) => `${r.entry.element.htsno}-${r.entry.country.code}`,
+      getRowId: (r: TrackedProduct) => `${r.entry.element.htsno}-${r.entry.country.code}`,
       state: { columnFilters: pruneColumnFilters(filters, columns, all) },
-      onStateChange: () => {},
-      renderFallbackValue: null,
-      getCoreRowModel: getCoreRowModel(),
-      getFilteredRowModel: getFilteredRowModel(),
-      getFacetedRowModel: getFacetedRowModel(),
-      getFacetedUniqueValues: getFacetedUniqueValues(),
     })
   const shown = (filters: ColumnFiltersState) => table(filters).getRowModel().rows.map((r) => r.original)
 

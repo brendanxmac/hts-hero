@@ -1,12 +1,5 @@
-import {
-  Billing,
-  TRACKER_MAX_LISTED_PAIRS,
-  TRACKER_TIERS,
-  TRIAL_ALLOWANCE,
-  formatPrice,
-  monthlyRate,
-  trackerBilling,
-} from "../lib/pricing"
+import { Billing, REVERSE_TRIAL, TRACKER_MAX_LISTED_PAIRS, TRACKER_TIERS, formatPrice, monthlyRate, perImportPrice, trackerBilling } from "../lib/pricing"
+import { AUTO_AUDITING, COMING_NOTE, FREE_FOREVER_SHORT, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon"
 
 // The copy for each tariff plan, shared by /pricing-calculator and the pricing section on
 // /duty-calculator so both always say the same thing. See PRICING.md.
@@ -21,23 +14,30 @@ export const CALCULATOR_FEATURES = [
   "Works in AI assistants through the HTS Hero MCP server",
 ]
 
-// What every account gets free in the Tracker, with no time limit and no card (TRIAL_ALLOWANCE).
-// Tracker MVP (MVP_TRIM.md): savings and audit checks are off, so they're left out
+// What every account gets free in the Tracker: the 14-day reverse trial (REVERSE_TRIAL, no card,
+// nothing to start), then the free plan forever: no alerts on its own imports (TRIAL_ALLOWANCE.alertImports
+// is 0), but Tariff News alerts and sourcing insights. Savings detection and auditing
+// aren't live yet (features.ts), so each mention carries the "coming" label
 export const TRACKER_TRIAL_FEATURES = [
-  "Upload your whole catalog, with every tariff on each import",
-  `Track ${TRIAL_ALLOWANCE.alertImports} imports: alerts and impact checks on each one`,
-  "Tariff News: every new US tariff action, as it happens",
-  "Rate history for every import: how its duty changed, and why",
-  "Export every tariff on every import to CSV or Excel",
+  `${REVERSE_TRIAL.days} days of everything the Tracker does, on up to ${REVERSE_TRIAL.imports} imports`,
+  "Alerts and impact checks on every tracked import, AD/CVD alerts included",
+  "Insights across your catalog, plus Tariff News as it happens",
+  `${SAVINGS_DETECTION.name} and ${AUTO_AUDITING.name.toLowerCase()} in the trial too, when they launch ${COMING_NOTE}`,
+  `Then ${FREE_FOREVER_SHORT}, free forever`,
+  "Your whole catalog, with current duty, rate history and exports to CSV or Excel, always free",
 ]
 
 export const TRACKER_FEATURES = [
   "Alerts the moment a tariff change hits a tracked import, with the rate before and after",
+  "AD/CVD alerts when a tracked import may fall under an antidumping or countervailing duty case",
+  "Insights across your catalog: where the duty comes from, what moved it, the most exposed imports",
   "Impact checks: pick any tariff action and see exactly how it affects each import",
   "Tariff News from CBP, the Federal Register, USTR, USITC and the White House",
   "Rate history for your whole catalog: compare with past rates and see why duty changed",
   "Export every tariff on every import to CSV or Excel",
   "Paste or upload your catalog as CSV",
+  `${SAVINGS_DETECTION.name} ${COMING_NOTE}: trade programs, exemptions and lower-duty origins you may qualify for, on every import`,
+  `${AUTO_AUDITING.name} ${COMING_NOTE}: every entry checked against the duty in force on its date, flagging possible over and underpayments`,
 ]
 
 // One stop on the Tracker card's tier picker; a null price means the plan is quoted
@@ -66,3 +66,9 @@ export const TRACKER_OPTIONS: TrackerOption[] = [
 // The price under each stop on the picker (monthly while Tracker annual billing is off)
 export const optionPrice = (option: TrackerOption, billing: Billing) =>
   option.price === null ? "Let's talk" : formatPrice(monthlyRate(option.price, trackerBilling(billing)))
+
+// What a stop comes to per import, per month ("$0.97"); null when the plan is quoted
+export const optionPerImport = (option: TrackerOption, billing: Billing) =>
+  option.price === null || option.maxPairs === null
+    ? null
+    : formatPrice(perImportPrice({ price: monthlyRate(option.price, trackerBilling(billing)), maxPairs: option.maxPairs }))

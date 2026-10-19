@@ -1,7 +1,8 @@
-import { ReactNode } from "react"
+import React, { ReactNode } from "react"
 import { Button, Column, Heading, Hr, Link, Row, Section, Text } from "@react-email/components"
-import { TRACKER_TIERS, TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
+import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice } from "../../components/pricing-calculator/lib/pricing"
+import { AUDITS_ENABLED, SAVINGS_AUDITS_LABEL, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
+import { AUTO_AUDITING, COMING_LOWER, SAVINGS_DETECTION } from "../../components/ui/marketing/comingSoon"
 import { C, FONT_DISPLAY, formatDay, SITE, TONES, Tone } from "./brand"
 
 // The pieces every email is made of, in the Tracker's look: a small bold eyebrow in a role color,
@@ -15,7 +16,18 @@ export const Eyebrow = ({ children, tone = "brand" }: { children: ReactNode; ton
 )
 
 export const Title = ({ children, size = 26 }: { children: ReactNode; size?: number }) => (
-  <Heading as="h1" style={{ margin: "0 0 14px", fontFamily: FONT_DISPLAY, fontSize: size, lineHeight: `${Math.round(size * 1.22)}px`, fontWeight: 600, color: C.text, letterSpacing: "-0.01em" }}>
+  <Heading
+    as="h1"
+    style={{
+      margin: "0 0 14px",
+      fontFamily: FONT_DISPLAY,
+      fontSize: size,
+      lineHeight: `${Math.round(size * 1.22)}px`,
+      fontWeight: 600,
+      color: C.text,
+      letterSpacing: "-0.01em",
+    }}
+  >
     {children}
   </Heading>
 )
@@ -60,7 +72,19 @@ export const Cta = ({ href, children, variant = "primary" }: { href: string; chi
 )
 
 export const Chip = ({ children, tone = "neutral" }: { children: ReactNode; tone?: Tone }) => (
-  <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, backgroundColor: TONES[tone].bg, color: TONES[tone].fg, fontSize: 12, lineHeight: "18px", fontWeight: 700, marginRight: 6 }}>
+  <span
+    style={{
+      display: "inline-block",
+      padding: "3px 10px",
+      borderRadius: 999,
+      backgroundColor: TONES[tone].bg,
+      color: TONES[tone].fg,
+      fontSize: 12,
+      lineHeight: "18px",
+      fontWeight: 700,
+      marginRight: 6,
+    }}
+  >
     {children}
   </span>
 )
@@ -78,7 +102,9 @@ export const Facts = ({ rows }: { rows: { label: string; value: ReactNode }[] })
     {rows.map((r) => (
       <Row key={r.label} style={{ marginBottom: 6 }}>
         <Column style={{ width: 110, verticalAlign: "top" }}>
-          <Text style={{ margin: 0, fontSize: 11, lineHeight: "20px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>{r.label}</Text>
+          <Text style={{ margin: 0, fontSize: 11, lineHeight: "20px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>
+            {r.label}
+          </Text>
         </Column>
         <Column style={{ verticalAlign: "top" }}>
           <Text style={{ margin: 0, fontSize: 14, lineHeight: "20px", color: C.text }}>{r.value}</Text>
@@ -113,7 +139,9 @@ export const StageTrack = ({ reached, current }: { reached: number[]; current: n
                 }}
               />
             </div>
-            <Text style={{ margin: "6px 0 0", fontSize: 11, lineHeight: "14px", fontWeight: isCurrent ? 700 : 500, color: done ? C.text : C.faint, textAlign: "center" }}>{label}</Text>
+            <Text style={{ margin: "6px 0 0", fontSize: 11, lineHeight: "14px", fontWeight: isCurrent ? 700 : 500, color: done ? C.text : C.faint, textAlign: "center" }}>
+              {label}
+            </Text>
           </Column>
         )
       })}
@@ -142,7 +170,10 @@ export const UpdateBlock = ({ update, campaign, compact }: { update: UpdateSumma
       <Chip tone={update.tone}>{update.authorityLabel}</Chip>
       <Chip tone="brand">{update.stageLabel}</Chip>
     </Text>
-    <Link href={updateUrl(update.slug, campaign)} style={{ fontFamily: FONT_DISPLAY, fontSize: compact ? 17 : 20, lineHeight: compact ? "23px" : "27px", fontWeight: 600, color: C.text, textDecoration: "none" }}>
+    <Link
+      href={updateUrl(update.slug, campaign)}
+      style={{ fontFamily: FONT_DISPLAY, fontSize: compact ? 17 : 20, lineHeight: compact ? "23px" : "27px", fontWeight: 600, color: C.text, textDecoration: "none" }}
+    >
       {update.title}
     </Link>
     <Text style={{ margin: "8px 0 0", fontSize: compact ? 14 : 15, lineHeight: compact ? "21px" : "23px", color: compact ? C.muted : C.text }}>{update.summary}</Text>
@@ -173,22 +204,21 @@ export const Checklist = ({ items }: { items: ReactNode[] }) => (
 )
 
 // What the Tariff Tracker does, as a checklist (the welcome and meet-the-Tracker emails). The
-// Tracker MVP (features.ts) sells tracking, alerts and impact checks; the savings and audit lines
-// come back with them.
-export const TRACKER_POINTS =
+// Tracker MVP (features.ts) sells tracking, alerts and impact checks; savings detection and
+// auditing show as coming, with their label, until they're on.
+export const TRACKER_POINTS: ReactNode[] =
   SAVINGS_ENABLED || AUDITS_ENABLED
-    ? [
-      "Track the duty rate on every import",
-      "Get alerted when a new tariff hits one",
-      "Find savings you may qualify for",
-      "Audit past entries for overpaid duty",
-    ]
+    ? ["Track the duty rate on every import", "Get alerted when a new tariff hits one", "Find savings you may qualify for", "Audit past entries for overpaid duty"]
     : [
-      "Track the duty rate on every import",
-      "Get alerted when a new tariff hits one, with the rate before and after",
-      "See exactly how any tariff action affects each import",
-      "Export every tariff on every import to CSV or Excel",
-    ]
+        "Track the duty rate on every import",
+        "Get alerted when a new tariff hits one, with the rate before and after",
+        "AD/CVD alerts when an import may fall under a case",
+        "See exactly how any tariff action affects each import, with Insights across your catalog",
+        "Export every tariff on every import to CSV or Excel",
+        <>
+          {SAVINGS_DETECTION.name} and {AUTO_AUDITING.name.toLowerCase()}, included when they launch <Chip tone="heads-up">{SAVINGS_AUDITS_LABEL}</Chip>
+        </>,
+      ]
 
 // Signed by the founder: every email is from a person, and replies reach him
 export const Signature = ({ line = "Founder, HTS Hero" }: { line?: string }) => (
@@ -201,23 +231,25 @@ export const Signature = ({ line = "Founder, HTS Hero" }: { line?: string }) => 
 
 // The way up, always in view but never the ask: what the free account already does, and where
 // the plans are. Value first, then the door. The Tracker MVP (features.ts) sells tracking only, so
-// savings and audit checks drop out of it while they're off.
+// savings and audit checks drop out of it while they're off. Worded to hold whether the reader is in
+// the 14-day trial (REVERSE_TRIAL) or past it, since emails don't know which.
 export const PlanStrip = ({ campaign, signedUp = true }: { campaign: string; signedUp?: boolean }) => (
   <Section style={{ marginTop: 24, borderTop: `1px solid ${C.border}`, paddingTop: 18 }}>
     <Text style={{ margin: 0, fontSize: 13, lineHeight: "20px", color: C.muted }}>
       {signedUp ? "Your free account" : "A free HTS Hero account"}{" "}
       {SAVINGS_ENABLED || AUDITS_ENABLED ? (
         <>
-          gives you the duty on every import you add, its rate history and sourcing, {TRIAL_ALLOWANCE.savingsChecks} savings checks,{" "}
-          {TRIAL_ALLOWANCE.auditChecks} audit checks and alerts on {TRIAL_ALLOWANCE.alertImports} imports.
+          gives you the duty on every import you add, its rate history and sourcing, {TRIAL_ALLOWANCE.savingsChecks} savings checks, {TRIAL_ALLOWANCE.auditChecks} audit
+          checks and Tariff News alerts on every new US tariff action.
         </>
       ) : (
         <>
-          gives you the duty on every import you add and its rate history, and tracks {TRIAL_ALLOWANCE.alertImports} imports: an alert when a tariff change hits
-          one, and impact checks on each.
+          gives you Tariff News alerts on every new US tariff action, the duty on every import you add, its rate history and sourcing insights, free forever, plus the
+          full Tariff Tracker (AD/CVD checks included) free for {signedUp ? "your first" : "its first"} {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports}{" "}
+          imports, no credit card. Automatic savings detection and automatic auditing are {COMING_LOWER}, included in every plan.
         </>
       )}{" "}
-      Plans that track more imports start at ${TRACKER_TIERS[0].price}/mo.{" "}
+      Plans with alerts on your imports start at {formatPrice(TRACKER_TIERS[0].price)}/mo, as low as {formatPrice(LOWEST_PER_IMPORT)} per import.{" "}
       <Link href={`${SITE}/pricing-calculator?utm_source=email&utm_medium=email&utm_campaign=${campaign}`} style={{ color: C.cobalt, fontWeight: 600 }}>
         See plans
       </Link>
@@ -233,8 +265,12 @@ export const Stats = ({ items }: { items: { label: string; value: string; note?:
       {items.map((s, i) => (
         <Column key={s.label} style={{ width: `${100 / items.length}%`, verticalAlign: "top", paddingLeft: i ? 8 : 0 }}>
           <Section style={{ backgroundColor: C.soft, borderRadius: 16, padding: "14px 14px 12px" }}>
-            <Text style={{ margin: 0, fontSize: 11, lineHeight: "15px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>{s.label}</Text>
-            <Text style={{ margin: "6px 0 0", fontFamily: FONT_DISPLAY, fontSize: 22, lineHeight: "28px", fontWeight: 600, color: s.tone ? TONES[s.tone].fg : C.text }}>{s.value}</Text>
+            <Text style={{ margin: 0, fontSize: 11, lineHeight: "15px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>
+              {s.label}
+            </Text>
+            <Text style={{ margin: "6px 0 0", fontFamily: FONT_DISPLAY, fontSize: 22, lineHeight: "28px", fontWeight: 600, color: s.tone ? TONES[s.tone].fg : C.text }}>
+              {s.value}
+            </Text>
             {s.note && <Text style={{ margin: "2px 0 0", fontSize: 12, lineHeight: "17px", color: C.muted }}>{s.note}</Text>}
           </Section>
         </Column>
@@ -265,7 +301,9 @@ export const AlertSample = ({ label, updateTitle, code, country, description, be
   const tone = Number(afterPct) > Number(beforePct) ? TONES.up.fg : TONES.down.fg
   return (
     <Section style={{ border: `1px solid ${C.border}`, borderLeft: `4px solid ${TONES.up.fg}`, borderRadius: 14, padding: "14px 16px", margin: "6px 0 18px" }}>
-      <Text style={{ margin: "0 0 6px", fontSize: 11, lineHeight: "15px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>{label}</Text>
+      <Text style={{ margin: "0 0 6px", fontSize: 11, lineHeight: "15px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>
+        {label}
+      </Text>
       <Text style={{ margin: "0 0 10px", fontFamily: FONT_DISPLAY, fontSize: 16, lineHeight: "22px", fontWeight: 600, color: C.text }}>{updateTitle}</Text>
       <Text style={{ margin: 0, fontSize: 14, lineHeight: "20px", fontWeight: 600, color: C.text }}>
         {code} from {country}

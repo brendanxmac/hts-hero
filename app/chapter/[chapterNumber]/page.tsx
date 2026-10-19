@@ -13,7 +13,7 @@ import { CtaGrid } from "../../../components/hts-page/CtaGrid";
 import { ChildrenList } from "../../../components/hts-page/ChildrenList";
 
 interface ChapterPageProps {
-  params: { chapterNumber: string };
+  params: Promise<{ chapterNumber: string }>;
 }
 
 export async function generateStaticParams() {
@@ -27,7 +27,8 @@ export async function generateStaticParams() {
   return params;
 }
 
-export async function generateMetadata({ params }: ChapterPageProps): Promise<Metadata> {
+export async function generateMetadata(props: ChapterPageProps): Promise<Metadata> {
+  const params = await props.params;
   const sections = await getHtsSectionsServer();
   const chapterNum = Number(params.chapterNumber);
   const { section, chapter } = findChapter(sections, chapterNum) || {};
@@ -63,7 +64,8 @@ export async function generateMetadata({ params }: ChapterPageProps): Promise<Me
   };
 }
 
-export default async function ChapterPage({ params }: ChapterPageProps) {
+export default async function ChapterPage(props: ChapterPageProps) {
+  const params = await props.params;
   const sections = await getHtsSectionsServer();
   const elements = await getHtsElementsServer();
   const chapterNum = Number(params.chapterNumber);
@@ -117,7 +119,7 @@ function ChapterContent({
             <span className="text-primary text-3xl lg:text-4xl font-semibold tracking-tight [font-family:var(--font-tracker-display)]">
               Chapter {chapter.number}
             </span>
-            <span className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug max-w-4xl [font-family:var(--font-tracker-display)]">
+            <span className="text-lg md:text-xl md:leading-7 lg:text-2xl lg:leading-8 text-base-content font-semibold leading-snug max-w-4xl [font-family:var(--font-tracker-display)]">
               {chapter.description}
             </span>
             <span className="text-xs text-base-content/60 font-bold tracking-wider uppercase mt-1">

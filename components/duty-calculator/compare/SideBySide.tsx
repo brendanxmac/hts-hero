@@ -122,7 +122,7 @@ export const SideBySide = ({
     <section className="flex flex-col" aria-label="Countries side by side">
       {/* One column per country, yours first, with a rule between them */}
       <div
-        className="grid grid-cols-1 divide-y divide-base-300 sm:grid-cols-2 sm:divide-y-0 lg:[grid-template-columns:var(--cols)] [&>*]:border-base-300 sm:[&>*:nth-child(n+3)]:border-t lg:[&>*:nth-child(n+3)]:border-t-0 sm:[&>*:nth-child(even)]:border-l lg:[&>*+*]:border-l"
+        className="grid grid-cols-1 divide-y divide-base-300 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-(--cols) [&>*]:border-base-300 sm:[&>*:nth-child(n+3)]:border-t lg:[&>*:nth-child(n+3)]:border-t-0 sm:[&>*:nth-child(even)]:border-l lg:[&>*+*]:border-l"
         style={{ ["--cols" as string]: `repeat(${columns}, minmax(0, 1fr))` }}
       >
         {ordered.map((r, i) => (

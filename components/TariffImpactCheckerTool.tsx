@@ -420,7 +420,7 @@ export default function TariffImpactCheckerTool() {
 
   const upgradeCta = showUpgradeCta ? (
     <button
-      className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-primary to-primary/90 text-primary-content font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200"
+      className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-linear-to-r from-primary to-primary/90 text-primary-content font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200"
       onClick={() => {
         setShowPricingModal(true);
         try {
@@ -529,7 +529,7 @@ export default function TariffImpactCheckerTool() {
             <button
               className={`w-full py-4 rounded-xl font-semibold text-base transition-all duration-200 ${checkingTariffImpacts
                 ? "bg-base-content/10 text-base-content/50"
-                : "bg-gradient-to-r from-primary to-primary/90 text-primary-content shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
+                : "bg-linear-to-r from-primary to-primary/90 text-primary-content shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
                 }`}
               disabled={
                 lastActionWasSubmit ||

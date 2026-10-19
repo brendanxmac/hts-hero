@@ -39,22 +39,22 @@ const nextConfig = {
     ];
   },
   // The HTS code pages read the Census import figures from these files on the server
-  experimental: {
-    outputFileTracingIncludes: {
-      "/hts/[code]": ["./public/data/us-imports/**"],
-      "/api/mcp": ["./public/data/us-imports/**"],
-      // Tracker snapshots work out origin savings from the same Census files
-      "/api/cron/tracker-snapshots": ["./public/data/us-imports/**"],
-      "/api/cron/tariff-updates": ["./public/data/us-imports/**"],
-      "/api/tariff-updates/[id]": ["./public/data/us-imports/**"],
-      // The Content Studio's posts and daily ideas read them too
-      "/api/social-studio/**": ["./public/data/us-imports/**"],
-      "/api/cron/social-ideas": ["./public/data/us-imports/**"],
-    },
+  outputFileTracingIncludes: {
+    "/hts/[code]": ["./public/data/us-imports/**"],
+    "/api/mcp": ["./public/data/us-imports/**"],
+    // Tracker snapshots work out origin savings from the same Census files
+    "/api/cron/tracker-snapshots": ["./public/data/us-imports/**"],
+    "/api/cron/tariff-updates": ["./public/data/us-imports/**"],
+    "/api/tariff-updates/[id]": ["./public/data/us-imports/**"],
+    // The Content Studio's posts and daily ideas read them too
+    "/api/social-studio/**": ["./public/data/us-imports/**"],
+    "/api/cron/social-ideas": ["./public/data/us-imports/**"],
   },
-  webpack: (config) => {
-    config.resolve.alias.canvas = false;
-    return config;
+  // Keep the optional native canvas package out of the bundles (PDF libraries reach for it)
+  turbopack: {
+    resolveAlias: {
+      canvas: "./libs/empty-module.js",
+    },
   },
 };
 

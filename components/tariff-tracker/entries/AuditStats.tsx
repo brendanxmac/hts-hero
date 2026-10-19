@@ -15,8 +15,8 @@ export const AuditStats = ({ totals }: { totals: AuditTotals }) => {
         { label: "Possible underpayments", value: money(totals.underpaid), note: "Worth correcting before Customs does", tone: totals.underpaid > 0 ? "error" : undefined },
         {
           label: "Audit checks left",
-          value: access.kind === "paid" ? "Unlimited" : access.kind === "anonymous" ? "0" : String(Math.max(0, TRIAL_ALLOWANCE.auditChecks - access.usage.auditsChecked.length)),
-          note: access.kind === "paid" ? "With your plan" : access.kind === "anonymous" ? `${TRIAL_ALLOWANCE.auditChecks} with a free account` : `Of ${TRIAL_ALLOWANCE.auditChecks} free`,
+          value: access.kind === "paid" || access.kind === "trial" ? "Unlimited" : access.kind === "anonymous" ? "0" : String(Math.max(0, TRIAL_ALLOWANCE.auditChecks - access.usage.auditsChecked.length)),
+          note: access.kind === "paid" || access.kind === "trial" ? "With your plan" : access.kind === "anonymous" ? `${TRIAL_ALLOWANCE.auditChecks} with a free account` : `Of ${TRIAL_ALLOWANCE.auditChecks} free`,
         },
       ]}
     />

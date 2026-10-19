@@ -49,8 +49,9 @@ const eventsOf = (sources: { stage: Stage | null; published_at: string }[]): Upd
 
 // An update matches a subscriber's laws and countries (empty: all). An all-countries update
 // matches every country; one naming no country only matches subscribers with no country filter.
+// AD/CVD news (many notices a week) goes only to readers who picked it.
 export const matchesPreferences = (u: Pick<UpdateRowForEmail, "authority" | "countries">, s: Pick<Subscriber, "news_authorities" | "news_countries">) =>
-  (!s.news_authorities.length || s.news_authorities.includes(u.authority)) &&
+  (u.authority === "ad_cvd" ? s.news_authorities.includes("ad_cvd") : !s.news_authorities.length || s.news_authorities.includes(u.authority)) &&
   (!s.news_countries.length || u.countries.includes("ALL") || u.countries.some((c) => s.news_countries.includes(c)))
 
 const activeSubscribers = async (db: Db, frequency: "instant" | "weekly") => {

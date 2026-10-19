@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useRef } from "react";
-import { ColumnDef, Row, Table } from "@tanstack/react-table";
+import type { DataTableInstance, TableColumnDef, TableRow } from "./features";
 import * as ui from "@/components/ui/styles";
 
 // Picking rows for a bulk action: a checkbox column (the header picks every row the filters
@@ -15,14 +15,14 @@ const Checkbox = ({ checked, indeterminate = false, onChange, label }: { checked
   return <input ref={ref} type="checkbox" className={ui.checkbox} checked={checked} onChange={onChange} aria-label={label} />;
 };
 
-export const selectColumn = <T,>(rowLabel: (row: T) => string): ColumnDef<T, unknown> => ({
+export const selectColumn = <T,>(rowLabel: (row: T) => string): TableColumnDef<T, unknown> => ({
   id: "select",
   enableSorting: false,
   meta: { width: "w-10" },
   header: ({ table }) => (
     <Checkbox
       checked={table.getIsAllRowsSelected()}
-      indeterminate={table.getIsSomeRowsSelected()}
+      indeterminate={table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
       onChange={() => table.toggleAllRowsSelected()}
       label="Select every row shown"
     />
@@ -30,7 +30,7 @@ export const selectColumn = <T,>(rowLabel: (row: T) => string): ColumnDef<T, unk
   cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onChange={() => row.toggleSelected()} label={`Select ${rowLabel(row.original)}`} />,
 });
 
-export const SelectionBar = <T,>({ table, children }: { table: Table<T>; children: (rows: Row<T>[]) => ReactNode }) => {
+export const SelectionBar = <T,>({ table, children }: { table: DataTableInstance<T>; children: (rows: TableRow<T>[]) => ReactNode }) => {
   // Only the picked rows still showing: a search or filter that hides one takes it out of the action
   const rows = table.getFilteredSelectedRowModel().rows;
   if (!rows.length) return null;

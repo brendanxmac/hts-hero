@@ -39,7 +39,7 @@ export const CodePath = ({ element, sectionChapter }: { element: HtsElement; sec
           return (
             <li key={i} className="relative">
               {/* The line joining each step to the next */}
-              {!current && <span className="absolute -bottom-[0.7rem] left-[0.9rem] top-[1.7rem] w-px bg-base-300" aria-hidden />}
+              {!current && <span className="absolute bottom-[-0.7rem] left-[0.9rem] top-[1.7rem] w-px bg-base-300" aria-hidden />}
               <button
                 type="button"
                 disabled={current || !trail}
@@ -128,7 +128,7 @@ export const CodeNotes = ({ sectionChapter, chapter }: { sectionChapter: Section
                 <span className="block text-sm font-semibold text-base-content group-hover:text-primary">{link.title}</span>
                 <span className="block text-xs leading-snug text-base-content/60 line-clamp-2">{link.description}</span>
               </span>
-              <ArrowTopRightOnSquareIcon className="mt-1 h-3.5 w-3.5 shrink-0 text-base-content/50 group-hover:text-primary" aria-hidden />
+              <ArrowTopRightOnSquareIcon className="mt-1 h-3.5 w-3.5 shrink-0 text-base-content/60 group-hover:text-primary" aria-hidden />
             </a>
           </li>
         ))}

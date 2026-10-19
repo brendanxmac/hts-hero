@@ -1,14 +1,13 @@
-import { TRACKER_TIERS, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRACKER_TIERS, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { PricingPlan } from "@/types";
 
 // What a visitor gets in the Tariff Tracker, worked out the same way on the server (which
-// decides) and in the browser (which shows it). The rules are in PRICING.md: every account is on
-// the usage-based trial from sign-up, with no time limit: savings checks on
-// TRIAL_ALLOWANCE.savingsChecks imports, TRIAL_ALLOWANCE.auditChecks audit checks and alerts on
-// TRIAL_ALLOWANCE.alertImports imports, never reset. Paid plans cover their tier's imports, with
-// unlimited audit checks.
+// decides) and in the browser (which shows it). The rules are in PRICING.md: every account starts
+// a 14-day reverse trial at sign-up (REVERSE_TRIAL: everything, on up to 200 imports), then drops
+// to the free plan (alerts on TRIAL_ALLOWANCE.alertImports imports). Paid plans cover their tier's
+// imports, with unlimited checks.
 
-export type TrackerPlanKind = "anonymous" | "trial" | "paid";
+export type TrackerPlanKind = "anonymous" | "trial" | "free" | "paid";
 
 // The kinds of check an allowance counts
 export type CheckKind = "savings" | "audit";
@@ -28,7 +27,25 @@ export interface TrackerAccess {
   // How many imports (pairs) the plan covers with alerts (and, paid, savings)
   pairLimit: number;
   usage: TrackerUsage;
+  // When the 14-day trial ends (or ended); null signed out
+  trialEndsAt: string | null;
+  // Set when the admin is previewing a trial stage (?trialPreview=): what's shown, not what's covered
+  preview?: TrialPreview;
 }
+
+// The trial stages the admin can preview on their own account (the access route's ?trialPreview=)
+export type TrialPreview = "trial" | "ending" | "ended";
+export const TRIAL_PREVIEWS: TrialPreview[] = ["trial", "ending", "ended"];
+
+// The access as it would look at that stage: mid-trial (10 days left), its last days (2 left), or
+// just after it ended
+export const previewAccess = (access: TrackerAccess, stage: TrialPreview, now = Date.now()): TrackerAccess => {
+  const days = stage === "trial" ? 10 : stage === "ending" ? 2 : -1;
+  const trialEndsAt = new Date(now + days * DAY - 60 * 60 * 1000).toISOString();
+  return stage === "ended"
+    ? { ...access, kind: "free", paidPlan: null, pairLimit: TRIAL_ALLOWANCE.alertImports, trialEndsAt, preview: stage }
+    : { ...access, kind: "trial", paidPlan: null, pairLimit: REVERSE_TRIAL.imports, trialEndsAt, preview: stage };
+};
 
 // Paid plans, smallest first, with the tier each one is
 export const TRACKER_PLANS = [
@@ -52,28 +69,54 @@ export const ANONYMOUS_ACCESS: TrackerAccess = {
   paidPlan: null,
   pairLimit: 0,
   usage: NO_USAGE,
+  trialEndsAt: null,
 };
+
+const DAY = 24 * 60 * 60 * 1000;
+
+// When an account's trial ends: REVERSE_TRIAL.days after the later of its sign-up and the day
+// existing accounts got a fresh trial
+export const trialEndsAt = (createdAt: string | null | undefined) => {
+  const fresh = Date.parse(`${REVERSE_TRIAL.freshStartOn}T00:00:00Z`);
+  const created = createdAt ? Date.parse(createdAt) : NaN;
+  const start = Number.isNaN(created) ? fresh : Math.max(created, fresh);
+  return new Date(start + REVERSE_TRIAL.days * DAY).toISOString();
+};
+
+// Days left on the trial, rounded up (1 on its last day, 0 or less once it's over); null without one
+export const trialDaysLeft = (access: Pick<TrackerAccess, "trialEndsAt">, now = Date.now()) =>
+  access.trialEndsAt ? Math.ceil((Date.parse(access.trialEndsAt) - now) / DAY) : null;
 
 // A signed-in account's access from what it has spent and its active Tracker plans (largest wins)
 export const trackerAccessFrom = ({
   usage,
   activePlans,
+  createdAt,
+  now = Date.now(),
 }: {
   usage: TrackerUsage;
   activePlans: PricingPlan[];
+  // The account's sign-up
+  createdAt?: string | null;
+  now?: number;
 }): TrackerAccess => {
+  const ends = trialEndsAt(createdAt);
   const paid = TRACKER_PLANS.filter((p) => activePlans.includes(p.plan)).pop();
-  if (paid) return { kind: "paid", paidPlan: paid.plan, pairLimit: paid.maxPairs, usage };
-  return { kind: "trial", paidPlan: null, pairLimit: TRIAL_ALLOWANCE.alertImports, usage };
+  if (paid) return { kind: "paid", paidPlan: paid.plan, pairLimit: paid.maxPairs, usage, trialEndsAt: ends };
+  if (now < Date.parse(ends)) return { kind: "trial", paidPlan: null, pairLimit: REVERSE_TRIAL.imports, usage, trialEndsAt: ends };
+  return { kind: "free", paidPlan: null, pairLimit: TRIAL_ALLOWANCE.alertImports, usage, trialEndsAt: ends };
 };
 
 export const isPaid = (access: TrackerAccess) => access.kind === "paid";
+
+// Everything the Tracker sells: a paid plan, or the 14-day trial
+export const hasFullAccess = (access: TrackerAccess) => access.kind === "paid" || access.kind === "trial";
 
 // How many of a kind of check the account may spend in all; null when unlimited (or, for savings
 // on a paid plan, when it follows the plan's coverage instead)
 export const checkLimit = (access: TrackerAccess, kind: CheckKind): number | null => {
   if (access.kind === "anonymous") return 0;
-  if (access.kind === "paid") return null;
+  if (hasFullAccess(access)) return null;
   return kind === "savings" ? TRIAL_ALLOWANCE.savingsChecks : TRIAL_ALLOWANCE.auditChecks;
 };
 
@@ -96,10 +139,17 @@ export const canSpendCheck = (access: TrackerAccess, kind: CheckKind, ref: strin
 // plan every product it covers as well
 export const savingsUnlocked = (access: TrackerAccess, coveredKeys: Set<string>) => {
   const keys = new Set(access.usage.savingsChecked);
-  if (access.kind === "paid") coveredKeys.forEach((k) => keys.add(k));
+  if (hasFullAccess(access)) coveredKeys.forEach((k) => keys.add(k));
   return keys;
 };
 
 // Whether an audited entry's result is shown
 export const auditUnlocked = (access: TrackerAccess, entryId: string) =>
-  access.kind === "paid" || hasChecked(access, "audit", entryId);
+  hasFullAccess(access) || hasChecked(access, "audit", entryId);
+
+// Import keys, highest duty first (keys without a product last, in their order): which picks stay
+// tracked when there are more than the plan covers, as when a trial ends
+export const byDuty = (keys: string[], products: { key: string; result: { totalDuty: number } }[]) => {
+  const duty = new Map(products.map((p) => [p.key, p.result.totalDuty]));
+  return [...keys].sort((a, b) => (duty.get(b) ?? -Infinity) - (duty.get(a) ?? -Infinity));
+};

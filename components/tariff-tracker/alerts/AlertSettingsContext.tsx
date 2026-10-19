@@ -15,6 +15,9 @@ export interface AlertSettings {
   emailEnabled: boolean;
   email: string;
   slackWebhook: string;
+  // The channel and workspace "Add to Slack" connected (empty for a pasted webhook)
+  slackChannel: string;
+  slackTeam: string;
   teamsWebhook: string;
   kinds: Kind[];
 }
@@ -25,6 +28,9 @@ interface AlertSettingsValue {
   on: boolean;
   settings: AlertSettings;
   save: (next: AlertSettings) => Promise<string | null>;
+  // Stops Slack or Teams alerts at once, leaving everything else as saved
+  disconnectSlack: () => Promise<string | null>;
+  disconnectTeams: () => Promise<string | null>;
 }
 
 const AlertSettingsContext = createContext<AlertSettingsValue | null>(null);
@@ -35,7 +41,7 @@ export const useAlertSettings = () => {
   return value;
 };
 
-const EMPTY: AlertSettings = { emailEnabled: true, email: "", slackWebhook: "", teamsWebhook: "", kinds: alertKinds(null) };
+const EMPTY: AlertSettings = { emailEnabled: true, email: "", slackWebhook: "", slackChannel: "", slackTeam: "", teamsWebhook: "", kinds: alertKinds(null) };
 
 export const SLACK_PREFIX = "https://hooks.slack.com/";
 
@@ -47,6 +53,7 @@ export const validateAlertSettings = (s: AlertSettings) => {
   if (s.emailEnabled && !/^\S+@\S+\.\S+$/.test(s.email)) return "Enter an email address for alerts.";
   if (s.slackWebhook && !s.slackWebhook.startsWith(SLACK_PREFIX)) return `A Slack webhook starts with ${SLACK_PREFIX}`;
   if (s.teamsWebhook && !s.teamsWebhook.startsWith("https://")) return "A Teams webhook starts with https://";
+  if (/\.webhook\.office\.com\//.test(s.teamsWebhook)) return "That's an Office 365 connector URL, which Microsoft is retiring. Create a Workflows webhook instead (steps above).";
   if (!s.kinds.length) return "Choose at least one kind of update to be alerted about.";
   return null;
 };
@@ -67,9 +74,9 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
     setLoading(true);
     createSupabaseClient()
       .from("tracker_alert_settings")
-      .select("email_enabled, email, slack_webhook, teams_webhook, alert_kinds")
+      .select("email_enabled, email, slack_webhook, slack_channel, slack_team, teams_webhook, alert_kinds")
       .eq("user_id", userId)
-      .maybeSingle<{ email_enabled: boolean; email: string | null; slack_webhook: string | null; teams_webhook: string | null; alert_kinds: string[] | null }>()
+      .maybeSingle<{ email_enabled: boolean; email: string | null; slack_webhook: string | null; slack_channel: string | null; slack_team: string | null; teams_webhook: string | null; alert_kinds: string[] | null }>()
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) console.error("Error loading alert settings:", error);
@@ -79,6 +86,8 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
                 emailEnabled: data.email_enabled,
                 email: data.email ?? "",
                 slackWebhook: data.slack_webhook ?? "",
+                slackChannel: data.slack_channel ?? "",
+                slackTeam: data.slack_team ?? "",
                 teamsWebhook: data.teams_webhook ?? "",
                 kinds: alertKinds(data),
               }
@@ -96,13 +105,20 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
       if (!userId) return "Create a free account to turn on alerts.";
       const problem = validateAlertSettings(next);
       if (problem) return problem;
+      // A different webhook than the connected one isn't that channel any more
+      const slackWebhook = next.slackWebhook.trim();
+      const sameSlack = !!slackWebhook && slackWebhook === saved?.slackWebhook;
+      const slackChannel = sameSlack ? saved.slackChannel : "";
+      const slackTeam = sameSlack ? saved.slackTeam : "";
       const { error } = await createSupabaseClient()
         .from("tracker_alert_settings")
         .upsert({
           user_id: userId,
           email_enabled: next.emailEnabled,
           email: next.email.trim() || null,
-          slack_webhook: next.slackWebhook.trim() || null,
+          slack_webhook: slackWebhook || null,
+          slack_channel: slackChannel || null,
+          slack_team: slackTeam || null,
           teams_webhook: next.teamsWebhook.trim() || null,
           alert_kinds: next.kinds,
           updated_at: new Date().toISOString(),
@@ -111,7 +127,7 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
         console.error("Error saving alert settings:", error);
         return "Couldn't save your alert settings. Please try again.";
       }
-      setSaved(next);
+      setSaved({ ...next, slackWebhook, slackChannel, slackTeam });
       trackEvent(MixpanelEvent.TARIFF_TRACKER_ALERTS_SAVED, {
         email: next.emailEnabled,
         slack: Boolean(next.slackWebhook),
@@ -121,13 +137,43 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
       });
       return null;
     },
-    [userId]
+    [userId, saved]
   );
+
+  const disconnectSlack = useCallback(async () => {
+    if (!userId || !saved) return null;
+    const { error } = await createSupabaseClient()
+      .from("tracker_alert_settings")
+      .update({ slack_webhook: null, slack_channel: null, slack_team: null, updated_at: new Date().toISOString() })
+      .eq("user_id", userId);
+    if (error) {
+      console.error("Error disconnecting Slack:", error);
+      return "Couldn't disconnect Slack. Please try again.";
+    }
+    setSaved({ ...saved, slackWebhook: "", slackChannel: "", slackTeam: "" });
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_SLACK_DISCONNECTED);
+    return null;
+  }, [userId, saved]);
+
+  const disconnectTeams = useCallback(async () => {
+    if (!userId || !saved) return null;
+    const { error } = await createSupabaseClient()
+      .from("tracker_alert_settings")
+      .update({ teams_webhook: null, updated_at: new Date().toISOString() })
+      .eq("user_id", userId);
+    if (error) {
+      console.error("Error disconnecting Teams:", error);
+      return "Couldn't disconnect Teams. Please try again.";
+    }
+    setSaved({ ...saved, teamsWebhook: "" });
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_TEAMS_DISCONNECTED);
+    return null;
+  }, [userId, saved]);
 
   const settings = saved ?? { ...EMPTY, email: user?.email ?? "" };
   return (
     <AlertSettingsContext.Provider
-      value={{ loading, on: !saved || settingsOn(saved), settings, save }}
+      value={{ loading, on: !saved || settingsOn(saved), settings, save, disconnectSlack, disconnectTeams }}
     >
       {children}
     </AlertSettingsContext.Provider>

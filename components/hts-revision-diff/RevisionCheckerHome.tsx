@@ -153,7 +153,7 @@ export default function RevisionCheckerHome() {
             <li>Review every change: approve, defer or skip, with notes for Claude Code.</li>
             <li>
               When every change has a decision, write the review into the repo:{" "}
-              <code className="rounded bg-base-content/[0.06] px-1 font-mono text-xs">npm run pull-revision -- &lt;revision&gt;</code>
+              <code className="rounded-sm bg-base-content/[0.06] px-1 font-mono text-xs">npm run pull-revision -- &lt;revision&gt;</code>
             </li>
           </ol>
         </Help>
@@ -422,7 +422,7 @@ function AttemptRowView({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pl-0 text-xs sm:pl-[11.25rem]">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pl-0 text-xs sm:pl-45">
         {docs.map((doc) => (
           <span
             key={doc.id}
@@ -569,7 +569,7 @@ function UploadModal({ open, onClose, busy, run }: { open: boolean; onClose: () 
               <input
                 type="file"
                 accept={kind === "ch99_json" ? ".json,application/json" : ".pdf,application/pdf"}
-                className="file-input file:normal-case file:font-medium file-input-sm file-input-bordered w-full border-base-content/15"
+                className="file-input file:normal-case file:font-medium file-input-sm w-full border-base-content/15"
                 onChange={(e) => setFiles((f) => ({ ...f, [kind]: e.target.files?.[0] }))}
               />
             </Field>

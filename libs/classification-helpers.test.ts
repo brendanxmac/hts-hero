@@ -235,7 +235,7 @@ describe("canUserDelete", () => {
 
 describe("hasPreliminaryLevels", () => {
   it("returns true when preliminaryLevels has items", () => {
-    const classification = {
+    const classification: any = {
       preliminaryLevels: [
         { level: "section" as const, candidates: [], analysis: "" },
       ],
@@ -244,12 +244,12 @@ describe("hasPreliminaryLevels", () => {
   })
 
   it("returns false when preliminaryLevels is empty", () => {
-    const classification = { preliminaryLevels: [] }
+    const classification: any = { preliminaryLevels: [] }
     expect(hasPreliminaryLevels(classification)).toBe(false)
   })
 
   it("returns false when preliminaryLevels is undefined", () => {
-    const classification = {}
+    const classification: any = {}
     expect(hasPreliminaryLevels(classification)).toBe(false)
   })
 
@@ -260,7 +260,7 @@ describe("hasPreliminaryLevels", () => {
 
 describe("shouldSkipSectionChapterDiscovery", () => {
   it("returns true for old classification (levels with selections, no preliminaryLevels)", () => {
-    const classification = {
+    const classification: any = {
       preliminaryLevels: [],
       levels: [
         { selection: { htsno: "1234", description: "x" }, candidates: [] },
@@ -270,7 +270,7 @@ describe("shouldSkipSectionChapterDiscovery", () => {
   })
 
   it("returns false when classification has preliminaryLevels", () => {
-    const classification = {
+    const classification: any = {
       preliminaryLevels: [
         { level: "section" as const, candidates: [], analysis: "" },
       ],
@@ -282,7 +282,7 @@ describe("shouldSkipSectionChapterDiscovery", () => {
   })
 
   it("returns false for new classification (no levels with selections)", () => {
-    const classification = {
+    const classification: any = {
       preliminaryLevels: [],
       levels: [{ candidates: [] }],
     }

@@ -8,7 +8,7 @@ import { exposure } from "./lib/metrics";
 
 // What each tariff adds to the highest-duty products: a heat grid in one hue, cobalt, deeper
 // for more. Empty cells stay soft.
-const heat = (pct: number) => `color-mix(in srgb, oklch(var(--p)) ${Math.min(92, 14 + pct * 2.8)}%, transparent)`;
+const heat = (pct: number) => `color-mix(in srgb, var(--color-primary) ${Math.min(92, 14 + pct * 2.8)}%, transparent)`;
 
 export const ExposureMap = ({ products, onOpen }: { products: TrackedProduct[]; onOpen: (key: string) => void }) => {
   const { columns, rows } = exposure(products);
@@ -46,7 +46,7 @@ export const ExposureMap = ({ products, onOpen }: { products: TrackedProduct[]; 
                 {cells.map((pct, i) => (
                   <td
                     key={columns[i]}
-                    className={`h-10 rounded-xl text-center text-xs font-semibold ${pct ? (pct > 14 ? "text-primary-content" : "text-base-content") : "bg-tt-soft text-base-content/40"}`}
+                    className={`h-10 rounded-xl text-center text-xs font-semibold ${pct ? (pct > 14 ? "text-primary-content" : "text-base-content") : "bg-tt-soft text-base-content/50"}`}
                     // Runtime tint (DESIGN_SYSTEM §10)
                     style={pct ? { background: heat(pct) } : undefined}
                   >

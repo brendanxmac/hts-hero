@@ -37,7 +37,14 @@ const readActivePlans = async (admin: SupabaseClient, userId: string): Promise<P
   return (data ?? []).map((row: { product_name: PricingPlan }) => row.product_name);
 };
 
+// The account's sign-up, which starts its 14-day trial
+const readCreatedAt = async (admin: SupabaseClient, userId: string): Promise<string | null> => {
+  const { data, error } = await admin.from("users").select("created_at").eq("id", userId).maybeSingle();
+  if (error) throw error;
+  return (data as { created_at: string } | null)?.created_at ?? null;
+};
+
 export const readTrackerAccess = async (admin: SupabaseClient, userId: string): Promise<TrackerAccess> => {
-  const [usage, activePlans] = await Promise.all([readUsage(admin, userId), readActivePlans(admin, userId)]);
-  return trackerAccessFrom({ usage, activePlans });
+  const [usage, activePlans, createdAt] = await Promise.all([readUsage(admin, userId), readActivePlans(admin, userId), readCreatedAt(admin, userId)]);
+  return trackerAccessFrom({ usage, activePlans, createdAt });
 };

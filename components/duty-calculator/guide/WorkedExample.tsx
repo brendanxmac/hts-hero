@@ -46,7 +46,7 @@ export const WorkedExample = ({ example, asOf }: { example: WorkedExampleData; a
           {parts.map((p) => (
             <Tr key={p.label}>
               <Td className="text-slate-600 skin:text-base-content/70">
-                <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: p.color }} aria-hidden />
+                <span className="mr-2 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: p.color }} aria-hidden />
                 {p.label}
                 {p.code && (
                   <>
@@ -65,7 +65,7 @@ export const WorkedExample = ({ example, asOf }: { example: WorkedExampleData; a
           {example.fees.map((f) => (
             <Tr key={f.name}>
               <Td className="text-slate-600 skin:text-base-content/70">
-                <span className="mr-2 inline-block h-2.5 w-2.5 rounded align-middle" style={{ background: colors[FEES_LABEL] }} aria-hidden />
+                <span className="mr-2 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: colors[FEES_LABEL] }} aria-hidden />
                 {f.name} ({formatPct(f.ratePct)})
               </Td>
               <Td align="right">{formatMoney(f.amount)}</Td>

@@ -46,7 +46,7 @@ export const ShowAll = ({ more, open, onToggle }: { more: string; open: boolean;
     type="button"
     onClick={onToggle}
     aria-expanded={open}
-    className="self-start rounded-full text-xs font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+    className="self-start rounded-full text-xs font-semibold text-primary hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
   >
     {open ? "Show fewer" : `Show ${more}`}
   </button>
@@ -74,6 +74,13 @@ export const importsFilter = (dimension: DimensionId, key: string): FilterState 
 };
 
 // Opens Your Imports with only these filters on
+// The arrow at the right end of every row that opens an import or Your Imports, so it reads as a
+// way to another page. Its row (a button) needs the "group" class for the hover color.
+export const NavArrow = () => <ArrowRightIcon className="h-4 w-4 shrink-0 text-base-content/50 transition-colors group-hover:text-primary" aria-hidden />;
+
+// An empty slot the size of NavArrow, for rows beside linked ones that don't link
+export const NavArrowSpace = () => <span className="h-4 w-4 shrink-0" aria-hidden />;
+
 export const useShowInImports = () => {
   const { replaceFilters } = useTracker();
   const nav = useTrackerNav();

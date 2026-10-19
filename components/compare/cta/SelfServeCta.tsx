@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 // Straight from the price list: the pricing feature's index also pulls in its client components
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "@/components/pricing-calculator/lib/pricing";
+import { FREE_FOREVER_LINE } from "@/components/ui/marketing/comingSoon";
 import * as ui from "@/components/ui/styles";
 
 const PROMISES = [
   "Free and unlimited, no sign-up: every tariff on your import, line by line",
-  "Published prices, monthly plans, no contract",
+  `Tariff Tracker free for ${REVERSE_TRIAL.days} days, no credit card`,
+  `Published prices: Tracker plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import`,
+  "Monthly plans, no contract",
   "No demo, no sales call, no freight account",
   "Start in about a minute",
 ];
@@ -22,8 +25,8 @@ export function SelfServeCta({ title = "Try HTS Hero now. No demo required." }: 
           <h2 className={ui.sectionTitle}>{title}</h2>
           <p className={`${ui.body} max-w-prose`}>
             Enter an HTS code and a country of origin and see the full US duty: the base rate, every Chapter 99 tariff
-            and the fees. It&apos;s free and unlimited. To watch your own imports for tariff changes, the Tariff
-            Tracker starts free, with alerts on {TRIAL_ALLOWANCE.alertImports} imports.
+            and the fees. It&apos;s free and unlimited. To watch your own imports for tariff changes, try the Tariff
+            Tracker free for {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports} imports. {FREE_FOREVER_LINE}
           </p>
           <div className="mt-2 flex flex-wrap gap-3">
             <Link href="/duty-calculator" className={ui.button({ variant: "primary", size: "lg" })}>

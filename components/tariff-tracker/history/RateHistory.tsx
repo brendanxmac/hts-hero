@@ -93,7 +93,7 @@ export const RateHistory = () => {
       teaser={changesTeaser(insights) ?? "Going through your products' history…"}
       points={section.planned}
       preview={<ChartStandIn title="Average Duty Rate Across Your Imports" />}
-      minHeight="min-h-[28rem]"
+      minHeight="min-h-112"
     >
       <HistoryReport />
     </AccountGate>

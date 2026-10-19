@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { ExclamationTriangleIcon, ArrowRightIcon, SparklesIcon } from "@heroicons/react/20/solid";
+import { ExclamationTriangleIcon, ArrowRightIcon, BellAlertIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { Question } from "@/tariffs/engine-v2/types";
 import * as ui from "@/components/ui/styles";
@@ -27,6 +27,9 @@ import { sortBySpecificity } from "../lib/questions";
 import { useLineChanges } from "../lib/useLineChanges";
 import { MAX_COMPARE, TariffFinder } from "../lib/useTariffFinder";
 import { ProhibitedNotice } from "../notices/ProhibitedNotice";
+import { AdcvdTab } from "@/components/adcvd/AdcvdTab";
+import { AdcvdDutyTeaser, useAdcvdFlagged } from "@/components/adcvd/AdcvdTeasers";
+import { NewsTab, useNewsCount } from "../news/NewsTab";
 import { VerifiedNotice } from "../notices/VerifiedNotice";
 import { RateHistoryCard } from "../rate-history";
 import {
@@ -65,24 +68,31 @@ import { useStickyColumn } from "./useStickyColumn";
 // The Tariff Calculator, as on /duty-calculator, the country pages and the Tariff Tracker's
 // Calculator tab. The entry details run across the top; the results below have three tabs (an
 // import's page in the Tracker adds the Overview first: everything about this tariff at a high
-// level, ../overview; on /duty-calculator, "Get Insights" sells it, beside "Get Alerts & News"):
+// level, ../overview; on /duty-calculator, "Get Alerts, Insights & News" sells it with the alerts):
 // - Duty (where the results open): the totals full width, then the duty breakdown (with the headings checked but not
 //   applied at its foot) beside the possible adjustments (and the Tracker's qualification check,
 //   teased), which move with the page. What the
 //   last answer changed is marked in the breakdown.
 // - Recent Changes: the rate history and every change in it, full width, free (the tab counts the
 //   changes); then the Tracker's refund check, teased
+// - AD/CVD: whether any antidumping or countervailing duty case may cover it, and each in full
+//   (a free account; the Duty tab says, in one line, that one may apply)
 // - Compare: other origins side by side, then the Analysis: this import's duty from every origin
 //   (a free account)
+// - News: every tariff action that may touch it (a free account)
 
-type ResultsTab = "overview" | "duty" | "history" | "compare";
+type ResultsTab = "overview" | "duty" | "adcvd" | "history" | "compare" | "news";
+
+const LOCAL_VIEWS = ["history", "adcvd", "news"] as const;
 
 // The calculator's own tabs. The Overview is an import's page's first tab in the Tracker only:
 // here Duty comes first and fast, and the Overview is teased under its totals (OverviewTeaser)
 const TABS: { id: ResultsTab; label: string }[] = [
   { id: "duty", label: "Duty" },
+  { id: "adcvd", label: "AD/CVD" },
   { id: "compare", label: "Compare" },
   { id: "history", label: "History" },
+  { id: "news", label: "News" },
 ];
 
 export const CalculatorWorkspace = ({
@@ -119,10 +129,11 @@ export const CalculatorWorkspace = ({
 
   // Compare is the finder's own view (so a shared link opens on it); Duty Over Time is this
   // page's. `view=analysis` (links from the MCP server) opens on Compare, where the Analysis is.
-  // The results open on Duty, unless a link asks for History
-  const [localTab, setLocalTab] = useState<Exclude<ResultsTab, "compare">>(() =>
-    searchParams.get("view") === "history" ? "history" : "duty",
-  );
+  // The results open on Duty, unless a link asks for History, AD/CVD or News
+  const [localTab, setLocalTab] = useState<Exclude<ResultsTab, "compare">>(() => {
+    const view = searchParams.get("view");
+    return LOCAL_VIEWS.find((v) => v === view) ?? "duty";
+  });
   const ownTab: ResultsTab = f.view === "compare" ? "compare" : localTab;
   const tab: ResultsTab = hostTab ?? ownTab;
   useEffect(() => {
@@ -274,32 +285,46 @@ export const CalculatorWorkspace = ({
   const signedOut = !whyLoading && !canSeeWhy;
   // How often the duty on this import changed: counted in the Recent Changes tab
   const historyChanges = f.history.filter((x) => x.changes.length > 0).length;
+  // What's waiting on the AD/CVD and News tabs
+  const adcvdFlagged = useAdcvdFlagged(selectedElement?.htsno ?? "", country?.code ?? "");
+  const newsCount = useNewsCount(selectedElement?.htsno, country?.code);
   // The calculator's one main way up: track this import (a free account, and the import saved to
   // the Tracker, where it's watched for tariff changes; its savings and past entries are checked
   // there too once savings and audits are back, features.ts)
   const track = useTrackImport(f, "track-import");
+  // Alerts, the Overview's insights and the import's news in one: signed out, the free account's
+  // pitch, led by this import's most pressing real fact (insightsPitch); signed in, straight to the
+  // import's page, on its Overview. A live dot when something is already moving on it
+  const urgent = Boolean(overview?.scheduled || adcvdFlagged || (newsCount ?? 0) > 0);
   const trackButton = page === "calculator" && track && (
-    <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => track.start()}>
-      {SAVINGS_ENABLED ? "Find ways to save" : "Get Alerts & News"}
+    <button
+      type="button"
+      className={`${ui.button({ variant: "primary", size: "sm" })} relative`}
+      onClick={() => track.start("overview", insightsPitch(overview, { news: newsCount, adcvd: adcvdFlagged }))}
+    >
+      {urgent ? (
+        <span className="relative flex h-2 w-2" aria-hidden>
+          {/* The button's own text color, so it reads on the fill in light and dark */}
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-content opacity-60 motion-reduce:animate-none" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-primary-content" />
+        </span>
+      ) : (
+        <BellAlertIcon className="h-4 w-4" aria-hidden />
+      )}
+      {SAVINGS_ENABLED ? "Find ways to save" : "Get Alerts, Insights & News"}
       <ArrowRightIcon className="h-4 w-4" aria-hidden />
-    </button>
-  );
-  // Beside it: the import's Overview (on its page in the Tracker), sold in its own numbers. Signed
-  // out, the free account's pitch; signed in, straight to the import's page, on its Overview
-  const insightsButton = page === "calculator" && track && (
-    <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => track.start("overview", insightsPitch(overview))}>
-      <SparklesIcon className="h-4 w-4" aria-hidden />
-      Get Insights
     </button>
   );
   // Under each tab on /duty-calculator: what tracking it would add
   const trackStrip = page === "calculator" && track && (
     <div className={`${ui.cardSection} flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between`}>
       <p className="m-0 text-sm text-base-content/70">
-        <span className="font-semibold text-base-content">Get alerts and news for this import, free.</span>{" "}
+        <span className="font-semibold text-base-content">
+          {historyChanges > 0 ? `Its duty has changed ${historyChanges} ${historyChanges === 1 ? "time" : "times"}. Know the moment it changes again, free.` : "Know the moment tariffs change on this import, free."}
+        </span>{" "}
         {SAVINGS_ENABLED || AUDITS_ENABLED
           ? "See what you could save on it (trade programs, exemptions, cheaper origins) and check your past entries for duty you may have overpaid."
-          : "Get an alert the moment a tariff change hits it, with the rate before and after, and see exactly how any tariff action affects it."}
+          : "Alerts with the rate before and after, insights on how its duty could be lower, and every tariff update that touches it."}
       </p>
       {trackButton}
     </div>
@@ -354,7 +379,6 @@ export const CalculatorWorkspace = ({
               <>
                 <ShareButtons f={f} />
                 {actions}
-                {insightsButton}
                 {trackButton}
               </>
             }
@@ -362,7 +386,15 @@ export const CalculatorWorkspace = ({
               hostTab ? undefined : (
                 <TabBar
                   label="Results"
-                  options={TABS.map((t) => (t.id === "history" && historyChanges > 0 ? { ...t, count: historyChanges } : t))}
+                  options={TABS.map((t) =>
+                    t.id === "history" && historyChanges > 0
+                      ? { ...t, count: historyChanges }
+                      : t.id === "news" && newsCount
+                        ? { ...t, count: newsCount }
+                        : t.id === "adcvd" && adcvdFlagged
+                          ? { ...t, badge: "May apply", badgeTone: "warning" as const }
+                          : t,
+                  )}
                   value={tab}
                   onChange={changeTab}
                 />
@@ -378,9 +410,29 @@ export const CalculatorWorkspace = ({
                 <ProhibitedNotice prohibitions={result.prohibitions} />
               </div>
             )}
-
             {tab === "overview" && (
-              <OverviewPanel o={overview} colors={sliceColors} canSee={canSeeWhy} onLocked={() => unlockWhy("overview")} onOpenTab={changeTab} />
+              <OverviewPanel
+                o={overview}
+                code={selectedElement.htsno}
+                country={country.code}
+                colors={sliceColors}
+                canSee={canSeeWhy}
+                onLocked={() => unlockWhy("overview")}
+                onOpenTab={changeTab}
+              />
+            )}
+
+            {tab === "adcvd" && (
+              <AdcvdTab code={selectedElement.htsno} country={country.code} page={page} customsValue={f.customsValue} dutyUsd={result.totalDuty} />
+            )}
+
+            {tab === "news" && (
+              <NewsTab
+                code={selectedElement.htsno}
+                country={country.code}
+                page={page}
+                action={page === "calculator" && track ? <ArrowLink onClick={() => track.start("overview")}>Get alerts for this import</ArrowLink> : undefined}
+              />
             )}
 
             {tab === "duty" && (
@@ -398,6 +450,8 @@ export const CalculatorWorkspace = ({
                     className={`${ui.cardSection} border-t border-base-300`}
                   />
                 </div>
+                {/* AD/CVD is never in the estimate: one line says a case may apply, and where to see it */}
+                {/* <AdcvdDutyTeaser code={selectedElement.htsno} country={country.code} onOpen={() => changeTab("adcvd")} /> */}
                 {result.warnings.length > 0 && (
                   <div className={ui.cardSection}>
                     <ul
@@ -519,7 +573,7 @@ export const CalculatorWorkspace = ({
                   onHighlight={setHighlight}
                   headerAction={
                     page === "calculator" ? (
-                      track && <ArrowLink onClick={() => track.start("history")}>Track this import free</ArrowLink>
+                      track && <ArrowLink onClick={() => track.start("history")}>Track this import</ArrowLink>
                     ) : (
                       <RefundsButton conversion={conversion} history={f.history} customsValue={f.customsValue} />
                     )

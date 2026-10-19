@@ -69,7 +69,7 @@ export const RateShift = ({ rows, onPick }: { rows: ShiftRow[]; onPick?: (key: s
                     className={onPick ? "cursor-pointer" : undefined}
                     opacity={hovered === null || active ? 1 : 0.45}
                   >
-                    <rect x={-margin.left} y={i * ROW} width={innerWidth + margin.left + margin.right} height={ROW} fill={active ? "oklch(var(--bc) / 0.04)" : "transparent"} rx={10} />
+                    <rect x={-margin.left} y={i * ROW} width={innerWidth + margin.left + margin.right} height={ROW} fill={active ? "color-mix(in oklab, var(--color-base-content) 4%, transparent)" : "transparent"} rx={10} />
                     <text x={-12} y={y - 3} textAnchor="end" className="fill-base-content text-[12px] font-semibold">
                       {r.label.length > 22 ? `${r.label.slice(0, 21)}…` : r.label}
                     </text>
@@ -77,8 +77,8 @@ export const RateShift = ({ rows, onPick }: { rows: ShiftRow[]; onPick?: (key: s
                       {r.sub}
                     </text>
                     <line x1={x(r.before)} x2={x(r.after)} y1={y} y2={y} stroke={color} strokeWidth={3} strokeLinecap="round" opacity={0.55} />
-                    <circle cx={x(r.before)} cy={y} r={5} fill="oklch(var(--b1))" stroke={MUTED_MARK} strokeWidth={2.5} />
-                    <circle cx={x(r.after)} cy={y} r={active ? 7 : 6} fill={color} stroke="oklch(var(--b1))" strokeWidth={2} />
+                    <circle cx={x(r.before)} cy={y} r={5} fill="var(--color-base-100)" stroke={MUTED_MARK} strokeWidth={2.5} />
+                    <circle cx={x(r.after)} cy={y} r={active ? 7 : 6} fill={color} stroke="var(--color-base-100)" strokeWidth={2} />
                     <text x={Math.max(x(r.before), x(r.after)) + 12} y={y + 4} className="fill-base-content text-[12px] font-semibold tabular-nums">
                       {formatRate(r.after)}
                     </text>

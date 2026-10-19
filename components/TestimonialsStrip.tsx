@@ -70,7 +70,7 @@ export function TestimonialsStrip({
         <div className="w-full flex flex-col">
           {/* Title Section */}
           <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05]">
+            <h2 className="text-4xl sm:text-5xl sm:leading-none md:text-6xl md:leading-none font-bold tracking-tight leading-[1.05]">
               <span className="text-primary">Loved</span> by Trade Pros
             </h2>
             <p className="text-sm sm:text-base text-base-content/60 mx-auto mt-3">
@@ -84,16 +84,16 @@ export function TestimonialsStrip({
             {testimonials.map((testimonial, index) => (
               <figure
                 key={index}
-                className="group relative flex flex-col h-full rounded-2xl p-6 sm:p-7 bg-base-100 border border-base-content/10 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                className="group relative flex flex-col h-full rounded-2xl p-6 sm:p-7 bg-base-100 border border-base-content/10 shadow-xs hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
               >
                 {/* Accent glow on hover */}
                 <div
-                  className={`pointer-events-none absolute -top-16 -right-16 w-40 h-40 rounded-full bg-gradient-to-br ${avatarGradients[testimonial.accent]} opacity-0 group-hover:opacity-10 blur-2xl transition-opacity duration-500`}
+                  className={`pointer-events-none absolute -top-16 -right-16 w-40 h-40 rounded-full bg-linear-to-br ${avatarGradients[testimonial.accent]} opacity-0 group-hover:opacity-10 blur-2xl transition-opacity duration-500`}
                 />
 
                 {/* Decorative quote mark */}
                 <div
-                  className={`absolute top-4 right-5 text-6xl sm:text-7xl font-serif leading-none bg-gradient-to-br ${avatarGradients[testimonial.accent]} bg-clip-text text-transparent opacity-[0.12] select-none`}
+                  className={`absolute top-4 right-5 text-6xl sm:text-7xl sm:leading-none font-serif leading-none bg-linear-to-br ${avatarGradients[testimonial.accent]} bg-clip-text text-transparent opacity-[0.12] select-none`}
                 >
                   &rdquo;
                 </div>
@@ -105,13 +105,13 @@ export function TestimonialsStrip({
                   ))}
                 </div>
 
-                <blockquote className="flex-1 text-base sm:text-lg text-base-content/80 leading-relaxed font-medium relative z-10">
+                <blockquote className="flex-1 text-base sm:text-lg sm:leading-7 text-base-content/80 leading-relaxed font-medium relative z-10">
                   {testimonial.quote}
                 </blockquote>
 
                 <figcaption className="flex items-center gap-3 mt-6 pt-5 border-t border-base-content/10 relative z-10">
                   <div
-                    className={`flex items-center justify-center w-11 h-11 shrink-0 rounded-full bg-gradient-to-br ${avatarGradients[testimonial.accent]} text-white font-bold text-sm shadow-md`}
+                    className={`flex items-center justify-center w-11 h-11 shrink-0 rounded-full bg-linear-to-br ${avatarGradients[testimonial.accent]} text-white font-bold text-sm shadow-md`}
                   >
                     {getInitials(testimonial.company)}
                   </div>

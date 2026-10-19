@@ -14,6 +14,8 @@ module.exports = {
       // The Tariff Tracker's extra surfaces and marks (palette.tracker.extra), set inside .hts-tracker
       colors: {
         "tt-soft": "var(--tt-soft)",
+        "tt-soft-high": "var(--tt-soft-high)",
+        "tt-rule": "var(--tt-rule)",
         "tt-side": "var(--tt-side)",
         "tt-side-card": "var(--tt-side-card)",
         "tt-side-active": "var(--tt-side-active)",
@@ -72,7 +74,6 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/typography"),
-    require("daisyui"),
     // The analytical theme's palette, scoped to .hts-theme (components/ui/theme/palette.js)
     require("./components/ui/theme/plugin"),
     // follow-dark: dark styles for marketing pieces, only on pages that opt in to following the
@@ -91,55 +92,5 @@ module.exports = {
       addVariant("tracker", [".hts-tracker &", "&.hts-tracker"]);
     }),
   ],
-  daisyui: {
-    // Light & dark themes are added by default (it switches automatically based on OS settings)
-    // You can add another theme among the list of 30+
-    // Add "data-theme='theme_name" to any HTML tag to enable the 'theme_name' theme.
-    // https://daisyui.com/
-    themes: [
-      // "black",
-      "light",
-      "dark",
-      // "cupcake",
-      // "bumblebee",
-      // "emerald",
-      // "corporate",
-      // "synthwave",
-      // "retro",
-      // "cyberpunk",
-      // "valentine",
-      // "halloween",
-      // "garden",
-      // "forest",
-      // "aqua",
-      // "lofi",
-      // "pastel",
-      // "fantasy",
-      // "wireframe",
-      // "black",
-      // "luxury",
-      // "dracula",
-      // "cmyk",
-      // "autumn",
-      // "business",
-      // "acid",
-      // "lemonade",
-      // "night",
-      // "coffee",
-      // "winter",
-      // "dim",
-      // "nord",
-      // "sunset",
-      {
-        light: {
-          ...require("daisyui/src/theming/themes")["light"],
-          "primary-content": "#FFFFFF", // text on primary button
-          "secondary-content": "#FFFFFF",
-          "accent-content": "#FFFFFF",
-        },
-      },
-    ],
-    darkTheme: "dark",
-    base: true,
-  },
+
 };

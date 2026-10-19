@@ -13,7 +13,8 @@ export const maxDuration = 300
 // Asks Claude for a high-level overview of the changes listed in the change record
 // (whatever their review decision; differences outside the change record are left
 // out) and saves it on the comparison. Replaces any earlier one.
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

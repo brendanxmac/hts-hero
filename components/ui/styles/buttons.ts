@@ -8,13 +8,13 @@ type ButtonVariant = "primary" | "secondary" | "ghost";
 type ButtonSize = "sm" | "md" | "lg";
 
 const BASE =
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium tracker:rounded-full tracker:font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium tracker:rounded-full tracker:font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 disabled:pointer-events-none disabled:opacity-50";
 
 const VARIANTS: Record<ButtonVariant, string> = {
   // The one main action in a region
-  primary: "bg-primary text-primary-content shadow-sm tracker:shadow-none hover:bg-primary/90",
+  primary: "bg-primary text-primary-content shadow-xs tracker:shadow-none hover:bg-primary/90",
   // Everything else
-  secondary: "border border-base-content/15 bg-base-100 text-base-content shadow-sm tracker:border-base-300 tracker:shadow-none hover:bg-base-200",
+  secondary: "border border-base-content/15 bg-base-100 text-base-content shadow-xs tracker:border-base-300 tracker:shadow-none hover:bg-base-200",
   // Nav items, dismiss and icon buttons
   ghost: "text-base-content/70 hover:bg-base-200 hover:text-base-content",
 };

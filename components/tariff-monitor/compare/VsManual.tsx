@@ -14,7 +14,7 @@ export const VsManual = () => (
         products is the work the Tracker does for you.
       </SectionIntro>
       <div className={`${mk.card} mt-12 overflow-x-auto`}>
-        <table className="w-full min-w-[48rem] text-left">
+        <table className="w-full min-w-3xl text-left">
           <thead>
             <tr className="border-b border-base-300">
               <th className="px-6 py-5">

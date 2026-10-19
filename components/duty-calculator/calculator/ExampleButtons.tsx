@@ -13,7 +13,7 @@ export const ExampleButtons = ({ examples, onExample }: { examples: Example[]; o
         key={`${example.code}-${example.country}`}
         type="button"
         onClick={() => onExample(example)}
-        className="group flex items-center justify-between gap-4 rounded-md border border-base-300 bg-base-200 px-4 py-3.5 text-left transition-colors hover:border-primary/30 hover:bg-primary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+        className="group flex items-center justify-between gap-4 rounded-md border border-base-300 bg-base-200 px-4 py-3.5 text-left transition-colors hover:border-primary/30 hover:bg-primary/10 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-primary"
       >
         <span className="flex flex-col">
           <span className={ui.cardTitle}>

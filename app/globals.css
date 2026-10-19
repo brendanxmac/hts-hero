@@ -1,295 +1,445 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap')
+layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-html,
-body {
-  scroll-behavior: smooth !important;
+@config '../tailwind.config.js';
+
+/*
+  daisyUI. The light and dark themes keep the colors and shapes of daisyUI 4's light and dark
+  (with white text on primary, secondary and accent in light), so pages outside .hts-theme look
+  as they did. .hts-theme pages take the palette instead (components/ui/theme/plugin.js).
+*/
+@plugin "daisyui" {
+  themes: false;
 }
 
-/* It makes the HTML progress bar filling smooth when value change. */
-progress::-webkit-progress-value {
-  transition: 0.6s width ease-out;
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  color-scheme: light;
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(96.1151% 0 0);
+  --color-base-300: oklch(92.4169% 0.00108 197.137559);
+  --color-base-content: oklch(27.8078% 0.029596 256.847952);
+  --color-primary: oklch(49.12% 0.3096 275.75);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(69.71% 0.329 342.55);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(76.76% 0.184 183.61);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(32.1785% 0.02476 255.701624);
+  --color-neutral-content: oklch(89.4994% 0.011585 252.096176);
+  --radius-box: 1rem;
+  --radius-field: 0.5rem;
+  --radius-selector: 1.9rem;
+  --size-field: 0.25rem;
+  --size-selector: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+  --color-info: oklch(72.06% 0.191 231.6);
+  --color-info-content: oklch(0% 0 0);
+  --color-success: oklch(64.8% 0.15 160);
+  --color-success-content: oklch(0% 0 0);
+  --color-warning: oklch(84.71% 0.199 83.87);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(71.76% 0.221 22.18);
+  --color-error-content: oklch(0% 0 0);
 }
 
-/* Animation for table rows appearing smoothly */
-@keyframes fadeInRow {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@plugin "daisyui/theme" {
+  name: "dark";
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: oklch(25.3267% 0.015896 252.417568);
+  --color-base-200: oklch(23.2607% 0.013807 253.100675);
+  --color-base-300: oklch(21.1484% 0.01165 254.087939);
+  --color-base-content: oklch(74.6477% 0.0216 264.435964);
+  --color-primary: oklch(65.69% 0.196 275.75);
+  --color-primary-content: oklch(13.138% 0.0392 275.75);
+  --color-secondary: oklch(74.8% 0.26 342.55);
+  --color-secondary-content: oklch(14.96% 0.052 342.55);
+  --color-accent: oklch(74.51% 0.167 183.61);
+  --color-accent-content: oklch(14.902% 0.0334 183.61);
+  --color-neutral: oklch(31.3815% 0.021108 254.139175);
+  --color-neutral-content: oklch(74.6477% 0.0216 264.435964);
+  --radius-box: 1rem;
+  --radius-field: 0.5rem;
+  --radius-selector: 1.9rem;
+  --size-field: 0.25rem;
+  --size-selector: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+  --color-info: oklch(72.06% 0.191 231.6);
+  --color-info-content: oklch(0% 0 0);
+  --color-success: oklch(64.8% 0.15 160);
+  --color-success-content: oklch(0% 0 0);
+  --color-warning: oklch(84.71% 0.199 83.87);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(71.76% 0.221 22.18);
+  --color-error-content: oklch(0% 0 0);
 }
 
-/* Success border animation for completed classifications */
-@keyframes success-border-pulse {
-  0%,
-  100% {
-    border-color: rgba(34, 197, 94, 0.4);
-  }
-  50% {
-    border-color: rgba(34, 197, 94, 0.7);
-  }
-}
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
 
-.animate-success-border {
-  animation: success-border-pulse 2s ease-in-out infinite;
-}
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
 
-/* ── Analysis loading animations ── */
-@keyframes shimmerSweep {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes analysisGlow {
-  0%,
-  100% {
-    opacity: 0.25;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.2);
-  }
-}
-
-@keyframes sparkleRotate {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  25% {
-    transform: rotate(90deg) scale(1.15);
-  }
-  50% {
-    transform: rotate(180deg) scale(1);
-  }
-  75% {
-    transform: rotate(270deg) scale(1.1);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
-}
-
-@keyframes progressSlide {
-  0% {
-    transform: translateX(-200%);
-  }
-  100% {
-    transform: translateX(400%);
-  }
-}
-
-@keyframes particleFloat {
-  0% {
-    transform: translateY(0) scale(0);
-    opacity: 0;
-  }
-  15% {
-    transform: translateY(-4px) scale(1);
-    opacity: 0.9;
-  }
-  70% {
-    transform: translateY(-20px) scale(0.7);
-    opacity: 0.4;
-  }
-  100% {
-    transform: translateY(-28px) scale(0);
-    opacity: 0;
+  /* Tailwind CSS v4 gives buttons the default cursor; keep v3's pointer */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
 
-.analysis-shimmer-line {
-  --shimmer-delay: 0s;
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.25rem;
-}
-
-.analysis-shimmer-line::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 25%,
-    rgba(255, 255, 255, 0.35) 50%,
-    transparent 75%
-  );
-  animation: shimmerSweep 2s ease-in-out infinite;
-  animation-delay: var(--shimmer-delay);
-}
-
-/* ── GRI Defense Hero Marketing ── */
-@keyframes griShimmer {
-  0% {
-    transform: translateX(-100%) skewX(-15deg);
-    opacity: 0;
+/*
+  daisyUI 4's control sizes, which the layouts were built around (daisyUI 5 made buttons and
+  inputs 40px tall instead of 48px, and badges taller). Only the size variables are set, so
+  utilities such as h-10 still win. The responsive sizes the code uses are repeated in their
+  breakpoints, after the base sizes.
+*/
+@layer utilities {
+  .btn { --size: 3rem; }
+  .btn-xs { --size: 1.5rem; --fontsize: 0.75rem; }
+  .btn-sm { --size: 2rem; --fontsize: 0.875rem; }
+  .btn-md { --size: 3rem; --fontsize: 0.875rem; }
+  .btn-lg { --size: 4rem; --btn-p: 1.5rem; }
+  .input { --in-size-mul: 12; }
+  .input-xs { --in-size-mul: 6; }
+  .input-sm { --in-size-mul: 8; }
+  .input-md { --in-size-mul: 12; }
+  .input-lg { --in-size-mul: 16; }
+  .select { --sl-size-mul: 12; }
+  .select-xs { --sl-size-mul: 6; }
+  .select-sm { --sl-size-mul: 8; }
+  .select-md { --sl-size-mul: 12; }
+  .select-lg { --sl-size-mul: 16; }
+  .badge { --size: 1.25rem; }
+  .badge-xs { --size: 0.75rem; }
+  .badge-sm { --size: 1rem; }
+  .badge-md { --size: 1.25rem; }
+  .badge-lg { --size: 1.5rem; }
+  .card { --card-p: 2rem; --card-fs: 1em; --cardtitle-fs: 1.25rem; }
+  /* Checkboxes rounded like buttons, as in daisyUI 4 (badges and toggles keep the pill) */
+  .checkbox { border-radius: var(--radius-field); }
+  /* Cards round to 20px in the Tracker's look (ui.card, tt.panel), including a card that is
+     itself the .hts-tracker root (a dialog's panel). Here, not in the theme plugin's base styles,
+     so it wins over the rounded-lg utility */
+  .hts-tracker .rounded-lg,
+  .hts-tracker.rounded-lg {
+    border-radius: 1.25rem;
   }
-  50% {
-    opacity: 0.5;
+  @media (width >= 40rem) {
+    .sm\:btn-md { --size: 3rem; --fontsize: 0.875rem; }
   }
-  100% {
-    transform: translateX(200%) skewX(-15deg);
-    opacity: 0;
-  }
-}
-.gri-shimmer-bg-primary::after,
-.gri-shimmer-bg-secondary::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  animation: griShimmer 2s ease-in-out infinite;
-  pointer-events: none;
-}
-.gri-shimmer-bg-secondary::after {
-  animation-delay: 0.5s;
-}
-@keyframes griFlowLine {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-.gri-flow-line {
-  animation: griFlowLine 3s ease-in-out infinite;
-}
-@keyframes griFlowArrow {
-  0%,
-  100% {
-    opacity: 0.4;
-    transform: translateX(0);
-  }
-  50% {
-    opacity: 0.8;
-    transform: translateX(4px);
-  }
-}
-.gri-flow-arrow {
-  animation: griFlowArrow 3s ease-in-out infinite;
-}
-
-/* Glassy heading hero */
-@keyframes griGlowFloat {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.35;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 0.6;
-  }
-}
-.gri-glow-float.primary {
-  background: hsl(var(--p) / 0.2);
-  animation: griGlowFloat 8s ease-in-out infinite;
-}
-.gri-glow-float.secondary {
-  background: hsl(var(--s) / 0.2);
-  animation: griGlowFloat 10s ease-in-out infinite 1s;
-}
-.gri-glow-float.accent {
-  background: hsl(var(--a) / 0.15);
-  animation: griGlowFloat 9s ease-in-out infinite 2s;
-}
-
-@keyframes griTypingCursor {
-  0%,
-  50% {
-    opacity: 1;
-  }
-  51%,
-  100% {
-    opacity: 0;
+  @media (width >= 48rem) {
+    .md\:btn-lg { --size: 4rem; --btn-p: 1.5rem; }
+    .md\:input-lg { --in-size-mul: 16; }
   }
 }
 
-@keyframes griGlowShimmer {
-  0% {
-    background-position: 200% 50%;
+@layer utilities {
+  html,
+  body {
+    scroll-behavior: smooth !important;
   }
-  100% {
-    background-position: -200% 50%;
-  }
-}
-.gri-glow-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.03) 25%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.03) 75%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  animation: griGlowShimmer 4s ease-in-out infinite;
-}
 
-@keyframes griFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
+  /* It makes the HTML progress bar filling smooth when value change. */
+  progress::-webkit-progress-value {
+    transition: 0.6s width ease-out;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.gri-fade-in {
-  animation: griFadeIn 1s ease-out forwards;
-}
 
-.gri-text-glow {
-  text-shadow:
-    0 0 40px hsl(var(--p) / 0.3),
-    0 0 80px hsl(var(--s) / 0.2);
-}
+  /* Animation for table rows appearing smoothly */
+  @keyframes fadeInRow {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-@keyframes griFloatVertical {
-  0%,
-  100% {
-    transform: translateY(-50%) translateY(0);
-    opacity: 0.2;
+  /* Success border animation for completed classifications */
+  @keyframes success-border-pulse {
+    0%,
+    100% {
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+    50% {
+      border-color: rgba(34, 197, 94, 0.7);
+    }
   }
-  50% {
-    transform: translateY(-50%) translateY(-8px);
-    opacity: 0.5;
+
+  .animate-success-border {
+    animation: success-border-pulse 2s ease-in-out infinite;
   }
-}
-.gri-float-vertical {
-  animation: griFloatVertical 5s ease-in-out infinite;
-}
-.gri-float-vertical-delayed {
-  animation: griFloatVertical 5s ease-in-out infinite 2.5s;
+
+  /* ── Analysis loading animations ── */
+  @keyframes shimmerSweep {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes analysisGlow {
+    0%,
+    100% {
+      opacity: 0.25;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.2);
+    }
+  }
+
+  @keyframes sparkleRotate {
+    0% {
+      transform: rotate(0deg) scale(1);
+    }
+    25% {
+      transform: rotate(90deg) scale(1.15);
+    }
+    50% {
+      transform: rotate(180deg) scale(1);
+    }
+    75% {
+      transform: rotate(270deg) scale(1.1);
+    }
+    100% {
+      transform: rotate(360deg) scale(1);
+    }
+  }
+
+  @keyframes progressSlide {
+    0% {
+      transform: translateX(-200%);
+    }
+    100% {
+      transform: translateX(400%);
+    }
+  }
+
+  @keyframes particleFloat {
+    0% {
+      transform: translateY(0) scale(0);
+      opacity: 0;
+    }
+    15% {
+      transform: translateY(-4px) scale(1);
+      opacity: 0.9;
+    }
+    70% {
+      transform: translateY(-20px) scale(0.7);
+      opacity: 0.4;
+    }
+    100% {
+      transform: translateY(-28px) scale(0);
+      opacity: 0;
+    }
+  }
+
+  .analysis-shimmer-line {
+    --shimmer-delay: 0s;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.25rem;
+  }
+
+  .analysis-shimmer-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 25%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 75%
+    );
+    animation: shimmerSweep 2s ease-in-out infinite;
+    animation-delay: var(--shimmer-delay);
+  }
+
+  /* ── GRI Defense Hero Marketing ── */
+  @keyframes griShimmer {
+    0% {
+      transform: translateX(-100%) skewX(-15deg);
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      transform: translateX(200%) skewX(-15deg);
+      opacity: 0;
+    }
+  }
+  .gri-shimmer-bg-primary::after,
+  .gri-shimmer-bg-secondary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: griShimmer 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .gri-shimmer-bg-secondary::after {
+    animation-delay: 0.5s;
+  }
+  @keyframes griFlowLine {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  .gri-flow-line {
+    animation: griFlowLine 3s ease-in-out infinite;
+  }
+  @keyframes griFlowArrow {
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: translateX(0);
+    }
+    50% {
+      opacity: 0.8;
+      transform: translateX(4px);
+    }
+  }
+  .gri-flow-arrow {
+    animation: griFlowArrow 3s ease-in-out infinite;
+  }
+
+  /* Glassy heading hero */
+  @keyframes griGlowFloat {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.35;
+    }
+    50% {
+      transform: scale(1.15);
+      opacity: 0.6;
+    }
+  }
+  .gri-glow-float.primary {
+    background: hsl(var(--p) / 0.2);
+    animation: griGlowFloat 8s ease-in-out infinite;
+  }
+  .gri-glow-float.secondary {
+    background: hsl(var(--s) / 0.2);
+    animation: griGlowFloat 10s ease-in-out infinite 1s;
+  }
+  .gri-glow-float.accent {
+    background: hsl(var(--a) / 0.15);
+    animation: griGlowFloat 9s ease-in-out infinite 2s;
+  }
+
+  @keyframes griTypingCursor {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    51%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes griGlowShimmer {
+    0% {
+      background-position: 200% 50%;
+    }
+    100% {
+      background-position: -200% 50%;
+    }
+  }
+  .gri-glow-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.03) 75%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: griGlowShimmer 4s ease-in-out infinite;
+  }
+
+  @keyframes griFadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .gri-fade-in {
+    animation: griFadeIn 1s ease-out forwards;
+  }
+
+  .gri-text-glow {
+    text-shadow:
+      0 0 40px hsl(var(--p) / 0.3),
+      0 0 80px hsl(var(--s) / 0.2);
+  }
+
+  @keyframes griFloatVertical {
+    0%,
+    100% {
+      transform: translateY(-50%) translateY(0);
+      opacity: 0.2;
+    }
+    50% {
+      transform: translateY(-50%) translateY(-8px);
+      opacity: 0.5;
+    }
+  }
+  .gri-float-vertical {
+    animation: griFloatVertical 5s ease-in-out infinite;
+  }
+  .gri-float-vertical-delayed {
+    animation: griFloatVertical 5s ease-in-out infinite 2.5s;
+  }
 }
 
 @layer base {
   .btn-gradient {
-    @apply !bg-gradient !bg-[length:300%_300%] hover:saturate-[1.2] shadow duration-100 !border-0 !border-transparent !bg-transparent animate-shimmer disabled:!bg-none disabled:!bg-gray-500/30  !text-white;
+    @apply bg-gradient! bg-size-[300%_300%]! hover:saturate-[1.2] shadow-sm duration-100 border-0! border-transparent! bg-transparent! animate-shimmer disabled:bg-none! disabled:bg-gray-500/30!  text-white!;
   }
   .btn {
-    @apply !capitalize;
+    @apply capitalize!;
   }
 }

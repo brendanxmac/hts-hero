@@ -139,8 +139,8 @@ export const Dot = ({ cx, cy, color, active = false, hollow = false }: { cx: num
     cx={cx}
     cy={cy}
     r={active ? 6 : 4.5}
-    fill={hollow ? "oklch(var(--b1))" : color}
-    stroke={hollow ? color : "oklch(var(--b1))"}
+    fill={hollow ? "var(--color-base-100)" : color}
+    stroke={hollow ? color : "var(--color-base-100)"}
     strokeWidth={hollow ? 2.5 : 2}
   />
 );

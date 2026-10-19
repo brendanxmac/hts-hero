@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic"
 
 // A message exactly as it will go out, with the batch's current note: the email's subject and
 // HTML, or the Slack / Teams payload
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props0: { params: Promise<{ id: string }> }) {
+  const params = await props0.params;
   const { db, denied } = await requireAdmin()
   if (denied) return denied
   const { data: m, error } = await db.from("email_messages").select("channel, recipient, template, props, batch_id").eq("id", params.id).single()
@@ -28,7 +29,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 
 // { action: "remove" | "restore" } takes one recipient out of a pending batch or back in;
 // "test" sends the admin a copy of this exact email
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireAdmin()
   if (denied) return denied
   const { action } = await req.json()

@@ -57,7 +57,7 @@ export const CodeRow = ({
           }
         }}
         aria-current={selected || undefined}
-        className="flex min-w-0 flex-1 cursor-pointer items-center gap-4 px-5 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40"
+        className="flex min-w-0 flex-1 cursor-pointer items-center gap-4 px-5 py-3 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40"
       >
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           {above}
@@ -76,7 +76,7 @@ export const CodeRow = ({
                 <SparklesIcon className="h-3.5 w-3.5" aria-hidden />
                 HTS Hero Analysis
               </span>
-              <MarkdownProse size="sm" className="prose-p:my-2 prose-headings:mt-3 prose-headings:mb-1 first:prose-headings:mt-0">
+              <MarkdownProse size="sm" className="prose-p:my-2 prose-headings:mt-3 prose-headings:mb-1 prose-headings:first:mt-0">
                 {classification.levels[0].analysisReason}
               </MarkdownProse>
             </div>
@@ -104,7 +104,7 @@ export const CodeRow = ({
           </button>
         )}
         <ChevronRightIcon
-          className="h-5 w-5 shrink-0 text-base-content/40 transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+          className="h-5 w-5 shrink-0 text-base-content/50 transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
           aria-hidden
         />
       </div>

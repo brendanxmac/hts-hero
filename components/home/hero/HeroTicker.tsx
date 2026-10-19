@@ -6,11 +6,14 @@ import { PROGRAM } from "@/components/ui/marketing";
 import { DEMO_ALERTS } from "@/components/tariff-monitor/lib/demoAlerts";
 import { LANES } from "@/components/tariff-monitor";
 import { CommandCenter } from "../command/CommandCenter";
+import { ComingChip } from "@/components/ui/marketing/ComingChip";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { OFFER } from "../lib/offer";
 import { darkBand, display, followPage, glow, moneyButton } from "../lib/theme";
 
 // The homepage hero: a trading-floor ticker of real 2026 tariff changes runs across the top
-// of a dark hero; below, the promise beside the example account (monitoring). One button.
+// of a dark hero; below, the promise beside the example account (monitoring, savings, audit). One button.
+// Savings and audits show ahead of the Tracker (MARKET_SAVINGS / MARKET_AUDITS), labeled while off.
 
 const TAPE = [
   ...DEMO_ALERTS.map((a) => ({ key: a.id, program: a.program as string, color: PROGRAM[a.program], text: a.title, change: a.change, date: a.date, up: a.kind === "increase" })),
@@ -59,16 +62,16 @@ export const HeroTicker = () => (
   <header className={`relative overflow-hidden ${darkBand}`}>
     <div aria-hidden className={glow} />
     <Tape />
-    <div className="relative mx-auto grid max-w-screen-xl grid-cols-1 items-center gap-14 px-6 pb-24 pt-16 lg:grid-cols-[minmax(0,6fr)_minmax(0,6fr)] lg:px-8 lg:pt-10">
+    <div className="relative mx-auto grid max-w-(--breakpoint-xl) grid-cols-1 items-center gap-14 px-6 pb-24 pt-16 lg:grid-cols-[minmax(0,6fr)_minmax(0,6fr)] lg:px-8 lg:pt-10">
       <div>
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary">US Tariff Intelligence</p>
         <h1 className={`${display} mt-4 text-5xl font-semibold leading-[1.04] tracking-tight lg:text-[3.4rem]`}>
-          Monitor Every Tariff{" "}
-          <span className="text-primary">on Your Imports</span>
+          Monitor &amp; Audit your US Tariffs{" "}
+          <span className="text-primary">on Autopilot</span>
         </h1>
         <p className="mt-5 text-xl leading-relaxed text-base-content/70">
-          HTS Hero tracks every tariff on your imports, alerts you the moment a change hits one, and runs impact checks so you see exactly how
-          each new tariff action affects you, 24/7.
+          HTS Hero calculates every duty, alerts you the moment a change hits your products, uncovers possible savings, and audits every
+          import for duty you may get back, 24/7.
         </p>
         <Link
           href={OFFER.href}
@@ -78,6 +81,11 @@ export const HeroTicker = () => (
           <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
         <p className="mt-4 max-w-md text-sm text-base-content/60">{OFFER.note}</p>
+        {(!SAVINGS_ENABLED || !AUDITS_ENABLED) && (
+          <p className="mt-3 flex max-w-md flex-wrap items-center gap-2 text-sm text-base-content/60">
+            <ComingChip /> Automatic savings detection and auditing, included in the trial and every plan
+          </p>
+        )}
       </div>
       <div className={followPage}>
         <CommandCenter />

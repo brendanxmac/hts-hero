@@ -186,7 +186,7 @@ export const CountryCard = ({
                   {country.flag}
                 </span>
                 <span className="truncate">{country.name}</span>
-                <ChevronDownIcon className="h-4 w-4 shrink-0 text-base-content/40 group-hover:text-base-content/70" aria-hidden />
+                <ChevronDownIcon className="h-4 w-4 shrink-0 text-base-content/50 group-hover:text-base-content/70" aria-hidden />
               </CountryPicker>
             ) : (
               <span className="flex items-center gap-2 text-base font-semibold text-base-content">
@@ -204,7 +204,7 @@ export const CountryCard = ({
         {(onRemove || onClose) && (
           <button
             type="button"
-            className="rounded p-1 text-base-content/40 hover:bg-base-200 hover:text-base-content"
+            className="rounded-sm p-1 text-base-content/50 hover:bg-base-200 hover:text-base-content"
             aria-label={onClose ? "Hide" : `Remove ${country.name} from the comparison`}
             title={onClose ? "Hide" : "Remove"}
             onClick={onClose ?? onRemove}
@@ -244,7 +244,7 @@ export const CountryCard = ({
           return (
             <div key={row.key} className="flex h-12 items-center justify-between gap-3 border-t border-base-300">
               <dt className={`flex min-w-0 items-center gap-2 ${line ? "text-base-content" : "text-base-content/60"}`}>
-                <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: line ? colors[row.part] : "oklch(var(--bc) / 0.15)" }} aria-hidden />
+                <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: line ? colors[row.part] : "color-mix(in oklab, var(--color-base-content) 15%, transparent)" }} aria-hidden />
                 <span className="flex min-w-0 flex-col leading-tight">
                   <span className="truncate" title={row.name}>
                     {row.name}
@@ -293,7 +293,7 @@ export const CountryCard = ({
       {supply && (
         // How much of this the US already buys from there: the value, its rank among the
         // suppliers and a bar of its share (the biggest share shown fills it)
-        <section className="mt-2 flex h-[6.5rem] flex-col justify-center gap-1.5 rounded-xl bg-tt-soft px-3.5" title={`US imports of this from ${country.name} in ${supply.year} (U.S. Census Bureau)`}>
+        <section className="mt-2 flex h-26 flex-col justify-center gap-1.5 rounded-xl bg-tt-soft px-3.5" title={`US imports of this from ${country.name} in ${supply.year} (U.S. Census Bureau)`}>
           <h5 className="m-0 flex items-center justify-between gap-2">
             <span className={ui.label}>US Import Volume</span>
             {supply.value > 0 && (
@@ -314,7 +314,14 @@ export const CountryCard = ({
                 </span>
               </>
             ) : (
-              <span className="text-sm text-base-content/60">The US doesn&apos;t import this from there yet</span>
+              // No Census figure: little or none, not "never" (the data is past imports, and very small
+              // shipments may not show)
+              <span
+                className="text-sm leading-snug text-base-content/70"
+                title={`U.S. Census Bureau import data for ${supply.year}: very small amounts may not show`}
+              >
+                Census data shows little or no US imports of this from {country.name} in {supply.year}.
+              </span>
             )}
           </div>
         </section>

@@ -77,13 +77,13 @@ export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder;
             <button
               type="button"
               onClick={() => open(r)}
-              className="group grid w-full grid-cols-[minmax(0,9rem)_minmax(0,1fr)_auto_1rem] items-center gap-4 px-6 py-3 text-left text-sm tabular-nums transition-colors hover:bg-tt-soft focus-visible:bg-tt-soft focus-visible:outline-none"
+              className="group grid w-full grid-cols-[minmax(0,9rem)_minmax(0,1fr)_auto_1rem] items-center gap-4 px-6 py-3 text-left text-sm tabular-nums transition-colors hover:bg-tt-soft focus-visible:bg-tt-soft focus-visible:outline-hidden"
             >
               <span className={`${mono.className} font-semibold text-base-content`}>{r.element.htsno}</span>
               <span className="flex min-w-0 items-baseline gap-2 truncate text-base-content/80">
                 <span aria-hidden>{r.country.flag}</span>
                 {r.country.name}
-                <span className="text-xs text-base-content/50">{ago(r.lookup.at)}</span>
+                <span className="text-xs text-base-content/60">{ago(r.lookup.at)}</span>
               </span>
               <span className="font-semibold text-base-content">{formatPct(Math.round(r.pct * 100) / 100)}</span>
               <ChevronRightIcon className="h-4 w-4 text-base-content/30 transition-colors group-hover:text-base-content/70" aria-hidden />

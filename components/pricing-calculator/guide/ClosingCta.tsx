@@ -8,7 +8,7 @@ export const ClosingCta = () => (
   <section className={`${mk.band} hts-tracker-on-dark relative overflow-hidden bg-base-200 text-base-content`} aria-labelledby="pricing-cta-title">
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_50%_0%,oklch(var(--p)/0.3),transparent)]"
+      className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_50%_0%,color-mix(in_oklab,var(--color-primary)_30%,transparent),transparent)]"
     />
     <div className={`${mk.container} relative flex flex-col items-center text-center`}>
       <p className={mk.eyebrowDark}>Large catalog or team?</p>

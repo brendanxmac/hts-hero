@@ -70,7 +70,7 @@ export function CountryExamples({
                   : e.tariffs.map((t) => (
                       <span key={t.code} className="block py-0.5">
                         <span className={`${mono.className} text-xs text-slate-500 skin:text-base-content/60`}>{t.code}</span> {t.name}
-                        {t.ratePct !== undefined && <span className="text-slate-400 skin:text-base-content/50"> · {t.ratePct}%</span>}
+                        {t.ratePct !== undefined && <span className="text-slate-400 skin:text-base-content/60"> · {t.ratePct}%</span>}
                       </span>
                     ))}
               </Td>

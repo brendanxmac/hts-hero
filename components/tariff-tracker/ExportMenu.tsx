@@ -18,7 +18,7 @@ export const ExportMenu = ({ onExport }: { onExport: (format: ExportFormat) => v
       Export
       <ChevronDownIcon className="-mr-1 h-4 w-4 text-base-content/60" aria-hidden />
     </Menu.Button>
-    <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-64 rounded-2xl p-2 focus:outline-none`}>
+    <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-64 rounded-2xl p-2 focus:outline-hidden`}>
       {EXPORTS.map(({ format, label, note, Icon }) => (
         <Menu.Item key={format}>
           {({ active }) => (

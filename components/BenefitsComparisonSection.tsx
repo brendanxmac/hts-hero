@@ -104,7 +104,7 @@ function ComparisonRow({
               />
             </div>
             <span
-              className={`text-lg sm:text-xl font-bold tabular-nums min-w-[4rem] ${!heroIsWinner ? "text-primary" : "text-base-content/40"}`}
+              className={`text-lg sm:text-xl font-bold tabular-nums min-w-16 ${!heroIsWinner ? "text-primary" : "text-base-content/40"}`}
             >
               {comparison.manual.value}
               {comparison.unit}
@@ -127,7 +127,7 @@ function ComparisonRow({
               />
             </div>
             <span
-              className={`text-lg sm:text-xl font-bold tabular-nums min-w-[4rem] ${heroIsWinner ? "text-primary" : "text-base-content/40"}`}
+              className={`text-lg sm:text-xl font-bold tabular-nums min-w-16 ${heroIsWinner ? "text-primary" : "text-base-content/40"}`}
             >
               {comparison.htsHero.value}
               {comparison.unit}
@@ -238,14 +238,14 @@ export default function BenefitsComparisonSection() {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-base-content mb-4">
             <span className="text-primary">Erase</span> Your Competition
           </h2>
-          <p className="text-base sm:text-lg text-base-content/50 max-w-xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg sm:leading-7 text-base-content/50 max-w-xl mx-auto leading-relaxed">
             Fast, cost-effective, and defensible HTS classification
           </p>
         </div>
 
         {/* Pain intro */}
         {/* <div className="mb-16 md:mb-20 max-w-2xl mx-auto text-center">
-          <p className="text-lg sm:text-xl text-base-content/80 leading-relaxed mb-4">
+          <p className="text-lg sm:text-xl sm:leading-7 text-base-content/80 leading-relaxed mb-4">
             Misclassification isn&apos;t just wrong—it&apos;s expensive.
           </p>
           <p className="text-base text-base-content/60 leading-relaxed mb-6">

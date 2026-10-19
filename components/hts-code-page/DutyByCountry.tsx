@@ -149,7 +149,7 @@ export function DutyByCountry({
                   )}
                 </Td>
                 {/* A step less padding than the other cells, so the pill's text lines up with theirs */}
-                <Td align="right" className="whitespace-nowrap !py-2.5">
+                <Td align="right" className="whitespace-nowrap py-2.5!">
                   {/* The total opens this code from this country in the calculator */}
                   <Link
                     href={calculatorHref(htsno, row.country.code)}

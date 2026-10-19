@@ -110,7 +110,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
           <Combobox.Input
             id={id}
             ref={inputRef}
-            className={`${bare ? "h-7 w-full bg-transparent font-semibold text-base-content outline-none placeholder:font-normal placeholder:text-base-content/60" : ui.input} pr-10 ${mono.className} text-base tracking-tight`}
+            className={`${bare ? "h-7 w-full bg-transparent font-semibold text-base-content outline-hidden placeholder:font-normal placeholder:text-base-content/60" : ui.input} pr-10 ${mono.className} text-base tracking-tight`}
             placeholder="e.g. 7326.90.86.88"
             autoComplete="off"
             spellCheck={false}
@@ -147,7 +147,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePat
           {query.trim() && !selectedElement && (results.length > 0 || debouncedQuery === query) && (
             <Combobox.Options
               static
-              className={`${ui.popover} absolute z-30 mt-2 w-full min-w-80 max-h-80 overflow-auto focus:outline-none`}
+              className={`${ui.popover} absolute z-30 mt-2 w-full min-w-80 max-h-80 overflow-auto focus:outline-hidden`}
             >
               {results.length === 0 && debouncedQuery === query ? (
                 <div className="px-3 py-3 text-sm text-base-content/60">

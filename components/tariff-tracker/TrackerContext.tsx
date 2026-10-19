@@ -4,6 +4,7 @@ import { createContext, ReactNode, useContext, useDeferredValue, useEffect, useM
 import { HtsElement } from "../../interfaces/hts";
 import { useUser } from "../../contexts/UserContext";
 import { useTrackerAccess } from "./access/accessContext";
+import { byDuty } from "../../libs/tariff-tracker/plan";
 import { useCatalogSync } from "./catalogSync";
 import { useHts } from "../../contexts/HtsContext";
 import { useHtsSections } from "../../contexts/HtsSectionsContext";
@@ -149,7 +150,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   const filterContext = useMemo(() => ({ sections }), [sections]);
 
   // Debounced, so picking a date with the keyboard counts once
-  const dateTimer = useRef<ReturnType<typeof setTimeout>>();
+  const dateTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const setEntryDate = (date: string, source?: string) => {
     setEntryDateState(date);
     clearTimeout(dateTimer.current);
@@ -218,7 +219,8 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   const chosen = useMemo(() => items.some((i) => i.covered !== undefined), [items]);
   const trackedKeys = useMemo(() => {
     const limit = access.pairLimit;
-    if (chosen) return new Set(items.filter((i) => i.covered === true).map(itemKey).slice(0, limit));
+    // More picks than the plan covers (a trial that ended): the highest-duty ones
+    if (chosen) return new Set(byDuty(items.filter((i) => i.covered === true).map(itemKey), products).slice(0, limit));
     return new Set([...products].sort((a, b) => b.result.totalDuty - a.result.totalDuty).slice(0, limit).map((p) => p.key));
   }, [items, products, access.pairLimit, chosen]);
   // False when it would go past the plan's limit (the caller shows the plans)

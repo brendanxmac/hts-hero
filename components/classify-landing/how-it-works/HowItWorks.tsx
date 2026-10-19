@@ -174,7 +174,7 @@ export const HowItWorks = () => {
                       </span>
                       {active && auto && (
                         // Time left before the next step, as a filling bar
-                        <span key={`${step}-${productIndex}`} className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-primary [animation:hiw-fill_6s_linear]" aria-hidden />
+                        <span key={`${step}-${productIndex}`} className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-primary animate-[hiw-fill_6s_linear]" aria-hidden />
                       )}
                     </button>
                   </li>
@@ -194,7 +194,7 @@ export const HowItWorks = () => {
                 Step {step + 1} · {STEPS[step].title}
               </span>
             </div>
-            <div className="min-h-[24rem] p-6" aria-live="polite">
+            <div className="min-h-96 p-6" aria-live="polite">
               {panel}
             </div>
           </div>

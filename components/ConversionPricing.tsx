@@ -111,7 +111,7 @@ const ConversionPricing = ({
 
                   {plan.isFeatured && (
                     <div
-                      className={`absolute -inset-[1px] rounded-[9px] bg-primary`}
+                      className={`absolute -inset-px rounded-[9px] bg-primary`}
                     ></div>
                   )}
 

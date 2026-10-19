@@ -35,7 +35,7 @@ export function StatusDropdown({
         label="Classification status"
         size="sm"
         disabled={isUpdating || disabled}
-        buttonClassName={`!h-9 !rounded-lg text-xs font-semibold ${statusStyles[status]}`}
+        buttonClassName={`h-9! rounded-lg! text-xs font-semibold ${statusStyles[status]}`}
       />
       {isUpdating && (
         <span className="loading loading-spinner loading-xs absolute right-8 top-1/2 -translate-y-1/2 text-primary" />

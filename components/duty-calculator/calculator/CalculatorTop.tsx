@@ -35,7 +35,7 @@ const DateField = ({ f }: { f: TariffFinder }) => {
   const step = (to: string | undefined) => to && f.setEntryDate(to);
   const arrow = "flex h-10 w-8 shrink-0 items-center justify-center text-base-content/60 transition-colors hover:bg-base-200 hover:text-base-content disabled:pointer-events-none disabled:opacity-30";
   return (
-    <div className={`${ui.input} flex items-stretch overflow-hidden !px-0`}>
+    <div className={`${ui.input} flex items-stretch overflow-hidden px-0!`}>
       <button
         type="button"
         className={`${arrow} border-r border-base-300`}
@@ -49,7 +49,7 @@ const DateField = ({ f }: { f: TariffFinder }) => {
       <input
         id="dc-date"
         type="date"
-        className="min-w-0 flex-1 bg-transparent px-2 text-sm tabular-nums outline-none"
+        className="min-w-0 flex-1 bg-transparent px-2 text-sm tabular-nums outline-hidden"
         value={f.entryDate}
         onChange={(e) => f.setEntryDate(e.target.value)}
       />

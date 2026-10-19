@@ -12,7 +12,8 @@ export const maxDuration = 300
 
 // Asks Claude for a plain-English summary of one change. The category it
 // suggests is applied only if the reviewer hasn't set one.
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

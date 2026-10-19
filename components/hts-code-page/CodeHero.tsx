@@ -32,10 +32,10 @@ export function CodeHero({
         {summary && <> · Updated {formatSummaryDate(summary.asOf)}</>}
       </span>
       <h1 className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span className={`${mono.className} text-3xl sm:text-4xl font-semibold leading-none tracking-tight text-primary`}>
+        <span className={`${mono.className} text-3xl sm:text-4xl sm:leading-10 font-semibold leading-none tracking-tight text-primary`}>
           {element.htsno}
         </span>
-        <span className={`${tt.display} text-2xl lg:text-3xl font-semibold leading-tight tracking-tight text-base-content`}>
+        <span className={`${tt.display} text-2xl lg:text-3xl lg:leading-9 font-semibold leading-tight tracking-tight text-base-content`}>
           {productName}
         </span>
       </h1>

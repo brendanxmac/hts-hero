@@ -250,7 +250,7 @@ export const HtsCodeSelector = ({
             onPaste={handlePaste}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            className={`w-full h-[45px] px-3 bg-base-200/50 rounded-xl border border-base-content/10 transition-all duration-200 pr-12 placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-200/70 ${
+            className={`w-full h-[45px] px-3 bg-base-200/50 rounded-xl border border-base-content/10 transition-all duration-200 pr-12 placeholder:text-base-content/40 focus:outline-hidden focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-200/70 ${
               selectedElement ? "font-semibold text-primary" : ""
             }`}
             displayValue={() => inputValue}
@@ -294,7 +294,7 @@ export const HtsCodeSelector = ({
           >
             <Combobox.Options
               static
-              className="absolute z-20 w-full mt-2 bg-base-100 border border-base-content/10 rounded-xl shadow-2xl max-h-80 overflow-y-auto focus:outline-none"
+              className="absolute z-20 w-full mt-2 bg-base-100 border border-base-content/10 rounded-xl shadow-2xl max-h-80 overflow-y-auto focus:outline-hidden"
             >
               {searching ? (
                 <div className="p-6">

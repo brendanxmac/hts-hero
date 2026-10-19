@@ -26,7 +26,7 @@ export function CategoryNav({
             <Link
               href={item.href}
               aria-current={item.active ? "page" : undefined}
-              className={`inline-flex h-8 items-center gap-2 rounded-md border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+              className={`inline-flex h-8 items-center gap-2 rounded-md border px-3 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
                 item.active
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-base-300 bg-base-100 text-base-content/70 hover:bg-base-200 hover:text-base-content"

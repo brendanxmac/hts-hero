@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/20/solid";
-import { ColumnDef } from "@tanstack/react-table";
+import type { TableColumnDef } from "@/components/ui/table/features";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
@@ -58,7 +58,7 @@ const Option = ({ option }: { option: SourcingOption }) => (
   </li>
 );
 
-const COUNTRY_COLUMNS: ColumnDef<CountryIdea, any>[] = [
+const COUNTRY_COLUMNS: TableColumnDef<CountryIdea, any>[] = [
   {
     id: "country",
     accessorFn: (c) => c.country.name,
@@ -96,7 +96,7 @@ const CountriesTable = ({ countries }: { countries: CountryIdea[] }) => {
   return <DataTable table={table} label="Countries That Already Make Your Products for Less" />;
 };
 
-const ideaColumns = (year?: number): ColumnDef<SourcingIdea, any>[] => [
+const ideaColumns = (year?: number): TableColumnDef<SourcingIdea, any>[] => [
   {
     id: "product",
     accessorFn: (i) => i.product.entry.element.htsno,
@@ -288,7 +288,7 @@ export const Sourcing = () => {
       teaser={sourcingTeaser(insights) ?? "Checking every origin for your products…"}
       points={section.planned}
       preview={<TableStandIn />}
-      minHeight="min-h-[28rem]"
+      minHeight="min-h-112"
     >
       <SourcingReport />
     </AccountGate>

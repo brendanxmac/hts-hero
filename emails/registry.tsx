@@ -11,23 +11,20 @@ import OnboardingEmail, { onboardingSubject, type OnboardingEmailProps } from ".
 import FounderNoteEmail, { founderNoteSubject, type FounderNoteEmailProps } from "./onboarding/FounderNoteEmail"
 import TrackerFindingsEmail, { trackerFindingsSubject, type TrackerFindingsEmailProps } from "./onboarding/TrackerFindingsEmail"
 import MeetTrackerEmail, { meetTrackerSubject, type MeetTrackerEmailProps } from "./onboarding/MeetTrackerEmail"
+import TrialEmail, { trialSubject, type TrialEmailProps } from "./onboarding/TrialEmail"
 import ImpactAlertEmail, { impactAlertSubject, type ImpactAlertEmailProps } from "./tariff-updates/ImpactAlertEmail"
 import TariffDigestEmail, { tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
 import TariffNewsEmail, { tariffNewsSubject, type TariffNewsEmailProps } from "./tariff-updates/TariffNewsEmail"
 import { updateUrl } from "./kit/parts"
 import { SITE } from "./kit/brand"
+import { AUTHORITIES } from "../libs/tariff-updates/types"
+import { chatDate, rateChange, type ChatMessage } from "./chat"
+
+export { slackPayload, teamsPayload, type ChatMessage } from "./chat"
 
 // Every template the outbox can send, by name. Messages store a template name and its props, not
 // HTML, so they're rendered when reviewed and again when sent (a template fix applies to messages
-// still waiting). Each template also says how it reads in Slack and Teams: a title, a few lines
-// and a link.
-
-export interface ChatMessage {
-  title: string
-  lines: string[]
-  url: string
-  linkLabel: string
-}
+// still waiting). Each template also says how it reads in Slack and Teams (emails/chat.ts).
 
 interface Template<P> {
   subject: (props: P) => string
@@ -43,43 +40,69 @@ export const TEMPLATES = {
     subject: tariffNewsSubject,
     email: (p) => <TariffNewsEmail {...p} />,
     chat: (p) => ({
-      title: `US tariff update${p.step ? ` · ${p.step}` : ""}: ${p.update.title}`,
-      lines: [p.note, p.update.summary, [p.update.authorityLabel, p.update.stageLabel, p.update.effectiveOn ? `effective ${p.update.effectiveOn}` : null].filter(Boolean).join(" · ")].filter(Boolean) as string[],
-      url: updateUrl(p.update.slug, "tariff-news-chat"),
-      linkLabel: "Read the update",
+      title: p.step ? `${p.step}: ${p.update.title}` : p.update.title,
+      tone: p.update.tone,
+      eyebrow: `US tariff news · ${p.update.authorityLabel}`,
+      summary: [p.note ? `*${p.note}*` : null, p.update.summary].filter(Boolean).join("\n\n"),
+      facts: [
+        { label: "Stage", value: p.update.stageLabel },
+        ...(p.update.effectiveOn ? [{ label: "Effective", value: chatDate(p.update.effectiveOn) }] : []),
+        ...(p.update.countriesLabel ? [{ label: "Countries", value: p.update.countriesLabel }] : []),
+      ],
+      actions: [{ label: "Read the update", url: updateUrl(p.update.slug, "tariff-news-chat") }],
     }),
   }),
   tariff_digest: template<TariffDigestEmailProps>({
     subject: tariffDigestSubject,
     email: (p) => <TariffDigestEmail {...p} />,
     chat: (p) => ({
-      title: `US tariff updates, ${p.period}`,
-      lines: [p.note, ...p.updates.map((u) => `• ${u.title}`)].filter(Boolean) as string[],
-      url: `${SITE}/tariff-updates?utm_source=chat&utm_medium=chat&utm_campaign=tariff-digest`,
-      linkLabel: "See every tariff update",
+      title: `${p.updates.length} US tariff ${p.updates.length === 1 ? "update" : "updates"} this week`,
+      tone: "brand",
+      eyebrow: `Weekly tariff digest · ${p.period}`,
+      summary: p.note ? `*${p.note}*` : undefined,
+      rows: p.updates.slice(0, 8).map((u) => ({
+        label: u.title,
+        url: updateUrl(u.slug, "tariff-digest-chat"),
+        detail: [u.authorityLabel, u.stageLabel, u.effectiveOn ? `effective ${chatDate(u.effectiveOn)}` : null, u.countriesLabel].filter(Boolean).join(" · "),
+      })),
+      notes: p.updates.length > 8 ? [`…and ${p.updates.length - 8} more this week`] : undefined,
+      actions: [{ label: "See every tariff update", url: `${SITE}/tariff-updates?utm_source=chat&utm_medium=chat&utm_campaign=tariff-digest` }],
     }),
   }),
   impact_alert: template<ImpactAlertEmailProps>({
     subject: impactAlertSubject,
     email: (p) => <ImpactAlertEmail {...p} />,
-    chat: (p) => ({
-      title: impactAlertSubject(p),
-      lines: [
-        p.update.summary,
-        ...p.imports.slice(0, 6).map((i) =>
-          i.level === "likely"
-            ? `• ${i.code} from ${i.country}: may apply`
-            : Number(i.beforePct) === Number(i.afterPct)
-              ? `• ${i.code} from ${i.country}: new Chapter 99 number, same duty`
-              : `• ${i.code} from ${i.country}: ${i.beforePct}% → ${i.afterPct}%`
-        ),
-        ...(p.imports.length > 6 ? [`…and ${p.imports.length - 6} more`] : []),
-        ...(p.beyond ? [`It may also affect ${p.beyond} more of your imports outside your alerts.`] : []),
-        ...(p.removed.length ? [`No longer affected: ${p.removed.map((r) => `${r.code} from ${r.country}`).join(", ")}`] : []),
-      ],
-      url: `${SITE}/tariff-tracker?tab=impact&update=${encodeURIComponent(p.update.slug)}&utm_source=chat&utm_medium=chat&utm_campaign=impact-alert`,
-      linkLabel: "See the impact on my imports",
-    }),
+    chat: (p) => {
+      const adcvd = p.update.authorityLabel === AUTHORITIES.ad_cvd
+      const onlyRemoved = !p.imports.length && !p.beyond && p.removed.length > 0
+      const shown = p.imports.slice(0, 6)
+      return {
+        title: impactAlertSubject(p),
+        tone: onlyRemoved ? "down" : adcvd ? "heads-up" : "up",
+        eyebrow: ["Tariff alert", p.update.authorityLabel, p.update.countriesLabel].filter(Boolean).join(" · "),
+        summary: `*${p.update.title}*\n${[p.update.stageLabel, p.update.effectiveOn ? `Effective ${chatDate(p.update.effectiveOn)}` : null].filter(Boolean).join(" · ")}`,
+        rows: [
+          ...shown.map((i) => {
+            const change = rateChange(i.beforePct, i.afterPct)
+            return {
+              label: `${i.code} · ${i.country}`,
+              detail: i.description || undefined,
+              value: i.level === "likely" || !change ? (adcvd ? "May be covered" : "May apply") : change.value,
+              tone: i.level === "likely" || !change ? ("heads-up" as const) : change.tone,
+            }
+          }),
+          ...p.removed.slice(0, 6 - shown.length).map((r) => ({ label: `${r.code} · ${r.country}`, detail: r.description || undefined, value: "No longer affected", tone: "down" as const })),
+        ],
+        notes: [
+          ...(p.imports.length > 6 ? [`…and ${p.imports.length - 6} more of your imports`] : []),
+          ...(p.beyond ? [`It may also affect ${p.beyond} more of your imports outside your alerts.`] : []),
+        ],
+        actions: [
+          { label: "See the impact on my imports", url: `${SITE}/tariff-tracker?tab=impact&update=${encodeURIComponent(p.update.slug)}&utm_source=chat&utm_medium=chat&utm_campaign=impact-alert` },
+          { label: "Read the update", url: updateUrl(p.update.slug, "impact-alert-chat") },
+        ],
+      }
+    },
   }),
   welcome: template<WelcomeEmailProps>({ subject: welcomeSubject, email: (p) => <WelcomeEmail {...p} /> }),
   purchase_confirmation: template<PurchaseConfirmationEmailProps>({ subject: purchaseConfirmationSubject, email: (p) => <PurchaseConfirmationEmail {...p} /> }),
@@ -91,6 +114,7 @@ export const TEMPLATES = {
   founder_note: template<FounderNoteEmailProps>({ subject: founderNoteSubject, email: (p) => <FounderNoteEmail {...p} /> }),
   tracker_findings: template<TrackerFindingsEmailProps>({ subject: trackerFindingsSubject, email: (p) => <TrackerFindingsEmail {...p} /> }),
   meet_tracker: template<MeetTrackerEmailProps>({ subject: meetTrackerSubject, email: (p) => <MeetTrackerEmail {...p} /> }),
+  trial: template<TrialEmailProps>({ subject: trialSubject, email: (p) => <TrialEmail {...p} /> }),
   internal_notice: template<InternalNoticeEmailProps>({ subject: internalNoticeSubject, email: (p) => <InternalNoticeEmail {...p} /> }),
 }
 
@@ -121,34 +145,3 @@ export const renderChat = (name: string, props: Record<string, unknown>, note?: 
   if (!chat) throw new Error(`${name} only goes by email`)
   return chat(withNote(props, note))
 }
-
-// Slack incoming webhook: Block Kit
-export const slackPayload = (m: ChatMessage) => ({
-  text: m.title,
-  blocks: [
-    { type: "section", text: { type: "mrkdwn", text: `*${m.title}*` } },
-    ...m.lines.map((line) => ({ type: "section", text: { type: "mrkdwn", text: line } })),
-    { type: "actions", elements: [{ type: "button", text: { type: "plain_text", text: m.linkLabel }, url: m.url }] },
-  ],
-})
-
-// Microsoft Teams webhook (Workflows "post to a channel when a webhook request is received"):
-// an Adaptive Card
-export const teamsPayload = (m: ChatMessage) => ({
-  type: "message",
-  attachments: [
-    {
-      contentType: "application/vnd.microsoft.card.adaptive",
-      content: {
-        $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
-        type: "AdaptiveCard",
-        version: "1.4",
-        body: [
-          { type: "TextBlock", text: m.title, weight: "Bolder", size: "Medium", wrap: true },
-          ...m.lines.map((line) => ({ type: "TextBlock", text: line, wrap: true })),
-        ],
-        actions: [{ type: "Action.OpenUrl", title: m.linkLabel, url: m.url }],
-      },
-    },
-  ],
-})

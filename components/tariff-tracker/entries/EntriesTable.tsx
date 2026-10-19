@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { LockClosedIcon, TrashIcon } from "@heroicons/react/20/solid";
-import { ColumnDef } from "@tanstack/react-table";
+import type { TableColumnDef } from "@/components/ui/table/features";
 import toast from "react-hot-toast";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
@@ -47,7 +47,7 @@ const columnsFor = ({
   showProduct: boolean;
   onRemove: (row: AuditRow) => void;
   onUnlock: (row: AuditRow) => void;
-}): ColumnDef<AuditRow, any>[] => [
+}): TableColumnDef<AuditRow, any>[] => [
   {
     id: "entry",
     accessorFn: (r) => r.entry.entryDate,
@@ -80,7 +80,7 @@ const columnsFor = ({
                 {entry.htsCode} · {entry.country} (no longer in your imports)
               </span>
             ),
-        } satisfies ColumnDef<AuditRow, any>,
+        } satisfies TableColumnDef<AuditRow, any>,
       ]
     : []),
   {
@@ -117,7 +117,7 @@ const columnsFor = ({
           <span className="text-xs text-base-content/60">{formatRate(audit.rateOwedPct)}</span>
         </span>
       ) : (
-        <span className="text-base-content/40">—</span>
+        <span className="text-base-content/50">—</span>
       ),
   },
   {
@@ -126,7 +126,7 @@ const columnsFor = ({
     header: "Result",
     filterFn: "facet",
     // Biggest difference first
-    sortingFn: (a, b) => Math.abs(a.original.audit?.difference ?? 0) - Math.abs(b.original.audit?.difference ?? 0),
+    sortFn: (a, b) => Math.abs(a.original.audit?.difference ?? 0) - Math.abs(b.original.audit?.difference ?? 0),
     sortDescFirst: true,
     meta: {
       align: "right",

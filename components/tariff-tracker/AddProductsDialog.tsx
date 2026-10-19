@@ -124,11 +124,11 @@ const CsvInput = ({
           <TBody>
             {CSV_COLUMNS.map((c) => (
               <Tr key={c.name} className="[&:first-child>*]:border-t-0">
-                <RowHeader className="!pl-4">
+                <RowHeader className="pl-4!">
                   <span className={`${mono.className} font-semibold text-base-content`}>{c.name}</span>
                 </RowHeader>
                 <Td muted>{c.description}</Td>
-                <Td align="right" className="!pr-4">
+                <Td align="right" className="pr-4!">
                   <span className={ui.badge(c.required ? "primary" : "neutral")}>{c.required ? "Required" : "Optional"}</span>
                 </Td>
               </Tr>
@@ -303,7 +303,7 @@ export const AddProductsDialog = ({
             </div>
             <button
               type="button"
-              className="rounded-full p-1.5 text-base-content/50 hover:bg-tt-soft hover:text-base-content"
+              className="rounded-full p-1.5 text-base-content/60 hover:bg-tt-soft hover:text-base-content"
               onClick={close}
             >
               <XMarkIcon className="h-5 w-5" aria-hidden />

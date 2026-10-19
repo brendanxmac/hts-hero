@@ -11,10 +11,10 @@ import { display } from "../lib/theme";
 // notes and CROSS rulings behind it.
 
 const POINTS = [
-  "Every candidate heading, with the reason each fits or doesn't",
-  "The section and chapter notes and CROSS rulings behind the choice",
-  "You make the call; your reasoning is documented as you go",
-  "A one-click report to file with the entry, or hand your broker",
+  "Likely HS candidates, with the reasoning shown",
+  "Relevant section and chapter notes and CROSS rulings",
+  "Your reasoning is documented as you go",
+  "A one-click report that contains your reasoning",
 ];
 
 const EXAMPLE = PRODUCTS[1];
@@ -25,11 +25,10 @@ export const ClassifySection = () => (
       <div>
         <p className={mk.eyebrow}>Classification assistant</p>
         <h2 id="classify-title" className={`${mk.h2} mt-4`}>
-          The right HTS code, <span className={mk.accent}>and the proof.</span>
+          Back every classifiaction with <span className={mk.accent}>legal proof</span>
         </h2>
         <p className={`${mk.lead} mt-5`}>
-          Describe the product. Get every candidate, the legal notes and CROSS rulings that decide between them, and an audit-ready classification in
-          minutes, not days.
+          Describe the product. Get HS candidates, relevant legal notes and CROSS rulings, and decide on your 10 digit code with confidence.
         </p>
         <ul className="mt-7 flex flex-col gap-3">
           {POINTS.map((point) => (

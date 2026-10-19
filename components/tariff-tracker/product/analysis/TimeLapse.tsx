@@ -196,7 +196,7 @@ export const TimeLapse = ({
               aria-valuetext={formatDate(date)}
             />
             <span
-              className="pointer-events-none absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-base-100 shadow"
+              className="pointer-events-none absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-base-100 shadow-sm"
               style={{ left: `${(day / total) * 100}%` }}
               aria-hidden
             />

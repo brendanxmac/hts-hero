@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "@/components/ui/marketing/styles";
+import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { DEFINITION } from "../lib/copy";
 import { REQUEST_ANCHOR, SELF_AUDIT_LIVE, SIGN_UP_TO_AUDIT, SIGN_UP_TO_TRACK } from "../lib/links";
 import { AuditDashboard } from "./AuditDashboard";
@@ -42,12 +43,16 @@ export const AuditHero = () => (
                 Request an audit <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </a>
               <Link href={SIGN_UP_TO_TRACK} className={mk.buttonSecondary}>
-                Track your imports free
+                Try the Tariff Tracker free for {REVERSE_TRIAL.days} days
               </Link>
             </>
           )}
         </div>
-        {!SELF_AUDIT_LIVE && <p className={`${mk.small} mt-4`}>Self-serve audits in the Tariff Tracker are coming soon.</p>}
+        {!SELF_AUDIT_LIVE && (
+          <p className={`${mk.small} mt-4 flex flex-wrap items-center gap-2`}>
+            <ComingChip /> Automatic auditing in the Tariff Tracker: every entry checked, possible over- and underpayments flagged.
+          </p>
+        )}
         <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
           {PROMISES.map((p) => (
             <li key={p} className={`${mk.small} flex items-center gap-1.5`}>

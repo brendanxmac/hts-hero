@@ -2,7 +2,7 @@
 
 import { barWidth } from "@/components/ui/charts/kit";
 import { useMemo, useState } from "react";
-import { ColumnDef, Row } from "@tanstack/react-table";
+import type { TableColumnDef, TableRow } from "@/components/ui/table/features";
 import { mono } from "@/components/ui/font";
 import * as mk from "@/components/ui/marketing/styles";
 import { DataTable, TableSearch, useDataTable } from "@/components/ui/table";
@@ -42,14 +42,14 @@ const none = <span className="text-slate-300">—</span>;
 const pill = "inline-block rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset";
 const caption = "text-xs text-slate-500";
 
-const byName = (a: Row<HubRow>, b: Row<HubRow>) => a.original.name.localeCompare(b.original.name);
+const byName = (a: TableRow<HubRow>, b: TableRow<HubRow>) => a.original.name.localeCompare(b.original.name);
 
-const columns = (maxImports: number): ColumnDef<HubRow, any>[] => [
+const columns = (maxImports: number): TableColumnDef<HubRow, any>[] => [
   {
     id: "name",
     accessorFn: (r) => r.name,
     header: "Country",
-    sortingFn: byName,
+    sortFn: byName,
     meta: { rowHeader: true },
     cell: ({ row: { original: r } }) => (
       <span className="whitespace-nowrap font-semibold text-slate-900">
@@ -87,7 +87,7 @@ const columns = (maxImports: number): ColumnDef<HubRow, any>[] => [
     header: "Forced-labor tariff",
     sortDescFirst: true,
     // Highest first, then A to Z (the whole comparison flips when sorting high to low)
-    sortingFn: (a, b) => (a.original.forcedLaborPct ?? -1) - (b.original.forcedLaborPct ?? -1) || byName(b, a),
+    sortFn: (a, b) => (a.original.forcedLaborPct ?? -1) - (b.original.forcedLaborPct ?? -1) || byName(b, a),
     cell: ({ row: { original: r } }) => {
       const capped = r.forcedLabor?.startsWith("Up to");
       return r.forcedLabor ? (
@@ -168,7 +168,7 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
           table={table}
           label="US tariffs by country of origin"
           // Rows of several lines read from the top
-          rowClassName={() => "[&>*]:align-top"}
+          rowClassName={() => "*:align-top"}
           empty={<p className={`${mk.body} py-2 text-center`}>No country matches.</p>}
           toolbar={
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -180,7 +180,7 @@ export function CountriesTable({ rows, asOf, asOfLabel }: { rows: HubRow[]; asOf
                     type="button"
                     aria-pressed={filter === f.id}
                     onClick={() => setFilter(f.id)}
-                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 ${
+                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-teal-500/60 ${
                       filter === f.id
                         ? "border-slate-900 bg-slate-900 text-white"
                         : "border-slate-200 bg-white text-slate-600 hover:border-teal-300 hover:text-teal-700"

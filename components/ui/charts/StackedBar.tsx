@@ -17,7 +17,7 @@ export function StackedBar({
   parts,
   formatValue,
   size = "md",
-  shape = "rounded",
+  shape = "rounded-sm",
   fill = 1,
   legend = true,
   showShare = true,
@@ -29,7 +29,7 @@ export function StackedBar({
   formatValue: (amount: number) => string;
   size?: "xs" | "sm" | "md";
   // rounded: slightly rounded ends (the calculator); pill: fully round (the Tracker)
-  shape?: "rounded" | "pill";
+  shape?: "rounded-sm" | "pill";
   // How much of the track the bar fills, from 0 to 1 (bars on a shared scale)
   fill?: number;
   // The list of parts under the bar; off where the host lists them itself
@@ -75,7 +75,7 @@ export function StackedBar({
               style={fade(p.label)}
               onMouseEnter={onHighlight ? () => onHighlight(p.label) : undefined}
             >
-              <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: p.color }} aria-hidden />
+              <span className="h-2.5 w-2.5 shrink-0 rounded-xs" style={{ background: p.color }} aria-hidden />
               <span className="text-base-content/70">{p.label}</span>
               <span className="font-semibold text-base-content">{formatValue(p.amount)}</span>
               {showShare && <span className="text-base-content/60">{share(p.amount)}</span>}

@@ -4,19 +4,18 @@ import { NextRequest } from "next/server";
 import { FileUploadDownloadResponse } from "../../../libs/supabase/storage";
 import { getAnonymousTokenFromCookieHeader } from "../../../libs/anonymous-token";
 
-export const createClient = () => {
-  const cookieStore = cookies();
-
-  return createServerClient(
+export const createClient = () =>
+  createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return cookieStore.getAll();
+        async getAll() {
+          return (await cookies()).getAll();
         },
-        setAll(cookiesToSet) {
+        async setAll(cookiesToSet) {
           try {
+            const cookieStore = await cookies();
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
@@ -29,14 +28,13 @@ export const createClient = () => {
       },
     }
   );
-};
 
 // A client for public data with no user session, so pages that read it can stay static
 // (cookies() would make them dynamic). Row-level security limits it to what anyone may read.
 export const createPublicClient = () =>
   createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
     cookies: {
-      getAll() {
+      getAll(): { name: string; value: string }[] {
         return [];
       },
       setAll() {},
@@ -50,7 +48,7 @@ export const createAdminClient = () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
       cookies: {
-        getAll() {
+        getAll(): { name: string; value: string }[] {
           return [];
         },
         setAll() {

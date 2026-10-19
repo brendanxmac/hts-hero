@@ -57,7 +57,7 @@ describe("Tariff updates: matching imports", () => {
 
   it("exceptions with nothing named as covered mean every product but them", () => {
     // How the reader returned Section 301 on Brazil: no covered codes, 2,126 exemptions
-    const brazil = { scope_codes: [], scope_excluded_codes: ["0901", "2601"], scope_countries: ["BR"], scope_headings: ["9903.05.01"] }
+    const brazil = { scope_codes: [] as string[], scope_excluded_codes: ["0901", "2601"], scope_countries: ["BR"], scope_headings: ["9903.05.01"] }
     expect(level(brazil, "4016931020", "BR")).toBe("likely")
     expect(level(brazil, "0901210000", "BR")).toBe(null)
     // No codes and no exceptions: the country only

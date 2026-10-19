@@ -6,6 +6,7 @@ import {
   ArrowDownTrayIcon,
   BellAlertIcon,
   BoltIcon,
+  ChartBarIcon,
   CheckIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
@@ -26,13 +27,15 @@ import {
   LAUNCH_PRICING,
   launchPricingActive,
   monthlyRate,
+  perImportPrice,
+  REVERSE_TRIAL,
   TRACKER_MAX_LISTED_PAIRS,
   TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { TRACKER_PLANS, TrackerAccess, TrackerPlan } from "@/libs/tariff-tracker/plan";
 import { TRACKER_PATH } from "../sections";
-import { AUDITS_ENABLED, SAVINGS_AUDITS_SOON, SAVINGS_ENABLED, TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
+import { AUDITS_ENABLED, SAVINGS_AUDITS_LABEL, SAVINGS_AUDITS_SOON, SAVINGS_ENABLED, TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { useCatalog } from "../catalogStore";
 import { useUpgradeStats } from "./upgradeStats";
 import { PREMIUM_FEATURES, PREMIUM_INCLUDES, PremiumFeature } from "./features";
@@ -62,17 +65,7 @@ const checkout = async (plan: TrackerPlan, billing: Billing) => {
   window.location.href = body.url;
 };
 
-export const UpgradeDialog = ({
-  open,
-  feature,
-  access,
-  onClose,
-}: {
-  open: boolean;
-  feature: PremiumFeature;
-  access: TrackerAccess;
-  onClose: () => void;
-}) => {
+export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolean; feature: PremiumFeature; access: TrackerAccess; onClose: () => void }) => {
   const { items } = useCatalog();
   const [billing, setBilling] = useState<Billing>(TRACKER_ANNUAL_ENABLED ? "annual" : "monthly");
   const [busy, setBusy] = useState<string | null>(null);
@@ -81,30 +74,22 @@ export const UpgradeDialog = ({
   const fits = noImports ? TRACKER_PLANS[1] : TRACKER_PLANS.find((p) => items.length <= p.maxPairs);
   // Savings and audits are off for the Tracker MVP, so their upsells talk about tracking
   const shown: PremiumFeature =
-    (!SAVINGS_ENABLED && (feature === "savings" || feature === "qualify")) || (!AUDITS_ENABLED && (feature === "entries" || feature === "refunds"))
-      ? "plan"
-      : feature;
+    (!SAVINGS_ENABLED && (feature === "savings" || feature === "qualify")) || (!AUDITS_ENABLED && (feature === "entries" || feature === "refunds")) ? "plan" : feature;
   const { benefit } = PREMIUM_FEATURES[shown];
-  const heading =
-    access.kind === "paid"
-      ? "Track more imports"
-      : shown === "savings" || feature === "qualify"
-        ? "Check savings on every import"
-        : shown === "entries" || shown === "refunds"
-          ? "Audit every entry"
-          : shown === "alerts" || shown === "tracking"
-            ? "Track more imports"
-            : "Track all your imports";
   const usedUp =
-    access.kind !== "trial"
-      ? null
-      : shown === "savings" || shown === "qualify"
-        ? `You've used your ${TRIAL_ALLOWANCE.savingsChecks} free savings checks.`
-        : shown === "entries" || shown === "refunds"
-          ? `You've used your ${TRIAL_ALLOWANCE.auditChecks} free audit checks.`
-          : shown === "alerts" || shown === "tracking"
-            ? `Your free plan tracks ${TRIAL_ALLOWANCE.alertImports} imports.`
-            : null;
+    access.kind === "trial"
+      ? shown === "alerts" || shown === "tracking"
+        ? `Your free trial tracks up to ${REVERSE_TRIAL.imports} imports.`
+        : null
+      : access.kind !== "free"
+        ? null
+        : shown === "savings" || shown === "qualify"
+          ? `You've used your ${TRIAL_ALLOWANCE.savingsChecks} free savings checks.`
+          : shown === "entries" || shown === "refunds"
+            ? `You've used your ${TRIAL_ALLOWANCE.auditChecks} free audit checks.`
+            : shown === "alerts" || shown === "tracking"
+              ? "Alerts on your own imports come with a Tracker plan."
+              : null;
 
   const buy = async (plan: TrackerPlan) => {
     setBusy(plan.plan);
@@ -124,13 +109,24 @@ export const UpgradeDialog = ({
   const imports = stats?.imports ?? items.length;
   const tracked = stats?.tracked ?? Math.min(items.length, access.pairLimit);
   const untracked = Math.max(0, imports - tracked);
-  // The headline speaks to what's left out: imports nobody is watching
-  // The headline is the outcome, on their own imports; what's at risk follows in red
-  const title = untracked > 0 ? `Never miss a tariff change on any of your ${number(imports)} imports` : heading;
+  // The headline is always the product's promise, whatever opened the dialog; what's at risk on
+  // their own imports follows in the subtitle
+  const title = "Tariff Alerts, Savings, & Audits for All Your Imports";
   const benefits = [
     ...BENEFITS,
-    ...(SAVINGS_ENABLED ? [{ Icon: SparklesIcon, title: "Savings on every import", body: PREMIUM_INCLUDES[0] }] : []),
-    ...(AUDITS_ENABLED ? [{ Icon: ClipboardDocumentCheckIcon, title: "Unlimited audit checks", body: PREMIUM_INCLUDES[1] }] : []),
+    // On the way (SAVINGS_AUDITS_LABEL), included in every plan when they launch
+    {
+      Icon: SparklesIcon,
+      title: "Automatic savings detection",
+      body: SAVINGS_ENABLED ? PREMIUM_INCLUDES[0] : "Trade programs, exemptions and lower-duty origins your imports may qualify for.",
+      soon: !SAVINGS_ENABLED,
+    },
+    {
+      Icon: ClipboardDocumentCheckIcon,
+      title: "Automatic auditing",
+      body: AUDITS_ENABLED ? PREMIUM_INCLUDES[1] : "Every entry checked against the duty in force on its date, flagging possible over and underpayments.",
+      soon: !AUDITS_ENABLED,
+    },
   ];
 
   // A dialog portals out of the Tracker, so it carries the Tracker's look itself (DESIGN_SYSTEM §15).
@@ -156,7 +152,7 @@ export const UpgradeDialog = ({
           <button
             type="button"
             onClick={onClose}
-            className={`absolute right-3 rounded-full p-1.5 text-base-content/50 hover:bg-tt-soft hover:text-base-content ${launch ? "top-1.5" : "top-4"}`}
+            className={`absolute right-3 rounded-full p-1.5 text-base-content/60 hover:bg-tt-soft hover:text-base-content ${launch ? "top-1.5" : "top-4"}`}
           >
             <XMarkIcon className="h-5 w-5" aria-hidden />
             <span className="sr-only">Close</span>
@@ -177,18 +173,17 @@ export const UpgradeDialog = ({
                 ) : (
                   ""
                 )}
-                Get an alert the day a tariff changes, with exactly how much each rate moves, so you can reprice, reorder or talk
-                to your supplier before it reaches your invoices.
+                Get an alert the day a tariff changes, with exactly how much each rate moves, so you can reprice, reorder or talk to your supplier before it reaches your
+                invoices.
               </p>
             </div>
 
-            {stats && stats.changes12m > 0 && (
+            {/* {stats && stats.changes12m > 0 && (
               <div className={`${tt.tile} flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:gap-3`}>
                 <BoltIcon className="hidden h-5 w-5 shrink-0 text-error sm:block" aria-hidden />
                 <p className="m-0 text-sm text-base-content/75">
-                  In the last 12 months,{" "}
-                  <span className={`${tt.numberChip("error")} font-semibold tabular-nums`}>{number(stats.changes12m)}</span>{" "}
-                  tariff {stats.changes12m === 1 ? "change" : "changes"} hit{" "}
+                  In the last 12 months, <span className={`${tt.numberChip("error")} font-semibold tabular-nums`}>{number(stats.changes12m)}</span> tariff{" "}
+                  {stats.changes12m === 1 ? "change" : "changes"} hit{" "}
                   <span className={`${tt.numberChip("primary")} font-semibold tabular-nums`}>{number(stats.productsHit12m)}</span> of your imports.
                   {stats.biggestRise && (
                     <>
@@ -200,7 +195,7 @@ export const UpgradeDialog = ({
                   The next one could land any day.
                 </p>
               </div>
-            )}
+            )} */}
 
             {/* The tiers, the one that fits picked out */}
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -222,18 +217,17 @@ export const UpgradeDialog = ({
                     )}
                     <div className="flex flex-col gap-1.5">
                       <span className={tt.eyebrow(recommended ? "primary" : "neutral")}>Track up to {number(plan.maxPairs)} imports</span>
-                      {current ? (
+                      {current && (
                         <span className={`${tt.chip("success")} self-start`}>Your plan</span>
-                      ) : launch ? (
-                        <span className={`${tt.chip("success")} self-start`}>Launch price</span>
-                      ) : (
-                        <span className="h-5" aria-hidden />
                       )}
                     </div>
                     <div className="flex flex-col gap-1">
                       <p className="m-0 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                         {anchored && (
-                          <span className="text-lg font-semibold tabular-nums text-base-content/40 line-through" aria-label={`Was going to be ${formatPrice(next)} a month`}>
+                          <span
+                            className="text-lg font-semibold tabular-nums text-base-content/50 line-through"
+                            aria-label={`Was going to be ${formatPrice(next)} a month`}
+                          >
                             {formatPrice(next)}
                           </span>
                         )}
@@ -241,7 +235,8 @@ export const UpgradeDialog = ({
                         <span className="text-sm text-base-content/60">/mo</span>
                       </p>
                       <span className="text-xs text-base-content/60 tabular-nums">
-                        {formatPrice(Math.round((monthly / plan.maxPairs) * 100) / 100)} per import, per month
+                        <span className="font-semibold text-success">{formatPrice(perImportPrice({ price: monthly, maxPairs: plan.maxPairs }))}</span> per import, per
+                        month
                       </span>
                     </div>
                     <button
@@ -253,8 +248,8 @@ export const UpgradeDialog = ({
                       {current ? "Your plan" : busy === plan.plan ? "Opening checkout…" : launch ? `Lock in ${formatPrice(monthly)}/mo` : "Choose plan"}
                     </button>
                     {anchored && (
-                      <span className="-mt-2 text-center text-[11px] leading-snug text-base-content/55">
-                        New subscribers pay {formatPrice(next)}/mo from {LAUNCH_PRICING.endsDay}
+                      <span className="-mt-2 text-center text-[11px] leading-snug text-base-content/60 font-bold text-error">
+                        Increases to {formatPrice(next)}/mo {LAUNCH_PRICING.endsDay}
                       </span>
                     )}
                   </div>
@@ -273,9 +268,7 @@ export const UpgradeDialog = ({
                   first, free, and we&apos;ll show you the plan that fits.
                 </span>
               ) : (
-                <span>
-                  An import is one HTS code from one country of origin.
-                </span>
+                <span>An import is one HTS code from one country of origin.</span>
               )}
               <span className="sm:text-right">
                 More than {number(TRACKER_MAX_LISTED_PAIRS)} imports?{" "}
@@ -288,16 +281,21 @@ export const UpgradeDialog = ({
 
             {/* Outcomes, not features */}
             <div className="flex flex-col gap-3">
-              <span className={tt.eyebrow()}>What every plan does for you</span>
-              <ul className={`m-0 grid list-none gap-4 p-0 sm:grid-cols-2 ${benefits.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-3"}`}>
-                {benefits.map(({ Icon, title, body }) => (
-                  <li key={title} className="flex gap-3 lg:flex-col lg:gap-2.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden>
-                      <Icon className="h-[18px] w-[18px]" />
+              <span className={tt.eyebrow('primary')}>What every plan does for you</span>
+              {/* Compact: icon beside the text (not above it), the label in the title's line, so the
+                  whole dialog fits without scrolling */}
+              <ul className={`m-0 grid list-none gap-x-5 gap-y-3 p-0 sm:grid-cols-2 ${benefits.length === 5 ? "lg:grid-cols-5" : benefits.length % 4 === 0 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+                {benefits.map(({ Icon, title, body, soon }: { Icon: typeof BellAlertIcon; title: string; body: string; soon?: boolean }) => (
+                  <li key={title} className="flex gap-2.5">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary" aria-hidden>
+                      <Icon className="h-4 w-4" />
                     </span>
-                    <span className="flex flex-col gap-0.5">
-                      <span className="text-sm font-semibold text-base-content">{title}</span>
-                      <span className="text-sm leading-snug text-base-content/65">{body}</span>
+                    <span className="flex min-w-0 flex-col gap-0.5">
+                      <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm font-semibold leading-tight text-base-content">
+                        {title}
+                        {soon && <span className={tt.chip("warning")}>{SAVINGS_AUDITS_LABEL}</span>}
+                      </span>
+                      <span className="text-xs leading-snug text-base-content/65">{body}</span>
                     </span>
                   </li>
                 ))}
@@ -306,9 +304,7 @@ export const UpgradeDialog = ({
 
             {/* The risk, taken away */}
             <div className="flex flex-col gap-3 border-t border-base-300 pt-4 sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-sm text-base-content/70">
-                Trusted by hundreds of customs brokers, freight forwarders and manufacturers.
-              </span>
+              <span className="text-sm text-base-content/70">Trusted by hundreds of customs brokers, freight forwarders and manufacturers.</span>
               <ul className="m-0 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-xs text-base-content/65">
                 {REASSURANCE.map((item) => (
                   <li key={item} className="inline-flex items-center gap-1">
@@ -325,7 +321,7 @@ export const UpgradeDialog = ({
             {SAVINGS_ENABLED && AUDITS_ENABLED
               ? "Cancel anytime."
               : launch
-                ? `Savings and audits join the Tracker from ${LAUNCH_PRICING.endsDay}; launch subscribers keep their price and can add them when they arrive.`
+                ? `Automatic savings detection and auditing arrive in October, included in your plan. Subscribe by ${LAUNCH_PRICING.endsDay} to keep the launch price for as long as you stay subscribed; prices go up after that.`
                 : SAVINGS_AUDITS_SOON}
           </div>
         </Dialog.Panel>
@@ -338,6 +334,7 @@ export const UpgradeDialog = ({
 export const BENEFITS = [
   { Icon: BellAlertIcon, title: "Hear the day a tariff hits", body: "Alerts by email, Slack or Teams, with each rate before and after." },
   { Icon: BoltIcon, title: "Know exactly what changed", body: "Impact checks show how any tariff action moves each of your imports." },
+  { Icon: ChartBarIcon, title: "See what drives your duty", body: "Insights across your whole catalog: where the duty comes from and what moved it." },
   { Icon: NewspaperIcon, title: "Every official source, one feed", body: "CBP, the Federal Register, USTR, USITC and the White House, sorted for you." },
   { Icon: ClockIcon, title: "See how you've been hit", body: "Rate history for every import, with what changed and why." },
   { Icon: ArrowDownTrayIcon, title: "Export every tariff", body: "Every tariff on every import, to CSV or Excel, for your team or broker." },

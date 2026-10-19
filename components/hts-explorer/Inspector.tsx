@@ -174,7 +174,7 @@ const ChapterNotes = ({ chapter }: { chapter: number }) => {
         Chapter notes
         <ChevronDownIcon className="h-3.5 w-3.5 text-base-content/60" aria-hidden />
       </Menu.Button>
-      <Menu.Items className="absolute left-0 z-20 mt-2 max-h-80 w-80 overflow-y-auto rounded-2xl border border-base-300 bg-base-100 p-1.5 shadow-xl focus:outline-none">
+      <Menu.Items className="absolute left-0 z-20 mt-2 max-h-80 w-80 overflow-y-auto rounded-2xl border border-base-300 bg-base-100 p-1.5 shadow-xl focus:outline-hidden">
         {subchapterNotes.length > 0 ? (
           subchapterNotes.map((note) => (
             <Menu.Item key={note.title}>
@@ -230,7 +230,7 @@ const LineDetail = ({ element }: { element: HtsElement }) => {
             <p className="text-sm leading-snug text-base-content/60">
               {parents.map((p, i) => (
                 <span key={p.uuid}>
-                  {i > 0 && <span className="mx-1.5 text-base-content/40">›</span>}
+                  {i > 0 && <span className="mx-1.5 text-base-content/50">›</span>}
                   {p.description}
                 </span>
               ))}

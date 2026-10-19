@@ -17,7 +17,7 @@ const source = (note: string) => ({
   citation: "EO 14384 (91 FR 6501)",
   url: "https://www.govinfo.gov/content/pkg/FR-2026-02-11/html/2026-02818.htm",
   publishedOn: "2026-02-11",
-  note: `${note}. Backfilled from 2026HTSRev3's change record. Starts on the date in 9903.01.84's text (EO 14329 sec. 2(b), 90 FR 38701: \"on or after 12:01 a.m. eastern daylight time 21 days after the date of this order\", Aug 6, 2025); EO 14384 sec. 2 ends it for goods entered on or after 12:01 a.m. EST Feb 7, 2026 and terminates 9903.01.84–9903.01.89 and note 2(z)`,
+  note: `${note}. Backfilled from 2026HTSRev3's change record. Starts on the date in 9903.01.84's text (EO 14329 sec. 2(b), 90 FR 38701: "on or after 12:01 a.m. eastern daylight time 21 days after the date of this order", Aug 6, 2025); EO 14384 sec. 2 ends it for goods entered on or after 12:01 a.m. EST Feb 7, 2026 and terminates 9903.01.84–9903.01.89 and note 2(z)`,
 })
 
 export const headings: Tariff[] = [

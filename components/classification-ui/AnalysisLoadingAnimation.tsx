@@ -18,7 +18,7 @@ export function AnalysisLoadingAnimation({
           className="absolute -inset-3 rounded-full bg-primary/20 blur-xl"
           style={{ animation: "analysisGlow 2.5s ease-in-out infinite" }}
         />
-        <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 flex items-center justify-center shadow-sm">
+        <div className="relative w-12 h-12 rounded-xl bg-linear-to-br from-primary/15 to-primary/5 border border-primary/20 flex items-center justify-center shadow-xs">
           <SparklesIcon
             className="w-5 h-5 text-primary"
             style={{ animation: "sparkleRotate 4s linear infinite" }}
@@ -52,7 +52,7 @@ export function AnalysisLoadingAnimation({
 
       <div className="w-48 h-0.5 rounded-full bg-base-300/50 overflow-hidden relative">
         <div
-          className="absolute top-0 left-0 h-full w-1/3 rounded-full bg-gradient-to-r from-transparent via-primary to-transparent"
+          className="absolute top-0 left-0 h-full w-1/3 rounded-full bg-linear-to-r from-transparent via-primary to-transparent"
           style={{ animation: "progressSlide 1.8s ease-in-out infinite" }}
         />
       </div>

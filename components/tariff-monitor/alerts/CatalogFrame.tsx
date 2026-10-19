@@ -138,7 +138,7 @@ export const CatalogFrame = () => {
           </span>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[30rem] text-left text-sm">
+          <table className="w-full min-w-120 text-left text-sm">
             <thead className="bg-tt-soft text-xs uppercase tracking-wider text-base-content/60">
               <tr>
                 <th className="px-5 py-2 font-semibold">Product</th>
@@ -185,9 +185,9 @@ export const CatalogFrame = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-0 right-4 w-[23rem] max-w-[calc(100%-2rem)] sm:-right-6" aria-live="polite">
+      <div className="absolute bottom-0 right-4 w-92 max-w-[calc(100%-2rem)] sm:-right-6" aria-live="polite">
         {/* Keeps the stack's height while every toast is absolutely positioned */}
-        <div className="invisible h-[11.5rem]" />
+        <div className="invisible h-46" />
         {changedRows.map((r, i) => {
           const state = latest === r ? "in" : i < step ? "past" : "next";
           return <Toast key={r.code} row={r} state={state} progressKey={cycle * STEPS + step} />;

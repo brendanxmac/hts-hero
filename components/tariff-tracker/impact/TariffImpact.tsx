@@ -134,7 +134,7 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
             ) : (
               <>
                 {confirmed.length + likely}
-                <span className="text-base font-medium text-base-content/50"> of {total.toLocaleString("en-US")}</span>
+                <span className="text-base font-medium text-base-content/60"> of {total.toLocaleString("en-US")}</span>
               </>
             ),
             note: pending ? "" : likely ? `${confirmed.length} confirmed · ${likely} may apply` : "All confirmed",
@@ -169,7 +169,9 @@ const UntrackedHits = ({ count }: { count: number }) => {
       <p className={`${ui.bodySm} flex-1`}>
         <span className="font-semibold text-base-content">It also hits {imports} you&apos;re not tracking.</span>{" "}
         {signedIn
-          ? `Your plan tracks ${access.pairLimit.toLocaleString("en-US")} imports. Track more to see how it hits each one.`
+          ? access.pairLimit > 0
+            ? `Your plan tracks ${access.pairLimit.toLocaleString("en-US")} imports. Track more to see how it hits each one.`
+            : "Impact checks on your own imports come with a Tracker plan. Pick one to see how it hits each import."
           : "Create a free account to track your imports and see how it hits each one."}
       </p>
       <button
@@ -282,7 +284,7 @@ export const TariffImpact = () => {
         {updates ? (
           <ActionList updates={updates} selected={slug} matches={matches} inReview={inReview} today={today} onPick={select} />
         ) : (
-          <div className={`${ui.skeleton} h-[36rem] w-full`} />
+          <div className={`${ui.skeleton} h-144 w-full`} />
         )}
         <div className="flex min-w-0 flex-col gap-4">
           {!update ? (

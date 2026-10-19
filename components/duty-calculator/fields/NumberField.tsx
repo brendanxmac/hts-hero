@@ -37,7 +37,7 @@ export const NumberField = ({
         id={id}
         inputMode="decimal"
         autoComplete="off"
-        className="flex-1 min-w-0 bg-transparent outline-none text-base font-medium"
+        className="flex-1 min-w-0 bg-transparent outline-hidden text-base font-medium"
         value={text}
         onFocus={() => setFocused(true)}
         onBlur={() => {

@@ -41,7 +41,7 @@ export const HitArea = ({ onMove }: { onMove: (x: number) => void }) => {
 
 export const Crosshair = ({ x }: { x: number }) => {
   const { innerHeight } = useChart();
-  return <line x1={x} x2={x} y1={0} y2={innerHeight} stroke="oklch(var(--bc) / 0.3)" strokeWidth={1} strokeDasharray="3 3" pointerEvents="none" />;
+  return <line x1={x} x2={x} y1={0} y2={innerHeight} stroke="color-mix(in oklab, var(--color-base-content) 30%, transparent)" strokeWidth={1} strokeDasharray="3 3" pointerEvents="none" />;
 };
 
 // The tooltip, beside the point (left of it past the middle), in plot coordinates
@@ -67,7 +67,7 @@ export const Tooltip = ({ x, y, children }: { x: number; y: number; children: Re
 export const TooltipRow = ({ color, label, value }: { color?: string; label: string; value: string }) => (
   <div className="flex items-center justify-between gap-4 py-0.5">
     <span className="inline-flex items-center gap-1.5 text-base-content/70">
-      {color && <span className="h-2 w-2 rounded-sm" style={{ background: color }} aria-hidden />}
+      {color && <span className="h-2 w-2 rounded-xs" style={{ background: color }} aria-hidden />}
       {label}
     </span>
     <span className="font-semibold tabular-nums text-base-content">{value}</span>

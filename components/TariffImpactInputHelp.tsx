@@ -16,7 +16,7 @@ export const TariffImpactInputHelp = () => (
         <span className="text-lg font-semibold">Supported Formats</span>
       </div>
 
-      <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 shadow-sm">
+      <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 shadow-xs">
         <div className="flex items-start gap-3">
           <p className="text-base-content leading-relaxed">
             Both <span className="font-semibold text-primary">8-digit</span> and{" "}
@@ -28,7 +28,7 @@ export const TariffImpactInputHelp = () => (
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* 8-Digit Codes Card */}
-        <div className="card bg-base-200 shadow-sm">
+        <div className="card bg-base-200 shadow-xs">
           <div className="card-body">
             <h3 className="card-title text-lg">8-Digit Codes</h3>
             <div className="space-y-3">
@@ -53,7 +53,7 @@ export const TariffImpactInputHelp = () => (
         </div>
 
         {/* 10-Digit Codes Card */}
-        <div className="card bg-base-200 shadow-sm">
+        <div className="card bg-base-200 shadow-xs">
           <div className="card-body">
             <h3 className="card-title text-lg">10-Digit Codes</h3>
             <div className="space-y-3">
@@ -85,7 +85,7 @@ export const TariffImpactInputHelp = () => (
         <span className="text-lg font-semibold">Multiple Code Entry</span>
       </div>
 
-      <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 shadow-sm">
+      <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 shadow-xs">
         <div className="flex items-start gap-3">
           <p className="text-base-content leading-relaxed">
             Enter multiple codes using any separator below, or{" "}
@@ -98,7 +98,7 @@ export const TariffImpactInputHelp = () => (
 
       <div className="space-y-4">
         {/* Comma Separated */}
-        <div className="card bg-base-200 shadow-sm">
+        <div className="card bg-base-200 shadow-xs">
           <div className="card-body p-4">
             <div className="flex items-center gap-3 mb-3">
               <span className="badge badge-primary badge-outline">CSV</span>
@@ -113,7 +113,7 @@ export const TariffImpactInputHelp = () => (
         </div>
 
         {/* Newline Separated */}
-        <div className="card bg-base-200 shadow-sm">
+        <div className="card bg-base-200 shadow-xs">
           <div className="card-body p-4">
             <div className="flex items-center gap-3 mb-3">
               <span className="badge badge-secondary badge-outline">
@@ -136,7 +136,7 @@ export const TariffImpactInputHelp = () => (
         </div>
 
         {/* Space Separated */}
-        <div className="card bg-base-200 shadow-sm">
+        <div className="card bg-base-200 shadow-xs">
           <div className="card-body p-4">
             <div className="flex items-center gap-3 mb-3">
               <span className="badge badge-accent badge-outline">SPACE</span>
@@ -151,7 +151,7 @@ export const TariffImpactInputHelp = () => (
         </div>
 
         {/* Mixed Separated */}
-        <div className="card bg-base-200 shadow-sm">
+        <div className="card bg-base-200 shadow-xs">
           <div className="card-body p-4">
             <div className="flex items-center gap-3 mb-3">
               <span className="badge badge-neutral badge-outline">MIXED</span>
@@ -172,7 +172,7 @@ export const TariffImpactInputHelp = () => (
 
     {/* Pro Tips Section */}
     <section>
-      <div className="bg-primary/10 border border-primary/20 rounded-xl p-5 shadow-sm">
+      <div className="bg-primary/10 border border-primary/20 rounded-xl p-5 shadow-xs">
         <div className="flex items-start gap-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"

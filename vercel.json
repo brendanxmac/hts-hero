@@ -9,6 +9,10 @@
       "schedule": "5,20,35,50 * * * *"
     },
     {
+      "path": "/api/cron/adcvd",
+      "schedule": "8,23,38,53 * * * *"
+    },
+    {
       "path": "/api/cron/social-ideas",
       "schedule": "0 11 * * *"
     },

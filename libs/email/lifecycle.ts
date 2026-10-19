@@ -1,5 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { readCatalog } from "../../components/tariff-tracker/catalog"
+import { LAUNCH_PRICING, launchPricingActive, REVERSE_TRIAL, TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
+import { TRACKER_PLANS, trialEndsAt } from "../tariff-tracker/plan"
+import { RENEWAL_GRACE_DAYS } from "../tariff-tracker/access"
 import { createBatch, type OutboxMessage } from "./outbox"
 import { appUrl, ensureAccountSubscriber, SUBSCRIBER_COLUMNS, subscriberFooter, type Subscriber } from "./subscribers"
 import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./tariff-news"
@@ -23,6 +26,12 @@ import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./t
 //                                           easy audits, then HTS Hero Managed (tracker_findings)
 // Accounts from before ONBOARDING_FROM get the one-time meet_tracker email instead (queued by
 // `npm run email:meet-tracker`), with a one-click opt-in to the weekly digest.
+//
+// The 14-day reverse trial (queueTrialEmails, run first so it wins the day):
+//   trial_unlocked  accounts from before REVERSE_TRIAL.freshStartOn, once, as their fresh 14 days start
+//   trial_ending_3  3 days before it ends   what they'll lose, in their numbers
+//   trial_ending_1  the last day
+//   trial_ended     the day after it ends   what they lost, and the plan that gets it back
 
 type Db = SupabaseClient
 
@@ -239,3 +248,138 @@ export const queueMeetTracker = async (db: Db, { limit = 2000, onlyUserIds }: { 
   return { queued: picks.length }
 }
 
+
+// ---------- The 14-day reverse trial ----------
+
+const TRIAL_PAGE = 1000
+
+// Every account made in [from, to), a page at a time (selects stop at 1,000 rows)
+const accountsBetween = async (db: Db, from: string | null, to: string): Promise<Account[]> => {
+  const out: Account[] = []
+  for (let page = 0; ; page++) {
+    let query = db.from("users").select("id, email, created_at").lt("created_at", to).order("created_at").range(page * TRIAL_PAGE, (page + 1) * TRIAL_PAGE - 1)
+    if (from) query = query.gte("created_at", from)
+    const { data, error } = await query
+    if (error) throw new Error(`Loading accounts: ${error.message}`)
+    out.push(...((data ?? []) as Account[]))
+    if (!data || data.length < TRIAL_PAGE) return out
+  }
+}
+
+const chunks = <T,>(list: T[], size = 200) => Array.from({ length: Math.ceil(list.length / size) }, (_, i) => list.slice(i * size, (i + 1) * size))
+
+// The trial email an account's day calls for: the latest step reached and not sent
+export const pickTrialEmail = ({ createdAt, sent, now }: { createdAt: string; sent: Set<string>; now: Date }): { key: string; daysLeft: number } | null => {
+  const ends = Date.parse(trialEndsAt(createdAt))
+  const daysLeft = Math.ceil((ends - now.getTime()) / DAY)
+  const fresh = Date.parse(`${REVERSE_TRIAL.freshStartOn}T00:00:00Z`)
+  if (daysLeft <= 0) return daysLeft > -3 && !sent.has("trial_ended") ? { key: "trial_ended", daysLeft } : null
+  if (daysLeft <= 1) return sent.has("trial_ending_1") ? null : { key: "trial_ending_1", daysLeft }
+  if (daysLeft <= 3) return sent.has("trial_ending_3") || sent.has("trial_ending_1") ? null : { key: "trial_ending_3", daysLeft }
+  // Existing accounts, in the first days of their fresh trial
+  const existing = Date.parse(createdAt) < fresh
+  if (existing && now.getTime() >= fresh && daysLeft > REVERSE_TRIAL.days - 4 && !sent.has("trial_unlocked")) return { key: "trial_unlocked", daysLeft }
+  return null
+}
+
+// The day's trial emails, as one outbox batch. Returns how many were queued.
+export const queueTrialEmails = async (db: Db, now = new Date(), { onlyUserIds }: TestScope = {}) => {
+  const today = now.toISOString().slice(0, 10)
+  const fresh = Date.parse(`${REVERSE_TRIAL.freshStartOn}T00:00:00Z`)
+  const trialMs = REVERSE_TRIAL.days * DAY
+  // Accounts whose trial ends between 3 days ago and 4 days from now (made after the fresh start),
+  // and, around the fresh start and its end, every account from before it
+  const recentFrom = new Date(Math.max(fresh, now.getTime() - trialMs - 3 * DAY)).toISOString()
+  const recentTo = new Date(now.getTime() - trialMs + 4 * DAY).toISOString()
+  const freshUnlocking = now.getTime() >= fresh && now.getTime() < fresh + 4 * DAY
+  const freshEnding = Math.abs(fresh + trialMs - now.getTime()) <= 4 * DAY
+  const [recent, existing] = await Promise.all([
+    recentFrom < recentTo ? accountsBetween(db, recentFrom, recentTo) : Promise.resolve([] as Account[]),
+    freshUnlocking || freshEnding ? accountsBetween(db, null, new Date(fresh).toISOString()) : Promise.resolve([] as Account[]),
+  ])
+  let accounts = [...recent, ...existing].filter((a) => a.email)
+  if (onlyUserIds) accounts = accounts.filter((a) => onlyUserIds.includes(a.id))
+  if (!accounts.length) return { queued: 0 }
+
+  // Paying accounts get none
+  const ids = accounts.map((a) => a.id)
+  const since = new Date(now.getTime() - RENEWAL_GRACE_DAYS * DAY).toISOString()
+  const paid = new Set<string>()
+  const sentKeys = new Map<string, Set<string>>()
+  const lastSent = new Map<string, number>()
+  const snapshots = new Map<string, { products: number; changes_12m: number; products_hit_12m: number }>()
+  const imports = new Map<string, number>()
+  for (const part of chunks(ids)) {
+    const [{ data: plans }, { data: sentRows }, { data: snaps }, { data: catalogs }] = await Promise.all([
+      db.from("purchases").select("user_id").in("user_id", part).in("product_name", TRACKER_PLANS.map((p) => p.plan)).gte("expires_at", since),
+      db.from("lifecycle_emails").select("user_id, email_key, queued_at").in("user_id", part),
+      db.from("tracker_snapshots").select("user_id, products, changes_12m, products_hit_12m").in("user_id", part),
+      db.from("tracker_catalogs").select("user_id, items").in("user_id", part),
+    ])
+    for (const r of plans ?? []) paid.add(r.user_id)
+    for (const r of sentRows ?? []) {
+      sentKeys.set(r.user_id, (sentKeys.get(r.user_id) ?? new Set()).add(r.email_key))
+      lastSent.set(r.user_id, Math.max(lastSent.get(r.user_id) ?? 0, new Date(r.queued_at).getTime()))
+    }
+    for (const r of snaps ?? []) snapshots.set(r.user_id, r)
+    for (const c of catalogs ?? []) imports.set(c.user_id as string, readCatalog(JSON.stringify(c.items))?.length ?? 0)
+  }
+
+  const due = accounts.flatMap((account) => {
+    if (paid.has(account.id)) return []
+    // One email a day at most
+    if (now.getTime() - (lastSent.get(account.id) ?? 0) < 20 * 60 * 60 * 1000) return []
+    const pick = pickTrialEmail({ createdAt: account.created_at, sent: sentKeys.get(account.id) ?? new Set(), now })
+    return pick ? [{ account, ...pick }] : []
+  })
+  if (!due.length) return { queued: 0 }
+  const subscribers = await subscribersFor(db, due.map((d) => d.account))
+  const launch = launchPricingActive(now.getTime())
+  const endsOn = (createdAt: string) => new Date(trialEndsAt(createdAt)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "America/New_York" })
+
+  const picks = due.flatMap(({ account, key, daysLeft }) => {
+    const subscriber = subscribers.get(account.id)
+    if (!reachable(subscriber)) return []
+    const snap = snapshots.get(account.id)
+    const count = imports.get(account.id) ?? snap?.products ?? 0
+    // The trial tracks up to REVERSE_TRIAL.imports; the free plan keeps TRIAL_ALLOWANCE.alertImports
+    const losing = Math.max(0, Math.min(count, REVERSE_TRIAL.imports) - TRIAL_ALLOWANCE.alertImports)
+    const plan = TRACKER_PLANS.find((p) => count <= p.maxPairs) ?? null
+    const message: OutboxMessage = {
+      channel: "email",
+      recipient: account.email,
+      userId: account.id,
+      subscriberId: subscriber.id,
+      template: "trial",
+      props: {
+        variant: key === "trial_unlocked" ? "unlocked" : key === "trial_ended" ? "ended" : "ending",
+        daysLeft,
+        endsOn: endsOn(account.created_at),
+        imports: count,
+        losing,
+        changes12m: snap?.changes_12m ?? 0,
+        productsHit12m: snap?.products_hit_12m ?? 0,
+        plan: plan ? { imports: plan.maxPairs, price: plan.price } : null,
+        launchEndsDay: launch ? LAUNCH_PRICING.endsDay : null,
+        footer: subscriberFooter(subscriber, ACCOUNT_REASON),
+      },
+    }
+    return [{ account, key, message }]
+  })
+  if (!picks.length) return { queued: 0 }
+
+  const batchId = await createBatch(db, {
+    kind: "lifecycle",
+    title: `Free trial · ${today} · ${picks.length} email${picks.length === 1 ? "" : "s"}`,
+    ref: { date: today, kind: "trial" },
+    dedupeKey: `trial:${today}`,
+    // The "unlocked" email goes to every existing account at once: reviewed in /email-outbox first
+    autoSend: !picks.some((p) => p.key === "trial_unlocked"),
+    messages: picks.map((p) => p.message),
+  })
+  if (!batchId) return { queued: 0 }
+  for (const part of chunks(picks, 500)) {
+    await db.from("lifecycle_emails").insert(part.map((p) => ({ user_id: p.account.id, email_key: p.key, batch_id: batchId })))
+  }
+  return { queued: picks.length }
+}

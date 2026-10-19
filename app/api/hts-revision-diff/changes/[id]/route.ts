@@ -9,7 +9,8 @@ const DECISIONS = ["pending", "approve", "skip", "defer"]
 const CATEGORIES = ["data", "logic", "mixed", "none", null]
 
 // Saves the review of one change: decision, category and notes
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

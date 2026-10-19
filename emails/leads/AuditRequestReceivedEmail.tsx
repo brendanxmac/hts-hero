@@ -1,8 +1,9 @@
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Checklist, Cta, Eyebrow, P, Signature, Title } from "../kit/parts"
 import { siteLink } from "../kit/brand"
-import { TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
+import { REVERSE_TRIAL, TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
 import { AUDITS_ENABLED } from "../../libs/tariff-tracker/features"
+import { COMING_LOWER, FREE_FOREVER_SHORT } from "../../components/ui/marketing/comingSoon"
 
 // After a tariff audit request: what happens next, what to have ready, and how to start finding
 // overpayments today on their own. While self-serve audits are off (features.ts), the head start is
@@ -29,7 +30,9 @@ export default function AuditRequestReceivedEmail({ name, company, footer }: Aud
       footer={footer}
     >
       <Eyebrow>Audit request received</Eyebrow>
-      <Title>Thanks, {name}. We&apos;ve got your request for {company}.</Title>
+      <Title>
+        Thanks, {name}. We&apos;ve got your request for {company}.
+      </Title>
       <P>I&apos;ll reply personally with next steps. It helps to have these ready:</P>
       <Checklist
         items={[
@@ -51,11 +54,12 @@ export default function AuditRequestReceivedEmail({ name, company, footer }: Aud
       ) : (
         <>
           <P>
-            Self-serve audits are coming soon. In the meantime, add your imports to the Tariff Tracker: you can track {TRIAL_ALLOWANCE.alertImports} free,
-            and we&apos;ll alert you the moment a tariff change hits one, with the rate before and after.
+            Automatic auditing in the Tariff Tracker is {COMING_LOWER}: every entry checked against the duty in force on its date, flagging possible over and
+            underpayments. In the meantime, try the Tariff Tracker free for {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports} imports, with no credit card:
+            we&apos;ll alert you the moment a tariff change hits one, with the rate before and after. After that, {FREE_FOREVER_SHORT} stay free, forever.
           </P>
           <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
-            Track my imports free
+            Start my free {REVERSE_TRIAL.days}-day trial
           </Cta>
         </>
       )}

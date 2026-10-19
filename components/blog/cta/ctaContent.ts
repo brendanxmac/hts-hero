@@ -1,5 +1,6 @@
 import type { CtaKind } from "@/libs/blog/types";
 import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { formatPostDate } from "../lib/format";
 
 // Historical rates go back to the first HTS revision whose tariff data has been verified
@@ -45,8 +46,9 @@ export const CTA_CONTENT: Record<
       "Alerts when a tariff change hits your imports",
       "Before and after rates for each import, and the change in %",
       "Impact checks on any tariff action, plus rate history and CSV or Excel exports",
+      `Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card`,
     ],
-    button: "Track your imports free",
+    button: `Try it free for ${REVERSE_TRIAL.days} days`,
     href: TRACKER_HREF,
   },
   classify: {

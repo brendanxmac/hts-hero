@@ -5,7 +5,7 @@ for product code, plan copy, landing pages, comparison pages, blog FAQs, `llms.t
 tools. If code or copy disagrees with this file, this file wins. Change this file first when
 pricing changes.
 
-_Last updated 2026-10-16 (Tracker MVP)._
+_Last updated 2026-10-18 (14-day reverse trial)._
 
 ## The rule
 
@@ -59,27 +59,66 @@ calculations" upgrade.
 
 ## Tariff Tracker: account required
 
-### Tracker MVP: what's live now (2026-10-16)
+### Tracker MVP: what's live now (2026-10-18)
 
-The Tracker launches as tracking only. **Savings (savings checks, the qualification check) and
-audits (entry audit, refund check) are switched off** (`libs/tariff-tracker/features.ts`) and come
-back soon **as their own subscription**. Copy says "Savings and audits are coming soon, as their own
-plan." Every change made for the MVP is listed in `MVP_TRIM.md`, so it can be put back.
+The Tracker sells tracking. **Savings (savings checks, the qualification check) and audits (entry
+audit, refund check) are switched off** (`libs/tariff-tracker/features.ts`) and arrive with
+automatic entry auditing, when prices go up (below). Copy says "Savings and audits are coming soon."
+Every change made for the MVP is listed in `MVP_TRIM.md`, so it can be put back.
 
 What the Tracker sells now:
 
 - **Track your imports**: paste or upload the whole catalog, with every tariff on each import
-- **Alerts** when a tariff change hits a tracked import, and by how much (before → after, +X%)
+- **Alerts** when a tariff change hits a tracked import, and by how much (before → after, +X%),
+  AD/CVD alerts included
 - **Impact checks**: pick any tariff action and see exactly how it affects each import
+- **Insights** across the whole catalog: where the duty comes from, what moved it, the most exposed
+  imports and countries
 - **Tariff News**: every tariff action from CBP, the Federal Register, USTR, USITC and the White House
 - **Rate history**: how each import's duty changed, and why
 - **Export** every tariff on every import to CSV or Excel
 
-| | Free (every account) | Paid tiers |
-|---|---|---|
-| Catalog, current duty, rate history, export | Unlimited | Unlimited |
-| Tracked imports (alerts and impact checks) | 5 | The tier's imports |
-| Impact checks on untracked imports | A count only ("also hits N imports you're not tracking") | n/a |
+### Who gets what (decided 2026-10-18)
+
+| | Visitor (no account) | Free account | 14-day trial | Paid tiers |
+|---|---|---|---|---|
+| Tariff Calculator, Duty over time | Unlimited | Unlimited | Unlimited | Unlimited |
+| Calculator extras (the why, Overview, News) | Teased | Yes | Yes | Yes |
+| AD/CVD check on any import (cases, rates, suppliers) | Teased: whether a case may apply | Teased: whether a case may apply | Yes | Yes |
+| Sourcing intelligence (Compare: Insights, Globe, Table, Chart) | Side by side only | Yes | Yes | Yes |
+| Catalog, current duty, rate history, export | n/a | Unlimited | Unlimited | Unlimited |
+| Tariff News alerts (every new US tariff action) | Yes (subscribe) | Yes | Yes | Yes |
+| Tracked imports (alerts, AD/CVD updates, impact checks) | n/a | None | 200 | The tier's imports |
+| Automatic savings detection, automatic auditing (Coming Oct 2026) | n/a | No | Yes, when live | Yes, when live |
+| Insights across the catalog | n/a | No (locked, shown as lost) | Yes | Yes |
+| Impact checks on untracked imports | n/a | A count only | A count only | A count only |
+
+**The 14-day trial is a reverse trial.** Every account starts it automatically at sign-up: no card,
+nothing to click. It gets everything the Tracker sells on up to **200 imports**
+(`REVERSE_TRIAL` in `components/pricing-calculator/lib/pricing.ts`). When it ends without a plan,
+the account drops to the free plan: **no alerts, impact checks or AD/CVD updates on its own
+imports** (changed from 5 imports on 2026-10-18). It keeps the Tariff News alerts on every new US
+tariff action, sourcing intelligence on any import, and its whole catalog. AD/CVD checks are part
+of the trial and the paid plans (decided 2026-10-18): a free account sees only whether a case may
+apply, as a signed-out visitor does (`/api/adcvd/match` answers it with a 402 and the summary).
+Nothing is deleted.
+
+- **Existing accounts** get a fresh 14 days from `REVERSE_TRIAL.freshStartOn` (set to the deploy
+  day). A trial ends `days` after the later of sign-up and that day (`trialEndsAt` in
+  `libs/tariff-tracker/plan.ts`).
+- **Lean into loss.** In the last days and after it ends, show what the account loses: tariff alerts,
+  impact checks, and AD/CVD checks and updates on all its imports, Insights, and automatic auditing and savings
+  detection (labeled "Coming Oct 2026"). The emails name no numbers.
+  Shown in the sidebar plan card (countdown), a trial-ending dialog, and emails 3 days and 1 day
+  before it ends and the day after (`libs/email/lifecycle.ts`).
+- **Subscribe during the trial to keep launch pricing.** The upgrade card recommends the tier that
+  fits the catalog.
+- Copy: "Free for 14 days", "Everything, on up to 200 imports", "No credit card", "Then Tariff News
+  alerts and sourcing insights stay free, forever". Never say "no time limit" or
+  "never expires" for the Tracker's alerts.
+- **Savings and audits in copy (decided 2026-10-18):** marketing, CTAs, emails and the in-app loss
+  screens sell "Automatic savings detection" and "Automatic auditing" as part of the trial and every
+  plan, always labeled "Coming Oct 2026" (`SAVINGS_AUDITS_LABEL`), until the features are switched on.
 
 | Imports tracked | Price / month |
 |---|---|
@@ -90,22 +129,25 @@ What the Tracker sells now:
 | 500+ | Quoted ("Let's talk") |
 
 **Launch pricing** (`LAUNCH_PRICING` in `components/pricing-calculator/lib/pricing.ts`): these
-are tracking-only launch prices until **Fri, Oct 23, 2026**. Anyone who subscribes before then
-keeps their price for as long as they stay subscribed (old Stripe prices keep working: see
-`libs/tariff-tracker/prices.ts`) and can add savings and audits when they arrive. From Oct 23,
-savings and audits join the Tracker and new subscribers pay **$19 / $49 / $149 / $249**. The plans
-dialog shows the deadline, a countdown and those coming prices struck through; it all disappears
-on its own after Oct 23.
+are launch prices until **Fri, Nov 13, 2026** (moved from Oct 23 on 2026-10-18); savings detection
+and auditing ship in October, included. Anyone who subscribes before then keeps their price for as
+long as they stay subscribed (old Stripe prices keep working: see `libs/tariff-tracker/prices.ts`)
+and gets savings and audits when they arrive. From then, new subscribers pay **$19 / $49 / $149 /
+$249**. The plans dialog shows the deadline, a countdown and those coming prices struck through; it
+all disappears on its own after the deadline.
 
 **Monthly only** for now (`TRACKER_ANNUAL_ENABLED`): no annual Tracker plan or toggle.
-Classification and Managed keep their annual billing. Copy: "Start free", "Track 5 imports free",
-"No credit card".
+Classification and Managed keep their annual billing.
+
+**Coming later, not on offer yet:** one-time offers to find savings and audit an importer's prior
+entries. Don't mention them in copy.
 
 ### Paused until savings and audits return
 
 Everything below this line in the Tariff Tracker section describes the plan before the MVP
-(usage-based trial with savings and audit checks, $19 / $49 / $149 / $249). It is kept for the
-relaunch; it is not what's live.
+(usage-based trial with savings and audit checks, $19 / $49 / $149 / $249). It is kept for
+reference; it is not what's live, and its "no time-limited trial" rule is replaced by the 14-day
+reverse trial above.
 
 ### Usage-based trial: every account, no time limit
 

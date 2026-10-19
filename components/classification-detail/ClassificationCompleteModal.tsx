@@ -43,7 +43,7 @@ export function ClassificationCompleteModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -60,7 +60,7 @@ export function ClassificationCompleteModal({
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-base-100 border border-base-300 shadow-2xl transition-all">
                 <div className="relative overflow-hidden">
                   {/* Decorative gradient header */}
-                  <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-success/10 to-transparent pointer-events-none" />
+                  <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-success/10 to-transparent pointer-events-none" />
                   <div className="absolute top-4 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full bg-success/5 blur-3xl pointer-events-none" />
 
                   <div className="relative px-6 pt-8 pb-6 flex flex-col items-center text-center">

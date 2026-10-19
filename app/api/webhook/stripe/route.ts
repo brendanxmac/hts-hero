@@ -18,7 +18,7 @@ import { isTrackerPlan, TRACKER_PLANS } from "@/libs/tariff-tracker/plan";
 import { RENEWAL_GRACE_DAYS } from "@/libs/tariff-tracker/access";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-05-28.basil",
+  apiVersion: "2026-09-30.endive",
   typescript: true,
 });
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -26,7 +26,7 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 export async function POST(req: NextRequest) {
   const body = await req.text();
 
-  const signature = headers().get("stripe-signature");
+  const signature = (await headers()).get("stripe-signature");
 
   let stripeEvent: Stripe.Event;
 
@@ -351,7 +351,8 @@ export async function POST(req: NextRequest) {
           break;
         }
 
-        const priceId = stripeInvoice.lines.data[0].pricing.price_details.price;
+        const linePrice = stripeInvoice.lines.data[0].pricing.price_details.price;
+        const priceId = typeof linePrice === "string" ? linePrice : linePrice.id;
         const customerId = stripeInvoice.customer;
         console.log("Price ID:", priceId);
         console.log("Customer ID:", customerId);

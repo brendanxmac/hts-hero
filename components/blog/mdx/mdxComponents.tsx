@@ -65,7 +65,7 @@ export const mdxComponents = {
   ),
   // Inline code is how a post marks HTS codes and Chapter 99 headings: mono, so the digits line up
   code: ({ children }: ComponentPropsWithoutRef<"code">) => (
-    <code className={`${mono.className} rounded bg-base-200 px-1 py-0.5 text-sm text-base-content`}>{children}</code>
+    <code className={`${mono.className} rounded-sm bg-base-200 px-1 py-0.5 text-sm text-base-content`}>{children}</code>
   ),
   pre: ({ children }: ComponentPropsWithoutRef<"pre">) => (
     <pre className={`${ui.card} overflow-x-auto p-5 text-sm leading-relaxed [&_code]:bg-transparent [&_code]:p-0`}>

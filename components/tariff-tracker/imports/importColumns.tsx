@@ -1,7 +1,7 @@
 "use client";
 
 import { AdjustmentsHorizontalIcon, BellAlertIcon, BellSlashIcon, CheckCircleIcon, LockClosedIcon, SparklesIcon } from "@heroicons/react/20/solid";
-import { ColumnDef } from "@tanstack/react-table";
+import type { TableColumnDef } from "@/components/ui/table/features";
 import { StackedBar } from "@/components/ui/charts/StackedBar";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
@@ -15,6 +15,8 @@ import { BASE_PART, shortProgram, TrackedProduct } from "../report";
 import { productUrl } from "../sections";
 import { countryFacet, openColumn } from "../tableColumns";
 import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
+import { AdcvdChipFor } from "@/components/adcvd/AdcvdChip";
+import type { AdcvdMark } from "@/components/adcvd/useCatalogAdcvd";
 
 // The columns of the user's imports (ImportsTable): what each shows, how it sorts, and the ones
 // people filter by (origin, HTS chapter, tariff, savings, alerts), each with its values' labels
@@ -31,6 +33,8 @@ export interface ImportColumnContext {
   setCovered: (key: string, on: boolean) => void;
   review: (key: string) => ReviewState;
   unlocked: (key: string) => boolean;
+  // An AD/CVD case may cover it (useCatalogAdcvd)
+  adcvd: (key: string) => AdcvdMark | null;
 }
 
 export const chapterOf = (product: TrackedProduct) => String(Number(product.entry.element.chapter)).padStart(2, "0");
@@ -71,7 +75,7 @@ const Status = ({ row, ctx }: { row: TrackedProduct; ctx: ImportColumnContext })
   );
 };
 
-export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduct, any>[] => [
+export const importColumns = (ctx: ImportColumnContext): TableColumnDef<TrackedProduct, any>[] => [
   ...(ctx.signedIn ? [selectColumn<TrackedProduct>((r) => `${r.entry.element.htsno} from ${r.entry.country.name}`)] : []),
   {
     id: "product",
@@ -89,6 +93,11 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
           <span className="line-clamp-2 text-xs leading-snug text-base-content/60" title={r.description}>
             {r.description}
           </span>
+          {ctx.adcvd(r.key) && (
+            <span className="mt-1 flex">
+              <AdcvdChipFor level={ctx.adcvd(r.key)!.level} applies={ctx.adcvd(r.key)!.applies} />
+            </span>
+          )}
           {tags.length > 0 && (
             <span className="mt-1 flex flex-wrap items-center gap-1" aria-label="Adjustments">
               <AdjustmentsHorizontalIcon className="h-3.5 w-3.5 text-primary" aria-hidden />
@@ -107,7 +116,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
     id: "country",
     accessorFn: (r) => r.entry.country.code,
     header: "Origin",
-    sortingFn: (a, b) => a.original.entry.country.name.localeCompare(b.original.entry.country.name),
+    sortFn: (a, b) => a.original.entry.country.name.localeCompare(b.original.entry.country.name),
     filterFn: "facet",
     meta: {
       width: "w-[16%]",
@@ -165,7 +174,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
             r.parts.map((p) => (
               <span key={p.key} className="inline-flex items-center gap-1.5 whitespace-nowrap" title={p.key}>
                 {/* Tariff color (DESIGN_SYSTEM §10) */}
-                <span className="h-2 w-2 rounded-sm" style={{ background: ctx.colors[p.key] }} aria-hidden />
+                <span className="h-2 w-2 rounded-xs" style={{ background: ctx.colors[p.key] }} aria-hidden />
                 {p.key === BASE_PART ? "Base" : shortProgram(p.key)}
                 <span className="font-semibold tabular-nums text-base-content">{formatRate(p.pct)}</span>
               </span>
@@ -180,7 +189,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
     accessorFn: (r) => r.totalPct,
     header: "Duty rate",
     sortDescFirst: true,
-    meta: { align: "right", width: "w-[9rem]" },
+    meta: { align: "right", width: "w-36" },
     cell: ({ row: { original: r } }) => (
       <span className="flex flex-col items-end gap-1">
         <span className={`${tt.display} text-xl font-semibold leading-none tabular-nums text-base-content`}>{formatRate(r.totalPct)}</span>
@@ -204,7 +213,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
                 REVIEW_ORDER.indexOf(a.value as ReviewState) - REVIEW_ORDER.indexOf(b.value as ReviewState),
             },
           },
-        } satisfies ColumnDef<TrackedProduct, any>,
+        } satisfies TableColumnDef<TrackedProduct, any>,
       ]
     : []),
   // Imports with alerts on are the tracked ones: alerts and impact checks (the plan's slots,
@@ -241,7 +250,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
                     : "Alerts off: no alerts or impact checks. Click to turn them on."
                 }
                 aria-label={`Alerts on ${r.entry.element.htsno} from ${r.entry.country.name}`}
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
                   on
                     ? "bg-success/10 text-success hover:bg-success/15"
                     : "bg-error/10 text-error hover:bg-error/15"
@@ -252,7 +261,7 @@ export const importColumns = (ctx: ImportColumnContext): ColumnDef<TrackedProduc
               </button>
             );
           },
-        } satisfies ColumnDef<TrackedProduct, any>,
+        } satisfies TableColumnDef<TrackedProduct, any>,
       ]
     : []),
   openColumn<TrackedProduct>(),

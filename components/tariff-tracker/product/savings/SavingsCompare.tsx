@@ -69,7 +69,7 @@ const OriginCompare = ({ product, option, imports, measure }: { product: Tracked
         <Arrow />
         <span className="mt-2 w-px flex-1 bg-base-300" aria-hidden />
       </div>
-      <div className="rounded-2xl bg-success/[0.04] p-4 outline outline-1 outline-success/20 md:-m-4">{card("option", option.result)}</div>
+      <div className="rounded-2xl bg-success/[0.04] p-4 outline-solid outline-1 outline-success/20 md:-m-4">{card("option", option.result)}</div>
     </div>
   );
 };
@@ -137,15 +137,15 @@ const RateChange = ({ product, option, measure }: { product: TrackedProduct; opt
           return (
             <div
               key={r.key}
-              className={`grid grid-cols-[minmax(0,1fr)_5.5rem_1.25rem_5.5rem_6.5rem] items-center gap-x-3 border-t border-base-300 py-3 text-sm ${moved ? "" : "text-base-content/50"}`}
+              className={`grid grid-cols-[minmax(0,1fr)_5.5rem_1.25rem_5.5rem_6.5rem] items-center gap-x-3 border-t border-base-300 py-3 text-sm ${moved ? "" : "text-base-content/60"}`}
             >
               <span className="flex min-w-0 items-center gap-2">
-                <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colors[r.part] ?? "oklch(var(--bc) / 0.2)" }} aria-hidden />
+                <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colors[r.part] ?? "color-mix(in oklab, var(--color-base-content) 20%, transparent)" }} aria-hidden />
                 <span className={`truncate ${moved ? "font-medium text-base-content" : ""}`} title={r.name}>
                   {r.name}
                 </span>
               </span>
-              <span className={`text-right tabular-nums ${moved && r.now < r.was ? "text-base-content/50 line-through decoration-error/60" : ""}`}>{r.was > 0.005 ? fmt(r.was) : "—"}</span>
+              <span className={`text-right tabular-nums ${moved && r.now < r.was ? "text-base-content/60 line-through decoration-error/60" : ""}`}>{r.was > 0.005 ? fmt(r.was) : "—"}</span>
               <ArrowRightIcon className={`h-3.5 w-3.5 ${moved ? "text-success" : "text-base-content/20"}`} aria-hidden />
               <span className={`text-right tabular-nums ${moved ? "font-semibold text-base-content" : ""}`}>{r.now > 0.005 ? fmt(r.now) : r.was > 0.005 ? fmt(0) : "—"}</span>
               <span className="text-right">

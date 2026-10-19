@@ -53,7 +53,7 @@ export const ReviewProgress = ({ action }: { action?: { label: string; onClick: 
       <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-base-content/70">
         {SEGMENTS.map((s) => (
           <span key={s.key} className="inline-flex items-center gap-1.5">
-            <span className={`h-2.5 w-2.5 rounded-sm ${s.className}`} aria-hidden />
+            <span className={`h-2.5 w-2.5 rounded-xs ${s.className}`} aria-hidden />
             {s.label} <span className="font-semibold tabular-nums text-base-content">{counts[s.key].toLocaleString("en-US")}</span>
           </span>
         ))}

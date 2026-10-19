@@ -349,7 +349,7 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
             <input
               type="file"
               accept=".pdf,application/pdf"
-              className="file-input file:normal-case file:font-medium file-input-bordered file-input-xs h-7 max-w-[14rem] border-base-content/15"
+              className="file-input file:normal-case file:font-medium file-input-xs h-7 max-w-56 border-base-content/15"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
             <button className={btn.xsPrimary} disabled={!file || !!busy} onClick={upload}>
@@ -684,7 +684,7 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
                   <input
                     type="checkbox"
                     aria-label="Select all rows"
-                    className="checkbox checkbox-xs rounded"
+                    className="checkbox checkbox-xs rounded-sm"
                     checked={allSelected}
                     ref={(el) => {
                       if (el) el.indeterminate = selectedRows.length > 0 && !allSelected
@@ -745,7 +745,7 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
                       <input
                         type="checkbox"
                         aria-label={`Select ${row.htsno || "row"}`}
-                        className="checkbox checkbox-xs mt-0.5 rounded"
+                        className="checkbox checkbox-xs mt-0.5 rounded-sm"
                         checked={selected.has(row.id)}
                         onChange={(e) => toggleSelected(index, (e.nativeEvent as MouseEvent).shiftKey)}
                       />
@@ -754,7 +754,7 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
                       <span className="flex items-center gap-1.5">
                         <input
                           type="checkbox"
-                          className="checkbox checkbox-xs mt-0.5 rounded"
+                          className="checkbox checkbox-xs mt-0.5 rounded-sm"
                           checked={row.reviewed}
                           // Only operations that replace or delete rows lock the checkboxes
                           disabled={!!busy && !busy.startsWith("row-")}
@@ -791,9 +791,9 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
                       )}
                     </Td>
                     <Td>{row.general}</Td>
-                    <Td className="max-w-[12rem] break-words">{row.special}</Td>
+                    <Td className="max-w-48 wrap-break-word">{row.special}</Td>
                     <Td>{row.other}</Td>
-                    <Td className="max-w-[12rem] text-xs text-base-content/70">{row.footnotes.join(" ")}</Td>
+                    <Td className="max-w-48 text-xs text-base-content/70">{row.footnotes.join(" ")}</Td>
                     <Td align="right" className="text-xs text-base-content/55">
                       {row.page ?? ""}
                     </Td>
@@ -808,7 +808,7 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
                         )
                       )}
                       {row.claude_notes && row.claude_status !== "ok" && (
-                        <span className="mt-1 block max-w-[12rem] leading-snug text-base-content/55">{row.claude_notes}</span>
+                        <span className="mt-1 block max-w-48 leading-snug text-base-content/55">{row.claude_notes}</span>
                       )}
                     </Td>
                     <Td align="right" className="whitespace-nowrap">
@@ -846,10 +846,10 @@ export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: 
 
 function RowForm({ value, onChange }: { value: Editable; onChange: (v: Editable) => void }) {
   const field = (key: keyof Editable, label: string, className = "") => (
-    <label className={`form-control ${className}`}>
+    <label className={`flex flex-col ${className}`}>
       <span className="mb-1 text-xs font-medium text-base-content/60">{label}</span>
       <input
-        className="input input-bordered input-sm border-base-content/15 bg-base-100"
+        className="input input-sm border-base-content/15 bg-base-100"
         value={value[key] === null ? "" : String(value[key])}
         onChange={(e) =>
           onChange({ ...value, [key]: key === "indent" || key === "page" ? (e.target.value ? Number(e.target.value) : key === "page" ? null : 0) : e.target.value })
@@ -864,10 +864,10 @@ function RowForm({ value, onChange }: { value: Editable; onChange: (v: Editable)
       {field("indent", "Indent (0 = left)")}
       {field("units", "Units")}
       {field("page", "Page")}
-      <label className="form-control md:col-span-6">
+      <label className="flex flex-col md:col-span-6">
         <span className="mb-1 text-xs font-medium text-base-content/60">Description</span>
         <textarea
-          className="textarea textarea-bordered textarea-sm border-base-content/15 bg-base-100"
+          className="textarea textarea-sm border-base-content/15 bg-base-100"
           rows={2}
           value={value.description}
           onChange={(e) => onChange({ ...value, description: e.target.value })}
@@ -876,10 +876,10 @@ function RowForm({ value, onChange }: { value: Editable; onChange: (v: Editable)
       {field("general", "General (column 1)", "md:col-span-2")}
       {field("special", "Special", "md:col-span-2")}
       {field("other", "Column 2", "md:col-span-2")}
-      <label className="form-control md:col-span-6">
+      <label className="flex flex-col md:col-span-6">
         <span className="mb-1 text-xs font-medium text-base-content/60">Footnotes, one per line (e.g. &quot;1/ See chapter 99 statistical note 1.&quot;)</span>
         <textarea
-          className="textarea textarea-bordered textarea-sm border-base-content/15 bg-base-100"
+          className="textarea textarea-sm border-base-content/15 bg-base-100"
           rows={2}
           value={value.footnotesText}
           onChange={(e) => onChange({ ...value, footnotesText: e.target.value })}

@@ -7,7 +7,7 @@ import Footer from "../../../components/Footer";
 export const metadata = getSEOTags({
   title: "Tariff Coverage — Supported Tariffs, Programs & Updates | HTS Hero",
   description:
-    "See the full list of US tariffs and trade programs covered by the HTS Hero duty simulator — including Section 301, Section 232, reciprocal tariffs, AD/CVD duties, USMCA, GSP, CAFTA-DR, and more.",
+    "See the full list of US tariffs and trade programs covered by the HTS Hero duty simulator — including Section 301, Section 232, reciprocal tariffs, USMCA, GSP, CAFTA-DR, and more.",
   canonicalUrlRelative: "/tariffs/coverage",
   // Out of date (it predates the IEEPA ruling): kept for old links, out of search results
   extraTags: { robots: { index: false, follow: true } },
@@ -173,7 +173,7 @@ const tariffFAQs = [
   {
     topic: "Do you support Anti-Dumping or Countervailing Duties?",
     details:
-      "Not currently, however we are considering adding support for these in the future. For now you are best of talking to a licensed customs broker to see if these might apply.",
+      "Not currently, however we are considering adding support for these in the future. For now you are best off talking to a licensed customs broker to see if these might apply.",
   },
   {
     topic:

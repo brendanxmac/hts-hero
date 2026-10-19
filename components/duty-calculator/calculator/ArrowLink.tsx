@@ -17,7 +17,7 @@ export const ArrowLink = ({
   <button
     type="button"
     onClick={onClick}
-    className={`group inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded text-sm font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${className}`}
+    className={`group inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-sm text-sm font-semibold text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${className}`}
   >
     {children}
     <ArrowRightIcon className="h-4 w-4" aria-hidden />

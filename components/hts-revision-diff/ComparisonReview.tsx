@@ -481,7 +481,7 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
 
           <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[22rem_minmax(0,1fr)]">
             {/* Change list */}
-            <aside className="flex flex-col overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-sm lg:sticky lg:top-[4.25rem] lg:max-h-[calc(100vh-5.5rem)]">
+            <aside className="flex flex-col overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs lg:sticky lg:top-17 lg:max-h-[calc(100vh-5.5rem)]">
               <div className="flex flex-col gap-2 border-b border-base-content/10 p-3">
                 <input
                   className={`${inputCls} w-full`}
@@ -712,9 +712,9 @@ function ChangeDetail({
   const citedHeadings = payload.citedHeadings ?? []
 
   return (
-    <article className="rounded-lg border border-base-content/10 bg-base-100 shadow-sm">
+    <article className="rounded-lg border border-base-content/10 bg-base-100 shadow-xs">
       {/* Decision bar */}
-      <div className="sticky top-12 z-20 rounded-t-lg border-b border-base-content/10 bg-base-100/95 px-5 py-3.5 backdrop-blur">
+      <div className="sticky top-12 z-20 rounded-t-lg border-b border-base-content/10 bg-base-100/95 px-5 py-3.5 backdrop-blur-sm">
         <div className="flex items-start gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2 text-[11px] text-base-content/45">
@@ -899,7 +899,7 @@ function ChangeDetail({
           <SectionLabel>Notes for Claude Code</SectionLabel>
           <textarea
             ref={notesRef}
-            className="textarea textarea-bordered border-base-content/15 text-sm leading-relaxed"
+            className="textarea border-base-content/15 text-sm leading-relaxed"
             rows={4}
             placeholder="Your interpretation and instructions. Saved when you click away."
             value={notes}
@@ -1082,7 +1082,7 @@ function RevisionContext({ revision, onSaved }: { revision: RevisionRow; onSaved
           when writing the changelog.
         </p>
         <textarea
-          className="textarea textarea-bordered border-base-content/15 text-sm leading-relaxed"
+          className="textarea border-base-content/15 text-sm leading-relaxed"
           rows={3}
           placeholder="e.g. Implements the Oct 17, 2025 proclamation's quota for Canadian and Mexican auto-supply steel. Saved when you click away."
           value={text}
@@ -1235,7 +1235,7 @@ function NoteDiffView({ diff, fromName, toName }: { diff: NoteDiff; fromName: st
       {(diff.codesAdded.length > 0 || diff.codesRemoved.length > 0 || (diff.rangeChanges?.length ?? 0) > 0) && (
         <div className="mt-3 flex flex-col gap-1 border-t border-base-content/[0.07] pt-2.5 text-xs">
           {diff.rangeChanges?.map((r, i) => (
-            <p key={i} className="break-words">
+            <p key={i} className="wrap-break-word">
               <span className="font-semibold">Range:</span>{" "}
               <span className="font-mono">
                 {r.before ?? "(none)"} → {r.after ?? "(none)"}
@@ -1244,13 +1244,13 @@ function NoteDiffView({ diff, fromName, toName }: { diff: NoteDiff; fromName: st
             </p>
           ))}
           {diff.codesAdded.length > 0 && (
-            <p className="break-words">
+            <p className="wrap-break-word">
               <span className="font-semibold text-success">+ {diff.codesAdded.length} codes:</span>{" "}
               <span className="font-mono text-base-content/70">{diff.codesAdded.join(", ")}</span>
             </p>
           )}
           {diff.codesRemoved.length > 0 && (
-            <p className="break-words">
+            <p className="wrap-break-word">
               <span className="font-semibold text-error">− {diff.codesRemoved.length} codes:</span>{" "}
               <span className="font-mono text-base-content/70">{diff.codesRemoved.join(", ")}</span>
             </p>

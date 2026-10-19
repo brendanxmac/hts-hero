@@ -113,7 +113,7 @@ const ButtonAccount = () => {
       <button
         ref={buttonRef}
         onClick={() => setIsOpen((v) => !v)}
-        className="overflow-clip focus:outline-none border border-base-content/50 rounded-full"
+        className="overflow-clip focus:outline-hidden border border-base-content/50 rounded-full"
       >
         {user?.user_metadata?.avatar_url ? (
           <img
@@ -136,7 +136,7 @@ const ButtonAccount = () => {
         createPortal(
           <div
             ref={panelRef}
-            className="fixed z-[100] w-56 transition-opacity duration-150"
+            className="fixed z-100 w-56 transition-opacity duration-150"
             style={style}
           >
             <div className="w-full rounded-xl shadow-xl border border-base-content/20 bg-base-100 p-1">

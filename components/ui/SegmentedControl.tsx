@@ -40,8 +40,8 @@ export function SegmentedControl<T extends string>({
             aria-checked={active}
             title={option.title}
             onClick={() => onChange(option.id)}
-            className={`${fullWidth ? "flex-1" : ""} ${size === "sm" ? "h-7 px-3" : "h-9 px-4"} whitespace-nowrap rounded-[6px] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-              active ? "bg-base-100 text-base-content shadow-sm ring-1 ring-base-300" : "text-base-content/70 hover:text-base-content"
+            className={`${fullWidth ? "flex-1" : ""} ${size === "sm" ? "h-7 px-3" : "h-9 px-4"} whitespace-nowrap rounded-[6px] text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
+              active ? "bg-base-100 text-base-content shadow-xs ring-1 ring-base-300" : "text-base-content/70 hover:text-base-content"
             }`}
           >
             {option.label}

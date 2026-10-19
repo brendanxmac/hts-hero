@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
+import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { REQUEST_ANCHOR, SELF_AUDIT_LIVE, SIGN_UP_TO_AUDIT, SIGN_UP_TO_TRACK } from "../lib/links";
 
 export const ClosingCta = () => (
@@ -31,12 +32,16 @@ export const ClosingCta = () => (
               Request an audit <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
             </a>
             <Link href={SIGN_UP_TO_TRACK} className={cta.secondary}>
-              Track your imports free
+              Try the Tariff Tracker free for {REVERSE_TRIAL.days} days
             </Link>
           </>
         )}
       </div>
-      {!SELF_AUDIT_LIVE && <p className="mt-6 text-sm text-base-content/60">Self-serve audits in the Tariff Tracker are coming soon.</p>}
+      {!SELF_AUDIT_LIVE && (
+        <p className="mt-6 flex flex-wrap items-center justify-center gap-2 text-sm text-base-content/60">
+          <ComingChip /> Automatic auditing in the Tariff Tracker, included in the trial and every plan.
+        </p>
+      )}
     </div>
   </section>
 );

@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
 // One batch and its messages, for review
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireAdmin()
   if (denied) return denied
   const [batch, messages] = await Promise.all([
@@ -19,7 +20,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 }
 
 // The note at the top of every message in the batch
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireAdmin()
   if (denied) return denied
   const { note } = await req.json()
@@ -34,7 +36,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
 // { action: "approve" } sends it now (what's left goes with the next cron run); "skip" drops it;
 // "reopen" puts a skipped batch back for review
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireAdmin()
   if (denied) return denied
   const { action } = await req.json()

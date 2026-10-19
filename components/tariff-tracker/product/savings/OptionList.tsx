@@ -82,8 +82,8 @@ const Row = ({
         onClick={onSelect}
         aria-pressed={selected}
         title={title}
-        className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-          selected ? "bg-primary/[0.06] shadow-[inset_0_0_0_1.5px_oklch(var(--p))]" : "hover:bg-tt-soft"
+        className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          selected ? "bg-primary/[0.06] shadow-[inset_0_0_0_1.5px_var(--color-primary)]" : "hover:bg-tt-soft"
         }`}
       >
         {/* Its kind, or the country's flag */}
@@ -91,7 +91,7 @@ const Row = ({
           {option?.kind === "origin" ? option.setup.country.flag : <Icon className="h-[18px] w-[18px]" />}
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className={`truncate text-sm font-semibold ${closed ? "text-base-content/50 line-through decoration-base-content/30" : "text-base-content"}`}>
+          <span className={`truncate text-sm font-semibold ${closed ? "text-base-content/60 line-through decoration-base-content/30" : "text-base-content"}`}>
             {option?.kind === "origin" ? option.setup.country.name : option?.kind === "exemption" ? exemptionName(option) : title}
           </span>
           <span className="flex min-w-0 items-center gap-1.5 text-xs text-base-content/60">
@@ -104,7 +104,7 @@ const Row = ({
           </span>
         </span>
         <span className="flex shrink-0 flex-col items-end gap-0.5">
-          <span className={`text-sm font-semibold tabular-nums ${closed ? "text-base-content/40" : "text-success"}`}>−{formatSaving(usd, customsValue, measure)}</span>
+          <span className={`text-sm font-semibold tabular-nums ${closed ? "text-base-content/50" : "text-success"}`}>−{formatSaving(usd, customsValue, measure)}</span>
           {status ? (
             <span className="flex items-center gap-1 text-[11px] font-semibold text-base-content/70">
               {opportunity!.status === "secured" ? (
@@ -135,7 +135,7 @@ const TrackHeading = ({ title, note, rows, badge }: { title: string; note: strin
           <h3 className={tt.eyebrow()}>{title}</h3>
           {badge}
         </span>
-        <span className="text-[11px] font-semibold tabular-nums text-base-content/50">
+        <span className="text-[11px] font-semibold tabular-nums text-base-content/60">
           {decided}/{rows.length} decided
         </span>
       </div>
@@ -179,7 +179,7 @@ export const OptionList = ({
   const sub = (kind: SavingKind) =>
     of(kind).length > 0 && (
       <div className="flex flex-col gap-1">
-        {of("program").length > 0 && of("exemption").length > 0 && <span className="px-3 pt-1 text-[11px] font-semibold text-base-content/50">{KIND[kind].label}</span>}
+        {of("program").length > 0 && of("exemption").length > 0 && <span className="px-3 pt-1 text-[11px] font-semibold text-base-content/60">{KIND[kind].label}</span>}
         {rows(of(kind))}
       </div>
     );

@@ -7,7 +7,7 @@ export const elementsAtClassificationLevel = (
   return elements.filter((e) => Number(e.indent) === level);
 };
 
-export const setIndexInArray = <T extends Object>(
+export const setIndexInArray = <T extends object>(
   elements: T[]
 ): Array<T & { indexInParentArray: number }> => {
   return elements.map((e, i) => ({ ...e, indexInParentArray: i }));

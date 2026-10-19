@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import type { TableColumnDef } from "@/components/ui/table/features";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table";
@@ -24,7 +24,7 @@ interface Row {
   changes: number;
 }
 
-const COLUMNS: ColumnDef<Row, any>[] = [
+const COLUMNS: TableColumnDef<Row, any>[] = [
   {
     id: "product",
     accessorFn: (r) => r.p.entry.element.htsno,

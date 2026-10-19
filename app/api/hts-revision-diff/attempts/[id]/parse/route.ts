@@ -8,7 +8,8 @@ export const maxDuration = 300
 
 // Parses the stored markdown and JSON again (after a parser change) without
 // converting again
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

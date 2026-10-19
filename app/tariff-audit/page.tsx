@@ -4,6 +4,7 @@ import { renderSchemaJsonLd } from "@/libs/seo";
 import { getLatestVerifiedRevision, getVerifiedRange } from "@/tariffs/engine-v2/revisions";
 import { getAuditExample } from "@/libs/tariff-audit-example";
 import { AUDITS_ENABLED } from "@/libs/tariff-tracker/features";
+import { COMING_NOTE } from "@/components/ui/marketing/comingSoon";
 import * as mk from "@/components/ui/marketing/styles";
 import {
   AUDIT_FAQS,
@@ -27,7 +28,7 @@ const TITLE = "Tariff Audit: Find Overpaid Import Duty & Refunds | HTS Hero";
 // Self-serve audit checks are off for the Tracker MVP (features.ts): the request is the way in
 const DESCRIPTION = AUDITS_ENABLED
   ? "Audit past US import entries for overpaid duty, missed exemptions and refundable tariffs like IEEPA. 10 free audit checks, or request one. Ready for your broker."
-  : "Audit past US import entries for overpaid duty, missed exemptions and refundable tariffs like IEEPA. Request a free audit, ready for your broker.";
+  : `Audit past US import entries for overpaid duty, missed exemptions and refundable tariffs like IEEPA. Request a free audit, ready for your broker. Automatic auditing in the Tariff Tracker ${COMING_NOTE}.`;
 
 export const metadata: Metadata = {
   title: TITLE,

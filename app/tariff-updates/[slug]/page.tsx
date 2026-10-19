@@ -30,7 +30,8 @@ const HTS_SHOWN = 40
 
 const clip = (text: string, max: number) => (text.length <= max ? text : `${text.slice(0, text.lastIndexOf(" ", max - 1))}…`)
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const found = await getPublishedUpdate(params.slug)
   if (!found) return {}
   const { update, indexable } = found
@@ -56,7 +57,8 @@ const HtsCode = ({ code, href }: { code: string; href: string | null }) => {
   )
 }
 
-export default async function TariffUpdatePage({ params }: { params: { slug: string } }) {
+export default async function TariffUpdatePage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const found = await getPublishedUpdate(params.slug)
   if (!found) notFound()
   const { update, sources, revisionEntry } = found
@@ -110,7 +112,7 @@ export default async function TariffUpdatePage({ params }: { params: { slug: str
             <span className={tt.chip("primary")}>{STAGE_LABELS[update.stage]}</span>
             <span className="text-sm text-base-content/60">Updated {formatDay(update.last_activity_at)}</span>
           </div>
-          <h1 className={`${tt.display} text-3xl font-semibold leading-tight text-base-content sm:text-4xl`}>{update.title}</h1>
+          <h1 className={`${tt.display} text-3xl font-semibold leading-tight text-base-content sm:text-4xl sm:leading-10`}>{update.title}</h1>
           <p className="text-lg leading-relaxed text-base-content/80">{update.summary}</p>
           {update.countries.length > 0 && (
             <p className="text-sm">

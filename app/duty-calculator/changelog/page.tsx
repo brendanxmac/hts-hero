@@ -54,7 +54,7 @@ export default async function TariffChangelogPage() {
             <p className={`${mk.lead} mt-2 max-w-2xl`}>
               Every change to the tariff calculator: new HTS revisions, corrections and improvements.
             </p>
-            <div className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 shadow-sm">
+            <div className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 shadow-xs">
               <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
               Tariff data verified through HTS {latestVerified.title}
             </div>

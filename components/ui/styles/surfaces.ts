@@ -5,8 +5,9 @@
 // its rounded corners, so a header, table or stat grid with its own background can never
 // paint square corners over the card's border.
 // In the Tracker's look (the Tracker, the calculator, /hts) it's the same card as tt.panel: 20px
-// corners and no shadow.
-export const card = "overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm tracker:shadow-none";
+// corners and the Tracker's two-layer shadow; tt-card makes base-200 fills inside it the
+// container tone (the theme plugin).
+export const card = "tt-card overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-xs tracker:shadow-[var(--tt-shadow)]";
 
 // The same card for one that holds a dropdown (a combobox, a menu), which must be free to
 // extend past the card. Nothing inside may paint into its corners: a header or footer with a
@@ -35,7 +36,7 @@ const BADGE_TONES: Record<Tone, string> = {
 
 // A short label on a row or a title: a type, a status, a program code
 export const badge = (tone: Tone = "neutral") =>
-  `inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${BADGE_TONES[tone]}`;
+  `inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${BADGE_TONES[tone]}`;
 
 const NOTICE_TONES: Record<Exclude<Tone, "neutral">, string> = {
   primary: "border-l-primary",
@@ -47,7 +48,7 @@ const NOTICE_TONES: Record<Exclude<Tone, "neutral">, string> = {
 // A message about the data on screen (unverified dates, caveats, errors): a card marked by a
 // colored left rule, not a tinted fill. The icon takes the tone's color; text stays base-content.
 export const notice = (tone: Exclude<Tone, "neutral"> = "warning") =>
-  `rounded-md border border-base-300 border-l-4 ${NOTICE_TONES[tone]} bg-base-100 px-4 py-3 shadow-sm tracker:rounded-xl tracker:shadow-none`;
+  `rounded-md border border-base-300 border-l-4 ${NOTICE_TONES[tone]} bg-base-100 px-4 py-3 shadow-xs tracker:rounded-xl tracker:shadow-none`;
 
 // A floating list under a control: dropdowns, comboboxes, menus. Position it yourself
 // ("absolute z-30 mt-2 w-full …"); options inside are rounded-md rows

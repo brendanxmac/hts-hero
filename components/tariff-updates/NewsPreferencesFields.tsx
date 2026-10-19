@@ -136,7 +136,7 @@ export function NewsPreferencesFields({
                 placeholder="Add a country…"
                 size="sm"
                 variant="pill"
-                buttonClassName="!text-xs"
+                buttonClassName="text-xs!"
                 menuClassName="w-64"
               />
             </div>

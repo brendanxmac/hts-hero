@@ -21,7 +21,7 @@ import { monitorFacts } from "@/components/tariff-monitor";
 import { getAuditExample } from "@/libs/tariff-audit-example";
 import { getSavingsExamples } from "@/libs/tariff-savings-example";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
+import { MARKET_AUDITS, MARKET_SAVINGS } from "@/libs/tariff-tracker/features";
 import * as mk from "@/components/ui/marketing/styles";
 
 // Static, refreshed daily with the tariff data
@@ -63,8 +63,8 @@ export default async function Home() {
   const [{ example }, audit, savings] = await Promise.all([
     getDutyCalculatorContent(),
     // Only fetched while the homepage shows the audit and savings blocks (MVP_TRIM.md)
-    AUDITS_ENABLED ? getAuditExample() : null,
-    SAVINGS_ENABLED ? getSavingsExamples() : [],
+    MARKET_AUDITS ? getAuditExample() : null,
+    MARKET_SAVINGS ? getSavingsExamples() : [],
   ]);
 
   return (

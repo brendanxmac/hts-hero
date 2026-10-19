@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic"
 
 // Saves the reviewer's optional context for a revision: { context_notes: string }.
 // An empty string clears it.
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

@@ -85,7 +85,7 @@ export function FeatureShowcaseSection({
           <div className={isEven ? "lg:order-2" : "lg:order-1"}>
             <div className="relative group">
               {/* Glow behind media */}
-              <div className="absolute -inset-2 rounded-2xl bg-gradient-to-br from-secondary/10 via-primary/5 to-secondary/10 blur-xl opacity-70" />
+              <div className="absolute -inset-2 rounded-2xl bg-linear-to-br from-secondary/10 via-primary/5 to-secondary/10 blur-xl opacity-70" />
 
               <div className="relative rounded-2xl overflow-hidden border border-secondary/15 shadow-lg shadow-secondary/[0.06] bg-base-200">
                 {feature.media.type === "video" ? (

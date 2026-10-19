@@ -8,7 +8,7 @@ import { getPostsByAuthor } from "@/libs/blog/posts";
 import config from "@/config";
 
 interface Props {
-  params: { authorId: string };
+  params: Promise<{ authorId: string }>;
 }
 
 export const dynamicParams = false;
@@ -17,7 +17,8 @@ export function generateStaticParams() {
   return AUTHORS.map((a) => ({ authorId: a.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const author = authorBySlug(params.authorId);
   if (!author) return {};
   return {
@@ -27,7 +28,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function BlogAuthorPage({ params }: Props) {
+export default async function BlogAuthorPage(props: Props) {
+  const params = await props.params;
   const author = authorBySlug(params.authorId);
   if (!author) notFound();
   const posts = getPostsByAuthor(author.slug);

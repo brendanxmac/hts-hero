@@ -132,7 +132,7 @@ export const RefundCheckCard = ({
           <button
             type="button"
             onClick={played.replay}
-            className="inline-flex items-center gap-1 rounded text-xs font-medium text-base-content/60 hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            className="inline-flex items-center gap-1 rounded-sm text-xs font-medium text-base-content/60 hover:text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             <ArrowPathIcon className="h-3.5 w-3.5" aria-hidden />
             Replay

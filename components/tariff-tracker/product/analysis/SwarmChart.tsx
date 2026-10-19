@@ -16,7 +16,7 @@ const Mosaic = ({ origins, size }: { origins: OriginRate[]; size: number }) => {
   const fit = Math.max(1, Math.floor(size / cell) ** 2);
   return (
     <span
-      className="flex h-full w-full flex-wrap content-center items-center justify-center overflow-hidden rounded-full bg-base-100 text-[11px] leading-[15px] shadow-sm ring-1 ring-base-300"
+      className="flex h-full w-full flex-wrap content-center items-center justify-center overflow-hidden rounded-full bg-base-100 text-[11px] leading-[15px] shadow-xs ring-1 ring-base-300"
       aria-hidden
     >
       {origins.slice(0, fit).map((o) => (
@@ -51,7 +51,7 @@ const pileSize = (count: number) => Math.round(Math.min(96, 34 + 8 * Math.log2(c
 
 const flagFace = (o: OriginRate, ring: string) => (
   <span
-    className={`flex h-[30px] w-[30px] items-center justify-center rounded-full bg-base-100 text-lg leading-none shadow-sm ring-1 ${ring}`}
+    className={`flex h-[30px] w-[30px] items-center justify-center rounded-full bg-base-100 text-lg leading-none shadow-xs ring-1 ${ring}`}
     aria-hidden
   >
     {o.country.flag}
@@ -187,7 +187,7 @@ export const SwarmChart = ({
               <button
                 key={node.key}
                 type="button"
-                className={`${motionClass} z-10 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${
+                className={`${motionClass} z-10 rounded-full focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-primary ${
                   open || hover === node.key ? "ring-2 ring-primary" : ""
                 }`}
                 style={{ ...motion, width: size, height: size }}
@@ -199,7 +199,7 @@ export const SwarmChart = ({
               >
                 <Mosaic origins={node.origins} size={size} />
                 <span
-                  className={`absolute left-1/2 top-full -mt-2.5 -translate-x-1/2 whitespace-nowrap rounded-full px-1.5 text-[11px] font-semibold tabular-nums shadow-sm ${
+                  className={`absolute left-1/2 top-full -mt-2.5 -translate-x-1/2 whitespace-nowrap rounded-full px-1.5 text-[11px] font-semibold tabular-nums shadow-xs ${
                     open || hover === node.key ? "bg-primary text-primary-content" : "bg-base-content text-base-100"
                   }`}
                 >
@@ -227,7 +227,7 @@ export const SwarmChart = ({
               key={node.key}
               tabIndex={0}
               role="img"
-              className={`${motionClass} ${hover === code || o.isOrigin ? "z-30" : "z-20"} rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary`}
+              className={`${motionClass} ${hover === code || o.isOrigin ? "z-30" : "z-20"} rounded-full focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-primary`}
               style={motion}
               onMouseEnter={() => setHover(code)}
               onMouseLeave={() => setHover(null)}
@@ -237,7 +237,7 @@ export const SwarmChart = ({
             >
               {flagFace(o, ring)}
               {o.isOrigin && (
-                <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded bg-primary px-1 text-[10px] font-semibold uppercase leading-4 tracking-wide text-primary-content">
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-sm bg-primary px-1 text-[10px] font-semibold uppercase leading-4 tracking-wide text-primary-content">
                   You
                 </span>
               )}

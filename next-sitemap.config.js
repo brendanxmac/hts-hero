@@ -26,8 +26,8 @@ async function getHtsCodes() {
   const u8 = new Uint8Array(arrayBuffer);
   const decompressed =
     u8.length >= 2 && u8[0] === 0x1f && u8[1] === 0x8b
-      ? pako.ungzip(u8, { to: "string" })
-      : pako.inflate(u8, { to: "string" });
+      ? pako.ungzip(u8, { toText: true })
+      : pako.inflate(u8, { toText: true });
   const elements = JSON.parse(decompressed);
 
   const codes = elements

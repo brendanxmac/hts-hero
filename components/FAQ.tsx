@@ -75,7 +75,7 @@ export const FAQ = ({ faqItems }: Props) => {
         {/* Still have questions? */}
         <div className="mt-12">
           {/* In the Tariff Tracker's look (tracker:) a bold call to action, inverted from the page */}
-          <div className="hts-tracker-inverse relative overflow-hidden rounded-3xl border border-base-content/10 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 px-6 py-10 sm:px-10 sm:py-12 shadow-lg tracker:border-0 tracker:bg-none tracker:bg-base-100 tracker:py-16 tracker:shadow-none">
+          <div className="hts-tracker-inverse relative overflow-hidden rounded-3xl border border-base-content/10 bg-linear-to-br from-primary/5 via-base-100 to-secondary/5 px-6 py-10 sm:px-10 sm:py-12 shadow-lg tracker:border-0 tracker:bg-none tracker:bg-base-100 tracker:py-16 tracker:shadow-none">
             {/* Decorative blurs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none tracker:hidden">
               <div className="absolute -top-16 -right-10 w-56 h-56 bg-primary/10 rounded-full blur-3xl" />

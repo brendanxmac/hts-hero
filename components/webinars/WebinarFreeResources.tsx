@@ -27,7 +27,7 @@ export default function WebinarFreeResources() {
         />
 
         {/* Duty Calculator CTA */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-transparent via-secondary/10 to-primary/10 border border-secondary/10 mb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-linear-to-r from-transparent via-secondary/10 to-primary/10 border border-secondary/10 mb-5">
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-secondary/10 shrink-0">
               <svg

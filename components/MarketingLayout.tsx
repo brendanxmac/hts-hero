@@ -20,7 +20,7 @@ export const MarketingLayout = ({
     <MarketingHeader />
     {children}
     {beforeFooter}
-    <div className={`${THEME_LIGHT} [color-scheme:light] follow-dark:[color-scheme:dark]`}>
+    <div className={`${THEME_LIGHT} scheme-light follow-dark:scheme-dark`}>
       <Footer />
     </div>
   </div>

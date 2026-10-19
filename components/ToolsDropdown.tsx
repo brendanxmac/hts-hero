@@ -100,11 +100,11 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
         <>
           {/* Backdrop to close menu */}
           <div
-            className="fixed inset-0 z-[9998]"
+            className="fixed inset-0 z-9998"
             onClick={() => setIsOpen(false)}
           />
           {/* Dropdown Menu */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-[9999] w-72 sm:w-80 bg-base-100 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-9999 w-72 sm:w-80 bg-base-100 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
             {/* Arrow */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-base-100 border-l border-t border-base-content/10 rotate-45" />
 
@@ -122,7 +122,7 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
                       }`}
                   >
                     <div
-                      className={`w-10 h-10 rounded-lg ${tool.iconBg} flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform`}
+                      className={`w-10 h-10 rounded-lg ${tool.iconBg} flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform`}
                     >
                       {tool.emoji}
                     </div>
@@ -175,7 +175,7 @@ export const MobileToolsMenu = ({ onLinkClick }: MobileToolsMenuProps) => {
                 }`}
             >
               <div
-                className={`w-9 h-9 rounded-lg ${tool.iconBg} flex items-center justify-center text-lg flex-shrink-0`}
+                className={`w-9 h-9 rounded-lg ${tool.iconBg} flex items-center justify-center text-lg shrink-0`}
               >
                 {tool.emoji}
               </div>

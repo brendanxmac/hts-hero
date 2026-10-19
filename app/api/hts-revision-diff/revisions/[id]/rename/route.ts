@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic"
 
 // Renames a revision (e.g. uploaded as 2025HTSRev6 when its documents say
 // 2026 Revision 6). Stored files keep their paths; only the name changes.
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

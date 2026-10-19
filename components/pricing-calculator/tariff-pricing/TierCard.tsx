@@ -45,11 +45,11 @@ export const TierCard = ({
       className={`relative flex flex-col overflow-hidden rounded-3xl lg:row-span-5 ${
         companion ? "" : "lg:grid lg:grid-rows-subgrid lg:gap-0"
       } ${
-        dark ? "hts-tracker-on-dark bg-tt-side text-base-content shadow-2xl shadow-primary/20 ring-1 ring-base-content/10" : "border border-base-300 skin:border-base-300 bg-base-100 skin:bg-base-100 shadow-sm"
+        dark ? "hts-tracker-on-dark bg-tt-side text-base-content shadow-2xl shadow-primary/20 ring-1 ring-base-content/10" : "border border-base-300 skin:border-base-300 bg-base-100 skin:bg-base-100 shadow-xs"
       }`}
     >
       {dark && (
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(32rem_18rem_at_100%_0%,oklch(var(--p)/0.35),transparent)]" />
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(32rem_18rem_at_100%_0%,color-mix(in_oklab,var(--color-primary)_35%,transparent),transparent)]" />
       )}
       <div className="relative flex flex-col gap-2 px-8 pt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">

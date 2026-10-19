@@ -18,7 +18,7 @@ export default async function LayoutPrivate({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const headersList = headers();
+    const headersList = await headers();
     const fullUrl =
       headersList.get("x-pathname") || headersList.get("referer") || "";
     const pathname = fullUrl.includes("://")

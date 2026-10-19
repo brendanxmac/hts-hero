@@ -40,6 +40,8 @@ export const recentUpdates = async (db: SupabaseClient, days: number): Promise<U
     .from("tariff_updates")
     .select(UPDATE_COLUMNS)
     .eq("status", "published")
+    // AD/CVD notices are steady news for the importers they touch, not daily posts
+    .neq("authority", "ad_cvd")
     .gte("last_activity_at", since)
     .order("last_activity_at", { ascending: false })
     .limit(200)
@@ -59,6 +61,7 @@ const TONE: Record<Kind, Tone> = {
   investigation: "heads-up",
   deal: "brand",
   hts_revision: "neutral",
+  ad_cvd: "heads-up",
   other: "neutral",
 }
 
@@ -75,6 +78,7 @@ const KIND_WEIGHT: Record<Kind, number> = {
   deadline: 30,
   guidance: 20,
   hts_revision: 0,
+  ad_cvd: 0,
   other: 0,
 }
 

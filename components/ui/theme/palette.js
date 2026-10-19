@@ -5,7 +5,7 @@
 //
 // Contrast: every text color meets WCAG AA (4.5:1) on base-100 and base-200 in its theme.
 // Change a value here, check both themes, and update the palette table in DESIGN_SYSTEM.md.
-// CommonJS, so tailwind.config.js can require it.
+// CommonJS, so the theme plugin can require it.
 
 const light = {
   // Brand
@@ -79,14 +79,12 @@ const series = {
 // Shapes daisyUI reads from the theme. Our controls set their own, but these keep any
 // remaining daisyUI element in line.
 const shape = {
-  "--rounded-box": "0.5rem",
-  "--rounded-btn": "0.375rem",
-  "--rounded-badge": "0.25rem",
-  "--tab-radius": "0.375rem",
-  "--animation-btn": "0",
-  "--animation-input": "0",
-  "--btn-focus-scale": "1",
-  "--border-btn": "1px",
+  "--radius-box": "0.5rem",
+  "--radius-field": "0.375rem",
+  "--radius-selector": "0.25rem",
+  "--border": "1px",
+  "--depth": "0",
+  "--noise": "0",
 };
 
 // The Tariff Tracker's own palette (DESIGN_SYSTEM.md §15): simple and colorful, applied inside
@@ -94,6 +92,11 @@ const shape = {
 // Cobalt is the user's data and the next step, green is money, red an increase, amber a
 // heads-up or a lock, sky a second series, slate base duty. The sidebar is dark in both modes.
 const tracker = {
+  // Surfaces (Oct 2026 review, DESIGN_SYSTEM.md §15 "Surfaces"): ground (base-200) → surface, the
+  // cards (base-100) → container (--tt-soft, fills inside a card) → container-high (--tt-soft-high:
+  // hover, selected). Generated in OKLCH from the cobalt hue (265) at very low chroma, so each step
+  // is even; in dark they get lighter as they come forward. Border (base-300) is at least 1.4:1
+  // against a card, the strong rule (--tt-rule) about 1.8:1 for where structure changes.
   light: {
     primary: "#2f49d1",
     "primary-content": "#ffffff",
@@ -104,8 +107,8 @@ const tracker = {
     neutral: "#0e1220",
     "neutral-content": "#f1f3f8",
     "base-100": "#ffffff",
-    "base-200": "#eef0f5",
-    "base-300": "#e3e6ee",
+    "base-200": "#e3e6ee",
+    "base-300": "#d4d7e0",
     "base-content": "#0e1220",
     info: "#2f49d1",
     "info-content": "#ffffff",
@@ -116,6 +119,7 @@ const tracker = {
     error: "#c2412d",
     "error-content": "#ffffff",
   },
+  // Colors a step lighter and softer than light mode's, so they don't vibrate on the dark surfaces
   dark: {
     primary: "#8ea2ff",
     "primary-content": "#0e1220",
@@ -123,25 +127,29 @@ const tracker = {
     "secondary-content": "#0e1220",
     accent: "#f2b24c",
     "accent-content": "#0e1220",
-    neutral: "#111319",
+    neutral: "#101319",
     "neutral-content": "#f1f3f8",
-    "base-100": "#111319",
-    "base-200": "#08090d",
-    "base-300": "#232733",
+    "base-100": "#161a22",
+    "base-200": "#0b0d13",
+    "base-300": "#333843",
     "base-content": "#f1f3f8",
     info: "#8ea2ff",
     "info-content": "#0e1220",
-    success: "#34c98b",
+    success: "#4fd39b",
     "success-content": "#0e1220",
     warning: "#f2b24c",
     "warning-content": "#0e1220",
-    error: "#ff7d6e",
+    error: "#ff8a7c",
     "error-content": "#0e1220",
   },
-  // Plain CSS variables for the Tracker's extra surfaces and chart marks
+  // Plain CSS variables for the Tracker's other surfaces, its shadow and chart marks
   extra: {
     light: {
-      "--tt-soft": "#f5f6fa",
+      "--tt-soft": "#f2f4f9",
+      "--tt-soft-high": "#e8ebf1",
+      "--tt-rule": "#bfc4cf",
+      // Two layers: a tight edge and a soft spread under the card
+      "--tt-shadow": "0 1px 2px rgb(14 18 32 / 0.05), 0 8px 24px -12px rgb(14 18 32 / 0.16)",
       "--tt-side": "#0e1220",
       "--tt-side-card": "#1a2033",
       "--tt-side-active": "#20273d",
@@ -149,10 +157,15 @@ const tracker = {
       "--tt-slate": "#cdd2e0",
     },
     dark: {
-      "--tt-soft": "#181b23",
-      "--tt-side": "#111319",
-      "--tt-side-card": "#1a1e28",
-      "--tt-side-active": "#1f2431",
+      "--tt-soft": "#1f232c",
+      "--tt-soft-high": "#262b36",
+      "--tt-rule": "#3f4551",
+      // Tone does the lifting in dark; the shadow only settles the card's edge
+      "--tt-shadow": "0 0 0 1px rgb(255 255 255 / 0.02), 0 8px 24px -12px rgb(0 0 0 / 0.6)",
+      // A step darker than the cards, so the content leads
+      "--tt-side": "#101319",
+      "--tt-side-card": "#191d26",
+      "--tt-side-active": "#20252f",
       "--tt-sky": "#5cc3f5",
       "--tt-slate": "#3a4154",
     },

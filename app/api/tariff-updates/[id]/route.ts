@@ -13,7 +13,8 @@ export const maxDuration = 300
 
 // The update's impact check: which of the users' imports it may affect (tariff_update_impacts),
 // imports by product with how many accounts have each, and what approving now would send
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireAdmin()
   if (denied) return denied
   const [{ data, error }, { data: update }] = await Promise.all([
@@ -50,7 +51,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 
 // Edits an update from /tariff-sources: its title and summary (kept from then on), whether it's
 // published, and its review flag
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireAdmin()
   if (denied) return denied
   const body = await req.json()
@@ -74,7 +76,8 @@ const codeList = (v: unknown) =>
 // { action: "read-scope" } has the reader read its PDFs again (replacing an admin's scope);
 // { action: "save-scope", codes, excludedCodes, countries, excludedCountries, headings } sets it
 // by hand (kept from then on). Either way the users' matches are worked out again.
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireAdmin()
   if (denied) return denied
   const body = await req.json().catch(() => ({}))

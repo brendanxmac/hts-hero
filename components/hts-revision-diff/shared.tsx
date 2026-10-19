@@ -61,16 +61,16 @@ export const StatusBadge = ({ status, label }: { status: string; label?: string 
 
 // Word diff with removed words struck through in red and added words in green
 export const WordDiffView = ({ ops }: { ops: WordOp[] }) => (
-  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-base-content/85">
+  <p className="whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-base-content/85">
     {ops.map((op, i) =>
       op.op === "eq" ? (
         <span key={i}>{op.text} </span>
       ) : op.op === "add" ? (
-        <ins key={i} className="rounded-sm bg-success/20 px-0.5 text-base-content no-underline">
+        <ins key={i} className="rounded-xs bg-success/20 px-0.5 text-base-content no-underline">
           {op.text}{" "}
         </ins>
       ) : (
-        <del key={i} className="rounded-sm bg-error/15 px-0.5 text-base-content/60 decoration-error/60">
+        <del key={i} className="rounded-xs bg-error/15 px-0.5 text-base-content/60 decoration-error/60">
           {op.text}{" "}
         </del>
       )
@@ -80,7 +80,7 @@ export const WordDiffView = ({ ops }: { ops: WordOp[] }) => (
 
 export const TextBlock = ({ text, tone }: { text: string; tone?: "add" | "del" }) => (
   <pre
-    className={`max-h-96 overflow-auto whitespace-pre-wrap break-words rounded-md border-l-2 px-3 py-2.5 font-sans text-sm leading-relaxed ${
+    className={`max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word rounded-md border-l-2 px-3 py-2.5 font-sans text-sm leading-relaxed ${
       tone === "add"
         ? "border-success/60 bg-success/[0.06]"
         : tone === "del"

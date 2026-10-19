@@ -75,7 +75,7 @@ export const AnalysisGate = ({ product, page, children }: { product: TrackedProd
       points={pitch?.points ?? []}
       // The real content, blurred: what they'd unlock is the best pitch for it
       preview={children}
-      minHeight="min-h-[30rem]"
+      minHeight="min-h-120"
     >
       {children}
     </AccountGate>

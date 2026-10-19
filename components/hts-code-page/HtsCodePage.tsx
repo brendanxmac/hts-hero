@@ -27,6 +27,8 @@ import { RelatedCodes } from "./RelatedCodes";
 import { RelatedRulings } from "./RelatedRulings";
 import { StructuredData } from "./StructuredData";
 import { CodeUpdates } from "@/components/tariff-updates/CodeUpdates";
+import { CodeCases } from "@/components/adcvd/CodeCases";
+import type { CodeCase } from "@/libs/adcvd/public";
 import { NewsAlertsBox } from "@/components/tariff-updates/NewsAlertsBox";
 import { TrackerCtaFeature } from "@/components/tariff-updates/TrackerCta";
 import type { PublicUpdate } from "@/libs/tariff-updates/public";
@@ -55,6 +57,8 @@ export interface HtsCodePageProps {
   importDuty?: HtsDutySummary | null;
   // The latest tariff updates naming the code or a heading above it
   tariffUpdates?: PublicUpdate[];
+  // Live AD/CVD cases whose scope lists the code
+  adcvdCases?: CodeCase[];
 }
 
 // "China" for "CN": the estimate's country, in the example alert
@@ -72,6 +76,7 @@ export function HtsCodePage({
   imports,
   importDuty,
   tariffUpdates = [],
+  adcvdCases = [],
 }: HtsCodePageProps) {
   const tariffElement = findRateElement(element, parents);
   const hasDutyData = !!(tariffElement.general || tariffElement.special || tariffElement.other);
@@ -92,7 +97,7 @@ export function HtsCodePage({
 
   return (
     // Anything jumped to (#notes, a country's row) clears the site's sticky header (65px) with room to spare
-    <div className={`${THEME} hts-tracker ${trackerSans.className} ${trackerDisplay.variable} w-full flex-1 flex flex-col bg-base-200 [&_[id]]:scroll-mt-24`}>
+    <div className={`${THEME} hts-tracker ${trackerSans.className} ${trackerDisplay.variable} w-full flex-1 flex flex-col bg-base-200 **:[[id]]:scroll-mt-24`}>
       <StructuredData element={element} productName={productName} summary={summary} tariffElement={tariffElement} parentElements={parents} sectionChapter={sectionChapter} faqs={faqs} />
 
       {/* === Hero: the code, a quick estimate, and a rail with its base rates === */}
@@ -142,6 +147,7 @@ export function HtsCodePage({
               {offerCalculator && <CalculatorPrompt htsno={element.htsno} />}
               {summary && <DutyPreview summary={summary} />}
               <CodeUpdates updates={tariffUpdates} htsno={element.htsno} />
+              <CodeCases cases={adcvdCases} htsno={element.htsno} />
               <NewsAlertsBox source="hts-code-page" />
             </div>
           </div>

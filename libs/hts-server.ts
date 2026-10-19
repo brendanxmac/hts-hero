@@ -13,7 +13,7 @@ const createAdminClient = () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
       cookies: {
-        getAll() {
+        getAll(): { name: string; value: string }[] {
           return [];
         },
         setAll() {},

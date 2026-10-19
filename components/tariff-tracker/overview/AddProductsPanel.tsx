@@ -5,6 +5,7 @@ import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { itemsFromText } from "../catalog";
 import { downloadCsvTemplate } from "../csv";
 import { EXAMPLE_LIST } from "../exampleList";
@@ -17,8 +18,13 @@ import { openAddProducts } from "./OverviewHeader";
 const BENEFITS = [
   { title: "Every tariff on every product", body: "Base duty, Section 232, 301, 122 and reciprocal", dot: "bg-primary" },
   { title: "What changed, and what it cost you", body: "Every change on your products, last 12 months", dot: "bg-error" },
-  { title: "Where you might pay less", body: "Trade programs and lower-duty origins, in dollars", dot: "bg-success" },
-  { title: "Your past entries, checked", body: "Duty you may have overpaid, and could recover", dot: "bg-warning" },
+  // Savings and audits are off for the Tracker MVP (libs/tariff-tracker/features.ts)
+  SAVINGS_ENABLED
+    ? { title: "Where you might pay less", body: "Trade programs and lower-duty origins, in dollars", dot: "bg-success" }
+    : { title: "Alerts the day a tariff hits", body: "Every new tariff action, checked against each import", dot: "bg-success" },
+  AUDITS_ENABLED
+    ? { title: "Your past entries, checked", body: "Duty you may have overpaid, and could recover", dot: "bg-warning" }
+    : { title: "AD/CVD cases that may apply", body: "Antidumping and countervailing duty cases, flagged", dot: "bg-warning" },
 ];
 
 export const AddProductsPanel = () => {
@@ -44,7 +50,7 @@ export const AddProductsPanel = () => {
       <div className="flex min-w-0 flex-col justify-center gap-6 p-6 sm:p-8 lg:p-10">
         <span className={`${tt.chip("primary")} self-start`}>Step 1 · takes about a minute</span>
         <div className="flex flex-col gap-4">
-          <h2 id="tt-add-products" className={`${tt.display} m-0 text-3xl font-semibold leading-tight tracking-tight text-base-content lg:text-4xl`}>
+          <h2 id="tt-add-products" className={`${tt.display} m-0 text-3xl font-semibold leading-tight tracking-tight text-base-content lg:text-4xl lg:leading-10`}>
             Add the Products You Import, and <span className="text-primary">we&apos;ll work our magic.</span>
           </h2>
           <p className="m-0 max-w-xl text-lg leading-relaxed text-base-content/70">
@@ -67,7 +73,7 @@ export const AddProductsPanel = () => {
         <button
           type="button"
           onClick={() => openAddProducts("csv")}
-          className="group flex flex-col items-center gap-2 rounded-xl border-2 border-dashed border-base-300 px-6 py-7 text-center transition-colors hover:border-primary hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="group flex flex-col items-center gap-2 rounded-xl border-2 border-dashed border-base-300 px-6 py-7 text-center transition-colors hover:border-primary hover:bg-tt-soft focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
         >
           <ArrowUpTrayIcon className="h-6 w-6 text-primary" aria-hidden />
           <span className={`${tt.display} text-lg font-semibold text-base-content`}>Upload your product list</span>
@@ -107,7 +113,7 @@ export const AddProductsPanel = () => {
           >
             Download the template
           </button>
-          <span className="text-base-content/40" aria-hidden>
+          <span className="text-base-content/50" aria-hidden>
             ·
           </span>
           <button

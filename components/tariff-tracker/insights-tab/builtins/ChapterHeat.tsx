@@ -4,13 +4,13 @@ import { useMemo, useState } from "react";
 import * as tt from "@/components/ui/styles/tracker";
 import { formatRate } from "../../formatRate";
 import { breakdown, chapterName, chapterOf, InsightsInput, rateOn } from "../lib/data";
-import { combineFilters, importsFilter, InsightPanel, ShowAll, ShowInImports, useShowInImports } from "../shared";
+import { combineFilters, importsFilter, InsightPanel, NavArrow, ShowAll, ShowInImports, useShowInImports } from "../shared";
 
 // Which tariffs hit which chapters: the catalog's biggest chapters down the side, its biggest
 // tariffs across, and what each tariff adds on average to the chapter's imports. One hue, cobalt,
 // deeper for more (DESIGN_SYSTEM §15: the heat ramp); empty cells stay soft.
 
-const heat = (pct: number) => `color-mix(in srgb, oklch(var(--p)) ${Math.min(92, 14 + pct * 2.8)}%, transparent)`;
+const heat = (pct: number) => `color-mix(in srgb, var(--color-primary) ${Math.min(92, 14 + pct * 2.8)}%, transparent)`;
 
 interface Hottest {
   chapter: string;
@@ -90,12 +90,15 @@ export const ChapterHeat = ({ input }: { input: InsightsInput }) => {
                     type="button"
                     title="Show this chapter's imports in Your Imports"
                     onClick={() => show({ chapter: [ch.key] })}
-                    className="-mx-2 block w-[calc(100%+1rem)] rounded-xl px-2 py-1 text-left hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    className="group -mx-2 flex w-[calc(100%+1rem)] items-center gap-2 rounded-xl px-2 py-1 text-left hover:bg-tt-soft focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
                   >
-                    <span className="block font-semibold text-base-content">
-                      Ch. {ch.key} <span className="text-xs font-normal text-base-content/60">· {ch.imports.toLocaleString("en-US")} imports</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-semibold text-base-content">
+                        Ch. {ch.key} <span className="text-xs font-normal text-base-content/60">· {ch.imports.toLocaleString("en-US")} imports</span>
+                      </span>
+                      <span className="block truncate text-xs text-base-content/60">{chapterName(ch.key, input.sections) ?? ""}</span>
                     </span>
-                    <span className="block truncate text-xs text-base-content/60">{chapterName(ch.key, input.sections) ?? ""}</span>
+                    <NavArrow />
                   </button>
                 </th>
                 {cells[i].map((pct, j) => {
@@ -103,7 +106,7 @@ export const ChapterHeat = ({ input }: { input: InsightsInput }) => {
                   return (
                     <td
                       key={programs[j].key}
-                      className={`h-11 rounded-xl p-0 text-center text-xs font-semibold ${pct > 0.005 ? (pct > 14 ? "text-primary-content" : "text-base-content") : `${tt.tile} text-base-content/40`}`}
+                      className={`h-11 rounded-xl p-0 text-center text-xs font-semibold ${pct > 0.005 ? (pct > 14 ? "text-primary-content" : "text-base-content") : `${tt.tile} text-base-content/50`}`}
                       // Runtime tint (DESIGN_SYSTEM §10)
                       style={pct > 0.005 ? { background: heat(pct) } : undefined}
                     >
@@ -113,7 +116,7 @@ export const ChapterHeat = ({ input }: { input: InsightsInput }) => {
                           type="button"
                           title={`Show Chapter ${ch.key} imports with ${programs[j].label} in Your Imports`}
                           onClick={() => show(filters)}
-                          className="h-11 w-full rounded-xl hover:ring-2 hover:ring-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          className="h-11 w-full rounded-xl hover:ring-2 hover:ring-primary/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
                         >
                           {formatRate(pct)}
                         </button>

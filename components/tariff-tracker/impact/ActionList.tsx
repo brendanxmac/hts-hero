@@ -86,7 +86,7 @@ export const ActionList = ({
       <div className="flex flex-col gap-3 border-b border-base-300 px-4 pb-4 pt-5">
         <div className="flex items-baseline justify-between px-1">
           <h2 className={tt.title}>Tariff Actions</h2>
-          <span className="text-sm tabular-nums text-base-content/50">{updates.length}</span>
+          <span className="text-sm tabular-nums text-base-content/60">{updates.length}</span>
         </div>
         <SegmentedControl
           label="Which actions"
@@ -105,20 +105,20 @@ export const ActionList = ({
         />
         <label className="relative">
           <span className="sr-only">Search tariff actions</span>
-          <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" aria-hidden />
+          <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/50" aria-hidden />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search actions"
-            className="h-9 w-full rounded-full border border-base-300 bg-tt-soft pl-10 pr-3 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:bg-base-100 focus:outline-none"
+            className="h-9 w-full rounded-full border border-base-300 bg-tt-soft pl-10 pr-3 text-sm text-base-content placeholder:text-base-content/50 focus:border-primary focus:bg-base-100 focus:outline-hidden"
           />
         </label>
       </div>
       <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto pb-2">
         {months.map(({ month, updates: monthUpdates }) => (
           <section key={month} aria-label={month}>
-            <h3 className="sticky top-0 z-10 bg-base-100/95 px-5 pb-1.5 pt-4 text-xs font-bold uppercase tracking-wider text-base-content/50 backdrop-blur-sm">{month}</h3>
+            <h3 className="sticky top-0 z-10 bg-base-100/95 px-5 pb-1.5 pt-4 text-xs font-bold uppercase tracking-wider text-base-content/60 backdrop-blur-xs">{month}</h3>
             <ul>
               {monthUpdates.map((u) => {
                 const active = u.slug === selected;

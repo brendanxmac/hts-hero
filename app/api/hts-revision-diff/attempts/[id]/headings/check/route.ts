@@ -10,7 +10,8 @@ export const maxDuration = 300
 // those rows' reviews. Large uploads are checked in chunks; `done: false` means
 // some pages are left, and posting again continues. With { rowIds }, only the
 // pages those rows are on are checked, in one request.
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

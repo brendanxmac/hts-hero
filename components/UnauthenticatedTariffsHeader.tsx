@@ -36,7 +36,7 @@ const UnauthenticatedTariffsHeader = () => {
     <>
       <header
         className={`sticky top-0 w-full h-16 z-50 flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ${scrolled
-          ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm"
+          ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-xs"
           : "bg-base-100 border-b border-base-content/10"
           }`}
       >
@@ -103,7 +103,7 @@ const UnauthenticatedTariffsHeader = () => {
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/duty-calculator"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-xs hover:shadow-md"
             >
               Calculate Your Tariffs
             </Link>
@@ -115,10 +115,10 @@ const UnauthenticatedTariffsHeader = () => {
 
       {/* Mobile Menu - Rendered outside header */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden">
+        <div className="fixed inset-0 z-100 md:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-base-content/20 backdrop-blur-sm"
+            className="fixed inset-0 bg-base-content/20 backdrop-blur-xs"
             onClick={() => setIsOpen(false)}
           />
 

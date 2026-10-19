@@ -9,12 +9,13 @@ import { classificationExampleByToken } from "@/constants/classification-example
 export const dynamic = "force-dynamic";
 
 interface Props {
-  params: { shareToken: string };
+  params: Promise<{ shareToken: string }>;
 }
 
 // The homepage's example classifications rank for searches like "brake pad hs code", so they
 // get a title and description that say what's on them. Other shared pages keep the default.
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const example = classificationExampleByToken(params.shareToken);
   if (!example) return {};
   return {
@@ -31,7 +32,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function SharedClassificationPage({ params }: Props) {
+export default async function SharedClassificationPage(props: Props) {
+  const params = await props.params;
   const supabase = createClient();
 
   const { data: classification, error } = await supabase

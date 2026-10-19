@@ -41,7 +41,7 @@ const rowOf = (item: SourceItem) => ({
 const runCollector = async (
   db: SupabaseClient,
   collector: Collector,
-  { since, backfill, trigger }: { since: Date; backfill: boolean; trigger: RunTrigger }
+  { since, until, agencies, backfill, trigger }: { since: Date; until?: Date; agencies?: string[]; backfill: boolean; trigger: RunTrigger }
 ): Promise<RunResult> => {
   const { data: run } = await db
     .from("tariff_source_runs")
@@ -57,7 +57,7 @@ const runCollector = async (
       : null
 
   try {
-    const items = await collector.collect({ since, backfill })
+    const items = await collector.collect({ since, until, agencies, backfill })
     // One row per item, even when a source lists it twice
     const rows = Array.from(new Map(items.map((item) => [item.externalId, rowOf(item)])).values())
     let added = 0
@@ -81,8 +81,15 @@ const runCollector = async (
 
 export const collectSources = async (
   db: SupabaseClient,
-  { since, backfill = false, trigger, sources }: { since: Date; backfill?: boolean; trigger: RunTrigger; sources?: SourceId[] }
+  {
+    since,
+    until,
+    agencies,
+    backfill = false,
+    trigger,
+    sources,
+  }: { since: Date; until?: Date; agencies?: string[]; backfill?: boolean; trigger: RunTrigger; sources?: SourceId[] }
 ) => {
   const collectors = sources ? COLLECTORS.filter((c) => sources.includes(c.id)) : COLLECTORS
-  return Promise.all(collectors.map((c) => runCollector(db, c, { since, backfill, trigger })))
+  return Promise.all(collectors.map((c) => runCollector(db, c, { since, until, agencies, backfill, trigger })))
 }

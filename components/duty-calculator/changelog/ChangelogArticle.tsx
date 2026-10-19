@@ -23,7 +23,7 @@ export const ChangelogArticle = ({
       <ChangelogTypeBadge type={entry.type} />
       {entry.status === "draft" && <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 ring-1 ring-inset ring-amber-200">Draft</span>}
     </div>
-    <h2 className="mt-3 text-xl font-semibold leading-snug tracking-tight text-slate-900 sm:text-2xl">{entry.title}</h2>
+    <h2 className="mt-3 text-xl font-semibold leading-snug tracking-tight text-slate-900 sm:text-2xl sm:leading-8">{entry.title}</h2>
     <p className={`${mk.body} mt-2`}>{entry.summary}</p>
     {isAdmin && (
       <div className="mt-4 flex flex-wrap gap-2">

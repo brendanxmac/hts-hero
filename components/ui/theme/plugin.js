@@ -1,50 +1,38 @@
-/* eslint-disable @typescript-eslint/no-var-requires -- CommonJS: tailwind.config.js loads this */
+/* eslint-disable @typescript-eslint/no-var-requires -- CommonJS: app/globals.css loads this with @plugin */
 // Tailwind plugin that applies the palette (./palette.js) to anything inside the class
 // "hts-theme": the daisyUI color variables behind the semantic classes, and the chart
 // variables. Follows <html data-theme="dark|light">, falling back to the OS setting.
 // Scoped to a class so pages can move to the theme one at a time; when every page has, the
-// palette can become the daisyUI themes in tailwind.config.js and this plugin goes away.
+// palette can become the daisyUI themes in app/globals.css and this plugin goes away.
 
 const plugin = require("tailwindcss/plugin");
-// daisyUI's own hex-to-oklch conversion (a method: keep it on its object)
-const daisyTheming = require("daisyui/src/theming/functions");
 const palette = require("./palette");
+
+// daisyUI 5 reads each color from --color-<name>, in any CSS color format
+const colorVars = (colors) => Object.fromEntries(Object.entries(colors).map(([name, color]) => [`--color-${name}`, color]));
 
 const chartVars = (mode) => ({
   ...Object.fromEntries(palette.chart[mode].map((color, i) => [`--chart-${i + 1}`, color])),
   ...Object.fromEntries(palette.series[mode].map((color, i) => [`--series-${i + 1}`, color])),
 });
 
-const themeVars = (mode) => {
-  const vars = daisyTheming.convertColorFormat(palette[mode]);
-  // daisyUI adds its default shapes; ours come from the palette
-  Object.keys(vars).forEach((key) => {
-    if (!/^--[a-z0-9]+$/.test(key) || key.startsWith("--rounded") || key.startsWith("--animation")) delete vars[key];
-  });
-  return { ...vars, ...chartVars(mode), colorScheme: mode };
-};
+const themeVars = (mode) => ({ ...colorVars(palette[mode]), ...chartVars(mode), colorScheme: mode });
 
 // The Tariff Tracker's palette (palette.tracker), on the same variables
-const trackerVars = (mode) => {
-  const vars = daisyTheming.convertColorFormat(palette.tracker[mode]);
-  Object.keys(vars).forEach((key) => {
-    if (!/^--[a-z0-9]+$/.test(key) || key.startsWith("--rounded") || key.startsWith("--animation")) delete vars[key];
-  });
-  return {
-    ...vars,
-    ...Object.fromEntries(palette.tracker.chart[mode].map((color, i) => [`--chart-${i + 1}`, color])),
-    ...palette.tracker.extra[mode],
-    colorScheme: mode,
-  };
-};
+const trackerVars = (mode) => ({
+  ...colorVars(palette.tracker[mode]),
+  ...Object.fromEntries(palette.tracker.chart[mode].map((color, i) => [`--chart-${i + 1}`, color])),
+  ...palette.tracker.extra[mode],
+  colorScheme: mode,
+});
 
 module.exports = plugin(({ addBase }) => {
   addBase({
     ".hts-theme": {
       ...themeVars("light"),
       ...palette.shape,
-      backgroundColor: "oklch(var(--b2))",
-      color: "oklch(var(--bc))",
+      backgroundColor: "var(--color-base-200)",
+      color: "var(--color-base-content)",
       "-webkit-font-smoothing": "antialiased",
     },
     '[data-theme="dark"] .hts-theme': themeVars("dark"),
@@ -79,9 +67,10 @@ module.exports = plugin(({ addBase }) => {
     // A page that follows the site's light/dark setting (.follow-theme): anything inside it held
     // light (the footer, themed blocks in marketing sections) follows too
     '[data-theme="dark"] .follow-theme .hts-theme.hts-theme-light, [data-theme="dark"] .follow-theme.hts-theme.hts-theme-light': themeVars("dark"),
-    // Cards round to 20px in the Tracker's look (ui.card, tt.panel), including a card that is
-    // itself the .hts-tracker root (a dialog's panel)
-    ".hts-tracker .rounded-lg, .hts-tracker.rounded-lg": { borderRadius: "1.25rem" },
+    // (Cards round to 20px in the Tracker's look: app/globals.css, so it wins over rounded-lg)
+    // Inside a card, a fill made with base-200 (a table head, a footer, a hover) takes the
+    // container tone instead of the ground's, so it never reads as a hole through the card
+    ".hts-tracker .tt-card, .hts-tracker.tt-card": { "--color-base-200": "var(--tt-soft)" },
     // The sidebar is dark in both modes: everything inside it takes the dark palette
     ".hts-tracker .hts-tracker-on-dark, [data-theme] .hts-tracker .hts-tracker-on-dark": trackerVars("dark"),
     // Landing pages in the Tracker's look: their dark bands (mk.bandDark marks them .mk-dark) take

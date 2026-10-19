@@ -2,10 +2,13 @@
 import {
   ANNUAL_DISCOUNT,
   CLASSIFY_PLANS,
+  LOWEST_PER_IMPORT,
+  REVERSE_TRIAL,
   TRACKER_TIERS,
-  TRIAL_ALLOWANCE,
   formatPrice,
+  perImportPrice,
 } from "@/components/pricing-calculator/lib/pricing";
+import { FREE_FOREVER_SHORT, SAVINGS_AUDITS_COMING } from "@/components/ui/marketing/comingSoon";
 import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions";
 import type { Tool } from "../types";
 
@@ -28,10 +31,10 @@ export const HTS_HERO: Tool = {
   summary:
     "A US tariff calculator built for importers who need the exact number: every Chapter 99 tariff stacked line by line with its legal source, the duty on any past entry date, duty over time, tracking for every tariff on your imports with alerts and impact checks when a tariff change hits them, and results by API and MCP for your own systems.",
   bestFor: "Importers, brokers and compliance teams who need exact, auditable US duty",
-  price: `Calculator free; Tracker from ${formatPrice(TRACKER_TIERS[0].price)}/mo`,
-  priceDetail: `${FREE_TIER}. Tariff Tracker starts free with no time limit: upload your whole catalog and track ${TRIAL_ALLOWANCE.alertImports} imports with alerts and impact checks; paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo for up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly. Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo, ${ANNUAL_DISCOUNT * 100}% off annually. No contract.`,
+  price: `Calculator free; Tracker ${REVERSE_TRIAL.days}-day free trial, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import`,
+  priceDetail: `${FREE_TIER}. Tariff Tracker ${REVERSE_TRIAL.days}-day free trial, no credit card: everything on up to ${REVERSE_TRIAL.imports} imports, then ${FREE_FOREVER_SHORT} stay free, forever; paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo for up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly, which comes to ${TRACKER_TIERS.map((t) => formatPrice(perImportPrice(t))).join(", ")} per import, per month by plan size (as low as ${formatPrice(LOWEST_PER_IMPORT)}). Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo, ${ANNUAL_DISCOUNT * 100}% off annually. No contract. ${SAVINGS_AUDITS_COMING}`,
   features: {
-    freeToTry: { support: "yes", note: FREE_TIER },
+    freeToTry: { support: "yes", note: `${FREE_TIER}; Tariff Tracker ${REVERSE_TRIAL.days}-day free trial, no credit card` },
     selfServe: { support: "yes", note: "Every plan is self-serve, with no demo or contract" },
     publishedPricing: { support: "yes" },
     fullStack: { support: "yes", note: "Each tariff on its own line, with its Chapter 99 heading and legal note" },
@@ -39,7 +42,7 @@ export const HTS_HERO: Tool = {
     adjustments: { support: "yes", note: "Answer each question and see the new total" },
     entryDate: { support: "yes", note: `Duty on any past entry date, free, with verified rates back to ${historyFrom}` },
     rateHistory: { support: "yes", note: "Duty Over Time, revision by revision, free with no account" },
-    catalogImpact: { support: "paid", note: `Tariff Tracker alerts and impact checks, with the rate before and after on each import; free on ${TRIAL_ALLOWANCE.alertImports} imports` },
+    catalogImpact: { support: "paid", note: `Tariff Tracker alerts and impact checks, with the rate before and after on each import; free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo` },
     countryCompare: { support: "yes" },
     csvUpload: { support: "yes", note: "Tariff Tracker: upload your whole catalog with any account" },
     classification: { support: "paid", note: "HTS Hero Classify, with CROSS rulings" },
@@ -52,6 +55,7 @@ export const HTS_HERO: Tool = {
     "Duty Over Time shows how a product's duty changed across revisions",
     "Alerts and impact checks when a tariff change hits your imports, with the rate before and after",
     "Export every tariff on every import to CSV or Excel",
+    `A ${REVERSE_TRIAL.days}-day free trial of the Tariff Tracker on up to ${REVERSE_TRIAL.imports} imports, with no credit card`,
     "Published prices, monthly plans, start in a minute with no demo or contract",
     "Tariff results by API and MCP, built into your ERP, TMS or internal tools",
   ],

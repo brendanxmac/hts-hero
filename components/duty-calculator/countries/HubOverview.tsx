@@ -25,7 +25,7 @@ export function HubStats({ summary }: { summary: HubSummary }) {
         <div key={s.label} className={`${mk.card} flex min-w-0 flex-col p-5`}>
           <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">{s.label}</div>
           <CountUp to={s.value} className={`mt-2 text-4xl font-bold tracking-tight sm:text-5xl ${s.tone}`} />
-          <div className="mt-1.5 break-words text-sm text-slate-500">{s.note}</div>
+          <div className="mt-1.5 wrap-break-word text-sm text-slate-500">{s.note}</div>
         </div>
       ))}
     </div>
@@ -62,7 +62,7 @@ export function HubOverview({ summary, tiers }: { summary: HubSummary; tiers: { 
           <ul className="flex flex-col divide-y divide-slate-100 text-sm tabular-nums">
             {parts.map((p) => (
               <li key={p.label} className="flex items-center gap-3 py-2.5">
-                <span className="h-3 w-3 shrink-0 rounded-sm" style={{ background: p.color }} aria-hidden />
+                <span className="h-3 w-3 shrink-0 rounded-xs" style={{ background: p.color }} aria-hidden />
                 <span className="min-w-0 flex-1 text-slate-700">{p.label}</span>
                 <span className="font-semibold text-slate-900">{countries(p.count)}</span>
                 <span className="w-12 text-right text-slate-500">{share(p.count)}</span>

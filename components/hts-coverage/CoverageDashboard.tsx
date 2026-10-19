@@ -151,7 +151,7 @@ const BulkBar = ({
   onSuggest: () => void
   suggesting: { done: number; total: number } | null
 }) => (
-  <div className="sticky top-12 z-30 flex flex-wrap items-center gap-2 border-b border-base-content/10 bg-base-200/95 px-4 py-2 backdrop-blur">
+  <div className="sticky top-12 z-30 flex flex-wrap items-center gap-2 border-b border-base-content/10 bg-base-200/95 px-4 py-2 backdrop-blur-sm">
     <span className="text-sm font-medium tabular-nums">{count} selected</span>
     <button className={btn.xsPrimary} onClick={onAddToBatch} disabled={!batchesEnabled}>
       Add to batch…
@@ -747,7 +747,7 @@ export default function CoverageDashboard() {
                           {r.item.notes && <Pill title={r.item.notes}>note</Pill>}
                         </div>
                       </Td>
-                      <Td className="max-w-[12rem] text-xs text-base-content/70">
+                      <Td className="max-w-48 text-xs text-base-content/70">
                         <span className="line-clamp-2">{r.item.general || "—"}</span>
                       </Td>
                       <Td className="whitespace-nowrap">
@@ -755,14 +755,14 @@ export default function CoverageDashboard() {
                           {STATUS_LABELS[r.status]}
                         </Pill>
                         {r.membership && (
-                          <div className="mt-1 max-w-[9rem] truncate text-[11px] text-base-content/50" title={r.membership.title}>
+                          <div className="mt-1 max-w-36 truncate text-[11px] text-base-content/50" title={r.membership.title}>
                             {r.membership.title}
                             {r.membership.decision === "skip" && " (skipped)"}
                           </div>
                         )}
                       </Td>
                       <Td className={`whitespace-nowrap text-xs ${r.item.category ? "" : "italic text-base-content/50"}`}>{categoryLabel(r.category)}</Td>
-                      <Td className="max-w-[11rem] truncate text-xs text-base-content/70">{r.program ? programName(r.program) : "—"}</Td>
+                      <Td className="max-w-44 truncate text-xs text-base-content/70">{r.program ? programName(r.program) : "—"}</Td>
                       <Td className="text-xs font-medium">{r.item.priority ?? <span className="text-base-content/30">—</span>}</Td>
                     </Tr>
                   ))}

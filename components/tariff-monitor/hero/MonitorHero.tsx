@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import config from "@/config";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "@/components/ui/marketing/styles";
+import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { DEFINITION } from "../lib/copy";
 import { ExposureDashboard } from "./ExposureDashboard";
 
-const PROMISES = [`Track ${TRIAL_ALLOWANCE.alertImports} imports free`, "Alerts and impact checks on each", "No credit card"];
+// The reverse trial first (REVERSE_TRIAL), then what stays free forever (no alerts on the account's
+// own imports: TRIAL_ALLOWANCE.alertImports is 0, but Tariff News alerts and the free checks)
+const PROMISES = [
+  `Free for ${REVERSE_TRIAL.days} days, on up to ${REVERSE_TRIAL.imports} imports`,
+  "No credit card",
+  "Then Tariff News alerts free, forever",
+];
 
 // The top of /tariff-monitor: the promise and the answer-first definition beside a live
 // dashboard. The copy is server-rendered, so crawlers and AI assistants read it as is.
@@ -23,7 +30,7 @@ export const MonitorHero = () => (
         <p className={`${mk.lead} mt-6`}>{DEFINITION}</p>
         <div className="mt-10 flex flex-wrap gap-4">
           <Link href={config.auth.loginUrl} className={mk.buttonPrimary}>
-            Start tracking free <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            Start your free {REVERSE_TRIAL.days}-day trial <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
           <a href="#try-it" className={mk.buttonSecondary}>
             Try it on your product
@@ -36,6 +43,9 @@ export const MonitorHero = () => (
             </li>
           ))}
         </ul>
+        <p className={`${mk.small} mt-4 flex flex-wrap items-center gap-2`}>
+          <ComingChip /> Automatic savings detection and automatic auditing, included in the trial and every plan when they launch
+        </p>
         <p className={`${mk.small} mt-8`}>Trusted by hundreds of customs brokers, freight forwarders and manufacturers.</p>
       </div>
       <ExposureDashboard />

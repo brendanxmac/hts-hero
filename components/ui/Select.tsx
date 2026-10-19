@@ -34,7 +34,7 @@ const HEIGHT: Record<Size, string> = {
 };
 
 const LOOK: Record<Variant, string> = {
-  field: "rounded-md border border-base-content/20 bg-base-100 shadow-sm hover:border-base-content/30",
+  field: "rounded-md border border-base-content/20 bg-base-100 shadow-xs hover:border-base-content/30",
   pill: "rounded-full border border-base-300 bg-base-100 hover:border-base-content/30",
   ghost: "rounded-md border border-transparent bg-transparent hover:bg-base-content/5",
 };
@@ -101,7 +101,7 @@ const Menu = ({ open, button, align, className, children }: { open: boolean; but
           static
           // Runtime position (DESIGN_SYSTEM §10)
           style={{ position: "fixed", ...at }}
-          className={`z-[1000] overflow-auto rounded-xl border border-base-300 bg-base-100 p-1 text-sm text-base-content shadow-lg focus:outline-none ${className}`}
+          className={`z-1000 overflow-auto rounded-xl border border-base-300 bg-base-100 p-1 text-sm text-base-content shadow-lg focus:outline-hidden ${className}`}
         >
           {children}
         </Listbox.Options>
@@ -158,12 +158,12 @@ export const Select = <T extends string | number>({
             ref={button}
             id={id}
             aria-label={label}
-            className={`flex w-full min-w-0 items-center justify-between text-left text-base-content outline-none transition-colors focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 ${HEIGHT[size]} ${LOOK[variant]} ${
+            className={`flex w-full min-w-0 items-center justify-between text-left text-base-content outline-hidden transition-colors focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 ${HEIGHT[size]} ${LOOK[variant]} ${
               open && variant !== "ghost" ? "!border-primary ring-2 ring-primary/20" : ""
             } ${buttonClassName}`}
           >
             <span className={`min-w-0 truncate ${current ? "font-medium" : "text-base-content/60"}`}>{current ? current.label : placeholder}</span>
-            <ChevronUpDownIcon className={`shrink-0 text-base-content/50 ${size === "xs" ? "h-3.5 w-3.5" : "h-4 w-4"}`} aria-hidden />
+            <ChevronUpDownIcon className={`shrink-0 text-base-content/60 ${size === "xs" ? "h-3.5 w-3.5" : "h-4 w-4"}`} aria-hidden />
           </Listbox.Button>
           {/* With `required`, an empty choice blocks the form like a native select */}
           {required && name && value === "" && (

@@ -15,11 +15,12 @@ import WebinarEditButton from "@/components/webinars/WebinarEditButton";
 import { MarkdownProse } from "@/components/MarkdownProse";
 import WebinarFreeResources from "@/components/webinars/WebinarFreeResources";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createAdminClient();
   const webinar = await getWebinarBySlug(supabase, params.slug);
 
@@ -70,11 +71,12 @@ function formatTime(dateStr: string): string {
   });
 }
 
-export default async function WebinarDetailPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function WebinarDetailPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createAdminClient();
   const webinar = await getWebinarBySlug(supabase, params.slug);
 
@@ -100,7 +102,7 @@ export default async function WebinarDetailPage({
       <div className="flex items-center justify-between mb-8">
         <Link
           href="/webinars"
-          className="link !no-underline text-base-content/80 hover:text-base-content inline-flex items-center gap-1"
+          className="link no-underline! text-base-content/80 hover:text-base-content inline-flex items-center gap-1"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -122,8 +124,8 @@ export default async function WebinarDetailPage({
       {/* Hero graphic — square image centered on a gradient backdrop */}
       {webinar.graphic_url && (
         <div className="relative rounded-2xl overflow-hidden mb-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-base-200 to-secondary/20" />
-          <div className="absolute inset-0 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-linear-to-br from-primary/20 via-base-200 to-secondary/20" />
+          <div className="absolute inset-0 backdrop-blur-xs" />
           <div className="relative flex items-center justify-center py-6 sm:py-8 md:py-10 px-4">
             <div className="relative w-full max-w-sm aspect-square rounded-xl overflow-hidden shadow-2xl ring-1 ring-base-content/10">
               <Image
@@ -166,7 +168,7 @@ export default async function WebinarDetailPage({
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
-              className="w-5 h-5 flex-shrink-0"
+              className="w-5 h-5 shrink-0"
             >
               <path
                 fillRule="evenodd"
@@ -181,7 +183,7 @@ export default async function WebinarDetailPage({
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
-              className="w-5 h-5 flex-shrink-0"
+              className="w-5 h-5 shrink-0"
             >
               <path
                 fillRule="evenodd"

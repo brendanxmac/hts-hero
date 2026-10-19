@@ -7,7 +7,7 @@ import { titleName } from "./countryCopy";
 // the hub with every country (left off on the hub itself). White cards, so they read on white and
 // slate-50 bands alike.
 const tile =
-  "flex h-full min-w-0 items-center gap-2.5 rounded-xl border bg-white skin:bg-base-100 px-3.5 py-2.5 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 skin:focus-visible:ring-primary/40";
+  "flex h-full min-w-0 items-center gap-2.5 rounded-xl border bg-white skin:bg-base-100 px-3.5 py-2.5 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-teal-500/60 skin:focus-visible:ring-primary/40";
 
 export function CountryLinks({ current, showAll = true }: { current?: string; showAll?: boolean }) {
   return (
@@ -20,7 +20,7 @@ export function CountryLinks({ current, showAll = true }: { current?: string; sh
           >
             {/* Flags next to country names are data */}
             <span aria-hidden className="shrink-0">{Countries.find((x) => x.code === c.code)?.flag}</span>
-            <span className="min-w-0 break-words">{titleName(c)} to US</span>
+            <span className="min-w-0 wrap-break-word">{titleName(c)} to US</span>
           </Link>
         </li>
       ))}
@@ -30,7 +30,7 @@ export function CountryLinks({ current, showAll = true }: { current?: string; sh
             href="/duty-calculator/countries"
             className={`${tile} group border-teal-200 skin:border-primary/30 skin:border-primary/30 font-semibold text-teal-700 skin:text-primary skin:text-primary hover:border-teal-400 skin:hover:border-primary/40 hover:bg-teal-50 skin:hover:bg-primary/10 skin:hover:bg-primary/10`}
           >
-            <span className="min-w-0 break-words">
+            <span className="min-w-0 wrap-break-word">
               All countries: US tariffs by country{" "}
               <span className="inline-block transition-transform group-hover:translate-x-0.5">→</span>
             </span>

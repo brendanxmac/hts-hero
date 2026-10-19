@@ -101,7 +101,7 @@ export const TimelineList = ({
               <button
                 type="button"
                 onClick={e.onSelect}
-                className="block w-full rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                className="block w-full rounded-md text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
               >
                 {head}
               </button>

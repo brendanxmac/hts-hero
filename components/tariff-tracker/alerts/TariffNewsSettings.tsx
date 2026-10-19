@@ -64,7 +64,7 @@ export const TariffNewsSettings = () => {
           </button>
         </>
       ) : (
-        <span className="loading loading-spinner loading-sm text-base-content/40" />
+        <span className="loading loading-spinner loading-sm text-base-content/50" />
       )}
     </section>
   );

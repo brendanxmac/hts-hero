@@ -66,7 +66,7 @@ export const CalculationTerminal = ({ example, revision }: { example: WorkedExam
         </span>
       </div>
       <div className="overflow-x-auto px-5 py-4">
-        <div className="min-w-[30rem]">
+        <div className="min-w-120">
           {rows.map((r, i) => (
             <div key={`${r.code}-${r.label}`} className={`grid grid-cols-[minmax(0,1fr)_7.5rem_5rem_6.5rem] gap-3 py-1.5 ${fade(i)}`}>
               <span className="truncate text-slate-200">{r.label}</span>

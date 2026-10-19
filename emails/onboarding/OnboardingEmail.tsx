@@ -1,7 +1,9 @@
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { AlertSample, Checklist, Cta, Eyebrow, P, PlanStrip, Signature, Title, UpdateSummary } from "../kit/parts"
+import { AlertSample, Checklist, Chip, Cta, Eyebrow, P, PlanStrip, Signature, Title, UpdateSummary } from "../kit/parts"
 import { siteLink } from "../kit/brand"
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
+import { AUDITS_ENABLED, SAVINGS_AUDITS_LABEL, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
+import { AUTO_AUDITING, SAVINGS_DETECTION } from "../../components/ui/marketing/comingSoon"
+import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
 // The "no imports yet" onboarding emails. Both lead to one thing, adding imports, and land on the
 // Tracker's Add products dialog (?tab=catalog&add=paste):
@@ -19,8 +21,7 @@ export interface OnboardingEmailProps {
 
 const actions = (n: number) => (n > 0 ? `${n} US tariff changes in the last 30 days` : "US tariffs change every week")
 
-export const onboardingSubject = (p: OnboardingEmailProps) =>
-  p.step === 1 ? "You just made tariffs easy" : "Which new tariffs hit your imports?"
+export const onboardingSubject = (p: OnboardingEmailProps) => (p.step === 1 ? "You just made tariffs easy" : "Which new tariffs hit your imports?")
 
 const preview = (p: OnboardingEmailProps) =>
   p.step === 1
@@ -43,21 +44,41 @@ export default function OnboardingEmail(props: OnboardingEmailProps) {
         <P>No more digging through the HTS, Federal Register notices and CBP messages. Tariff Tracker does it for you:</P>
         <Checklist
           items={[
-            <><strong>Every rate, always current.</strong> The full duty on each import, line by line, updated the moment anything changes.</>,
-            <><strong>Alerts before it costs you.</strong> When a new tariff hits one of your imports, you hear about it first, by email, Slack or Teams.</>,
+            <>
+              <strong>Every rate, always current.</strong> The full duty on each import, line by line, updated the moment anything changes.
+            </>,
+            <>
+              <strong>Alerts before it costs you.</strong> When a new tariff hits one of your imports, you hear about it first, by email, Slack or Teams. AD/CVD alerts
+              included.
+            </>,
             // The Tracker MVP (features.ts): impact checks and exports in place of savings and audits
             ...(SAVINGS_ENABLED || AUDITS_ENABLED
               ? [
-                <><strong>Savings you may qualify for.</strong> Trade programs, exclusions and lower-duty countries, checked for every import.</>,
-                <><strong>Duty you may have overpaid.</strong> Audit past entries against the rates in force on the day.</>,
-              ]
+                  <>
+                    <strong>Savings you may qualify for.</strong> Trade programs, exclusions and lower-duty countries, checked for every import.
+                  </>,
+                  <>
+                    <strong>Duty you may have overpaid.</strong> Audit past entries against the rates in force on the day.
+                  </>,
+                ]
               : [
-                <><strong>Impact checks.</strong> Pick any tariff action and see exactly how it affects each of your imports.</>,
-                <><strong>Every tariff, exported.</strong> The full duty on every import, to CSV or Excel in one click.</>,
-              ]),
+                  <>
+                    <strong>Impact checks.</strong> Pick any tariff action and see exactly how it affects each of your imports.
+                  </>,
+                  <>
+                    <strong>Every tariff, exported.</strong> The full duty on every import, to CSV or Excel in one click.
+                  </>,
+                  <>
+                    <strong>Savings and audits, on their way.</strong> {SAVINGS_DETECTION.name} and {AUTO_AUDITING.name.toLowerCase()}: programs you may qualify for, and
+                    possible over- and underpayments flagged, included when they launch <Chip tone="heads-up">{SAVINGS_AUDITS_LABEL}</Chip>
+                  </>,
+                ]),
           ]}
         />
-        <P>It all starts with your imports. Paste your HTS codes and countries, and you&apos;re set in about a minute.</P>
+        <P>
+          Your free {REVERSE_TRIAL.days}-day trial includes all of it, on up to {REVERSE_TRIAL.imports} imports, with no credit card. It all starts with your imports.
+          Paste your HTS codes and countries, and you&apos;re set in about a minute.
+        </P>
         <Cta href={siteLink(ADD_IMPORTS_URL, campaign)} variant="next">
           Add your imports &rarr;
         </Cta>
@@ -71,8 +92,8 @@ export default function OnboardingEmail(props: OnboardingEmailProps) {
       <Eyebrow tone="up">Tariff alerts</Eyebrow>
       <Title>Your Tracker is still empty</Title>
       <P>
-        {actionsThisMonth > 0 ? `${actionsThisMonth} US tariff changes in the last 30 days.` : "US tariffs keep changing."} Add your imports and
-        you&apos;ll get an alert like this when one hits:
+        {actionsThisMonth > 0 ? `${actionsThisMonth} US tariff changes in the last 30 days.` : "US tariffs keep changing."} Add your imports and you&apos;ll get an alert
+        like this when one hits. Your free trial covers up to {REVERSE_TRIAL.imports} imports, so bring your whole catalog:
       </P>
       <AlertSample
         label="Example alert"
@@ -94,7 +115,7 @@ export default function OnboardingEmail(props: OnboardingEmailProps) {
 
 const SAMPLE: UpdateSummary = {
   slug: "commerce-defines-u-s-content",
-  title: "Commerce defines \"U.S. content\" for USMCA metal goods under Proclamation 11032",
+  title: 'Commerce defines "U.S. content" for USMCA metal goods under Proclamation 11032',
   summary: "A Bureau of Industry and Security notice tells CBP how to assess U.S. content for metal goods entered under USMCA.",
   authorityLabel: "Section 232",
   stageLabel: "Published",
@@ -107,5 +128,9 @@ OnboardingEmail.PreviewProps = {
   step: 1,
   actionsThisMonth: 14,
   recent: [SAMPLE],
-  footer: { reason: "You're getting this because you have an HTS Hero account.", manageUrl: "https://htshero.com/tariff-updates/subscription?token=example", unsubscribeUrl: "https://htshero.com/api/email/unsubscribe?token=example" },
+  footer: {
+    reason: "You're getting this because you have an HTS Hero account.",
+    manageUrl: "https://htshero.com/tariff-updates/subscription?token=example",
+    unsubscribeUrl: "https://htshero.com/api/email/unsubscribe?token=example",
+  },
 } satisfies OnboardingEmailProps

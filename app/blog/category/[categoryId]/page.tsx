@@ -7,7 +7,7 @@ import type { CategorySlug } from "@/libs/blog/types";
 import * as ui from "@/components/ui/styles";
 
 interface Props {
-  params: { categoryId: string };
+  params: Promise<{ categoryId: string }>;
 }
 
 export const dynamicParams = false;
@@ -20,7 +20,8 @@ export function generateStaticParams() {
   return categoriesWithPosts().map((c) => ({ categoryId: c.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const category = categoryBySlug(params.categoryId);
   if (!category) return {};
   return {
@@ -38,7 +39,8 @@ const CATEGORY_CTA = {
   product: "calculator",
 } as const satisfies Record<CategorySlug, string>;
 
-export default function BlogCategoryPage({ params }: Props) {
+export default async function BlogCategoryPage(props: Props) {
+  const params = await props.params;
   const category = categoryBySlug(params.categoryId);
   if (!category) notFound();
   const posts = getPostsInCategory(category.slug);

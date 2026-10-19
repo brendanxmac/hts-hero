@@ -44,8 +44,8 @@ export const NewsTape = () => {
         >
           <span className={`h-2 w-2 shrink-0 rounded-full ${DOTS[toneOf(u.kind)]}`} aria-hidden />
           <b className="shrink-0 font-semibold text-base-content">{AUTHORITIES[u.authority] ?? u.authority}</b>
-          <span className="max-w-[22rem] truncate text-base-content/70">{u.title}</span>
-          <span className="shrink-0 text-base-content/50">· {date(u.last_activity_at)}</span>
+          <span className="max-w-88 truncate text-base-content/70">{u.title}</span>
+          <span className="shrink-0 text-base-content/60">· {date(u.last_activity_at)}</span>
           {(() => {
             const m = matches.get(u.slug);
             if (!m || m.confirmed + m.likely === 0) return null;

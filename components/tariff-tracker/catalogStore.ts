@@ -201,10 +201,13 @@ export const setProductAdjustments = (key: string, patch: Adjustments) => {
   save({ ...current, adjustments });
 };
 
+// Back to the defaults the duty is worked out with; AD/CVD answers stay
 export const resetProductAdjustments = (key: string) => {
   const current = getSnapshot();
   if (!current.adjustments[key]) return;
   const adjustments = { ...current.adjustments };
-  delete adjustments[key];
+  const adcvd = current.adjustments[key].adcvd;
+  if (adcvd) adjustments[key] = { adcvd };
+  else delete adjustments[key];
   save({ ...current, adjustments });
 };

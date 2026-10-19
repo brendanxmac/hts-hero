@@ -6,3 +6,4 @@ export { SectionIntro } from "./SectionIntro";
 export { PROGRAM, heat } from "./colors";
 export type { ProgramName } from "./colors";
 export { BillingSwitch } from "./BillingSwitch";
+export { ComingChip, comingChip } from "./ComingChip";

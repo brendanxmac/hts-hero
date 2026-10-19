@@ -10,16 +10,28 @@ export const ANNUAL_DISCOUNT = 0.15;
 // The Tariff Calculator is free: unlimited lookups, no account. A free account unlocks Analysis
 // and the plain-English why. See PRICING.md.
 
-// Tariff Tracker's usage-based trial: every account is on it from sign-up, with no time limit and
-// no card. These allowances never reset; past them, a feature needs a paid plan (PRICING.md)
+// The free plan's allowances (PRICING.md). alertImports is what every account tracks free once its
+// 14-day trial (REVERSE_TRIAL) is over: none (2026-10-18). Free accounts keep the Tariff News alerts
+// (every new US tariff action), not alerts on their own imports. The savings and audit checks are
+// paused with savings and audits (libs/tariff-tracker/features.ts) and never reset
 export const TRIAL_ALLOWANCE = {
   // Imports (pairs) whose savings can be checked, the qualification check included
   savingsChecks: 5,
   // Past entries checked against the duty in force on their date (entry audit, refund check)
   auditChecks: 10,
   // Tracked imports: alerts and impact checks run on these; the slots can be moved. 10 before the
-  // Tracker MVP (MVP_TRIM.md)
-  alertImports: 5,
+  // Tracker MVP (MVP_TRIM.md), 5 until the reverse trial
+  alertImports: 0,
+} as const;
+
+// The Tariff Tracker's reverse trial (PRICING.md): every account gets everything the Tracker sells,
+// on up to `imports` imports, for `days` days from sign-up, with no card and nothing to start.
+// Accounts made before `freshStartOn` get their `days` from that day instead (set it to the deploy
+// day). After it, the account is on the free plan: TRIAL_ALLOWANCE.alertImports tracked imports.
+export const REVERSE_TRIAL = {
+  days: 14,
+  imports: 200,
+  freshStartOn: "2026-10-20",
 } as const;
 
 // Tariff Tracker is priced by the number of imports (HTS code + country of origin pairs) it covers.
@@ -34,9 +46,11 @@ export const TRACKER_TIERS = [
 // long as a subscriber stays subscribed. From `endsAt`, savings and audits join the Tracker and new
 // subscribers pay `nextPrices` (by tier imports). Shown in the plans dialog until it ends.
 export const LAUNCH_PRICING = {
-  endsAt: "2026-10-23T23:59:59-04:00",
-  endsLabel: "Fri, Oct 23",
-  endsDay: "Oct 23",
+  // New prices from mid-November, after savings and audits ship in October (moved from Oct 23 on
+  // 2026-10-18)
+  endsAt: "2026-11-13T23:59:59-05:00",
+  endsLabel: "Fri, Nov 13",
+  endsDay: "Nov 13",
   nextPrices: { 10: 19, 30: 49, 100: 149, 500: 249 } as Record<number, number>,
 } as const;
 
@@ -234,3 +248,13 @@ export const formatPrice = (amount: number) =>
     minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
     maximumFractionDigits: 2,
   });
+
+// What a Tracker plan comes to per import, per month: its price over the imports it covers ($29 /
+// 30 = $0.97). The easiest way to see the value, so every price shown also shows this.
+export const perImportPrice = (tier: { price: number; maxPairs: number }) => Math.round((tier.price / tier.maxPairs) * 100) / 100;
+
+// "$0.97/import"
+export const formatPerImport = (tier: { price: number; maxPairs: number }) => `${formatPrice(perImportPrice(tier))}/import`;
+
+// The lowest per-import price across the tiers ("as low as $0.30 per import")
+export const LOWEST_PER_IMPORT = Math.min(...TRACKER_TIERS.map(perImportPrice));

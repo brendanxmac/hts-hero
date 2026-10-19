@@ -25,7 +25,7 @@ export function SectionHeader({
   return (
     <div className={`flex flex-col gap-2 ${wide ? "" : "max-w-3xl"} ${className}`}>
       <span className={`${ui.kicker} tracker:font-bold`}>{kicker}</span>
-      <h2 id={titleId} className={`${ui.sectionTitle} tracker:font-[family-name:var(--font-tracker-display)]`}>
+      <h2 id={titleId} className={`${ui.sectionTitle} tracker:font-(family-name:--font-tracker-display)`}>
         {title}
       </h2>
       {children && <p className={ui.body}>{children}</p>}

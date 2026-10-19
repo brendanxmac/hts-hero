@@ -10,7 +10,7 @@ import { TRACKER_PLANS } from "@/libs/tariff-tracker/plan";
 import { trackerLookupKey, trackerPlanForPriceId, trackerPriceId } from "@/libs/tariff-tracker/prices";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-05-28.basil", typescript: true });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2026-09-30.endive", typescript: true });
 
 const main = async () => {
   const mode = process.env.STRIPE_SECRET_KEY?.startsWith("sk_live_") ? "LIVE" : "test";

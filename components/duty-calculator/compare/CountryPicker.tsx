@@ -47,7 +47,7 @@ const Row = ({ option, onPick }: { option: PickOption; onPick: () => void }) => 
         onClick={onPick}
         disabled={Boolean(on)}
         aria-current={on ? "true" : undefined}
-        className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm focus-visible:outline-none ${on ? "cursor-default bg-primary/10 shadow-[inset_3px_0_0_0_oklch(var(--p))]" : "hover:bg-tt-soft focus-visible:bg-tt-soft"}`}
+        className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm focus-visible:outline-hidden ${on ? "cursor-default bg-primary/10 shadow-[inset_3px_0_0_0_var(--color-primary)]" : "hover:bg-tt-soft focus-visible:bg-tt-soft"}`}
       >
         <span className="text-base leading-none" aria-hidden>
           {option.country.flag}
@@ -115,11 +115,11 @@ export const CountryPicker = ({
           <Popover.Button className={buttonClassName} aria-label={label} onClick={() => setQuery("")}>
             {children}
           </Popover.Button>
-          <Popover.Panel className={`${ui.popover} absolute ${align === "right" ? "right-0" : "left-0"} z-40 mt-2 flex w-[26rem] max-w-[calc(100vw-2rem)] flex-col gap-2 tracker:rounded-2xl tracker:p-2`}>
+          <Popover.Panel className={`${ui.popover} absolute ${align === "right" ? "right-0" : "left-0"} z-40 mt-2 flex w-104 max-w-[calc(100vw-2rem)] flex-col gap-2 tracker:rounded-2xl tracker:p-2`}>
             <label className={`${ui.inputSm} flex items-center gap-2 tracker:rounded-xl tracker:border-transparent tracker:bg-tt-soft tracker:shadow-none`}>
               <MagnifyingGlassIcon className="h-4 w-4 text-base-content/60" aria-hidden />
               <input
-                className="min-w-0 flex-1 bg-transparent outline-none"
+                className="min-w-0 flex-1 bg-transparent outline-hidden"
                 // Ready to type as soon as it opens
                 autoFocus
                 placeholder={`Search all ${options.filter((o) => !o.selected).length} countries`}
@@ -153,7 +153,7 @@ export const CountryPicker = ({
             )}
             <div className="flex items-baseline justify-between gap-2 px-2.5">
               <span className={ui.label}>{q ? `Matching “${query.trim()}”` : LISTS[shownList]}</span>
-              <span className="text-xs text-base-content/50">{options.some((o) => o.vsYours !== undefined) ? "Rate · vs yours" : "Rate"}</span>
+              <span className="text-xs text-base-content/60">{options.some((o) => o.vsYours !== undefined) ? "Rate · vs yours" : "Rate"}</span>
             </div>
             {rows.length ? (
               <ul className="m-0 flex max-h-80 list-none flex-col overflow-y-auto p-0">

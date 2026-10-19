@@ -15,12 +15,12 @@ import * as mk from "./styles";
 // pages that opt in (skin:). The tariff products first, sign in or open the app on the right.
 // Sticky, with a frosted background.
 
+// Tariff Audit (/tariff-audit) is off the nav for now; the page stays live
 const NAV = [
   { href: "/duty-calculator", label: "Tariff Calculator" },
   { href: "/tariff-monitor", label: "Tariff Tracker" },
-  { href: "/tariff-audit", label: "Tariff Audit" },
-  { href: "/tariff-updates", label: "Tariff Updates" },
-  { href: "/classify", label: "Classification" },
+  { href: "/tariff-updates", label: "Tariff News" },
+  { href: "/classify", label: "Classification Assistant" },
 ];
 
 export const MarketingHeader = () => {
@@ -31,7 +31,7 @@ export const MarketingHeader = () => {
   // Only on pages in the Tracker's look; the rest of the marketing layer is always light
   const themeSwitch = (
     <span className="hidden skin:inline-flex">
-      <ThemeSwitch className="flex h-10 w-10 items-center justify-center rounded-full border border-base-300 text-base-content/70 transition-colors hover:bg-tt-soft hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40" />
+      <ThemeSwitch className="flex h-10 w-10 items-center justify-center rounded-full border border-base-300 text-base-content/70 transition-colors hover:bg-tt-soft hover:text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40" />
     </span>
   );
 
@@ -51,7 +51,7 @@ export const MarketingHeader = () => {
   );
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 skin:border-base-300 bg-white/85 skin:bg-base-100/85 backdrop-blur [color-scheme:light] follow-dark:[color-scheme:dark]">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 skin:border-base-300 bg-white/85 skin:bg-base-100/85 backdrop-blur-sm scheme-light follow-dark:scheme-dark">
       <div className={`${mk.container} flex h-16 items-center justify-between gap-6`}>
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <Image src={logo} alt={`${config.appName} logo`} width={28} height={28} priority />
@@ -64,7 +64,7 @@ export const MarketingHeader = () => {
               href={item.href}
               // Six items fit at 1024px with tighter padding below xl
               className={`whitespace-nowrap rounded-lg px-2 py-2 text-sm font-semibold transition-colors xl:px-3 ${
-                pathname === item.href ? "bg-teal-50 skin:bg-primary/10 skin:bg-primary/10 text-teal-800 skin:text-primary skin:text-primary" : "text-slate-600 skin:text-base-content/70 hover:bg-slate-50 skin:hover:bg-tt-soft hover:text-slate-900 skin:hover:text-base-content"
+                pathname === item.href ? "bg-teal-50 skin:bg-primary/10 skin:bg-primary/10 text-teal-800 skin:text-primary skin:text-primary" : "text-slate-600 skin:text-base-content/70 hover:bg-slate-50 hover:skin:bg-tt-soft hover:text-slate-900 skin:hover:text-base-content"
               }`}
             >
               {item.label}
@@ -77,7 +77,7 @@ export const MarketingHeader = () => {
         </div>
         <button
           type="button"
-          className="rounded-lg p-2 text-slate-700 skin:text-base-content/80 hover:bg-slate-100 skin:hover:bg-tt-soft lg:hidden"
+          className="rounded-lg p-2 text-slate-700 skin:text-base-content/80 hover:bg-slate-100 hover:skin:bg-tt-soft lg:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
@@ -89,7 +89,7 @@ export const MarketingHeader = () => {
         <nav aria-label="Main" className="border-t border-slate-200 skin:border-base-300 bg-white skin:bg-base-100 lg:hidden">
           <div className={`${mk.container} flex flex-col gap-1 py-4`}>
             {NAV.map((item) => (
-              <Link key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 font-semibold text-slate-700 skin:text-base-content/80 hover:bg-slate-50 skin:hover:bg-tt-soft" onClick={() => setOpen(false)}>
+              <Link key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 font-semibold text-slate-700 skin:text-base-content/80 hover:bg-slate-50 hover:skin:bg-tt-soft" onClick={() => setOpen(false)}>
                 {item.label}
               </Link>
             ))}

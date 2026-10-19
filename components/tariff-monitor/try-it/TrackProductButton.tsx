@@ -7,6 +7,7 @@ import { NewProduct, addToCatalog, itemKey, productUrl } from "@/components/tari
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 
 // Saves the demo's product to the Tariff Tracker catalog, then sends the visitor to sign up
 // (or in) and on to that product in the Tracker
@@ -43,7 +44,7 @@ export const TrackProductButton = ({ f }: { f: TariffFinder }) => {
         }
       }}
     >
-      Track this product free
+      Track it free for {REVERSE_TRIAL.days} days
       <ArrowRightIcon className="h-4 w-4" aria-hidden />
     </a>
   );

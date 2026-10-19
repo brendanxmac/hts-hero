@@ -14,6 +14,7 @@ import {
   type Extraction,
   type Stage,
 } from "./types"
+import { logUsage } from "../adcvd/usage"
 
 // Turns source items into tariff updates, in three passes that each pick up where the last run
 // stopped (so the cron, "Process now" and the backfill script all share it):
@@ -61,8 +62,10 @@ export interface StepCosts {
 }
 
 const newCosts = (): StepCosts => ({ sort: 0, read: 0, group: 0 })
-const addCost = (costs: StepCosts, step: keyof StepCosts, usage: ClaudeUsage) => {
+const addCost = async (db: Db, costs: StepCosts, step: keyof StepCosts, usage: ClaudeUsage) => {
   costs[step] += usage.cost_usd
+  // Also kept in ai_usage, for the spend shown on /adcvd
+  await logUsage(db, usage, { pipeline: "tariff_updates", step })
 }
 
 // At most this many items per step in a run (a small sample, to see what processing costs)
@@ -128,7 +131,7 @@ const sortPending = async (db: Db, deadline: number, costs: StepCosts, asked: St
     }))
     try {
       const { answers: list, usage } = await triageItems(inputs)
-      addCost(costs, "sort", usage)
+      await addCost(db, costs, "sort", usage)
       asked.sort += batch.length
       const answers = new Map(list.map((a) => [a.index, a]))
       for (const [index, item] of Array.from(batch.entries())) {
@@ -172,7 +175,7 @@ const readPending = async (db: Db, deadline: number, costs: StepCosts, asked: St
     try {
       const { text, truncated } = await fullTextOf(item)
       const result = await extractAction(item, text)
-      addCost(costs, "read", result.usage)
+      await addCost(db, costs, "read", result.usage)
       asked.read++
       const extraction: Extraction = { ...result.extraction, ...(truncated ? { truncated } : {}) }
       must(
@@ -417,7 +420,7 @@ const groupPending = async (db: Db, deadline: number, costs: StepCosts, asked: S
           ? await chooseUpdate({ ...item, extraction: item.extraction }, candidates)
           : { update_id: null, confidence: 1, reason: "No related earlier updates", usage: null }
         if (choice.usage) {
-          addCost(costs, "group", choice.usage)
+          await addCost(db, costs, "group", choice.usage)
           asked.group++
         }
         if (choice.update_id) {

@@ -100,7 +100,7 @@ export const Explore = (props: ExploreProps) => {
   );
 };
 
-// What the explorer remembers while it's open: the search, the tab, the outline's open rows
+// What the explorer remembers while it's open: the search, the tab, the outline-solid's open rows
 const ExplorerState = (props: ExploreProps & { loading: boolean }) => {
   const { explorerSurface, onUseCode, startAt } = props;
   const searchParams = useSearchParams();
@@ -325,7 +325,7 @@ const Layout = ({
           onKeyDown={onKeyDown}
           placeholder={tab === "codes" ? "Search a product or HTS code, like t-shirts or 6109.10" : "Search the notes"}
           aria-label={tab === "codes" ? "Search HTS codes and descriptions" : "Search the notes"}
-          className="h-11 w-full rounded-full border border-base-300 bg-base-100 pl-12 pr-20 text-sm text-base-content shadow-sm transition-colors placeholder:text-base-content/50 hover:border-primary/30 focus:border-primary/50 focus:outline-none focus:ring-4 focus:ring-primary/10"
+          className="h-11 w-full rounded-full border border-base-300 bg-base-100 pl-12 pr-20 text-sm text-base-content shadow-xs transition-colors placeholder:text-base-content/60 hover:border-primary/30 focus:border-primary/50 focus:outline-hidden focus:ring-4 focus:ring-primary/10"
         />
         <span className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center">
           {pending ? (
@@ -392,7 +392,7 @@ const Layout = ({
       // the site's sticky header (65px). At either end, scrolling carries on to the page.
       <div
         className={`grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[minmax(0,1fr)] ${
-          dialog ? "lg:h-full" : "lg:h-[calc(100dvh-6rem)] lg:min-h-[32rem] lg:scroll-mt-[5rem]"
+          dialog ? "lg:h-full" : "lg:h-[calc(100dvh-6rem)] lg:min-h-128 lg:scroll-mt-20"
         }`}
       >
         {list}
@@ -405,7 +405,7 @@ const Layout = ({
       <>
         <div className="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-3 border-b border-base-300 bg-base-100 px-5 py-4 sm:px-6">
           <h2 className={`${tt.display} text-lg font-semibold text-base-content`}>{dialog.title}</h2>
-          <div className="order-last flex w-full min-w-0 md:order-none md:w-auto md:flex-1">{search}</div>
+          <div className="order-last flex w-full min-w-0 md:order-0 md:w-auto md:flex-1">{search}</div>
           <button
             type="button"
             onClick={dialog.onClose}

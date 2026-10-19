@@ -1,44 +1,32 @@
 "use client";
 
-import "./meta";
 import { useMemo, useRef, useState } from "react";
 import {
-  ColumnDef,
   ColumnFiltersState,
   FilterFn,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getSortedRowModel,
   OnChangeFn,
+  RowData,
   RowSelectionState,
   SortingState,
-  useReactTable,
-  VisibilityState,
+  useTable,
+  ColumnVisibilityState,
 } from "@tanstack/react-table";
+import { facetFilter, features, type Features, type TableColumnDef } from "./features";
+
+export { facetFilter };
 
 // Every table's engine: TanStack Table (sorting, column and global filters, facets with counts,
 // row selection, column visibility), set up the same way everywhere. Our components draw it
 // (DataTable, TableSearch, FacetFilter, FilterChips, SelectionBar). Any part of the state can be
 // owned by the host (to keep filters while moving between tabs, say); the rest lives here.
 
-// A column filtered by picking values: a row matches when it has any picked value (a column's
-// value can be one string or a list, such as every tariff on an import)
-export const facetFilter: FilterFn<unknown> = (row, columnId, picked: string[]) => {
-  if (!picked?.length) return true;
-  const value = row.getValue<string | string[]>(columnId);
-  return (Array.isArray(value) ? value : [value]).some((v) => picked.includes(v));
-};
-facetFilter.autoRemove = (picked: string[] | undefined) => !picked?.length;
-
 // A filter's picked values that no row has any more are dropped (a value whose last row was
 // removed while the filter stayed set), so a stale pick never hides every row
-export const pruneColumnFilters = <T,>(filters: ColumnFiltersState, columns: ColumnDef<T, any>[], data: T[]): ColumnFiltersState =>
+export const pruneColumnFilters = <T extends RowData>(filters: ColumnFiltersState, columns: TableColumnDef<T>[], data: T[]): ColumnFiltersState =>
   filters
     .map((f) => {
       if (!Array.isArray(f.value)) return f;
-      const def = columns.find((c) => c.id === f.id) as (ColumnDef<T, any> & { accessorFn?: (row: T, i: number) => unknown; getUniqueValues?: (row: T, i: number) => unknown[] }) | undefined;
+      const def = columns.find((c) => c.id === f.id) as (TableColumnDef<T> & { accessorFn?: (row: T, i: number) => unknown; getUniqueValues?: (row: T, i: number) => unknown[] }) | undefined;
       const read = def?.getUniqueValues ?? def?.accessorFn;
       if (!read) return f;
       const present = new Set(data.flatMap((row, i) => {
@@ -52,9 +40,9 @@ export const pruneColumnFilters = <T,>(filters: ColumnFiltersState, columns: Col
 // "6110.20.20" and "6110 20 20" find 61102020; any case
 export const normalizeSearch = (text: string) => text.toLowerCase().replace(/[.\s-]+/g, "");
 
-export interface DataTableOptions<T> {
+export interface DataTableOptions<T extends RowData> {
   data: T[];
-  columns: ColumnDef<T, any>[];
+  columns: TableColumnDef<T>[];
   getRowId: (row: T) => string;
   // The text the search box looks through, per row (code, description, country…)
   searchText?: (row: T) => string;
@@ -74,7 +62,7 @@ export interface DataTableOptions<T> {
   enableRowSelection?: boolean;
 }
 
-export const useDataTable = <T>({
+export const useDataTable = <T extends RowData>({
   data,
   columns,
   getRowId,
@@ -88,14 +76,14 @@ export const useDataTable = <T>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const columnVisibility = useMemo<VisibilityState>(() => Object.fromEntries(hidden.map((id) => [id, false])), [hidden]);
+  const columnVisibility = useMemo<ColumnVisibilityState>(() => Object.fromEntries(hidden.map((id) => [id, false])), [hidden]);
 
   // The one column the search runs on (TanStack searches per column, and only columns with a
   // value): the first such column, so it runs once per row
-  const searchColumn = useRef<string>();
+  const searchColumn = useRef<string>(undefined);
   // Each row's search text, worked out once per row object
   const searchCache = useMemo(() => new WeakMap<object, string>(), []);
-  const matchesSearch: FilterFn<T> = (row, _columnId, query: string) => {
+  const matchesSearch: FilterFn<Features, T> = (row, _columnId, query: string) => {
     if (!searchText || !query) return true;
     const original = row.original as object;
     let text = searchCache.get(original);
@@ -113,7 +101,8 @@ export const useDataTable = <T>({
   const ownedFilters = controlled.columnFilters ?? columnFilters;
   const effectiveFilters = useMemo(() => pruneColumnFilters(ownedFilters, columns, data), [ownedFilters, columns, data]);
 
-  return useReactTable<T>({
+  return useTable<Features, T>({
+    features,
     data,
     columns,
     getRowId,
@@ -129,20 +118,13 @@ export const useDataTable = <T>({
     onGlobalFilterChange: controlled.onGlobalFilterChange ?? setGlobalFilter,
     onRowSelectionChange: controlled.onRowSelectionChange ?? setRowSelection,
     enableRowSelection,
-    filterFns: { facet: facetFilter },
     globalFilterFn: matchesSearch,
     getColumnCanGlobalFilter: (column) => {
       if (!column.accessorFn) return false;
       searchColumn.current ??= column.id;
       return column.id === searchColumn.current;
     },
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     // Sorting starts from the most first for numbers, A to Z for text
     sortDescFirst: false,
-    autoResetPageIndex: false,
   });
 };

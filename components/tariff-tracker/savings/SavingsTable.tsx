@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import type { TableColumnDef } from "@/components/ui/table/features";
 import { mono } from "@/components/ui/font";
 import * as tt from "@/components/ui/styles/tracker";
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table";
@@ -26,7 +26,7 @@ export interface SavingRow {
   product: TrackedProduct;
 }
 
-const COLUMNS: ColumnDef<SavingRow, any>[] = [
+const COLUMNS: TableColumnDef<SavingRow, any>[] = [
   {
     id: "product",
     accessorFn: (r) => r.product.entry.element.htsno,

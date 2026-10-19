@@ -69,7 +69,7 @@ export const RecentLookups = () => {
               type="button"
               aria-pressed={on}
               onClick={() => toggle(key)}
-              className={`flex flex-col gap-2 rounded-2xl border-2 p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+              className={`flex flex-col gap-2 rounded-2xl border-2 p-4 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
                 on ? "border-success bg-success/10" : "border-base-300 bg-base-100 hover:border-base-content/30"
               }`}
             >

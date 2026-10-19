@@ -134,12 +134,12 @@ export const Takeaways = ({ input, scale }: { input: InsightsInput; scale: Catal
       const hit = new Set(recent.map((c) => c.product.key)).size;
       const latest = recent[0];
       list.push({
-        eyebrow: "Last 90 days",
+        eyebrow: "Rate changes, last 90 days",
         value: hit.toLocaleString("en-US"),
         tone: hit ? "error" : "success",
         text: latest ? (
           <>
-            {hit === 1 ? "import" : "imports"} had a rate change, the latest on {shortDate(latest.date, true)}
+            The latest on {shortDate(latest.date, true)}
             {latest.after.changes[0] ? ` (${shortProgram(latest.after.changes[0].name)})` : ""}.
           </>
         ) : (

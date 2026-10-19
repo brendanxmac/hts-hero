@@ -64,7 +64,7 @@ export const ManagedSection = () => {
                 href={config.bookCallUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-14 items-center gap-2 rounded-full bg-primary px-8 text-lg font-semibold text-primary-content transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                className="inline-flex h-14 items-center gap-2 rounded-full bg-primary px-8 text-lg font-semibold text-primary-content transition-colors hover:bg-primary/90 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/50"
               >
                 Book an intro call
                 <ArrowRightIcon className="h-5 w-5" aria-hidden />
@@ -77,7 +77,7 @@ export const ManagedSection = () => {
           </div>
 
           {/* What working together looks like: the shared channel, as an example */}
-          <div className="rounded-3xl border border-base-content/10 bg-base-100/60 p-6 shadow-2xl backdrop-blur-sm" aria-label="An example of the shared Slack channel">
+          <div className="rounded-3xl border border-base-content/10 bg-base-100/60 p-6 shadow-2xl backdrop-blur-xs" aria-label="An example of the shared Slack channel">
             <div className="mb-5 flex items-center justify-between border-b border-base-content/10 pb-4">
               <span className="text-sm font-bold text-base-content"># acme-tariffs</span>
               <span className="text-xs text-base-content/50">Example</span>

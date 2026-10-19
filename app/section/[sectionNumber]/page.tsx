@@ -10,7 +10,7 @@ import { CtaGrid } from "../../../components/hts-page/CtaGrid";
 import { ChildrenList } from "../../../components/hts-page/ChildrenList";
 
 interface SectionPageProps {
-  params: { sectionNumber: string };
+  params: Promise<{ sectionNumber: string }>;
 }
 
 export async function generateStaticParams() {
@@ -18,7 +18,8 @@ export async function generateStaticParams() {
   return sections.map((s) => ({ sectionNumber: String(s.number) }));
 }
 
-export async function generateMetadata({ params }: SectionPageProps): Promise<Metadata> {
+export async function generateMetadata(props: SectionPageProps): Promise<Metadata> {
+  const params = await props.params;
   const sections = await getHtsSectionsServer();
   const section = sections.find((s) => s.number === Number(params.sectionNumber));
 
@@ -52,7 +53,8 @@ export async function generateMetadata({ params }: SectionPageProps): Promise<Me
   };
 }
 
-export default async function SectionPage({ params }: SectionPageProps) {
+export default async function SectionPage(props: SectionPageProps) {
+  const params = await props.params;
   const sections = await getHtsSectionsServer();
   const sectionNum = Number(params.sectionNumber);
   const section = sections.find((s) => s.number === sectionNum);
@@ -86,7 +88,7 @@ function SectionContent({ section, siblings }: { section: HtsSection; siblings: 
             <span className="text-primary text-3xl lg:text-4xl font-semibold tracking-tight [font-family:var(--font-tracker-display)]">
               Section {roman}
             </span>
-            <span className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug max-w-4xl [font-family:var(--font-tracker-display)]">
+            <span className="text-lg md:text-xl md:leading-7 lg:text-2xl lg:leading-8 text-base-content font-semibold leading-snug max-w-4xl [font-family:var(--font-tracker-display)]">
               {section.description}
             </span>
             <span className="text-xs text-base-content/60 font-bold tracking-wider uppercase mt-1">

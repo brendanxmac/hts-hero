@@ -25,6 +25,8 @@ export const KINDS = {
   investigation: "Investigation or proposal",
   deal: "Trade deal",
   hts_revision: "HTS revision",
+  // Antidumping and countervailing duty proceedings (libs/adcvd): news only, never alerts
+  ad_cvd: "AD/CVD",
   other: "Other",
 } as const
 export type Kind = keyof typeof KINDS
@@ -39,6 +41,7 @@ export const AUTHORITIES = {
   trade_agreement: "Trade Agreements",
   quota: "Tariff Rate Quotas",
   hts: "HTS Revisions",
+  ad_cvd: "AD/CVD",
   other: "Other",
 } as const
 export type Authority = keyof typeof AUTHORITIES

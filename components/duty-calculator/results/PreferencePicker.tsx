@@ -31,10 +31,10 @@ export const PreferencePicker = ({
           <span className={`truncate ${current ? "font-medium text-base-content" : "text-base-content/60"}`}>
             {current ? current.name : "None claimed"}
           </span>
-          <ChevronUpDownIcon className="h-4 w-4 shrink-0 text-base-content/50" aria-hidden />
+          <ChevronUpDownIcon className="h-4 w-4 shrink-0 text-base-content/60" aria-hidden />
         </Listbox.Button>
         {/* Wider than the button, lined up with its right edge (the card lets it overflow) */}
-        <Listbox.Options className={`${ui.popover} absolute right-0 z-40 mt-1.5 w-72 max-w-[calc(100vw-2rem)] focus:outline-none`}>
+        <Listbox.Options className={`${ui.popover} absolute right-0 z-40 mt-1.5 w-72 max-w-[calc(100vw-2rem)] focus:outline-hidden`}>
           {all.map((p) => (
             <Listbox.Option
               key={p.symbol || "none"}

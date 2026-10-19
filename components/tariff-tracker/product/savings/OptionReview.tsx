@@ -169,9 +169,9 @@ const Decide = ({ onAccept, onReject, kind, busy }: { onAccept: (note: string) =
         </div>
       )}
       <div className="flex flex-wrap items-center gap-3">
-        {!rejecting && <p className={`${tt.title} m-0 shrink-0 !text-base`}>Worth pursuing?</p>}
+        {!rejecting && <p className={`${tt.title} m-0 shrink-0 text-base!`}>Worth pursuing?</p>}
         <input
-          className={`${ui.input} !h-9 min-w-[12rem] flex-1 text-sm ${missing ? "!border-error" : ""}`}
+          className={`${ui.input} h-9! min-w-48 flex-1 text-sm ${missing ? "!border-error" : ""}`}
           maxLength={500}
           value={note}
           onChange={(e) => {
@@ -278,7 +278,7 @@ const Securing = ({
         {PATH.map((p, i) => (
           <li key={p.status} className="flex flex-col gap-2">
             <span className={`h-1.5 rounded-full ${i < here ? "bg-success" : i === here ? "bg-primary" : "bg-base-300"}`} aria-hidden />
-            <span className={`flex items-center gap-1.5 text-xs font-semibold ${i === here ? "text-base-content" : i < here ? "text-success" : "text-base-content/50"}`}>
+            <span className={`flex items-center gap-1.5 text-xs font-semibold ${i === here ? "text-base-content" : i < here ? "text-success" : "text-base-content/60"}`}>
               {i < here && <CheckCircleIcon className="h-3.5 w-3.5" aria-hidden />}
               {p.label}
             </span>

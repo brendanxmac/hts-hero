@@ -1,13 +1,18 @@
 import {
+  LOWEST_PER_IMPORT,
+  REVERSE_TRIAL,
   TRACKER_TIERS,
-  TRIAL_ALLOWANCE,
   formatPrice,
+  perImportPrice,
 } from "@/components/pricing-calculator/lib/pricing";
+import { AUTO_AUDITING, COMING_LOWER, FREE_FOREVER_SHORT, SAVINGS_AUDITS_COMING, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 
 // The monitoring page's fixed copy. The FAQ is shown on the page and in its FAQPage schema, so
 // the two always match. Prices come from the price list (PRICING.md).
 
 const from = formatPrice(TRACKER_TIERS[0].price);
+// The lowest per-import price, per month ("$0.30")
+const lowestPerImport = formatPrice(LOWEST_PER_IMPORT);
 
 // The one-sentence answer to "what is it?", written so it can be quoted on its own
 export const DEFINITION =
@@ -43,30 +48,53 @@ export const CHANNELS = [
   { name: "Microsoft Teams", detail: "Posted to the channel your team picks", short: "Your team's channel" },
 ];
 
-export const FEATURES: { title: string; text: string; href?: string; linkText?: string }[] = [
+// coming: not live yet (libs/tariff-tracker/features.ts), shown with the SAVINGS_AUDITS_LABEL chip
+export const FEATURES: { title: string; text: string; href?: string; linkText?: string; coming?: boolean }[] = [
   {
-    title: "Tariff alerts by HTS code",
+    title: "Tariff Alerts by HTS Code",
     text: "Alerts only for changes that touch your codes and countries, with the old rate, the new rate, the change in % and the date it takes effect.",
   },
   {
-    title: "Early warning on announcements",
+    title: "Early Warning on Announcements",
     text: "A heads-up when a proclamation, Federal Register notice or CSMS message announces a tariff, before it reaches the Harmonized Tariff Schedule.",
   },
   {
-    title: "Rate history for every product",
+    title: "Rate History for Every Product",
     text: "Every change to each product's duty, revision by revision, with the program behind it. Compare any two dates side by side.",
   },
   {
-    title: "Impact checks",
+    title: "Impact Checks",
     text: "Pick any tariff action and see exactly how it affects each of your imports, with the rate before and after.",
+  },
+  {
+    title: "AD/CVD Alerts",
+    text: "A flag when a tracked import may fall under an antidumping or countervailing duty case, with the range of rates Commerce set and links to the case, so you and your broker can check it.",
+  },
+  {
+    title: "Insights Across Your Catalog",
+    text: "Where your duty comes from, what moved it, and which imports and countries are most exposed, across every product you track.",
+  },
+  {
+    title: "Sourcing Intelligence",
+    text: "The duty on the same product from every country of origin, as insights, a globe, a table and a chart, to see where it could cost less.",
   },
   {
     title: "Export to CSV or Excel",
     text: "Export every tariff on every import, with each one's rate history, to share or work with in your own tools.",
   },
   {
-    title: "Built for teams",
+    title: "Built for Teams",
     text: "Upload your catalog as CSV, route alerts to the right Slack or Teams channel, and share exports with your team.",
+  },
+  {
+    title: SAVINGS_DETECTION.title,
+    text: `${SAVINGS_DETECTION.text} Included in the trial and every plan at no extra cost when it launches.`,
+    coming: true,
+  },
+  {
+    title: AUTO_AUDITING.title,
+    text: `${AUTO_AUDITING.text} Included in the trial and every plan at no extra cost when it launches.`,
+    coming: true,
   },
 ];
 
@@ -101,7 +129,7 @@ export const COMPARISON_ROWS: { label: string; values: [string, string, string, 
   },
   {
     label: "Cost",
-    values: [`Free on ${TRIAL_ALLOWANCE.alertImports} imports, then from ${from}/mo`, "Free", "Free", "Your team's time"],
+    values: [`Free for ${REVERSE_TRIAL.days} days, then from ${from}/mo (as low as ${lowestPerImport} per import)`, "Free", "Free", "Your team's time"],
   },
 ];
 
@@ -112,7 +140,7 @@ export const MONITOR_FAQS = [
   },
   {
     question: "How do I get alerts when tariffs change on my products?",
-    answer: `Create a free HTS Hero account, add your products as HTS code and country of origin pairs (paste them or upload a CSV), and choose where alerts go: email, the in-app feed, Slack or Microsoft Teams. From then on, any tariff change that touches one of your imports sends an alert. Alerts are free on ${TRIAL_ALLOWANCE.alertImports} imports, and a paid plan covers the rest.`,
+    answer: `Create a free HTS Hero account, add your products as HTS code and country of origin pairs (paste them or upload a CSV), and choose where alerts go: email, the in-app feed, Slack or Microsoft Teams. From then on, any tariff change that touches one of your imports sends an alert. Every new account gets alerts on up to ${REVERSE_TRIAL.imports} imports free for ${REVERSE_TRIAL.days} days, with no credit card; after that, a paid plan keeps alerts on your imports, and ${FREE_FOREVER_SHORT} stay free, forever.`,
   },
   {
     question: "Which sources does the Tariff Tracker watch?",
@@ -127,11 +155,19 @@ export const MONITOR_FAQS = [
   {
     question: "Which tariffs does it cover?",
     answer:
-      "The base rate and every Chapter 99 tariff: Section 232 (steel, aluminum, copper, autos, wood, pharmaceuticals, semiconductors, drones and more), Section 301 (China, Brazil, forced labor), Section 201 safeguards, Section 338 on Canada, country trade deals and quotas, plus trade preferences like USMCA and the MPF and HMF fees. Antidumping and countervailing duties aren't included, since they're set for specific producers.",
+      "The base rate and every Chapter 99 tariff: Section 232 (steel, aluminum, copper, autos, wood, pharmaceuticals, semiconductors, drones and more), Section 301 (China, Brazil, forced labor), Section 201 safeguards, Section 338 on Canada, country trade deals and quotas, plus trade preferences like USMCA and the MPF and HMF fees. Antidumping and countervailing duties are flagged rather than added to the duty, since they're set for specific producers: the Tracker flags imports that may fall under a case, with the range of rates and links to the source, so you and your broker can check.",
   },
   {
     question: "How much does the Tariff Tracker cost?",
-    answer: `It's free to start, with no time limit and no credit card. Every account can upload its whole catalog, with every tariff, rate history and exports to CSV or Excel for all of it, and tracks ${TRIAL_ALLOWANCE.alertImports} imports free (an import is one HTS code from one country of origin), with alerts and impact checks on each. Paid plans start at ${from} a month to track up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly.`,
+    answer: `Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, with no credit card and nothing to start: alerts (AD/CVD alerts included), impact checks, Insights, Tariff News, rate history and exports, on up to ${REVERSE_TRIAL.imports} imports (an import is one HTS code from one country of origin). After the trial, ${FREE_FOREVER_SHORT} stay free, forever, and so do your whole catalog with its current duty, rate history and exports. Nothing is deleted. To keep alerts and impact checks on your imports, paid plans start at ${from} a month to track up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly. Per import, that's ${TRACKER_TIERS.map((t) => `${formatPrice(perImportPrice(t))} on the ${t.maxPairs}-import plan`).join(", ")}: as low as ${lowestPerImport} per import, per month. ${SAVINGS_AUDITS_COMING}`,
+  },
+  {
+    question: "What happens when the free trial ends?",
+    answer: `If you don't pick a plan, your account moves to the free plan on its own. Alerts, impact checks and AD/CVD checks on your own imports stop, but you keep Tariff News alerts (every new US tariff action, by email) and sourcing insights on any import, free, forever, and your whole catalog stays in your account with its current duty, rate history and exports. You're never charged unless you choose a plan.`,
+  },
+  {
+    question: "Does the Tariff Tracker find savings or audit my entries?",
+    answer: `Not yet: automatic savings detection and automatic auditing are ${COMING_LOWER}. Savings detection will check every import for trade programs, exemptions and lower-duty origins you may qualify for. Auditing will check every entry against the duty in force on its date and flag possible over- and underpayments, for you and your broker to review. Both will be included in the trial and every paid plan at no extra cost.`,
   },
   {
     question: "What's the difference between the Tariff Calculator and the Tariff Tracker?",

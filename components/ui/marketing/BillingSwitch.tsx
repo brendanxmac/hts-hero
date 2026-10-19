@@ -14,7 +14,7 @@ export const BillingSwitch = ({
   size?: "sm" | "md";
 }) => (
   <div
-    className={`inline-flex items-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 skin:bg-base-100 skin:ring-base-300 ${size === "sm" ? "p-1" : "p-1.5"}`}
+    className={`inline-flex items-center rounded-full bg-white shadow-xs ring-1 ring-slate-200 skin:bg-base-100 skin:ring-base-300 ${size === "sm" ? "p-1" : "p-1.5"}`}
     role="radiogroup"
     aria-label="Billing period"
   >

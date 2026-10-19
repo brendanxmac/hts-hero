@@ -81,7 +81,7 @@ export const bundleFaqList: FAQItem[] = [
 
         <br />
         <p>
-          If you're not sure which tool you need, you can always contact us at{" "}
+          If you&apos;re not sure which tool you need, you can always contact us at{" "}
           <Link
             href={`mailto:${config.resend.supportEmail}`}
             className="text-secondary underline"
@@ -154,7 +154,7 @@ export const bundleFaqList: FAQItem[] = [
         </p>
         <br />
         <p>
-          Just log in to your account, click "Billing" in the profile dropdown,
+          Just log in to your account, click &quot;Billing&quot; in the profile dropdown,
           and you&apos;ll be able to cancel your subscription.
         </p>
       </div>
@@ -262,7 +262,7 @@ export const tariffImpactFaqList: FAQItem[] = [
       <div className="space-y-2 leading-relaxed">
         Any tariff announcement that has a clearly defined list of affected HTS
         codes will be made available for you to check against. <br />
-        If an announcement is made that is unclear about exactly what's impacted
+        If an announcement is made that is unclear about exactly what&apos;s impacted
         we will still send you a notification and highlight what the
         announcement says it covers.
       </div>
@@ -313,7 +313,7 @@ export const tariffImpactFaqList: FAQItem[] = [
         </ul>
         <br />
         Once your lists are in place, anytime a new tariff announcement impacts
-        any of the imports in any of your lists you'll receive an email
+        any of the imports in any of your lists you&apos;ll receive an email
         notification (one for each list that is affected).
       </div>
     ),
@@ -365,8 +365,8 @@ export const tariffImpactFaqList: FAQItem[] = [
     question: "Can you notify me when new updates are added?",
     answer: (
       <div className="space-y-2 leading-relaxed">
-        You bet! Upload & save your list of imports and you're all set to
-        recieve notifications when your imports are affected as long as you're
+        You bet! Upload & save your list of imports and you&apos;re all set to
+        recieve notifications when your imports are affected as long as you&apos;re
         on a{" "}
         <a href="/about/tariffs#pricing" className="text-secondary underline">
           paid plan
@@ -530,7 +530,7 @@ export const importerFaqList: FAQItem[] = [
         <p>
           HTS codes are used for classifying{" "}
           <span className="font-bold italic">imports</span> to the United
-          States, whereas "Schedule B" codes are used for classifying{" "}
+          States, whereas &quot;Schedule B&quot; codes are used for classifying{" "}
           <span className="font-bold italic">exports</span> from the United
           States.
           <br /> <br /> Currently HTS Hero only provides HTS Codes and not

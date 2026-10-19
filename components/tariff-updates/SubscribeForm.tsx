@@ -6,6 +6,8 @@ import { ArrowRightIcon, CheckCircleIcon, CheckIcon, EnvelopeIcon } from "@heroi
 import { signupHref } from "@/components/tariff-tracker/access/signup"
 import * as ui from "@/components/ui/styles"
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel"
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing"
+import { AUTO_AUDITING, COMING_NOTE, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon"
 import { DEFAULT_NEWS_PREFERENCES, NewsPreferencesFields, type NewsPreferencesValue } from "./NewsPreferencesFields"
 
 // Subscribe to US tariff updates by email, on /tariff-updates and every update page. Weekly digest
@@ -19,6 +21,8 @@ const UPSELL = [
   "See which of your imports each new tariff update affects",
   "Get alerted with the rate before and after, by email, Slack or Teams",
   "Run impact checks to see exactly how any tariff action affects each import",
+  `${SAVINGS_DETECTION.name} and ${AUTO_AUDITING.name.toLowerCase()} ${COMING_NOTE}, included`,
+  `Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card`,
 ]
 
 // The address they subscribed with, for the sign-up page to fill in (this tab only, never in a URL)
@@ -60,7 +64,12 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
       } catch {
         // Private mode: they type it again
       }
-      trackEvent(MixpanelEvent.TARIFF_UPDATES_SUBSCRIBED, { source, frequency: prefs.frequency, scope: prefs.scope, filtered: prefs.authorities.length + prefs.countries.length > 0 })
+      trackEvent(MixpanelEvent.TARIFF_UPDATES_SUBSCRIBED, {
+        source,
+        frequency: prefs.frequency,
+        scope: prefs.scope,
+        filtered: prefs.authorities.length + prefs.countries.length > 0,
+      })
     } catch (err) {
       setStatus("idle")
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
@@ -84,7 +93,10 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
           </p>
           <div className="flex flex-col gap-2 rounded-xl border border-primary/20 bg-primary/[0.06] p-3.5">
             <p className="m-0 text-sm font-semibold text-base-content">Next: see when an update hits your own imports</p>
-            <p className="m-0 text-xs leading-relaxed text-base-content/70">Track your imports free, get alerted with the rate before and after, and see exactly how each update affects them.</p>
+            <p className="m-0 text-xs leading-relaxed text-base-content/70">
+              Try the Tariff Tracker free for {REVERSE_TRIAL.days} days, no credit card: get alerted with the rate before and after, and see exactly how each update
+              affects your imports.
+            </p>
             <Link href={signup} onClick={() => upsellClicked(source)} className={`${ui.button({ variant: "primary", size: "sm" })} self-start`}>
               Create my free account
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
@@ -115,7 +127,9 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
             Create my free account
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
-          <p className="m-0 text-xs text-base-content/60">Free. Takes a minute; then add your HTS codes and countries.</p>
+          <p className="m-0 text-xs text-base-content/60">
+            Free, no credit card: your {REVERSE_TRIAL.days}-day trial starts on its own. Takes a minute; then add your HTS codes and countries.
+          </p>
         </div>
       </div>
     )
@@ -134,7 +148,7 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
             autoComplete="email"
-            className={`${inline ? "h-9" : "h-10"} w-full rounded-full border border-base-300 bg-base-100 pl-10 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30`}
+            className={`${inline ? "h-9" : "h-10"} w-full rounded-full border border-base-300 bg-base-100 pl-10 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-hidden focus:ring-2 focus:ring-primary/30`}
           />
         </label>
         {/* Only bots fill this in */}

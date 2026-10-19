@@ -6,10 +6,11 @@ import {
   BellSlashIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
-import { ColumnFiltersState, Row, Table, Updater } from "@tanstack/react-table";
+import { ColumnFiltersState, Updater } from "@tanstack/react-table";
+import type { DataTableInstance, TableRow } from "@/components/ui/table/features";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { formatPrice, LAUNCH_PRICING, launchPricingActive } from "@/components/pricing-calculator/lib/pricing";
+import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice } from "@/components/pricing-calculator/lib/pricing";
 import { TRACKER_PLANS } from "@/libs/tariff-tracker/plan";
 import { todayIso } from "../../duty-calculator/lib/format";
 import {
@@ -26,6 +27,7 @@ import { TrackedProduct } from "../report";
 import { useTracker } from "../TrackerContext";
 import { importColumns } from "./importColumns";
 import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
+import { useCatalogAdcvd } from "@/components/adcvd/useCatalogAdcvd";
 
 // The user's imports as a table, on the shared table (components/ui/table): search by code,
 // description or country; filter by origin, HTS chapter, tariff, savings and alerts, each with
@@ -47,9 +49,9 @@ export const ImportsTable = ({
   rows: TrackedProduct[];
   onOpen: (row: TrackedProduct) => void;
   // Above everything: the report's header and notices
-  header?: (table: Table<TrackedProduct>) => ReactNode;
+  header?: (table: DataTableInstance<TrackedProduct>) => ReactNode;
   // Between the header and the table
-  summary?: (table: Table<TrackedProduct>) => ReactNode;
+  summary?: (table: DataTableInstance<TrackedProduct>) => ReactNode;
 }) => {
   const {
     filters,
@@ -73,8 +75,12 @@ export const ImportsTable = ({
     return changes.filter((c) => c.date >= yearAgo && c.date <= today && !trackedKeys.has(c.product.key)).length;
   }, [changes, trackedKeys]);
   const coverAllPlan = TRACKER_PLANS.find((p) => items.length <= p.maxPairs && p.maxPairs > access.pairLimit);
-  const coverAll = coverAllPlan ? { perImport: Math.round((coverAllPlan.price / coverAllPlan.maxPairs) * 100) / 100 } : null;
+  const coverAll = coverAllPlan ? { perImport: perImportPrice(coverAllPlan) } : null;
   const launch = launchPricingActive();
+
+  // Imports an AD/CVD case may cover, chipped under their code
+  const adcvdItems = useMemo(() => rows.map((r) => ({ key: r.key, code: r.entry.element.htsno, country: r.entry.country.code })), [rows]);
+  const adcvd = useCatalogAdcvd(adcvdItems);
 
   const columns = useMemo(
     () =>
@@ -90,6 +96,7 @@ export const ImportsTable = ({
         },
         review: (key) => review.get(key) ?? "unchecked",
         unlocked: (key) => unlocked.has(key),
+        adcvd: (key) => adcvd.get(key) ?? null,
       }),
     [
       signedIn,
@@ -101,6 +108,7 @@ export const ImportsTable = ({
       openUpgrade,
       review,
       unlocked,
+      adcvd,
     ],
   );
 
@@ -136,15 +144,15 @@ export const ImportsTable = ({
   const shown = table.getRowModel().rows.length;
 
   // Alerts on for the picked imports, as far as the plan allows
-  const alertsOn = (picked: Row<TrackedProduct>[]) => {
+  const alertsOn = (picked: TableRow<TrackedProduct>[]) => {
     const full = picked.find(
       (r) => !trackedKeys.has(r.id) && !setCovered(r.id, true),
     );
     if (full) openUpgrade("limit");
   };
-  const alertsOff = (picked: Row<TrackedProduct>[]) =>
+  const alertsOff = (picked: TableRow<TrackedProduct>[]) =>
     picked.forEach((r) => setCovered(r.id, false));
-  const remove = (picked: Row<TrackedProduct>[]) => {
+  const remove = (picked: TableRow<TrackedProduct>[]) => {
     if (
       !window.confirm(
         `Remove ${picked.length} ${picked.length === 1 ? "import" : "imports"}? Their adjustments are kept.`,
@@ -257,7 +265,7 @@ export const ImportsTable = ({
           <div className="flex flex-col items-start gap-3">
             <p className={ui.body}>
               No imports match{" "}
-              {table.getState().globalFilter ? "this search" : "these filters"}.
+              {table.store.state.globalFilter ? "this search" : "these filters"}.
             </p>
             <button
               type="button"

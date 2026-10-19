@@ -55,14 +55,14 @@ export const DutyChart = () => {
           <>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style={{ stopColor: "oklch(var(--p))", stopOpacity: 0.22 }} />
-                <stop offset="100%" style={{ stopColor: "oklch(var(--p))", stopOpacity: 0 }} />
+                <stop offset="0%" style={{ stopColor: "var(--color-primary)", stopOpacity: 0.22 }} />
+                <stop offset="100%" style={{ stopColor: "var(--color-primary)", stopOpacity: 0 }} />
               </linearGradient>
             </defs>
             <ValueAxis ticks={[0, 25, 50, 75, 100]} y={y} format={(v) => `${v}%`} />
             <BottomAxis labels={TICKS.map(([d, label]) => ({ x: x.at(d), text: label }))} />
             <StepArea points={points} x={x} y={y} to={time(END)} y0={innerHeight} fill={`url(#${gradientId})`} />
-            <StepLine points={points} x={x} y={y} to={time(END)} color="oklch(var(--bc))" />
+            <StepLine points={points} x={x} y={y} to={time(END)} color="var(--color-base-content)" />
             {NOTES.map((n) => {
               const cx = x.at(n.at);
               const flip = cx + NOTE_WIDTH > innerWidth;

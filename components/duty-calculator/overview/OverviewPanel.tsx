@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { AccountGate } from "@/components/tariff-tracker/access/AccountGate";
+import { AdcvdSummaryCard } from "@/components/adcvd/AdcvdTeasers";
 import { CardRow } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
 import { DetailsLink, Headline, Moved, OverviewTab, PartHeader, PayLess, pct, RateSources, Watch } from "./parts";
@@ -10,17 +11,18 @@ import { Overview } from "./useOverview";
 // The Overview tab: everything about this tariff at a high level, on one page, before the detail
 // tabs. On /duty-calculator, and as the first tab of an import's page in the Tracker. On top, side
 // by side: the rate, big, with its story in plain English, and where the rate comes from (each
-// tariff with why it applies). Under it, could you pay less, full width with its two halves side
+// tariff with why it applies). Under it, whether any AD/CVD case may cover it (to the AD/CVD tab),
+// then could you pay less, full width with its two halves side
 // by side (exemptions and savings, to the Duty tab; other countries to source from, to Compare),
 // then its duty history beside news about it. Signed out, could you pay less and the news are
 // blurred behind a free account's teaser. Sections of the results box, never cards inside it.
 
-const COLUMN = `${ui.cardSection} flex min-w-0 flex-col gap-4 !py-5`;
+const COLUMN = `${ui.cardSection} flex min-w-0 flex-col gap-4 py-5!`;
 
 // Signed out, the parts that need a free account show blurred, with a teaser from this import's
 // own numbers and the sign-up (AccountGate, the accepted blur: DESIGN_SYSTEM §10.5)
 const Gate = ({ title, teaser, points, children }: { title: string; teaser: string; points: string[]; children: ReactNode }) => (
-  <AccountGate feature="overview" page="calculator_overview" title={title} teaser={teaser} points={points} preview={children} minHeight="min-h-[18rem]" framed={false}>
+  <AccountGate feature="overview" page="calculator_overview" title={title} teaser={teaser} points={points} preview={children} minHeight="min-h-72" framed={false}>
     {children}
   </AccountGate>
 );
@@ -46,12 +48,16 @@ const newsTeaser = (o: Overview) =>
 
 export const OverviewPanel = ({
   o,
+  code,
+  country,
   colors,
   canSee,
   onLocked,
   onOpenTab,
 }: {
   o: Overview | null;
+  code: string;
+  country: string;
   colors: Record<string, string>;
   canSee: boolean;
   onLocked: () => void;
@@ -69,14 +75,15 @@ export const OverviewPanel = ({
   return (
     <>
       <CardRow className="lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <section className={`${ui.cardSection} !py-6`} aria-label="The answer">
+        <section className={`${ui.cardSection} py-6!`} aria-label="The answer">
           <Headline o={o} />
         </section>
-        <section className={`${ui.cardSection} flex flex-col gap-4 !py-6`}>
+        <section className={`${ui.cardSection} flex flex-col gap-4 py-6!`}>
           <PartHeader title="Where Your Rate Comes From" hint="Each tariff on this import, and why it applies" link={<DetailsLink label="Full breakdown" onClick={() => onOpenTab("duty")} />} />
           <RateSources o={o} colors={colors} canSee={canSee} onLocked={onLocked} />
         </section>
       </CardRow>
+      <AdcvdSummaryCard code={code} country={country} onOpen={() => onOpenTab("adcvd")} />
       <section className={COLUMN}>
         <PartHeader title="Could You Pay Less?" hint="Potential savings, if your goods qualify" />
         <Gate title="See How You Could Pay Less, Free" teaser={payLessTeaser(o)} points={PAY_LESS_POINTS}>
@@ -92,14 +99,9 @@ export const OverviewPanel = ({
           </div>
         </section>
         <section className={COLUMN}>
-          <PartHeader title="News About This Import" hint="Recent tariff news that may touch this import" />
+          <PartHeader title="News About This Import" hint="Recent tariff news that may touch this import" link={<DetailsLink label="All news" onClick={() => onOpenTab("news")} />} />
           <Gate title="See the News About This Import, Free" teaser={newsTeaser(o)} points={NEWS_POINTS}>
-            <div className="flex flex-col gap-4">
-              <Watch o={o} />
-              <a href="/tariff-updates" target="_blank" rel="noopener" className={`${ui.link} text-sm`}>
-                All tariff news
-              </a>
-            </div>
+            <Watch o={o} />
           </Gate>
         </section>
       </CardRow>

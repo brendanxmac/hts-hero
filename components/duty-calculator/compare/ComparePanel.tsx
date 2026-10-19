@@ -25,7 +25,7 @@ import { onShipment } from "../lib/valueBasis";
 // The map loads only when the Globe view opens
 const WorldMap = dynamic(() => import("@/components/tariff-tracker/product/analysis/WorldMap").then((m) => m.WorldMap), {
   ssr: false,
-  loading: () => <div className={`${ui.skeleton} m-5 h-[28rem]`} />,
+  loading: () => <div className={`${ui.skeleton} m-5 h-112`} />,
 });
 
 // The Compare tab: Duty Comparison, what it costs to import this from other countries. One header
@@ -211,7 +211,7 @@ export const ComparePanel = ({
                   : `See all ${rates.length} countries ranked, on a globe, in a table and over time.`}
               </p>
               <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={action}>
-                {onCreateAccount ? "Create a free account" : "Track this import free"}
+                {onCreateAccount ? "Create a free account" : "Track this import"}
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </button>
             </div>

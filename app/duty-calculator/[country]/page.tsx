@@ -11,7 +11,7 @@ import { getHtsElementsServer } from "@/libs/hts-server";
 import { renderSchemaJsonLd } from "@/libs/seo";
 
 interface Props {
-  params: { country: string };
+  params: Promise<{ country: string }>;
 }
 
 // Rebuilt daily, so the tables and examples follow the tariff data without a deploy
@@ -28,7 +28,8 @@ const longDate = (iso: string) =>
 const monthYear = (iso: string) =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const country = countryPageBySlug(params.country);
   if (!country) return {};
   const name = titleName(country);
@@ -45,7 +46,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function CountryCalculatorRoute({ params }: Props) {
+export default async function CountryCalculatorRoute(props: Props) {
+  const params = await props.params;
   const country = countryPageBySlug(params.country);
   if (!country) notFound();
 

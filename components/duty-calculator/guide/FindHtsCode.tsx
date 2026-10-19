@@ -14,12 +14,12 @@ export const FindHtsCode = () => (
   >
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 bg-[radial-gradient(44rem_22rem_at_85%_0%,oklch(var(--p)/0.3),transparent),radial-gradient(30rem_18rem_at_0%_100%,oklch(var(--p)/0.12),transparent)]"
+      className="pointer-events-none absolute inset-0 bg-[radial-gradient(44rem_22rem_at_85%_0%,color-mix(in_oklab,var(--color-primary)_30%,transparent),transparent),radial-gradient(30rem_18rem_at_0%_100%,color-mix(in_oklab,var(--color-primary)_12%,transparent),transparent)]"
     />
     <div className={`${mk.container} relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center`}>
       <div className="flex max-w-3xl flex-col gap-4">
         <span className={tt.eyebrow("primary")}>Classification</span>
-        <h2 id="find-hts-code-title" className={`${tt.display} m-0 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl`}>
+        <h2 id="find-hts-code-title" className={`${tt.display} m-0 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl sm:leading-none`}>
           Find the right HTS code for your imports, fast.
         </h2>
         <p className="m-0 text-lg leading-relaxed text-base-content/70">

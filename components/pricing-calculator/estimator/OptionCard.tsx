@@ -26,7 +26,7 @@ export const OptionCard = ({
     aria-checked={selected}
     disabled={disabled}
     onClick={onSelect}
-    className={`flex h-full flex-col gap-2 rounded-xl border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-tt-soft disabled:opacity-60 sm:p-5 ${
+    className={`flex h-full flex-col gap-2 rounded-xl border p-4 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-tt-soft disabled:opacity-60 sm:p-5 ${
       selected ? "border-primary bg-primary/10 ring-1 ring-primary" : "border-base-300 bg-base-100 hover:border-base-300 hover:bg-tt-soft"
     }`}
   >
@@ -34,7 +34,7 @@ export const OptionCard = ({
       <span className="flex items-center gap-2.5">
         <span
           aria-hidden
-          className={`flex h-[1.125rem] w-[1.125rem] shrink-0 items-center justify-center rounded-full border-2 ${
+          className={`flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border-2 ${
             selected ? "border-primary bg-base-100" : "border-base-300 bg-base-100"
           }`}
         >

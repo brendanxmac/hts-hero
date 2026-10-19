@@ -33,7 +33,7 @@ export const useCardClass = (overflowVisible = false) => {
 // (so a card with no header doesn't start with a line)
 export const CardSections = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
   <InCard.Provider value={true}>
-    <div className={`flex flex-col [&>:empty]:hidden [&>:not(:empty)~:not(:empty)]:border-t [&>*]:border-base-300 ${className}`}>{children}</div>
+    <div className={`flex flex-col *:empty:hidden [&>:not(:empty)~:not(:empty)]:border-t [&>*]:border-base-300 ${className}`}>{children}</div>
   </InCard.Provider>
 );
 

@@ -56,7 +56,7 @@ const Modal = ({ isOpen, setIsOpen, children, size = "default" }: ModalProps) =>
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-hidden">
@@ -85,7 +85,7 @@ const Modal = ({ isOpen, setIsOpen, children, size = "default" }: ModalProps) =>
 
                 <button
                   type="button"
-                  className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2 z-[60] shrink-0 border border-base-content/10 bg-base-100/90 text-base-content shadow-sm backdrop-blur-sm hover:bg-base-200/90 sm:right-3 sm:top-3"
+                  className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2 z-60 shrink-0 border border-base-content/10 bg-base-100/90 text-base-content shadow-xs backdrop-blur-xs hover:bg-base-200/90 sm:right-3 sm:top-3"
                   aria-label="Close"
                   onClick={() => setIsOpen(false)}
                 >

@@ -10,7 +10,7 @@ import { shortProgram } from "../../report";
 import { useTrackerNav } from "../../shell/TrackerNav";
 import { relativeDays } from "../../impact/format";
 import { InsightsInput } from "../lib/data";
-import { InsightPanel } from "../shared";
+import { InsightPanel, NavArrow } from "../shared";
 
 // The imports most recently hit by a tariff change, newest first: when, what, and the rate
 // before and after
@@ -46,7 +46,7 @@ export const RecentlyHit = ({ input, count = 8 }: { input: InsightsInput; count?
               <button
                 type="button"
                 onClick={() => nav.openProduct(c.product.key)}
-                className="grid w-full grid-cols-[4.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2 py-2 text-left text-sm hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                className="group grid w-full grid-cols-[4.5rem_minmax(0,1fr)_auto_1rem] items-center gap-3 rounded-xl px-2 py-2 text-left text-sm hover:bg-tt-soft focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
               >
                 <span className="text-xs tabular-nums text-base-content/60">{shortDate(c.date, true)}</span>
                 <span className="min-w-0">
@@ -64,6 +64,7 @@ export const RecentlyHit = ({ input, count = 8 }: { input: InsightsInput; count?
                   </span>
                   <span className={tt.chip(c.deltaPct > 0 ? "error" : "success")}>{signedRate(c.deltaPct)}</span>
                 </span>
+                <NavArrow />
               </button>
             </li>
           ))}

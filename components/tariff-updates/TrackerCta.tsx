@@ -4,11 +4,11 @@ import { formatPct } from "@/components/duty-calculator/lib/format"
 import { mono } from "@/components/ui/font"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing"
+import { LOWEST_PER_IMPORT, REVERSE_TRIAL, formatPrice } from "@/components/pricing-calculator/lib/pricing"
 
 // The Tariff Tracker's offer beside tariff news: the updates, matched to the reader's own imports.
-// Free, so the ask is an account, and it opens straight on adding imports. Two sizes: a row in the
-// /tariff-updates list, and a card on an HTS code page (named for the code, with what an alert
+// Free for 14 days (REVERSE_TRIAL), then Tariff News alerts free forever, so the ask is an account, and
+// it opens straight on adding imports. Two sizes: a row in the /tariff-updates list, and a card on an HTS code page (named for the code, with what an alert
 // looks like), inverted from the page so it stands out.
 
 const HREF = "/tariff-tracker?tab=catalog&add=paste"
@@ -24,13 +24,13 @@ export function TrackerCtaRow({ boxed = false }: { boxed?: boolean }) {
     >
       <span className="absolute inset-y-0 left-0 w-1 bg-primary" aria-hidden />
       <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-content shadow-sm" aria-hidden>
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-content shadow-xs" aria-hidden>
           <BellAlertIcon className="h-5 w-5" />
         </span>
         <p className="m-0 self-center text-base font-semibold text-base-content">Get alerted the moment a new tariff update affects any of your imports</p>
       </div>
       <Link href={HREF} className={`${ui.button({ variant: "primary" })} shrink-0 self-start sm:self-center`}>
-        Get import alerts
+        Get tariff alerts for your imports
         <ArrowRightIcon className="h-4 w-4" aria-hidden />
       </Link>
     </div>
@@ -41,6 +41,7 @@ const POINTS = [
   "Every new US tariff action checked against your imports, every 15 minutes",
   "An alert with the rate before and after, by email, Slack or Teams",
   "Impact checks: see exactly how any tariff action affects each import",
+  "AD/CVD alerts when an import may fall under a case",
 ]
 
 // The example alert starts from the code's real duty today (the page's estimate), plus a made-up
@@ -60,14 +61,14 @@ export function TrackerCtaFeature({ htsno, today }: { htsno: string; today?: { p
       <div className="flex flex-col gap-4">
         <span className={`${tt.eyebrow("primary")} flex items-center gap-2`}>
           <BellAlertIcon className="h-4 w-4" aria-hidden />
-          Tariff alerts, free
+          Tariff alerts, free for {REVERSE_TRIAL.days} days
         </span>
-        <h2 id="tracker-cta" className={`${tt.display} m-0 text-2xl font-semibold leading-tight text-base-content sm:text-3xl`}>
+        <h2 id="tracker-cta" className={`${tt.display} m-0 text-2xl font-semibold leading-tight text-base-content sm:text-3xl sm:leading-9`}>
           Know the moment an update hits <span className={`${mono.className} text-primary`}>{htsno}</span>
         </h2>
         <p className="m-0 text-base leading-relaxed text-base-content/70">
-          Add it, with your country of origin, to the free Tariff Tracker. When a new tariff action affects it, you hear about it first, with exactly what
-          changes.
+          Add it, with your country of origin, to the Tariff Tracker, free for {REVERSE_TRIAL.days} days. When a new tariff action affects it, you hear about it first,
+          with exactly what changes.
         </p>
         <ul className="m-0 flex list-none flex-col gap-2 p-0">
           {POINTS.map((point) => (
@@ -79,16 +80,18 @@ export function TrackerCtaFeature({ htsno, today }: { htsno: string; today?: { p
         </ul>
         <div className="flex flex-wrap items-center gap-3 pt-1">
           <Link href={HREF} className={ui.button({ variant: "primary" })}>
-            Track my imports free
+            Start my free {REVERSE_TRIAL.days}-day trial
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
-          <span className="text-xs text-base-content/60">Free account · Track up to {TRIAL_ALLOWANCE.alertImports} imports</span>
+          <span className="text-xs text-base-content/60">
+            No credit card · Plans as low as {formatPrice(LOWEST_PER_IMPORT)} per import, per month · Tariff News alerts free, forever
+          </span>
         </div>
       </div>
 
       {/* What an alert looks like: an example, labeled as one */}
       <div className="rounded-2xl bg-tt-soft p-5" aria-label="An example tariff alert">
-        <div className="flex flex-col gap-3 rounded-xl border border-base-300 border-l-4 border-l-error bg-base-100 p-4 shadow-sm">
+        <div className="flex flex-col gap-3 rounded-xl border border-base-300 border-l-4 border-l-error bg-base-100 p-4 shadow-xs">
           <span className={tt.eyebrow()}>Example alert</span>
           <p className={`${tt.display} m-0 text-sm font-semibold leading-snug text-base-content`}>New tariff action affects 1 of your imports</p>
           <div className="flex items-center justify-between gap-3 border-t border-base-300 pt-3">

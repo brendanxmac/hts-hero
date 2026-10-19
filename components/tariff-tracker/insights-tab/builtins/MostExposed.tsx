@@ -11,7 +11,7 @@ import { programColors } from "../../programColors";
 import { shortProgram } from "../../report";
 import { useTrackerNav } from "../../shell/TrackerNav";
 import { CatalogScale, importMoves, InsightsInput } from "../lib/data";
-import { InsightPanel } from "../shared";
+import { InsightPanel, NavArrow } from "../shared";
 
 // The imports most exposed to tariffs: the highest rates today, or the biggest rises in the last
 // 12 months, each with what its rate is made of on one shared scale. With a handful of imports,
@@ -79,7 +79,7 @@ export const MostExposed = ({ input, scale }: { input: InsightsInput; scale: Cat
             <button
               type="button"
               onClick={() => nav.openProduct(m.product.key)}
-              className="grid w-full grid-cols-[minmax(0,15rem)_minmax(0,1fr)_9rem] items-center gap-4 rounded-xl px-2 py-2.5 text-left text-sm hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              className="group grid w-full grid-cols-[minmax(0,15rem)_minmax(0,1fr)_9rem_1rem] items-center gap-4 rounded-xl px-2 py-2.5 text-left text-sm hover:bg-tt-soft focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               <span className="min-w-0">
                 <span className="flex items-center gap-2">
@@ -106,6 +106,7 @@ export const MostExposed = ({ input, scale }: { input: InsightsInput; scale: Cat
                 <b className={`${tt.display} text-base text-base-content`}>{formatRate(m.now)}</b>
                 <span className={tt.chip(m.change > 0.005 ? "error" : m.change < -0.005 ? "success" : "neutral")}>{Math.abs(m.change) < 0.005 ? "No change" : signedRate(m.change)}</span>
               </span>
+              <NavArrow />
             </button>
           </li>
         ))}

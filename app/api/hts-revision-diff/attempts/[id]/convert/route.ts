@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic"
 export const maxDuration = 300
 
 // Sends the attempt's PDFs to datalab (only those not converted yet, or failed)
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

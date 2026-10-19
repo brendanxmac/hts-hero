@@ -2,14 +2,14 @@
 
 import * as tt from "@/components/ui/styles/tracker";
 import { TableStandIn } from "@/components/ui/stand-ins";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { AccountGate } from "../access/AccountGate";
 import { AlertSettingsPanel } from "./AlertSettingsPanel";
 import { TariffNewsSettings } from "./TariffNewsSettings";
 
 // The Alerts section: where alerts go, what sets one off, and which imports get them. Alerts come
-// with every account (PRICING.md: the trial covers TRIAL_ALLOWANCE.alertImports imports; a plan,
-// its size).
+// with the 14-day trial (REVERSE_TRIAL.imports imports) and every plan (its size); the free plan
+// keeps the Tariff News alerts only (PRICING.md).
 const TRIGGERS = [
   { title: "A new HTS revision", body: "When a revision changes the rate on one of your products", tone: "primary" as const },
   { title: "An announced tariff", body: "Proclamations, executive orders and Federal Register notices, before they reach the HTS", tone: "warning" as const },
@@ -21,7 +21,7 @@ export const Alerts = () => (
     feature="alerts"
     page="tracker_alerts"
     title="Get Alerts When Tariffs Change on Your Products"
-    teaser={`Alerts come free with your account, on up to ${TRIAL_ALLOWANCE.alertImports} imports.`}
+    teaser={`Every new account gets alerts on up to ${REVERSE_TRIAL.imports} imports free for ${REVERSE_TRIAL.days} days, and Tariff News alerts free, forever.`}
     preview={<TableStandIn columns={["Alert", "Products", "Change", "Date"]} />}
   >
     <div className="flex flex-col gap-4">

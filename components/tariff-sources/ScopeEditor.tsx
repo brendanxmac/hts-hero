@@ -15,7 +15,7 @@ import { adminCall, type UpdateRow } from "./types"
 const toText = (list: string[] | null) => (list ?? []).join("\n")
 const toList = (text: string) => text.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean)
 
-const area = "textarea textarea-bordered min-h-24 border-base-content/15 font-mono text-xs leading-relaxed"
+const area = "textarea min-h-24 border-base-content/15 font-mono text-xs leading-relaxed"
 
 export default function ScopeEditor({ update }: { update: UpdateRow }) {
   const router = useRouter()

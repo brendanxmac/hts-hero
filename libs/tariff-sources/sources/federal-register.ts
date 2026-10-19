@@ -85,11 +85,12 @@ const searchDocuments = async (conditions: [string, string][]) => {
 
 export const federalRegister: Collector = {
   id: "federal_register",
-  collect: async ({ since }) => {
-    const published: [string, string] = ["conditions[publication_date][gte]", isoDay(since)]
+  collect: async ({ since, until, agencies: only }) => {
+    const published: [string, string][] = [["conditions[publication_date][gte]", isoDay(since)]]
+    if (until) published.push(["conditions[publication_date][lte]", isoDay(until)])
     const [presidential, agencies] = await Promise.all([
-      searchDocuments([published, ["conditions[type][]", "PRESDOCU"]]),
-      searchDocuments([published, ...TRADE_AGENCIES.map((slug): [string, string] => ["conditions[agencies][]", slug])]),
+      only ? [] : searchDocuments([...published, ["conditions[type][]", "PRESDOCU"]]),
+      searchDocuments([...published, ...(only ?? TRADE_AGENCIES).map((slug): [string, string] => ["conditions[agencies][]", slug])]),
     ])
     return [...presidential, ...agencies].map(
       (doc): SourceItem => ({
@@ -154,10 +155,10 @@ const piItem = (doc: PiDocument): SourceItem => ({
   },
 })
 
-// Weekdays from `since` through today
-const weekdays = (since: Date) => {
+// Weekdays from `since` through `until` (today unless given)
+const weekdays = (since: Date, until = new Date()) => {
   const days: string[] = []
-  for (const d = new Date(`${isoDay(since)}T12:00:00Z`); d <= new Date(); d.setUTCDate(d.getUTCDate() + 1)) {
+  for (const d = new Date(`${isoDay(since)}T12:00:00Z`); d <= until; d.setUTCDate(d.getUTCDate() + 1)) {
     if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6) days.push(isoDay(d))
   }
   return days
@@ -165,16 +166,16 @@ const weekdays = (since: Date) => {
 
 export const federalRegisterPublicInspection: Collector = {
   id: "federal_register_pi",
-  collect: async ({ since, backfill }) => {
+  collect: async ({ since, until, backfill, agencies }) => {
     const pages = backfill
-      ? await mapLimit(weekdays(since), 4, (day) =>
+      ? await mapLimit(weekdays(since, until), 4, (day) =>
           fetchJson<FrPage<PiDocument>>(`${API}/public-inspection-documents.json?conditions[available_on]=${day}&per_page=1000`)
         )
       : [await fetchJson<FrPage<PiDocument>>(`${API}/public-inspection-documents/current.json`)]
     return pages
       .flatMap((page) => page.results ?? [])
-      .filter(isTradeDocument)
+      .filter((doc) => (agencies ? doc.agencies.some((a) => a.slug && agencies.includes(a.slug)) : isTradeDocument(doc)))
       .map(piItem)
-      .filter((item) => new Date(item.publishedAt) >= since)
+      .filter((item) => new Date(item.publishedAt) >= since && (!until || new Date(item.publishedAt) <= until))
   },
 }

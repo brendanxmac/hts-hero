@@ -8,7 +8,7 @@ export const EngineSection = () => (
   <section id="how-it-works" className={`${mk.band} relative scroll-mt-6 overflow-hidden`} aria-labelledby="engine-title">
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 opacity-60 [background-image:linear-gradient(oklch(var(--b3))_1px,transparent_1px),linear-gradient(90deg,oklch(var(--b3))_1px,transparent_1px)] [background-size:32px_32px]"
+      className="pointer-events-none absolute inset-0 opacity-60 bg-[linear-gradient(var(--color-base-300)_1px,transparent_1px),linear-gradient(90deg,var(--color-base-300)_1px,transparent_1px)] bg-size-[32px_32px]"
     />
     <div className={`${mk.container} relative`}>
       <SectionIntro eyebrow="How it works" title={<>Engineered to get every duty <span className={mk.accent}>exactly right.</span></>} id="engine-title" center>

@@ -19,6 +19,13 @@ copy change below can be restored from it with `git show 3f439dc0:<path>`.
 4. Revisit the price and free-plan constants in `components/pricing-calculator/lib/pricing.ts`
    (see "Prices and allowances").
 
+**Marketing ahead of the Tracker (2026-10-19):** `SAVINGS_AUDITS_MARKETED` in `features.ts`
+brings back the homepage's savings and audit pieces (hero H1 and lead, the scan's Savings and
+Audits passes, the Discover Savings and Audit blocks) while the Tracker's tabs stay off. Each
+carries the "Coming Oct 2026" chip and its self-serve button reads "Coming soon" until
+`SAVINGS_ENABLED` / `AUDITS_ENABLED` are on; the chips and disabled buttons then go away by
+themselves.
+
 ## Prices and allowances
 
 | What | Before | MVP | Where |

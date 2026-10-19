@@ -30,7 +30,7 @@ export function TabBar<T extends string>({
             aria-selected={active}
             title={option.title}
             onClick={() => onChange(option.id)}
-            className={`inline-flex h-11 shrink-0 items-center whitespace-nowrap border-b-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+            className={`inline-flex h-11 shrink-0 items-center whitespace-nowrap border-b-2 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
               active ? "border-primary text-primary" : "border-transparent text-base-content/60 hover:border-base-300 hover:text-base-content"
             }`}
           >

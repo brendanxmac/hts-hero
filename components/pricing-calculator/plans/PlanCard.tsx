@@ -36,11 +36,11 @@ export const PlanCard = ({
     className={`relative flex flex-col overflow-hidden rounded-3xl ${
       dark
         ? "hts-tracker-on-dark bg-base-200 text-base-content shadow-2xl shadow-black/25"
-        : `border bg-base-100 shadow-sm ${featured ? "border-primary ring-2 ring-primary" : "border-base-300"}`
+        : `border bg-base-100 shadow-xs ${featured ? "border-primary ring-2 ring-primary" : "border-base-300"}`
     }`}
   >
     {dark && (
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(36rem_18rem_at_100%_0%,oklch(var(--p)/0.3),transparent)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(36rem_18rem_at_100%_0%,color-mix(in_oklab,var(--color-primary)_30%,transparent),transparent)]" />
     )}
     <div className={`relative flex flex-1 flex-col ${compact ? "gap-5 p-7" : "gap-8 p-8 sm:p-10"}`}>
       <div className={`flex flex-col ${compact ? "gap-1" : "gap-2"}`}>

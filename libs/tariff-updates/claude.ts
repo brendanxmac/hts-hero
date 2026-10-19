@@ -90,8 +90,9 @@ const EXTRACT_SCHEMA = {
   properties: {
     headline: { type: "string" },
     summary: { type: "string" },
-    kind: { type: "string", enum: Object.keys(KINDS).filter((k) => k !== "hts_revision") },
-    authority: { type: "string", enum: Object.keys(AUTHORITIES).filter((a) => a !== "hts") },
+    // HTS revisions and AD/CVD cases get their updates elsewhere (libs/adcvd), never from this reader
+    kind: { type: "string", enum: Object.keys(KINDS).filter((k) => k !== "hts_revision" && k !== "ad_cvd") },
+    authority: { type: "string", enum: Object.keys(AUTHORITIES).filter((a) => a !== "hts" && a !== "ad_cvd") },
     countries: { type: "array", items: { type: "string" } },
     hts_codes: { type: "array", items: { type: "string" } },
     products: { type: ["string", "null"], description: "What's covered, in a few words" },

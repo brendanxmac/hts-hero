@@ -8,7 +8,8 @@ export const maxDuration = 300
 
 // Current state of an attempt. Also advances it: checks datalab for finished
 // conversions and parses once everything has converted.
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

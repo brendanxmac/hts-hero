@@ -44,7 +44,7 @@ export const RefundTimeline = ({ verifiedFrom }: { verifiedFrom: string }) => (
       return (
         <>
           {/* Theme and marketing colors at runtime positions (DESIGN_SYSTEM §10, §14) */}
-          <rect x={x.at(verifiedFrom)} y={0} width={Math.max(0, innerWidth - x.at(verifiedFrom))} height={110} rx={10} style={{ fill: "oklch(var(--p) / 0.08)" }} />
+          <rect x={x.at(verifiedFrom)} y={0} width={Math.max(0, innerWidth - x.at(verifiedFrom))} height={110} rx={10} style={{ fill: "color-mix(in oklab, var(--color-primary) 8%, transparent)" }} />
           <text x={x.at(verifiedFrom) + 10} y={-8} className="fill-primary text-xs font-bold">
             Verified by HTS Hero from{" "}
             {new Date(`${verifiedFrom}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}

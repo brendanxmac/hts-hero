@@ -52,7 +52,7 @@ export const TrackerTierPicker = ({
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(option)}
             onKeyDown={(event) => onKeyDown(event, index)}
-            className={`flex min-w-0 flex-col items-center gap-0.5 rounded-xl px-1 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
+            className={`flex min-w-0 flex-col items-center gap-0.5 rounded-xl px-1 py-3 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60 ${
               active ? "bg-base-100 text-base-content skin:bg-primary skin:text-primary-content" : "text-base-content/70 hover:bg-base-content/10"
             }`}
           >

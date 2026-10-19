@@ -1,13 +1,15 @@
 "use client";
 
 import * as mk from "@/components/ui/marketing/styles";
+import { FREE_FOREVER_SHORT } from "@/components/ui/marketing/comingSoon";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { PAIRS_SLIDER_MAX_PAIRS, pairsAt, positionOf } from "../lib/pairsScale";
 import {
   Billing,
+  REVERSE_TRIAL,
   TRACKER_MAX_LISTED_PAIRS,
   TRACKER_TIERS,
-  TRIAL_ALLOWANCE,
+  formatPerImport,
   formatPrice,
   monthlyRate,
   trackerBilling,
@@ -36,10 +38,11 @@ export const TrackerControls = ({
       key: String(t.maxPairs),
       label: `Up to ${t.maxPairs}`,
       price: formatPrice(monthlyRate(t.price, trackerBilling(billing))),
+      perImport: formatPerImport({ price: monthlyRate(t.price, trackerBilling(billing)), maxPairs: t.maxPairs }),
       pairs: t.maxPairs,
       active: tier === t,
     })),
-    { key: "custom", label: `${TRACKER_MAX_LISTED_PAIRS}+`, price: "Let's talk", pairs: CUSTOM_PAIRS, active: !tier },
+    { key: "custom", label: `${TRACKER_MAX_LISTED_PAIRS}+`, price: "Let's talk", perImport: null as string | null, pairs: CUSTOM_PAIRS, active: !tier },
   ];
 
   return (
@@ -51,7 +54,8 @@ export const TrackerControls = ({
           </label>
           <p className={`${mk.small} mt-1 max-w-md leading-relaxed`}>
             One HTS code from one country of origin. The same code from China and Vietnam is two imports.
-            Every account tracks {TRIAL_ALLOWANCE.alertImports} imports free, with alerts and impact checks on each, no credit card.
+            Every new account gets the Tracker free for {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports} imports, no credit card,
+            then {FREE_FOREVER_SHORT} stay free, forever.
             {!TRACKER_ANNUAL_ENABLED && " Tracker plans are billed monthly."}
           </p>
         </div>
@@ -68,7 +72,7 @@ export const TrackerControls = ({
           onChange={(e) => onPairsChange(pairsAt(Number(e.target.value)))}
           aria-label="Imports (HTS code + country pairs)"
           aria-valuetext={pairs >= PAIRS_SLIDER_MAX_PAIRS ? `${pairs}+ imports` : `${pairs} imports`}
-          className="h-2 w-full cursor-pointer rounded-full accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-4"
+          className="h-2 w-full cursor-pointer rounded-full accent-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-4"
         />
         <div
           role="radiogroup"
@@ -82,7 +86,7 @@ export const TrackerControls = ({
               role="radio"
               aria-checked={t.active}
               onClick={() => onPairsChange(t.pairs)}
-              className={`flex flex-col items-start gap-0.5 rounded-xl border px-3.5 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 ${
+              className={`flex flex-col items-start gap-0.5 rounded-xl border px-3.5 py-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 ${
                 t.active ? "border-primary bg-primary/10 ring-1 ring-primary" : "border-base-300 bg-base-100 hover:border-base-300 hover:bg-tt-soft"
               }`}
             >
@@ -92,6 +96,7 @@ export const TrackerControls = ({
               <span className={`text-base font-semibold tabular-nums ${t.active ? "text-primary" : "text-base-content"}`}>
                 {t.price}
               </span>
+              {t.perImport && <span className="text-xs tabular-nums text-base-content/50">{t.perImport}</span>}
             </button>
           ))}
         </div>

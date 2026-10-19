@@ -250,7 +250,7 @@ export const VerticalCandidateElement = ({
 
         {/* Description */}
         <p
-          className={`text-sm md:text-base leading-relaxed ${isLevelSelection
+          className={`text-sm md:text-base md:leading-6 leading-relaxed ${isLevelSelection
             ? "font-semibold text-base-content"
             : "font-medium text-base-content/80"
             }`}

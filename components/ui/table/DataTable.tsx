@@ -4,7 +4,8 @@ import { useInCard } from "@/components/ui/Card";
 import "./meta";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { ChevronDownIcon, ChevronUpDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
-import { flexRender, Header, Row, Table } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
+import type { DataTableInstance, TableHeader, TableRow } from "./features";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as ui from "@/components/ui/styles";
 import * as s from "./styles";
@@ -29,7 +30,7 @@ const SortIcon = ({ dir }: { dir: false | "asc" | "desc" }) =>
     <ChevronUpDownIcon className="h-3.5 w-3.5 opacity-40" aria-hidden />
   );
 
-const HeaderCell = <T,>({ header, first, last, top }: { header: Header<T, unknown>; first: boolean; last: boolean; top: boolean }) => {
+const HeaderCell = <T,>({ header, first, last, top }: { header: TableHeader<T, unknown>; first: boolean; last: boolean; top: boolean }) => {
   const meta = header.column.columnDef.meta;
   const align = s.ALIGN[meta?.align ?? "left"];
   const dir = header.column.getIsSorted();
@@ -48,7 +49,7 @@ const HeaderCell = <T,>({ header, first, last, top }: { header: Header<T, unknow
         <button
           type="button"
           onClick={header.column.getToggleSortingHandler()}
-          className={`inline-flex items-center gap-1 whitespace-nowrap rounded uppercase tracking-wider hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          className={`inline-flex items-center gap-1 whitespace-nowrap rounded uppercase tracking-wider hover:text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
             meta?.align === "right" ? "flex-row-reverse" : ""
           } ${dir ? "text-base-content" : ""}`}
         >
@@ -69,7 +70,7 @@ const BodyRow = <T,>({
   measure,
   index,
 }: {
-  row: Row<T>;
+  row: TableRow<T>;
   onRowClick?: (row: T) => void;
   rowClassName?: (row: T) => string;
   // Virtualized: the virtualizer measures each drawn row's real height
@@ -129,7 +130,7 @@ export const DataTable = <T,>({
   virtualizeFrom = 300,
   estimateRowHeight = 72,
 }: {
-  table: Table<T>;
+  table: DataTableInstance<T>;
   // What the table is, for screen readers
   label: string;
   onRowClick?: (row: T) => void;
@@ -169,7 +170,7 @@ export const DataTable = <T,>({
         {/* The last row's corner cells round with the card, so a hover never paints past it */}
         <table
           ref={tableRef}
-          className={`${s.table} [&_tbody>tr:last-child>*:first-child]:rounded-bl-lg [&_tbody>tr:last-child>*:last-child]:rounded-br-lg tracker:[&_tbody>tr:last-child>*:first-child]:rounded-bl-[1.25rem] tracker:[&_tbody>tr:last-child>*:last-child]:rounded-br-[1.25rem]`}
+          className={`${s.table} [&_tbody>tr:last-child>*:first-child]:rounded-bl-lg [&_tbody>tr:last-child>*:last-child]:rounded-br-lg [&_tbody>tr:last-child>*:first-child]:tracker:rounded-bl-[1.25rem] [&_tbody>tr:last-child>*:last-child]:tracker:rounded-br-[1.25rem]`}
           aria-label={label}
           aria-rowcount={rows.length + 1}
         >

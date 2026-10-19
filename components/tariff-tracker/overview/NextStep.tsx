@@ -157,7 +157,7 @@ export const NextStep = () => {
           {step.done && <CheckIcon className="h-3 w-3" />}
         </span>
         <span
-          className={`whitespace-nowrap text-xs font-semibold ${step.done ? "text-base-content/50 line-through decoration-base-content/30" : isNext ? "text-primary" : "text-base-content/70"
+          className={`whitespace-nowrap text-xs font-semibold ${step.done ? "text-base-content/60 line-through decoration-base-content/30" : isNext ? "text-primary" : "text-base-content/70"
             }`}
         >
           {step.label}
@@ -177,7 +177,7 @@ export const NextStep = () => {
             type="button"
             onClick={c.go}
             title={c.payoff}
-            className="flex items-center gap-1.5 rounded-full px-1 py-0.5 transition-colors hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            className="flex items-center gap-1.5 rounded-full px-1 py-0.5 transition-colors hover:bg-tt-soft focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             {inner}
           </button>

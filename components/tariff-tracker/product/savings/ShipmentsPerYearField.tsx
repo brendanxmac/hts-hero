@@ -24,7 +24,7 @@ export const ShipmentsPerYearField = ({ productKey }: { productKey: string }) =>
         min={1}
         step={1}
         inputMode="numeric"
-        className="h-8 w-20 rounded-full border border-base-300 bg-base-100 px-3 text-right text-sm tabular-nums text-base-content focus:outline-none focus:ring-2 focus:ring-primary/40"
+        className="h-8 w-20 rounded-full border border-base-300 bg-base-100 px-3 text-right text-sm tabular-nums text-base-content focus:outline-hidden focus:ring-2 focus:ring-primary/40"
         value={text}
         placeholder="1"
         onChange={(e) => change(e.target.value)}

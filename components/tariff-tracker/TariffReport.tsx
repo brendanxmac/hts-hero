@@ -46,7 +46,7 @@ export const TariffReport = ({
                     <input
                       id="tt-date"
                       type="date"
-                      className="h-7 rounded-full bg-transparent px-1 text-sm font-semibold tabular-nums text-base-content outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                      className="h-7 rounded-full bg-transparent px-1 text-sm font-semibold tabular-nums text-base-content outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
                       value={entryDate}
                       onChange={(e) => setEntryDate(e.target.value)}
                     />
@@ -67,7 +67,7 @@ export const TariffReport = ({
                       <EllipsisHorizontalIcon className="h-4 w-4" aria-hidden />
                       <span className="sr-only">More import actions</span>
                     </Menu.Button>
-                    <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-56 rounded-2xl p-2 focus:outline-none`}>
+                    <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-56 rounded-2xl p-2 focus:outline-hidden`}>
                       <Menu.Item>
                         {({ active }) => (
                           <button

@@ -24,7 +24,7 @@ const POINTS: { Icon: typeof Squares2X2Icon; text: string }[] = [
   { Icon: Squares2X2Icon, text: "Today's duty rate on every product, and the tariffs behind it" },
   { Icon: AdjustmentsHorizontalIcon, text: "Adjust each one to match your shipments and exemptions" },
   { Icon: FunnelIcon, text: "Filter by country of origin and HTS chapter, and export it all" },
-  { Icon: BellAlertIcon, text: "Coming soon: alerts when a tariff change hits one of your products" },
+  { Icon: BellAlertIcon, text: "Alerts when a tariff change hits one of your products, with the rate before and after" },
 ];
 
 const Option = ({

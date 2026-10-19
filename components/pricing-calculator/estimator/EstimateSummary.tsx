@@ -3,15 +3,26 @@
 import Link from "next/link";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
+import { FREE_FOREVER_LINE } from "@/components/ui/marketing/comingSoon";
 import { BillingSwitch } from "@/components/ui/marketing";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { estimateEmailBody } from "../lib/estimateEmail";
 import { LINKS, contactLink, estimateUrl } from "../lib/links";
-import { Billing, Estimate, TRACKER_MAX_LISTED_PAIRS, formatPrice } from "../lib/pricing";
+import {
+  Billing,
+  Estimate,
+  LAUNCH_PRICING,
+  REVERSE_TRIAL,
+  TRACKER_MAX_LISTED_PAIRS,
+  formatPerImport,
+  formatPrice,
+  launchPricingActive,
+  trackerTierFor,
+} from "../lib/pricing";
 import { CopyLinkButton } from "./CopyLinkButton";
 
 const ghostOnDark =
-  "inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg px-5 text-base font-semibold text-base-content/70 transition-colors hover:bg-base-content/10 hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60";
+  "inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg px-5 text-base font-semibold text-base-content/70 transition-colors hover:bg-base-content/10 hover:text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60";
 
 // The running total beside the estimator: a line per product, the monthly total and what
 // annual billing saves. While Tracker annual billing is off (MVP_TRIM.md), the Tracker line stays
@@ -21,8 +32,11 @@ export const EstimateSummary = ({
   billing,
   onBillingChange,
   query,
+  pairs,
 }: {
   est: Estimate;
+  // The imports the Tracker covers, for its per-import price
+  pairs: number;
   billing: Billing;
   onBillingChange: (billing: Billing) => void;
   query: string;
@@ -34,6 +48,12 @@ export const EstimateSummary = ({
   const annual = billing === "annual" && canBillAnnually;
   const annualTotal = (est.monthly - (monthlyTracker?.monthly ?? 0)) * 12;
   const needsConversation = est.lines.some((line) => line.viaSales);
+  // Every new account starts the Tracker's 14-day trial (REVERSE_TRIAL), so a plan with it leads with the trial
+  const hasTracker = est.lines.some((line) => line.id === "tracker");
+  // What the Tracker plan comes to per import, per month (its price over the imports it covers)
+  const trackerTier = trackerTierFor(pairs);
+  const trackerPerImport = (monthly: number | null) =>
+    trackerTier && monthly ? formatPerImport({ price: monthly, maxPairs: trackerTier.maxPairs }) : null;
   const emailLink = contactLink("My HTS Hero plan", estimateEmailBody(est, billing, estimateUrl(query)));
 
   return (
@@ -43,7 +63,7 @@ export const EstimateSummary = ({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(36rem_18rem_at_100%_0%,oklch(var(--p)/0.3),transparent)]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(36rem_18rem_at_100%_0%,color-mix(in_oklab,var(--color-primary)_30%,transparent),transparent)]"
       />
 
       <div className="flex flex-col gap-4 px-6 pt-6 sm:px-7 sm:pt-7">
@@ -86,7 +106,7 @@ export const EstimateSummary = ({
                 Billed monthly.{" "}
                 <button
                   type="button"
-                  className="rounded font-semibold text-primary underline decoration-primary/40 decoration-2 underline-offset-4 tabular-nums hover:decoration-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+                  className="rounded-sm font-semibold text-primary underline decoration-primary/40 decoration-2 underline-offset-4 tabular-nums hover:decoration-primary/40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60"
                   onClick={() => onBillingChange("annual")}
                 >
                   Save {formatPrice(est.annualSavings)} a year with annual billing
@@ -114,7 +134,12 @@ export const EstimateSummary = ({
                 ) : line.monthly === null ? (
                   <span className="text-primary">Let&apos;s talk</span>
                 ) : (
-                  formatPrice(line.monthly)
+                  <>
+                    {formatPrice(line.monthly)}
+                    {line.id === "tracker" && trackerPerImport(line.monthly) && (
+                      <span className="block text-right text-xs font-normal text-base-content/50">{trackerPerImport(line.monthly)}</span>
+                    )}
+                  </>
                 )}
               </p>
             </li>
@@ -145,8 +170,16 @@ export const EstimateSummary = ({
               aria-disabled={isEmpty}
               className={`${mk.buttonOnDark} w-full ${isEmpty ? "pointer-events-none opacity-50" : ""}`}
             >
-              Get started
+              {hasTracker ? `Start your free ${REVERSE_TRIAL.days}-day trial` : "Get started"}
             </Link>
+            {hasTracker && (
+              <p className="m-0 text-center text-xs leading-relaxed text-base-content/60">
+                No credit card.{" "}
+                {launchPricingActive()
+                  ? `Subscribe before ${LAUNCH_PRICING.endsDay} and lock in launch pricing for as long as you stay subscribed.`
+                  : FREE_FOREVER_LINE}
+              </p>
+            )}
             {!isEmpty && (
               <a href={emailLink} className={ghostOnDark}>
                 Email us this estimate

@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useMemo } from "react";
+import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import { TimeStepChart } from "@/components/ui/charts/kit";
 import * as tt from "@/components/ui/styles/tracker";
 import { shortDate } from "../../../duty-calculator/rate-history/format";
@@ -9,7 +10,7 @@ import { signedRate } from "../../impact/format";
 import { FilterState } from "../../filters";
 import { averageMove, breakdown, changeCauses, importMoves, InsightsInput, trendSeries, yearAgo } from "../lib/data";
 import { Fill } from "../charts";
-import { importsFilter, InsightPanel, ShowInImports, useShowInImports } from "../shared";
+import { importsFilter, InsightPanel, NavArrow, NavArrowSpace, ShowInImports, useShowInImports } from "../shared";
 
 // How much of the catalog changed in the last 12 months: the average rate then and now, how many
 // imports went up or down, and the tariffs that moved them
@@ -68,8 +69,16 @@ export const LastTwelveMonths = ({ input }: { input: InsightsInput }) => {
         </div>
         <div className={`${tt.tile} px-4 py-3`}>
           <span className="text-xs text-base-content/60">Imports moved</span>
-          <div className={tt.metricSm}>
-            <span className="text-error">{up}↑</span> <span className="text-success">{down}↓</span>
+          {/* Each count with its arrow, sized to the number (em) and centered on it */}
+          <div className={`${tt.metricSm} flex items-center gap-4`}>
+            <span className="inline-flex items-center gap-1 text-error" aria-label={`${up} up`}>
+              {up}
+              <ArrowUpIcon className="h-[0.85em] w-[0.85em]" aria-hidden />
+            </span>
+            <span className="inline-flex items-center gap-1 text-success" aria-label={`${down} down`}>
+              {down}
+              <ArrowDownIcon className="h-[0.85em] w-[0.85em]" aria-hidden />
+            </span>
           </div>
         </div>
       </div>
@@ -118,11 +127,15 @@ const CauseRow = ({ filters, onShow, children }: { filters: FilterState | null; 
       type="button"
       title="Show these imports in Your Imports"
       onClick={() => onShow(filters)}
-      className={`${row} hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
+      className={`${row} group hover:bg-tt-soft focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40`}
     >
-      {children}
+      <span className="flex min-w-0 flex-1 items-center justify-between gap-3">{children}</span>
+      <NavArrow />
     </button>
   ) : (
-    <div className={row}>{children}</div>
+    <div className={row}>
+      <span className="flex min-w-0 flex-1 items-center justify-between gap-3">{children}</span>
+      <NavArrowSpace />
+    </div>
   );
 };

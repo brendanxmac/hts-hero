@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { useUser } from "@/contexts/UserContext";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { signupHref } from "@/components/tariff-tracker/access/signup";
 import * as ui from "@/components/ui/styles";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
@@ -34,7 +34,7 @@ export const TrackImportButton = ({ f, size = "md" }: { f: TariffFinder; size?: 
         }}
       >
         <PlusIcon className="h-4 w-4" aria-hidden />
-        Get Alerts &amp; News
+        Get Alerts, Insights &amp; News
       </a>
       {track.dialog}
     </>
@@ -84,11 +84,11 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
     <ConversionDialog
       open={open}
       view="account"
-      account={pitch ?? { title: "Get alerts and news for this import, free", highlight: SAVINGS_ENABLED ? "savings" : "alerts", cta: "Create my free account" }}
+      account={pitch ?? { title: `Get alerts and news for this import, free for ${REVERSE_TRIAL.days} days`, highlight: SAVINGS_ENABLED ? "savings" : "alerts", cta: "Create my free account" }}
       accountNote={
         SAVINGS_ENABLED
           ? `This import is saved to your Tracker, with ${TRIAL_ALLOWANCE.savingsChecks} free savings checks and ${TRIAL_ALLOWANCE.auditChecks} free entry audits.`
-          : `This import is saved to your Tracker, one of ${TRIAL_ALLOWANCE.alertImports} you can track free.`
+          : `This import is saved to your Tracker, with the full Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports.`
       }
       onClose={() => setOpen(false)}
       onCreateAccount={() => {

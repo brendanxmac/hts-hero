@@ -69,18 +69,19 @@ export const MicroCalculator = ({
 
   const shown = country && estimate?.country === country.code ? estimate : null;
 
-  // One lookup for each country shown, like the calculator's own. The first is the page's own
-  // estimate; later ones are countries the visitor picked.
+  // One lookup for each country the visitor picks. The page's own estimate shows on load without
+  // them doing anything, so it isn't counted.
   const lastViewed = useRef<string | null>(null);
   useEffect(() => {
     if (!shown || lastViewed.current === shown.country) return;
     const first = lastViewed.current === null;
     lastViewed.current = shown.country;
+    if (first && shown === initial) return;
     trackEvent(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
       hts_code: htsno,
       country_code: shown.country,
       surface: surface(),
-      country_source: first && shown === initial ? "default" : "user",
+      country_source: "user",
     });
     // surface() only reads where the page is
     // eslint-disable-next-line react-hooks/exhaustive-deps

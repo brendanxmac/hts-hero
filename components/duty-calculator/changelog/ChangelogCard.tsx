@@ -8,7 +8,7 @@ import { CHANGELOG_PATH } from "./constants";
 export const ChangelogCard = ({ entries, dark = false }: { entries: ChangelogEntry[]; dark?: boolean }) => (
   <section
     aria-labelledby="changelog-card-title"
-    className={`${dark ? `${mk.cardDark} backdrop-blur-sm` : mk.card} w-full p-6`}
+    className={`${dark ? `${mk.cardDark} backdrop-blur-xs` : mk.card} w-full p-6`}
   >
     <h2 id="changelog-card-title" className={`text-xs font-bold uppercase tracking-wider ${dark ? "text-slate-400" : "text-slate-500"}`}>
       Latest updates

@@ -60,7 +60,7 @@ export const EntryAudit = () => {
       teaser={`Every account gets ${TRIAL_ALLOWANCE.auditChecks} free audit checks.`}
       points={section.planned}
       preview={<TableStandIn columns={["Entry", "Product", "Paid", "Owed"]} />}
-      minHeight="min-h-[28rem]"
+      minHeight="min-h-112"
     >
       <AuditReport />
     </AccountGate>

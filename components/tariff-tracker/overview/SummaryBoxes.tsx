@@ -17,7 +17,7 @@ import { useTracker } from "../TrackerContext";
 import { useTrackerAccess } from "../access/accessContext";
 import { useTariffHealth } from "./TariffHealth";
 import { useTariffUpdates, type TrackerUpdate } from "./useTariffUpdates";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
+import { AUDITS_ENABLED, SAVINGS_ENABLED, SAVINGS_AUDITS_LABEL } from "@/libs/tariff-tracker/features";
 
 // The Overview's summaries of the Tracker's other pages (DESIGN_SYSTEM §15): Tariff health, the
 // latest tariff impacts on the user's imports and the latest tariff news, side by side. Each is the
@@ -191,7 +191,7 @@ export const HealthSummary = () => {
         {!full && (
           <li className="flex items-baseline justify-between gap-3 border-t border-base-300 pt-3 text-sm">
             <span className="text-base-content/60">Savings and Audits</span>
-            <span className={ui.badge("neutral")}>Coming soon</span>
+            <span className={tt.chip("warning")}>{SAVINGS_AUDITS_LABEL}</span>
           </li>
         )}
       </ul>
@@ -277,7 +277,7 @@ export const ImpactsSummary = () => {
                         <span className="text-warning">May apply</span>
                       ) : Math.abs(rateChange(i)) > 0.005 ? (
                         <>
-                          <span className="text-base-content/50">{formatRate(i.beforePct!)} → </span>
+                          <span className="text-base-content/60">{formatRate(i.beforePct!)} → </span>
                           <span className={`font-semibold ${g === "up" ? "text-error" : "text-success"}`}>{formatRate(i.afterPct!)}</span>
                         </>
                       ) : (

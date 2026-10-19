@@ -42,7 +42,7 @@ export const QuickLookup = () => {
             onChange={(e) => setCode(e.target.value)}
             inputMode="decimal"
             placeholder="e.g. 6109.10.00"
-            className="h-9 w-full bg-transparent text-lg text-base-content placeholder:text-base-content/40 focus:outline-none"
+            className="h-9 w-full bg-transparent text-lg text-base-content placeholder:text-base-content/40 focus:outline-hidden"
           />
         </label>
         <label className="flex min-w-0 flex-col border-base-300 px-2 sm:w-52 sm:border-l sm:pl-4">
@@ -53,7 +53,7 @@ export const QuickLookup = () => {
             options={ORIGINS.map((c) => ({ value: c.code, label: c.name }))}
             variant="ghost"
             className="w-full"
-            buttonClassName="!h-9 !px-0 !text-lg hover:!bg-transparent"
+            buttonClassName="h-9! px-0! text-lg! hover:bg-transparent!"
             menuClassName="w-64"
           />
         </label>

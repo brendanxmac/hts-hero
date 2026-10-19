@@ -16,7 +16,7 @@ import { Overview, TOP_SUPPLIERS } from "./useOverview";
 // news about it. Rates lead and dollars follow; savings are always "could" (the importer may not
 // qualify).
 
-export type OverviewTab = "duty" | "compare" | "history";
+export type OverviewTab = "duty" | "adcvd" | "compare" | "history" | "news";
 
 export const pct = (n: number) => (n < 0.005 ? "Free" : formatPct(Math.round(n * 100) / 100));
 
@@ -47,7 +47,7 @@ export const DetailsLink = ({ label, onClick }: { label: string; onClick: () => 
 // Nothing could lower it: good news, said so (green is money and done here), at the height of the
 // options it stands in for, so the two halves still line up
 const AllGood = ({ title, body }: { title: string; body: string }) => (
-  <div className="flex min-h-[4.75rem] items-center gap-3 rounded-xl bg-success/10 px-4 py-3">
+  <div className="flex min-h-19 items-center gap-3 rounded-xl bg-success/10 px-4 py-3">
     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success text-success-content" aria-hidden>
       <CheckBadgeIcon className="h-5 w-5" />
     </span>
@@ -60,7 +60,7 @@ const AllGood = ({ title, body }: { title: string; body: string }) => (
 
 // One option, an adjustment or a country: a row between thin rules, at least two lines of title
 // tall, so the two lists beside each other line up row for row
-const TILE = "flex min-h-[4.75rem] items-center gap-2.5 py-2.5";
+const TILE = "flex min-h-19 items-center gap-2.5 py-2.5";
 const OPTIONS = "m-0 flex list-none flex-col divide-y divide-base-300 border-y border-base-300 p-0";
 
 export const PayLess = ({
@@ -327,7 +327,7 @@ export const RateSources = ({ o, colors, canSee, onLocked }: { o: Overview; colo
         {charges.map((c) => (
           <li key={c.code} className="grid grid-cols-[0.75rem_4.5rem_minmax(0,1fr)] items-baseline gap-x-3 border-t border-base-300 py-3 first:border-t-0 first:pt-0">
             {/* Part color (DESIGN_SYSTEM §10) */}
-            <span className="h-3 w-3 self-center rounded-sm" style={{ background: colors[c.slice] }} aria-hidden />
+            <span className="h-3 w-3 self-center rounded-xs" style={{ background: colors[c.slice] }} aria-hidden />
             <span className={`${tt.display} text-xl font-semibold tabular-nums text-base-content`}>{pct(c.pct)}</span>
             <span className="min-w-0">
               <span className="block font-semibold text-base-content">{c.name}</span>

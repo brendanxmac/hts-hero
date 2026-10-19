@@ -47,7 +47,7 @@ export const StatementRow = ({
                 <Swatch color={link?.color} />
                 {code}
               </span>
-              <span className={`text-base font-medium text-base-content ${change?.kind === "removed" ? "line-through decoration-base-content/40 text-base-content/50" : ""}`}>
+              <span className={`text-base font-medium text-base-content ${change?.kind === "removed" ? "line-through decoration-base-content/40 text-base-content/60" : ""}`}>
                 {name}
               </span>
               {change && <ChangeBadge change={change} amount={amount} />}

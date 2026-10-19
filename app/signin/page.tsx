@@ -17,6 +17,7 @@ import { THEME } from "@/components/ui/theme";
 import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import PasswordRequirements from "@/components/PasswordRequirements";
 
 // Component that uses useSearchParams wrapped in Suspense
@@ -248,7 +249,7 @@ function LoginContent() {
       : showOtpForm
         ? "We'll email you a one-time passcode. No password needed."
         : isSignUp
-          ? "Free to start. Track your imports and get alerts when their duty changes."
+          ? `Free for ${REVERSE_TRIAL.days} days: the full Tariff Tracker on up to ${REVERSE_TRIAL.imports} imports, no credit card. Then Tariff News alerts stay free, forever.`
           : "Welcome back. Pick up where you left off.";
 
   return (
@@ -259,7 +260,7 @@ function LoginContent() {
         <div className="flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            className="flex items-center gap-2 rounded-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             <Image src={logo} alt={`${config.appName} logo`} width={28} height={28} priority />
             <span className={`${tt.display} text-lg font-semibold text-base-content`}>{config.appName}</span>

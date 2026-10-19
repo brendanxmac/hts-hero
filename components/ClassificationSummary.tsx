@@ -80,11 +80,11 @@ export const ClassificationSummary = ({
           }
         />
         {/* Subtle gradient overlay on hover */}
-        {/* <div className="absolute inset-0 z-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" /> */}
+        {/* <div className="absolute inset-0 z-0 bg-linear-to-r from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" /> */}
 
         {/* Deleting overlay */}
         {isDeleting && (
-          <div className="absolute inset-0 bg-error/10 backdrop-blur-sm flex items-center justify-center rounded-2xl z-20">
+          <div className="absolute inset-0 bg-error/10 backdrop-blur-xs flex items-center justify-center rounded-2xl z-20">
             <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-base-100 shadow-lg">
               <span className="loading loading-spinner loading-sm text-error"></span>
               <span className="text-sm font-semibold text-error">
@@ -94,7 +94,7 @@ export const ClassificationSummary = ({
           </div>
         )}
 
-        <div className="relative z-[1] p-5 pointer-events-none">
+        <div className="relative z-1 p-5 pointer-events-none">
           {/* Top Row: HTS Code + Status Badges */}
           <div className="flex items-start justify-between gap-4 mb-3">
             <div className="flex items-center gap-2">
@@ -219,7 +219,7 @@ export const ClassificationSummary = ({
       {showDeleteModal &&
         createPortal(
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50"
             onClick={(e) => {
               e.stopPropagation();
               setShowDeleteModal(false);

@@ -12,6 +12,7 @@ export type PremiumFeature =
       | "alerts"
       | "entries"
       | "sourcing"
+      | "insights"
       | "expert-help"
     >
   | "tracking"
@@ -48,6 +49,10 @@ export const PREMIUM_FEATURES: Record<
     name: "Sourcing",
     benefit: "Find the countries with the lowest duty on each of your products",
   },
+  insights: {
+    name: "Insights",
+    benefit: "See where the duty on your imports comes from, what moved it, and your most exposed imports and countries",
+  },
   "expert-help": {
     name: "Expert help",
     benefit: "Work with the HTS Hero team on your tariff strategy",
@@ -83,6 +88,7 @@ export const PREMIUM_INCLUDES = [
   ...(AUDITS_ENABLED ? ["Unlimited audit checks: what you paid on past entries against what you owed"] : []),
   "Alerts when a tariff change hits any import your plan tracks, and by how much",
   "Impact checks: see exactly how any tariff action affects each import",
+  "Insights across your whole catalog: where the duty comes from and what moved it",
   "Tariff News: every tariff action from CBP, the Federal Register, USTR, USITC and the White House",
   "Rate history for all your imports",
   "Export every tariff on every import to CSV or Excel, or share reports with your team or broker",

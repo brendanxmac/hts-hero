@@ -63,7 +63,7 @@ export const ChangeSummary = ({
         )}
       </div>
       {onClear && (
-        <button type="button" className="rounded p-1 text-base-content/50 hover:bg-base-300 hover:text-base-content" aria-label="Hide the changes" onClick={onClear}>
+        <button type="button" className="rounded-sm p-1 text-base-content/60 hover:bg-base-300 hover:text-base-content" aria-label="Hide the changes" onClick={onClear}>
           <XMarkIcon className="h-4 w-4" />
         </button>
       )}

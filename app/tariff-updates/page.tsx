@@ -80,7 +80,7 @@ export default async function TariffUpdatesPage() {
           <header className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
             <div className="flex max-w-3xl flex-col gap-4">
               <span className={tt.eyebrow("primary")}>US tariff updates</span>
-              <h1 className={`${tt.display} text-4xl font-semibold leading-tight text-base-content sm:text-5xl`}>Latest US Tariff Updates</h1>
+              <h1 className={`${tt.display} text-4xl font-semibold leading-tight text-base-content sm:text-5xl sm:leading-none`}>Latest US Tariff Updates</h1>
               <p className="text-base leading-relaxed text-base-content/70">{UPDATES_DEFINITION}</p>
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-base-content/60">
                 <span>

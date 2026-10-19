@@ -80,8 +80,8 @@ const WhereItSits = ({ element }: { element: HtsElement }) => {
     <span className="flex min-w-0 flex-wrap items-center gap-1 text-xs text-base-content/60">
       {steps.map((step, i) => (
         <Fragment key={i}>
-          {i > 0 && <ChevronRightIcon className="h-3 w-3 shrink-0 text-base-content/40" aria-hidden />}
-          <span title={step.title} className={`max-w-[14rem] truncate ${"code" in step && step.code ? mono.className : ""}`}>
+          {i > 0 && <ChevronRightIcon className="h-3 w-3 shrink-0 text-base-content/50" aria-hidden />}
+          <span title={step.title} className={`max-w-56 truncate ${"code" in step && step.code ? mono.className : ""}`}>
             {step.label}
           </span>
         </Fragment>

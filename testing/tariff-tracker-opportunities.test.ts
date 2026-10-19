@@ -50,7 +50,7 @@ describe("Tariff Tracker: savings tallies", () => {
 })
 
 describe("Tariff Tracker: origin supply (Census)", () => {
-  const imports = { year: 2025, prior: 2024, level: 10 as const, byCountry: new Map([["VN", { value: 5_000_000, prior: 4_000_000 }], ["MX", { value: 0, prior: 10 }]]) }
+  const imports = { year: 2025, prior: 2024, level: 10 as const, totalValue: 5_000_000, byCountry: new Map([["VN", { value: 5_000_000, prior: 4_000_000 }], ["MX", { value: 0, prior: 10 }]]) }
 
   it("a country the US imported the product from is proven", () => {
     expect(supplyOf(imports, "VN")).toBe("proven")

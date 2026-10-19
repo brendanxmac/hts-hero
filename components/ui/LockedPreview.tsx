@@ -57,9 +57,9 @@ export const LockedPreview = ({
   return (
     // No card of its own inside a card's sections (CardSections): it's one of them
     // At most a screen of the preview: enough to see what's behind it, never a page of blur
-    <section className={`${framed && !inCard ? `${ui.card} ` : ""}relative max-h-[44rem] overflow-clip ${minHeight}`} aria-label={title}>
+    <section className={`${framed && !inCard ? `${ui.card} ` : ""}relative max-h-176 overflow-clip ${minHeight}`} aria-label={title}>
       {/* Behind the blur: nothing in it can be read by assistive tech, selected or focused */}
-      <div ref={behind} className={`pointer-events-none select-none opacity-60 blur-sm ${framed ? "p-5" : ""}`} aria-hidden>
+      <div ref={behind} className={`pointer-events-none select-none opacity-60 blur-xs ${framed ? "p-5" : ""}`} aria-hidden>
         {preview}
       </div>
       {/* Near the top, and in view while scrolling past a tall preview */}

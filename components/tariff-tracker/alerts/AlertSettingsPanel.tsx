@@ -9,7 +9,9 @@ import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
 import type { Kind } from "@/libs/tariff-updates/types";
 import { ALERT_KIND_OPTIONS, DEFAULT_ALERT_KINDS } from "./alertPrefs";
-import { AlertSettings, settingsOn, SLACK_PREFIX, useAlertSettings } from "./AlertSettingsContext";
+import { AlertSettings, settingsOn, useAlertSettings } from "./AlertSettingsContext";
+import { SlackConnect } from "./SlackConnect";
+import { TeamsConnect } from "./TeamsConnect";
 
 // Where tariff alerts go (email, a Slack channel, a Microsoft Teams channel) and which kinds of
 // tariff update set one off. Alerts are on from the start; turning every channel off asks first.
@@ -34,6 +36,7 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
     const problem = await save(draft);
     setState({ saving: false, message: problem, saved: !problem });
     if (!problem) onSaved?.();
+    return problem;
   };
 
   const submit = (e: FormEvent) => {
@@ -74,20 +77,8 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
             placeholder="you@company.com"
           />
         </div>
-        <div className={`${tt.tile} flex flex-col gap-3 p-4`}>
-          <label htmlFor="tt-slack" className="text-sm font-semibold text-base-content">
-            Slack <span className="font-normal text-base-content/60">(optional)</span>
-          </label>
-          <input id="tt-slack" type="url" className={ui.input} value={draft.slackWebhook} onChange={(e) => set({ slackWebhook: e.target.value })} placeholder={`${SLACK_PREFIX}services/…`} />
-          <span className={ui.caption}>An incoming webhook for the channel to post in</span>
-        </div>
-        <div className={`${tt.tile} flex flex-col gap-3 p-4`}>
-          <label htmlFor="tt-teams" className="text-sm font-semibold text-base-content">
-            Microsoft Teams <span className="font-normal text-base-content/60">(optional)</span>
-          </label>
-          <input id="tt-teams" type="url" className={ui.input} value={draft.teamsWebhook} onChange={(e) => set({ teamsWebhook: e.target.value })} placeholder="https://…webhook.office.com/…" />
-          <span className={ui.caption}>An incoming webhook for the channel to post in</span>
-        </div>
+        <SlackConnect webhook={draft.slackWebhook} onWebhookChange={(slackWebhook) => set({ slackWebhook })} />
+        <TeamsConnect webhook={draft.teamsWebhook} onWebhookChange={(teamsWebhook) => set({ teamsWebhook })} onConnect={commit} saving={state.saving} />
       </div>
 
       <fieldset className="flex flex-col gap-3" disabled={!draftOn}>

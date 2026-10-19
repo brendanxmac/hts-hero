@@ -16,7 +16,7 @@ export function decompressHtsRevisionPayload(bytes: Uint8Array): string {
     bytes[0] === GZIP_ID1 &&
     bytes[1] === GZIP_ID2
   ) {
-    return ungzip(bytes, { to: "string" });
+    return ungzip(bytes, { toText: true });
   }
-  return inflate(bytes, { to: "string" });
+  return inflate(bytes, { toText: true });
 }

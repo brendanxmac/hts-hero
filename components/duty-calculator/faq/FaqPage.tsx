@@ -73,7 +73,7 @@ export function FaqPage({ sections }: { sections: FaqSection[] }) {
               <section key={s.id} id={s.id} className="flex scroll-mt-24 flex-col gap-8">
                 <div className="flex max-w-3xl flex-col gap-3">
                   <span className={mk.eyebrow}>{`${s.faqs.length} questions`}</span>
-                  <h2 className="text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl">{s.title}</h2>
+                  <h2 className="text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl sm:leading-10">{s.title}</h2>
                   {s.description && <p className={mk.lead}>{s.description}</p>}
                 </div>
                 <div className="flex flex-col gap-3">
@@ -101,7 +101,7 @@ export function FaqPage({ sections }: { sections: FaqSection[] }) {
                   Email{" "}
                   <a
                     href={`mailto:${config.resend.supportEmail}`}
-                    className="break-words font-semibold text-teal-300 underline decoration-teal-300/40 decoration-2 underline-offset-4 hover:decoration-teal-300"
+                    className="wrap-break-word font-semibold text-teal-300 underline decoration-teal-300/40 decoration-2 underline-offset-4 hover:decoration-teal-300"
                   >
                     {config.resend.supportEmail}
                   </a>

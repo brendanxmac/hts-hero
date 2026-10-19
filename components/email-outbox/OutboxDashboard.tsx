@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
+import type { ChatMessage } from "@/emails/chat"
 import toast from "react-hot-toast"
 import { formatTime } from "../hts-revision-diff/shared"
 import { Callout, EmptyState, PageHeader, Pill, Segmented, Spinner, btn, type Tone } from "../hts-revision-diff/ui"
@@ -37,7 +38,7 @@ interface Preview {
   recipient: string
   subject?: string
   html?: string
-  chat?: { title: string; lines: string[]; url: string; linkLabel: string }
+  chat?: ChatMessage
   payload?: unknown
 }
 
@@ -248,7 +249,7 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
                     type="button"
                     onClick={() => setOpenId(b.id)}
                     className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
-                      b.id === openId ? "border-base-content/30 bg-base-100 shadow-sm" : "border-base-content/10 bg-base-100/60 hover:bg-base-100"
+                      b.id === openId ? "border-base-content/30 bg-base-100 shadow-xs" : "border-base-content/10 bg-base-100/60 hover:bg-base-100"
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -303,7 +304,7 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
                 </label>
                 <textarea
                   id="batch-note"
-                  className="textarea textarea-bordered min-h-16 border-base-content/15 text-sm"
+                  className="textarea min-h-16 border-base-content/15 text-sm"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="e.g. Heads-up: this one hits steel derivatives hard. Check your Chapter 73 imports."
@@ -383,15 +384,36 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
                 )}
                 {preview && preview.channel !== "email" && preview.chat && (
                   <div className="flex flex-col gap-3 rounded-lg border border-base-content/10 bg-base-100 p-4 text-sm">
-                    <div className="font-semibold">{preview.chat.title}</div>
-                    {preview.chat.lines.map((line, i) => (
-                      <p key={i} className="whitespace-pre-line text-base-content/80">
-                        {line}
+                    {preview.chat.eyebrow && <div className="text-xs font-semibold text-base-content/60">{preview.chat.eyebrow}</div>}
+                    <div className="text-base font-semibold">{preview.chat.title}</div>
+                    {preview.chat.summary && <p className="whitespace-pre-line text-base-content/80">{preview.chat.summary.replace(/\*/g, "")}</p>}
+                    {preview.chat.facts?.map((f) => (
+                      <div key={f.label} className="text-base-content/80">
+                        <span className="font-semibold">{f.label}: </span>
+                        {f.value}
+                      </div>
+                    ))}
+                    {preview.chat.rows?.map((r, i) => (
+                      <div key={i} className="flex items-start justify-between gap-4 border-t border-base-content/10 pt-2">
+                        <div>
+                          <div className="font-semibold">{r.label}</div>
+                          {r.detail && <div className="text-xs text-base-content/60">{r.detail}</div>}
+                        </div>
+                        {r.value && <div className="whitespace-nowrap font-semibold">{r.value}</div>}
+                      </div>
+                    ))}
+                    {preview.chat.notes?.map((n) => (
+                      <p key={n} className="text-xs text-base-content/60">
+                        {n}
                       </p>
                     ))}
-                    <a href={preview.chat.url} target="_blank" rel="noreferrer" className="self-start rounded-md bg-base-content px-3 py-1.5 text-xs font-medium text-base-100">
-                      {preview.chat.linkLabel}
-                    </a>
+                    <div className="flex flex-wrap gap-2">
+                      {preview.chat.actions.map((a) => (
+                        <a key={a.url} href={a.url} target="_blank" rel="noreferrer" className="rounded-md bg-base-content px-3 py-1.5 text-xs font-medium text-base-100">
+                          {a.label}
+                        </a>
+                      ))}
+                    </div>
                     <details>
                       <summary className="cursor-pointer text-xs text-base-content/50">Payload</summary>
                       <pre className="mt-2 overflow-x-auto text-[11px]">{JSON.stringify(preview.payload, null, 2)}</pre>

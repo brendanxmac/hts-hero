@@ -24,7 +24,7 @@ import { ProductSavings } from "./savings/ProductSavings";
 import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // One import, opened from its row: a small header (what it is, and its one row of tabs), then
-// - Duty (where it opens), Compare, History: the calculator's own tabs, for this product (its
+// - Overview (where it opens), Duty, AD/CVD, Compare, History, News: the calculator's own tabs, for this product (its
 //   code and origin fixed), held by the header's tabs.
 //   Everything set here is saved as the product's adjustments, so the catalog row shows it on
 //   the way back.
@@ -119,7 +119,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f.entryDate]);
 
-  const calculatorTab = tab === "overview" || tab === "duty" || tab === "compare" || tab === "history";
+  const calculatorTab = tab !== "savings" && tab !== "audit";
   const remove = () => {
     removeProducts([row.key]);
     nav.closeProduct();
@@ -151,7 +151,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
           page="tracker_product"
           fixedProduct
           onCheckSavings={SAVINGS_ENABLED ? () => openTab("savings") : undefined}
-          tab={tab === "overview" || tab === "compare" || tab === "history" ? tab : "duty"}
+          tab={calculatorTab ? tab : "duty"}
           onTabChange={openTab}
         />
         <Disclaimer />

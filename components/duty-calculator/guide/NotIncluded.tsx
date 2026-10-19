@@ -4,7 +4,7 @@ import { EXCLUDED } from "./content";
 
 // Charges an entry can owe that the estimate leaves out
 export const NotIncluded = () => (
-  <div className="min-w-0 self-start rounded-3xl border border-slate-200 skin:border-base-300 bg-white skin:bg-base-100 p-6 shadow-sm sm:p-8">
+  <div className="min-w-0 self-start rounded-3xl border border-slate-200 skin:border-base-300 bg-white skin:bg-base-100 p-6 shadow-xs sm:p-8">
     <h3 className={`${mk.h3} flex items-center gap-2`}>
       <ExclamationTriangleIcon className="h-5 w-5 text-amber-500" aria-hidden />
       Not included

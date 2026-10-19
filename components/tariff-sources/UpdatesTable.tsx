@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { ColumnDef } from "@tanstack/react-table"
+import type { TableColumnDef } from "@/components/ui/table/features";
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table"
 import { AUTHORITIES, KINDS, STAGE_ORDER, STAGES, type Authority, type Stage } from "@/libs/tariff-updates/types"
 import { Pill, Segmented } from "../hts-revision-diff/ui"
@@ -18,7 +18,7 @@ const day = (iso: string | null) => (iso ? new Date(`${iso.slice(0, 10)}T12:00:0
 const statusOf = (u: UpdateRow) => (u.needs_review ? "review" : u.status)
 const STATUS_LABELS: Record<string, string> = { review: "Needs review", published: "Published", hidden: "Hidden" }
 
-const columnsFor = (sourceCounts: Map<string, number>): ColumnDef<UpdateRow, any>[] => [
+const columnsFor = (sourceCounts: Map<string, number>): TableColumnDef<UpdateRow, any>[] => [
   {
     id: "activity",
     accessorFn: (u) => u.last_activity_at,
@@ -61,7 +61,7 @@ const columnsFor = (sourceCounts: Map<string, number>): ColumnDef<UpdateRow, any
     accessorFn: (u) => u.stage,
     header: "Stage",
     filterFn: "facet",
-    sortingFn: (a, b) => STAGE_ORDER.indexOf(a.original.stage) - STAGE_ORDER.indexOf(b.original.stage),
+    sortFn: (a, b) => STAGE_ORDER.indexOf(a.original.stage) - STAGE_ORDER.indexOf(b.original.stage),
     meta: {
       width: "w-44",
       facet: {

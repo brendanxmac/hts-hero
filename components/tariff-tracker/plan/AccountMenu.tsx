@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Menu } from "@headlessui/react";
 import { ArrowRightOnRectangleIcon, CreditCardIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import toast from "react-hot-toast";
@@ -29,11 +30,18 @@ const itemClass = (active: boolean) =>
 export const AccountMenu = () => {
   const { signOut } = useUser();
   const { signedIn, email, access } = useTrackerAccess();
+  const router = useRouter();
 
   if (!signedIn) {
     return (
+      // The page to come back to is read when clicked: it's the browser's address, which the server
+      // doesn't know, so it can't be in the server-rendered link
       <Link
-        href={`${config.auth.loginUrl}?redirect=${encodeURIComponent(currentPath())}`}
+        href={`${config.auth.loginUrl}?redirect=${encodeURIComponent("/tariff-tracker")}`}
+        onClick={(e) => {
+          e.preventDefault();
+          router.push(`${config.auth.loginUrl}?redirect=${encodeURIComponent(currentPath())}`);
+        }}
         className={`${ui.button({ variant: "ghost", size: "sm" })} w-full justify-start`}
       >
         <UserCircleIcon className="h-4 w-4" aria-hidden />
@@ -48,7 +56,7 @@ export const AccountMenu = () => {
         <UserCircleIcon className="h-4 w-4 shrink-0" aria-hidden />
         <span className="truncate">{email}</span>
       </Menu.Button>
-      <Menu.Items className={`${ui.popover} absolute bottom-full left-0 z-30 mb-2 w-56 focus:outline-none`}>
+      <Menu.Items className={`${ui.popover} absolute bottom-full left-0 z-30 mb-2 w-56 focus:outline-hidden`}>
         {access.kind === "paid" && (
           <Menu.Item>
             {({ active }) => (

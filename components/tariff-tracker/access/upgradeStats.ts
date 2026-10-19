@@ -11,6 +11,13 @@ export interface UpgradeStats {
   productsHit12m: number;
   // The biggest increase among them, in %
   biggestRise: { code: string; country: string; pct: number } | null;
+  // What the free plan would take away (the trial's loss): tracked imports that would lose alerts
+  // and impact checks, and imports an AD/CVD case may cover (in all, and among those losing alerts)
+  losingAlerts: number;
+  adcvdFlagged: number;
+  adcvdLosing: number;
+  // Flagged imports without alerts now (after the trial: what it lost)
+  adcvdUntracked: number;
 }
 
 let stats: UpgradeStats | null = null;
@@ -27,4 +34,4 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 
-export const useUpgradeStats = () => useSyncExternalStore(subscribe, () => stats, () => null);
+export const useUpgradeStats = () => useSyncExternalStore(subscribe, () => stats, (): UpgradeStats | null => null);

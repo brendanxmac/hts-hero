@@ -12,7 +12,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
+import { AUDITS_ENABLED, MARKET_AUDITS, MARKET_SAVINGS, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
+import { ComingChip } from "@/components/ui/marketing/ComingChip";
 
 // The homepage hero's picture of the product, for an example account: one catalog table, scanned
 // three times. Each pass (monitoring, savings, audit) sweeps the rows and fills its own column as
@@ -20,8 +21,9 @@ import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 // the end the table shows the whole picture. Then the results are shared to each channel over
 // the table, and it starts over.
 //
-// Tracker MVP (MVP_TRIM.md): the savings and audit passes are switched off with SAVINGS_ENABLED and
-// AUDITS_ENABLED, so only the monitoring pass runs; their cells stay in ROWS for the relaunch.
+// The savings and audit passes run ahead of the Tracker (MARKET_SAVINGS / MARKET_AUDITS); while a
+// feature is off in the Tracker (SAVINGS_ENABLED / AUDITS_ENABLED) its tile carries the
+// "Coming Oct 2026" chip.
 //
 // Tariff changes and audit reasons are real 2026 rules; products, volumes and amounts are
 // illustrative. Each tile's total is the sum of its own column.
@@ -154,9 +156,11 @@ const ALL_LAYERS = [
   },
 ];
 const LAYERS = ALL_LAYERS.filter(
-  ({ key }) => (key !== "savings" || SAVINGS_ENABLED) && (key !== "audit" || AUDITS_ENABLED),
+  ({ key }) => (key !== "savings" || MARKET_SAVINGS) && (key !== "audit" || MARKET_AUDITS),
 );
 type LayerKey = (typeof ALL_LAYERS)[number]["key"];
+// The passes not live in the Tracker yet
+const COMING: Record<LayerKey, boolean> = { monitor: false, savings: !SAVINGS_ENABLED, audit: !AUDITS_ENABLED };
 // The tiles' grid, by how many passes are on
 const TILE_COLS = ["grid-cols-1", "grid-cols-1", "grid-cols-2", "grid-cols-3"];
 
@@ -378,6 +382,7 @@ export const CommandCenter = () => {
                 <span className="block text-xs text-base-content/60">
                   {tileSub[key]}
                 </span>
+                {COMING[key] && <ComingChip className="mt-1.5 px-2 text-[10px]" />}
                 {/* How much of this layer's scan is done; the width is a runtime value */}
                 <span
                   className={`absolute bottom-0 left-0 h-1 ${bar} transition-[width] duration-300`}
@@ -438,7 +443,7 @@ export const CommandCenter = () => {
             // The scan line, on the row being checked; its position is a runtime value
             <div
               aria-hidden
-              className={`pointer-events-none absolute inset-x-0 h-10 bg-gradient-to-b from-transparent ${current.scanColor} to-transparent transition-[top] duration-300 ease-linear`}
+              className={`pointer-events-none absolute inset-x-0 h-10 bg-linear-to-b from-transparent ${current.scanColor} to-transparent transition-[top] duration-300 ease-linear`}
               style={{ top: `calc(2rem + ${rows * ROW_H}rem)` }}
             />
           )}
@@ -482,7 +487,7 @@ export const CommandCenter = () => {
                   >
                     <Icon className="h-7 w-7" aria-hidden />
                     <span
-                      className={`absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-base-100 shadow transition-all duration-300 ${sent ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
+                      className={`absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-base-100 shadow-sm transition-all duration-300 ${sent ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
                     >
                       <CheckCircleIcon
                         className="h-6 w-6 text-success"

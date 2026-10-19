@@ -233,12 +233,12 @@ function ResetPasswordContent() {
 
       <div className="space-y-4 max-w-xl mx-auto">
         <form
-          className="form-control w-full space-y-4"
+          className="flex flex-col w-full space-y-4"
           onSubmit={handleResetPassword}
         >
           <div className="flex flex-col gap-0">
             <label className="label">
-              <span className="label-text">New Password</span>
+              <span className="text-sm">New Password</span>
             </label>
             <div className="relative">
               <input
@@ -248,7 +248,7 @@ function ResetPasswordContent() {
                 value={password}
                 autoComplete="new-password"
                 placeholder="Enter your new password"
-                className="input input-bordered w-full pr-10 placeholder:opacity-30"
+                className="input w-full pr-10 placeholder:opacity-30"
                 onChange={(e) => setPassword(e.target.value)}
               />
               <button
@@ -268,7 +268,7 @@ function ResetPasswordContent() {
 
           <div className="flex flex-col gap-0">
             <label className="label">
-              <span className="label-text">Confirm New Password</span>
+              <span className="text-sm">Confirm New Password</span>
             </label>
             <div className="relative">
               <input
@@ -278,7 +278,7 @@ function ResetPasswordContent() {
                 value={confirmPassword}
                 autoComplete="new-password"
                 placeholder="Confirm your new password"
-                className="input input-bordered w-full pr-10 placeholder:opacity-30"
+                className="input w-full pr-10 placeholder:opacity-30"
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
               <button

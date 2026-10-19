@@ -50,7 +50,7 @@ export default async function Home() {
   // the explorer itself loads the HTS in the browser
   return (
     <main className="w-full flex-1 min-h-0 flex flex-col bg-base-200">
-      <div className="mx-auto w-full max-w-screen-xl px-6 lg:px-8 pt-8 md:pt-10 pb-16 sm:pb-20">
+      <div className="mx-auto w-full max-w-(--breakpoint-xl) px-6 lg:px-8 pt-8 md:pt-10 pb-16 sm:pb-20">
         <BreadcrumbsProvider>
           <Explore
             explorerSurface="explore_page"
@@ -58,7 +58,7 @@ export default async function Home() {
             heading={
               <>
                 <span className={tt.eyebrow("primary")}>Harmonized Tariff Schedule</span>
-                <h1 className="mt-4 text-4xl sm:text-5xl font-semibold leading-tight text-base-content [font-family:var(--font-tracker-display)]">
+                <h1 className="mt-4 text-4xl sm:text-5xl sm:leading-none font-semibold leading-tight text-base-content [font-family:var(--font-tracker-display)]">
                   HTS Code Lookup
                 </h1>
                 <p className="mt-4 max-w-2xl text-base text-base-content/70 leading-relaxed">
@@ -76,7 +76,7 @@ export default async function Home() {
         </BreadcrumbsProvider>
       </div>
 
-      {/* <section className="mx-auto w-full max-w-screen-xl px-6 lg:px-8 py-12 sm:py-16">
+      {/* <section className="mx-auto w-full max-w-(--breakpoint-xl) px-6 lg:px-8 py-12 sm:py-16">
         <h2 className="text-2xl font-semibold tracking-tight text-base-content [font-family:var(--font-tracker-display)]">Browse the HTS by section</h2>
         <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map((s) => (

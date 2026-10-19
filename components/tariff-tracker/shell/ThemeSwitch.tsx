@@ -30,7 +30,7 @@ export const ThemeSwitch = ({ className }: { className?: string } = {}) => {
       title={`Switch to ${dark ? "light" : "dark"} mode`}
       className={
         className ??
-        "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base-content/70 transition-colors hover:bg-tt-side-active hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base-content/70 transition-colors hover:bg-tt-side-active hover:text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
       }
     >
       {dark ? <SunIcon className="h-4 w-4" aria-hidden /> : <MoonIcon className="h-4 w-4" aria-hidden />}

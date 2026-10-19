@@ -7,8 +7,9 @@ import {
   Billing,
   CLASSIFY_PLANS,
   EstimateInput,
+  LOWEST_PER_IMPORT,
+  REVERSE_TRIAL,
   TRACKER_TIERS,
-  TRIAL_ALLOWANCE,
   estimate,
   formatPrice,
   monthlyRate,
@@ -55,7 +56,7 @@ export const Estimator = ({
           />
           <ProductCard
             name="Tariff Tracker"
-            summary={`Track ${TRIAL_ALLOWANCE.alertImports} imports free, then from ${formatPrice(monthlyRate(TRACKER_TIERS[0].price, trackerBilling(billing)))}/mo${TRACKER_ANNUAL_ENABLED ? "" : ", billed monthly"} · alerts and impact checks on your imports`}
+            summary={`Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, then from ${formatPrice(monthlyRate(TRACKER_TIERS[0].price, trackerBilling(billing)))}/mo${TRACKER_ANNUAL_ENABLED ? "" : ", billed monthly"} (as low as ${formatPrice(LOWEST_PER_IMPORT)} per import) · alerts and impact checks on your imports`}
             enabled={input.tracker}
             onToggle={(tracker) => update({ tracker })}
           >
@@ -72,7 +73,7 @@ export const Estimator = ({
         </div>
 
         <div className="min-w-0 lg:sticky lg:top-24">
-          <EstimateSummary est={est} billing={billing} onBillingChange={onBillingChange} query={query} />
+          <EstimateSummary est={est} billing={billing} onBillingChange={onBillingChange} query={query} pairs={input.pairs} />
         </div>
       </div>
     </section>

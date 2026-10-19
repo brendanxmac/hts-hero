@@ -84,7 +84,7 @@ export const ChangelogList = ({
           {entries.map((entry) => (
             <li key={entry.id} className="relative pb-12 pl-8 last:pb-0">
               <span
-                className="absolute -left-[7px] top-1 h-3 w-3 rounded-full bg-teal-600 ring-4 ring-white"
+                className="absolute left-[-7px] top-1 h-3 w-3 rounded-full bg-teal-600 ring-4 ring-white"
                 aria-hidden
               />
               {editing === entry.id ? (

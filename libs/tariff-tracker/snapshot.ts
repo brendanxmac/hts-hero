@@ -3,7 +3,7 @@ import type { HtsElement } from "../../interfaces/hts"
 import { htsCodeDigitsOnly } from "../hts-code"
 import { getUsImports } from "../us-imports-server"
 import { readTrackerAccess } from "./access"
-import { checksLeft, savingsUnlocked } from "./plan"
+import { byDuty, checksLeft, savingsUnlocked } from "./plan"
 import { readAdjustments, type Adjustments } from "../../components/tariff-tracker/adjustments"
 import { readCatalog, type CatalogItem } from "../../components/tariff-tracker/catalog"
 import { catalogChanges, productHistory, type ProductHistory } from "../../components/tariff-tracker/insights/catalogHistory"
@@ -80,9 +80,10 @@ export const trackedProducts = (items: CatalogItem[], adjustments: Record<string
 
 // The imports a plan covers (TrackerContext's trackedKeys): until the user chooses, the
 // highest-duty ones up to the limit; once they've tracked or untracked any, exactly their picks
+// (the highest-duty of them when there are more than the plan covers, as when a trial ends)
 export const coveredKeys = (items: CatalogItem[], products: TrackedProduct[], limit: number) => {
   const keyOf = (i: CatalogItem) => `${i.code}-${i.country}`
-  if (items.some((i) => i.covered !== undefined)) return new Set(items.filter((i) => i.covered === true).map(keyOf).slice(0, limit))
+  if (items.some((i) => i.covered !== undefined)) return new Set(byDuty(items.filter((i) => i.covered === true).map(keyOf), products).slice(0, limit))
   return new Set([...products].sort((a, b) => b.result.totalDuty - a.result.totalDuty).slice(0, limit).map((p) => p.key))
 }
 

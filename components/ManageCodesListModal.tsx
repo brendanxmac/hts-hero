@@ -124,7 +124,7 @@ export const ManageCodeListModal = ({
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="input input-bordered w-full placeholder:text-sm placeholder:text-base-content/50"
+              className="input w-full placeholder:text-sm placeholder:text-base-content/50"
               placeholder="e.g. My Imports, Product Name, Client Name, Country Name, etc..."
               required
             />

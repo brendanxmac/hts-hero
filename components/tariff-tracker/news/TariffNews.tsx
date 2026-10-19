@@ -73,10 +73,10 @@ const Row = ({ update, isNew, match }: { update: TrackerUpdate; isNew: boolean; 
           <span className="text-sm font-semibold leading-snug text-base-content">{update.title}</span>
           {!open && <span className="line-clamp-1 text-xs text-base-content/60">{update.summary}</span>}
         </span>
-        <ChevronDownIcon className={`mt-1 h-5 w-5 text-base-content/40 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
+        <ChevronDownIcon className={`mt-1 h-5 w-5 text-base-content/50 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
       {open && (
-        <div className="flex flex-col gap-4 px-6 pb-5 sm:pl-[8.5rem]">
+        <div className="flex flex-col gap-4 px-6 pb-5 sm:pl-34">
           <p className="text-sm leading-relaxed text-base-content/80">{update.summary}</p>
           <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[7rem_minmax(0,1fr)]">
             <dt className="text-xs text-base-content/60">Kind</dt>
@@ -223,15 +223,15 @@ export const TariffNews = () => {
             variant="pill"
             menuClassName="w-max max-w-xs"
           />
-          <label className="relative min-w-[14rem] flex-1">
+          <label className="relative min-w-56 flex-1">
             <span className="sr-only">Search tariff news</span>
-            <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" aria-hidden />
+            <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/50" aria-hidden />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by product, HTS code or keyword"
-              className="h-8 w-full rounded-full border border-base-300 bg-base-100 pl-9 pr-3 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none"
+              className="h-8 w-full rounded-full border border-base-300 bg-base-100 pl-9 pr-3 text-sm text-base-content placeholder:text-base-content/50 focus:border-primary focus:outline-hidden"
             />
           </label>
         </div>

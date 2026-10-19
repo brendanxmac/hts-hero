@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic"
 
 // Deletes the heading rows the change record doesn't cite (see uncitedHeadingRowIds).
 // Worked out again here rather than trusting the page's list, in case it's stale.
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

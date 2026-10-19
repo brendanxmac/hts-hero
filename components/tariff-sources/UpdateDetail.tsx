@@ -173,7 +173,7 @@ export default function UpdateDetail({
             <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} />
           </Field>
           <Field label="Summary">
-            <textarea className="textarea textarea-bordered min-h-28 border-base-content/15 text-sm" value={summary} onChange={(e) => setSummary(e.target.value)} />
+            <textarea className="textarea min-h-28 border-base-content/15 text-sm" value={summary} onChange={(e) => setSummary(e.target.value)} />
           </Field>
           <DefList
             items={[

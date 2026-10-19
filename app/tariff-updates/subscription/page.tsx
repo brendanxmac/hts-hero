@@ -18,7 +18,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-export default async function SubscriptionPage({ searchParams }: { searchParams: { token?: string; confirmed?: string; unsubscribed?: string } }) {
+export default async function SubscriptionPage(
+  props: { searchParams: Promise<{ token?: string; confirmed?: string; unsubscribed?: string }> }
+) {
+  const searchParams = await props.searchParams;
   const token = searchParams.token ?? ""
   const s = token ? await subscriberByToken(createAdminClient(), token) : null
 

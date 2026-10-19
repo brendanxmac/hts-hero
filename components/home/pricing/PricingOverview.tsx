@@ -6,40 +6,53 @@ import { ArrowRightIcon, CheckIcon, MagnifyingGlassIcon, UserGroupIcon } from "@
 import config from "@/config";
 import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
+import { ComingChip } from "@/components/ui/marketing/ComingChip";
+import { AUTO_AUDITING, FREE_FOREVER_LINE, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 import { darkBand, display, moneyButtonMd } from "../lib/theme";
 import {
   Billing,
   CLASSIFY_PLANS,
   MANAGED_TIERS,
+  REVERSE_TRIAL,
   TRACKER_MAX_LISTED_PAIRS,
   TRACKER_TIERS,
-  TRIAL_ALLOWANCE,
   formatPrice,
   monthlyRate,
+  perImportPrice,
   trackerBilling,
 } from "@/components/pricing-calculator/lib/pricing";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 
-// Pricing at a glance: what's free (the calculator and the Tracker's free imports), and the
+// Pricing at a glance: what's free (the calculator, the Tracker's 14-day reverse trial and what stays
+// free forever after it), and the
 // Tariff Tracker priced by catalog size, with a tier picker (monthly only while TRACKER_ANNUAL_ENABLED
 // is off, and so is the billing switch: the classification line shows its monthly price). Below the cards, a worked example of how a catalog is counted
 // (one import per HTS code + country of origin), then classification as its own line. Every number
 // comes from the price list (PRICING.md).
 
-const FREE_INCLUDES = [
+// After the trial: no alerts on the account's own imports (TRIAL_ALLOWANCE.alertImports is 0)
+const FREE_INCLUDES: Include[] = [
+  `The whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, on up to ${REVERSE_TRIAL.imports} imports`,
+  "Then Tariff News alerts on every new US tariff action, free forever",
+  "Your whole catalog, with current duty, rate history and exports to CSV or Excel",
+  "Sourcing intelligence on any import",
   "Tariff Calculator: unlimited lookups, no account",
-  "Tariff Tracker: upload your whole catalog, with every tariff, rate history and exports to CSV or Excel",
-  `Track ${TRIAL_ALLOWANCE.alertImports} imports: alerts and impact checks on each`,
-  "Tariff News: every new US tariff action",
   "Works in AI assistants over MCP",
 ];
 
-const TRACKER_INCLUDES = [
+// coming: not live yet (libs/tariff-tracker/features.ts), shown with the "Coming Oct 2026" chip
+type Include = string | { text: string; coming: true };
+
+const TRACKER_INCLUDES: Include[] = [
   "Alerts by email, in-app, Slack and Teams",
+  "AD/CVD checks and alerts on every import",
+  "Insights across your whole catalog",
   "Impact checks: how any tariff action hits each import",
   "Tariff News from every official source",
   "Rate history for every product",
   "Export every tariff on every import to CSV or Excel",
+  { text: SAVINGS_DETECTION.name, coming: true },
+  { text: AUTO_AUDITING.name, coming: true },
 ];
 
 type Tier = { label: string; pairs: number | null; price: number | null };
@@ -49,16 +62,22 @@ const TIERS: Tier[] = [
 ];
 
 // Theme classes only, so the same list reads right on the dark card
-const Includes = ({ items }: { items: string[] }) => (
+const Includes = ({ items }: { items: Include[] }) => (
   <ul className="flex flex-col gap-3.5">
-    {items.map((i) => (
-      <li key={i} className="flex gap-3 text-base text-base-content/70">
-        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/15">
-          <CheckIcon className="h-3.5 w-3.5 text-success" aria-hidden />
-        </span>
-        {i}
-      </li>
-    ))}
+    {items.map((i) => {
+      const text = typeof i === "string" ? i : i.text;
+      return (
+        <li key={text} className="flex gap-3 text-base text-base-content/70">
+          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/15">
+            <CheckIcon className="h-3.5 w-3.5 text-success" aria-hidden />
+          </span>
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            {text}
+            {typeof i !== "string" && <ComingChip />}
+          </span>
+        </li>
+      );
+    })}
   </ul>
 );
 
@@ -69,13 +88,15 @@ export const PricingOverview = () => {
   // The Tracker's own billing period: monthly while Tracker annual billing is off
   const trackerPeriod = trackerBilling(billing);
   const price = tier.price === null ? null : monthlyRate(tier.price, trackerPeriod);
+  // What the picked tier comes to per import, per month
+  const perImport = price === null || tier.pairs === null ? null : perImportPrice({ price, maxPairs: tier.pairs });
 
   return (
     <section id="pricing" className={`${mk.band} ${mk.bandMuted} scroll-mt-20`} aria-labelledby="home-pricing-title">
       <div className={mk.container}>
         <div className="flex flex-col items-center gap-8">
           <SectionIntro eyebrow="Pricing" title="Pricing that matches your imports" id="home-pricing-title" center>
-            No demo, no sales call and no contract. Start free, no credit card.
+            No demo, no sales call and no contract. Try the Tariff Tracker free for {REVERSE_TRIAL.days} days, no credit card.
           </SectionIntro>
           {/* Hidden while Tracker plans are monthly only (MVP_TRIM.md); classification shows monthly */}
           {TRACKER_ANNUAL_ENABLED && <BillingSwitch billing={billing} onChange={setBilling} />}
@@ -83,19 +104,24 @@ export const PricingOverview = () => {
 
         <div className="mx-auto mt-12 grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
           {/* Free */}
-          <article className="flex flex-col rounded-3xl border border-base-300 bg-base-100 p-8 shadow-sm sm:p-10" aria-labelledby="price-free-title">
+          <article className="flex flex-col rounded-3xl border border-base-300 bg-base-100 p-8 shadow-xs sm:p-10" aria-labelledby="price-free-title">
             <h3 id="price-free-title" className="text-2xl font-semibold [font-family:var(--font-tracker-display)] text-base-content">
               Free
             </h3>
-            <p className="mt-1 text-base-content/70">Everything you need to look up a tariff, today.</p>
+            <p className="mt-1 text-base-content/70">
+              {REVERSE_TRIAL.days} days of the full Tracker, then the essentials free, forever.
+            </p>
             <p className="mt-8 flex items-baseline gap-2">
               <span className="text-7xl font-semibold [font-family:var(--font-tracker-display)] tracking-tight text-base-content">$0</span>
             </p>
             <div className="mt-8 flex-1 border-t border-base-300 pt-8">
               <Includes items={FREE_INCLUDES} />
             </div>
-            <Link href="/duty-calculator" className={`${mk.buttonSecondary} mt-10 h-14 w-full text-lg`}>
-              Calculate a duty free
+            <Link href={config.auth.loginUrl} className={`${mk.buttonSecondary} mt-10 h-14 w-full text-lg`}>
+              Start your free {REVERSE_TRIAL.days}-day trial
+            </Link>
+            <Link href="/duty-calculator" className={`${mk.link} mt-4 self-center text-sm`}>
+              Or calculate a duty free, no account
             </Link>
           </article>
 
@@ -108,7 +134,7 @@ export const PricingOverview = () => {
                 </h3>
                 <p className="mt-1 text-base-content/70">Every tariff on your imports, tracked.</p>
               </div>
-              <span className="rounded-full bg-success px-3.5 py-1.5 text-sm font-bold text-success-content">Free to start</span>
+              <span className="rounded-full bg-success px-3.5 py-1.5 text-sm font-bold text-success-content">Free for {REVERSE_TRIAL.days} days</span>
             </div>
 
             <div className="relative mt-8 grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -123,6 +149,11 @@ export const PricingOverview = () => {
                     </>
                   )}
                 </p>
+                {perImport !== null && (
+                  <p className="mt-1 text-base text-base-content/70" aria-live="polite">
+                    <span className="font-semibold tabular-nums text-base-content">{formatPrice(perImport)}</span> per import, per month
+                  </p>
+                )}
                 {TRACKER_ANNUAL_ENABLED && billing === "monthly" && tier.price !== null && (
                   <button
                     type="button"
@@ -176,10 +207,12 @@ export const PricingOverview = () => {
                 </a>
               ) : (
                 <Link href={config.auth.loginUrl} className={`${moneyButtonMd} h-14 px-8 text-lg`}>
-                  Start free <ArrowRightIcon className="h-5 w-5" aria-hidden />
+                  Start your free {REVERSE_TRIAL.days}-day trial <ArrowRightIcon className="h-5 w-5" aria-hidden />
                 </Link>
               )}
-              <span className="text-sm text-base-content/60">No credit card. Track {TRIAL_ALLOWANCE.alertImports} imports free.</span>
+              <span className="text-sm text-base-content/60">
+                No credit card. {FREE_FOREVER_LINE}
+              </span>
             </div>
           </article>
         </div>

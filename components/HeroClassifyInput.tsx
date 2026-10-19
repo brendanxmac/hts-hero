@@ -195,7 +195,7 @@ export function HeroClassifyInput({
   return (
     <>
       <div className="w-full">
-        <div className="relative rounded-xl border-2 bg-base-100/90 backdrop-blur-sm transition-all duration-300 border-base-300 shadow-sm shadow-base-content/10">
+        <div className="relative rounded-xl border-2 bg-base-100/90 backdrop-blur-xs transition-all duration-300 border-base-300 shadow-xs shadow-base-content/10">
           <div className="relative px-5 pt-5 sm:px-6 sm:pt-6">
             <label
               htmlFor={inputId}
@@ -207,7 +207,7 @@ export function HeroClassifyInput({
               {showPlaceholder && (
                 <p
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 text-base sm:text-lg md:text-xl leading-relaxed text-base-content/35 text-center motion-reduce:transition-none"
+                  className="pointer-events-none absolute inset-0 text-base sm:text-lg sm:leading-7 md:text-xl md:leading-7 leading-relaxed text-base-content/35 text-center motion-reduce:transition-none"
                   style={{
                     opacity: isPlaceholderVisible ? 1 : 0,
                     transition: `opacity ${FADE_DURATION_MS}ms ease`,
@@ -230,7 +230,7 @@ export function HeroClassifyInput({
                   }
                 }}
                 rows={2}
-                className="relative z-10 w-full resize-none bg-transparent text-base sm:text-lg md:text-xl leading-relaxed text-base-content placeholder-transparent focus:outline-none text-center"
+                className="relative z-10 w-full resize-none bg-transparent text-base sm:text-lg sm:leading-7 md:text-xl md:leading-7 leading-relaxed text-base-content placeholder-transparent focus:outline-hidden text-center"
                 placeholder={EXAMPLES[placeholderIndex]}
                 aria-label="Product description to classify"
               />
@@ -245,7 +245,7 @@ export function HeroClassifyInput({
               onClick={handleSubmit}
               className="group relative w-full overflow-hidden rounded-2xl bg-primary px-6 py-4 sm:py-5 text-base sm:text-lg font-bold text-primary-content transition-all duration-200 hover:bg-primary/90 hover:scale-[1.015] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/15 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%] transition-transform duration-700 ease-out" />
+              <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/15 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%] transition-transform duration-700 ease-out" />
               <span className="relative z-10 flex items-center justify-center gap-2.5">
                 {isCreating ? (
                   <span className="loading loading-spinner loading-md" />

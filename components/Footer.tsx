@@ -12,7 +12,7 @@ const Footer = () => {
     <footer className="bg-base-100 border-t border-base-content/10">
       <div className="max-w-7xl mx-auto px-8 py-24">
         <div className=" flex lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
-          <div className="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left">
+          <div className="w-64 shrink-0 md:mx-0 mx-auto text-center md:text-left">
             <Link
               href="/#"
               aria-current="page"
@@ -40,7 +40,7 @@ const Footer = () => {
             {/* Required by the Census Bureau's API terms (US import figures in the calculator) */}
             <p className="mt-2 max-w-xs text-xs leading-snug text-base-content/50">{CENSUS_NOTICE}</p>
           </div>
-          <div className="flex-grow flex flex-wrap justify-center -mb-10 md:mt-0 mt-10 text-center">
+          <div className="grow flex flex-wrap justify-center -mb-10 md:mt-0 mt-10 text-center">
             <div className="lg:w-1/3 md:w-1/2 w-full px-4">
               <div className="footer-title font-semibold text-base-content tracking-widest text-sm md:text-left mb-3">
                 LINKS

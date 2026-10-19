@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { ColumnDef } from "@tanstack/react-table";
+import type { TableColumnDef } from "@/components/ui/table/features";
 import { FacetMeta } from "@/components/ui/table";
 import { Countries } from "../../constants/countries";
 
@@ -17,10 +17,10 @@ export const countryFacet = (label = "Country of origin"): FacetMeta => ({
 });
 
 // The last column of a table whose rows open something: a chevron
-export const openColumn = <T,>(): ColumnDef<T, any> => ({
+export const openColumn = <T,>(): TableColumnDef<T, any> => ({
   id: "open",
   header: () => <span className="sr-only">Open</span>,
   enableSorting: false,
   meta: { width: "w-10", align: "right" },
-  cell: () => <ChevronRightIcon className="ml-auto h-5 w-5 text-base-content/40" aria-hidden />,
+  cell: () => <ChevronRightIcon className="ml-auto h-5 w-5 text-base-content/50" aria-hidden />,
 });

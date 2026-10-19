@@ -66,7 +66,7 @@ export const CompareCard = ({
     <article
       // An outline, because the card's shadow would override a Tailwind ring
       // Overflow visible, for the trade program's dropdown
-      className={`${ui.cardOverflowVisible} flex flex-col ${isLowest ? "outline outline-2 -outline-offset-1 outline-success" : ""}`}
+      className={`${ui.cardOverflowVisible} flex flex-col ${isLowest ? "outline-solid outline-2 -outline-offset-1 outline-success" : ""}`}
       aria-label={`Duty estimate for ${country.name}`}
     >
       <div className="flex items-center justify-between gap-3 px-5 pt-5">

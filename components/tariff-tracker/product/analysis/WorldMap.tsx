@@ -608,7 +608,7 @@ export const WorldMap = ({
           {missing > 0 && ` ${missing} small origins are too small to draw; they're in the table.`}
         </span>
         <div className="flex items-center gap-2" aria-hidden>
-          <span className="h-2.5 w-2.5 rounded-sm" style={{ background: colors.free }} />
+          <span className="h-2.5 w-2.5 rounded-xs" style={{ background: colors.free }} />
           <span className={`${ui.caption} mr-1`}>Duty free</span>
           <span className={ui.caption}>Low</span>
           <span

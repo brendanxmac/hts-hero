@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { NavArrow, NavArrowSpace } from "./shared";
 import {
   Bar,
   bandScale,
@@ -90,7 +90,7 @@ export const BarList = ({ data, labelWidth = "11rem", spread = false }: { data: 
               <b className="text-base-content">{d.display}</b>
               {d.note && <span className="ml-1.5 text-xs text-base-content/60">{d.note}</span>}
             </span>
-            {links && (d.onClick ? <ArrowRightIcon className="h-4 w-4 text-base-content/40 group-hover:text-primary" aria-hidden /> : <span />)}
+            {links && (d.onClick ? <NavArrow /> : <NavArrowSpace />)}
           </>
         );
         return (
@@ -100,7 +100,7 @@ export const BarList = ({ data, labelWidth = "11rem", spread = false }: { data: 
                 type="button"
                 onClick={d.onClick}
                 title={d.hint}
-                className={`${grid} group rounded-xl hover:bg-tt-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
+                className={`${grid} group rounded-xl hover:bg-tt-soft focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40`}
                 style={cols}
               >
                 {row}

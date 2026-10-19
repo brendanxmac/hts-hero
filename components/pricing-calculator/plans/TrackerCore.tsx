@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ArrowDownTrayIcon, ArrowRightIcon, BellAlertIcon, BoltIcon, NewspaperIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
-import { SAVINGS_AUDITS_SOON } from "@/libs/tariff-tracker/features";
+import { ComingChip } from "@/components/ui/marketing/ComingChip";
+import { AUTO_AUDITING, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 import { LINKS } from "../lib/links";
-import { TRIAL_ALLOWANCE } from "../lib/pricing";
+import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "../lib/pricing";
 
 // The core of the Tariff Tracker in one place, under the tariff plans: impact checks, Tariff News
 // and alerts side by side, then export and rate history as one strip. Tracker MVP (MVP_TRIM.md).
@@ -21,13 +22,13 @@ const CORE = [
   {
     Icon: BellAlertIcon,
     title: "Alerts",
-    body: "When a change hits a tracked import, you hear about it with its rate before and after, and the change in %.",
+    body: "When a change hits a tracked import, you hear about it with its rate before and after, and the change in %. AD/CVD alerts included.",
   },
 ];
 
 export const TrackerCore = () => (
   <section
-    className="mt-6 overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-sm"
+    className="mt-6 overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-xs"
     aria-labelledby="tracker-core-title"
   >
     <div className="flex flex-col gap-6 p-7 sm:p-8">
@@ -37,9 +38,12 @@ export const TrackerCore = () => (
           <h3 id="tracker-core-title" className={`${mk.h3} mt-2`}>
             Impact Checks, Tariff News and Alerts in One Place
           </h3>
+          <p className="m-0 mt-2 text-sm text-base-content/60">
+            From {formatPrice(TRACKER_TIERS[0].price)}/mo · as low as {formatPrice(LOWEST_PER_IMPORT)} per import, per month
+          </p>
         </div>
         <Link href={LINKS.signUp} className={`${mk.buttonPrimary} h-12 px-6`}>
-          Track {TRIAL_ALLOWANCE.alertImports} imports free <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          Try it free for {REVERSE_TRIAL.days} days <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </Link>
       </div>
       <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -66,6 +70,16 @@ export const TrackerCore = () => (
       </p>
       <span className="shrink-0 text-sm text-base-content/60">Free with every account</span>
     </div>
-    <p className="m-0 border-t border-base-300 px-7 py-3 text-sm text-base-content/60 sm:px-8">{SAVINGS_AUDITS_SOON}</p>
+    {/* Not live yet (features.ts): labeled, and included at no extra cost when they launch */}
+    <ul className="m-0 grid grid-cols-1 gap-4 border-t border-base-300 px-7 py-5 sm:px-8 md:grid-cols-2">
+      {[SAVINGS_DETECTION, AUTO_AUDITING].map(({ title, text }) => (
+        <li key={title} className="flex flex-col gap-1">
+          <span className="flex flex-wrap items-center gap-2 font-semibold text-base-content">
+            {title} <ComingChip />
+          </span>
+          <span className="text-sm leading-relaxed text-base-content/70">{text} Included in every Tracker plan at no extra cost.</span>
+        </li>
+      ))}
+    </ul>
   </section>
 );

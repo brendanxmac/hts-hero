@@ -5,7 +5,6 @@ import * as ui from "@/components/ui/styles";
 import { TableStandIn } from "@/components/ui/stand-ins";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { time } from "@/components/ui/charts/kit";
-import { PRIMARY_MARK } from "@/components/ui/theme";
 import { addDays } from "../../../tariffs/engine-v2/history";
 import { AccountGate } from "../access/AccountGate";
 import { formatRate } from "../formatRate";
@@ -19,7 +18,7 @@ import { useTracker } from "../TrackerContext";
 import { EmptyOverview } from "./EmptyOverview";
 import { ExposureMap } from "./ExposureMap";
 import { LatestChanges } from "./LatestChanges";
-import { averageRate, changesLastYear, countryCount, dutyPerShipment, monthlyChanges, productsToLookAt } from "./lib/metrics";
+import { averageRate, changesLastYear, dutyPerShipment, monthlyChanges, productsToLookAt } from "./lib/metrics";
 import { Metric, MetricTiles } from "./MetricTiles";
 import { NextStep } from "./NextStep";
 import { OriginDistribution } from "./OriginDistribution";
@@ -35,7 +34,7 @@ import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The value on a date in a series of steps
 // A cell of a side-by-side row: its panel fills the cell, so the row's panels are one height
-const ROW = "flex flex-col [&>*]:flex-1";
+const ROW = "flex flex-col *:flex-1";
 
 const valueOn = <T extends { date: string }>(series: T[], date: string) => [...series].reverse().find((p) => p.date <= date) ?? series[0];
 
@@ -66,18 +65,6 @@ export const Overview = () => {
     const lastYearOf = <T extends { date: string }>(s: T[], value: (p: T) => number) =>
       s.length ? [{ x: time(yearAgo), y: value(valueOn(s, yearAgo)) }, ...s.filter((p) => p.date > yearAgo).map((p) => ({ x: time(p.date), y: value(p) }))] : [];
     const stepSpark = { sparkStep: true, sparkTo: time(today) };
-
-    // The catalog over the last year: each import, and its country, from the day it was added
-    // (imports added before dates were kept count from the start)
-    const importsSparks = (() => {
-      const added = t.items.map((i) => ({ date: i.addedAt ? i.addedAt.slice(0, 10) : "", country: i.country }));
-      const on = (date: string) => added.filter((a) => a.date <= date);
-      const days = [yearAgo, ...Array.from(new Set(added.map((a) => a.date).filter((d) => d > yearAgo && d <= today))).sort()];
-      return {
-        spark: days.map((d) => ({ x: time(d), y: on(d).length })),
-        spark2: days.map((d) => ({ x: time(d), y: new Set(on(d).map((a) => a.country)).size })),
-      };
-    })();
 
     const metrics: Metric[] = [
       {
@@ -127,19 +114,6 @@ export const Overview = () => {
             once). The line adds them up month by month, so a steep stretch is a busy few months.
           </>
         ),
-      },
-      {
-        label: "Imports",
-        value: t.items.length.toLocaleString("en-US"),
-        note: `From ${countryCount(t.products)} countries`,
-        noteTone: "neutral",
-        ...importsSparks,
-        ...stepSpark,
-        legend: [
-          { label: `${t.items.length.toLocaleString("en-US")} imports`, color: PRIMARY_MARK },
-          { label: `${countryCount(t.products)} countries`, color: "var(--tt-sky)" },
-        ],
-        info: "The imports in your catalog (each HTS code and country of origin) and the countries they come from. The lines are how many of each you've tracked over the last 12 months.",
       },
     ];
 

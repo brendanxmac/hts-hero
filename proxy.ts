@@ -3,7 +3,7 @@ import { updateSession } from "@/app/api/supabase/middleware"
 import { canonicalHtsCode } from "@/libs/hts-code"
 import { countryPageBySlug } from "@/libs/country-pages/countries"
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   const isTariffPath = pathname === "/tariffs"

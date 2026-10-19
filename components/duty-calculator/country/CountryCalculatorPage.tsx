@@ -83,11 +83,11 @@ export function CountryCalculatorPage({
               <div className="flex min-w-0 flex-col gap-4">
                 <h1 className="m-0 flex flex-col gap-3">
                   <span className={tt.eyebrow("primary")}>US Import Duty &amp; Tariff Calculator</span>
-                  <span className={`${tt.display} max-w-4xl break-words text-4xl font-semibold leading-tight tracking-tight text-base-content sm:text-5xl`}>
+                  <span className={`${tt.display} max-w-4xl wrap-break-word text-4xl font-semibold leading-tight tracking-tight text-base-content sm:text-5xl sm:leading-none`}>
                     {name} to US Tariff Calculator
                   </span>
                 </h1>
-                <p className="m-0 max-w-3xl text-base leading-relaxed text-base-content/70 sm:text-lg">{tariffSummary(country, tariffs)}</p>
+                <p className="m-0 max-w-3xl text-base leading-relaxed text-base-content/70 sm:text-lg sm:leading-7">{tariffSummary(country, tariffs)}</p>
               </div>
               {facts && <ImportFactsCard name={country.name} facts={facts} />}
             </header>
@@ -162,11 +162,11 @@ export function CountryCalculatorPage({
           <div className="hts-tracker-on-dark relative flex flex-col items-center overflow-hidden rounded-3xl bg-tt-side px-6 py-16 text-center sm:px-12">
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_50%_0%,oklch(var(--p)/0.25),transparent)]"
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_50%_0%,color-mix(in_oklab,var(--color-primary)_25%,transparent),transparent)]"
             />
             <div className="relative flex flex-col items-center">
               <p className={tt.eyebrow("primary")}>Tariff Tracker</p>
-              <p className={`${tt.display} mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-base-content sm:text-5xl`}>
+              <p className={`${tt.display} mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-base-content sm:text-5xl sm:leading-none`}>
                 Get alerted when tariffs on goods from <span className="text-primary">{name}</span> change.
               </p>
               <p className="mt-5 max-w-3xl text-lg leading-relaxed text-base-content/70">

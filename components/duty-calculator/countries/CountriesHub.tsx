@@ -66,7 +66,7 @@ export function CountriesHub({
             <span className={`${mk.eyebrow} mt-2 block`}>All {summary.total} countries of origin</span>
             <h1 className={`${mk.display} max-w-4xl`}>US tariffs by country, 2026</h1>
             <p className={`${mk.lead} max-w-3xl`}>{subtitle}</p>
-            <p className="inline-flex w-fit max-w-full items-start gap-2 rounded-2xl border border-slate-200 bg-white/80 px-3.5 py-1.5 text-sm text-slate-600 shadow-sm sm:items-center sm:rounded-full">
+            <p className="inline-flex w-fit max-w-full items-start gap-2 rounded-2xl border border-slate-200 bg-white/80 px-3.5 py-1.5 text-sm text-slate-600 shadow-xs sm:items-center sm:rounded-full">
               <CheckBadgeIcon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 sm:mt-0" aria-hidden />
               <span>
                 Tariff rules verified through {verifiedThrough} · Updated <time dateTime={asOf}>{asOfLabel}</time>
@@ -155,7 +155,7 @@ export function CountriesHub({
           </SectionIntro>
           <ul className={`${mk.card} min-w-0 divide-y divide-slate-100 self-start`}>
             {[...sources, { name: IMPORT_SOURCE.name, url: IMPORT_SOURCE.url }].map((s) => (
-              <li key={s.name} className="break-words px-6 py-4 text-sm leading-relaxed text-slate-700">
+              <li key={s.name} className="wrap-break-word px-6 py-4 text-sm leading-relaxed text-slate-700">
                 {s.url ? (
                   <a href={s.url} rel="noopener" className={mk.link}>
                     {s.name}

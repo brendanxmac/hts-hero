@@ -49,7 +49,7 @@ export default function ImporterDropdown({
       disabled={isLoading || disabled}
     >
       <div className="relative w-full">
-        <Listbox.Button className="relative w-full cursor-default h-[45px] rounded-lg border border-base-content/20 bg-base-100 py-3 pl-4 pr-10 text-left shadow-sm focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed">
+        <Listbox.Button className="relative w-full cursor-default h-[45px] rounded-lg border border-base-content/20 bg-base-100 py-3 pl-4 pr-10 text-left shadow-xs focus:outline-hidden focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed">
           <span
             className={`block truncate ${selectedImporterId ? "text-base-content" : "text-base-content/60"}`}
           >
@@ -75,7 +75,7 @@ export default function ImporterDropdown({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md bg-base-100 border border-base-content/20 py-1 text-base shadow-lg ring-1 ring-base-content/5 focus:outline-none sm:text-sm">
+          <Listbox.Options className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md bg-base-100 border border-base-content/20 py-1 text-base shadow-lg ring-1 ring-base-content/5 focus:outline-hidden sm:text-sm">
             {/* Create New Option */}
             {showCreateOption && (
               <>
@@ -116,7 +116,7 @@ export default function ImporterDropdown({
                     </span>
                     {selected && (
                       <CheckIcon
-                        className={`h-5 w-5 flex-shrink-0 ${active ? "text-primary-content" : "text-primary"}`}
+                        className={`h-5 w-5 shrink-0 ${active ? "text-primary-content" : "text-primary"}`}
                         aria-hidden="true"
                       />
                     )}

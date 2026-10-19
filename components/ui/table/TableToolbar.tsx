@@ -2,7 +2,7 @@
 
 import "./meta";
 import { ReactNode } from "react";
-import { Table } from "@tanstack/react-table";
+import type { DataTableInstance } from "./features";
 import { FacetFilter } from "./FacetFilter";
 import { FilterChips } from "./FilterChips";
 import { TableSearch } from "./TableSearch";
@@ -18,7 +18,7 @@ export const TableToolbar = <T,>({
   actions,
   children,
 }: {
-  table: Table<T>;
+  table: DataTableInstance<T>;
   // The search box's placeholder; no search box without one
   placeholder?: string;
   // Column ids to filter by, in order
@@ -37,7 +37,9 @@ export const TableToolbar = <T,>({
       <div className="flex flex-wrap items-center gap-2">
         {placeholder && <TableSearch table={table} placeholder={placeholder} />}
         {facets.map((id) => {
-          const column = table.getColumn(id);
+          // A facet's column can be left out of the table (one shown only on some plans): skipped,
+          // without getColumn's "does not exist" warning
+          const column = table.getAllLeafColumns().find((c) => c.id === id);
           return column ? <FacetFilter key={id} column={column} /> : null;
         })}
         <span className="ml-auto text-sm font-semibold tabular-nums text-base-content/60" aria-live="polite">

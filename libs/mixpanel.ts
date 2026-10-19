@@ -111,6 +111,15 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_SETUP_STEP_CLICKED = "Tariff Tracker Setup Step Clicked",
   TARIFF_TRACKER_CATALOG_SYNCED = "Tariff Tracker Catalog Synced",
   TARIFF_TRACKER_ALERTS_SAVED = "Tariff Tracker Alerts Saved",
+  /** "Add to Slack" in the Alerts tab: clicked, back from Slack connected, disconnected */
+  TARIFF_TRACKER_SLACK_CONNECT_STARTED = "Tariff Tracker Slack Connect Started",
+  TARIFF_TRACKER_SLACK_CONNECTED = "Tariff Tracker Slack Connected",
+  TARIFF_TRACKER_SLACK_DISCONNECTED = "Tariff Tracker Slack Disconnected",
+  /** The Teams box in the Alerts tab: steps opened, disconnected */
+  TARIFF_TRACKER_TEAMS_STEPS_OPENED = "Tariff Tracker Teams Steps Opened",
+  TARIFF_TRACKER_TEAMS_DISCONNECTED = "Tariff Tracker Teams Disconnected",
+  /** "Send Test" for a Slack or Teams channel in the Alerts tab */
+  TARIFF_TRACKER_ALERT_TEST_SENT = "Tariff Tracker Alert Test Sent",
   TARIFF_TRACKER_LOOKUPS_ADDED = "Tariff Tracker Lookups Added",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",

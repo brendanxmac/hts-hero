@@ -30,7 +30,7 @@ export const InfoTip = ({ label, children, className = "" }: { label: string; ch
         onFocus={show}
         onBlur={hide}
         onKeyDown={(e) => e.key === "Escape" && hide()}
-        className="rounded-full text-base-content/35 transition-colors hover:text-base-content/70 focus-visible:text-base-content/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="rounded-full text-base-content/35 transition-colors hover:text-base-content/70 focus-visible:text-base-content/70 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
       >
         <InformationCircleIcon className="h-4 w-4" aria-hidden />
       </button>

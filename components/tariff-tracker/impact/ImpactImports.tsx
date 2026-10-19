@@ -62,9 +62,9 @@ const DutyDiff = ({ impact, customsValue }: { impact: ImportImpact; customsValue
             <tr key={code} className="border-t border-base-300">
               <td className="py-2 pr-4">
                 <span className={state === "same" ? "text-base-content/70" : "font-semibold text-base-content"}>{(a ?? b)!.name}</span>
-                {code !== "BASE" && <span className="ml-2 font-mono text-xs text-base-content/50">{code}</span>}
+                {code !== "BASE" && <span className="ml-2 font-mono text-xs text-base-content/60">{code}</span>}
               </td>
-              <td className={`py-2 text-right tabular-nums ${state === "removed" ? "text-base-content/50 line-through" : "text-base-content/60"}`}>{cell(b)}</td>
+              <td className={`py-2 text-right tabular-nums ${state === "removed" ? "text-base-content/60 line-through" : "text-base-content/60"}`}>{cell(b)}</td>
               <td
                 className={`py-2 text-right tabular-nums ${
                   state === "added" || (state === "changed" && a!.amount > b!.amount) ? "font-semibold text-error" : state === "changed" ? "font-semibold text-success" : "text-base-content/70"
@@ -88,7 +88,7 @@ const DutyDiff = ({ impact, customsValue }: { impact: ImportImpact; customsValue
 // One bar of the duty on the import, on the list's shared scale, with its rate at the end
 const DutyBar = ({ label, parts, pct, colors, maxPct, faded, rateClass }: { label: string; parts: RatePart[]; pct: number; colors: Record<string, string>; maxPct: number; faded?: boolean; rateClass: string }) => (
   <span className="grid grid-cols-[3.5rem_minmax(0,1fr)_3.75rem] items-center gap-3">
-    <span className="text-[11px] font-bold uppercase tracking-wider text-base-content/50">{label}</span>
+    <span className="text-[11px] font-bold uppercase tracking-wider text-base-content/60">{label}</span>
     <span className={faded ? "opacity-60" : ""}>
       <StackedBar
         parts={parts.map((p) => ({ label: p.key, amount: p.pct, color: colors[p.key] }))}
@@ -118,12 +118,12 @@ const BeforeAfter = ({ r, colors, maxPct }: { r: RowData; colors: Record<string,
       ) : (
         <DutyBar label="Today" parts={r.parts} pct={r.product.totalPct} colors={colors} maxPct={maxPct} rateClass={`${tt.display} text-base font-semibold text-base-content`} />
       )}
-      <span className="flex flex-wrap gap-x-3 gap-y-1 pl-[4.25rem] text-xs text-base-content/70">
+      <span className="flex flex-wrap gap-x-3 gap-y-1 pl-17 text-xs text-base-content/70">
         {r.parts.length === 0 && <span className="text-base-content/60">Duty free</span>}
         {r.parts.map((p) => (
           <span key={p.key} className="inline-flex items-center gap-1.5 whitespace-nowrap" title={p.key}>
             {/* Tariff color (DESIGN_SYSTEM §10) */}
-            <span className="h-2 w-2 rounded-sm" style={{ background: colors[p.key] }} aria-hidden />
+            <span className="h-2 w-2 rounded-xs" style={{ background: colors[p.key] }} aria-hidden />
             <span className={r.added.has(p.key) ? "font-semibold text-error" : ""}>{p.key === BASE_PART ? "Base" : shortProgram(p.key)}</span>
             <span className="font-semibold tabular-nums text-base-content">{formatRate(p.pct)}</span>
             {r.added.has(p.key) && <span className="text-[10px] font-bold uppercase tracking-wide text-error">New</span>}
@@ -192,7 +192,7 @@ const Row = ({ r, colors, maxPct, effective, today }: { r: RowData; colors: Reco
           )}
           {future && <span className="text-xs font-semibold text-warning">From {day(impact.date!, false)}</span>}
         </span>
-        <ChevronRightIcon className={`h-5 w-5 text-base-content/40 transition-transform ${open ? "rotate-90" : ""}`} aria-hidden />
+        <ChevronRightIcon className={`h-5 w-5 text-base-content/50 transition-transform ${open ? "rotate-90" : ""}`} aria-hidden />
       </button>
       {open && (
         <div className="grid gap-6 border-t border-base-300 bg-tt-soft/60 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
@@ -291,15 +291,15 @@ export const ImpactImports = ({
   return (
     <section className={`${tt.panel} overflow-hidden`} aria-label="Your imports it affects" id="tt-impact-imports-list">
       <div className="flex flex-wrap items-center gap-3 px-6 py-4">
-        <label className="relative min-w-[13rem] flex-1">
+        <label className="relative min-w-52 flex-1">
           <span className="sr-only">Search these imports</span>
-          <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" aria-hidden />
+          <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/50" aria-hidden />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search code, product or country"
-            className="h-9 w-full rounded-full border border-base-300 bg-tt-soft pl-10 pr-3 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:bg-base-100 focus:outline-none"
+            className="h-9 w-full rounded-full border border-base-300 bg-tt-soft pl-10 pr-3 text-sm text-base-content placeholder:text-base-content/50 focus:border-primary focus:bg-base-100 focus:outline-hidden"
           />
         </label>
         <SegmentedControl

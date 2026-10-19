@@ -11,6 +11,9 @@ import { PRODUCT_TABS, ProductTab } from "../sections";
 import { useInsights } from "../insights/InsightsContext";
 import { wholeDollars } from "../insights/teasers";
 import { AlertsToggle } from "./AlertsToggle";
+import { AdcvdChip } from "@/components/adcvd/AdcvdChip";
+import { useAdcvdFlagged } from "@/components/adcvd/AdcvdTeasers";
+import { useNewsCount } from "@/components/duty-calculator/news/NewsTab";
 
 // The top of one of the user's imports (DESIGN_SYSTEM.md §15): one light panel holding everything
 // about the import that isn't one of its views. The way back and its actions (alerts on or off,
@@ -54,12 +57,16 @@ export const ProductHeader = ({
 }) => {
   const { entry } = row;
   const saving = useBestSaving(row.key);
+  const adcvd = useAdcvdFlagged(entry.element.htsno, entry.country.code);
+  const news = useNewsCount(entry.element.htsno, entry.country.code);
   // Each view, with what's waiting on it: savings found (always "up to"), the history's changes
   const allTabs: { id: ProductTab; label: string; count?: number; badge?: string; badgeTone?: "success" | "warning" }[] = [
     { id: "overview", label: "Overview" },
     { id: "duty", label: "Duty" },
+    { id: "adcvd", label: "AD/CVD", badge: adcvd ? "May apply" : undefined, badgeTone: "warning" },
     { id: "compare", label: "Compare" },
     { id: "history", label: "History", count: historyChanges > 0 ? historyChanges : undefined },
+    { id: "news", label: "News", count: news || undefined },
     { id: "savings", label: "Savings", badge: saving > 0.005 ? `Up to ${wholeDollars(saving)}` : undefined, badgeTone: "success" },
     { id: "audit", label: "Audit", badge: "Beta" },
   ];
@@ -98,13 +105,14 @@ export const ProductHeader = ({
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <h1 className={`${mono.className} m-0 text-2xl font-semibold leading-none tracking-tight text-base-content`}>{entry.element.htsno}</h1>
                 <span className="text-sm font-medium text-base-content/70">From {entry.country.name}</span>
+                <AdcvdChip code={entry.element.htsno} country={entry.country.code} />
               </div>
               <p className="m-0 line-clamp-1 max-w-3xl text-sm text-base-content/60" title={row.description}>
                 {row.description}
               </p>
             </div>
           </div>
-          {inputs && <div className="w-full lg:w-auto lg:min-w-[30rem] lg:max-w-[40rem] lg:flex-1">{inputs}</div>}
+          {inputs && <div className="w-full lg:w-auto lg:min-w-120 lg:max-w-160 lg:flex-1">{inputs}</div>}
         </div>
       </div>
       {/* Its views, along the header's bottom edge */}

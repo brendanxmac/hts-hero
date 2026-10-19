@@ -52,7 +52,7 @@ export const ProductTiles = ({
             key={product.key}
             type="button"
             onClick={() => onOpen(product.key)}
-            className={`${tt.panel} flex flex-col gap-2.5 p-5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
+            className={`${tt.panel} flex flex-col gap-2.5 p-5 text-left transition-colors hover:border-primary/40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40`}
           >
             <span className="flex items-center justify-between gap-2">
               <span className={`${mono.className} text-sm font-bold text-base-content`}>{product.entry.element.htsno}</span>

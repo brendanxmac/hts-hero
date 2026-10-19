@@ -12,7 +12,7 @@ import {
   ReceiptPercentIcon,
   Squares2X2Icon,
 } from "@heroicons/react/20/solid"
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 
 // The Tariff Tracker's sections, in sidebar order: tabs on the one /tariff-tracker page, picked
 // with ?tab=. Sections that aren't built yet, or are held back as coming soon, show what's
@@ -119,7 +119,8 @@ export const SECTIONS: TrackerSection[] = [
     label: "Tariff News",
     Icon: NewspaperIcon,
     title: "Tariff News",
-    summary: "Every new US tariff action, as it happens, with the official documents behind it.",
+    summary:
+      "Every new US tariff action, as it happens, with the official documents behind it.",
     ready: true,
     group: "workspace",
     paidOnly: false,
@@ -130,7 +131,8 @@ export const SECTIONS: TrackerSection[] = [
     label: "Tariff Impacts",
     Icon: BoltIcon,
     title: "Tariff Impacts",
-    summary: "Pick any tariff action and see exactly which of your imports it hits, and by how much.",
+    summary:
+      "Pick any tariff action and see exactly which of your imports it hits, and by how much.",
     ready: true,
     group: "workspace",
     paidOnly: false,
@@ -141,7 +143,7 @@ export const SECTIONS: TrackerSection[] = [
     label: "Insights",
     Icon: LightBulbIcon,
     title: "Insights",
-    summary: "What your imports teach you: where your duty comes from, what moved it, and what to watch.",
+    summary: "Where your duty comes from, what moved it, and what to watch.",
     ready: true,
     group: "workspace",
     paidOnly: false,
@@ -223,7 +225,8 @@ export const SECTIONS: TrackerSection[] = [
     label: "Expert Help",
     Icon: ChatBubbleLeftRightIcon,
     title: "Expert Help",
-    summary: "HTS Hero as your tariff team: we manage every tariff on your imports, with you.",
+    summary:
+      "HTS Hero as your tariff team: we manage every tariff on your imports, with you.",
     ready: true,
     group: "workspace",
     paidOnly: false,
@@ -239,15 +242,36 @@ export const sectionUrl = (slug: SectionSlug) =>
   slug === DEFAULT_SECTION ? TRACKER_PATH : `${TRACKER_PATH}?tab=${slug}`
 
 // A catalog product's own view's tabs, in order; Overview is where it opens
-export type ProductTab = "overview" | "duty" | "compare" | "history" | "savings" | "audit"
+export type ProductTab =
+  | "overview"
+  | "duty"
+  | "adcvd"
+  | "compare"
+  | "history"
+  | "news"
+  | "savings"
+  | "audit"
 
 // Savings and Audit are off for the Tracker MVP (libs/tariff-tracker/features.ts); a link to either
 // opens the Overview instead
-export const PRODUCT_TABS: ProductTab[] = (["overview", "duty", "compare", "history", "savings", "audit"] as ProductTab[]).filter(
-  (t) => (t !== "savings" || SAVINGS_ENABLED) && (t !== "audit" || AUDITS_ENABLED),
+export const PRODUCT_TABS: ProductTab[] = (
+  [
+    "overview",
+    "duty",
+    "adcvd",
+    "compare",
+    "history",
+    "news",
+    "savings",
+    "audit",
+  ] as ProductTab[]
+).filter(
+  (t) =>
+    (t !== "savings" || SAVINGS_ENABLED) && (t !== "audit" || AUDITS_ENABLED),
 )
 
-export const isProductTab = (tab: string | null): tab is ProductTab => PRODUCT_TABS.includes(tab as ProductTab)
+export const isProductTab = (tab: string | null): tab is ProductTab =>
+  PRODUCT_TABS.includes(tab as ProductTab)
 
 // The address of a catalog product's own view, on one of its tabs (the Overview when left out)
 export const productUrl = (key: string, productTab?: ProductTab) =>

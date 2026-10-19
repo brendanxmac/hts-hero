@@ -9,6 +9,7 @@ import { createBatch, type OutboxMessage } from "../email/outbox"
 import { accountSubscriber, subscriberFooter } from "../email/subscribers"
 import { reachedStages, UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "../email/tariff-news"
 import { readTrackerAccess } from "../tariff-tracker/access"
+import { hasFullAccess } from "../tariff-tracker/plan"
 import { coveredKeys, trackedProducts } from "../tariff-tracker/snapshot"
 import { refreshImpacts } from "./impacts"
 import { STAGE_ORDER } from "./types"
@@ -159,7 +160,8 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
         slack: prefs?.slack_webhook ?? null,
         teams: prefs?.teams_webhook ?? null,
       },
-      paid: access.kind === "paid",
+      // On a plan or the 14-day trial: the note on imports past it talks about its size, not the free limit
+      paid: hasFullAccess(access),
       imports: inSlots
         .sort((a, b) => Number(b.delta_usd ?? -1) - Number(a.delta_usd ?? -1))
         .map((r) => ({

@@ -468,7 +468,7 @@ let failedTests = 0;
 testCases.forEach(({ input, expected, description }, index) => {
   totalTests++;
   const result = validateTariffableHtsCode(input);
-  const passed = result === expected;
+  const passed = (result as unknown) === expected;
 
   if (passed) {
     passedTests++;
@@ -523,7 +523,7 @@ const additionalTests = [
 
 additionalTests.forEach(({ input, expected, description }, index) => {
   const result = validateTariffableHtsCode(input);
-  const passed = result === expected;
+  const passed = (result as unknown) === expected;
 
   if (passed) {
     console.log(`✅ ${description}: "${input}" -> ${result}`);

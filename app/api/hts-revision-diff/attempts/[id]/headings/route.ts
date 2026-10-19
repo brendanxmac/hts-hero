@@ -19,7 +19,8 @@ export const dynamic = "force-dynamic"
 // The attempt's heading pages: document state, rows, Claude check, the headings the
 // change record cites, whether the pages hold every subchapter III heading, and the
 // headings each comparison using this attempt needs from it
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {
@@ -76,7 +77,8 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 }
 
 // Adds a heading by hand (counts as reviewed: you entered it)
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {
@@ -114,7 +116,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 }
 
 // Deletes several rows at once: { ids: string[] }
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

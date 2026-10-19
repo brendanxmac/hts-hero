@@ -4,12 +4,14 @@ import Link from "next/link";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CheckBadgeIcon } from "@heroicons/react/20/solid";
-import { formatPrice, LAUNCH_PRICING, launchPricingActive, TRACKER_TIERS, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { formatPrice, LAUNCH_PRICING, launchPricingActive, LOWEST_PER_IMPORT, perImportPrice, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { TRACKER_PLANS } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "../access/accessContext";
 import { currentPath, signupHref } from "../access/signup";
 import { useTracker } from "../TrackerContext";
 import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { endDate, endsIn, keepPlan, trialProgress, trialState } from "./trial";
 
 // The plan at the foot of the sidebar (dark in both modes): what it is, how much of the catalog
 // has alerts, and, short of all of it, the next step up; all of it, a well done. Always in view, so
@@ -42,7 +44,6 @@ export const PlanCard = () => {
   const { items, trackedKeys, moreToTrack, trackMore } = useTracker();
   if (loading) return <div className={`${ui.skeleton} h-32 w-full`} />;
 
-  const fromPrice = formatPrice(TRACKER_TIERS[0].price);
 
   if (!signedIn) {
     return (
@@ -65,25 +66,70 @@ export const PlanCard = () => {
   const withAlerts = Math.min(trackedKeys.size, imports);
   const off = imports - withAlerts;
   const coverAll = TRACKER_PLANS.find((p) => imports <= p.maxPairs && p.maxPairs > access.pairLimit);
-  const perImport = coverAll ? Math.round((coverAll.price / coverAll.maxPairs) * 100) / 100 : null;
+  const perImport = coverAll ? perImportPrice(coverAll) : null;
   const launch = launchPricingActive();
   // Room on the plan, even when the imports left out were turned off by the user
   const room = Math.max(0, access.pairLimit - trackedKeys.size);
 
+  // The admin previewing a trial stage (?trialPreview=): say so, and the way out
+  const previewNote = access.preview && (
+    <a href="?trialPreview=off" className="-mt-1 text-xs font-semibold text-warning hover:underline">
+      Previewing &ldquo;{access.preview}&rdquo; · Stop
+    </a>
+  );
+
+  // On the 14-day trial: the countdown, and what its end takes away, in their own numbers
+  const trial = trialState(access);
+  if (trial.onTrial) {
+    const plan = keepPlan(imports);
+    return (
+      <div className={BOX}>
+        {previewNote}
+        <div className="flex items-center justify-between gap-2">
+          <span className={tt.eyebrow(trial.ending ? "warning" : "primary")}>Free Trial</span>
+          <span className={`text-xs font-semibold tabular-nums ${trial.ending ? "text-warning" : "text-base-content/70"}`}>
+            {trial.daysLeft !== null && trial.daysLeft <= 1 ? "Last day" : `${trial.daysLeft} days left`}
+          </span>
+        </div>
+        <Meter value={trialProgress(trial.daysLeft)} max={REVERSE_TRIAL.days} tone={trial.ending ? "bg-warning" : "bg-primary"} />
+        {imports > 0 && (
+          <span className="text-sm leading-snug text-base-content/75">
+            <span className="font-semibold text-warning">Upgrade to keep tariff alerts, savings detection, and audits for all your imports.
+            </span>
+          </span>
+        )}
+        <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => openUpgrade("plan")}>
+          Keep everything{plan ? ` · ${formatPrice(plan.price)}/mo` : ""}
+        </button>
+        {/* The price per import: the easiest way to see what it's worth */}
+        {plan && (
+          <span className="-mt-1 text-center text-xs text-base-content/60">
+            Just <span className="font-semibold text-success">{formatPrice(perImportPrice(plan))}</span> per import, per month
+          </span>
+        )}
+        {/* {launch && <span className="text-center text-xs text-warning">Launch pricing ends {LAUNCH_PRICING.endsLabel}</span>} */}
+      </div>
+    );
+  }
+
   return (
     <div className={BOX}>
+      {previewNote}
       <span className={tt.eyebrow("success")}>{paid ? `Tracker ${n(access.pairLimit)}` : "Free plan"}</span>
+      {trial.ended && <span className="-mt-2 text-xs text-base-content/60">Your free trial ended {endDate(access)}.</span>}
       {SAVINGS_ENABLED && !paid && <Allowance label="Savings checks" used={access.usage.savingsChecked.length} max={TRIAL_ALLOWANCE.savingsChecks} />}
       {AUDITS_ENABLED && !paid && <Allowance label="Audit checks" used={access.usage.auditsChecked.length} max={TRIAL_ALLOWANCE.auditChecks} />}
 
       {imports === 0 ? (
         <>
           <span className="text-sm leading-snug text-base-content/70">
-            Add your imports and {paid ? `alerts cover up to ${n(access.pairLimit)}` : `get alerts on ${n(access.pairLimit)} free`}.
+            {paid
+              ? `Add your imports and alerts cover up to ${n(access.pairLimit)}.`
+              : "Alerts on your own imports come with a Tracker plan. Tariff News alerts stay free."}
           </span>
           {!paid && (
             <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => openUpgrade("plan")}>
-              See plans · from {fromPrice}/mo
+              See plans · from {formatPrice(LOWEST_PER_IMPORT)}/import
             </button>
           )}
         </>

@@ -24,7 +24,7 @@ export const ProductCard = ({
   const highlighted = enabled && !fixedLabel;
   return (
     <div
-      className={`rounded-2xl border bg-base-100 shadow-sm transition-shadow ${
+      className={`rounded-2xl border bg-base-100 shadow-xs transition-shadow ${
         highlighted ? "border-transparent ring-2 ring-primary" : "border-base-300"
       }`}
     >
@@ -49,14 +49,14 @@ export const ProductCard = ({
               aria-checked={enabled}
               aria-labelledby={titleId}
               onClick={() => onToggle(!enabled)}
-              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 ${
+              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 ${
                 enabled ? "bg-primary" : "bg-base-300 hover:bg-base-content/20"
               }`}
             >
               <span
                 aria-hidden
-                className={`inline-block h-6 w-6 rounded-full bg-base-100 shadow-sm ring-1 ring-base-content/5 transition-transform ${
-                  enabled ? "translate-x-[1.375rem]" : "translate-x-0.5"
+                className={`inline-block h-6 w-6 rounded-full bg-base-100 shadow-xs ring-1 ring-base-content/5 transition-transform ${
+                  enabled ? "translate-x-5.5" : "translate-x-0.5"
                 }`}
               />
             </button>

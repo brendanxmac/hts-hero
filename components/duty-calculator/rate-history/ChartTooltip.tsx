@@ -50,7 +50,7 @@ export const ChartTooltip = ({
           .reverse()
           .map((l) => (
             <li key={l.label} className="grid grid-cols-[0.5rem_minmax(0,1fr)] gap-x-1.5 text-xs leading-tight">
-              <span className="mt-1 h-2 w-2 rounded" style={{ background: l.color }} aria-hidden />
+              <span className="mt-1 h-2 w-2 rounded-sm" style={{ background: l.color }} aria-hidden />
               <span className="text-base-content/70">{l.label}</span>
               <span className="col-start-2 font-semibold tabular-nums text-base-content">
                 {show(amounts.get(l.label) ?? 0)}

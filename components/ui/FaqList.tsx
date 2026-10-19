@@ -15,7 +15,7 @@ export function FaqList({
     <div className={`${ui.card} divide-y divide-base-300 tracker:rounded-3xl tracker:shadow-none`}>
       {faqs.map(({ question, answer }, i) => (
         <details key={question} open={openFirst && i === 0} className="group">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-base font-semibold text-base-content hover:bg-base-200/50 tracker:px-7 tracker:py-5 tracker:hover:bg-tt-soft [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-base font-semibold text-base-content hover:bg-base-200/50 tracker:px-7 tracker:py-5 hover:tracker:bg-tt-soft [&::-webkit-details-marker]:hidden">
             <h3>{question}</h3>
             <ChevronDownIcon
               className="h-5 w-5 shrink-0 text-base-content/60 transition-transform group-open:rotate-180"

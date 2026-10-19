@@ -132,7 +132,7 @@ export const CollapsibleSection = ({
       {isExpanded && (
         <div className="relative z-10">
           <div className="px-5 pb-5 pt-0">
-            <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-5" />
+            <div className="h-px bg-linear-to-r from-transparent via-base-content/10 to-transparent mb-5" />
             {children}
           </div>
         </div>

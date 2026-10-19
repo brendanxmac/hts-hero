@@ -3,6 +3,7 @@ import { callJson } from "../hts-revision-diff/claude"
 import type { ClaudeUsage } from "../hts-revision-diff/types"
 import { fetchText } from "../tariff-sources/text"
 import { MODELS } from "./claude"
+import { logUsage } from "../adcvd/usage"
 
 // The scope reader: exactly what a tariff action covers, read from its PDFs. Each source's text
 // misses annex tables that are images and stops at 200 codes, so this collects the update's PDFs
@@ -147,6 +148,7 @@ export const readUpdateScope = async (db: Db, updateId: string, { force = false 
   }
   if (!answer) throw new Error("The documents were too long to read")
   const { data, usage } = answer
+  await logUsage(db, usage, { pipeline: "tariff_updates", step: "scope_read", ref: updateId })
   const notes = [
     data.complete ? null : "The documents point to a list that isn't among them: codes may be incomplete.",
     left.length ? `Too long to read with the rest, so left out: ${left.map((d) => d.title).join(", ")}.` : null,

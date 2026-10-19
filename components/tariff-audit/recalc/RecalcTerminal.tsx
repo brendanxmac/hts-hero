@@ -48,7 +48,7 @@ export const RecalcTerminal = ({ example }: { example: AuditExample }) => {
         <span className="text-teal-300">rules in force that day</span>
       </div>
       <div className="overflow-x-auto px-5 py-4">
-        <div className="min-w-[34rem]">
+        <div className="min-w-136">
           <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_6.5rem] gap-3 pb-2 text-xs uppercase tracking-wider text-slate-500">
             <span>Line</span>
             <span className="text-right">Paid</span>
@@ -58,7 +58,7 @@ export const RecalcTerminal = ({ example }: { example: AuditExample }) => {
           {example.lines.map((l, i) => {
             const d = l.paid - l.owed;
             return (
-              <div key={`${l.code}-${l.name}`} className={`grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_6.5rem] gap-3 py-1.5 ${fade(i)} ${d ? "rounded bg-rose-500/10" : ""}`}>
+              <div key={`${l.code}-${l.name}`} className={`grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_6.5rem] gap-3 py-1.5 ${fade(i)} ${d ? "rounded-sm bg-rose-500/10" : ""}`}>
                 <span className="truncate text-slate-200">
                   {l.name} {l.code && <span className="text-slate-500">{l.code}</span>}
                 </span>

@@ -481,7 +481,7 @@ Rules:
 
 ## 15. Tracker app layer (the paid dashboard)
 
-`/tariff-tracker` is the product people pay for, so it gets its own layer: **simple, colorful, and always about the money**. Chosen Oct 2026 as "Option D" (the Atlas look with the Command concept's charts and path to lower duty; mockups on the "Tariff Tracker Dashboard Concepts" canvas). It replaces §1–13's flat, quiet analytical look inside the Tracker, the calculator (`/duty-calculator` and the country pages, through §14's `.follow-theme`) and the HTS code pages (`/hts/[code]`, since Oct 2026); other tools and SEO pages keep §1–13, landing pages keep §14. Built Oct 2026: the palette is `palette.tracker` in `components/ui/theme/palette.js`, applied by the theme plugin inside `.hts-theme.hts-tracker` on the same variables as everything else (so existing themed components in the Tracker follow it), plus `--tt-*` extras exposed as Tailwind colors (`bg-tt-soft`, `bg-tt-side`, `bg-tt-side-card`, `bg-tt-side-active`, `tt-sky`, `tt-slate`). The sidebar carries `.hts-tracker-on-dark`, which gives it the dark palette in both modes. Class helpers: `import * as tt from "@/components/ui/styles/tracker"` (`panel`, `tile`, `title`, `metric`, `eyebrow(tone)`, `chip(tone)`, `numberChip(tone)`, `metricSm`). **Inside this look, `ui.*` and `tt.*` draw the same thing** (Oct 2026, through `tracker:` classes on the `ui` helpers): `ui.card` and `tt.panel` are one card (20px corners, 1px border, no shadow), `ui.cardTitle` is `tt.title` (Sora 18), `ui.metric.*` are Sora, and there is one button, `ui.button` (no `tt.button`). Toggles anywhere in the Tracker and the calculator are `SegmentedControl` (one look: the selected option raised in white on a soft track, never a brand fill), never a hand-rolled track; tabs that switch what a whole panel shows (the calculator results' Duty · Compare · History) are `TabBar` (`components/ui/TabBar`): plain labels along the bottom of the panel's header, the open one in the brand color with an underline on the header's rule. Fonts: `trackerSans` (Figtree) and `trackerDisplay` (Sora) in `components/ui/font.ts`. Inside the Tracker, `rounded-lg` panels round to 20px.
+`/tariff-tracker` is the product people pay for, so it gets its own layer: **simple, colorful, and always about the money**. Chosen Oct 2026 as "Option D" (the Atlas look with the Command concept's charts and path to lower duty; mockups on the "Tariff Tracker Dashboard Concepts" canvas). It replaces §1–13's flat, quiet analytical look inside the Tracker, the calculator (`/duty-calculator` and the country pages, through §14's `.follow-theme`) and the HTS code pages (`/hts/[code]`, since Oct 2026); other tools and SEO pages keep §1–13, landing pages keep §14. Built Oct 2026: the palette is `palette.tracker` in `components/ui/theme/palette.js`, applied by the theme plugin inside `.hts-theme.hts-tracker` on the same variables as everything else (so existing themed components in the Tracker follow it), plus `--tt-*` extras exposed as Tailwind colors (`bg-tt-soft`, `bg-tt-side`, `bg-tt-side-card`, `bg-tt-side-active`, `tt-sky`, `tt-slate`). The sidebar carries `.hts-tracker-on-dark`, which gives it the dark palette in both modes. Class helpers: `import * as tt from "@/components/ui/styles/tracker"` (`panel`, `tile`, `title`, `metric`, `eyebrow(tone)`, `chip(tone)`, `numberChip(tone)`, `metricSm`). **Inside this look, `ui.*` and `tt.*` draw the same thing** (Oct 2026, through `tracker:` classes on the `ui` helpers): `ui.card` and `tt.panel` are one card (20px corners, 1px border, the two-layer `--tt-shadow`), `ui.cardTitle` is `tt.title` (Sora 18), `ui.metric.*` are Sora, and there is one button, `ui.button` (no `tt.button`). Toggles anywhere in the Tracker and the calculator are `SegmentedControl` (one look: the selected option raised in white on a soft track, never a brand fill), never a hand-rolled track; tabs that switch what a whole panel shows (the calculator results' Duty · Compare · History) are `TabBar` (`components/ui/TabBar`): plain labels along the bottom of the panel's header, the open one in the brand color with an underline on the header's rule. Fonts: `trackerSans` (Figtree) and `trackerDisplay` (Sora) in `components/ui/font.ts`. Inside the Tracker, `rounded-lg` panels round to 20px.
 
 ### Principles
 
@@ -493,21 +493,27 @@ Rules:
 
 ### Color (light / dark)
 
+**Surfaces (Oct 2026 review).** Five roles, generated in OKLCH from the cobalt hue (265) at very low chroma so each step looks even, and lighter as they come forward in dark: **ground** (the page, `bg-base-200`) → **surface** (cards, `bg-base-100`) → **container** (fills inside a card: totals, tips, a table's head, `bg-tt-soft`) → **container high** (hover and selected rows, `bg-tt-soft-high`). Lines: **border** (`border-base-300`, at least 1.4:1 against a card) for edges and rows, and the **strong rule** (`border-tt-rule`, about 1.8:1) only where structure changes (under a table's head, above a total). Inside a card (`ui.card` and `tt.panel` carry `tt-card`), any `bg-base-200` fill takes the container tone, so a tint never reads as a hole through to the ground. Cards cast the Tracker's two-layer shadow (`--tt-shadow`: a tight edge and a soft spread); in dark the tone does the lifting and the shadow only settles the edge.
+
 | Role | Light | Dark | Soft tint |
 |---|---|---|---|
-| Ground | `#EEF0F5` | `#08090D` | |
-| Surface (cards) | `#FFFFFF` | `#111319` | |
-| Soft (tiles inside cards) | `#F5F6FA` | `#181B23` | |
-| Border | `#E3E6EE` | `#232733` | |
+| Ground | `#E3E6EE` | `#0B0D13` | |
+| Surface (cards) | `#FFFFFF` | `#161A22` | |
+| Container (fills inside cards) | `#F2F4F9` | `#1F232C` | |
+| Container high (hover, selected) | `#E8EBF1` | `#262B36` | |
+| Border | `#D4D7E0` | `#333843` | |
+| Strong rule | `#BFC4CF` | `#3F4551` | |
 | Text | `#0E1220` | `#F1F3F8` | |
-| Muted text | `#5D6475` | `#9298A6` | |
-| Sidebar (always dark) | `#0E1220`, active `#20273D`, card `#1A2033` | `#111319`, active `#1F2431`, card `#1A1E28` | |
+| Muted text | 60–70% of text (never below 50% for words) | same | |
+| Sidebar (always dark) | `#0E1220`, active `#20273D`, card `#1A2033` | `#101319` (a step darker than cards), active `#20252F`, card `#191D26` | |
 | Cobalt | `#2F49D1` | `#8EA2FF` | 9% / 14% |
-| Green | `#138A5B` | `#34C98B` | 10% / 14% |
-| Red | `#C2412D` | `#FF7D6E` | 9% / 14% |
+| Green | `#138A5B` | `#4FD39B` | 10% / 14% |
+| Red | `#C2412D` | `#FF8A7C` | 9% / 14% |
 | Amber | `#A86A0C` | `#F2B24C` | 10% / 14% |
 | Sky (second series) | `#7CC4F2` | `#5CC3F5` | |
 | Slate (base duty, quiet marks) | `#CDD2E0` | `#3A4154` | |
+
+Dark mode's colors are a step lighter and softer than light mode's, so they don't vibrate on dark surfaces; check every text color at 4.5:1 on the surface it sits on.
 
 Soft tints are the role color at the given opacity, for chips and highlight panels. The heat ramp is cobalt alone, faint to deep; empty cells stay Soft.
 
@@ -517,7 +523,7 @@ Sora (600) for headlines and every big number; Figtree (400–700) for everythin
 
 ### Shape and space
 
-Radii: cards and the sidebar 20 (`rounded-lg` here); tiles, notices, dropzones and nav items 12 (`rounded-xl`); buttons and chips full pills. Page gutter and card gaps 16; card padding 20–24 (`px-5 sm:px-6`); tile padding 16–18. Buttons and nav items 40–44 tall. Cards have a 1px border and no shadow; only floating things (dialogs, popovers, locked overlays) cast one.
+Radii: cards and the sidebar 20 (`rounded-lg` here); tiles, notices, dropzones and nav items 12 (`rounded-xl`); buttons and chips full pills. Page gutter and card gaps 16; card padding 20–24 (`px-5 sm:px-6`); tile padding 16–18. Buttons and nav items 40–44 tall. Cards have a 1px border and the Tracker's two-layer shadow (`--tt-shadow`); floating things (dialogs, popovers, locked overlays) cast a bigger one.
 
 ### Components
 

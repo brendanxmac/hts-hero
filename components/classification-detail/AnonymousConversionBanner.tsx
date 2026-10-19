@@ -25,19 +25,19 @@ export function AnonymousConversionBanner({
   )}&sign-up=true`;
 
   return (
-    <div className="border-b border-primary/20 bg-gradient-to-r from-primary/[0.06] via-base-100 to-secondary/[0.06]">
+    <div className="border-b border-primary/20 bg-linear-to-r from-primary/[0.06] via-base-100 to-secondary/[0.06]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5">
           {/* Icon + messaging */}
           <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0">
             <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-30 blur-xl animate-pulse" />
+              <div className="absolute inset-0 rounded-full bg-linear-to-r from-primary to-secondary opacity-30 blur-xl animate-pulse" />
               <div className="relative p-2 md:p-3 rounded-full bg-base-100 shadow-lg border border-primary/20">
                 <LockClosedIcon className="w-6 h-6 md:w-7 md:h-7 text-primary" />
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-base md:text-lg font-bold text-base-content leading-snug">
+              <p className="text-base md:text-lg md:leading-7 font-bold text-base-content leading-snug">
                 Create a <span className="text-primary">FREE</span> account to
                 save your results & verify your code!
               </p>

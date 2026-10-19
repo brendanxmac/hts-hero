@@ -51,7 +51,7 @@ export const ChangeFeed = ({ days, onOpen }: { days: ChangeDay[]; onOpen: (key: 
                     <li key={c.product.key}>
                       <button
                         type="button"
-                        className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-md px-2 py-1.5 text-left text-sm hover:bg-base-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-md px-2 py-1.5 text-left text-sm hover:bg-base-200 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
                         onClick={() => onOpen(c.product.key)}
                       >
                         <span className="flex min-w-0 items-center gap-2">

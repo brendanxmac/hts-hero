@@ -5,9 +5,9 @@ import { trackerDisplay } from "../font";
 
 type Tone = "primary" | "success" | "error" | "warning" | "neutral";
 
-// A panel on the ground: the one card (ui.card's look here: 20px corners, a 1px border, no
-// shadow), without clipping, so a dropdown inside can reach past it
-export const panel = "rounded-lg border border-base-300 bg-base-100";
+// A panel on the ground: the one card (ui.card's look here: 20px corners, a 1px border, the
+// Tracker's shadow), without clipping, so a dropdown inside can reach past it
+export const panel = "tt-card rounded-lg border border-base-300 bg-base-100 shadow-[var(--tt-shadow)]";
 
 // Padding inside a panel
 export const panelPad = "p-6 lg:p-7";

@@ -11,7 +11,7 @@ export default function TariffImpactCheckerPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex flex-col gap-2">
               <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-                <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
+                <span className="bg-linear-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
                   Tariff Impact Checker
                 </span>
               </h1>

@@ -16,9 +16,9 @@ export const TransportField = ({ id, value, onChange }: { id?: string; value: Mo
       <div className="relative">
         <Listbox.Button id={id} className={`${ui.input} flex items-center justify-between gap-2 text-left`}>
           <span className="truncate font-medium">{current.label}</span>
-          <ChevronUpDownIcon className="h-4 w-4 shrink-0 text-base-content/50" aria-hidden />
+          <ChevronUpDownIcon className="h-4 w-4 shrink-0 text-base-content/60" aria-hidden />
         </Listbox.Button>
-        <Listbox.Options className={`${ui.popover} absolute z-30 mt-2 w-full min-w-40 focus:outline-none`}>
+        <Listbox.Options className={`${ui.popover} absolute z-30 mt-2 w-full min-w-40 focus:outline-hidden`}>
           {TRANSPORT_MODES.map((mode) => (
             <Listbox.Option
               key={mode.id}

@@ -3,6 +3,7 @@ import { Cta, Eyebrow, P, Title } from "../kit/parts"
 import { C } from "../kit/brand"
 import { Link, Text } from "@react-email/components"
 import { SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
+import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
 // The emails Supabase Auth sends (confirm sign-up, magic link, password reset, email change,
 // invite), in the HTS Hero look. Supabase fills the {{ .ConfirmationURL }}-style placeholders, so
@@ -21,9 +22,9 @@ export const AUTH_EMAILS: Record<AuthKind, { subject: string; eyebrow: string; t
     // The Tracker MVP (features.ts): no savings line while savings are off
     body: SAVINGS_ENABLED
       ? "Confirm this address to access Tariff Tracker. Then, add your HTS codes and countries, and see every duty, change, and possible saving on each import."
-      : "Confirm this address to access Tariff Tracker. Then, add your HTS codes and countries, see every duty on each import, and get an alert when a tariff change hits one.",
+      : `Confirm this address to start your free ${REVERSE_TRIAL.days}-day Tariff Tracker trial: everything, on up to ${REVERSE_TRIAL.imports} imports, with no credit card. Then, add your HTS codes and countries, see every duty on each import, and get an alert when a tariff change hits one.`,
     button: "Confirm and open Tariff Tracker",
-    preview: "Confirm your email to access Tariff Tracker.",
+    preview: `Confirm your email to start your free ${REVERSE_TRIAL.days}-day Tariff Tracker trial.`,
   },
   magic_link: {
     subject: "Your HTS Hero sign-in link",
@@ -72,7 +73,10 @@ export default function AuthEmail({ kind = "confirm" }: { kind?: AuthKind }) {
         {e.button}
       </Cta>
       <Text style={{ margin: "4px 0 0", fontSize: 12, lineHeight: "18px", color: C.muted }}>
-        Button not working? Copy this link: <Link href={URL} style={{ color: C.cobalt, wordBreak: "break-all" }}>{URL}</Link>
+        Button not working? Copy this link:{" "}
+        <Link href={URL} style={{ color: C.cobalt, wordBreak: "break-all" }}>
+          {URL}
+        </Link>
       </Text>
     </EmailLayout>
   )

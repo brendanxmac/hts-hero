@@ -88,7 +88,7 @@ export const SavingsFinder = ({ examples }: { examples: SavingsExample[] }) => {
               role="tab"
               aria-selected={active}
               onClick={() => setIdx(i)}
-              className={`relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-lg px-2 py-2 text-center text-xs font-semibold leading-tight transition-colors duration-300 sm:flex-row sm:gap-1.5 sm:text-sm ${active ? "bg-base-100 text-base-content shadow-sm" : "text-base-content/60 hover:text-base-content"}`}
+              className={`relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-lg px-2 py-2 text-center text-xs font-semibold leading-tight transition-colors duration-300 sm:flex-row sm:gap-1.5 sm:text-sm sm:leading-5 ${active ? "bg-base-100 text-base-content shadow-xs" : "text-base-content/60 hover:text-base-content"}`}
             >
               <Icon className={`h-4 w-4 shrink-0 ${active ? "text-primary" : "text-base-content/60"}`} aria-hidden />
               <span>{tab}</span>
@@ -101,7 +101,7 @@ export const SavingsFinder = ({ examples }: { examples: SavingsExample[] }) => {
       </div>
 
       {/* One fixed height for every find */}
-      <div className="flex h-[23rem] flex-col p-4 sm:p-5">
+      <div className="flex h-92 flex-col p-4 sm:p-5">
         <p className="text-base font-semibold">
           {e.product}, from {e.countryName}
           <span className={`${mono.className} ml-2 text-xs font-normal text-base-content/60`}>{e.htsno}</span>

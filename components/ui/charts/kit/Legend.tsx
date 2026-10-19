@@ -5,7 +5,7 @@ export const Legend = ({ items }: { items: { label: string; color: string; shape
     {items.map((item) => (
       <span key={item.label} className="inline-flex items-center gap-1.5">
         <span
-          className={item.shape === "line" ? "h-0.5 w-4 rounded" : item.shape === "dot" ? "h-2.5 w-2.5 rounded-full" : "h-2.5 w-2.5 rounded-sm"}
+          className={item.shape === "line" ? "h-0.5 w-4 rounded-sm" : item.shape === "dot" ? "h-2.5 w-2.5 rounded-full" : "h-2.5 w-2.5 rounded-xs"}
           // Series color (DESIGN_SYSTEM §10)
           style={{ background: item.color }}
           aria-hidden

@@ -131,7 +131,7 @@ const SlackMessage = ({ who, team, time, children }: { who: string; team?: boole
     <div className="flex min-w-0 flex-col gap-1">
       <div className="flex items-baseline gap-2">
         <span className="text-sm font-bold text-base-content">{who}</span>
-        <span className="text-xs text-base-content/50">{time}</span>
+        <span className="text-xs text-base-content/60">{time}</span>
       </div>
       <p className="text-sm leading-relaxed text-base-content/80">{children}</p>
     </div>
@@ -187,7 +187,7 @@ export const ExpertHelp = () => {
         <div className="grid items-center gap-10 px-6 py-10 sm:px-10 lg:grid-cols-[1.1fr_1fr] lg:gap-14 lg:px-12 lg:py-14">
           <div className="flex flex-col gap-6">
             <span className={`${tt.chip("primary")} self-start`}>HTS Hero Managed</span>
-            <h1 id="tt-managed-title" className={`${tt.display} m-0 text-4xl font-semibold leading-[1.1] tracking-tight xl:text-5xl`}>
+            <h1 id="tt-managed-title" className={`${tt.display} m-0 text-4xl font-semibold leading-[1.1] tracking-tight xl:text-5xl xl:leading-none`}>
               Tariff Experts on Your Team.
             </h1>
             <p className="max-w-xl text-lg leading-relaxed text-base-content/75">

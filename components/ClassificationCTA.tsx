@@ -85,7 +85,7 @@ export const ClassificationCTA = ({
   showWorkflowPreview,
 }: ClassificationCTAProps) => {
   return (
-    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.04] via-base-100 to-secondary/[0.04]">
+    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl border border-primary/20 bg-linear-to-br from-primary/[0.04] via-base-100 to-secondary/[0.04]">
       {/* Decorative bg */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-24 -left-24 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 bg-primary/10 rounded-full blur-3xl" />
@@ -107,7 +107,7 @@ export const ClassificationCTA = ({
               {title}
             </h3>
             {subtitle && (
-              <p className="text-base-content/60 text-sm md:text-base lg:text-lg leading-relaxed max-w-2xl mx-auto">
+              <p className="text-base-content/60 text-sm md:text-base md:leading-6 lg:text-lg lg:leading-7 leading-relaxed max-w-2xl mx-auto">
                 {subtitle}
               </p>
             )}
@@ -154,7 +154,7 @@ export const ClassificationCTA = ({
                   <div key={step.title} className="relative flex flex-col">
                     {/* Connector line (4-col layout only) */}
                     {index < WORKFLOW_STEPS.length - 1 && (
-                      <div className="hidden lg:block absolute top-5 left-[calc(50%+24px)] right-0 h-px bg-gradient-to-r from-primary/20 to-primary/5 z-0" />
+                      <div className="hidden lg:block absolute top-5 left-[calc(50%+24px)] right-0 h-px bg-linear-to-r from-primary/20 to-primary/5 z-0" />
                     )}
 
                     <div className="relative z-10 flex flex-col items-center text-center gap-2">
@@ -167,7 +167,7 @@ export const ClassificationCTA = ({
                         </span>
                       </div>
 
-                      <h5 className="font-bold text-sm sm:text-base text-base-content leading-tight">
+                      <h5 className="font-bold text-sm sm:text-base sm:leading-6 text-base-content leading-tight">
                         {step.title}
                       </h5>
                       <p className="text-xs text-base-content/60 leading-relaxed max-w-[240px]">

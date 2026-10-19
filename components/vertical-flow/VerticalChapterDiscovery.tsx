@@ -161,7 +161,7 @@ export const VerticalChapterDiscovery = () => {
   const isLoading = isFetchingChapters || chapterCandidates.length === 0;
 
   return (
-    <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+    <div className="rounded-xl border border-base-300 bg-base-100 shadow-xs overflow-hidden">
       {/* Header */}
       <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
         <div className="flex items-center gap-2.5">

@@ -7,19 +7,20 @@ import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { LINKS, contactLink } from "../lib/links";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
-import { ANNUAL_DISCOUNT, Billing, TRACKER_TIERS, TRIAL_ALLOWANCE } from "../lib/pricing";
+import { FREE_FOREVER_LINE, LAUNCH_PITCH, SAVINGS_AUDITS_COMING } from "@/components/ui/marketing/comingSoon";
+import { ANNUAL_DISCOUNT, Billing, REVERSE_TRIAL, TRACKER_TIERS, launchPricingActive } from "../lib/pricing";
 import { PlanPrice } from "../plans/PlanPrice";
-import { CALCULATOR_FEATURES, TRACKER_FEATURES, TRACKER_OPTIONS, TrackerOption } from "./plans";
+import { CALCULATOR_FEATURES, TRACKER_FEATURES, TRACKER_OPTIONS, TrackerOption, optionPerImport } from "./plans";
 import { TierCard } from "./TierCard";
 import { TrackerTierPicker } from "./TrackerTierPicker";
 
 // The pricing band on /duty-calculator: the free calculator and the Tariff Tracker side by side,
 // with one billing switch (only while Tracker annual billing is on; MVP_TRIM.md). The Tracker card's
 // picker runs through the paid tiers, and the card's price and button follow the stop picked; every
-// account tracks a few imports free. See PRICING.md.
+// account gets the Tracker free for 14 days (REVERSE_TRIAL), then keeps Tariff News alerts and sourcing insights free. See PRICING.md.
 // The headline plan's button, in the Tracker's primary color on its dark card
 const BUTTON_ON_DARK =
-  "inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-content transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50";
+  "inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-content transition-colors hover:bg-primary/90 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/50";
 
 export const TariffPricing = () => {
   const [billing, setBilling] = useState<Billing>("monthly");
@@ -38,7 +39,8 @@ export const TariffPricing = () => {
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <SectionIntro eyebrow="Pricing" title="Calculate for free. Track your imports when you're ready." id="pricing-title">
             This calculator is free and unlimited. Track your own imports with the Tariff Tracker and run impact checks to see
-            exactly how each tariff action hits them: track {TRIAL_ALLOWANCE.alertImports} imports free. No credit card.
+            exactly how each tariff action hits them. Try it free for {REVERSE_TRIAL.days} days: everything, on up to{" "}
+            {REVERSE_TRIAL.imports} imports, no credit card. {FREE_FOREVER_LINE} {SAVINGS_AUDITS_COMING}
           </SectionIntro>
           {TRACKER_ANNUAL_ENABLED && (
             <div className="shrink-0">
@@ -65,7 +67,7 @@ export const TariffPricing = () => {
           <TierCard
             id="plan-tracker"
             name="Tariff Tracker"
-            badge="Free to start"
+            badge={`Free for ${REVERSE_TRIAL.days} days`}
             dark
             description="Every tariff on your imports tracked, with alerts and impact checks."
             price={
@@ -81,6 +83,9 @@ export const TariffPricing = () => {
                   listPrice={trackerOption.price ?? TRACKER_TIERS[0].price}
                   billing={billing}
                   prefix={isLowestTier ? "From" : undefined}
+                  note={`${optionPerImport(trackerOption, billing)} per import, per month · ${
+                    billing === "annual" && TRACKER_ANNUAL_ENABLED ? "billed yearly" : "billed monthly"
+                  }`}
                   dark
                 />
               )
@@ -96,7 +101,7 @@ export const TariffPricing = () => {
                 </a>
               ) : (
                 <Link href={LINKS.signUp} className={`${BUTTON_ON_DARK}`}>
-                  Start free
+                  Start your free {REVERSE_TRIAL.days}-day trial
                   <ArrowRightIcon className="h-5 w-5" aria-hidden />
                 </Link>
               )
@@ -109,6 +114,7 @@ export const TariffPricing = () => {
         <p className={`${mk.small} mt-8`}>
           Prices in USD.{" "}
           {TRACKER_ANNUAL_ENABLED ? `Annual plans are billed once a year at ${ANNUAL_DISCOUNT * 100}% off. ` : "Tracker plans are billed monthly. "}
+          {launchPricingActive() ? `${LAUNCH_PITCH} ` : ""}
           <Link href="/tariff-monitor" className={mk.link}>
             See how the Tariff Tracker works
           </Link>{" "}

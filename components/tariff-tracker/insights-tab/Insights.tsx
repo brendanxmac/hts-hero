@@ -2,7 +2,11 @@
 
 import { ChartStandIn } from "@/components/ui/stand-ins";
 import * as ui from "@/components/ui/styles";
+import { LockedPreview } from "@/components/ui/LockedPreview";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { AccountGate } from "../access/AccountGate";
+import { useTrackerAccess } from "../access/accessContext";
+import { trialState } from "../plan/trial";
 import { InsightsProgress } from "../insights/InsightsProgress";
 import { NeedsProducts } from "../shell/NeedsProducts";
 import { sectionBySlug } from "../sections";
@@ -19,7 +23,8 @@ import { Takeaways } from "./builtins/Takeaways";
 import { catalogScale, InsightsInput } from "./lib/data";
 import { useInsightsInput } from "./shared";
 
-// The Insights tab: what the user's own imports teach them, free with an account. The insights
+// The Insights tab: what the user's own imports teach them, on the 14-day trial and paid plans
+// (signed out, a free-account gate; after the trial, shown as lost). The insights
 // are picked for the catalog's size: a handful of imports are each explained, dozens are grouped,
 // hundreds are ranked and concentrated. Charts of a group (a tariff, a country, a chapter) open
 // Your Imports filtered to it. Separate from Rate history for now; the two may merge.
@@ -87,6 +92,7 @@ const InsightsReport = () => {
 
 export const Insights = () => {
   const { items, loading } = useTracker();
+  const { access, openUpgrade } = useTrackerAccess();
   const section = sectionBySlug("insights")!;
   if (loading) return <div className={`${ui.skeleton} h-80 w-full`} />;
   if (!items.length) {
@@ -105,9 +111,29 @@ export const Insights = () => {
       teaser={`Insights on your ${items.length.toLocaleString("en-US")} imports: where the duty comes from, and what changed.`}
       points={section.planned}
       preview={<ChartStandIn title="Where Your Duty Comes From" />}
-      minHeight="min-h-[28rem]"
+      minHeight="min-h-112"
     >
-      <InsightsReport />
+      {trialState(access).ended ? (
+        // Part of the 14-day trial and the paid plans (PRICING.md): after the trial, shown as lost
+        <LockedPreview
+          title="Insights Was Part of Your Free Trial"
+          teaser={`Get back the insights on your ${items.length.toLocaleString("en-US")} imports: where the duty comes from, and what changed.`}
+          points={section.planned}
+          preview={<ChartStandIn title="Where Your Duty Comes From" />}
+          minHeight="min-h-112"
+          onShown={() => trackEvent(MixpanelEvent.LOCKED_FEATURE_VIEWED, { feature: "insights", reason: "plan", page: "tracker" })}
+          cta={{
+            label: "Get Insights back",
+            onClick: () => {
+              trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature: "insights", reason: "plan", page: "tracker" });
+              openUpgrade("insights");
+            },
+          }}
+          note="Cancel anytime. Your catalog stays free."
+        />
+      ) : (
+        <InsightsReport />
+      )}
     </AccountGate>
   );
 };

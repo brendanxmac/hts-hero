@@ -15,8 +15,10 @@ import { CHANGELOG_PATH } from "../changelog/constants";
 
 const day = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
-// The three newest tariff actions, each opening its update (color is meaning: red a new or higher
-// tariff, green one lifted, amber a heads-up), and the way to the news page to sign up for them
+// The two newest tariff actions, each opening its update (color is meaning: red a new or higher
+// tariff, green one lifted, amber a heads-up), and the way to the news page to sign up for them,
+// in the brand color so it stands out from the page
+const SHOWN = 2;
 const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string }) => (
   <section aria-labelledby="dc-news" className={`${tt.panel} flex w-full flex-col lg:max-w-md`}>
     <div className="flex items-center justify-between gap-3 px-5 pb-1 pt-4">
@@ -33,7 +35,7 @@ const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string
       </Link>
     </div>
     <ul className="m-0 flex list-none flex-col px-2 pb-1.5">
-      {updates.map((u) => (
+      {updates.slice(0, SHOWN).map((u) => (
         <li key={u.slug}>
           <Link href={`/tariff-updates/${u.slug}`} className="flex items-start gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-tt-soft">
             <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${NEWS_DOTS[newsToneOf(u.kind)]}`} aria-hidden />
@@ -50,13 +52,13 @@ const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string
     </ul>
     <Link
       href="/tariff-updates"
-      className="mt-auto flex items-center justify-between gap-2 rounded-b-lg border-t border-base-300 bg-tt-soft px-5 py-3 text-sm font-semibold text-base-content transition-colors hover:text-primary"
+      className="group mt-auto flex items-center justify-between gap-2 rounded-b-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-content transition-colors hover:bg-primary/90"
     >
       <span className="flex items-center gap-2">
-        <BellAlertIcon className="h-4 w-4 text-primary" aria-hidden />
+        <BellAlertIcon className="h-4 w-4" aria-hidden />
         Want tariff news alerts in your inbox?
       </span>
-      <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+      <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
     </Link>
   </section>
 );
@@ -68,11 +70,11 @@ export const Hero = ({ latestNews, revisionTitle }: { latestNews: PublicUpdate[]
       <div className="flex max-w-3xl flex-col gap-4">
         <h1 className="m-0 flex flex-col gap-3">
           <span className={tt.eyebrow("primary")}>Free US Import Duty &amp; Tariff Calculator</span>
-          <span className={`${tt.display} text-4xl font-semibold leading-tight tracking-tight text-base-content sm:text-5xl`}>
+          <span className={`${tt.display} text-4xl font-semibold leading-tight tracking-tight text-base-content sm:text-5xl sm:leading-none`}>
             Know what you owe on every import. <span className="text-primary">And why.</span>
           </span>
         </h1>
-        <p className="m-0 text-base leading-relaxed text-base-content/70 sm:text-lg">
+        <p className="m-0 text-base leading-relaxed text-base-content/70 sm:text-lg sm:leading-7">
           Every tariff, exemption, and fee in effect for your imports, line by line with its legal source.
         </p>
         <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-base-content/60">

@@ -87,7 +87,7 @@ export const AuditRequestForm = () => {
             options={IMPORT_VALUES.map((v) => ({ value: v, label: v }))}
             placeholder="Choose a range"
             className="w-full"
-            buttonClassName="!h-11 !rounded-lg !px-3.5 !text-base"
+            buttonClassName="h-11! rounded-lg! px-3.5! text-base!"
           />
         </label>
       </div>

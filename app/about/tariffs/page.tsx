@@ -152,7 +152,7 @@ export default function Home() {
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-5">
               See The{" "}
-              <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
                 Latest
               </span>{" "}
               Tariffs

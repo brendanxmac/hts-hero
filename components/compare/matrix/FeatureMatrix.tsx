@@ -20,7 +20,7 @@ export function FeatureMatrix({
     <div className={ui.card}>
       <div className="overflow-x-auto">
         {/* Narrower than this, the tool columns crush their notes; the table scrolls instead */}
-        <table className="w-full min-w-[40rem] text-sm">
+        <table className="w-full min-w-160 text-sm">
           <thead className="bg-base-200">
             <tr>
               <th scope="col" className={`${ui.label} sticky left-0 z-10 w-64 bg-base-200 px-5 py-3 text-left`}>

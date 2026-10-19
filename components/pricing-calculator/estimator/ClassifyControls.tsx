@@ -62,8 +62,8 @@ export const ClassifyControls = ({
                 role="radio"
                 aria-checked={active}
                 onClick={() => onChange({ audience: option.id as ClassifyAudience })}
-                className={`h-9 whitespace-nowrap rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
-                  active ? "bg-base-100 text-base-content shadow-sm ring-1 ring-base-300" : "text-base-content/70 hover:text-base-content"
+                className={`h-9 whitespace-nowrap rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60 ${
+                  active ? "bg-base-100 text-base-content shadow-xs ring-1 ring-base-300" : "text-base-content/70 hover:text-base-content"
                 }`}
               >
                 {option.label}

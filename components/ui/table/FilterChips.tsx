@@ -2,15 +2,15 @@
 
 import "./meta";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { Table } from "@tanstack/react-table";
+import type { DataTableInstance } from "./features";
 import * as ui from "@/components/ui/styles";
 
 // The picked filter values as chips (one click takes one off), the search as one more, and the
 // way to clear them all. Nothing when no filter or search is on.
-export const FilterChips = <T,>({ table }: { table: Table<T> }) => {
-  const search = (table.getState().globalFilter as string) ?? "";
-  const chips = table.getState().columnFilters.flatMap((f) => {
-    const column = table.getColumn(f.id);
+export const FilterChips = <T,>({ table }: { table: DataTableInstance<T> }) => {
+  const search = (table.store.state.globalFilter as string) ?? "";
+  const chips = table.store.state.columnFilters.flatMap((f) => {
+    const column = table.getAllLeafColumns().find((c) => c.id === f.id);
     const facet = column?.columnDef.meta?.facet;
     if (!column || !facet || !Array.isArray(f.value)) return [];
     return (f.value as string[]).map((value) => {

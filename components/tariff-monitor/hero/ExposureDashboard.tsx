@@ -50,7 +50,7 @@ const HeatMap = () => (
             </th>
             {r.rates.map((p, i) => (
               // The heat color is a runtime value
-              <td key={i} title={`${MONTHS[i]}: ${p}%`} className="h-6 rounded" style={{ backgroundColor: heat(p) }} />
+              <td key={i} title={`${MONTHS[i]}: ${p}%`} className="h-6 rounded-sm" style={{ backgroundColor: heat(p) }} />
             ))}
           </tr>
         ))}

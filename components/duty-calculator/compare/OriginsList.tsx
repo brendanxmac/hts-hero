@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import type { TableColumnDef } from "@/components/ui/table/features";
 import { Sparkline, time } from "@/components/ui/charts/kit";
 import { StackedBar } from "@/components/ui/charts/StackedBar";
 import * as ui from "@/components/ui/styles";
@@ -113,7 +113,7 @@ export const OriginsList = ({
   // Dollars only with a value to work them out from
   const value = customsValue && customsValue > 0 ? customsValue : null;
 
-  const columns = useMemo<ColumnDef<Row, any>[]>(
+  const columns = useMemo<TableColumnDef<Row, any>[]>(
     () => [
       {
         id: "country",
@@ -243,7 +243,7 @@ export const OriginsList = ({
               {totalImports > 0 && <span className="block text-xs text-base-content/60">{shareOf(r.imports, totalImports)} of imports</span>}
             </span>
           ) : (
-            <span className="text-base-content/40">—</span>
+            <span className="text-base-content/50">—</span>
           ),
       },
       {
@@ -255,7 +255,7 @@ export const OriginsList = ({
           r.segments.length ? (
             <Sparkline
               points={r.segments.map((s) => ({ x: time(s.from), y: s.pct }))}
-              color={isYours(r) ? PRIMARY_MARK : "oklch(var(--bc) / 0.45)"}
+              color={isYours(r) ? PRIMARY_MARK : "color-mix(in oklab, var(--color-base-content) 45%, transparent)"}
               step
               to={today}
               height={24}
@@ -272,7 +272,7 @@ export const OriginsList = ({
         meta: { align: "right", width: "hidden lg:table-cell" },
         cell: ({ row: { original: r } }) =>
           r.swing === null ? (
-            <span className="text-base-content/40">…</span>
+            <span className="text-base-content/50">…</span>
           ) : r.changes === 0 ? (
             <span className="text-base-content/60">Steady</span>
           ) : (
@@ -324,7 +324,7 @@ export const OriginsList = ({
       estimateRowHeight={52}
       // Yours stands out as the list scrolls past it: a brand tint across the row and a brand bar
       // down its left edge
-      rowClassName={(r) => (isYours(r) ? "!bg-primary/15 hover:!bg-primary/20 [&>*:first-child]:shadow-[inset_4px_0_0_0_oklch(var(--p))]" : "")}
+      rowClassName={(r) => (isYours(r) ? "!bg-primary/15 hover:!bg-primary/20 [&>*:first-child]:shadow-[inset_4px_0_0_0_var(--color-primary)]" : "")}
       toolbar={toolbar}
       empty={<p className="text-sm text-base-content/70">No country matches.</p>}
     />

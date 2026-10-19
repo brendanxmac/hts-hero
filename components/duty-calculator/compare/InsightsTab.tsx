@@ -272,15 +272,15 @@ export const InsightsTab = ({
                 </div>
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-base-content/70">
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-sm bg-success" aria-hidden />
+                    <span className="h-2.5 w-2.5 rounded-xs bg-success" aria-hidden />
                     Cheaper than {yours?.country.name} <span className="font-semibold tabular-nums text-base-content">{formatImportValue(cheaperValue)}</span>
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-sm bg-primary" aria-hidden />
+                    <span className="h-2.5 w-2.5 rounded-xs bg-primary" aria-hidden />
                     {yours?.country.name} <span className="font-semibold tabular-nums text-base-content">{formatImportValue(yoursValue)}</span>
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-sm bg-base-200" aria-hidden />
+                    <span className="h-2.5 w-2.5 rounded-xs bg-base-200" aria-hidden />
                     The rest <span className="font-semibold tabular-nums text-base-content">{formatImportValue(Math.max(0, total - cheaperValue - yoursValue))}</span>
                   </span>
                 </div>

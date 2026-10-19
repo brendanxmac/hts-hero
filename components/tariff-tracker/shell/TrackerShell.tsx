@@ -11,6 +11,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { THEME } from "@/components/ui/theme";
 import { useTrackerAccess } from "../access/accessContext";
 import { AccountMenu, PlanBanner, PlanCard } from "../plan";
+import { TrialDialog } from "../plan/trial";
 import { SECTIONS, sectionUrl, TrackerSection } from "../sections";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { NavMeta, useNavMeta } from "./useNavMeta";
@@ -68,7 +69,7 @@ const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSect
         id={`tt-tab-${section.slug}`}
         title={section.comingSoon ? `${section.label} · Coming soon` : meta ? `${section.label} · ${meta.text}` : section.label}
         aria-label={section.label}
-        className={`relative flex h-10 w-10 items-center justify-center self-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+        className={`relative flex h-10 w-10 items-center justify-center self-center rounded-xl transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
           active ? "bg-tt-side-active text-base-content" : "text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
         } ${section.ready ? "" : "opacity-60"}`}
       >
@@ -80,11 +81,11 @@ const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSect
     <a
       {...props}
       id={`tt-tab-${section.slug}`}
-      className={`flex h-10 items-center gap-3 rounded-xl px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${active ? "bg-tt-side-active font-semibold text-base-content" : "font-medium text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
+      className={`flex h-10 items-center gap-3 rounded-xl px-3 text-sm transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${active ? "bg-tt-side-active font-semibold text-base-content" : "font-medium text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
         } ${section.ready ? "" : "opacity-60"}`}
     >
       {/* The section's icon, as in the collapsed sidebar; what's waiting shows on the right */}
-      <section.Icon className={`h-[18px] w-[18px] shrink-0 ${active ? "text-base-content" : "text-base-content/50"}`} aria-hidden />
+      <section.Icon className={`h-[18px] w-[18px] shrink-0 ${active ? "text-base-content" : "text-base-content/60"}`} aria-hidden />
       <span className="flex-1 truncate">{section.label}</span>
       {section.comingSoon ? (
         <span className="rounded-full bg-tt-side-active px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-base-content/60">Soon</span>
@@ -155,7 +156,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
     // a scrolled section would otherwise be placed against the page and stretch it past the app
     <div className={`${THEME} hts-tracker ${trackerSans.className} relative flex h-svh flex-col overflow-hidden bg-base-200 lg:flex-row lg:gap-4 lg:p-4`}>
       <aside
-        className={`hts-tracker-on-dark relative hidden shrink-0 flex-col gap-5 rounded-lg bg-tt-side text-base-content transition-[width] lg:flex ${collapsed ? "w-[4.5rem] px-2 py-4" : "w-64 p-4"}`}
+        className={`hts-tracker-on-dark relative hidden shrink-0 flex-col gap-5 rounded-lg bg-tt-side text-base-content transition-[width] lg:flex ${collapsed ? "w-18 px-2 py-4" : "w-64 p-4"}`}
       >
         <div className={`flex items-center gap-2.5 pt-1 ${collapsed ? "flex-col" : "px-2"}`}>
           <Link href="/" className="flex shrink-0 items-center rounded-full bg-base-content p-1" aria-label={`${config.appName} home`}>
@@ -214,6 +215,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
       <main className="relative min-h-0 min-w-0 flex-1 overflow-y-auto">
         <div className="px-4 pt-4 empty:hidden sm:px-6 lg:px-2 lg:pt-0">
           <PlanBanner />
+          <TrialDialog />
         </div>
         {children}
       </main>

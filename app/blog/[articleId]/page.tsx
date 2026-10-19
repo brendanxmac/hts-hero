@@ -6,7 +6,7 @@ import { getPost, getPosts, getRelatedPosts } from "@/libs/blog/posts";
 import config from "@/config";
 
 interface Props {
-  params: { articleId: string };
+  params: Promise<{ articleId: string }>;
 }
 
 // Every post is built ahead of time; an unknown slug is a 404, not a render
@@ -16,7 +16,8 @@ export function generateStaticParams() {
   return getPosts().map((post) => ({ articleId: post.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const post = getPost(params.articleId);
   if (!post) return {};
   const author = authorBySlug(post.author);
@@ -39,7 +40,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function BlogPostPage({ params }: Props) {
+export default async function BlogPostPage(props: Props) {
+  const params = await props.params;
   const post = getPost(params.articleId);
   if (!post) notFound();
   const category = categoryBySlug(post.category);

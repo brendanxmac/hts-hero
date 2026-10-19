@@ -89,7 +89,7 @@ export const CountryField = ({ id, selected, onChange, max, bare = false }: Prop
               {bare ? <span className="truncate">{country.name}</span> : country.name}
               <button
                 type="button"
-                className="rounded p-0.5 text-base-content/60 hover:bg-base-300 hover:text-base-content"
+                className="rounded-sm p-0.5 text-base-content/60 hover:bg-base-300 hover:text-base-content"
                 aria-label={`Remove ${country.name}`}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -103,7 +103,7 @@ export const CountryField = ({ id, selected, onChange, max, bare = false }: Prop
           <Combobox.Input
             id={id}
             ref={inputRef}
-            className={`${bare ? (selected.length ? "h-7 w-2 min-w-2 px-0" : "h-7 min-w-0 px-0 font-semibold placeholder:font-normal") : single && selected.length ? "h-8 w-2 min-w-2 px-0 text-base" : "min-w-28 h-8 px-1.5 text-base"} flex-1 bg-transparent text-base-content outline-none placeholder:text-base-content/60`}
+            className={`${bare ? (selected.length ? "h-7 w-2 min-w-2 px-0" : "h-7 min-w-0 px-0 font-semibold placeholder:font-normal") : single && selected.length ? "h-8 w-2 min-w-2 px-0 text-base" : "min-w-28 h-8 px-1.5 text-base"} flex-1 bg-transparent text-base-content outline-hidden placeholder:text-base-content/60`}
             placeholder={selected.length === 0 ? (bare ? "Choose a country" : "Search countries") : ""}
             autoComplete="off"
             value={query}
@@ -112,7 +112,7 @@ export const CountryField = ({ id, selected, onChange, max, bare = false }: Prop
           />
         </div>
 
-        <Combobox.Options className={`${ui.popover} absolute z-30 mt-2 w-full min-w-64 max-h-72 overflow-auto focus:outline-none`}>
+        <Combobox.Options className={`${ui.popover} absolute z-30 mt-2 w-full min-w-64 max-h-72 overflow-auto focus:outline-hidden`}>
           {full && (
             <div className={`${ui.caption} px-3 py-2`}>
               You can compare up to {max} countries. Remove one to add another.

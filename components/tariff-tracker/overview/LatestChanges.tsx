@@ -30,7 +30,7 @@ export const LatestChanges = ({ changes, onOpen, onAll }: { changes: CatalogChan
             <li key={`${c.product.key}-${c.date}`}>
               <button
                 type="button"
-                className={`${tt.tile} flex w-full items-center gap-3 p-3.5 text-left transition-colors hover:bg-base-300/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
+                className={`${tt.tile} flex w-full items-center gap-3 p-3.5 text-left transition-colors hover:bg-base-300/60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40`}
                 onClick={() => onOpen(c.product.key)}
               >
                 <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${up ? "bg-error/10 text-error" : "bg-success/10 text-success"}`}>

@@ -362,7 +362,7 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
                         <Pill tone={item.action === "added" ? "success" : item.action === "deleted" ? "error" : "neutral"}>{item.action}</Pill>
                       </Td>
                       <Td className="min-w-[16rem]">{item.description}</Td>
-                      <Td className="max-w-xs break-words font-mono text-xs">
+                      <Td className="max-w-xs wrap-break-word font-mono text-xs">
                         {[
                           item.subchapter && `sub ${item.subchapter}`,
                           ...item.note_citations.map((c) => `note ${c}`),
@@ -385,7 +385,7 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
                 <span className="transition-transform group-open:rotate-90">›</span>
                 Change record markdown (from datalab)
               </summary>
-              <pre className="max-h-[32rem] overflow-auto whitespace-pre-wrap border-t border-base-content/10 bg-base-content/[0.02] px-4 py-3 text-xs leading-relaxed">
+              <pre className="max-h-128 overflow-auto whitespace-pre-wrap border-t border-base-content/10 bg-base-content/[0.02] px-4 py-3 text-xs leading-relaxed">
                 {data.changeRecordMarkdown}
               </pre>
             </details>

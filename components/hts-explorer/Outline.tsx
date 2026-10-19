@@ -172,7 +172,7 @@ const RowShell = ({
         onClick={onToggle}
         aria-expanded={open}
         aria-label={`${open ? "Close" : "Open"} ${label}`}
-        className="flex w-6 shrink-0 items-start justify-center pt-3 text-base-content/50 hover:text-primary"
+        className="flex w-6 shrink-0 items-start justify-center pt-3 text-base-content/60 hover:text-primary"
       >
         <ChevronRightIcon className={`h-4 w-4 transition-transform ${open ? "rotate-90" : ""}`} />
       </button>
@@ -183,7 +183,7 @@ const RowShell = ({
       type="button"
       onClick={onSelect}
       aria-current={selected || undefined}
-      className="flex min-w-0 flex-1 items-start gap-3 py-2.5 pl-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40"
+      className="flex min-w-0 flex-1 items-start gap-3 py-2.5 pl-1 text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40"
     >
       {children}
     </button>
@@ -315,7 +315,7 @@ const LineRow = ({ row }: { row: Extract<Row, { kind: "line" }> }) => {
         <span className="min-w-0 flex-1 text-sm font-semibold leading-snug text-base-content/70">{line.description}</span>
       )}
       {count > 0 && !expanded.has(row.key) && (
-        <span className="mt-0.5 shrink-0 text-xs tabular-nums text-base-content/50">{count}</span>
+        <span className="mt-0.5 shrink-0 text-xs tabular-nums text-base-content/60">{count}</span>
       )}
     </RowShell>
   );
