@@ -182,7 +182,7 @@ export const ResultsBox = ({
     >
       {!headless && (
         <div className={`${ui.cardOverflowVisible} flex flex-col px-5 sm:px-6`}>
-          <div className={`flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-4 ${tabs ? "pb-1" : "pb-4"}`}>
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pb-4 pt-4">
             <div className="min-w-0 flex-1">
               <h2 id="results-heading" className="m-0 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xl font-semibold tracking-tight text-base-content sm:text-2xl">
                 <span className={mono.className}>{selectedElement.htsno}</span>
@@ -199,8 +199,8 @@ export const ResultsBox = ({
             </div>
             <div className="flex flex-wrap items-center gap-2">{actions}</div>
           </div>
-          {/* The tabs, along the header card's bottom edge */}
-          {tabs && <div className="mt-2">{tabs}</div>}
+          {/* The views, as pills at the foot of the header card */}
+          {tabs && <div className="-mt-1 pb-4">{tabs}</div>}
         </div>
       )}
       {/* Every module of the open tab, each a card on the ground (ModuleSections) */}

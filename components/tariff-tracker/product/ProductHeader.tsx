@@ -115,8 +115,8 @@ export const ProductHeader = ({
           {inputs && <div className="w-full lg:w-auto lg:min-w-120 lg:max-w-160 lg:flex-1">{inputs}</div>}
         </div>
       </div>
-      {/* Its views, along the header's bottom edge */}
-      <div className="border-t border-base-300 px-5 sm:px-6">
+      {/* Its views, as pills at the foot of the header card */}
+      <div className="px-5 pb-4 sm:px-6">
         <TabBar label="This import" options={tabs} value={tab} onChange={onTab} />
       </div>
     </header>

@@ -1,9 +1,10 @@
 "use client";
 
-// A row of tabs along the bottom edge of a panel's header: plain labels, the open one in the
-// brand color with a line under it that sits on the header's bottom border (so it reads as
-// the tab the content below belongs to). For switching what a panel shows; for a small toggle
-// between views inside content, use SegmentedControl.
+// The views of one thing (an answer's Duty · AD/CVD · Compare…, an import's tabs), as a row of
+// pills in its header card: the open one tinted in the brand color, the rest plain with a soft
+// hover. Pills, not an underline, because the header is a card of its own with the views' modules
+// below it on the ground, so there's no edge for a line to sit on. For a small toggle between views
+// inside content, use SegmentedControl.
 export function TabBar<T extends string>({
   label,
   options,
@@ -19,7 +20,7 @@ export function TabBar<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <div role="tablist" aria-label={label} className="-mb-px flex gap-6 overflow-x-auto">
+    <div role="tablist" aria-label={label} className="-mx-1 flex gap-1 overflow-x-auto px-1 py-0.5">
       {options.map((option) => {
         const active = option.id === value;
         return (
@@ -30,8 +31,8 @@ export function TabBar<T extends string>({
             aria-selected={active}
             title={option.title}
             onClick={() => onChange(option.id)}
-            className={`inline-flex h-11 shrink-0 items-center whitespace-nowrap border-b-2 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
-              active ? "border-primary text-primary" : "border-transparent text-base-content/60 hover:border-base-300 hover:text-base-content"
+            className={`inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
+              active ? "bg-primary/10 font-semibold text-primary" : "text-base-content/70 hover:bg-tt-soft hover:text-base-content"
             }`}
           >
             {option.label}
