@@ -403,11 +403,12 @@ export const AdcvdResults = ({
     <>
       <Verdict data={data} />
       {several ? (
-        <>
+        // One module: what was found, then two panels under it (every case on the left, the
+        // picked one's steps on the right), ruled apart
+        <CardSections>
           <section className={SECTION} aria-label="AD/CVD check">
             <CasesHeader flags={live} answers={answers} />
           </section>
-          {/* Two panels: every case on the left, the picked one's steps on the right */}
           <CardRow className="lg:grid-cols-[19rem_minmax(0,1fr)]">
             <div className="min-w-0 px-3 py-4">
               <div className="lg:sticky lg:top-4">
@@ -434,7 +435,7 @@ export const AdcvdResults = ({
               {walkthrough}
             </CardSections>
           </CardRow>
-        </>
+        </CardSections>
       ) : (
         // One case: its steps are one module
         <CardSections>{walkthrough}</CardSections>

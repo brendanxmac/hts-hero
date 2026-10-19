@@ -16,11 +16,12 @@ import { formatDate, todayIso } from "../lib/format";
 import { TariffFinder } from "../lib/useTariffFinder";
 import { RailField } from "./RailField";
 
-// The calculator, the same on every page: one card on top, Entry details (the fields: the only
-// place the import's details change, the entry date included, with arrows that step to the dates
-// its rates changed) and, once there's an answer, under them what's being looked at, its actions
-// and the tabs (ResultsHeading). Then everything the open tab shows, as modules (ResultsBox). On an
-// import's own page, its header is that card, with the HTS code and origin fixed.
+// The calculator, the same on every page, in two groups a page tier apart. The inputs: Entry details
+// (the fields: the only place the import's details change, the entry date included, with arrows
+// that step to the dates its rates changed). Then, once there's an answer, the results: a heading
+// card (what's being looked at, its actions and the tabs, ResultsHeading) with everything the open
+// tab shows as modules close under it (ResultsBox). On an import's own page, its header holds the
+// fields that can change and the tabs, with the HTS code and origin fixed.
 
 // The dates this import's rates changed (from its history), for the date's arrows
 const changeDates = (f: TariffFinder) =>
@@ -99,8 +100,7 @@ export const ImportInputs = ({ f }: { f: TariffFinder }) => (
   </div>
 );
 
-// children: the answer's heading, under the fields, once there is one
-export const EntryDetails = ({ f, description, children }: { f: TariffFinder; description: string; children?: ReactNode }) => {
+export const EntryDetails = ({ f, description }: { f: TariffFinder; description: string }) => {
   const { result } = f;
   const setOrigin = (picked: Country[]) => {
     const origin = picked[0];
@@ -141,13 +141,12 @@ export const EntryDetails = ({ f, description, children }: { f: TariffFinder; de
           <EntryInputs f={f} />
         </div>
       )}
-      {children && <div className="-mx-5 mt-2 border-t border-base-300 px-5 sm:-mx-6 sm:px-6">{children}</div>}
     </section>
   );
 };
 
 // What the answer is about (the code, its description in words and the origin, the same on every
-// tab), its actions, and the tabs as pills under them. In the Entry details card, under the fields.
+// tab), its actions, and the tabs as pills under them: the results' first card
 export const ResultsHeading = ({ f, actions, tabs }: { f: TariffFinder; actions?: ReactNode; tabs?: ReactNode }) => {
   const { selectedElement, country } = f;
   const { htsElements } = useHts();
@@ -155,7 +154,7 @@ export const ResultsHeading = ({ f, actions, tabs }: { f: TariffFinder; actions?
   const words = selectedElement ? describe(selectedElement, htsElements) : "";
   if (!selectedElement || !country) return null;
   return (
-    <div className="flex flex-col">
+    <div className={`${ui.cardOverflowVisible} flex flex-col px-5 sm:px-6`}>
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pb-4 pt-4">
         <div className="min-w-0 flex-1">
           <h2 id="results-heading" className="m-0 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xl font-semibold tracking-tight text-base-content sm:text-2xl">
@@ -173,15 +172,15 @@ export const ResultsHeading = ({ f, actions, tabs }: { f: TariffFinder; actions?
         </div>
         <div className="flex flex-wrap items-center gap-2">{actions}</div>
       </div>
-      {tabs && <div className="-mt-1">{tabs}</div>}
+      {tabs && <div className="-mt-1 pb-4">{tabs}</div>}
     </div>
   );
 };
 
-// The results: everything the open tab shows, as module cards on the ground (ModuleSections). Only
-// once there's an answer; what it's about and the tabs are in the card above (ResultsHeading, or an
-// import's header).
-export const ResultsBox = ({ view, children }: { view?: string; children: ReactNode }) => (
+// The results, one group: their heading card (ResultsHeading; none on an import's page, whose
+// header holds the tabs), then everything the open tab shows as module cards close under it
+// (ModuleSections). Only once there's an answer.
+export const ResultsBox = ({ view, heading, children }: { view?: string; heading?: ReactNode; children: ReactNode }) => (
   // The arrow over plain text (still selectable), so the pointer doesn't flick to a text cursor
   // over every short line of figures; fields keep their text cursor, links and buttons their hand
   <section
@@ -190,6 +189,7 @@ export const ResultsBox = ({ view, children }: { view?: string; children: ReactN
     aria-label="Results"
     aria-live="polite"
   >
+    {heading}
     {/* Every module of the open tab, each a card on the ground (ModuleSections); switching tabs
         brings them in with the enter motion */}
     <ModuleSections key={view} className="tt-enter">

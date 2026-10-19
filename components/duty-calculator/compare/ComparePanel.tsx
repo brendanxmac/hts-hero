@@ -7,6 +7,7 @@ import { Country } from "@/constants/countries";
 import { useUser } from "@/contexts/UserContext";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import * as ui from "@/components/ui/styles";
+import { CardSections } from "@/components/ui/Card";
 import * as tt from "@/components/ui/styles/tracker";
 import { AnalysisGate } from "@/components/tariff-tracker/product/analysis/AnalysisGate";
 import { changeEvents, OriginHistory, ratesOn } from "@/components/tariff-tracker/product/analysis/history";
@@ -155,8 +156,8 @@ export const ComparePanel = ({
   );
 
   return (
-    // Sections of the results box: the header, then the open view
-    <>
+    // One module: the header, then the open view (and its note) under it, ruled apart
+    <CardSections>
       {/* One line: what it is, then the view and the two controls every view follows */}
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4 sm:px-6">
         <div className="min-w-0">
@@ -243,6 +244,6 @@ export const ComparePanel = ({
         gated(
           <TimeLapse rates={rates} histories={histories} timeline={timeline} progress={origins.progress} ready={ready} basis={mode === "with" ? "agreements" : "standard"} />
         )}
-    </>
+    </CardSections>
   );
 };

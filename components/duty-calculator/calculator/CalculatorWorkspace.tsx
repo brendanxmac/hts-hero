@@ -117,6 +117,7 @@ export const CalculatorWorkspace = ({
   onCheckSavings,
   tab: hostTab,
   onTabChange,
+  overviewLead,
 }: {
   f: TariffFinder;
   // In the results' heading, after Share: the host's main action (Add to catalog, Track this import)
@@ -135,6 +136,8 @@ export const CalculatorWorkspace = ({
   // results then show no tab row of their own), and the way to change it
   tab?: ResultsTab;
   onTabChange?: (tab: ResultsView) => void;
+  // On an import's page: the first module of its Overview (its alerts, savings and audits)
+  overviewLead?: ReactNode;
 }) => {
   const { htsElements } = useHts();
   const searchParams = useSearchParams();
@@ -378,41 +381,10 @@ export const CalculatorWorkspace = ({
     [result, unadjusted],
   );
   return (
-    <div className="flex flex-col gap-4">
-      {/* One card: the fields, then (once there's an answer) what it's about, its actions and the
-          tabs. On an import's own page, its header is that card */}
-      {!fixedProduct && (
-        <EntryDetails f={f} description="Enter the details of your import to get a duty estimate">
-          {ready && !f.loading && (
-            <ResultsHeading
-              f={f}
-              actions={
-                <>
-                  <ShareButtons f={f} />
-                  {actions}
-                  {trackButton}
-                </>
-              }
-              tabs={
-                hostTab ? undefined : (
-                  <TabBar
-                    label="Results"
-                    options={TABS.map((t) =>
-                      t.id === "changes" && historyChanges + (newsCount ?? 0) > 0
-                        ? { ...t, count: historyChanges + (newsCount ?? 0) }
-                        : t.id === "duty" && adcvdFlagged
-                          ? { ...t, badge: "AD/CVD may apply", badgeTone: "warning" as const }
-                          : t,
-                    )}
-                    value={tab}
-                    onChange={changeTab}
-                  />
-                )
-              }
-            />
-          )}
-        </EntryDetails>
-      )}
+    // Two groups a page tier apart: the inputs, then the results (their heading and modules, close together)
+    <div className="flex flex-col gap-page">
+      {/* The inputs: their own card. On an import's own page, its header holds them */}
+      {!fixedProduct && <EntryDetails f={f} description="Enter the details of your import to get a duty estimate" />}
 
       {f.loading ? (
         <ResultsSkeleton />
@@ -420,7 +392,39 @@ export const CalculatorWorkspace = ({
         (empty ?? <EmptyState f={f} />)
       ) : (
         <WhyUnlockContext.Provider value={unlockWhy}>
-          <ResultsBox view={tab}>
+          <ResultsBox
+            view={tab}
+            heading={
+              fixedProduct ? undefined : (
+                <ResultsHeading
+                  f={f}
+                  actions={
+                    <>
+                      <ShareButtons f={f} />
+                      {actions}
+                      {trackButton}
+                    </>
+                  }
+                  tabs={
+                    hostTab ? undefined : (
+                      <TabBar
+                        label="Results"
+                        options={TABS.map((t) =>
+                          t.id === "changes" && historyChanges + (newsCount ?? 0) > 0
+                            ? { ...t, count: historyChanges + (newsCount ?? 0) }
+                            : t.id === "duty" && adcvdFlagged
+                              ? { ...t, badge: "AD/CVD may apply", badgeTone: "warning" as const }
+                              : t,
+                        )}
+                        value={tab}
+                        onChange={changeTab}
+                      />
+                    )
+                  }
+                />
+              )
+            }
+          >
             <div className={ui.cardSection}>
               <VerifiedNotice f={f} />
             </div>
@@ -430,6 +434,7 @@ export const CalculatorWorkspace = ({
                 <ProhibitedNotice prohibitions={result.prohibitions} />
               </div>
             )}
+            {tab === "overview" && overviewLead}
             {tab === "overview" && (
               <OverviewPanel
                 o={overview}
@@ -567,10 +572,10 @@ export const CalculatorWorkspace = ({
                     </aside>
                   )}
                 </CardRow>
-                {/* AD/CVD: the rest of the duty. A heading on the ground, then the check's own modules */}
-                <div data-plain id="adcvd-check" className="flex scroll-mt-4 flex-col gap-0.5 px-1 pt-3">
-                  <h3 className="m-0 text-lg font-semibold text-base-content">Antidumping and Countervailing Duties</h3>
-                  <p className={`${ui.caption} m-0`}>AD/CVD deposits are due on top of the duty above when a case covers your product. They aren&apos;t in the estimate.</p>
+                {/* AD/CVD: the rest of the duty, its check's own modules (each says what it found). The
+                    anchor the line under the totals scrolls to: on the ground, taking no room */}
+                <div data-plain id="adcvd-check" className="-mb-module scroll-mt-4">
+                  <span className="sr-only">AD/CVD check</span>
                 </div>
                 <AdcvdTab code={selectedElement.htsno} country={country.code} page={page} customsValue={f.customsValue} dutyUsd={result.totalDuty} />
               </>

@@ -20,6 +20,7 @@ import { PlannedSection } from "../shell/PlannedSection";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ProductAudit } from "./audit/ProductAudit";
+import { ImportPromises } from "./ImportPromises";
 import { ProductHeader } from "./ProductHeader";
 import { ProductSavings } from "./savings/ProductSavings";
 import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
@@ -159,6 +160,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
           onCheckSavings={SAVINGS_ENABLED ? () => openTab("savings") : undefined}
           tab={calculatorTab ? tab : "duty"}
           onTabChange={openTab}
+          overviewLead={<ImportPromises productKey={row.key} onOpenTab={openTab} />}
         />
         <Disclaimer />
       </div>
