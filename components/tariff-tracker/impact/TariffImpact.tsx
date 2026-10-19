@@ -83,7 +83,7 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
   return (
     <section className={`${tt.panel} overflow-hidden`} aria-labelledby="tt-impact-title">
       {/* What it is on the left; where it stands on the right, as a timeline */}
-      <div className="grid gap-x-8 gap-y-5 px-6 py-5 xl:grid-cols-[minmax(0,1fr)_17rem]">
+      <div className="grid gap-x-8 gap-y-5 px-6 py-5 xl:grid-cols-[minmax(0,1fr)_19rem]">
       <div className="flex min-w-0 flex-col gap-3">
         <div className="flex items-start justify-between gap-6">
           <div className="flex min-w-0 flex-col gap-2">

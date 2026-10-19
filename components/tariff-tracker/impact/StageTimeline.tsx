@@ -5,6 +5,8 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { STAGE_DETAIL, STAGE_LABELS } from "@/components/tariff-updates/labels";
+import { EVENTS } from "@/libs/adcvd/types";
+import { createSupabaseClient } from "@/libs/supabase/client";
 import { stagesFor, type Stage } from "@/libs/tariff-updates/types";
 import type { TrackerUpdate } from "../overview/useTariffUpdates";
 import { day, relativeDays } from "./format";
@@ -13,7 +15,9 @@ import { day, relativeDays } from "./format";
 // reached, shown as a chip; under it the path so far as a short vertical timeline, oldest first.
 // Each stage it reached has its date and the official document behind it; the day it takes (or
 // took) effect sits among them by date; the stages still ahead are faded. Stages it skipped (many
-// actions are never announced first) aren't shown.
+// actions are never announced first) aren't shown. An AD/CVD proceeding uses its own milestones
+// instead (petition, investigation started, preliminary and final determinations, ITC votes, order),
+// from its notices in adcvd_events, with an investigation's milestones still to come faded.
 
 interface Source {
   stage: Stage | null;
@@ -24,7 +28,7 @@ interface Source {
 
 type Step = { id: string; label: string; detail: string; date: string | null; url?: string; state: "done" | "now" | "ahead" | "effective" };
 
-export const StageTimeline = ({ update, today }: { update: TrackerUpdate; today: string }) => {
+const ActionStages = ({ update, today }: { update: TrackerUpdate; today: string }) => {
   const [sources, setSources] = useState<Source[] | null>(null);
   useEffect(() => {
     let live = true;
@@ -59,7 +63,17 @@ export const StageTimeline = ({ update, today }: { update: TrackerUpdate; today:
       },
     ];
   }).filter((s) => STAGE_ORDER.indexOf(s.id as Stage) <= current);
-  const effective: Step[] = update.effective_on
+  const past = byDate([...reached, ...effectiveStep(update, today)]);
+  // What it could still reach
+  const ahead: Step[] = STAGE_ORDER.slice(current + 1).map((stage): Step => ({ id: stage, label: STAGE_LABELS[stage], detail: STAGE_DETAIL[stage], date: null, state: "ahead" }));
+  const steps = [...past, ...ahead];
+
+  return <Timeline chip={STAGE_LABELS[update.stage]} steps={sources === null ? null : steps} today={today} />;
+};
+
+// The day it takes (or took) effect, as a milestone
+const effectiveStep = (update: TrackerUpdate, today: string): Step[] =>
+  update.effective_on
     ? [
         {
           id: "effective",
@@ -70,23 +84,103 @@ export const StageTimeline = ({ update, today }: { update: TrackerUpdate; today:
         },
       ]
     : [];
-  // By date; on the same day, the stage before the day it takes effect
-  const past = [...reached, ...effective].sort(
+
+// By date; on the same day, the milestone before the day it takes effect
+const byDate = (steps: Step[]) =>
+  [...steps].sort(
     (a, b) => (a.date ?? "").slice(0, 10).localeCompare((b.date ?? "").slice(0, 10)) || (a.state === "effective" ? 1 : 0) - (b.state === "effective" ? 1 : 0),
   );
-  // What it could still reach
-  const ahead: Step[] = STAGE_ORDER.slice(current + 1).map((stage): Step => ({ id: stage, label: STAGE_LABELS[stage], detail: STAGE_DETAIL[stage], date: null, state: "ahead" }));
-  const steps = [...past, ...ahead];
 
+// ── AD/CVD: the case's own milestones (libs/adcvd), from its notices ──
+
+interface CaseEvent {
+  event: string;
+  published_on: string;
+  agency: "commerce" | "itc" | "cbp";
+  url: string;
+}
+
+// Short names for the timeline
+const CASE_LABELS: Record<string, string> = {
+  itc_institution: "Petition filed",
+  initiation: "Investigation started",
+  itc_prelim: "ITC preliminary vote",
+  prelim: "Preliminary determination",
+  final: "Final determination",
+  itc_final: "ITC final vote",
+  order: "Order issued",
+  continuation: "Order continued",
+  revocation: "Order revoked",
+  termination: "Investigation ended",
+  suspension: "Suspension agreement",
+  circumvention: "Circumvention inquiry",
+  scope_ruling: "Scope ruling",
+};
+const AGENCY = { commerce: "Commerce", itc: "the US International Trade Commission", cbp: "CBP" };
+
+// An investigation's path, in order: what's still ahead once it's under way
+const INVESTIGATION = ["itc_institution", "initiation", "itc_prelim", "prelim", "final", "itc_final", "order"];
+// Where an investigation ends early, or ends
+const CLOSES = new Set(["order", "termination", "suspension"]);
+
+const CaseStages = ({ update, today }: { update: TrackerUpdate; today: string }) => {
+  const [events, setEvents] = useState<CaseEvent[] | null>(null);
+  useEffect(() => {
+    let live = true;
+    setEvents(null);
+    createSupabaseClient()
+      .from("adcvd_events")
+      .select("event, published_on, agency, url")
+      .eq("update_id", update.id)
+      .order("published_on")
+      .then(({ data }) => live && setEvents((data ?? []) as CaseEvent[]));
+    return () => {
+      live = false;
+    };
+  }, [update.id]);
+
+  if (events === null) return <Timeline chip="AD/CVD" steps={null} today={today} />;
+  // One step per milestone (a case's AD and CVD sides, or several countries, publish the same one):
+  // the first notice of each, in date order
+  const first = new Map<string, CaseEvent>();
+  for (const e of events) if (!first.has(e.event)) first.set(e.event, e);
+  const reached = Array.from(first.values());
+  const latest = events[events.length - 1];
+  const done: Step[] = reached.map((e) => ({
+    id: e.event,
+    label: CASE_LABELS[e.event] ?? EVENTS[e.event as keyof typeof EVENTS] ?? "Notice",
+    detail: `Published by ${AGENCY[e.agency] ?? "Commerce"} in the Federal Register`,
+    date: e.published_on,
+    url: e.url,
+    state: e.event === latest?.event ? "now" : "done",
+  }));
+  // An investigation still under way: the milestones it hasn't reached, faded
+  const investigating = reached.some((e) => INVESTIGATION.includes(e.event)) && !reached.some((e) => CLOSES.has(e.event));
+  const furthest = Math.max(-1, ...reached.map((e) => INVESTIGATION.indexOf(e.event)));
+  const ahead: Step[] = investigating
+    ? INVESTIGATION.slice(furthest + 1)
+        .filter((ev) => !first.has(ev))
+        .map((ev): Step => ({ id: ev, label: CASE_LABELS[ev], detail: "Still to come in the investigation", date: null, state: "ahead" }))
+    : [];
+  const chip = latest ? (CASE_LABELS[latest.event] ?? EVENTS[latest.event as keyof typeof EVENTS] ?? "AD/CVD") : "AD/CVD";
+  return <Timeline chip={chip} steps={[...byDate([...done, ...effectiveStep(update, today)]), ...ahead]} today={today} />;
+};
+
+// Where a tariff action stands: an AD/CVD proceeding by its own milestones, any other action by
+// the stages it has reached
+export const StageTimeline = ({ update, today }: { update: TrackerUpdate; today: string }) =>
+  update.kind === "ad_cvd" || update.authority === "ad_cvd" ? <CaseStages update={update} today={today} /> : <ActionStages update={update} today={today} />;
+
+const Timeline = ({ chip, steps, today }: { chip: string; steps: Step[] | null; today: string }) => {
   return (
     <section className="flex flex-col gap-3" aria-labelledby="tt-impact-stage">
-      <div className="flex items-center justify-between gap-3">
-        <h3 id="tt-impact-stage" className={tt.sectionTitle}>
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+        <h3 id="tt-impact-stage" className={`${tt.sectionTitle} whitespace-nowrap`}>
           Where It Stands
         </h3>
-        <span className={tt.chip("primary")}>{STAGE_LABELS[update.stage]}</span>
+        <span className={tt.chip("primary")}>{chip}</span>
       </div>
-      {sources === null ? (
+      {steps === null ? (
         <div className={`${ui.skeleton} h-32 w-full`} />
       ) : (
         <ol className="m-0 flex list-none flex-col p-0">
