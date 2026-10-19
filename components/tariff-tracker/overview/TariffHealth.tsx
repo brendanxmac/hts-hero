@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ArrowRightIcon, BellAlertIcon, ClipboardDocumentCheckIcon, ReceiptPercentIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, BellAlertIcon, BoltIcon, ClipboardDocumentCheckIcon, ReceiptPercentIcon } from "@heroicons/react/20/solid";
 import { InfoTip } from "@/components/ui/InfoTip";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
@@ -13,6 +13,7 @@ import { useAuditRows } from "../entries/useAuditRows";
 import { useInsights } from "../insights/InsightsContext";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
+import { REVIEW_DAYS, useActionReviews } from "../impact/reviews";
 
 // Tariff Health (DESIGN_SYSTEM.md §15 "Home"): one score for how well the user's imports are looked
 // after, from the three things the Tracker does for them. Alerts: the share of imports with alerts
@@ -44,9 +45,17 @@ export const useTariffHealth = () => {
   auditRows.forEach(({ entry, audit, product }) => audit && product && audited.add(entryProductKey(entry)));
   const auditPct = share(audited.size, imports);
 
-  const live = [alertsPct, ...(SAVINGS_ENABLED ? [savingsPct] : []), ...(AUDITS_ENABLED ? [auditPct] : [])];
+  // Impact checks: the tariff actions that may affect imports with alerts on, reviewed (counted
+  // once there are imports with alerts on; with none due, it's all done)
+  const reviews = useActionReviews();
+  const checking = alertsSet && covered > 0;
+  const due = reviews.due.length;
+  const reviewedCount = due - reviews.outstanding.length;
+  const reviewsPct = due ? share(reviewedCount, due) : 100;
+
+  const live = [alertsPct, ...(checking ? [reviewsPct] : []), ...(SAVINGS_ENABLED ? [savingsPct] : []), ...(AUDITS_ENABLED ? [auditPct] : [])];
   const overall = Math.round(live.reduce((sum, n) => sum + n, 0) / live.length);
-  return { imports, covered, alertsSet, alertsPct, savingsPct, reviewed: insights.reviewStats, auditPct, audited: audited.size, overall, signedIn };
+  return { imports, covered, alertsSet, alertsPct, checking, due, reviewedCount, toReview: reviews.outstanding.length, reviewsPct, savingsPct, reviewed: insights.reviewStats, auditPct, audited: audited.size, overall, signedIn };
 };
 
 // The score as a ring: green from 80, amber below (a low score needs a look, it isn't "wrong")
@@ -80,6 +89,7 @@ const Part = ({
   label,
   pct,
   soon,
+  muted,
   text,
   action,
 }: {
@@ -87,6 +97,8 @@ const Part = ({
   label: string;
   pct: number;
   soon?: boolean;
+  // Not in the score yet (no imports with alerts on): shown, but quiet
+  muted?: boolean;
   text: string;
   action?: { label: string; go: () => void };
 }) => (
@@ -98,9 +110,15 @@ const Part = ({
         </span>
         {label}
       </span>
-      {soon ? <span className={tt.chip()}>{SAVINGS_AUDITS_LABEL}</span> : <span className="font-semibold tabular-nums text-base-content">{pct}%</span>}
+      {soon ? (
+        <span className={tt.chip()}>{SAVINGS_AUDITS_LABEL}</span>
+      ) : muted ? (
+        <span className="font-semibold text-base-content/40">—</span>
+      ) : (
+        <span className="font-semibold tabular-nums text-base-content">{pct}%</span>
+      )}
     </span>
-    {soon ? (
+    {soon || muted ? (
       <span className="block h-2 w-full rounded-full border border-dashed border-base-300" aria-hidden />
     ) : (
       <span className="block h-2 w-full overflow-hidden rounded-full bg-tt-soft-high" aria-hidden>
@@ -127,7 +145,13 @@ export const TariffHealth = () => {
   const n = (count: number) => count.toLocaleString("en-US");
   const parts = [!SAVINGS_ENABLED && "savings", !AUDITS_ENABLED && "audits"].filter(Boolean);
   const scoreLine =
-    h.overall >= 80 ? "Your imports are well looked after." : h.alertsSet ? "Turn on alerts for more of your imports to raise it." : "Turn on alerts to start raising it.";
+    h.overall >= 80
+      ? "Your imports are well looked after."
+      : !h.alertsSet
+        ? "Turn on alerts to start raising it."
+        : h.toReview
+          ? `Review ${n(h.toReview)} tariff ${h.toReview === 1 ? "action" : "actions"} to raise it.`
+          : "Turn on alerts for more of your imports to raise it.";
   return (
     <section className={`${tt.panel} flex h-full flex-col gap-4 p-6`} aria-labelledby="tt-health">
       <div className="flex items-center gap-2">
@@ -135,8 +159,9 @@ export const TariffHealth = () => {
           Tariff Health
         </h2>
         <InfoTip label="About Tariff Health">
-          One score for how well your imports are looked after: the share with alerts on, the share whose savings are reviewed, and the share with an entry
-          audited, averaged.{parts.length ? ` Until ${parts.join(" and ")} launch, it's alerts alone.` : ""}
+          One score for how well your imports are looked after: the share with alerts on, the share of tariff actions that may affect them you&apos;ve
+          reviewed (from the last {REVIEW_DAYS} days), the share whose savings are reviewed, and the share with an entry audited, averaged.
+          {parts.length ? ` Until ${parts.join(" and ")} launch, they aren't in the score.` : ""}
         </InfoTip>
       </div>
       <div className="flex items-center gap-5">
@@ -162,6 +187,21 @@ export const TariffHealth = () => {
                 ? { label: `Add ${n(moreToTrack)} more`, go: trackMore }
                 : undefined
           }
+        />
+        <Part
+          icon={<BoltIcon className="h-4 w-4" />}
+          label="Impact Checks"
+          pct={h.reviewsPct}
+          soon={false}
+          muted={!h.checking}
+          text={
+            !h.checking
+              ? "Starts with alerts on"
+              : h.due
+                ? `${n(h.reviewedCount)} of ${n(h.due)} reviewed`
+                : `Nothing to review from the last ${REVIEW_DAYS} days`
+          }
+          action={h.checking && h.toReview ? { label: `Review ${n(h.toReview)}`, go: () => openTab("changes") } : undefined}
         />
         <Part
           icon={<ReceiptPercentIcon className="h-4 w-4" />}

@@ -19,6 +19,7 @@ import { TRACKER_PATH } from "../sections";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { useTariffUpdates } from "./useTariffUpdates";
+import { useActionReviews } from "../impact/reviews";
 
 // Home's list of what needs the user (DESIGN_SYSTEM.md §15 "Home"): a short list, ranked by what it
 // costs them and how soon. Rates that went up first, then tariff actions about to take effect or
@@ -58,6 +59,7 @@ export const useAttention = (): Item[] | null => {
   const nav = useTrackerNav();
   const updates = useTariffUpdates("all");
   const matches = useImportMatches(updates);
+  const reviews = useActionReviews();
   const keyed = useMemo(() => items.map((i) => ({ key: `${i.code}-${i.country}`, code: i.code, country: i.country })), [items]);
   const adcvd = useCatalogAdcvd(keyed);
   const today = todayIso();
@@ -101,27 +103,37 @@ export const useAttention = (): Item[] | null => {
         go: () => nav.openTab("history"),
       });
 
-    // 2. Tariff actions still to take effect, or that name an import (before the duty engine
-    // confirms them), newest first
-    const pending = (updates ?? []).filter((u) => {
-      const m = matches.get(u.slug);
-      if (u.kind === "hts_revision" || !m || m.confirmed + m.likely === 0) return false;
-      // Nothing the user hasn't heard about in two months, even if it takes effect later
-      if (u.last_activity_at.slice(0, 10) < since) return false;
-      const upcoming = !!u.effective_on && u.effective_on > today;
-      return upcoming || m.confirmed === 0;
-    });
+    // 2. Impact checks to review: tariff actions that affect or may affect imports with alerts on,
+    // not marked reviewed yet (impact/reviews.ts), those still to take effect first, then the newest
+    const pending = reviews.outstanding
+      .map((a) => a.update)
+      // Nothing the user hasn't heard about in two months, unless it's still to take effect
+      .filter((u) => u.last_activity_at.slice(0, 10) >= since || (!!u.effective_on && u.effective_on > today))
+      .sort((a, b) => {
+        const up = (u: typeof a) => (!!u.effective_on && u.effective_on > today ? 0 : 1);
+        return up(a) - up(b) || b.last_activity_at.localeCompare(a.last_activity_at);
+      });
     for (const u of pending.slice(0, MOST)) {
       const upcoming = !!u.effective_on && u.effective_on > today;
+      const m = matches.get(u.slug);
       out.push({
         id: `action-${u.slug}`,
         tone: "warning",
         title: upcoming ? `From ${day(u.effective_on!, false)}: ${u.title}` : u.title,
-        detail: matchLabel(matches.get(u.slug)!).text,
-        action: "See the impact",
+        detail: m ? `${matchLabel(m).text}. Review what it does to them.` : "Review what it does to your imports.",
+        action: "Review",
         go: () => openAction(u.slug),
       });
     }
+    if (pending.length > MOST)
+      out.push({
+        id: "action-more",
+        tone: "warning",
+        title: `${pending.length - MOST} more tariff ${pending.length - MOST === 1 ? "action" : "actions"} to review`,
+        detail: "Each one may affect your imports",
+        action: "Review them",
+        go: () => nav.openTab("changes"),
+      });
 
     // 3. AD/CVD: imports a case covers (by the user's own answer), then those still to check
     const covered = keyed.filter((i) => adcvd.get(i.key)?.applies);
@@ -168,7 +180,7 @@ export const useAttention = (): Item[] | null => {
         main: !out.some((i) => i.main),
       });
     return out;
-  }, [loading, products, insights.changes, updates, matches, keyed, adcvd, items.length, signedIn, alerts.loading, alerts.on, today, nav]);
+  }, [loading, products, insights.changes, reviews, matches, keyed, adcvd, items.length, signedIn, alerts.loading, alerts.on, today, nav]);
 };
 
 export const AttentionList = () => {

@@ -20,6 +20,7 @@ import { useTracker } from "../TrackerContext";
 import { ActionList } from "./ActionList";
 import { ActionScope } from "./ActionScope";
 import { StageTimeline } from "./StageTimeline";
+import { useActionReviews } from "./reviews";
 import { OriginBars, RateShift, type OriginRow, type ShiftRow } from "./ImpactCharts";
 import { ImpactImports } from "./ImpactImports";
 import { day, groupOf, GROUP_ORDER, GROUPS, rateChange, signedRate } from "./format";
@@ -233,6 +234,9 @@ export const TariffImpact = () => {
   }, [published, review]);
 
   const matches = useImportMatches(updates);
+  const reviews = useActionReviews();
+  const toReview = useMemo(() => new Set(reviews.outstanding.map((a) => a.update.slug)), [reviews.outstanding]);
+  const reviewedSlugs = useMemo(() => new Set(reviews.due.filter((a) => !toReview.has(a.update.slug)).map((a) => a.update.slug)), [reviews.due, toReview]);
   const hits = useMemo(() => {
     const out = new Set<string>();
     matches.forEach((m, slug) => m.confirmed + m.likely > 0 && out.add(slug));
@@ -296,7 +300,7 @@ export const TariffImpact = () => {
     <>
       <div className="grid gap-4 xl:grid-cols-[19.5rem_minmax(0,1fr)] xl:items-start">
         {updates ? (
-          <ActionList updates={updates} selected={slug} matches={matches} inReview={inReview} today={today} onPick={select} isNew={(u) => !!seenAt && u.first_seen_at > seenAt} />
+          <ActionList updates={updates} selected={slug} matches={matches} inReview={inReview} today={today} onPick={select} isNew={(u) => !!seenAt && u.first_seen_at > seenAt} toReview={toReview} reviewed={reviewedSlugs} />
         ) : (
           <div className={`${ui.skeleton} h-144 w-full`} />
         )}
@@ -320,7 +324,21 @@ export const TariffImpact = () => {
               ) : (
                 <>
                   {untracked > 0 && <UntrackedHits count={untracked} />}
-                  <ImpactImports checking={trackedKeys.size > 0} update={update} impacts={impacts} today={today} country={country} onClearCountry={() => setCountry(null)} />
+                  <ImpactImports
+                    checking={trackedKeys.size > 0}
+                    review={(() => {
+                      // The imports to mark: those it affects or may affect, as worked out here and as matched
+                      const keys = Array.from(
+                        new Set([
+                          ...impacts.filter((i) => i.level !== "possible").map((i) => i.key),
+                          ...(reviews.due.find((a) => a.update.slug === update.slug)?.keys ?? []),
+                        ])
+                      );
+                      return keys.length
+                        ? { on: reviews.reviewedOn(update.slug, keys), mark: (on: boolean) => reviews.mark(update.slug, keys, on) }
+                        : null;
+                    })()}
+                    update={update} impacts={impacts} today={today} country={country} onClearCountry={() => setCountry(null)} />
                   {(shifts.length > 2 || origins.length > 1) && (
                     <div className={`grid gap-4 ${shifts.length > 2 && origins.length > 1 ? "xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]" : ""}`}>
                       {shifts.length > 2 && (

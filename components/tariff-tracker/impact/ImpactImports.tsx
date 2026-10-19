@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronRightIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { CheckIcon, ChevronRightIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { StackedBar } from "@/components/ui/charts/StackedBar";
@@ -296,7 +296,10 @@ export const ImpactImports = ({
   country,
   onClearCountry,
   checking,
+  review,
 }: {
+  // Marking it reviewed for these imports: the day it was, or null; none when it touches none
+  review: { on: string | null; mark: (on: boolean) => void } | null;
   // Whether any import is checked against actions (signed out or with none tracked, there are none)
   checking: boolean;
   update: TrackerUpdate;
@@ -371,6 +374,23 @@ export const ImpactImports = ({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {review &&
+            (review.on ? (
+              <span className="inline-flex items-center gap-2 text-sm">
+                <span className={`${tt.chip("success")} gap-1`}>
+                  <CheckIcon className="h-3.5 w-3.5" aria-hidden />
+                  Reviewed {day(review.on, false)}
+                </span>
+                <button type="button" className={`${ui.link} text-xs`} onClick={() => review.mark(false)}>
+                  Undo
+                </button>
+              </span>
+            ) : (
+              <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => review.mark(true)}>
+                <CheckIcon className="h-4 w-4" aria-hidden />
+                Mark as reviewed
+              </button>
+            ))}
           {country && (
             <button type="button" className={tt.chip("primary")} onClick={onClearCountry} title="Show every country">
               From {countryName ?? country} ✕

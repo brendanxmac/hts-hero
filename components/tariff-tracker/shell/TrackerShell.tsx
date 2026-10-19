@@ -94,7 +94,11 @@ const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSect
       ) : locked ? (
         <LockClosedIcon className="h-3.5 w-3.5 text-base-content/60" aria-label="Paid plans" />
       ) : (
-        meta && <span className={`rounded-full px-2 py-0.5 text-[0.7rem] font-semibold tabular-nums ${META_TEXT[meta.tone]}`}>{meta.text}</span>
+        meta && (
+          <span className={`rounded-full px-2 py-0.5 text-[0.7rem] font-semibold tabular-nums ${META_TEXT[meta.tone]}`} title={meta.title}>
+            {meta.text}
+          </span>
+        )
       )}
     </a>
   );

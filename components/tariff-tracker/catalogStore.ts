@@ -201,13 +201,30 @@ export const setProductAdjustments = (key: string, patch: Adjustments) => {
   save({ ...current, adjustments });
 };
 
-// Back to the defaults the duty is worked out with; AD/CVD answers stay
+// Back to the defaults the duty is worked out with; AD/CVD answers and reviews stay
 export const resetProductAdjustments = (key: string) => {
   const current = getSnapshot();
   if (!current.adjustments[key]) return;
   const adjustments = { ...current.adjustments };
-  const adcvd = current.adjustments[key].adcvd;
-  if (adcvd) adjustments[key] = { adcvd };
+  const { adcvd, reviewed } = current.adjustments[key];
+  if (adcvd || reviewed) adjustments[key] = { ...(adcvd ? { adcvd } : {}), ...(reviewed ? { reviewed } : {}) };
   else delete adjustments[key];
+  save({ ...current, adjustments });
+};
+
+// A tariff action marked reviewed (or not) on each of the imports it may affect, in one save
+export const setActionReviewed = (slug: string, keys: string[], on: boolean) => {
+  const current = getSnapshot();
+  const adjustments = { ...current.adjustments };
+  const day = new Date().toISOString().slice(0, 10);
+  for (const key of keys) {
+    const was = adjustments[key] ?? {};
+    const reviewed = { ...was.reviewed };
+    if (on) reviewed[slug] = day;
+    else delete reviewed[slug];
+    const merged = cleanAdjustments({ ...was, reviewed });
+    if (Object.keys(merged).length) adjustments[key] = merged;
+    else delete adjustments[key];
+  }
   save({ ...current, adjustments });
 };

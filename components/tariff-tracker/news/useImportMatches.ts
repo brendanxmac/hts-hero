@@ -18,6 +18,8 @@ export interface ImportMatch {
   possible: number;
   // Confirmed: the change in duty on one shipment, added up across the imports
   deltaUsd: number;
+  // The imports it affects or may affect (confirmed and likely), by key
+  keys: string[];
 }
 
 interface ImpactRow {
@@ -58,7 +60,13 @@ export const useImportMatches = (updates: TrackerUpdate[] | null) => {
       const likely = (m?.likely ?? []).filter((k) => !sureKeys.has(k)).length;
       const possible = (m?.possible ?? []).filter((k) => !sureKeys.has(k)).length;
       if (!sure.length && !likely && !possible) continue;
-      out.set(u.slug, { confirmed: sure.length, likely, possible, deltaUsd: sure.reduce((sum, r) => sum + Number(r.delta_usd ?? 0), 0) });
+      out.set(u.slug, {
+        confirmed: sure.length,
+        likely,
+        possible,
+        deltaUsd: sure.reduce((sum, r) => sum + Number(r.delta_usd ?? 0), 0),
+        keys: [...sureKeys, ...(m?.likely ?? []).filter((k) => !sureKeys.has(k))],
+      });
     }
     return out;
   }, [updates, items, confirmed]);

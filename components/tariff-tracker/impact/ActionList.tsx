@@ -16,7 +16,7 @@ import { day } from "./format";
 // does to the user's imports in the color of it); the open one is marked with a cobalt bar. The
 // list scrolls on its own beside the page and keeps the open action in view.
 
-type Filter = "mine" | "upcoming" | "all";
+type Filter = "review" | "mine" | "upcoming" | "all";
 
 const monthOf = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
 
@@ -35,6 +35,8 @@ export const ActionList = ({
   today,
   onPick,
   isNew,
+  toReview,
+  reviewed,
 }: {
   updates: TrackerUpdate[];
   selected: string | null;
@@ -45,6 +47,9 @@ export const ActionList = ({
   onPick: (slug: string) => void;
   // First seen since the user last looked
   isNew: (u: TrackerUpdate) => boolean;
+  // Impact checks still to review, and those reviewed (by slug)
+  toReview: Set<string>;
+  reviewed: Set<string>;
 }) => {
   const hits = (u: TrackerUpdate) => !!effectOn(matches.get(u.slug));
   // HTS revisions take effect on a date too, but carry out actions already listed
@@ -55,14 +60,16 @@ export const ActionList = ({
   // Open on the actions that hit the catalog, once that's known, unless the user picked a filter
   const [chose, setChose] = useState(false);
   useEffect(() => {
-    if (!chose && mine) setFilter("mine");
-  }, [mine, chose]);
+    if (!chose && toReview.size) setFilter("review");
+    else if (!chose && mine) setFilter("mine");
+  }, [mine, chose, toReview.size]);
 
   const months = useMemo(() => {
     const words = query.toLowerCase().split(/\s+/).filter(Boolean);
     const groups: { month: string; updates: TrackerUpdate[] }[] = [];
     for (const u of updates) {
       if (filter === "mine" && !hits(u)) continue;
+      if (filter === "review" && !toReview.has(u.slug)) continue;
       if (filter === "upcoming" && !upcoming(u)) continue;
       const text = `${u.title} ${u.summary} ${u.products ?? ""} ${u.hts_codes.join(" ")} ${AUTHORITIES[u.authority] ?? ""}`.toLowerCase();
       if (!words.every((w) => text.includes(w))) continue;
@@ -72,7 +79,7 @@ export const ActionList = ({
     }
     return groups;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updates, filter, query, matches, today]);
+  }, [updates, filter, query, matches, today, toReview]);
 
   // Keep the open action in view (opened from a link, or the list filtered around it)
   const listRef = useRef<HTMLDivElement>(null);
@@ -97,8 +104,9 @@ export const ActionList = ({
           size="sm"
           fullWidth
           options={[
-            { id: "mine", label: "Your imports", count: mine || undefined },
-            { id: "upcoming", label: "Upcoming" },
+            { id: "review", label: "To review", count: toReview.size || undefined },
+            { id: "mine", label: "Yours" },
+            { id: "upcoming", label: "Soon", title: "Still to take effect" },
             { id: "all", label: "All" },
           ]}
           value={filter}
@@ -148,7 +156,16 @@ export const ActionList = ({
                           {soon && <span className="font-semibold text-warning"> · From {day(u.effective_on!, false)}</span>}
                           {inReview.has(u.id) && <span className="font-semibold text-warning"> · In review</span>}
                         </span>
-                        {effect && <span className={`text-xs font-semibold ${effect.tone}`}>{effect.text}</span>}
+                        {effect && (
+                          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <span className={`text-xs font-semibold ${effect.tone}`}>{effect.text}</span>
+                            {toReview.has(u.slug) ? (
+                              <span className={tt.chip("warning")}>To review</span>
+                            ) : reviewed.has(u.slug) ? (
+                              <span className={tt.chip("success")}>Reviewed</span>
+                            ) : null}
+                          </span>
+                        )}
                       </span>
                     </button>
                   </li>
@@ -159,7 +176,7 @@ export const ActionList = ({
         ))}
         {!months.length && (
           <p className="px-5 py-8 text-sm text-base-content/60">
-            {filter === "mine" ? "No recent action hits your imports." : filter === "upcoming" ? "Nothing announced is still to take effect." : "No actions match."}
+            {filter === "review" ? "Every impact check is reviewed." : filter === "mine" ? "No recent action hits your imports." : filter === "upcoming" ? "Nothing announced is still to take effect." : "No actions match."}
           </p>
         )}
       </div>

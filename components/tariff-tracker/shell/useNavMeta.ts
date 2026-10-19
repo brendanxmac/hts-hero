@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { newsSeenAt, onNewsSeen, useTariffUpdates } from "../overview/useTariffUpdates";
 import { useImportMatches } from "../news/useImportMatches";
 import { SectionSlug } from "../sections";
+import { useActionReviews } from "../impact/reviews";
 import { useTracker } from "../TrackerContext";
 
 // What's waiting in each section, for the sidebar: a count or an amount, in the color of what
@@ -14,6 +15,8 @@ import { useTracker } from "../TrackerContext";
 export interface NavMeta {
   text: string;
   tone: "error" | "success" | "warning" | "primary" | "neutral";
+  // What it means, on hover, when the text is a bare count
+  title?: string;
 }
 
 export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
@@ -29,12 +32,17 @@ export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
   }, []);
   // Recent tariff actions (the last 45 days) that affect, or may affect, the user's imports
   const matches = useImportMatches(updates);
+  const reviews = useActionReviews();
   const meta: Partial<Record<SectionSlug, NavMeta>> = {};
-  // Tariff Changes: actions new since the user last looked, else recent ones that hit their imports
+  // Tariff Changes: impact checks to review, else actions new since the user last looked, else recent ones that hit their imports
   const hitting = (updates ?? []).filter((u) => u.kind !== "hts_revision" && (matches.get(u.slug)?.confirmed ?? 0) + (matches.get(u.slug)?.likely ?? 0) > 0).length;
   const since = seenAt ?? new Date(Date.now() - 7 * 86_400_000).toISOString();
   const fresh = (updates ?? []).filter((u) => u.first_seen_at > since).length;
-  if (fresh) meta.changes = { text: `${fresh} new`, tone: "primary" };
+  // Impact checks still to review come first: they're the user's to do
+  const toReview = reviews.outstanding.length;
+  // A count alone (the label is long), amber: the user's to do
+  if (toReview) meta.changes = { text: `${toReview}`, tone: "warning", title: `${toReview} tariff ${toReview === 1 ? "action" : "actions"} to review` };
+  else if (fresh) meta.changes = { text: `${fresh} new`, tone: "primary" };
   else if (hitting) meta.changes = { text: `${hitting} recent`, tone: "neutral" };
   if (items.length) meta.catalog = { text: items.length.toLocaleString("en-US"), tone: "neutral" };
   else meta.catalog = { text: "Start here", tone: "primary" };

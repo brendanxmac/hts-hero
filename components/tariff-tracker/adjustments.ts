@@ -19,6 +19,9 @@ export interface Adjustments {
   // What the user said about each AD/CVD case that may cover the product, by its case numbers
   // ("A-570-056,C-570-057"): whether it's their product, and who made it
   adcvd?: Record<string, AdcvdAnswer>;
+  // Tariff actions whose impact on this import the user has reviewed: the action's slug, and the
+  // day it was marked (an import added later is still to review for older actions that hit it)
+  reviewed?: Record<string, string>;
 }
 
 export interface AdcvdAnswer {
@@ -53,11 +56,13 @@ export const cleanAdjustments = (adjustments: Adjustments): Adjustments => {
       .filter(([, a]) => Object.keys(a).length)
   );
   if (Object.keys(adcvd).length) out.adcvd = adcvd;
+  const reviewed = Object.fromEntries(Object.entries(adjustments.reviewed ?? {}).filter(([, on]) => !!on));
+  if (Object.keys(reviewed).length) out.reviewed = reviewed;
   return out;
 };
 
-// Changed from the defaults the duty is worked out with (AD/CVD answers don't change it)
-export const isAdjusted = (adjustments: Adjustments) => Object.keys(cleanAdjustments(adjustments)).some((k) => k !== "adcvd");
+// Changed from the defaults the duty is worked out with (AD/CVD answers and reviews don't change it)
+export const isAdjusted = (adjustments: Adjustments) => Object.keys(cleanAdjustments(adjustments)).some((k) => k !== "adcvd" && k !== "reviewed");
 
 export interface AdjustmentTag {
   id: keyof Adjustments;
