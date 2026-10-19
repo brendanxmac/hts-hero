@@ -147,6 +147,30 @@ layer(base);
 }
 
 /*
+  Motion (DESIGN_SYSTEM.md §15 "Motion"): quick and quiet. A view that comes into place (a Tracker
+  page, a results tab) fades in and rises 4px; it replays whenever the element goes from hidden to
+  shown. None for anyone who asks for reduced motion.
+*/
+@keyframes tt-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.tt-enter {
+  animation: tt-enter 180ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tt-enter {
+    animation: none;
+  }
+}
+
+/*
   daisyUI 4's control sizes, which the layouts were built around (daisyUI 5 made buttons and
   inputs 40px tall instead of 48px, and badges taller). Only the size variables are set, so
   utilities such as h-10 still win. The responsive sizes the code uses are repeated in their

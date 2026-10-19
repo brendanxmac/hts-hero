@@ -18,6 +18,7 @@ import {
   SelectionBar,
   TableToolbar,
   useDataTable,
+  useDensity,
 } from "@/components/ui/table";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
 import { useTrackerAccess } from "../access/accessContext";
@@ -28,6 +29,8 @@ import { useTracker } from "../TrackerContext";
 import { importColumns } from "./importColumns";
 import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { useCatalogAdcvd } from "@/components/adcvd/useCatalogAdcvd";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import type { Density } from "@/components/ui/table";
 
 // The user's imports as a table, on the shared table (components/ui/table): search by code,
 // description or country; filter by origin, HTS chapter, tariff, savings and alerts, each with
@@ -129,6 +132,8 @@ export const ImportsTable = ({
     trackEvent(MixpanelEvent.TARIFF_TRACKER_FILTERED, { filters: next.length });
   };
 
+  // Comfortable or compact rows, remembered on this device
+  const [density, setDensity] = useDensity("imports");
   const table = useDataTable<TrackedProduct>({
     data: rows,
     columns,
@@ -169,6 +174,18 @@ export const ImportsTable = ({
       placeholder="Search code, product or country"
       facets={FACETS}
       noun={["import", "imports"]}
+      actions={
+        <SegmentedControl<Density>
+          label="Row density"
+          options={[
+            { id: "comfortable", label: "Comfortable" },
+            { id: "compact", label: "Compact" },
+          ]}
+          value={density}
+          onChange={setDensity}
+          size="sm"
+        />
+      }
     >
       <SelectionBar table={table}>
         {(picked) => (
@@ -260,6 +277,7 @@ export const ImportsTable = ({
         label="Your imports"
         onRowClick={onOpen}
         estimateRowHeight={84}
+        density={density}
         toolbar={toolbar}
         empty={
           <div className="flex flex-col items-start gap-3">

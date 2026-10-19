@@ -68,7 +68,7 @@ export function CountryCalculatorPage({
         <Suspense
           fallback={
             <div className={mk.container}>
-              <div className="h-64 animate-pulse rounded-3xl bg-base-300" />
+              <div className="h-64 animate-pulse rounded-3xl bg-base-300 tracker:bg-tt-soft-high" />
             </div>
           }
         >

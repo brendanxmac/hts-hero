@@ -58,4 +58,6 @@ export const popover = "rounded-lg border border-base-300 bg-base-100 p-1.5 shad
 export const tooltip = "pointer-events-none rounded-md border border-base-300 bg-base-100 text-base-content shadow-lg";
 
 // A loading placeholder: give it the size of what it stands in for
-export const skeleton = "animate-pulse rounded-md bg-base-300/70";
+// A placeholder shape while something loads; in the Tracker's look, the container-high tone (it
+// reads on a card and on the ground alike)
+export const skeleton = "animate-pulse rounded-md bg-base-300/70 tracker:bg-tt-soft-high";

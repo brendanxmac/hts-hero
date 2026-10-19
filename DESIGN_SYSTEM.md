@@ -539,6 +539,11 @@ A side rail beside a page's main column (Tariff News's email and sources boxes) 
 
 `components/ui/Module`: a **Module** is a card, for one thing that stands on its own and could move (a set of key numbers, the Duty Breakdown, Possible Adjustments, a chart, a list); **Modules** stacks them with `gap-module` of ground between. Inside a module, groups are made with space and a section title, never another card. A container fill (`tt.tile`, `ui.notice`) only marks a total, a tip, a selected row or a callout. Never a card inside a card, or a tinted box inside a tinted box. A table is never boxed inside a module: the module is its frame. Grouping by space comes first (NN/g: proximity is the strongest cue); a box is for what spacing can't group.
 
+
+### Tables, states and motion
+
+**Tables:** hairline rows (the border role), the head on the card's own surface over a 2px strong rule (`tt-rule`), totals under the strong rule with the grand total on the container fill; numbers right-aligned in tabular figures; rows about 48px, and on long tables a **Comfortable · Compact** switch (`useDensity`, about 40px rows, remembered on the device; Your Imports first). **Loading:** skeletons in the container-high tone (`ui.skeleton`), shaped like the modules they stand in for (`ResultsSkeleton`). **Empty:** a module with nothing to show is one short line and its action, sized to its content, never a tall empty card. **Motion:** quick and quiet: a view that comes into place (a Tracker page, a results tab) fades in and rises 4px over 180ms (`.tt-enter`), and nothing moves for anyone who asks for reduced motion.
+
 ### Components
 
 - **Sidebar:** floating, dark in both modes. Workspace and Intelligence groups; each item has a colored dot and count for what's waiting (red "6 new", green "$6.7k", amber alerts). Plan card at the foot (the trial's free checks left as segments, payoff line, green button), then the account.

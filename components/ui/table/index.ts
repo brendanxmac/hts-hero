@@ -16,3 +16,5 @@ export { TableSearch } from "./TableSearch";
 export { TableToolbar } from "./TableToolbar";
 export { facetFilter, normalizeSearch, pruneColumnFilters, useDataTable } from "./useDataTable";
 export type { DataTableOptions } from "./useDataTable";
+export { useDensity } from "./density";
+export type { Density } from "./density";

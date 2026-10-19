@@ -201,6 +201,7 @@ export const TrackerApp = () => {
                           id={`tt-panel-${section.slug}`}
                           aria-labelledby={`tt-tab-${section.slug}`}
                           hidden={!active}
+                          className="tt-enter"
                         >
                           <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "impact"].includes(section.slug)}>
                             {panel ? panel(active) : <PlannedSection section={section} />}

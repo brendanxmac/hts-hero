@@ -17,6 +17,9 @@ export const pad = "px-4 first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6";
 // structure changes there), not on a gray band
 export const headCell = `${ui.label} whitespace-nowrap bg-base-200 py-2.5 tracker:border-b-2 tracker:border-tt-rule tracker:bg-base-100 tracker:py-3 tracker:font-bold tracker:text-base-content/70`;
 
+// The compact density: tighter rows for scanning many (about 40px instead of 48)
+export const compactCell = "py-1.5! tracker:py-2!";
+
 export const bodyCell = "border-t border-base-300 py-3 align-middle tracker:py-3.5 tracker:[tbody>tr:first-child>&]:border-t-0";
 
 // Table (static, and fine in server components) can't hand its options to its cells through

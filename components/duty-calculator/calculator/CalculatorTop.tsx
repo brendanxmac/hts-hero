@@ -152,6 +152,7 @@ export const ResultsBox = ({
   actions,
   tabs,
   headless = false,
+  view,
   children,
 }: {
   f: TariffFinder;
@@ -160,6 +161,8 @@ export const ResultsBox = ({
   // No title, actions or tabs of its own: on an import's page, whose header already says what it
   // is and holds the tabs, it's just the answer
   headless?: boolean;
+  // The open tab: switching it brings its modules in with the enter motion
+  view?: string;
   children: ReactNode;
 }) => {
   const { selectedElement, country } = f;
@@ -201,7 +204,9 @@ export const ResultsBox = ({
         </div>
       )}
       {/* Every module of the open tab, each a card on the ground (ModuleSections) */}
-      <ModuleSections>{children}</ModuleSections>
+      <ModuleSections key={view} className="tt-enter">
+        {children}
+      </ModuleSections>
     </section>
   );
 };

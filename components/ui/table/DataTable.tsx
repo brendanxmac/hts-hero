@@ -6,6 +6,7 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { ChevronDownIcon, ChevronUpDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { flexRender } from "@tanstack/react-table";
 import type { DataTableInstance, TableHeader, TableRow } from "./features";
+import type { Density } from "./density";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as ui from "@/components/ui/styles";
 import * as s from "./styles";
@@ -69,6 +70,7 @@ const BodyRow = <T,>({
   rowClassName,
   measure,
   index,
+  compact = false,
 }: {
   row: TableRow<T>;
   onRowClick?: (row: T) => void;
@@ -76,6 +78,8 @@ const BodyRow = <T,>({
   // Virtualized: the virtualizer measures each drawn row's real height
   measure?: (el: HTMLTableRowElement | null) => void;
   index?: number;
+  // Tighter rows (the compact density)
+  compact?: boolean;
 }) => {
   const cells = row.getVisibleCells();
   return (
@@ -95,7 +99,7 @@ const BodyRow = <T,>({
     >
       {cells.map((cell) => {
         const meta = cell.column.columnDef.meta;
-        const className = `${s.bodyCell} ${s.pad} ${s.ALIGN[meta?.align ?? "left"]} ${meta?.width ?? ""}`;
+        const className = `${s.bodyCell} ${s.pad} ${s.ALIGN[meta?.align ?? "left"]} ${meta?.width ?? ""} ${compact ? s.compactCell : ""}`;
         const content = flexRender(cell.column.columnDef.cell, cell.getContext());
         return meta?.rowHeader ? (
           <th key={cell.id} scope="row" className={`${className} font-normal`}>
@@ -129,6 +133,7 @@ export const DataTable = <T,>({
   toolbar,
   virtualizeFrom = 300,
   estimateRowHeight = 72,
+  density = "comfortable",
 }: {
   table: DataTableInstance<T>;
   // What the table is, for screen readers
@@ -142,7 +147,10 @@ export const DataTable = <T,>({
   // Rows from which only those in view are drawn
   virtualizeFrom?: number;
   estimateRowHeight?: number;
+  // Compact draws rows tighter (useDensity remembers the user's choice)
+  density?: Density;
 }) => {
+  const compact = density === "compact";
   const inCard = useInCard();
   const rows = table.getRowModel().rows;
   const tableRef = useRef<HTMLTableElement>(null);
@@ -152,7 +160,7 @@ export const DataTable = <T,>({
   const virtualizer = useVirtualizer({
     count: virtual ? rows.length : 0,
     getScrollElement: () => scroller,
-    estimateSize: () => estimateRowHeight,
+    estimateSize: () => (compact ? Math.round(estimateRowHeight * 0.8) : estimateRowHeight),
     overscan: 12,
     // Rows are offset by where the table starts inside the scroller
     scrollMargin: tableRef.current && scroller ? tableRef.current.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop : 0,
@@ -196,6 +204,7 @@ export const DataTable = <T,>({
                 {before > 0 && <tr aria-hidden style={{ height: before }} />}
                 {items.map((item) => (
                   <BodyRow
+                    compact={compact}
                     key={rows[item.index].id}
                     row={rows[item.index]}
                     onRowClick={onRowClick}
@@ -207,7 +216,7 @@ export const DataTable = <T,>({
                 {after > 0 && <tr aria-hidden style={{ height: after }} />}
               </>
             ) : (
-              rows.map((row) => <BodyRow key={row.id} row={row} onRowClick={onRowClick} rowClassName={rowClassName} />)
+              rows.map((row) => <BodyRow key={row.id} row={row} onRowClick={onRowClick} rowClassName={rowClassName} compact={compact} />)
             )}
           </tbody>
         </table>

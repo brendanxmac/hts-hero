@@ -375,6 +375,7 @@ export const CalculatorWorkspace = ({
           <ResultsBox
             f={f}
             headless={fixedProduct}
+            view={tab}
             actions={
               <>
                 <ShareButtons f={f} />
