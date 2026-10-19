@@ -84,25 +84,27 @@ export const HealthSummary = () => {
         : h.covered < h.imports
           ? `${n(h.covered)} of ${n(h.imports)} imports get an alert when a tariff on them changes.`
           : "Every import gets an alert when a tariff on it changes.",
-    link: h.signedIn ? "Alert settings" : h.unlockLabel,
-    go: () => (h.signedIn ? openTab("alerts") : h.unlock("alerts")),
+    // Signed out too it opens Alerts, which makes the ask to sign up (one ask per screen)
+    link: h.signedIn ? "Alert settings" : "Set up alerts",
+    go: () => openTab("alerts"),
   };
   // The Tracker MVP: the share of imports with alerts on, and one way to raise it (fill the plan's
   // spare room, or the plans)
-  // The score and its bar share one color: green from 80%, amber from 40%, red below
-  const scoreTone = h.trackedPct >= 80 ? "success" : h.trackedPct >= 40 ? "warning" : "error";
-  const scoreText = { success: "text-success", warning: "text-warning", error: "text-error" }[scoreTone];
+  // The score and its bar share one color: green from 80%, amber below (a low score needs a look;
+  // red is only for a cost going up or something wrong, DESIGN_SYSTEM.md §15 "Color")
+  const scoreTone: "success" | "warning" = h.trackedPct >= 80 ? "success" : "warning";
+  const scoreText = { success: "text-success", warning: "text-warning" }[scoreTone];
   const readinessRows = [
     {
       label: "Imports With Alerts",
       pct: h.trackedPct,
-      bar: { success: "bg-success", warning: "bg-warning", error: "bg-error" }[scoreTone],
+      bar: { success: "bg-success", warning: "bg-warning" }[scoreTone],
       text:
         h.covered < h.imports
           ? `${n(h.covered)} of ${n(h.imports)} imports get alerts and impact checks. The other ${n(h.imports - h.covered)} don't.`
           : "Every import gets alerts and impact checks.",
       link: !h.signedIn
-        ? h.unlockLabel
+        ? "Set up alerts"
         : h.covered >= h.imports
           ? "See Your imports"
           : moreToTrack > 0
@@ -110,7 +112,7 @@ export const HealthSummary = () => {
             : `Get alerts on all ${n(h.imports)}`,
       go: () =>
         !h.signedIn
-          ? h.unlock("tracking")
+          ? openTab("alerts")
           : h.covered >= h.imports
             ? openTab("catalog")
             : moreToTrack > 0

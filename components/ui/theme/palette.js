@@ -171,11 +171,13 @@ const tracker = {
     },
   },
   // Product chart parts in the Tracker: base duty a clear gray, then each program in a hue far
-  // from the last (cobalt, orange, yellow, red), then fees green. Neighbours also differ in
-  // lightness, so they stay apart side by side and for colorblind viewers.
+  // from the last (blue, orange, yellow, teal), then fees sage. A data palette of its own: none of
+  // them is a state color (cobalt the brand, red an increase, green money), so a Section 232 bar
+  // never reads as "something went up". Neighbours also differ in lightness, so they stay apart
+  // side by side and for colorblind viewers.
   chart: {
-    light: ["#959eb0", "#2f49d1", "#ea7a26", "#d9a90f", "#c2413a", "#138a5b"],
-    dark: ["#a7afc0", "#7d96ff", "#ff9547", "#f2c94c", "#ff6f61", "#34c98b"],
+    light: ["#959eb0", "#2a78d6", "#ea7a26", "#d9a90f", "#12949a", "#7f9c56"],
+    dark: ["#a7afc0", "#5ea0ff", "#ff9547", "#f2c94c", "#3cc6c4", "#a8c47e"],
   },
 };
 

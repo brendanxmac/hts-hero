@@ -86,7 +86,7 @@ export const PayLess = ({
       <div className="flex flex-col gap-2">
         {applied.length > 0 && (
           <>
-            <span className={tt.eyebrow("primary")}>Already applied</span>
+            <span className={tt.sectionTitle}>Already applied</span>
             <ul className={`${OPTIONS} mb-3`}>
               {applied.map((a) => (
                 <li key={a.title} className={TILE}>
@@ -110,7 +110,7 @@ export const PayLess = ({
             </ul>
           </>
         )}
-        <span className={tt.eyebrow("success")}>{applied.length ? "More that could lower it" : "Adjustments that could lower it"}</span>
+        <span className={tt.sectionTitle}>{applied.length ? "More that could lower it" : "Adjustments that could lower it"}</span>
         {savings.length ? (
           <ul className={OPTIONS}>
             {savings.map((s) => (
@@ -141,7 +141,7 @@ export const PayLess = ({
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className={tt.eyebrow("success")}>Cheaper among the {TOP_SUPPLIERS} biggest US suppliers</span>
+        <span className={tt.sectionTitle}>Cheaper among the {TOP_SUPPLIERS} biggest US suppliers</span>
         {o.cheaper === null ? (
           <div className={`${ui.skeleton} h-16 w-full`} />
         ) : o.cheaper.length ? (
@@ -331,18 +331,18 @@ export const RateSources = ({ o, colors, canSee, onLocked }: { o: Overview; colo
             <span className={`${tt.display} text-xl font-semibold tabular-nums text-base-content`}>{pct(c.pct)}</span>
             <span className="min-w-0">
               <span className="block font-semibold text-base-content">{c.name}</span>
-              {canSee ? (
-                <span className="block text-sm text-base-content/70">{c.why}</span>
-              ) : (
-                <button type="button" onClick={onLocked} className={`${ui.link} inline-flex items-center gap-1 text-xs`}>
-                  <LockClosedIcon className="h-3 w-3" aria-hidden />
-                  See why it applies, free
-                </button>
-              )}
+              {canSee && <span className="block text-sm text-base-content/70">{c.why}</span>}
             </span>
           </li>
         ))}
       </ul>
+      {/* Locked: one way in for the whole list, not one per row */}
+      {!canSee && (
+        <button type="button" onClick={onLocked} className={`${ui.link} inline-flex items-center gap-1 self-start text-sm`}>
+          <LockClosedIcon className="h-3.5 w-3.5" aria-hidden />
+          See why each tariff applies, free
+        </button>
+      )}
     </div>
   );
 };

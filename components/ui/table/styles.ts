@@ -13,9 +13,11 @@ export const table = "w-full border-separate border-spacing-0 text-sm tabular-nu
 // Each cell's sides: the first and last line up with the card's padding
 export const pad = "px-4 first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6";
 
-export const headCell = `${ui.label} whitespace-nowrap bg-base-200 py-2.5 tracker:bg-tt-soft tracker:py-3 tracker:font-bold tracker:text-base-content/70`;
+// In the Tracker's look the head sits on the card's own surface over the strong rule (2px: the
+// structure changes there), not on a gray band
+export const headCell = `${ui.label} whitespace-nowrap bg-base-200 py-2.5 tracker:border-b-2 tracker:border-tt-rule tracker:bg-base-100 tracker:py-3 tracker:font-bold tracker:text-base-content/70`;
 
-export const bodyCell = "border-t border-base-300 py-3 align-middle tracker:py-3.5";
+export const bodyCell = "border-t border-base-300 py-3 align-middle tracker:py-3.5 tracker:[tbody>tr:first-child>&]:border-t-0";
 
 // Table (static, and fine in server components) can't hand its options to its cells through
 // context, so the <table> carries them (data-edge, data-dense, data-valign) and each cell reads them with a

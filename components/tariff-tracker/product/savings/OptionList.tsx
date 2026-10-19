@@ -132,7 +132,7 @@ const TrackHeading = ({ title, note, rows, badge }: { title: string; note: strin
     <div className="flex flex-col gap-0.5 px-3">
       <div className="flex items-center justify-between gap-2">
         <span className="flex items-center gap-2">
-          <h3 className={tt.eyebrow()}>{title}</h3>
+          <h3 className={tt.sectionTitle}>{title}</h3>
           {badge}
         </span>
         <span className="text-[11px] font-semibold tabular-nums text-base-content/60">
@@ -209,7 +209,7 @@ export const OptionList = ({
       {past.length > 0 && (
         <section className="flex flex-col gap-2" aria-label="Tracked Earlier">
           <div className="px-3">
-            <h3 className={tt.eyebrow()}>Tracked Earlier</h3>
+            <h3 className={tt.sectionTitle}>Tracked Earlier</h3>
           </div>
           {rows(past)}
         </section>

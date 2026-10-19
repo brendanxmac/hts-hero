@@ -86,7 +86,7 @@ const Facts = ({ f }: { f: AdcvdFlag }) => {
   ]
   return (
     <div className="flex flex-col gap-2">
-      <h4 className={tt.eyebrow()}>Where It Stands</h4>
+      <h4 className={tt.sectionTitle}>Where It Stands</h4>
       <dl className="m-0 flex flex-col divide-y divide-base-300 rounded-xl bg-tt-soft px-4">
         {rows.map((r) => (
           <div key={r.label} className="flex items-baseline justify-between gap-3 py-2.5 text-sm">
@@ -101,7 +101,7 @@ const Facts = ({ f }: { f: AdcvdFlag }) => {
 
 const Rates = ({ f }: { f: AdcvdFlag }) => (
   <div className="flex flex-col gap-2">
-    <h4 className={tt.eyebrow()}>Rates Commerce Set</h4>
+    <h4 className={tt.sectionTitle}>Rates Commerce Set</h4>
     <div className={`grid gap-3 ${f.cases.length > 1 ? "md:grid-cols-2" : ""}`}>
       {f.cases.map((c) => (
         <div key={c.case_number} className={`${tt.tile} flex flex-col gap-1.5 px-5 py-4`}>
@@ -138,7 +138,7 @@ const Rates = ({ f }: { f: AdcvdFlag }) => (
 const Timeline = ({ events }: { events: FlagEvent[] }) =>
   events.length ? (
     <div className="flex flex-col gap-2">
-      <h4 className={tt.eyebrow()}>Notices</h4>
+      <h4 className={tt.sectionTitle}>Notices</h4>
       <ol className="m-0 flex list-none flex-col p-0">
         {events.map((e, i) => (
           <li key={e.document_number} className="grid grid-cols-[6.5rem_1rem_minmax(0,1fr)] gap-x-3">
@@ -164,7 +164,7 @@ const CaseDetails = ({ f, code, country }: { f: AdcvdFlag; code: string; country
   <>
     <div className="grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
       <div className="flex flex-col gap-2">
-        <h4 className={tt.eyebrow()}>Why We Flagged It</h4>
+        <h4 className={tt.sectionTitle}>Why We Flagged It</h4>
         <Why f={f} code={code} country={country} />
       </div>
       <Facts f={f} />
@@ -436,7 +436,8 @@ export const AdcvdResults = ({
           </CardRow>
         </>
       ) : (
-        walkthrough
+        // One case: its steps are one module
+        <CardSections>{walkthrough}</CardSections>
       )}
       <Petitions petitions={data.petitions} />
       {ended.length > 0 && (
@@ -451,8 +452,9 @@ export const AdcvdResults = ({
           </Fold>
         </section>
       )}
-      {/* What it's based on, and that it's no guarantee: last, under everything */}
-      <section className={`${ui.cardSection} py-4!`}>
+      {/* What it's based on, and that it's no guarantee: last, under everything, as small print on
+          the ground in the module layout */}
+      <section data-plain className={`${ui.cardSection} py-4!`}>
         <Disclaimer checkedAt={data.checked_at} />
       </section>
     </>

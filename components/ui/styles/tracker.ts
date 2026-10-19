@@ -9,6 +9,10 @@ type Tone = "primary" | "success" | "error" | "warning" | "neutral";
 // Tracker's shadow), without clipping, so a dropdown inside can reach past it
 export const panel = "tt-card rounded-lg border border-base-300 bg-base-100 shadow-[var(--tt-shadow)]";
 
+// A side rail's box (beside a page's main column): an outline on the ground, no fill or shadow,
+// so the main column leads (DESIGN_SYSTEM.md §15 "Page frame")
+export const rail = "rounded-lg border border-base-300";
+
 // Padding inside a panel
 export const panelPad = "p-6 lg:p-7";
 

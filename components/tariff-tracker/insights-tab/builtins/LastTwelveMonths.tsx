@@ -97,7 +97,7 @@ export const LastTwelveMonths = ({ input }: { input: InsightsInput }) => {
       </Fill>
       {causes.length > 0 && (
         <div className="flex flex-col gap-2">
-          <span className={tt.eyebrow()}>What moved them</span>
+          <span className={tt.sectionTitle}>What moved them</span>
           <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
             {causes.map((c) => (
               <li key={c.key}>

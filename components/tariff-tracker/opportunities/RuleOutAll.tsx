@@ -107,7 +107,8 @@ export const RuleOutAll = ({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-base-300 bg-base-100 p-4">
+    // Inside the Savings card: a container fill, never a card inside the card
+    <div className="flex flex-col gap-3 rounded-xl bg-tt-soft p-4">
       <p className="m-0 text-sm font-semibold text-base-content">
         {copy.title}: {pending.length} {pending.length === 1 ? "option" : "options"}
         <span className="font-normal text-base-content/60"> · each is marked Not eligible, with the reason kept</span>

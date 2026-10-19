@@ -51,12 +51,14 @@ const DOTS: Record<NavMeta["tone"], string> = {
   neutral: "bg-base-content/25",
 };
 
+// One style for every count (DESIGN_SYSTEM.md §15 "Sidebar"): a small pill, neutral for a count,
+// cobalt for something new, green for money, amber for what needs a look
 const META_TEXT: Record<NavMeta["tone"], string> = {
-  error: "text-error",
-  success: "text-success",
-  warning: "text-warning",
-  primary: "text-primary",
-  neutral: "text-base-content/60",
+  error: "bg-error/15 text-error",
+  success: "bg-success/15 text-success",
+  warning: "bg-warning/15 text-warning",
+  primary: "bg-primary/20 text-primary",
+  neutral: "bg-tt-side-active text-base-content/70",
 };
 
 const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSection; meta?: NavMeta; locked: boolean; collapsed: boolean }) => {
@@ -92,7 +94,7 @@ const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSect
       ) : locked ? (
         <LockClosedIcon className="h-3.5 w-3.5 text-base-content/60" aria-label="Paid plans" />
       ) : (
-        meta && <span className={`text-xs font-semibold ${META_TEXT[meta.tone]}`}>{meta.text}</span>
+        meta && <span className={`rounded-full px-2 py-0.5 text-[0.7rem] font-semibold tabular-nums ${META_TEXT[meta.tone]}`}>{meta.text}</span>
       )}
     </a>
   );

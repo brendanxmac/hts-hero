@@ -40,6 +40,18 @@ export const CardSections = ({ children, className = "" }: { children: ReactNode
 // Sections side by side inside a card (a table and its sidebar): stacked with a rule between them
 // on small screens, a full-height vertical rule between them from lg. Each column stretches to the
 // row's height, so something that should stay in view (a sidebar) is sticky inside its column.
+// Inside ModuleSections the row's columns become cards side by side instead (data-card-row).
 export const CardRow = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
-  <div className={`grid grid-cols-1 divide-y divide-base-300 lg:divide-x lg:divide-y-0 ${className}`}>{children}</div>
+  <div data-card-row className={`grid grid-cols-1 divide-y divide-base-300 lg:divide-x lg:divide-y-0 ${className}`}>{children}</div>
+);
+
+// The module layout (DESIGN_SYSTEM.md §15 "When to use a box"): the same children as CardSections
+// (panels still draw as sections, without cards of their own), but each one that has anything in
+// it is a card of its own on the ground, gap-module apart, and a CardRow's columns are cards side by
+// side. A child marked data-plain (small print) sits on the ground without a card. The cards' look
+// is in app/globals.css (.tt-modules).
+export const ModuleSections = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
+  <InCard.Provider value={true}>
+    <div className={`tt-modules flex flex-col gap-module *:empty:hidden ${className}`}>{children}</div>
+  </InCard.Provider>
 );

@@ -5,7 +5,7 @@ import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon } from "@heroico
 import { useHts } from "@/contexts/HtsContext";
 import { describe } from "@/components/tariff-tracker/report";
 import { mono } from "@/components/ui/font";
-import { CardSections } from "@/components/ui/Card";
+import { ModuleSections } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
 import { Country } from "@/constants/countries";
 import { CountryField } from "../fields/CountryField";
@@ -144,10 +144,9 @@ export const EntryDetails = ({ f, description }: { f: TariffFinder; description:
   );
 };
 
-// The results' box: what the answer is about (the code, its description in words and the origin,
-// the same on every tab) on the left, the tabs and the actions on the right, and under a
-// rule everything the open tab shows, as sections of the one box divided by hairlines (not boxes
-// inside the box). Only once there's an answer.
+// The results: a header card (what the answer is about: the code, its description in words and the
+// origin, the same on every tab, with the actions and the tabs), then everything the open tab shows
+// as module cards on the ground (ModuleSections). Only once there's an answer.
 export const ResultsBox = ({
   f,
   actions,
@@ -173,38 +172,36 @@ export const ResultsBox = ({
     // over every short line of figures; fields keep their text cursor, links and buttons their hand
     <section
       id="duty-results"
-      className={`${ui.cardOverflowVisible} flex scroll-mt-4 cursor-default flex-col overflow-clip [&_input:not([type=checkbox]):not([type=radio])]:cursor-text [&_textarea]:cursor-text`}
+      className="flex scroll-mt-4 cursor-default flex-col gap-module [&_input:not([type=checkbox]):not([type=radio])]:cursor-text [&_textarea]:cursor-text"
       aria-labelledby={headless ? undefined : "results-heading"}
       aria-label={headless ? "Results" : undefined}
       aria-live="polite"
     >
       {!headless && (
-      <div className="flex flex-col border-b border-base-300 px-5 sm:px-6">
-        <div className={`flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-4 ${tabs ? "pb-1" : "pb-4"}`}>
-          <div className="min-w-0 flex-1">
-            <h2 id="results-heading" className="m-0 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xl font-semibold tracking-tight text-base-content sm:text-2xl">
-              <span className={mono.className}>{selectedElement.htsno}</span>
-              <span className="text-base-content/30" aria-hidden>
-                ·
-              </span>
-              <span>
-                {country.flag} {country.name}
-              </span>
-            </h2>
-            <p className="m-0 mt-1 line-clamp-1 text-sm text-base-content/60" title={words}>
-              {words}
-            </p>
+        <div className={`${ui.cardOverflowVisible} flex flex-col px-5 sm:px-6`}>
+          <div className={`flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-4 ${tabs ? "pb-1" : "pb-4"}`}>
+            <div className="min-w-0 flex-1">
+              <h2 id="results-heading" className="m-0 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xl font-semibold tracking-tight text-base-content sm:text-2xl">
+                <span className={mono.className}>{selectedElement.htsno}</span>
+                <span className="text-base-content/30" aria-hidden>
+                  ·
+                </span>
+                <span>
+                  {country.flag} {country.name}
+                </span>
+              </h2>
+              <p className="m-0 mt-1 line-clamp-1 text-sm text-base-content/60" title={words}>
+                {words}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">{actions}</div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">{actions}</div>
+          {/* The tabs, along the header card's bottom edge */}
+          {tabs && <div className="mt-2">{tabs}</div>}
         </div>
-        {/* The tabs, along the header's bottom edge */}
-        {tabs && <div className="mt-2">{tabs}</div>}
-      </div>
       )}
-      {/* Every section of the open tab: panels that are cards elsewhere are its sections here. The
-          box clips to its corners (overflow: clip, which keeps sticky panels working), so a first
-          section with a fill, with no header above it, never paints square corners */}
-      <CardSections>{children}</CardSections>
+      {/* Every module of the open tab, each a card on the ground (ModuleSections) */}
+      <ModuleSections>{children}</ModuleSections>
     </section>
   );
 };

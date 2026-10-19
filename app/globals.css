@@ -121,6 +121,32 @@ layer(base);
 }
 
 /*
+  Module layout (components/ui/Card ModuleSections): each section with anything in it is a card on
+  the ground, and a CardRow's columns are cards side by side. In the components layer, so a
+  section's own utilities (padding, a fill) still apply; the row's divide rules give way to each
+  card's own border (!important beats the utilities layer).
+*/
+@layer components {
+  .tt-modules > :not(:empty):not([data-card-row]):not([data-plain]),
+  .tt-modules > [data-card-row] > * {
+    background-color: var(--color-base-100);
+    border: 1px solid var(--color-base-300) !important;
+    border-radius: 1.25rem;
+    box-shadow: var(--tt-shadow, none);
+    overflow: clip;
+    min-width: 0;
+  }
+  .tt-modules > [data-card-row] {
+    gap: var(--spacing-module);
+  }
+  /* Inside these cards, base-200 fills take the container tone, as in any card (tt-card) */
+  .hts-tracker .tt-modules > :not([data-card-row]):not([data-plain]),
+  .hts-tracker .tt-modules > [data-card-row] > * {
+    --color-base-200: var(--tt-soft);
+  }
+}
+
+/*
   daisyUI 4's control sizes, which the layouts were built around (daisyUI 5 made buttons and
   inputs 40px tall instead of 48px, and badges taller). Only the size variables are set, so
   utilities such as h-10 still win. The responsive sizes the code uses are repeated in their

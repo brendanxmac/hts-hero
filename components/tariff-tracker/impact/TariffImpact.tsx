@@ -70,7 +70,8 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
         <div className="flex items-start justify-between gap-6">
           <div className="flex min-w-0 flex-col gap-2">
             <span className={tt.eyebrow(tone)}>
-              {AUTHORITIES[update.authority] ?? update.authority} · {KINDS[update.kind] ?? update.kind} · {STAGE_LABELS[update.stage]}
+              {/* The authority, the kind and the stage, each once (an AD/CVD action's kind is also "AD/CVD") */}
+              {Array.from(new Set([AUTHORITIES[update.authority] ?? update.authority, KINDS[update.kind] ?? update.kind, STAGE_LABELS[update.stage]])).join(" · ")}
             </span>
             <h2 id="tt-impact-title" className={`${tt.display} text-xl font-semibold leading-snug text-base-content`}>
               {update.title}

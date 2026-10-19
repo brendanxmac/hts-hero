@@ -31,7 +31,7 @@ export const NextStep = () => {
   const { items, products, trackedKeys } = useTracker();
   const alerts = useAlertSettings();
   const insights = useInsights();
-  const { signedIn, paid, access, savingsLeft, auditsLeft, unlock, unlockLabel } = useTrackerAccess();
+  const { signedIn, paid, access, savingsLeft, auditsLeft } = useTrackerAccess();
   const nav = useTrackerNav();
   const [seen, setSeen] = useState<Set<string>>(new Set());
   useEffect(() => setSeen(readSeenSections()), [nav.tab]);
@@ -51,8 +51,10 @@ export const NextStep = () => {
   const onEstimate = items.length - valuesSet;
 
   const openValues = () => (firstDefault ? nav.openProduct(firstDefault.key, false, "duty") : nav.openTab("catalog"));
-  const openSavings = () => (signedIn ? nav.openTab("savings") : unlock("savings"));
-  const openAlerts = () => (signedIn ? nav.openTab("alerts") : unlock("alerts"));
+  // Signed out too, the step opens its page: the ask to sign up is made there, at the locked
+  // feature (one sign-up ask per screen, DESIGN_SYSTEM.md §15 "Color")
+  const openSavings = () => nav.openTab("savings");
+  const openAlerts = () => nav.openTab("alerts");
   const openImpact = () => nav.openTab("impact");
   const covered = trackedKeys.size;
 
@@ -78,7 +80,7 @@ export const NextStep = () => {
       go: openAlerts,
       action: (
         <button type="button" className={ui.button({ variant: "primary" })} onClick={openAlerts}>
-          {signedIn ? "Set up alerts" : unlockLabel}
+          Set up alerts
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </button>
       ),
@@ -106,7 +108,7 @@ export const NextStep = () => {
       action: (
         <>
           <button type="button" className={ui.button({ variant: "primary" })} onClick={openSavings}>
-            {!signedIn ? unlockLabel : paid || savingsLeft === 0 ? "See potential savings" : "Check savings free"}
+            {!signedIn || paid || savingsLeft === 0 ? "See potential savings" : "Check savings free"}
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </button>
           {signedIn && !paid && savingsLeft > 0 && (

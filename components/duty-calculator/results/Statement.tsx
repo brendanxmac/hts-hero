@@ -15,6 +15,7 @@ import { LineChanges } from "../lib/useLineChanges";
 import { RowLink, RowProps } from "./rowTypes";
 import { StatementRow } from "./StatementRow";
 import { TotalRow } from "./TotalRow";
+import { WhyLocked } from "../calculator/WhyGate";
 
 export const Statement = ({
   result,
@@ -78,7 +79,8 @@ export const Statement = ({
       name: line.name,
       // Why it applies, in plain English (the engine's own reasons are mostly empty)
       detail: lockWhy ? undefined : whyApplies(line, result, result.questions).join(" · "),
-      whyLocked: lockWhy,
+      // Locked: one way in under the table, not one per line
+      whyLocked: false,
       // The legal text takes a free account too (the locked line says so)
       legal: lockWhy ? undefined : legalText(line.code, result),
       basis: line.basisValue,
@@ -157,7 +159,7 @@ export const Statement = ({
         <table className="w-full text-left border-collapse">
           <caption className="sr-only">Duty statement</caption>
           <thead>
-            <tr className="bg-primary/[0.06] text-base-content/70">
+            <tr className="bg-primary/[0.06] text-base-content/70 tracker:border-b-2 tracker:border-tt-rule tracker:bg-transparent">
               <th scope="col" className={`${ui.label} py-3 pl-5 sm:pl-6 pr-3`}>
                 Line
               </th>
@@ -201,6 +203,11 @@ export const Statement = ({
           </tbody>
         </table>
       </div>
+      {lockWhy && !compact && (
+        <div className="border-t border-base-300 px-5 py-3 sm:px-6">
+          <WhyLocked label="See why each line applies, with its legal text" where="breakdown" className="text-sm" />
+        </div>
+      )}
     </>
   );
 };

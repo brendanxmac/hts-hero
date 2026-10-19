@@ -169,21 +169,16 @@ export const Overview = () => {
 
       <MetricTiles metrics={data.metrics} />
 
-      {/* The other pages in short, each with a way in */}
-      <div className="grid gap-4 xl:grid-cols-3">
-        <div className={ROW}>
-          <HealthSummary />
-        </div>
-        <div className={ROW}>
-          <ImpactsSummary />
-        </div>
-        <div className={ROW}>
-          <NewsSummary />
-        </div>
+      {/* The other pages in short, each with a way in. Each sizes to its own content (their
+          lengths differ a lot), so a short one never holds a tall empty card */}
+      <div className="grid items-start gap-module xl:grid-cols-3">
+        <HealthSummary />
+        <ImpactsSummary />
+        <NewsSummary />
       </div>
 
       {/* Side by side, each row's panels stretch to the taller one, so no gaps open under them */}
-      <div className="grid gap-4 xl:grid-cols-12">
+      <div className="grid gap-module xl:grid-cols-12">
         <div className={`${ROW} xl:col-span-8`}>
           <RatePulse series={data.rateSeries} from={data.yearAgo} to={today} rise={data.rise} drop={data.drop} />
         </div>
@@ -192,7 +187,7 @@ export const Overview = () => {
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-12">
+      <div className="grid gap-module xl:grid-cols-12">
         <div className={`${ROW} xl:col-span-7`}>
           <ExposureMap products={t.products} onOpen={open} />
         </div>

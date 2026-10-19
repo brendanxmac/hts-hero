@@ -126,7 +126,7 @@ const EmailCard = () => {
   }, [signedIn]);
   const now = frequency === "instant" ? "Each action as it happens" : frequency === "weekly" ? "A weekly digest, Mondays" : frequency === "off" ? "Off" : null;
   return (
-    <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-3`} aria-labelledby="tt-news-email">
+    <section className={`${tt.rail} p-6 flex flex-col gap-3`} aria-labelledby="tt-news-email">
       <h2 id="tt-news-email" className={tt.title}>
         Get These by Email
       </h2>
@@ -263,7 +263,7 @@ export const TariffNews = () => {
 
       <aside className="flex flex-col gap-4">
         <EmailCard />
-        <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-2`}>
+        <section className={`${tt.rail} p-6 flex flex-col gap-2`}>
           <h2 className={tt.title}>Where These Come From</h2>
           <p className="text-sm text-base-content/70">
             The White House, the Federal Register, CBP, USTR and the USITC, checked every 15 minutes. Each action is followed from announcement into the

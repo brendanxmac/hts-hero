@@ -17,7 +17,9 @@ export const TotalRow = ({
   hideBasis?: boolean;
 }) => (
   <tr
-    className={`border-t ${strong ? "border-base-content/20 bg-primary/[0.06]" : "border-base-content/20"}`}
+    // In the Tracker's look a total sits under the strong rule (2px where the structure changes), the
+    // grand total on the container fill
+    className={`border-t ${strong ? "border-base-content/20 bg-primary/[0.06] tracker:bg-tt-soft" : "border-base-content/20"} tracker:border-t-2 tracker:border-tt-rule`}
   >
     <td
       colSpan={hideBasis ? 2 : 3}

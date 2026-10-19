@@ -207,7 +207,7 @@ export const Companies = ({ f }: { f: AdcvdFlag }) => {
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
-          <h4 className={tt.eyebrow()}>Rates By Company</h4>
+          <h4 className={tt.sectionTitle}>Rates By Company</h4>
           <p className={`${ui.caption} m-0 mt-1`}>
             {rated.length} {rated.length === 1 ? "company has" : "companies have"} a rate of its own. Companies not named pay the &ldquo;all others&rdquo; rate.
           </p>
