@@ -9,7 +9,7 @@ import { useTariffFinder } from "@/components/duty-calculator/lib/useTariffFinde
 import * as ui from "@/components/ui/styles";
 import { AddToCatalogButton } from "../AddToCatalogButton";
 import { productKey } from "../adjustments";
-import { TRACKER_PATH } from "../sections";
+import { sectionBySlug, TRACKER_PATH } from "../sections";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
@@ -18,6 +18,8 @@ import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 // without that page's marketing, with "Add to catalog" in its results. While it's the open tab,
 // the address follows its inputs; its share links open it here.
 const CALCULATOR_TAB = { tab: "calculator" };
+// Its header is the Entry details card (the page's fields under its title)
+const CALCULATOR = sectionBySlug("calculator")!;
 
 const Calculator = ({ active }: { active: boolean }) => {
   const f = useTariffFinder({ path: TRACKER_PATH, extraParams: CALCULATOR_TAB, syncAddress: active });
@@ -28,7 +30,7 @@ const Calculator = ({ active }: { active: boolean }) => {
   const checkSavings = () => (key && products.some((p) => p.key === key) ? nav.openProduct(key, false, "savings") : nav.openTab("savings"));
   return (
     <div className="flex flex-col gap-4">
-      <CalculatorWorkspace f={f} page="tracker_calculator" onCheckSavings={SAVINGS_ENABLED ? checkSavings : undefined} actions={<AddToCatalogButton f={f} source="tracker_calculator" onOpen={nav.openProduct} />} />
+      <CalculatorWorkspace f={f} page="tracker_calculator" pageTitle={{ title: CALCULATOR.title, summary: CALCULATOR.summary }} onCheckSavings={SAVINGS_ENABLED ? checkSavings : undefined} actions={<AddToCatalogButton f={f} source="tracker_calculator" onOpen={nav.openProduct} />} />
       <Disclaimer />
       <ExploreModal f={f} />
     </div>

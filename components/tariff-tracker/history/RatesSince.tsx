@@ -123,7 +123,7 @@ export const RatesSince = ({
   });
 
   return (
-    <section aria-labelledby="tt-rates-since">
+    <section aria-labelledby="tt-rates-since" className="flex flex-col *:flex-1">
       <DataTable
         table={table}
         label="Then and Now"

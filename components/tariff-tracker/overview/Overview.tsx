@@ -19,17 +19,15 @@ import { useTracker } from "../TrackerContext";
 import { EmptyOverview } from "./EmptyOverview";
 import { LatestChanges } from "./LatestChanges";
 import { averageRate, changesLastYear, dutyPerShipment, monthlyChanges, productsToLookAt } from "./lib/metrics";
-import { Metric } from "./MetricTiles";
+import { Metric, MetricTiles } from "./MetricTiles";
 import { AttentionList } from "./AttentionList";
-import { Module } from "@/components/ui/Module";
-import * as tt from "@/components/ui/styles/tracker";
 import { PulseEvent, RatePulse } from "./RatePulse";
 import { NewsSummary } from "./SummaryBoxes";
 import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
-// Home (DESIGN_SYSTEM.md §15 "Home"): what needs the user, ranked (AttentionList), beside the one
-// number that sums up their imports; then how their average rate moved over the year, and what
-// changed, on their imports and in tariffs at large. Where the duty comes from (exposure, origins)
+// Home (DESIGN_SYSTEM.md §15 "Home"): the header card with the three numbers that sum up the
+// imports (with their 12-month lines), what needs the user, ranked (AttentionList), how their
+// average rate moved over the year, and what changed, on their imports and in tariffs at large. Where the duty comes from (exposure, origins)
 // is in Your Imports' Insights. Before there are products, the empty Home asks for them.
 
 // The value on a date in a series of steps
@@ -151,61 +149,36 @@ export const Overview = () => {
   if (!t.items.length) return <EmptyOverview />;
 
   const open = (key: string) => nav.openProduct(key);
-  const [yearChange, , changes] = data.metrics;
 
+  // Rows never pair cards of different heights: a card is full width, or the row has a fixed height
+  // its cards fill (DESIGN_SYSTEM.md §15 "Home")
   return (
     <div className="flex flex-col gap-module">
-      {/* The page frame like every page's, its line the day and how many imports it covers */}
+      {/* The page's header card, with the three numbers that sum up the imports under the title */}
       <SectionHeader
         section={OVERVIEW}
         summary={`${new Date(`${today}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })} · ${t.items.length.toLocaleString("en-US")} ${t.items.length === 1 ? "import" : "imports"}`}
-      />
+      >
+        <MetricTiles metrics={data.metrics} framed={false} />
+      </SectionHeader>
 
-      {/* What needs the user first; beside it, the one number that sums up their imports */}
-      <div className="grid items-start gap-module xl:grid-cols-12">
-        <div className="xl:col-span-8">
-          <AttentionList />
-        </div>
-        <Module title="Your Duty Today" className="xl:col-span-4">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <span className={tt.caption}>Average duty rate</span>
-              <span className={tt.metricLg}>{formatRate(averageRate(t.products))}</span>
-            </div>
-            <dl className="m-0 flex flex-col gap-2 border-t border-base-300 pt-4 text-sm">
-              <div className="flex items-baseline justify-between gap-3">
-                <dt className="text-base-content/70">{yearChange.label}</dt>
-                <dd className={`m-0 font-semibold tabular-nums ${yearChange.tone === "error" ? "text-error" : yearChange.tone === "success" ? "text-success" : "text-base-content"}`}>{yearChange.value}</dd>
-              </div>
-              <div className="flex items-baseline justify-between gap-3">
-                <dt className="text-base-content/70">{changes.label}</dt>
-                <dd className="m-0 font-semibold tabular-nums text-base-content">{changes.value}</dd>
-              </div>
-            </dl>
-            <p className={`${tt.caption} m-0`}>{yearChange.note}. {changes.note}.</p>
-          </div>
-        </Module>
-      </div>
+      <AttentionList />
 
       <RatePulse series={data.rateSeries} from={data.yearAgo} to={today} rise={data.rise} drop={data.drop} />
 
-      {/* What changed: on the user's imports, and in tariffs at large */}
-      <div className="grid items-start gap-module xl:grid-cols-12">
-        <div className="xl:col-span-7">
-          <AccountGate
-            feature="history"
-            page="tracker"
-            title="What Changed on Your Products"
-            teaser={changesTeaser(insights) ?? "Going through your products' history…"}
-            preview={<TableStandIn columns={["Product", "Origin", "Change", "Date"]} />}
-            minHeight="min-h-96"
-          >
-            <LatestChanges changes={data.lastYearChanges} onOpen={open} onAll={() => nav.openTab("history")} />
-          </AccountGate>
-        </div>
-        <div className="xl:col-span-5">
-          <NewsSummary />
-        </div>
+      {/* What changed: on the user's imports, and in tariffs at large; one height, each list cut to fit */}
+      <div className="grid gap-module xl:h-[26rem] xl:grid-cols-2">
+        <AccountGate
+          feature="history"
+          page="tracker"
+          title="What Changed on Your Imports"
+          teaser={changesTeaser(insights) ?? "Going through your products' history…"}
+          preview={<TableStandIn columns={["Product", "Origin", "Change", "Date"]} />}
+          minHeight="min-h-96"
+        >
+          <LatestChanges changes={data.lastYearChanges} onOpen={open} onAll={() => nav.openTab("history")} />
+        </AccountGate>
+        <NewsSummary />
       </div>
     </div>
   );

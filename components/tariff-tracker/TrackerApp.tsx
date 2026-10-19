@@ -206,7 +206,7 @@ export const TrackerApp = () => {
                           hidden={!active}
                           className="tt-enter"
                         >
-                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "changes"].includes(section.slug)}>
+                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "changes", "calculator"].includes(section.slug)}>
                             {panel ? panel(active) : <PlannedSection section={section} />}
                           </SectionPage>
                         </div>

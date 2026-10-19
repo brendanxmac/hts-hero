@@ -7,6 +7,7 @@ import { describe } from "@/components/tariff-tracker/report";
 import { mono } from "@/components/ui/font";
 import { ModuleSections } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { Country } from "@/constants/countries";
 import { CountryField } from "../fields/CountryField";
 import { HtsCodeField } from "../fields/HtsCodeField";
@@ -100,18 +101,27 @@ export const ImportInputs = ({ f }: { f: TariffFinder }) => (
   </div>
 );
 
-export const EntryDetails = ({ f, description }: { f: TariffFinder; description: string }) => {
+// pageTitle: in the Tracker, this card is the Calculator page's header, so it carries the page's
+// title and line in place of "Entry details"
+export const EntryDetails = ({ f, description, pageTitle }: { f: TariffFinder; description: string; pageTitle?: { title: string; summary: string } }) => {
   const { result } = f;
   const setOrigin = (picked: Country[]) => {
     const origin = picked[0];
     f.changeCountries(origin ? [origin, ...f.countries.slice(1).filter((c) => c.code !== origin.code)] : []);
   };
   return (
-    <section className={`${ui.cardOverflowVisible} flex flex-col gap-3 px-5 pb-5 pt-4 sm:px-6`} aria-label="Entry details">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-        <h2 className={ui.cardTitle}>Entry details</h2>
-        <p className={`${ui.caption} leading-snug`}>{description}</p>
-      </div>
+    <section className={`${ui.cardOverflowVisible} flex flex-col ${pageTitle ? "gap-4 pt-5" : "gap-3 pt-4"} px-5 pb-5 sm:px-6`} aria-label="Entry details">
+      {pageTitle ? (
+        <div className="flex min-w-0 flex-col gap-1">
+          <h1 className={tt.pageTitle}>{pageTitle.title}</h1>
+          <p className={`${tt.subtitle} m-0`}>{pageTitle.summary}</p>
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+          <h2 className={ui.cardTitle}>Entry details</h2>
+          <p className={`${ui.caption} leading-snug`}>{description}</p>
+        </div>
+      )}
       {f.loading ? (
         <div className={`${ui.skeleton} h-14 w-full`} />
       ) : (

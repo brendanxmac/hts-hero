@@ -118,6 +118,7 @@ export const CalculatorWorkspace = ({
   tab: hostTab,
   onTabChange,
   overviewLead,
+  pageTitle,
 }: {
   f: TariffFinder;
   // In the results' heading, after Share: the host's main action (Add to catalog, Track this import)
@@ -138,6 +139,8 @@ export const CalculatorWorkspace = ({
   onTabChange?: (tab: ResultsView) => void;
   // On an import's page: the first module of its Overview (its alerts, savings and audits)
   overviewLead?: ReactNode;
+  // In the Tracker: the page's title and line, in the Entry details card (the page's header)
+  pageTitle?: { title: string; summary: string };
 }) => {
   const { htsElements } = useHts();
   const searchParams = useSearchParams();
@@ -384,7 +387,7 @@ export const CalculatorWorkspace = ({
     // Two groups a page tier apart: the inputs, then the results (their heading and modules, close together)
     <div className="flex flex-col gap-page">
       {/* The inputs: their own card. On an import's own page, its header holds them */}
-      {!fixedProduct && <EntryDetails f={f} description="Enter the details of your import to get a duty estimate" />}
+      {!fixedProduct && <EntryDetails f={f} description="Enter the details of your import to get a duty estimate" pageTitle={pageTitle} />}
 
       {f.loading ? (
         <ResultsSkeleton />

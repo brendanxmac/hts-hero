@@ -28,8 +28,10 @@ export interface Metric {
 
 const NOTE_TONES = { error: "text-error", success: "text-success", neutral: "text-base-content/60" };
 
-export const MetricTiles = ({ metrics }: { metrics: Metric[] }) => (
+// framed: a card of its own; off, a section of the card it's in (Home's header)
+export const MetricTiles = ({ metrics, framed = true }: { metrics: Metric[]; framed?: boolean }) => (
   <StatStrip
+    framed={framed}
     label="Key numbers"
     stats={metrics.map((m) => ({
       label: m.label,

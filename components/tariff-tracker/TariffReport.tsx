@@ -68,7 +68,7 @@ export const TariffReport = ({
                     }}
                   />
                   <Menu as="div" className="relative">
-                    <Menu.Button className={`${ui.button({ variant: "secondary" }).replace("px-5", "")} w-10`}>
+                    <Menu.Button className={ui.button({ variant: "secondary", icon: true })}>
                       <EllipsisHorizontalIcon className="h-4 w-4" aria-hidden />
                       <span className="sr-only">More import actions</span>
                     </Menu.Button>

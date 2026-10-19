@@ -64,7 +64,8 @@ const HistoryReport = () => {
         ]}
       />
       <CatalogRateChart series={series} to={todayIso()} />
-      <div className="grid items-start gap-4 xl:grid-cols-2">
+      {/* Side by side, one height: each card fills its cell */}
+      <div className="grid gap-4 xl:grid-cols-2 *:h-full">
         <ChangeFeed days={days} onOpen={open} />
         <RatesSince products={products} histories={histories} from={range.from} onOpen={open} />
       </div>

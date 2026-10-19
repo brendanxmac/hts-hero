@@ -42,8 +42,9 @@ interface Item {
 
 const STRIPE: Record<Tone, string> = { error: "bg-error", warning: "bg-warning", primary: "bg-primary" };
 
-// Rates that went up within this many days stay on the list
-const RECENT_DAYS = 90;
+// Changes and tariff actions stay on the list this many days (about two months); older ones are
+// in Tariff Changes and Rate History
+const RECENT_DAYS = 60;
 // The most items of one kind before they're summed up in one line
 const MOST = 3;
 
@@ -105,8 +106,10 @@ export const useAttention = (): Item[] | null => {
     const pending = (updates ?? []).filter((u) => {
       const m = matches.get(u.slug);
       if (u.kind === "hts_revision" || !m || m.confirmed + m.likely === 0) return false;
+      // Nothing the user hasn't heard about in two months, even if it takes effect later
+      if (u.last_activity_at.slice(0, 10) < since) return false;
       const upcoming = !!u.effective_on && u.effective_on > today;
-      return upcoming || (m.confirmed === 0 && u.last_activity_at.slice(0, 10) >= addDays(today, -45));
+      return upcoming || m.confirmed === 0;
     });
     for (const u of pending.slice(0, MOST)) {
       const upcoming = !!u.effective_on && u.effective_on > today;

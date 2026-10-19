@@ -316,7 +316,8 @@ export const TariffImpact = () => {
         ) : (
           <div className={`${ui.skeleton} h-144 w-full`} />
         )}
-        <div className="flex min-w-0 flex-col gap-4">
+        {/* As tall as the list beside it, the last card filling the rest, so no ground shows under it */}
+        <div className="flex min-w-0 flex-col gap-4 xl:min-h-[calc(100vh-2rem)] xl:[&>:last-child]:flex-1">
           {!update ? (
             <div className={`${ui.skeleton} h-64 w-full`} />
           ) : (

@@ -11,10 +11,10 @@ import { CatalogChange } from "../insights/catalogHistory";
 // The latest tariff changes on the user's products, newest first, as soft rows with a round
 // icon in the color of the change
 export const LatestChanges = ({ changes, onOpen, onAll }: { changes: CatalogChange[]; onOpen: (key: string) => void; onAll: () => void }) => (
-  <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-3`} aria-labelledby="tt-latest">
+  <section className={`${tt.panel} ${tt.panelPad} flex h-full flex-col gap-3`} aria-labelledby="tt-latest">
     <div className="flex items-center justify-between gap-3">
       <h2 id="tt-latest" className={tt.title}>
-        Changes on Your Products
+        What Changed on Your Imports
       </h2>
       <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={onAll}>
         Rate history
@@ -23,8 +23,9 @@ export const LatestChanges = ({ changes, onOpen, onAll }: { changes: CatalogChan
     {changes.length === 0 ? (
       <p className={`${tt.tile} m-0 p-4 text-sm text-base-content/70`}>No rate on your tracked products changed in the last 12 months.</p>
     ) : (
-      <ul className="flex flex-col gap-2">
-        {changes.slice(0, 5).map((c) => {
+      // Fills the card; in a row of fixed height, what doesn't fit is cut at the card's foot
+      <ul className="m-0 flex min-h-0 flex-1 list-none flex-col gap-2 overflow-hidden p-0">
+        {changes.slice(0, 8).map((c) => {
           const up = c.deltaPct > 0;
           return (
             <li key={`${c.product.key}-${c.date}`}>

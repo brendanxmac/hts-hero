@@ -38,7 +38,7 @@ const SummaryBox = ({
 }) => {
   const { openTab } = useTrackerNav();
   return (
-    <section className={`${tt.panel} flex flex-col`} aria-labelledby={id}>
+    <section className={`${tt.panel} flex h-full flex-col`} aria-labelledby={id}>
       <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-5 lg:px-6">
         <span className="flex items-center gap-2">
           <h2 id={id} className={tt.title}>
@@ -53,7 +53,8 @@ const SummaryBox = ({
           </button>
         )}
       </div>
-      <div className="flex flex-1 flex-col px-5 pb-5 lg:px-6">{children}</div>
+      {/* Fills the card; in a row of fixed height, what doesn't fit is cut at the card's foot */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-5 pb-5 lg:px-6">{children}</div>
     </section>
   );
 };
@@ -77,7 +78,7 @@ export const NewsSummary = () => {
         <p className="text-sm text-base-content/70">No new US tariff actions in the last few weeks.</p>
       ) : (
         <ul className="-mx-2 flex flex-col">
-          {updates.slice(0, 5).map((u) => {
+          {updates.slice(0, 8).map((u) => {
             const m = matches.get(u.slug);
             return (
               <li key={u.id}>
