@@ -42,7 +42,7 @@ import {
 } from "../results";
 import { DutyBreakdown, LinesDetail } from "./DutyBreakdown";
 import { EmptyState } from "./EmptyState";
-import { EntryDetails, ResultsBox } from "./CalculatorTop";
+import { EntryDetails, ResultsBox, ResultsHeading } from "./CalculatorTop";
 import {
   CheckSavingsLink,
   QUALIFY_TRIAL,
@@ -72,27 +72,40 @@ import { useStickyColumn } from "./useStickyColumn";
 // - Duty (where the results open): the totals full width, then the duty breakdown (with the headings checked but not
 //   applied at its foot) beside the possible adjustments (and the Tracker's qualification check,
 //   teased), which move with the page. What the
-//   last answer changed is marked in the breakdown.
-// - Recent Changes: the rate history and every change in it, full width, free (the tab counts the
-//   changes); then the Tracker's refund check, teased
-// - AD/CVD: whether any antidumping or countervailing duty case may cover it, and each in full
-//   (a free account; the Duty tab says, in one line, that one may apply)
+//   last answer changed is marked in the breakdown. Then the AD/CVD check: antidumping and
+//   countervailing duties are duty too, so they're part of this tab (a line under the totals says
+//   whether a case may apply, and takes the user to it)
 // - Compare: other origins side by side, then the Analysis: this import's duty from every origin
 //   (a free account)
-// - News: every tariff action that may touch it (a free account)
+// - Changes: the rate history and every change in it (free; the tab counts the changes), then every
+//   tariff action that may touch it (a free account); then the Tracker's refund check, teased
 
-type ResultsTab = "overview" | "duty" | "adcvd" | "history" | "compare" | "news";
+// The tabs, and the names of the ones folded into them (AD/CVD into Duty; History and News into
+// Changes), which links and other pages still use
+type ResultsView = "overview" | "duty" | "compare" | "changes";
+export type ResultsTab = ResultsView | "adcvd" | "history" | "news";
 
-const LOCAL_VIEWS = ["history", "adcvd", "news"] as const;
+const viewOf = (tab: ResultsTab): ResultsView => (tab === "adcvd" ? "duty" : tab === "history" || tab === "news" ? "changes" : tab);
+
+const LOCAL_VIEWS = ["changes", "history", "adcvd", "news"] as const;
+
+// Scroll to the AD/CVD check on the Duty tab, once it's there (the tab may still be coming in)
+export const showAdcvd = () => {
+  let tries = 0;
+  const go = () => {
+    const el = document.getElementById("adcvd-check");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    else if (tries++ < 20) window.setTimeout(go, 100);
+  };
+  window.setTimeout(go, 60);
+};
 
 // The calculator's own tabs. The Overview is an import's page's first tab in the Tracker only:
-// here Duty comes first and fast, and the Overview is teased under its totals (OverviewTeaser)
-const TABS: { id: ResultsTab; label: string }[] = [
+// here Duty comes first and fast
+const TABS: { id: ResultsView; label: string }[] = [
   { id: "duty", label: "Duty" },
-  { id: "adcvd", label: "AD/CVD" },
   { id: "compare", label: "Compare" },
-  { id: "history", label: "History" },
-  { id: "news", label: "News" },
+  { id: "changes", label: "Changes" },
 ];
 
 export const CalculatorWorkspace = ({
@@ -121,7 +134,7 @@ export const CalculatorWorkspace = ({
   // A host whose own menu holds the tabs (the Tracker's import page): which one is open (the
   // results then show no tab row of their own), and the way to change it
   tab?: ResultsTab;
-  onTabChange?: (tab: ResultsTab) => void;
+  onTabChange?: (tab: ResultsView) => void;
 }) => {
   const { htsElements } = useHts();
   const searchParams = useSearchParams();
@@ -130,18 +143,21 @@ export const CalculatorWorkspace = ({
   // Compare is the finder's own view (so a shared link opens on it); Duty Over Time is this
   // page's. `view=analysis` (links from the MCP server) opens on Compare, where the Analysis is.
   // The results open on Duty, unless a link asks for History, AD/CVD or News
-  const [localTab, setLocalTab] = useState<Exclude<ResultsTab, "compare">>(() => {
-    const view = searchParams.get("view");
-    return LOCAL_VIEWS.find((v) => v === view) ?? "duty";
+  const [localTab, setLocalTab] = useState<Exclude<ResultsView, "compare">>(() => {
+    const view = LOCAL_VIEWS.find((v) => v === searchParams.get("view"));
+    return view ? (viewOf(view) as Exclude<ResultsView, "compare">) : "duty";
   });
-  const ownTab: ResultsTab = f.view === "compare" ? "compare" : localTab;
-  const tab: ResultsTab = hostTab ?? ownTab;
+  const ownTab: ResultsView = f.view === "compare" ? "compare" : localTab;
+  const tab: ResultsView = viewOf(hostTab ?? ownTab);
   useEffect(() => {
     if (searchParams.get("view") === "analysis") f.changeView("compare");
+    if (searchParams.get("view") === "adcvd") showAdcvd();
     // Once, on arrival
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const changeTab = (next: ResultsTab) => {
+  const changeTab = (asked: ResultsTab) => {
+    if (asked === "adcvd") showAdcvd();
+    const next = viewOf(asked);
     if (onTabChange) return onTabChange(next);
     if (next !== "compare") setLocalTab(next);
     // The address says Compare only while it's open
@@ -363,8 +379,40 @@ export const CalculatorWorkspace = ({
   );
   return (
     <div className="flex flex-col gap-4">
-      {/* On an import's own page, its header holds what it is and the fields that can change */}
-      {!fixedProduct && <EntryDetails f={f} description="Enter the details of your import to get a duty estimate" />}
+      {/* One card: the fields, then (once there's an answer) what it's about, its actions and the
+          tabs. On an import's own page, its header is that card */}
+      {!fixedProduct && (
+        <EntryDetails f={f} description="Enter the details of your import to get a duty estimate">
+          {ready && !f.loading && (
+            <ResultsHeading
+              f={f}
+              actions={
+                <>
+                  <ShareButtons f={f} />
+                  {actions}
+                  {trackButton}
+                </>
+              }
+              tabs={
+                hostTab ? undefined : (
+                  <TabBar
+                    label="Results"
+                    options={TABS.map((t) =>
+                      t.id === "changes" && historyChanges + (newsCount ?? 0) > 0
+                        ? { ...t, count: historyChanges + (newsCount ?? 0) }
+                        : t.id === "duty" && adcvdFlagged
+                          ? { ...t, badge: "AD/CVD may apply", badgeTone: "warning" as const }
+                          : t,
+                    )}
+                    value={tab}
+                    onChange={changeTab}
+                  />
+                )
+              }
+            />
+          )}
+        </EntryDetails>
+      )}
 
       {f.loading ? (
         <ResultsSkeleton />
@@ -372,36 +420,7 @@ export const CalculatorWorkspace = ({
         (empty ?? <EmptyState f={f} />)
       ) : (
         <WhyUnlockContext.Provider value={unlockWhy}>
-          <ResultsBox
-            f={f}
-            headless={fixedProduct}
-            view={tab}
-            actions={
-              <>
-                <ShareButtons f={f} />
-                {actions}
-                {trackButton}
-              </>
-            }
-            tabs={
-              hostTab ? undefined : (
-                <TabBar
-                  label="Results"
-                  options={TABS.map((t) =>
-                    t.id === "history" && historyChanges > 0
-                      ? { ...t, count: historyChanges }
-                      : t.id === "news" && newsCount
-                        ? { ...t, count: newsCount }
-                        : t.id === "adcvd" && adcvdFlagged
-                          ? { ...t, badge: "May apply", badgeTone: "warning" as const }
-                          : t,
-                  )}
-                  value={tab}
-                  onChange={changeTab}
-                />
-              )
-            }
-          >
+          <ResultsBox view={tab}>
             <div className={ui.cardSection}>
               <VerifiedNotice f={f} />
             </div>
@@ -423,18 +442,6 @@ export const CalculatorWorkspace = ({
               />
             )}
 
-            {tab === "adcvd" && (
-              <AdcvdTab code={selectedElement.htsno} country={country.code} page={page} customsValue={f.customsValue} dutyUsd={result.totalDuty} />
-            )}
-
-            {tab === "news" && (
-              <NewsTab
-                code={selectedElement.htsno}
-                country={country.code}
-                page={page}
-                action={page === "calculator" && track ? <ArrowLink onClick={() => track.start("overview")}>Get alerts for this import</ArrowLink> : undefined}
-              />
-            )}
 
             {tab === "duty" && (
               <>
@@ -450,9 +457,10 @@ export const CalculatorWorkspace = ({
                     onHighlight={setHighlight}
                     className={`${ui.cardSection} border-t border-base-300`}
                   />
+                  {/* AD/CVD is never in the estimate: one line says whether a case may apply, and
+                      takes the user to the check further down this tab */}
+                  <AdcvdDutyTeaser code={selectedElement.htsno} country={country.code} onOpen={showAdcvd} />
                 </div>
-                {/* AD/CVD is never in the estimate: one line says a case may apply, and where to see it */}
-                {/* <AdcvdDutyTeaser code={selectedElement.htsno} country={country.code} onOpen={() => changeTab("adcvd")} /> */}
                 {result.warnings.length > 0 && (
                   <div className={ui.cardSection}>
                     <ul
@@ -559,10 +567,16 @@ export const CalculatorWorkspace = ({
                     </aside>
                   )}
                 </CardRow>
+                {/* AD/CVD: the rest of the duty. A heading on the ground, then the check's own modules */}
+                <div data-plain id="adcvd-check" className="flex scroll-mt-4 flex-col gap-0.5 px-1 pt-3">
+                  <h3 className="m-0 text-lg font-semibold text-base-content">Antidumping and Countervailing Duties</h3>
+                  <p className={`${ui.caption} m-0`}>AD/CVD deposits are due on top of the duty above when a case covers your product. They aren&apos;t in the estimate.</p>
+                </div>
+                <AdcvdTab code={selectedElement.htsno} country={country.code} page={page} customsValue={f.customsValue} dutyUsd={result.totalDuty} />
               </>
             )}
 
-            {tab === "history" && (
+            {tab === "changes" && (
               // The history and every change in it are free. On /duty-calculator, alerts on this
               // import in the heading, and the Tracker's refund check (audit checks) as its own card
               // under it; in the Tracker, the refund check in the heading
@@ -579,6 +593,12 @@ export const CalculatorWorkspace = ({
                       <RefundsButton conversion={conversion} history={f.history} customsValue={f.customsValue} />
                     )
                   }
+                />
+                <NewsTab
+                  code={selectedElement.htsno}
+                  country={country.code}
+                  page={page}
+                  action={page === "calculator" && track ? <ArrowLink onClick={() => track.start("overview")}>Get alerts for this import</ArrowLink> : undefined}
                 />
                 {page === "calculator" && AUDITS_ENABLED && (
                   <RefundCheckCard

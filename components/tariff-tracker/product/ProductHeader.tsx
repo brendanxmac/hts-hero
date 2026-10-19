@@ -7,7 +7,8 @@ import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { TabBar } from "@/components/ui/TabBar";
 import { TrackedProduct } from "../report";
-import { PRODUCT_TABS, ProductTab } from "../sections";
+import { ProductTab, ProductView } from "../sections";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { useInsights } from "../insights/InsightsContext";
 import { wholeDollars } from "../insights/teasers";
 import { AlertsToggle } from "./AlertsToggle";
@@ -42,7 +43,7 @@ export const ProductHeader = ({
   historyChanges = 0,
 }: {
   row: TrackedProduct;
-  tab: ProductTab;
+  tab: ProductView;
   onTab: (tab: ProductTab) => void;
   onBack: () => void;
   onRemove: () => void;
@@ -59,18 +60,16 @@ export const ProductHeader = ({
   const saving = useBestSaving(row.key);
   const adcvd = useAdcvdFlagged(entry.element.htsno, entry.country.code);
   const news = useNewsCount(entry.element.htsno, entry.country.code);
-  // Each view, with what's waiting on it: savings found (always "up to"), the history's changes
-  const allTabs: { id: ProductTab; label: string; count?: number; badge?: string; badgeTone?: "success" | "warning" }[] = [
+  // Each view, with what's waiting on it: AD/CVD on Duty (it's duty too), the changes and news on
+  // Changes, savings found (always "up to"); Savings and Audits marked until they launch
+  const tabs: { id: ProductView; label: string; count?: number; badge?: string; badgeTone?: "success" | "warning" | "neutral" }[] = [
     { id: "overview", label: "Overview" },
-    { id: "duty", label: "Duty" },
-    { id: "adcvd", label: "AD/CVD", badge: adcvd ? "May apply" : undefined, badgeTone: "warning" },
+    { id: "duty", label: "Duty", badge: adcvd ? "AD/CVD may apply" : undefined, badgeTone: "warning" },
     { id: "compare", label: "Compare" },
-    { id: "history", label: "History", count: historyChanges > 0 ? historyChanges : undefined },
-    { id: "news", label: "News", count: news || undefined },
-    { id: "savings", label: "Savings", badge: saving > 0.005 ? `Up to ${wholeDollars(saving)}` : undefined, badgeTone: "success" },
-    { id: "audit", label: "Audit", badge: "Beta" },
+    { id: "changes", label: "Changes", count: historyChanges + (news ?? 0) || undefined },
+    { id: "savings", label: "Savings", badge: !SAVINGS_ENABLED ? "Soon" : saving > 0.005 ? `Up to ${wholeDollars(saving)}` : undefined, badgeTone: SAVINGS_ENABLED ? "success" : "neutral" },
+    { id: "audit", label: "Audits", badge: AUDITS_ENABLED ? "Beta" : "Soon", badgeTone: AUDITS_ENABLED ? "warning" : "neutral" },
   ];
-  const tabs = allTabs.filter((t) => PRODUCT_TABS.includes(t.id));
   return (
     <header className={`${tt.panel} flex flex-col`} aria-label={`${entry.element.htsno} from ${entry.country.name}`}>
       <div className="flex flex-col gap-4 px-5 pb-4 pt-4 sm:px-6">

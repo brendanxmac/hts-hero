@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { BreadcrumbsProvider } from "@/contexts/BreadcrumbsContext";
 import { Countries } from "@/constants/countries";
-import { CalculatorWorkspace } from "@/components/duty-calculator/calculator/CalculatorWorkspace";
+import { CalculatorWorkspace, showAdcvd } from "@/components/duty-calculator/calculator/CalculatorWorkspace";
 import { ImportInputs } from "@/components/duty-calculator/calculator/CalculatorTop";
 import { Disclaimer } from "@/components/duty-calculator/calculator/Disclaimer";
 import { ShareButtons } from "@/components/duty-calculator/calculator/ShareButtons";
@@ -15,21 +15,24 @@ import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { Answers, TransportMode } from "@/tariffs/engine-v2/types";
 import { Adjustments, DEFAULT_MODE, DEFAULT_UNITS, DEFAULT_VALUE, isAdjusted } from "../adjustments";
 import { TrackedProduct } from "../report";
-import { isProductTab, ProductTab, TRACKER_PATH } from "../sections";
+import { isProductTab, ProductTab, productViewOf, ProductView as View, sectionBySlug, TRACKER_PATH } from "../sections";
+import { PlannedSection } from "../shell/PlannedSection";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ProductAudit } from "./audit/ProductAudit";
 import { ProductHeader } from "./ProductHeader";
 import { ProductSavings } from "./savings/ProductSavings";
-import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // One import, opened from its row: a small header (what it is, and its one row of tabs), then
-// - Overview (where it opens), Duty, AD/CVD, Compare, History, News: the calculator's own tabs, for this product (its
-//   code and origin fixed), held by the header's tabs.
+// - Overview (where it opens), Duty (with its AD/CVD check), Compare, Changes (its history and
+//   news): the calculator's own tabs, for this product (its code and origin fixed), held by the
+//   header's tabs.
 //   Everything set here is saved as the product's adjustments, so the catalog row shows it on
 //   the way back.
 // - Savings: every way to pay less on it, guided, once its savings are unlocked
-// - Audit (Beta): its past entries, checked against the duty in force on each entry date
+// - Audits: its past entries, checked against the duty in force on each entry date
+// Until Savings and Audits launch, their tabs say what's coming.
 
 
 const CALCULATOR_TAB = { tab: "calculator" };
@@ -61,12 +64,15 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
   // Sourcing is now part of Compare, and Summary is gone; old links still land somewhere
   const ptab = searchParams.get("ptab");
   const asked = ptab === "sourcing" ? "compare" : ptab;
-  const [tab, setTab] = useState<ProductTab>(isProductTab(asked) ? asked : "overview");
+  const [tab, setTab] = useState<View>(isProductTab(asked) ? productViewOf(asked) : "overview");
   // Opened again on another tab (from Savings or Entry audit) while already open
   useEffect(() => {
-    if (isProductTab(asked)) setTab(asked);
+    if (isProductTab(asked)) setTab(productViewOf(asked));
+    if (asked === "adcvd") showAdcvd();
   }, [asked]);
-  const openTab = (next: ProductTab) => {
+  const openTab = (asked: ProductTab) => {
+    const next = productViewOf(asked);
+    if (asked === "adcvd") showAdcvd();
     setTab(next);
     // Each view opens at its top (the Tracker's one scroller is its main)
     document.querySelector("main")?.scrollTo({ top: 0 });
@@ -156,8 +162,8 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
         />
         <Disclaimer />
       </div>
-      {tab === "savings" && <ProductSavings product={row} />}
-      {tab === "audit" && <ProductAudit product={row} />}
+      {tab === "savings" && (SAVINGS_ENABLED ? <ProductSavings product={row} /> : <PlannedSection section={sectionBySlug("savings")!} />)}
+      {tab === "audit" && (AUDITS_ENABLED ? <ProductAudit product={row} /> : <PlannedSection section={sectionBySlug("entries")!} />)}
     </div>
   );
 };

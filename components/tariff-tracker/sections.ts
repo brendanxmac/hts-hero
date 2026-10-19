@@ -12,7 +12,6 @@ import {
   ReceiptPercentIcon,
   Squares2X2Icon,
 } from "@heroicons/react/20/solid"
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 
 // The Tariff Tracker's sections, in sidebar order: tabs on the one /tariff-tracker page, picked
 // with ?tab=. Sections that aren't built yet, or are held back as coming soon, show what's
@@ -275,37 +274,21 @@ export const sectionUrl = (slug: SectionSlug): string => {
   return slug === DEFAULT_SECTION ? TRACKER_PATH : `${TRACKER_PATH}?tab=${slug}`
 }
 
-// A catalog product's own view's tabs, in order; Overview is where it opens
-export type ProductTab =
-  | "overview"
-  | "duty"
-  | "adcvd"
-  | "compare"
-  | "history"
-  | "news"
-  | "savings"
-  | "audit"
+// A catalog product's own view's tabs, in order; Overview is where it opens. AD/CVD is part of Duty,
+// and History and News are Changes: their old names still open them there. Savings and Audits are
+// always shown; until they launch (libs/tariff-tracker/features.ts) they say what's coming.
+export type ProductView = "overview" | "duty" | "compare" | "changes" | "savings" | "audit"
+export type ProductTab = ProductView | "adcvd" | "history" | "news"
 
-// Savings and Audit are off for the Tracker MVP (libs/tariff-tracker/features.ts); a link to either
-// opens the Overview instead
-export const PRODUCT_TABS: ProductTab[] = (
-  [
-    "overview",
-    "duty",
-    "adcvd",
-    "compare",
-    "history",
-    "news",
-    "savings",
-    "audit",
-  ] as ProductTab[]
-).filter(
-  (t) =>
-    (t !== "savings" || SAVINGS_ENABLED) && (t !== "audit" || AUDITS_ENABLED),
-)
+export const PRODUCT_TABS: ProductView[] = ["overview", "duty", "compare", "changes", "savings", "audit"]
+
+const FOLDED: Record<string, ProductView> = { adcvd: "duty", history: "changes", news: "changes" }
 
 export const isProductTab = (tab: string | null): tab is ProductTab =>
-  PRODUCT_TABS.includes(tab as ProductTab)
+  !!tab && (PRODUCT_TABS.includes(tab as ProductView) || tab in FOLDED)
+
+// The view a tab name opens
+export const productViewOf = (tab: ProductTab): ProductView => FOLDED[tab] ?? (tab as ProductView)
 
 // The address of a catalog product's own view, on one of its tabs (the Overview when left out)
 export const productUrl = (key: string, productTab?: ProductTab) =>

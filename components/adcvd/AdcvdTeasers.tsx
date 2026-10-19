@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowRightIcon, CheckBadgeIcon, ExclamationTriangleIcon, LockClosedIcon } from "@heroicons/react/20/solid"
+import { ArrowDownIcon, ArrowRightIcon, CheckBadgeIcon, CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/20/solid"
 import { useUser } from "@/contexts/UserContext"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
@@ -8,8 +8,8 @@ import { countryName, depositFor, Disclaimer } from "./AdcvdParts"
 import { lookupOf, useAdcvdLookup, useAdcvdSummary } from "./useAdcvd"
 import { useAdcvdAnswers, useOpenFlags } from "./useAdcvdAnswers"
 
-// AD/CVD outside its own tab: a one-line heads-up on the Duty tab (signed out, only that a case
-// may apply; signed in, a pointer to the AD/CVD tab), and the Overview's summary card, which says
+// AD/CVD in short: a line under the Duty tab's totals (whether a case may apply, and the way down
+// to the check further down the tab; signed out, only whether one may), and the Overview's summary card, which says
 // plainly whether we found any (celebrated when not), always with what it's based on.
 
 const pct = (n: number) => `${Number(n.toFixed(2))}%`
@@ -32,9 +32,18 @@ export const useAdcvdFlagged = (code: string, country: string) => {
 export const AdcvdDutyTeaser = ({ code, country, onOpen }: { code: string; country: string; onOpen: () => void }) => {
   const { user } = useUser()
   const locked = useAdcvdLookup(code, country) === "locked"
-  if (!useAdcvdFlagged(code, country)) return null
+  const flagged = useAdcvdFlagged(code, country)
+  // Still checking
+  if (flagged === null) return null
+  if (!flagged)
+    return (
+      <div className={`${ui.cardSection} flex items-center gap-2 border-t border-base-300 py-3! text-sm text-base-content/70`}>
+        <CheckCircleIcon className="h-4 w-4 shrink-0 text-success" aria-hidden />
+        No antidumping or countervailing duty case found for this import.
+      </div>
+    )
   return (
-    <div className={`${ui.cardSection} py-3!`}>
+    <div className={`${ui.cardSection} border-t border-base-300 py-3!`}>
       <button
         type="button"
         onClick={onOpen}
@@ -46,17 +55,8 @@ export const AdcvdDutyTeaser = ({ code, country, onOpen }: { code: string; count
           <span className="text-base-content/70"> and aren&apos;t in this estimate.</span>
         </span>
         <span className="inline-flex shrink-0 items-center gap-1 font-medium text-primary group-hover:underline">
-          {user && !locked ? (
-            <>
-              See the AD/CVD tab
-              <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
-            </>
-          ) : (
-            <>
-              <LockClosedIcon className="h-3.5 w-3.5" aria-hidden />
-              {user ? "See which cases" : "Start your free trial to see it"}
-            </>
-          )}
+          {user && !locked ? "Check the cases" : user ? "See which cases" : "See if they apply"}
+          <ArrowDownIcon className="h-3.5 w-3.5" aria-hidden />
         </span>
       </button>
     </div>
