@@ -6,8 +6,7 @@ import { ArrowTopRightOnSquareIcon, LockClosedIcon } from "@heroicons/react/20/s
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { StatStrip } from "@/components/ui/StatStrip";
-import { STAGE_LABELS } from "@/components/tariff-updates/labels";
-import { AUTHORITIES, KINDS, STAGE_ORDER } from "@/libs/tariff-updates/types";
+import { AUTHORITIES, KINDS } from "@/libs/tariff-updates/types";
 import type { ImportImpact } from "@/libs/tariff-updates/impactOf";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { useTrackerAccess } from "../access/accessContext";
@@ -20,9 +19,10 @@ import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ActionList } from "./ActionList";
 import { ActionScope } from "./ActionScope";
+import { StageTimeline } from "./StageTimeline";
 import { OriginBars, RateShift, type OriginRow, type ShiftRow } from "./ImpactCharts";
 import { ImpactImports } from "./ImpactImports";
-import { day, groupOf, GROUP_ORDER, GROUPS, rateChange, relativeDays, signedRate } from "./format";
+import { day, groupOf, GROUP_ORDER, GROUPS, rateChange, signedRate } from "./format";
 import { useReviewList, type ImpactCheck } from "./useReviewList";
 import { useUpdateImpact } from "./useUpdateImpact";
 
@@ -35,18 +35,6 @@ import { useUpdateImpact } from "./useUpdateImpact";
 // checks an action before approving its alerts (actions still in review show for the admin only).
 
 const urlFor = (slug: string) => `${TRACKER_PATH}?tab=changes&update=${encodeURIComponent(slug)}`;
-
-// The stages an action moves through, the one it has reached marked. Not every action passes every
-// stage (many are never announced first), so earlier ones aren't shown as done.
-const StageTrack = ({ current }: { current: number }) => (
-  <ol className="flex flex-wrap items-center gap-1.5" aria-label="Where it stands">
-    {STAGE_ORDER.map((stage, i) => (
-      <li key={stage} aria-current={i === current ? "step" : undefined} className={i === current ? tt.chip("primary") : `${tt.chip()} opacity-60`}>
-        {STAGE_LABELS[stage]}
-      </li>
-    ))}
-  </ol>
-);
 
 // Before there are imports to check an action against: the way to add them
 const AddImportsNote = () => {
@@ -78,8 +66,6 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
     ro.observe(el);
     return () => ro.disconnect();
   }, [update.id, more]);
-  const effective = update.effective_on;
-  const upcoming = !!effective && effective > today;
   const tone = newsToneOf(update.kind);
 
   const confirmed = (impacts ?? []).filter((i) => i.level === "confirmed");
@@ -95,12 +81,14 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
 
   return (
     <section className={`${tt.panel} overflow-hidden`} aria-labelledby="tt-impact-title">
-      <div className="flex flex-col gap-3 px-6 py-5">
+      {/* What it is on the left; where it stands on the right, as a timeline */}
+      <div className="grid gap-x-8 gap-y-5 px-6 py-5 xl:grid-cols-[minmax(0,1fr)_17rem]">
+      <div className="flex min-w-0 flex-col gap-3">
         <div className="flex items-start justify-between gap-6">
           <div className="flex min-w-0 flex-col gap-2">
             <span className={tt.eyebrow(tone)}>
-              {/* The authority, the kind and the stage, each once (an AD/CVD action's kind is also "AD/CVD") */}
-              {Array.from(new Set([AUTHORITIES[update.authority] ?? update.authority, KINDS[update.kind] ?? update.kind, STAGE_LABELS[update.stage]])).join(" · ")}
+              {/* The authority and the kind, each once (an AD/CVD action's kind is also "AD/CVD"); its stage is in the timeline */}
+              {Array.from(new Set([AUTHORITIES[update.authority] ?? update.authority, KINDS[update.kind] ?? update.kind])).join(" · ")}
             </span>
             <h2 id="tt-impact-title" className={`${tt.display} text-xl font-semibold leading-snug text-base-content`}>
               {update.title}
@@ -112,7 +100,7 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
             </a>
           )}
         </div>
-        <p ref={summaryRef} className={`m-0 text-sm leading-relaxed text-base-content/75 ${more ? "" : "line-clamp-2"}`}>
+        <p ref={summaryRef} className={`m-0 text-sm leading-relaxed text-base-content/75 ${more ? "" : "line-clamp-4"}`}>
           {update.summary}
         </p>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-base-content/60">
@@ -135,8 +123,9 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
           )}
         </div>
       </div>
-      <div className="px-6 pb-5">
-        <StageTrack current={STAGE_ORDER.indexOf(update.stage)} />
+      <div className="border-base-300 xl:border-l xl:pl-8">
+        <StageTimeline update={update} today={today} />
+      </div>
       </div>
       {update.kind !== "hts_revision" && <ActionScope update={update} />}
       {update.kind === "hts_revision" ? (
@@ -187,13 +176,6 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
             value: pending ? "…" : biggest ? signedRate(rateChange(biggest)) : "—",
             tone: biggest ? (rateChange(biggest) > 0 ? "error" : "success") : undefined,
             note: biggest && biggestProduct ? `${biggestProduct.entry.element.htsno} · ${biggestProduct.entry.country.code}` : "Confirmed imports only",
-          },
-          {
-            label: upcoming ? "Takes effect" : "In effect",
-            info: "The date the action applies from, to goods entered on or after it, as the official notice sets it.",
-            value: effective ? day(effective) : "Not set",
-            tone: upcoming ? "primary" : undefined,
-            note: effective ? relativeDays(effective, today) : "No date announced yet",
           },
         ]}
       />
