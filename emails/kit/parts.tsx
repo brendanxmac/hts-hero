@@ -117,14 +117,16 @@ export const Facts = ({ rows }: { rows: { label: string; value: ReactNode }[] })
 // Where a tariff action stands, as in the social posts: a dot per stage, the reached ones filled
 export const STAGE_TRACK = ["Announced", "Signed", "Filed", "Published", "CBP guidance", "In the HTS"]
 
-export const StageTrack = ({ reached, current }: { reached: number[]; current: number }) => (
+// shown: the positions this kind of action can reach (AD/CVD: filed and published only); all by default
+export const StageTrack = ({ reached, current, shown }: { reached: number[]; current: number; shown?: number[] }) => (
   <Section style={{ margin: "4px 0 20px" }}>
     <Row>
       {STAGE_TRACK.map((label, i) => {
+        if (shown && !shown.includes(i)) return null
         const done = reached.includes(i)
         const isCurrent = i === current
         return (
-          <Column key={label} align="center" style={{ width: `${100 / STAGE_TRACK.length}%`, verticalAlign: "top" }}>
+          <Column key={label} align="center" style={{ width: `${100 / (shown?.length ?? STAGE_TRACK.length)}%`, verticalAlign: "top" }}>
             {/* Every dot sits in the same 24px row (padding, not margins, so nothing collapses) */}
             <div style={{ height: 24, paddingTop: isCurrent ? 0 : 4, boxSizing: "border-box" }}>
               <div

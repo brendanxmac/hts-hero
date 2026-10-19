@@ -58,6 +58,14 @@ export const STAGES = {
 export type Stage = keyof typeof STAGES
 export const STAGE_ORDER = Object.keys(STAGES) as Stage[]
 
+// The stages an action of this kind can reach, in order. AD/CVD notices come from Commerce and the
+// ITC, through the Federal Register only: USTR and the White House never announce or sign them, AD/CVD
+// duties are set case by case and never written into the HTS, and CBP's AD/CVD instructions go out as
+// its own AD/CVD messages, not the CSMS guidance tracked here (none of the AD/CVD actions' sources has
+// ever been anything but a Federal Register notice).
+export const stagesFor = (u: { kind: string; authority: string }): Stage[] =>
+  u.kind === "ad_cvd" || u.authority === "ad_cvd" ? ["filed", "published"] : STAGE_ORDER
+
 export const stageOfSource = (source: SourceId): Stage =>
   (
     ({

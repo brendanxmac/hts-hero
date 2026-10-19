@@ -4,7 +4,7 @@ import type { Tone } from "../../emails/kit/brand"
 import type { UpdateSummary } from "../../emails/kit/parts"
 import type { EmailFooter } from "../../emails/kit/Layout"
 import type { TariffNewsEmailProps } from "../../emails/tariff-updates/TariffNewsEmail"
-import { AUTHORITIES, STAGE_ORDER, STAGES, type Authority, type Kind, type Stage } from "../tariff-updates/types"
+import { AUTHORITIES, STAGE_ORDER, STAGES, stagesFor, type Authority, type Kind, type Stage } from "../tariff-updates/types"
 import { createBatch } from "./outbox"
 
 // Tariff updates as emails: the props of the news alert and the digest, from an update's row.
@@ -65,6 +65,7 @@ export const newsEmailProps = async (db: SupabaseClient, u: UpdateRowForEmail, f
   update: updateSummary(u),
   reached: await reachedStages(db, u.id),
   current: STAGE_ORDER.indexOf(u.stage),
+  shown: stagesFor(u).map((s) => STAGE_ORDER.indexOf(s)),
   footer,
 })
 

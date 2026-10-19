@@ -6,7 +6,7 @@ import config from "@/config"
 import { renderSchemaJsonLd } from "@/libs/seo"
 import { SOURCES } from "@/libs/tariff-sources/types"
 import { getPublishedUpdate, getPublishedUpdates, resolveHtsLinks, stagesReached } from "@/libs/tariff-updates/public"
-import { STAGE_ORDER } from "@/libs/tariff-updates/types"
+import { stagesFor } from "@/libs/tariff-updates/types"
 import { THEME } from "@/components/ui/theme"
 import { mono, trackerDisplay, trackerSans } from "@/components/ui/font"
 import * as mk from "@/components/ui/marketing/styles"
@@ -155,7 +155,7 @@ export default async function TariffUpdatePage(props: { params: Promise<{ slug: 
             <div className="flex flex-col gap-2 border-t border-base-300 pt-5">
               <span className={tt.eyebrow()}>Stages</span>
               <ol className="flex flex-wrap gap-2">
-                {STAGE_ORDER.map((stage) => (
+                {stagesFor(update).map((stage) => (
                   <li
                     key={stage}
                     title={STAGE_DETAIL[stage]}

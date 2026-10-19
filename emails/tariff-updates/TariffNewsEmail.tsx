@@ -12,6 +12,8 @@ export interface TariffNewsEmailProps {
   // Indexes into the stage track (0 announced … 5 in the HTS)
   reached: number[]
   current: number
+  // The stages this kind of action can reach, as positions (all when left out)
+  shown?: number[]
   // What's new since the last alert about this update ("Published in the Federal Register")
   step?: string | null
   // The reader has an account: the next step is their Tracker, not signing up
@@ -48,7 +50,7 @@ export const TrackerLine = ({ signedIn, campaign }: { signedIn?: boolean; campai
     </P>
   )
 
-export default function TariffNewsEmail({ update, reached, current, step, signedIn, note, footer }: TariffNewsEmailProps) {
+export default function TariffNewsEmail({ update, reached, current, shown, step, signedIn, note, footer }: TariffNewsEmailProps) {
   return (
     <EmailLayout preview={newsPreview(update)} footer={footer}>
       <Eyebrow>{step ? `US tariff update · ${step}` : "US tariff update"}</Eyebrow>
@@ -58,7 +60,7 @@ export default function TariffNewsEmail({ update, reached, current, step, signed
         </Panel>
       )}
       <UpdateBlock update={update} campaign="tariff-news" />
-      <StageTrack reached={reached} current={current} />
+      <StageTrack reached={reached} current={current} shown={shown} />
       <Cta href={updateUrl(update.slug, "tariff-news")}>Learn More &rarr;</Cta>
       <TrackerLine signedIn={signedIn} campaign="tariff-news" />
     </EmailLayout>

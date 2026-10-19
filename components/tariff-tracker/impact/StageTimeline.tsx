@@ -5,7 +5,7 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { STAGE_DETAIL, STAGE_LABELS } from "@/components/tariff-updates/labels";
-import { STAGE_ORDER, type Stage } from "@/libs/tariff-updates/types";
+import { stagesFor, type Stage } from "@/libs/tariff-updates/types";
 import type { TrackerUpdate } from "../overview/useTariffUpdates";
 import { day, relativeDays } from "./format";
 
@@ -38,6 +38,8 @@ export const StageTimeline = ({ update, today }: { update: TrackerUpdate; today:
     };
   }, [update.slug]);
 
+  // Only the stages this kind of action can reach (AD/CVD: filed early and published)
+  const STAGE_ORDER = stagesFor(update);
   const current = STAGE_ORDER.indexOf(update.stage);
   // Each stage reached, with its first document; the current stage always counts as reached
   const reached: Step[] = STAGE_ORDER.flatMap((stage, i): Step[] => {
