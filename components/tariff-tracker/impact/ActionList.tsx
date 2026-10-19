@@ -3,20 +3,30 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Countries } from "@/constants/countries";
 import { AUTHORITIES } from "@/libs/tariff-updates/types";
 import { NEWS_DOTS, newsToneOf } from "../news/tone";
 import type { ImportMatch } from "../news/useImportMatches";
 import type { TrackerUpdate } from "../overview/useTariffUpdates";
 import { day } from "./format";
 
-// The tariff actions to pick from, down the left of Tariff Impacts (DESIGN_SYSTEM §15): which
-// ones (those that hit the user's imports, those still to take effect, all), a search, then the
+// The tariff actions to pick from, down the left of Tariff Changes' Actions (DESIGN_SYSTEM §15): which
+// ones (Needs Review, Affect You, Upcoming, All; each explained under the filters), a search, then the
 // actions by month, newest first. Each is its title and one quiet line (law, date, and what it
 // does to the user's imports in the color of it); the open one is marked with a cobalt bar. The
 // list scrolls on its own beside the page and keeps the open action in view.
 
 type Filter = "review" | "mine" | "upcoming" | "all";
+
+const COUNTRY_NAMES = new Map(Countries.map((c) => [c.code, c.name]));
+
+// The filters, and what each means
+const FILTERS: { id: Filter; label: string; hint: string }[] = [
+  { id: "review", label: "Needs Review", hint: "Recent actions that may affect your imports with alerts on, and you haven't reviewed yet." },
+  { id: "mine", label: "Affect You", hint: "Every action that affects or may affect your imports: to review, reviewed, and past ones." },
+  { id: "upcoming", label: "Upcoming", hint: "Actions still to take effect, the soonest first." },
+  { id: "all", label: "All", hint: "Every US tariff action, newest first. Search by product, code, country or law." },
+];
 
 const monthOf = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
 
@@ -55,6 +65,7 @@ export const ActionList = ({
   // HTS revisions take effect on a date too, but carry out actions already listed
   const upcoming = (u: TrackerUpdate) => u.kind !== "hts_revision" && !!u.effective_on && u.effective_on > today;
   const mine = updates.filter(hits).length;
+  const counts: Record<Filter, number | undefined> = { review: toReview.size, mine, upcoming: updates.filter(upcoming).length, all: undefined };
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   // Open on the actions that hit the catalog, once that's known, unless the user picked a filter
@@ -67,13 +78,17 @@ export const ActionList = ({
   const months = useMemo(() => {
     const words = query.toLowerCase().split(/\s+/).filter(Boolean);
     const groups: { month: string; updates: TrackerUpdate[] }[] = [];
-    for (const u of updates) {
+    // Upcoming: the soonest to take effect first, by the month it does; the rest newest first
+    const soonest = filter === "upcoming";
+    const ordered = soonest ? [...updates].sort((a, b) => (a.effective_on ?? "").localeCompare(b.effective_on ?? "")) : updates;
+    for (const u of ordered) {
       if (filter === "mine" && !hits(u)) continue;
       if (filter === "review" && !toReview.has(u.slug)) continue;
       if (filter === "upcoming" && !upcoming(u)) continue;
-      const text = `${u.title} ${u.summary} ${u.products ?? ""} ${u.hts_codes.join(" ")} ${AUTHORITIES[u.authority] ?? ""}`.toLowerCase();
+      const countries = u.countries.map((c) => COUNTRY_NAMES.get(c) ?? c).join(" ");
+      const text = `${u.title} ${u.summary} ${u.products ?? ""} ${u.hts_codes.join(" ")} ${countries} ${AUTHORITIES[u.authority] ?? ""}`.toLowerCase();
       if (!words.every((w) => text.includes(w))) continue;
-      const month = monthOf(u.last_activity_at);
+      const month = soonest ? `Takes effect in ${monthOf(u.effective_on!)}` : monthOf(u.last_activity_at);
       if (groups[groups.length - 1]?.month !== month) groups.push({ month, updates: [] });
       groups[groups.length - 1].updates.push(u);
     }
@@ -99,22 +114,42 @@ export const ActionList = ({
           <h2 className={tt.title}>Tariff Actions</h2>
           <span className="text-sm tabular-nums text-base-content/60">{updates.length}</span>
         </div>
-        <SegmentedControl
-          label="Which actions"
-          size="sm"
-          fullWidth
-          options={[
-            { id: "review", label: "To review", count: toReview.size || undefined },
-            { id: "mine", label: "Yours" },
-            { id: "upcoming", label: "Soon", title: "Still to take effect" },
-            { id: "all", label: "All" },
-          ]}
-          value={filter}
-          onChange={(v) => {
-            setChose(true);
-            setFilter(v as Filter);
-          }}
-        />
+        {/* Which actions: four filters as pills (they wrap in the narrow list), and what the open one means */}
+        <div className="flex flex-col gap-2">
+          <div role="tablist" aria-label="Which actions" className="flex flex-wrap gap-1.5">
+            {FILTERS.map((f) => {
+              const active = f.id === filter;
+              const count = counts[f.id];
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => {
+                    setChose(true);
+                    setFilter(f.id);
+                  }}
+                  className={`inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                    active ? "bg-primary/10 font-semibold text-primary" : "bg-tt-soft text-base-content/75 hover:text-base-content"
+                  }`}
+                >
+                  {f.label}
+                  {count !== undefined && (
+                    <span
+                      className={`rounded-full px-1.5 text-[11px] font-semibold leading-[18px] tabular-nums ${
+                        f.id === "review" && count > 0 ? "bg-warning/15 text-warning" : active ? "bg-primary/10 text-primary" : "bg-base-content/10 text-base-content/70"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <p className={`${tt.caption} m-0 px-1`}>{FILTERS.find((f) => f.id === filter)!.hint}</p>
+        </div>
         <label className="relative">
           <span className="sr-only">Search tariff actions</span>
           <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/50" aria-hidden />

@@ -298,7 +298,7 @@ export const TariffImpact = () => {
 
   return (
     <>
-      <div className="grid gap-4 xl:grid-cols-[19.5rem_minmax(0,1fr)] xl:items-start">
+      <div className="grid gap-4 xl:grid-cols-[21rem_minmax(0,1fr)] xl:items-start">
         {updates ? (
           <ActionList updates={updates} selected={slug} matches={matches} inReview={inReview} today={today} onPick={select} isNew={(u) => !!seenAt && u.first_seen_at > seenAt} toReview={toReview} reviewed={reviewedSlugs} />
         ) : (
