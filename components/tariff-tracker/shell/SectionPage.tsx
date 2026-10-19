@@ -34,7 +34,8 @@ export const SectionHeader = ({
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
     {tabs && <div className="px-5 pb-4 sm:px-6">{tabs}</div>}
-    {children && <div className="border-t border-base-300">{children}</div>}
+    {/* Clipped to the card's rounded foot (the header itself can't clip: its actions' menus open past it) */}
+    {children && <div className="overflow-hidden rounded-b-[inherit] border-t border-base-300">{children}</div>}
   </header>
 );
 
