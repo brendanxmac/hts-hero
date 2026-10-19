@@ -70,7 +70,7 @@ export const RatePulse = ({
     return (
       <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-pulse">
         <h2 id="tt-pulse" className={tt.title}>
-          Rate Pulse
+          Average Rate Over 12 Months
         </h2>
         <div className="h-56 animate-pulse rounded-2xl bg-tt-soft" />
       </section>
@@ -89,15 +89,11 @@ export const RatePulse = ({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="tt-pulse" className={tt.title}>
-            Rate Pulse
+            Average Rate Over 12 Months
           </h2>
-          <p className={tt.subtitle}>The average duty rate across your imports over the last 12 months</p>
+          <p className={tt.subtitle}>Across your imports; each step is a tariff change landing on one of them</p>
         </div>
         <div className="flex gap-2.5">
-          <div className={`${tt.tile} px-4 py-2`}>
-            <span className="text-xs text-base-content/60">Today</span>
-            <div className={`${tt.display} text-xl font-semibold tabular-nums`}>{formatRate(today.pct)}</div>
-          </div>
           <div className={`${tt.tile} px-4 py-2`}>
             <span className="text-xs text-base-content/60">Low, {shortDate(low.date)}</span>
             <div className={`${tt.display} text-xl font-semibold tabular-nums`}>{formatRate(low.pct)}</div>

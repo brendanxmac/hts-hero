@@ -15,6 +15,8 @@ import { useTrackerNav } from "./shell/TrackerNav";
 import { sectionBySlug, TRACKER_PATH } from "./sections";
 import { TabBar } from "@/components/ui/TabBar";
 import { Insights } from "./insights-tab/Insights";
+import { ExposureMap } from "./overview/ExposureMap";
+import { OriginDistribution } from "./overview/OriginDistribution";
 import { TariffReport } from "./TariffReport";
 import { useTracker } from "./TrackerContext";
 
@@ -90,6 +92,15 @@ export const ProductCatalog = () => {
           ) : view === "insights" ? (
             <div className="tt-enter flex flex-col gap-group">
               <SectionHeader section={sectionBySlug("catalog")!} tabs={views} />
+              {/* Free for everyone: where the duty on each import comes from, and where they come from */}
+              <div className="grid gap-module xl:grid-cols-12">
+                <div className="flex flex-col *:flex-1 xl:col-span-8">
+                  <ExposureMap products={t.products} onOpen={(key) => nav.openProduct(key)} />
+                </div>
+                <div className="flex flex-col *:flex-1 xl:col-span-4">
+                  <OriginDistribution products={t.products} />
+                </div>
+              </div>
               <Insights />
             </div>
           ) : (

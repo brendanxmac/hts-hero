@@ -1,11 +1,9 @@
 "use client";
 
-import { todayIso } from "../../duty-calculator/lib/format";
 import { useTrackerAccess } from "../access/accessContext";
 import { useAlertSettings } from "../alerts/AlertSettingsContext";
 import { useInsights } from "../insights/InsightsContext";
 import { wholeDollars } from "../insights/teasers";
-import { changesLastYear } from "../overview/lib/metrics";
 import { useEffect, useState } from "react";
 import { newsSeenAt, onNewsSeen, useTariffUpdates } from "../overview/useTariffUpdates";
 import { useImportMatches } from "../news/useImportMatches";
