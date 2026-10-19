@@ -68,6 +68,7 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
     return () => ro.disconnect();
   }, [update.id, more]);
   const tone = newsToneOf(update.kind);
+  const adcvd = update.kind === "ad_cvd" || update.authority === "ad_cvd";
 
   const confirmed = (impacts ?? []).filter((i) => i.level === "confirmed");
   const likely = (impacts ?? []).filter((i) => i.level === "likely").length;
@@ -155,12 +156,16 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
                 : confirmed.length
                   ? "New Chapter 99 numbers, same rates"
                   : likely
-                    ? "Confirmed once it's in the HTS"
+                    ? adcvd
+                      ? "Depends on the case: what the goods are, who made them"
+                      : "Confirmed once it's in the HTS"
                     : "Nothing it changes",
           },
           {
             label: "Imports hit",
-            info: "Your imports this action affects. Confirmed: the duty engine applies it to them. May apply: its scope names their code and country, before the change is in the HTS. Imports that only share a country it names aren't counted.",
+            info: adcvd
+              ? "Your imports whose code and country the case's scope names. Whether a deposit applies depends on what the goods are and who made them; AD/CVD duties are set case by case and are never in the HTS. Imports that only share a country it names aren't counted."
+              : "Your imports this action affects. Confirmed: the duty engine applies it to them. May apply: its scope names their code and country, before the change is in the HTS. Imports that only share a country it names aren't counted.",
             value: pending ? (
               "…"
             ) : (

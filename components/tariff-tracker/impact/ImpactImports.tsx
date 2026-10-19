@@ -13,18 +13,18 @@ import { formatRate } from "../formatRate";
 import { BASE_PART, rateParts, shortProgram, type RatePart, type TrackedProduct } from "../report";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
+import { productUrl, type ProductTab } from "../sections";
 import type { TrackerUpdate } from "../overview/useTariffUpdates";
 import { day, formatPrefix, groupOf, rateChange, signedRate, type ImpactGroup } from "./format";
 
 // The imports an action touches, laid out like Your imports (DESIGN_SYSTEM §15), in three groups,
 // each with one line on what it means: Duty Changes (worked out by the duty engine, the day before
 // and the day it takes effect), May Apply (it names their code and country, before the new rate is
-// in the HTS), and Same Country, Other Products (it names their country only; folded away). Each
-// row: the product and origin with why it's here, its tariffs before and after as two bars (what
-// the action adds marked new, what it ends struck), and the change. Biggest change first. A row
-// opens to the duty line by line, the day before and the day of the change.
+// in the HTS; for an AD/CVD case, The Case May Cover: a deposit depends on the goods and who made
+// them, never on the HTS), and Same Country, Other Products (folded away). Each row says it all
+// without opening: the product and origin with why it's here, its tariffs before and after as two
+// bars, each duty line the action adds, ends or moves, and the change. A row opens the import.
 
-const GRID = "grid grid-cols-[minmax(0,1fr)_minmax(0,1.75fr)_7.5rem_1.25rem] items-center gap-6";
 
 interface Line {
   code: string;
@@ -38,58 +38,39 @@ const linesOf = (p: DutyAt): Line[] => [
   ...p.result.lines.filter((l: DutyLine) => l.status === "applies").map((l) => ({ code: l.code, name: l.name, pct: l.ratePct ?? null, amount: l.amount })),
 ];
 
-// The duty, line by line, the day before and the day of the change
-const DutyDiff = ({ impact, customsValue }: { impact: ImportImpact; customsValue: number }) => {
+// What the action changes on the import, line by line: each duty line it adds, ends or moves, with
+// its number and its rate before and after. Lines it leaves alone aren't listed.
+const LineChanges = ({ impact, customsValue }: { impact: ImportImpact; customsValue: number }) => {
   const before = linesOf(impact.before!);
   const after = linesOf(impact.after!);
   const codes = Array.from(new Set([...before.map((l) => l.code), ...after.map((l) => l.code)]));
   const find = (lines: Line[], code: string) => lines.find((l) => l.code === code);
-  // Each line as a rate on the shipment (a per-unit duty worked out on its value)
-  const cell = (l?: Line) => (l ? formatRate(l.pct ?? (l.amount / customsValue) * 100) : "—");
+  // A line as a rate on the shipment (a per-unit duty worked out on its value)
+  const rate = (l: Line) => formatRate(l.pct ?? (l.amount / customsValue) * 100);
+  const changed = codes.flatMap((code) => {
+    const b = find(before, code);
+    const a = find(after, code);
+    if (b && a && Math.abs(a.amount - b.amount) <= 0.5) return [];
+    return [{ code, name: (a ?? b)!.name, b, a }];
+  });
+  if (!changed.length) return null;
   return (
-    <table className="w-full text-sm">
-      <thead>
-        <tr className="text-left">
-          <th className={`${tt.eyebrow()} pb-2`}>Duty line</th>
-          <th className={`${tt.eyebrow()} whitespace-nowrap pb-2 pl-4 text-right`}>Day before</th>
-          <th className={`${tt.eyebrow()} whitespace-nowrap pb-2 pl-4 text-right`}>From {day(impact.date!, false)}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {codes.map((code) => {
-          const b = find(before, code);
-          const a = find(after, code);
-          const state = !b ? "added" : !a ? "removed" : Math.abs(a.amount - b.amount) > 0.5 ? "changed" : "same";
-          return (
-            <tr key={code} className="border-t border-base-300">
-              <td className="py-2 pr-4">
-                <span className={state === "same" ? "text-base-content/70" : "font-semibold text-base-content"}>{(a ?? b)!.name}</span>
-                {code !== "BASE" && <span className="ml-2 font-mono text-xs text-base-content/60">{code}</span>}
-              </td>
-              <td className={`py-2 text-right tabular-nums ${state === "removed" ? "text-base-content/60 line-through" : "text-base-content/60"}`}>{cell(b)}</td>
-              <td
-                className={`py-2 text-right tabular-nums ${
-                  (state === "added" && a!.amount > 0.5) || (state === "changed" && a!.amount > b!.amount)
-                    ? "font-semibold text-error"
-                    : state === "changed"
-                      ? "font-semibold text-success"
-                      : state === "added"
-                        ? "font-semibold text-base-content"
-                        : "text-base-content/70"
-                }`}
-              >
-                {state === "removed" ? <span className="font-semibold text-success">Ends</span> : cell(a)}
-              </td>
-            </tr>
-          );
-        })}
-        <tr className="border-t border-base-300">
-          <td className="py-2.5 font-semibold text-base-content">Total duty</td>
-          <td className="py-2.5 text-right tabular-nums text-base-content/60">{formatRate(impact.beforePct!)}</td>
-          <td className="py-2.5 text-right font-semibold tabular-nums text-base-content">{formatRate(impact.afterPct!)}</td>
-        </tr>
-      </tbody>
-    </table>
+    <ul className="m-0 flex list-none flex-col gap-1 p-0 pl-17 text-xs">
+      {changed.map(({ code, name, b, a }) => {
+        const up = (a?.amount ?? 0) > (b?.amount ?? 0) + 0.5;
+        const tone = up ? "text-error" : (a?.amount ?? 0) < (b?.amount ?? 0) - 0.5 ? "text-success" : "text-base-content";
+        return (
+          <li key={code} className="flex flex-wrap items-baseline gap-x-2">
+            <span className={`text-[10px] font-bold uppercase tracking-wide ${!b ? tone : !a ? "text-success" : "text-base-content/60"}`}>{!b ? "Adds" : !a ? "Ends" : "Changes"}</span>
+            <span className="text-base-content">{name}</span>
+            {code !== "BASE" && <span className="font-mono text-base-content/50">{code}</span>}
+            <span className={`ml-auto font-semibold tabular-nums ${tone}`}>
+              {b ? rate(b) : "—"} → {a ? rate(a) : "—"}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
   );
 };
 
@@ -113,7 +94,7 @@ const DutyBar = ({ label, parts, pct, colors, maxPct, faded, rateClass }: { labe
 
 // The duty the day before and from the change, as two bars on one scale, then what's in the
 // second: what the action adds marked new, what it ends struck
-const BeforeAfter = ({ r, colors, maxPct }: { r: RowData; colors: Record<string, string>; maxPct: number }) => {
+const BeforeAfter = ({ r, colors, maxPct, adcvd }: { r: RowData; colors: Record<string, string>; maxPct: number; adcvd: boolean }) => {
   const { impact, group } = r;
   const tone = group === "up" ? "text-error" : group === "down" ? "text-success" : "text-base-content";
   return (
@@ -126,10 +107,15 @@ const BeforeAfter = ({ r, colors, maxPct }: { r: RowData; colors: Record<string,
       ) : (
         <>
           <DutyBar label="Today" parts={r.parts} pct={r.product.totalPct} colors={colors} maxPct={maxPct} rateClass={`${tt.display} text-base font-semibold text-base-content`} />
-          {/* No "after" yet: the new rate isn't in the HTS, so it can't be worked out */}
+          {/* No "after" to show: a tariff's new rate isn't in the HTS yet; an AD/CVD deposit is never in
+              the HTS, it depends on the case (what the goods are, who made them) */}
           <span className="grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-3">
             <span className="text-[11px] font-bold uppercase tracking-wider text-base-content/60">After</span>
-            <span className="text-xs text-base-content/60">{r.impact.level === "possible" ? "Most likely unchanged" : "Known once it's in the HTS; we'll alert you"}</span>
+            <span className="text-xs text-base-content/60">{r.impact.level === "possible"
+                ? "Most likely unchanged"
+                : adcvd
+                  ? "A deposit on top, if the case covers your goods"
+                  : "Known once it's in the HTS; we'll alert you"}</span>
           </span>
         </>
       )}
@@ -171,7 +157,7 @@ interface RowData {
 
 // Why an action touches an import: the tariff it starts, ends or changes on it, the code or
 // country its scope names, or the answer it depends on
-const whyOf = (impact: ImportImpact, product: TrackedProduct, scope: UpdateScope) => {
+const whyOf = (impact: ImportImpact, product: TrackedProduct, scope: UpdateScope, adcvd = false) => {
   const country = product.entry.country.name;
   // The duty lines it starts or ends, by name and number, from the day before to the day of it
   const lines = (side: DutyAt | null) => (side ? linesOf(side).filter((l) => l.code !== "BASE") : []);
@@ -199,6 +185,7 @@ const whyOf = (impact: ImportImpact, product: TrackedProduct, scope: UpdateScope
     case "named": {
       if (scope.allProducts) return `It covers every product from ${country}`;
       const prefix = namingPrefix(scope, product.entry.element.htsno);
+      if (adcvd && prefix) return `The case's scope lists ${formatPrefix(prefix)}${prefix.replace(/\D/g, "").length < 10 ? ", which includes your code" : ""}, from ${country}`;
       return prefix ? `It names ${formatPrefix(prefix)}${prefix.replace(/\D/g, "").length < 10 ? ", which includes your code" : ""}, from ${country}` : `It names your code, from ${country}`;
     }
     case "country":
@@ -206,85 +193,83 @@ const whyOf = (impact: ImportImpact, product: TrackedProduct, scope: UpdateScope
   }
 };
 
-const Row = ({ r, colors, maxPct, today }: { r: RowData; colors: Record<string, string>; maxPct: number; today: string }) => {
-  const [open, setOpen] = useState(false);
+// One import: everything about what the action does to it in the row itself (why it's here, its
+// tariffs before and after, each duty line the action adds, ends or moves, and the change). The row
+// opens the import, on the tab where this action shows: Changes for a confirmed change, AD/CVD for a
+// case, Duty for the rest (an answer to give, or a rate still to come).
+const Row = ({ r, colors, maxPct, today, adcvd }: { r: RowData; colors: Record<string, string>; maxPct: number; today: string; adcvd: boolean }) => {
   const { openProduct } = useTrackerNav();
   const { impact, product } = r;
   const confirmed = impact.level === "confirmed";
   const future = confirmed && !!impact.date && impact.date > today;
   const delta = rateChange(impact);
+  const tab: ProductTab = adcvd ? "adcvd" : confirmed && impact.reason !== "ban" ? "changes" : "duty";
   return (
     <li className="border-t border-base-300 first:border-t-0">
-      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={`${GRID} w-full px-6 py-4 text-left transition-colors hover:bg-tt-soft`}>
-        <span className="flex min-w-0 flex-col gap-0.5">
-          <span className="flex min-w-0 items-baseline gap-2 text-sm">
-            <span className="font-semibold tabular-nums text-base-content">{product.entry.element.htsno}</span>
-            <span className="truncate text-base-content/70">
-              <span aria-hidden>{product.entry.country.flag}</span> {product.entry.country.name}
+      <a
+        href={productUrl(product.key, tab)}
+        onClick={(e) => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+          e.preventDefault();
+          openProduct(product.key, false, tab);
+        }}
+        className="flex w-full flex-col gap-3 px-6 py-4 text-left transition-colors hover:bg-tt-soft focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40"
+      >
+        {/* The import and why it's here, with the change on the right */}
+        <span className="flex items-start justify-between gap-6">
+          <span className="flex min-w-0 flex-col gap-0.5">
+            <span className="flex min-w-0 items-baseline gap-2 text-sm">
+              <span className="font-semibold tabular-nums text-base-content">{product.entry.element.htsno}</span>
+              <span className="shrink-0 whitespace-nowrap text-base-content/70">
+                <span aria-hidden>{product.entry.country.flag}</span> {product.entry.country.name}
+              </span>
+              <span className="hidden min-w-0 truncate text-xs text-base-content/60 sm:inline">· {product.description}</span>
+            </span>
+            <span className="text-xs font-medium text-base-content/80">
+              <span className="text-base-content/50">Why: </span>
+              {r.why}
             </span>
           </span>
-          <span className="line-clamp-1 text-xs text-base-content/60">{product.description}</span>
-          <span className="mt-1 text-xs font-medium text-base-content/80">
-            <span className="text-base-content/50">Why: </span>
-            {r.why}
+          <span className="flex shrink-0 items-center gap-3">
+            <span className="flex flex-col items-end gap-1">
+              {confirmed && impact.reason === "ban" ? (
+                <span className={tt.chip("error")}>Import ban</span>
+              ) : confirmed && Math.abs(delta) > 0.005 ? (
+                <span className={`${tt.chip(delta > 0 ? "error" : "success")} tabular-nums`}>{signedRate(delta)} duty rate</span>
+              ) : confirmed ? (
+                <span className={tt.chip()}>Same duty</span>
+              ) : impact.level === "likely" ? (
+                <span className={tt.chip("warning")}>{adcvd ? "Check the case" : "May apply"}</span>
+              ) : (
+                <span className="text-xs text-base-content/60">Country only</span>
+              )}
+              {future && <span className="text-xs font-semibold text-warning">From {day(impact.date!, false)}</span>}
+            </span>
+            <ChevronRightIcon className="h-5 w-5 text-base-content/50" aria-hidden />
           </span>
         </span>
-        <BeforeAfter r={r} colors={colors} maxPct={maxPct} />
-        <span className="flex flex-col items-end gap-1">
-          {confirmed && impact.reason === "ban" ? (
-            <span className={tt.chip("error")}>Import ban</span>
-          ) : confirmed && Math.abs(delta) > 0.005 ? (
-            <>
-              <span className={`${tt.chip(delta > 0 ? "error" : "success")} tabular-nums`}>{signedRate(delta)}</span>
-              <span className="text-xs text-base-content/60">duty rate</span>
-            </>
-          ) : confirmed ? (
-            <>
-              <span className={tt.chip()}>Same duty</span>
-              <span className="text-xs text-base-content/60">New number</span>
-            </>
-          ) : impact.level === "likely" ? (
-            <span className={tt.chip("warning")}>May apply</span>
-          ) : (
-            <span className="text-xs text-base-content/60">Country only</span>
-          )}
-          {future && <span className="text-xs font-semibold text-warning">From {day(impact.date!, false)}</span>}
+        {/* Its tariffs before and after, and each line the action adds, ends or moves */}
+        <span className="flex max-w-3xl flex-col gap-2">
+          <BeforeAfter r={r} colors={colors} maxPct={maxPct} adcvd={adcvd} />
+          {confirmed && impact.before && impact.after && impact.reason !== "ban" && <LineChanges impact={impact} customsValue={product.customsValue} />}
         </span>
-        <ChevronRightIcon className={`h-5 w-5 text-base-content/50 transition-transform ${open ? "rotate-90" : ""}`} aria-hidden />
-      </button>
-      {open && (
-        <div className="grid gap-6 border-t border-base-300 bg-tt-soft/60 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
-          <div className="flex flex-col gap-3">
-            <p className="text-sm font-semibold text-base-content">{r.why}.</p>
-            <p className="text-sm text-base-content/70">
-              {confirmed &&
-                impact.reason !== "ban" &&
-                "Worked out by the duty engine on your saved shipment details, the day before and the day it changes."}
-              {impact.reason === "ban" && "From that day these goods can't be entered, unless an exception applies to them."}
-              {impact.reason === "named" && "Its scope names this code and country. We'll confirm the exact duty once the change is in the HTS, and alert you."}
-              {impact.reason === "answer" && "The duty engine has this tariff; whether it applies depends on an answer about your goods."}
-              {impact.reason === "country" && "The scope doesn't name this code. Worth a look if your goods could fall under it."}
-            </p>
-            <button type="button" className={`${ui.button({ variant: "secondary", size: "sm" })} self-start`} onClick={() => openProduct(product.key, false, "duty")}>
-              {impact.reason === "answer" ? "Answer it on the import's page" : "Open this import"}
-            </button>
-          </div>
-          {impact.before && impact.after && impact.reason !== "ban" ? <DutyDiff impact={impact} customsValue={product.customsValue} /> : <div />}
-        </div>
-      )}
+      </a>
     </li>
   );
 };
 
 const groupRank: Record<ImpactGroup, number> = { up: 0, down: 1, same: 2, likely: 3, possible: 4 };
 
-// The three groups, in order, with what each means
-const GROUPS: { id: ImportImpact["level"]; title: string; body: string }[] = [
+// The three groups, in order, with what each means (an AD/CVD case never reaches the HTS: its
+// deposit depends on what the goods are and who made them)
+const groupsFor = (adcvd: boolean): { id: ImportImpact["level"]; title: string; body: string }[] => [
   { id: "confirmed", title: "Duty Changes", body: "Worked out on each import the day before and the day it takes effect." },
   {
     id: "likely",
-    title: "May Apply",
-    body: "It names these imports' codes and countries, but its new rate isn't in the HTS yet. We'll work out each one once it is, and alert you.",
+    title: adcvd ? "The Case May Cover" : "May Apply",
+    body: adcvd
+      ? "The case names these imports' codes and countries. Whether a deposit applies depends on what your goods are and who made them: check each one on its AD/CVD tab."
+      : "It names these imports' codes and countries, but its new rate isn't in the HTS yet. We'll work out each one once it is, and alert you.",
   },
   { id: "possible", title: "Same Country, Other Products", body: "It names their country but not their codes, so it most likely doesn't apply to them." },
 ];
@@ -311,6 +296,7 @@ export const ImpactImports = ({
   const { products } = useTracker();
   const byKey = useMemo(() => new Map(products.map((p) => [p.key, p])), [products]);
   const scope = useMemo(() => scopeOf(update), [update]);
+  const adcvd = update.kind === "ad_cvd" || update.authority === "ad_cvd";
   const [query, setQuery] = useState("");
   // The country-only group is folded away until asked for
   const [showPossible, setShowPossible] = useState(false);
@@ -338,7 +324,7 @@ export const ImpactImports = ({
             added: new Set(added),
             ended,
             pct: confirmed ? Math.max(impact.afterPct!, impact.beforePct!) : product.totalPct,
-            why: whyOf(impact, product, scope),
+            why: whyOf(impact, product, scope, update.kind === "ad_cvd" || update.authority === "ad_cvd"),
           },
         ];
       }),
@@ -420,7 +406,7 @@ export const ImpactImports = ({
               : "Turn on alerts for your imports to check each action against them."}
         </p>
       ) : (
-        GROUPS.map((g) => {
+        groupsFor(adcvd).map((g) => {
           const groupRows = rows.filter((r) => r.impact.level === g.id);
           if (!groupRows.length) return null;
           const folded = g.id === "possible" && !showPossible && !query;
@@ -441,7 +427,7 @@ export const ImpactImports = ({
               {!folded && (
                 <ul className="m-0 list-none border-t border-base-300 p-0">
                   {groupRows.map((r) => (
-                    <Row key={r.impact.key} r={r} colors={colors} maxPct={maxPct} today={today} />
+                    <Row key={r.impact.key} r={r} colors={colors} maxPct={maxPct} today={today} adcvd={adcvd} />
                   ))}
                 </ul>
               )}
