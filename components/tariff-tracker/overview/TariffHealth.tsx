@@ -55,7 +55,7 @@ const Ring = ({ pct }: { pct: number }) => {
   const c = 2 * Math.PI * r;
   const good = pct >= 80;
   return (
-    <span className="relative flex h-20 w-20 shrink-0 items-center justify-center">
+    <span className="relative flex h-22 w-22 shrink-0 items-center justify-center">
       <svg viewBox="0 0 80 80" className="absolute inset-0 h-full w-full -rotate-90" aria-hidden>
         <circle cx="40" cy="40" r={r} fill="none" strokeWidth="8" className="stroke-tt-soft-high" />
         <circle
@@ -69,7 +69,8 @@ const Ring = ({ pct }: { pct: number }) => {
           className={good ? "stroke-success" : "stroke-warning"}
         />
       </svg>
-      <span className={`${tt.metric} ${good ? "text-success" : "text-warning"}`}>{pct}%</span>
+      {/* Sized to sit inside the ring at any score, 100% included */}
+      <span className={`${tt.display} text-xl font-semibold tabular-nums tracking-tight ${good ? "text-success" : "text-warning"}`}>{pct}%</span>
     </span>
   );
 };
