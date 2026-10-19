@@ -95,7 +95,7 @@ export const PricingOverview = () => {
     <section id="pricing" className={`${mk.band} ${mk.bandMuted} scroll-mt-20`} aria-labelledby="home-pricing-title">
       <div className={mk.container}>
         <div className="flex flex-col items-center gap-8">
-          <SectionIntro eyebrow="Pricing" title="Pricing that matches your imports" id="home-pricing-title" center>
+          <SectionIntro eyebrow="Pricing" title="Pricing that matches your import volume" id="home-pricing-title" center>
             No demo, no sales call and no contract. Try the Tariff Tracker free for {REVERSE_TRIAL.days} days, no credit card.
           </SectionIntro>
           {/* Hidden while Tracker plans are monthly only (MVP_TRIM.md); classification shows monthly */}
@@ -251,7 +251,7 @@ export const PricingOverview = () => {
             </span>
             <span>
               <span className="block text-lg font-bold text-base-content">HTS Hero Managed Tariffs</span>
-              <span className="text-base-content/70">Overwhelmed by tariffs? We watch every tariff on your imports, audit every entry, and brief you and your broker on what we find. Your broker files.</span>
+              <span className="text-base-content/70">Overwhelmed by tariffs? We watch every tariff on your imports, audit every entry, and brief your team on what we find. We meet once a week and you can contact real experts any time.</span>
             </span>
           </span>
           <span className="flex items-center gap-4">

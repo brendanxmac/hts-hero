@@ -15,7 +15,7 @@ export const ManagedTeaser = () => (
       </span>
       <span>
         <span className="block text-lg font-bold text-base-content">HTS Hero Managed Tariffs</span>
-        <span className="text-base-content/70">Overwhelmed by tariffs? We watch every tariff on your imports, audit every entry, and brief you and your broker on what we find. Your broker files.</span>
+        <span className="text-base-content/70">Overwhelmed by tariffs? We watch every tariff on your imports, audit every entry, and brief your team on what we find.</span>
       </span>
     </span>
     <span className="flex items-center gap-4">

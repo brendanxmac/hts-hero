@@ -164,8 +164,8 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
         />
         <Disclaimer />
       </div>
-      {tab === "savings" && (SAVINGS_ENABLED ? <ProductSavings product={row} /> : <PlannedSection section={sectionBySlug("savings")!} />)}
-      {tab === "audit" && (AUDITS_ENABLED ? <ProductAudit product={row} /> : <PlannedSection section={sectionBySlug("entries")!} />)}
+      {tab === "savings" && (SAVINGS_ENABLED ? <ProductSavings product={row} /> : <PlannedSection section={sectionBySlug("savings")!} productKey={row.key} />)}
+      {tab === "audit" && (AUDITS_ENABLED ? <ProductAudit product={row} /> : <PlannedSection section={sectionBySlug("entries")!} productKey={row.key} />)}
     </div>
   );
 };

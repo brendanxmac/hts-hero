@@ -192,7 +192,7 @@ export const ExpertHelp = () => {
             </h1>
             <p className="max-w-xl text-lg leading-relaxed text-base-content/75">
               HTS Hero joins your team on every tariff on every import: we watch every change, audit every entry and
-              brief you and your broker on what we find. Your broker files. You talk to us in Slack, and we meet every
+              brief your team on what we find. You talk to us in Slack, Team, or email and we meet every
               week.
             </p>
             <div className="flex flex-wrap items-center gap-3">

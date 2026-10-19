@@ -66,7 +66,7 @@ export const HeroTicker = () => (
       <div>
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary">US Tariff Intelligence</p>
         <h1 className={`${display} mt-4 text-5xl font-semibold leading-[1.04] tracking-tight lg:text-[3.4rem]`}>
-          Monitor &amp; Audit your US Tariffs{" "}
+          Tariff Alerts, Savings, &amp; Audits {" "}
           <span className="text-primary">on Autopilot</span>
         </h1>
         <p className="mt-5 text-xl leading-relaxed text-base-content/70">
@@ -80,12 +80,12 @@ export const HeroTicker = () => (
           {OFFER.cta}
           <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
-        <p className="mt-4 max-w-md text-sm text-base-content/60">{OFFER.note}</p>
-        {(!SAVINGS_ENABLED || !AUDITS_ENABLED) && (
+        {/* <p className="mt-4 max-w-md text-sm text-base-content/60">{OFFER.note}</p> */}
+        {/* {(!SAVINGS_ENABLED || !AUDITS_ENABLED) && (
           <p className="mt-3 flex max-w-md flex-wrap items-center gap-2 text-sm text-base-content/60">
             <ComingChip /> Automatic savings detection and auditing, included in the trial and every plan
           </p>
-        )}
+        )} */}
       </div>
       <div className={followPage}>
         <CommandCenter />

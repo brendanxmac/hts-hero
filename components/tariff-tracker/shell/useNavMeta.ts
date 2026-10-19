@@ -1,7 +1,6 @@
 "use client";
 
 import { useTrackerAccess } from "../access/accessContext";
-import { useAlertSettings } from "../alerts/AlertSettingsContext";
 import { useInsights } from "../insights/InsightsContext";
 import { wholeDollars } from "../insights/teasers";
 import { useEffect, useState } from "react";
@@ -21,7 +20,6 @@ export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
   const { items } = useTracker();
   const insights = useInsights();
   const { signedIn, paid, savingsLeft, auditsLeft } = useTrackerAccess();
-  const alerts = useAlertSettings();
   // Tariff actions first seen since the news tab was last opened (the last week, before it ever was)
   const updates = useTariffUpdates("recent");
   const [seenAt, setSeenAt] = useState<string | null>(null);

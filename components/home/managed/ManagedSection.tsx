@@ -56,8 +56,8 @@ export const ManagedSection = () => {
               Your Dedicated Tariff Team, <span className={mk.accent}>Without the Headcount.</span>
             </h2>
             <p className={`${mk.lead} mt-5`}>
-              We watch every tariff on your imports, audit every entry, and brief you and your broker on what we find. Your broker files. And
-              there&apos;s a person you can message the same day.
+              We watch every tariff on your imports, audit every entry, and brief your team on what we find, every week.
+              Plus, get direct access to tariff experts for any questions that pop up.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
               <a

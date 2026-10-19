@@ -8,10 +8,18 @@ import { useInsights } from "../insights/InsightsContext";
 import { changesTeaser, sourcingTeaser } from "../insights/teasers";
 import { TrackerSection } from "../sections";
 import { useTrackerNav } from "./TrackerNav";
+import { ComingSoon } from "./ComingSoon";
 
 // A section that isn't built yet: what it will do. A paid-only one leads with what it would have
 // told the user about their own catalog, and the way to get it.
-export const PlannedSection = ({ section }: { section: TrackerSection }) => {
+export const PlannedSection = ({ section, productKey }: { section: TrackerSection; productKey?: string }) => {
+  // Savings and Audits before launch: the full pitch (ComingSoon)
+  if (section.comingSoon && (section.slug === "savings" || section.slug === "entries"))
+    return <ComingSoon kind={section.slug === "savings" ? "savings" : "audits"} productKey={productKey} />;
+  return <Planned section={section} />;
+};
+
+const Planned = ({ section }: { section: TrackerSection }) => {
   const { openTab } = useTrackerNav();
   const insights = useInsights();
   const { paid, signedIn, unlock, unlockLabel, loading } = useTrackerAccess();
