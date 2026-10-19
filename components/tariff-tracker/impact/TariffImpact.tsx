@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowTopRightOnSquareIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { StatStrip } from "@/components/ui/StatStrip";
-import { Countries } from "@/constants/countries";
 import { STAGE_LABELS } from "@/components/tariff-updates/labels";
 import { AUTHORITIES, KINDS, STAGE_ORDER } from "@/libs/tariff-updates/types";
 import type { ImportImpact } from "@/libs/tariff-updates/impactOf";
@@ -20,8 +19,9 @@ import { TRACKER_PATH } from "../sections";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ActionList } from "./ActionList";
+import { ActionScope } from "./ActionScope";
 import { OriginBars, RateShift, type OriginRow, type ShiftRow } from "./ImpactCharts";
-import { ImpactImports, type Show } from "./ImpactImports";
+import { ImpactImports } from "./ImpactImports";
 import { day, groupOf, GROUP_ORDER, GROUPS, rateChange, relativeDays, signedRate } from "./format";
 import { useReviewList, type ImpactCheck } from "./useReviewList";
 import { useUpdateImpact } from "./useUpdateImpact";
@@ -33,13 +33,6 @@ import { useUpdateImpact } from "./useUpdateImpact";
 // then the rates it moves and the countries it lands on. Worked out live with the code the
 // alerts use, so it's where an alert's link lands (?tab=impact&update=slug) and where the admin
 // checks an action before approving its alerts (actions still in review show for the admin only).
-
-const byCode = new Map(Countries.map((c) => [c.code, c]));
-const countryLabel = (codes: string[]) => {
-  if (codes.includes("ALL")) return "All countries";
-  const names = codes.map((c) => byCode.get(c)?.name ?? c);
-  return names.length > 4 ? `${names.slice(0, 4).join(", ")} and ${names.length - 4} more` : names.join(", ");
-};
 
 const urlFor = (slug: string) => `${TRACKER_PATH}?tab=changes&update=${encodeURIComponent(slug)}`;
 
@@ -72,7 +65,19 @@ const AddImportsNote = () => {
 const ActionCard = ({ update, check, today, impacts, total, hasImports }: { update: TrackerUpdate; check?: ImpactCheck; today: string; impacts: ImportImpact[] | null; total: number; hasImports: boolean }) => {
   const { products } = useTracker();
   const [more, setMore] = useState(false);
+  // Whether the two-line summary is cut off, so "Read the full summary" shows only when there's more
+  const summaryRef = useRef<HTMLParagraphElement>(null);
+  const [cut, setCut] = useState(false);
   useEffect(() => setMore(false), [update.id]);
+  useLayoutEffect(() => {
+    const el = summaryRef.current;
+    if (!el) return;
+    const measure = () => setCut(el.scrollHeight > el.clientHeight + 1);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [update.id, more]);
   const effective = update.effective_on;
   const upcoming = !!effective && effective > today;
   const tone = newsToneOf(update.kind);
@@ -87,8 +92,6 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
   const ups = rated.filter((i) => rateChange(i) > 0).length;
   const downs = rated.length - ups;
   const pending = impacts === null;
-  const meta = [update.countries.length ? countryLabel(update.countries) : null, update.products].filter(Boolean).join(" · ");
-  const long = update.summary.length > 240;
 
   return (
     <section className={`${tt.panel} overflow-hidden`} aria-labelledby="tt-impact-title">
@@ -103,22 +106,22 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
               {update.title}
             </h2>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {check && (
-              <a href={`/tariff-sources?update=${update.id}`} target="_blank" rel="noopener" className={ui.button({ variant: "ghost", size: "sm" })}>
-                Review alerts
-              </a>
-            )}
-            <a href={`/tariff-updates/${update.slug}`} target="_blank" rel="noopener" className={ui.button({ variant: "secondary", size: "sm" })}>
-              Full update
-              <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" aria-hidden />
+          {check && (
+            <a href={`/tariff-sources?update=${update.id}`} target="_blank" rel="noopener" className={`${ui.button({ variant: "ghost", size: "sm" })} shrink-0`}>
+              Review alerts
             </a>
-          </div>
+          )}
         </div>
-        <p className={`text-sm leading-relaxed text-base-content/75 ${more ? "" : "line-clamp-2"}`}>{update.summary}</p>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-base-content/60">
-          {meta && <span className="line-clamp-1 max-w-3xl">{meta}</span>}
-          {long && (
+        <p ref={summaryRef} className={`m-0 text-sm leading-relaxed text-base-content/75 ${more ? "" : "line-clamp-2"}`}>
+          {update.summary}
+        </p>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-base-content/60">
+          {/* The official notice, where the action was announced */}
+          <a href={`/tariff-updates/${update.slug}`} target="_blank" rel="noopener" className={ui.button({ variant: "secondary", size: "sm" })}>
+            Read the announcement
+            <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" aria-hidden />
+          </a>
+          {(cut || more) && (
             <button type="button" className={`${ui.link} text-sm`} onClick={() => setMore((m) => !m)}>
               {more ? "Show less" : "Read the full summary"}
             </button>
@@ -135,6 +138,7 @@ const ActionCard = ({ update, check, today, impacts, total, hasImports }: { upda
       <div className="px-6 pb-5">
         <StageTrack current={STAGE_ORDER.indexOf(update.stage)} />
       </div>
+      {update.kind !== "hts_revision" && <ActionScope update={update} />}
       {update.kind === "hts_revision" ? (
         <p className={`${tt.body} m-0 border-t border-base-300 px-6 py-5`}>
           An HTS revision puts tariff actions into the tariff schedule. Each action it carries out is listed on its own, with what it does to your imports.
@@ -269,10 +273,8 @@ export const TariffImpact = () => {
   const { impacts, progress, untracked } = useUpdateImpact(update && update.kind !== "hts_revision" && items.length ? update : null);
   const checked = !!update && update.kind !== "hts_revision" && items.length > 0;
   const [country, setCountry] = useState<string | null>(null);
-  const [show, setShow] = useState<Show>("affected");
   useEffect(() => {
     setCountry(null);
-    setShow("affected");
   }, [slug]);
   const showImports = () => document.getElementById("tt-impact-imports-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -336,7 +338,7 @@ export const TariffImpact = () => {
               ) : (
                 <>
                   {untracked > 0 && <UntrackedHits count={untracked} />}
-                  <ImpactImports impacts={impacts} effective={update.effective_on} today={today} country={country} onClearCountry={() => setCountry(null)} show={show} onShow={setShow} />
+                  <ImpactImports checking={trackedKeys.size > 0} update={update} impacts={impacts} today={today} country={country} onClearCountry={() => setCountry(null)} />
                   {(shifts.length > 2 || origins.length > 1) && (
                     <div className={`grid gap-4 ${shifts.length > 2 && origins.length > 1 ? "xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]" : ""}`}>
                       {shifts.length > 2 && (

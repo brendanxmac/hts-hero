@@ -91,7 +91,7 @@ const inRange = (prefix: string, code: string) => {
 
 // Whether the update names a product code. An 8-digit import is named by one of its 10-digit
 // lines: it may be the one imported.
-const codeNamed = (prefix: string, code: string) =>
+export const codeNamed = (prefix: string, code: string) =>
   prefix.includes("-") ? inRange(prefix, code) : code.startsWith(prefix) || (code.length === 8 && prefix.startsWith(code))
 
 // Only what's certainly carved out: one of an 8-digit import's 10-digit lines doesn't exclude it
@@ -143,6 +143,9 @@ export const matchImport = (scope: UpdateScope, item: MatchableImport): Exclude<
   }
   return scope.countries !== "all" && scope.countries.includes(country) ? "possible" : null
 }
+
+// The prefix (or range) in an update's scope that names an import's code, if one does
+export const namingPrefix = (scope: UpdateScope, code: string) => scope.codes.find((prefix) => codeNamed(prefix, code.replace(/\D/g, ""))) ?? null
 
 export interface UpdateMatches {
   likely: string[]

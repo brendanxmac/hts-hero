@@ -25,27 +25,6 @@ export const GROUPS: Record<ImpactGroup, { label: string; short: string; tone: "
 
 export const GROUP_ORDER: ImpactGroup[] = ["up", "down", "same", "likely", "possible"];
 
-// What it does to one import, in a few words
-export const reasonText = (i: ImportImpact, effective: string | null, today: string) => {
-  const future = !!i.date && i.date > today;
-  switch (i.reason) {
-    case "starts":
-      return future ? "A new duty applies from the effective date" : "A new duty applies";
-    case "ends":
-      return future ? "A duty stops applying from the effective date" : "A duty stopped applying";
-    case "changes":
-      return "The duty under it changes";
-    case "ban":
-      return "An import ban starts";
-    case "answer":
-      return "Applies depending on an answer about your goods";
-    case "named":
-      return effective && effective > today ? "Named in its scope; confirmed once it's in the HTS" : "Named in its scope; not in the HTS yet";
-    case "country":
-      return "Covers your country of origin, not this code";
-  }
-};
-
 // A change in the duty rate, signed: "+25%", "−2.5%" (never "points": the rate moves by that %)
 export const rateChange = (i: Pick<ImportImpact, "beforePct" | "afterPct">) => (i.afterPct ?? 0) - (i.beforePct ?? 0);
 export const signedRate = (n: number) => `${n > 0.005 ? "+" : n < -0.005 ? "−" : ""}${formatRate(Math.abs(n))}`;
@@ -67,4 +46,12 @@ export const relativeDays = (iso: string, today: string) => {
   if (days > 0) return `in ${days} days`;
   if (days === -1) return "yesterday";
   return `${-days} days ago`;
+};
+
+// A code prefix from an update's scope as people write it: "73" → "Chapter 73", "732690" →
+// "7326.90", "870810-870899" → "8708.10–8708.99"
+export const formatPrefix = (prefix: string): string => {
+  if (prefix.includes("-")) return prefix.split("-").map(formatPrefix).join("–");
+  if (prefix.length <= 2) return `Chapter ${prefix}`;
+  return [prefix.slice(0, 4), prefix.slice(4, 6), prefix.slice(6, 8), prefix.slice(8, 10)].filter(Boolean).join(".");
 };
