@@ -34,6 +34,7 @@ export const ActionList = ({
   inReview,
   today,
   onPick,
+  isNew,
 }: {
   updates: TrackerUpdate[];
   selected: string | null;
@@ -42,9 +43,12 @@ export const ActionList = ({
   inReview: Set<string>;
   today: string;
   onPick: (slug: string) => void;
+  // First seen since the user last looked
+  isNew: (u: TrackerUpdate) => boolean;
 }) => {
   const hits = (u: TrackerUpdate) => !!effectOn(matches.get(u.slug));
-  const upcoming = (u: TrackerUpdate) => !!u.effective_on && u.effective_on > today;
+  // HTS revisions take effect on a date too, but carry out actions already listed
+  const upcoming = (u: TrackerUpdate) => u.kind !== "hts_revision" && !!u.effective_on && u.effective_on > today;
   const mine = updates.filter(hits).length;
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
@@ -135,7 +139,10 @@ export const ActionList = ({
                       {active && <span className="absolute inset-y-2 left-0 w-1 rounded-r-full bg-primary" aria-hidden />}
                       <span className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${NEWS_DOTS[newsToneOf(u.kind)]}`} aria-hidden />
                       <span className="flex min-w-0 flex-col gap-1">
-                        <span className={`line-clamp-2 text-sm font-semibold leading-snug ${active ? "text-primary" : "text-base-content"}`}>{u.title}</span>
+                        <span className={`line-clamp-2 text-sm font-semibold leading-snug ${active ? "text-primary" : "text-base-content"}`}>
+                          {isNew(u) && <span className={`${tt.chip("error")} mr-1.5 align-[1px]`}>New</span>}
+                          {u.title}
+                        </span>
                         <span className="text-xs text-base-content/60">
                           {AUTHORITIES[u.authority] ?? u.authority} · {day(u.last_activity_at, false)}
                           {soon && <span className="font-semibold text-warning"> · From {day(u.effective_on!, false)}</span>}

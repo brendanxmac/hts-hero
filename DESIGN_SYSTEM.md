@@ -533,7 +533,7 @@ Radii: cards and the sidebar 20 (`rounded-lg` here); tiles, notices, dropzones a
 
 Every page opens the same way (`shell/SectionPage`, `SectionHeader`): its title (`tt.pageTitle`), one line on what it's for (the Overview's line is the day and how many imports it covers), its own actions on the right, then its modules. Above the title there is one status slot (the plan banner: the trial ending or ended, the free checks used), never more than one strip at a time.
 
-A side rail beside a page's main column (Tariff News's email and sources boxes) is quieter than the main column: `tt.rail`, an outline on the ground with no fill or shadow.
+A side rail beside a page's main column is quieter than the main column: `tt.rail`, an outline on the ground with no fill or shadow.
 
 ### When to use a box
 
@@ -546,7 +546,7 @@ A side rail beside a page's main column (Tariff News's email and sources boxes) 
 
 ### Components
 
-- **Sidebar:** floating, dark in both modes. Workspace and Intelligence groups; each item has a colored dot and count for what's waiting (red "6 new", green "$6.7k", amber alerts). Plan card at the foot (the trial's free checks left as segments, payoff line, green button), then the account.
+- **Sidebar:** floating, dark in both modes, organized by what people come to do, not by data source (Oct 2026 restructure): **Home** (what needs attention), **Your Imports** (views: Imports, Insights), **Calculator**, **Tariff Changes** (views: Actions, Rate History, Alert Settings; it holds what were Tariff News, Tariff Impacts, Rate History and Alerts), then **Savings** and **Audits** (marked Soon until they launch). Expert Help sits apart at the sidebar's foot, above the plan card and the account. A page with several views shows them as pill tabs (`TabBar`) under its title (`SectionHeader`'s `tabs`), and a view is in the address (`&view=`). Old addresses of sections that moved open them in their new home (`MOVED_TABS` in `sections.ts`). Each item has one small pill for what's waiting there.
 - **Buttons:** one button, `ui.button`, in three kinds: primary (the cobalt fill, the one main action on a screen), secondary (outline pill) and ghost. No dark or green buttons; a card's other actions are secondary or links.
 - **Chips:** number chips inside sentences; status chips (POTENTIAL green, CHANGED red, PROGRAM cobalt, HEADS-UP amber).
 - **Tariff news tape:** the latest tariff news and newly added tariffs (proposals, HTS revisions, Federal Register, CSMS, court rulings), as pills with a colored dot.

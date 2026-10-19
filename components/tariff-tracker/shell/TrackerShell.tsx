@@ -193,6 +193,12 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
               ))}
             </div>
           ))}
+          {/* Help sits apart from the daily work, above the plan */}
+          <div className="mt-auto flex flex-col gap-1">
+            {SHOWN.filter((s) => s.group === "foot").map((section) => (
+              <SidebarTab key={section.slug} section={section} meta={meta[section.slug]} locked={false} collapsed={collapsed} />
+            ))}
+          </div>
         </nav>
         {!collapsed && <PlanCard />}
         <div className={`flex items-center gap-1 ${collapsed ? "flex-col" : ""}`}>

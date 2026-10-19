@@ -1,5 +1,6 @@
 "use client";
 
+import { ReactNode } from "react";
 import { Menu } from "@headlessui/react";
 import { EllipsisHorizontalIcon, ExclamationTriangleIcon, PlusIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
@@ -23,8 +24,11 @@ export const TariffReport = ({
   rows,
   onAdd,
   onOpen,
+  tabs,
 }: {
   rows: TrackedProduct[];
+  // Your Imports' views (Imports, Insights), under the title
+  tabs?: ReactNode;
   onAdd: () => void;
   onOpen: (row: TrackedProduct) => void;
 }) => {
@@ -39,6 +43,7 @@ export const TariffReport = ({
           <>
             <SectionHeader
               section={sectionBySlug("catalog")!}
+              tabs={tabs}
               actions={
                 <>
                   <label className="flex h-9 items-center gap-2 rounded-full border border-base-300 bg-base-100 pl-3.5 pr-2 text-xs font-semibold text-base-content/70">

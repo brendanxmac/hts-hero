@@ -22,6 +22,7 @@ import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 export type SectionSlug =
   | "overview"
   | "calculator"
+  | "changes"
   | "catalog"
   | "history"
   | "insights"
@@ -42,8 +43,8 @@ export interface TrackerSection {
   title: string
   summary: string
   ready: boolean
-  // Where it sits in the sidebar
-  group: "workspace"
+  // Where it sits in the sidebar: the main list, or the foot (beside the plan and the account)
+  group: "workspace" | "foot"
   // Needs a paid plan (the usage-based trial doesn't include it)
   paidOnly: boolean
   // Still experimental
@@ -67,22 +68,10 @@ const section = (s: TrackerSection) => s
 export const SECTIONS: TrackerSection[] = [
   section({
     slug: "overview",
-    label: "Overview",
+    label: "Home",
     Icon: HomeIcon,
-    title: "Overview",
-    summary:
-      "Your imports' tariffs at a glance: what you pay, what changed and where to save.",
-    ready: true,
-    group: "workspace",
-    paidOnly: false,
-    planned: [],
-  }),
-  section({
-    slug: "calculator",
-    label: "Calculator",
-    Icon: CalculatorIcon,
-    title: "Calculator",
-    summary: "Every duty on one shipment of any product, from any country.",
+    title: "Home",
+    summary: "What needs your attention on your imports today.",
     ready: true,
     group: "workspace",
     paidOnly: false,
@@ -100,7 +89,64 @@ export const SECTIONS: TrackerSection[] = [
     planned: [],
   }),
   section({
+    slug: "calculator",
+    label: "Calculator",
+    Icon: CalculatorIcon,
+    title: "Calculator",
+    summary: "Every duty on one shipment of any product, from any country.",
+    ready: true,
+    group: "workspace",
+    paidOnly: false,
+    planned: [],
+  }),
+  section({
+    slug: "changes",
+    label: "Tariff Changes",
+    Icon: BoltIcon,
+    title: "Tariff Changes",
+    summary: "Every US tariff action, what it does to your imports, and your alerts.",
+    ready: true,
+    group: "workspace",
+    paidOnly: false,
+    planned: [],
+  }),
+  section({
+    slug: "savings",
+    label: "Savings",
+    Icon: ReceiptPercentIcon,
+    title: "Savings",
+    summary: "Ways you could pay less duty on the products you already import.",
+    ready: false,
+    comingSoon: true,
+    group: "workspace",
+    paidOnly: false,
+    planned: [
+      "Trade programs your products can claim from the countries they come from",
+      "The lowest-duty countries of origin for every product",
+      "Exemptions worth checking, and the total you could potentially save",
+    ],
+  }),
+  section({
+    slug: "entries",
+    label: "Audits",
+    Icon: ClipboardDocumentCheckIcon,
+    title: "Audits",
+    comingSoon: true,
+    summary:
+      "Check the duty paid on every shipment against the rates in force that day.",
+    ready: false,
+    group: "workspace",
+    paidOnly: false,
+    planned: [
+      "Log each entry you clear: product, country, entry date, value and the duty you paid",
+      "An instant check against the rates in force on the entry date",
+      "Overpayments you could recover, and underpayments to fix before Customs finds them",
+    ],
+  }),
+  section({
     slug: "alerts",
+    // Moved into another section (MOVED_TABS): its old address opens it there
+    hidden: true,
     label: "Alerts",
     Icon: BellAlertIcon,
     title: "Alerts",
@@ -116,6 +162,8 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "news",
+    // Moved into another section (MOVED_TABS): its old address opens it there
+    hidden: true,
     label: "Tariff News",
     Icon: NewspaperIcon,
     title: "Tariff News",
@@ -128,6 +176,8 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "impact",
+    // Moved into another section (MOVED_TABS): its old address opens it there
+    hidden: true,
     label: "Tariff Impacts",
     Icon: BoltIcon,
     title: "Tariff Impacts",
@@ -140,6 +190,8 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "insights",
+    // Moved into another section (MOVED_TABS): its old address opens it there
+    hidden: true,
     label: "Insights",
     Icon: LightBulbIcon,
     title: "Insights",
@@ -155,6 +207,8 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "history",
+    // Moved into another section (MOVED_TABS): its old address opens it there
+    hidden: true,
     label: "Rate History",
     Icon: ClockIcon,
     title: "Rate History",
@@ -166,23 +220,6 @@ export const SECTIONS: TrackerSection[] = [
       "The rate on every one of your imports on any past date",
       "A timeline of each change: the program, the HTS revision and the date it took effect",
       "Any two dates side by side, to see exactly what moved",
-    ],
-  }),
-  section({
-    slug: "savings",
-    hidden: true,
-    label: "Savings",
-    Icon: ReceiptPercentIcon,
-    title: "Savings",
-    summary: "Ways you could pay less duty on the products you already import.",
-    ready: false,
-    comingSoon: true,
-    group: "workspace",
-    paidOnly: false,
-    planned: [
-      "Trade programs your products can claim from the countries they come from",
-      "The lowest-duty countries of origin for every product",
-      "Exemptions worth checking, and the total you could potentially save",
     ],
   }),
   section({
@@ -203,24 +240,6 @@ export const SECTIONS: TrackerSection[] = [
     ],
   }),
   section({
-    slug: "entries",
-    hidden: true,
-    label: "Entry Audit",
-    Icon: ClipboardDocumentCheckIcon,
-    title: "Entry Audit",
-    comingSoon: true,
-    summary:
-      "Check the duty paid on every shipment against the rates in force that day.",
-    ready: false,
-    group: "workspace",
-    paidOnly: false,
-    planned: [
-      "Log each entry you clear: product, country, entry date, value and the duty you paid",
-      "An instant check against the rates in force on the entry date",
-      "Overpayments you could recover, and underpayments to fix before Customs finds them",
-    ],
-  }),
-  section({
     slug: "expert-help",
     label: "Expert Help",
     Icon: ChatBubbleLeftRightIcon,
@@ -228,7 +247,7 @@ export const SECTIONS: TrackerSection[] = [
     summary:
       "HTS Hero as your tariff team: we manage every tariff on your imports, with you.",
     ready: true,
-    group: "workspace",
+    group: "foot",
     paidOnly: false,
     planned: [],
   }),
@@ -237,9 +256,24 @@ export const SECTIONS: TrackerSection[] = [
 export const sectionBySlug = (slug: string | null) =>
   SECTIONS.find((s) => s.slug === slug)
 
-// The address of a tab
-export const sectionUrl = (slug: SectionSlug) =>
-  slug === DEFAULT_SECTION ? TRACKER_PATH : `${TRACKER_PATH}?tab=${slug}`
+// Sections folded into another one (the sidebar is organized by what people come to do): Tariff
+// News, Tariff Impacts, Rate History and the alert settings are views of Tariff Changes, and
+// Insights a view of Your Imports. Their old addresses (in sent emails, Slack, bookmarks) open
+// them there.
+export const MOVED_TABS: Partial<Record<SectionSlug, { tab: SectionSlug; view?: string }>> = {
+  news: { tab: "changes" },
+  impact: { tab: "changes" },
+  history: { tab: "changes", view: "history" },
+  alerts: { tab: "changes", view: "alerts" },
+  insights: { tab: "catalog", view: "insights" },
+}
+
+// The address of a tab (a moved one's new home)
+export const sectionUrl = (slug: SectionSlug): string => {
+  const moved = MOVED_TABS[slug]
+  if (moved) return `${TRACKER_PATH}?tab=${moved.tab}${moved.view ? `&view=${moved.view}` : ""}`
+  return slug === DEFAULT_SECTION ? TRACKER_PATH : `${TRACKER_PATH}?tab=${slug}`
+}
 
 // A catalog product's own view's tabs, in order; Overview is where it opens
 export type ProductTab =

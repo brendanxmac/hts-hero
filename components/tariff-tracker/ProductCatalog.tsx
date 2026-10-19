@@ -12,7 +12,9 @@ import { ProductView } from "./product/ProductView";
 import { TrackedProduct } from "./report";
 import { SectionHeader } from "./shell/SectionPage";
 import { useTrackerNav } from "./shell/TrackerNav";
-import { sectionBySlug } from "./sections";
+import { sectionBySlug, TRACKER_PATH } from "./sections";
+import { TabBar } from "@/components/ui/TabBar";
+import { Insights } from "./insights-tab/Insights";
 import { TariffReport } from "./TariffReport";
 import { useTracker } from "./TrackerContext";
 
@@ -40,6 +42,20 @@ export const ProductCatalog = () => {
   useEffect(() => {
     if (addParam === "paste" || addParam === "csv") openDialog(addParam);
   }, [addParam]);
+
+  // Two views: the imports, and Insights on them (where the duty comes from, what moved it)
+  const view = searchParams.get("view") === "insights" ? "insights" : "imports";
+  const views = (
+    <TabBar
+      label="Your Imports"
+      options={[
+        { id: "imports", label: "Imports", count: t.items.length },
+        { id: "insights", label: "Insights" },
+      ]}
+      value={view}
+      onChange={(next) => next !== view && window.history.pushState(null, "", `${TRACKER_PATH}?tab=catalog${next === "insights" ? "&view=insights" : ""}`)}
+    />
+  );
 
   const loadExample = () => {
     t.addProducts(itemsFromText(EXAMPLE_LIST), "example");
@@ -71,9 +87,15 @@ export const ProductCatalog = () => {
             </div>
           ) : t.items.length === 0 ? (
             <CatalogEmptyState onAdd={openDialog} onExample={loadExample} />
+          ) : view === "insights" ? (
+            <div className="tt-enter flex flex-col gap-group">
+              <SectionHeader section={sectionBySlug("catalog")!} tabs={views} />
+              <Insights />
+            </div>
           ) : (
             <TariffReport
               rows={t.products}
+              tabs={views}
               onAdd={() => openDialog("paste")}
               onOpen={(row: TrackedProduct) => nav.openProduct(row.key, true)}
             />

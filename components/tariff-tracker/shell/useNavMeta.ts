@@ -34,19 +34,14 @@ export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
   // Recent tariff actions (the last 45 days) that affect, or may affect, the user's imports
   const matches = useImportMatches(updates);
   const meta: Partial<Record<SectionSlug, NavMeta>> = {};
+  // Tariff Changes: actions new since the user last looked, else recent ones that hit their imports
   const hitting = (updates ?? []).filter((u) => u.kind !== "hts_revision" && (matches.get(u.slug)?.confirmed ?? 0) + (matches.get(u.slug)?.likely ?? 0) > 0).length;
-  if (hitting) meta.impact = { text: `${hitting} recent`, tone: "primary" };
   const since = seenAt ?? new Date(Date.now() - 7 * 86_400_000).toISOString();
   const fresh = (updates ?? []).filter((u) => u.first_seen_at > since).length;
-  if (fresh) meta.news = { text: `${fresh} new`, tone: "primary" };
+  if (fresh) meta.changes = { text: `${fresh} new`, tone: "primary" };
+  else if (hitting) meta.changes = { text: `${hitting} recent`, tone: "neutral" };
   if (items.length) meta.catalog = { text: items.length.toLocaleString("en-US"), tone: "neutral" };
   else meta.catalog = { text: "Start here", tone: "primary" };
-  if (signedIn && !alerts.loading) meta.alerts = alerts.on ? { text: "On", tone: "success" } : { text: "Off", tone: "warning" };
-  if (insights.historyReady && items.length) {
-    const { count } = changesLastYear(insights.changes, todayIso());
-    if (count) meta.history = { text: `${count} changes`, tone: "neutral" };
-  }
-  if (items.length) meta.insights = { text: "New", tone: "primary" };
   // On the trial, what's still free; once the checks are spent (or on a plan), what they found
   const found = insights.totals.anyUsd + insights.beyond.anyUsd;
   if (signedIn && !paid && savingsLeft > 0) meta.savings = { text: `${savingsLeft} free`, tone: "primary" };

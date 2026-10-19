@@ -14,7 +14,7 @@ import { useTrackerNav } from "./TrackerNav";
 export const PlannedSection = ({ section }: { section: TrackerSection }) => {
   const { openTab } = useTrackerNav();
   const insights = useInsights();
-  const { paid, unlock, unlockLabel, loading } = useTrackerAccess();
+  const { paid, signedIn, unlock, unlockLabel, loading } = useTrackerAccess();
   const { Icon } = section;
   const headingId = `tt-planned-${section.slug}`;
   const teaser =
@@ -44,6 +44,19 @@ export const PlannedSection = ({ section }: { section: TrackerSection }) => {
               {unlockLabel}
             </button>
           )}
+        </div>
+      )}
+      {/* Coming soon, signed out: an account now means it's on for their imports the day it opens */}
+      {section.comingSoon && !section.paidOnly && !loading && !signedIn && (
+        <div className={`${ui.notice("primary")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
+          <SparklesIcon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+          <p className={`${ui.bodySm} flex-1`}>
+            <span className="font-semibold text-base-content">{section.label} switches on for every account the day it launches. </span>
+            Create a free account now and it runs on your imports from day one.
+          </p>
+          <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={() => unlock("tracking")}>
+            {unlockLabel}
+          </button>
         </div>
       )}
       <section className={ui.card} aria-labelledby={headingId}>

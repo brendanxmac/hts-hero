@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import * as ui from "@/components/ui/styles";
-import { DEFAULT_SECTION, productUrl, SECTIONS, SectionSlug, sectionBySlug, sectionUrl } from "./sections";
+import { DEFAULT_SECTION, MOVED_TABS, productUrl, SECTIONS, SectionSlug, sectionBySlug, sectionUrl } from "./sections";
 import { PlannedSection } from "./shell/PlannedSection";
 import { SectionPage } from "./shell/SectionPage";
 import { TrackerNav, TrackerNavContext } from "./shell/TrackerNav";
@@ -34,14 +34,10 @@ const ProductCatalog = dynamic(() => import("./ProductCatalog").then((m) => m.Pr
   loading: PanelSkeleton,
 });
 const Overview = dynamic(() => import("./overview/Overview").then((m) => m.Overview), { loading: PanelSkeleton });
-const Insights = dynamic(() => import("./insights-tab/Insights").then((m) => m.Insights), { loading: PanelSkeleton });
-const RateHistory = dynamic(() => import("./history/RateHistory").then((m) => m.RateHistory), { loading: PanelSkeleton });
-const Alerts = dynamic(() => import("./alerts/Alerts").then((m) => m.Alerts), { loading: PanelSkeleton });
 const Savings = dynamic(() => import("./savings/Savings").then((m) => m.Savings), { loading: PanelSkeleton });
 const EntryAudit = dynamic(() => import("./entries/EntryAudit").then((m) => m.EntryAudit), { loading: PanelSkeleton });
 const Sourcing = dynamic(() => import("./sourcing/Sourcing").then((m) => m.Sourcing), { loading: PanelSkeleton });
-const TariffImpact = dynamic(() => import("./impact/TariffImpact").then((m) => m.TariffImpact), { loading: PanelSkeleton });
-const TariffNews = dynamic(() => import("./news/TariffNews").then((m) => m.TariffNews), { loading: PanelSkeleton });
+const TariffChanges = dynamic(() => import("./changes/TariffChanges").then((m) => m.TariffChanges), { loading: PanelSkeleton });
 const ExpertHelp = dynamic(() => import("./expert-help/ExpertHelp").then((m) => m.ExpertHelp), { loading: PanelSkeleton });
 const TrackerCalculator = dynamic(
   () => import("./calculator/TrackerCalculator").then((m) => m.TrackerCalculator),
@@ -54,9 +50,20 @@ const BASE_TITLE = "Tariff Tracker | HTS Hero";
 export const TrackerApp = () => {
   const searchParams = useSearchParams();
   // Links into the catalog from before it had a tab of its own (?add=, ?product=) still land there
-  const tab =
+  const asked =
     sectionBySlug(searchParams.get("tab"))?.slug ??
     (searchParams.get("add") || searchParams.get("product") ? "catalog" : DEFAULT_SECTION);
+  // A section that moved into another (Tariff News into Tariff Changes…) opens there
+  const moved = MOVED_TABS[asked];
+  const tab = moved?.tab ?? asked;
+  useEffect(() => {
+    if (!moved) return;
+    // The address says where it now lives, keeping the rest of it (?update=, ?slack=…)
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", moved.tab);
+    if (moved.view && !params.get("view")) params.set("view", moved.view);
+    window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+  }, [moved]);
   // A catalog product open in its own view
   const product = tab === "catalog" ? searchParams.get("product") : null;
 
@@ -77,13 +84,9 @@ export const TrackerApp = () => {
     calculator: (active) => <TrackerCalculator key={calculatorRun} active={active} />,
     catalog: () => <ProductCatalog />,
     overview: () => <Overview />,
-    insights: () => <Insights />,
-    history: () => <RateHistory />,
     savings: () => <Savings />,
     sourcing: () => <Sourcing />,
-    alerts: () => <Alerts />,
-    news: () => <TariffNews />,
-    impact: () => <TariffImpact />,
+    changes: () => <TariffChanges />,
     entries: () => <EntryAudit />,
     "expert-help": () => <ExpertHelp />,
   };
@@ -98,10 +101,10 @@ export const TrackerApp = () => {
   // returns to wherever they came from (scroll and filters intact). Landing straight on an import
   // (a shared link, an alert email) has nowhere to go back to in the Tracker, so Back opens Your
   // Imports instead.
-  const moved = useRef(false);
+  const wandered = useRef(false);
   const firstView = useRef(`${tab}:${product ?? ""}`);
   useEffect(() => {
-    if (`${tab}:${product ?? ""}` !== firstView.current) moved.current = true;
+    if (`${tab}:${product ?? ""}` !== firstView.current) wandered.current = true;
   }, [tab, product]);
 
   // Each view's scroll position (the Tracker's one scroller is its <main>), kept as the user
@@ -166,7 +169,7 @@ export const TrackerApp = () => {
         window.history.pushState(null, "", productUrl(key, productTab));
       },
       closeProduct: () => {
-        if (moved.current) window.history.back();
+        if (wandered.current) window.history.back();
         else {
           leaveView();
           window.history.pushState(null, "", sectionUrl("catalog"));
@@ -203,7 +206,7 @@ export const TrackerApp = () => {
                           hidden={!active}
                           className="tt-enter"
                         >
-                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "impact"].includes(section.slug)}>
+                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "changes"].includes(section.slug)}>
                             {panel ? panel(active) : <PlannedSection section={section} />}
                           </SectionPage>
                         </div>

@@ -8,16 +8,16 @@ import * as tt from "@/components/ui/styles/tracker";
 import { StatStrip } from "@/components/ui/StatStrip";
 import { Countries } from "@/constants/countries";
 import { STAGE_LABELS } from "@/components/tariff-updates/labels";
-import { AUTHORITIES, KINDS } from "@/libs/tariff-updates/types";
+import { AUTHORITIES, KINDS, STAGE_ORDER } from "@/libs/tariff-updates/types";
 import type { ImportImpact } from "@/libs/tariff-updates/impactOf";
 import { todayIso } from "../../duty-calculator/lib/format";
 import { useTrackerAccess } from "../access/accessContext";
 import { newsToneOf } from "../news/tone";
 import { useImportMatches } from "../news/useImportMatches";
 import { useTariffUpdates, type TrackerUpdate } from "../overview/useTariffUpdates";
-import { sectionBySlug, TRACKER_PATH } from "../sections";
-import { NeedsProducts } from "../shell/NeedsProducts";
-import { SectionHeader } from "../shell/SectionPage";
+import { markNewsSeen, newsSeenAt } from "../overview/useTariffUpdates";
+import { TRACKER_PATH } from "../sections";
+import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ActionList } from "./ActionList";
 import { OriginBars, RateShift, type OriginRow, type ShiftRow } from "./ImpactCharts";
@@ -26,7 +26,8 @@ import { day, groupOf, GROUP_ORDER, GROUPS, rateChange, relativeDays, signedRate
 import { useReviewList, type ImpactCheck } from "./useReviewList";
 import { useUpdateImpact } from "./useUpdateImpact";
 
-// Tariff Impacts: pick any tariff action and see exactly which of your imports it hits. The
+// The Tariff Actions view of Tariff Changes (it was Tariff News and Tariff Impacts): every US tariff
+// action, and exactly which of your imports the open one hits. The
 // actions down the left (ActionList); the open one on the right as one card: what it is, then the answer for the catalog
 // as a stat strip like the Overview's. Under it, the imports it affects laid out like Your imports,
 // then the rates it moves and the countries it lands on. Worked out live with the code the
@@ -40,10 +41,35 @@ const countryLabel = (codes: string[]) => {
   return names.length > 4 ? `${names.slice(0, 4).join(", ")} and ${names.length - 4} more` : names.join(", ");
 };
 
-const urlFor = (slug: string) => `${TRACKER_PATH}?tab=impact&update=${encodeURIComponent(slug)}`;
+const urlFor = (slug: string) => `${TRACKER_PATH}?tab=changes&update=${encodeURIComponent(slug)}`;
+
+// The stages an action moves through, the one it has reached marked. Not every action passes every
+// stage (many are never announced first), so earlier ones aren't shown as done.
+const StageTrack = ({ current }: { current: number }) => (
+  <ol className="flex flex-wrap items-center gap-1.5" aria-label="Where it stands">
+    {STAGE_ORDER.map((stage, i) => (
+      <li key={stage} aria-current={i === current ? "step" : undefined} className={i === current ? tt.chip("primary") : `${tt.chip()} opacity-60`}>
+        {STAGE_LABELS[stage]}
+      </li>
+    ))}
+  </ol>
+);
+
+// Before there are imports to check an action against: the way to add them
+const AddImportsNote = () => {
+  const { openTab } = useTrackerNav();
+  return (
+    <div className="flex flex-col gap-3 border-t border-base-300 px-6 py-5 sm:flex-row sm:items-center">
+      <p className={`${tt.body} m-0 flex-1`}>Add your imports to see which of them each action hits, with the rate before and after.</p>
+      <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={() => openTab("catalog")}>
+        Add my imports
+      </button>
+    </div>
+  );
+};
 
 // The action, and what it does to the catalog
-const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerUpdate; check?: ImpactCheck; today: string; impacts: ImportImpact[] | null; total: number }) => {
+const ActionCard = ({ update, check, today, impacts, total, hasImports }: { update: TrackerUpdate; check?: ImpactCheck; today: string; impacts: ImportImpact[] | null; total: number; hasImports: boolean }) => {
   const { products } = useTracker();
   const [more, setMore] = useState(false);
   useEffect(() => setMore(false), [update.id]);
@@ -98,6 +124,7 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
             </button>
           )}
           {check?.inReview && <span className="font-semibold text-warning">In review: users don&apos;t see it yet</span>}
+          {update.effective_on && update.kind === "hts_revision" && <span>In the HTS from {day(update.effective_on)}</span>}
           {check?.eligible && !check.inReview && (
             <span className={`font-semibold ${check.approvedAt ? "text-success" : "text-warning"}`}>
               {check.approvedAt ? `Alerts sent ${day(check.approvedAt, false)} to ${check.alerted ?? 0} accounts` : "Alerts not approved yet"}
@@ -105,6 +132,16 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
           )}
         </div>
       </div>
+      <div className="px-6 pb-5">
+        <StageTrack current={STAGE_ORDER.indexOf(update.stage)} />
+      </div>
+      {update.kind === "hts_revision" ? (
+        <p className={`${tt.body} m-0 border-t border-base-300 px-6 py-5`}>
+          An HTS revision puts tariff actions into the tariff schedule. Each action it carries out is listed on its own, with what it does to your imports.
+        </p>
+      ) : !hasImports ? (
+        <AddImportsNote />
+      ) : (
       <StatStrip
         framed={false}
         label="What it does to your imports"
@@ -156,6 +193,7 @@ const ActionCard = ({ update, check, today, impacts, total }: { update: TrackerU
           },
         ]}
       />
+      )}
     </section>
   );
 };
@@ -193,13 +231,17 @@ export const TariffImpact = () => {
   const published = useTariffUpdates("all");
   const review = useReviewList(signedIn);
   const today = todayIso();
-  const section = sectionBySlug("impact")!;
+  // What counted as new when the view opened, before it's marked seen (clears the sidebar's "new")
+  const [seenAt] = useState(() => newsSeenAt());
+  useEffect(() => {
+    markNewsSeen();
+  }, []);
 
-  // Every action but HTS revisions (they only confirm the actions they carry out); the admin's
-  // actions still in review mixed in by date
+  // Every action, HTS revisions too (they only confirm the actions they carry out, so they're never
+  // checked against the imports); the admin's actions still in review mixed in by date
   const updates = useMemo(() => {
     if (!published) return null;
-    const all = [...published, ...(review?.pending ?? [])].filter((u) => u.kind !== "hts_revision");
+    const all = [...published, ...(review?.pending ?? [])];
     const seen = new Set<string>();
     return all.filter((u) => !seen.has(u.id) && !!seen.add(u.id)).sort((a, b) => b.last_activity_at.localeCompare(a.last_activity_at));
   }, [published, review]);
@@ -224,7 +266,8 @@ export const TariffImpact = () => {
     if (next !== slug) window.history.pushState(null, "", urlFor(next));
   };
 
-  const { impacts, progress, untracked } = useUpdateImpact(update);
+  const { impacts, progress, untracked } = useUpdateImpact(update && update.kind !== "hts_revision" && items.length ? update : null);
+  const checked = !!update && update.kind !== "hts_revision" && items.length > 0;
   const [country, setCountry] = useState<string | null>(null);
   const [show, setShow] = useState<Show>("affected");
   useEffect(() => {
@@ -265,25 +308,11 @@ export const TariffImpact = () => {
     return Array.from(rows.values()).sort((a, b) => Math.abs(b.ratePct) - Math.abs(a.ratePct) || Object.values(b.counts).reduce((s, n) => s + n, 0) - Object.values(a.counts).reduce((s, n) => s + n, 0));
   }, [impacts, byKey]);
 
-  const header = <SectionHeader section={section} />;
-
-  if (!loading && !items.length)
-    return (
-      <>
-        {header}
-        <NeedsProducts
-          title="See What Every Tariff Action Does to Your Imports"
-          body="Add your imports, then pick any tariff action: you'll see which of them it hits, the rate before and after, and what it adds to each shipment."
-        />
-      </>
-    );
-
   return (
     <>
-      {header}
       <div className="grid gap-4 xl:grid-cols-[19.5rem_minmax(0,1fr)] xl:items-start">
         {updates ? (
-          <ActionList updates={updates} selected={slug} matches={matches} inReview={inReview} today={today} onPick={select} />
+          <ActionList updates={updates} selected={slug} matches={matches} inReview={inReview} today={today} onPick={select} isNew={(u) => !!seenAt && u.first_seen_at > seenAt} />
         ) : (
           <div className={`${ui.skeleton} h-144 w-full`} />
         )}
@@ -292,8 +321,8 @@ export const TariffImpact = () => {
             <div className={`${ui.skeleton} h-64 w-full`} />
           ) : (
             <>
-              <ActionCard update={update} check={review?.checks[update.id]} today={today} impacts={impacts} total={Math.min(trackedKeys.size, products.length)} />
-              {!impacts ? (
+              <ActionCard update={update} check={review?.checks[update.id]} today={today} impacts={impacts} total={Math.min(trackedKeys.size, products.length)} hasImports={loading || items.length > 0} />
+              {!checked ? null : !impacts ? (
                 <section className={`${tt.panel} flex flex-col gap-3 px-6 py-5`} aria-busy="true">
                   <p className="text-sm text-base-content/70">
                     Working out each import&apos;s duty the day before and the day it takes effect
