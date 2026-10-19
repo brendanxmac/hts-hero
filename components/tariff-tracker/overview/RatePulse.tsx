@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   BottomAxis,
   ChartFrame,
@@ -55,6 +55,16 @@ export const RatePulse = ({
 }) => {
   const gradientId = useId();
   const hover = useHovered();
+  // The chart fills what the card leaves it (the card can be stretched to its row's height), never
+  // less than HEIGHT
+  const box = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(HEIGHT);
+  useEffect(() => {
+    if (!box.current) return;
+    const observer = new ResizeObserver(([entry]) => setHeight(Math.max(HEIGHT, Math.floor(entry.contentRect.height))));
+    observer.observe(box.current);
+    return () => observer.disconnect();
+  });
 
   // The steps in the window: the rate in force on its first day (when it started earlier), then
   // each change, sorted and with one step per date
@@ -85,7 +95,7 @@ export const RatePulse = ({
   const rateOn = (date: IsoDate) => [...steps].reverse().find((s) => s.date <= date) ?? steps[0];
 
   return (
-    <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-4`} aria-labelledby="tt-pulse">
+    <section className={`${tt.panel} ${tt.panelPad} flex h-full flex-col gap-4`} aria-labelledby="tt-pulse">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="tt-pulse" className={tt.title}>
@@ -101,8 +111,11 @@ export const RatePulse = ({
         </div>
       </div>
 
+      <div ref={box} className="relative min-h-60 flex-1">
+      {/* Out of the flow, so the chart's own height never stretches the box it measures */}
+      <div className="absolute inset-0">
       <ChartFrame
-        height={HEIGHT}
+        height={height}
         margin={MARGIN}
         label={`Average duty rate over the last 12 months, ${formatRate(today.pct)} today`}
         onLeave={hover.clear}
@@ -182,6 +195,8 @@ export const RatePulse = ({
           );
         }}
       </ChartFrame>
+      </div>
+      </div>
     </section>
   );
 };

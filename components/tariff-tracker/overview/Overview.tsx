@@ -23,6 +23,7 @@ import { Metric, MetricTiles } from "./MetricTiles";
 import { AttentionList } from "./AttentionList";
 import { PulseEvent, RatePulse } from "./RatePulse";
 import { NewsSummary } from "./SummaryBoxes";
+import { TariffHealth } from "./TariffHealth";
 import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // Home (DESIGN_SYSTEM.md §15 "Home"): the header card with the three numbers that sum up the
@@ -164,7 +165,16 @@ export const Overview = () => {
 
       <AttentionList />
 
-      <RatePulse series={data.rateSeries} from={data.yearAgo} to={today} rise={data.rise} drop={data.drop} />
+      {/* The year's rate beside Tariff Health, one height: the row is at least 26rem, grows with
+          Tariff Health if it needs to, and the chart fills what its card leaves it */}
+      <div className="grid gap-module xl:min-h-[26rem] xl:grid-cols-12">
+        <div className="min-w-0 xl:col-span-8">
+          <RatePulse series={data.rateSeries} from={data.yearAgo} to={today} rise={data.rise} drop={data.drop} />
+        </div>
+        <div className="min-w-0 xl:col-span-4">
+          <TariffHealth />
+        </div>
+      </div>
 
       {/* What changed: on the user's imports, and in tariffs at large; one height, each list cut to fit */}
       <div className="grid gap-module xl:h-[26rem] xl:grid-cols-2">
