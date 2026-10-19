@@ -11,15 +11,13 @@ import { downloadReport } from "./export";
 import { ExportMenu } from "./ExportMenu";
 import { ImportsTable } from "./imports/ImportsTable";
 import { TrackedProduct } from "./report";
-import { ReportSummary } from "./ReportSummary";
 import { sectionBySlug } from "./sections";
 import { SectionHeader } from "./shell/SectionPage";
 import { useTracker } from "./TrackerContext";
 
 // The report on the user's imports: the section's header with its actions (the date, export,
-// adding products), a summary, then the imports table (ImportsTable: search, filters, sorting by heading, bulk actions), with a summary
-// of the imports showing. The summary and the export cover what the search and filters let through,
-// in the order shown.
+// adding products), then the imports table (ImportsTable: search, filters, sorting by heading,
+// bulk actions). The export covers what the search and filters let through, in the order shown.
 export const TariffReport = ({
   rows,
   onAdd,
@@ -124,7 +122,6 @@ export const TariffReport = ({
           <DateNotice entryDate={entryDate} onUseVerified={(date) => setEntryDate(date, "verified_notice")} />
           </>
         )}
-        summary={(table) => <ReportSummary rows={table.getRowModel().rows.map((row) => row.original)} />}
       />
     </section>
   );
