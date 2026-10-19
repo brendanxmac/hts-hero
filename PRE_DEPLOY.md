@@ -1,13 +1,24 @@
 # Deploying the PLG / Tariff Tracker release
 
-The release on `release/2026-10-10` (170+ commits since `master`, Oct 8 to Oct 18): the free Tariff
+The release on `release/2026-10-10` (170+ commits since `master`, Oct 8 to Oct 19): the free Tariff
 Calculator rework, the Tariff Tracker with alerts, impact checks, Insights, rate history and
 Tariff News, AD/CVD flags, the tariff sources and updates pipeline, the email outbox and lifecycle
-emails, the 14-day reverse trial, and launch pricing. Work through the steps in order; tick items
-as they land, and add new ones as they come up.
+emails, the 14-day reverse trial, launch pricing, the Content Studio, and a framework upgrade
+(Next 14 → 16, React 18 → 19, Tailwind 3 → 4, ESLint 9, TypeScript 6). Work through the steps in
+order; tick items as they land, and add new ones as they come up.
 
 ## 1. Before merging
 
+- [ ] **Pick the deploy day, then set the dates around it.** `freshStartOn` is `2026-10-20`
+      (tomorrow as of Oct 19): if you deploy later, move it to the real day (see below). The
+      "Coming Oct 2026" label leaves only days in October: change it now if savings and audits
+      won't ship by Oct 31.
+- [ ] **Vercel Node version 20.9 or newer** (Project Settings → Build and Deployment → Node.js
+      Version; 22.x matches local). Next 16 won't build on Node 18.
+- [ ] **A Vercel preview deploy of the branch first.** Push `release/2026-10-10` and open its
+      preview URL: the framework upgrade is the riskiest part of the release, and a preview shows
+      build or runtime breakage before `master` does. Click through the home page, a blog post (MDX
+      3), /duty-calculator and the Tracker there.
 - [ ] **Commit everything except** `.vscode/` and every `app/zz-*` folder (`app/zz-tracker/`,
       `app/zz-adcvd/`: local previews without sign-in). They must never be committed or deployed.
 - [ ] **Set the trial's fresh start to the deploy day**: `REVERSE_TRIAL.freshStartOn` in
@@ -32,6 +43,9 @@ as they land, and add new ones as they come up.
   - [ ] The product page: Overview, Duty, AD/CVD, Compare, History, News.
 
 ## 2. Production database (Supabase, prod project)
+
+- [ ] **Back up prod first** (Database → Backups, or a `pg_dump`). `tariff_tracker_accounts.sql`
+      drops `tracker_trials`, which can't be undone.
 
 Paste each migration into the SQL editor, in this order (foreign keys):
 
@@ -91,6 +105,9 @@ No migration is needed for the 14-day trial: it's worked out from each account's
 - [ ] Every cron in `vercel.json` shows in Vercel: tariff-sources, tariff-updates, adcvd,
       social-ideas, email-outbox, tariff-news, tariff-digest, lifecycle (onboarding and trial
       emails), tracker-snapshots.
+- [ ] **If prod breaks:** Vercel → Deployments → the last `master` deploy → Instant Rollback. The
+      new tables don't bother the old code, but `tracker_trials` is gone, so fix forward on
+      anything Tracker-related rather than rolling back for long.
 
 ## 6. After deploying
 
@@ -114,25 +131,42 @@ No migration is needed for the 14-day trial: it's worked out from each account's
 Everything else runs on its own (collectors, AD/CVD updates, snapshots, onboarding and trial
 emails). These need you:
 
-**Every day or two**
+**Every day (about 15 minutes)**
 
 - [ ] **/tariff-sources: approve impact checks.** Alerts to users about a tariff update go out only
-      after you approve that update's impact check. Updates the pipeline wasn't confident about wait
-      there for review (`needs_review`) before they publish. Confident official ones publish, and
-      their Tariff News emails send, on their own.
-- [ ] **/email-outbox: approve held batches.** Held: the one-time "everything is unlocked" trial
-      email to existing accounts. Sent on their own: onboarding and trial emails, Tariff News, and
-      impact alerts (after your approval above). Spot-check those now and then.
+      after you approve that update's impact check, so this is the step that keeps alerts timely.
+      Updates the pipeline wasn't confident about wait there for review (`needs_review`) before
+      they publish. Confident official ones publish, and their Tariff News emails send, on their own.
+- [ ] **/email-outbox: a glance.** Onboarding and trial emails (daily, 12:00 UTC), Tariff News and
+      impact alerts send on their own; look for failed messages (they aren't retried) and anything
+      that reads wrong.
+- [ ] **/content-studio: today's post.** New ideas land at 11:00 UTC. Pick one, check its numbers
+      against the sources on the post (never post unverified), download, and post to LinkedIn and X
+      by hand: nothing posts for you.
 - [ ] **Replies and leads.** Every lifecycle email is from you and replies reach you; /tariff-audit
       audit requests arrive as an internal notice; HTS Hero Managed intro calls come through your
       Calendly.
+- [ ] **Vercel cron errors.** The 15-minute jobs (tariff-sources, tariff-updates, adcvd,
+      tariff-news) and the 5-minute outbox: a run of failures means alerts and news have stopped.
+
+**Every week**
+
+- [ ] **Monday: approve the weekly digest** in /email-outbox. The `tariff-digest` cron builds it at
+      13:00 UTC and it's the one regular batch held for your review: it doesn't send until you
+      approve it.
+- [ ] **New HTS revisions** (several a month this year): when USITC posts one, run it through the
+      revision checker and `/apply-revision` (local), and new coverage gaps through the coverage
+      checker and `/apply-batch`, as before. Until a revision lands, its rate changes show as news
+      only, not as confirmed duty changes.
+- [ ] **Stripe:** new subscriptions, failed payments, cancellations.
 
 **Every month**
 
 - [ ] **/adcvd: the AI budget and spend.** Set the monthly budget in prod; when it's reached, the AI
       steps pause until next month (regex linking keeps going). The Problems tab retries itself,
       with nothing to do. If the AD/CVD updates stop running, an internal notice email tells you.
-- [ ] **New HTS revisions** through the revision checker and coverage checker (local), as before.
+- [ ] **Anthropic spend** for the tariff-updates pipeline and the Content Studio ideas (about 5¢ a
+      day).
 
 **On a date**
 

@@ -519,11 +519,21 @@ Soft tints are the role color at the given opacity, for chips and highlight pane
 
 ### Type
 
-Sora (600) for headlines and every big number; Figtree (400–700) for everything else; tabular figures everywhere. metrics 26–32, card titles 18, body and rows 14, captions 12–13 muted, eyebrows 11–12 bold with +6% tracking in the role color.
+Sora (600) for headlines and every big number; Figtree (400–700) for everything else; tabular figures everywhere. Five text roles, and at most three sizes on one screen (`components/ui/styles/tracker.ts`): **page title** Sora 28 (`tt.pageTitle`, one per page), **module title** Sora 18 (`tt.moduleTitle`, a card's title), **section title** Figtree 15 semibold (`tt.sectionTitle`, a group inside a module), **body** 14 (`tt.body`) and **caption** 12 muted (`tt.caption`). Numbers in three sizes only: the one hero figure of a view 40 (`tt.metricLg`), key figures 28 (`tt.metric`), figures inline or beside a bigger one 18 (`tt.metricSm`). Uppercase eyebrows (`tt.eyebrow`) only over key numbers and as a page's kicker, never on every section. Muted text is 60–70% of the text color, never below 50% for words.
 
 ### Shape and space
 
 Radii: cards and the sidebar 20 (`rounded-lg` here); tiles, notices, dropzones and nav items 12 (`rounded-xl`); buttons and chips full pills. Page gutter and card gaps 16; card padding 20–24 (`px-5 sm:px-6`); tile padding 16–18. Buttons and nav items 40–44 tall. Cards have a 1px border and the Tracker's two-layer shadow (`--tt-shadow`); floating things (dialogs, popovers, locked overlays) cast a bigger one.
+
+**Space in three tiers** (`@theme` in `app/globals.css`): within a group 4–12px; between groups inside a module 24px (`gap-group`, each group with a section title); between modules on the ground 16px (`gap-module`) and between page sections 40px (`gap-page`). The space between groups is always clearly bigger than the space inside them, so groups read without lines. Rows of cards size to their content: never stretch a card to the tallest in its row (pair cards whose content is similar in height instead).
+
+### Page frame
+
+Every page opens the same way (`shell/SectionPage`, `SectionHeader`): its title (`tt.pageTitle`), one line on what it's for (the Overview's line is the day and how many imports it covers), its own actions on the right, then its modules. Above the title there is one status slot (the plan banner: the trial ending or ended, the free checks used), never more than one strip at a time.
+
+### When to use a box
+
+`components/ui/Module`: a **Module** is a card, for one thing that stands on its own and could move (a set of key numbers, the Duty Breakdown, Possible Adjustments, a chart, a list); **Modules** stacks them with `gap-module` of ground between. Inside a module, groups are made with space and a section title, never another card. A container fill (`tt.tile`, `ui.notice`) only marks a total, a tip, a selected row or a callout. Never a card inside a card, or a tinted box inside a tinted box. A table is never boxed inside a module: the module is its frame. Grouping by space comes first (NN/g: proximity is the strongest cue); a box is for what spacing can't group.
 
 ### Components
 

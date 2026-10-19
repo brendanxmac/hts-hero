@@ -6,6 +6,20 @@ layer(base);
 @config '../tailwind.config.js';
 
 /*
+  Space in three tiers (DESIGN_SYSTEM.md §15 "Shape and space"): within a group 4–12px (Tailwind's
+  own steps), then these. The space between groups is always clearly bigger than the space inside
+  them, so groups read without lines.
+*/
+@theme {
+  /* between modules (cards) on the ground */
+  --spacing-module: 1rem;
+  /* between groups inside a module, each with its own title */
+  --spacing-group: 1.5rem;
+  /* between a page's header and its content, and between page sections */
+  --spacing-page: 2.5rem;
+}
+
+/*
   daisyUI. The light and dark themes keep the colors and shapes of daisyUI 4's light and dark
   (with white text on primary, secondary and accent in light), so pages outside .hts-theme look
   as they did. .hts-theme pages take the palette instead (components/ui/theme/plugin.js).

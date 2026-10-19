@@ -13,7 +13,9 @@ import { useInsights } from "../insights/InsightsContext";
 import { changesTeaser } from "../insights/teasers";
 import { BeyondPlanTeaser } from "../plan";
 import { shortProgram } from "../report";
+import { SectionHeader } from "../shell/SectionPage";
 import { useTrackerNav } from "../shell/TrackerNav";
+import { SECTIONS } from "../sections";
 import { useTracker } from "../TrackerContext";
 import { EmptyOverview } from "./EmptyOverview";
 import { ExposureMap } from "./ExposureMap";
@@ -35,6 +37,7 @@ import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 // The value on a date in a series of steps
 // A cell of a side-by-side row: its panel fills the cell, so the row's panels are one height
 const ROW = "flex flex-col *:flex-1";
+const OVERVIEW = SECTIONS.find((s) => s.slug === "overview")!;
 
 const valueOn = <T extends { date: string }>(series: T[], date: string) => [...series].reverse().find((p) => p.date <= date) ?? series[0];
 
@@ -154,9 +157,12 @@ export const Overview = () => {
   const open = (key: string) => nav.openProduct(key);
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* No visible title: the page opens on the tariff news */}
-      <h1 className="sr-only">Overview</h1>
+    <div className="flex flex-col gap-module">
+      {/* The page frame like every page's, its line the day and how many imports it covers */}
+      <SectionHeader
+        section={OVERVIEW}
+        summary={`${new Date(`${today}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })} · ${t.items.length.toLocaleString("en-US")} ${t.items.length === 1 ? "import" : "imports"}`}
+      />
       <NextStep />
       {/* On a plan: what the imports it doesn't cover could add */}
       {/* <BeyondPlanTeaser compact /> */}

@@ -18,15 +18,24 @@ export const tile = "rounded-xl bg-tt-soft";
 // Sora, for headlines and every big number
 export const display = trackerDisplay.className;
 
-// A panel's title, and the line under it
+// Text roles (DESIGN_SYSTEM.md §15 "Type"): five, and at most three sizes on a screen.
+// A page's title (one per page, in its header)
+export const pageTitle = `${display} m-0 text-[1.75rem] font-semibold leading-tight tracking-tight text-base-content`;
+// A module's (a card's) title, and the line under it
 export const title = `${display} text-lg font-semibold text-base-content`;
+export const moduleTitle = title;
 export const subtitle = "text-sm text-base-content/70";
+// A group's title inside a module: Figtree, not Sora, so it sits under the module's
+export const sectionTitle = "m-0 text-[0.9375rem] font-semibold text-base-content";
+// Running text and the small print
+export const body = "text-sm text-base-content/80";
+export const caption = "text-xs text-base-content/60";
 
-// Big numbers
+// Numbers, in three sizes only: the one hero figure of a view (40), key figures (28), and figures
+// inline or beside a bigger one (18)
+export const metricLg = `${display} text-[2.5rem] font-semibold leading-none tabular-nums text-base-content`;
 export const metric = `${display} text-[1.75rem] font-semibold leading-tight tabular-nums text-base-content`;
-export const metricLg = `${display} text-4xl font-semibold leading-none tabular-nums text-base-content`;
-// A smaller figure beside a big one (a stat row's other numbers)
-export const metricSm = `${display} text-xl font-semibold leading-tight tabular-nums text-base-content`;
+export const metricSm = `${display} text-lg font-semibold leading-tight tabular-nums text-base-content`;
 
 const EYEBROW_TONES: Record<Tone, string> = {
   primary: "text-primary",
