@@ -299,7 +299,7 @@ export const ImportTakeover = () => {
     setTimeout(refreshAccess, 7000);
   };
 
-  const skip = (reason: SkipReason, note: string) => {
+  const skip = (reason: SkipReason | null, note: string) => {
     void save({ action: "skip", reason, note });
     trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_SKIPPED, {
       reason,

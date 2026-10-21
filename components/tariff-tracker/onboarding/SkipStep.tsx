@@ -1,11 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { Dialog } from "@headlessui/react";
+import { Crisp } from "crisp-sdk-web";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  ChatBubbleLeftRightIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
+import config from "@/config";
+import { trackerSans } from "@/components/ui/font";
+import { THEME } from "@/components/ui/theme";
 import * as tt from "@/components/ui/styles/tracker";
 import * as ui from "@/components/ui/styles";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
@@ -14,8 +20,9 @@ import { SKIP_REASONS, SkipReason } from "@/libs/tariff-tracker/onboarding";
 import { delay } from "./parts";
 
 // "Skip for now": not a door out but a last word. What the Tracker can't do without their
-// imports, that the trial is waiting on them, and why they're skipping (one tap, needed to go on):
-// it tells us what's in the way, and "not sure what an import is" goes back to the explainer.
+// imports and that the trial is waiting on them, then the two choices side by side. Skipping opens
+// a popup asking why, optionally (it tells us what's in the way; "not sure what an import is" goes
+// back to the explainer), with a way to talk to us in the support chat instead.
 
 const WITHOUT = [
   "Alert you the day a tariff change hits one of your products",
@@ -34,10 +41,9 @@ export const SkipStep = ({
   backLabel: string;
   onBack: () => void;
   onExplain: () => void;
-  onSkip: (reason: SkipReason, note: string) => void;
+  onSkip: (reason: SkipReason | null, note: string) => void;
 }) => {
-  const [reason, setReason] = useState<SkipReason | null>(null);
-  const [note, setNote] = useState("");
+  const [asking, setAsking] = useState(false);
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-7">
@@ -92,53 +98,13 @@ export const SkipStep = ({
         </li>
       </ul>
 
-      <fieldset
-        className="tt-ob-rise m-0 flex flex-col gap-3 border-0 p-0"
-        style={delay(260)}
-      >
-        <legend className="mb-3 text-sm font-semibold text-base-content">
-          What&apos;s stopping you right now?
-        </legend>
-        <div className="flex flex-wrap gap-2">
-          {SKIP_REASONS.map((r) => (
-            <button
-              key={r.id}
-              type="button"
-              aria-pressed={reason === r.id}
-              onClick={() =>
-                r.id === "what_is_import" ? onExplain() : setReason(r.id)
-              }
-              className={`rounded-full border px-3.5 py-2 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
-                reason === r.id
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-base-300 bg-base-100 text-base-content/80 hover:border-base-content/30"
-              }`}
-            >
-              {r.label}
-            </button>
-          ))}
-        </div>
-        {reason && reason !== "looking" && (
-          <textarea
-            className={`${ui.textarea} tt-enter min-h-20 text-sm`}
-            placeholder={
-              reason === "someone_else"
-                ? "Who handles it? We can help you get the list from them."
-                : "Anything we could make easier? (optional)"
-            }
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
-        )}
-      </fieldset>
-
       <div
-        className="tt-ob-rise flex flex-wrap items-center gap-3"
-        style={delay(320)}
+        className="tt-ob-rise grid grid-cols-1 gap-3 sm:grid-cols-2"
+        style={delay(260)}
       >
         <button
           type="button"
-          className={`${ui.button({ variant: "primary", size: "lg" })} px-7`}
+          className={`${ui.button({ variant: "primary", size: "lg" })} w-full justify-center`}
           onClick={onBack}
           autoFocus
         >
@@ -147,18 +113,148 @@ export const SkipStep = ({
         </button>
         <button
           type="button"
-          className={ui.button({ variant: "secondary", size: "lg" })}
-          disabled={!reason}
-          onClick={() => reason && onSkip(reason, note)}
+          className={`${ui.button({ variant: "secondary", size: "lg" })} w-full justify-center`}
+          onClick={() => setAsking(true)}
         >
           Skip for now
         </button>
-        {!reason && (
-          <span className="text-xs text-base-content/60">
-            Pick a reason to skip
-          </span>
-        )}
       </div>
+
+      <SkipReasonDialog
+        open={asking}
+        onClose={() => setAsking(false)}
+        onExplain={() => {
+          setAsking(false);
+          onExplain();
+        }}
+        onSkip={onSkip}
+      />
     </div>
+  );
+};
+
+// Opens Crisp over the Tracker (it can be hidden on some routes, config.crisp)
+const openSupportChat = () => {
+  if (config.crisp?.id) {
+    Crisp.chat.show();
+    Crisp.chat.open();
+  } else if (config.resend?.supportEmail) {
+    window.open(`mailto:${config.resend.supportEmail}?subject=Help adding my imports`, "_blank");
+  }
+};
+
+// Why they're skipping, if they'd like to say (never required), or talk to us instead. Above the
+// takeover (z-[70]), so it sits at z-[80] and carries the Tracker's look itself.
+const SkipReasonDialog = ({
+  open,
+  onClose,
+  onExplain,
+  onSkip,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onExplain: () => void;
+  onSkip: (reason: SkipReason | null, note: string) => void;
+}) => {
+  const [reason, setReason] = useState<SkipReason | null>(null);
+  const [note, setNote] = useState("");
+
+  return (
+    <Dialog open={open} onClose={onClose} className="relative z-[80]">
+      <div className="fixed inset-0 bg-black/50" aria-hidden />
+      <div className="fixed inset-0 flex items-center justify-center p-4">
+        <Dialog.Panel
+          className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} relative flex max-h-[92vh] w-full max-w-lg flex-col gap-5 overflow-y-auto p-6 shadow-2xl sm:p-7`}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-4 top-4 rounded-full p-1.5 text-base-content/60 hover:bg-tt-soft hover:text-base-content"
+          >
+            <XMarkIcon className="h-5 w-5" aria-hidden />
+            <span className="sr-only">Close</span>
+          </button>
+
+          <div className="flex flex-col gap-2 pr-6">
+            <Dialog.Title className={`${tt.display} m-0 text-2xl font-semibold leading-tight text-base-content`}>
+              Anything in the way?
+            </Dialog.Title>
+            <p className="m-0 text-sm leading-relaxed text-base-content/70">
+              Optional, but it helps us make this easier. Pick one if it fits, or just skip.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {SKIP_REASONS.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                aria-pressed={reason === r.id}
+                onClick={() =>
+                  r.id === "what_is_import"
+                    ? onExplain()
+                    : setReason(reason === r.id ? null : r.id)
+                }
+                className={`rounded-full border px-3.5 py-2 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                  reason === r.id
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-base-300 bg-base-100 text-base-content/80 hover:border-base-content/30"
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+          {reason && reason !== "looking" && (
+            <textarea
+              className={`${ui.textarea} tt-enter min-h-20 text-sm`}
+              placeholder={
+                reason === "someone_else"
+                  ? "Who handles it? We can help you get the list from them."
+                  : "Anything we could make easier? (optional)"
+              }
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          )}
+
+          <div className="flex items-start gap-3 rounded-xl border border-base-300 bg-tt-soft p-4">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden>
+              <ChatBubbleLeftRightIcon className="h-5 w-5" />
+            </span>
+            <div className="flex flex-1 flex-col gap-2">
+              <p className="m-0 text-sm leading-relaxed text-base-content/80">
+                <span className="font-semibold text-base-content">Stuck, or not sure where to start?</span> Talk to us. We&apos;ll help you get your imports in.
+              </p>
+              <button
+                type="button"
+                className={`${ui.button({ variant: "secondary", size: "sm" })} self-start`}
+                onClick={openSupportChat}
+              >
+                <ChatBubbleLeftRightIcon className="h-4 w-4" aria-hidden />
+                Chat with support
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              className={`${ui.button({ variant: "secondary", size: "md" })} w-full justify-center`}
+              onClick={onClose}
+            >
+              Back to setup
+            </button>
+            <button
+              type="button"
+              className={`${ui.button({ variant: "primary", size: "md" })} w-full justify-center`}
+              onClick={() => onSkip(reason, note)}
+            >
+              Skip for now
+            </button>
+          </div>
+        </Dialog.Panel>
+      </div>
+    </Dialog>
   );
 };

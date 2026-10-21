@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 // The signed-in account's import onboarding (tracker_onboarding), written here only:
 //   {action: "visit"}                    the Tracker opened: the first time is kept (the no-imports
 //                                        emails count from it)
-//   {action: "skip", reason, note?}      "Skip for now" on the import takeover, and why
+//   {action: "skip", reason?, note?}     "Skip for now" on the import takeover, and why if they said
 //   {action: "signup", redirect}         a sign-up by typed code (no auth callback): its source,
 //                                        for an account made in the last hour
 // The trial start isn't written here: a trigger on tracker_catalogs sets it.
@@ -30,10 +30,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    if (body?.action === "skip" && isSkipReason(body.reason)) {
+    // The reason is optional ("Skip for now" asks, but never requires one)
+    if (body?.action === "skip" && (body.reason == null || isSkipReason(body.reason))) {
       await ensure();
       const note = typeof body.note === "string" ? body.note.trim().slice(0, 500) || null : null;
-      const { error } = await db.from("tracker_onboarding").update({ skipped_at: now, skip_reason: body.reason, skip_note: note, updated_at: now }).eq("user_id", user.id);
+      const { error } = await db.from("tracker_onboarding").update({ skipped_at: now, skip_reason: body.reason ?? null, skip_note: note, updated_at: now }).eq("user_id", user.id);
       if (error) throw error;
       return NextResponse.json({ ok: true });
     }
