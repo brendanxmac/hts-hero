@@ -114,9 +114,12 @@ and the scope reader fail on the missing column.
 - [ ] **Vercel env (Production):** new in this release: `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`,
       `CENSUS_API_KEY` (Content Studio's Census check). Confirm these are set: `ANTHROPIC_API_KEY`
       (AD/CVD, tariff updates, Content Studio), `CRON_SECRET`, `BASE_URL` = the live site (email
-      links), `RESEND_API_KEY`. Leave out `HTS_REVISION_TOOL_ENABLED` (the revision checker is
-      local-only) and `TARIFF_SCOPE_READER` / `DATALAB_API_KEY` (prod reads scopes from the PDFs
-      with Claude; set both only to switch prod to the datalab reader).
+      links), `RESEND_API_KEY`. Add `DATALAB_API_KEY` too: unused until `TARIFF_SCOPE_READER=datalab`
+      switches prod's scope reader to datalab (an env change needs a redeploy to take effect).
+      Leave out `HTS_REVISION_TOOL_ENABLED` (the revision checker is local-only). No new Stripe env
+      vars: Tracker prices are found by lookup key; check the live webhook endpoint sends
+      `checkout.session.completed`, `checkout.session.expired`, `customer.subscription.updated`,
+      `customer.subscription.deleted`, `invoice.paid` and `invoice.payment_failed`.
 - [ ] **Slack app (HTS Hero):** Redirect URLs include `https://htshero.com/api/slack/callback`,
       public distribution is activated, and the logo is uploaded. Vercel env has
       `SLACK_CLIENT_ID` and `SLACK_CLIENT_SECRET`. Then run Add to Slack once on the live site.
