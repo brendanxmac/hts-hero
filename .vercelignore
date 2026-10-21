@@ -1,0 +1,7 @@
+# Never uploaded by `vercel deploy` from this folder (Git deploys only see committed files anyway)
+.env*
+!.env.example
+/app/zz-*/
+.vscode/
+.next/
+node_modules/
