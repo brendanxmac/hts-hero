@@ -1,3 +1,4 @@
+import type React from "react";
 import { getHtsElementParents } from "./hts-parents";
 import { ChatCompletion } from "openai/resources";
 import {
@@ -35,7 +36,7 @@ import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
 import { TariffColumn } from "../enums/tariff";
-import { NavigatableElement } from "../components/Elements";
+import { NavigatableElement } from "../components/hts-explorer/types";
 import { generateClassificationReport } from "./classification";
 import { SecondaryText } from "../components/SecondaryText";
 import { TertiaryLabel } from "../components/TertiaryLabel";
@@ -333,7 +334,7 @@ export const getTemporaryTariffs = async (
 
   // otherwise, try to get as much tariff info as possible for each
   // tariff footnote spefified for the given HTS Element
-  let tariffs: TemporaryTariff[] = tariffFootnotes.map((f) => ({
+  const tariffs: TemporaryTariff[] = tariffFootnotes.map((f) => ({
     description: f.value,
   }));
 
@@ -714,7 +715,7 @@ export const getBestIndentLevelMatch = async (
   indentLevel: number,
   selectionProgression: ClassificationProgression[] = []
 ): Promise<ClassificationProgression[]> => {
-  let elementsAtIndent = elementsAtClassificationLevel(elements, indentLevel);
+  const elementsAtIndent = elementsAtClassificationLevel(elements, indentLevel);
   const descriptionsForElements = getHtsElementDescriptions(elementsAtIndent);
   const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
     "/openai/get-best-description-match",
@@ -1222,7 +1223,7 @@ export function getBaseTariffs(input: string): ParsedBaseTariff {
 export const getTemporaryTariffTextElement = (
   element: HtsElement,
   tariffColumn: TariffColumn
-): JSX.Element | null => {
+): React.JSX.Element | null => {
   const footnotes = getFootnotesForTariffType(element, tariffColumn);
 
   if (!footnotes.length) {

@@ -2,7 +2,7 @@
 
 // Text inputs, and wrappers that hold an input (add "flex items-center gap-2")
 export const input =
-  "h-10 w-full rounded-md border border-base-content/20 bg-base-100 px-3 text-sm text-base-content shadow-sm outline-none transition-colors placeholder:text-base-content/60 hover:border-base-content/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20";
+  "h-10 w-full rounded-md border border-base-content/20 bg-base-100 px-3 text-sm text-base-content shadow-xs outline-hidden transition-colors placeholder:text-base-content/60 hover:border-base-content/30 focus:border-primary focus:ring-2 focus:ring-primary/20 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20";
 
 // In dense rows
 export const inputSm = input.replace("h-10", "h-8");

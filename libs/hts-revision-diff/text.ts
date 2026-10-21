@@ -116,18 +116,25 @@ const revisionName = (year: string, revision: string | undefined) =>
 
 // The revision a converted PDF says it is: "Revision 6 (2026)",
 // "(2026 Revision 6)", "Basic Edition (2026)"…, and for a change record, the
-// revision it follows ("updates made to the HTS after 2026 Revision 5")
+// revision it follows ("updates made to the HTS after 2026 Revision 5").
+// A Basic edition's title has no revision number ("Harmonized Tariff Schedule of the
+// United States (2026)"), and its change record is cumulative: "updates made to the HTS
+// since the last printed edition (2025 Basic Edition)" names the edition it doesn't follow
+// directly, so it's neither its name nor its previous revision
 export const detectRevision = (markdown: string) => {
   const head = markdown.slice(0, 6000)
+  // A mention of an earlier edition, not the document's own
+  const isReference = (index: number) => /(?:after|since)\b[^.]{0,80}$/i.test(head.slice(Math.max(0, index - 80), index))
   const patterns: [RegExp, (m: RegExpMatchArray) => string][] = [
-    [/Revision\s+(\d+)\s*\((\d{4})\)/i, (m) => revisionName(m[2], m[1])],
-    [/\((\d{4})\s+Revision\s+(\d+)\)/i, (m) => revisionName(m[1], m[2])],
-    [/Basic\s+Edition\s*\((\d{4})\)/i, (m) => revisionName(m[1], undefined)],
-    [/\((\d{4})\s+Basic\s+Edition\)/i, (m) => revisionName(m[1], undefined)],
+    [/Revision\s+(\d+)\s*\((\d{4})\)/gi, (m) => revisionName(m[2], m[1])],
+    [/\((\d{4})\s+Revision\s+(\d+)\)/gi, (m) => revisionName(m[1], m[2])],
+    [/Basic\s+Edition\s*\((\d{4})\)/gi, (m) => revisionName(m[1], undefined)],
+    [/\((\d{4})\s+Basic\s+Edition\)/gi, (m) => revisionName(m[1], undefined)],
+    [/Harmonized\s+Tariff\s+Schedule\s+of\s+the\s+United\s+States\s*\((\d{4})\)/gi, (m) => revisionName(m[1], undefined)],
   ]
   let name: string | null = null
   for (const [pattern, toName] of patterns) {
-    const m = head.match(pattern)
+    const m = Array.from(head.matchAll(pattern)).find((x) => !isReference(x.index!))
     if (m) {
       name = toName(m)
       break
@@ -170,4 +177,51 @@ export const formatRange = (r: HtsRange) => `${r.from}–${r.to}`
 export const inRange = (code: string, r: HtsRange) => {
   const k = htsSortKey(code)
   return k >= htsSortKey(r.from) && k <= r.to.replace(/\D/g, "").padEnd(10, "9")
+}
+
+// ---------- Cumulative change records ----------
+
+// A Basic edition's change record is cumulative: it lists every change since the last printed
+// edition, with an Edition column naming the revision that made it ("Rev 16", …, "2026"). Only the
+// rows the Basic edition itself made (Edition = its year) are changes from the revision before it;
+// the rest were already in that revision. Rows that wrap onto a second line have a blank Edition
+// cell and go with the row above. Other change records, and tables without an Edition column, are
+// returned as is.
+export const ownEditionRows = (markdown: string, revisionName: string) => {
+  const basic = revisionName.match(/^(\d{4})HTSBasic$/)
+  if (!basic) return { markdown, kept: null, dropped: 0 }
+  const year = basic[1]
+  const cells = (line: string) => line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.replace(/<[^>]+>/g, "").trim())
+  const isSeparator = (line: string) => /^\|\s*:?-{3,}/.test(line.trim())
+  let editionColumn = -1
+  let keeping = true
+  let kept = 0
+  let dropped = 0
+  const out: string[] = []
+  for (const line of markdown.split("\n")) {
+    if (!line.trim().startsWith("|")) {
+      editionColumn = -1
+      keeping = true
+      out.push(line)
+      continue
+    }
+    const row = cells(line)
+    const header = row.findIndex((c) => /^edition$/i.test(c))
+    if (header >= 0) {
+      editionColumn = header
+      out.push(line)
+      continue
+    }
+    if (editionColumn < 0 || isSeparator(line)) {
+      out.push(line)
+      continue
+    }
+    const edition = row[editionColumn] ?? ""
+    if (edition) keeping = edition === year
+    if (keeping) {
+      if (edition) kept++
+      out.push(line)
+    } else if (edition) dropped++
+  }
+  return { markdown: out.join("\n"), kept, dropped }
 }

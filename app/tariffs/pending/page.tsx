@@ -34,7 +34,7 @@ export default function Home() {
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-base-content mb-4">
               Pending Tariffs Tracker
             </h1>
-            <p className="text-base lg:text-lg text-base-content/70 max-w-3xl leading-relaxed">
+            <p className="text-base lg:text-lg lg:leading-7 text-base-content/70 max-w-3xl leading-relaxed">
               Stay informed about upcoming tariff announcements and their
               potential impact on your imports. Track the status of proposed
               tariffs from initial mention through investigation to publication.

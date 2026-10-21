@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server"
 import { requireRevisionTool } from "@/libs/hts-revision-diff/access"
 import { RevisionDiffTables as T } from "@/libs/hts-revision-diff/constants"
-import { headingRowsFingerprint, loadHeadingRows } from "@/libs/hts-revision-diff/headings"
+import {
+  headingRowsFingerprint,
+  headingsUsedByChanges,
+  loadHeadingRows,
+  unreviewedHeadings,
+} from "@/libs/hts-revision-diff/headings"
 import { loadAttempt } from "@/libs/hts-revision-diff/pipeline"
 import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 import type { ComparisonStats } from "@/libs/hts-revision-diff/types"
 
 export const dynamic = "force-dynamic"
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {
@@ -23,22 +29,37 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
     const from = await loadAttempt(db, comparison.data.from_attempt_id)
     const to = await loadAttempt(db, comparison.data.to_attempt_id)
+    const [fromRows, toRows] = await Promise.all([loadHeadingRows(db, from.attempt.id), loadHeadingRows(db, to.attempt.id)])
 
-    // Have the newer attempt's reviewed heading rows changed since this was built?
+    // Headings the changes rely on whose rows aren't reviewed yet: they must be before pulling
+    const used = headingsUsedByChanges(changes.data ?? [])
+    const unreviewedInChanges = { from: unreviewedHeadings(fromRows, used), to: unreviewedHeadings(toRows, used) }
+
+    // Have either attempt's heading rows changed since this was built?
     // Only matters when cited headings come from those rows (no Chapter 99 JSON).
     // Comparisons built before fingerprints were saved fall back to comparing counts.
     const stats = comparison.data.stats as ComparisonStats | null
     let headingRowsChanged = false
     if (comparison.data.status === "ready" && stats && stats.headingSource !== "revision_json") {
-      const rows = await loadHeadingRows(db, to.attempt.id)
       headingRowsChanged = stats.headingRowsFingerprint
-        ? stats.headingRowsFingerprint !== headingRowsFingerprint(rows)
-        : (stats.headingSource === "none" && rows.some((r) => r.reviewed)) ||
-          (stats.unreviewedHeadingRows ?? 0) !== rows.filter((r) => !r.reviewed).length
+        ? stats.headingRowsFingerprint !== headingRowsFingerprint(toRows)
+        : (stats.headingSource === "none" && toRows.length > 0) ||
+          (stats.unreviewedHeadingRows ?? 0) !== toRows.filter((r) => !r.reviewed).length
+    }
+    // The same for the older attempt's rows (the "before" of cited headings).
+    // Comparisons built before these were saved aren't checked.
+    if (
+      !headingRowsChanged &&
+      comparison.data.status === "ready" &&
+      stats?.fromHeadingRowsFingerprint &&
+      stats.fromHeadingSource !== "revision_json"
+    ) {
+      headingRowsChanged = stats.fromHeadingRowsFingerprint !== headingRowsFingerprint(fromRows)
     }
 
     return NextResponse.json({
       headingRowsChanged,
+      unreviewedInChanges,
       comparison: comparison.data,
       changes: changes.data,
       from: { revision: from.revision, attemptNumber: from.attempt.attempt_number },

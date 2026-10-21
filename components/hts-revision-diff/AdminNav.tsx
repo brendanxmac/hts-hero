@@ -6,6 +6,10 @@ import { usePathname } from "next/navigation"
 const TOOLS = [
   { href: "/revision-checker", label: "Revision checker" },
   { href: "/coverage-checker", label: "Coverage checker" },
+  { href: "/tariff-sources", label: "Tariff sources" },
+  { href: "/adcvd", label: "AD/CVD" },
+  { href: "/email-outbox", label: "Outbox" },
+  { href: "/content-studio", label: "Content Studio" },
 ]
 
 // Switches between the admin tools that share AdminShell

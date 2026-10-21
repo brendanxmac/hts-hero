@@ -4,6 +4,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import toast from "react-hot-toast"
+import { Select } from "@/components/ui/Select"
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table"
 import { HtsRevisions } from "@/tariffs/engine-v2/revisions"
 import {
   DOCUMENT_KINDS,
@@ -31,7 +33,6 @@ import {
   Panel,
   Pill,
   ProgressBar,
-  selectCls,
   Spinner,
   StatusDot,
 } from "./ui"
@@ -152,7 +153,7 @@ export default function RevisionCheckerHome() {
             <li>Review every change: approve, defer or skip, with notes for Claude Code.</li>
             <li>
               When every change has a decision, write the review into the repo:{" "}
-              <code className="rounded bg-base-content/[0.06] px-1 font-mono text-xs">npm run pull-revision -- &lt;revision&gt;</code>
+              <code className="rounded-sm bg-base-content/[0.06] px-1 font-mono text-xs">npm run pull-revision -- &lt;revision&gt;</code>
             </li>
           </ol>
         </Help>
@@ -164,66 +165,58 @@ export default function RevisionCheckerHome() {
             {comparable.length < 2 ? "Upload and parse two revisions, then compare them." : "Start one with “New comparison”."}
           </EmptyState>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-base-content/10 text-left text-xs font-medium text-base-content/50">
-                  <th className="px-4 py-2 font-medium">Comparison</th>
-                  <th className="px-4 py-2 font-medium">Status</th>
-                  <th className="w-56 px-4 py-2 font-medium">Reviewed</th>
-                  <th className="px-4 py-2 font-medium">Created</th>
-                  <th className="w-8" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-base-content/[0.07]">
-                {data.comparisons.map((c) => {
-                  const p = data.progress[c.id]
-                  const from = revisionName(c.from_attempt_id)
-                  const to = revisionName(c.to_attempt_id)
-                  const href = `/revision-checker/comparisons/${c.id}`
-                  return (
-                    <tr
-                      key={c.id}
-                      className="group cursor-pointer transition-colors hover:bg-base-content/[0.025]"
-                      onClick={() => router.push(href)}
-                    >
-                      <td className="px-4 py-3">
-                        <Link href={href} className="flex flex-wrap items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                          <span className="font-mono text-[13px] font-medium">
-                            {from?.name ?? "?"} <span className="text-base-content/35">→</span> {to?.name ?? "?"}
+          <Table label="Comparisons" framed={false}>
+            <THead>
+              <Tr>
+                <Th>Comparison</Th>
+                <Th>Status</Th>
+                <Th className="w-56">Reviewed</Th>
+                <Th>Created</Th>
+                <Th className="w-8" />
+              </Tr>
+            </THead>
+            <TBody>
+              {data.comparisons.map((c) => {
+                const p = data.progress[c.id]
+                const from = revisionName(c.from_attempt_id)
+                const to = revisionName(c.to_attempt_id)
+                const href = `/revision-checker/comparisons/${c.id}`
+                return (
+                  <Tr key={c.id} className="group" onClick={() => router.push(href)}>
+                    <RowHeader>
+                      <Link href={href} className="flex flex-wrap items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        <span className="font-mono text-[13px] font-medium">
+                          {from?.name ?? "?"} <span className="text-base-content/35">→</span> {to?.name ?? "?"}
+                        </span>
+                        {c.stats?.consecutive === false && <Pill tone="warning">Not consecutive</Pill>}
+                      </Link>
+                      <div className="mt-0.5 text-xs text-base-content/45">
+                        Attempts #{from?.attempt ?? "?"} → #{to?.attempt ?? "?"}
+                      </div>
+                    </RowHeader>
+                    <Td>
+                      <StatusBadge status={c.status} />
+                      {c.error && <div className="mt-1 max-w-xs truncate text-xs text-error" title={c.error}>{c.error}</div>}
+                    </Td>
+                    <Td>
+                      {p ? (
+                        <div className="flex items-center gap-3">
+                          <ProgressBar value={p.decided} max={p.total} className="flex-1" />
+                          <span className="w-16 text-right text-xs tabular-nums text-base-content/60">
+                            {p.decided} / {p.total}
                           </span>
-                          {c.stats?.consecutive === false && <Pill tone="warning">Not consecutive</Pill>}
-                        </Link>
-                        <div className="mt-0.5 text-xs text-base-content/45">
-                          Attempts #{from?.attempt ?? "?"} → #{to?.attempt ?? "?"}
                         </div>
-                      </td>
-                      <td className="px-4 py-3 align-top">
-                        <div className="pt-0.5">
-                          <StatusBadge status={c.status} />
-                        </div>
-                        {c.error && <div className="mt-1 max-w-xs truncate text-xs text-error" title={c.error}>{c.error}</div>}
-                      </td>
-                      <td className="px-4 py-3">
-                        {p ? (
-                          <div className="flex items-center gap-3">
-                            <ProgressBar value={p.decided} max={p.total} className="flex-1" />
-                            <span className="w-16 text-right text-xs tabular-nums text-base-content/60">
-                              {p.decided} / {p.total}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-base-content/30">—</span>
-                        )}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-xs text-base-content/55">{formatTime(c.created_at)}</td>
-                      <td className="pr-4 text-base-content/30 group-hover:text-base-content/70">→</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+                      ) : (
+                        <span className="text-base-content/30">—</span>
+                      )}
+                    </Td>
+                    <Td className="whitespace-nowrap text-xs text-base-content/55">{formatTime(c.created_at)}</Td>
+                    <Td className="text-base-content/30 group-hover:text-base-content/70">→</Td>
+                  </Tr>
+                )
+              })}
+            </TBody>
+          </Table>
         )}
       </Panel>
 
@@ -429,7 +422,7 @@ function AttemptRowView({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pl-0 text-xs sm:pl-[11.25rem]">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pl-0 text-xs sm:pl-45">
         {docs.map((doc) => (
           <span
             key={doc.id}
@@ -576,7 +569,7 @@ function UploadModal({ open, onClose, busy, run }: { open: boolean; onClose: () 
               <input
                 type="file"
                 accept={kind === "ch99_json" ? ".json,application/json" : ".pdf,application/pdf"}
-                className="file-input file:normal-case file:font-medium file-input-sm file-input-bordered w-full border-base-content/15"
+                className="file-input file:normal-case file:font-medium file-input-sm w-full border-base-content/15"
                 onChange={(e) => setFiles((f) => ({ ...f, [kind]: e.target.files?.[0] }))}
               />
             </Field>
@@ -635,13 +628,15 @@ function CompareModal({
     })
 
   const select = (value: string, onChange: (id: string) => void) => (
-    <select className={`${selectCls} w-full font-mono`} value={value} onChange={(e) => onChange(e.target.value)}>
-      {ready.map((r) => (
-        <option key={r.id} value={r.id}>
-          {r.name}
-        </option>
-      ))}
-    </select>
+    <Select
+      size="sm"
+      className="w-full"
+      buttonClassName="font-mono"
+      menuClassName="font-mono"
+      value={value}
+      onChange={onChange}
+      options={ready.map((r) => ({ value: r.id, label: r.name }))}
+    />
   )
 
   return (

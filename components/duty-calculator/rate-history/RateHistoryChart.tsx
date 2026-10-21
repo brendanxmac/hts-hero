@@ -93,7 +93,7 @@ export const RateHistoryChart = ({
   return (
     <div
       ref={ref}
-      className="relative select-none outline-none rounded-md focus-visible:ring-2 focus-visible:ring-primary"
+      className="relative select-none outline-hidden rounded-md focus-visible:ring-2 focus-visible:ring-primary"
       style={{ height: HEIGHT, cursor: finePointer ? "crosshair" : undefined, touchAction: "pan-y" }}
       tabIndex={0}
       role="group"

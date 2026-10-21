@@ -6,9 +6,8 @@ import { Billing, ClassifyPlanId, EstimateInput, TeamOption } from "./pricing";
 export const DEFAULT_BILLING: Billing = "monthly";
 
 export const DEFAULT_INPUT: EstimateInput = {
-  calculator: true,
   tracker: true,
-  pairs: 100,
+  pairs: 30,
   classify: true,
   audience: "individual",
   individualPlan: "pro",
@@ -44,7 +43,6 @@ export const parseEstimateParams = (params: SearchParams): EstimateState => {
   return {
     billing: oneOf<Billing>(get("billing"), ["monthly", "annual"], DEFAULT_BILLING),
     input: {
-      calculator: flag(get("calculator"), d.calculator),
       tracker: flag(get("tracker"), d.tracker),
       pairs: whole(get("pairs"), 1, MAX_PAIRS, d.pairs),
       classify: flag(get("classify"), d.classify),
@@ -58,7 +56,6 @@ export const parseEstimateParams = (params: SearchParams): EstimateState => {
 
 export const toEstimateParams = ({ billing, input }: EstimateState) => {
   const params = new URLSearchParams({ billing });
-  params.set("calculator", input.calculator ? "1" : "0");
   params.set("tracker", input.tracker ? "1" : "0");
   if (input.tracker) params.set("pairs", String(input.pairs));
   params.set("classify", input.classify ? "1" : "0");

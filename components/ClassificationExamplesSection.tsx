@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,7 +8,7 @@ import {
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { GRIDefenseHeroMarketing } from "./GRIDefenseHeroMarketing";
-import LetsTalkModal from "./LetsTalkModal";
+import { openBookCall } from "@/libs/book-call";
 import { HeroClassifyInput } from "./HeroClassifyInput";
 import { CLASSIFICATION_EXAMPLES, type ClassificationExample } from "../constants/classification-examples";
 
@@ -28,7 +27,7 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
       className="group relative flex flex-col rounded-2xl transition-all duration-300 hover:-translate-y-1.5"
     >
       {/* Glow */}
-      {/* <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-secondary/15 via-primary/10 to-secondary/15 blur-xl transition-all duration-300 group-hover:from-secondary/25 group-hover:via-primary/20 group-hover:to-secondary/25 group-hover:-inset-1" /> */}
+      {/* <div className="absolute -inset-px rounded-2xl bg-linear-to-br from-secondary/15 via-primary/10 to-secondary/15 blur-xl transition-all duration-300 group-hover:from-secondary/25 group-hover:via-primary/20 group-hover:to-secondary/25 group-hover:-inset-1" /> */}
 
       {/* Card surface */}
       <div className="relative flex flex-col flex-1 rounded-2xl border-2 border-base-300 bg-base-100 overflow-hidden shadow-lg shadow/[0.08] transition-all duration-300 group-hover:shadow-xl group-hover:shadow/[0.12]">
@@ -43,7 +42,7 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
               className="max-h-full w-auto rounded-lg object-contain transition-transform duration-500 group-hover:scale-105"
             />
           </div>
-          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-base-100 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-base-100 to-transparent" />
         </div>
 
         <div className="flex flex-col flex-1 px-5 pb-5 pt-2 sm:px-6 sm:pb-6">
@@ -140,16 +139,10 @@ export default function ClassificationExamplesSection({
 }: {
   bottomCta?: "classify" | "book-demo";
 }) {
-  const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
 
   return (
     <section className="relative pb-20 md:pb-28">
       {/* Ambient background glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-secondary/[0.08] rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-primary/[0.08] rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary/[0.04] rounded-full blur-3xl" />
-      </div>
 
       <div className="relative max-w-7xl mx-auto px-5 sm:px-6">
         {/* Section header */}
@@ -158,7 +151,7 @@ export default function ClassificationExamplesSection({
             Not Just Codes, <span className="text-primary">Proof</span>
           </h2>
 
-          <p className="text-base sm:text-lg text-base-content/50 max-w-3xl mx-auto leading-relaxed text-center mb-8">
+          <p className="text-base sm:text-lg sm:leading-7 text-base-content/50 max-w-3xl mx-auto leading-relaxed text-center mb-8">
             Each classification includes step-by-step GRI reasoning, legal note analysis, and CROSS ruling validation — so you can explain and defend every decision
           </p>
 
@@ -202,11 +195,11 @@ export default function ClassificationExamplesSection({
             Check out these examples
           </p>
           <div className="flex items-center gap-2 mb-8">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent to-primary/30" />
+            <div className="w-12 h-px bg-linear-to-r from-transparent to-primary/30" />
             <svg className="w-4 h-4 text-primary/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
-            <div className="w-12 h-px bg-gradient-to-l from-transparent to-primary/30" />
+            <div className="w-12 h-px bg-linear-to-l from-transparent to-primary/30" />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
@@ -215,49 +208,23 @@ export default function ClassificationExamplesSection({
           ))}
         </div>
 
-        {/* CTA */}
-        {/* <div className="text-center mt-12">
+        {/* Bottom CTA — pass bottomCta="book-demo" to restore the demo button */}
+        <div className="flex flex-col items-center mt-16">
           <button
-            onClick={() => scrollTo({ top: 0, behavior: "smooth" })}
-            className="btn btn-primary btn-lg text-lg min-w-72 text-base font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] transition-all duration-200"
+            onClick={() => openBookCall()}
+            className="inline-flex items-center gap-3 px-10 py-4 rounded-xl font-bold text-lg bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
-            Try Now!
+            Book a Demo
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </button>
-          <p className="text-xs text-base-content/50 mt-4">
-            100% Free. No Credit Card Required
+          <p className="text-sm text-base-content/50 mt-3">
+            See how HTS Hero removes risk from your classifications
           </p>
-        </div> */}
+        </div>
 
-        {/* Bottom CTA — pass bottomCta="book-demo" to restore the demo button */}
-        {bottomCta === "classify" ? (
-          <div className="mt-16 w-full max-w-4xl mx-auto text-center">
-            <HeroClassifyInput entryPoint="examples_section" />
-          </div>
-        ) : (
-          <div className="flex flex-col items-center mt-16">
-            <button
-              onClick={() => setIsBookDemoModalOpen(true)}
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-xl font-bold text-lg bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
-            >
-              Book a Demo
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
-            <p className="text-sm text-base-content/50 mt-3">
-              See how HTS Hero removes risk from your classifications
-            </p>
-          </div>
-        )}
       </div>
-
-      <LetsTalkModal
-        isOpen={isBookDemoModalOpen}
-        onClose={() => setIsBookDemoModalOpen(false)}
-      />
 
       <style jsx>{`
         .examples-bounce-arrow {

@@ -1,27 +1,17 @@
 import Link from "next/link";
-import * as ui from "@/components/ui/styles";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
+import * as mk from "@/components/ui/marketing/styles";
+import { FREE_FOREVER_LINE, SAVINGS_AUDITS_COMING } from "@/components/ui/marketing/comingSoon";
 import { LINKS } from "../lib/links";
-import { Billing, TARIFF_CALCULATOR_PRICE, TRACKER_TIERS } from "../lib/pricing";
-import { BillingToggle } from "./BillingToggle";
+import { Billing, LAUNCH_PRICING, LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice, launchPricingActive, trackerBilling } from "../lib/pricing";
+import { CALCULATOR_FEATURES, TRACKER_FEATURES } from "../tariff-pricing/plans";
 import { CoverageGrid } from "./CoverageGrid";
+import { ManagedTeaser } from "./ManagedTeaser";
 import { PlanCard } from "./PlanCard";
-import { PriceTag } from "./PriceTag";
+import { PlanPrice } from "./PlanPrice";
+import { TrackerCore } from "./TrackerCore";
 import { TrackerTierTable } from "./TrackerTierTable";
-
-const CALCULATOR_FEATURES = [
-  "Every tariff, exemption and fee for any HTS code and country of origin",
-  "Section 232, 301 and 122 tariffs, trade preferences, MPF and HMF, itemized",
-  "Compare countries and see how a duty changed over time",
-];
-
-const TRACKER_FEATURES = [
-  "Includes the Tariff Calculator",
-  "Paste or upload your catalog as CSV",
-  "The current duty for every product, in one report",
-  "See which products a tariff change hits, and by how much",
-  "Export reports to share with your team",
-];
 
 export const TariffPlans = ({
   billing,
@@ -30,24 +20,33 @@ export const TariffPlans = ({
   billing: Billing;
   onBillingChange: (billing: Billing) => void;
 }) => (
-  <section id="tariffs" className={ui.section} aria-labelledby="tariffs-title">
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <SectionHeader kicker="Tariffs" title="Know every duty before it costs you" titleId="tariffs-title">
-        Look up the landed duty on a single import, or keep your whole catalog
-        under watch as tariffs change.
-      </SectionHeader>
-      <BillingToggle billing={billing} onChange={onBillingChange} />
+  <section id="tariffs" className="scroll-mt-24" aria-labelledby="tariffs-title">
+    <div className="flex flex-col gap-8">
+      <SectionIntro eyebrow="Tariffs" title="Track every tariff on your imports." id="tariffs-title">
+        The Tariff Calculator is free for everyone. The{" "}
+        <Link href="/tariff-monitor" className={mk.link}>
+          Tariff Tracker
+        </Link>{" "}
+        tracks every tariff on your imports and runs impact checks to show exactly how each tariff action hits them. Try it free
+        for {REVERSE_TRIAL.days} days: everything, on up to {REVERSE_TRIAL.imports} imports, no credit card. {FREE_FOREVER_LINE}{" "}
+        {SAVINGS_AUDITS_COMING}
+      </SectionIntro>
+      <div className="shrink-0">
+        <BillingSwitch billing={billing} onChange={onBillingChange} />
+      </div>
     </div>
 
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
       <PlanCard
         id="plan-tariff-calculator"
         name="Tariff Calculator"
+        badge="Free"
+        compact
         description="For anyone who needs the exact duty on an import, with the reasons behind it."
-        price={<PriceTag listPrice={TARIFF_CALCULATOR_PRICE} billing={billing} />}
+        price={<PlanPrice listPrice={0} billing={billing} unit="" note="No account needed" compact />}
         features={CALCULATOR_FEATURES}
         cta={
-          <Link href={LINKS.calculator} className={`${ui.button({ size: "lg" })} w-full`}>
+          <Link href={LINKS.calculator} className={`${mk.buttonSecondary} h-12 px-6`}>
             Open the calculator
           </Link>
         }
@@ -57,19 +56,35 @@ export const TariffPlans = ({
       <PlanCard
         id="plan-tariff-tracker"
         name="Tariff Tracker"
-        badge="Priced by catalog size"
-        featured
-        description="For importers who need to know the moment a tariff change hits their products."
-        price={<PriceTag listPrice={TRACKER_TIERS[0].price} billing={billing} prefix="From" />}
+        badge={`Free for ${REVERSE_TRIAL.days} days`}
+        dark
+        compact
+        description="For importers who want every tariff on their imports tracked, an alert when a change hits one, and impact checks on every new tariff action."
+        price={
+          <PlanPrice
+            listPrice={TRACKER_TIERS[0].price}
+            billing={trackerBilling(billing)}
+            prefix="From"
+            note={
+              launchPricingActive()
+                ? `As low as ${formatPrice(LOWEST_PER_IMPORT)} per import · ${REVERSE_TRIAL.days}-day free trial, no credit card · subscribe before ${LAUNCH_PRICING.endsDay} to lock in launch pricing`
+                : `As low as ${formatPrice(LOWEST_PER_IMPORT)} per import · ${REVERSE_TRIAL.days}-day free trial, no credit card · billed monthly`
+            }
+            dark
+            compact
+          />
+        }
         features={TRACKER_FEATURES}
         cta={
-          <a href={LINKS.estimate} className={`${ui.button({ variant: "primary", size: "lg" })} w-full`}>
-            Price your catalog
-          </a>
+          <Link href={LINKS.signUp} className={`${mk.buttonOnDark} h-12 px-6`}>
+            Start your free {REVERSE_TRIAL.days}-day trial <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          </Link>
         }
       >
         <TrackerTierTable billing={billing} />
       </PlanCard>
     </div>
+    <TrackerCore />
+    <ManagedTeaser />
   </section>
 );

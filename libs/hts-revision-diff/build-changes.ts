@@ -42,8 +42,14 @@ interface BuildInput {
   toNodes: NoteNode[]
   // The newer revision's Chapter 99 JSON rows, if it has any
   toRows: HtsRow[] | null
+  // The older revision's rows (JSON or reviewed heading pages), for the
+  // "before" of cited headings
+  fromRows?: HtsRow[] | null
   // Whether codeDiffs covers every heading (both revisions had JSON)
   fullHeadingDiff: boolean
+  // Otherwise, the headings codeDiffs covers in full (added and removed too), e.g.
+  // subchapter III when both revisions' heading pages are complete
+  headingDiffed?: (code: string) => boolean
   toRevisionName: string
   // Where toRows came from
   headingSource?: "revision_json" | "revision_pdf" | "none"
@@ -78,30 +84,41 @@ const notePrefixes = (item: ChangeRecordItem, knownKeys: Set<string>) => {
 const keyMatchesPrefix = (key: string | null, prefix: string) =>
   !!key && (key === prefix || key.startsWith(`${prefix}(`) || key.startsWith(`${prefix}#`))
 
-// Headings a change record item cites, looked up in the newer revision's rows
-const citedHeadingsFor = (item: ChangeRecordItem, rows: HtsRow[] | null): CitedHeading[] => {
-  const codes = Array.from(new Set(item.hts_codes.map(normalizeHtsCode)))
-  if (!rows) return codes.map((code): CitedHeading => ({ code, status: "unverified", row: null }))
-  const withCode = rows.filter((r) => r.htsno)
-  const cited: CitedHeading[] = codes.map((code) => {
-    const row = withCode.find((r) => r.htsno === code) ?? null
-    return { code, status: row ? "found" : "not_found", row }
-  })
-  // Ranges: every row inside the range, or the endpoints if none are found
-  for (const range of item.hts_code_ranges) {
-    const inRange = withCode.filter((r) =>
-      codeMatches({ ...item, hts_codes: [], hts_code_ranges: [range] }, r.htsno)
-    )
-    if (inRange.length) {
-      for (const row of inRange) {
-        if (!cited.some((c) => c.code === row.htsno)) cited.push({ code: row.htsno, status: "found", row })
-      }
-    } else {
-      cited.push({ code: normalizeHtsCode(range.from), status: "not_found", row: null })
-      cited.push({ code: normalizeHtsCode(range.to), status: "not_found", row: null })
-    }
+// Headings a change record item cites, looked up in the newer revision's rows,
+// with the same heading in the older revision's rows as the "before"
+const citedHeadingsFor = (
+  item: ChangeRecordItem,
+  rows: HtsRow[] | null,
+  fromRows: HtsRow[] | null = null
+): CitedHeading[] => {
+  const lookup = (source: HtsRow[] | null, code: string) => {
+    if (!source) return { status: "unverified" as const, row: null as HtsRow | null }
+    const row = source.find((r) => r.htsno && r.htsno === code) ?? null
+    return { status: row ? ("found" as const) : ("not_found" as const), row }
   }
-  return cited
+  const inRange = (source: HtsRow[] | null, range: ChangeRecordItem["hts_code_ranges"][number]) =>
+    (source ?? []).filter(
+      (r) => r.htsno && codeMatches({ ...item, hts_codes: [], hts_code_ranges: [range] }, r.htsno)
+    )
+
+  const codes = Array.from(new Set(item.hts_codes.map(normalizeHtsCode)))
+  // Ranges: every row inside the range in either revision, or the endpoints
+  // if neither has any
+  for (const range of item.hts_code_ranges) {
+    const found = [...inRange(rows, range), ...inRange(fromRows, range)].map((r) => r.htsno)
+    const add = found.length ? found : [normalizeHtsCode(range.from), normalizeHtsCode(range.to)]
+    for (const code of add) if (!codes.includes(code)) codes.push(code)
+  }
+  return codes.map((code): CitedHeading => {
+    const after = lookup(rows, code)
+    const before = lookup(fromRows, code)
+    return {
+      code,
+      status: after.status,
+      row: after.row,
+      ...(fromRows ? { beforeStatus: before.status, before: before.row } : {}),
+    }
+  })
 }
 
 export const codeMatches = (item: ChangeRecordItem, htsno: string) => {
@@ -153,7 +170,9 @@ const hashPayload = (payload: Omit<ChangePayload, "hash">) =>
         cr: payload.changeRecordItems.map((i) => i.source_text),
         notes: payload.noteDiffs.map((d) => [d.status, d.fromKey, d.toKey, d.before, d.after]),
         codes: payload.codeDiffs.map((d) => [d.status, d.key, d.before, d.after]),
-        cited: (payload.citedHeadings ?? []).map((c) => [c.code, c.status, c.row]),
+        cited: (payload.citedHeadings ?? []).map((c) =>
+          c.beforeStatus ? [c.code, c.status, c.row, c.beforeStatus, c.before] : [c.code, c.status, c.row]
+        ),
       })
     )
     .digest("hex")
@@ -335,11 +354,13 @@ export const buildChanges = (input: BuildInput): ChangeInsert[] => {
         `None of the cited notes (${item.note_citations.join(", ")}) were found in either revision's parsed notes. Check the citation or the parse.`
       )
     }
-    const cited = citedHeadingsFor(item, toRows)
+    const cited = citedHeadingsFor(item, toRows, input.fromRows ?? null)
     const citesHeadings = item.hts_codes.length + item.hts_code_ranges.length > 0
     // Without a full heading diff, a heading change can't be confirmed by
     // diffing, so a heading citation counts as the change itself
-    const found = notes.length + codes.length > 0 || (!fullHeadingDiff && citesHeadings)
+    // ...unless every cited heading was diffed in full
+    const citedDiffed = !!input.headingDiffed && cited.length > 0 && cited.every((c) => input.headingDiffed!(c.code))
+    const found = notes.length + codes.length > 0 || (!fullHeadingDiff && citesHeadings && !citedDiffed)
     if (!found) {
       warnings.push(
         "The change record lists this, but no difference was found. Either the change is outside what was parsed, the citation didn't match, or the parse missed it."

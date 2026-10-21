@@ -37,7 +37,7 @@ describe("Tariff Tracker: reading the list", () => {
     expect(errors[0].message).toBe("HTS codes need 8 or 10 digits (this has 6)")
     expect(errors[1].message).toBe("Add a country of origin after the code")
     expect(errors[3].message).toBe("The country of origin can't be the United States")
-    expect(errors[4].message).toBe("9999999999 isn't in the current HTS")
+    expect(errors[4].message).toBe("9999.99.99.99 isn't in the current HTS")
   })
 
   it("keeps duplicates, in order", () => {
@@ -59,7 +59,11 @@ import {
   readAdjustments,
   writeAdjustments,
 } from "../components/tariff-tracker/adjustments"
-import { activeFilters, applyFilters, CATALOG_FILTERS, FilterContext, filterOptions } from "../components/tariff-tracker/filters"
+import { ColumnFiltersState, constructTable, tableFeatures } from "@tanstack/react-table";
+import { storeReactivityBindings } from "@tanstack/table-core/store-reactivity-bindings";
+import { features, type TableColumnDef } from "../components/ui/table/features";
+import { normalizeSearch, pruneColumnFilters } from "../components/ui/table/useDataTable"
+import { TrackedProduct } from "../components/tariff-tracker/report"
 
 // A top-level HTS line carrying its own base rate (no parents to look up)
 const htsLine = (htsno: string, general: string, description: string) =>
@@ -167,36 +171,60 @@ describe("Tariff Tracker: product adjustments", () => {
   })
 })
 
-describe("Tariff Tracker: filters", () => {
+describe("Tariff Tracker: filtering your imports", () => {
   const steelCN = product("7326.90.86.88", "2.9%", "CN")
   const steelVN = product("7326.90.86.88", "2.9%", "VN")
   const watchCN = product("9103.10.40", "24¢ each", "CN")
   const all = [steelCN, steelVN, watchCN]
-  const context: FilterContext = { sections: [] }
-  const byId = (id: string) => CATALOG_FILTERS.find((f) => f.id === id)!
+  const columns: TableColumnDef<TrackedProduct, any>[] = [
+    { id: "country", accessorFn: (r) => r.entry.country.code, filterFn: "facet" },
+    { id: "chapter", accessorFn: (r) => String(r.entry.element.chapter), filterFn: "facet" },
+    { id: "tags", accessorFn: (r) => (r.entry.country.code === "CN" ? ["China", "Asia"] : ["Asia"]), getUniqueValues: (r) => (r.entry.country.code === "CN" ? ["China", "Asia"] : ["Asia"]), filterFn: "facet" },
+  ]
+  const table = (filters: ColumnFiltersState) =>
+    constructTable({
+      // Outside React: TanStack Store holds the state
+      features: tableFeatures({ ...features, coreReactivityFeature: storeReactivityBindings() }),
+      data: all,
+      columns,
+      getRowId: (r: TrackedProduct) => `${r.entry.element.htsno}-${r.entry.country.code}`,
+      state: { columnFilters: pruneColumnFilters(filters, columns, all) },
+    })
+  const shown = (filters: ColumnFiltersState) => table(filters).getRowModel().rows.map((r) => r.original)
 
   it("lets everything through with nothing picked", () => {
-    expect(applyFilters(all, {}).length).toBe(3)
-    expect(applyFilters(all, { country: [] }).length).toBe(3)
+    expect(shown([]).length).toBe(3)
+    expect(shown([{ id: "country", value: [] }]).length).toBe(3)
   })
 
   it("matches any picked value within a filter, and every filter across them", () => {
-    expect(applyFilters(all, { country: ["CN", "VN"] }).length).toBe(3)
-    expect(applyFilters(all, { country: ["CN"] }).length).toBe(2)
-    expect(applyFilters(all, { country: ["CN"], chapter: ["91"] })).toEqual([watchCN])
+    expect(shown([{ id: "country", value: ["CN", "VN"] }]).length).toBe(3)
+    expect(shown([{ id: "country", value: ["CN"] }]).length).toBe(2)
+    expect(shown([{ id: "country", value: ["CN"] }, { id: "chapter", value: ["91"] }])).toEqual([watchCN])
   })
 
-  it("ignores picked values no product has any more", () => {
-    expect(applyFilters(all, { country: ["MX"] }).length).toBe(3)
-    expect(activeFilters(all, { country: ["MX", "VN"] })[0].picked).toEqual(["VN"])
+  it("matches a list value (an import's tariffs) by any of its items", () => {
+    expect(shown([{ id: "tags", value: ["China"] }]).length).toBe(2)
+    expect(shown([{ id: "tags", value: ["Asia"] }]).length).toBe(3)
   })
 
-  it("lists every value with its count against the other filters", () => {
-    const countries = filterOptions(byId("country"), all, { chapter: ["73"] }, context)
-    expect(countries.map((o) => `${o.value}:${o.count}`)).toEqual(["CN:1", "VN:1"])
-    expect(countries[0].label).toBe("China")
-    const chapters = filterOptions(byId("chapter"), all, { country: ["VN"] }, context)
-    expect(chapters.map((o) => `${o.value}:${o.count}`)).toEqual(["73:1", "91:0"])
+  it("ignores picked values no import has any more", () => {
+    expect(shown([{ id: "country", value: ["MX"] }]).length).toBe(3)
+    expect(pruneColumnFilters([{ id: "country", value: ["MX", "VN"] }], columns, all)).toEqual([{ id: "country", value: ["VN"] }])
+  })
+
+  it("counts every value against the other filters", () => {
+    const counts = (t: ReturnType<typeof table>, id: string) =>
+      [...t.getColumn(id)!.getFacetedUniqueValues().entries()].map(([v, n]) => `${v}:${n}`).sort()
+    expect(counts(table([{ id: "chapter", value: ["73"] }]), "country")).toEqual(["CN:1", "VN:1"])
+    expect(counts(table([{ id: "country", value: ["VN"] }]), "chapter")).toEqual(["73:1"])
+    expect(counts(table([]), "tags")).toEqual(["Asia:3", "China:2"])
+  })
+
+  it("searches codes with or without dots and spaces, in any case", () => {
+    expect(normalizeSearch("7326.90.86")).toBe("73269086")
+    expect(normalizeSearch("7326 90-86")).toBe("73269086")
+    expect(normalizeSearch("China")).toBe("china")
   })
 })
 
@@ -483,5 +511,100 @@ describe("Tariff Tracker: rate history across origins", () => {
 
   it("counts days between dates", () => {
     expect(daysBetween("2026-04-08", "2026-04-10")).toBe(2)
+  })
+})
+
+import { originCosts } from "../components/tariff-tracker/insights/savings"
+import { provenPicks, supplierCodes } from "../components/tariff-tracker/product/analysis/analysis"
+import { sourcingIdeas } from "../components/tariff-tracker/sourcing/ideas"
+import type { UsImports } from "../components/duty-calculator/lib/usImportsData"
+
+describe("Tariff Tracker: proven suppliers and sourcing ideas", () => {
+  const steel = product("7326.90.86.88", "2.9%", "CN")
+  const rates = originRates(steel)
+  const rateFor = (code: string) => rates.find((r) => r.country.code === code)!
+  // Mexico and Vietnam ship it; China (its origin) too
+  const imports: UsImports = {
+    year: 2025,
+    prior: 2024,
+    level: 10,
+    byCountry: new Map([
+      ["CN", { value: 900e6, prior: 1000e6 }],
+      ["VN", { value: 300e6, prior: 100e6 }],
+      ["MX", { value: 500e6, prior: 450e6 }],
+      ["DE", { value: 0, prior: 10e6 }],
+    ]),
+    totalValue: 1700e6,
+  }
+
+  it("works out only the asked-for origins, and always the product's own", () => {
+    expect(originRates(steel, ["MX"]).map((r) => r.country.code).sort()).toEqual(["CN", "MX"])
+  })
+
+  it("lists the countries that ship it, leaving out those with no imports", () => {
+    expect(Array.from(supplierCodes(imports)!).sort()).toEqual(["CN", "MX", "VN"])
+    expect(supplierCodes(null)).toBe(null)
+  })
+
+  it("picks the largest suppliers, cheaper ones first, never the product's own origin", () => {
+    const picks = provenPicks(steel, imports, 2)
+    expect(picks.includes("CN")).toBe(false)
+    expect(picks.sort()).toEqual(["MX", "VN"])
+    const cheaper = (code: string) => rateOf(rateFor(code), "agreements") < rateOf(rateFor("CN"), "agreements") - 0.005
+    // A cheaper supplier is never listed after one that isn't
+    const first = provenPicks(steel, imports, 2)
+    expect(!cheaper(first[0]) && cheaper(first[1])).toBe(false)
+  })
+
+  it("finds cheaper origins that ship each product, largest supplier first", () => {
+    const sourcing = sourcingIdeas([steel], new Map([[steel.key, originCosts(rates)]]), new Map([[steel.entry.element.htsno, imports]]))
+    expect(sourcing.withFigures).toBe(1)
+    const idea = sourcing.ideas[0]
+    if (idea) {
+      expect(idea.options.every((o) => o.pct < steel.totalPct && ["MX", "VN"].includes(o.country.code))).toBe(true)
+      expect(idea.options.every((o, i) => i === 0 || o.value <= idea.options[i - 1].value)).toBe(true)
+      expect(sourcing.usd).toBe(idea.best.usd)
+      expect(sourcing.countries.every((c) => c.products === 1)).toBe(true)
+    }
+  })
+
+  it("counts products Census has no figures for", () => {
+    const sourcing = sourcingIdeas([steel], new Map([[steel.key, originCosts(rates)]]), new Map([[steel.entry.element.htsno, null]]))
+    expect(sourcing.withoutFigures).toBe(1)
+    expect(sourcing.ideas.length).toBe(0)
+  })
+})
+
+// ── Saving the catalog to the account ──
+
+import { resolveCatalog } from "../components/tariff-tracker/catalogSync"
+
+describe("Tariff Tracker: syncing the catalog with the account", () => {
+  const item = (code: string) => ({ code, country: "CN" }) as never
+  const snap = (...codes: string[]) => ({ items: codes.map(item), adjustments: {} })
+  const account = snap("1111111111")
+  const device = snap("1111111111", "2222222222")
+
+  it("keeps the device's changes the account doesn't have yet, and saves them", () => {
+    const r = resolveCatalog({ account, device, owner: "u1", userId: "u1", unsaved: true })
+    expect(r.next).toBe(device)
+    expect(r.push).toBe(true)
+  })
+
+  it("takes the account's copy over a device cache with nothing new", () => {
+    const r = resolveCatalog({ account, device, owner: "u1", userId: "u1", unsaved: false })
+    expect(r.next).toBe(account)
+    expect(r.push).toBe(false)
+  })
+
+  it("replaces another account's catalog, even with unsaved changes", () => {
+    const r = resolveCatalog({ account, device, owner: "u2", userId: "u1", unsaved: true })
+    expect(r.next).toBe(account)
+  })
+
+  it("saves the device's catalog when the account has none", () => {
+    const r = resolveCatalog({ account: null, device, owner: "u1", userId: "u1", unsaved: false })
+    expect(r.next).toBe(device)
+    expect(r.push).toBe(true)
   })
 })

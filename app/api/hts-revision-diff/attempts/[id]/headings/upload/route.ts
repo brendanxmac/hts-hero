@@ -11,7 +11,8 @@ export const maxDuration = 300
 
 // Adds (or replaces) an attempt's heading pages and sends them to datalab.
 // The attempt's status isn't touched: its notes stay parsed.
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

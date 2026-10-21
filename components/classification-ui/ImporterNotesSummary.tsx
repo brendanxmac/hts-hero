@@ -32,7 +32,7 @@ export function ImporterNotesSummary({ importerName, notes }: Props) {
           <div className="flex items-center justify-center w-6 h-6 md:w-7 md:h-7 rounded-lg bg-base-content/10 shrink-0 mt-0.5">
             <DocumentTextIcon className="w-3.5 h-3.5 md:w-4 md:h-4 text-base-content/60" />
           </div>
-          <p className="text-sm md:text-base text-base-content line-clamp-3 leading-relaxed">
+          <p className="text-sm md:text-base md:leading-6 text-base-content line-clamp-3 leading-relaxed">
             {notes}
           </p>
         </div>

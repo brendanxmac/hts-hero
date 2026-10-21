@@ -1,7 +1,7 @@
 // Markdown renderings of a change, used both as the material sent to Claude
 // for a summary and in the package the pull script writes to the repo
 
-import type { ChangePayload, ChangeRow, ChangeSummary, CodeDiff, NoteDiff } from "./types"
+import type { ChangePayload, ChangeRow, ChangeSummary, CitedHeading, CodeDiff, HtsRow, NoteDiff } from "./types"
 import { renderWordDiff } from "./word-diff"
 
 const fence = (text: string) => `\`\`\`text\n${text.replace(/```/g, "'''")}\n\`\`\``
@@ -107,15 +107,30 @@ export const renderChangeMaterial = (
     for (const d of payload.noteDiffs) out.push("", renderNoteDiff(d, fromName, toName))
   }
   if (payload.citedHeadings?.length) {
-    out.push("", `## Headings cited by the change record, as they read in ${toName}`)
+    const hasBefore = payload.citedHeadings.some((c) => c.beforeStatus)
+    out.push(
+      "",
+      hasBefore
+        ? `## Headings cited by the change record, as they read in ${fromName} (before) and ${toName} (after)`
+        : `## Headings cited by the change record, as they read in ${toName}`
+    )
+    const side = (status: CitedHeading["status"] | undefined, row: HtsRow | null | undefined, name: string) =>
+      status === "found" && row
+        ? fence(rowText(row))
+        : status === "not_found"
+          ? `Not in ${name}'s Chapter 99 data or reviewed heading pages.`
+          : `Not checked: no Chapter 99 JSON or reviewed heading pages for ${name}.`
     for (const c of payload.citedHeadings) {
-      if (c.status === "found" && c.row) out.push("", `#### ${c.code}`, fence(rowText(c.row)))
-      else if (c.status === "not_found") out.push("", `#### ${c.code}`, `Not in ${toName}'s Chapter 99 data.`)
-      else out.push("", `#### ${c.code}`, `Not checked: no Chapter 99 JSON for ${toName}.`)
+      if (!c.beforeStatus) {
+        out.push("", `#### ${c.code}`, side(c.status, c.row, toName))
+        continue
+      }
+      out.push("", `#### ${c.code}`, "", `Before (${fromName}):`, side(c.beforeStatus, c.before, fromName))
+      out.push("", `After (${toName}):`, side(c.status, c.row, toName))
     }
   }
   if (payload.codeDiffs.length) {
-    out.push("", "## Chapter 99 heading differences (from the JSON)")
+    out.push("", "## Chapter 99 heading differences (from the JSON or both revisions' heading pages)")
     for (const d of payload.codeDiffs) out.push("", renderCodeDiff(d, fromName, toName))
   }
   if (payload.context.length) {
@@ -292,6 +307,9 @@ export const renderSummaryMaterial = (
     for (const c of payload.citedHeadings) {
       if (c.status === "found" && c.row) push(`- ${c.code}: ${c.row.description} | General: ${c.row.general || "—"}`)
       else push(`- ${c.code}: ${c.status === "not_found" ? `not in ${toName}'s Chapter 99 data` : "not checked (no JSON)"}`)
+      if (c.beforeStatus === "found" && c.before) {
+        push(`  - Before (${fromName}): ${c.before.description} | General: ${c.before.general || "—"}`)
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 import { Countries, Country } from "../../constants/countries";
-import { htsCodeDigitsOnly } from "../../libs/hts-code";
+import { canonicalHtsCode, htsCodeDigitsOnly } from "../../libs/hts-code";
 
 // Reads a product catalog: one product per line, "HTS code, country of origin".
 //   8413919015,BR
@@ -19,6 +19,9 @@ export interface CatalogError {
   line: number;
   text: string;
   message: string;
+  // The code and country as written, when they could be told apart (for fixing the line in place)
+  code?: string;
+  country?: string;
 }
 
 export interface ParsedCatalog<T> {
@@ -60,13 +63,17 @@ export const parseCatalog = <T>(
     // The code is the first run of digits and dots; the rest of the line is the country
     const match = trimmed.match(/^([\d.\s]*\d)\s*[,;\t|]?\s*(.*)$/);
     if (!match) return fail("Start the line with an HTS code");
-    const product = readProduct(match[1], match[2].replace(/^[,;\t|\s]+|[,;\t|\s]+$/g, ""), findElement);
-    if ("message" in product) return fail(product.message);
+    const country = match[2].replace(/^[,;\t|\s]+|[,;\t|\s]+$/g, "");
+    const product = readProduct(match[1], country, findElement);
+    if ("message" in product) return errors.push({ line, text: trimmed, message: product.message, code: match[1].trim(), country });
     entries.push({ line, text: trimmed, ...product });
   });
 
   return { entries, errors };
 };
+
+// 8 or 10 digits that are a 6-digit HS code and zeros
+export const isPaddedHs6 = (digits: string) => (digits.length === 8 || digits.length === 10) && /^\d{6}0+$/.test(digits) && digits.replace(/0+$/, "").length <= 6;
 
 // One product from its code and country as written, or why it can't be read. Shared by the
 // pasted list and CSV uploads.
@@ -92,6 +99,10 @@ export const readProduct = <T>(
     };
   }
   const element = findElement(digits);
-  if (!element) return { message: `${codeText.trim()} isn't in the current HTS` };
+  // A 6-digit HS code filled out with zeros (6109.10.00.00): not a US line, and not the same
+  // problem as a code the HTS dropped. Said plainly here; where it's fixed (RowFixPanel, FixGuide)
+  // says it may be the 6-digit code with zeros added, and offers its US lines
+  if (!element && isPaddedHs6(digits)) return { message: `${canonicalHtsCode(digits)} isn't a real HTS code` };
+  if (!element) return { message: `${canonicalHtsCode(codeText.trim()) ?? codeText.trim()} isn't in the current HTS` };
   return { element, country: found };
 };

@@ -74,6 +74,11 @@ export enum PricingPlan {
   TARIFF_IMPACT_STARTER = "Tariff Impact Starter",
   TARIFF_IMPACT_STANDARD = "Tariff Impact Standard",
   TARIFF_IMPACT_PRO = "Tariff Impact Pro",
+  // Tariff Tracker, by the number of imports (pairs) it covers (see PRICING.md)
+  TARIFF_TRACKER_10 = "Tariff Tracker 10",
+  TARIFF_TRACKER_30 = "Tariff Tracker 30",
+  TARIFF_TRACKER_100 = "Tariff Tracker 100",
+  TARIFF_TRACKER_500 = "Tariff Tracker 500",
 }
 
 export interface PricingFeatureI {
@@ -102,6 +107,8 @@ export interface ConfigProps {
   appName: string;
   appDescription: string;
   domainName: string;
+  // The postal address commercial email must show (CAN-SPAM)
+  mailingAddress: string;
   // A 30-minute call with the team: integrations, the API and MCP, larger plans
   bookCallUrl: string;
   crisp: {

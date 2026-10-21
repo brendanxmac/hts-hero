@@ -7,7 +7,13 @@ import { confirm } from "../confirmations"
 import { section232ArticleHeadingsFromJuly31, section232ArticleHeadingsFromJune8 } from "./122"
 
 const FROM = "2026-07-22"
-const SOURCE = { revision: "2026HTSRev12", citation: "Notice" }
+const NOTICE = {
+  citation:
+    "USTR notice, Notice of Action: Section 301 Investigation of Brazil's Acts, Policies, and Practices, 91 FR 45516 (FR Doc. 2026-14542)",
+  url: "https://www.govinfo.gov/content/pkg/FR-2026-07-20/html/2026-14542.htm",
+  publishedOn: "2026-07-20",
+}
+const SOURCE = { revision: "2026HTSRev12", ...NOTICE }
 
 export const headings: Tariff[] = [
   {
@@ -55,7 +61,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.03",
     program: "301-brazil",
-    name: "Section 301 Brazil Exemption: Specific Articles",
+    name: "Section 301 Brazil Exemption: Listed Products",
     description:
       "Articles the product of Brazil, as provided for in subdivision (a)(ii) of U.S. note 50 to this subchapter",
     scope: {
@@ -69,13 +75,16 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.04",
     program: "301-brazil",
-    name: "Section 301 Brazil Exemption: Particular Articles",
+    name: "Section 301 Brazil Exemption: Described Products",
     description:
       "Articles the product of Brazil, as provided for in subdivision (a)(iii) of U.S. note 50 to this subchapter",
     scope: {
       countries: ["BR"],
       codes: [{ list: "brazilExempt50aiii" }],
     },
+    // Each of the 11 particular articles is narrower than its subheading ("Acai (classifiable in
+    // subheading 2008.99.21)"), so it needs confirming, as under 9903.02.78. Decided by the user, Oct 9, 2026
+    requires: [confirm("9903.05.04")],
     rate: { kind: "free" },
     effective: { from: FROM },
     source: { ...SOURCE, note: "U.S. note 50(a)(iii)" },
@@ -142,14 +151,15 @@ export const headings: Tariff[] = [
             whenApplies: { codes: section232ArticleHeadingsFromJuly31 },
           },
         },
-        source: { revision: "2026HTSRev14", citation: "Notice", note: "U.S. note 50(a)(vi)(8)" },
+        // Annex I, Part B: from 12:01 a.m. ET July 31, 2026
+        source: { revision: "2026HTSRev14", ...NOTICE, note: "U.S. note 50(a)(vi)(8), Annex I, Part B" },
       },
     ],
   ),
   {
     code: "9903.05.08",
     program: "301-brazil",
-    name: "Section 301 Brazil Exemption: Donation",
+    name: "Section 301 Brazil Exemption: Donations",
     description:
       "Articles the product of Brazil that are donations by persons subject to the jurisdiction of the United States, such as food, clothing and medicine, intended to be used to relieve human suffering",
     scope: {
@@ -164,7 +174,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.05.09",
     program: "301-brazil",
-    name: "Section 301 Brazil Exemption: Information Material",
+    name: "Section 301 Brazil Exemption: Informational Materials",
     description:
       "Articles the product of Brazil that are informational materials, including but not limited to publications, films, posters, phonograph records, photographs, microfilms, microfiche, tapes, compact disks, CD ROMs, artworks and news wire feeds",
     scope: {

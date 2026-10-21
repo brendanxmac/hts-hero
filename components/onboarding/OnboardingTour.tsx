@@ -162,7 +162,7 @@ function SpotlightBackdrop({ rect }: { rect: ViewportRect | null }) {
 function SpotlightRing({ rect }: { rect: ViewportRect }) {
   return (
     <div
-      className="fixed pointer-events-none transition-all duration-500 ease-out z-[1]"
+      className="fixed pointer-events-none transition-all duration-500 ease-out z-1"
       style={{
         top: rect.top,
         left: rect.left,
@@ -170,7 +170,7 @@ function SpotlightRing({ rect }: { rect: ViewportRect }) {
         height: rect.height,
         borderRadius: SPOTLIGHT_RADIUS,
         boxShadow:
-          "0 0 0 3px oklch(var(--p)), 0 0 20px 6px oklch(var(--p) / 0.45), 0 0 40px 12px oklch(var(--p) / 0.2)",
+          "0 0 0 3px var(--color-primary), 0 0 20px 6px color-mix(in oklab, var(--color-primary) 45%, transparent), 0 0 40px 12px color-mix(in oklab, var(--color-primary) 20%, transparent)",
       }}
     />
   );
@@ -239,7 +239,7 @@ export default function OnboardingTour({
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className="fixed inset-0 z-[9999]" aria-modal="true" role="dialog" data-onboarding-tour-active>
+      <div className="fixed inset-0 z-9999" aria-modal="true" role="dialog" data-onboarding-tour-active>
         {/* Backdrop */}
         <SpotlightBackdrop rect={isModal ? null : viewportRect} />
 
@@ -256,14 +256,14 @@ export default function OnboardingTour({
         {/* Tooltip card */}
         <div
           ref={tooltipRef}
-          className="fixed z-[10000] w-[min(360px,calc(100vw-32px))]
+          className="fixed z-10000 w-[min(360px,calc(100vw-32px))]
             transition-all duration-500 ease-out"
           style={tooltipStyle}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="relative overflow-hidden rounded-2xl border border-base-content/30 bg-base-100 shadow-lg shadow-primary/60">
             {/* Gradient accent bar */}
-            <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary" />
+            <div className="h-1 w-full bg-linear-to-r from-primary via-secondary to-primary" />
 
             {/* Close button */}
             <button
@@ -281,7 +281,7 @@ export default function OnboardingTour({
               {/* Optional icon */}
               {currentStep.icon && (
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl
-                  bg-gradient-to-br from-primary/15 to-secondary/15">
+                  bg-linear-to-br from-primary/15 to-secondary/15">
                   {currentStep.icon}
                 </div>
               )}
@@ -348,7 +348,7 @@ export default function OnboardingTour({
                     }}
                     className="flex items-center gap-1 rounded-lg bg-primary px-4 py-1.5
                       text-xs font-bold text-primary-content
-                      hover:bg-primary/90 transition-colors shadow-sm"
+                      hover:bg-primary/90 transition-colors shadow-xs"
                   >
                     {currentStep.action.label}
                     <ChevronRightIcon className="h-3.5 w-3.5" />
@@ -359,7 +359,7 @@ export default function OnboardingTour({
                     onClick={next}
                     className="flex items-center gap-1 rounded-lg bg-primary px-4 py-1.5
                       text-xs font-bold text-primary-content
-                      hover:bg-primary/90 transition-colors shadow-sm"
+                      hover:bg-primary/90 transition-colors shadow-xs"
                   >
                     {isLast ? "Got it!" : "Next"}
                     {!isLast && <ChevronRightIcon className="h-3.5 w-3.5" />}

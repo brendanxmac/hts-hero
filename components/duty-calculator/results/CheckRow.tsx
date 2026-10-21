@@ -19,6 +19,11 @@ export const CheckRow = ({
   showNoChange = false,
   citations,
   notesFor,
+  stable = false,
+  note,
+  muted = false,
+  qualifyLink,
+  hideLegal = false,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
@@ -32,8 +37,20 @@ export const CheckRow = ({
   notesFor?: { asOf: string; htsCode: string };
   // Say "No change" when checking it wouldn't change the total (otherwise nothing is shown)
   showNoChange?: boolean;
+  // Keeps its shape whatever it says: the amount line always shows, checked or not, so answering
+  // one row never moves the rows below it
+  stable?: boolean;
+  // What checking it would do, in plain English (or the locked line, signed out)
+  note?: ReactNode;
+  // Doesn't apply with the other answers as they stand
+  muted?: boolean;
+  // A link to find out whether the goods qualify, on a stable row that could save money
+  qualifyLink?: ReactNode;
+  // Signed out: no legal text (it takes a free account)
+  hideLegal?: boolean;
 }) => {
   const [expanded, setExpanded] = useState(false);
+  if (hideLegal) help = undefined;
   const noChange =
     showNoChange &&
     !checked &&
@@ -49,7 +66,7 @@ export const CheckRow = ({
           onChange={(e) => onChange(e.target.checked)}
         />
         <span className="flex flex-col gap-1 min-w-0">
-          <span className="text-sm leading-snug text-base-content">
+          <span className={`text-sm leading-snug ${muted ? "text-base-content/60" : "text-base-content"}`}>
             {code && (
               <span
                 className={`${mono.className} mr-1.5 text-sm font-semibold text-primary`}
@@ -59,7 +76,14 @@ export const CheckRow = ({
             )}
             {label}
           </span>
-          {(!checked && impact !== undefined && Math.abs(impact) >= 0.005) ||
+          {note && <span className="flex text-xs leading-snug text-base-content/60">{note}</span>}
+          {stable ? (
+            <span className="flex flex-wrap items-center gap-2">
+              <StableAmount amount={impact} checked={checked} />
+              {qualifyLink && !checked && impact !== undefined && impact < -0.005 && qualifyLink}
+              {help && <LegalToggle open={expanded} onToggle={() => setExpanded((x) => !x)} />}
+            </span>
+          ) : (!checked && impact !== undefined && Math.abs(impact) >= 0.005) ||
           noChange ||
           help ? (
             <span className="flex flex-wrap items-center gap-2">
@@ -99,6 +123,25 @@ const Impact = ({ amount }: { amount?: number }) => {
       }`}
     >
       {lower ? "−" : "+"}
+      {formatMoney(Math.abs(amount))}
+    </span>
+  );
+};
+
+// The amount in a stable row: what checking it could do, what it's doing once checked, or that it
+// makes no change, always in the same place
+const StableAmount = ({ amount, checked }: { amount?: number; checked: boolean }) => {
+  const none = amount === undefined || Math.abs(amount) < 0.005;
+  if (none)
+    return (
+      <span className="inline-flex items-center rounded-md bg-base-300 px-1.5 py-0.5 text-xs font-medium text-base-content/60">
+        {checked ? "Applied" : "No change to the total"}
+      </span>
+    );
+  const lower = amount < 0;
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums ${lower ? "bg-success/10 text-success" : "bg-error/10 text-error"}`}>
+      {checked ? "Applied" : lower ? "Could save" : "Would add"} {lower ? "−" : "+"}
       {formatMoney(Math.abs(amount))}
     </span>
   );

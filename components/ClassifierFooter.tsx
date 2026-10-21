@@ -11,7 +11,7 @@ const ClassifierFooter = () => {
     <footer className="bg-base-300 border-t border-base-content/10">
       <div className="max-w-7xl mx-auto px-8 py-24">
         <div className=" flex lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
-          <div className="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left">
+          <div className="w-64 shrink-0 md:mx-0 mx-auto text-center md:text-left">
             <Link
               href="/classifications"
               aria-current="page"
@@ -38,7 +38,7 @@ const ClassifierFooter = () => {
               Copyright © {new Date().getFullYear()} - All rights reserved
             </p>
           </div>
-          <div className="flex-grow flex flex-wrap justify-center -mb-10 md:mt-0 mt-10 text-center">
+          <div className="grow flex flex-wrap justify-center -mb-10 md:mt-0 mt-10 text-center">
             <div className="lg:w-1/3 md:w-1/2 w-full px-4">
               <div className="footer-title font-semibold text-base-content tracking-widest text-sm md:text-left mb-3">
                 LINKS

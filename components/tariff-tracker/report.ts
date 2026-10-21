@@ -4,6 +4,7 @@ import { calculate } from "../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../tariffs/engine-v2/data";
 import { Authority, CalculationInput, CalculationResult } from "../../tariffs/engine-v2/types";
 import { buildEstimateInput, findTariffElement } from "../duty-calculator/lib/estimate";
+import type { TariffFinder } from "../duty-calculator/lib/useTariffFinder";
 import { countOpenQuestions, questionImpacts } from "../duty-calculator/lib/questions";
 import {
   Adjustments,
@@ -58,7 +59,7 @@ export interface TrackedProduct {
 const plain = (text: string) => text.replace(/<[^>]+>/g, "").replace(/:\s*$/, "").trim();
 
 // The nearest two levels that say what the product is; "Other" levels say nothing on their own
-const describe = (element: HtsElement, htsElements: HtsElement[]) => {
+export const describe = (element: HtsElement, htsElements: HtsElement[]) => {
   const levels = [...getHtsElementParents(element, htsElements), element]
     .map((el) => plain(el.description))
     .filter((text) => text && !/^other\b[\s.,]*$/i.test(text));
@@ -122,3 +123,22 @@ export const trackProduct = (
     bestSavingPct: Math.max(0, ...Object.values(impacts).map((d) => (-d / customsValue) * 100)),
   };
 };
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+// A calculator's inputs as a tracked product: the shape the Analysis works from
+export const productFromFinder = (f: TariffFinder, htsElements: HtsElement[]): TrackedProduct | null =>
+  f.selectedElement && f.country && htsElements.length
+    ? trackProduct(
+        { line: 1, text: `${f.selectedElement.htsno},${f.country.code}`, element: f.selectedElement, country: f.country },
+        htsElements,
+        ISO_DATE.test(f.entryDate) ? f.entryDate : new Date().toISOString().slice(0, 10),
+        {
+          customsValue: f.customsValue,
+          quantity: f.quantity,
+          transportMode: f.transportMode,
+          claimedPreference: f.claimedPreference || undefined,
+          answers: f.answers,
+        }
+      )
+    : null;

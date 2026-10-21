@@ -57,7 +57,7 @@ export default async function WebinarsPage() {
       {upcoming.length > 0 && (
         <section className="mb-16">
           <h2 className="text-2xl font-bold tracking-tight mb-6">
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
               Upcoming
             </span>{" "}
             Webinars

@@ -1,0 +1,130 @@
+import { Metadata } from "next";
+import config from "@/config";
+import { CountriesHub, HubRow, hubDescription, hubFaqs, hubGroups, hubKeyFacts, hubLead, hubSubtitle } from "@/components/duty-calculator/countries";
+import { THEME_LIGHT } from "@/components/ui/theme";
+import * as mk from "@/components/ui/marketing/styles";
+import { countryRows, hubSources, hubSummary, hubTiers } from "@/libs/country-pages/allCountries";
+import { formatImports, IMPORT_SOURCE } from "@/libs/country-pages/importStats";
+import { renderSchemaJsonLd } from "@/libs/seo";
+import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
+
+// /duty-calculator/countries: US tariffs for every country of origin. Rebuilt daily, so the
+// table follows the tariff data without a deploy.
+export const revalidate = 86400;
+
+const PATH = "/duty-calculator/countries";
+const URL_ = `https://${config.domainName}${PATH}`;
+const CSV_PATH = "/duty-calculator/countries.csv";
+// "US Tariffs by Country 2026: Rates for All 199 Countries"
+const title = (total: number) => `US Tariffs by Country 2026: Rates for All ${total} Countries`;
+
+const todayIso = () => new Date().toISOString().slice(0, 10);
+const longDate = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+const monthYear = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
+// "2026HTSRev20" → "2026 HTS Revision 20"
+const revisionTitle = (name: string) => name.replace(/^(\d{4})HTSRev(\d+)$/, "$1 HTS Revision $2");
+
+const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+
+export function generateMetadata(): Metadata {
+  const asOf = todayIso();
+  const summary = hubSummary(countryRows(asOf));
+  const description = hubDescription(summary, monthYear(asOf));
+  const TITLE = title(summary.total);
+  return {
+    title: TITLE,
+    description,
+    alternates: { canonical: PATH },
+    openGraph: { title: TITLE, description, url: URL_, siteName: "HTS Hero", type: "website" },
+    twitter: { card: "summary", title: TITLE, description },
+  };
+}
+
+export default function CountriesHubRoute() {
+  const asOf = todayIso();
+  const asOfLabel = longDate(asOf);
+  const verifiedThrough = revisionTitle(getLatestVerifiedRevision().name);
+  const all = countryRows(asOf);
+  const summary = hubSummary(all);
+  const faqs = hubFaqs(all, summary, asOfLabel, verifiedThrough);
+  const sources = hubSources(asOf);
+  const rows: HubRow[] = all.map((r) => ({
+    code: r.code,
+    name: r.name,
+    flag: r.flag,
+    imports: r.imports2025,
+    importsLabel: r.imports2025 ? formatImports(r.imports2025) : null,
+    rank: r.rank2025,
+    forcedLabor: r.forcedLabor,
+    forcedLaborPct: r.forcedLaborPct,
+    otherTariffs: r.otherTariffs.map((t) => ({ name: t.name, detail: `${lowerFirst(t.rates)} on ${t.allProducts ? "all products" : "listed products"}` })),
+    dealRates: r.dealRates,
+    preferences: r.preferences,
+    column2: r.column2,
+  }));
+
+  return (
+    <main className={`${THEME_LIGHT} ${mk.page} flex w-full flex-1 flex-col`}>
+      {renderSchemaJsonLd({
+        "@type": "Dataset",
+        name: "US tariffs by country of origin",
+        description: hubLead(summary, asOfLabel),
+        url: URL_,
+        dateModified: asOf,
+        temporalCoverage: asOf,
+        spatialCoverage: { "@type": "Place", name: "United States" },
+        creator: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
+        isBasedOn: [...sources, { name: IMPORT_SOURCE.name, url: IMPORT_SOURCE.url }].map((s) => ({
+          "@type": "CreativeWork",
+          name: s.name,
+          ...(s.url ? { url: s.url } : {}),
+        })),
+        distribution: {
+          "@type": "DataDownload",
+          encodingFormat: "text/csv",
+          contentUrl: `https://${config.domainName}${CSV_PATH}`,
+        },
+        keywords: ["US tariffs by country", "tariff rates by country", "Section 301 forced labor tariff", "Column 2 Rates", "US trade agreements"],
+        variableMeasured: [
+          "US goods imports in 2025 (USD)",
+          "Section 301 forced-labor tariff rate",
+          "Country-specific tariffs",
+          "Pays Column 2 Rates",
+          "Trade agreements and preference programs",
+        ],
+        isAccessibleForFree: true,
+      })}
+      {renderSchemaJsonLd({
+        "@type": "FAQPage",
+        mainEntity: faqs.map(({ question, answer }) => ({
+          "@type": "Question",
+          name: question,
+          acceptedAnswer: { "@type": "Answer", text: answer },
+        })),
+      })}
+      {renderSchemaJsonLd({
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { name: "Duty Calculator", item: `https://${config.domainName}/duty-calculator` },
+          { name: "Tariffs by country", item: URL_ },
+        ].map((crumb, i) => ({ "@type": "ListItem", position: i + 1, ...crumb })),
+      })}
+      <CountriesHub
+        rows={rows}
+        summary={summary}
+        subtitle={hubSubtitle(summary)}
+        keyFacts={hubKeyFacts(all, summary)}
+        tiers={hubTiers(all)}
+        groups={hubGroups(summary)}
+        faqs={faqs}
+        sources={sources}
+        csvHref={CSV_PATH}
+        verifiedThrough={verifiedThrough}
+        asOf={asOf}
+        asOfLabel={asOfLabel}
+      />
+    </main>
+  );
+}

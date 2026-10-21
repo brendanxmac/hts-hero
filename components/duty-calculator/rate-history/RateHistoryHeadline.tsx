@@ -1,6 +1,6 @@
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "@heroicons/react/20/solid";
 import { HistorySegment } from "@/tariffs/engine-v2/history";
-import * as ui from "@/components/ui/styles";
+import { StatStrip } from "@/components/ui/StatStrip";
 import { shortDate, signedMoney, signedPct } from "./format";
 import { TREND_PILL, trendOf } from "./trend";
 import { Metric } from "./types";
@@ -37,44 +37,41 @@ export const RateHistoryHeadline = ({
   const totals = history.map((s) => s.result.totalDuty);
   const changes = history.length - 1;
 
+  // A band across the whole card (out past its padding), like the duty tab's figures
   return (
-    <div>
-      <div className={ui.label}>{label}</div>
-      <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1.5">
-        <span className={ui.metric.primaryCompact}>{show(current.result.totalDuty)}</span>
-        <span
-          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${TREND_PILL[trendOf(delta)]}`}
-        >
-          {Math.abs(delta) < 0.005 ? (
-            <>No change since {shortDate(first.from)}</>
-          ) : (
-            <>
-              {delta > 0 ? (
-                <ArrowUpRightIcon className="w-3.5 h-3.5" aria-hidden />
+    <StatStrip
+      framed={false}
+      lead
+      className="-mx-5 border-y border-base-300 sm:-mx-6"
+      stats={[
+        {
+          label,
+          value: show(current.result.totalDuty),
+          note: (
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${TREND_PILL[trendOf(delta)]}`}
+            >
+              {Math.abs(delta) < 0.005 ? (
+                <>No change since {shortDate(first.from)}</>
               ) : (
-                <ArrowDownRightIcon className="w-3.5 h-3.5" aria-hidden />
+                <>
+                  {delta > 0 ? <ArrowUpRightIcon className="h-3.5 w-3.5" aria-hidden /> : <ArrowDownRightIcon className="h-3.5 w-3.5" aria-hidden />}
+                  {metric === "usd" ? signedMoney(delta) : signedPct(value(delta))}
+                  {deltaPct !== null && metric === "usd" && ` (${signedPct(deltaPct)})`}
+                  <span className="font-medium opacity-80">{deltaWhen}</span>
+                </>
               )}
-              {metric === "usd" ? signedMoney(delta) : signedPct(value(delta))}
-              {deltaPct !== null && metric === "usd" && ` (${signedPct(deltaPct)})`}
-              <span className="font-medium opacity-80">{deltaWhen}</span>
-            </>
-          )}
-        </span>
-      </div>
-      {changes > 0 && (
-        <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
-          {[
-            ["Low", show(Math.min(...totals))],
-            ["High", show(Math.max(...totals))],
-            ["Changes", String(changes)],
-          ].map(([term, detail]) => (
-            <div key={term} className="rounded-md bg-base-200 px-2.5 py-1.5">
-              <dt className="text-base-content/60">{term}</dt>
-              <dd className="font-semibold tabular-nums text-base-content">{detail}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
-    </div>
+            </span>
+          ),
+        },
+        ...(changes > 0
+          ? [
+              { label: "Low", value: show(Math.min(...totals)), note: "Lowest since " + shortDate(first.from) },
+              { label: "High", value: show(Math.max(...totals)), note: "Highest since " + shortDate(first.from) },
+              { label: "Changes", value: String(changes), note: changes === 1 ? "Tariff change" : "Tariff changes", wide: true },
+            ]
+          : []),
+      ]}
+    />
   );
 };

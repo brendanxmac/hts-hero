@@ -22,7 +22,7 @@ const Highlight = ({ text, term }: { text: string; term: string }) => {
     <>
       {parts.map((part, i) =>
         part.toLowerCase() === term.toLowerCase() ? (
-          <mark key={i} className="rounded bg-warning/40 px-0.5 text-inherit">
+          <mark key={i} className="rounded-sm bg-warning/40 px-0.5 text-inherit">
             {part}
           </mark>
         ) : (
@@ -176,14 +176,14 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
       {/* Outline */}
-      <aside className="flex min-w-0 flex-col gap-2 lg:sticky lg:top-[4.25rem] lg:max-h-[calc(100vh-5.5rem)]">
+      <aside className="flex min-w-0 flex-col gap-2 lg:sticky lg:top-17 lg:max-h-[calc(100vh-5.5rem)]">
         <input
           className={`${inputCls} w-full`}
           placeholder="Filter notes"
           value={outlineFilter}
           onChange={(e) => setOutlineFilter(e.target.value)}
         />
-        <nav className="max-h-80 overflow-y-auto rounded-lg border border-base-content/10 bg-base-100 shadow-sm lg:max-h-none lg:flex-1">
+        <nav className="max-h-80 overflow-y-auto rounded-lg border border-base-content/10 bg-base-100 shadow-xs lg:max-h-none lg:flex-1">
           {outline.map((top, i) => {
             const newGroup = i === 0 || outline[i - 1].groupKey !== top.groupKey
             const count = descendants.get(top.key)?.length ?? 1
@@ -192,7 +192,7 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
             return (
               <Fragment key={top.key}>
                 {newGroup && (
-                  <div className="sticky top-0 z-10 border-b border-base-content/10 bg-base-100/95 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-base-content/50 backdrop-blur">
+                  <div className="sticky top-0 z-10 border-b border-base-content/10 bg-base-100/95 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-base-content/50 backdrop-blur-sm">
                     {groupTitle(top)}
                   </div>
                 )}
@@ -219,13 +219,13 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
       <section className="flex min-w-0 flex-col gap-4">
         <div className="flex flex-col gap-1">
           <input
-            className="input input-bordered border-base-content/15 bg-base-100 shadow-sm"
+            className="input border-base-content/15 bg-base-100 shadow-xs"
             placeholder='Search: a citation like "20(gg)" or "note 2(v)(iii)", any text, or an HTS code'
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           {results && (
-            <div className="overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-sm">
+            <div className="overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs">
               <div className="flex items-center justify-between border-b border-base-content/10 px-3 py-1.5 text-xs text-base-content/50">
                 <span>
                   {results.matches.length} match{results.matches.length === 1 ? "" : "es"}
@@ -258,8 +258,8 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
         </div>
 
         {selected && (
-          <div className="rounded-lg border border-base-content/10 bg-base-100 shadow-sm">
-            <div className="sticky top-12 z-10 flex flex-wrap items-center gap-3 rounded-t-lg border-b border-base-content/10 bg-base-100/95 px-4 py-2.5 backdrop-blur">
+          <div className="rounded-lg border border-base-content/10 bg-base-100 shadow-xs">
+            <div className="sticky top-12 z-10 flex flex-wrap items-center gap-3 rounded-t-lg border-b border-base-content/10 bg-base-100/95 px-4 py-2.5 backdrop-blur-sm">
               <button className={btn.xsSecondary} disabled={topIndex <= 0} onClick={() => step(-1)} title="Previous note ([)">
                 ← Prev
               </button>
@@ -305,7 +305,7 @@ export default function NotesBrowser({ notes, warnings, focusKey }: Props) {
                         </Pill>
                       ))}
                     </div>
-                    <p className="mt-0.5 whitespace-pre-wrap break-words leading-relaxed text-base-content/80">
+                    <p className="mt-0.5 whitespace-pre-wrap wrap-break-word leading-relaxed text-base-content/80">
                       {n.text ? (
                         <Highlight text={n.text} term={results?.term ?? ""} />
                       ) : (

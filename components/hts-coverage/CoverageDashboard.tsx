@@ -1,6 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { Select } from "@/components/ui/Select"
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table"
 import {
   CATEGORIES,
   CATEGORY_LABELS,
@@ -31,7 +33,6 @@ import {
   StatGrid,
   btn,
   inputCls,
-  selectCls,
 } from "../hts-revision-diff/ui"
 import { coverageApi } from "./api"
 import { BatchesPanel, BatchModal } from "./batch-ui"
@@ -117,15 +118,16 @@ const SortHeader = ({
   setSort: (s: { key: SortKey; dir: 1 | -1 }) => void
   className?: string
 }) => (
-  <th className={`px-3 py-2 font-medium ${className}`}>
+  <Th className={className} aria-sort={sort.key === k ? (sort.dir === 1 ? "ascending" : "descending") : "none"}>
     <button
-      className="inline-flex items-center gap-1 hover:text-base-content"
+      type="button"
+      className={`inline-flex items-center gap-1 uppercase tracking-wider hover:text-base-content ${sort.key === k ? "text-base-content" : ""}`}
       onClick={() => setSort({ key: k, dir: sort.key === k ? (-sort.dir as 1 | -1) : 1 })}
     >
       {label}
       <span className="text-base-content/30">{sort.key === k ? (sort.dir === 1 ? "↑" : "↓") : ""}</span>
     </button>
-  </th>
+  </Th>
 )
 
 const BulkBar = ({
@@ -149,7 +151,7 @@ const BulkBar = ({
   onSuggest: () => void
   suggesting: { done: number; total: number } | null
 }) => (
-  <div className="sticky top-12 z-30 flex flex-wrap items-center gap-2 border-b border-base-content/10 bg-base-200/95 px-4 py-2 backdrop-blur">
+  <div className="sticky top-12 z-30 flex flex-wrap items-center gap-2 border-b border-base-content/10 bg-base-200/95 px-4 py-2 backdrop-blur-sm">
     <span className="text-sm font-medium tabular-nums">{count} selected</span>
     <button className={btn.xsPrimary} onClick={onAddToBatch} disabled={!batchesEnabled}>
       Add to batch…
@@ -163,53 +165,41 @@ const BulkBar = ({
       {suggesting && <Spinner />}
       {suggesting ? `Suggesting ${suggesting.done}/${suggesting.total}…` : "Suggest with Claude"}
     </button>
-    <select className={`${selectCls} select-xs`} value="" onChange={(e) => e.target.value && onApply({ status: e.target.value as CoverageStatus })}>
-      <option value="">Set status…</option>
-      {STATUSES.map((s) => (
-        <option key={s} value={s}>
-          {s === "open" ? "In effect" : STATUS_LABELS[s]}
-        </option>
-      ))}
-    </select>
-    <select
-      className={`${selectCls} select-xs`}
+    <Select<CoverageStatus | "">
+      size="xs"
+      label="Set status"
+      placeholder="Set status…"
+      menuClassName="w-48"
       value=""
-      onChange={(e) => e.target.value && onApply({ category: e.target.value === "-" ? null : (e.target.value as Category) })}
-    >
-      <option value="">Set category…</option>
-      <option value="-">Use suggestion</option>
-      {CATEGORIES.map((c) => (
-        <option key={c} value={c}>
-          {CATEGORY_LABELS[c]}
-        </option>
-      ))}
-    </select>
-    <select
-      className={`${selectCls} select-xs`}
+      onChange={(v) => v && onApply({ status: v })}
+      options={STATUSES.map((s) => ({ value: s, label: s === "open" ? "In effect" : STATUS_LABELS[s] }))}
+    />
+    <Select<Category | "-" | "">
+      size="xs"
+      label="Set category"
+      placeholder="Set category…"
+      menuClassName="w-56"
       value=""
-      onChange={(e) => e.target.value && onApply({ priority: e.target.value === "-" ? null : (e.target.value as Priority) })}
-    >
-      <option value="">Set priority…</option>
-      <option value="-">None</option>
-      {PRIORITIES.map((p) => (
-        <option key={p} value={p}>
-          {p}
-        </option>
-      ))}
-    </select>
-    <select
-      className={`${selectCls} select-xs`}
+      onChange={(v) => v && onApply({ category: v === "-" ? null : v })}
+      options={[{ value: "-", label: "Use suggestion" }, ...CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABELS[c] }))]}
+    />
+    <Select<Priority | "-" | "">
+      size="xs"
+      label="Set priority"
+      placeholder="Set priority…"
       value=""
-      onChange={(e) => e.target.value && onApply({ program: e.target.value === "-" ? null : e.target.value })}
-    >
-      <option value="">Set program…</option>
-      <option value="-">Automatic</option>
-      {programs.map((p) => (
-        <option key={p.id} value={p.id}>
-          {p.name}
-        </option>
-      ))}
-    </select>
+      onChange={(v) => v && onApply({ priority: v === "-" ? null : v })}
+      options={[{ value: "-", label: "None" }, ...PRIORITIES.map((p) => ({ value: p, label: p }))]}
+    />
+    <Select
+      size="xs"
+      label="Set program"
+      placeholder="Set program…"
+      menuClassName="w-72"
+      value=""
+      onChange={(v) => v && onApply({ program: v === "-" ? null : v })}
+      options={[{ value: "-", label: "Automatic" }, ...programs.map((p) => ({ value: p.id, label: p.name }))]}
+    />
     {busy && <Spinner />}
     <button className={`${btn.xsGhost} ml-auto`} onClick={onClear}>
       Clear selection
@@ -625,40 +615,47 @@ export default function CoverageDashboard() {
                 value={filters.q}
                 onChange={(e) => setFilter("q", e.target.value)}
               />
-              <select className={`${selectCls} select-xs`} value={filters.subchapter} onChange={(e) => setFilter("subchapter", e.target.value)}>
-                <option value="">All subchapters</option>
-                {subchapters.map((s) => (
-                  <option key={s} value={s}>
-                    {s} · {subchapterLabel(s)}
-                  </option>
-                ))}
-              </select>
-              <select className={`${selectCls} select-xs`} value={filters.category} onChange={(e) => setFilter("category", e.target.value)}>
-                <option value="">All categories</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {CATEGORY_LABELS[c]}
-                  </option>
-                ))}
-              </select>
-              <select className={`${selectCls} select-xs`} value={filters.program} onChange={(e) => setFilter("program", e.target.value)}>
-                <option value="">All programs</option>
-                <option value={UNMAPPED}>Unmapped</option>
-                {data.programs.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-              <select className={`${selectCls} select-xs`} value={filters.priority} onChange={(e) => setFilter("priority", e.target.value)}>
-                <option value="">Any priority</option>
-                <option value={UNMAPPED}>No priority</option>
-                {PRIORITIES.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
+              <Select
+                size="xs"
+                label="Subchapter"
+                className="max-w-[16rem]"
+                menuClassName="w-80"
+                value={filters.subchapter}
+                onChange={(v) => setFilter("subchapter", v)}
+                options={[{ value: "", label: "All subchapters" }, ...subchapters.map((s) => ({ value: s, label: `${s} · ${subchapterLabel(s)}` }))]}
+              />
+              <Select
+                size="xs"
+                label="Category"
+                menuClassName="w-56"
+                value={filters.category}
+                onChange={(v) => setFilter("category", v)}
+                options={[{ value: "", label: "All categories" }, ...CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABELS[c] }))]}
+              />
+              <Select
+                size="xs"
+                label="Program"
+                className="max-w-[16rem]"
+                menuClassName="w-72"
+                value={filters.program}
+                onChange={(v) => setFilter("program", v)}
+                options={[
+                  { value: "", label: "All programs" },
+                  { value: UNMAPPED, label: "Unmapped" },
+                  ...data.programs.map((p) => ({ value: p.id, label: p.name })),
+                ]}
+              />
+              <Select
+                size="xs"
+                label="Priority"
+                value={filters.priority}
+                onChange={(v) => setFilter("priority", v)}
+                options={[
+                  { value: "", label: "Any priority" },
+                  { value: UNMAPPED, label: "No priority" },
+                  ...PRIORITIES.map((p) => ({ value: p, label: p })),
+                ]}
+              />
               <label className="flex cursor-pointer items-center gap-1.5 text-xs text-base-content/70">
                 <input
                   type="checkbox"
@@ -696,86 +693,81 @@ export default function CoverageDashboard() {
             {filtered.length === 0 ? (
               <EmptyState title="No headings match">Try another view or clear the filters.</EmptyState>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="border-b border-base-content/10 text-left text-xs text-base-content/55">
-                    <tr>
-                      <th className="w-8 px-3 py-2">
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-xs"
-                          checked={allShownSelected}
-                          onChange={() =>
-                            setSelected((s) => {
-                              const next = new Set(s)
-                              shown.forEach((r) => (allShownSelected ? next.delete(r.item.htsno) : next.add(r.item.htsno)))
-                              return next
-                            })
-                          }
-                          title="Select this page"
-                        />
-                      </th>
-                      <SortHeader label="Heading" k="htsno" sort={sort} setSort={setSort} />
-                      <th className="px-3 py-2 font-medium">Description</th>
-                      <SortHeader label="Rate" k="rate" sort={sort} setSort={setSort} />
-                      <SortHeader label="Status" k="status" sort={sort} setSort={setSort} />
-                      <SortHeader label="Category" k="category" sort={sort} setSort={setSort} />
-                      <SortHeader label="Program" k="program" sort={sort} setSort={setSort} />
-                      <SortHeader label="Priority" k="priority" sort={sort} setSort={setSort} />
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-base-content/5">
-                    {shown.map((r) => (
-                      <tr
-                        key={r.item.htsno}
-                        className={`cursor-pointer align-top hover:bg-base-content/[0.03] ${open === r.item.htsno ? "bg-base-content/[0.05]" : ""}`}
-                        onClick={() => setOpen(r.item.htsno)}
-                      >
-                        <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+              <Table label="Headings" framed={false} dense valign="top">
+                <THead>
+                  <Tr>
+                    <Th className="w-8">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-xs"
+                        checked={allShownSelected}
+                        onChange={() =>
+                          setSelected((s) => {
+                            const next = new Set(s)
+                            shown.forEach((r) => (allShownSelected ? next.delete(r.item.htsno) : next.add(r.item.htsno)))
+                            return next
+                          })
+                        }
+                        title="Select this page"
+                      />
+                    </Th>
+                    <SortHeader label="Heading" k="htsno" sort={sort} setSort={setSort} />
+                    <Th>Description</Th>
+                    <SortHeader label="Rate" k="rate" sort={sort} setSort={setSort} />
+                    <SortHeader label="Status" k="status" sort={sort} setSort={setSort} />
+                    <SortHeader label="Category" k="category" sort={sort} setSort={setSort} />
+                    <SortHeader label="Program" k="program" sort={sort} setSort={setSort} />
+                    <SortHeader label="Priority" k="priority" sort={sort} setSort={setSort} />
+                  </Tr>
+                </THead>
+                <TBody>
+                  {shown.map((r) => (
+                    <Tr key={r.item.htsno} selected={open === r.item.htsno} onClick={() => setOpen(r.item.htsno)}>
+                      <Td>
+                        {/* Clicks around the checkbox select, they don't open the heading */}
+                        <span className="-m-2 inline-flex p-2" onClick={(e) => e.stopPropagation()}>
                           <input
                             type="checkbox"
                             className="checkbox checkbox-xs"
                             checked={selected.has(r.item.htsno)}
                             onChange={() => toggle(r.item.htsno)}
                           />
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">{r.item.htsno}</td>
-                        <td className="max-w-md px-3 py-2">
-                          <p className="line-clamp-2 text-[13px] leading-snug text-base-content/85">{r.item.description}</p>
-                          <div className="mt-1 flex flex-wrap gap-1">
-                            {r.starts && <Pill tone="warning">Starts {formatDay(r.starts)}</Pill>}
-                            {r.item.engine_referenced && !r.item.engine_modeled && <Pill tone="info">referenced</Pill>}
-                            {r.item.note_citations.slice(0, 2).map((c) => (
-                              <Pill key={c.key}>{c.label}</Pill>
-                            ))}
-                            {r.item.note_citations.length > 2 && <Pill>+{r.item.note_citations.length - 2}</Pill>}
-                            {r.item.notes && <Pill title={r.item.notes}>note</Pill>}
+                        </span>
+                      </Td>
+                      <RowHeader className="whitespace-nowrap font-mono text-xs">{r.item.htsno}</RowHeader>
+                      <Td className="max-w-md">
+                        <p className="line-clamp-2 text-[13px] leading-snug text-base-content/85">{r.item.description}</p>
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {r.starts && <Pill tone="warning">Starts {formatDay(r.starts)}</Pill>}
+                          {r.item.engine_referenced && !r.item.engine_modeled && <Pill tone="info">referenced</Pill>}
+                          {r.item.note_citations.slice(0, 2).map((c) => (
+                            <Pill key={c.key}>{c.label}</Pill>
+                          ))}
+                          {r.item.note_citations.length > 2 && <Pill>+{r.item.note_citations.length - 2}</Pill>}
+                          {r.item.notes && <Pill title={r.item.notes}>note</Pill>}
+                        </div>
+                      </Td>
+                      <Td className="max-w-48 text-xs text-base-content/70">
+                        <span className="line-clamp-2">{r.item.general || "—"}</span>
+                      </Td>
+                      <Td className="whitespace-nowrap">
+                        <Pill tone={STATUS_TONES[r.status]} title={r.membership ? `In ${r.membership.title} (${r.membership.decision})` : r.item.status_note ?? undefined}>
+                          {STATUS_LABELS[r.status]}
+                        </Pill>
+                        {r.membership && (
+                          <div className="mt-1 max-w-36 truncate text-[11px] text-base-content/50" title={r.membership.title}>
+                            {r.membership.title}
+                            {r.membership.decision === "skip" && " (skipped)"}
                           </div>
-                        </td>
-                        <td className="max-w-[12rem] px-3 py-2 text-xs text-base-content/70">
-                          <span className="line-clamp-2">{r.item.general || "—"}</span>
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-2">
-                          <Pill tone={STATUS_TONES[r.status]} title={r.membership ? `In ${r.membership.title} (${r.membership.decision})` : r.item.status_note ?? undefined}>
-                            {STATUS_LABELS[r.status]}
-                          </Pill>
-                          {r.membership && (
-                            <div className="mt-1 max-w-[9rem] truncate text-[11px] text-base-content/50" title={r.membership.title}>
-                              {r.membership.title}
-                              {r.membership.decision === "skip" && " (skipped)"}
-                            </div>
-                          )}
-                        </td>
-                        <td className={`whitespace-nowrap px-3 py-2 text-xs ${r.item.category ? "" : "italic text-base-content/50"}`}>
-                          {categoryLabel(r.category)}
-                        </td>
-                        <td className="max-w-[11rem] truncate px-3 py-2 text-xs text-base-content/70">{r.program ? programName(r.program) : "—"}</td>
-                        <td className="px-3 py-2 text-xs font-medium">{r.item.priority ?? <span className="text-base-content/30">—</span>}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        )}
+                      </Td>
+                      <Td className={`whitespace-nowrap text-xs ${r.item.category ? "" : "italic text-base-content/50"}`}>{categoryLabel(r.category)}</Td>
+                      <Td className="max-w-44 truncate text-xs text-base-content/70">{r.program ? programName(r.program) : "—"}</Td>
+                      <Td className="text-xs font-medium">{r.item.priority ?? <span className="text-base-content/30">—</span>}</Td>
+                    </Tr>
+                  ))}
+                </TBody>
+              </Table>
             )}
 
             {pages > 1 && (

@@ -4,21 +4,31 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+// Tariff tools first: they're the focus. Classification follows the HTS Explorer.
 export const toolLinks = [
-  {
-    href: "/classifications",
-    emoji: "🎯",
-    title: "Classification Assistant",
-    subtitle: "AI-powered classification assistance",
-    hoverBg: "hover:bg-secondary/10",
-    iconBg: "bg-secondary/20",
-    hoverText: "group-hover:text-secondary",
-  },
   {
     href: "/duty-calculator",
     emoji: "💰",
-    title: "Duty & Tariff Simulator",
-    subtitle: "Duties & tariffs for any import",
+    title: "Tariff Calculator",
+    subtitle: "Every duty on any import, free",
+    hoverBg: "hover:bg-primary/10",
+    iconBg: "bg-primary/20",
+    hoverText: "group-hover:text-primary",
+  },
+  {
+    href: "/tariff-monitor",
+    emoji: "🔔",
+    title: "Tariff Tracker",
+    subtitle: "Alerts when tariffs change on your products",
+    hoverBg: "hover:bg-primary/10",
+    iconBg: "bg-primary/20",
+    hoverText: "group-hover:text-primary",
+  },
+  {
+    href: "/tariff-audit",
+    emoji: "🧾",
+    title: "Tariff Audit",
+    subtitle: "Find overpaid duty and refunds",
     hoverBg: "hover:bg-primary/10",
     iconBg: "bg-primary/20",
     hoverText: "group-hover:text-primary",
@@ -31,6 +41,15 @@ export const toolLinks = [
     hoverBg: "hover:bg-base-content/10",
     iconBg: "bg-base-content/10",
     hoverText: "group-hover:text-base-content",
+  },
+  {
+    href: "/classifications",
+    emoji: "🎯",
+    title: "Classification Assistant",
+    subtitle: "AI-powered classification assistance",
+    hoverBg: "hover:bg-secondary/10",
+    iconBg: "bg-secondary/20",
+    hoverText: "group-hover:text-secondary",
   },
 ];
 
@@ -81,11 +100,11 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
         <>
           {/* Backdrop to close menu */}
           <div
-            className="fixed inset-0 z-[9998]"
+            className="fixed inset-0 z-9998"
             onClick={() => setIsOpen(false)}
           />
           {/* Dropdown Menu */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-[9999] w-72 sm:w-80 bg-base-100 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-9999 w-72 sm:w-80 bg-base-100 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
             {/* Arrow */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-base-100 border-l border-t border-base-content/10 rotate-45" />
 
@@ -103,7 +122,7 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
                       }`}
                   >
                     <div
-                      className={`w-10 h-10 rounded-lg ${tool.iconBg} flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform`}
+                      className={`w-10 h-10 rounded-lg ${tool.iconBg} flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform`}
                     >
                       {tool.emoji}
                     </div>
@@ -156,7 +175,7 @@ export const MobileToolsMenu = ({ onLinkClick }: MobileToolsMenuProps) => {
                 }`}
             >
               <div
-                className={`w-9 h-9 rounded-lg ${tool.iconBg} flex items-center justify-center text-lg flex-shrink-0`}
+                className={`w-9 h-9 rounded-lg ${tool.iconBg} flex items-center justify-center text-lg shrink-0`}
               >
                 {tool.emoji}
               </div>

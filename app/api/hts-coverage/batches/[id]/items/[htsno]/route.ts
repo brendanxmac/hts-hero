@@ -6,7 +6,11 @@ import { updateBatchItem } from "@/libs/hts-coverage/batches"
 export const dynamic = "force-dynamic"
 
 // { decision?, instructions? } for one heading in a batch
-export async function PATCH(request: Request, { params }: { params: { id: string; htsno: string } }) {
+export async function PATCH(
+  request: Request,
+  props: { params: Promise<{ id: string; htsno: string }> }
+) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

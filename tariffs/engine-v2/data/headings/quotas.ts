@@ -11,7 +11,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.54.02",
     program: "quotas",
-    name: "Additional Quota: Lean Beef Trimmings (Sep 1 – Nov 30, 2026)",
+    name: "Additional Quota: Lean Beef Trimmings",
     description:
       "In addition to the aggregate quantity of beef specified in additional U.S. note 3(a) to chapter 2 of the tariff schedule for any calendar year, and the aggregate quantity of lean beef trimmings of Argentina specified in additional U.S. note 3(b) to chapter 2 of the tariff schedule, 300,000 metric tons of lean beef trimmings of other countries or areas, described in statistical reporting numbers 0201.30.5091, 0201.30.5097, 0202.30.5091 and 0202.30.5097, may be entered for consumption, or withdrawn from warehouse for consumption, between 12:01 a.m. local port time on September 1, 2026, and 11:59 p.m. eastern time on November 30, 2026, as provided in subsections (c) and (d) of U.S. note 7 to this subchapter",
     scope: {

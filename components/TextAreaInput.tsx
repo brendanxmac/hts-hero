@@ -96,7 +96,7 @@ export default function TextAreaInput({
               onSubmit && onSubmit(localProductDescription);
             }
           }}
-          className="w-full text-base max-h-96 min-h-16 resize-none bg-transparent placeholder-base-content/40 focus:outline-none leading-relaxed"
+          className="w-full text-base max-h-96 min-h-16 resize-none bg-transparent placeholder-base-content/40 focus:outline-hidden leading-relaxed"
         />
 
         {(showCharacterCount || onSubmit) && (
@@ -124,7 +124,7 @@ export default function TextAreaInput({
               <button
                 disabled={!canSubmit || loading}
                 className={`group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${canSubmit && !loading
-                  ? "bg-gradient-to-r from-primary to-primary/90 text-primary-content hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02] hover:cursor-pointer"
+                  ? "bg-linear-to-r from-primary to-primary/90 text-primary-content hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02] hover:cursor-pointer"
                   : "bg-base-content/10 text-base-content/40 cursor-not-allowed"
                   }`}
                 onClick={() => {

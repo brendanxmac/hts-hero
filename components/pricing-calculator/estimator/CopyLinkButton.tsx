@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { CheckIcon, LinkIcon } from "@heroicons/react/20/solid";
-import * as ui from "@/components/ui/styles";
 import { estimateUrl } from "../lib/links";
 
 const COPIED_FOR_MS = 2000;
@@ -27,8 +26,13 @@ export const CopyLinkButton = ({ query }: { query: string }) => {
     }
   };
 
+  // A quiet button for the dark summary card
   return (
-    <button type="button" onClick={copy} className={ui.button({ variant: "ghost", size: "sm" })}>
+    <button
+      type="button"
+      onClick={copy}
+      className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-base-content/70 transition-colors hover:bg-base-content/10 hover:text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60"
+    >
       {copied ? (
         <CheckIcon className="h-4 w-4 text-success" aria-hidden />
       ) : (

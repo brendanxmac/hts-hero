@@ -3,7 +3,7 @@
 // Checked but not applied: the other headings that match the code and country, and why each
 // doesn't apply. Collapsed until opened.
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import { DutyLine } from "@/tariffs/engine-v2/types";
@@ -15,12 +15,25 @@ const STATUS = {
   applies: "Applies",
 };
 
-export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
+// bare: no card of its own, divided from what's above it (inside the duty breakdown)
+// explain: the engine's reasons in plain English (plainReasons)
+export const NotAppliedPanel = ({
+  lines,
+  bare = false,
+  explain = (r) => r,
+  lockedReason,
+}: {
+  lines: DutyLine[];
+  bare?: boolean;
+  explain?: (reason: string) => string;
+  // Signed out: in place of each reason, given the plain-English reason (it takes a free account)
+  lockedReason?: (reason: string) => ReactNode;
+}) => {
   const [open, setOpen] = useState(false);
   const notApplied = lines.filter((l) => l.status !== "applies");
   if (notApplied.length === 0) return null;
   return (
-    <div className={ui.card}>
+    <div className={bare ? "border-t border-base-300" : ui.card}>
       <button
         type="button"
         className="w-full flex items-center justify-between gap-3 p-5 sm:px-6 text-left"
@@ -62,9 +75,12 @@ export const NotAppliedPanel = ({ lines }: { lines: DutyLine[] }) => {
                 >
                   {STATUS[line.status]}
                 </span>
-                {line.reasons[0] && (
-                  <span className={ui.caption}>{line.reasons.join(" · ")}</span>
-                )}
+                {line.reasons[0] &&
+                  (lockedReason ? (
+                    lockedReason(line.reasons.map(explain).join(" · "))
+                  ) : (
+                    <span className={ui.caption}>{line.reasons.map(explain).join(" · ")}</span>
+                  ))}
               </div>
             </li>
           ))}

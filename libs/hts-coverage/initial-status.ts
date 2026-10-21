@@ -13,13 +13,13 @@ export interface StatusEntry {
 export const expired: StatusEntry[] = [
   { codes: "9901", note: "Expired" },
   { codes: "9902", note: "Expired" },
-  { codes: "9903.01.20", note: "Expired (9903.01.21–24 need review)" },
-  { codes: "9903.01.43-76", note: "Terminated" },
-  { codes: "9903.01.84-89", note: "Terminated Feb 7, 2026" },
-  { codes: "9903.02.30", note: "Terminated (See 90 Fed. Reg. 44638)" },
-  { codes: "9903.02.36", note: "Terminated (See 90 Fed. Reg. 59281)" },
-  { codes: "9903.02.56", note: "Terminated Nov 14, 2025 (See 90 Fed. Reg. 55964)" },
-  { codes: "9903.02.58", note: "Terminated (See 90 Fed. Reg. 59281)" },
+  { codes: "9903.01.20", note: "IEEPA (China fentanyl 10%); replaced by 9903.01.24" },
+  { codes: "9903.01.43-76", note: "IEEPA (reciprocal country rates); terminated" },
+  { codes: "9903.01.84-89", note: "IEEPA (India); terminated Feb 7, 2026 (EO 14384; CSMS #67702087)" },
+  { codes: "9903.02.30", note: "IEEPA; terminated (See 90 Fed. Reg. 44638)" },
+  { codes: "9903.02.36", note: "IEEPA; terminated (See 90 Fed. Reg. 59281)" },
+  { codes: "9903.02.56", note: "IEEPA; terminated Nov 14, 2025 (See 90 Fed. Reg. 55964)" },
+  { codes: "9903.02.58", note: "IEEPA; terminated (See 90 Fed. Reg. 59281)" },
   { codes: "9903.03.01-11", note: "Expired" },
   { codes: "9903.04.05-55", note: "Expired" },
   { codes: "9903.08.04-15", note: "Expired" },
@@ -36,6 +36,11 @@ export const expired: StatusEntry[] = [
   { codes: "9917", note: "All expired" },
   { codes: "9920", note: "All expired" },
   { codes: "9922", note: "All expired" },
+  // Every other heading in 9903.01 and 9903.02 is an IEEPA duty or exemption (fentanyl/border,
+  // reciprocal and country rates, Brazil, country deals), checked heading by heading in
+  // tariffs/backfill/ieepa/headings.md. Listed last so the entries above keep their own notes.
+  { codes: "9903.01.01-99", note: "IEEPA; ended for entries on or after Feb 24, 2026 (EO 14389; CSMS #67834313)" },
+  { codes: "9903.02.01-99", note: "IEEPA; ended for entries on or after Feb 24, 2026 (EO 14389; CSMS #67834313)" },
 ]
 
 const FTZ_NOTE = "Duties suspended except on certain goods entered from foreign trade zones"
@@ -63,7 +68,7 @@ export const ftzSuspended: StatusEntry[] = [
 ].map((codes) => ({ codes, note: FTZ_NOTE }))
 
 // Still in effect (they stay in missing), but flagged for a closer look
-export const needsReview: StatusEntry[] = [{ codes: "9903.01.21-24", note: "Needs review (see 9903.01.20, expired)" }]
+export const needsReview: StatusEntry[] = []
 
 // A parsed entry: either a prefix, or the exact headings it lists
 export type Matcher = { entry: StatusEntry; prefix: string } | { entry: StatusEntry; exact: string[] }

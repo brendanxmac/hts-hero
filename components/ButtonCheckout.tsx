@@ -10,7 +10,7 @@ import {
 } from "../libs/supabase/purchase";
 import toast from "react-hot-toast";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
-import LetsTalkModal from "./LetsTalkModal";
+import { openBookCall } from "@/libs/book-call";
 import LightningSVG from "./svg/LightningSVG";
 
 interface Props {
@@ -43,7 +43,6 @@ const getBuyButtonText = (plan: PricingPlanI) => {
 const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const getCheckoutSuccessEndpoint = (plan: PricingPlan) => {
     switch (plan) {
@@ -99,8 +98,8 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
       console.error("Error tracking classify team click:", e);
     }
 
-    // Open the modal
-    setIsModalOpen(true);
+    // Straight to Calendly
+    openBookCall({ name: user?.user_metadata?.full_name, email: user?.email });
   };
 
   const handlePayment = async () => {
@@ -185,11 +184,6 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
         )}
         {getBuyButtonText(plan)}
       </button>
-
-      <LetsTalkModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </>
   );
 };

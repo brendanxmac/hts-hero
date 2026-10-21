@@ -13,7 +13,7 @@ export const SkippedLines = ({ errors }: { errors: CatalogError[] }) => {
     <div className={ui.notice("warning")}>
       <button
         type="button"
-        className="flex w-full items-center justify-between gap-2 rounded text-left text-sm font-semibold text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="flex w-full items-center justify-between gap-2 rounded-sm text-left text-sm font-semibold text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
         onClick={() => setOpen((x) => !x)}
         aria-expanded={open}
       >

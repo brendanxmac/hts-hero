@@ -204,8 +204,8 @@ export const OverviewTab = ({
       </div>
 
       {/* Hero Banner */}
-      <div className="relative rounded-2xl border border-base-300 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/30 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
+      <div className="relative rounded-2xl border border-base-300 bg-linear-to-br from-base-200/60 via-base-100 to-base-200/30">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
           <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/[0.04] blur-3xl" />
           <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-success/[0.04] blur-3xl" />
         </div>
@@ -250,7 +250,7 @@ export const OverviewTab = ({
               <p className="text-xs uppercase font-semibold text-base-content/50 mb-1 mt-2">
                 Item Description
               </p>
-              <p className="text-sm md:text-base font-semibold leading-relaxed line-clamp-2 max-w-lg">
+              <p className="text-sm md:text-base md:leading-6 font-semibold leading-relaxed line-clamp-2 max-w-lg">
                 {liveClassification?.articleDescription ||
                   "No description available."}
               </p>
@@ -418,7 +418,7 @@ export const OverviewTab = ({
         <div className="p-5">
           <textarea
             ref={basisTextareaRef}
-            className={`whitespace-pre-wrap min-h-48 w-full px-4 py-3 rounded-lg border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${canUpdateDetails
+            className={`whitespace-pre-wrap min-h-48 w-full px-4 py-3 rounded-lg border transition-all duration-200 placeholder:text-base-content/50 focus:outline-hidden focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${canUpdateDetails
               ? "bg-base-100 border-base-300 hover:border-primary/40"
               : "bg-base-200/50 border-base-300 cursor-not-allowed opacity-60"
               }`}
@@ -489,7 +489,7 @@ export const OverviewTab = ({
               type="text"
               placeholder="Tag name"
               value={newImporter}
-              className="input input-bordered w-full"
+              className="input w-full"
               onChange={(e) => setNewImporter(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && newImporter.trim()) {

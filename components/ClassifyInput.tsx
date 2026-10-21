@@ -263,7 +263,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
                   }
                 }}
                 rows={3}
-                className={`w-full text-sm resize-none rounded-xl border px-3 py-2.5 bg-base-100 placeholder-base-content/40 focus:outline-none transition-all duration-200 ${isFocused
+                className={`w-full text-sm resize-none rounded-xl border px-3 py-2.5 bg-base-100 placeholder-base-content/40 focus:outline-hidden transition-all duration-200 ${isFocused
                   ? "ring-2 ring-primary/50 border-primary/30"
                   : "border-base-content/15 hover:border-primary/30"
                   }`}
@@ -312,7 +312,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
           >
             <textarea
               ref={textareaRef}
-              className="w-full min-h-[112px] sm:min-h-[120px] lg:min-h-[144px] max-h-48 text-base lg:text-lg resize-none pl-5 pr-5 pt-4 pb-16 sm:pb-[4.5rem] bg-transparent placeholder-base-content/40 focus:outline-none leading-relaxed rounded-2xl"
+              className="w-full min-h-[112px] sm:min-h-[120px] lg:min-h-[144px] max-h-48 text-base lg:text-lg lg:leading-7 resize-none pl-5 pr-5 pt-4 pb-16 sm:pb-18 bg-transparent placeholder-base-content/40 focus:outline-hidden leading-relaxed rounded-2xl"
               placeholder={shouldCycle ? "" : staticPlaceholder}
               autoFocus={true}
               value={description}
@@ -329,7 +329,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
             />
             {showPlaceholderOverlay && (
               <span
-                className={`absolute left-5 top-4 right-5 text-base lg:text-lg pointer-events-none transition-all leading-relaxed ${nudge ? "text-secondary font-medium animate-pulse" : "text-base-content/40"}`}
+                className={`absolute left-5 top-4 right-5 text-base lg:text-lg lg:leading-7 pointer-events-none transition-all leading-relaxed ${nudge ? "text-secondary font-medium animate-pulse" : "text-base-content/40"}`}
                 style={{
                   opacity: nudge ? 1 : (isVisible ? 1 : 0),
                   transitionDuration: `${FADE_DURATION_MS}ms`,

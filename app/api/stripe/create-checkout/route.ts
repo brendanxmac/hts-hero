@@ -3,9 +3,15 @@ import { createClient } from "@/app/api/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { PricingPlan } from "../../../../types";
 import { fetchUser, UserProfile } from "../../../../libs/supabase/user";
+import { Billing } from "@/components/pricing-calculator/lib/pricing";
+import { isTrackerPlan } from "@/libs/tariff-tracker/plan";
+import { trackerPriceId } from "@/libs/tariff-tracker/prices";
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 
 interface CreateCheckoutDto {
   itemId: PricingPlan;
+  // Tariff Tracker plans are billed monthly or annually
+  billing?: Billing;
   successEndpoint: string;
   cancelUrl: string;
 }
@@ -27,7 +33,7 @@ export async function POST(req: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const { itemId, successEndpoint, cancelUrl } = requestDto;
+    const { itemId, billing = "monthly", successEndpoint, cancelUrl } = requestDto;
 
     let userProfile: UserProfile | null = null;
 
@@ -35,7 +41,9 @@ export async function POST(req: NextRequest) {
       userProfile = await fetchUser(user.id);
     }
 
-    const getPriceId = (itemId: PricingPlan) => {
+    const getPriceId = async (itemId: PricingPlan) => {
+      // Tracker plans are monthly only for now (libs/tariff-tracker/features.ts)
+      if (isTrackerPlan(itemId)) return trackerPriceId(itemId, TRACKER_ANNUAL_ENABLED ? billing : "monthly");
       switch (itemId) {
         case PricingPlan.CLASSIFY_STARTER:
           return process.env.STRIPE_CLASSIFY_STARTER_PRICE_ID;
@@ -56,13 +64,21 @@ export async function POST(req: NextRequest) {
         case PricingPlan.CLASSIFY_PRO:
         case PricingPlan.TARIFF_IMPACT_STANDARD:
         case PricingPlan.TARIFF_IMPACT_PRO:
+        case PricingPlan.TARIFF_TRACKER_10:
+        case PricingPlan.TARIFF_TRACKER_30:
+        case PricingPlan.TARIFF_TRACKER_100:
+        case PricingPlan.TARIFF_TRACKER_500:
           return StripePaymentMode.SUBSCRIPTION;
       }
     };
 
     const successUrl = `${process.env.BASE_URL}${successEndpoint ? successEndpoint : "/"}`;
-    const priceId = getPriceId(itemId);
+    const priceId = await getPriceId(itemId);
     const mode = getMode(itemId);
+
+    if (!priceId) {
+      return NextResponse.json({ error: "This plan isn't available to buy yet." }, { status: 400 });
+    }
 
     console.log("cancelUrl", cancelUrl);
     console.log("successEndpoint", successEndpoint);

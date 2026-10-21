@@ -38,9 +38,9 @@ export function LockedTabOverlay({
       <div className="absolute inset-0 flex items-start justify-center pt-12 sm:pt-20 bg-base-100/40">
         <div className="w-full max-w-md mx-4 rounded-2xl border border-primary/20 bg-base-100 shadow-2xl shadow-primary/10 overflow-hidden">
           {/* Card header */}
-          <div className="bg-gradient-to-r from-primary/[0.08] via-primary/[0.04] to-secondary/[0.08] px-6 pt-6 pb-4 flex flex-col items-center text-center">
+          <div className="bg-linear-to-r from-primary/[0.08] via-primary/[0.04] to-secondary/[0.08] px-6 pt-6 pb-4 flex flex-col items-center text-center">
             <div className="relative mb-3">
-              <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-primary to-secondary opacity-25 blur-xl animate-pulse" />
+              <div className="absolute -inset-2 rounded-full bg-linear-to-r from-primary to-secondary opacity-25 blur-xl animate-pulse" />
               <div className="relative w-12 h-12 rounded-full bg-base-100 border-2 border-primary/30 shadow-lg flex items-center justify-center">
                 <LockClosedIcon className="w-6 h-6 text-primary" />
               </div>

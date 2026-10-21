@@ -1,7 +1,7 @@
 import type { HtsElement } from "@/interfaces/hts";
 import { formatSummaryDate, HtsDutySummary } from "@/libs/hts-duty-summary";
 import { mono } from "@/components/ui/font";
-import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import type { SectionChapter } from "./types";
 
 // The top of the page: the code, its readable name, and where it sits in the schedule
@@ -27,19 +27,19 @@ export function CodeHero({
 
   return (
     <div className="flex flex-col gap-3">
-      <span className={ui.kicker}>
+      <span className={tt.eyebrow("primary")}>
         HTS Code{element.chapter ? ` · Chapter ${element.chapter}` : ""}
         {summary && <> · Updated {formatSummaryDate(summary.asOf)}</>}
       </span>
       <h1 className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span className={`${mono.className} text-3xl sm:text-4xl font-semibold leading-none tracking-tight text-primary`}>
+        <span className={`${mono.className} text-3xl sm:text-4xl sm:leading-10 font-semibold leading-none tracking-tight text-primary`}>
           {element.htsno}
         </span>
-        <span className="text-2xl lg:text-3xl font-semibold leading-tight tracking-tight text-base-content">
+        <span className={`${tt.display} text-2xl lg:text-3xl lg:leading-9 font-semibold leading-tight tracking-tight text-base-content`}>
           {productName}
         </span>
       </h1>
-      <p className="max-w-3xl text-sm leading-relaxed text-base-content/70">
+      <p className="text-sm leading-relaxed text-base-content/70">
         HTS Code {element.htsno} covers any article best defined as{" "}
         {path.map((text, i) => (
           <span key={i}>

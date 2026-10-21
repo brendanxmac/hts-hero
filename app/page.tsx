@@ -1,31 +1,43 @@
 import { Metadata } from "next";
-import { HomePage } from "../components/HomePage";
-import { HomeDirectory } from "../components/HomeDirectory";
-import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
+import { renderSchemaJsonLd } from "@/libs/seo";
+import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import { FollowTheme } from "@/components/ui/marketing/FollowTheme";
+import {
+  DEFINITION,
+  HOME_FAQS,
+  HeroTicker,
+  HomeDirectory,
+  HomeFaq,
+  OfferCta,
+  PricingOverview,
+  ToolShowcase,
+  ClassifySection,
+  ManagedSection,
+  WelcomeNotice,
+} from "@/components/home";
+import { Testimonials } from "@/components/classify-landing";
+import { monitorFacts } from "@/components/tariff-monitor";
+import { getAuditExample } from "@/libs/tariff-audit-example";
+import { getSavingsExamples } from "@/libs/tariff-savings-example";
+import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
+import { MARKET_AUDITS, MARKET_SAVINGS } from "@/libs/tariff-tracker/features";
+import * as mk from "@/components/ui/marketing/styles";
+
+// Static, refreshed daily with the tariff data
+export const revalidate = 86400;
+
+const TITLE = "HTS Hero: US Tariff Calculator & Tariff Tracking for Your Imports";
+const DESCRIPTION =
+  "Calculate the US duty on any HTS code free, track every tariff on your imports, get alerts when tariffs change, and see exactly how each new tariff affects you. For importers and customs brokers.";
 
 export const metadata: Metadata = {
-  title:
-    "HTS Hero — Produce Audit-Ready HTS Classifications, Fast!",
-  description:
-    "Classify any product correctly in minutes, see the duties and tariffs for any import, and check tariff impact on your imports. Trusted by hundreds of customs brokers, freight forwarders, and manufacturers.",
-  keywords: [
-    "HTS Hero",
-    "US import duty calculator",
-    "HTS classification",
-    "harmonized tariff schedule",
-    "tariff calculator",
-    "us tariff calculator",
-    "customs duty calculator",
-    "HTS code lookup",
-    "import tariff",
-    "trade compliance",
-    "customs broker tools",
-  ],
+  title: TITLE,
+  description: DESCRIPTION,
   openGraph: {
-    title: "HTS Hero — Produce Audit-Ready HTS Classifications, Fast!",
-    description:
-      "Free tools for importers: calculate duties by HTS code, classify products with AI, and check tariff impacts on your imports.",
+    title: "HTS Hero: know every tariff on every import",
+    description: DESCRIPTION,
     url: `https://${config.domainName}`,
     siteName: "HTS Hero",
     type: "website",
@@ -34,51 +46,87 @@ export const metadata: Metadata = {
         url: `https://${config.domainName}/hero-tariffs.png`,
         width: 1200,
         height: 630,
-        alt: "HTS Hero — US Import Duty Simulator & Classification Tools",
+        alt: "HTS Hero tariff software",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HTS Hero — Produce Audit-Ready HTS Classifications, Fast!",
-    description:
-      "Free tools for importers: calculate duties by HTS code, classify products with AI, and check tariff impacts.",
+    title: "HTS Hero: know every tariff on every import",
+    description: DESCRIPTION,
     images: [`https://${config.domainName}/hero-tariffs.png`],
   },
-  alternates: {
-    canonical: "/",
-  },
+  alternates: { canonical: "/" },
 };
 
-export default function Home() {
+export default async function Home() {
+  const facts = monitorFacts();
+  const [{ example }, audit, savings] = await Promise.all([
+    getDutyCalculatorContent(),
+    // Only fetched while the homepage shows the audit and savings blocks (MVP_TRIM.md)
+    MARKET_AUDITS ? getAuditExample() : null,
+    MARKET_SAVINGS ? getSavingsExamples() : [],
+  ]);
+
   return (
-    <>
-      {renderSchemaJsonLd({
-        "@type": "WebSite",
-        name: "HTS Hero",
-        url: `https://${config.domainName}`,
-        description:
-          "Classify any product in minutes and see the tariff rate for any import. Trusted by hundreds of customs brokers, freight forwarders, and importers.",
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `https://${config.domainName}/hts/{search_term_string}`,
+    // The Tariff Tracker's look, following the site's light/dark setting (DESIGN_SYSTEM.md §15)
+    <FollowTheme>
+      <MarketingLayout>
+        {renderSchemaJsonLd({
+          "@type": "WebSite",
+          name: "HTS Hero",
+          url: `https://${config.domainName}`,
+          description: DEFINITION,
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `https://${config.domainName}/hts/{search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
           },
-          "query-input": "required name=search_term_string",
-        },
-      })}
-      {renderSchemaJsonLd({
-        "@type": "Organization",
-        name: "HTS Hero",
-        url: `https://${config.domainName}`,
-        logo: `https://${config.domainName}/logo.svg`,
-        description:
-          "Trade compliance tools for US importers — duty calculators, AI classification, and tariff impact analysis.",
-      })}
-      <HomePage>
-        <HomeDirectory />
-      </HomePage>
-    </>
+        })}
+        {renderSchemaJsonLd({
+          "@type": "Organization",
+          name: "HTS Hero",
+          url: `https://${config.domainName}`,
+          logo: `https://${config.domainName}/logo.svg`,
+          description: DEFINITION,
+        })}
+        {renderSchemaJsonLd({
+          "@type": "WebPage",
+          name: TITLE,
+          url: `https://${config.domainName}`,
+          description: DESCRIPTION,
+          // The tariff data on the page follows the latest verified HTS revision
+          dateModified: getLatestVerifiedRevision().from,
+        })}
+        {renderSchemaJsonLd({
+          "@type": "FAQPage",
+          mainEntity: HOME_FAQS.map(({ question, answer }) => ({
+            "@type": "Question",
+            name: question,
+            acceptedAnswer: { "@type": "Answer", text: answer },
+          })),
+        })}
+        <main className={`${mk.page} w-full flex-1 shrink-0`}>
+          <WelcomeNotice />
+          <HeroTicker />
+          <ToolShowcase
+            example={example}
+            audit={audit}
+            savings={savings}
+            facts={facts}
+          />
+          {/* <Testimonials /> */}
+          <PricingOverview />
+          <ManagedSection />
+          <ClassifySection />
+          <HomeDirectory />
+          <HomeFaq />
+          <OfferCta />
+        </main>
+      </MarketingLayout>
+    </FollowTheme>
   );
 }

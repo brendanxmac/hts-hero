@@ -32,7 +32,7 @@ export const SectionChapterCandidate = ({
             {label} {number}
           </span>
         </div>
-        <p className="text-sm md:text-base leading-relaxed font-medium text-base-content/80">
+        <p className="text-sm md:text-base md:leading-6 leading-relaxed font-medium text-base-content/80">
           {description}
         </p>
 

@@ -3,6 +3,7 @@
 // whatever is ready, so closing the page and coming back picks up where it was.
 
 import type { RevisionDb } from "./access"
+import { headingCoverage as headingCoverageFor, headingOf, isSubchapterIII } from "./archive"
 import { buildChanges, normalizeCitation } from "./build-changes"
 import { extractChangeRecord } from "./claude"
 import {
@@ -13,18 +14,17 @@ import {
   RevisionDiffTables as T,
 } from "./constants"
 import { pollConversion, submitConversion } from "./datalab"
-import { diffCodes, diffNotes } from "./diff"
+import { diffCodes, diffNotes, diffSharedCodes } from "./diff"
 import { parseCh99Json } from "./parse-ch99-json"
 import { groupSlugForNoteType, parseCh99NotesMarkdown, type ExpectedCitation } from "./parse-ch99-notes"
 import {
-  checkHeadingRowsWithClaude,
   extractHeadingRows,
   headingRowsAsHtsRows,
   headingRowsFingerprint,
   loadHeadingRows,
   saveHeadingPagesInfo,
 } from "./headings"
-import { detectRevision } from "./text"
+import { detectRevision, ownEditionRows } from "./text"
 import { attemptFolder, downloadBlob, downloadJson, downloadText, markdownPath, sourcePath, uploadFile } from "./storage"
 import { fetchCh99Export, getCurrentReleaseName } from "./usitc"
 import { HtsRevisions } from "../../tariffs/engine-v2/revisions"
@@ -126,11 +126,11 @@ export const advanceAttempt = async (db: RevisionDb, attemptId: string) => {
         completed_at: new Date().toISOString(),
       })
       if (doc.kind === "ch99_headings_pdf") {
-        // Read the table rows, then have Claude check them against the pages
+        // Read the table rows. Claude's check against the pages is run by hand from the
+        // Headings tab: on the forward revisions it only ever fixed formatting, which
+        // the parser now handles, and differences between revisions get reviewed anyway.
         try {
-          if (await extractHeadingRows(db, attemptId)) {
-            void checkHeadingRowsWithClaude(db, attemptId).catch((): null => null)
-          }
+          await extractHeadingRows(db, attemptId)
         } catch (error) {
           await saveHeadingPagesInfo(db, attemptId, { error: (error as Error).message })
         }
@@ -309,8 +309,10 @@ export const ensureChangeRecordItems = async (db: RevisionDb, attemptId: string,
   if (attempt.change_record_items && !force) return attempt.change_record_items
   const doc = documents.find((d) => d.kind === "change_record")
   if (!doc?.markdown_path) throw new Error("The change record hasn't been converted")
-  const markdown = await downloadText(db, doc.markdown_path)
-  const { items, model, usage } = await extractChangeRecord(markdown, revision.name)
+  // A Basic edition's change record is cumulative: only its own rows are changes from the
+  // revision before it, and reading the whole record overruns the model's output
+  const own = ownEditionRows(await downloadText(db, doc.markdown_path), revision.name)
+  const { items, model, usage } = await extractChangeRecord(own.markdown, revision.name)
   await updateAttempt(db, attemptId, {
     change_record_items: items,
     change_record_model: `${model} (${CHANGE_RECORD_PROMPT_VERSION})`,
@@ -390,17 +392,48 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       rowsOf(toAttempt.hts_rows_path),
     ])
     const noteDiffs = diffNotes(fromNotes.nodes, toNotes.nodes)
-    // Every heading is diffed only when both revisions have Chapter 99 JSON;
-    // otherwise heading changes come from the change record
-    const fullHeadingDiff = !!fromRows && !!toRows
-    const codeDiffs = fullHeadingDiff ? diffCodes(fromRows, toRows) : []
-    // Without JSON, cited headings are looked up in the reviewed rows from the
-    // revision's own heading pages
-    const headingRows = await loadHeadingRows(db, toAttempt.id)
+    // Without JSON, cited headings are looked up in the reviewed rows from each
+    // revision's own heading pages: the newer revision's for the "after", the
+    // older revision's for the "before"
+    const [headingRows, fromHeadingRows] = await Promise.all([
+      loadHeadingRows(db, toAttempt.id),
+      loadHeadingRows(db, from.attempt.id),
+    ])
     const unreviewedHeadingRows = headingRows.filter((r) => !r.reviewed).length
     const pdfRows = headingRowsAsHtsRows(headingRows)
+    const fromPdfRows = headingRowsAsHtsRows(fromHeadingRows)
     const lookupRows = toRows ?? (pdfRows.length ? pdfRows : null)
+    const fromLookupRows = fromRows ?? (fromPdfRows.length ? fromPdfRows : null)
     const headingSource = toRows ? "revision_json" : pdfRows.length ? "revision_pdf" : "none"
+    const fromHeadingSource = fromRows ? "revision_json" : fromPdfRows.length ? "revision_pdf" : "none"
+    // Every heading is diffed when both revisions have Chapter 99 JSON. Heading pages
+    // may be trimmed: subchapter III is diffed in full when both sides have all of its
+    // headings (checked against USITC's archived PDF), and otherwise only headings on
+    // both sides are diffed, with added and removed headings from the change record.
+    const fullHeadingDiff = !!fromRows && !!toRows
+    const headingCoverage = !toRows && pdfRows.length ? headingCoverageFor(to.revision.name, pdfRows) : null
+    const fromHeadingCoverage = !fromRows && fromPdfRows.length ? headingCoverageFor(from.revision.name, fromPdfRows) : null
+    const fullSubchapterIII =
+      !fullHeadingDiff &&
+      !!lookupRows &&
+      !!fromLookupRows &&
+      (!!toRows || !!headingCoverage?.complete) &&
+      (!!fromRows || !!fromHeadingCoverage?.complete)
+    const pageHeadingDiff = !fullHeadingDiff && !!lookupRows && !!fromLookupRows
+    const inSubchapterIII = (r: HtsRow) => isSubchapterIII(headingOf(r))
+    const codeDiffs = fullHeadingDiff
+      ? diffCodes(fromRows, toRows)
+      : fullSubchapterIII
+        ? [
+            ...diffCodes(fromLookupRows!.filter(inSubchapterIII), lookupRows!.filter(inSubchapterIII)),
+            ...diffSharedCodes(
+              fromLookupRows!.filter((r: HtsRow) => !inSubchapterIII(r)),
+              lookupRows!.filter((r: HtsRow) => !inSubchapterIII(r))
+            ),
+          ]
+        : pageHeadingDiff
+          ? diffSharedCodes(fromLookupRows!, lookupRows!)
+          : []
     const changes = buildChanges({
       changeRecordItems: items,
       noteDiffs,
@@ -408,7 +441,11 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
       fromNodes: fromNotes.nodes,
       toNodes: toNotes.nodes,
       toRows: lookupRows,
+      fromRows: fromLookupRows,
       fullHeadingDiff,
+      // With complete subchapter III pages, a cited 9903 heading with no difference
+      // really didn't change
+      headingDiffed: fullSubchapterIII ? (code: string) => isSubchapterIII(headingOf({ htsno: code, parentHtsno: null })) : undefined,
       toRevisionName: to.revision.name,
       headingSource,
     })
@@ -463,10 +500,21 @@ export const runComparison = async (db: RevisionDb, comparisonId: string) => {
         changes.map((c) => c.source)
       ),
       carriedOverReviews: carried,
-      headingDiff: fullHeadingDiff ? "full" : "change_record_only",
+      headingDiff: fullHeadingDiff
+        ? "full"
+        : fullSubchapterIII
+          ? "heading_pages_full"
+          : pageHeadingDiff
+            ? "heading_pages"
+            : "change_record_only",
+      headingCoverage,
+      fromHeadingCoverage,
       headingSource,
       unreviewedHeadingRows,
       headingRowsFingerprint: headingRowsFingerprint(headingRows),
+      fromHeadingSource,
+      fromUnreviewedHeadingRows: fromHeadingRows.filter((r) => !r.reviewed).length,
+      fromHeadingRowsFingerprint: headingRowsFingerprint(fromHeadingRows),
     }
     await updateComparison(db, comparisonId, { status: "ready", stats, diff_version: DIFF_VERSION })
   } catch (error) {

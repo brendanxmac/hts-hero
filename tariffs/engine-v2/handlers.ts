@@ -2,6 +2,7 @@
 // Rule: once past results depend on a handler, never change its behavior; register a new kind.
 // See HowTariffsWork.md §11.
 
+import { codeMatches } from "./snapshot"
 import { Answers, IsoDate, RuleSnapshot, Tri } from "./types"
 
 export interface HandlerContext {
@@ -19,8 +20,9 @@ export interface HandlerContext {
 type Params = Record<string, unknown>
 
 export interface ConditionHandler {
-  // Input ids this condition reads (so the UI can ask for them)
-  inputs: (params: Params) => string[]
+  // Input ids this condition reads (so the UI can ask for them). Without a context (the
+  // validator), every input it can read; with one, those it reads for this entry
+  inputs: (params: Params, ctx?: HandlerContext) => string[]
   check: (params: Params, ctx: HandlerContext) => Tri
   describe: (params: Params) => string
 }
@@ -117,6 +119,21 @@ register(conditionHandlers, "inputCompare", {
   describe: (p) => `${String(p.input)} ${String(p.op)} ${String(p.value)}`,
 })
 
+// A yes/no answer asked only for codes on `list`; other codes pass without a question. For
+// headings whose list mixes whole statistical numbers with described products: USTR's Section 301
+// exclusions in U.S. note 20(vvv) cover a whole number, or only a product "described in" one.
+register(conditionHandlers, "answerForListedCodes", {
+  inputs: (p, ctx) =>
+    !ctx || codeMatches([{ list: p.list as string }], ctx.htsCode, ctx.snapshot) ? [p.input as string] : [],
+  check: (p, ctx) => {
+    if (!codeMatches([{ list: p.list as string }], ctx.htsCode, ctx.snapshot)) return true
+    const value = ctx.answers[p.input as string]
+    if (value === undefined || value === null) return "unknown"
+    return value === (p.equals ?? true)
+  },
+  describe: (p) => `${String(p.input)} = ${String(p.equals ?? true)} (codes on ${String(p.list)})`,
+})
+
 // The importer claims (or doesn't claim) one of the listed trade preferences (SPI symbols).
 register(conditionHandlers, "preferenceClaimed", {
   inputs: none,
@@ -143,6 +160,55 @@ register(basisHandlers, "metalContent", {
     return (ctx.customsValue * Number(pct)) / 100
   },
   describe: (p) => `${String(p.metal)} content value`,
+})
+
+// The value of one metal's content for goods in the listed chapters, the full value otherwise.
+// U.S. notes 16 and 19 before April 6, 2026: "For goods classified in chapter 73, the additional
+// ad valorem duty imposed by headings 9903.81.89, 9903.81.90 and 9903.81.93 shall only apply to
+// the declared value of the steel content of the derivative article."
+register(basisHandlers, "metalContentInChapters", {
+  inputs: (p) => [`${String(p.metal)}ContentPct`],
+  value: (p, ctx) => {
+    const chapter = ctx.htsCode.replace(/\D/g, "").slice(0, 2)
+    if (!(p.chapters as string[]).includes(chapter)) return ctx.customsValue
+    const pct = ctx.answers[`${String(p.metal)}ContentPct`]
+    if (pct === undefined || pct === null || pct === "") return "unknown"
+    return (ctx.customsValue * Number(pct)) / 100
+  },
+  describe: (p) =>
+    `${String(p.metal)} content value (chapter ${(p.chapters as string[]).join(", ")}), full value otherwise`,
+})
+
+// The U.S. content of the article, when it's at least `minPct` percent of the value; nothing
+// otherwise. A partial exemption: the headings it displaces still apply to the rest. U.S. note
+// 2(v)(xvii) (IEEPA reciprocal, heading 9903.01.34): the duty "shall apply only to the non-U.S.
+// content", for articles whose U.S. content is at least 20 percent of the customs value.
+register(basisHandlers, "usContentPortion", {
+  inputs: () => ["usContentPct"],
+  value: (p, ctx) => {
+    const answer = ctx.answers.usContentPct
+    if (answer === undefined || answer === null || answer === "") return "unknown"
+    const pct = Math.min(Math.max(Number(answer), 0), 100)
+    return pct >= Number(p.minPct) ? (ctx.customsValue * pct) / 100 : 0
+  },
+  describe: (p) => `U.S. content, when at least ${String(p.minPct)}% of the value`,
+  explain: (p, ctx, basisValue) =>
+    basisValue > 0
+      ? `Covers the U.S. content (${Number(ctx.answers.usContentPct)}% of the value)`
+      : `U.S. content is under ${String(p.minPct)}% of the value, so nothing is covered`,
+})
+
+// Resolved by the pipeline, for a partial exemption: the content of each metal whose listed
+// headings apply (`content`: [{ codes, metal }]), capped at the customs value; the full value
+// when a trigger outside `content` applies. U.S. note 2(aa)(v) before April 6, 2026: Section 122
+// "shall apply to the non-steel content" (and non-aluminum, non-copper) of Section 232 metals.
+register(basisHandlers, "metalContentCovered", {
+  inputs: (p) =>
+    Array.from(new Set((p.content as { metal: string }[]).map((g) => `${g.metal}ContentPct`))),
+  value: () => {
+    throw new Error("metalContentCovered is resolved by the pipeline")
+  },
+  describe: () => "metal content of the Section 232 metals headings that apply",
 })
 
 // Resolved by the pipeline: the value covered by other applying tariffs matching `selector`

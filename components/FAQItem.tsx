@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { useRef, useState } from "react";
+import { useRef, useState, type JSX } from "react";
 
 export interface FAQItem {
   question: string;
@@ -20,7 +20,7 @@ export const FaqItem = ({ item }: Props) => {
   return (
     <li className="group">
       <button
-        className="relative flex items-center gap-4 w-full px-6 py-5 text-left transition-colors duration-200 hover:bg-gradient-to-r hover:from-base-100 hover:to-primary/10"
+        className="relative flex items-center gap-4 w-full px-6 py-5 text-left transition-colors duration-200 hover:bg-linear-to-r hover:from-base-100 hover:to-primary/10"
         onClick={(e) => {
           e.preventDefault();
           setIsOpen(!isOpen);
@@ -37,7 +37,7 @@ export const FaqItem = ({ item }: Props) => {
         </span>
         {/* Icon container */}
         <div
-          className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+          className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
             isOpen
               ? "bg-primary text-white rotate-0"
               : "bg-primary/10 text-primary"

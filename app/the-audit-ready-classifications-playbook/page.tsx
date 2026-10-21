@@ -84,17 +84,17 @@ export default function AuditReadyClassificationsPage() {
 
           {/* Hero: headline + book cover */}
           <section className="max-w-6xl mx-auto relative pt-6 pb-6 sm:pb-8 md:pb-4 px-4 sm:px-6 text-center flex flex-col gap-4 sm:gap-6 md:gap-8 lg:gap-10">
-            <p className="w-full max-w-4xl mx-auto py-2 px-4 sm:px-6 bg-primary/90 rounded-md text-base-100 font-bold text-xs sm:text-base md:text-lg tracking-wider mb-0 break-words">
+            <p className="w-full max-w-4xl mx-auto py-2 px-4 sm:px-6 bg-primary/90 rounded-md text-base-100 font-bold text-xs sm:text-base md:text-lg tracking-wider mb-0 wrap-break-word">
               Claim your <span className="underline">FREE</span> Copy of &quot;The Audit-Ready Classifications Playbook&quot; & Learn:
             </p>
 
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 sm:mb-8 break-words leading-tight">
+            <h1 className="text-3xl xs:text-4xl xs:leading-10 sm:text-5xl sm:leading-none md:text-6xl md:leading-none lg:text-7xl lg:leading-none font-extrabold tracking-tight mb-6 sm:mb-8 wrap-break-word leading-tight">
               How to Produce HTS Classifications that Reduce Import Risk And Protect Profits
             </h1>
 
             {/* Book cover + download form (side-by-side on wide screens, same height for future video swap) */}
-            <div className="w-full max-w-full mb-6 sm:mb-10 grid grid-cols-1 lg:grid-cols-[1fr,minmax(280px,400px)] lg:gap-6 xl:gap-10 lg:items-stretch lg:text-left min-w-0">
-              <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl shadow-base-content/20 border-2 sm:border-4 border-base-content/10 bg-base-200/30 lg:self-start shrink-0">
+            <div className="w-full max-w-full mb-6 sm:mb-10 grid grid-cols-1 lg:grid-cols-[1fr_minmax(280px,400px)] lg:gap-6 xl:gap-10 lg:items-stretch lg:text-left min-w-0">
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-base-content/20 border-2 sm:border-4 border-base-content/10 bg-base-200/30 lg:self-start shrink-0">
                 <iframe
                   src="https://www.youtube.com/embed/vJP4d2gkyQU?si=vQbWSuVav4U22QwM"
                   title="The Audit-Ready Classifications Playbook"
@@ -135,19 +135,19 @@ export default function AuditReadyClassificationsPage() {
           {/* Attention-grabber block - styled like classic funnel headline */}
           <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 lg:pt-10">
             <div className="text-center min-w-0">
-              <p className="p-2 sm:p-3 font-bold text-base-content bg-warning/70 text-sm sm:text-base md:text-lg lg:text-xl mb-4 sm:mb-6 md:mb-8 break-words">
+              <p className="p-2 sm:p-3 font-bold text-base-content bg-warning/70 text-sm sm:text-base md:text-lg lg:text-xl mb-4 sm:mb-6 md:mb-8 wrap-break-word">
                 Attention: Importers, Customs Brokers, Compliance Teams And Classification Professionals...
               </p>
 
-              <p className="font-bold text-2xl min-[400px]:text-3xl sm:text-4xl md:text-5xl lg:text-6xl py-4 sm:py-6 break-words leading-tight">
+              <p className="font-bold text-2xl min-[400px]:text-3xl sm:text-4xl sm:leading-10 md:text-5xl md:leading-none lg:text-6xl lg:leading-none py-4 sm:py-6 wrap-break-word leading-tight">
                 The <span className="text-error">Wrong HTS Code</span> Can Cost You A Year Of Profits & Headaches...
               </p>
 
-              <p className="text-base-content font-bold text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl pt-2 sm:pt-4 max-w-4xl mx-auto md:mb-3 break-words">
+              <p className="text-base-content font-bold text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl pt-2 sm:pt-4 max-w-4xl mx-auto md:mb-3 wrap-break-word">
                 Despite this, a <span className="underline">simple system</span> for <span className="text-primary">generating accurate classifications that defend themselves </span> didn&apos;t exist...
               </p>
 
-              <p className="text-base-content font-bold text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl py-4 sm:py-6 break-words">
+              <p className="text-base-content font-bold text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl py-4 sm:py-6 wrap-break-word">
                 So I Quit My Job & Built It Myself!
               </p>
 
@@ -157,7 +157,7 @@ export default function AuditReadyClassificationsPage() {
                   href="https://www.linkedin.com/in/brendan-mclaughlin-profile/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative w-48 h-48 min-[400px]:w-56 min-[400px]:h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 rounded-full overflow-hidden ring-2 sm:ring-4 ring-primary/30 hover:ring-primary/90 shadow-xl shrink-0 block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 hover:scale-105 transition-all duration-300 max-w-[85vw] max-h-[85vw]"
+                  className="relative w-48 h-48 min-[400px]:w-56 min-[400px]:h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 rounded-full overflow-hidden ring-2 sm:ring-4 ring-primary/30 hover:ring-primary/90 shadow-xl shrink-0 block focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 hover:scale-105 transition-all duration-300 max-w-[85vw] max-h-[85vw]"
                   aria-label="View Brendan's LinkedIn profile"
                 >
                   <Image
@@ -169,7 +169,7 @@ export default function AuditReadyClassificationsPage() {
                     sizes="(max-width: 400px) 192px, (max-width: 640px) 224px, 288px"
                   />
                 </a>
-                <p className="mt-2 sm:mt-4 text-lg sm:text-xl md:text-2xl font-bold text-base-content max-w-xl mx-auto px-1 break-words">
+                <p className="mt-2 sm:mt-4 text-lg sm:text-xl md:text-2xl font-bold text-base-content max-w-xl mx-auto px-1 wrap-break-word">
                   Hi, I&apos;m <a href="https://www.linkedin.com/in/brendan-mclaughlin-profile/" className="link link-primary">Brendan</a> 👋, the founder of HTS Hero and an engineer whose been flown around the world to help companies build better systems.
                 </p>
               </div>
@@ -179,15 +179,15 @@ export default function AuditReadyClassificationsPage() {
           {/* Proof of Results — bold strip (theme-aware: base-200 in both modes) */}
           <section className="py-8 sm:py-12 md:pt-16 px-4 sm:px-6 bg-primary/5 flex flex-col gap-4 md:gap-6 min-w-0">
             <div className="flex flex-col max-w-5xl mx-auto justify-center items-center text-center min-w-0 w-full">
-              <p className="font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-5 sm:mb-6 lg:mb-10 text-center break-words leading-tight">
+              <p className="font-bold text-3xl sm:text-4xl sm:leading-10 md:text-5xl md:leading-none lg:text-6xl lg:leading-none mb-5 sm:mb-6 lg:mb-10 text-center wrap-break-word leading-tight">
                 I&apos;ve Developed a <span className="text-primary">Step-by-Step System</span> for Generating <span className="text-primary">Audit-Ready</span> Classifications
               </p>
 
-              <p className="text-base-content font-medium md:font-bold text-base sm:text-lg md:text-xl lg:text-2xl pb-4 sm:pb-6 lg:pb-8 max-w-3xl mx-auto break-words">
+              <p className="text-base-content font-medium md:font-bold text-base sm:text-lg md:text-xl lg:text-2xl pb-4 sm:pb-6 lg:pb-8 max-w-3xl mx-auto wrap-break-word">
                 That Can <span className="text-primary">Reduce Your Compliance Risk</span> & Defend Your Business, Faster Than Anything Else You&apos;ve Ever Tried!
               </p>
 
-              <p className="text-base-content font-medium md:font-bold text-base sm:text-lg md:text-xl lg:text-2xl pb-6 sm:pb-8 max-w-xl mx-auto break-words">
+              <p className="text-base-content font-medium md:font-bold text-base sm:text-lg md:text-xl lg:text-2xl pb-6 sm:pb-8 max-w-xl mx-auto wrap-break-word">
                 And now... I&apos;ve turned that system into an <span className="font-bold text-primary">easy-to-follow playbook</span> so you can get the same results for <span className="underline">FREE!</span> 👇
               </p>
 
@@ -204,20 +204,20 @@ export default function AuditReadyClassificationsPage() {
               </div>
 
               <div className="max-w-5xl mx-auto text-center pt-6 sm:pt-10 lg:pt-20 pb-4 sm:pb-8 min-w-0">
-                <h2 className="text-xl min-[400px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-base-content leading-tight break-words">
+                <h2 className="text-xl min-[400px]:text-2xl sm:text-3xl sm:leading-9 md:text-4xl md:leading-10 lg:text-5xl lg:leading-none font-extrabold text-base-content leading-tight wrap-break-word">
                   In just <span className="text-primary">6 months</span> this systems has helped customs brokers and importers generate{" "}
                   <span className="text-primary">1,000+ Audit-Ready Classifications</span>
                 </h2>
               </div>
 
-              <p className="text-base-content font-bold text-base sm:text-lg md:text-xl lg:text-2xl pb-2 lg:pb-4 max-w-2xl mx-auto break-words">
+              <p className="text-base-content font-bold text-base sm:text-lg md:text-xl lg:text-2xl pb-2 lg:pb-4 max-w-2xl mx-auto wrap-break-word">
                 And now, for a limited time, you can get the playbook and 7 bonuses, <span className="font-bold text-primary">absolutely FREE!</span>
               </p>
 
               {/* Arrow pointing down to the CTA */}
               <div className="flex justify-center py-2 lg:py-4" aria-hidden>
                 <span className="inline-block text-primary animate-bounce w-8 h-8 sm:w-10 sm:h-10" style={{ animationDuration: "2s" }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full drop-shadow-sm">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full drop-shadow-xs">
                     <path d="M12 5v14M19 12l-7 7-7-7" />
                   </svg>
                 </span>
@@ -237,10 +237,10 @@ export default function AuditReadyClassificationsPage() {
 
           {/* What you get - benefits first */}
           <section className="py-8 sm:py-12 md:py-20 md:pb-10 max-w-4xl md:max-w-full mx-auto px-4 sm:px-6 text-center min-w-0">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-2 break-words">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-2 wrap-break-word">
               What&apos;s <span className="text-primary">Inside</span> The Playbook?
             </h2>
-            <p className="text-center text-base-content/80 mb-6 sm:mb-8 lg:mb-12 max-w-xl mx-auto text-base sm:text-lg lg:text-xl break-words">
+            <p className="text-center text-base-content/80 mb-6 sm:mb-8 lg:mb-12 max-w-xl mx-auto text-base sm:text-lg lg:text-xl wrap-break-word">
               Here&apos;s a sneak peek of what you&apos;ll discover inside the book:
             </p>
             <div className="flex flex-col md:flex-row md:items-stretch items-center justify-center md:gap-8 lg:gap-12 max-w-4xl md:max-w-6xl mx-auto w-full min-w-0">
@@ -256,34 +256,34 @@ export default function AuditReadyClassificationsPage() {
                 </div>
               </div>
               <ul className="space-y-4 sm:space-y-6 md:space-y-10 text-left max-w-2xl mx-auto md:mx-0 flex-1 min-w-0 w-full list-outside pl-5 sm:pl-6">
-                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 break-words">
+                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 wrap-break-word">
                   <span className="text-primary font-bold shrink-0">✓</span>
                   <span><strong className="underline">The CLEAR Framework</strong> - A simple process to quickly understand the classification-relevant details of any product</span>
                 </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 break-words">
+                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 wrap-break-word">
                   <span className="text-primary font-bold shrink-0">✓</span>
                   <span><strong className="underline">The DOOR Method</strong> - An easy-to-follow 4-step process that helps you build classifications that stand up to CBP review</span>
                 </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 break-words">
+                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 wrap-break-word">
                   <span className="text-primary font-bold shrink-0">✓</span>
                   <span><strong className="underline">Documentation Masterclass</strong> - Learn how to easily document classifications so audits don&apos;t become nightmares and classifications defend themselves</span>
                 </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 break-words">
+                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 wrap-break-word">
                   <span className="text-primary font-bold shrink-0">✓</span>
                   <span><strong className="underline">Step-by-Step Classification Example</strong> - See a full, In-depth example of how to do produce audit-ready classifications from start to finish</span>
                 </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 break-words">
+                <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 wrap-break-word">
                   <span className="text-primary font-bold shrink-0">✓</span>
                   <span><strong className="underline">Tricks to Classify 10x Faster</strong> - See how you can cut classification time without cutting corners</span>
                 </li>
               </ul>
             </div>
-            <p className="text-center mt-6 md:mt-14 lg:mt-16 md:text-lg lg:text-xl font-bold break-words mb-3">
+            <p className="text-center mt-6 md:mt-14 lg:mt-16 md:text-lg lg:text-xl font-bold wrap-break-word mb-3">
               But that&apos;s not all...
             </p>
             <div className="flex justify-center py-2 lg:py-4" aria-hidden>
               <span className="inline-block text-primary animate-bounce w-8 h-8 sm:w-10 sm:h-10" style={{ animationDuration: "2s" }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full drop-shadow-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full drop-shadow-xs">
                   <path d="M12 5v14M19 12l-7 7-7-7" />
                 </svg>
               </span>
@@ -293,10 +293,10 @@ export default function AuditReadyClassificationsPage() {
           {/* Free Bonuses */}
           <section className="pb-8 px-4 sm:px-6 min-w-0">
             <div className="max-w-4xl mx-auto w-full">
-              <h3 className="sm:text-lg md:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-8 lg:mb-12 text-base-content break-words">
+              <h3 className="sm:text-lg md:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-8 lg:mb-12 text-base-content wrap-break-word">
                 If You Download The Playbook <span className="underline">Today</span>, You&apos;ll
               </h3>
-              <h2 className="text-primary text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4 sm:mb-6 lg:mb-14 max-w-3xl mx-auto break-words leading-tight">
+              <h2 className="text-primary text-3xl sm:text-4xl sm:leading-10 md:text-5xl md:leading-none lg:text-6xl lg:leading-none font-extrabold text-center mb-4 sm:mb-6 lg:mb-14 max-w-3xl mx-auto wrap-break-word leading-tight">
                 Unlock the Following Bonuses for FREE!
               </h2>
 
@@ -347,24 +347,24 @@ export default function AuditReadyClassificationsPage() {
                 ].map((item, i) => (
                   <li
                     key={i}
-                    className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-200 to-base-200/80 border-2 border-base-content/10 shadow-lg shadow-base-content/5 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300"
+                    className="group relative overflow-hidden rounded-2xl bg-linear-to-br from-base-200 to-base-200/80 border-2 border-base-content/10 shadow-lg shadow-base-content/5 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300"
                   >
                     <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary opacity-80 group-hover:opacity-100 transition-opacity" aria-hidden />
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 md:gap-8 p-4 sm:p-4 md:p-6 pl-6 sm:pl-8 md:pl-10">
                       <div className="flex items-center gap-3 sm:gap-4 md:gap-6 flex-1 min-w-0">
-                        <span className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl bg-primary/15 text-primary font-extrabold text-lg sm:text-xl md:text-2xl lg:text-3xl flex items-center justify-center ring-2 ring-primary/20">
+                        <span className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl bg-primary/15 text-primary font-extrabold text-lg sm:text-xl md:text-2xl lg:text-3xl flex items-center justify-center ring-2 ring-primary/20">
                           {item.icon}
                         </span>
                         <div className="min-w-0 flex-1">
-                          <h3 className="text-base sm:text-lg md:text-lg lg:text-xl font-bold text-base-content mb-1 sm:mb-2 leading-tight break-words">
+                          <h3 className="text-base sm:text-lg sm:leading-7 md:text-lg md:leading-7 lg:text-xl lg:leading-7 font-bold text-base-content mb-1 sm:mb-2 leading-tight wrap-break-word">
                             {item.title}
                           </h3>
-                          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-base-content/85 leading-relaxed break-words">
+                          <p className="text-xs sm:text-sm sm:leading-5 md:text-base md:leading-6 lg:text-lg lg:leading-7 text-base-content/85 leading-relaxed wrap-break-word">
                             {item.copy}
                           </p>
                         </div>
                       </div>
-                      <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3 sm:flex-col sm:items-end">
+                      <div className="shrink-0 flex items-center gap-2 sm:gap-3 sm:flex-col sm:items-end">
                         <span className="text-base-content/50 text-sm sm:text-base font-medium line-through">
                           {item.value} value
                         </span>
@@ -396,14 +396,14 @@ export default function AuditReadyClassificationsPage() {
           {/* Who this is for */}
           <section className="sm:py-8 py-12 md:py-20 md:mt-12 bg-primary/5 px-4 sm:px-6 min-w-0">
             <div className="max-w-4xl mx-auto w-full">
-              <p className="text-center text-base-content text-base sm:text-lg md:text-2xl mb-3 sm:mb-4 break-words">
+              <p className="text-center text-base-content text-base sm:text-lg md:text-2xl mb-3 sm:mb-4 wrap-break-word">
                 If you&apos;re still here,{" "}
                 <span className="font-bold">you might be asking yourself...</span>
               </p>
-              <h2 className="text-primary text-2xl min-[400px]:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-6 sm:mb-10 lg:mb-16 break-words leading-tight">
+              <h2 className="text-primary text-2xl min-[400px]:text-3xl sm:text-4xl sm:leading-10 md:text-5xl md:leading-none lg:text-6xl lg:leading-none font-bold text-center mb-6 sm:mb-10 lg:mb-16 wrap-break-word leading-tight">
                 &ldquo;Is This Playbook For Me?&rdquo;
               </h2>
-              <h2 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-6 lg:mb-12 text-base-content max-w-3xl mx-auto break-words">
+              <h2 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-6 lg:mb-12 text-base-content max-w-3xl mx-auto wrap-break-word">
                 This Playbook is for <span className="underline">Every US Importer & Customs Broker</span> Who Touches Classifications, Including:
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -437,13 +437,13 @@ export default function AuditReadyClassificationsPage() {
                     key={i}
                     className="p-4 sm:p-5 rounded-xl bg-base-100 border border-base-content/10 hover:border-primary/30 transition-colors min-w-0"
                   >
-                    <h3 className="font-bold text-primary text-base sm:text-lg lg:text-xl mb-1 sm:mb-2 break-words">{item.title}</h3>
-                    <p className="text-xs sm:text-sm text-base-content/80 leading-relaxed break-words">{item.copy}</p>
+                    <h3 className="font-bold text-primary text-base sm:text-lg lg:text-xl mb-1 sm:mb-2 wrap-break-word">{item.title}</h3>
+                    <p className="text-xs sm:text-sm sm:leading-5 text-base-content/80 leading-relaxed wrap-break-word">{item.copy}</p>
                   </div>
                 ))}
               </div>
 
-              <p className="text-center text-base sm:text-lg lg:text-xl font-medium mt-8 sm:mt-10 max-w-3xl mx-auto break-words px-1">
+              <p className="text-center text-base sm:text-lg lg:text-xl font-medium mt-8 sm:mt-10 max-w-3xl mx-auto wrap-break-word px-1">
                 Whether you’re a solo importer or a global compliance team, the Audit-Ready Classifications Playbook gives you a repeatable system that protects your business and speeds up your work.
               </p>
             </div>

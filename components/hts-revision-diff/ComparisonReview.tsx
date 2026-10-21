@@ -3,18 +3,22 @@
 import { useRouter } from "next/navigation"
 import { forwardRef, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import { Select } from "@/components/ui/Select"
 import type {
   Category,
   ChangeRow,
   ChangeSource,
+  CitedHeading,
   ClaudeUsage,
   CodeDiff,
   ComparisonRow,
   Decision,
+  HtsRow,
   NoteDiff,
   RevisionRow,
   RevisionSummary,
 } from "@/libs/hts-revision-diff/types"
+import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions"
 import { api, BUSY_STATUSES, formatTime, StatusBadge, TextBlock, WordDiffView } from "./shared"
 import {
   btn,
@@ -31,7 +35,6 @@ import {
   Pill,
   ProgressBar,
   SectionLabel,
-  selectCls,
   Spinner,
   Stat,
   StatGrid,
@@ -40,8 +43,10 @@ import {
 } from "./ui"
 
 interface ComparisonData {
-  // The newer attempt's reviewed heading rows changed after this comparison was built
+  // Either attempt's heading rows changed after this comparison was built
   headingRowsChanged?: boolean
+  // Headings the changes rely on whose rows aren't reviewed yet, per side
+  unreviewedInChanges?: { from: string[]; to: string[] }
   comparison: ComparisonRow
   changes: ChangeRow[]
   from: { revision: RevisionRow; attemptNumber: number }
@@ -220,6 +225,20 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
   const decided = changes.filter((c) => c.decision !== "pending").length
   const unsummarized = changes.filter((c) => !c.summary).length
   const allDecided = changes.length > 0 && decided === changes.length
+  // Comparing the revision just before the earliest verified one to it: a
+  // backfill (HowTariffsWork.md §17.13), pulled by the older revision
+  const isBackfill = getVerifiedRevisions()[0]?.name === to.revision.name
+  const unreviewed = [...(data.unreviewedInChanges?.from ?? []), ...(data.unreviewedInChanges?.to ?? [])]
+  const sides = [
+    { name: from.revision.name, coverage: stats?.fromHeadingCoverage },
+    { name: to.revision.name, coverage: stats?.headingCoverage },
+  ]
+  const incompletePages = sides.flatMap(({ name, coverage }) =>
+    coverage && !coverage.complete ? [{ name, coverage }] : []
+  )
+  const unexpectedHeadings = sides.flatMap(({ name, coverage }) =>
+    coverage?.unexpected.length ? [{ name, codes: coverage.unexpected }] : []
+  )
   // Claude cost so far: the change record reading plus every summary
   const usages = [to.changeRecordUsage, comparison.revision_summary?.usage, ...changes.map((c) => c.summary?.usage)].filter(Boolean) as ClaudeUsage[]
   const claudeCost = usages.reduce((sum, u) => sum + u.cost_usd, 0)
@@ -310,8 +329,59 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                 </button>
               }
             >
-              {to.revision.name}&apos;s reviewed heading rows were added, edited or un-reviewed after this comparison ran, so the
-              cited headings below don&apos;t reflect them. Re-run to use them; decisions on unchanged changes carry over.
+              {from.revision.name}&apos;s or {to.revision.name}&apos;s reviewed heading rows were added, edited or un-reviewed after
+              this comparison ran, so the cited headings below don&apos;t reflect them. Re-run to use them; decisions on unchanged changes carry over.
+            </Callout>
+          )}
+          {unreviewed.length > 0 && (
+            <Callout tone="warning" title="Heading rows to review before pulling">
+              <p>
+                These changes rely on headings whose rows haven&apos;t been checked against the PDF. Only these need reviewing; every
+                other row is used as read.
+              </p>
+              {(["from", "to"] as const).map((side) => {
+                const codes = data.unreviewedInChanges?.[side] ?? []
+                if (!codes.length) return null
+                const attemptId = side === "from" ? comparison.from_attempt_id : comparison.to_attempt_id
+                return (
+                  <p key={side} className="mt-1.5 flex flex-wrap items-center gap-2">
+                    <span>
+                      {(side === "from" ? from : to).revision.name} ({side === "from" ? "before" : "after"}): {codes.length} heading
+                      {codes.length === 1 ? "" : "s"}
+                    </span>
+                    <a
+                      className={btn.xsSecondary}
+                      href={`/revision-checker/attempts/${attemptId}?tab=headings&comparison=${comparison.id}`}
+                    >
+                      Review them
+                    </a>
+                  </p>
+                )
+              })}
+            </Callout>
+          )}
+          {incompletePages.length > 0 && (
+            <Callout tone="info" title="Heading pages don't cover every subchapter III heading">
+              {incompletePages.map(({ name, coverage }) => (
+                <p key={name}>
+                  {name}: {coverage.missingCount} of {coverage.expected} missing
+                  {coverage.missing.length > 0 && ` (${coverage.missing.slice(0, 20).join(", ")}${coverage.missingCount > 20 ? ", …" : ""})`}
+                </p>
+              ))}
+              <p className="mt-1">
+                Upload every subchapter III heading page on both revisions to diff every heading, including added and removed
+                ones. Until then, added and removed headings come from the change record.
+              </p>
+            </Callout>
+          )}
+          {unexpectedHeadings.length > 0 && (
+            <Callout tone="warning" title="Heading numbers that aren't in USITC's archive for the revision">
+              {unexpectedHeadings.map(({ name, codes }) => (
+                <p key={name}>
+                  {name}: {codes.join(", ")}
+                </p>
+              ))}
+              <p className="mt-1">Usually a misread heading number: check these rows against the PDF.</p>
             </Callout>
           )}
           {stats.consecutive === false && (
@@ -320,8 +390,23 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
             </Callout>
           )}
           {allDecided && (
-            <Callout tone="success" title="Every change has a decision" action={<CopyCommand command={`npm run pull-revision -- ${to.revision.name}`} />}>
-              Write the review into the repo for Claude Code.
+            <Callout
+              tone="success"
+              title="Every change has a decision"
+              action={
+                <CopyCommand
+                  command={
+                    isBackfill
+                      ? `npm run pull-revision -- ${from.revision.name} --backfill`
+                      : `npm run pull-revision -- ${to.revision.name}`
+                  }
+                />
+              }
+            >
+              {isBackfill
+                ? `Write the review into the repo for Claude Code, to backfill ${from.revision.name} from ${to.revision.name}, the earliest verified revision.`
+                : "Write the review into the repo for Claude Code."}
+              {unreviewed.length > 0 && " Review the headings listed above first: the pull stops until they are."}
             </Callout>
           )}
 
@@ -346,11 +431,24 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                       : stats.headingSource === "revision_pdf"
                         ? `From ${to.revision.name}'s reviewed heading pages`
                         : `No heading data for ${to.revision.name}; add heading pages on its attempt page`}
-                    {(stats.unreviewedHeadingRows ?? 0) > 0 && (
-                      <span className="text-warning"> · {stats.unreviewedHeadingRows} rows not reviewed</span>
-                    )}
                   </>
                 }
+              />
+            ) : stats.headingDiff === "heading_pages" ? (
+              <Stat
+                label="Heading differences"
+                value={Object.values(stats.codeDiffs).reduce((a, b) => a + b, 0)}
+                hint={
+                  <>
+                    Headings on both revisions&apos; heading pages; added and removed headings from the change record
+                  </>
+                }
+              />
+            ) : stats.headingDiff === "heading_pages_full" ? (
+              <Stat
+                label="Heading differences"
+                value={Object.values(stats.codeDiffs).reduce((a, b) => a + b, 0)}
+                hint={`Every subchapter III heading, from complete heading pages: ${stats.codeDiffs.modified} changed · ${stats.codeDiffs.added} added · ${stats.codeDiffs.removed} removed`}
               />
             ) : (
               <Stat
@@ -383,7 +481,7 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
 
           <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[22rem_minmax(0,1fr)]">
             {/* Change list */}
-            <aside className="flex flex-col overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-sm lg:sticky lg:top-[4.25rem] lg:max-h-[calc(100vh-5.5rem)]">
+            <aside className="flex flex-col overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs lg:sticky lg:top-17 lg:max-h-[calc(100vh-5.5rem)]">
               <div className="flex flex-col gap-2 border-b border-base-content/10 p-3">
                 <input
                   className={`${inputCls} w-full`}
@@ -392,21 +490,33 @@ export default function ComparisonReview({ comparisonId }: { comparisonId: strin
                   onChange={(e) => setSearch(e.target.value)}
                 />
                 <div className="grid grid-cols-2 gap-2">
-                  <select className={`${selectCls} select-xs h-8 min-h-8`} value={decisionFilter} onChange={(e) => setDecisionFilter(e.target.value as any)}>
-                    <option value="all">Any decision</option>
-                    <option value="pending">Pending ({count("pending")})</option>
-                    <option value="approve">Approved ({count("approve")})</option>
-                    <option value="defer">Deferred ({count("defer")})</option>
-                    <option value="skip">Skipped ({count("skip")})</option>
-                  </select>
-                  <select className={`${selectCls} select-xs h-8 min-h-8`} value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value as any)}>
-                    <option value="all">Any source</option>
-                    {(Object.keys(SOURCE_LABELS) as ChangeSource[]).map((s) => (
-                      <option key={s} value={s}>
-                        {SOURCE_LABELS[s]} ({changes.filter((c) => c.source === s).length})
-                      </option>
-                    ))}
-                  </select>
+                  <Select<Decision | "all">
+                    size="sm"
+                    label="Decision"
+                    value={decisionFilter}
+                    onChange={setDecisionFilter}
+                    options={[
+                      { value: "all", label: "Any decision" },
+                      { value: "pending", label: `Pending (${count("pending")})` },
+                      { value: "approve", label: `Approved (${count("approve")})` },
+                      { value: "defer", label: `Deferred (${count("defer")})` },
+                      { value: "skip", label: `Skipped (${count("skip")})` },
+                    ]}
+                  />
+                  <Select<ChangeSource | "all">
+                    size="sm"
+                    label="Source"
+                    align="right"
+                    value={sourceFilter}
+                    onChange={setSourceFilter}
+                    options={[
+                      { value: "all", label: "Any source" },
+                      ...(Object.keys(SOURCE_LABELS) as ChangeSource[]).map((s) => ({
+                        value: s,
+                        label: `${SOURCE_LABELS[s]} (${changes.filter((c) => c.source === s).length})`,
+                      })),
+                    ]}
+                  />
                 </div>
               </div>
               <div className="flex items-center justify-between px-3 py-1.5 text-[11px] text-base-content/45">
@@ -602,9 +712,9 @@ function ChangeDetail({
   const citedHeadings = payload.citedHeadings ?? []
 
   return (
-    <article className="rounded-lg border border-base-content/10 bg-base-100 shadow-sm">
+    <article className="rounded-lg border border-base-content/10 bg-base-100 shadow-xs">
       {/* Decision bar */}
-      <div className="sticky top-12 z-20 rounded-t-lg border-b border-base-content/10 bg-base-100/95 px-5 py-3.5 backdrop-blur">
+      <div className="sticky top-12 z-20 rounded-t-lg border-b border-base-content/10 bg-base-100/95 px-5 py-3.5 backdrop-blur-sm">
         <div className="flex items-start gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2 text-[11px] text-base-content/45">
@@ -644,17 +754,20 @@ function ChangeDetail({
           </div>
           <label className="flex items-center gap-2 text-xs text-base-content/55">
             Category
-            <select
-              className={`${selectCls} select-xs h-8 min-h-8`}
+            <Select<Category | "">
+              size="sm"
+              label="Category"
+              className="w-36"
               value={change.category ?? ""}
-              onChange={(e) => onSave({ category: (e.target.value || null) as Category | null })}
-            >
-              <option value="">Not set</option>
-              <option value="data">Data</option>
-              <option value="logic">Logic</option>
-              <option value="mixed">Mixed</option>
-              <option value="none">None (noise)</option>
-            </select>
+              onChange={(v) => onSave({ category: v || null })}
+              options={[
+                { value: "", label: "Not set" },
+                { value: "data", label: "Data" },
+                { value: "logic", label: "Logic" },
+                { value: "mixed", label: "Mixed" },
+                { value: "none", label: "None (noise)" },
+              ]}
+            />
           </label>
           {saving && (
             <span className="flex items-center gap-1.5 text-xs text-base-content/50" role="status">
@@ -726,7 +839,9 @@ function ChangeDetail({
 
         {citedHeadings.length > 0 && (
           <section className="flex flex-col gap-3">
-            <SectionLabel>Headings cited by the change record · {toName}</SectionLabel>
+            <SectionLabel>
+              Headings cited by the change record · {citedHeadings.some((c) => c.beforeStatus) ? `${fromName} → ${toName}` : toName}
+            </SectionLabel>
             <div className="divide-y divide-base-content/[0.07] rounded-md border border-base-content/10">
               {citedHeadings.map((c) => (
                 <div key={c.code} className="px-3.5 py-2.5 text-sm">
@@ -737,19 +852,13 @@ function ChangeDetail({
                       label={c.status === "found" ? "Found" : c.status === "not_found" ? "Not in JSON" : "Not checked"}
                     />
                   </div>
-                  {c.row && (
+                  {c.beforeStatus ? (
                     <>
-                      <p className="mt-1 text-base-content/80">{c.row.description}</p>
-                      <p className="mt-1 text-xs text-base-content/55">
-                        General: {c.row.general || "—"} <Dot /> Special: {c.row.special || "—"} <Dot /> Other: {c.row.other || "—"}
-                        {c.row.footnotes.length > 0 && (
-                          <>
-                            {" "}
-                            <Dot /> Footnotes: {c.row.footnotes.join(" | ")}
-                          </>
-                        )}
-                      </p>
+                      <CitedHeadingSide label={`Before · ${fromName}`} status={c.beforeStatus} row={c.before ?? null} />
+                      <CitedHeadingSide label={`After · ${toName}`} status={c.status} row={c.row} />
                     </>
+                  ) : (
+                    c.row && <CitedHeadingRow row={c.row} />
                   )}
                 </div>
               ))}
@@ -790,7 +899,7 @@ function ChangeDetail({
           <SectionLabel>Notes for Claude Code</SectionLabel>
           <textarea
             ref={notesRef}
-            className="textarea textarea-bordered border-base-content/15 text-sm leading-relaxed"
+            className="textarea border-base-content/15 text-sm leading-relaxed"
             rows={4}
             placeholder="Your interpretation and instructions. Saved when you click away."
             value={notes}
@@ -973,7 +1082,7 @@ function RevisionContext({ revision, onSaved }: { revision: RevisionRow; onSaved
           when writing the changelog.
         </p>
         <textarea
-          className="textarea textarea-bordered border-base-content/15 text-sm leading-relaxed"
+          className="textarea border-base-content/15 text-sm leading-relaxed"
           rows={3}
           placeholder="e.g. Implements the Oct 17, 2025 proclamation's quota for Canadian and Mexican auto-supply steel. Saved when you click away."
           value={text}
@@ -1126,7 +1235,7 @@ function NoteDiffView({ diff, fromName, toName }: { diff: NoteDiff; fromName: st
       {(diff.codesAdded.length > 0 || diff.codesRemoved.length > 0 || (diff.rangeChanges?.length ?? 0) > 0) && (
         <div className="mt-3 flex flex-col gap-1 border-t border-base-content/[0.07] pt-2.5 text-xs">
           {diff.rangeChanges?.map((r, i) => (
-            <p key={i} className="break-words">
+            <p key={i} className="wrap-break-word">
               <span className="font-semibold">Range:</span>{" "}
               <span className="font-mono">
                 {r.before ?? "(none)"} → {r.after ?? "(none)"}
@@ -1135,13 +1244,13 @@ function NoteDiffView({ diff, fromName, toName }: { diff: NoteDiff; fromName: st
             </p>
           ))}
           {diff.codesAdded.length > 0 && (
-            <p className="break-words">
+            <p className="wrap-break-word">
               <span className="font-semibold text-success">+ {diff.codesAdded.length} codes:</span>{" "}
               <span className="font-mono text-base-content/70">{diff.codesAdded.join(", ")}</span>
             </p>
           )}
           {diff.codesRemoved.length > 0 && (
-            <p className="break-words">
+            <p className="wrap-break-word">
               <span className="font-semibold text-error">− {diff.codesRemoved.length} codes:</span>{" "}
               <span className="font-mono text-base-content/70">{diff.codesRemoved.join(", ")}</span>
             </p>
@@ -1188,6 +1297,39 @@ function CodeDiffView({ diff }: { diff: CodeDiff }) {
         )
       )}
       </div>
+    </div>
+  )
+}
+
+function CitedHeadingRow({ row }: { row: HtsRow }) {
+  return (
+    <>
+      <p className="mt-1 text-base-content/80">{row.description}</p>
+      <p className="mt-1 text-xs text-base-content/55">
+        General: {row.general || "—"} <Dot /> Special: {row.special || "—"} <Dot /> Other: {row.other || "—"}
+        {row.footnotes.length > 0 && (
+          <>
+            {" "}
+            <Dot /> Footnotes: {row.footnotes.join(" | ")}
+          </>
+        )}
+      </p>
+    </>
+  )
+}
+
+// One side of a cited heading: the older revision's row ("before") or the newer one's ("after")
+function CitedHeadingSide({ label, status, row }: { label: string; status: CitedHeading["status"]; row: HtsRow | null }) {
+  return (
+    <div className="mt-2">
+      <p className="text-[11px] font-medium uppercase tracking-wide text-base-content/45">{label}</p>
+      {status === "found" && row ? (
+        <CitedHeadingRow row={row} />
+      ) : (
+        <p className="mt-1 text-xs text-base-content/55">
+          {status === "not_found" ? "Not in this revision's heading data" : "Not checked: no heading data for this revision"}
+        </p>
+      )}
     </div>
   )
 }

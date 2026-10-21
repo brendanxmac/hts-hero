@@ -6,10 +6,10 @@ const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/
 export function PlaybookBanner() {
   return (
     <section className="relative rounded-2xl overflow-hidden border-2 border-secondary/20 bg-base-100 shadow-md mb-8">
-      <div className="absolute inset-0 bg-gradient-to-br from-secondary/[0.06] via-transparent to-secondary/[0.03] pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-secondary/[0.06] via-transparent to-secondary/[0.03] pointer-events-none" />
       <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-0">
         <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6">
-          <div className="relative w-32 sm:w-36 md:w-40 aspect-[2/3] rounded-xl overflow-hidden border-2 border-base-content/10 shadow-lg shrink-0">
+          <div className="relative w-32 sm:w-36 md:w-40 aspect-2/3 rounded-xl overflow-hidden border-2 border-base-content/10 shadow-lg shrink-0">
             <Image
               src={`${STORAGE_BASE}/book-cover.jpg`}
               alt="The Audit-Ready Classifications Playbook"
@@ -27,7 +27,7 @@ export function PlaybookBanner() {
                 Playbook + 7 Bonuses
               </span>
             </div>
-            <h3 className="text-xl md:text-2xl font-bold text-base-content leading-tight">
+            <h3 className="text-xl md:text-2xl md:leading-8 font-bold text-base-content leading-tight">
               The Audit-Ready Classifications Playbook
             </h3>
             <p className="text-sm text-base-content/60 leading-relaxed">

@@ -42,7 +42,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.60",
     program: PROGRAM,
-    name: "Section 232 – Patented Pharmaceuticals",
+    name: "Section 232 Pharmaceuticals: Patented Pharmaceuticals",
     description:
       "Except as provided in heading 9903.04.61, patented pharmaceutical articles as provided for in subdivisions (c) and (d) of U.S. note 40 to this subchapter",
     scope: {
@@ -60,7 +60,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.61",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: Companies Identified by the Secretary (Before Sep 29, 2026)",
+    name: "Section 232 Pharmaceuticals: Companies Identified by Commerce",
     description:
       "Patented pharmaceutical articles entered before 12:01 a.m. eastern time on September 29, 2026 as provided for in subdivisions (c) and (e) of U.S. note 40 to this subchapter",
     scope: {
@@ -76,7 +76,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.62",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: Japan, EU, South Korea, Switzerland, Liechtenstein (15% Total)",
+    name: "Section 232 Pharmaceuticals: Products of the European Union, Japan, South Korea, Switzerland or Liechtenstein (15% Including Base Duty)",
     description:
       "Patented pharmaceutical articles that are the product of Japan, of a European Union member country, of South Korea, of Switzerland, or of Liechtenstein as provided for in subdivisions (c) and (f) of U.S. note 40 to this subchapter",
     scope: {
@@ -93,7 +93,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.63",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: United Kingdom",
+    name: "Section 232 Pharmaceuticals: Products of the United Kingdom",
     description:
       "Patented pharmaceutical articles that are the product of the United Kingdom as defined in subdivisions (c) and (g) of U.S. note 40 to this subchapter",
     scope: {
@@ -132,7 +132,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.65",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: Onshoring Plan and MFN Pricing Agreement",
+    name: "Section 232 Pharmaceuticals: Onshoring Plan and Most-Favored-Nation Pricing Agreement",
     description:
       "Pharmaceutical articles subject to a qualifying onshoring plan and a Most-Favored-Nation pharmaceutical pricing agreement, as provided for in subdivisions (c) and (h)(ii) of U.S. note 40 to this subchapter",
     scope: {
@@ -182,7 +182,7 @@ const base: Tariff[] = [
   {
     code: "9903.04.68",
     program: PROGRAM,
-    name: "Section 232 Pharmaceuticals: U.S. Active Ingredient in Dosage Form",
+    name: "Section 232 Pharmaceuticals: Active Ingredient From the United States in Dosage Form",
     description:
       "Pharmaceutical products with an active pharmaceutical ingredient packaged in dosage form that is a product of the United States",
     scope: {
@@ -225,7 +225,13 @@ const PATENTED = [
   "9903.04.65",
   "9903.04.66",
 ];
-const REV20 = { revision: "2026HTSRev20", citation: "Notice" };
+const REV20 = {
+  revision: "2026HTSRev20",
+  citation:
+    "Commerce (BIS) notice, Guidance and Procedures for Specialty Pharmaceuticals and Technical Corrections to the HTSUS for Duties Imposed Under Proclamation 11020, Annex I, 91 FR 60360 (FR Doc. 2026-19498)",
+  url: "https://www.govinfo.gov/content/pkg/FR-2026-09-23/html/2026-19498.htm",
+  publishedOn: "2026-09-23",
+};
 
 export const headings: Tariff[] = [
   ...base.flatMap((tariff) =>

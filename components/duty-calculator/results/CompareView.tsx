@@ -3,9 +3,11 @@
 // Compare: one card per country side by side, the lowest landed cost marked, and a card to add
 // the next country
 import { Country } from "@/constants/countries";
+import { partColors } from "@/components/ui/charts/partColors";
 import { AddCountryCard } from "./AddCountryCard";
 import { CompareCard } from "./CompareCard";
 import { CompareEntry } from "./compareEntry";
+import { BASE_SLICE, sliceForProgram } from "./slices";
 
 export const CompareView = ({
   entries,
@@ -36,15 +38,31 @@ export const CompareView = ({
   const lowestNames = lowestEntries.map((e) => e.country.name).join(" and ");
   const allTied = lowestEntries.length === entries.length;
 
+  // One color per part of the duty across every card, the same one it has everywhere (partColors)
+  const labels = [BASE_SLICE];
+  entries.forEach((e) =>
+    e.result.lines
+      .filter((l) => l.status === "applies" && l.amount > 0)
+      .forEach((l) => {
+        const label = sliceForProgram(l.program);
+        if (!labels.includes(label)) labels.push(label);
+      }),
+  );
+  const colors = partColors(labels);
+  const colorFor = (label: string) => colors[label] ?? colors[BASE_SLICE];
+
   const single = entries.length === 1;
   const canAdd = countries.length < max;
   const cards = entries.length + (canAdd ? 1 : 0);
+  // Up to four across: the countries being compared, then the card that adds the next one
   const columns =
-    cards >= 3
-      ? "lg:grid-cols-3 md:grid-cols-2"
-      : cards === 2
-        ? "md:grid-cols-2"
-        : "";
+    cards >= 4
+      ? "md:grid-cols-2 xl:grid-cols-4"
+      : cards === 3
+        ? "md:grid-cols-2 lg:grid-cols-3"
+        : cards === 2
+          ? "md:grid-cols-2"
+          : "";
 
   return (
     <div className={`grid grid-cols-1 ${columns} gap-4 items-stretch`}>
@@ -60,6 +78,7 @@ export const CompareView = ({
           allTied={allTied}
           lowestNames={lowestNames}
           single={single}
+          colorFor={colorFor}
           onPreferenceChange={onPreferenceChange}
           onViewDetails={onViewDetails}
           onRemove={onRemove}

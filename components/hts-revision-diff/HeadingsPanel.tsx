@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table"
 import type { DocumentRow, HeadingRow } from "@/libs/hts-revision-diff/types"
 import { api, formatBytes, formatTime, StatusBadge } from "./shared"
 import { btn, Callout, Dot, EmptyState, Help, PageSpinner, Panel, Pill, Spinner, StatusDot, type Tone } from "./ui"
@@ -14,12 +15,28 @@ interface HeadingsData {
     warnings: { kind: string; message: string }[]
     check: { at: string; issues: string[]; usage: { cost_usd: number; input_tokens: number; output_tokens: number } } | null
     checking: boolean
+    progress?: { pagesChecked: number; pages: number } | null
+    scopedCheck?: { at: string; rows: number; pages: number[]; issues: string[]; usage: { cost_usd: number } } | null
     error: string | null
   } | null
   rows: HeadingRow[]
   cited: string[]
   uncited: string[] // row ids the change record doesn't cite
   changeRecordRead: boolean
+  // Against USITC's archived PDF: complete when every subchapter III heading is here
+  coverage: { expected: number; complete: boolean; missingCount: number; missing: string[]; unexpected: string[] } | null
+  // Comparisons using this attempt, and the headings their changes need from it
+  comparisons: { id: string; side: "from" | "to"; fromRevision: string | null; toRevision: string | null; needed: string[] }[]
+}
+
+// The heading each row belongs to: its own number, or the one above it for a
+// description-only row (as comparisons group them)
+const rowHeadings = (rows: HeadingRow[]) => {
+  let last = ""
+  return rows.map((r) => {
+    if (r.htsno) last = r.htsno.split(".").slice(0, 3).join(".")
+    return last
+  })
 }
 
 type Editable = Pick<HeadingRow, "htsno" | "stat_suffix" | "indent" | "description" | "general" | "special" | "other" | "units" | "page"> & {
@@ -65,7 +82,7 @@ const CHECK_TONES: Record<string, Tone> = {
   flagged: "error",
 }
 
-export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
+export default function HeadingsPanel({ attemptId, comparisonId }: { attemptId: string; comparisonId?: string | null }) {
   const [data, setData] = useState<HeadingsData | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [savingRows, setSavingRows] = useState<Record<string, number>>({}) // row id → review saves in flight
@@ -77,6 +94,8 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
   const [file, setFile] = useState<File | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [anchor, setAnchor] = useState<number | null>(null) // last row clicked, for shift-click ranges
+  // Which rows to show: those a comparison needs (one, or all of them), or every row
+  const [view, setView] = useState<string>(comparisonId ? `needed:${comparisonId}` : "needed")
 
   const load = useCallback(async () => {
     try {
@@ -189,26 +208,138 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
 
   if (!data) return <PageSpinner />
 
-  const { document, info, rows, cited } = data
+  const { document, info, cited } = data
+  const allRows = data.rows
   const uncited = new Set(data.uncited)
+  // Rows comparisons need reviewed: those of headings their changes rely on
+  const headingOfRow = rowHeadings(allRows)
+  const neededBy = (c: HeadingsData["comparisons"][number]) => new Set(c.needed)
+  const viewComparison = view.startsWith("needed:") ? data.comparisons.find((c) => c.id === view.slice(7)) : null
+  const needed = new Set(
+    (viewComparison ? [viewComparison] : data.comparisons).flatMap((c) => Array.from(neededBy(c)))
+  )
+  const isNeeded = (index: number) => needed.has(headingOfRow[index])
+  const showNeeded = view !== "all" && needed.size > 0
+  const rows = showNeeded ? allRows.filter((_, i) => isNeeded(i)) : allRows
+  const neededRows = allRows.filter((_, i) => isNeeded(i))
+  const neededReviewed = neededRows.filter((r) => r.reviewed).length
   const selectedRows = rows.filter((r) => selected.has(r.id))
   const allSelected = rows.length > 0 && selectedRows.length === rows.length
-  const reviewed = rows.filter((r) => r.reviewed).length
+  const reviewed = allRows.filter((r) => r.reviewed).length
   const okUnreviewed = rows.filter((r) => r.claude_status === "ok" && !r.reviewed)
+  const markReviewed = (ids: string[], label: string) =>
+    run(
+      label,
+      async () => {
+        await api(`/attempts/${attemptId}/headings/review`, { method: "POST", body: JSON.stringify({ ids, reviewed: true }) })
+        setSelected(new Set())
+      },
+      `${ids.length} row${ids.length === 1 ? "" : "s"} marked reviewed`
+    )
+  // Claude checks only the pages these rows are on
+  const checkRows = (ids: string[], label: string) =>
+    run(
+      label,
+      async () => {
+        const { rows: n, pages } = await api<{ rows: number; pages: number }>(`/attempts/${attemptId}/headings/check`, {
+          method: "POST",
+          body: JSON.stringify({ rowIds: ids }),
+        })
+        setSelected(new Set())
+        toast.success(`Claude checked ${n} row${n === 1 ? "" : "s"} on ${pages} page${pages === 1 ? "" : "s"}`)
+      }
+    )
+  const pdfIds = (list: HeadingRow[]) => list.filter((r) => r.source === "pdf").map((r) => r.id)
   const coverage = cited.map((code) => {
     const matches = rows.filter((r) => r.htsno === code)
     return { code, state: matches.some((r) => r.reviewed) ? "reviewed" : matches.length ? "unreviewed" : "missing" }
   })
-  const th = "whitespace-nowrap px-3 py-2 text-left text-xs font-medium text-base-content/50"
-  const td = "px-3 py-2.5 align-top"
 
   return (
     <div className="flex flex-col gap-5">
       <Help>
-        New or changed Chapter 99 headings, read from this revision&apos;s own tariff-table pages. Upload the pages for the
-        headings the change record cites (trimmed from the Chapter 99 PDF). Rows are read from datalab&apos;s conversion, checked
-        by Claude against the pages, and only used once you mark them reviewed.
+        Chapter 99 headings, read from this revision&apos;s own tariff-table pages. Upload every subchapter III heading page:
+        comparisons then diff every heading, including added and removed ones. You only review the rows a comparison&apos;s
+        changes rely on, listed below; the rest are used as they were read. &ldquo;Check with Claude&rdquo; compares every row with
+        the pages; &ldquo;Check … with Claude&rdquo; on a comparison, or on selected rows, reads only the pages those rows are on.
       </Help>
+
+      {/* What comparisons need from this revision */}
+      <Panel title="To review for comparisons">
+        <div className="flex flex-col gap-2.5 px-4 py-3 text-sm">
+          {data.coverage &&
+            (data.coverage.complete ? (
+              <StatusDot
+                tone="success"
+                label={
+                  <span className="font-normal text-base-content/70">
+                    All {data.coverage.expected} subchapter III headings are here (checked against USITC&apos;s archived PDF)
+                  </span>
+                }
+              />
+            ) : (
+              <StatusDot
+                tone="warning"
+                label={
+                  <span className="font-normal text-base-content/70">
+                    {data.coverage.missingCount} of {data.coverage.expected} subchapter III headings aren&apos;t on these pages, so
+                    comparisons can&apos;t diff every heading
+                  </span>
+                }
+              />
+            ))}
+          {data.comparisons.length === 0 ? (
+            <p className="text-base-content/50">
+              No comparison uses this revision yet. Once one does, the rows its changes rely on are listed here: those are the
+              only ones to review.
+            </p>
+          ) : (
+            data.comparisons.map((c) => {
+              const codes = neededBy(c)
+              const cRows = allRows.filter((_, i) => codes.has(headingOfRow[i]))
+              const cReviewed = cRows.filter((r) => r.reviewed).length
+              const done = cRows.length === cReviewed
+              return (
+                <div key={c.id} className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  <StatusDot
+                    tone={done ? "success" : "warning"}
+                    label={
+                      <span className="font-normal text-base-content/80">
+                        <span className="font-medium">
+                          {c.fromRevision} → {c.toRevision}
+                        </span>{" "}
+                        (this revision is the {c.side === "from" ? "before" : "after"}): {codes.size} heading
+                        {codes.size === 1 ? "" : "s"}, {cReviewed} of {cRows.length} rows reviewed
+                      </span>
+                    }
+                  />
+                  <div className="ml-auto flex gap-1.5">
+                    {!done && pdfIds(cRows.filter((r) => !r.reviewed)).length > 0 && (
+                      <button
+                        className={btn.xsSecondary}
+                        disabled={!!busy || !!info?.checking}
+                        title="Claude reads only the pages these rows are on and corrects them, like the full check"
+                        onClick={() => checkRows(pdfIds(cRows.filter((r) => !r.reviewed)), `check:${c.id}`)}
+                      >
+                        {busy === `check:${c.id}` && <Spinner />}
+                        Check {cRows.length - cReviewed} with Claude
+                      </button>
+                    )}
+                    {!done && view !== `needed:${c.id}` && (
+                      <button className={btn.xsSecondary} onClick={() => setView(`needed:${c.id}`)}>
+                        Show these rows
+                      </button>
+                    )}
+                    <a className={btn.xsGhost} href={`/revision-checker/comparisons/${c.id}`}>
+                      Open comparison
+                    </a>
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+      </Panel>
 
       {/* Source document and Claude's check */}
       <Panel
@@ -218,7 +349,7 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
             <input
               type="file"
               accept=".pdf,application/pdf"
-              className="file-input file:normal-case file:font-medium file-input-bordered file-input-xs h-7 max-w-[14rem] border-base-content/15"
+              className="file-input file:normal-case file:font-medium file-input-xs h-7 max-w-56 border-base-content/15"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
             <button className={btn.xsPrimary} disabled={!file || !!busy} onClick={upload}>
@@ -258,6 +389,15 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
               <div className="flex flex-wrap items-center gap-2">
                 {info.checking ? (
                   <StatusDot tone="info" busy label="Claude is checking the rows against the pages…" />
+                ) : info.progress && !info.check ? (
+                  <StatusDot
+                    tone="warning"
+                    label={
+                      <span className="font-normal text-base-content/70">
+                        Claude has checked {info.progress.pagesChecked} of {info.progress.pages} pages: continue to check the rest
+                      </span>
+                    }
+                  />
                 ) : info.check ? (
                   <StatusDot
                     tone={info.check.issues.length ? "warning" : "success"}
@@ -286,13 +426,47 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                   <button
                     className={btn.xsSecondary}
                     disabled={!!busy || !!info.checking || !rows.some((r) => r.source === "pdf")}
-                    onClick={() => run("check", () => api(`/attempts/${attemptId}/headings/check`, { method: "POST" }), "Checked")}
+                    onClick={() =>
+                      run(
+                        "check",
+                        async () => {
+                          const { done } = await api<{ done: boolean }>(`/attempts/${attemptId}/headings/check`, { method: "POST" })
+                          if (done) toast.success("Checked")
+                          else toast("Checked part of the pages; continue to check the rest")
+                        }
+                      )
+                    }
                   >
                     {busy === "check" && <Spinner />}
-                    {info.check ? "Check again with Claude" : "Check with Claude"}
+                    {info.progress && !info.check ? "Continue checking" : info.check ? "Check again with Claude" : "Check with Claude"}
                   </button>
                 </div>
               </div>
+              {info.scopedCheck && (
+                <StatusDot
+                  tone={info.scopedCheck.issues.length ? "warning" : "success"}
+                  label={
+                    <span className="font-normal text-base-content/70">
+                      Claude checked {info.scopedCheck.rows} row{info.scopedCheck.rows === 1 ? "" : "s"} on{" "}
+                      {info.scopedCheck.pages.length === 1 ? "page" : "pages"} {info.scopedCheck.pages.join(", ")}{" "}
+                      {formatTime(info.scopedCheck.at)} <Dot /> ${info.scopedCheck.usage.cost_usd.toFixed(2)}
+                    </span>
+                  }
+                />
+              )}
+              {info.scopedCheck && info.scopedCheck.issues.length > 0 && (
+                <details className="group rounded-md border border-warning/30 bg-warning/[0.05]">
+                  <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
+                    <span className="transition-transform group-open:rotate-90">›</span>
+                    Claude found {info.scopedCheck.issues.length} difference{info.scopedCheck.issues.length === 1 ? "" : "s"} on those pages
+                  </summary>
+                  <ul className="ml-8 list-disc space-y-1 px-3 pb-3 text-base-content/75">
+                    {info.scopedCheck.issues.map((issue, i) => (
+                      <li key={i}>{issue}</li>
+                    ))}
+                  </ul>
+                </details>
+              )}
               {info.warnings.map((w, i) => (
                 <Callout key={i} tone="warning">
                   {w.message}
@@ -358,7 +532,13 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
 
       {/* Rows */}
       <Panel
-        title="Heading rows"
+        title={
+          showNeeded
+            ? viewComparison
+              ? `Rows ${viewComparison.fromRevision} → ${viewComparison.toRevision} needs reviewed`
+              : "Rows comparisons need reviewed"
+            : "Heading rows"
+        }
         count={rows.length}
         actions={
           selectedRows.length > 0 ? (
@@ -366,6 +546,23 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
               <span className="mr-1 text-xs font-medium text-base-content/70">{selectedRows.length} selected</span>
               <button className={btn.xsGhost} disabled={!!busy} onClick={() => setSelected(new Set())}>
                 Clear
+              </button>
+              <button
+                className={btn.xsSecondary}
+                disabled={!!busy || selectedRows.every((r) => r.reviewed)}
+                onClick={() => markReviewed(selectedRows.filter((r) => !r.reviewed).map((r) => r.id), "bulk-review")}
+              >
+                {busy === "bulk-review" && <Spinner />}
+                Mark selected reviewed
+              </button>
+              <button
+                className={btn.xsSecondary}
+                disabled={!!busy || !!info?.checking || pdfIds(selectedRows).length === 0}
+                title="Claude reads only the pages these rows are on and corrects them, like the full check"
+                onClick={() => checkRows(pdfIds(selectedRows), "check-selected")}
+              >
+                {busy === "check-selected" && <Spinner />}
+                Check selected with Claude
               </button>
               <button
                 className={`${btn.xsSecondary} text-error`}
@@ -381,14 +578,15 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
             </>
           ) : (
           <>
-            {uncited.size > 0 && (
+            {/* Only for trimmed uploads: with every subchapter III page, removing rows would stop full diffs */}
+            {uncited.size > 0 && !data.coverage?.complete && (
               <button
                 className={btn.xsSecondary}
                 disabled={!!busy}
                 title="Deletes rows whose headings the change record doesn't cite, by code or range. Keeps parent rows of cited headings and rows you added by hand."
                 onClick={() =>
                   confirm(
-                    `Remove ${uncited.size} row${uncited.size === 1 ? "" : "s"} the change record doesn't cite? They're tagged "Not cited" in the table. This can't be undone (Re-read rows brings them back).`
+                    `Remove ${uncited.size} row${uncited.size === 1 ? "" : "s"} this revision's change record doesn't cite? They're tagged "Not cited" in the table. Keep them if comparisons should diff every heading, or if this revision is being backfilled: the next revision's changes need them as the "before". This can't be undone (Re-read rows brings them back).`
                   ) && removeUncited()
                 }
               >
@@ -396,10 +594,26 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                 Remove {uncited.size} uncited row{uncited.size === 1 ? "" : "s"}
               </button>
             )}
-            {rows.length > 0 && (
+            {needed.size > 0 && (
+              <button className={btn.xsGhost} onClick={() => setView(showNeeded ? "all" : "needed")}>
+                {showNeeded ? `Show all ${allRows.length} rows` : "Show only rows to review"}
+              </button>
+            )}
+            {allRows.length > 0 && (
               <span className="mr-1 text-xs tabular-nums text-base-content/50">
-                {reviewed} reviewed
-                {rows.length > reviewed && <span className="text-warning"> · {rows.length - reviewed} to review</span>}
+                {needed.size > 0 ? (
+                  <>
+                    <span className={neededReviewed < neededRows.length ? "text-warning" : ""}>
+                      {neededReviewed} of {neededRows.length} rows to review done
+                    </span>
+                    {" "}
+                    · {reviewed} of {allRows.length} reviewed in all
+                  </>
+                ) : (
+                  <>
+                    {reviewed} of {allRows.length} reviewed
+                  </>
+                )}
               </span>
             )}
             {/* Stays mounted once there are Claude-confirmed rows, so the header doesn't reflow as you tick */}
@@ -411,7 +625,10 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
                   run(
                     "bulk",
                     async () => {
-                      for (const r of okUnreviewed) await api(`/heading-rows/${r.id}`, { method: "PATCH", body: JSON.stringify({ reviewed: true }) })
+                      await api(`/attempts/${attemptId}/headings/review`, {
+                        method: "POST",
+                        body: JSON.stringify({ ids: okUnreviewed.map((r) => r.id), reviewed: true }),
+                      })
                     },
                     `${okUnreviewed.length} rows marked reviewed`
                   )
@@ -460,172 +677,167 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
         {rows.length === 0 ? (
           <EmptyState title="No heading rows">Upload the heading pages, or add a heading by hand.</EmptyState>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-base-content/10">
-                  <th className={`${th} w-8 pr-0`}>
-                    <input
-                      type="checkbox"
-                      aria-label="Select all rows"
-                      className="checkbox checkbox-xs rounded"
-                      checked={allSelected}
-                      ref={(el) => {
-                        if (el) el.indeterminate = selectedRows.length > 0 && !allSelected
-                      }}
-                      onChange={() => {
-                        setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)))
-                        setAnchor(null)
-                      }}
-                    />
-                  </th>
-                  <th className={`${th} w-16`} title="Reviewed">
-                    ✓
-                  </th>
-                  <th className={th}>Heading</th>
-                  <th className={`${th} min-w-[18rem]`}>Description</th>
-                  <th className={th}>General</th>
-                  <th className={th}>Special</th>
-                  <th className={th}>Col. 2</th>
-                  <th className={th}>Footnotes</th>
-                  <th className={`${th} text-right`}>Page</th>
-                  <th className={th}>Check</th>
-                  <th className={th} />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-base-content/[0.07]">
-                {rows.map((row, index) =>
-                  editing === row.id ? (
-                    <tr key={row.id} className="bg-base-content/[0.02]">
-                      <td colSpan={11} className="px-4 py-4">
-                        <RowForm value={draft} onChange={setDraft} />
-                        <div className="mt-3 flex justify-end gap-2">
-                          <button className={btn.xsGhost} onClick={() => setEditing(null)}>
-                            Cancel
-                          </button>
-                          <button
-                            className={btn.xsPrimary}
-                            disabled={!!busy}
-                            onClick={async () => {
-                              await patch(row, fromEditable(draft))
-                              setEditing(null)
-                            }}
-                          >
-                            {busy === `row-${row.id}` && <Spinner />}
-                            Save and mark reviewed
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    <tr
-                      key={row.id}
-                      className={`group transition-colors duration-150 ${
-                        selected.has(row.id)
-                          ? "bg-info/[0.07]"
-                          : row.claude_status === "flagged"
-                            ? "bg-error/[0.05]"
-                            : row.reviewed
-                              ? ""
-                              : "bg-warning/[0.03]"
-                      }`}
-                    >
-                      <td className={`${td} pr-0`}>
-                        <input
-                          type="checkbox"
-                          aria-label={`Select ${row.htsno || "row"}`}
-                          className="checkbox checkbox-xs mt-0.5 rounded"
-                          checked={selected.has(row.id)}
-                          onChange={(e) => toggleSelected(index, (e.nativeEvent as MouseEvent).shiftKey)}
-                        />
-                      </td>
-                      <td className={td}>
-                        <span className="flex items-center gap-1.5">
-                          <input
-                            type="checkbox"
-                            className="checkbox checkbox-xs mt-0.5 rounded"
-                            checked={row.reviewed}
-                            // Only operations that replace or delete rows lock the checkboxes
-                            disabled={!!busy && !busy.startsWith("row-")}
-                            onChange={(e) => toggleReviewed(row, e.target.checked)}
-                          />
-                          {/* Fixed slot: the spinner never changes the column's width */}
-                          <span className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center" aria-hidden>
-                            {((savingRows[row.id] ?? 0) > 0 || busy === `row-${row.id}`) && (
-                              <span className="loading loading-spinner h-3 w-3 text-base-content/40" />
-                            )}
-                          </span>
-                        </span>
-                      </td>
-                      <td className={`${td} whitespace-nowrap font-mono text-[13px]`}>
-                        {row.htsno || <span className="text-base-content/30">—</span>}
-                        {row.stat_suffix && <span className="text-base-content/45"> {row.stat_suffix}</span>}
-                        {uncited.has(row.id) && (
-                          <span className="mt-1 block font-sans">
-                            <Pill title="The change record doesn't cite this heading">Not cited</Pill>
-                          </span>
-                        )}
-                      </td>
-                      <td className={td}>
-                        <span style={{ paddingLeft: `${row.indent * 1}rem` }} className="block leading-snug">
-                          {row.description}
-                        </span>
-                        {row.parser_original && (
-                          <span className="mt-1 block text-xs text-base-content/45">
-                            Parser read:{" "}
-                            {Object.entries(row.parser_original)
-                              .map(([k, v]) => `${k} "${Array.isArray(v) ? v.join("; ") : v}"`)
-                              .join(", ")}
-                          </span>
-                        )}
-                      </td>
-                      <td className={td}>{row.general}</td>
-                      <td className={`${td} max-w-[12rem] break-words`}>{row.special}</td>
-                      <td className={td}>{row.other}</td>
-                      <td className={`${td} max-w-[12rem] text-xs text-base-content/70`}>{row.footnotes.join(" ")}</td>
-                      <td className={`${td} text-right text-xs tabular-nums text-base-content/55`}>{row.page ?? ""}</td>
-                      <td className={`${td} text-xs`}>
-                        {row.source === "manual" ? (
-                          <Pill>Manual</Pill>
-                        ) : (
-                          row.claude_status && (
-                            <Pill tone={CHECK_TONES[row.claude_status]} title={row.claude_notes ?? ""}>
-                              {row.claude_status.charAt(0).toUpperCase() + row.claude_status.slice(1)}
-                            </Pill>
-                          )
-                        )}
-                        {row.claude_notes && row.claude_status !== "ok" && (
-                          <span className="mt-1 block max-w-[12rem] leading-snug text-base-content/55">{row.claude_notes}</span>
-                        )}
-                      </td>
-                      <td className={`${td} whitespace-nowrap text-right`}>
+          <Table label="Heading rows" framed={false} dense valign="top">
+            <THead>
+              <Tr>
+                <Th className="w-8 pr-0">
+                  <input
+                    type="checkbox"
+                    aria-label="Select all rows"
+                    className="checkbox checkbox-xs rounded-sm"
+                    checked={allSelected}
+                    ref={(el) => {
+                      if (el) el.indeterminate = selectedRows.length > 0 && !allSelected
+                    }}
+                    onChange={() => {
+                      setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)))
+                      setAnchor(null)
+                    }}
+                  />
+                </Th>
+                <Th className="w-16">
+                  <span title="Reviewed">✓</span>
+                </Th>
+                <Th>Heading</Th>
+                <Th className="min-w-[18rem]">Description</Th>
+                <Th>General</Th>
+                <Th>Special</Th>
+                <Th>Col. 2</Th>
+                <Th>Footnotes</Th>
+                <Th align="right">Page</Th>
+                <Th>Check</Th>
+                <Th />
+              </Tr>
+            </THead>
+            <TBody>
+              {rows.map((row, index) =>
+                editing === row.id ? (
+                  <Tr key={row.id} className="bg-base-content/[0.02]">
+                    <Td colSpan={11} className="py-4">
+                      <RowForm value={draft} onChange={setDraft} />
+                      <div className="mt-3 flex justify-end gap-2">
+                        <button className={btn.xsGhost} onClick={() => setEditing(null)}>
+                          Cancel
+                        </button>
                         <button
-                          className={btn.xsGhost}
-                          onClick={() => {
-                            setDraft(toEditable(row))
-                            setEditing(row.id)
+                          className={btn.xsPrimary}
+                          disabled={!!busy}
+                          onClick={async () => {
+                            await patch(row, fromEditable(draft))
+                            setEditing(null)
                           }}
                         >
-                          Edit
+                          {busy === `row-${row.id}` && <Spinner />}
+                          Save and mark reviewed
                         </button>
-                        <button
-                          className={`${btn.xsGhost} text-base-content/40 hover:text-error`}
-                          disabled={!!busy}
-                          onClick={() =>
-                            confirm(`Delete ${row.htsno || "this row"}?`) &&
-                            run(`del-${row.id}`, () => api(`/heading-rows/${row.id}`, { method: "DELETE" }))
-                          }
-                        >
-                          {busy === `del-${row.id}` && <Spinner />}
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </Td>
+                  </Tr>
+                ) : (
+                  <Tr
+                    key={row.id}
+                    selected={selected.has(row.id)}
+                    className={`group transition-colors duration-150 ${
+                      selected.has(row.id) ? "" : row.claude_status === "flagged" ? "bg-error/[0.05]" : row.reviewed ? "" : "bg-warning/[0.03]"
+                    }`}
+                  >
+                    <Td className="pr-0">
+                      <input
+                        type="checkbox"
+                        aria-label={`Select ${row.htsno || "row"}`}
+                        className="checkbox checkbox-xs mt-0.5 rounded-sm"
+                        checked={selected.has(row.id)}
+                        onChange={(e) => toggleSelected(index, (e.nativeEvent as MouseEvent).shiftKey)}
+                      />
+                    </Td>
+                    <Td>
+                      <span className="flex items-center gap-1.5">
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-xs mt-0.5 rounded-sm"
+                          checked={row.reviewed}
+                          // Only operations that replace or delete rows lock the checkboxes
+                          disabled={!!busy && !busy.startsWith("row-")}
+                          onChange={(e) => toggleReviewed(row, e.target.checked)}
+                        />
+                        {/* Fixed slot: the spinner never changes the column's width */}
+                        <span className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center" aria-hidden>
+                          {((savingRows[row.id] ?? 0) > 0 || busy === `row-${row.id}`) && (
+                            <span className="loading loading-spinner h-3 w-3 text-base-content/40" />
+                          )}
+                        </span>
+                      </span>
+                    </Td>
+                    <RowHeader className="whitespace-nowrap font-mono text-[13px]">
+                      {row.htsno || <span className="text-base-content/30">—</span>}
+                      {row.stat_suffix && <span className="text-base-content/45"> {row.stat_suffix}</span>}
+                      {uncited.has(row.id) && !data.coverage?.complete && (
+                        <span className="mt-1 block font-sans">
+                          <Pill title="The change record doesn't cite this heading">Not cited</Pill>
+                        </span>
+                      )}
+                    </RowHeader>
+                    <Td>
+                      <span style={{ paddingLeft: `${row.indent * 1}rem` }} className="block leading-snug">
+                        {row.description}
+                      </span>
+                      {row.parser_original && (
+                        <span className="mt-1 block text-xs text-base-content/45">
+                          Parser read:{" "}
+                          {Object.entries(row.parser_original)
+                            .map(([k, v]) => `${k} "${Array.isArray(v) ? v.join("; ") : v}"`)
+                            .join(", ")}
+                        </span>
+                      )}
+                    </Td>
+                    <Td>{row.general}</Td>
+                    <Td className="max-w-48 wrap-break-word">{row.special}</Td>
+                    <Td>{row.other}</Td>
+                    <Td className="max-w-48 text-xs text-base-content/70">{row.footnotes.join(" ")}</Td>
+                    <Td align="right" className="text-xs text-base-content/55">
+                      {row.page ?? ""}
+                    </Td>
+                    <Td className="text-xs">
+                      {row.source === "manual" ? (
+                        <Pill>Manual</Pill>
+                      ) : (
+                        row.claude_status && (
+                          <Pill tone={CHECK_TONES[row.claude_status]} title={row.claude_notes ?? ""}>
+                            {row.claude_status.charAt(0).toUpperCase() + row.claude_status.slice(1)}
+                          </Pill>
+                        )
+                      )}
+                      {row.claude_notes && row.claude_status !== "ok" && (
+                        <span className="mt-1 block max-w-48 leading-snug text-base-content/55">{row.claude_notes}</span>
+                      )}
+                    </Td>
+                    <Td align="right" className="whitespace-nowrap">
+                      <button
+                        className={btn.xsGhost}
+                        onClick={() => {
+                          setDraft(toEditable(row))
+                          setEditing(row.id)
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className={`${btn.xsGhost} text-base-content/40 hover:text-error`}
+                        disabled={!!busy}
+                        onClick={() =>
+                          confirm(`Delete ${row.htsno || "this row"}?`) &&
+                          run(`del-${row.id}`, () => api(`/heading-rows/${row.id}`, { method: "DELETE" }))
+                        }
+                      >
+                        {busy === `del-${row.id}` && <Spinner />}
+                        Delete
+                      </button>
+                    </Td>
+                  </Tr>
+                )
+              )}
+            </TBody>
+          </Table>
         )}
       </Panel>
     </div>
@@ -634,10 +846,10 @@ export default function HeadingsPanel({ attemptId }: { attemptId: string }) {
 
 function RowForm({ value, onChange }: { value: Editable; onChange: (v: Editable) => void }) {
   const field = (key: keyof Editable, label: string, className = "") => (
-    <label className={`form-control ${className}`}>
+    <label className={`flex flex-col ${className}`}>
       <span className="mb-1 text-xs font-medium text-base-content/60">{label}</span>
       <input
-        className="input input-bordered input-sm border-base-content/15 bg-base-100"
+        className="input input-sm border-base-content/15 bg-base-100"
         value={value[key] === null ? "" : String(value[key])}
         onChange={(e) =>
           onChange({ ...value, [key]: key === "indent" || key === "page" ? (e.target.value ? Number(e.target.value) : key === "page" ? null : 0) : e.target.value })
@@ -652,10 +864,10 @@ function RowForm({ value, onChange }: { value: Editable; onChange: (v: Editable)
       {field("indent", "Indent (0 = left)")}
       {field("units", "Units")}
       {field("page", "Page")}
-      <label className="form-control md:col-span-6">
+      <label className="flex flex-col md:col-span-6">
         <span className="mb-1 text-xs font-medium text-base-content/60">Description</span>
         <textarea
-          className="textarea textarea-bordered textarea-sm border-base-content/15 bg-base-100"
+          className="textarea textarea-sm border-base-content/15 bg-base-100"
           rows={2}
           value={value.description}
           onChange={(e) => onChange({ ...value, description: e.target.value })}
@@ -664,10 +876,10 @@ function RowForm({ value, onChange }: { value: Editable; onChange: (v: Editable)
       {field("general", "General (column 1)", "md:col-span-2")}
       {field("special", "Special", "md:col-span-2")}
       {field("other", "Column 2", "md:col-span-2")}
-      <label className="form-control md:col-span-6">
+      <label className="flex flex-col md:col-span-6">
         <span className="mb-1 text-xs font-medium text-base-content/60">Footnotes, one per line (e.g. &quot;1/ See chapter 99 statistical note 1.&quot;)</span>
         <textarea
-          className="textarea textarea-bordered textarea-sm border-base-content/15 bg-base-100"
+          className="textarea textarea-sm border-base-content/15 bg-base-100"
           rows={2}
           value={value.footnotesText}
           onChange={(e) => onChange({ ...value, footnotesText: e.target.value })}

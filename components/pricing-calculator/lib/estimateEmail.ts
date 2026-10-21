@@ -10,7 +10,7 @@ export const estimateEmailBody = (est: Estimate, billing: Billing, link: string)
     ...est.lines.map(
       (line) =>
         `- ${line.label} (${line.detail}): ${
-          line.includedWith ? "included" : line.monthly === null ? "custom quote" : `${formatPrice(line.monthly)}/mo`
+          line.monthly === 0 ? "free" : line.monthly === null ? "custom quote" : `${formatPrice(line.monthly)}/mo`
         }`
     ),
     "",

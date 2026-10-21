@@ -13,6 +13,9 @@ export interface Source {
   revision?: string // USITC release name, e.g. "2026HTSRev5"
   citation?: string // "Proclamation 11021", "91 FR 12345", "CSMS # 68554727"
   url?: string
+  // When the cited document was published (signed, or in the Federal Register),
+  // as opposed to when it took effect. Shows retroactive changes and lead times.
+  publishedOn?: IsoDate
   note?: string
 }
 
@@ -37,7 +40,11 @@ export type Authority =
 export interface Program {
   id: string
   name: string
+  // The law it was enacted under
   authority: Authority
+  // Implements a trade deal with another country, whatever its authority (e.g. the EU,
+  // Japan and Korea deals were implemented under IEEPA)
+  tradeDeal?: boolean
   legalBasis?: string[]
   description?: string
 }

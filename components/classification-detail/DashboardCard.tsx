@@ -7,7 +7,7 @@ export function DashboardCard({
 }) {
   return (
     <div
-      className={`rounded-xl border border-base-300 bg-base-100 shadow-sm ${className}`}
+      className={`rounded-xl border border-base-300 bg-base-100 shadow-xs ${className}`}
     >
       {children}
     </div>

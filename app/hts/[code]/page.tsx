@@ -20,9 +20,13 @@ import {
   inSentence,
 } from "@/libs/hts-duty-summary";
 import { microEstimate } from "@/libs/hts-micro-estimate";
+import { getUsImports } from "@/libs/us-imports-server";
+import { IMPORT_SOURCES_SHOWN } from "@/components/hts-code-page/ImportSources";
+import { getUpdatesNamingCode } from "@/libs/tariff-updates/public";
+import { getCasesNamingCode } from "@/libs/adcvd/public";
 
 interface HtsCodePageProps {
-  params: { code: string };
+  params: Promise<{ code: string }>;
 }
 
 export const revalidate = 86400;
@@ -93,9 +97,8 @@ function pageDescription(
   return `US duty on HTS ${htsno}: ${totals[0]}.${updated}`;
 }
 
-export async function generateMetadata({
-  params,
-}: HtsCodePageProps): Promise<Metadata> {
+export async function generateMetadata(props: HtsCodePageProps): Promise<Metadata> {
+  const params = await props.params;
   const page = await loadHtsPage(params.code);
   if (!page) {
     return { title: "HTS Code Not Found | HTS Hero" };
@@ -141,13 +144,26 @@ export async function generateMetadata({
   };
 }
 
-export default async function HtsCodePage({ params }: HtsCodePageProps) {
+export default async function HtsCodePage(props: HtsCodePageProps) {
+  const params = await props.params;
   const page = await loadHtsPage(params.code);
   if (!page) {
     notFound();
   }
 
   const { elements, element, parents, rateElement, sectionChapter, productName, summary } = page;
+  // Where the US imports it from (Census), and the duty from each of its top suppliers
+  const imports = summary ? getUsImports(element.htsno) : null;
+  const importDuty = imports
+    ? getHtsDutySummary(
+        element,
+        rateElement,
+        Array.from(imports.byCountry.entries())
+          .sort((a, b) => b[1].value - a[1].value)
+          .slice(0, IMPORT_SOURCES_SHOWN)
+          .map(([iso]) => iso)
+      )
+    : null;
   // The quick estimate opens on China, the most-looked-up country of origin
   const estimate = summary
     ? microEstimate({
@@ -157,6 +173,8 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
       asOf: summary.asOf,
     })
     : null;
+  const tariffUpdates = element.htsno ? await getUpdatesNamingCode(element.htsno) : [];
+  const adcvdCases = element.htsno ? await getCasesNamingCode(element.htsno) : [];
   const children = getDirectChildren(element, elements);
   const nearestParent = parents[parents.length - 1];
   const siblings = nearestParent
@@ -174,6 +192,10 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
         childrenElements={children}
         siblingElements={siblings}
         sectionChapter={sectionChapter}
+        imports={imports}
+        importDuty={importDuty}
+        tariffUpdates={tariffUpdates}
+        adcvdCases={adcvdCases}
       />
     </main>
   );

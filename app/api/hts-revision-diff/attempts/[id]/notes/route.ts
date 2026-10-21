@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic"
 
 // Parse output for inspection: the note tree, warnings, the change record
 // markdown and its extracted items, and links to every stored file
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

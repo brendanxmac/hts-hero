@@ -2,15 +2,15 @@
 // was removed on Oct 1, 2026; this file is now the source. See HowTariffsWork.md §6.
 import { Tariff } from "../../types"
 import { confirm } from "../confirmations"
-import { tariffVersions } from "../../versioning"
+import { tariffVersions, splitTariffAt } from "../../versioning"
 
-export const headings: Tariff[] = [
+const allHeadings: Tariff[] = [
   {
     code: "9903.94.01",
     program: "232-autos",
-    name: "Section 232 Automobiles",
+    name: "Section 232 Autos: Passenger Vehicles and Light Trucks",
     description:
-      "Except for products described in headings 9903.94.02, 9903.94.03, 9903.94.04, 9903.94.31, 9903.94.40, 9903.94.41, 9903.94.50, and 9903.94.51, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, as specified in note 33 to this subchapter, as provided for in subdivision (b) of U.S. note 33 to this subchapter",
+      "Except for products described in headings 9903.94.02, 9903.94.03, 9903.94.04, 9903.94.31, 9903.94.40, 9903.94.41, 9903.94.50, 9903.94.51, 9903.94.60, and 9903.94.61, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, as specified in note 33 to this subchapter, as provided for in subdivision (b) of U.S. note 33 to this subchapter",
     scope: {
       countries: "all",
       codes: [{ list: "automobiles33B" }],
@@ -34,7 +34,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.02",
     program: "232-autos",
-    name: "The U.S Content of Articles of Ch.99, III, 33(b) OR non passenger vehicles / light trucks of those headings",
+    name: "Section 232 Autos Exemption: Not a Passenger Vehicle or Light Truck, or Approved United States Content",
     description:
       "Effective with respect to entries on or after April 3, 2025, articles as provided for in subdivision (c) of U.S. note 33 to this subchapter.",
     scope: {
@@ -49,7 +49,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.03",
     program: "232-autos",
-    name: "Tariff On Only The Non-US Content of Passenger Vehicles / Light Trucks If Approved by Secretary of Commerce",
+    name: "Section 232 Autos: Foreign Content of USMCA Vehicles (Commerce Approved)",
     description:
       "Effective with respect to entries on or after April 3, 2025, certain passenger vehicles and light trucks, as provided for in subdivision (d) of U.S. note 33 to this subchapter.",
     scope: {
@@ -67,7 +67,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.04",
     program: "232-autos",
-    name: "Manufactured at least 25 Years Prior to Date of Entry",
+    name: "Section 232 Autos Exemption: Vehicles at Least 25 Years Old",
     description:
       "Effective with respect to entries on or after April 3, 2025, certain passenger vehicles and light trucks, as provided for in subdivision (e) of U.S. note 33 to this subchapter.",
     scope: {
@@ -82,7 +82,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.31",
     program: "232-autos",
-    name: "Passenger Vehicles from the United Kingdom",
+    name: "Section 232 Autos: Passenger Vehicles of the United Kingdom",
     description:
       "Effective with respect to entries on or after June 30, 2025, passenger vehicles that are products of the United Kingdom as specified in subdivision (i) of U.S. note 33 to this subchapter, when entered under the terms of subdivision (i) of U.S. note 33 to this subchapter",
     scope: {
@@ -135,7 +135,13 @@ export const headings: Tariff[] = [
       requires: [confirm("9903.94.05")],
       rate: { kind: "adValorem", pct: 25 },
       effective: {},
-      source: { revision: "2026HTSRev5" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+        url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+        publishedOn: "2025-12-04",
+        note: "Excepts the Korea headings 9903.94.62 and .63 from Nov 1, 2025 (retroactive); the Taiwan headings are added May 1, 2026",
+      },
     },
     [
       {
@@ -165,7 +171,11 @@ export const headings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev9",
-          note: "Taiwan headings 9903.94.66/67 added as exceptions (U.S. note 33(u)); Notice effective 2026-05-01",
+          citation:
+            "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+          publishedOn: "2026-05-28",
+          note: "Taiwan headings 9903.94.66/67 added as exceptions (U.S. note 33(u)); the notice, effective 2026-05-01 (retroactive)",
         },
       },
     ],
@@ -173,7 +183,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.06",
     program: "232-autos",
-    name: "Is not an auto part for passenger vehicles or light trucks, or is an auto part that is USCMA Eligible other than knock-down kits or parts compilations",
+    name: "Section 232 Auto Parts Exemption: USMCA Parts, or Not a Vehicle Part",
     description:
       "Effective with respect to entries on or after May 3, 2025, articles provided for in subdivision (h) of U.S. note 33 to this subchapter.",
     scope: {
@@ -189,7 +199,7 @@ export const headings: Tariff[] = [
     {
       code: "9903.94.07",
       program: "232-autos",
-      name: "Parts for Production or Repair of Automobiles in the US",
+      name: "Section 232 Auto Parts: For Vehicle Production or Repair in the United States",
       description:
         "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54, 9903.94.55, 9903.94.64, and 9903.94.65, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter.",
       scope: {
@@ -225,7 +235,13 @@ export const headings: Tariff[] = [
       requires: [confirm("9903.94.07")],
       rate: { kind: "adValorem", pct: 25 },
       effective: {},
-      source: { revision: "2026HTSRev5" },
+      source: {
+        revision: "2026HTSRev5",
+        citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+        url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+        publishedOn: "2025-12-04",
+        note: "Excepts the Korea headings 9903.94.64 and .65 from Nov 1, 2025 (retroactive); the Taiwan headings are added May 1, 2026",
+      },
     },
     [
       {
@@ -253,7 +269,11 @@ export const headings: Tariff[] = [
         },
         source: {
           revision: "2026HTSRev9",
-          note: "Taiwan headings 9903.94.68/69 added as exceptions (U.S. note 33(u)); Notice effective 2026-05-01",
+          citation:
+            "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+          url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+          publishedOn: "2026-05-28",
+          note: "Taiwan headings 9903.94.68/69 added as exceptions (U.S. note 33(u)); the notice, effective 2026-05-01 (retroactive)",
         },
       },
     ],
@@ -261,7 +281,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.33",
     program: "232-autos",
-    name: "Automobile parts of the United Kingdom that will be used in Automobiles of the United Kingdom",
+    name: "Section 232 Auto Parts: Parts of the United Kingdom for United Kingdom Vehicles",
     description:
       "Automobile parts the product of the United Kingdom as provided for in subdivision (q) of U.S. note 33 to this subchapter",
     scope: {
@@ -287,9 +307,9 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.44",
     program: "232-autos",
-    name: "Automobile parts of the European Union with Column 1 Duty >=15%",
+    name: "Section 232 Auto Parts: Parts of the European Union for United States Production or Repair (Base Duty 15% or More)",
     description:
-      "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
+      "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
       countries: [{ list: "eu-members" }],
       // TODO(list): covers every code except the exclusions below (legacy scope). The heading's U.S. note subdivision (see description) defines its own list; use that instead. PROGRESS.md L9.
@@ -313,7 +333,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.45",
     program: "232-autos",
-    name: "Automobile parts of the European Union with Column 1 Duty <15% (Replaces General Duty)",
+    name: "Section 232 Auto Parts: Parts of the European Union for United States Production or Repair (15% Including Base Duty)",
     description:
       "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
@@ -339,7 +359,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.54",
     program: "232-autos",
-    name: "Automobile parts of the Japan from 33(r), with Column 1 Duty >=15%",
+    name: "Section 232 Auto Parts: Parts of Japan for United States Production or Repair (Base Duty 15% or More)",
     description:
       "Automobile parts the product of Japan with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
@@ -362,7 +382,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.55",
     program: "232-autos",
-    name: "Automobile parts of Japan from 33(r), with Column 1 Duty <15% (Replaces General Duty)",
+    name: "Section 232 Auto Parts: Parts of Japan for United States Production or Repair (15% Including Base Duty)",
     description:
       "Automobile parts the product of Japan with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     scope: {
@@ -388,7 +408,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.64",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of South Korea from 33(r) & 33(t), with Column 1 Duty >=15%",
+    name: "Section 232 Auto Parts: Parts of South Korea for United States Production or Repair (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (r) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -405,13 +425,20 @@ export const headings: Tariff[] = [
     },
     requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.94.64")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.65",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of South Korea from 33(r) & 33(t), with Column 1 Duty <15% (Replaces General Duty)",
+    name: "Section 232 Auto Parts: Parts of South Korea for United States Production or Repair (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (r) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
@@ -431,13 +458,20 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.32",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of the United Kingdom",
+    name: "Section 232 Auto Parts: Parts of the United Kingdom",
     description:
       "Effective with respect to entries on or after June 30, 2025, parts of passenger vehicles and light trucks of the United Kingdom, classified in the subheadings enumerated in subdivision (j) of U.S. note 33 to this subchapter",
     scope: {
@@ -459,7 +493,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.40",
     program: "232-autos",
-    name: "Vehicles & Light Trucks of Japan, Duty >=15%",
+    name: "Section 232 Autos: Vehicles of Japan (Base Duty 15% or More)",
     description:
       "Passenger vehicles and light trucks that are products of Japan as provided for in subdivision (k) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter",
     scope: {
@@ -475,7 +509,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.41",
     program: "232-autos",
-    name: "Vehicles & Light Trucks of Japan, Duty <15% (Replaces General Duty)",
+    name: "Section 232 Autos: Vehicles of Japan (15% Including Base Duty)",
     description:
       "Passenger vehicles and light trucks that are products of Japan provided for in subdivision (k) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
     scope: {
@@ -494,7 +528,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.42",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of Japan, Duty >=15%",
+    name: "Section 232 Auto Parts: Parts of Japan (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Japan as provided for subdivision (l) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
     scope: {
@@ -510,7 +544,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.43",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of Japan, Duty <15% (Replaces General Duty)",
+    name: "Section 232 Auto Parts: Parts of Japan (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Japan as provided for subdivision (l) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
     scope: {
@@ -529,7 +563,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.50",
     program: "232-autos",
-    name: "Vehicles & Light Trucks of the European Union, Duty >=15%",
+    name: "Section 232 Autos: Vehicles of the European Union (Base Duty 15% or More)",
     description:
       "Passenger vehicles and light trucks that are products of the European Union as specified in subdivision (n) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1 equal to or greater than 15 percent.",
     scope: {
@@ -544,7 +578,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.51",
     program: "232-autos",
-    name: "Vehicles & Light Trucks of the European Union, Duty <15% (Replaces General Duty)",
+    name: "Section 232 Autos: Vehicles of the European Union (15% Including Base Duty)",
     description:
       "Passenger vehicles and light trucks that are products of the European Union as specified in subdivision (n) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1 less than 15 percent",
     scope: {
@@ -562,7 +596,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.52",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of the European Union, Duty >=15%",
+    name: "Section 232 Auto Parts: Parts of the European Union (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of the European Union as specified in subdivision (o) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1 equal to or greater than 15 percent.",
     scope: {
@@ -577,7 +611,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.53",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of the European Union, Duty <15% (Replaces General Duty)",
+    name: "Section 232 Auto Parts: Parts of the European Union (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of the European Union as specified in subdivision (o) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column1 less than 15 percent.",
     scope: {
@@ -595,7 +629,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.94.60",
     program: "232-autos",
-    name: "Vehicles & Light Trucks of South Korea, Duty >=15%",
+    name: "Section 232 Autos: Vehicles of South Korea (Base Duty 15% or More)",
     description:
       "Passenger vehicles and light trucks that are products of South Korea as specified in subdivision (s) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -605,13 +639,20 @@ export const headings: Tariff[] = [
     exceptions: ["9903.94.02", "9903.94.04"],
     requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.94.60")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.61",
     program: "232-autos",
-    name: "Vehicles & Light Trucks of South Korea, Duty <15% (Replaces General Duty)",
+    name: "Section 232 Autos: Vehicles of South Korea (15% Including Base Duty)",
     description:
       "Passenger vehicles and light trucks that are products of South Korea as specified in subdivision (s) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
@@ -624,13 +665,20 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.62",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of South Korea (33(g) & 33(t)), Duty >=15%",
+    name: "Section 232 Auto Parts: Parts of South Korea (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (g) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -640,13 +688,20 @@ export const headings: Tariff[] = [
     exceptions: ["9903.94.06"],
     requires: [{ kind: "baseRate", op: ">=", pct: 15 }, confirm("9903.94.62")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.63",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of South Korea (33(g) & 33(t)), Duty <15% (Replaces General Duty)",
+    name: "Section 232 Auto Parts: Parts of South Korea (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (g) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
@@ -659,13 +714,20 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    // Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A: "on or after 12:01 a.m. eastern time on November 1, 2025" (automobiles and parts). Retroactive
+    effective: { from: "2025-11-01" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+      publishedOn: "2025-12-04",
+      note: "Starts with goods entered on or after 12:01 a.m. ET Nov 1, 2025 (retroactive). Backfilled from 2025HTSRev32's change record",
+    },
   },
   {
     code: "9903.94.66",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of Taiwan (33(g) & 33(u)), Duty >=15%",
+    name: "Section 232 Auto Parts: Parts of Taiwan (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Taiwan as provided for in subdivisions (g) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -678,13 +740,17 @@ export const headings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 33(u); Notice effective 2026-05-01",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 33(u); the notice, effective 2026-05-01 (retroactive)",
     },
   },
   {
     code: "9903.94.67",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of Taiwan (33(g) & 33(u)), Duty <15% (Topped Up to 15%)",
+    name: "Section 232 Auto Parts: Parts of Taiwan (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Taiwan as provided for in subdivisions (g) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
@@ -700,13 +766,17 @@ export const headings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 33(u); Notice effective 2026-05-01",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 33(u); the notice, effective 2026-05-01 (retroactive)",
     },
   },
   {
     code: "9903.94.68",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of Taiwan from 33(r) & 33(u), with Column 1 Duty >=15%",
+    name: "Section 232 Auto Parts: Parts of Taiwan for United States Production or Repair (Base Duty 15% or More)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Taiwan as specified in subdivisions (r) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
     scope: {
@@ -725,13 +795,17 @@ export const headings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 33(u); Notice effective 2026-05-01",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 33(u); the notice, effective 2026-05-01 (retroactive)",
     },
   },
   {
     code: "9903.94.69",
     program: "232-autos",
-    name: "Parts of Vehicles & Light Trucks of Taiwan from 33(r) & 33(u), with Column 1 Duty <15% (Topped Up to 15%)",
+    name: "Section 232 Auto Parts: Parts of Taiwan for United States Production or Repair (15% Including Base Duty)",
     description:
       "Parts of passenger vehicles and light trucks that are products of Taiwan as provided for in subdivisions (r) and (u) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
     scope: {
@@ -753,7 +827,40 @@ export const headings: Tariff[] = [
     effective: { from: "2026-05-01" },
     source: {
       revision: "2026HTSRev9",
-      note: "U.S. note 33(u); Notice effective 2026-05-01",
+      citation:
+        "Commerce/USTR notice, Implementing Certain Tariff-Related Elements of a Trade and Security Agreement Between the American Institute in Taiwan and the Taipei Economic and Cultural Representative Office in the United States, Annex, 91 FR 31818 (FR Doc. 2026-10571)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-05-28/html/2026-10571.htm",
+      publishedOn: "2026-05-28",
+      note: "U.S. note 33(u); the notice, effective 2026-05-01 (retroactive)",
     },
   },
 ]
+
+// 2025HTSRev31 text of headings the U.S.-Korea deal changed on Nov 1, 2025: they didn't yet name the
+// Korea vehicle and parts headings 9903.94.60–.65. Commerce/USTR notice (90 FR 55964), Annex Part A,
+// "on or after 12:01 a.m. eastern time on November 1, 2025" (retroactive). Text only: the exceptions
+// name headings that don't apply before then. Backfilled from 2025HTSRev32's change record
+const KOREA_AUTOS_FROM = "2025-11-01"
+const REV31_DESCRIPTIONS: Record<string, string> = {
+  "9903.94.01":
+    "Except for products described in headings 9903.94.02, 9903.94.03, 9903.94.04, 9903.94.31, 9903.94.40, 9903.94.41, 9903.94.50, and 9903.94.51, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, as specified in note 33 to this subchapter, as provided for in subdivision (b) of U.S. note 33 to this subchapter",
+  "9903.94.05":
+    "Except for products described in headings 9903.94.06, 9903.94.32, 9903.94.33, 9903.94.42, 9903.94.43, 9903.94.44, 9903.94.45, 9903.94.52, 9903.94.53, 9903.94.54, 9903.94.55, automobile parts, as provided for in subdivision (g) of U.S. note 33 to this subchapter",
+  "9903.94.07":
+    "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54 and 9903.94.55, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter",
+}
+
+export const headings: Tariff[] = allHeadings.flatMap((t) =>
+  REV31_DESCRIPTIONS[t.code]
+    ? splitTariffAt(t, KOREA_AUTOS_FROM, () => ({
+        description: REV31_DESCRIPTIONS[t.code],
+        source: {
+          revision: "2025HTSRev31",
+          citation: "Commerce/USTR notice, U.S.-Korea Strategic Trade and Investment Deal (90 FR 55964), Annex Part A",
+          url: "https://www.govinfo.gov/content/pkg/FR-2025-12-04/html/2025-21940.htm",
+          publishedOn: "2025-12-04",
+          note: "The 2025HTSRev31 text, before the Korea vehicle and parts headings 9903.94.60–.65 (Nov 1, 2025, retroactive). Backfilled from 2025HTSRev32's change record",
+        },
+      }))
+    : [t],
+)

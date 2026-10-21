@@ -60,7 +60,7 @@ function CrossRulingsByTermBlock({
         ) : (
           rulings.map((ruling) => (
             <RulingCard
-              key={ruling.id}
+              key={ruling.rulingNumber}
               ruling={ruling}
               onClick={() => onRulingClick(ruling)}
             />

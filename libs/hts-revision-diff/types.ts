@@ -338,12 +338,27 @@ export interface ContextBlock {
   text: string
 }
 
+// Subchapter III headings on a revision's heading pages, against the list read from
+// USITC's archived Chapter 99 PDF for that revision
+export interface HeadingCoverage {
+  expected: number
+  complete: boolean
+  missingCount: number
+  missing: string[] // in the archive but not on the pages (first 100)
+  unexpected: string[] // on the pages but not in the archive: check the heading number (first 100)
+}
+
 // A heading the change record cites, looked up in the newer revision's
 // Chapter 99 JSON (when there is one)
 export interface CitedHeading {
   code: string
+  // The heading in the newer revision
   status: "found" | "not_found" | "unverified"
   row: HtsRow | null
+  // The same heading in the older revision (its JSON or reviewed heading pages).
+  // Missing on comparisons built before this was added.
+  beforeStatus?: "found" | "not_found" | "unverified"
+  before?: HtsRow | null
 }
 
 export interface ChangePayload {
@@ -365,14 +380,29 @@ export interface ComparisonStats {
   noteDiffs: Record<NoteDiff["status"], number>
   codeDiffs: Record<CodeDiff["status"], number>
   // "full": both revisions have Chapter 99 JSON, so every heading is diffed.
-  // Otherwise heading changes come from the change record only.
-  headingDiff?: "full" | "change_record_only"
+  // "heading_pages_full": both revisions have every subchapter III heading (on
+  // their heading pages, or in JSON), so every subchapter III heading is diffed,
+  // including added and removed ones; other subchapters as for "heading_pages".
+  // "heading_pages": headings that appear on both revisions' heading pages are
+  // diffed; added and removed headings come from the change record only.
+  // "change_record_only": heading changes come from the change record only.
+  headingDiff?: "full" | "heading_pages_full" | "heading_pages" | "change_record_only"
+  // Each side's heading pages against USITC's archived Chapter 99 PDF (null when
+  // the side has JSON, no heading pages, or the archive doesn't cover the revision)
+  headingCoverage?: HeadingCoverage | null
+  fromHeadingCoverage?: HeadingCoverage | null
   // Where cited headings were looked up: the newer revision's JSON, its
   // reviewed heading pages, or nowhere
   headingSource?: "revision_json" | "revision_pdf" | "none"
+  // Heading rows not reviewed when this was built (all of them; the ones that matter
+  // are those used by changes, worked out when the comparison is viewed)
   unreviewedHeadingRows?: number
   // headingRowsFingerprint() of the newer attempt's rows when this was built
   headingRowsFingerprint?: string
+  // The same, for the older revision (where cited headings' "before" comes from)
+  fromHeadingSource?: "revision_json" | "revision_pdf" | "none"
+  fromUnreviewedHeadingRows?: number
+  fromHeadingRowsFingerprint?: string
   changes: Record<ChangeSource, number>
   carriedOverReviews: number
   // From the newer revision's change record ("after 2026 Revision 5")

@@ -140,9 +140,9 @@ export const ClassificationHierarchy = ({
           >
             {/* Circle indicator */}
             {item.isCurrent ? (
-              <span className="absolute -left-[11px] top-2.5 w-5 h-5 rounded-full bg-primary border-2 border-base-100 shadow-md shadow-primary/30" />
+              <span className="absolute left-[-11px] top-2.5 w-5 h-5 rounded-full bg-primary border-2 border-base-100 shadow-md shadow-primary/30" />
             ) : (
-              <span className="absolute -left-[9px] top-5 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
+              <span className="absolute left-[-9px] top-5 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
             )}
 
             {isClickable ? (

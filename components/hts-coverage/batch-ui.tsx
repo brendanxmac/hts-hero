@@ -196,7 +196,7 @@ export const BatchModal = ({
               </Field>
               <Field label="Instructions for Claude" hint="Optional now; editable on the batch page">
                 <textarea
-                  className="textarea textarea-bordered textarea-sm min-h-20 border-base-content/15 bg-base-100 text-sm"
+                  className="textarea textarea-sm min-h-20 border-base-content/15 bg-base-100 text-sm"
                   value={instructions}
                   onChange={(e) => setInstructions(e.target.value)}
                 />

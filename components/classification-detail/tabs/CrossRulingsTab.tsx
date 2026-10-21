@@ -34,7 +34,7 @@ function TermSection({
   onRulingClick: (ruling: CrossRuling) => void;
 }) {
   return (
-    <div className="rounded-xl border border-base-content/10 bg-base-100 overflow-hidden shadow-sm">
+    <div className="rounded-xl border border-base-content/10 bg-base-100 overflow-hidden shadow-xs">
       <div className="bg-base-200/40 px-4 py-3 border-b border-base-content/10">
         <p className="text-xs font-semibold uppercase tracking-wide text-base-content/45">
           Search term
@@ -54,7 +54,7 @@ function TermSection({
         ) : (
           rulings.map((ruling) => (
             <RulingCard
-              key={ruling.id}
+              key={ruling.rulingNumber}
               ruling={ruling}
               onClick={() => onRulingClick(ruling)}
             />

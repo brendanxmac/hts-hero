@@ -1,6 +1,7 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
 import ButtonCheckout from "./ButtonCheckout";
+import { Select } from "@/components/ui/Select";
 import { StripePaymentMode } from "../libs/stripe";
 import { getFeatureIcon, getFeatureSupportingLabel } from "./ClassifyPricing";
 import router from "next/router";
@@ -110,7 +111,7 @@ const ConversionPricing = ({
 
                   {plan.isFeatured && (
                     <div
-                      className={`absolute -inset-[1px] rounded-[9px] bg-primary`}
+                      className={`absolute -inset-px rounded-[9px] bg-primary`}
                     ></div>
                   )}
 
@@ -164,19 +165,17 @@ const ConversionPricing = ({
                           )}
                         </div>
                         {hasMultipleTiers && (
-                          <select
+                          <Select
                             value={currentTierIndex}
-                            onChange={(e) =>
-                              handleTierChange(index, parseInt(e.target.value))
-                            }
-                            className="select select-bordered select-sm bg-base-100 font-semibold"
-                          >
-                            {plan.priceTiers!.map((tier, i) => (
-                              <option key={i} value={i}>
-                                {tier}
-                              </option>
-                            ))}
-                          </select>
+                            onChange={(i) => handleTierChange(index, i)}
+                            options={plan.priceTiers!.map((tier, i) => ({
+                              value: i,
+                              label: tier,
+                            }))}
+                            label="Choose a tier"
+                            size="sm"
+                            buttonClassName="font-semibold"
+                          />
                         )}
                       </div>
                     </div>

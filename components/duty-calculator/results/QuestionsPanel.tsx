@@ -8,6 +8,7 @@ import { DutyLine, Question } from "@/tariffs/engine-v2/types";
 import { sortBySpecificity } from "../lib/questions";
 import { Panel } from "./Panel";
 import { QuestionControl } from "./QuestionControl";
+import { onShipment } from "../lib/valueBasis";
 
 export const QuestionsPanel = ({
   questions,
@@ -18,6 +19,15 @@ export const QuestionsPanel = ({
   asOf,
   htsCode,
   preference,
+  bare = false,
+  stableQuestions,
+  notes = {},
+  qualifyLink,
+  notice,
+  hideLegal,
+  changeSummary,
+  action,
+  customsValue,
 }: {
   questions: Question[];
   answers: Record<string, unknown>;
@@ -29,6 +39,26 @@ export const QuestionsPanel = ({
   htsCode?: string;
   // The trade preference control, when the entry has preferences to claim
   preference?: ReactNode;
+  // No card of its own: it sits inside a host's
+  bare?: boolean;
+  // Holds still while answering: every question in this one order (the host's: those of the
+  // entry before any answer, plus any an answer brings up), all shown, each row keeping its
+  // shape. Ones that don't apply with the answers as they stand are greyed.
+  stableQuestions?: Question[];
+  // What answering yes would do, in plain English, by question
+  notes?: Record<string, ReactNode>;
+  // On each row that could save money: find out whether the goods qualify
+  qualifyLink?: ReactNode;
+  // Above the sections, once for the whole panel (the Tracker's "See what you qualify for")
+  notice?: ReactNode;
+  // Signed out: no legal text on the rows (it takes a free account)
+  hideLegal?: boolean;
+  // What the last answer did, under the question it answered (by its id)
+  changeSummary?: { id: string; node: ReactNode };
+  // Across from the title (the calculator's "See which ones apply")
+  action?: ReactNode;
+  // The shipment's value, which the amounts on each row are for
+  customsValue?: number;
 }) => {
   const [showAll, setShowAll] = useState(false);
   // Questions that change the amount, can lift an import ban, or are already answered come first; the rest
@@ -44,16 +74,21 @@ export const QuestionsPanel = ({
   const sorted = sortBySpecificity(questions, asOf);
   const primary = sorted.filter(matters);
   const secondary = sorted.filter((q) => !matters(q));
-  const visible = showAll ? [...primary, ...secondary] : primary;
+  const stable = Boolean(stableQuestions);
+  const current = new Set(questions.map((q) => q.input.id));
+  const visible = stableQuestions ?? (showAll ? [...primary, ...secondary] : primary);
   const open = primary.filter((q) => !q.answered).length;
 
   return (
     <Panel
+      bare={bare}
       title="Possible Adjustments"
-      badge={open > 0 ? `${open} could change the total` : undefined}
-      description="Review the conditions below to get a more accurate duty calculation for your import"
+      count={open}
+      action={action}
+      description={`Programs and provisions that could change what you owe${customsValue ? `; amounts ${onShipment(customsValue)}` : ""}`}
     >
       <div className="flex flex-col gap-6">
+        {notice}
         {preference && (
           <AdjustmentSection
             title="Special Tariff Programs"
@@ -62,7 +97,7 @@ export const QuestionsPanel = ({
             {preference}
           </AdjustmentSection>
         )}
-        {questions.length > 0 && (
+        {(stableQuestions ?? questions).length > 0 && (
           <AdjustmentSection
             title="Special Tariff Provisions"
             description="Tariffs and conditions that may apply to your goods."
@@ -78,13 +113,19 @@ export const QuestionsPanel = ({
                       <QuestionControl
                         question={q}
                         value={answers[q.input.id]}
-                        impact={impacts[q.input.id]}
+                        impact={current.has(q.input.id) ? impacts[q.input.id] : undefined}
                         heading={lines.find(
                           (l) => `confirm:${l.code}` === q.input.id,
                         )}
                         onChange={(v) => onAnswer(q.input.id, v)}
                         notesFor={htsCode ? { asOf, htsCode } : undefined}
+                        stable={stable}
+                        note={notes[q.input.id]}
+                        muted={stable && !current.has(q.input.id)}
+                        qualifyLink={qualifyLink}
+                        hideLegal={hideLegal}
                       />
+                      {changeSummary?.id === q.input.id && <div className="mt-3">{changeSummary.node}</div>}
                     </li>
                   ))}
                 </ul>
@@ -93,7 +134,7 @@ export const QuestionsPanel = ({
                   No answer would change the total for this entry.
                 </p>
               )}
-              {secondary.length > 0 && (
+              {!stable && secondary.length > 0 && (
                 <button
                   type="button"
                   className={`${ui.link} mt-4 text-sm`}

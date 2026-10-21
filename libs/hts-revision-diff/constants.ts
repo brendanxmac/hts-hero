@@ -25,6 +25,9 @@ export const CLAUDE_MODEL = "claude-opus-5-5"
 // model (used only if Opus declines) is priced as Opus as an estimate.
 export const CLAUDE_PRICES: Record<string, { input: number; output: number; cacheRead: number; cacheWrite: number }> = {
   "claude-opus-5-5": { input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
+  "claude-sonnet-5-5": { input: 2, output: 10, cacheRead: 0.2, cacheWrite: 2.5 },
+  // Prompts up to 100K tokens; cache rates estimated at the usual 0.1x / 1.25x of input
+  "claude-haiku-5-5": { input: 0.1, output: 0.5, cacheRead: 0.01, cacheWrite: 0.125 },
 }
 
 // Bump when parsing or diffing output changes shape, so stored results show

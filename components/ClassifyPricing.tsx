@@ -2,6 +2,7 @@ import config from "@/config";
 import { classNames } from "../utilities/style";
 import { PricingFeatureI } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
+import { Select } from "@/components/ui/Select";
 import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
 import { useState } from "react";
@@ -149,8 +150,8 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                 key={index}
                 className={classNames(
                   "group relative w-full max-w-md overflow-hidden",
-                  "bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60",
-                  "backdrop-blur-sm rounded-2xl border transition-all duration-300",
+                  "bg-linear-to-br from-base-200/80 via-base-100 to-base-200/60",
+                  "backdrop-blur-xs rounded-2xl border transition-all duration-300",
                   plan.isFeatured
                     ? "border-secondary/40 shadow-xl shadow-secondary/10 hover:shadow-2xl hover:shadow-secondary/20"
                     : "border-base-content/10 shadow-lg hover:shadow-xl hover:border-secondary/20"
@@ -159,7 +160,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                 {/* Featured badge */}
                 {plan.isFeatured && (
                   <div className="absolute -top-px left-1/2 -translate-x-1/2">
-                    <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-secondary to-primary rounded-b-xl text-white text-xs font-semibold shadow-lg">
+                    <div className="flex items-center gap-1.5 px-4 py-1.5 bg-linear-to-r from-secondary to-primary rounded-b-xl text-white text-xs font-semibold shadow-lg">
                       <SparklesIcon className="w-3.5 h-3.5" />
                       Most Popular
                     </div>
@@ -177,7 +178,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                         className={classNames(
                           "flex items-center justify-center w-10 h-10 rounded-xl",
                           plan.isFeatured
-                            ? "bg-gradient-to-br from-secondary/20 to-primary/20 border border-secondary/20"
+                            ? "bg-linear-to-br from-secondary/20 to-primary/20 border border-secondary/20"
                             : "bg-base-200 border border-base-content/10"
                         )}
                       >
@@ -207,19 +208,19 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                         </h3>
                         {/* Tier selector - inline with price */}
                         {hasMultipleTiers && (
-                          <select
+                          <Select
                             value={currentTierIndex}
-                            onChange={(e) =>
-                              handleTierChange(index, parseInt(e.target.value))
-                            }
-                            className="select select-sm ml-auto bg-base-200/50 text-base-content text-xs font-medium border border-base-content/10 focus:border-secondary focus:outline-none"
-                          >
-                            {plan.priceTiers!.map((tier, i) => (
-                              <option key={i} value={i}>
-                                {tier}
-                              </option>
-                            ))}
-                          </select>
+                            onChange={(i) => handleTierChange(index, i)}
+                            options={plan.priceTiers!.map((tier, i) => ({
+                              value: i,
+                              label: tier,
+                            }))}
+                            label="Choose a tier"
+                            size="sm"
+                            className="ml-auto"
+                            buttonClassName="bg-base-200/50 text-xs"
+                            align="right"
+                          />
                         )}
                       </div>
                     </div>
@@ -259,7 +260,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                             className={classNames(
                               "text-5xl font-extrabold tracking-tight",
                               plan.isFeatured
-                                ? "bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent"
+                                ? "bg-linear-to-r from-secondary to-primary bg-clip-text text-transparent"
                                 : "text-base-content"
                             )}
                           >
@@ -276,7 +277,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                   )}
 
                   {/* Divider */}
-                  <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-6" />
+                  <div className="h-px bg-linear-to-r from-transparent via-base-content/10 to-transparent mb-6" />
 
                   {/* Features */}
                   {plan.features && (
@@ -329,23 +330,23 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
 
         {/* Guarantee section */}
         <div className="mt-8 max-w-4xl mx-auto">
-          <div className="relative overflow-hidden bg-gradient-to-br from-secondary/5 via-base-100 to-primary/5 rounded-2xl border border-secondary/20 p-4">
+          <div className="relative overflow-hidden bg-linear-to-br from-secondary/5 via-base-100 to-primary/5 rounded-2xl border border-secondary/20 p-4">
             {/* Decorative elements */}
             <div className="absolute -top-12 -left-12 w-24 h-24 bg-secondary/20 rounded-full blur-2xl" />
             <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
 
             <div className="relative flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-secondary/20 to-primary/20 border border-secondary/20 shrink-0">
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-secondary/20 to-primary/20 border border-secondary/20 shrink-0">
                 <ShieldCheckIcon className="w-8 h-8 text-secondary" />
               </div>
               <div className="flex-1">
                 <h3 className="text-xl md:text-2xl font-bold text-base-content mb-2">
                   Smarter Classifications{" "}
-                  <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-secondary to-primary bg-clip-text text-transparent">
                     Guarantee
                   </span>
                 </h3>
-                <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
+                <p className="text-base-content/60 text-sm md:text-base md:leading-6 leading-relaxed">
                   If you complete 10 classifications within 30 days, and are not
                   completely satisfied with your experience, we&apos;ll refund
                   your purchase in full.

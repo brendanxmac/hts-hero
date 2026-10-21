@@ -7,10 +7,11 @@ import { Countries, Country } from "@/constants/countries";
 // Types only: the engine and its tariff data load on demand, below
 import type { MicroEstimate } from "@/libs/hts-micro-estimate";
 import { CountryField } from "@/components/duty-calculator/fields";
-import { markCalculatorHandoff } from "@/components/duty-calculator/lib/analytics";
+import { estimateSurface, markCalculatorHandoff } from "@/components/duty-calculator/lib/analytics";
 import { formatDate, formatMoney } from "@/components/duty-calculator/lib/format";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import { CostBar } from "./CostBar";
 import { EstimateStats } from "./EstimateStats";
 
@@ -28,11 +29,18 @@ export const MicroCalculator = ({
   htsno,
   baseRates,
   initial,
+  inExplorer = false,
+  onUseCode,
 }: {
   htsno: string;
   baseRates: { general: string | null; special: string | null; other: string | null };
   initial: MicroEstimate;
+  // Shown in the HTS explorer rather than on the code's own page, for analytics
+  inExplorer?: boolean;
+  // Over a calculator: the way on is putting this code in it, rather than opening another one
+  onUseCode?: () => void;
 }) => {
+  const surface = () => (inExplorer ? estimateSurface("explorer") : "hts_code_page");
   const [country, setCountry] = useState<Country | null>(
     Countries.find((c) => c.code === initial.country) ?? null,
   );
@@ -61,54 +69,64 @@ export const MicroCalculator = ({
 
   const shown = country && estimate?.country === country.code ? estimate : null;
 
-  // One lookup for each country shown, like the calculator's own. The first is the page's own
-  // estimate; later ones are countries the visitor picked.
+  // One lookup for each country the visitor picks. The page's own estimate shows on load without
+  // them doing anything, so it isn't counted.
   const lastViewed = useRef<string | null>(null);
   useEffect(() => {
     if (!shown || lastViewed.current === shown.country) return;
     const first = lastViewed.current === null;
     lastViewed.current = shown.country;
+    if (first && shown === initial) return;
     trackEvent(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
       hts_code: htsno,
       country_code: shown.country,
-      surface: "hts_code_page",
-      country_source: first && shown === initial ? "default" : "user",
+      surface: surface(),
+      country_source: "user",
     });
+    // surface() only reads where the page is
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shown, htsno, initial]);
 
   const openInCalculator = () => {
-    markCalculatorHandoff(htsno, "hts_code_page");
+    markCalculatorHandoff(htsno, surface());
     trackEvent(MixpanelEvent.DUTY_ESTIMATE_OPENED_IN_CALCULATOR, {
       hts_code: htsno,
       country_code: country?.code,
-      surface: "hts_code_page",
+      surface: surface(),
     });
   };
   const calculatorHref =
     `/duty-calculator?code=${htsno}` +
     (country ? `&country=${country.code}&value=${CUSTOMS_VALUE}&date=${initial.asOf}&mode=ocean` : "");
 
-  // The hook to open the calculator: what this quick estimate leaves out
+  // The way on: what could lower the duty, and the calculator that checks it
   const exemptions = shown?.openQuestions ?? 0;
   const preference = shown?.preferences[0];
-  const hook =
+  const plural = (n: number) => `${n} exemption${n === 1 ? "" : "s"}`;
+  const headline =
+    exemptions > 0
+      ? `${plural(exemptions)} could lower this`
+      : preference
+        ? `${preference} could lower this`
+        : shown && shown.totalDuty > 0
+          ? "Make sure this is your best rate"
+          : "Make sure this shipment really enters duty-free";
+  const detail =
     exemptions > 0 && preference
-      ? `${exemptions} exemption${exemptions === 1 ? "" : "s"} and ${preference} could lower it. Check them against your real shipment details.`
-      : exemptions > 0
-        ? `${exemptions} exemption${exemptions === 1 ? "" : "s"} could lower it. Check them against your real shipment details.`
-        : preference
-          ? `${preference} could lower it. Check whether your shipment qualifies.`
-          : "Tariffs stack and change often. Check your exact shipment, line by line.";
+      ? `So could ${preference}. Check them against your real shipment details.`
+      : exemptions > 0 || preference
+        ? "Check them against your real shipment details."
+        : "Tariffs stack and change often. Check your exact shipment, line by line.";
 
   return (
     <section
       id="estimate"
       aria-labelledby="estimate-title"
-      className={`${ui.cardOverflowVisible} scroll-mt-6`}
+      className={`${tt.panel} scroll-mt-6`}
     >
-      <div className="flex flex-col gap-3 border-b border-base-300 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-base-300 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h2 id="estimate-title" className={ui.cardTitle}>
+          <h2 id="estimate-title" className={tt.title}>
             Estimated Duty on {htsno}
           </h2>
           <p className={ui.caption}>
@@ -135,7 +153,7 @@ export const MicroCalculator = ({
       {shown ? (
         <div className={`transition-opacity ${loading ? "opacity-50" : ""}`} aria-busy={loading} aria-live="polite">
           <EstimateStats estimate={shown} customsValue={CUSTOMS_VALUE} />
-          <CostBar slices={shown.slices} />
+          <CostBar slices={shown.slices} customsValue={CUSTOMS_VALUE} />
         </div>
       ) : (
         <div className="flex min-h-36 items-center justify-center px-6 py-8 text-center text-base text-base-content/70" aria-live="polite">
@@ -148,27 +166,32 @@ export const MicroCalculator = ({
       )}
 
       {/* The way on: what this quick estimate leaves out, and the calculator that doesn't */}
-      <div className="flex flex-col gap-3 rounded-b-lg border-t border-base-300 bg-base-200 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <div className="flex flex-col gap-3 rounded-b-[1.25rem] border-t border-base-300 bg-base-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="min-w-0">
-          <p className={`${ui.cardTitle} leading-snug`}>
-            {shown && shown.totalDuty > 0
-              ? `Is ${formatMoney(shown.totalDuty)} really what you'll owe?`
-              : "Make sure this shipment really enters duty-free."}
-          </p>
-          <p className="mt-0.5 text-sm text-base-content/70">{hook}</p>
+          <p className={`${tt.title} leading-snug`}>{headline}</p>
+          <p className="mt-0.5 text-sm text-base-content/70">{detail}</p>
         </div>
         <div className="flex shrink-0 flex-col items-stretch sm:items-center gap-1">
-          {/* nofollow: calculator links with parameters all canonicalize to /duty-calculator */}
-          <Link
-            href={calculatorHref}
-            onClick={openInCalculator}
-            rel="nofollow"
-            className={ui.button({ variant: "primary", size: "lg" })}
-          >
-            Find my exact duty
-            <ArrowRightIcon className="h-4 w-4" aria-hidden />
-          </Link>
-          <span className={`${ui.caption} text-center`}>Free · No sign-up</span>
+          {onUseCode ? (
+            <button type="button" onClick={onUseCode} className={ui.button({ variant: "primary" })}>
+              Use this code
+              <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            </button>
+          ) : (
+            <>
+              {/* nofollow: calculator links with parameters all canonicalize to /duty-calculator */}
+              <Link
+                href={calculatorHref}
+                onClick={openInCalculator}
+                rel="nofollow"
+                className={ui.button({ variant: "primary" })}
+              >
+                Open Tariff Calculator
+                <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              </Link>
+              <span className={`${ui.caption} text-center`}>Free · No sign-up</span>
+            </>
+          )}
         </div>
       </div>
     </section>

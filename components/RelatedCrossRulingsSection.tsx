@@ -118,20 +118,25 @@ export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }
           )}
 
           {!loading && !error && rulings.length > 0 && (
-            <div className={bare ? "grid gap-3 md:grid-cols-2" : "flex flex-col gap-4"}>
-              {(showAll || !initialCount ? rulings : rulings.slice(0, initialCount)).map((ruling) => (
-                <RulingCard
-                  key={ruling.id}
-                  ruling={ruling}
-                  onClick={() => handleRulingClick(ruling)}
-                />
-              ))}
+            <div className={bare ? "flex flex-col items-center gap-4" : "flex flex-col gap-4"}>
+              {/* Bare (on an HTS code page), every card the same size: rows as tall as the tallest */}
+              <div className={bare ? "grid w-full auto-rows-fr gap-3 md:grid-cols-2" : "flex flex-col gap-4"}>
+                {(showAll || !initialCount ? rulings : rulings.slice(0, initialCount)).map((ruling, i) => (
+                  <RulingCard
+                    // CBP can list a ruling twice
+                    key={`${ruling.id}-${i}`}
+                    ruling={ruling}
+                    uniform={bare}
+                    onClick={() => handleRulingClick(ruling)}
+                  />
+                ))}
+              </div>
               {!showAll && initialCount && rulings.length > initialCount && (
                 <button
                   type="button"
                   onClick={() => setShowAll(true)}
                   // Bare, the section sits on a page with the analytical theme
-                  className={bare ? `${ui.button({ size: "sm" })} justify-self-center md:col-span-2` : "btn btn-outline btn-sm self-center"}
+                  className={bare ? `${ui.button({ size: "sm" })} tracker:rounded-full tracker:shadow-none` : "btn btn-outline btn-sm self-center"}
                 >
                   Show all {rulings.length} rulings
                 </button>

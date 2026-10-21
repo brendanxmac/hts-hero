@@ -33,7 +33,8 @@ const chapter99Markdown = async (db: RevisionDb, attemptId: string) => {
 const exists = (db: RevisionDb, path: string) => downloadText(db, path).then(() => true, () => false)
 
 // The whole Chapter 99 markdown, with its version and whether it's been edited
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {
@@ -48,7 +49,8 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 // `baseVersion` is the version the edit started from; the save is refused if
 // the file changed since. The first save keeps datalab's original next to it.
 // Re-parse to use the change.
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

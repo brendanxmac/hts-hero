@@ -7,7 +7,8 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-export default async function CoverageBatchPage({ params }: { params: { id: string } }) {
+export default async function CoverageBatchPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   await guardRevisionTool()
   return <BatchReview batchId={params.id} />
 }

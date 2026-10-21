@@ -217,7 +217,7 @@ const main = async () => {
       `**${DATES_MODE_LABELS[batch.dates_mode]}.**`,
       "",
       batch.dates_mode === "earliest_verified"
-        ? `Start each heading at the earliest verified revision, ${earliest.name} (${earliest.from}), unless its own text gives a later start ("on or after <date>"), which then wins. Don't research earlier history; the record starts where the engine's verified data starts.`
+        ? `Give a heading a start date only if its own text gives one ("on or after <date>"). Otherwise leave \`effective.from\` unset, which means "in effect since before the verified data starts" (${earliest.name}, ${earliest.from}), and add \`note: "Start date not researched yet"\` to its source. Never use ${earliest.from} or any other revision's start date as a placeholder: when earlier revisions are backfilled, a placeholder would drop the heading from them. Undated headings are caught when backfilling reaches the revision where they first appear in the HTS (\`tariffs/engine-v2/data/ch99-first-seen.json\`), so check that file: a heading that first appears after ${earliest.name} must get its real start date now. Don't research earlier history.`
         : "Research each heading's real legal start date and any later changes (Federal Register notices, proclamations, USTR notices, CSMS messages, change records) and record that history as dated versions (HowTariffsWork.md §17.13). Cite the source of every date. If a date can't be verified, don't guess: list it under open questions.",
       "",
     ].join("\n")

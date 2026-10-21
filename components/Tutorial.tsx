@@ -1,9 +1,10 @@
+import type React from "react";
 import Modal from "./Modal";
 import { TutorialName, tutorials } from "../tutorials";
 
 export interface TutorialI {
   name: TutorialName;
-  element: JSX.Element;
+  element: React.JSX.Element;
   paths?: string[];
 }
 

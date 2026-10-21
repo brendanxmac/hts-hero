@@ -241,6 +241,159 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Oct 9: 2025 Rev 29 verified (Brazil agricultural exemptions, EO 14361)
+
+- **Verified from Nov 17, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev29/PLAN.md`. Seven of Rev 30's eight changes are EO 14361 (90 FR 54467, signed Nov 20, 2025), effective for goods entered on or after 12:01 a.m. EST Nov 13, 2025 (retroactive, before Rev 29 printed it). Rev 29 dates already get the new rules.
+- **Before Nov 13** (`ieepa-2026.ts`): 9903.01.77 without the 9903.01.90 exception, 9903.01.81 citing 2(x)(iii), and `brazilExempt2xiiia` with Rev 29's 129 subheadings (EO 14361 added 238, `EO_14361_ADDED`). 9903.01.90 starts Nov 13.
+- **Note 33(g)** gained wording about Proclamation 10925's manufacturer offset; the parts list is unchanged, so nothing to model. The package's Rev 30 text drops 9401.20.00 from 33(g), but USITC's PDF still lists it (extraction error).
+- **Checks:** the full text of Rev 29 vs Rev 30 differs in exactly the change record's 8 items. The date check confirmed Nov 13 against the order and Annex II. The sweep changed 256 of 1,136,160 results, all Brazilian goods on Nov 12, 2025 (Rev 28, unverified).
+- **Correction (decided by the user, Oct 9):** the 11 particular articles of note 2(v)(iii)(b) (`argiculturalArticlesExemptFromCertainTariffs`) are each narrower than their subheading ("Acai (classifiable in subheading 2008.99.21)"), so every heading that exempts them now asks for confirmation, as 9903.02.78 always did: 9903.01.90 (IEEPA Brazil), 9903.03.04 (Section 122), 9903.05.04 (Section 301 Brazil) and, for those 11 only, 9903.05.87 (Section 301 forced labor; `answerForListedCodes`, like India's 9903.01.86). Unconfirmed, the duty applies. The rest of note 52(c) (seeds for sowing, plywood) still isn't asked. Other lists that hold these subheadings in full (52(b)'s 1404.90.90, the EU essential oils 9903.02.75's 3301.29.51) exempt the whole subheading, so they don't ask.
+
+## Oct 9: 2025 Rev 30 verified (Section 301 exclusion end dates)
+
+- **Verified from Nov 21, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev30/PLAN.md`. Rev 31's only changes: 9903.88.69 and .70 went from "through November 29, 2025" to "through November 9, 2026" (USTR, 90 FR 55232, effective 12:01 a.m. EST Nov 30, 2025).
+- **Text only.** The records split at Nov 30 (`301-china.ts`); the exclusions apply without a break.
+- **Checks:** the full text of Rev 30 vs Rev 31 differs in just 3 passages (those two, plus a note 2(v) compiler's-note citation). The date check confirmed the Nov 30 date. The sweep changed 0 results.
+
+## Oct 8: 2025 Rev 31 backfilled: the U.S.-Korea deal
+
+- **Verified from Nov 28, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev31/PLAN.md`. Every change is the Commerce/USTR notice (90 FR 55964, Dec 4, 2025), retroactive. Rev 31 dates already get the deal.
+- **Part A, Nov 1, 2025:**
+  - 9903.94.60–.65 (Korea vehicles and parts) start;
+  - 9903.94.01, .05 and .07 keep Rev 31's text before then (`232-autos.ts`).
+- **Part B, Nov 14, 2025:**
+  - 9903.02.79–.81 and 9903.76.23 start;
+  - 9903.02.56 (Korea reciprocal +15%) is added back, ending then;
+  - 9903.76.02/.03 include Korea before then (notes 37(c)/(e));
+  - 9903.01.25's earlier version has Rev 31's text ("…–9903.02.78") and excepts .56.
+- **Correction (text only):** the verified 9903.94.01 description predated Rev 32. It now names 9903.94.60 and .61, from Nov 1, 2025.
+- **Sweep:** 3,765 of 160,758 results changed, all Korean goods before Nov 14, 2025.
+
+## Oct 8: 2025 Rev 32 backfilled; Section 301 Nicaragua added
+
+- **Verified from Dec 5, 2025.** Plan: `tariffs/revision-diffs/2025HTSRev32/PLAN.md`. Basic's cumulative change record was cut to its own 39 rows (`ownEditionRows`).
+- **Switzerland and Liechtenstein deal** (Commerce/USTR notice, 90 FR 59281, Annex II), retroactive to Nov 14, 2025:
+  - 9903.02.82–.91 start then;
+  - 9903.02.58 (Switzerland 39%) and 9903.02.36 (Liechtenstein 15%) are added back, ending Nov 14;
+  - 9903.01.25 has an earlier version whose exceptions include them, built from `BASELINE` in `ieepa-2026.ts`.
+- **9903.02.74–.77 cross-references:** Proclamation 10999's Annex II corrected them in two retroactive steps, Oct 14 and Nov 1, 2025 (in `2026-basic-text.ts`).
+  - The dates come from Annex II's scanned pages, read by the independent date check and confirmed.
+  - The change record's Jan 1, 2026 is wrong.
+  - Rev 32 dates show Basic's citations.
+- **Already right:** note 31(b)/(f) Jan 1 moves (`china31b`, `china31f`).
+- **Section 301 Nicaragua** (new program `301-nicaragua`, `data/headings/301-nicaragua.ts`): 9903.89.01 at 0% (2026), 10% (2027) and 15% (2028+), not with a CAFTA-DR claim (U.S. note 29; USTR, 90 FR 57807).
+- **Sweep:** 3,884 of 153,888 results changed. They're all Switzerland/Liechtenstein on Nov 13, 2025 and Nicaragua in 2027; no verified date changed.
+
+## Oct 8: 2026 Basic backfilled: Section 232 semiconductors from Jan 15
+
+- **Verified from Dec 31, 2025.** Every change in Rev 1's change record comes from Proclamation 11002 (91 FR 2443), effective 12:01 a.m. EST Jan 15, 2026, Basic's last day. Plan: `tariffs/revision-diffs/2026HTSBasic/PLAN.md`.
+- **9903.79.01 starts Jan 15** (it was undated). The note 39 interaction `232-autos-mhdv-ieepa-not-on-semiconductors` starts then too.
+- **`data/headings/2026-basic-text.ts`** (`withBasicText`, applied in `data/index.ts`) splits the 18 headings PP 11002 renumbered, or gave "semiconductor articles", at Jan 15: the Basic text before, the current text after.
+  - Before Jan 15, 9903.01.33, .83 and .87 also drop 9903.79.01 from `whenApplies`.
+  - No amounts change.
+- **Checks:**
+  - **Archive:** 690 → 699 headings, the nine 9903.79 ones added.
+  - **Full text:** every Basic → Rev 1 difference traces to PP 11002.
+  - **Sweep:** 0 of 144,270 results changed (7 dates, Dec 31 to Aug 1).
+
+## Oct 8: 2026 Rev 1 verified, with no chapter 99 changes
+
+- **Verified from Jan 16, 2026.** Rev 2's change record has no chapter 99 entries, and USITC's archived Rev 1 and Rev 2 chapter 99 PDFs are word-for-word identical (756 pages and 318,730 words each). No records were added; Rev 2's records hold. This was verified without a revision-checker comparison (decided by the user); the evidence is in `tariffs/revision-diffs/2026HTSRev1/PLAN.md`.
+
+## Oct 8: 2026 Rev 2 backfilled: IEEPA India (branch `backfill/2026HTSRev2`)
+
+- **Verified from Jan 30, 2026.** `VerifiedTariffRevisions` now starts with "2026HTSRev2". Plan: `tariffs/revision-diffs/2026HTSRev2/PLAN.md`.
+- **New program `ieepa-india`** (authority IEEPA) in `data/headings/ieepa-india.ts`: India's 25% (9903.01.84) and its exemptions .85–.89 (U.S. note 2(z)).
+  - **Dates:** from Aug 27, 2025 (the heading text) to Feb 7, 2026 (EO 14384, 91 FR 6501).
+  - **9903.01.86** covers both parts of 2(v)(iii). The (b) particular articles need confirming, through `answerForListedCodes` (decided by the user).
+- **IEEPA snapshot holds for Rev 2.** Every subchapter III heading row in USITC's Rev 2 and Rev 3 PDFs was compared. The only changes are the India termination notes and the new 9903.54.01, an Argentine beef quota that isn't modeled. The 7 skipped note differences are extraction noise; for example, the PDF's note 33(g) does list 9401.20.00.
+- **Sweep:** 862 of 144,270 results changed, all Indian goods on Rev 2 dates; no verified date changed.
+
+## Oct 8: Plainer tariff titles (branch `fix/tariff-titles`)
+
+- **284 title changes** (the `name` shown on the Duty Breakdown and Possible Adjustments); codes, rates, dates and amounts are unchanged. Every change and its reason is in `title-changes.md` (review copy, not committed). The conventions are now in HowTariffsWork.md §Tariff.
+- **12 titles were wrong**, among them:
+  - 9903.03.02 said "or" where the exemption needs both conditions.
+  - 9903.74.03 was labeled an exemption but charges the duty.
+  - 9903.74.07 said "over 25 years" where the note says at least 25.
+  - Three Russia metals headings had the same title.
+- **Section 338 titles:** `duty()` in `338-canada.ts` now takes the title.
+- **"Of" or "from", and names spelled out:** titles for one country's goods say "of" or "from", and United Kingdom, European Union and United States are spelled out. This is also done for the 6 trade-deal and civil-aircraft program names, and the aircraft program now lists Taiwan.
+- **Descriptions fixed:**
+  - 9903.94.44 said "less than 15 percent"; the HTS says "equal to or greater than".
+  - 9903.76.01–.22 were "TODO"; they now carry the USITC heading text.
+
+## Oct 8: Section 301 China exclusions need confirmation for described products (branch `fix/301-china-exclusions`)
+
+- **Two kinds of exclusion in U.S. note 20(vvv).**
+  - Parts (i)–(ii) list whole statistical numbers.
+  - Parts (iii)–(iv) describe a product within a number, e.g. "Cable hooks of steel … with spring loaded closure gate (described in statistical reporting number 7326.90.8688)".
+  - The engine applied 9903.88.69 to every code on its list, so all Chinese goods under the 120 described-product numbers lost their Section 301 duty.
+- **New condition `answerForListedCodes`.** It asks `confirm:9903.88.69` only for codes on `china301ExclusionDescribedProducts20vvv` (140 numbers). Whole-number exclusions still apply without a question.
+  - **Supporting change:** `ConditionHandler.inputs` takes an optional context, so the question shows only where it's needed.
+- **9903.88.70 (20(www), solar wafer equipment):** all of its exclusions are described products, so it now uses `confirm()`.
+- **Added the three missing exclusions:** 7009.10.00.00 (rear-view mirrors), 7326.90.86.88 (steel cable hooks) and 8544.42.20.00 (telecom conductors). Every revision from Rev 3 to Rev 20 lists them.
+- **Dates documented:** USTR's extension notice, 90 FR 55232 (Dec 1, 2025), extends "the 178 current exclusions" from 12:01 a.m. EST Nov 30, 2025 "before 11:59 p.m. eastern daylight time on November 9, 2026". The heading text now matches: "through November 9, 2026".
+- **Effect, a correction to verified data:** 351 results changed in the regression sweep, all Chinese goods on described-product codes. Unconfirmed, they pay Section 301 again; confirmed, it's $0 as before. The Rev 18 pinned case is updated with a comment.
+
+## Oct 8: 2026 Rev 3 backfilled, with the IEEPA snapshot (branch `backfill/2026HTSRev3`)
+
+Verified data now starts at 2026HTSRev3 (Feb 12, 2026). See `tariffs/revision-diffs/2026HTSRev3/PLAN.md`.
+- **The Rev 4 change record needed no before-records.** It deleted de minimis and postal sentences, added Section 122 (already modeled) and marked the expired solar safeguard.
+- **IEEPA, as in force Feb 12–23, 2026** (completeness bar). 106 headings in `data/headings/ieepa-2026.ts` and lists in `data/lists/ieepa-2026.ts`, all ending 2026-02-24 (EO 14389; CSMS # 67834313):
+  - fentanyl duties on Mexico, Canada and China/HK, with their exemptions;
+  - the reciprocal 10% baseline (China too: its 34% is suspended), its exemptions, the 64 country rates and 40% transshipment;
+  - Brazil's 40% and its exemptions;
+  - the Swiss and Liechtenstein deals.
+  - All programs have authority IEEPA (for refunds).
+- **Lists from CBP guidance**, since the notes have none: potash (CSMS # 64336037 and # 64335789, the same 9 subheadings) and Canadian energy (CSMS # 65054354, 413 codes).
+- **New basis `usContentPortion`** (partial): 9903.01.34 spares the U.S. content when it is at least 20%.
+- **9903.01.33** reuses `metalContentCovered`: steel and aluminum articles pay on the non-metal content; copper, autos, wood, MHDV and semiconductors are fully exempt.
+- **EU/Japan/Korea deal records fixed for February:**
+  - exceptions follow the Rev 3 text (Section 232 goods through 9903.01.33, not the post-April 9903.82 headings);
+  - descriptions cite the right subdivisions;
+  - 9903.02.78 moved to `ieepa-reciprocal`.
+- **Interactions:** Canada/Mexico IEEPA drops for the old metals headings (notes 16 and 19) and for Section 232 wood; the semiconductor rule adds the deal headings named in 2(v)(xvi).
+- **Correction to verified data:** 9903.88.15 no longer lists 8507.60.00. Note 20(s) never did; the batteries are in note 31.
+- **Checks:**
+  - invariant sweep: 2,515 codes × 15 countries (113,175 calculations), 0 problems;
+  - every result from Feb 24 on unchanged: 113,175 compared, 0 differences.
+
+## Oct 7: 2026 Rev 4 backfilled (branch `backfill/2026HTSRev4`)
+
+The first backward step. Verified data now starts at 2026HTSRev4 (Feb 25, 2026). See `tariffs/revision-diffs/2026HTSRev4/PLAN.md`.
+
+- **Old Section 232 metals headings until April 6, 2026** (PP 11021, Annex IV A.11), in `data/headings/232-metals-2025.ts` with lists in `data/lists/metals-2025.ts`:
+  - steel 9903.81.87–.99, aluminum 9903.85.02–.15, .69, .70, copper 9903.78.01/.02;
+  - many charged only the metal content: all of 16(n)/(u), 19(k)/(s) and 36(b), plus chapter 73 (steel) and chapter 76 (aluminum) goods under the others.
+- **New handlers:**
+  - `metalContentInChapters`: content for listed chapters, full value otherwise.
+  - `metalContentCovered`: the Rev 4 9903.03.06 exempts only the metal content from Section 122, per note 2(aa)(v). Resolved in step 7, with triggers settled before noStack.
+- **New inputs:** steel, aluminum and copper content %, and an FTZ admission date for the FTZ headings.
+- **Interactions before April 6:** notes 33/38/39 (autos, MHDV, semiconductors) and the four civil aircraft agreements over the old headings.
+- **From April 6:** 9903.82.02–.17 now start on 2026-04-06.
+- **Checks:** an invariant sweep over 1,374 metals codes × 8 countries (21,984 calculations) found 0 problems. Results from April 6 on are unchanged: 65,952 compared, 0 differences.
+- **Russia precedence, fixed afterwards** (branch `fix/232-russia-aluminum-precedence`, corrections to Rev 5+):
+  - **Every 9903.82.02–.26 heading now gives way to 9903.85.67/.68,** per note 16(a). Before, only .02 did, so Russian goods paid the 200% plus a 9903.82 duty.
+  - **7616.99.51.30/.40/.90 (in both 19(g) and 19(j)) pay 200% once:** .67, or .68 when confirmed. Before, both applied.
+  - **Rev 4 matches:** the old .02/.07 give way to the Russia headings.
+  - **Side effects that follow the text:** without a 9903.82 heading, those goods pay Section 122 (note 2(aa)(v) doesn't exempt .67/.68) and, from August 2026, the forced-labor Section 301 duty (note 52(f) only exempts the 9903.82 headings).
+  - **Sweeps:** a Russia invariant sweep found 179 problems before and 0 after. In the regression sweep (65,952 results), 12 changed, all Russian.
+- **Not modeled:** the 2018–2025 quota and exemption headings (9903.80.xx, 9903.81.01–.86, most of 9903.85). Per the compiler's notes to 16(a) and 19(a), they only covered entries before March 12, 2025.
+
+## Oct 7: corrections found while planning the 2026HTSRev4 backfill (branch `fix/232-civil-aircraft-and-metals-lists`)
+
+These are corrections to verified data (Rev 5–20). The backfill itself is paused; see `tariffs/revision-diffs/2026HTSRev4/PLAN.md`.
+
+- **Civil aircraft agreements over Section 232 metals.** U.S. notes 35(a) (UK, 9903.96.01), 2(v)(xxii) (EU, 9903.02.76), 35(b) (Japan, 9903.96.02) and 2(v)(xxiv)(b) (Korea, 9903.02.81) exempt their civil aircraft articles from 9903.82.02 and .04–.17. That range is the same in every verified revision.
+  - Now modeled as the `232-metals-not-on-civil-aircraft-agreements` noStack, from 2026-04-06.
+  - **9903.02.76/.81 no longer end on Feb 24, 2026.** Their IEEPA role ended, but Proclamation 11021 clause (10) keeps the Section 232 civil aircraft agreements. They move to `aircraft-agreements`, with the Rev 5 heading text, which cites (v)(xxii) and (v)(xxiv)(b).
+  - This **lowers Rev 5+ duties** on confirmed UK, EU, Japanese and Korean aircraft articles.
+- **`9903.85.68` rebuilt from note 19(i)–(k)** (254 codes). The note is identical from Rev 4 to Rev 20. The migrated list had 131 of its codes, plus 9401.99.90.81, which isn't in the note. Russian aluminum containers, wire, cable and the other missing goods now pay 200% instead of 50%.
+- **`motorcycleParts16cg`:** 8516.90.50.00 → 8516.90.50, as listed in note 16(c)(vi).
+- **9903.03.06 description** replaced with the Rev 5 heading text. It was a paraphrase; no duty effect.
+- **Not changed:** 9903.96.02's `exceptions: ["9903.94.06"]`, which note 35 doesn't support. Left for a decision.
+
 ## Oct 6: import bans (Section 338 Canada, from Sep 29, 2026)
 
 - **New record type `Prohibition`** (`types.ts`, `data/prohibitions.ts`): an import ban, dated and scoped like a tariff, with optional `unless` conditions. `calculate()` returns the bans in scope as `result.prohibitions` (step 11); a ban never changes `totalDuty`, because goods imported before it still pay the duty when withdrawn from a warehouse or FTZ. Validated in `validate.ts`; included in `ruleChangeDates`.
@@ -281,7 +434,7 @@ Section 338 – Canada (Proclamations 11046–11048, 11056), from 2026-08-22. Se
 
 Section 201 – Quartz Surface Products (Proclamation 11051), from 2026-08-15. See `tariffs/revision-diffs/2026HTSRev16/PLAN.md`.
 - **New program `201-quartz`** and headings 9903.45.30 (in quota) and 9903.45.31 (over quota) in `headings/201-quartz.ts`, for 6810.99.00.20, 6810.99.00.40 and 7020.00.60.00. Rates step down each August 15 (25/50%, 23/49%, 21/48%, 19/47%) and end after August 14, 2030. They stack with other duties.
-- **Exempt countries** (note 41(c)) in the country list `quartzSafeguardExempt41c` (`lists/quartz.ts`), used as `excludeCountries`. Kosovo and Congo (Kinshasa) aren't in the calculator's country list yet.
+- **Exempt countries** (note 41(c)) in the country list `quartzSafeguardExempt41c` (`lists/quartz.ts`), used as `excludeCountries`. Kosovo isn't in the calculator's country list yet.
 - **Quota:** new input `quartzQuotaFilled`. Unanswered means in quota (decision); yes means .31.
 - **Is it QSP?** New input `notQuartzSurfaceProduct` ("These goods aren't quartz surface products"): checking it removes the 201 duty, for goods under the three codes that aren't QSP per 41(a), e.g. other glass articles under 7020.00.60.00. Asked as "not" because an unchecked box is unanswered, not "no".
 

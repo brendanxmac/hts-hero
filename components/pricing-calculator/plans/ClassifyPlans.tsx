@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { UsersIcon } from "@heroicons/react/20/solid";
-import * as ui from "@/components/ui/styles";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SectionIntro } from "@/components/ui/marketing";
+import * as mk from "@/components/ui/marketing/styles";
 import { LINKS, contactLink } from "../lib/links";
 import {
   Billing,
@@ -13,18 +13,18 @@ import {
   monthlyRate,
 } from "../lib/pricing";
 import { PlanCard } from "./PlanCard";
-import { PriceTag } from "./PriceTag";
+import { PlanPrice } from "./PlanPrice";
 
 const PLAN_ORDER: ClassifyPlanId[] = ["starter", "pro", "team"];
 
 export const ClassifyPlans = ({ billing }: { billing: Billing }) => (
-  <section id="classification" className={ui.section} aria-labelledby="classification-title">
-    <SectionHeader kicker="Classification" title="Classifications you can defend" titleId="classification-title">
-      Build audit-ready HTS classifications backed by the legal notes and CROSS
-      rulings, for one person or a whole compliance team.
-    </SectionHeader>
+  <section id="classification" className="scroll-mt-24" aria-labelledby="classification-title">
+    <SectionIntro eyebrow="Classification" title="Classifications you can defend" id="classification-title">
+      Build audit-ready HTS classifications backed by the legal notes and CROSS rulings, for one person or a whole compliance
+      team.
+    </SectionIntro>
 
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-3">
       {PLAN_ORDER.map((id) => {
         const plan = CLASSIFY_PLANS[id];
         const isTeam = id === "team";
@@ -38,23 +38,26 @@ export const ClassifyPlans = ({ billing }: { billing: Billing }) => (
             badge={isFeatured ? "Most popular" : isTeam ? "Shared workspace" : undefined}
             featured={isFeatured}
             price={
-              <PriceTag
+              <PlanPrice
                 listPrice={plan.price}
                 billing={billing}
-                unit={isTeam ? "/mo for your team" : "/mo"}
+                note={
+                  isTeam
+                    ? billing === "annual"
+                      ? `${formatPrice(monthlyRate(plan.price, billing) * 12)} billed yearly, for your whole team`
+                      : "Billed monthly, for your whole team"
+                    : undefined
+                }
               />
             }
             features={plan.features}
             cta={
               isTeam ? (
-                <a href={contactLink("Classify Team")} className={`${ui.button({ size: "lg" })} w-full`}>
+                <a href={contactLink("Classify Team")} className={`${mk.buttonSecondary} h-14 w-full text-lg`}>
                   Talk to us
                 </a>
               ) : (
-                <Link
-                  href={LINKS.classify}
-                  className={`${ui.button({ variant: isFeatured ? "primary" : "secondary", size: "lg" })} w-full`}
-                >
+                <Link href={LINKS.classify} className={`${isFeatured ? mk.buttonPrimary : mk.buttonSecondary} h-14 w-full text-lg`}>
                   Start with {plan.name}
                 </Link>
               )
@@ -64,30 +67,30 @@ export const ClassifyPlans = ({ billing }: { billing: Billing }) => (
       })}
     </div>
 
-    <p className={ui.caption}>
-      The Team plan is for teams classifying at least {TEAM_MIN_CLASSIFICATIONS} products a month.
-    </p>
+    <p className={`${mk.small} mt-4`}>The Team plan is for teams classifying at least {TEAM_MIN_CLASSIFICATIONS} products a month.</p>
 
     {/* Licenses: for teams that want separate accounts rather than a shared workspace */}
-    <div className={`${ui.card} flex flex-col gap-5 p-6 md:flex-row md:items-center md:justify-between`}>
+    <div className={`${mk.card} mt-6 flex flex-col gap-6 p-6 sm:p-8 md:flex-row md:items-center md:justify-between`}>
       <div className="flex gap-4">
-        <UsersIcon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-tt-soft text-base-content/80">
+          <UsersIcon className="h-6 w-6" aria-hidden />
+        </span>
         <div className="flex flex-col gap-1">
-          <h3 className={ui.cardTitle}>Separate licenses for your team</h3>
-          <p className={`${ui.bodySm} max-w-2xl`}>
-            Give each person their own Classify account at a per-person rate.
-            No shared workspace or approvals, just one invoice.
+          <h3 className="text-lg font-bold text-base-content">Separate licenses for your team</h3>
+          <p className={`${mk.body} max-w-2xl`}>
+            Give each person their own Classify account at a per-person rate. No shared workspace or approvals, just one
+            invoice.
           </p>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-5">
         <p className="whitespace-nowrap">
-          <span className="text-2xl font-semibold tabular-nums text-base-content">
+          <span className="text-3xl font-extrabold tabular-nums text-base-content">
             {formatPrice(monthlyRate(CLASSIFY_LICENSE_PRICE, billing))}
           </span>
-          <span className={ui.bodySm}> /person/mo</span>
+          <span className="text-base-content/60"> /person/mo</span>
         </p>
-        <a href={LINKS.estimate} className={ui.button()}>
+        <a href={LINKS.estimate} className={mk.buttonSecondary}>
           Price your team
         </a>
       </div>

@@ -35,8 +35,8 @@ export function DutyCalculatorNoticeBanner({
     <div
       className={
         isBanner
-          ? "w-full border-l-4 border-l-warning border-y border-r border-warning/30 bg-gradient-to-r from-warning/10 via-warning/5 to-transparent text-base-content px-4 py-3 sm:px-6 shadow-sm"
-          : "w-full rounded-xl border border-warning/30 bg-gradient-to-br from-warning/10 via-base-100 to-warning/5 text-base-content px-3 py-2.5 mb-3 shadow-md shadow-warning/5"
+          ? "w-full border-l-4 border-l-warning border-y border-r border-warning/30 bg-linear-to-r from-warning/10 via-warning/5 to-transparent text-base-content px-4 py-3 sm:px-6 shadow-xs"
+          : "w-full rounded-xl border border-warning/30 bg-linear-to-br from-warning/10 via-base-100 to-warning/5 text-base-content px-3 py-2.5 mb-3 shadow-md shadow-warning/5"
       }
       role="status"
       aria-live="polite"
@@ -71,8 +71,8 @@ export function DutyCalculatorNoticeBanner({
           <p
             className={
               isBanner
-                ? "text-sm sm:text-base font-semibold leading-snug text-base-content"
-                : "text-xs sm:text-sm font-semibold leading-snug text-base-content"
+                ? "text-sm sm:text-base sm:leading-6 font-semibold leading-snug text-base-content"
+                : "text-xs sm:text-sm sm:leading-5 font-semibold leading-snug text-base-content"
             }
           >
             {NOTICE_TEXT}
@@ -88,7 +88,7 @@ export function DutyCalculatorNoticeBanner({
             <button
               type="button"
               onClick={openReportCrispOrEmail}
-              className="font-semibold text-primary underline decoration-2 underline-offset-2 hover:text-primary/90 hover:decoration-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 rounded-md transition-colors"
+              className="font-semibold text-primary underline decoration-2 underline-offset-2 hover:text-primary/90 hover:decoration-primary/90 focus:outline-hidden focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 rounded-md transition-colors"
             >
               Report it here
             </button>{" "}

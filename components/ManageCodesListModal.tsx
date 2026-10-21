@@ -10,8 +10,8 @@ import {
 import { HtsCodeSet } from "../interfaces/hts";
 import { validateTariffableHtsCode } from "../libs/hts";
 import { User } from "@supabase/supabase-js";
-import { sentEmailWithExampleOfTariffImpactCheck } from "../libs/tariff-impact-check";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table";
 
 interface ValidatedCode {
   code: string;
@@ -28,12 +28,10 @@ interface Props {
 }
 
 export const ManageCodeListModal = ({
-  user,
   isOpen,
   setIsOpen,
   onSetCreated,
   codes: passedCodes,
-  usersCodeSets,
 }: Props) => {
   const validateCodes = (codes: string[]) => {
     return codes.map((htsCode) => ({
@@ -74,25 +72,7 @@ export const ManageCodeListModal = ({
         console.error(e);
       }
 
-      if (!usersCodeSets || usersCodeSets.length === 0) {
-        if (user) {
-          try {
-            await sentEmailWithExampleOfTariffImpactCheck(user.email);
-            toast.success(
-              "List Created! Check your email for an example of an impact notification. (Be sure to check spam too!)",
-              { duration: 10000 }
-            );
-          } catch (error) {
-            console.error("Error sending tariff impact check example email");
-            console.error(error);
-            toast.success("List Created!");
-          }
-        } else {
-          toast.success("List Created!");
-        }
-      } else {
-        toast.success("List Created!");
-      }
+      toast.success("List Created!");
       onSetCreated(newHtsCodeSet);
       setIsOpen(false);
       setName("");
@@ -144,7 +124,7 @@ export const ManageCodeListModal = ({
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="input input-bordered w-full placeholder:text-sm placeholder:text-base-content/50"
+              className="input w-full placeholder:text-sm placeholder:text-base-content/50"
               placeholder="e.g. My Imports, Product Name, Client Name, Country Name, etc..."
               required
             />
@@ -174,24 +154,24 @@ export const ManageCodeListModal = ({
                 ⚠️ Invalid Codes
               </label>
               <div className="w-full rounded-md border-2 border-warning overflow-hidden">
-                <table className="table table-zebra table-sm table-pin-cols w-full">
-                  <thead className="bg-base-100">
-                    <tr>
-                      <th>Code</th>
-                      <th>Error</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                <Table framed={false} dense>
+                  <THead>
+                    <Tr>
+                      <Th>Code</Th>
+                      <Th>Error</Th>
+                    </Tr>
+                  </THead>
+                  <TBody>
                     {codes
                       .filter(({ error }) => error)
                       .map(({ code, error }, index) => (
-                        <tr key={code + index}>
-                          <td className="truncate max-w-48">{code}</td>
-                          <td>{error || "-"}</td>
-                        </tr>
+                        <Tr key={code + index}>
+                          <RowHeader className="truncate max-w-48">{code}</RowHeader>
+                          <Td>{error || "-"}</Td>
+                        </Tr>
                       ))}
-                  </tbody>
-                </table>
+                  </TBody>
+                </Table>
               </div>
             </div>
           )}

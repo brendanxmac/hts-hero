@@ -5,14 +5,17 @@
 import * as ui from "@/components/ui/styles";
 import { CalculationResult } from "@/tariffs/engine-v2/types";
 import { formatMoney } from "../lib/format";
-import { legalText, tariffStartDate } from "./headings";
-import { COLUMN_LABEL, programName } from "./labels";
+import { legalText } from "./headings";
+import { COLUMN_LABEL } from "./labels";
 import { MobileRow } from "./MobileRow";
 import { MobileTotal } from "./MobileTotal";
 import { BASE_SLICE, FEES_SLICE, sliceForProgram } from "./slices";
+import { whyApplies } from "../lib/explain";
+import { LineChanges } from "../lib/useLineChanges";
 import { RowLink, RowProps } from "./rowTypes";
 import { StatementRow } from "./StatementRow";
 import { TotalRow } from "./TotalRow";
+import { WhyLocked } from "../calculator/WhyGate";
 
 export const Statement = ({
   result,
@@ -22,6 +25,8 @@ export const Statement = ({
   highlight,
   onHighlight,
   compact,
+  changes,
+  lockWhy = false,
 }: {
   result: CalculationResult;
   customsValue: number;
@@ -31,8 +36,12 @@ export const Statement = ({
   // The slice being hovered, here or in the chart
   highlight?: string | null;
   onHighlight?: (slice: string | null) => void;
-  // One tight line per row: no program, effective date, reasons or legal text
+  // One tight line per row: no reasons or legal text
   compact?: boolean;
+  // What the last answer or trade program changed, to mark in the rows
+  changes?: LineChanges | null;
+  // The plain-English why for each line takes a free account: signed out, it's locked
+  lockWhy?: boolean;
 }) => {
   // Per-unit and compound base rates are shown as written in the HTS
   // Rates with several parts, per-unit amounts, or parts that apply to a component
@@ -68,15 +77,32 @@ export const Statement = ({
       code: line.code,
       slice: sliceForProgram(line.program),
       name: line.name,
-      program: programName(line.program),
-      effectiveFrom: tariffStartDate(line.code, result.asOf),
-      detail: line.reasons.join(" · "),
-      legal: legalText(line.code, result),
+      // Why it applies, in plain English (the engine's own reasons are mostly empty)
+      detail: lockWhy ? undefined : whyApplies(line, result, result.questions).join(" · "),
+      // Locked: one way in under the table, not one per line
+      whyLocked: false,
+      // The legal text takes a free account too (the locked line says so)
+      legal: lockWhy ? undefined : legalText(line.code, result),
       basis: line.basisValue,
       rate: line.ratePct,
       amount: line.amount,
     })),
   ];
+  if (changes) {
+    rows.forEach((row) => (row.change = changes.byCode[row.code]));
+    // Lines the change switched off stay in view, struck through
+    changes.removed.forEach((line) =>
+      rows.push({
+        code: line.code,
+        slice: sliceForProgram(line.program),
+        name: line.name,
+          basis: line.basisValue,
+        rate: line.ratePct,
+        amount: 0,
+        change: { kind: "removed", before: line.amount },
+      })
+    );
+  }
   const feeRows: RowProps[] = result.fees.map((fee) => ({
     code: fee.id.toUpperCase(),
     slice: FEES_SLICE,
@@ -86,6 +112,10 @@ export const Statement = ({
     rate: fee.ratePct,
     amount: fee.amount,
   }));
+
+  // Every line charged on the customs value: the "Applies to" column would repeat it on every
+  // row, so it's left out (the host says it once)
+  const hideBasis = sameBasis(result, customsValue);
 
   // Only lines with a slice in the chart get a color and respond to hover
   const linked = (row: RowProps): RowLink => {
@@ -129,13 +159,15 @@ export const Statement = ({
         <table className="w-full text-left border-collapse">
           <caption className="sr-only">Duty statement</caption>
           <thead>
-            <tr className="bg-base-200 text-base-content/60">
+            <tr className="bg-primary/[0.06] text-base-content/70 tracker:border-b-2 tracker:border-tt-rule tracker:bg-transparent">
               <th scope="col" className={`${ui.label} py-3 pl-5 sm:pl-6 pr-3`}>
                 Line
               </th>
-              <th scope="col" className={`${ui.label} py-3 px-3`}>
-                Applies to
-              </th>
+              {!hideBasis && (
+                <th scope="col" className={`${ui.label} py-3 px-3`}>
+                  Applies to
+                </th>
+              )}
               <th scope="col" className={`${ui.label} py-3 px-3 text-right`}>
                 Rate
               </th>
@@ -154,21 +186,34 @@ export const Statement = ({
                 {...row}
                 link={linked(row)}
                 compact={compact}
+                hideBasis={hideBasis}
               />
             ))}
-            <TotalRow label="Total duty" amount={result.totalDuty} />
+            <TotalRow label="Total duty" amount={result.totalDuty} before={changes?.totalDutyBefore} hideBasis={hideBasis} />
             {feeRows.map((row) => (
               <StatementRow
                 key={row.code}
                 {...row}
                 link={linked(row)}
                 compact={compact}
+                hideBasis={hideBasis}
               />
             ))}
-            <TotalRow label="Total duty and fees" amount={dutyAndFees} strong />
+            <TotalRow label="Total duty and fees" amount={dutyAndFees} strong before={changes ? changes.totalDutyBefore + result.totalFees : undefined} hideBasis={hideBasis} />
           </tbody>
         </table>
       </div>
+      {lockWhy && !compact && (
+        <div className="border-t border-base-300 px-5 py-3 sm:px-6">
+          <WhyLocked label="See why each line applies, with its legal text" where="breakdown" className="text-sm" />
+        </div>
+      )}
     </>
   );
 };
+
+// Whether every duty line is charged on the whole customs value (no per-unit or component parts)
+export const sameBasis = (result: CalculationResult, customsValue: number) =>
+  result.baseParts.length <= 1 &&
+  !result.baseParts.some((p) => p.kind === "amount" || p.component) &&
+  [result.base, ...result.lines.filter((l) => l.status === "applies")].every((l) => Math.abs(l.basisValue - customsValue) < 0.005);

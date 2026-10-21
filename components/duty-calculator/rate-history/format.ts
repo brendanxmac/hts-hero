@@ -39,14 +39,3 @@ export const KIND_LABEL: Record<LineChange["kind"], string> = {
   changed: "Changed",
 };
 
-// A changed line's rate: "25%", or "10% → 25%"
-export const rateText = (change: LineChange) => {
-  const before = change.before?.ratePct;
-  const after = change.after?.ratePct;
-  if (change.kind === "added") return after !== undefined ? formatPct(after) : "";
-  if (change.kind === "removed") return before !== undefined ? formatPct(before) : "";
-  if (before !== undefined && after !== undefined && before !== after) {
-    return `${formatPct(before)} → ${formatPct(after)}`;
-  }
-  return "";
-};

@@ -2,15 +2,16 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import config from "@/config";
 import { CountryCalculatorPage, countryFaqs, metaDescription, titleName } from "@/components/duty-calculator/country";
-import { THEME } from "@/components/ui/theme";
-import { COUNTRY_PAGES, countryPageBySlug } from "@/libs/country-pages/countries";
+import * as mk from "@/components/ui/marketing/styles";
+import { COUNTRY_PAGES, countryPageByCode, countryPageBySlug } from "@/libs/country-pages/countries";
+import { IMPORT_SOURCE, importFacts } from "@/libs/country-pages/importStats";
+import { countryTopImports } from "@/libs/country-pages/topImports";
 import { countryExamples, countryPreferences, countryTariffs } from "@/libs/country-pages/countryTariffs";
 import { getHtsElementsServer } from "@/libs/hts-server";
 import { renderSchemaJsonLd } from "@/libs/seo";
-import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
 
 interface Props {
-  params: { country: string };
+  params: Promise<{ country: string }>;
 }
 
 // Rebuilt daily, so the tables and examples follow the tariff data without a deploy
@@ -26,10 +27,9 @@ const longDate = (iso: string) =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
 const monthYear = (iso: string) =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
-// "2026HTSRev20" → "2026 HTS Revision 20"
-const revisionTitle = (name: string) => name.replace(/^(\d{4})HTSRev(\d+)$/, "$1 HTS Revision $2");
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const country = countryPageBySlug(params.country);
   if (!country) return {};
   const name = titleName(country);
@@ -37,7 +37,8 @@ export function generateMetadata({ params }: Props): Metadata {
   const description = metaDescription(country, countryTariffs(country.code, todayIso()), monthYear(todayIso()));
   const url = `https://${config.domainName}/duty-calculator/${country.slug}`;
   return {
-    title: `${title} | HTS Hero`,
+    // The brand goes on when it fits; long country names need the room for the keyword
+    title: `${title} | HTS Hero`.length <= 70 ? `${title} | HTS Hero` : title,
     description,
     alternates: { canonical: `/duty-calculator/${country.slug}` },
     openGraph: { title, description, url, siteName: "HTS Hero", type: "website" },
@@ -45,20 +46,27 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function CountryCalculatorRoute({ params }: Props) {
+export default async function CountryCalculatorRoute(props: Props) {
+  const params = await props.params;
   const country = countryPageBySlug(params.country);
   if (!country) notFound();
 
   const asOf = todayIso();
   const tariffs = countryTariffs(country.code, asOf);
-  const examples = countryExamples(country.code, asOf, await getHtsElementsServer());
+  const elements = await getHtsElementsServer();
+  const examples = countryExamples(country.code, asOf, elements);
   const preferences = countryPreferences(country.code, asOf);
-  const faqs = countryFaqs({ country, tariffs, examples, preferences, asOfLabel: longDate(asOf) });
+  const facts = importFacts(country.code);
+  // Everyone asks how a country compares with China; China's page compares with Vietnam, the
+  // largest alternative it has lost share to
+  const other = countryPageByCode(country.code === "CN" ? "VN" : "CN");
+  const comparison = other ? { name: titleName(other), examples: countryExamples(other.code, asOf, elements) } : null;
+  const faqs = countryFaqs({ country, tariffs, examples, preferences, asOfLabel: longDate(asOf), facts, comparison });
   const name = titleName(country);
   const url = `https://${config.domainName}/duty-calculator/${country.slug}`;
 
   return (
-    <main className={`${THEME} w-full flex-1 shrink-0 flex flex-col`}>
+    <main className={`${mk.page} flex w-full flex-1 flex-col`}>
       {renderSchemaJsonLd({
         "@type": "WebApplication",
         name: `${name} to US Tariff Calculator`,
@@ -66,8 +74,11 @@ export default async function CountryCalculatorRoute({ params }: Props) {
         applicationCategory: "BusinessApplication",
         operatingSystem: "All",
         dateModified: asOf,
+        description: metaDescription(country, tariffs, monthYear(asOf)),
+        about: { "@type": "Country", name: titleName(country) },
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
         provider: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
+        ...(facts ? { citation: { "@type": "CreativeWork", name: IMPORT_SOURCE.name, url: IMPORT_SOURCE.url } } : {}),
       })}
       {renderSchemaJsonLd({
         "@type": "FAQPage",
@@ -89,8 +100,10 @@ export default async function CountryCalculatorRoute({ params }: Props) {
         tariffs={tariffs}
         examples={examples}
         faqs={faqs}
-        verifiedThrough={revisionTitle(getLatestVerifiedRevision().name)}
         asOfLabel={longDate(asOf)}
+        facts={facts}
+        comparison={comparison}
+        topImports={countryTopImports(country.code, elements)}
       />
     </main>
   );

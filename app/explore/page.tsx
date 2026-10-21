@@ -1,7 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { toRoman } from "@javascript-packages/roman-numerals";
-import { Explore } from "../../components/Explore";
+import { Explore } from "@/components/hts-explorer/Explore";
+import * as tt from "@/components/ui/styles/tracker";
+import { NewsAlertsBox } from "@/components/tariff-updates/NewsAlertsBox";
 import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import config from "@/config";
 import { getHtsSectionsServer } from "../../libs/hts-server";
@@ -47,34 +49,41 @@ export default async function Home() {
   // The heading, intro and section links are server-rendered so crawlers see them;
   // the explorer itself loads the HTS in the browser
   return (
-    <main className="w-full min-h-0 flex flex-col bg-base-100">
-      <header className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 md:pt-8">
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-          HTS Code Lookup
-        </h1>
-        <p className="mt-2 max-w-3xl text-sm md:text-base text-base-content/60 leading-relaxed">
-          Search the US Harmonized Tariff Schedule (HTSUS) by code or product
-          description, then open any HTS code to see its duty rates and notes,
-          or{" "}
-          <Link href="/duty-calculator" className="text-primary hover:underline">
-            calculate the full duty
-          </Link>{" "}
-          for a country of origin.
-        </p>
-      </header>
+    <main className="w-full flex-1 min-h-0 flex flex-col bg-base-200">
+      <div className="mx-auto w-full max-w-(--breakpoint-xl) px-6 lg:px-8 pt-8 md:pt-10 pb-16 sm:pb-20">
+        <BreadcrumbsProvider>
+          <Explore
+            explorerSurface="explore_page"
+            aside={<NewsAlertsBox source="explore" />}
+            heading={
+              <>
+                <span className={tt.eyebrow("primary")}>Harmonized Tariff Schedule</span>
+                <h1 className="mt-4 text-4xl sm:text-5xl sm:leading-none font-semibold leading-tight text-base-content [font-family:var(--font-tracker-display)]">
+                  HTS Code Lookup
+                </h1>
+                <p className="mt-4 max-w-2xl text-base text-base-content/70 leading-relaxed">
+                  Search the US Harmonized Tariff Schedule (HTSUS) by code or product
+                  description, then open any HTS code to see its duty rates and notes,
+                  or{" "}
+                  <Link href="/duty-calculator" className="text-primary hover:underline">
+                    calculate the full duty
+                  </Link>{" "}
+                  for a country of origin.
+                </p>
+              </>
+            }
+          />
+        </BreadcrumbsProvider>
+      </div>
 
-      <BreadcrumbsProvider>
-        <Explore explorerSurface="explore_page" />
-      </BreadcrumbsProvider>
-
-      <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <h2 className="text-lg font-bold">Browse the HTS by section</h2>
-        <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      {/* <section className="mx-auto w-full max-w-(--breakpoint-xl) px-6 lg:px-8 py-12 sm:py-16">
+        <h2 className="text-2xl font-semibold tracking-tight text-base-content [font-family:var(--font-tracker-display)]">Browse the HTS by section</h2>
+        <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map((s) => (
             <li key={s.number}>
               <Link
                 href={`/section/${s.number}`}
-                className="group flex h-full flex-col gap-0.5 px-3 py-2 rounded-lg border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 transition-all"
+                className="tt-card group flex h-full flex-col gap-1 rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-[var(--tt-shadow)] transition-colors hover:border-primary/40"
               >
                 <span className="text-xs font-bold text-primary group-hover:underline">
                   Section {toRoman(s.number)}
@@ -86,7 +95,7 @@ export default async function Home() {
             </li>
           ))}
         </ul>
-      </section>
+      </section> */}
     </main>
   );
 }

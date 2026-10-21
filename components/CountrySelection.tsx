@@ -199,7 +199,7 @@ export const CountrySelection = ({
         role="combobox"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className={`w-full px-3 py-2 bg-base-200/50 rounded-xl cursor-pointer flex gap-2 items-center justify-between transition-all duration-200 border border-base-content/10 hover:border-primary/30 hover:bg-base-200/70 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 ${singleSelect ? "h-[45px]" : "min-h-[45px]"} ${isOpen ? "ring-2 ring-primary/50 border-primary/30" : ""}`}
+        className={`w-full px-3 py-2 bg-base-200/50 rounded-xl cursor-pointer flex gap-2 items-center justify-between transition-all duration-200 border border-base-content/10 hover:border-primary/30 hover:bg-base-200/70 focus:outline-hidden focus:ring-2 focus:ring-primary/50 focus:border-primary/30 ${singleSelect ? "h-[45px]" : "min-h-[45px]"} ${isOpen ? "ring-2 ring-primary/50 border-primary/30" : ""}`}
         onMouseDown={handleTriggerMouseDown}
         onClick={handleTriggerClick}
         onFocus={handleTriggerFocus}
@@ -220,7 +220,7 @@ export const CountrySelection = ({
                 </div>
                 <button
                   onClick={(e) => handleRemoveCountry(country, e)}
-                  className="p-0.5 hover:bg-primary/20 rounded transition-colors"
+                  className="p-0.5 hover:bg-primary/20 rounded-sm transition-colors"
                   title={`Remove ${country.name}`}
                 >
                   <svg
@@ -251,7 +251,7 @@ export const CountrySelection = ({
           {selectedCountries.length > 0 ? (
             <button
               onClick={handleClearAll}
-              className="text-xs font-medium text-base-content/50 hover:text-error transition-colors px-1.5 py-0.5 rounded hover:bg-error/10"
+              className="text-xs font-medium text-base-content/50 hover:text-error transition-colors px-1.5 py-0.5 rounded-sm hover:bg-error/10"
               title="Clear all selections"
             >
               clear
@@ -283,7 +283,7 @@ export const CountrySelection = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full px-4 py-2.5 bg-base-100 rounded-lg border border-base-content/10 placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
+              className="w-full px-4 py-2.5 bg-base-100 rounded-lg border border-base-content/10 placeholder:text-base-content/40 focus:outline-hidden focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
               autoFocus
             />
           </div>

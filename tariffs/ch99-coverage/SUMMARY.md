@@ -1,20 +1,20 @@
 # Chapter 99 coverage
 
-Generated 2026-10-04 by `npm run ch99:coverage`. HTS source: USITC export (2026HTSRev20).
+Generated 2026-10-07 by `npm run ch99:coverage`. HTS source: USITC export (2026HTSRev20).
 Expired and FTZ-suspended headings come from libs/hts-coverage/initial-status.ts. Coverage is modeled ÷ in effect.
 
 | | Headings |
 |---|---:|
 | Chapter 99 headings in the HTS | 3111 |
-| Expired / terminated (expired.csv) | 2031 |
+| Expired / terminated (expired.csv) | 2152 |
 | FTZ-suspended (ftz-suspended.csv) | 19 |
-| **In effect** | **1061** |
-| **Modeled, in effect** | **248 (23.4%)** |
+| **In effect** | **940** |
+| **Modeled, in effect** | **236 (25.1%)** |
 | …with an engine record in effect today | 232 |
-| **Missing, in effect (missing.csv)** | **813** |
-| …named elsewhere in engine data (exceptions, interactions, conditions) | 80 |
-| …flagged for review | 4 |
-| Expired headings that are modeled (kept in covered.csv for past dates) | 11 |
+| **Missing, in effect (missing.csv)** | **704** |
+| …named elsewhere in engine data (exceptions, interactions, conditions) | 2 |
+| …flagged for review | 0 |
+| Expired headings that are modeled (kept in covered.csv for past dates) | 23 |
 | Engine tariff headings not in the current HTS (stale.csv) | 1 |
 
 ## By subchapter
@@ -23,7 +23,7 @@ Expired and FTZ-suspended headings come from libs/hts-coverage/initial-status.ts
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | 9901 | Subchapter I | 2 | 2 | 0 | 0 | 0 | 0 | – |
 | 9902 | Subchapter II – Temporary duty reductions (MTB) | 1655 | 1655 | 0 | 0 | 0 | 0 | – |
-| 9903 | Subchapter III – Temporary modifications (232, 301, 122, IEEPA, 201, 338, …) | 637 | 165 | 19 | 453 | 248 | 205 | 54.7% |
+| 9903 | Subchapter III – Temporary modifications (232, 301, 122, IEEPA, 201, 338, …) | 637 | 286 | 19 | 332 | 236 | 96 | 71.1% |
 | 9904 | Subchapter IV – Section 22 quantitative limitations | 512 | 0 | 0 | 512 | 0 | 512 | 0.0% |
 | 9908 | Subchapter VIII | 5 | 0 | 0 | 5 | 0 | 5 | 0.0% |
 | 9915 | Subchapter XV | 115 | 115 | 0 | 0 | 0 | 0 | – |
@@ -36,12 +36,10 @@ Expired and FTZ-suspended headings come from libs/hts-coverage/initial-status.ts
 
 ## Missing, by first 4 digits
 
-### 9903 – Subchapter III – Temporary modifications (232, 301, 122, IEEPA, 201, 338, …): 205 missing (missing/9903.csv)
+### 9903 – Subchapter III – Temporary modifications (232, 301, 122, IEEPA, 201, 338, …): 96 missing (missing/9903.csv)
 
 | Group | In effect | Modeled | Missing | Coverage |
 |---|---:|---:|---:|---:|
-| 9903.01 | 34 | 0 | 34 | 0.0% |
-| 9903.02 | 87 | 12 | 75 | 13.8% |
 | 9903.17 | 23 | 0 | 23 | 0.0% |
 | 9903.18 | 10 | 0 | 10 | 0.0% |
 | 9903.41 | 2 | 0 | 2 | 0.0% |
@@ -127,8 +125,8 @@ Expired and FTZ-suspended headings come from libs/hts-coverage/initial-status.ts
 | 9902.16 | 97 | 97 | 0 | 0 | 0 | 0 | – |
 | 9902.17 | 95 | 95 | 0 | 0 | 0 | 0 | – |
 | 9902.18 | 3 | 3 | 0 | 0 | 0 | 0 | – |
-| 9903.01 | 75 | 41 | 0 | 34 | 0 | 34 | 0.0% |
-| 9903.02 | 91 | 4 | 0 | 87 | 12 | 75 | 13.8% |
+| 9903.01 | 75 | 75 | 0 | 0 | 0 | 0 | – |
+| 9903.02 | 91 | 91 | 0 | 0 | 0 | 0 | – |
 | 9903.03 | 16 | 11 | 0 | 5 | 5 | 0 | 100.0% |
 | 9903.04 | 22 | 11 | 0 | 11 | 11 | 0 | 100.0% |
 | 9903.05 | 89 | 0 | 0 | 89 | 89 | 0 | 100.0% |
@@ -227,6 +225,8 @@ Headings each entry in initial-status.ts lists, and how many of them are in the 
 | expired | 9917 | prefix | 45 |
 | expired | 9920 | prefix | 25 |
 | expired | 9922 | prefix | 24 |
+| expired | 9903.01.01-99 | 99 | 75 |
+| expired | 9903.02.01-99 | 99 | 91 |
 | FTZ-suspended | 9903.89.05 | 1 | 1 |
 | FTZ-suspended | 9903.89.10 | 1 | 1 |
 | FTZ-suspended | 9903.89.13 | 1 | 1 |
@@ -246,4 +246,3 @@ Headings each entry in initial-status.ts lists, and how many of them are in the 
 | FTZ-suspended | 9903.89.55 | 1 | 1 |
 | FTZ-suspended | 9903.89.57 | 1 | 1 |
 | FTZ-suspended | 9903.89.61 | 1 | 1 |
-| needs review | 9903.01.21-24 | 4 | 4 |

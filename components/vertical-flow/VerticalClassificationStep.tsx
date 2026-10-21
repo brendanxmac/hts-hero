@@ -564,7 +564,7 @@ export const VerticalClassificationStep = ({
       <div
         id="onboarding-detail-options"
         ref={containerRef}
-        className="xl:col-span-5 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
+        className="xl:col-span-5 rounded-xl border border-base-300 bg-base-100 shadow-xs overflow-hidden"
       >
         {/* Header */}
         <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
@@ -620,15 +620,15 @@ export const VerticalClassificationStep = ({
                   className="rounded-lg border border-base-300 bg-base-200/30 p-4 animate-pulse"
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="h-4 w-20 bg-base-300 rounded" />
+                    <div className="h-4 w-20 bg-base-300 rounded-sm" />
                     <div className="flex gap-1 ml-auto">
                       <div className="h-6 w-6 bg-base-300 rounded-md" />
                       <div className="h-6 w-6 bg-base-300 rounded-md" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <div className="h-3.5 w-full bg-base-300 rounded" />
-                    <div className="h-3.5 w-2/3 bg-base-300 rounded" />
+                    <div className="h-3.5 w-full bg-base-300 rounded-sm" />
+                    <div className="h-3.5 w-2/3 bg-base-300 rounded-sm" />
                   </div>
                 </div>
               ))}
@@ -661,7 +661,7 @@ export const VerticalClassificationStep = ({
       {/* Research / legal notes / CROSS panel */}
       <div
         id="onboarding-detail-research-panel"
-        className="xl:col-span-7 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
+        className="xl:col-span-7 rounded-xl border border-base-300 bg-base-100 shadow-xs overflow-hidden"
       >
         <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
           <div className="w-full flex gap-3 justify-between items-center">
@@ -669,7 +669,7 @@ export const VerticalClassificationStep = ({
               id="onboarding-detail-research-tabs"
               role="tablist"
               aria-label="Research panel"
-              className="tabs tabs-boxed tabs-sm rounded-lg gap-0.5 py-0 flex-wrap shrink-0"
+              className="tabs tabs-box tabs-sm rounded-lg gap-0.5 py-0 flex-wrap shrink-0"
             >
               <button
                 type="button"
@@ -836,7 +836,7 @@ export const VerticalClassificationStep = ({
               </div>
               <textarea
                 ref={defenseTextareaRef}
-                className={`whitespace-pre-wrap min-h-48 w-full px-4 py-3 rounded-lg border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${readOnly || isDisabled
+                className={`whitespace-pre-wrap min-h-48 w-full px-4 py-3 rounded-lg border transition-all duration-200 placeholder:text-base-content/50 focus:outline-hidden focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${readOnly || isDisabled
                   ? "bg-base-200/50 border-base-300 cursor-not-allowed opacity-60"
                   : "bg-base-100 border-base-300 hover:border-primary/40"
                   }`}

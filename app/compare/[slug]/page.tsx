@@ -5,7 +5,7 @@ import { COMPARE_PAGES, comparePage, comparePageTitle } from "@/libs/compare/pag
 import config from "@/config";
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export const dynamicParams = false;
@@ -20,7 +20,8 @@ const describe = (page: NonNullable<ReturnType<typeof comparePage>>) => {
   return page.tool.alternatives!.intro;
 };
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const page = comparePage(params.slug);
   if (!page) return {};
   const title = comparePageTitle(page);
@@ -40,7 +41,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ComparisonPage({ params }: Props) {
+export default async function ComparisonPage(props: Props) {
+  const params = await props.params;
   const page = comparePage(params.slug);
   if (!page) notFound();
   if (page.kind === "roundup") return <RoundupPage />;

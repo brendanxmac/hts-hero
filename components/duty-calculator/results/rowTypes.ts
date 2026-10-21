@@ -4,8 +4,6 @@ export interface RowProps {
   code: string;
   slice?: string;
   name: string;
-  program?: string;
-  effectiveFrom?: string;
   detail?: string;
   // The heading's legal text, for Chapter 99 lines
   legal?: { text: string; asOf: string; htsCode: string };
@@ -14,6 +12,16 @@ export interface RowProps {
   rate?: number;
   rateText?: string;
   amount: number;
+  // The plain-English why is locked (signed out): a link to sign up takes the detail's place
+  whyLocked?: boolean;
+  // What the last answer or trade program changed on this line
+  change?: RowChange;
+}
+
+export interface RowChange {
+  kind: "added" | "changed" | "removed";
+  // The amount before the change
+  before?: number;
 }
 
 // A line's tie to "Where the money goes": its chart color, and whether it's the hovered slice

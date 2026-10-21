@@ -10,7 +10,7 @@ export const LegalPanel = ({
   citations?: string[];
   notesFor?: { asOf: string; htsCode: string };
 }) => (
-  <div className="flex flex-col gap-4 rounded-md border border-base-300 bg-base-100 p-4 shadow-sm">
+  <div className="flex flex-col gap-4 rounded-xl bg-tt-soft p-4">
     <p className="text-sm leading-relaxed text-base-content">{text}</p>
     {notesFor && (
       <ReferencedNotes

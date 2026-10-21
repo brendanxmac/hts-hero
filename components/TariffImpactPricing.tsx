@@ -2,11 +2,12 @@ import config from "@/config";
 import { classNames } from "../utilities/style";
 import { PricingFeatureI, PricingPlan } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
+import { Select } from "@/components/ui/Select";
 import { StripePaymentMode } from "../libs/stripe";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
 import { getActivePriorityTariffPurchase } from "../libs/supabase/purchase";
-import LetsTalkModal from "./LetsTalkModal";
+import { openBookCall } from "@/libs/book-call";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import {
   CheckIcon,
@@ -69,7 +70,6 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
 const TariffImpactPricing = () => {
   const [currentPlan, setCurrentPlan] = useState<PricingPlan | null>(null);
   const { user } = useUser();
-  const [isEnterpriseModalOpen, setIsEnterpriseModalOpen] = useState(false);
   // Track the selected price tier index for each plan
   const [selectedTierIndices, setSelectedTierIndices] = useState<{
     [key: number]: number;
@@ -97,8 +97,8 @@ const TariffImpactPricing = () => {
       console.error("Error tracking tariff team click:", e);
     }
 
-    // Open the modal
-    setIsEnterpriseModalOpen(true);
+    // Straight to Calendly
+    openBookCall({ name: user?.user_metadata?.full_name, email: user?.email });
   };
 
   useEffect(() => {
@@ -148,11 +148,11 @@ const TariffImpactPricing = () => {
             <span className="w-8 h-px bg-primary/40" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 max-w-3xl mx-auto">
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
               Master
             </span>{" "}
             Tariffs & Discover{" "}
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
               Savings
             </span>
           </h2>
@@ -181,8 +181,8 @@ const TariffImpactPricing = () => {
                 key={index}
                 className={classNames(
                   "group relative w-full max-w-md overflow-hidden",
-                  "bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60",
-                  "backdrop-blur-sm rounded-2xl border transition-all duration-300",
+                  "bg-linear-to-br from-base-200/80 via-base-100 to-base-200/60",
+                  "backdrop-blur-xs rounded-2xl border transition-all duration-300",
                   plan.isFeatured
                     ? "border-primary/40 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20"
                     : "border-base-content/10 shadow-lg hover:shadow-xl hover:border-primary/20"
@@ -191,7 +191,7 @@ const TariffImpactPricing = () => {
                 {/* Featured badge */}
                 {plan.isFeatured && (
                   <div className="absolute -top-px left-1/2 -translate-x-1/2">
-                    <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-primary to-secondary rounded-b-xl text-white text-xs font-semibold shadow-lg">
+                    <div className="flex items-center gap-1.5 px-4 py-1.5 bg-linear-to-r from-primary to-secondary rounded-b-xl text-white text-xs font-semibold shadow-lg">
                       <SparklesIcon className="w-3.5 h-3.5" />
                       Most Popular
                     </div>
@@ -209,7 +209,7 @@ const TariffImpactPricing = () => {
                         className={classNames(
                           "flex items-center justify-center w-10 h-10 rounded-xl",
                           plan.isFeatured
-                            ? "bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/20"
+                            ? "bg-linear-to-br from-primary/20 to-secondary/20 border border-primary/20"
                             : "bg-base-200 border border-base-content/10"
                         )}
                       >
@@ -239,19 +239,19 @@ const TariffImpactPricing = () => {
                         </h3>
                         {/* Tier selector - inline with price */}
                         {hasMultipleTiers && (
-                          <select
+                          <Select
                             value={currentTierIndex}
-                            onChange={(e) =>
-                              handleTierChange(index, parseInt(e.target.value))
-                            }
-                            className="select select-sm ml-auto bg-base-200/50 text-base-content text-xs font-medium border border-base-content/10 focus:border-primary focus:outline-none"
-                          >
-                            {plan.priceTiers!.map((tier, i) => (
-                              <option key={i} value={i}>
-                                {tier}
-                              </option>
-                            ))}
-                          </select>
+                            onChange={(i) => handleTierChange(index, i)}
+                            options={plan.priceTiers!.map((tier, i) => ({
+                              value: i,
+                              label: tier,
+                            }))}
+                            label="Choose a tier"
+                            size="sm"
+                            className="ml-auto"
+                            buttonClassName="bg-base-200/50 text-xs"
+                            align="right"
+                          />
                         )}
                       </div>
                     </div>
@@ -284,7 +284,7 @@ const TariffImpactPricing = () => {
                           className={classNames(
                             "text-5xl font-extrabold tracking-tight",
                             plan.isFeatured
-                              ? "bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+                              ? "bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent"
                               : "text-base-content"
                           )}
                         >
@@ -300,7 +300,7 @@ const TariffImpactPricing = () => {
                   </div>
 
                   {/* Divider */}
-                  <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-6" />
+                  <div className="h-px bg-linear-to-r from-transparent via-base-content/10 to-transparent mb-6" />
 
                   {/* Features */}
                   {plan.features && (
@@ -351,23 +351,23 @@ const TariffImpactPricing = () => {
 
         {/* Enterprise/Team Plan CTA */}
         <div className="mt-12 max-w-3xl mx-auto">
-          <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 rounded-2xl border border-primary/20 p-4">
+          <div className="relative overflow-hidden bg-linear-to-br from-primary/5 via-base-100 to-secondary/5 rounded-2xl border border-primary/20 p-4">
             {/* Decorative elements */}
             <div className="absolute -top-12 -left-12 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
             <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-secondary/20 rounded-full blur-2xl" />
 
             <div className="relative flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/20 shrink-0">
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-primary/20 to-secondary/20 border border-primary/20 shrink-0">
                 <UserGroupIcon className="w-8 h-8 text-primary" />
               </div>
               <div className="flex-1">
                 <h3 className="text-xl md:text-2xl font-bold text-base-content mb-2">
                   Tariff Pro for{" "}
-                  <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
                     Teams
                   </span>
                 </h3>
-                <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
+                <p className="text-base-content/60 text-sm md:text-base md:leading-6 leading-relaxed">
                   Get Pro for your whole team with custom pricing and dedicated
                   support.
                 </p>
@@ -415,11 +415,6 @@ const TariffImpactPricing = () => {
           </div>
         </div>
       </div>
-
-      <LetsTalkModal
-        isOpen={isEnterpriseModalOpen}
-        onClose={() => setIsEnterpriseModalOpen(false)}
-      />
     </section>
   );
 };

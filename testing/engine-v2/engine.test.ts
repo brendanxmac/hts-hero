@@ -2,7 +2,7 @@
 // checked in isolation. Real-data tests are in real-data.test.ts.
 import { describe, it, expect } from "../test-runner"
 import { calculate } from "../../tariffs/engine-v2/calculate"
-import { codeListVersions, tariffVersions } from "../../tariffs/engine-v2/versioning"
+import { codeListVersions, replaceOnce, splitTariffAt, tariffVersions } from "../../tariffs/engine-v2/versioning"
 import { validateRules } from "../../tariffs/engine-v2/validate"
 import {
   CalculationInput,
@@ -158,6 +158,120 @@ describe("engine-v2: usContentShare basis (U.S. note 16(j))", () => {
   it("needs an answer when U.S. content isn't given", () => {
     expect(line(split(), "REST").status).toBe("needsAnswer")
     expect(line(split(), "CAPPED").status).toBe("needsAnswer")
+  })
+})
+
+describe("engine-v2: metalContentInChapters basis (notes 16 and 19 before April 6, 2026)", () => {
+  const set = rules({
+    tariffs: [
+      tariff({ code: "STEEL", basis: { kind: "metalContentInChapters", metal: "steel", chapters: ["73"] }, rate: { kind: "adValorem", pct: 50 } }),
+    ],
+  })
+  it("charges the steel content for chapter 73 goods", () => {
+    const result = calculate(set, input({ htsCode: "7326.90.86.88", answers: { steelContentPct: 60 } }))
+    expect(line(result, "STEEL").basisValue).toBe(6000)
+    expect(line(result, "STEEL").amount).toBe(3000)
+  })
+  it("charges the full value outside the listed chapters, with or without a content answer", () => {
+    expect(line(calculate(set, input({ htsCode: "7208.51.00.30" })), "STEEL").amount).toBe(5000)
+    expect(line(calculate(set, input({ htsCode: "8708.10.30.50", answers: { steelContentPct: 20 } })), "STEEL").amount).toBe(5000)
+  })
+  it("needs an answer for chapter 73 goods when the steel content isn't given", () => {
+    expect(line(calculate(set, input({ htsCode: "7326.90.86.88" })), "STEEL").status).toBe("needsAnswer")
+  })
+})
+
+describe("engine-v2: metalContentCovered basis (note 2(aa)(v) before April 6, 2026)", () => {
+  const set = rules({
+    inputs: [
+      { id: "steelContentPct", label: "Steel %", type: "percent" },
+      { id: "aluminumContentPct", label: "Aluminum %", type: "percent" },
+      { id: "confirmed", label: "Confirmed?", type: "boolean" },
+    ],
+    tariffs: [
+      tariff({ code: "STEEL", rate: { kind: "adValorem", pct: 50 } }),
+      tariff({ code: "ALU", requires: [{ kind: "answer", input: "confirmed", equals: true }], rate: { kind: "adValorem", pct: 50 } }),
+      tariff({ code: "AUTO", scope: { countries: "all", codes: ["8703"] }, rate: { kind: "adValorem", pct: 25 } }),
+      tariff({ code: "SURCHARGE", program: "p-c", exceptions: ["EXEMPT"] }),
+      tariff({
+        code: "EXEMPT",
+        program: "p-c",
+        scope: { countries: "all", codes: "all", whenApplies: { codes: ["STEEL", "ALU", "AUTO"] } },
+        basis: { kind: "metalContentCovered", content: [{ metal: "steel", codes: ["STEEL"] }, { metal: "aluminum", codes: ["ALU"] }] },
+        rate: { kind: "free" },
+      }),
+    ],
+  })
+  it("exempts only the steel content; the surcharge applies to the rest", () => {
+    const result = calculate(set, input({ answers: { steelContentPct: 60 } }))
+    expect(line(result, "EXEMPT").basisValue).toBe(6000)
+    expect(line(result, "SURCHARGE").amount).toBe(400) // 10% of 4,000
+  })
+  it("adds the content of each metal whose headings apply, capped at the value", () => {
+    const result = calculate(set, input({ answers: { confirmed: true, steelContentPct: 60, aluminumContentPct: 30 } }))
+    expect(line(result, "EXEMPT").basisValue).toBe(9000)
+    expect(line(result, "SURCHARGE").amount).toBe(100)
+    const capped = calculate(set, input({ answers: { confirmed: true, steelContentPct: 80, aluminumContentPct: 50 } }))
+    expect(line(capped, "EXEMPT").basisValue).toBe(10000)
+    expect(line(capped, "SURCHARGE").status).toBe("excluded")
+  })
+  it("ignores metals whose headings don't apply", () => {
+    const result = calculate(set, input({ answers: { steelContentPct: 60, aluminumContentPct: 30 } }))
+    expect(line(result, "EXEMPT").basisValue).toBe(6000)
+  })
+  it("covers the full value when a trigger outside the metals applies", () => {
+    const result = calculate(set, input({ htsCode: "8703.23.01.90", answers: { steelContentPct: 60 } }))
+    expect(line(result, "EXEMPT").basisValue).toBe(10000)
+    expect(line(result, "SURCHARGE").status).toBe("excluded")
+  })
+  it("needs an answer when the content isn't given, so the surcharge applies in full", () => {
+    const result = calculate(set, input())
+    expect(line(result, "EXEMPT").status).toBe("needsAnswer")
+    expect(line(result, "SURCHARGE").amount).toBe(1000)
+    expect(result.unansweredInputs.map((u) => u.input.id)).toContain("steelContentPct")
+  })
+})
+
+describe("engine-v2: usContentPortion basis (note 2(v)(xvii), 9903.01.34)", () => {
+  const set = rules({
+    inputs: [{ id: "usContentPct", label: "U.S. content", type: "percent" }],
+    tariffs: [
+      tariff({ code: "RECIPROCAL", exceptions: ["US-CONTENT"], rate: { kind: "adValorem", pct: 20 } }),
+      tariff({ code: "US-CONTENT", basis: { kind: "usContentPortion", minPct: 20 }, rate: { kind: "free" } }),
+    ],
+  })
+  const run = (usContentPct?: number) => calculate(set, input({ answers: usContentPct === undefined ? {} : { usContentPct } }))
+  it("leaves the duty on the non-U.S. content when U.S. content is at least 20%", () => {
+    expect(line(run(30), "US-CONTENT").basisValue).toBe(3000)
+    expect(line(run(30), "RECIPROCAL").amount).toBe(1400) // 20% of 7,000
+    expect(line(run(20), "RECIPROCAL").amount).toBe(1600) // at the threshold
+  })
+  it("covers nothing under 20%", () => {
+    expect(line(run(10), "RECIPROCAL").amount).toBe(2000)
+    expect(line(run(10), "US-CONTENT").status).toBe("excluded")
+  })
+  it("needs an answer when U.S. content isn't given; the duty applies in full", () => {
+    expect(line(run(), "US-CONTENT").status).toBe("needsAnswer")
+    expect(line(run(), "RECIPROCAL").amount).toBe(2000)
+  })
+})
+
+describe("engine-v2: answerForListedCodes condition", () => {
+  const set = rules({
+    lists: [{ id: "described", kind: "hts", description: "", versions: [{ codes: ["7326.90.86.88"], effective: {} }] }],
+    tariffs: [
+      tariff({ code: "DUTY", exceptions: ["EXCLUSION"] }),
+      tariff({ code: "EXCLUSION", rate: { kind: "free" }, requires: [{ kind: "answerForListedCodes", input: "confirmed", equals: true, list: "described" }] }),
+    ],
+  })
+  it("asks for listed codes, and applies once answered", () => {
+    expect(line(calculate(set, input()), "EXCLUSION").status).toBe("needsAnswer")
+    expect(line(calculate(set, input({ answers: { confirmed: true } })), "EXCLUSION").status).toBe("applies")
+  })
+  it("applies to other codes without asking", () => {
+    const result = calculate(set, input({ htsCode: "8483.50.90.40" }))
+    expect(line(result, "EXCLUSION").status).toBe("applies")
+    expect(result.questions.some((q) => q.input.id === "confirmed")).toBe(false)
   })
 })
 
@@ -509,5 +623,92 @@ describe("engine-v2: validation", () => {
       }),
     )
     expect(errors.length).toBe(4)
+  })
+
+  // When each heading was in the HTS, as `npm run ch99:archive` writes it
+  const archive = {
+    revisions: ["R1", "R2", "R3"],
+    headings: {
+      "9903.01.01": { first: "R1", last: "R3" },
+      "9903.01.02": { first: "R2", last: "R3" },
+      "9903.01.03": { first: "R1", last: "R2" },
+    },
+  }
+  const starts: Record<string, string> = { R1: "2025-01-01", R2: "2025-03-01", R3: "2025-06-01" }
+  const checkArchive = (tariffs: Tariff[], checkFrom = "2025-01-01") =>
+    validateRules(rules({ tariffs }), { checkFrom, archive, revisionStart: (r) => starts[r] })
+
+  it("flags an undated heading that first appears in the HTS after the checked range starts", () => {
+    const { errors } = checkArchive([tariff({ code: "9903.01.02", effective: {} })])
+    expect(errors.some((e) => e.includes("9903.01.02") && e.includes("no start date"))).toBe(true)
+    // Already in the HTS when the checked range starts: fine
+    expect(checkArchive([tariff({ code: "9903.01.02", effective: {} })], "2025-04-01").errors).toHaveLength(0)
+    // In the earliest archived revision: it may be older, so no start date is fine
+    expect(checkArchive([tariff({ code: "9903.01.01", effective: {} })]).errors).toHaveLength(0)
+  })
+
+  it("asks for a citation when a heading is dated before it appears in the HTS", () => {
+    const uncited = checkArchive([tariff({ code: "9903.01.02", effective: { from: "2025-02-15" } })])
+    expect(uncited.warnings.some((w) => w.includes("before the heading first appears"))).toBe(true)
+    const cited = checkArchive([
+      tariff({ code: "9903.01.02", effective: { from: "2025-02-15" }, source: { citation: "EO 14000" } }),
+    ])
+    expect(cited.warnings.some((w) => w.includes("before the heading first appears"))).toBe(false)
+  })
+
+  it("warns when a heading stays in effect after it left the HTS", () => {
+    const open = checkArchive([tariff({ code: "9903.01.03", effective: { from: "2025-01-01" } })])
+    expect(open.warnings.some((w) => w.includes("removed from the HTS"))).toBe(true)
+    const ended = checkArchive([tariff({ code: "9903.01.03", effective: { from: "2025-01-01", to: "2025-05-20" } })])
+    expect(ended.warnings.some((w) => w.includes("removed from the HTS"))).toBe(false)
+  })
+
+  it("warns about dates whose only source is \"Notice\"", () => {
+    const { warnings } = checkArchive([
+      tariff({ code: "9903.01.01", effective: { from: "2025-02-01" }, source: { citation: "Notice" } }),
+    ])
+    expect(warnings.some((w) => w.includes("no citation for its dates"))).toBe(true)
+  })
+})
+
+describe("splitTariffAt", () => {
+  const base = {
+    code: "9903.99.99", program: "x", name: "x", description: "through November 9, 2026",
+    scope: { countries: "all", codes: "all" }, rate: { kind: "free" },
+  } as unknown as Tariff
+  const older = () => ({ description: "through November 29, 2025" })
+
+  it("splits a record that spans the date", () => {
+    const parts = splitTariffAt({ ...base, effective: { from: "2024-06-15", to: "2026-11-10" } }, "2025-11-30", older)
+    expect(parts.map((p) => [p.effective.from, p.effective.to, p.description])).toEqual([
+      ["2024-06-15", "2025-11-30", "through November 29, 2025"],
+      ["2025-11-30", "2026-11-10", "through November 9, 2026"],
+    ])
+  })
+
+  it("splits an undated record, keeping it undated before the date", () => {
+    const parts = splitTariffAt({ ...base, effective: {} }, "2025-11-30", older)
+    expect(parts.map((p) => [p.effective.from, p.effective.to])).toEqual([[undefined, "2025-11-30"], ["2025-11-30", undefined]])
+  })
+
+  it("leaves a record that starts on or after the date, or ends on or before it", () => {
+    for (const effective of [{ from: "2025-11-30" }, { from: "2026-01-01" }, { to: "2025-11-30" }, { from: "2025-01-01", to: "2025-09-01" }]) {
+      const parts = splitTariffAt({ ...base, effective }, "2025-11-30", older)
+      expect(parts.length).toBe(1)
+      expect(parts[0].description).toBe("through November 9, 2026")
+    }
+  })
+})
+
+describe("replaceOnce", () => {
+  it("replaces the text, and throws when it isn't there", () => {
+    expect(replaceOnce("through November 9, 2026", "November 9, 2026", "November 29, 2025", "x")).toBe("through November 29, 2025")
+    let threw = false
+    try {
+      replaceOnce("through November 10, 2026", "November 9, 2026", "November 29, 2025", "x")
+    } catch {
+      threw = true
+    }
+    expect(threw).toBe(true)
   })
 })

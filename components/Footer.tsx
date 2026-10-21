@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import config from "@/config";
+import { CENSUS_NOTICE } from "@/components/duty-calculator/lib/census";
 import logo from "@/app/logo.svg";
 
 // Add the Footer to the bottom of your landing page and more.
@@ -11,7 +12,7 @@ const Footer = () => {
     <footer className="bg-base-100 border-t border-base-content/10">
       <div className="max-w-7xl mx-auto px-8 py-24">
         <div className=" flex lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
-          <div className="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left">
+          <div className="w-64 shrink-0 md:mx-0 mx-auto text-center md:text-left">
             <Link
               href="/#"
               aria-current="page"
@@ -36,8 +37,10 @@ const Footer = () => {
             <p className="mt-3 text-sm text-base-content/60">
               Copyright © {new Date().getFullYear()} - All rights reserved
             </p>
+            {/* Required by the Census Bureau's API terms (US import figures in the calculator) */}
+            <p className="mt-2 max-w-xs text-xs leading-snug text-base-content/50">{CENSUS_NOTICE}</p>
           </div>
-          <div className="flex-grow flex flex-wrap justify-center -mb-10 md:mt-0 mt-10 text-center">
+          <div className="grow flex flex-wrap justify-center -mb-10 md:mt-0 mt-10 text-center">
             <div className="lg:w-1/3 md:w-1/2 w-full px-4">
               <div className="footer-title font-semibold text-base-content tracking-widest text-sm md:text-left mb-3">
                 LINKS
@@ -71,6 +74,15 @@ const Footer = () => {
               <div className="flex flex-col justify-center items-center md:items-start gap-2 mb-10 text-sm">
                 <Link href="/duty-calculator" className="link link-hover">
                   US Tariff Calculator
+                </Link>
+                <Link href="/tariff-monitor" className="link link-hover">
+                  Tariff Tracker
+                </Link>
+                <Link href="/tariff-audit" className="link link-hover">
+                  Tariff Audit
+                </Link>
+                <Link href="/tariff-updates" className="link link-hover">
+                  Latest Tariff Updates
                 </Link>
                 <Link href="/explore" className="link link-hover">
                   HTS Code Lookup

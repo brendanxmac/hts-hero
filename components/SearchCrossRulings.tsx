@@ -31,7 +31,7 @@ export const SearchCrossRulings = ({ searchTerm }: Props) => {
           <TertiaryLabel value="Search Term" />
           <div className="w-full flex flex-col gap-3">
             <input
-              className="w-full p-3 bg-base-200 border-2 border-base-content/20 rounded-lg text-base-content placeholder-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 bg-base-200 border-2 border-base-content/20 rounded-lg text-base-content placeholder-base-content/50 focus:outline-hidden focus:ring-2 focus:ring-primary"
               type="text"
               placeholder="Enter search term..."
               value={localSearchTerm}

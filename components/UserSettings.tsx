@@ -146,7 +146,7 @@ export const UserSettings = ({ user, team }: Props) => {
               type="text"
               placeholder="Enter your name"
               value={name}
-              className="input input-bordered w-full"
+              className="input w-full"
               onChange={(e) => setName(e.target.value)}
               disabled={isSaving}
             />
@@ -159,7 +159,7 @@ export const UserSettings = ({ user, team }: Props) => {
               type="text"
               value={user.email}
               disabled
-              className="input input-bordered w-full"
+              className="input w-full"
             />
           </div>
         </div>
@@ -190,7 +190,7 @@ export const UserSettings = ({ user, team }: Props) => {
             </div>
             <div className="w-full flex flex-col gap-3">
               <textarea
-                className="textarea textarea-bordered w-full resize-y"
+                className="textarea w-full resize-y"
                 placeholder="Enter your classification disclaimer..."
                 rows={4}
                 value={disclaimer}
@@ -207,7 +207,7 @@ export const UserSettings = ({ user, team }: Props) => {
               type="text"
               placeholder="Enter your company address"
               value={address}
-              className="input input-bordered w-full"
+              className="input w-full"
               onChange={(e) => handleAddressChange(e.target.value)}
               disabled={isSaving}
             />
@@ -225,7 +225,7 @@ export const UserSettings = ({ user, team }: Props) => {
                 className="tooltip tooltip-bottom"
                 data-tip="This feature is experimental"
               >
-                <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
+                <div className="rounded-xs bg-accent p-0.5 text-xs text-base-300">
                   <BeakerIcon className="w-4 h-4" />
                 </div>
               </div>
@@ -237,7 +237,7 @@ export const UserSettings = ({ user, team }: Props) => {
               type="text"
               placeholder="Enter importers name"
               value={newImporter}
-              className="max-w-md input input-sm input-bordered flex-1 py-4"
+              className="max-w-md input input-sm flex-1 py-4"
               onChange={(e) => setNewImporter(e.target.value)}
             />
             <button

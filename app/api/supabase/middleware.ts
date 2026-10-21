@@ -1,7 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
+import { User } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function updateSession(request: NextRequest) {
+// Refreshes the visitor's auth session, and says who they are (null when signed out)
+export async function updateSession(request: NextRequest): Promise<{ response: NextResponse; user: User | null }> {
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -10,7 +12,7 @@ export async function updateSession(request: NextRequest) {
 
   // If running in test env, we do not need to have a ensure
   // there is a valid user session in the cookies, so skip
-  if (IS_TEST_ENV) return supabaseResponse;
+  if (IS_TEST_ENV) return { response: supabaseResponse, user: null };
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,7 +38,9 @@ export async function updateSession(request: NextRequest) {
   );
 
   // refreshing the auth token
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return supabaseResponse;
+  return { response: supabaseResponse, user };
 }

@@ -1,32 +1,18 @@
 import { ReactNode } from "react";
-import { createClient } from "@/app/api/supabase/server";
-import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
-import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- for the commented-out banner
-import { CTABanner } from "../../components/CTABanner";
-import { THEME } from "../../components/ui/theme";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import { FollowTheme } from "@/components/ui/marketing/FollowTheme";
+import { COUNTRY_PAGES } from "@/libs/country-pages/countries";
 
-export default async function LayoutPrivate({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const supabase = createClient();
+// Every /duty-calculator page is a landing page: the marketing header and footer. The calculator
+// itself has the Tariff Tracker's look; /duty-calculator and the country pages are in that look
+// throughout, following the site's light/dark setting. The others (changelog, FAQ, countries hub)
+// stay in the light marketing look for now.
+const TRACKER_SKIN_PATHS = ["/duty-calculator", ...COUNTRY_PAGES.map((c) => `/duty-calculator/${c.slug}`)];
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // The analytical theme covers the site header too
+export default function DutyCalculatorLayout({ children }: { children: ReactNode }) {
   return (
-    <div className={`${THEME} flex flex-col max-h-svh overflow-y-auto`}>
-      {/* <CTABanner
-        message="Your duty rate is only correct if your HTS code is correct."
-        ctaText="Verify Your Classifications"
-        href="/classify"
-      /> */}
-      {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
-      {children}
-    </div>
+    <FollowTheme paths={TRACKER_SKIN_PATHS}>
+      <MarketingLayout>{children}</MarketingLayout>
+    </FollowTheme>
   );
 }

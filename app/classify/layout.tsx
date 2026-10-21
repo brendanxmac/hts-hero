@@ -1,11 +1,13 @@
 import { ReactNode } from "react";
 import { Metadata } from "next";
 import config from "@/config";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import { FollowTheme } from "@/components/ui/marketing/FollowTheme";
 
 export const metadata: Metadata = {
-  title: "HTS Code Finder for US Importers & Customs Brokers | HTS Hero",
+  title: "Produce Audit-Ready HTS Classifications, Fast! | HTS Hero",
   description:
-    "Find the HTS Code for any product in minutes & generate branded, audit-ready classification reports trusted by customs brokers and importers.",
+    "Classify any product correctly in minutes. Trusted by hundreds of customs brokers, freight forwarders, and manufacturers.",
   keywords: [
     "HTS classification tool",
     "AI customs classification",
@@ -17,18 +19,18 @@ export const metadata: Metadata = {
     "tariff classification assistant",
   ],
   openGraph: {
-    title: "HTS Code Finder for US Importers & Customs Brokers | HTS Hero",
+    title: "Produce Audit-Ready HTS Classifications, Fast! | HTS Hero",
     description:
-      "Find the HTS Code for any product in minutes & generate branded, audit-ready classification reports trusted by customs brokers and importers.",
+      "Classify any product correctly in minutes. Trusted by hundreds of customs brokers, freight forwarders, and manufacturers.",
     url: `https://${config.domainName}/classify`,
     siteName: "HTS Hero",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "HTS Code Finder for US Importers & Customs Brokers | HTS Hero",
+    title: "Produce Audit-Ready HTS Classifications, Fast! | HTS Hero",
     description:
-      "Find the HTS Code for any product in minutes & generate branded, audit-ready classification reports trusted by customs brokers and importers.",
+      "Classify any product correctly in minutes. Trusted by hundreds of customs brokers, freight forwarders, and manufacturers.",
   },
   alternates: {
     canonical: "/classify",
@@ -36,5 +38,10 @@ export const metadata: Metadata = {
 };
 
 export default function ClassifyLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+  // The Tariff Tracker's look, following the site's light/dark setting (DESIGN_SYSTEM.md §15)
+  return (
+    <FollowTheme>
+      <MarketingLayout>{children}</MarketingLayout>
+    </FollowTheme>
+  );
 }

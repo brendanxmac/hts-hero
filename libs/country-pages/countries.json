@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "mexico",
+    "code": "MX",
+    "name": "Mexico"
+  },
+  {
+    "slug": "canada",
+    "code": "CA",
+    "name": "Canada"
+  },
+  {
+    "slug": "china",
+    "code": "CN",
+    "name": "China"
+  },
+  {
+    "slug": "taiwan",
+    "code": "TW",
+    "name": "Taiwan"
+  },
+  {
+    "slug": "vietnam",
+    "code": "VN",
+    "name": "Vietnam"
+  },
+  {
+    "slug": "germany",
+    "code": "DE",
+    "name": "Germany"
+  },
+  {
+    "slug": "japan",
+    "code": "JP",
+    "name": "Japan"
+  },
+  {
+    "slug": "ireland",
+    "code": "IE",
+    "name": "Ireland"
+  },
+  {
+    "slug": "south-korea",
+    "code": "KR",
+    "name": "South Korea"
+  },
+  {
+    "slug": "switzerland",
+    "code": "CH",
+    "name": "Switzerland"
+  },
+  {
+    "slug": "india",
+    "code": "IN",
+    "name": "India"
+  },
+  {
+    "slug": "thailand",
+    "code": "TH",
+    "name": "Thailand"
+  },
+  {
+    "slug": "italy",
+    "code": "IT",
+    "name": "Italy"
+  },
+  {
+    "slug": "france",
+    "code": "FR",
+    "name": "France"
+  },
+  {
+    "slug": "united-kingdom",
+    "code": "GB",
+    "name": "the United Kingdom"
+  },
+  {
+    "slug": "malaysia",
+    "code": "MY",
+    "name": "Malaysia"
+  },
+  {
+    "slug": "brazil",
+    "code": "BR",
+    "name": "Brazil"
+  },
+  {
+    "slug": "singapore",
+    "code": "SG",
+    "name": "Singapore"
+  },
+  {
+    "slug": "netherlands",
+    "code": "NL",
+    "name": "the Netherlands"
+  },
+  {
+    "slug": "indonesia",
+    "code": "ID",
+    "name": "Indonesia"
+  },
+  {
+    "slug": "australia",
+    "code": "AU",
+    "name": "Australia"
+  },
+  {
+    "slug": "belgium",
+    "code": "BE",
+    "name": "Belgium"
+  },
+  {
+    "slug": "spain",
+    "code": "ES",
+    "name": "Spain"
+  },
+  {
+    "slug": "israel",
+    "code": "IL",
+    "name": "Israel"
+  },
+  {
+    "slug": "chile",
+    "code": "CL",
+    "name": "Chile"
+  },
+  {
+    "slug": "colombia",
+    "code": "CO",
+    "name": "Colombia"
+  },
+  {
+    "slug": "austria",
+    "code": "AT",
+    "name": "Austria"
+  },
+  {
+    "slug": "philippines",
+    "code": "PH",
+    "name": "the Philippines"
+  },
+  {
+    "slug": "south-africa",
+    "code": "ZA",
+    "name": "South Africa"
+  },
+  {
+    "slug": "turkey",
+    "code": "TR",
+    "name": "Turkey"
+  }
+]

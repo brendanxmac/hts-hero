@@ -6,6 +6,10 @@ import { headings as section201Quartz } from "./headings/201-quartz"
 import { headings as section122 } from "./headings/122"
 import { headings as section232Autos } from "./headings/232-autos"
 import { headings as section232Metals } from "./headings/232-metals"
+import { headings as section232Metals2025 } from "./headings/232-metals-2025"
+import { headings as ieepa2026 } from "./headings/ieepa-2026"
+import { headings as ieepaIndia } from "./headings/ieepa-india"
+import { headings as section301Nicaragua } from "./headings/301-nicaragua"
 import { headings as section232Mhdv } from "./headings/232-mhdv"
 import { headings as section232Pharmaceuticals } from "./headings/232-pharmaceuticals"
 import { headings as section232Uas } from "./headings/232-uas"
@@ -27,6 +31,8 @@ import { canada338BanLists } from "./lists/canada-338-bans"
 import { china301Lists } from "./lists/china-301"
 import { forcedLaborLists } from "./lists/forced-labor-301"
 import { metalsLists } from "./lists/metals"
+import { metals2025Lists } from "./lists/metals-2025"
+import { ieepa2026Lists } from "./lists/ieepa-2026"
 import { pharmaceuticalLists } from "./lists/pharmaceuticals"
 import { quartzLists } from "./lists/quartz"
 import { uasLists } from "./lists/uas"
@@ -34,10 +40,15 @@ import { vehiclePartsLists } from "./lists/vehicle-parts"
 import { preferences } from "./preferences"
 import { programs } from "./programs"
 import { prohibitions } from "./prohibitions"
+import { withBasicText } from "./headings/2026-basic-text"
 
-const tariffs = [
+// withBasicText: the 2026HTSBasic text of headings Proclamation 11002 changed on Jan 15, 2026
+const tariffs = withBasicText([
   ...section122,
   ...section232Metals,
+  ...section232Metals2025,
+  ...ieepa2026,
+  ...ieepaIndia,
   ...section232Autos,
   ...section232Wood,
   ...section232Mhdv,
@@ -46,19 +57,20 @@ const tariffs = [
   ...section232Uas,
   ...section301China,
   ...section301Brazil,
+  ...section301Nicaragua,
   ...section301ForcedLabor,
   ...section201Quartz,
   ...section338Canada,
   ...quotas,
   ...deals,
-]
+])
 
 // Every rule record across all dates. The engine resolves it to a single date with getRulesAsOf().
 export const AllRules: RuleSet = {
   programs,
   tariffs,
   prohibitions,
-  lists: [...(generatedLists as CodeList[]), ...china301Lists, ...aircraftLists, ...metalsLists, ...brazilLists, ...forcedLaborLists, ...pharmaceuticalLists, ...quartzLists, ...canada338Lists, ...canada338BanLists, ...uasLists, ...vehiclePartsLists],
+  lists: [...(generatedLists as CodeList[]), ...china301Lists, ...aircraftLists, ...metalsLists, ...metals2025Lists, ...ieepa2026Lists, ...brazilLists, ...forcedLaborLists, ...pharmaceuticalLists, ...quartzLists, ...canada338Lists, ...canada338BanLists, ...uasLists, ...vehiclePartsLists],
   interactions,
   columnAssignments,
   preferences,

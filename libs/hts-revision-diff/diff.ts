@@ -283,3 +283,14 @@ export const diffCodes = (fromRows: HtsRow[], toRows: HtsRow[]): CodeDiff[] => {
     d.after ? (toOrder.get(d.key) ?? 0) : (fromOrder.get(d.key) ?? 0) - 0.5
   return diffs.sort((a, b) => orderOf(a) - orderOf(b))
 }
+
+// Diffs only the headings that appear in both sets of rows, with the rows under
+// them. For trimmed heading pages: a heading on one side only usually means
+// its page wasn't included, not that it was added or removed.
+export const diffSharedCodes = (fromRows: HtsRow[], toRows: HtsRow[]): CodeDiff[] => {
+  const codesOf = (rows: HtsRow[]) => new Set(rows.filter((r) => r.htsno).map((r) => r.htsno))
+  const fromCodes = codesOf(fromRows)
+  const shared = new Set(Array.from(codesOf(toRows)).filter((code) => fromCodes.has(code)))
+  const keep = (r: HtsRow) => shared.has(r.htsno || r.parentHtsno || "")
+  return diffCodes(fromRows.filter(keep), toRows.filter(keep))
+}

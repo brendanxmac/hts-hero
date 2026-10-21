@@ -1,6 +1,7 @@
 "use client";
 
 // One question in the adjustments panel: a checkbox for yes/no, otherwise a number or date field
+import React from "react";
 import * as ui from "@/components/ui/styles";
 import { DutyLine, Question } from "@/tariffs/engine-v2/types";
 import { CheckRow } from "./CheckRow";
@@ -12,6 +13,11 @@ export const QuestionControl = ({
   heading,
   onChange,
   notesFor,
+  stable,
+  note,
+  muted,
+  qualifyLink,
+  hideLegal,
 }: {
   question: Question;
   value: unknown;
@@ -19,6 +25,11 @@ export const QuestionControl = ({
   heading?: DutyLine;
   onChange: (value: unknown) => void;
   notesFor?: { asOf: string; htsCode: string };
+  stable?: boolean;
+  note?: React.ReactNode;
+  muted?: boolean;
+  qualifyLink?: React.ReactNode;
+  hideLegal?: boolean;
 }) => {
   const { input } = question;
   const code = heading?.code;
@@ -35,6 +46,11 @@ export const QuestionControl = ({
         help={input.help}
         citations={input.citations}
         notesFor={notesFor}
+        stable={stable}
+        note={note}
+        muted={muted}
+        qualifyLink={qualifyLink}
+        hideLegal={hideLegal}
       />
     );
   }

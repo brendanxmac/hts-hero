@@ -1,0 +1,1954 @@
+<html>
+<head>
+<title>Federal Register, Volume 91 Issue 189 (Thursday, October 1, 2026)</title>
+</head>
+<body><pre>
+[Federal Register Volume 91, Number 189 (Thursday, October 1, 2026)]
+[Notices]
+[Pages 62477-62495]
+From the Federal Register Online via the Government Publishing Office [<a href="http://www.gpo.gov">www.gpo.gov</a>]
+[FR Doc No: 2026-20160]
+
+
+-----------------------------------------------------------------------
+
+DEPARTMENT OF COMMERCE
+
+International Trade Administration
+
+
+Initiation of Antidumping and Countervailing Duty Administrative 
+Reviews
+
+AGENCY: Enforcement and Compliance, International Trade Administration, 
+Department of Commerce.
+SUMMARY: The U.S. Department of Commerce (Commerce) has received 
+requests to conduct administrative reviews of various antidumping duty 
+(AD) and countervailing duty (CVD) orders with August anniversary 
+dates. In accordance with Commerce's regulations, we are initiating 
+those administrative reviews.
+
+DATES: Applicable October 1, 2026.
+
+FOR FURTHER INFORMATION CONTACT: Brenda E. Brown, AD/CVD Operations, 
+Customs Liaison Unit, Enforcement and Compliance, International Trade 
+Administration, U.S. Department of Commerce, 1401 Constitution Avenue 
+NW, Washington, DC 20230; telephone: (202) 482-4735.
+
+SUPPLEMENTARY INFORMATION:
+
+Background
+
+    Commerce has received timely requests, in accordance with 19 CFR 
+351.213(b), for administrative reviews of various AD and CVD orders 
+with August anniversary dates. All deadlines for the submission of 
+various types of information, certifications, comments, or actions by 
+Commerce discussed below refer to the number of calendar days from the 
+applicable starting time.
+
+Respondent Selection
+
+    In the event that Commerce limits the number of respondents for 
+individual examination for administrative reviews initiated pursuant to 
+requests made for the orders identified below, Commerce intends to 
+select respondents based either on U.S. Customs and Border Protection 
+(CBP) data for U.S. imports during the period of review (POR) or 
+questionnaires in which we request the quantity and value (Q&V) of 
+sales, shipments, or exports during the POR. Where Commerce selects 
+respondents based on CBP data, we normally intend to place the CBP data 
+on the record within five days of publication of the initiation notice. 
+Where Commerce selects respondents based on Q&V data, Commerce intends 
+to place the Q&V questionnaire on the record of the review within five 
+days of publication of the initiation notice. In either case, we intend 
+to make our respondent selection decision within 35 days of the Federal 
+Register publication of the initiation notice. Comments regarding the 
+CBP data (and/or Q&V data (where applicable)) and respondent selection 
+should be submitted within seven days after the placement of the CBP 
+data/submission of the Q&V data on the record of the review. Parties 
+wishing to submit rebuttal comments should submit those comments within 
+five days after the deadline for the initial comments.
+    In the event that Commerce decides it is necessary to limit 
+individual examination of respondents and conduct respondent selection 
+under section 777A(c)(2) of the Tariff Act of 1930, as amended (the 
+Act), the following guidelines regarding collapsing of companies for 
+purposes of respondent selection will apply. In general, Commerce has 
+found that determinations concerning whether particular companies 
+should be ``collapsed'' (e.g., treated as a single entity for purposes 
+of calculating AD rates) require a substantial amount of detailed 
+information and analysis, which often require follow-up questions and 
+analysis. Accordingly, Commerce will not conduct collapsing analyses at 
+the respondent selection phase of the review and will not collapse 
+companies at the respondent selection phase unless there has been a 
+determination to collapse certain companies in a previous segment of 
+the AD proceeding (e.g., investigation, administrative review, new 
+shipper review, or changed circumstances review). For any company 
+subject to the review, if Commerce determined, or continued to treat, 
+that company as collapsed with others, Commerce will assume that such 
+companies continue to operate in the same manner and will collapse them 
+for respondent selection purposes. Otherwise, Commerce will not 
+collapse companies for purposes of respondent selection.
+    Parties are requested to: (a) identify which companies subject to 
+review previously were collapsed, and (b) provide a citation to the 
+proceeding in which they were collapsed. Further, if companies are 
+requested to complete the Q&V questionnaire for purposes of respondent 
+selection, in general, each company must report volume and value data 
+separately for itself. Parties should not include data for any other 
+party, even if they believe they should be treated as a single entity 
+with that other party. If a company was collapsed with another company 
+or companies in the most recently completed segment of the proceeding 
+where Commerce considered collapsing that entity, complete Q&V data for 
+that collapsed entity must be submitted.
+
+[[Page 62478]]
+
+Notice of No Sales
+
+    With respect to AD administrative reviews, we intend to rescind the 
+review where there are no suspended entries for a company or entity 
+under review and/or where there are no suspended entries under the 
+company-specific case number for that company or entity. Where there 
+may be suspended entries, if a producer or exporter named in this 
+notice of initiation had no exports, sales, or entries during the POR, 
+it may notify Commerce of this fact within 30 days of publication of 
+this initiation notice in the Federal Register for Commerce to consider 
+how to treat suspended entries under that producer's or exporter's 
+company-specific case number.
+
+Deadline for Withdrawal of Request for Administrative Review
+
+    Pursuant to 19 CFR 351.213(d)(1), a party that has requested a 
+review may withdraw that request within 90 days of the date of 
+publication of the notice of initiation of the requested review. The 
+regulation provides that Commerce may extend this time if it is 
+reasonable to do so. Determinations by Commerce to extend the 90-day 
+deadline will be made on a case-by-case basis.
+
+Deadline for Particular Market Situation Allegation
+
+    Section 504 of the Trade Preferences Extension Act of 2015 amended 
+the Act by adding the concept of a particular market situation (PMS) 
+for purposes of constructed value under section 773(e) of the Act.\1\ 
+Section 773(e) of the Act states that ``if a particular market 
+situation exists such that the cost of materials and fabrication or 
+other processing of any kind does not accurately reflect the cost of 
+production in the ordinary course of trade, the administering authority 
+may use another calculation methodology under this subtitle or any 
+other calculation methodology.'' When an interested party submits a PMS 
+allegation pursuant to section 773(e) of the Act, Commerce will respond 
+to such a submission consistent with 19 CFR 351.301(c)(2)(v). If 
+Commerce finds that a PMS exists under section 773(e) of the Act, then 
+it will modify its dumping calculations appropriately.
+---------------------------------------------------------------------------
+
+    \1\ See Trade Preferences Extension Act of 2015, Public Law 114-
+27, 129 Stat. 362 (2015).
+---------------------------------------------------------------------------
+
+    Neither section 773(e) of the Act nor 19 CFR 351.301(c)(2)(v) set a 
+deadline for the submission of PMS allegations and supporting factual 
+information. However, in order to administer section 773(e) of the Act, 
+Commerce must receive PMS allegations and supporting factual 
+information with enough time to consider the submission. Thus, should 
+an interested party wish to submit a PMS allegation and supporting new 
+factual information pursuant to section 773(e) of the Act, it must do 
+so no later than 20 days after submission of initial responses to 
+section D of the questionnaire.
+
+Separate Rates
+
+    In proceedings involving non-market economy (NME) countries, 
+Commerce begins with a rebuttable presumption that all companies within 
+the country are subject to government control and, thus, should be 
+assigned a single AD deposit rate. It is Commerce's policy to assign 
+all exporters of merchandise subject to an administrative review in an 
+NME country this single rate unless an exporter can demonstrate that it 
+is sufficiently independent so as to be entitled to a separate rate.
+    To establish whether a firm is sufficiently independent from 
+government control of its export activities to be entitled to a 
+separate rate, Commerce analyzes each entity exporting the subject 
+merchandise. In accordance with the separate rates criteria, Commerce 
+assigns separate rates to companies in NME cases only if respondents 
+can demonstrate the absence of both de jure and de facto government 
+control over export activities.
+    All firms listed below that wish to qualify for separate rate 
+status in the administrative reviews involving NME countries must 
+complete, as appropriate, either a Separate Rate Application or 
+Certification, as described below. In addition, all firms that wish to 
+qualify for separate rate status in the administrative reviews of AD 
+orders in which a Q&V questionnaire is issued must complete, as 
+appropriate, either a Separate Rate Application or Certification, and 
+respond to the Q&V questionnaire.
+    For these administrative reviews, in order to demonstrate separate 
+rate eligibility, Commerce requires entities for whom a review was 
+requested, that were assigned a separate rate in the most recent 
+segment of this proceeding in which they participated, to certify that 
+they continue to meet the criteria for obtaining a separate rate. The 
+Separate Rate Certification form will be available on Commerce's 
+website at <a href="https://www.trade.gov/non-market-economy-separate-rate-applications-and-certifications">https://www.trade.gov/non-market-economy-separate-rate-applications-and-certifications</a> on the date of publication of this 
+Federal Register notice. In responding to the certification, please 
+follow the ``Instructions for Filing the Certification'' in the 
+Separate Rate Certification. Separate Rate Certifications are due to 
+Commerce no later than 14 calendar days after publication of this 
+Federal Register notice. In addition to filing a Separate Rate 
+Certification with Commerce no later than 14 calendar days after 
+publication of this Federal Register notice. The deadline and 
+requirement for submitting a Separate Rate Certification applies 
+equally to NME-owned firms, wholly foreign-owned firms, and foreign 
+sellers who purchase and export subject merchandise to the United 
+States.
+    Entities that currently do not have a separate rate from a 
+completed segment of the proceeding \2\ should timely file a Separate 
+Rate Application to demonstrate eligibility for a separate rate in this 
+proceeding. In addition, companies that received a separate rate in a 
+completed segment of the proceeding that have subsequently made 
+changes, including, but not limited to, changes to corporate structure, 
+acquisitions of new companies or facilities, or changes to their 
+official company name,\3\ should timely file a Separate Rate 
+Application to demonstrate eligibility for a separate rate in this 
+proceeding. The Separate Rate Application will be available on 
+Commerce's website at <a href="https://www.trade.gov/non-market-economy-separate-rate-applications-and-certifications">https://www.trade.gov/non-market-economy-separate-rate-applications-and-certifications</a> on the date of 
+publication of this Federal Register notice. In responding to the 
+Separate Rate Application, refer to the instructions contained in the 
+application. Separate Rate Applications are due to Commerce no later 
+than 14 calendar days after publication of this Federal Register 
+notice. The deadline and requirement for submitting a Separate Rate 
+Application applies equally to NME-owned firms, wholly foreign-owned 
+firms, and foreign sellers that purchase and export subject merchandise 
+to the United States.
+---------------------------------------------------------------------------
+
+    \2\ Such entities include entities that have not participated in 
+the proceeding, entities that were preliminarily granted a separate 
+rate in any currently incomplete segment of the proceeding (e.g., an 
+ongoing administrative review, new shipper review, etc.) and 
+entities that lost their separate rate in the most recently 
+completed segment of the proceeding in which they participated.
+    \3\ Only changes to the official company name, rather than trade 
+names, need to be addressed via a Separate Rate Application. 
+Information regarding new trade names may be submitted via a 
+Separate Rate Certification.
+---------------------------------------------------------------------------
+
+    Exporters and producers must file a timely Separate Rate 
+Application or Certification if they want to be considered for 
+individual examination.
+
+[[Page 62479]]
+
+Furthermore, exporters and producers who submit a Separate Rate 
+Application or Certification and subsequently are selected as mandatory 
+respondents will no longer be eligible for separate rate status unless 
+they respond to all parts of the questionnaire as mandatory 
+respondents.
+
+Certification Eligibility
+
+    Commerce may establish a certification process for companies whose 
+exports to the United States could contain both subject and non-subject 
+merchandise. Companies under review that were deemed to not be eligible 
+to participate in the certification program of that proceeding may 
+submit a Certification Eligibility Application to establish that they 
+maintain the necessary systems to track their sales to the United 
+States of subject and non-subject goods.
+    All firms listed below that are not currently eligible to certify 
+but wish to establish certification eligibility are required to submit 
+a Certification Eligibility Application. The Certification Eligibility 
+Application will be available on Commerce's website at <a href="https://www.trade.gov/sites/default/files/2026-02/Certification-Eligibility-Application.pdf?v=1777492320626">https://www.trade.gov/sites/default/files/2026-02/Certification-Eligibility-Application.pdf?v=1777492320626</a>. Certification Eligibility Applications 
+must be filed according to Commerce's regulations and are due to 
+Commerce no later than 30 calendar days after the publication of the 
+Federal Register notice.
+    Exporters and producers that are not currently eligible to certify, 
+who submit a Certification Eligibility Application, and are 
+subsequently selected as mandatory respondents must respond to all 
+parts of the questionnaire as mandatory respondents for Commerce to 
+consider their Certification Eligibility Application.
+
+Initiation of Reviews
+
+    In accordance with 19 CFR 351.221(c)(1)(i), we are initiating 
+administrative reviews of the following AD and CVD orders and findings. 
+We intend to issue the final results of these reviews not later than 
+August 31, 2027.
+
+------------------------------------------------------------------------
+                                                  Period to be reviewed
+------------------------------------------------------------------------
+                 AD Proceedings
+ 
+CANADA: Utility Scale Wind Towers, A-122-867...           8/1/25-7/31/26
+    CS Wind Canada Inc.
+    Marmen Inc.
+    Marmen [Eacute]nergie Inc.
+    Marmen Energy Co.
+INDIA: Certain High Chrome Cast Iron Grinding            12/6/25-5/31/26
+ Media, A-533-930 \4\..........................
+    AIA Engineering Limited
+    AIA Engineering Ltd.
+    Vega Industries
+    Vega Industries (Middle East) F.Z.E.
+    Vega Industries Ltd., USA
+    Welcast Steel Limited
+    Welcast Steels Ltd.
+INDIA: Finished Carbon Steel Flanges, A-533-871           8/1/25-7/31/26
+    Adinath International
+    Aditya Forge Limited
+    Allena Group
+    Alloyed Steel
+    Balkrishna Steel Forge Pvt. Ltd.
+    Bansidhar Chiranjilal
+    Bebitz Flanges Works Private Limited
+    BFN Forgings Private Limited
+    Brai Technoforge Pvt.Ltd.
+    C. D. Industries
+    Cetus Engineering Private Limited
+    CHW Forge
+    CHW Forge Pvt. Ltd.
+    Citizen Metal Depot
+    Corum Flange
+    DN Forge Industries
+    Echjay Forgings Limited
+    Echjay Industries Pvt. Ltd.
+    Falcon Valves and Flanges Private Limited
+    Heubach International
+    Hindon Forge Pvt. Ltd.
+    Jai Auto Pvt. Ltd.
+    Jiten Steel Industries
+    Kinnari Steel Corporation
+    Koram Inc.
+    Laframboise Group Ltd.
+    M F Rings and Bearing Races Ltd.
+    Mascot Metal Manufactures
+    Munish Forge Limited
+    Munish Forge Private Limited
+    Norma (India) Limited
+    OM Exports
+    Pantech Stainless & Alloy Industries Sdn
+     Bhd
+    Pantech Steel Industries Sdn Bhd
+    Pradeep Metals Limited
+    Punjab Steel Works (PSW)
+    R. D. Forge Private Limited
+
+[[Page 62480]]
+
+ 
+    R. N. Gupta & Company Limited
+    Raaj Sagar Steel
+    Ravi Ratan Metal Industries
+    Renin Piping Products
+    Rolex Fittings India Pvt. Ltd.
+    Rollwell Forge Engineering Components And
+     Flanges
+    Rollwell Forge Pvt. Ltd.
+    SHM (ShinHeung Machinery)
+    Siddhagiri Metal & Tubes
+    Sizer India
+    Steel Shape India
+    Sudhir Forgings Pvt. Ltd.
+    Technotrak Engineers
+    Tirupati Forge
+    Uma Shanker Khandelwal & Co.
+    Umashanker Khandelwal Forging Limited
+    USK Exports Private Limited
+INDONESIA: Utility Scale Wind Towers, A-560-833           8/1/25-7/31/26
+    GE Indonesia
+    GE Renewable Energy
+    General Electric Indonesia
+    Korindo Wind
+    Nordex SE
+    PT. Kenertec Power System
+    PT. Siemens Gamesa Renewable Energy
+JAPAN: Tin Mill Products, A-588-854............           8/1/25-7/31/26
+    JFE Shoji Trade Corporation
+    JFE Steel Corporation
+    Kanematsu Corporation
+    Marubeni-Itochu Steel, Inc.
+    Mitusi and Co., Steel Ltd.
+    Mitsubishi Electric Trading Co.
+    Nichias Corporation
+    Nippon Steel Corporation
+    Nippon Steel Trading Corporation
+    NK Plus Tec Co. Ltd.
+    NOK Corporation
+    Sumitomo Corporation Global Metals
+    Toyo Kohan Co.
+MALAYSIA: Polyethylene Retail Carrier Bags, A-            8/1/25-7/31/26
+ 557-813.......................................
+    Euro SME Sdn Bhd; Euro Nature Green Sdn.
+     Bhd.
+MALAYSIA: Silicon Metal, A-557-820.............           8/1/25-7/31/26
+    PMB Silicon Sdn. Bhd.
+MEXICO: Light-Walled Rectangular Pipe and Tube,           8/1/25-7/31/26
+ A-201-836.....................................
+    Aceros Cuatro Caminos S.A. de C.V.;
+     Productos Laminados de Monterrey S.A. de
+     C.V.
+    Acro Metal S.A. de C.V.
+    Fabricaciones y Servicios de Mexico
+    Galvak, S.A. de C.V.
+    Grupo Estructuras y Perfiles
+    Industrias Monterrey S.A. de C.V.
+    Internacional de Aceros, S.A. de C.V.
+    Maquilacero S.A. de C.V.; Tecnicas de
+     Fluidos S.A. de C.V.
+    Nacional de Acero S.A. de C.V.
+    PEASA-Productos Especializados de Acero
+    Perfiles LM, S.A. de C.V.
+    Regiomontana de Perfiles y Tubos S. de R.L.
+     de C.V.\5\
+    Talleres Acero Rey S.A. de C.V.
+    Ternium Mexico S.A. de C.V.
+    Tuberia Laguna, S.A. de C.V.
+    Tuberias Aspe S.A. de C.V.
+    Tuberias y Derivados S.A. de C.V.
+REPUBLIC OF KOREA: Large Power Transformers, A-           8/1/25-7/31/26
+ 580-867.......................................
+    HD Hyundai Electric Co., Ltd.
+    Hyosung Heavy Industries Corporation
+    Iljin Electric Co., Ltd.
+    LS Electric Co., Ltd.
+REPUBLIC OF KOREA: Low Melt Polyester Staple              8/1/25-7/31/26
+ Fiber, A-580-895..............................
+    Toray Advanced Materials Korea, Inc.
+REPUBLIC OF KOREA: Utility Scale Wind Towers, A-          8/1/25-7/31/26
+ 580-902.......................................
+    CS Wind Corporation
+    Dongkuk S&C Co., Ltd.
+    Enercon Korea Inc.
+    Hyosung Heavy Industries
+    Nordex SE
+
+[[Page 62481]]
+
+ 
+    Siemens Gamesa Renewable Energy
+    Unison Co., Ltd
+    Vestas Korea Wind Technology Ltd.
+    Win&P., Ltd.
+REPUBLIC OF T[Uuml]RKIYE: Certain Brake Drums,           1/29/25-7/31/26
+ A-489-853.....................................
+    Akis Asansor Makina Motor Dokum San
+    Akisoglu Dokum San.Ltd.Sti.
+    Akkus Dokum San.Ve Tic.Ltd.Sti
+    Altun Otomotiv
+    Anka Imex Ithalat Ihracat Oto San
+    Arikan Dis Ticaret Ltd. Sirketi
+    Buyuk Eker Bijon Sanayi Ve Ticaret
+    Cansa Dis Ticaret Limited Sirketi
+    Ekd[ouml]ksan D[ouml]k[uuml]m Metal
+     Otomotiv San Tic Ltd [Scedil]ti
+    Eker Bijon Sanayi Ve Tic. A.S
+    EKU Fren Kampana Sanayi ve Ticaret Ltd.
+     [Scedil]ti
+    EKU Fren ve Dok. San. A.S
+    Genk Otomotiv San. Dis Tic. Ltd. Sti
+    Global Dynamic Otomotiv Sanayi Dis
+    Insel Endustriyel Urunleri Sanayi
+    Kilinc Global Otomotiv San.ve Tic
+     A.[Scedil]
+    Luk Dis Ticaret M Messillik A.S
+    Mira Tasima Hizmetleri Ins.San.Ve
+    Mitlog Lojistik Denizcilik Ve Nakli
+    Motor Is Ticari Arac Fren Sistemler
+    Safak Dokum Makina Parca Sanayi Ve
+    Safak Kahraman Ithalat Ihracat
+    Vector Otomotiv A.S.
+SOCIALIST REPUBLIC OF VIETNAM: Certain Paper              7/1/25-6/30/26
+ Shopping Bags,\6\ A-552-836...................
+    International Packaging Limited Company
+SOCIALIST REPUBLIC OF VIETNAM: Frozen Fish                8/1/25-7/31/26
+ Fillets, A-552-801............................
+    An Chau Co., Ltd
+    An Giang Agriculture and Food Import-Export
+     Joint Stock Company (also known as Afiex
+     or An Giang Agriculture and Foods Import-
+     Export Joint Stock Company)
+    An Giang Fisheries Import and Export Joint
+     Stock Company (also known as Agifish,
+     AnGiang Fisheries Import and Export, An
+     Giang Fisheries Import & Export Joint
+     Stock Company)
+    An Hai Fishery Ltd. Co.
+    An My Fish Joint Stock Company (also known
+     as Anmyfish, Anmyfishco, or An My Fish
+     Joint Stock)
+    An Phat Import-Export Seafood Co., Ltd.
+     (aka An Phat Seafood Co. Ltd. or An Phat
+     Seafood Co., Ltd.)
+    An Phu Seafood Corp. (also known as
+     ASEAFOOD or An Phu Seafood Corp.)
+    Anchor Seafood Corp.
+    Anvifish Joint Stock Company (aka Anvifish,
+     Anvifish JSC, or Anvifish Co., Ltd.)
+    Asia Pangasius Company Limited (aka ASIA)
+    Asia Commerce Fisheries Joint Stock Company
+     (also known as Acomfish JCS or Acomfish)
+    Basa Joint Stock Company (aka BASACO)
+    Ben Tre Aquaproduct Import and Export Joint
+     Stock Company (aka Bentre Aquaproduct,
+     Bentre Aquaproduct Import & Export Joint
+     Stock Company or Aquatex Bentre)
+    Bentre Forestry and Aquaproduct Import
+     Export Joint Stock Company (aka Bentre
+     Forestry and Aquaproduct Import and Export
+     Joint Stock Company, Ben Tre Forestry and
+     Aquaproduct Import-Export Company or Ben
+     Tre Forestry Aquaproduct Import-Export
+     Company or Ben Tre Frozen Aquaproduct
+     Export Company or Faquimex)
+    Ben Tre Seafood Jsc.
+    Bien Dong Hau Giang Seafood Joint Stock
+     Company (aka Bien Dong HG or Bien Dong Hau
+     Giang Seafood Joint Stock Co.)
+    Bien Dong Seafood Company Ltd. (aka Bien
+     Dong, Bien Dong Seafood, Bien Dong Seafood
+     Co. Ltd., Biendong Seafood Co., Ltd., or
+     Bien Dong Seafood Limited Liability
+     Company)
+    Binh An Seafood Joint Stock Company (also
+     known as Binh An or Binh An Seafood Joint
+     Stock Co.)
+    Binh Dinh Import Export Company (aka Binh
+     Dinh or Binh Dinh Import Export Joint
+     Stock Company)
+    Cadovimex II Seafood Import-Export and
+     Processing Joint Stock Company (aka
+     Cadovimex II, Cadovimex II Seafood Import
+     Export and Processing Joint Stock Company,
+     or Cadovimex II Seafood Import-Export)
+    Cafatex Corporation (aka Cafatex)
+    Can Tho Animal Fishery Products Processing
+     Export Enterprise (aka Cafatex)
+    Cantho Import-Export Seafood Joint Stock
+     Company (aka CASEAMEX, Cantho Import
+     Export Seafood Joint Stock Company, Cantho
+     Import-Export Joint Stock Company, Can Tho
+     Import Export Seafood Joint Stock Company,
+     Can Tho Import-Export Seafood Joint Stock
+     Company, or Can Tho Import-Export Joint
+     Stock Company)
+    Cavina Seafood Joint Stock Company (also
+     known as Cavina Fish or Cavina Seafood
+     Jsc.)
+    Cds Overseas Vietnam Co., Ltd.
+    Co May Import Export Company Limited (aka
+     Co May Import-Export Co. Ltd. or Co May
+     Import Export Seafood Joint Stock Company
+     Limited)
+    Co May Imp. Exp. Co.
+    Colorado Boxed Beef Company (also known as
+     CBBC)
+    C.P. Vietnam Corporation
+    Coral Triangle Processors (dba Mowi Vietnam
+     Co., Limited (Dong Nai))
+    Cuu Long Fish Import-Export Corporation
+     (aka CL Panga Fish)
+
+[[Page 62482]]
+
+ 
+    Cuu Long Fish Joint Stock Company (aka CL-
+     Fish, CL-FISH CORP, or Cuu Long Fish Joint
+     Stock Company)
+    Cuu Long Seapro.
+    Da Nang Seaproducts Import-Export
+     Corporation (as known as SEADANANG or Da
+     Nang or Da Nang Seaproducts Import/Export
+     Corp.)
+    Dai Thanh Seafoods Company Limited (aka
+     DATHACO, Dai Thanh Seafoods or Dai Thanh
+     Seafoods Co., Ltd.)
+    Dai Tien Vinh Co., Ltd.
+    Dong A Seafood One Member Company Limited
+     (aka Dong A)
+    Dong Phuong Co., Ltd.
+    Dong Phuong Import Export Seafood Company
+     Limited (as known as Dong Phuong Export
+     Seafood Limited, Dong Phuong Seafood
+     Company Limited, or aFishDeal)
+    Dragonwaves Frozen Food Factory Co., Ltd.
+    East Sea Seafoods LLC or East Sea Seafoods
+     Limited Liability Company (aka ESS LLC,
+     ESS, ESS JVC, or East Sea Seafoods Joint
+     Venture Co., Ltd.)
+    Europe Joint Stock Company (aka Europe
+     Trading Co., Ltd. Or Europe JSC or EJS
+     CO.)
+    Fatifish Company Limited (aka FATIFISH or
+     FATIFISHCO)
+    GF Seafood Corp.
+    Gia Minh Co., Ltd.
+    Go Dang An Hiep One Member Limited Company
+    Go Dang Ben Tre One Member Limited
+     Liability Company
+    GODACO Seafood Joint Stock Company (aka
+     GODACO, GODACO Seafood, GODACO_SEAFOOD, or
+     GODACO Seafood J.S.C.)
+    Gold Future Imp. Exp./Gold Future Imp. Exp.
+     Development Co. Ltd.
+    Golden Quality Seafood Corporation (aka
+     Golden Quality, GoldenQuality, or
+     GoldenQuality Seafood Corporation)
+    Green Farms Seafood Joint Stock Company
+     (aka Green Farms, Green Farms Seafood JSC,
+     GreenFarm Sea-Foods Joint Stock Company,
+     GreenFarm SeaFoods Joint Stock Company, or
+     Green Farms Seafoods Joint Stock Company)
+    GreenFeed Vietnam Corporation
+    Gri-dynamics Trading Production Co.
+    Ha Noi Can Tho Seafood Jsc.
+    Hai Huong Seafood Joint Stock Company (aka
+     HHFish, HH Fish, or Hai Huong Seafood)
+    Hai Thuan Nam Co Ltd.
+    Hai Trieu Co., Ltd.
+    Hasa Seafood Corp. (Hasaco)
+    Hiep Thanh Seafood Joint Stock Company
+     (also known as Hiep Thanh or Hiep Thanh
+     Seafood Joint Stock Co.)
+    Hoa Phat Seafood Import-Export and
+     Processing J.S.C. (aka HOPAFISH, Hoa Phat
+     Seafood Import-Export and Processing Joint
+     Stock Company, Hoa Phat Seafood Import-
+     Export and Processing JSC)
+    Hoang Long Seafood Processing Company
+     Limited (aka HLS, Hoang Long, Hoang Long
+     Seafood, HoangLong Seafood, or Hoang Long
+     Seafood Processing Co., Ltd.)
+    Hong Ngoc Seafood Co., Ltd.
+    Hungca Co., Ltd.
+    HungCa 6 Corporation (aka HungCa 6)
+    Hung Phuc Thinh Food Jsc.
+    Hung Phuc Thinh Food Joint Stock
+    Hung Vuong Ben Tre Seafood Processing
+     Company Limited (aka Ben Tre, HVBT, or
+     HVBT Seafood Processing)
+    Hung Vuong Corporation (aka HVC or HV
+     Corp.)
+    Hung Vuong Joint Stock Company
+    Hung Vuong Seafood Joint Stock Company
+    Hung Vuong Mascato Company Limited
+    Hung Vuong-Mien Tay Aquaculture Corporation
+     (aka HVMT or Hung Vuong Mien Tay
+     Aquaculture Joint Stock Company)
+    Hung Vuong-Sa Dec Co., Ltd. (aka Hung Vuong
+     Sa Dec Company Limited)
+    Hung Vuong-Vinh Long Co. Ltd. (aka Hung
+     Vuong Vinh Long Company Limited)
+    Indian Ocean One Member Company Limited
+     (aka Indian Ocean Co., Ltd.
+    International Development & Investment
+     Corporation (aka IDI, International
+     Development and Investment Corporation,
+     I.D.I International Development and
+     Investment Corporation or IDI
+     International Development & Investment
+     Corporation)
+    Lian Heng Investment Co., Ltd. (aka Lian
+     Heng or Lian Heng Investment)
+    Lian Heng Trading Co., Ltd. (aka Lian Heng
+     or Lian Heng Trading)
+    Loc Kim Chi Seafood Joint Stock Company
+     (also known as Loc Kim Chi)
+    Mekong Seafood Connection Co., Ltd.
+    Minh Phu Hau Giang Seafood Corp.
+    Minh Phu Seafood Corp.
+    Minh Qui Seafood Co. Ltd.
+    Minh Tam Seafoods Import Export Company
+     Limited (aka Minh Tam or Minh Tam
+     Seafoods)
+    Nam Viet Corporation (aka NAVICO)
+    Nam Phuong Seafood Co., Ltd. (aka Nam
+     Phuong, or NAFISHCO, Nam Phuong Seafood,
+     or Nam PhuongSeafood Company Ltd.)
+    New Food Import, Inc.
+    Ngoc Ha Co. Ltd. Food Processing and
+     Trading (also known as Ngoc Ha or Ngoc Ha
+     Co., Ltd. Foods Processing and Trading)
+    Ngoc Tri Seafood Joint Stock
+    Nguyen Tran Seafood Company (also known as
+     Nguyen Chan J-S Co)
+    Nha Trang Seafoods, Inc. (aka Nha Trang
+     Seafoods, Nha Trang Seafoods-F89, or Nha
+     Trang Seaproduct Company)
+
+[[Page 62483]]
+
+ 
+    NTACO Corporation (aka NTACO or NTACO
+     Corp.)
+    NTSF Seafoods Joint Stock Company (aka NTSF
+     or NTSF Seafoods)
+    Phu Thanh Co., Ltd.
+    Phu Thanh Hai Co., Ltd. (also known as PTH
+     Seafood)
+    Phuc Tam Loi Fisheries Imp.
+    PREFCO Distribution, LLC
+    Pufong Trading and Service Co.
+    QMC Foods, Inc
+    Qn Seafood Co., Ltd.
+    Quang Minh Seafood Company Limited (also
+     known as Quang Minh, Quang Minh Seafood
+     Co., Ltd., or Quang Minh Seafood Co.)
+    Quirch Foods, LLC.
+    QVD Dong Thap Food Co., Ltd. (aka Dong Thap
+     or QVD DT)
+    QVD Food Company Ltd. (aka QVD, QVD Food
+     Co., Ltd., or QVD Aquaculture)
+    Riptide Foods
+    SA KYFoods Corporation
+    Saigon- Mekong Fishery Co., Ltd. (also
+     known as SAMEFICO or Saigon Mekong Fishery
+     Co., Ltd.)
+    Sao Kim Import Export Seafood
+    Seafood Joint Stock Company No. 4 (aka
+     SEAPRIEXCO No. 4)
+    Seafood Joint Stock Company No. 4 Branch
+     Dongtam Fisheries Processing Company (aka
+     DOTASEAFOODCO or Seafood Joint Stock
+     Company No. 4--Branch Dong Tam Fisheries
+     Processing Company)
+    Seavina Joint Stock Company (aka Seavina)
+    Sobi Co., Ltd.
+    Song Bien Co., Ltd.
+    Southern Fishery Industries Company, Ltd.
+     (aka South Vina, South Vina Co., Ltd.,
+     Southern Fishery Industries Co., Ltd.,
+     Southern Fisheries Industries Company,
+     Ltd., or Southern Fisheries Industries
+     Company Limited)
+    Sunrise Corporation
+    Tam Le Food Co., Ltd.
+    T & T Logistics International Trans.
+    Taika Seafood Corporation
+    Tan Thanh Loi Frozen Food Co., Ltd.
+    Tasifish Import Export Joint Stock
+    TG Fishery Holdings Corporation (also known
+     as TG or Tg Fishery Holdings Corp.)
+    Thanh Binh Dong Thap One Member Company
+     Limited (aka Thanh Binh Dong Thap or Thanh
+     Binh Dong Thap Ltd.)
+    Thanh Dat Food Service and Trading
+    Thanh Hung Co., Ltd. (aka Thanh Hung Frozen
+     Seafood Processing Import Export Co., Ltd.
+     or Thanh Hung)
+    Thanh Phong Fisheries Corp.
+    Thien Ma Seafood Co., Ltd (aka THIMACO,
+     Thien Ma, Thien Ma Seafood Company, Ltd.,
+     or Thien Ma Seafoods Co., Ltd.)
+    The Great Fish Company, LLC
+    Thinh Hung Co., Ltd.
+    Thuan An Production Trading and Service
+     Co., Ltd. (aka TAFISHCO, Thuan An
+     Production Trading and Services Co., Ltd.,
+     or Thuan An Production Trading & Service
+     Co., Ltd.)
+    Thuan Hung Co., Ltd. (aka THUFICO)
+    Thuan Phuoc Seafoods and Trading
+     Corporation
+    To Chau Joint Stock Company (aka TOCHAU,
+     TOCHAU JSC, or TOCHAU Joint Stock Company)
+    Trang Thuy Seafood Co., Ltd.
+    Truong Phat Seafood Jsc.
+    Van Y Corp.
+    Van Duc Food Export Joint Stock Company
+     (aka Van Duc)
+    Van Duc Tien Giang Food Export Company (aka
+     VDTG)
+    Viet Hai Seafood Company Limited (aka Viet
+     Hai, Viet Hai Seafood Co., Ltd., Viet Hai
+     Seafood Co., Vietnam Fish-One Co., Ltd.,
+     or Fish One)
+    Viet Long Seafood Co., Ltd.
+    Viet Phat Aquatic Products Co., Ltd.
+    Viet Phu Foods and Fish Corporation (aka
+     Vietphu, Viet Phu, Viet Phu Food and Fish
+     Corporation, or Viet Phu Food & Fish
+     Corporation)
+    Viet Phu Foods & Fish Co., Ltd.
+    Viet Tiep Trading Services Limited
+    Vietnam Seaproducts Joint Stock Company
+     (aka Seaprodex or Vietnam Seafood
+     Corporation--Joint Stock Company)
+    Vif Seafood Factory
+    Vinh Hoan Corporation (aka Vinh Hoan, Vinh
+     Hoan Co., or Vinh Hoan Corp.)
+    Vinh Long Import-Export Company (aka Vinh
+     Long, Imex Cuu Long, Vinh Long Import/
+     Export Company)
+    Vinh Phuoc Food Company Limited (also known
+     as Vinh Phuoc or VP Food)
+    Vinh Quang Fisheries Corporation (aka Vinh
+     Quang, Vinh Quang Fisheries Corp., Vinh
+     Quang Fisheries Joint Stock Company, or
+     Vinh Quang Fisheries Co., Ltd.)
+SOCIALIST REPUBLIC OF VIETNAM: Seamless Refined           8/1/25-7/31/26
+ Copper Pipe and Tube, A-552-831...............
+    Hailing (Vietnam) Copper Manufacturing
+     Company Ltd.
+    Jintian Copper Industrial (Vietnam) Company
+     Ltd.
+    LS Metal Vina Limited Liability Company
+    Toan Phat Copper Tube Joint Stock Company
+SOCIALIST REPUBLIC OF VIETNAM: Utility Scale              8/1/25-7/31/26
+ Wind Towers, A-552-825........................
+
+[[Page 62484]]
+
+ 
+    CS Wind Corporation
+    CS Wind Vietnam Co., Ltd.
+    GE Renewable Energy
+    GE Wind Energy LLC
+    Nordex SE
+    Siemens Gamesa Renewable Energy
+    Southern Renewable and Green Energy Company
+     Limited
+    Vestas American Wind Technology, Inc.
+SPAIN: Finished Carbon Steel Flanges,\7\ A-469-           6/1/25-5/31/26
+ 815...........................................
+    ULMA Advanced Forged Solutions
+    ULMA Forja, S.Coop
+SPAIN: Ripe Olives, A-469-817..................           8/1/25-7/31/26
+    Aceitunera del Norte de C[aacute]ceres,
+     S.C.L.
+    Agro Sevilla Aceitunas, S.Coop.And.
+    Angel Camacho Alimentaci[oacute]n, S.L.
+SPAIN: Utility Scale Wind Towers, A-469-823....           8/1/25-7/31/26
+    Acciona Energia
+    Acciona Windpower S.A.
+    Industrial Barranquesa S.A.
+    Gamesa Energy Transmission S.A.
+    GE Renewable Energy
+    GRI Renewable Industries S.L.
+    Haizea Wind Group
+    Iberdrola, S.A.
+    Iberdrola Renovables Energia S.A.
+    Nordex SE
+    Nordex Energy Spain S.A.
+    Siemens Gamesa Renewable Energy Inc.
+    Vestas Eolica S.A.U.
+    Vestas Eolica, S.A.
+    Vestas Manufacturing Spain S.L.U.
+    Vestas Control Systems Spain S.L.U.
+    Windar Renovables, S.A.
+THAILAND: Steel Propane Cylinders, A-549-839...           8/1/25-7/31/26
+    Sahamitr Pressure Container Public Company
+     Limited
+THAILAND: Boltless Steel Shelving Units                   6/1/25-5/31/26
+ Prepackaged for Sale,\8\ A-549-846............
+    Wire Master Industries (Thailand) Co.
+    Wire Master Industry (Thailand) Co., Ltd.
+THE PEOPLE'S REPUBLIC OF CHINA: Certain Brake            1/29/25-7/31/26
+ Drums, A-570-174..............................
+    Anhui Changfeng Trading Co., Ltd
+    Anhui Haiguang Trading Co., Ltd
+    Anhui Volcano Vehicle Parts Co., Ltd
+    Caiec Trailer Master Co., Ltd.
+    Changyi Qiyang Mechanical
+    Chongqing Millennium
+    ConMet (Weifang) Mechanical Co., Ltd
+    Dalian Honfriend Auto Parts Co., Ltd
+    Deye International Limited
+    Dongguan Chenggen Import & Export Co., Ltd
+    FTA Test Area Welson Imp&Exp
+    Guangzhou Joyhand Import&Export Co
+    Hebei Ankesu Imp Exp Trade Co Ltd
+    Hebei Iruijin Auto Parts Co., Ltd
+    Hebei OE Auto Spare Parts Co., Ltd
+    Hebei Yingsheng Automabile Parts Co
+    Hefei Yisheng Trailer Machinery Co., Ltd
+    Henan Broad Top Metalwork LLC
+    Henan Valiant Braking System Co
+    Hubei Xinxing Quanli Machinery Co., Ltd
+    International Machinery And Equipment
+    Jiaxing Jman Mechanical Design Co.
+    Jiaxing Stone Wheel Co., Ltd
+    Jining Huida Construction Machinery
+    Kara CVS Inc.
+    Laizhou Haichen Machinery Co., Ltd
+    Laizhou Sanli Auto Replacement
+    Liaoning Hechuang CV Parts MFG Co
+    Liaoning Shengbang Chuanglian International
+     Trade Co., Ltd
+    Lizhouland Inc
+    Longkou Aoda Auto Parts Co., Ltd
+    Longkou Fuyang Mechanic Parts Co., Ltd
+    Longkou Haimeng Machinery Co., Ltd
+    Longkou Jiaodong Machine Parts Co.
+    Longyao County Yiheng Auto Parts Co., Ltd
+
+[[Page 62485]]
+
+ 
+    Longyao Gucheng Automobile Parts Factory
+    Mass Parts LLC
+    Ningbo Qingchen International Trade Co.,
+     Ltd
+    Ningbo Shimaotong International Co. Panasia
+     CVS (HK) Limited
+    Qingdao Binke Auto Parts Co.,Ltd.
+    Qingdao Jasmine International Trade Co.,
+     Ltd
+    Qingdao Jianfeng International Trade Co.,
+     Ltd
+    Qingdao Leeda Auto Parts Co., Limited
+    Qingdao Tordon Brake Co., Ltd
+    Qiqihar Beimo Auto Parts Manufacturing Co.,
+     Ltd
+    Raw King Brake Parts Co., Ltd
+    Rayloc Recest E-Commerce (Shanghai) Co.,
+     Ltd
+    Richland Global Sources, Inc
+    Shandong Best Machinery
+    Shandong ConMet Mechanical Co., Ltd
+    Shandong ConMet Mechanical Co., Ltd.
+    Shandong Haoxin Co., Ltd
+    Shandong Hongma Engineering Co., Ltd
+    Shandong Hongma Engineering Machinery Co.,
+     Ltd
+    Shandong Lingang Nonferrous Metals Co., Ltd
+    Shandong Longji Machinery Co., Ltd
+    Shandong North Autotech Co., Ltd
+    Shandong Taijiu Power Machinery Co.
+    Shandong Xinchang Environmental Science
+     Co., Ltd
+    Shanghai Aote E-Commerce Co., Ltd
+    Shanghai Waizongfu International Trading
+     Co., Ltd
+    Shanghai Winsun Auto Parts Co., Ltd
+    Shanxi Tang Rong Machinery Mfg Co.
+    Shenyang Honbase Machinery Co., Ltd
+    Shenzhen Jiali Trading Co., Ltd
+    Shijiazhuang Hua Nuo I/E Co., Ltd.
+    Suzhou Jianghexingyao International Trade
+     Co., Ltd
+    Suzhou Kaihongbo Technology Co., Ltd
+    Suzhou Qian Shunxiang International Trade
+     Co., Ltd
+    Tianjin Haresco International
+    Tianjin Textile Group Import And Export
+     Inc.
+    Trade Tianjin Heng Rong Wei Ye
+     International Trade Co., Ltd
+    Weifang Airui Brake Systems Co., Ltd
+    Weifang Changxin Machinery
+    Weifang Haoxin ConMet Mechanical
+    Xiamen Tinmy Industrial Co., Ltd
+    Xianghe Xumingyuan Auto Parts Company
+    Xianghe Zichen Auto Parts Co., Ltd.
+    Xingtai Xunchiyoute Auto Parts Co.
+    Yancheng Terbon Auto Parts Co.
+    Yantai Hongtian Autoparts Co., Ltd
+    Yantai March International Trade
+    Yantai Mefine Machine Group Co., Ltd
+    Yantai Newtek International Trading Co.,
+     Ltd
+    Yantai Winhere Auto-Part Manufacturing Co.,
+     Ltd
+    Zhejiang Firsd Group Co., Ltd.
+    Zhejiang New Sorl Auto Parts Co., Ltd
+    Zhengzhou Custom Eng. Parts Ltd
+    Zhengzhou Dinghong Machinery & Equipment
+     Co., Ltd
+    Zhumadian CIMC Huajun Casting Co., Ltd
+    Zhumadian Hengjiu Machinery
+    Zibo Jizhou Trading Co., Ltd
+THE PEOPLE'S REPUBLIC OF CHINA: Certain Low              11/1/24-7/31/26
+ Speed Personal Transportation Vehicles, A-570-
+ 176...........................................
+    Alwayz Electric Vehicle (Chuzhou) Co., Ltd.
+    Anhui Forerunner Electronic Technology Co.,
+     Ltd.
+    Anhui Hopper Industrial Vehicle Co., Ltd.
+    Anhui Huaxin Electric Technology Co., Ltd.
+    Anhui Shuncha Machinery Co., Ltd.
+    Anhui Technology Imp. & Exp. Co., Ltd.
+    Anhui Telee Vehicle Co., Ltd.
+    Anyang Hongmeng Machinery Co., Ltd.
+    Baike Vehicle Vietnam Co. Ltd.
+    Binzhou Road Conqueror Power Co., Ltd.
+    Changzhou Pengzhan Cross-Border E-Commerce
+     Co., Ltd.
+    Chengdu Rich Trading Imp. & Exp. Co., Ltd.
+    Chongqing Bronico Electronic & Technology
+     Co., Ltd.
+    Chongqing Onetouch Business Service Co.,
+     Ltd.
+    Chongqing Xuhu International Trade Co.,
+     Ltd.
+    Dachi Intelligent Automobile (Rizhao) Co.,
+     Ltd.
+
+[[Page 62486]]
+
+ 
+    Delei Industrial Development Co., Ltd.
+    Dezhou Dylante Vehicle Co., Ltd.
+    Dezhou Lebin Automobile Co., Ltd.
+    Dongguan ERS Machinery Co., Ltd.
+    Dongguan Excar Electric Vehicle Co., Ltd.
+    Dongguan Grand Dragon Sports Co., Ltd.
+    Dongguan Jiemao E-Commerce Co., Ltd.
+    Dongguan KWC Machinery Co., Ltd.
+    Dongguan Machinery Imp. & Exp. Co., Ltd.
+    Dongguan Maosheng New Energy Technology
+     Co., Ltd.
+    Dongguan Park Sports Goods Co., Ltd.
+    Dongguan Royal Machinery Co., Ltd.
+    Dongguan Ruida Machinery Co., Ltd.
+    Dongguanshi Panghonghong Ke Ji You Xian
+     Gong Si
+    Eda Tech Co. Ltd.
+    Edacar EV Co. Ltd.
+    Feiteng Electric Vehicle Co. Ltd.
+    Foshan Lisheng Electric Vehicle Co., Ltd.
+    Foshan Shunde Green Motor Technology Co.,
+     Ltd.
+    Greenman Electric Vehicles Co., Ltd.
+    Greenmotor Vehicle Co., Ltd.
+    Guangdong Dongguan Oriental Machinery Imp.
+     & Exp. Co., Ltd.
+    Guangdong Liwang New Energy Co., Ltd.
+    Guangdong Lvtong New Energy Electric
+     Vehicle Technology Co., Ltd.
+    Guangdong Marshell Electric Vehicle Co.,
+     Ltd.
+    Guangdong Yatian Industrial Co., Ltd.
+    Guangdong Yitong New Energy Technology Co.,
+     Ltd
+    Guangzhou BorCart Electric Vehicle Co., Ltd
+    Guangzhou Camqi Electric Vehicle Co., Ltd.
+    Guangzhou Fuyun Bags & Outdoors Co., Ltd.
+    Guangzhou Huiye E-Commerce Co., Ltd.
+    Guangzhou Oriental Founder Chemical Co.,
+     Ltd.
+    Guangzhou Rariro Vehicle Co., Ltd
+    Guangzhou Ruike Electric Vehicle Co., Ltd.
+    Guangzhou Sachs Bikes Technology Co., Ltd.
+    Guangzhou You 2 Trading Co., Ltd.
+    Guangzhou Zhanfeng Smart Card Co., Ltd.
+    Haike EV Co., Ltd.
+    Hainan Kandi Holding New Energy Technology
+     Co., Ltd.
+    Hainan Yuda Trading & Logistics Co., Ltd.
+    Hebei Machinery Imp. & Exp. Co., Ltd.
+    Hefei Huanxin Technology Development Co.,
+     Ltd.
+    Henan Camp Industrial Co., Ltd.
+    Henan Volga Energy Technology Co., Ltd.
+    Henan Wealth Machinery Co., Ltd.
+    Henan Zhongzhou Machinery Equipment Co.,
+     Ltd.
+    Hengyu Electric Vehicle Viet Nam Co., Ltd.
+    Holdhand Industrial Co., Ltd.
+    Huzhou Meiwen Imp. & Exp. Co., Ltd.
+    Jiangsu Baodiao Locomotive Co., Ltd.
+    Jiangsu Elegance Vehicle Co., Ltd.
+    Jiangsu Giant Electric Vehicle Co., Ltd.
+    Jiangsu Imagine Electric Co., Ltd.
+    Jiangsu Import Sports Medical Equipment
+     Co., Ltd.
+    Jiangsu Linhai Power Machinery Group Co.,
+     Ltd.
+    Jiangsu Maple New Energy Electric Vehicle
+     Co., Ltd.
+    Jiangsu Ruipaiying Imp. & Exp. Co., Ltd.
+    Jiangsu Trail-Blazer Manufacturing Co.,
+     Ltd.
+    Jiaozuo Newest Machinery Co., Ltd.
+    Jiaxing Learoad Special Vehicle Co., Ltd.
+    Jilu Henghua Technology Co., Ltd.
+    Jin Kung Industrial Shandong Corp.
+    Jinan Gongming Machine Equipment Co., Ltd.
+    Jinan Hongteng Machinery Equipment Co.,
+     Ltd.
+    Jinhua Dailymoving Medical Technology Co.,
+     Ltd.
+    Jinhua Fulong Vehicle Industry Co., Ltd.
+    Jinhua Huagang Athletic Equipment Co., Ltd.
+    Jinhua Jiaxin Automobile Co., Ltd.
+    Jinhua Sigma Industrial & Trading Co., Ltd.
+    Jinhua Suncart Vehicle Co., Ltd.
+    Jinshun Imp. & Exp. (Xuzhou) Co., Ltd.
+    JN EV Parts (Xiamen) Co., Ltd.
+    Kangdi Electric Vehicle (Hainan) Co., Ltd.
+    Keyang Electric Machinery Co., Ltd.
+
+[[Page 62487]]
+
+ 
+    Kinghike Vehicle Co., Ltd.
+    Leoch Battery PTE LTD
+    Letex Ltd.
+    Linhai International Co., Ltd.
+    Liuzhou Wuling Automobile Industry Co.,
+     Ltd.
+    Lomon Technology Ltd.
+    Longxiang Trading Co. Ltd.
+    Meiyuda International Trade (Ningbo) Co.,
+     Ltd.
+    Minland Energy Technology (Vietnam) Co.
+     Ltd.
+    Nanjing Skywork Intelligent Technology Co.,
+     Ltd.
+    Ningbo Joystar International Trade Co.,
+     Ltd.
+    Ningbo Qianjie Enterprise Operation
+     Management Co., Ltd.
+    Ningbo Rebon E-Commerce Co., Ltd.
+    Ningbo Renlong Imp. & Exp. Co., Ltd.
+    Ningbo Wentai Sports Equipment Co., Ltd.
+    Ningbo Wins Time Imp. & Exp. Ltd.
+    Ningbo Yuhong Imp. & Exp. Co., Ltd.
+    Ningbo Zeny Products E-Commerce Co., Ltd.
+    North Machinery (Shandong) Co., Ltd.
+    Polestar New Energy Vehicle Co., Ltd.
+    Qingdao Flying Eagle Rubber & Plastic Co.,
+     Ltd.
+    Qingdao Fullrun Tyre Co., Ltd.
+    Qingdao Hotsale International Trade Co.,
+     Ltd.
+    Qingdao Oriental Shimao Imp. & Exp. Co.,
+     Ltd.
+    Qingdao Pop Gain International Trading Co.,
+     Ltd.
+    Qingdao Raysince Industrial Co., Ltd.
+    Qingdao Wetruth New Energy Vehicle Co.,
+     Ltd.
+    Qingdao Xinjiang Vehicle Co., Ltd.
+    Qingdao Xinyongan Industrial Co., Ltd.
+    Rizhao Greaterman Fitness Inc.
+    Rizhao Rainfield Electronic Commerce Co.,
+     Ltd.
+    SAIC GM Dong Yue Motors Co., Ltd.
+    Saintyol Sports Co., Ltd.
+    Serfay International Co., Ltd.
+    Shaan Xi Succeed Trading Co., Ltd.
+    Shandong Beemotor New Energy Vehicle Co.,
+     Ltd.
+    Shandong Golf Trading Co., Ltd.
+    Shandong Gopo International Trading Co.,
+     Ltd.
+    Shandong Haike Automobile Sales Co., Ltd.
+    Shandong Hightop Group
+    Shandong Hiseas International Trade Co.,
+     Ltd.
+    Shandong Jinma Holding Co., Ltd.
+    Shandong Kerong International Co., Ltd.
+    Shandong Keyu Special Automobile
+     Manufacturing Co., Ltd.
+    Shandong Light Industrial Products Imp. &
+     Exp. Co., Ltd.
+    Shandong Machinery Imp. & Exp. Co., Ltd.
+    Shandong Mico Carts Co., Ltd.
+    Shandong Odes Imp. & Exp. Ltd.
+    Shandong Odes Industry Co., Ltd.
+    Shandong Qiaoke New Energy Auto Industry
+     Co., Ltd
+    Shandong San Ding Machinery Co., Ltd.
+    Shandong Senbo Machinery Co., Ltd.
+    Shandong Shengwo New Energy Vehicle Co.,
+     Ltd.
+    Shandong Shenzhou Machinery Co., Ltd.
+    Shandong Tianzong Food Truck Co., Ltd.
+    Shandong Yano Imp. & Exp. Co., Ltd.
+    Shandong Yongli New Energy Vehicle Industry
+     Co., Ltd.
+    Shanghai Dachi Auto Power Co., Ltd
+    Shanghai Guanshang International Co., Ltd.
+    Shanghai Helios New Energy Technology Co.,
+     Ltd.
+    Shanghai Jianghuai Environmental Equipment
+     Co., Ltd.
+    Shanghai Suoto Pump International Co., Ltd.
+    Shanghai Yixing Power Technology Co., Ltd.
+    Shangrao City Zihe Trade Co., Ltd.
+    Shanxi Century Metal Industries Inc.
+    Shanxi Industry Technology Trading Co.,
+     Ltd.
+    Shanxi Weiyida Electric Technology Co.,
+     Ltd.
+    Sharefer Smart Technology (Changzhou) Co.,
+     Ltd.
+    Shenzhen Aoxiang Industrial Development
+     Co., Ltd.
+    Shenzhen Chuangyin Co., Ltd.
+    Shenzhen Fudakin Technology Co., Ltd.
+    Shenzhen Fulin International Logistics Co.,
+     Ltd.
+    Shenzhen Guoshitie Trade Co., Ltd.
+    Shenzhen Topbeauty Technology Co., Ltd.
+
+[[Page 62488]]
+
+ 
+    Shenzhen Xinzeyou Trade Co., Ltd.
+    Shenzhen Zehui Technology Co., Ltd.
+    Sichuan Nuole Electric Technology Co., Ltd.
+    Smart Navigation Business Co., Ltd.
+    Suntop Tire (Wuxi) Co., Ltd.
+    Suzhou Alwayz Electric Vehicle
+     Manufacturing Co., Ltd.
+    Suzhou Eagle Electric Vehicle Manufacturing
+     Co., Ltd.
+    Suzhou Jinpeng Electromechanical Equipment
+     Co., Ltd.
+    Suzhou Lexsong Electromechanical Equipment
+     Co., Ltd.
+    Suzhou Ouloda Intelligent Technology Co.,
+     Ltd.
+    Suzhou Rainbow Intelligent Technology Co.,
+     Ltd.
+    Suzhou Sanyo Electro-Mechanical Co., Ltd.
+    Suzhou Waltz Intelligent Technology Co.,
+     Ltd.
+    Suzhou Wintao Intelligent Technology Co.,
+     Ltd.
+    T & D Industrial Co., Ltd.
+    Taian Xingchuang Trading Co., Ltd.
+    Taishan City Anyi Technology Co., Ltd.
+    Taiwan Golden Bee Co., Ltd.
+    Taiwan Max E-Bike Co. Ltd.
+    Taizhou Nebula Power Co., Ltd.
+    Taizhou Qianxin Vehicle Co., Ltd.
+    Taizhou Yoki Carts Co., Ltd.
+    Tianjin Bedier Imp. & Exp. Co., Ltd.
+    Tianjin Zhongyi Electric Vehicle Co., Ltd.
+    Timeco (Shanghai) Industrial Co., Ltd.
+    Top Goal Enterprise Ltd.
+    Top Goal International Group Ltd.
+    Top Golf Co., Ltd.
+    Toptom International Co., Ltd.
+    Weihai Baixian Trading Co., Ltd.
+    Welift Machinery (Changzhou) Co., Ltd.
+    Winbo Dongjian Automotive Technology Co.,
+     Ltd.
+    Windus International Inc.
+    Wuhan Winway Enterprise Co., Ltd.
+    Wuhu Volibear New Energy Co., Ltd.
+    Wuxi Fine Century Trading Co., Ltd.
+    Wuxi Pegasus Technology Co., Ltd.
+    Wuxi Yaxi Electric Vehicle Sales Co., Ltd.
+    Xiamen Dalle New Energy Automobile Co., Ltd
+    Xiamen Delle Technology Co. Ltd.
+    Xiamen Sunshine Marine Co., Ltd.
+    Xingtel Xiamen Electronics Co., Ltd.
+    Xuchang Fengyida Machinery Co., Ltd.
+    Xuzhou Feito Imp. & Exp. Co., Ltd.
+    Xuzhou Thunder EV Smart Technology Co.,
+     Ltd.
+    Yangzhou Whanlong Electric Vehicle Co.,
+     Ltd.
+    Yiwu Maideng Outdoor Products Co., Ltd.
+    Yongkang Beiqin Industry and Trade Co.,
+     Ltd.
+    Yongkang Hangyu Vehicle Co., Ltd.
+    Yongkang Huitian Industrial and Trading
+     Co., Ltd.
+    Yongkang Jinghang Sightseeing Vehicle Co.,
+     Ltd.
+    Yunsum Industry Inc.
+    Zhejiang Aoli Motor Co., Ltd.
+    Zhejiang Applestone Vehicle Co., Ltd.
+    Zhejiang CFMOTO Power Co., Ltd.
+    Zhejiang Greenpee Imp. & Exp. Co., Ltd.
+    Zhejiang Kandi Smart Battery Swap
+     Technology Co. Ltd.
+    Zhejiang Kandi Technologies Group Co. Ltd.
+    Zhejiang Kuangdi Industry & Trade Co., Ltd.
+    Zhejiang Taotao Vehicles Co., Ltd.
+    Zhengzhou Well-Known Instrument Equipment
+     Co., Ltd.
+    Zhian Supply Chain Co., Ltd.
+    Zhibang International Freight Forwarding
+     Co., Ltd.
+    Zhongshan Etech Electric Vehicle Co., Ltd.
+    Zhuhai ZKHY New Energy Electric Vehicle
+     Co., Ltd.
+THE PEOPLE'S REPUBLIC OF CHINA: Certain Metal             8/1/25-7/31/26
+ Lockers and Parts Thereof, A-570-133..........
+    Da Wu Supply Chain Management Co., Ltd.
+    Fourever International Ltd.
+    Hangzhou Evernew Machinery & Equipment
+     Company, Ltd.
+    Hangzhou Yide Supply Chain Management Co.,
+     Ltd.
+    Kunshan Dongchu Precision Machinery Co.,
+     Ltd.
+    Ningbo Safewell Group Smart Security
+     Products Co., Ltd.
+    Ningbo Safewell Safes
+    Pinghu Chenda Storage Office Co., Ltd.
+
+[[Page 62489]]
+
+ 
+    Safewell Group Holdings, Ltd.
+    Shenzhen Mascot International
+    Sunmetals Products De Mexico Sa De Cv
+    Tianjin Jia Mei Metal Furniture Ltd.
+    Xingyi Metalworking Technology (Zhejiang)
+     Co., Ltd.
+    Xpedition LLC DBA Safewell Gr
+    Zhejiang Focus-On Import & Export Co., Ltd.
+    Zhejiang Safewell Security Technology Co.,
+     Ltd.
+    Zhejiang Xingyi Metal Products Co., Ltd.
+THE PEOPLE'S REPUBLIC OF CHINA: Certain                   8/1/25-7/31/26
+ Passenger Vehicle and Light Truck Tires, A-570-
+ 016...........................................
+    Actyon Tyre Resources Co., Limited
+    Briway Tire Co., Ltd.
+    Crown International Corporation
+    Dynamic Tire Corp.; Husky Tire Corp; ;
+     Sailun Group (Hong Kong) Co., Limited.;
+    Sailun Group Co., Ltd.; Sailun Tire
+     International Corp.; and Seatex
+     International Inc.
+    Fleming Limited
+    Guangrao Taihua International Trade Co.,
+     Ltd.
+    Haohua Orient International Trade Ltd.
+    Jilin Jixing Tire Co., Ltd.
+    Liaoning Permanent Tyre Co., Ltd.
+    Macho Tire Corporation Limited
+    Maxon Int'l Co., Limited
+    Prinx Chengshan (Shandong) Tire Co., Ltd.
+    Qingdao Crown Chemical Co., Ltd.
+    Qingdao Fullrun Tyre Corp., Ltd.
+    Qingdao Keter International Co., Limited
+    Qingdao Lakesea Tyre Co., Ltd.
+    Qingdao Landwinner Tyre Co., Ltd.
+    Qingdao Nama Industrial Co., Ltd.
+    Qingdao Nexen Tire Corporation
+    Qingzhou Detai International Trading Co.,
+     Ltd.
+    Riversun Industry Limited
+    Shandong Changfeng Tyres Co., Ltd.
+    Shandong Duratti Rubber Corporation Co.,
+     Ltd.
+    Shandong Guofeng Rubber Plastics Co., Ltd.
+    Shandong Qilun Rubber Co., Ltd
+    Shandong Yongtai Group Co., Ltd.
+    Shandong Yonking Rubber Co., Ltd.
+    Shengtai Group Co., Ltd.
+    Sumitomo Rubber Industries Ltd.; Sumitomo
+     Rubber (Hunan) Co., Ltd.; and Sumitomo
+    Rubber (Changshu) Co., Ltd.
+    Techking Tires Limited
+    Weihai Zhongwei Rubber Co., Ltd.
+    Windforce Tyre Co., Limited
+THE PEOPLE'S REPUBLIC OF CHINA: Certain Pea               8/1/25-7/31/26
+ Protein, A-570-154............................
+    Anhui Xiaoshan Hope Medical Devices
+    Bioway Industrial Group Ltd.
+    Bioway Organic Group Ltd.
+    Bioway (Xi'an) Organic Ingredients Co.,
+     Ltd.
+    Chuzhou Ligu Bio Science And Tech Co., Ltd.
+    Dongguan Fenggang Yuxing Food Factory
+    Fenchem Biotek Ltd.
+    Flyloong Biotechnology (Qingdao) Co., Ltd.
+    Focusherb LLC
+    Hainan Zhongxin Chemical Co., Ltd.
+    Hangzhou Natur Foods Co., Ltd.
+    Hengyuan Biotechnology Co., Ltd.
+    Ishaan Bio Limited
+    Jianyuan International Co., Ltd
+    Jinxiang Jinxiyuan Food Co., Ltd
+    Jinyuan Import & Export Co., Ltd.
+    Jiujiang Tiantai Food Co., Ltd.
+    KTL Pharmaceutical Co., Ltd.
+    Kubon (Cambodia) Biotechnology Co., Ltd.
+    Kunshan Jinfu Trading Co., Ltd.
+    LCH Mega Maju Industry
+    Linyi Yuwang Vegetable Protein Co., Ltd.
+    M/S Du-Hope International Group
+    Nanjing NHC Nutraceuticals Co., Ltd.
+    Naturz Organics (Dalian) Co., Ltd.
+    Ningbo Bachi Trading Co., Ltd
+    Nutracean Co., Ltd.
+    Nutritech Asia Group Qingdao, Ltd.
+    Nutrivita Forte Ltd.
+
+[[Page 62490]]
+
+ 
+    Qingdao Yingshen Industrial Co., Ltd.
+    Richtek Ltd.
+    Shandong Jianyuan Bioengineering
+    Shandong Sanjia Investment Holding Group
+     Co., Ltd.
+    Shandong Xiangsiyuan Trade Co., Ltd.
+    Shandong Yuwang Ecological Food Industry
+     Co., Ltd.
+    Shanghai Elim Organic Food Co., Ltd.
+    Shanghai Freeman Lifescience Co., Ltd.
+    Shanxi Coolflying Bio-Tech Co., Ltd.
+    Sugarbush Shenzhen Biotechnology Co., Ltd.
+    Wellgreen Technology Co., Ltd.
+    Wenzhou Tengce E-Commerce Co., Ltd
+    Xiamen Yotoyo Foods Co., Ltd.
+    Yantai Hongben Import Export Co., Ltd.
+    Yantai Oriental Protein Tech Co., Ltd.
+    Yantai Shuangta Food Co., Ltd.
+    Yantai T.Full Biotech Co., Ltd.
+    Yantai Wanpy International Trade Co.
+    Yantai Yiyuan Bioengineering Co., Ltd.
+    Yantai Zhongzhen Trading Co., Ltd.
+    Yosin Biotechnology (Yantai) Co., Ltd.
+    Yosin Import and Export (Yantai) Co., Ltd.
+    Zhaoyuan Junbang Trading Co., Ltd.
+THE PEOPLE'S REPUBLIC OF CHINA: Certain Steel             8/1/25-7/31/26
+ Nails, A-570-909..............................
+    JISCO Corporation
+    Nanjing Caiqing Hardware Co., Ltd.
+    Nanjing Yuechang Hardwares Co., Ltd.
+    Qingdao Jisco Co., Ltd.
+    Shandong Qingyun Hongyi Hardware Co., Ltd.
+    Shanghai Curvet Hardware
+    Shanghai Yueda Nails (Chuzhou) Ltd.
+    Shanghai Yueda Nails Co., Ltd.
+    Shanxi Hairui Trade Co., Ltd.
+    Suntec Industries Co., Ltd.
+    Tianjin Jinchi Metal Products Co., Ltd.
+    Tianjin Jinghai County Hongli Industry &
+     Business Co., Ltd.
+    Xi'an Metals and Minerals Import & Export
+     Co., Ltd.
+THE PEOPLE'S REPUBLIC OF CHINA:                           8/1/25-7/31/26
+ Hydrofluorocarbon Blends And Components
+ Thereof, A-570-028............................
+    Dongyang Weihua Refrigerants Co., Ltd.
+    Global Fluorine Chemical Factory
+    Hangzhou JM Chemical Co., Ltd.
+    Zhejiang Yonghe Refrigerant Co., Ltd.
+    Zhejiang Zhongyi Exp & Imp. Co., Ltd.
+THE PEOPLE'S REPUBLIC OF CHINA: Laminated Woven           8/1/25-7/31/26
+ Sacks, A-570-916..............................
+    Nantong Unipack International Co., Ltd.
+    Shanghai Zhongliang International Trading
+     Co., Ltd.
+    Shining Star Plastic Co., Ltd.
+    Shuangzhou (Shanghai) Packaging Products
+     Co., Ltd.
+    Zibo Ai Fudi Plastic Packaging Co., Ltd.
+THE PEOPLE'S REPUBLIC OF CHINA: Polyethylene              8/1/25-7/31/26
+ Retail Carrier Bags, A-570-886................
+    Dongguan Nozawa Plastics Products Co., Ltd.
+     and United Power Packaging, Ltd.
+     (collectively Nozawa)
+UKRAINE: Seamless Carbon and Alloy Steel                  8/1/25-7/31/26
+ Standard, Line, and Pressure Pipe, A-823-819..
+    Interpipe Europe S.A.; Interpipe Ukraine
+     LLC; LLC Interpipe Niko Tube; PJSC
+    Interpipe Niznedneprovsky Tube Rolling
+     Plant
+UNITED ARAB EMIRATES: Circular Welded Carbon-           12/1/24-11/30/25
+ Quality Steel Pipe,\9\ A-520-807..............
+    TSI Metal Industries L.L.C.
+ 
+                CVD Proceedings
+ 
+CANADA: Utility Scale Wind Towers, C-122-868...          1/1/25-12/31/25
+    CS Wind Canada Inc.
+    Marmen Inc.
+    Marmen [Eacute]nergie Inc.
+    Marmen Energy Co.
+INDIA: Finished Carbon Steel Flanges, C-533-872          1/1/25-12/31/25
+    Adinath International
+    Aditya Forge Limited
+    Allena Group
+    Alloyed Steel
+    Balkrishna Steel Forge Pvt. Ltd.
+    Bansidhar Chiranjilal
+    Bebitz Flanges Works Private Limited
+    BFN Forgings Private Limited
+    Brai Technoforge Pvt. Ltd.
+    C. D. Industries
+
+[[Page 62491]]
+
+ 
+    Cetus Engineering Private Limited
+    CHW Forge
+    CHW Forge Pvt. Ltd.
+    Citizen Metal Depot
+    Corum Flange
+    DN Forge Industries
+    Echjay Forgings Limited
+    Echjay Industries Pvt. Ltd.
+    Falcon Valves and Flanges Private Limited
+    Heubach International
+    Hindon Forge Pvt. Ltd.
+    Jai Auto Pvt. Ltd.
+    Jiten Steel Industries
+    Kinnari Steel Corporation
+    Koram Inc.
+    Laframboise Group Ltd.
+    M F Rings and Bearing Races Ltd.
+    Mascot Metal Manufactures
+    Munish Forge Limited
+    Munish Forge Private Limited
+    Norma (India) Limited
+    OM Exports
+    Pantech Stainless & Alloy Industries Sdn
+     Bhd
+    Pantech Steel Industries Sdn Bhd
+    Punjab Steel Works (PSW)
+    Pradeep Metals Limited
+    Raaj Sagar Steel
+    Ravi Ratan Metal Industries
+    R. D. Forge Private Limited
+    R. N. Gupta & Company Limited
+    Renin Piping Products
+    Rolex Fittings India Pvt. Ltd.
+    Rollwell Forge Engineering Components And
+     Flanges
+    Rollwell Forge Pvt. Ltd.
+    SHM (ShinHeung Machinery)
+    Siddhagiri Metal & Tubes
+    Sizer India
+    Steel Shape India
+    Sudhir Forgings Pvt. Ltd.
+    Technotrak Engineers
+    Tirupati Forge
+    Uma Shanker Khandelwal and Co.
+    Umashanker Khandelwal Forging Limited
+    USK Exports Private Limited
+INDIA: Glycine,\10\ C-533-884..................          1/1/25-12/31/25
+    Mulji Mehta Enterprises
+    Mulji Mehta Pharma
+MALAYSIA: Utility Scale Wind Towers, C-557-822.          1/1/25-12/31/25
+    CS Wind Malaysia Sdn. Bhd.
+    GE Renewable Energy
+    GE Renewables Malaysia Sdn. Bhd.
+    Nordex SE
+    Siemens Gamesa Renewable Energy, S.A.
+REPUBLIC OF T[Uuml]RKIYE: Certain Brake Drums,          12/3/24-12/31/25
+ C-489-854.....................................
+    Akis Asansor Makina Motor Dokum San. Tic.
+     Ltd. Sti
+    Akisoglu Dokum San. Ltd. Sti.
+    Akkus Dokum San. Ve Tic. Ltd. Sti
+    Altun Otomotiv
+    Anka Imex Ithalat Ihracat Oto San
+    Arikan Dis Ticaret Ltd. Sirketi
+    Buyuk Eker Bijon Sanayi Ve Ticaret
+    Cansa Dis Ticaret Limited Sirketi
+    Ekd[ouml]ksan D[ouml]k[uuml]m Metal
+     Otomotiv San Tic Ltd [Scedil]ti
+    Eker Bijon Sanayi Ve Tic. A.S
+    EKU Fren Kampana Sanayi ve Ticaret Ltd.
+     [Scedil]ti
+    EKU Fren ve Dok. San. A.S
+    Genk Otomotiv San. Dis Tic. Ltd. Sti
+    Global Dynamic Otomotiv Sanayi Dis
+    Insel Endustriyel Urunleri Sanayi
+    Kilinc Global Otomotiv San.ve Tic
+     A.[Scedil]
+    Luk Dis Ticaret M Messillik A.S
+    Mira Tasima Hizmetleri Ins. San. Ve
+    Mitlog Lojistik Denizcilik Ve Nakli
+    Motor Is Ticari Arac Fren Sistemler
+
+[[Page 62492]]
+
+ 
+    Safak Dokum Makina Parca Sanayi Ve
+    Safak Kahraman Ithalat Ihracat
+    Vector Otomotiv A.S.
+SOCIALIST REPUBLIC OF VIETNAM: Utility Scale             1/1/25-12/31/25
+ Wind Towers, C-552-826........................
+    CS Wind Corporation
+    CS Wind Vietnam Co., Ltd.
+    GE Renewable Energy
+    GE Wind Energy LLC
+    Nordex SE
+    Siemens Gamesa Renewable Energy
+    Southern Renewable and Green Energy Company
+     Limited
+    Vestas American Wind Technology, Inc.
+SPAIN: Ripe Olives, C-469-818..................          1/1/25-12/31/25
+    Aceitunera del Norte de C[aacute]ceres,
+     S.C.L.
+    Agro Sevilla Aceitunas S.Coop.And.
+    Angel Camacho Alimentaci[oacute]n, S.L.;
+     Cuarterola S.L.; Cucanoche S.L.; Grupo
+     Angel Camacho, S.L.\11\
+THE PEOPLE'S REPUBLIC OF CHINA: Certain Brakes          12/3/24-12/31/25
+ Drums, C-570-175..............................
+    Anhui Changfeng Trading Co., Ltd
+    Anhui Haiguang Trading Co., Ltd
+    Anhui Volcano Vehicle Parts Co., Ltd
+    Beijing Wilbury International, Inc.
+    CAIEC Trailer Master Co., Ltd./Trailer
+     Master CVS Inc
+    Changyi Qiyang Mechanical
+    Chongqing Millennium
+    ConMet (Weifang) Mechanical Co., Ltd
+    Dalian Honfriend Auto Parts Co., Ltd
+    Danaher Auto Spare Parts Co., Ltd.
+    Deye International Limited
+    Dongguan Chenggen Import & Export Co., Ltd
+    FTA Test Area Welson Imp&Exp
+    Guangzhou Joyhand Import&Export Co
+    Hebei Ankesu Imp Exp Trade Co Ltd
+    Hebei Iruijin Auto Parts Co., Ltd
+    Hebei OE Auto Spare Parts Co., Ltd
+    Hebei Yingsheng Automabile Parts Co., Ltd
+    Hefei Yisheng Trailer Machinery Co., Ltd
+    Henan Broad Top Metalwork LLC
+    Henan Valiant Braking System Co
+    HTS (Tianjin) Supply Chain Co., Ltd
+    Huainan Chuangsu Import And Export Co., Ltd
+    Hubei Xinxing Quanli Machinery Co., Ltd
+    International Machinery And Equipment
+    Jiaxing Jman Mechanical Design Co.
+    Jiaxing Stone Wheel Co., Ltd
+    Jining Huida Construction Machinery
+    Kara CVS Inc.
+    Laizhou Haichen Machinery Co., Ltd
+    Laizhou Sanli Auto Replacement
+    Liaoning Hechuang CV Parts MFG Co
+    Lizhouland Inc
+    Longkou Aoda Auto Parts Co., Ltd
+    Longkou Haimeng Machinery Co., Ltd
+    Longkou Jiaodong Machine Parts Co.
+    Mass Parts LLC
+    Ningbo Qingchen International Trade Co.,
+     Ltd
+    Ningbo Shimaotong International Co., Ltd
+    PanAsia CVS (HK) Limited
+    Qingdao Jasmine International Trade Co.,
+     Ltd
+    Qingdao Leeda Auto Parts Co., Limited
+    Qingdao Tordon Brake Co., Ltd
+    Raw King Brake Parts Co., Ltd
+    Rayloc
+    Recest E-Commerce (Shanghai) Co., Ltd
+    Richland Global Sources, Inc
+    Shandong Best Machinery
+    Shandong ConMet Mechanical, Ltd./Weifang
+     ConMet Mechanical Products Co., Ltd/
+     Shandong ConMet Mechanical Co., Ltd.
+    Shandong Haoxin Co., Ltd
+    Shandong Hongma Engineering Co., Ltd
+    Shandong Longji Machinery Co., Ltd
+    Shandong Taijiu Power Machinery Co., Ltd.
+    Shandong Xinchang Environmental Science
+     Co., Ltd
+    Shanghai Waizongfu International Trading
+     Co., Ltd
+    Shanghai Winsun Auto Parts Co., Ltd
+
+[[Page 62493]]
+
+ 
+    Shanxi Tang Rong Machinery Mfg Co.
+    Shenyang Honbase Machinery Co., Ltd
+    Shenzhen Jiali Trading Co., Ltd
+    Shenzhen Lechuan Trading Co Ltd
+    Shijiazhuang Hua Nuo I/E Co., Ltd.
+    Suzhou Jianghexingyao International Trade
+     Co., Ltd
+    Suzhou Kaihongbo Technology Co., Ltd
+    Tianjin Haresco International Trade
+    Tianjin Textile Group Import And Export
+     Inc.
+    Weifang Changxin Machinery
+    Weifang Haoxin ConMet Mechanical
+    Xiamen Tinmy Industrial Co., Ltd
+    Xianghe Zichen Auto Parts Co., Ltd.
+    Xingtai Xunchiyoute Auto Parts Co.
+    Yancheng Terbon Auto Parts Co., Ltd.
+    Yantai Hongtian Autoparts Co., Ltd
+    Yantai March International Trade
+    Yantai Mefine Machine Group Co., Ltd
+    Yantai Newtek International Trading Co.,
+     Ltd
+    Yantai Winhere Auto-Part Manufacturing Co.,
+     Ltd
+    Zhejiang Firsd Group Co., Ltd.
+    Zhejiang New Sorl Auto Parts Co., Ltd
+    Zhengzhou Dinghong Machinery & Equipment
+     Co., Ltd
+    Zhumadian CIMC Huajun Casting Co., Ltd
+    Zhumadian Hengjiu Machinery
+    Zibo Jizhou Trading Co., Ltd
+THE PEOPLE'S REPUBLIC OF CHINA: Certain Low              9/7/24-12/31/25
+ Speed Personal Transportation Vehicles, C-570-
+ 177...........................................
+    Dongguan Excar Electric Vehicle Co., Ltd
+    Dongguan Excar Electric Vehicle Co., Ltd.
+    Guangdong Lvtong New Energy Electric
+     Vehicle Technology Co., Ltd.
+    Guangzhou Ruike Electric Vehicle Co., Ltd
+    Kangdi Electric Vehicle (Hainan) Co., Ltd
+    Shandong Yongli New Energy Vehicle Industry
+     Co., Ltd.
+    Shanghai Dachi Auto Power Co., Ltd.
+    Shenzhen Aoxiang Industrial Development
+     Co., Ltd.
+    Yangzhou Whanlong Electric Vehicle Co., Ltd
+THE PEOPLE'S REPUBLIC OF CHINA: Certain Metal            1/1/25-12/31/25
+ Lockers and Parts Thereof, C-570-134..........
+    Da Wu Supply Chain Management Co., Ltd.
+    Fourever International Ltd.
+    Hangzhou Evernew Machinery & Equipment
+     Company, Ltd.
+    Hangzhou Yide Supply Chain Management Co.,
+     Ltd.
+    Hangzhou Xline Machinery
+    Kunshan Dongchu Precision Machinery Co.,
+     Ltd.
+    Ningbo Safewell Group Smart Security
+     Products Co., Ltd.
+    Ningbo Safewell Safes
+    Pinghu Chenda Storage Office Co., Ltd.
+    Safewell Group Holdings, Ltd.
+    Shenzhen Mascot International
+    Sunmetals Products De Mexico Sa De Cv
+    Tianjin Jia Mei Metal Furniture Ltd.
+    Xingyi Metalworking Technology (Zhejiang)
+     Co., Ltd.
+    Xpedition LLC DBA Safewell Gr
+    Zhejiang Focus-On Import & Export Co., Ltd.
+    Zhejiang Safewell Security Technology Co.,
+     Ltd.
+    Zhejiang Xingyi Metal Products Co., Ltd.
+THE PEOPLE'S REPUBLIC OF CHINA: Certain                  1/1/25-12/31/25
+ Passenger Vehicle and Light Truck Tires, C-570-
+ 017...........................................
+    Qingdao Keter International Co., Limited
+THE PEOPLE'S REPUBLIC OF CHINA: Certain Pea              1/1/25-12/31/25
+ Protein, C-570-155............................
+    Amy (Hong Kong) On Line Co., Ltd.
+    Arc Food Technologies Limited
+    Bioway Industrial Group Ltd.
+    Bioway Organic Group Ltd.
+    Bioway (Xi'an) Organic Ingredients Co.,
+     Ltd.
+    Chuzhou Ligu Bio Science And Tech Co.
+    Dongguan Fenggang Yuxing Food Factory
+    Fenchem Biotek Ltd
+    Flyloong Biotechnology (Qingdao) Co., Ltd.
+    Focusherb LLC
+    Hainan Zhongxin Chemical Co., Ltd.
+    Hengyuan Biotechnology Co., Ltd.
+    Ishaan Bio Private Limited
+    Jianyuan International Co., Ltd.
+    Jinyuan Import & Export Co., Ltd.
+    KTL Pharmaceutical Co., Ltd.
+
+[[Page 62494]]
+
+ 
+    Kubon (Cambodia) Biotechnology Co., Ltd.
+    Kunshan Jinfu Trading Co., Ltd.
+    LCH Mega Maju Industry
+    Linyi Yuwang Vegetable Protein Co., Ltd.
+    Nanjing NHC Nutraceuticals Co., Ltd.
+    Naturz Organics (Dalian) Co., Ltd.
+    Nutracean Co., Ltd.
+    Nutritech Asia Group Qingdao, Ltd.
+    Qingdao Runhuixin Industrial Co., Ltd.
+    Qingdao Yingshen Industrial Co., Ltd.
+    Shandong Jiaming International Trade Co.,
+     Ltd.
+    Shandong Jianyuan Bioengineering Co.
+    Shandong Yuwang Ecological Food Industry
+     Co., Ltd.
+    Shanghai Elim Organic Food Co., Ltd.
+    Shanghai Freeman Lifescience Co., Ltd.
+    Shanxi Coolflying Bio-Tech Co., Ltd.
+    Sugarbush Shenzhen Biotechnology Co., Ltd.
+    Wellgreen Technology Co., Ltd.
+    Xiamen Yotoyo Foods Co., Ltd.
+    Yantai Hongben Import Export Co., Ltd
+    Yantai Oriental Protein Tech Co., Ltd.;
+     Jiujiang Tiantai Food Co., Ltd.; Shandong
+     Sanjia Investment Holding Group Co., Ltd.;
+     Yantai Yiyuan Bioengineering Co., Ltd.;
+     and Yantai Zhongzhen Trading Co., Ltd.
+    Yantai T.Full Biotech Co., Ltd.
+    Yantai Wanpy International Trade
+    Yosin Biotechnology (Yantai) Co., Ltd.
+    Yosin Import and Export (Yantai) Co., Ltd.
+    Zhaoyuan Junbang Trading Co., Ltd.; Yantai
+     Shuangta Food Co. Ltd.
+------------------------------------------------------------------------
+
+Suspension Agreements
+
+    None.
+
+Duty Absorption Reviews
+
+    During any administrative review covering all or part of a period 
+falling between the first and second or third and fourth anniversary of 
+the publication of an AD order under 19 CFR 351.211 or a determination 
+under 19 CFR 351.218(f)(4) to continue an order or suspended 
+investigation (after sunset review), Commerce, if requested by a 
+domestic interested party within 30 days of the date of publication of 
+the notice of initiation of the review, will determine whether 
+antidumping duties have been absorbed by an exporter or producer 
+subject to the review if the subject merchandise is sold in the United 
+States through an importer that is affiliated with such exporter or 
+producer. The request must include the name(s) of the exporter or 
+producer for which the inquiry is requested.
+---------------------------------------------------------------------------
+
+    \4\ Commerce inadvertently omitted these companies from the 
+initiation notice published on August 10, 2026 (91 FR 51436). 
+Inclusion of the companies listed here serves as a correction 
+notice.
+    \5\ We received a request for review of Regiomontana de Perfiles 
+y Tubos S.A. de C.V. However, Commerce previously determined that 
+Regiomontana de Perfiles y Tubos S. de R.L. de C.V. is the 
+successor-in-interest to Regiomontana de Perfiles y Tubos S.A. de 
+C.V. See Light-Walled Rectangular Pipe and Tube from Mexico: Final 
+Results of Antidumping Duty Administrative Review; 2018-2019, 86 FR 
+33646 (June 25, 2021).
+    \6\ Commerce inadvertently omitted this company from the 
+initiation notice published on September 4, 2026 (91 FR 56836). 
+Inclusion of the company here serves as a correction notice.
+    \7\ In the initiation notice that was published on August 10, 
+2026 (91 FR 51436), the companies listed above should have been 
+listed separately. This serves as a correction notice.
+    \8\ In the initiation notice that was published on August 10, 
+2026 (91 FR 51436), the companies listed above should have been 
+listed separately. This serves as a correction notice.
+    \9\ In the notice of initiation of administrative review 
+published on May 4, 2026 (91 FR 23941), we initiated a review with 
+respect to ``TSI Metal Industries L.L.C.'' However, the incorrect 
+POR of 12/1/21-11/30/22 was listed. We are correcting that error in 
+this notice.
+    \10\ In the initiation notice that was published on August 10, 
+2026 (91 FR 51436), the companies listed above should have been 
+listed separately. This serves as a correction notice.
+    \11\ Commerce previously determined that Angel Camacho 
+Alimentaci[oacute]n, S.L.; Cuarterola S.L.; Cucanoche S.L.; and 
+Grupo Angel Camacho, S.L. are cross-owned. See Ripe Olives from 
+Spain: Final Results of Countervailing Duty Administrative Review; 
+2023, 91 FR 48062 (July 30, 2026).
+---------------------------------------------------------------------------
+
+Gap Period Liquidation
+
+    For the first administrative review of any order, there will be no 
+assessment of antidumping or countervailing duties on entries of 
+subject merchandise entered, or withdrawn from warehouse, for 
+consumption during the relevant ``gap'' period of the order (i.e., the 
+period following the expiry of provisional measures and before 
+definitive measures were put into place), if such a gap period is 
+applicable to the POR.
+
+Administrative Protective Orders and Letters of Appearance
+
+    Interested parties must submit applications for disclosure under 
+administrative protective orders in accordance with the procedures 
+outlined in Commerce's regulations at 19 CFR 351.305. Those procedures 
+apply to administrative reviews included in this notice of initiation. 
+Parties wishing to participate in any of these administrative reviews 
+should ensure that they meet the requirements of these procedures 
+(e.g., the filing of separate letters of appearance as discussed at 19 
+CFR 351.103(d)).
+
+Factual Information Requirements
+
+    Commerce's regulations identify five categories of factual 
+information in 19 CFR 351.102(b)(21), which are summarized as follows: 
+(i) evidence submitted in response to questionnaires; (ii) evidence 
+submitted in support of allegations; (iii) publicly available 
+information to value factors under 19 CFR 351.408(c) or to measure the 
+adequacy of remuneration under 19 CFR 351.511(a)(2); (iv) evidence 
+placed on the record by Commerce; and (v) evidence other than factual 
+information described in (i)-(iv). These regulations require any party, 
+when submitting factual information, to specify under which subsection 
+of 19 CFR 351.102(b)(21) the information is being submitted and, if the 
+information is submitted to rebut, clarify, or correct factual 
+information already on the record, to provide an explanation 
+identifying the information already on the record that the factual 
+information seeks to rebut, clarify, or correct. The regulations, at 19 
+CFR 351.301, also
+
+[[Page 62495]]
+
+provide specific time limits for such factual submissions based on the 
+type of factual information being submitted. Please review the Final 
+Rule,\12\ available at <a href="https://www.govinfo.gov/content/pkg/FR-2013-07-17/pdf/2013-17045.pdf">https://www.govinfo.gov/content/pkg/FR-2013-07-17/pdf/2013-17045.pdf</a>, prior to submitting factual information in this 
+segment. Note that Commerce has amended certain of its requirements 
+pertaining to the service of documents in 19 CFR 351.303(f).\13\
+---------------------------------------------------------------------------
+
+    \12\ See Certification of Factual Information To Import 
+Administration During Antidumping and Countervailing Duty 
+Proceedings, 78 FR 42678 (July 17, 2013) (Final Rule); see also the 
+frequently asked questions regarding the Final Rule, available at 
+<a href="https://www.trade.gov/sites/default/files/2026-08/FAQ%20for%20Certifications.pdf?v=1788270933909">https://www.trade.gov/sites/default/files/2026-08/FAQ%20for%20Certifications.pdf?v=1788270933909</a>.
+    \13\ See Administrative Protective Order, Service, and Other 
+Procedures in Antidumping and Countervailing Duty Proceedings; Final 
+Rule, 88 FR 67069 (September 29, 2023).
+---------------------------------------------------------------------------
+
+    Any party submitting factual information in an AD or CVD proceeding 
+must certify to the accuracy and completeness of that information using 
+the formats provided at the end of the Final Rule.\14\ Commerce intends 
+to reject factual submissions in any proceeding segments if the 
+submitting party does not comply with applicable certification 
+requirements.
+---------------------------------------------------------------------------
+
+    \14\ See section 782(b) of the Act; see also Final Rule; and the 
+frequently asked questions regarding the Final Rule, available at 
+<a href="https://www.trade.gov/sites/default/files/2026-08/FAQ%20for%20Certifications.pdf?v=1788270933909">https://www.trade.gov/sites/default/files/2026-08/FAQ%20for%20Certifications.pdf?v=1788270933909</a>.
+---------------------------------------------------------------------------
+
+Extension of Time Limits Regulation
+
+    Parties may request an extension of time limits before a time limit 
+established under Part 351 expires, or as otherwise specified by 
+Commerce.\15\ In general, an extension request will be considered 
+untimely if it is filed after the time limit established under Part 351 
+expires. For submissions which are due from multiple parties 
+simultaneously, an extension request will be considered untimely if it 
+is filed after 10:00 a.m. on the due date. Examples include, but are 
+not limited to: (1) case and rebuttal briefs, filed pursuant to 19 CFR 
+351.309; (2) factual information to value factors under 19 CFR 
+351.408(c), or to measure the adequacy of remuneration under 19 CFR 
+351.511(a)(2), filed pursuant to 19 CFR 351.301(c)(3) and rebuttal, 
+clarification and correction filed pursuant to 19 CFR 
+351.301(c)(3)(iv); (3) comments concerning the selection of a surrogate 
+country and surrogate values and rebuttal; (4) comments concerning CBP 
+data; and (5) Q&V questionnaires. Under certain circumstances, Commerce 
+may elect to specify a different time limit by which extension requests 
+will be considered untimely for submissions which are due from multiple 
+parties simultaneously. In such a case, Commerce will inform parties in 
+the letter or memorandum setting forth the deadline (including a 
+specified time) by which extension requests must be filed to be 
+considered timely. This policy also requires that an extension request 
+must be made in a separate, standalone submission, and clarifies the 
+circumstances under which Commerce will grant untimely-filed requests 
+for the extension of time limits. Please review the Final Rule, 
+available at <a href="https://www.gpo.gov/fdsys/pkg/FR-2013-09-20/html/2013-22853.htm">https://www.gpo.gov/fdsys/pkg/FR-2013-09-20/html/2013-22853.htm</a>, prior to submitting factual information in these segments.
+---------------------------------------------------------------------------
+
+    \15\ See 19 CFR 351.302.
+---------------------------------------------------------------------------
+
+Notification to Interested Parties
+
+    These initiations and this notice are in accordance with section 
+751(a) of the Act (19 U.S.C. 1675(a)) and 19 CFR 351.221(c)(1)(i).
+
+    Dated: September 29, 2026.
+Scot Fullerton,
+Acting Deputy Assistant Secretary for Antidumping and Countervailing 
+Duty Operations.
+[FR Doc. 2026-20160 Filed 9-30-26; 8:45 am]
+BILLING CODE 3510-DS-P
+
+
+</pre></body>
+</html>

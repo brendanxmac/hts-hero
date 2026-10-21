@@ -22,7 +22,7 @@ export const AddCountryCard = ({
   }, [searching]);
 
   return (
-    <div className="flex min-h-72 flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-base-content/20 p-6 text-center">
+    <div className="flex min-h-72 flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-base-content/20 bg-base-100 p-6 text-center">
       {searching ? (
         <div className="w-full max-w-xs flex flex-col gap-2 text-left">
           <label htmlFor="dc-compare-add" className={ui.fieldLabel}>

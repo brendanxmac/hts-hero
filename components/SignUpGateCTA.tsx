@@ -20,16 +20,16 @@ export const SignUpGateCTA = ({
 }: SignUpGateCTAProps) => {
   const getResultsText = (articleDescription?: string) => {
     if (articleDescription) {
-      return <p className="text-base-content/70 text-base md:text-lg leading-relaxed">
+      return <p className="text-base-content/70 text-base md:text-lg md:leading-7 leading-relaxed">
         Create a free account to find the HTS Code for <span className="font-bold">{articleDescription}</span>
       </p>
     }
-    return <p className="text-base-content/70 text-base md:text-lg leading-relaxed">
+    return <p className="text-base-content/70 text-base md:text-lg md:leading-7 leading-relaxed">
       Create a free account to continue finding HTS Codes
     </p>
   }
   return (
-    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5">
+    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-linear-to-br from-primary/5 via-base-100 to-secondary/5">
       {/* Decorative background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/15 rounded-full blur-3xl" />
@@ -46,7 +46,7 @@ export const SignUpGateCTA = ({
       <div className="relative z-10 p-8 md:p-10 flex flex-col items-center text-center gap-6">
         {/* Icon */}
         <div className="relative">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-30 blur-xl animate-pulse" />
+          <div className="absolute inset-0 rounded-full bg-linear-to-r from-primary to-secondary opacity-30 blur-xl animate-pulse" />
           <div className="relative p-4 rounded-full bg-base-100 shadow-lg border border-primary/20">
             <LockClosedIcon className="w-8 h-8 text-primary" />
           </div>

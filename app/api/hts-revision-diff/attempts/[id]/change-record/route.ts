@@ -8,7 +8,8 @@ export const maxDuration = 300
 
 // Reads the change record into items with Claude again (replacing the stored
 // items). New comparisons use the new items.
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

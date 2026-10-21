@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Footer from "../../components/Footer";
-import LetsTalkModal from "../../components/LetsTalkModal";
+import { openBookCall } from "@/libs/book-call";
 import { ClassificationCTA } from "../../components/ClassificationCTA";
 import { useUser } from "../../contexts/UserContext";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
@@ -22,7 +21,6 @@ const StoryConnector = () => (
 
 export default function EngineeredCompliancePage() {
   const { user } = useUser();
-  const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
 
   const handleBookDemoClick = () => {
     const userEmail = user?.email || "";
@@ -39,8 +37,8 @@ export default function EngineeredCompliancePage() {
       console.error("Error tracking book demo click:", e);
     }
 
-    // Open the modal
-    setIsBookDemoModalOpen(true);
+    // Straight to Calendly
+    openBookCall({ name: user?.user_metadata?.full_name, email: user?.email });
   };
 
   return (
@@ -83,7 +81,7 @@ export default function EngineeredCompliancePage() {
           {/* ===== THE CURRENT STATE ===== */}
           <section className="py-4">
             <div className={cardStyle}>
-              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center mt-6">
+              <div className="space-y-6 text-lg md:text-xl md:leading-7 leading-relaxed text-center mt-6">
                 <p className="text-2xl md:text-3xl font-bold">Yet...</p>
                 <p><span className="font-semibold text-primary">Most</span> trade compliance programs still run on:</p>
                 <ul className="space-y-5 text-lg my-6 max-w-md mx-auto">
@@ -104,7 +102,7 @@ export default function EngineeredCompliancePage() {
           {/* ===== THE CURRENT STATE ===== */}
           <section className="py-4">
             <div className={cardStyle}>
-              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
+              <div className="space-y-6 text-lg md:text-xl md:leading-7 leading-relaxed text-center">
                 {/* <p>This isn&apos;t due to a lack of expertise or effort.</p> */}
                 <p className="text-2xl md:text-3xl font-bold">But it isn&apos;t their fault.</p>
                 <p>Trade complinace has traditionally been seen as a <br /> <span className="text-primary font-semibold">costly requirement</span> instead of a <span className="text-primary font-semibold">strategic advantage</span>.</p>
@@ -123,7 +121,7 @@ export default function EngineeredCompliancePage() {
           {/* ===== WHAT THAT CREATES ===== */}
           <section className="py-4">
             <div className={cardStyle}>
-              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
+              <div className="space-y-6 text-lg md:text-xl md:leading-7 leading-relaxed text-center">
                 <p className="text-2xl md:text-3xl font-bold">The problem this created</p>
                 <p>Without systemized compliance, the results are <span className="font-semibold text-primary">predictable</span>:</p>
 
@@ -160,7 +158,7 @@ export default function EngineeredCompliancePage() {
           {/* ===== WHAT IS ENGINEERED COMPLIANCE ===== */}
           <section className="py-4">
             <div className={cardStyle}>
-              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
+              <div className="space-y-6 text-lg md:text-xl md:leading-7 leading-relaxed text-center">
                 <p className="text-2xl md:text-3xl font-bold">What is Engineered Compliance?</p>
                 {/* <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
                   What Is Engineered Compliance?
@@ -174,7 +172,7 @@ export default function EngineeredCompliancePage() {
                     { old: "Assumptions", new: "Metrics" },
                     { old: "Periodic review", new: "Continuous monitoring" },
                   ].map((item, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20">
+                    <div key={i} className="p-4 rounded-xl bg-linear-to-br from-primary/15 to-primary/5 border border-primary/20">
                       <p className="text-sm text-base-content/60 line-through">{item.old}</p>
                       <p className="font-bold text-primary">{item.new}</p>
                     </div>
@@ -203,7 +201,7 @@ export default function EngineeredCompliancePage() {
           {/* ===== THE ANALOGY: TRAINS ===== */}
           <section className="py-4">
             <div className={cardStyle}>
-              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
+              <div className="space-y-6 text-lg md:text-xl md:leading-7 leading-relaxed text-center">
                 <p className="text-6xl rounded-full p-0">🚂</p>
                 <p className="text-2xl md:text-3xl font-bold">The Train Analogy</p>
                 {/* <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
@@ -215,7 +213,7 @@ export default function EngineeredCompliancePage() {
                 {/* <p>In a <span className="font-semibold text-primary">single place</span>.</p> */}
                 <br />
                 <div className="grid md:grid-cols-2 gap-6 w-full">
-                  <div className="p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20">
+                  <div className="p-5 rounded-xl bg-linear-to-br from-primary/15 to-primary/5 border border-primary/20">
                     <p className="text-sm font-bold uppercase tracking-wider text-primary mb-4 text-center">Signals</p>
                     <div className="space-y-2">
                       {[
@@ -232,7 +230,7 @@ export default function EngineeredCompliancePage() {
                     </div>
                   </div>
 
-                  <div className="p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20">
+                  <div className="p-5 rounded-xl bg-linear-to-br from-primary/15 to-primary/5 border border-primary/20">
                     <p className="text-sm font-bold uppercase tracking-wider text-primary mb-4 text-center">Systems</p>
                     <div className="space-y-2">
                       {[
@@ -258,7 +256,7 @@ export default function EngineeredCompliancePage() {
           {/* ===== ENGINEERED COMPLIANCE WORKS THE SAME WAY ===== */}
           <section className="py-4">
             <div className={cardStyle}>
-              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
+              <div className="space-y-6 text-lg md:text-xl md:leading-7 leading-relaxed text-center">
                 <p className="text-6xl rounded-full p-0">⚙️</p>
                 <p className="text-2xl md:text-3xl font-bold">Engineered Compliance <br />Works The Same Way</p>
                 {/* <br /> */}
@@ -273,7 +271,7 @@ export default function EngineeredCompliancePage() {
                 <br />
 
                 <div className="grid md:grid-cols-2 gap-6 w-full">
-                  <div className="p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20">
+                  <div className="p-5 rounded-xl bg-linear-to-br from-primary/15 to-primary/5 border border-primary/20">
                     <p className="text-sm font-bold uppercase tracking-wider text-primary mb-4 text-center">Signals</p>
                     <div className="space-y-2">
                       {[
@@ -292,7 +290,7 @@ export default function EngineeredCompliancePage() {
                     </div>
                   </div>
 
-                  <div className="p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20">
+                  <div className="p-5 rounded-xl bg-linear-to-br from-primary/15 to-primary/5 border border-primary/20">
                     <p className="text-sm font-bold uppercase tracking-wider text-primary mb-4 text-center">Systems</p>
                     <div className="space-y-2">
                       {[
@@ -331,7 +329,7 @@ export default function EngineeredCompliancePage() {
           {/* ===== THE RESULT ===== */}
           <section className="py-4">
             <div className={cardStyle}>
-              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
+              <div className="space-y-6 text-lg md:text-xl md:leading-7 leading-relaxed text-center">
                 <p className="text-6xl rounded-full p-0">✨</p>
                 <p className="text-2xl md:text-3xl font-bold">The Result</p>
                 {/* <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
@@ -354,7 +352,7 @@ export default function EngineeredCompliancePage() {
                     <p className="text-base-content/60 text-base mb-2">Before</p>
                     <p className="font-semibold">&quot;Are we okay?&quot;</p>
                   </div>
-                  <div className="p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20">
+                  <div className="p-5 rounded-xl bg-linear-to-br from-primary/15 to-primary/5 border border-primary/20">
                     <p className="text-primary/60 text-base mb-2">After</p>
                     <p className="font-bold text-primary">&quot;Here&apos;s our compliance posture, and here&apos;s how we know.&quot;</p>
                   </div>
@@ -368,7 +366,7 @@ export default function EngineeredCompliancePage() {
           {/* ===== WHY THIS MATTERS ===== */}
           {/* <section className="py-4 pb-6">
             <div className={cardStyle}>
-              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
+              <div className="space-y-6 text-lg md:text-xl md:leading-7 leading-relaxed text-center">
                 <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
                   Why This Matters
                 </p>
@@ -388,7 +386,7 @@ export default function EngineeredCompliancePage() {
 
           <section className="py-4 mb-16">
             <div className={cardStyle}>
-              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
+              <div className="space-y-6 text-lg md:text-xl md:leading-7 leading-relaxed text-center">
                 <p className="text-2xl font-semibold">Want to <span className="text-primary">engineer compliance</span> for your business?</p>
                 <p>Book a free engineered compliance review today!</p>
                 {/* Book Demo CTA */}
@@ -416,11 +414,6 @@ export default function EngineeredCompliancePage() {
       </main>
 
       <Footer />
-
-      <LetsTalkModal
-        isOpen={isBookDemoModalOpen}
-        onClose={() => setIsBookDemoModalOpen(false)}
-      />
     </div>
   );
 }

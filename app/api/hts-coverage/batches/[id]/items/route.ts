@@ -5,7 +5,7 @@ import { addBatchItems, removeBatchItems } from "@/libs/hts-coverage/batches"
 
 export const dynamic = "force-dynamic"
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
 const codes = (body: { htsnos?: unknown }) => {
   const list = Array.isArray(body.htsnos) ? body.htsnos.filter((h): h is string => typeof h === "string") : []
@@ -14,7 +14,8 @@ const codes = (body: { htsnos?: unknown }) => {
 }
 
 // Adds headings: { htsnos }. Headings in another open batch are skipped and listed.
-export async function POST(request: Request, { params }: Params) {
+export async function POST(request: Request, props: Params) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {
@@ -24,7 +25,8 @@ export async function POST(request: Request, { params }: Params) {
   }
 }
 
-export async function DELETE(request: Request, { params }: Params) {
+export async function DELETE(request: Request, props: Params) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

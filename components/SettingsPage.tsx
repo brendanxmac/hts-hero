@@ -55,7 +55,7 @@ export default function SettingsPage({ user }: Props) {
           {user.team_id && (
             <div
               role="tablist"
-              className="tabs tabs-boxed tabs-sm md:tabs-md rounded-xl gap-1"
+              className="tabs tabs-box tabs-sm md:tabs-md rounded-xl gap-1"
             >
               {ProfileTabs.map((tab) => (
                 <a

@@ -11,10 +11,6 @@ export interface TariffImpactResult {
   error?: string;
 }
 
-export const sentEmailWithExampleOfTariffImpactCheck = (email: string) => {
-  console.log("Sending Fake Impact Check Email");
-  return apiClient.post("/tariff-impact-check/example-email", { email });
-};
 
 export const checkTariffImpactsForCodes = (
   htsCodes: string[],

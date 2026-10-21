@@ -73,8 +73,13 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_COMPARE_CHANGED = "Duty Calculator Compare Countries Changed",
   /** Duty estimate embedded in the explorer, a classification or an HTS code page, opened in the calculator */
   DUTY_ESTIMATE_OPENED_IN_CALCULATOR = "Duty Estimate Opened in Calculator",
+  /** A call to action on the tariffs-by-country hub: cta (calculator | tracker | csv) and where on the page */
+  COUNTRIES_HUB_CTA_CLICKED = "Countries Hub CTA Clicked",
   /** Tariff Tracker (/tariff-tracker). Was the Tariff Watcher tab, as "Tariff Watcher …" events */
   TARIFF_TRACKER_PRODUCTS_ADDED = "Tariff Tracker Products Added",
+  TARIFF_MONITOR_PRODUCT_CHECKED = "Tariff Monitor Product Checked",
+  TARIFF_MONITOR_TRACK_CLICKED = "Tariff Monitor Track Clicked",
+  TARIFF_AUDIT_REQUESTED = "Tariff Audit Requested",
   TARIFF_TRACKER_PRODUCTS_REMOVED = "Tariff Tracker Products Removed",
   TARIFF_TRACKER_CSV_TEMPLATE_DOWNLOADED = "Tariff Tracker CSV Template Downloaded",
   TARIFF_TRACKER_EXAMPLE_USED = "Tariff Tracker Example Used",
@@ -89,6 +94,40 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_ANALYSIS_BASIS_CHANGED = "Tariff Tracker Analysis Basis Changed",
   TARIFF_TRACKER_ANALYSIS_ORIGIN_SELECTED = "Tariff Tracker Analysis Origin Selected",
   TARIFF_TRACKER_ANALYSIS_COUNTRIES_CHOSEN = "Tariff Tracker Analysis Countries Chosen",
+  /** Funnel (PRICING.md): a locked feature shown, and its call to action clicked */
+  LOCKED_FEATURE_VIEWED = "Locked Feature Viewed",
+  LOCKED_FEATURE_CTA_CLICKED = "Locked Feature CTA Clicked",
+  TARIFF_TRACKER_COVERAGE_CHANGED = "Tariff Tracker Coverage Changed",
+  /** A trial allowance spent (a savings or audit check), and one that ran out */
+  TARIFF_TRACKER_CHECK_SPENT = "Tariff Tracker Check Spent",
+  TARIFF_TRACKER_ALLOWANCE_USED_UP = "Tariff Tracker Allowance Used Up",
+  TARIFF_TRACKER_ENTRY_AUDITED = "Tariff Tracker Entry Audited",
+  /** A savings opportunity tracked, or moved to a new status (product Savings tab) */
+  TARIFF_TRACKER_OPPORTUNITY_CHANGED = "Tariff Tracker Opportunity Changed",
+  TARIFF_TRACKER_SAVING_APPLIED = "Tariff Tracker Saving Applied",
+  TARIFF_TRACKER_PRODUCT_TAB_OPENED = "Tariff Tracker Product Tab Opened",
+  TARIFF_TRACKER_UPGRADE_OPENED = "Tariff Tracker Upgrade Opened",
+  TARIFF_TRACKER_CHECKOUT_STARTED = "Tariff Tracker Checkout Started",
+  TARIFF_TRACKER_SETUP_STEP_CLICKED = "Tariff Tracker Setup Step Clicked",
+  TARIFF_TRACKER_CATALOG_SYNCED = "Tariff Tracker Catalog Synced",
+  TARIFF_TRACKER_ALERTS_SAVED = "Tariff Tracker Alerts Saved",
+  /** "Add to Slack" in the Alerts tab: clicked, back from Slack connected, disconnected */
+  TARIFF_TRACKER_SLACK_CONNECT_STARTED = "Tariff Tracker Slack Connect Started",
+  TARIFF_TRACKER_SLACK_CONNECTED = "Tariff Tracker Slack Connected",
+  TARIFF_TRACKER_SLACK_DISCONNECTED = "Tariff Tracker Slack Disconnected",
+  /** The Teams box in the Alerts tab: steps opened, disconnected */
+  TARIFF_TRACKER_TEAMS_STEPS_OPENED = "Tariff Tracker Teams Steps Opened",
+  TARIFF_TRACKER_TEAMS_DISCONNECTED = "Tariff Tracker Teams Disconnected",
+  /** "Send Test" for a Slack or Teams channel in the Alerts tab */
+  TARIFF_TRACKER_ALERT_TEST_SENT = "Tariff Tracker Alert Test Sent",
+  TARIFF_TRACKER_LOOKUPS_ADDED = "Tariff Tracker Lookups Added",
+  // The first-run import takeover (components/tariff-tracker/onboarding): shown, each step seen,
+  // imports added through it, skipped (and why), and the "don't have it handy" help used
+  TARIFF_TRACKER_ONBOARDING_SHOWN = "Tariff Tracker Onboarding Shown",
+  TARIFF_TRACKER_ONBOARDING_STEP = "Tariff Tracker Onboarding Step",
+  TARIFF_TRACKER_ONBOARDING_COMPLETED = "Tariff Tracker Onboarding Completed",
+  TARIFF_TRACKER_ONBOARDING_SKIPPED = "Tariff Tracker Onboarding Skipped",
+  TARIFF_TRACKER_ONBOARDING_HELP_USED = "Tariff Tracker Onboarding Help Used",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** A tool call to the MCP server (Claude, ChatGPT and other AI clients) */
@@ -102,6 +141,10 @@ export enum MixpanelEvent {
   EXPLORER_COMPLETED_NOTES_SEARCH = "Explorer Completed a Notes Search",
   /** Hierarchy moves: deeper, back, breadcrumb, chapter, search, URL code, etc. */
   EXPLORER_NAVIGATED_TO_LEVEL = "Explorer Navigated to Level",
+  // Subscribed to tariff news on /tariff-updates (source: the page it was on)
+  TARIFF_UPDATES_SUBSCRIBED = "Tariff Updates Subscribed",
+  // After subscribing: "Create my free account" for the Tariff Tracker
+  TARIFF_UPDATES_TRACKER_UPSELL_CLICKED = "Tariff Updates Tracker Upsell Clicked",
 }
 
 // Browser-side tracking functions

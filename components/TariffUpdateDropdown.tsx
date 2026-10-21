@@ -43,7 +43,7 @@ export default function TariffUpdateDropdown({
         disabled={disabled}
       >
         <div className="relative">
-          <Listbox.Button className="relative w-full cursor-default rounded-xl border border-base-content/10 bg-base-100/50 py-3 pl-4 pr-10 text-left transition-all duration-200 hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30">
+          <Listbox.Button className="relative w-full cursor-default rounded-xl border border-base-content/10 bg-base-100/50 py-3 pl-4 pr-10 text-left transition-all duration-200 hover:border-primary/30 focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary/30">
             <div className="flex items-center gap-3">
               <span className="text-sm md:text-base text-base-content font-medium">
                 {selectedUpdate
@@ -70,7 +70,7 @@ export default function TariffUpdateDropdown({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute z-10 mt-2 max-h-72 w-full overflow-auto rounded-xl bg-base-100 border border-base-content/10 py-1 text-base shadow-2xl shadow-black/10 focus:outline-none">
+            <Listbox.Options className="absolute z-10 mt-2 max-h-72 w-full overflow-auto rounded-xl bg-base-100 border border-base-content/10 py-1 text-base shadow-2xl shadow-black/10 focus:outline-hidden">
               {tariffCodeSets.length > 0 &&
                 tariffCodeSets.map((update, index) => (
                   <Listbox.Option
@@ -119,7 +119,7 @@ export default function TariffUpdateDropdown({
 
                         {/* Check icon for selected item */}
                         {selected && (
-                          <span className="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-primary/10">
+                          <span className="flex items-center justify-center shrink-0 w-6 h-6 rounded-full bg-primary/10">
                             <CheckIcon
                               className="h-4 w-4 text-primary"
                               aria-hidden="true"

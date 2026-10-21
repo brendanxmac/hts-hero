@@ -1,6 +1,7 @@
 import type { HtsElement } from "@/interfaces/hts";
 import { dutyAnswerSentence, HtsDutySummary, inSentence, lowestTotal } from "@/libs/hts-duty-summary";
 import type { FaqEntry, SectionChapter } from "./types";
+import { formatImportValue, UsImports } from "@/components/duty-calculator/lib/usImportsData";
 
 // The page's questions, shown in the FAQ and in its FAQPage schema (which must match what's visible)
 export function htsFaqs({
@@ -10,6 +11,8 @@ export function htsFaqs({
   tariffElement,
   children,
   sectionChapter,
+  imports,
+  importNames = {},
 }: {
   element: HtsElement;
   productName: string;
@@ -17,6 +20,9 @@ export function htsFaqs({
   tariffElement: HtsElement;
   children: HtsElement[];
   sectionChapter: SectionChapter;
+  // Where the US imports it from (Census), and the countries' names
+  imports?: UsImports | null;
+  importNames?: Record<string, string>;
 }): FaqEntry[] {
   const chapterCtx = sectionChapter
     ? `, classified under Chapter ${element.chapter} (${sectionChapter.chapterDescription})`
@@ -67,6 +73,18 @@ export function htsFaqs({
           ]]
           : [];
       })
+      : []),
+    ...(imports && imports.level === 10 && imports.totalValue > 0
+      ? [[
+        `Where does the US import HTS ${element.htsno} from?`,
+        (() => {
+          const top = Array.from(imports.byCountry.entries())
+            .sort((a, b) => b[1].value - a[1].value)
+            .slice(0, 3)
+            .map(([iso, v]) => `${importNames[iso] ?? iso} (${Math.round((v.value / imports.totalValue) * 100)}%)`);
+          return `In ${imports.year} the US imported ${formatImportValue(imports.totalValue)} of ${inSentence(productName)} under HTS ${element.htsno}, mostly from ${top.slice(0, -1).join(", ")}${top.length > 1 ? " and " : ""}${top[top.length - 1]}, according to U.S. Census Bureau import data.`;
+        })(),
+      ] as FaqEntry]
       : []),
     ...(summary && lowest
       ? [[

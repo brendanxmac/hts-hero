@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChangelogEntry, ChangelogEntryInput } from "@/libs/supabase/tariff-changelog";
-import * as ui from "@/components/ui/styles";
+import * as mk from "@/components/ui/marketing/styles";
 import { ChangelogArticle } from "./ChangelogArticle";
 import { ChangelogEntryForm } from "./ChangelogEntryForm";
 import { emptyDraft, request, sortEntries } from "./changelogEntries";
@@ -53,21 +53,21 @@ export const ChangelogList = ({
   };
 
   return (
-    <div className="mt-10">
+    <div className="mt-6">
       {isAdmin && (
         <div className="mb-6 flex items-center justify-between gap-3">
-          <p className="text-sm text-base-content/60">
+          <p className={mk.small}>
             Admin: drafts are only visible to you.
           </p>
           {editing !== "new" && (
-            <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => setEditing("new")}>
+            <button type="button" className={`${mk.buttonPrimary} h-9 px-4 text-sm`} onClick={() => setEditing("new")}>
               Add entry
             </button>
           )}
         </div>
       )}
       {error && (
-        <p role="alert" className={`${ui.notice("error")} mb-4 text-sm text-base-content`}>
+        <p role="alert" className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
           {error}
         </p>
       )}
@@ -76,15 +76,15 @@ export const ChangelogList = ({
       )}
 
       {entries.length === 0 ? (
-        <p className={`${ui.card} px-5 py-8 text-center text-sm text-base-content/60`}>
+        <p className={`${mk.card} px-5 py-10 text-center text-sm text-slate-500`}>
           No updates yet.
         </p>
       ) : (
-        <ol className="relative border-l border-base-300 ml-1.5">
+        <ol className="relative ml-1.5 border-l border-slate-200">
           {entries.map((entry) => (
-            <li key={entry.id} className="relative pl-6 pb-8 last:pb-0">
+            <li key={entry.id} className="relative pb-12 pl-8 last:pb-0">
               <span
-                className="absolute -left-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-base-200 bg-primary"
+                className="absolute left-[-7px] top-1 h-3 w-3 rounded-full bg-teal-600 ring-4 ring-white"
                 aria-hidden
               />
               {editing === entry.id ? (

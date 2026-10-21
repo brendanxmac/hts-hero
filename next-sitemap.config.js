@@ -26,8 +26,8 @@ async function getHtsCodes() {
   const u8 = new Uint8Array(arrayBuffer);
   const decompressed =
     u8.length >= 2 && u8[0] === 0x1f && u8[1] === 0x8b
-      ? pako.ungzip(u8, { to: "string" })
-      : pako.inflate(u8, { to: "string" });
+      ? pako.ungzip(u8, { toText: true })
+      : pako.inflate(u8, { toText: true });
   const elements = JSON.parse(decompressed);
 
   const codes = elements
@@ -35,6 +35,26 @@ async function getHtsCodes() {
     .map((el) => el.htsno);
 
   return { codes, revisionDate: revision.created_at };
+}
+
+// Published tariff updates (/tariff-updates/[slug]), each with its latest activity. Pages added
+// after a build are found through the list page and its RSS feed until the next build.
+async function getTariffUpdates() {
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const { data, error } = await supabase
+    .from("tariff_updates")
+    .select("id, slug, kind, last_activity_at")
+    .eq("status", "published")
+    .order("last_activity_at", { ascending: false })
+    .limit(5000);
+  if (error) throw new Error(`Failed to get tariff updates: ${error.message}`);
+  // An HTS revision's page is noindexed until the calculator changelog describes the revision
+  // (app/tariff-updates/[slug]), so it stays out of the sitemap until then too
+  const { data: releases } = await supabase.from("tariff_source_items").select("update_id, external_id").eq("source", "usitc").not("update_id", "is", null);
+  const { data: entries } = await supabase.from("tariff_changelog").select("revision").eq("status", "published").eq("type", "revision");
+  const described = new Set((entries || []).map((e) => e.revision));
+  const releaseOf = new Map((releases || []).map((r) => [r.update_id, r.external_id]));
+  return data.filter((u) => u.kind !== "hts_revision" || described.has(releaseOf.get(u.id)));
 }
 
 // Each blog post's last update, from its frontmatter
@@ -54,14 +74,20 @@ function blogPostDates() {
   return postDates;
 }
 
-// Server-rendered pages to list, with their priority. Country pages follow
-// libs/country-pages/countries.ts (testing/sitemap.test.ts keeps the two in step).
+// The "[Country] to US tariff calculator" pages, from the same list the pages are built from
+const COUNTRY_PAGES = require("./libs/country-pages/countries.json");
+
+// Server-rendered pages to list, with their priority
 const KEY_PAGES = [
   ["/duty-calculator", 1.0],
-  ["/duty-calculator/china", 0.9],
-  ["/duty-calculator/japan", 0.9],
+  ["/duty-calculator/countries", 0.9],
+  ...COUNTRY_PAGES.map((c) => [`/duty-calculator/${c.slug}`, 0.9]),
   ["/duty-calculator/faq", 0.7],
   ["/duty-calculator/changelog", 0.6],
+  ["/tariff-monitor", 0.9],
+  ["/tariff-audit", 0.9],
+  ["/tariff-updates", 0.9],
+  ["/classify", 0.8],
   ["/pricing-calculator", 0.6],
   ["/explore", 0.5],
 ];
@@ -72,11 +98,11 @@ function priorityOf(path) {
   const key = KEY_PAGES.find(([loc]) => loc === path);
   if (key) return key[1];
   if (path === "/") return 0.9;
-  if (path === "/tariff-tracker") return 0.8;
   if (path === "/compare" || path.startsWith("/compare/")) return 0.8;
   if (path === "/blog") return 0.7;
   if (path.startsWith("/blog/category/") || path.startsWith("/blog/author/")) return 0.4;
   if (path.startsWith("/blog/")) return 0.7;
+  if (path.startsWith("/tariff-updates/")) return 0.6;
   if (path.startsWith("/hts/")) return 0.5;
   if (["/tos", "/privacy-policy"].includes(path)) return 0.2;
   return 0.6;
@@ -103,11 +129,17 @@ module.exports = {
     "/coverage-checker*",
     // Account pages: nothing for search engines here
     "/signin",
+    // The Tariff Tracker app is noindexed; /tariff-monitor is its page
+    "/tariff-tracker",
+    // Local previews without sign-in (never committed or deployed)
+    "/zz-*",
     "/sign-out",
     "/reset-password",
     "/settings*",
     // Feeds and machine-readable files aren't pages
     "/blog/feed.xml",
+    "/tariff-updates/feed.xml",
+    "/tariff-updates/subscription",
     "/llms.txt",
     // Retired or stale: the Tariff Impact Checker (being sunset; its tool stays up for existing
     // users), the old tariff coverage and pending-announcement pages, and /about/tariffs, which
@@ -126,10 +158,17 @@ module.exports = {
   // want found are listed here: above all the calculator, which this whole sitemap supports
   additionalPaths: async (config) => {
     const { codes, revisionDate } = await getHtsCodes();
+    const updates = await getTariffUpdates();
     const lastmod = new Date(revisionDate).toISOString();
     const pages = KEY_PAGES.map(([loc]) => ({ loc, changefreq: config.changefreq, priority: priorityOf(loc) }));
     return [
       ...pages,
+      ...updates.map((u) => ({
+        loc: `/tariff-updates/${u.slug}`,
+        changefreq: "weekly",
+        priority: priorityOf(`/tariff-updates/${u.slug}`),
+        lastmod: new Date(u.last_activity_at).toISOString(),
+      })),
       ...codes.map((code) => ({
         loc: `/hts/${code}`,
         changefreq: "monthly",

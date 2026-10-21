@@ -51,6 +51,8 @@ function NewClassificationContent() {
   const hasAutoSubmittedRef = useRef(false);
 
   const productParam = searchParams.get("product") || "";
+  // A 10-digit code to confirm (e.g. from the HTS explorer's "Confirm this classification")
+  const codeParam = searchParams.get("code") || "";
 
   useEffect(() => {
     resetClassificationState();
@@ -62,6 +64,13 @@ function NewClassificationContent() {
       hasAutoSubmittedRef.current = true;
     }
   }, [productParam]);
+
+  useEffect(() => {
+    if (codeParam && isValidTenDigitHtsInput(codeParam)) {
+      setInputMode("hts_code");
+      setLocalHtsCode(normalizeHtsCode(codeParam));
+    }
+  }, [codeParam]);
 
   const descriptionCanSubmit = localDescription.trim().length > 0;
   const htsCanSubmit = isValidTenDigitHtsInput(localHtsCode);
@@ -217,11 +226,11 @@ function NewClassificationContent() {
                   m === "description" ? "hts_code" : "description"
                 )
               }
-              className="relative h-3.5 w-7 shrink-0 rounded-full border border-base-content/[0.07] bg-base-content/[0.035] transition-[border-color,background-color] hover:border-base-content/[0.11] hover:bg-base-content/[0.05] focus:outline-none focus-visible:ring-1 focus-visible:ring-base-content/15 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100"
+              className="relative h-3.5 w-7 shrink-0 rounded-full border border-base-content/[0.07] bg-base-content/[0.035] transition-[border-color,background-color] hover:border-base-content/[0.11] hover:bg-base-content/[0.05] focus:outline-hidden focus-visible:ring-1 focus-visible:ring-base-content/15 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100"
             >
               <span
                 aria-hidden
-                className={`pointer-events-none absolute left-[1px] top-1/2 block h-2 w-2 -translate-y-1/2 rounded-full bg-base-content/[0.22] transition-transform duration-200 ease-out ${inputMode === "hts_code" ? "translate-x-4" : ""
+                className={`pointer-events-none absolute left-px top-1/2 block h-2 w-2 -translate-y-1/2 rounded-full bg-base-content/[0.22] transition-transform duration-200 ease-out ${inputMode === "hts_code" ? "translate-x-4" : ""
                   }`}
               />
             </button>
@@ -294,7 +303,7 @@ function NewClassificationContent() {
                       void handleSubmit();
                     }
                   }}
-                  className="mt-2 w-full bg-transparent text-lg font-mono font-medium text-base-content placeholder:text-base-content/30 outline-none border-0 focus:ring-0"
+                  className="mt-2 w-full bg-transparent text-lg font-mono font-medium text-base-content placeholder:text-base-content/30 outline-hidden border-0 focus:ring-0"
                 />
                 <p className="mt-1 text-xs text-base-content/45">
                   Dots and spaces optional. Must resolve to exactly 10 digits in chapters 1-97.
@@ -303,7 +312,7 @@ function NewClassificationContent() {
               <div className="px-4 pb-4">
                 <button
                   type="button"
-                  className="btn btn-primary w-full gap-2 rounded-xl min-h-[2.75rem] font-semibold"
+                  className="btn btn-primary w-full gap-2 rounded-xl min-h-11 font-semibold"
                   disabled={!htsCanSubmit || loading}
                   onClick={() => void handleSubmit()}
                 >

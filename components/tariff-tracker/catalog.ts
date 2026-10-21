@@ -12,7 +12,22 @@ export interface CatalogItem {
   code: string;
   // Two-letter country code
   country: string;
+  // Picked by the user for their plan's coverage (true), or taken out of it (false). Unset, it
+  // can fill a spare slot (highest duty first). See TrackerContext.
+  covered?: boolean;
+  // How many shipments of it a year, for yearly savings (1 when unset)
+  shipmentsPerYear?: number;
+  // A secured change of origin: the country it's moving to (the new origin is its own product)
+  movingTo?: string;
+  // When it was added (ISO). Tariff updates already alerted before then aren't alerted for it.
+  addedAt?: string;
+  // From the example list, to look around with: not one of the user's imports, so it doesn't
+  // start the trial or finish onboarding (see realItems). Cleared when they add it themselves.
+  example?: true;
 }
+
+// What's kept about a product besides its code and origin
+export type CatalogItemMeta = Pick<CatalogItem, "shipmentsPerYear" | "movingTo">;
 
 // A product on its way into the catalog, with any adjustments it brings (from a CSV upload)
 export interface NewProduct extends CatalogItem {
@@ -21,17 +36,31 @@ export interface NewProduct extends CatalogItem {
 
 export const itemKey = (item: CatalogItem) => `${item.code}-${item.country}`;
 
-// Adds products, skipping any already in the catalog (or repeated in what's added)
+// The user's own imports: everything but the example list's
+export const realItems = <T extends Pick<CatalogItem, "example">>(items: T[]) => items.filter((item) => !item.example);
+
+// Adds products, skipping any already in the catalog (or repeated in what's added). An example
+// product added again for real becomes the user's own (and counts as added).
 export const mergeItems = (existing: CatalogItem[], incoming: CatalogItem[]) => {
-  const keys = new Set(existing.map(itemKey));
-  const added: CatalogItem[] = [];
+  const index = new Map(existing.map((item, i) => [itemKey(item), i]));
+  const items = [...existing];
+  let added = 0;
   incoming.forEach((item) => {
     const key = itemKey(item);
-    if (keys.has(key)) return;
-    keys.add(key);
-    added.push({ code: item.code, country: item.country });
+    const at = index.get(key);
+    if (at !== undefined) {
+      if (items[at].example && !item.example) {
+        const { example: _example, ...own } = items[at];
+        items[at] = own;
+        added++;
+      }
+      return;
+    }
+    index.set(key, items.length);
+    items.push({ code: item.code, country: item.country, ...(item.addedAt && { addedAt: item.addedAt }), ...(item.example && { example: true as const }) });
+    added++;
   });
-  return { items: [...existing, ...added], added: added.length, duplicates: incoming.length - added.length };
+  return { items, added, duplicates: incoming.length - added };
 };
 
 // ── Storage ──

@@ -10,7 +10,7 @@ import {
 import {
   NavigatableElement,
   NavigatableElementType,
-} from "../components/Elements";
+} from "../components/hts-explorer/types";
 import {
   HtsElement,
   HtsSectionAndChapterBase,

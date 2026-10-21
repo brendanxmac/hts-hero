@@ -1,0 +1,17 @@
+import { NextRequest, NextResponse } from "next/server"
+import { createAdminClient } from "@/app/api/supabase/server"
+import { parsePreferences, updatePreferences } from "@/libs/email/subscribers"
+
+export const dynamic = "force-dynamic"
+
+// The manage page's save: the token from the email link is the key
+export async function PATCH(req: NextRequest) {
+  const body: Record<string, unknown> | null = await req.json().catch((): null => null)
+  if (!body || typeof body.token !== "string") return NextResponse.json({ error: "Bad request" }, { status: 400 })
+  const db = createAdminClient()
+  const s = await updatePreferences(db, body.token, parsePreferences(body))
+  if (!s) return NextResponse.json({ error: "This link isn't valid any more." }, { status: 404 })
+  // Account holders: tips and onboarding emails on or off
+  if (typeof body.lifecycle === "boolean") await db.from("email_subscribers").update({ lifecycle: body.lifecycle }).eq("id", s.id)
+  return NextResponse.json({ ok: true })
+}

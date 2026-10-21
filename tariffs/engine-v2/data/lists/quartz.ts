@@ -4,9 +4,9 @@ import { CodeList } from "../../types"
 
 export const quartzLists: CodeList[] = [
   // 41(c): "the products of the following countries shall not be subject to the rates of duty and
-  // tariff-rate quotas". Kosovo (XK) and Congo (Kinshasa) (CD) aren't in the calculator's country
-  // list yet. Belize, Dominica, Grenada, Guyana, Haiti, Jamaica, Saint Lucia and Saint Vincent are
-  // in both (iii) and (iv).
+  // tariff-rate quotas". Kosovo (XK) isn't in the calculator's country list yet. Belize,
+  // Dominica, Grenada, Guyana, Haiti, Jamaica, Saint Lucia and Saint Vincent are in both (iii)
+  // and (iv).
   {
     id: "quartzSafeguardExempt41c",
     kind: "country",

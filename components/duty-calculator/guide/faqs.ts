@@ -1,14 +1,23 @@
 import config from "@/config";
+import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions";
 
 // The duty calculator's questions, in sections for /duty-calculator/faq. The calculator page
-// shows a shortlist (dutyCalculatorFaqs). Both pages put the same text in their FAQPage JSON-LD.
+// shows a selection of them (dutyCalculatorFaqs). Both pages put the same text in their FAQPage JSON-LD.
 
 export type Faq = { question: string; answer: string };
 export type FaqSection = { id: string; title: string; description: string; faqs: Faq[] };
 
 // Facts several answers repeat, kept in one place
 const MPF = "0.3464% of the customs value, with a minimum of $34.58 and a maximum of $670.86 for fiscal year 2027 (from October 1, 2026)";
-const HISTORY_FROM = "April 8, 2026 (2026 HTS Revision 5)";
+// The first verified revision: "February 25, 2026" and "Revision 4"
+const firstVerified = getVerifiedRevisions()[0];
+export const historyStartDate = new Date(`${firstVerified.from}T00:00:00`).toLocaleDateString("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+export const historyStartRevision = firstVerified.title.replace(/ \(\d{4}\)$/, "");
+const HISTORY_FROM = `${historyStartDate} (${firstVerified.from.slice(0, 4)} HTS ${historyStartRevision})`;
 
 export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] => [
   {
@@ -54,7 +63,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "Is this US tariff calculator free?",
         answer:
-          "Yes. The HTS Hero duty and tariff calculator is free to use with no sign-up. You get the full line-by-line breakdown: the base rate, every Chapter 99 tariff and exemption, trade preferences and customs fees.",
+          "Yes. The HTS Hero duty and tariff calculator is free to use with no sign-up. You get the full line-by-line breakdown: the base rate, every Chapter 99 tariff and exemption, trade preferences and customs fees. Duty Over Time is free too. A free account adds the plain-English why behind every result (why each tariff applies and why others don't, with the legal text), and Analysis (the duty from every country of origin).",
       },
       {
         question: "Can I save or share a calculation?",
@@ -189,7 +198,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "Can I see how a product's duty changed over time?",
         answer:
-          "Yes. Duty Over Time charts the duty on your product across every HTS revision, with each change and the heading that caused it, so you can see when a tariff started, ended or changed rate.",
+          "Yes. Duty Over Time charts the duty on your product across every HTS revision, with each change and the heading that caused it, so you can see when a tariff started, ended or changed rate. It needs a free account.",
       },
     ],
   },
@@ -210,7 +219,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "How much does HTS Hero cost?",
         answer:
-          "The duty calculator is free. Paid plans, including Tariff Tracker for product catalogs and Classify for HTS classification, are monthly with published prices and no contract, and annual billing takes 10% off. See the pricing page for current prices.",
+          "The duty calculator is free. Paid plans, including Tariff Tracker for product catalogs and Classify for HTS classification, are monthly with published prices and no contract, and annual billing takes 15% off. See the pricing page for current prices.",
       },
       {
         question: "Is this legal or customs advice?",
@@ -221,7 +230,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
   },
 ];
 
-// The shortlist on the calculator page
+// The questions shown on the calculator page
 const PAGE_QUESTIONS = [
   "How do I calculate US import duty?",
   "Is this US tariff calculator free?",

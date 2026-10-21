@@ -16,7 +16,7 @@ export function ClassifyCTA({
   ctaRedirectUrl,
 }: ClassifyCTAProps) {
   return (
-    <div className="my-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-transparent via-primary/10 to-secondary/10 border border-primary/10">
+    <div className="my-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-linear-to-r from-transparent via-primary/10 to-secondary/10 border border-primary/10">
       <div className="flex items-center gap-3">
         <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 shrink-0 mt-0.5">
           <svg

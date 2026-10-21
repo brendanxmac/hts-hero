@@ -44,7 +44,7 @@ export default function HtsCodeSetDropdown({
     <div className="w-full">
       <Listbox value={selectedIndex} onChange={onSelectionChange}>
         <div className="relative">
-          <Listbox.Button className="relative w-full cursor-default rounded-xl border border-base-content/10 bg-base-100/50 py-3 pl-4 pr-10 text-left transition-all duration-200 hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30">
+          <Listbox.Button className="relative w-full cursor-default rounded-xl border border-base-content/10 bg-base-100/50 py-3 pl-4 pr-10 text-left transition-all duration-200 hover:border-primary/30 focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary/30">
             <div className="flex items-center gap-3">
               <span
                 className={`truncate text-sm sm:text-base ${selectedSet ? "text-base-content font-medium" : "text-base-content/50"}`}
@@ -71,7 +71,7 @@ export default function HtsCodeSetDropdown({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute z-10 mt-2 max-h-72 w-full overflow-auto rounded-xl bg-base-100 border border-base-content/10 py-1 text-base shadow-2xl shadow-black/10 focus:outline-none">
+            <Listbox.Options className="absolute z-10 mt-2 max-h-72 w-full overflow-auto rounded-xl bg-base-100 border border-base-content/10 py-1 text-base shadow-2xl shadow-black/10 focus:outline-hidden">
               {/* Create New List Option */}
               <div
                 className="relative cursor-pointer select-none py-3 px-4 transition-colors duration-150 hover:bg-primary/10 flex items-center gap-2 text-primary border-b border-base-content/10"
@@ -131,7 +131,7 @@ export default function HtsCodeSetDropdown({
 
                       {/* Check icon for selected item */}
                       {selected && (
-                          <span className="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-primary/10">
+                          <span className="flex items-center justify-center shrink-0 w-6 h-6 rounded-full bg-primary/10">
                             <CheckIcon
                               className="h-4 w-4 text-primary"
                               aria-hidden="true"

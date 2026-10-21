@@ -18,12 +18,17 @@ import {
   firstVerifiedDate,
 } from "./duty";
 import { changelogUrl, htsPageUrl, LinkContext } from "./links";
-import { DISCLAIMER, dutyPayload, dutySummary, originRow, programName, productDescription } from "./payloads";
+import { Countries } from "../../constants/countries";
+import { getUsImports } from "../us-imports-server";
+import { countryImports, DISCLAIMER, dutyPayload, dutySummary, importsMeta, originRow, programName, productDescription } from "./payloads";
 import { RequestInfo, trackToolCall } from "./track";
 import { WIDGET_URI } from "./widget";
 
 // The MCP server's tools. All read-only and open to anyone: they only read public tariff data.
 // Tools that touch a user's own data (tracking products, alerts) come with sign-in in v1.
+
+// A country's name from its code, or the code when it isn't one we know
+const findOriginName = (code: string) => Countries.find((c) => c.code === code)?.name ?? code;
 
 const READ_ONLY = {
   readOnlyHint: true,
@@ -173,6 +178,7 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
     countries?: string[];
     limit?: number;
     basis?: "with_trade_programs" | "standard";
+    only_us_suppliers?: boolean;
   }
 
   server.registerTool(
@@ -183,6 +189,8 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
         "Use this when the user asks which country is cheapest to import a product from, how the duty on a product differs between countries of origin, or where to source to lower US tariffs, for a known HTS code.",
         "Works out the duty from every country (about 200), with and without the best trade program each can claim, and returns them ranked lowest first.",
         "Pass `countries` to compare specific origins, or leave it out for the cheapest ones overall; pass `country_of_origin` for the user's current origin so it's marked and ranked.",
+        "Each origin carries how much of the product the US imported from it last year (U.S. Census Bureau), so a cheaper rate can be checked against whether the country actually makes it; `proven_cheaper_origins` lists the largest suppliers paying less than the user's origin. Set `only_us_suppliers` to rank only countries that already ship it to the US.",
+        "When showing import figures, include the `us_imports.notice` attribution.",
         "Do not use this to find an HTS code from a description.",
       ].join(" "),
       inputSchema: fromJsonSchema<CompareArgs>({
@@ -197,6 +205,10 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
             description: "Origins to compare (ISO codes or names). Leave out for the cheapest origins overall.",
           },
           limit: { type: "integer", minimum: 1, maximum: 50, description: "How many origins to return when `countries` is left out. Default 10." },
+          only_us_suppliers: {
+            type: "boolean",
+            description: "Only origins the US imported this product from last year (Census), for sourcing options that already exist. Default false.",
+          },
           basis: {
             type: "string",
             enum: ["with_trade_programs", "standard"],
@@ -221,7 +233,11 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
         toRequest({ ...args, country_of_origin: requested?.code ?? chosen[0]?.code ?? "CN" })
       );
       const basis: RateBasis = args.basis === "standard" ? "standard" : "agreements";
-      // Among origins on the same rate, the largest sources of US imports first
+      // Which countries the US imports it from (Census), when there are figures
+      const imports = getUsImports(calc.line.element.htsno);
+      const shipped = (code: string) => imports?.byCountry.get(code)?.value ?? 0;
+      // Among origins on the same rate, the largest suppliers of this product first, then the
+      // largest sources of US imports overall
       const importRank = (code: string) => {
         const i = SUMMARY_COUNTRY_CODES.indexOf(code);
         return i === -1 ? SUMMARY_COUNTRY_CODES.length : i;
@@ -234,6 +250,7 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
       }).sort(
         (a, b) =>
           rateKey(rateOf(a, basis)) - rateKey(rateOf(b, basis)) ||
+          shipped(b.country.code) - shipped(a.country.code) ||
           importRank(a.country.code) - importRank(b.country.code) ||
           a.country.name.localeCompare(b.country.name)
       );
@@ -241,7 +258,11 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
       // Origins on the same rate share a rank
       const distinct = Array.from(new Set(rates.map((r) => rateKey(rateOf(r, basis)))));
       const rankOf = (pct: number) => distinct.indexOf(rateKey(pct)) + 1;
-      const rows = rates.map((r) => originRow(r, calc.customsValue, rankOf(rateOf(r, basis)), basis));
+      const rows = rates.map((r) => ({
+        ...originRow(r, calc.customsValue, rankOf(rateOf(r, basis)), basis),
+        us_imports: countryImports(imports, r.country.code),
+      }));
+      const listed = args.only_us_suppliers && imports ? rows.filter((r) => r.us_imports || r.is_requested_origin) : rows;
       const tiers = distinct.slice(0, 12).map((pct, i) => {
         const at = rows.filter((r) => r.rank === i + 1);
         return { rank: i + 1, rate_pct: pct, origins: at.length, examples: at.slice(0, 6).map((r) => r.country.name) };
@@ -249,14 +270,21 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
 
       const chosenCodes = new Set(chosen.map((c) => c.code));
       const shown = chosen.length
-        ? rows.filter((r) => chosenCodes.has(r.country.code) || r.is_requested_origin)
+        ? listed.filter((r) => chosenCodes.has(r.country.code) || r.is_requested_origin)
         : [
-            ...rows.slice(0, args.limit ?? 10),
-            ...rows.slice(args.limit ?? 10).filter((r) => r.is_requested_origin),
+            ...listed.slice(0, args.limit ?? 10),
+            ...listed.slice(args.limit ?? 10).filter((r) => r.is_requested_origin),
           ];
       const lowest = rows[0];
       const highest = rows[rows.length - 1];
       const requestedRow = rows.find((r) => r.is_requested_origin) ?? null;
+      // The largest suppliers to the US paying less than the user's origin: realistic places to move
+      const proven = requestedRow
+        ? rows
+            .filter((r) => r.us_imports && !r.is_requested_origin && r.effective_duty_rate_pct < requestedRow.effective_duty_rate_pct - 0.005)
+            .sort((a, b) => b.us_imports!.value_usd - a.us_imports!.value_usd)
+            .slice(0, 8)
+        : [];
 
       const payload = {
         kind: "comparison" as const,
@@ -270,6 +298,8 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
         basis: basis === "agreements" ? "with_trade_programs" : "standard",
         origins: shown,
         rate_tiers: tiers,
+        proven_cheaper_origins: requestedRow && imports ? proven : null,
+        us_imports: imports ? importsMeta(imports) : null,
         summary: {
           origins_compared: rows.length,
           distinct_rates: distinct.length,
@@ -297,6 +327,11 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
         `Duty on HTS ${payload.product.hts_code} (${payload.product.description}) across ${rows.length} origins, ${calc.asOf}:`,
         `Lowest ${lowest.effective_duty_rate_pct}% (${payload.summary.origins_at_lowest_rate} origins), highest ${highest.effective_duty_rate_pct}%.`,
         requestedRow ? `${requestedRow.country.name}: ${requestedRow.effective_duty_rate_pct}%, rank ${requestedRow.rank} of ${distinct.length} distinct rates.` : "",
+        proven.length
+          ? `Cheaper origins that already ship it to the US (${imports!.year} imports): ${proven
+              .map((r) => `${r.country.name} ${r.effective_duty_rate_pct}% ($${Math.round(r.us_imports!.value_usd / 1e6).toLocaleString("en-US")}M)`)
+              .join(", ")}.`
+          : "",
         ...shown.map(
           (r) =>
             `#${r.rank} ${r.country.name}: ${r.effective_duty_rate_pct}%${
@@ -305,8 +340,9 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
                 : r.best_trade_program
                   ? ` (${r.best_trade_program.effective_duty_rate_pct}% with ${r.best_trade_program.symbol})`
                   : ""
-            }`
+            }${r.us_imports ? `, US imports $${Math.round(r.us_imports.value_usd / 1e6).toLocaleString("en-US")}M` : ""}`
         ),
+        imports ? `Import figures: ${importsMeta(imports).source}. ${importsMeta(imports).notice}` : "",
       ]
         .filter(Boolean)
         .join("\n");
@@ -401,7 +437,8 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
     {
       title: "Look up an HTS code",
       description: [
-        "Use this when the user gives a US HTS code and wants what it covers, its base duty rates (general, special, column 2), its parent headings or the more specific lines under it, or a quick view of its total duty from major origins.",
+        "Use this when the user gives a US HTS code and wants what it covers, its base duty rates (general, special, column 2), its parent headings or the more specific lines under it, a quick view of its total duty from major origins, or which countries the US imports it from (U.S. Census Bureau, last full year).",
+        "When showing import figures, include the `us_imports.notice` attribution.",
         "Do not use this to search for a code by product description.",
       ].join(" "),
       inputSchema: fromJsonSchema<{ hts_code: string }>({
@@ -417,6 +454,14 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
       const { element, rateElement, parents, elements } = line;
       const children = childLines(element, elements);
       const summary = children.length ? null : getHtsDutySummary(element, rateElement);
+      const imports = element.htsno ? getUsImports(element.htsno) : null;
+      const sources = imports
+        ? Array.from(imports.byCountry.keys())
+            .map((code) => ({ code, figures: countryImports(imports, code) }))
+            .filter((s) => s.figures)
+            .sort((a, b) => b.figures!.value_usd - a.figures!.value_usd)
+            .slice(0, 10)
+        : [];
       const payload = {
         kind: "hts_code" as const,
         hts_code: element.htsno,
@@ -441,6 +486,12 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
               with_trade_program: r.preference ? { symbol: r.preference.symbol, name: r.preference.name, total_pct: r.preference.totalPct } : null,
             }))
           : null,
+        us_imports: imports
+          ? {
+              ...importsMeta(imports),
+              top_sources: sources.map((s) => ({ country: s.code, name: findOriginName(s.code), ...s.figures! })),
+            }
+          : null,
         as_of: summary?.asOf ?? todayIso(),
         rates_revision: line.ratesRevision,
         disclaimer: DISCLAIMER,
@@ -450,6 +501,12 @@ export const registerTools = (server: McpServer, request: RequestInfo) => {
         `HTS ${payload.hts_code}: ${payload.description}.`,
         `Base rates (from ${payload.base_rates.from_line}): general ${payload.base_rates.general ?? "–"}, special ${payload.base_rates.special ?? "–"}, column 2 ${payload.base_rates.column_2 ?? "–"}.`,
         children.length ? `${children.length} more specific lines under it; duty needs one of them.` : "",
+        imports && sources.length
+          ? `US imports ${imports.year}: $${Math.round(imports.totalValue / 1e6).toLocaleString("en-US")}M, mostly from ${sources
+              .slice(0, 3)
+              .map((s) => `${findOriginName(s.code)} (${s.figures!.share_pct}%)`)
+              .join(", ")}. ${importsMeta(imports).notice}`
+          : "",
       ]
         .filter(Boolean)
         .join("\n");

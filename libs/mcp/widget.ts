@@ -137,6 +137,11 @@ export const widgetHtml = `<!doctype html>
       '<div class="note">' + esc(d.disclaimer) + "</div>";
   }
 
+  // 1250000000 → "$1.3B"
+  function shortUsd(v) {
+    return v >= 1e9 ? "$" + (v / 1e9).toFixed(1).replace(/\\.0$/, "") + "B" : v >= 1e6 ? "$" + Math.round(v / 1e6) + "M" : "$" + Math.max(1, Math.round(v / 1e3)) + "K";
+  }
+
   function renderComparison(c) {
     var max = Math.max.apply(null, c.origins.map(function (o) { return o.effective_duty_rate_pct; }).concat([0.01]));
     var rows = c.origins.map(function (o) {
@@ -144,8 +149,10 @@ export const widgetHtml = `<!doctype html>
       var agreement = !p ? "" : '<div class="muted" style="font-size:12px">' + (o.effective_duty_rate_pct !== o.standard_rate_pct
         ? "With " + esc(p.symbol) + " claimed · " + pct(o.standard_rate_pct) + " standard"
         : pct(p.effective_duty_rate_pct) + " with " + esc(p.symbol)) + "</div>";
+      var shipped = !o.us_imports ? "" : '<div class="muted" style="font-size:12px">Ships ' + shortUsd(o.us_imports.value_usd) + " to the US" +
+        (c.us_imports ? " (" + c.us_imports.year + ")" : "") + "</div>";
       return '<tr class="' + (o.is_requested_origin ? "mine" : "") + '"><td class="muted" style="width:32px">#' + o.rank + "</td><td>" + esc(o.country.flag || "") + " " + esc(o.country.name) +
-        '<div class="row-bar" style="width:' + Math.max(2, o.effective_duty_rate_pct / max * 100) + '%"></div>' + agreement + '</td><td class="num">' + pct(o.effective_duty_rate_pct) + "</td></tr>";
+        '<div class="row-bar" style="width:' + Math.max(2, o.effective_duty_rate_pct / max * 100) + '%"></div>' + agreement + shipped + '</td><td class="num">' + pct(o.effective_duty_rate_pct) + "</td></tr>";
     }).join("");
     var s = c.summary;
     root.innerHTML =
@@ -156,7 +163,7 @@ export const widgetHtml = `<!doctype html>
       (s.requested_origin ? '<div><div class="big">' + pct(s.requested_origin.effective_duty_rate_pct) + '</div><div class="label">' + esc(s.requested_origin.country.name) + "</div></div>" : "") +
       "</div><table>" + rows + "</table>" +
       actions([{ label: "Open origin analysis", url: c.links && c.links.analysis_url }, { label: "HTS code page", url: c.links && c.links.hts_page_url }]) +
-      '<div class="note">' + esc(c.note) + " " + esc(c.disclaimer) + "</div>";
+      '<div class="note">' + esc(c.note) + " " + esc(c.disclaimer) + (c.us_imports ? " " + esc(c.us_imports.notice) : "") + "</div>";
   }
 
   function render(data) {

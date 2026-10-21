@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { SIGNUP_EMAIL_KEY } from "@/components/tariff-updates/SubscribeForm";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import { Provider } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
@@ -9,22 +10,39 @@ import config from "@/config";
 import { useUser } from "../../contexts/UserContext";
 import { redirect } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
+import { ArrowLeftIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import logo from "@/app/logo.svg";
+import { THEME } from "@/components/ui/theme";
+import { trackerDisplay, trackerSans } from "@/components/ui/font";
+import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
+import { SIGNIN_HOME, SIGNUP_HOME } from "@/libs/tariff-tracker/onboarding";
 import PasswordRequirements from "@/components/PasswordRequirements";
 
 // Component that uses useSearchParams wrapped in Suspense
 function LoginContent() {
   const { user } = useUser();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect");
+  // Where to go after signing in: the page that sent them here, else the home page
+  const redirectTo = searchParams.get("redirect") || SIGNIN_HOME;
   const isRedirectForSignUp = searchParams.get("sign-up") === "true";
 
   if (user) {
-    redirect(redirectTo || "/");
+    redirect(redirectTo);
   }
 
   const supabase = createSupabaseClient();
   const [email, setEmail] = useState<string>("");
+  // Signing up right after subscribing to tariff news: the address they just gave (SubscribeForm)
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(SIGNUP_EMAIL_KEY);
+      if (saved) setEmail((now) => now || saved);
+    } catch {
+      // Storage blocked: nothing to fill in
+    }
+  }, []);
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -94,7 +112,15 @@ function LoginContent() {
         }
       } else {
         toast.success("Successfully signed in!");
-        window.location.href = redirectTo || "/";
+        // A typed code skips the auth callback: say where a new account came from here (the
+        // server keeps it only for an account made in the last hour)
+        const target = searchParams.get("redirect") || (isSignUp ? SIGNUP_HOME : redirectTo);
+        await fetch("/api/tracker/onboarding", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "signup", redirect: target }),
+        }).catch((): null => null);
+        window.location.href = target;
       }
     } catch (error) {
       console.error(error);
@@ -123,10 +149,12 @@ function LoginContent() {
 
     try {
       if (isSignUp) {
+        // The confirmation link signs them in and goes on to where sign-up was headed (e.g. the
+        // import they tracked from the calculator)
         const signUpRedirect =
           window.location.origin +
           "/api/auth/callback" +
-          `?redirect=${encodeURIComponent("/signin")}`;
+          `?redirect=${encodeURIComponent(searchParams.get("redirect") || SIGNUP_HOME)}`;
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -151,7 +179,7 @@ function LoginContent() {
           toast.error(error.message);
         } else {
           toast.success("Successfully signed in!");
-          window.location.href = redirectTo || "/";
+          window.location.href = redirectTo;
         }
       }
     } catch (error) {
@@ -175,9 +203,8 @@ function LoginContent() {
 
     try {
       const { type, provider } = options;
-      const redirectParam = redirectTo
-        ? `?redirect=${encodeURIComponent(redirectTo)}`
-        : "";
+      // A new account with nowhere it was headed starts on the home page, with every product
+      const redirectParam = `?redirect=${encodeURIComponent(searchParams.get("redirect") || (isSignUp ? SIGNUP_HOME : redirectTo))}`;
       const redirectURL =
         window.location.origin + "/api/auth/callback" + redirectParam;
 
@@ -189,8 +216,10 @@ function LoginContent() {
           },
         });
       } else if (type === "otp") {
+        // The emailed link signs them in and comes back to the same place the code does
         const { error } = await supabase.auth.signInWithOtp({
           email,
+          options: { emailRedirectTo: redirectURL },
         });
 
         if (error) {
@@ -213,69 +242,74 @@ function LoginContent() {
     }
   };
 
-  return (
-    <main className="p-8 md:p-24 h-screen" data-theme={config.colors.theme}>
-      <div className="text-center mb-4">
-        <Link href="/" className="btn btn-ghost btn-sm">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              fillRule="evenodd"
-              d="M15 10a.75.75 0 01-.75.75H7.612l2.158 1.96a.75.75 0 11-1.04 1.08l-3.5-3.25a.75.75 0 010-1.08l3.5-3.25a.75.75 0 111.04 1.08L7.612 9.25h6.638A.75.75 0 0115 10z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Home
-        </Link>
-      </div>
-      <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-8">
-        {showForgotPassword
-          ? "Reset Your Password"
-          : showOtpVerification
-            ? "Enter Passcode"
-            : showOtpForm
-              ? "Sign in with Passcode"
-              : isSignUp
-                ? "Sign up for"
-                : "Sign in to"}{" "}
-        {!showOtpForm &&
-          !showForgotPassword &&
-          !showOtpVerification &&
-          config.appName}
-      </h1>
+  const title = showForgotPassword
+    ? "Reset your password"
+    : showOtpVerification
+      ? "Enter your passcode"
+      : showOtpForm
+        ? "Sign in with a passcode"
+        : isSignUp
+          ? `Create your ${config.appName} account`
+          : `Sign in to ${config.appName}`;
+  const subtitle = showForgotPassword
+    ? "Enter your email and we'll send you a link to set a new password."
+    : showOtpVerification
+      ? "Enter the one-time passcode we sent to your email."
+      : showOtpForm
+        ? "We'll email you a one-time passcode. No password needed."
+        : isSignUp
+          ? null
+          : "Welcome back. Pick up where you left off.";
 
-      <div className="space-y-4 max-w-xl mx-auto">
-        {showForgotPassword ? (
-          /* Forgot Password Form */
-          <>
-            <form
-              className="form-control w-full space-y-4"
-              onSubmit={handleForgotPassword}
-            >
-              <div className="flex flex-col gap-0">
-                <label className="label">
-                  <span className="label-text">Email</span>
+  return (
+    <main
+      className={`${THEME} hts-tracker ${trackerSans.className} ${trackerDisplay.variable} flex min-h-screen w-full flex-col items-center bg-base-200 px-4 py-10 sm:py-16`}
+    >
+      <div className="flex w-full max-w-md flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+          >
+            <Image src={logo} alt={`${config.appName} logo`} width={28} height={28} priority />
+            <span className={`${tt.display} text-lg font-semibold text-base-content`}>{config.appName}</span>
+          </Link>
+          <Link href="/" className={ui.button({ variant: "ghost", size: "sm" })}>
+            <ArrowLeftIcon className="h-4 w-4" />
+            Home
+          </Link>
+        </div>
+
+        <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-6`}>
+          <header className="flex flex-col gap-1.5">
+            <h1 className={`${tt.display} text-2xl font-semibold tracking-tight text-base-content`}>{title}</h1>
+            {subtitle && <p className={tt.subtitle}>{subtitle}</p>}
+          </header>
+
+          {showForgotPassword ? (
+            /* Forgot Password Form */
+            <form className="flex w-full flex-col gap-5" onSubmit={handleForgotPassword}>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="reset-email" className={ui.fieldLabel}>
+                  Email
                 </label>
                 <input
+                  id="reset-email"
                   required
                   name="email"
                   type="email"
                   value={email}
                   autoComplete="email"
-                  placeholder="Enter your email"
-                  className="input input-bordered w-full placeholder:opacity-60"
+                  placeholder="you@company.com"
+                  className={ui.input}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isDisabled}
                 />
               </div>
 
-              <div className="flex gap-2 w-full">
+              <div className="flex w-full gap-2">
                 <button
-                  className="grow btn btn-outline"
+                  className={`${ui.button({ size: "lg" })} grow`}
                   onClick={() => {
                     setShowForgotPassword(false);
                     setEmail("");
@@ -287,38 +321,30 @@ function LoginContent() {
                   Back
                 </button>
                 <button
-                  className="grow btn btn-primary"
+                  className={`${ui.button({ variant: "primary", size: "lg" })} grow`}
                   disabled={isLoading || isDisabled}
                   type="submit"
                 >
-                  {isLoading && (
-                    <span className="loading loading-spinner loading-xs"></span>
-                  )}
-                  Send Reset Link
+                  {isLoading && <Spinner />}
+                  Send reset link
                 </button>
               </div>
             </form>
-          </>
-        ) : showOtpVerification ? (
-          /* OTP Verification Form */
-          <>
-            <form
-              className="form-control w-full space-y-4"
-              onSubmit={handleVerifyOtp}
-            >
-              <div className="flex flex-col gap-0">
-                <label className="label">
-                  <span className="label-text">
-                    Enter one-time the passcode sent to your email
-                  </span>
+          ) : showOtpVerification ? (
+            /* OTP Verification Form */
+            <form className="flex w-full flex-col gap-5" onSubmit={handleVerifyOtp}>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="otp-code" className={ui.fieldLabel}>
+                  One-time passcode
                 </label>
                 <input
+                  id="otp-code"
                   required
                   name="otp"
                   type="text"
                   value={otpCode}
                   placeholder="123456"
-                  className="input input-bordered w-full placeholder:opacity-40 text-center text-2xl tracking-widest"
+                  className={`${ui.input} h-14 text-center text-2xl tracking-[0.4em] tabular-nums`}
                   onChange={(e) => setOtpCode(e.target.value)}
                   maxLength={6}
                   pattern="[0-9]*"
@@ -327,9 +353,9 @@ function LoginContent() {
                 />
               </div>
 
-              <div className="flex gap-2 w-full">
+              <div className="flex w-full gap-2">
                 <button
-                  className="grow btn btn-outline"
+                  className={`${ui.button({ size: "lg" })} grow`}
                   onClick={() => {
                     setShowOtpVerification(false);
                     setShowOtpForm(true);
@@ -341,45 +367,39 @@ function LoginContent() {
                   Back
                 </button>
                 <button
-                  className="grow btn btn-primary"
+                  className={`${ui.button({ variant: "primary", size: "lg" })} grow`}
                   disabled={isLoading}
                   type="submit"
                 >
-                  {isLoading && (
-                    <span className="loading loading-spinner loading-xs"></span>
-                  )}
-                  Sign In
+                  {isLoading && <Spinner />}
+                  Sign in
                 </button>
               </div>
             </form>
-          </>
-        ) : showOtpForm ? (
-          /* OTP Form */
-          <>
-            <form
-              className="form-control w-full space-y-4"
-              onSubmit={(e) => handleSignup(e, { type: "otp" })}
-            >
-              <div className="flex flex-col gap-0">
-                <label className="label">
-                  <span className="label-text">Email</span>
+          ) : showOtpForm ? (
+            /* OTP Form */
+            <form className="flex w-full flex-col gap-5" onSubmit={(e) => handleSignup(e, { type: "otp" })}>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="otp-email" className={ui.fieldLabel}>
+                  Email
                 </label>
                 <input
+                  id="otp-email"
                   required
                   name="email"
                   type="email"
                   value={email}
                   autoComplete="email"
-                  placeholder="john-doe@gmail.com"
-                  className="input input-bordered w-full placeholder:opacity-60"
+                  placeholder="you@company.com"
+                  className={ui.input}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isDisabled}
                 />
               </div>
 
-              <div className="flex gap-2 w-full">
+              <div className="flex w-full gap-2">
                 <button
-                  className="grow btn btn-outline"
+                  className={`${ui.button({ size: "lg" })} grow`}
                   onClick={() => {
                     setShowOtpForm(false);
                     setEmail("");
@@ -391,21 +411,19 @@ function LoginContent() {
                   Back
                 </button>
                 <button
-                  className="grow btn btn-primary"
+                  className={`${ui.button({ variant: "primary", size: "lg" })} grow`}
                   disabled={isLoading || isDisabled}
                   type="submit"
                 >
-                  {isLoading && (
-                    <span className="loading loading-spinner loading-xs"></span>
-                  )}
-                  Send Passcode
+                  {isLoading && <Spinner />}
+                  Send passcode
                 </button>
               </div>
 
               <div className="text-center">
                 <button
                   type="button"
-                  className="btn btn-link btn-sm"
+                  className={`${ui.link} text-sm disabled:opacity-50`}
                   onClick={() => setShowOtpVerification(true)}
                   disabled={isLoading}
                   data-1p-ignore
@@ -414,94 +432,106 @@ function LoginContent() {
                 </button>
               </div>
             </form>
-          </>
-        ) : (
-          <>
-            {/* Email & Password Form */}
-            <form onSubmit={handleEmailPasswordAuth} className="space-y-4">
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Email</span>
-                </label>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="input input-bordered w-full placeholder:opacity-30"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isDisabled}
-                />
-              </div>
-
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Password</span>
-                </label>
-                <div className="relative">
+          ) : (
+            <>
+              {/* Email & Password Form */}
+              <form onSubmit={handleEmailPasswordAuth} className="flex flex-col gap-5">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="email" className={ui.fieldLabel}>
+                    Email
+                  </label>
                   <input
-                    type={showPassword ? "text" : "password"}
-                    className="input input-bordered w-full pr-10 placeholder:opacity-30"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@company.com"
+                    className={ui.input}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
-                    minLength={6}
-                    placeholder="Enter your password"
                     disabled={isDisabled}
                   />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content transition-colors"
-                    onClick={() => setShowPassword(!showPassword)}
-                    disabled={isDisabled}
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <EyeSlashIcon className="w-5 h-5" />
-                    ) : (
-                      <EyeIcon className="w-5 h-5" />
-                    )}
-                  </button>
                 </div>
-              </div>
 
-              {isSignUp && (
-                <div className="form-control w-full">
-                  <label className="label">
-                    <span className="label-text">Confirm Password</span>
-                  </label>
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="password" className={ui.fieldLabel}>
+                      Password
+                    </label>
+                    {!isSignUp && (
+                      <button
+                        type="button"
+                        className={`${ui.link} text-sm disabled:opacity-50`}
+                        onClick={() => {
+                          setShowForgotPassword(true);
+                          setEmail("");
+                          setPassword("");
+                        }}
+                        disabled={isLoading}
+                      >
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
                   <div className="relative">
                     <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      className="input input-bordered w-full pr-10 placeholder:opacity-30"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete={isSignUp ? "new-password" : "current-password"}
+                      className={`${ui.input} pr-10`}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                       minLength={6}
+                      placeholder="Enter your password"
                       disabled={isDisabled}
-                      placeholder="Confirm your password"
                     />
                     <button
                       type="button"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content transition-colors"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/60 transition-colors hover:text-base-content"
+                      onClick={() => setShowPassword(!showPassword)}
                       disabled={isDisabled}
                       tabIndex={-1}
                     >
-                      {showConfirmPassword ? (
-                        <EyeSlashIcon className="w-5 h-5" />
-                      ) : (
-                        <EyeIcon className="w-5 h-5" />
-                      )}
+                      {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                     </button>
                   </div>
                 </div>
-              )}
 
-              {isSignUp &&
-                (password.length > 0 || confirmPassword.length > 0) && (
+                {isSignUp && (
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="confirm-password" className={ui.fieldLabel}>
+                      Confirm password
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="confirm-password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        autoComplete="new-password"
+                        className={`${ui.input} pr-10`}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        minLength={6}
+                        disabled={isDisabled}
+                        placeholder="Confirm your password"
+                      />
+                      <button
+                        type="button"
+                        aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/60 transition-colors hover:text-base-content"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        disabled={isDisabled}
+                        tabIndex={-1}
+                      >
+                        {showConfirmPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {isSignUp && (password.length > 0 || confirmPassword.length > 0) && (
                   <PasswordRequirements
                     password={password}
                     confirmPassword={confirmPassword}
@@ -509,133 +539,100 @@ function LoginContent() {
                   />
                 )}
 
-              <button
-                type="submit"
-                className="btn btn-primary btn-block"
-                disabled={
-                  isLoading ||
-                  isDisabled ||
-                  (isSignUp && (!isPasswordValid || !passwordsMatch))
-                }
-              >
-                {isLoading ? (
-                  <span className="loading loading-spinner loading-xs"></span>
-                ) : isSignUp ? (
-                  "Sign Up"
-                ) : (
-                  "Sign In"
-                )}
-              </button>
-
-              <div className="flex justify-center items-center gap-2 flex-wrap">
                 <button
-                  type="button"
-                  className="btn btn-link btn-sm"
-                  onClick={() => {
-                    setIsSignUp(!isSignUp);
-                    setIsDisabled(false);
-                    setConfirmPassword("");
-                  }}
+                  type="submit"
+                  className={`${ui.button({ variant: "primary", size: "lg" })} w-full`}
+                  disabled={isLoading || isDisabled || (isSignUp && (!isPasswordValid || !passwordsMatch))}
+                >
+                  {isLoading ? <Spinner /> : isSignUp ? "Create account" : "Sign in"}
+                </button>
+              </form>
+
+              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-base-content/60">
+                <span className="h-px flex-1 bg-base-300" />
+                or
+                <span className="h-px flex-1 bg-base-300" />
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <button
+                  className={`${ui.button({ size: "lg" })} w-full`}
+                  onClick={(e) => handleSignup(e, { type: "oauth", provider: "google" })}
                   disabled={isLoading}
                 >
-                  {isSignUp
-                    ? "Already have an account? Sign In"
-                    : "Don't have an account? Sign Up"}
+                  {isLoading ? (
+                    <Spinner />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 48 48" aria-hidden>
+                      <path
+                        fill="#FFC107"
+                        d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
+                      />
+                      <path
+                        fill="#FF3D00"
+                        d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
+                      />
+                      <path
+                        fill="#4CAF50"
+                        d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
+                      />
+                      <path
+                        fill="#1976D2"
+                        d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
+                      />
+                    </svg>
+                  )}
+                  Continue with Google
                 </button>
-                {!isSignUp && (
-                  <>
-                    <button
-                      type="button"
-                      className="btn btn-link btn-sm"
-                      onClick={() => {
-                        setShowForgotPassword(true);
-                        setEmail("");
-                        setPassword("");
-                      }}
-                      disabled={isLoading}
-                    >
-                      Forgot password?
-                    </button>
-                  </>
-                )}
-              </div>
-            </form>
 
-            <div className="divider text-xs text-base-content/50 font-medium pt-4">
-              OR
-            </div>
-
-            <div className="flex flex-col gap-4 pt-4">
-              <button
-                className="btn btn-primary"
-                onClick={(e) =>
-                  handleSignup(e, { type: "oauth", provider: "google" })
-                }
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <span className="loading loading-spinner loading-xs"></span>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6 bg-white rounded-md p-1"
-                    viewBox="0 0 48 48"
-                  >
-                    <path
-                      fill="#FFC107"
-                      d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
-                    />
-                    <path
-                      fill="#FF3D00"
-                      d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
-                    />
-                    <path
-                      fill="#4CAF50"
-                      d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
-                    />
-                    <path
-                      fill="#1976D2"
-                      d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
-                    />
-                  </svg>
-                )}
-                Continue with Google
-              </button>
-
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowOtpForm(true)}
-                disabled={isLoading}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="#617BFF"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="#fff"
-                  className="w-6 h-6 bg-white rounded-md p-0.5"
+                <button
+                  className={`${ui.button({ size: "lg" })} w-full`}
+                  onClick={() => setShowOtpForm(true)}
+                  disabled={isLoading}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-                  />
-                </svg>
-                Continue with Passcode
-              </button>
-            </div>
-          </>
+                  <EnvelopeIcon className="h-5 w-5 text-base-content/60" />
+                  Continue with a passcode
+                </button>
+              </div>
+            </>
+          )}
+        </section>
+
+        {!showForgotPassword && !showOtpForm && !showOtpVerification && (
+          <p className="text-center text-sm text-base-content/70">
+            {isSignUp ? "Already have an account?" : "New to " + config.appName + "?"}{" "}
+            <button
+              type="button"
+              className={`${ui.link} disabled:opacity-50`}
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setIsDisabled(false);
+                setConfirmPassword("");
+              }}
+              disabled={isLoading}
+            >
+              {isSignUp ? "Sign in" : "Create a free account"}
+            </button>
+          </p>
         )}
       </div>
     </main>
   );
 }
 
+// A small spinner for buttons that are waiting on a request
+const Spinner = () => (
+  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
+    <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+  </svg>
+);
+
 // This a login/singup page for Supabase Auth.
 // Successfull login redirects to /api/auth/callback where the Code Exchange is processed (see app/api/auth/callback/route.js).
 export default function Login() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<main className={`${THEME} hts-tracker min-h-screen w-full bg-base-200`} />}>
       <LoginContent />
     </Suspense>
   );

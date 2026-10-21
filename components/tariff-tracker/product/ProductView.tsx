@@ -1,31 +1,40 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeftIcon, ArrowPathIcon, ClipboardDocumentCheckIcon, TrashIcon } from "@heroicons/react/20/solid";
+import { useSearchParams } from "next/navigation";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { BreadcrumbsProvider } from "@/contexts/BreadcrumbsContext";
-import { CalculatorLayout } from "@/components/duty-calculator/calculator/CalculatorLayout";
+import { Countries } from "@/constants/countries";
+import { CalculatorWorkspace, showAdcvd } from "@/components/duty-calculator/calculator/CalculatorWorkspace";
+import { ImportInputs } from "@/components/duty-calculator/calculator/CalculatorTop";
 import { Disclaimer } from "@/components/duty-calculator/calculator/Disclaimer";
-import { ExploreModal } from "@/components/duty-calculator/calculator/ExploreModal";
+import { ShareButtons } from "@/components/duty-calculator/calculator/ShareButtons";
 import { FinderStart, useTariffFinder } from "@/components/duty-calculator/lib/useTariffFinder";
-import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { Answers, TransportMode } from "@/tariffs/engine-v2/types";
-import { adjustmentTags, Adjustments, DEFAULT_MODE, DEFAULT_UNITS, DEFAULT_VALUE, isAdjusted } from "../adjustments";
-import { formatRate } from "../formatRate";
+import { Adjustments, DEFAULT_MODE, DEFAULT_UNITS, DEFAULT_VALUE, isAdjusted } from "../adjustments";
 import { TrackedProduct } from "../report";
-import { TRACKER_PATH } from "../sections";
-import { SubTabs } from "../shell/SubTabs";
+import { isProductTab, ProductTab, productViewOf, ProductView as View, sectionBySlug, TRACKER_PATH } from "../sections";
+import { PlannedSection } from "../shell/PlannedSection";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
-import { AnalysisTab } from "./analysis/AnalysisTab";
+import { ProductAudit } from "./audit/ProductAudit";
+import { ImportPromises } from "./ImportPromises";
+import { ProductHeader } from "./ProductHeader";
+import { ProductSavings } from "./savings/ProductSavings";
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
-// One catalog product, opened from its row: the full calculator for it (its shipment, trade
-// programs, conditions, duty over time), its duty from every other origin (Analysis), and its
-// entries. Everything set here is saved as the
-// product's adjustments, so the catalog row shows it on the way back.
+// One import, opened from its row: a small header (what it is, and its one row of tabs), then
+// - Overview (where it opens), Duty (with its AD/CVD check), Compare, Changes (its history and
+//   news): the calculator's own tabs, for this product (its code and origin fixed), held by the
+//   header's tabs.
+//   Everything set here is saved as the product's adjustments, so the catalog row shows it on
+//   the way back.
+// - Savings: every way to pay less on it, guided, once its savings are unlocked
+// - Audits: its past entries, checked against the duty in force on each entry date
+// Until Savings and Audits launch, their tabs say what's coming.
 
-type ProductTab = "duty" | "analysis" | "entries";
 
 const CALCULATOR_TAB = { tab: "calculator" };
 
@@ -50,9 +59,26 @@ const startFrom = (row: TrackedProduct, adjustments: Adjustments, entryDate: str
 });
 
 const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: FinderStart; onReset: () => void }) => {
-  const { setAdjustments, entryDate, setEntryDate, removeProducts } = useTracker();
+  const { setAdjustments, entryDate, setEntryDate, removeProducts, itemFor, products } = useTracker();
   const nav = useTrackerNav();
-  const [tab, setTab] = useState<ProductTab>("duty");
+  const searchParams = useSearchParams();
+  // Sourcing is now part of Compare, and Summary is gone; old links still land somewhere
+  const ptab = searchParams.get("ptab");
+  const asked = ptab === "sourcing" ? "compare" : ptab;
+  const [tab, setTab] = useState<View>(isProductTab(asked) ? productViewOf(asked) : "overview");
+  // Opened again on another tab (from Savings or Entry audit) while already open
+  useEffect(() => {
+    if (isProductTab(asked)) setTab(productViewOf(asked));
+    if (asked === "adcvd") showAdcvd();
+  }, [asked]);
+  const openTab = (asked: ProductTab) => {
+    const next = productViewOf(asked);
+    if (asked === "adcvd") showAdcvd();
+    setTab(next);
+    // Each view opens at its top (the Tracker's one scroller is its main)
+    document.querySelector("main")?.scrollTo({ top: 0 });
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCT_TAB_OPENED, { tab: next });
+  };
   const f = useTariffFinder({
     path: TRACKER_PATH,
     extraParams: CALCULATOR_TAB,
@@ -100,118 +126,70 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f.entryDate]);
 
-  const { entry } = row;
-  const totalPct = f.result && f.customsValue > 0 ? (f.result.totalDuty / f.customsValue) * 100 : row.totalPct;
-  const tags = adjustmentTags(row.adjustments, row.result);
+  const calculatorTab = tab !== "savings" && tab !== "audit";
+  const remove = () => {
+    removeProducts([row.key]);
+    nav.closeProduct();
+  };
 
   return (
     <div className="flex flex-col gap-5">
-      <div>
-        <button type="button" className={`${ui.button({ variant: "ghost", size: "sm" })} -ml-3`} onClick={nav.closeProduct}>
-          <ArrowLeftIcon className="h-4 w-4" aria-hidden />
-          Catalog
-        </button>
-      </div>
-
-      <header className="flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <div className="flex items-center gap-2 text-sm text-base-content/70">
-            <span className="text-lg leading-none" aria-hidden>
-              {entry.country.flag}
-            </span>
-            {entry.country.name}
-          </div>
-          <h1 className={`${mono.className} text-2xl font-semibold tracking-tight text-base-content`}>
-            {entry.element.htsno}
-          </h1>
-          <p className={`${ui.bodySm} max-w-3xl`}>{row.description}</p>
-          {tags.length > 0 && (
-            <div className="mt-1 flex flex-wrap gap-1" aria-label="Adjustments">
-              {tags.map((t) => (
-                <span key={t.id} className={ui.badge("primary")} title={t.title}>
-                  {t.label}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col items-end gap-3">
-          <div className="text-right">
-            <div className={ui.label}>Total duty rate</div>
-            <div className={`${ui.metric.primary} mt-1 text-primary`}>{formatRate(totalPct)}</div>
-          </div>
-          <div className="flex flex-wrap justify-end gap-2">
-            {isAdjusted(row.adjustments) && (
-              <button type="button" className={ui.button({ size: "sm" })} onClick={onReset}>
-                <ArrowPathIcon className="h-4 w-4" aria-hidden />
-                Reset adjustments
-              </button>
-            )}
-            <button
-              type="button"
-              className={`${ui.button({ size: "sm" })} hover:text-error`}
-              onClick={() => {
-                removeProducts([row.key]);
-                nav.closeProduct();
-              }}
-            >
-              <TrashIcon className="h-4 w-4" aria-hidden />
-              Remove
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <SubTabs<ProductTab>
-        label="Product"
-        tabs={[
-          { id: "duty", label: "Duty" },
-          { id: "analysis", label: "Analysis" },
-          { id: "entries", label: "Entries", soon: true },
-        ]}
-        value={tab}
-        onChange={setTab}
+      <ProductHeader
+        row={row}
+        tab={tab}
+        onTab={openTab}
+        onBack={nav.closeProduct}
+        onRemove={remove}
+        onReset={isAdjusted(row.adjustments) ? onReset : undefined}
+        actions={
+          f.result ? <ShareButtons f={f} /> : undefined
+        }
+        inputs={calculatorTab ? <ImportInputs f={f} /> : undefined}
+        historyChanges={f.history.filter((x) => x.changes.length > 0).length}
       />
+      <MovingNotice row={row} movingTo={itemFor(row.key)?.movingTo} hasNew={(key) => products.some((p) => p.key === key)} />
 
-      {tab === "analysis" ? (
-        <AnalysisTab product={row} />
-      ) : tab === "duty" ? (
-        <div className="flex flex-col gap-4">
-          <CalculatorLayout
-            f={f}
-            fixedProduct
-            railTitle="Shipment"
-            railDescription="Saved to this product as you change it"
-          />
-          <Disclaimer />
-          <ExploreModal f={f} />
-        </div>
-      ) : (
-        <section className={`${ui.card} max-w-3xl`} aria-labelledby="tt-entries-heading">
-          <div className={ui.cardHeader}>
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary" aria-hidden>
-                <ClipboardDocumentCheckIcon className="h-5 w-5" />
-              </span>
-              <h3 id="tt-entries-heading" className={ui.cardTitle}>
-                Entries for this product
-              </h3>
-            </div>
-            <span className={ui.badge("primary")}>In development</span>
-          </div>
-          <ul className={`${ui.bodySm} flex list-disc flex-col gap-2 px-10 py-4`}>
-            <li>Every shipment of this product you&apos;ve cleared: entry number, entry date, value and duty paid</li>
-            <li>An instant check of each against the rates in force on its entry date</li>
-            <li>Overpayments you could recover, and underpayments to fix before Customs finds them</li>
-          </ul>
-          <div className={`${ui.cardFooter} ${ui.bodySm}`}>
-            Part of{" "}
-            <button type="button" className={ui.link} onClick={() => nav.openTab("entries")}>
-              Entry audit
-            </button>
-            , coming soon.
-          </div>
-        </section>
+      {/* The calculator, on the menu's Duty, Compare or History (and every country under Compare).
+          Kept mounted, so it keeps its state while another view is open. A class, not the
+          hidden attribute: `flex` would override that and keep it showing */}
+      <div className={calculatorTab ? "flex flex-col gap-4" : "hidden"}>
+        <CalculatorWorkspace
+          f={f}
+          page="tracker_product"
+          fixedProduct
+          onCheckSavings={SAVINGS_ENABLED ? () => openTab("savings") : undefined}
+          tab={calculatorTab ? tab : "duty"}
+          onTabChange={openTab}
+          overviewLead={<ImportPromises productKey={row.key} onOpenTab={openTab} />}
+        />
+        <Disclaimer />
+      </div>
+      {tab === "savings" && (SAVINGS_ENABLED ? <ProductSavings product={row} /> : <PlannedSection section={sectionBySlug("savings")!} productKey={row.key} />)}
+      {tab === "audit" && (AUDITS_ENABLED ? <ProductAudit product={row} /> : <PlannedSection section={sectionBySlug("entries")!} productKey={row.key} />)}
+    </div>
+  );
+};
+
+// A product whose origin is moving (a secured change of origin): where to, and the new one
+const MovingNotice = ({ row, movingTo, hasNew }: { row: TrackedProduct; movingTo?: string; hasNew: (key: string) => boolean }) => {
+  const nav = useTrackerNav();
+  const country = Countries.find((c) => c.code === movingTo);
+  if (!country) return null;
+  const newKey = `${row.key.split("-")[0]}-${country.code}`;
+  return (
+    <div role="status" className={`${ui.notice("primary")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
+      <ArrowRightIcon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+      <p className={`${ui.bodySm} flex-1`}>
+        <span className="font-semibold text-base-content">
+          Moving to {country.flag} {country.name}.
+        </span>{" "}
+        The new origin is its own import in your list. Keep this one while you still import from {row.entry.country.name}; its
+        history and entries stay here.
+      </p>
+      {hasNew(newKey) && (
+        <button type="button" className={`${ui.button({ size: "sm" })} shrink-0`} onClick={() => nav.openProduct(newKey)}>
+          Open {country.name}
+        </button>
       )}
     </div>
   );
@@ -236,10 +214,10 @@ export const ProductView = ({ productKey }: { productKey: string }) => {
   if (!row) {
     return (
       <div className={`${ui.card} flex max-w-xl flex-col items-start gap-3 p-6`}>
-        <p className={ui.body}>This product isn&apos;t in your catalog.</p>
+        <p className={ui.body}>This product isn&apos;t in your imports.</p>
         <button type="button" className={ui.button({ size: "sm" })} onClick={nav.closeProduct}>
           <ArrowLeftIcon className="h-4 w-4" aria-hidden />
-          Back to the catalog
+          Back to your imports
         </button>
       </div>
     );

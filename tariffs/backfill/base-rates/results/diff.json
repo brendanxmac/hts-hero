@@ -1,0 +1,8316 @@
+{
+ "2025HTSRev1": [
+  {
+   "old": [
+    "20|weght+45%"
+   ],
+   "new": [
+    "20|weight+45%"
+   ],
+   "ln": 19856,
+   "at": "2003.10.01"
+  }
+ ],
+ "2025HTSRev2": [],
+ "2025HTSRev3": [],
+ "2025HTSRev4": [],
+ "2025HTSRev5": [
+  {
+   "old": [
+    "84|Other8/008426.19.0035%Free"
+   ],
+   "new": [
+    "84|Other11/008426.19.0035%Free"
+   ],
+   "ln": 107038,
+   "at": "8426.19.00"
+  },
+  {
+   "old": [
+    "85|Solid-statenon-volatilestoragedevices8/008523.51.0080%Free"
+   ],
+   "new": [
+    "85|Solid-statenon-volatilestoragedevices9/008523.51.0080%Free"
+   ],
+   "ln": 115037,
+   "at": "8523.51.00"
+  },
+  {
+   "old": [
+    "85|Notexceeding18mmindiameter14/20No."
+   ],
+   "new": [
+    "85|Notexceeding18mmindiameter18/20No."
+   ],
+   "ln": 116341,
+   "at": "8532.22.00"
+  },
+  {
+   "old": [
+    "85|Exceeding51mmindiameter14/85No."
+   ],
+   "new": [
+    "85|Exceeding51mmindiameter18/85No."
+   ],
+   "ln": 116350,
+   "at": "8532.23.00"
+  },
+  {
+   "old": [
+    "87|Steelforgings8/70kg"
+   ],
+   "new": [
+    "87|Steelforgings9/70kg"
+   ],
+   "ln": 119619,
+   "at": "8708.40.75"
+  },
+  {
+   "old": [
+    "87|Othertrailersandsemi-trailers8/008716.40.0045%Free"
+   ],
+   "new": [
+    "87|Othertrailersandsemi-trailers9/008716.40.0045%Free"
+   ],
+   "ln": 120590,
+   "at": "8716.40.00"
+  },
+  {
+   "old": [
+    "90|Foruseincivilaircraft8/40No."
+   ],
+   "new": [
+    "90|Foruseincivilaircraft9/40No."
+   ],
+   "ln": 122022,
+   "at": "9014.20.80"
+  },
+  {
+   "old": [
+    "90|Foruseincivilaircraft8/40No."
+   ],
+   "new": [
+    "90|Foruseincivilaircraft9/40No."
+   ],
+   "ln": 122040,
+   "at": "9014.90.20"
+  },
+  {
+   "old": [
+    "90|Other11/80No."
+   ],
+   "new": [
+    "90|Other12/80No."
+   ],
+   "ln": 122329,
+   "at": "9018.31.00"
+  },
+  {
+   "old": [
+    "90|Foruseincivilaircraft8/40No."
+   ],
+   "new": [
+    "90|Foruseincivilaircraft9/40No."
+   ],
+   "ln": 123142,
+   "at": "9029.20.40"
+  }
+ ],
+ "2025HTSRev6": [
+  {
+   "old": [
+    "29|Other002909.19.1837%/Free(A*,AU,BH,"
+   ],
+   "new": [
+    "29|Other002909.19.1837%Free(A*,AU,BH,"
+   ],
+   "ln": 31485,
+   "at": "2909.19.18"
+  }
+ ],
+ "2025HTSRev7": [],
+ "2025HTSRev8": [],
+ "2025HTSRev9": [],
+ "2025HTSRev10": [],
+ "2025HTSRev11": [],
+ "2025HTSRev12": [
+  {
+   "old": [
+    "3|Atkamackeral(Atkafish)(Pleurogrammus"
+   ],
+   "new": [
+    "3|Atkamackerel(Atkafish)(Pleurogrammus"
+   ],
+   "ln": 2139,
+   "at": "0303.89.00"
+  },
+  {
+   "old": [
+    "3|Carribbeanspinylobster(Panulirusargus)10kg"
+   ],
+   "new": [
+    "3|Caribbeanspinylobster(Panulirusargus)10kg"
+   ],
+   "ln": 3191,
+   "at": "0306.11.00"
+  },
+  {
+   "old": [
+    "3|AntarcticKrill30kg"
+   ],
+   "new": [
+    "3|Antarctickrill30kg"
+   ],
+   "ln": 3720,
+   "at": "0309.90.10"
+  },
+  {
+   "old": [
+    "62|MA,.OM,P,PA,"
+   ],
+   "new": [
+    "62|MA,OM,P,PA,"
+   ],
+   "ln": 79952,
+   "at": "6204.63.11"
+  }
+ ],
+ "2025HTSRev13": [],
+ "2025HTSRev14": [
+  {
+   "old": [
+    "40|CL,CO,D,EIL,"
+   ],
+   "new": [
+    "40|CL,CO,D,E,IL,"
+   ],
+   "ln": 49413,
+   "at": "4011.90.20"
+  }
+ ],
+ "2025HTSRev15": [],
+ "2025HTSRev16": [
+  {
+   "old": [],
+   "new": [
+    "9|Robusta:",
+    "9|Certifiedorganic35kg",
+    "9|Other40kg"
+   ],
+   "ln": 11931,
+   "at": "0901.11.00"
+  },
+  {
+   "old": [
+    "9|Certifiedorganic45kg",
+    "9|Other55kg"
+   ],
+   "new": [
+    "9|Certifiedorganic50kg",
+    "9|Other65kg"
+   ],
+   "ln": 11933,
+   "at": "0901.12.00"
+  },
+  {
+   "old": [
+    "9|Certifiedorganic15kg",
+    "9|Other25kg"
+   ],
+   "new": [
+    "9|Arabica:",
+    "9|Certifiedorganic20kg",
+    "9|Other35kg",
+    "9|Robusta:",
+    "9|Certifiedorganic40kg",
+    "9|Other55kg",
+    "9|Other:",
+    "9|Certifiedorganic60kg",
+    "9|Other75kg",
+    "9|RatesofDuty",
+    "9|1",
+    "9|RatesofDutyUnit",
+    "9|of",
+    "9|Quantity",
+    "9|ArticleDescription",
+    "9|Stat.",
+    "9|Suf-",
+    "9|fix",
+    "9|Heading/",
+    "9|Subheading21",
+    "9|SpecialGeneral",
+    "9|Coffee,whetherornotroastedordecaffeinated;coffeehusks",
+    "9|andskins;coffeesubstitutescontainingcoffeeinany",
+    "9|proportion:(con.)",
+    "9|0901(con.)"
+   ],
+   "ln": 11936,
+   "at": "0901.12.00"
+  },
+  {
+   "old": [
+    "9|Certifiedorganic35kg",
+    "9|Other45kg"
+   ],
+   "new": [
+    "9|Arabica:",
+    "9|Certifiedorganic15kg",
+    "9|Other20kg",
+    "9|Robusta:",
+    "9|Certifiedorganic25kg",
+    "9|Other29kg",
+    "9|Other:",
+    "9|Certifiedorganic40kg",
+    "9|Other49kg"
+   ],
+   "ln": 11941,
+   "at": "0901.21.00"
+  },
+  {
+   "old": [
+    "9|Other45kg",
+    "9|Other60kg"
+   ],
+   "new": [
+    "9|Other:",
+    "9|Arabica40kg",
+    "9|Robusta50kg",
+    "9|Other55kg",
+    "9|Other:",
+    "9|Arabica:",
+    "9|Certifiedorganic65kg",
+    "9|Other70kg",
+    "9|Robusta:",
+    "9|Certifiedorganic75kg",
+    "9|Other80kg",
+    "9|Other90kg"
+   ],
+   "ln": 11949,
+   "at": "0901.90"
+  },
+  {
+   "old": [
+    "28|Germaniumoxidesandzirconiumdioxide002825.60.0025%"
+   ],
+   "new": [
+    "28|Germaniumoxidesandzirconiumdioxide2825.60.0025%"
+   ],
+   "ln": 27962,
+   "at": "2825.60.00"
+  },
+  {
+   "old": [
+    "28|kg"
+   ],
+   "new": [
+    "28|Germaniumdioxide10kg",
+    "28|Zirconiumdioxide20kg",
+    "28|Other50kg"
+   ],
+   "ln": 27968,
+   "at": "2825.70.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "28|RatesofDuty",
+    "28|1",
+    "28|RatesofDutyUnit",
+    "28|of",
+    "28|Quantity",
+    "28|ArticleDescription",
+    "28|Stat.",
+    "28|Suf-",
+    "28|fix",
+    "28|Heading/",
+    "28|Subheading21",
+    "28|SpecialGeneral",
+    "28|Hydrazineandhydroxylamineandtheirinorganicsalts;other",
+    "28|inorganicbases;othermetaloxides,hydroxidesandperoxides:",
+    "28|(con.)",
+    "28|2825(con.)"
+   ],
+   "ln": 27975,
+   "at": "2825.80.00"
+  },
+  {
+   "old": [
+    "28|Other002827.39.9025%"
+   ],
+   "new": [
+    "28|Other2827.39.9025%"
+   ],
+   "ln": 28179,
+   "at": "2827.39.90"
+  },
+  {
+   "old": [
+    "28|kg"
+   ],
+   "new": [
+    "28|Oflithium10kg",
+    "28|Other50kg"
+   ],
+   "ln": 28185,
+   "at": "2827.39.90"
+  },
+  {
+   "old": [
+    "28|Other002836.99.5025%"
+   ],
+   "new": [
+    "28|Other2836.99.5025%"
+   ],
+   "ln": 28757,
+   "at": "2836.99.50"
+  },
+  {
+   "old": [
+    "28|kg"
+   ],
+   "new": [
+    "28|Zirconiumcarbonates10kg",
+    "28|Other50kg",
+    "28|RatesofDuty",
+    "28|1",
+    "28|RatesofDutyUnit",
+    "28|of",
+    "28|Quantity",
+    "28|ArticleDescription",
+    "28|Stat.",
+    "28|Suf-",
+    "28|fix",
+    "28|Heading/",
+    "28|Subheading21",
+    "28|SpecialGeneral"
+   ],
+   "ln": 28763,
+   "at": "2836.99.50"
+  },
+  {
+   "old": [
+    "28|RatesofDuty",
+    "28|1",
+    "28|RatesofDutyUnit",
+    "28|of",
+    "28|Quantity",
+    "28|ArticleDescription",
+    "28|Stat.",
+    "28|Suf-",
+    "28|fix",
+    "28|Heading/",
+    "28|Subheading21",
+    "28|SpecialGeneral"
+   ],
+   "new": [],
+   "ln": 28786,
+   "at": "2837.20.51"
+  },
+  {
+   "old": [],
+   "new": [
+    "28|RatesofDuty",
+    "28|1",
+    "28|RatesofDutyUnit",
+    "28|of",
+    "28|Quantity",
+    "28|ArticleDescription",
+    "28|Stat.",
+    "28|Suf-",
+    "28|fix",
+    "28|Heading/",
+    "28|Subheading21",
+    "28|SpecialGeneral"
+   ],
+   "ln": 28824,
+   "at": "2839.90.50"
+  },
+  {
+   "old": [
+    "28|RatesofDuty",
+    "28|1",
+    "28|RatesofDutyUnit",
+    "28|of",
+    "28|Quantity",
+    "28|ArticleDescription",
+    "28|Stat.",
+    "28|Suf-",
+    "28|fix",
+    "28|Heading/",
+    "28|Subheading21",
+    "28|SpecialGeneral"
+   ],
+   "new": [],
+   "ln": 28853,
+   "at": "2840.30.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "28|RatesofDuty",
+    "28|1",
+    "28|RatesofDutyUnit",
+    "28|of",
+    "28|Quantity",
+    "28|ArticleDescription",
+    "28|Stat.",
+    "28|Suf-",
+    "28|fix",
+    "28|Heading/",
+    "28|Subheading21",
+    "28|SpecialGeneral",
+    "28|Saltsofoxometallicorperoxometallicacids:(con.)2841(con.)"
+   ],
+   "ln": 28898,
+   "at": "2841.69.00"
+  },
+  {
+   "old": [
+    "28|RatesofDuty",
+    "28|1",
+    "28|RatesofDutyUnit",
+    "28|of",
+    "28|Quantity",
+    "28|ArticleDescription",
+    "28|Stat.",
+    "28|Suf-",
+    "28|fix",
+    "28|Heading/",
+    "28|Subheading21",
+    "28|SpecialGeneral",
+    "28|Saltsofoxometallicorperoxometallicacids:(con.)2841(con.)"
+   ],
+   "new": [],
+   "ln": 28923,
+   "at": "2841.90"
+  },
+  {
+   "old": [],
+   "new": [
+    "28|RatesofDuty",
+    "28|1",
+    "28|RatesofDutyUnit",
+    "28|of",
+    "28|Quantity",
+    "28|ArticleDescription",
+    "28|Stat.",
+    "28|Suf-",
+    "28|fix",
+    "28|Heading/",
+    "28|Subheading21",
+    "28|SpecialGeneral"
+   ],
+   "ln": 28974,
+   "at": "2841.90.50"
+  },
+  {
+   "old": [
+    "28|Other002842.90.9025%"
+   ],
+   "new": [
+    "28|Other2842.90.9025%"
+   ],
+   "ln": 28996,
+   "at": "2842.90.90"
+  },
+  {
+   "old": [
+    "28|kg"
+   ],
+   "new": [
+    "28|Selenidesandtellurides10kg",
+    "28|Other50kg"
+   ],
+   "ln": 29002,
+   "at": "2842.90.90"
+  },
+  {
+   "old": [
+    "29|Other95kg"
+   ],
+   "new": [
+    "29|Terbufos(ISO)30kg",
+    "29|Other90kg"
+   ],
+   "ln": 37442,
+   "at": "2930.90.43"
+  },
+  {
+   "old": [
+    "70|Valuednotover$0.30each7013.37.1060%Free(A+,AU,BH,"
+   ],
+   "new": [
+    "70|Valuednotover$0.30each017013.37.1060%Free(A+,AU,BH,"
+   ],
+   "ln": 91838,
+   "at": "7013.37.10"
+  },
+  {
+   "old": [
+    "70|Crystallineornon-leadcrystal10No.",
+    "70|Other90No."
+   ],
+   "new": [
+    "70|No"
+   ],
+   "ln": 91843,
+   "at": "7013.37.20"
+  },
+  {
+   "old": [
+    "70|Valuednotover$0.30each7013.99.4060%Free(A+,AU,BH,"
+   ],
+   "new": [
+    "70|Valuednotover$0.30each017013.99.4060%Free(A+,AU,BH,"
+   ],
+   "ln": 92123,
+   "at": "7013.99.40"
+  },
+  {
+   "old": [
+    "70|38%",
+    "70|Crystallineornon-leadcrystal10No.",
+    "70|Other90No."
+   ],
+   "new": [
+    "70|38%No"
+   ],
+   "ln": 92127,
+   "at": "7013.99.50"
+  },
+  {
+   "old": [
+    "71|Other90g"
+   ],
+   "new": [
+    "71|Other:",
+    "71|Articlesofjewelry,ofgold,otherthan",
+    "71|rope,curb,cable,chain,necklaces,",
+    "71|neckchainsorclasps",
+    "71|91",
+    "71|pcs",
+    "71|Other95g"
+   ],
+   "ln": 93861,
+   "at": "7113.19.50"
+  },
+  {
+   "old": [
+    "73|20"
+   ],
+   "new": [
+    "73|30",
+    "73|kg",
+    "73|Tubularwindturbinetowers,whetherornottapered,",
+    "73|andsectionalcomponentsthereof",
+    "73|35"
+   ],
+   "ln": 98375,
+   "at": "7308.20.00"
+  },
+  {
+   "old": [
+    "73|Other50No."
+   ],
+   "new": [
+    "73|Containersofacircularcrosssection,ofacapacity",
+    "73|notexceeding11.4liters,ofakindusedfor",
+    "73|aerosols",
+    "73|70",
+    "73|No.",
+    "73|Other75No."
+   ],
+   "ln": 98459,
+   "at": "7310.29.00"
+  },
+  {
+   "old": [
+    "76|Ofgreaterthan99.8percentaluminum30kg"
+   ],
+   "new": [
+    "76|Of99.9percentaluminumorgreater40kg",
+    "76|Ofgreaterthan99.8percentbutlessthan99.9",
+    "76|percent",
+    "76|45",
+    "76|kg"
+   ],
+   "ln": 100899,
+   "at": "7601.10.60"
+  },
+  {
+   "old": [
+    "76|Recyclablebeveragecontainers35kg"
+   ],
+   "new": [
+    "76|Recyclableusedbeveragecontainers35kg"
+   ],
+   "ln": 100949,
+   "at": "7602.00.00"
+  },
+  {
+   "old": [
+    "76|Cansofacapacitynotexceeding355ml30No."
+   ],
+   "new": [
+    "76|Cansofacapacitynotexceeding355ml:",
+    "76|Withacircularcrosssection,ofakindused",
+    "76|foraerosols",
+    "76|40",
+    "76|No.",
+    "76|Other45No."
+   ],
+   "ln": 101443,
+   "at": "7612.90.10"
+  },
+  {
+   "old": [
+    "83|Ofaluminum10kg"
+   ],
+   "new": [
+    "83|Ofaluminum:",
+    "83|Forcansofakindusedfortheconveyanceof",
+    "83|beveragesasdescribedinstatisticalnote1tothis",
+    "83|chapter",
+    "83|20",
+    "83|kg"
+   ],
+   "ln": 104598,
+   "at": "8309.90.00"
+  },
+  {
+   "old": [
+    "83|Other90kg"
+   ],
+   "new": [
+    "83|Other25kg",
+    "83|No.",
+    "83|Other:",
+    "83|Ofsteel80kg",
+    "83|No.",
+    "83|Other85kg"
+   ],
+   "ln": 104600,
+   "at": "8309.90.00"
+  },
+  {
+   "old": [
+    "84|Windturbinebladesandhubs81kg"
+   ],
+   "new": [
+    "84|Windturbineblades,importedinaccordance",
+    "84|withstatisticalnote2ofthischapter",
+    "84|70",
+    "84|kg",
+    "84|Windturbinehubs75kg"
+   ],
+   "ln": 105518,
+   "at": "8412.90.90"
+  },
+  {
+   "old": [
+    "84|statisticalnote2tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote3tothischapter"
+   ],
+   "ln": 105666,
+   "at": "8413.50.00"
+  },
+  {
+   "old": [
+    "84|Other75No."
+   ],
+   "new": [
+    "84|Refrigeratorswithatopfreezer",
+    "84|compartment",
+    "84|80",
+    "84|No.",
+    "84|Other85No."
+   ],
+   "ln": 106182,
+   "at": "8418.10.00"
+  },
+  {
+   "old": [
+    "84|Otherfurniture(chests,cabinets,displaycounters,",
+    "84|show-casesandthelike)forstorageanddisplay,",
+    "84|incorporatingrefrigeratingorfreezingequipment",
+    "84|8418.50.00",
+    "84|35%Free",
+    "84|Freezing40No.",
+    "84|Other6/80No."
+   ],
+   "new": [],
+   "ln": 106222,
+   "at": "8418.50.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|Otherfurniture(chests,cabinets,displaycounters,",
+    "84|show-casesandthelike)forstorageanddisplay,",
+    "84|incorporatingrefrigeratingorfreezingequipment",
+    "84|8418.50.00",
+    "84|35%Free",
+    "84|Freezing40No.",
+    "84|Other6/80No."
+   ],
+   "ln": 106244,
+   "at": "8418.50.00"
+  },
+  {
+   "old": [
+    "84|statisticalnote3tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "ln": 107067,
+   "at": "8427.10.80"
+  },
+  {
+   "old": [
+    "84|statisticalnote3tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "ln": 107073,
+   "at": "8427.10.80"
+  },
+  {
+   "old": [
+    "84|statisticalnote3tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "ln": 107079,
+   "at": "8427.10.80"
+  },
+  {
+   "old": [
+    "84|statisticalnote3tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "ln": 107088,
+   "at": "8427.20.80"
+  },
+  {
+   "old": [
+    "84|statisticalnote3tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "ln": 107094,
+   "at": "8427.90.00"
+  },
+  {
+   "old": [
+    "84|Other50No."
+   ],
+   "new": [
+    "84|Gearboxesandspeedchangersforwind",
+    "84|turbines,asdescribedinstatisticalnote6",
+    "84|tothischapter",
+    "84|20",
+    "84|No.",
+    "84|Other80No."
+   ],
+   "ln": 112281,
+   "at": "8483.40.70"
+  },
+  {
+   "old": [
+    "84|Other90kg"
+   ],
+   "new": [
+    "84|Partsofgearboxesandspeedchangersforwind",
+    "84|turbines",
+    "84|20",
+    "84|kg",
+    "84|Other80kg"
+   ],
+   "ln": 112420,
+   "at": "8483.90.50"
+  },
+  {
+   "old": [
+    "85|Exceeding750kVAbutnotexceeding10,000kVA:",
+    "85|Forwind-poweredgeneratingsetsclassified",
+    "85|within8502.31.00",
+    "85|21"
+   ],
+   "new": [
+    "85|Forwind-poweredgeneratingsetsclassifiedwithin",
+    "85|8502.31.00",
+    "85|10"
+   ],
+   "ln": 112961,
+   "at": "8502.31.00"
+  },
+  {
+   "old": [
+    "85|Other25No."
+   ],
+   "new": [
+    "85|Other:",
+    "85|Exceeding750kVAbutnotexceeding10,000",
+    "85|kVA",
+    "85|25",
+    "85|No."
+   ],
+   "ln": 112966,
+   "at": "8502.31.00"
+  },
+  {
+   "old": [
+    "85|30"
+   ],
+   "new": [
+    "85|35"
+   ],
+   "ln": 112969,
+   "at": "8502.31.00"
+  },
+  {
+   "old": [
+    "85|Other50No."
+   ],
+   "new": [
+    "85|Other55No."
+   ],
+   "ln": 112971,
+   "at": "8502.31.00"
+  },
+  {
+   "old": [
+    "85|statisticalreportingnumber8501.64.0121"
+   ],
+   "new": [
+    "85|statisticalreportingnumber8501.64.0110"
+   ],
+   "ln": 113217,
+   "at": "8501.64.01"
+  },
+  {
+   "old": [
+    "85|Other90kg"
+   ],
+   "new": [
+    "85|Other90No."
+   ],
+   "ln": 114692,
+   "at": "8517.69.00"
+  },
+  {
+   "old": [
+    "85|Other60No."
+   ],
+   "new": [
+    "85|Withadjustableperformancecharacteristics,not",
+    "85|elsewherespecifiedorincluded",
+    "85|70",
+    "85|No.",
+    "85|Other90No."
+   ],
+   "ln": 117629,
+   "at": "8542.90.00"
+  },
+  {
+   "old": [
+    "86|Forvehiclesofheading8605or8606008607.30.1045%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "86|Forvehiclesofheading8605or86068607.30.1045%Free(A,AU,BH,CL,"
+   ],
+   "ln": 118388,
+   "at": "8607.30.10"
+  },
+  {
+   "old": [
+    "86|kg"
+   ],
+   "new": [
+    "86|Assembledfreightrailcouplers10kg",
+    "86|Freightrailcouplerparts50kg",
+    "86|Other90kg"
+   ],
+   "ln": 118393,
+   "at": "8607.30.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "94|Mechanicallycollapsiblesofabedseat",
+    "94|deckcomponents,coveredoruncovered",
+    "94|asdescribedinstatisticalnote2tothis",
+    "94|chapter",
+    "94|309401.99.30"
+   ],
+   "ln": 127145,
+   "at": "9401.99.25"
+  },
+  {
+   "old": [
+    "94|Other81No."
+   ],
+   "new": [
+    "94|Mechanicallycollapsiblesofabedseatdeck",
+    "94|components,coveredoruncoveredas",
+    "94|describedinstatisticalnote2tothis",
+    "94|chapter",
+    "94|30",
+    "94|No.",
+    "94|Other70No."
+   ],
+   "ln": 127158,
+   "at": "9401.99.90"
+  }
+ ],
+ "2025HTSRev17": [
+  {
+   "old": [
+    "94|Mechanicallycollapsiblesofabedseat",
+    "94|deckcomponents,coveredoruncovered",
+    "94|asdescribedinstatisticalnote2tothis",
+    "94|chapter",
+    "94|309401.99.30"
+   ],
+   "new": [],
+   "ln": 127280,
+   "at": "9401.99.35"
+  },
+  {
+   "old": [
+    "94|note3tothischapter"
+   ],
+   "new": [
+    "94|note4tothischapter"
+   ],
+   "ln": 127368,
+   "at": "9403.20.00"
+  },
+  {
+   "old": [
+    "94|asdescribedinstatisticalnote4tothis"
+   ],
+   "new": [
+    "94|asdescribedinstatisticalnote5tothis"
+   ],
+   "ln": 127372,
+   "at": "?"
+  },
+  {
+   "old": [
+    "94|akinddescribedinstatisticalnote5tothis"
+   ],
+   "new": [
+    "94|akinddescribedinstatisticalnote6tothis"
+   ],
+   "ln": 127757,
+   "at": "9404.90.10"
+  },
+  {
+   "old": [
+    "94|note5tothischapter:"
+   ],
+   "new": [
+    "94|note6tothischapter:"
+   ],
+   "ln": 127771,
+   "at": "9404.90.20"
+  }
+ ],
+ "2025HTSRev18": [],
+ "2025HTSRev19": [],
+ "2025HTSRev20": [],
+ "2025HTSRev21": [],
+ "2025HTSRev22": [],
+ "2025HTSRev23": [],
+ "2025HTSRev24": [],
+ "2025HTSRev25": [],
+ "2025HTSRev26": [],
+ "2025HTSRev27": [],
+ "2025HTSRev28": [],
+ "2025HTSRev29": [],
+ "2025HTSRev30": [],
+ "2025HTSRev31": [],
+ "2025HTSRev32": [],
+ "2026HTSBasic": [
+  {
+   "old": [
+    "2|JO,MA,OM,P,",
+    "2|PE,S,SG)",
+    "2|1.7%(KR)"
+   ],
+   "new": [
+    "2|JO,KR,MA,OM,",
+    "2|P,PE,S,SG)"
+   ],
+   "ln": 389,
+   "at": "9822.04.01"
+  },
+  {
+   "old": [
+    "2|JO,MA,OM,P,",
+    "2|PE,S,SG)",
+    "2|1.7%(KR)"
+   ],
+   "new": [
+    "2|JO,KR,MA,OM,",
+    "2|P,PE,S,SG)"
+   ],
+   "ln": 463,
+   "at": "9822.04.01"
+  },
+  {
+   "old": [
+    "2|JO,MA,OM,P,",
+    "2|PE,S,SG)",
+    "2|1.7%(KR)"
+   ],
+   "new": [
+    "2|JO,KR,MA,OM,",
+    "2|P,PE,S,SG)"
+   ],
+   "ln": 538,
+   "at": "9822.04.01"
+  },
+  {
+   "old": [
+    "2|JO,MA,OM,P,",
+    "2|PE,S,SG)",
+    "2|1.7%(KR)"
+   ],
+   "new": [
+    "2|JO,KR,MA,OM,",
+    "2|P,PE,S,SG)"
+   ],
+   "ln": 583,
+   "at": "9822.04.01"
+  },
+  {
+   "old": [
+    "2|JO,MA,OM,P,",
+    "2|PE,S,SG)",
+    "2|1.7%(KR)"
+   ],
+   "new": [
+    "2|JO,KR,MA,OM,",
+    "2|P,PE,S,SG)"
+   ],
+   "ln": 653,
+   "at": "9822.04.01"
+  },
+  {
+   "old": [
+    "2|JO,MA,OM,P,",
+    "2|PE,S,SG)",
+    "2|1.7%(KR)"
+   ],
+   "new": [
+    "2|JO,KR,MA,OM,",
+    "2|P,PE,S,SG)"
+   ],
+   "ln": 727,
+   "at": "9822.04.01"
+  },
+  {
+   "old": [
+    "4|P,P+,PE,SG)",
+    "4|5.1\u00a2/liter(PA)"
+   ],
+   "new": [
+    "4|P,P+,PA,PE,SG)"
+   ],
+   "ln": 3803,
+   "at": "9822.04.05"
+  },
+  {
+   "old": [
+    "4|P,P+,PE,SG)",
+    "4|5.1\u00a2/liter(PA)"
+   ],
+   "new": [
+    "4|P,P+,PA,PE,SG)"
+   ],
+   "ln": 3850,
+   "at": "9822.04.05"
+  },
+  {
+   "old": [
+    "4|P,P+,PE,SG)",
+    "4|10.9\u00a2/kg(PA)"
+   ],
+   "new": [
+    "4|P,P+,PA,PE,SG)"
+   ],
+   "ln": 3882,
+   "at": "9822.04.10"
+  },
+  {
+   "old": [
+    "4|Other4/000402.10.50$1.018/kgFree(BH,CL,JO,",
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|5.7\u00a2/kg(CO,KR,",
+    "4|PA)"
+   ],
+   "new": [
+    "4|Other4/000402.10.50$1.018/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 3929,
+   "at": "9822.04.15"
+  },
+  {
+   "old": [
+    "4|Other4/000402.21.25$1.018/kgFree(BH,CL,JO,",
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|5.7\u00a2/kg(CO,KR,",
+    "4|PA)"
+   ],
+   "new": [
+    "4|Other4/000402.21.25$1.018/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 3970,
+   "at": "9822.04.15"
+  },
+  {
+   "old": [
+    "4|Other5/000402.21.50$1.285/kgFree(BH,CL,JO,",
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7.2\u00a2/kg(CO,KR,",
+    "4|PA)"
+   ],
+   "new": [
+    "4|Other5/000402.21.50$1.285/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 4027,
+   "at": "9822.04.20"
+  },
+  {
+   "old": [
+    "4|Other6/000402.21.90$1.831/kgFree(BH,CL,JO,",
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)",
+    "4|10.3\u00a2/kg(CO,PA)"
+   ],
+   "new": [
+    "4|Other6/000402.21.90$1.831/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 4061,
+   "at": "9822.04.10"
+  },
+  {
+   "old": [
+    "4|PE,SG)",
+    "4|7.3\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "4|PA,PE,SG)"
+   ],
+   "ln": 4113,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "4|Inairtightcontainers8/000402.91.7036.8\u00a2/kgFree(BH,CL,JO,",
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)",
+    "4|2\u00a2/kg(CO)"
+   ],
+   "new": [
+    "4|Inairtightcontainers8/000402.91.7036.8\u00a2/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PE,SG)"
+   ],
+   "ln": 4180,
+   "at": "9822.04.30"
+  },
+  {
+   "old": [
+    "4|Other8/000402.91.9036.8\u00a2/kgFree(BH,CL,JO,",
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)",
+    "4|2\u00a2/kg(CO)"
+   ],
+   "new": [
+    "4|Other8/000402.91.9036.8\u00a2/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PE,SG)"
+   ],
+   "ln": 4194,
+   "at": "9822.04.30"
+  },
+  {
+   "old": [
+    "4|RatesofDuty",
+    "4|1",
+    "4|RatesofDutyUnit",
+    "4|of",
+    "4|Quantity",
+    "4|ArticleDescription",
+    "4|Stat.",
+    "4|Suf-",
+    "4|fix",
+    "4|Heading/",
+    "4|Subheading21",
+    "4|SpecialGeneral",
+    "4|Milkandcream,concentratedorcontainingaddedsugaror",
+    "4|othersweeteningmatter:(con.)",
+    "4|0402(con.)",
+    "4|Other:(con.)"
+   ],
+   "new": [],
+   "ln": 4208,
+   "at": "0402.99"
+  },
+  {
+   "old": [],
+   "new": [
+    "4|RatesofDuty",
+    "4|1",
+    "4|RatesofDutyUnit",
+    "4|of",
+    "4|Quantity",
+    "4|ArticleDescription",
+    "4|Stat.",
+    "4|Suf-",
+    "4|fix",
+    "4|Heading/",
+    "4|Subheading21",
+    "4|SpecialGeneral",
+    "4|Milkandcream,concentratedorcontainingaddedsugaror",
+    "4|othersweeteningmatter:(con.)",
+    "4|0402(con.)",
+    "4|Other:(con.)",
+    "4|Other:(con.)0402.99",
+    "4|(con.)",
+    "4|Condensedmilk:(con.)"
+   ],
+   "ln": 4256,
+   "at": "0402.99.30"
+  },
+  {
+   "old": [
+    "4|Inairtightcontainers8/000402.99.4558.4\u00a2/kgFree(BH,CL,JO,",
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)",
+    "4|3.3\u00a2/kg(CO)"
+   ],
+   "new": [
+    "4|Inairtightcontainers8/000402.99.4558.4\u00a2/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PE,SG)"
+   ],
+   "ln": 4258,
+   "at": "9822.04.30"
+  },
+  {
+   "old": [
+    "4|Other8/000402.99.5558.4\u00a2/kgFree(BH,CL,JO,",
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)",
+    "4|3.3\u00a2/kg(CO)"
+   ],
+   "new": [
+    "4|Other8/000402.99.5558.4\u00a2/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PE,SG)"
+   ],
+   "ln": 4272,
+   "at": "9822.04.30"
+  },
+  {
+   "old": [
+    "4|RatesofDuty",
+    "4|1",
+    "4|RatesofDutyUnit",
+    "4|of",
+    "4|Quantity",
+    "4|ArticleDescription",
+    "4|Stat.",
+    "4|Suf-",
+    "4|fix",
+    "4|Heading/",
+    "4|Subheading21",
+    "4|SpecialGeneral",
+    "4|Milkandcream,concentratedorcontainingaddedsugaror",
+    "4|othersweeteningmatter:(con.)",
+    "4|0402(con.)",
+    "4|Other:(con.)",
+    "4|Other:(con.)0402.99",
+    "4|(con.)"
+   ],
+   "new": [],
+   "ln": 4286,
+   "at": "0402.99"
+  },
+  {
+   "old": [
+    "4|PE,SG)",
+    "4|3\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "4|PA,PE,SG)"
+   ],
+   "ln": 4330,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "4|PE,SG)",
+    "4|6.9\u00a2/kg+1.1%(PA)"
+   ],
+   "new": [
+    "4|PA,PE,SG)"
+   ],
+   "ln": 4384,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "4|P,PE,SG)",
+    "4|5.1\u00a2/liter(PA)"
+   ],
+   "new": [
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 4447,
+   "at": "9822.04.05"
+  },
+  {
+   "old": [
+    "4|Other9/000403.90.45$1.kgFree(BH,CL,JO,",
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|5.8\u00a2/kg(CO,KR,",
+    "4|PA)"
+   ],
+   "new": [
+    "4|Other9/000403.90.45$1.kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 4514,
+   "at": "9822.04.20"
+  },
+  {
+   "old": [
+    "4|Other5/000403.90.55$1.285/kgFree(BH,CL,JO,",
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7.2\u00a2/kg(CO,KR,",
+    "4|PA)"
+   ],
+   "new": [
+    "4|Other5/000403.90.55$1.285/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 4572,
+   "at": "9822.04.20"
+  },
+  {
+   "old": [
+    "4|Other6/000403.90.65$1.831/kgFree(BH,CL,JO,",
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)",
+    "4|10.3\u00a2/kg(CO,PA)"
+   ],
+   "new": [
+    "4|Other6/000403.90.65$1.831/kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 4606,
+   "at": "9822.04.10"
+  },
+  {
+   "old": [
+    "4|P,PE,SG)",
+    "4|10.9\u00a2/kg(PA)"
+   ],
+   "new": [
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 4660,
+   "at": "9822.04.10"
+  },
+  {
+   "old": [
+    "4|SG)",
+    "4|6.8\u00a2/kg+1.1%(PA)"
+   ],
+   "new": [
+    "4|PA,SG)"
+   ],
+   "ln": 4728,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "4|PE,SG)",
+    "4|6.9\u00a2/kg+0.5%(PA)"
+   ],
+   "new": [
+    "4|PA,PE,SG)"
+   ],
+   "ln": 4794,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "4|Other9/000404.10.90$1.kgFree(BH,CL,JO,",
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|5.8\u00a2/kg(CO,KR,",
+    "4|PA)"
+   ],
+   "new": [
+    "4|Other9/000404.10.90$1.kgFree(BH,CL,CO,",
+    "4|JO,KR,MA,OM,",
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 4862,
+   "at": "9822.04.20"
+  },
+  {
+   "old": [
+    "4|PE,SG)",
+    "4|7.9\u00a2/kg+0.5%(PA)"
+   ],
+   "new": [
+    "4|PA,PE,SG)"
+   ],
+   "ln": 4927,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "4|P,PE,SG)",
+    "4|10.2\u00a2/kg(PA)"
+   ],
+   "new": [
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 4981,
+   "at": "9822.04.10"
+  },
+  {
+   "old": [
+    "4|P,PE,SG)",
+    "4|13.3\u00a2/kg(PA)"
+   ],
+   "new": [
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 5017,
+   "at": "9822.04.10"
+  },
+  {
+   "old": [
+    "4|PE,SG)",
+    "4|4.6\u00a2/kg+0.5%(PA)"
+   ],
+   "new": [
+    "4|PA,PE,SG)"
+   ],
+   "ln": 5078,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "4|P,PE,SG)",
+    "4|12.4\u00a2/kg+0.5%",
+    "4|(PA)"
+   ],
+   "new": [
+    "4|P,PA,PE,SG)"
+   ],
+   "ln": 5139,
+   "at": "9822.04.10"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,SG)",
+    "4|10\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|SG)"
+   ],
+   "ln": 5189,
+   "at": "9822.04.35"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|15.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5247,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|8.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5297,
+   "at": "9822.04.45"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5330,
+   "at": "9822.04.50"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|12\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5380,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|14.3\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5438,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|9.2\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5489,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7.5\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5540,
+   "at": "9823.04.01"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|10\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5569,
+   "at": "9822.04.35"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|15.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5651,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|8.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5708,
+   "at": "9822.04.45"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5760,
+   "at": "9822.04.50"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|12\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5797,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|14.3\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5853,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|15.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5931,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|8.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 5978,
+   "at": "9822.04.45"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6009,
+   "at": "9822.04.50"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|12\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6056,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|14.3\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6088,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|9.2\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6135,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7.5\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6183,
+   "at": "9823.04.01"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|10\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6211,
+   "at": "9822.04.35"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|15.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6280,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|8.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6334,
+   "at": "9822.04.45"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6371,
+   "at": "9822.04.50"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|12\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6425,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|9.2\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6462,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,SG)",
+    "4|15.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|SG)"
+   ],
+   "ln": 6536,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|8.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6584,
+   "at": "9822.04.45"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6615,
+   "at": "9822.04.50"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|12\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6664,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|14.3\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6695,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|9.2\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6744,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7.5\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6794,
+   "at": "9823.04.01"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|10\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6822,
+   "at": "9822.04.35"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|15.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6934,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|8.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 6996,
+   "at": "9822.04.45"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|12\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7048,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|14.3\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7121,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|14.3\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7183,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|14.3\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7245,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|12.5\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7303,
+   "at": "9822.04.65"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7362,
+   "at": "9822.04.50"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|14.3\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7446,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|15.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7496,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|8.1\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7526,
+   "at": "9822.04.45"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7577,
+   "at": "9822.04.50"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|12\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7607,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|9.2\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7657,
+   "at": "9822.04.40"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|7.5\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7708,
+   "at": "9823.04.01"
+  },
+  {
+   "old": [
+    "4|MA,OM,P,PE,",
+    "4|SG)",
+    "4|10\u00a2/kg(KR)"
+   ],
+   "new": [
+    "4|KR,MA,OM,P,",
+    "4|PE,SG)"
+   ],
+   "ln": 7759,
+   "at": "9822.04.35"
+  },
+  {
+   "old": [
+    "10|MA,OM,P,PA,",
+    "10|PE,S,SG)",
+    "10|0.7%(KR)"
+   ],
+   "new": [
+    "10|KR,MA,OM,P,",
+    "10|PA,PE,S,SG)"
+   ],
+   "ln": 12481,
+   "at": "1006.30.10"
+  },
+  {
+   "old": [
+    "12|JO,KR,MA,OM,",
+    "12|P,P+,PE,S,SG)",
+    "12|8.7%(CO)",
+    "12|13.1%(PA)"
+   ],
+   "new": [
+    "12|CO,JO,KR,MA,",
+    "12|OM,P,P+,PA,PE,",
+    "12|S,SG)"
+   ],
+   "ln": 12933,
+   "at": "9908.12.01"
+  },
+  {
+   "old": [
+    "12|JO,KR,MA,OM,",
+    "12|P,P+,PE,S,SG)",
+    "12|10.9%(CO)",
+    "12|16.3%(PA)"
+   ],
+   "new": [
+    "12|CO,JO,KR,MA,",
+    "12|OM,P,P+,PA,PE,",
+    "12|S,SG)"
+   ],
+   "ln": 12963,
+   "at": "9908.12.01"
+  },
+  {
+   "old": [
+    "12|JO,KR,MA,OM,",
+    "12|P,PE,S,SG)",
+    "12|8.7%(CO)",
+    "12|13.1%(PA)"
+   ],
+   "new": [
+    "12|CO,JO,KR,MA,",
+    "12|OM,P,PA,PE,S,",
+    "12|SG)"
+   ],
+   "ln": 13012,
+   "at": "9908.12.01"
+  },
+  {
+   "old": [
+    "12|JO,KR,MA,OM,",
+    "12|P,PE,S,SG)",
+    "12|8.7%(CO)",
+    "12|13.1%(PA)"
+   ],
+   "new": [
+    "12|CO,JO,KR,MA,",
+    "12|OM,P,PA,PE,S,",
+    "12|SG)"
+   ],
+   "ln": 13044,
+   "at": "9908.12.01"
+  },
+  {
+   "old": [],
+   "new": [
+    "12|Copra001203.00.00FreeFree",
+    "12|kg"
+   ],
+   "ln": 13051,
+   "at": "9908.12.01"
+  },
+  {
+   "old": [
+    "12|Copra001203.00.00FreeFree",
+    "12|kg"
+   ],
+   "new": [],
+   "ln": 13064,
+   "at": "1204.00.00"
+  },
+  {
+   "old": [
+    "15|PE,S,SG)",
+    "15|2.2\u00a2/kg(PA)"
+   ],
+   "new": [
+    "15|PA,PE,S,SG)"
+   ],
+   "ln": 14447,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [],
+   "new": [
+    "15|Glycerol,crude;glycerolwatersandglycerollyes001520.00.002.2\u00a2/kgFree",
+    "15|kg"
+   ],
+   "ln": 14487,
+   "at": "1518.00.40"
+  },
+  {
+   "old": [
+    "15|Glycerol,crude;glycerolwatersandglycerollyes001520.00.002.2\u00a2/kgFree",
+    "15|kg"
+   ],
+   "new": [],
+   "ln": 14500,
+   "at": "1520.00.00"
+  },
+  {
+   "old": [
+    "17|1.6%(JP)"
+   ],
+   "new": [
+    "17|1.2%(JP)"
+   ],
+   "ln": 16770,
+   "at": "1704.10.00"
+  },
+  {
+   "old": [
+    "17|1.8%(JP)"
+   ],
+   "new": [
+    "17|1.35%(JP)"
+   ],
+   "ln": 16794,
+   "at": "1704.90.10"
+  },
+  {
+   "old": [
+    "17|PE,SG)",
+    "17|2.6\u00a2/kg+0.6%(PA)"
+   ],
+   "new": [
+    "17|PA,PE,SG)"
+   ],
+   "ln": 16860,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|RatesofDuty",
+    "18|1",
+    "18|RatesofDutyUnit",
+    "18|of",
+    "18|Quantity",
+    "18|ArticleDescription",
+    "18|Stat.",
+    "18|Suf-",
+    "18|fix",
+    "18|Heading/",
+    "18|Subheading21",
+    "18|SpecialGeneral",
+    "18|Chocolateandotherfoodpreparationscontainingcocoa:(con.)1806(con.)",
+    "18|Otherpreparationsinblocks,slabsorbars,weighingmore",
+    "18|than2kgorinliquid,paste,powder,granularorotherbulk",
+    "18|formincontainersorimmediatepackings,ofacontent",
+    "18|exceeding2kg:(con.)",
+    "18|1806.20",
+    "18|(con.)",
+    "18|Preparationsconsistingwhollyofgroundcocoabeans,",
+    "18|withorwithoutaddedcocoafat,flavoringoremulsifying",
+    "18|agents,andcontainingnotmorethan32percentby",
+    "18|weightofbutterfatorothermilksolidsandnotmore",
+    "18|than60percentbyweightofsugar:(con.)",
+    "18|Other:(con.)",
+    "18|Containingbutterfatorothermilksolids",
+    "18|(excludingarticlesforconsumptionatretailas",
+    "18|candyorconfection):(con.)"
+   ],
+   "new": [],
+   "ln": 17203,
+   "at": "1806.20"
+  },
+  {
+   "old": [
+    "18|43.8\u00a2/kg+5%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|2.4\u00a2/kg+0.2%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|43.8\u00a2/kg+5%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17248,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|Other4/001806.20.2862.1\u00a2/kg+5%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.2%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|Other4/001806.20.2862.1\u00a2/kg+5%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17261,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|43.8\u00a2/kg+5%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|2.4\u00a2/kg+0.2%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|43.8\u00a2/kg+5%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17318,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|Other5/001806.20.3862.1\u00a2/kg+5%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.2%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|Other5/001806.20.3862.1\u00a2/kg+5%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17331,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|PE,SG)",
+    "18|2.4\u00a2/kg+0.5%(PA)"
+   ],
+   "new": [
+    "18|PA,PE,SG)"
+   ],
+   "ln": 17534,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.5%(PA)"
+   ],
+   "new": [
+    "18|PA,PE,SG)"
+   ],
+   "ln": 17550,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|2.4\u00a2/kg+0.5%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17604,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.5%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17619,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|43.8\u00a2/kg+5%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|2.4\u00a2/kg+0.2%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|43.8\u00a2/kg+5%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17815,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|Other4/001806.32.0862.1\u00a2/kg+5%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.2%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|Other4/001806.32.0862.1\u00a2/kg+5%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17828,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|43.8\u00a2/kg+5%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PA,PE,SG)",
+    "18|2.4\u00a2/kg+0.2%(CO)"
+   ],
+   "new": [
+    "18|43.8\u00a2/kg+5%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17882,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|Other5/001806.32.1862.1\u00a2/kg+5%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.2%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|Other5/001806.32.1862.1\u00a2/kg+5%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 17894,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.4%(PA)"
+   ],
+   "new": [
+    "18|PA,PE,SG)"
+   ],
+   "ln": 17972,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|PE,SG)",
+    "18|2.4\u00a2/kg+0.4%(PA)"
+   ],
+   "new": [
+    "18|PA,PE,SG)"
+   ],
+   "ln": 18032,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.4%(PA)"
+   ],
+   "new": [
+    "18|PA,PE,SG)"
+   ],
+   "ln": 18045,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|43.8\u00a2/kg+7%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|2.4\u00a2/kg+0.4%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|43.8\u00a2/kg+7%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 18093,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|Other4/001806.90.2062.1\u00a2/kg+7%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.4%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|Other4/001806.90.2062.1\u00a2/kg+7%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 18105,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|43.8\u00a2/kg+7%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PA,PE,SG)",
+    "18|2.4\u00a2/kg+0.4%(CO)"
+   ],
+   "new": [
+    "18|43.8\u00a2/kg+7%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 18153,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "18|Other5/001806.90.3062.1\u00a2/kg+7%Free(BH,CL,JO,",
+    "18|KR,MA,OM,P,",
+    "18|PE,SG)",
+    "18|3.5\u00a2/kg+0.4%(CO,",
+    "18|PA)"
+   ],
+   "new": [
+    "18|Other5/001806.90.3062.1\u00a2/kg+7%Free(BH,CL,CO,",
+    "18|JO,KR,MA,OM,",
+    "18|P,PA,PE,SG)"
+   ],
+   "ln": 18164,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|6.9\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 18349,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|6.9\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 18408,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|6.9\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 18509,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|6.9\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 18537,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|6.9\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 18610,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|6.9\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 18676,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|2.8\u00a2/kg+0.5%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 18813,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|2.8\u00a2/kg+0.5%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 19001,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|MA,OM,P,PE,",
+    "19|SG)",
+    "19|7.5\u00a2/kg(KR)"
+   ],
+   "new": [
+    "19|KR,MA,OM,P,",
+    "19|PE,SG)"
+   ],
+   "ln": 19214,
+   "at": "9823.04.01"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|6.9\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 19281,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "19|PE,SG)",
+    "19|6.9\u00a2/kg+0.9%(PA)"
+   ],
+   "new": [
+    "19|PA,PE,SG)"
+   ],
+   "ln": 19344,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "20|JO,KR,MA,OM,",
+    "20|P,PE,S,SG)",
+    "20|8.7%(CO)",
+    "20|13.1%(PA)"
+   ],
+   "new": [
+    "20|CO,JO,KR,MA,",
+    "20|OM,P,PA,PE,S,",
+    "20|SG)"
+   ],
+   "ln": 20764,
+   "at": "2008.11.15"
+  },
+  {
+   "old": [
+    "20|JO,KR,MA,OM,",
+    "20|P,PE,S,SG)",
+    "20|8.7%(CO)",
+    "20|13.1%(PA)"
+   ],
+   "new": [
+    "20|CO,JO,KR,MA,",
+    "20|OM,P,PA,PE,S,",
+    "20|SG)"
+   ],
+   "ln": 20791,
+   "at": "9908.12.01"
+  },
+  {
+   "old": [],
+   "new": [
+    "21|RatesofDuty",
+    "21|1",
+    "21|RatesofDutyUnit",
+    "21|of",
+    "21|Quantity",
+    "21|ArticleDescription",
+    "21|Stat.",
+    "21|Suf-",
+    "21|fix",
+    "21|Heading/",
+    "21|Subheading21",
+    "21|SpecialGeneral"
+   ],
+   "ln": 22296,
+   "at": "2104.20.50"
+  },
+  {
+   "old": [
+    "21|RatesofDuty",
+    "21|1",
+    "21|RatesofDutyUnit",
+    "21|of",
+    "21|Quantity",
+    "21|ArticleDescription",
+    "21|Stat.",
+    "21|Suf-",
+    "21|fix",
+    "21|Heading/",
+    "21|Subheading21",
+    "21|SpecialGeneral",
+    "21|Icecreamandotheredibleice,whetherornotcontaining",
+    "21|cocoa:(con.)",
+    "21|2105.00",
+    "21|(con.)"
+   ],
+   "new": [],
+   "ln": 22335,
+   "at": "2105.00"
+  },
+  {
+   "old": [
+    "21|PE,SG)",
+    "21|3.3\u00a2/kg+1.1%(PA)"
+   ],
+   "new": [
+    "21|PA,PE,SG)"
+   ],
+   "ln": 22376,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "21|PE,SG)",
+    "21|5.7\u00a2/kg(PA)"
+   ],
+   "new": [
+    "21|PA,PE,SG)"
+   ],
+   "ln": 22445,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "21|P,PE,SG)",
+    "21|13.3\u00a2/kg(PA)"
+   ],
+   "new": [
+    "21|P,PA,PE,SG)"
+   ],
+   "ln": 22533,
+   "at": "9822.04.10"
+  },
+  {
+   "old": [
+    "21|P,PE,SG)",
+    "21|13.3\u00a2/kg(PA)"
+   ],
+   "new": [
+    "21|P,PA,PE,SG)"
+   ],
+   "ln": 22593,
+   "at": "9822.04.10"
+  },
+  {
+   "old": [
+    "21|PE,SG)",
+    "21|4.6\u00a2/kg+0.5%(PA)"
+   ],
+   "new": [
+    "21|PA,PE,SG)"
+   ],
+   "ln": 22777,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "21|PE,SG)",
+    "21|1.9\u00a2/kg+0.5%(PA)"
+   ],
+   "new": [
+    "21|PA,PE,SG)"
+   ],
+   "ln": 22968,
+   "at": "9822.04.25"
+  },
+  {
+   "old": [
+    "21|RatesofDuty",
+    "21|1",
+    "21|RatesofDutyUnit",
+    "21|of",
+    "21|Quantity",
+    "21|ArticleDescription",
+    "21|Stat.",
+    "21|Suf-",
+    "21|fix",
+    "21|Heading/",
+    "21|Subheading21",
+    "21|SpecialGeneral",
+    "21|Foodpreparationsnotelsewherespecifiedorincluded:(con.)2106(con.)",
+    "21|Other:(con.)2106.90",
+    "21|(con.)",
+    "21|Other:(con.)",
+    "21|Other:(con.)",
+    "21|Other:(con.)"
+   ],
+   "new": [],
+   "ln": 22979,
+   "at": "2106.90"
+  },
+  {
+   "old": [],
+   "new": [
+    "21|RatesofDuty",
+    "21|1",
+    "21|RatesofDutyUnit",
+    "21|of",
+    "21|Quantity",
+    "21|ArticleDescription",
+    "21|Stat.",
+    "21|Suf-",
+    "21|fix",
+    "21|Heading/",
+    "21|Subheading21",
+    "21|SpecialGeneral",
+    "21|Foodpreparationsnotelsewherespecifiedorincluded:(con.)2106(con.)",
+    "21|Other:(con.)2106.90",
+    "21|(con.)",
+    "21|Other:(con.)",
+    "21|Other:(con.)",
+    "21|Other:(con.)",
+    "21|Other:(con.)"
+   ],
+   "ln": 23023,
+   "at": "9822.03.01"
+  },
+  {
+   "old": [
+    "21|RatesofDuty",
+    "21|1",
+    "21|RatesofDutyUnit",
+    "21|of",
+    "21|Quantity",
+    "21|ArticleDescription",
+    "21|Stat.",
+    "21|Suf-",
+    "21|fix",
+    "21|Heading/",
+    "21|Subheading21",
+    "21|SpecialGeneral",
+    "21|Foodpreparationsnotelsewherespecifiedorincluded:(con.)2106(con.)",
+    "21|Other:(con.)2106.90",
+    "21|(con.)",
+    "21|Other:(con.)",
+    "21|Other:(con.)",
+    "21|Other:(con.)",
+    "21|Other:(con.)"
+   ],
+   "new": [],
+   "ln": 23051,
+   "at": "2106.90"
+  },
+  {
+   "old": [
+    "22|CL,D,E,IL,KR,",
+    "22|MA,OM,P,PA,",
+    "22|PE,S,SG)",
+    "22|1.5\u00a2/pf.liter(CO)"
+   ],
+   "new": [
+    "22|CL,CO,D,E,IL,",
+    "22|KR,MA,OM,P,",
+    "22|PA,PE,S,SG)"
+   ],
+   "ln": 23866,
+   "at": "2208.40.20"
+  },
+  {
+   "old": [
+    "22|CL,D,E,IL,KR,",
+    "22|MA,OM,P,PA,",
+    "22|PE,S,SG)",
+    "22|1.5\u00a2/pf.liter(CO)"
+   ],
+   "new": [
+    "22|CL,CO,D,E,IL,",
+    "22|KR,MA,OM,P,",
+    "22|PA,PE,S,SG)"
+   ],
+   "ln": 23879,
+   "at": "2208.40.60"
+  },
+  {
+   "old": [],
+   "new": [
+    "22|Vodka:2208.60",
+    "22|Incontainerseachholdingnotover4liters:",
+    "22|Valuednotover$2.liter002208.60.10$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Valuedover$2.liter002208.60.20$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Incontainerseachholdingover4liters002208.60.50$1.pf.liter",
+    "22|Free",
+    "22|pf.liters"
+   ],
+   "ln": 23892,
+   "at": "2208.50.00"
+  },
+  {
+   "old": [
+    "22|Vodka:2208.60",
+    "22|Incontainerseachholdingnotover4liters:",
+    "22|Valuednotover$2.liter002208.60.10$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Valuedover$2.liter002208.60.20$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Incontainerseachholdingover4liters002208.60.50$1.pf.liter",
+    "22|Free",
+    "22|pf.liters"
+   ],
+   "new": [],
+   "ln": 23909,
+   "at": "2208.70.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "22|Tequila:",
+    "22|Incontainerseachholdingnotover4liters002208.90.50$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Incontainerseachholdingover4liters002208.90.55$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Imitationsofbrandyandotherspirituousbeverages002208.90.71$2.pf.liter",
+    "22|Free",
+    "22|pf.liters"
+   ],
+   "ln": 23974,
+   "at": "2208.90.46"
+  },
+  {
+   "old": [
+    "22|Tequila:",
+    "22|Incontainerseachholdingnotover4liters002208.90.50$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Incontainerseachholdingover4liters002208.90.55$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Imitationsofbrandyandotherspirituousbeverages002208.90.71$2.pf.liter",
+    "22|Free",
+    "22|pf.liters"
+   ],
+   "new": [],
+   "ln": 23993,
+   "at": "2208.90.71"
+  },
+  {
+   "old": [
+    "23|Free(BH,CL,JO,",
+    "23|KR,MA,OM,P,",
+    "23|PE,SG)",
+    "23|5.3\u00a2/kg+0.4%(CO,",
+    "23|PA)"
+   ],
+   "new": [
+    "23|Free(BH,CL,CO,",
+    "23|JO,KR,MA,OM,",
+    "23|P,PA,PE,SG)"
+   ],
+   "ln": 24297,
+   "at": "9822.04.20"
+  },
+  {
+   "old": [
+    "23|Free(BH,CL,JO,",
+    "23|KR,MA,OM,P,",
+    "23|PA,PE,SG)",
+    "23|5.3\u00a2/kg+0.4%(CO)"
+   ],
+   "new": [
+    "23|Free(BH,CL,CO,",
+    "23|JO,KR,MA,OM,",
+    "23|P,PA,PE,SG)"
+   ],
+   "ln": 24353,
+   "at": "9822.04.20"
+  },
+  {
+   "old": [
+    "24|PE,S,SG)",
+    "24|35%(PA)"
+   ],
+   "new": [
+    "24|PA,PE,S,SG)"
+   ],
+   "ln": 24471,
+   "at": "9918.24.10"
+  },
+  {
+   "old": [
+    "24|Other:",
+    "24|Flue-cured,burleyandotherlight",
+    "24|air-curedleaf:",
+    "24|Tobeusedinproductsotherthan",
+    "24|cigarettes",
+    "24|2401.20.31",
+    "24|$1.kgFree(A+,AU,BH,",
+    "24|CL,CO,D,E,IL,",
+    "24|KR,MA,OM,P,",
+    "24|PA,PE,S,SG)",
+    "24|40.9\u00a2/kg",
+    "24|Flue-cured10kg",
+    "24|Burley20kg",
+    "24|Maryland30kg",
+    "24|Other40kg"
+   ],
+   "new": [],
+   "ln": 24538,
+   "at": "2401.20.31"
+  },
+  {
+   "old": [
+    "24|Other:(con.)"
+   ],
+   "new": [
+    "24|Other:"
+   ],
+   "ln": 24575,
+   "at": "2401.20"
+  },
+  {
+   "old": [
+    "24|air-curedleaf:(con.)"
+   ],
+   "new": [
+    "24|air-curedleaf:",
+    "24|Tobeusedinproductsotherthan",
+    "24|cigarettes",
+    "24|2401.20.31",
+    "24|$1.kgFree(A+,AU,BH,",
+    "24|CL,CO,D,E,IL,",
+    "24|KR,MA,OM,P,",
+    "24|PA,PE,S,SG)",
+    "24|40.9\u00a2/kg",
+    "24|Flue-cured10kg",
+    "24|Burley20kg",
+    "24|Maryland30kg",
+    "24|Other40kg"
+   ],
+   "ln": 24577,
+   "at": "2401.20"
+  },
+  {
+   "old": [
+    "24|PE,S,SG)",
+    "24|35%(PA)"
+   ],
+   "new": [
+    "24|PA,PE,S,SG)"
+   ],
+   "ln": 24595,
+   "at": "9918.24.10"
+  },
+  {
+   "old": [
+    "24|PE,S,SG)",
+    "24|35%(PA)"
+   ],
+   "new": [
+    "24|PA,PE,S,SG)"
+   ],
+   "ln": 24716,
+   "at": "9918.24.10"
+  },
+  {
+   "old": [
+    "24|PE,S,SG)",
+    "24|35%(PA)"
+   ],
+   "new": [
+    "24|PA,PE,S,SG)"
+   ],
+   "ln": 24914,
+   "at": "9918.24.10"
+  },
+  {
+   "old": [
+    "24|PE,S,SG)",
+    "24|35%(PA)"
+   ],
+   "new": [
+    "24|PA,PE,S,SG)"
+   ],
+   "ln": 25102,
+   "at": "9918.24.10"
+  },
+  {
+   "old": [
+    "24|PE,S,SG)",
+    "24|35%(PA)"
+   ],
+   "new": [
+    "24|PA,PE,S,SG)"
+   ],
+   "ln": 25164,
+   "at": "9918.24.10"
+  },
+  {
+   "old": [
+    "24|PE,S,SG)",
+    "24|35%(PA)"
+   ],
+   "new": [
+    "24|PA,PE,S,SG)"
+   ],
+   "ln": 25243,
+   "at": "9918.24.10"
+  },
+  {
+   "old": [
+    "39|CL,D,E,IL,J,JO,",
+    "39|KR,MA,OM,P,",
+    "39|PE,S,SG)"
+   ],
+   "new": [
+    "39|CL,CO,D,E,IL,J,",
+    "39|JO,KR,MA,OM,",
+    "39|P,PE,S,SG)"
+   ],
+   "ln": 47751,
+   "at": "3921.12.19"
+  },
+  {
+   "old": [
+    "52|MA,OM,P,PE,S,",
+    "52|SG)",
+    "52|3.1\u00a2/kg(PA)"
+   ],
+   "new": [
+    "52|MA,OM,P,PA,",
+    "52|PE,S,SG)"
+   ],
+   "ln": 59265,
+   "at": "5201.00.18"
+  },
+  {
+   "old": [
+    "52|MA,OM,P,PE,S,",
+    "52|SG)",
+    "52|3.1\u00a2/kg(PA)"
+   ],
+   "new": [
+    "52|MA,OM,P,PA,",
+    "52|PE,S,SG)"
+   ],
+   "ln": 59296,
+   "at": "5201.00.28"
+  },
+  {
+   "old": [
+    "52|MA,OM,P,PE,S,",
+    "52|SG)",
+    "52|3.1\u00a2/kg(PA)"
+   ],
+   "new": [
+    "52|MA,OM,P,PA,",
+    "52|PE,S,SG)"
+   ],
+   "ln": 59313,
+   "at": "5201.00.38"
+  },
+  {
+   "old": [
+    "52|OM,P,PE,S,SG)",
+    "52|3.1\u00a2/kg(PA)"
+   ],
+   "new": [
+    "52|OM,P,PA,PE,S,",
+    "52|SG)"
+   ],
+   "ln": 59354,
+   "at": "5201.00.80"
+  },
+  {
+   "old": [
+    "52|MA,OM,P,PE,S,",
+    "52|SG)",
+    "52|0.7\u00a2/kg(PA)"
+   ],
+   "new": [
+    "52|MA,OM,P,PA,",
+    "52|PE,S,SG)"
+   ],
+   "ln": 59387,
+   "at": "5202.99.30"
+  },
+  {
+   "old": [
+    "52|MA,OM,P,PE,S,",
+    "52|SG)",
+    "52|3.1\u00a2/kg(PA)"
+   ],
+   "new": [
+    "52|MA,OM,P,PA,",
+    "52|PE,S,SG)"
+   ],
+   "ln": 59429,
+   "at": "5203.00.30"
+  },
+  {
+   "old": [
+    "63|Surgical42No.",
+    "63|kg",
+    "63|Other44No."
+   ],
+   "new": [
+    "63|Surgical7/42No."
+   ],
+   "ln": 86017,
+   "at": "6307.90.98"
+  },
+  {
+   "old": [
+    "63|Otherrespirators50No."
+   ],
+   "new": [
+    "63|Other7/44No."
+   ],
+   "ln": 86021,
+   "at": "6307.90.98"
+  },
+  {
+   "old": [],
+   "new": [
+    "63|Otherrespirators7/50No.",
+    "63|kg"
+   ],
+   "ln": 86022,
+   "at": "6307.90.98"
+  },
+  {
+   "old": [
+    "63|Disposable70No."
+   ],
+   "new": [
+    "63|Disposable7/70No."
+   ],
+   "ln": 86024,
+   "at": "6307.90.98"
+  },
+  {
+   "old": [
+    "63|Other75No."
+   ],
+   "new": [
+    "63|Other7/75No."
+   ],
+   "ln": 86026,
+   "at": "6307.90.98"
+  },
+  {
+   "old": [
+    "85|Notexceeding18mmindiameter18/20No."
+   ],
+   "new": [
+    "85|Notexceeding18mmindiameter19/20No."
+   ],
+   "ln": 116470,
+   "at": "8532.22.00"
+  },
+  {
+   "old": [
+    "85|Exceeding51mmindiameter18/85No."
+   ],
+   "new": [
+    "85|Exceeding51mmindiameter19/85No."
+   ],
+   "ln": 116479,
+   "at": "8532.23.00"
+  },
+  {
+   "old": [
+    "90|Other12/80No."
+   ],
+   "new": [
+    "90|Other80No."
+   ],
+   "ln": 122464,
+   "at": "9018.31.00"
+  }
+ ],
+ "2026HTSRev1": [],
+ "2026HTSRev2": [
+  {
+   "old": [
+    "2|Other85kg"
+   ],
+   "new": [
+    "2|Other:",
+    "2|Certifiedorganic91kg",
+    "2|Other97kg"
+   ],
+   "ln": 534,
+   "at": "0201.30.80"
+  },
+  {
+   "old": [
+    "2|Other85kg",
+    "2|Other2/000202.30.8031.1%Free(BH,CL,CO,"
+   ],
+   "new": [
+    "2|Other:",
+    "2|Certifiedorganic91kg",
+    "2|Other97kg",
+    "2|Other2/0202.30.8031.1%Free(BH,CL,CO,"
+   ],
+   "ln": 720,
+   "at": "0202.30.80"
+  },
+  {
+   "old": [
+    "2|kg"
+   ],
+   "new": [
+    "2|Certifiedorganic15kg",
+    "2|Other25kg"
+   ],
+   "ln": 729,
+   "at": "9919.02.02"
+  },
+  {
+   "old": [
+    "7|MushroomsofthegenusAgaricus000709.51.0122\u00a2/kg+45%Free(A+,AU,BH,"
+   ],
+   "new": [
+    "7|MushroomsofthegenusAgaricus0709.51.0122\u00a2/kg+45%Free(A+,AU,BH,"
+   ],
+   "ln": 9090,
+   "at": "0709.51.01"
+  },
+  {
+   "old": [
+    "7|kg"
+   ],
+   "new": [
+    "7|Certifiedorganic10kg",
+    "7|Other50kg"
+   ],
+   "ln": 9095,
+   "at": "0709.52.05"
+  },
+  {
+   "old": [
+    "7|000709.70.00"
+   ],
+   "new": [
+    "7|0709.70.00"
+   ],
+   "ln": 9223,
+   "at": "0709.70.00"
+  },
+  {
+   "old": [
+    "7|kg"
+   ],
+   "new": [
+    "7|Certifiedorganic10kg",
+    "7|Other50kg"
+   ],
+   "ln": 9229,
+   "at": "0709.70.00"
+  },
+  {
+   "old": [
+    "7|than1.4kg",
+    "7|24",
+    "7|kg"
+   ],
+   "new": [
+    "7|than1.4kg:",
+    "7|Certifiedorganic23kg",
+    "7|Other25kg"
+   ],
+   "ln": 9604,
+   "at": "0710.80.97"
+  },
+  {
+   "old": [],
+   "new": [
+    "8|RatesofDuty",
+    "8|1",
+    "8|RatesofDutyUnit",
+    "8|of",
+    "8|Quantity",
+    "8|ArticleDescription",
+    "8|Stat.",
+    "8|Suf-",
+    "8|fix",
+    "8|Heading/",
+    "8|Subheading21",
+    "8|SpecialGeneral",
+    "8|Dates,figs,pineapples,avocados,guavas,mangoesand",
+    "8|mangosteens,freshordried:(con.)",
+    "8|0804(con.)"
+   ],
+   "ln": 10811,
+   "at": "0804.20.80"
+  },
+  {
+   "old": [
+    "8|Reducedinsize000804.30.604.4\u00a2/kgFree(A+,AU,BH,"
+   ],
+   "new": [
+    "8|Reducedinsize0804.30.604.4\u00a2/kgFree(A+,AU,BH,"
+   ],
+   "ln": 10827,
+   "at": "0804.30.60"
+  },
+  {
+   "old": [
+    "8|kg"
+   ],
+   "new": [
+    "8|Certifiedorganic10kg",
+    "8|Other90kg",
+    "8|Avocados0804.40.0033.1\u00a2/kgFree(A+,AU,BH,",
+    "8|CL,CO,D,E,IL,",
+    "8|JO,KR,MA,OM,",
+    "8|P,PA,PE,S,SG)",
+    "8|11.2\u00a2/kg",
+    "8|Hassavocadosandavocadosdeterminedbythe",
+    "8|SecretaryofAgriculturetobeHass-like:",
+    "8|Certifiedorganic20kg",
+    "8|Other40kg",
+    "8|Other90kg"
+   ],
+   "ln": 10832,
+   "at": "0804.30.60"
+  },
+  {
+   "old": [
+    "8|Avocados0804.40.0033.1\u00a2/kgFree(A+,AU,BH,",
+    "8|CL,CO,D,E,IL,",
+    "8|JO,KR,MA,OM,",
+    "8|P,PA,PE,S,SG)",
+    "8|11.2\u00a2/kg",
+    "8|Hassavocadosandavocadosdeterminedbythe",
+    "8|SecretaryofAgriculturetobeHass-like:",
+    "8|Certifiedorganic20kg",
+    "8|Other40kg",
+    "8|Other90kg"
+   ],
+   "new": [],
+   "ln": 10848,
+   "at": "0804.50"
+  },
+  {
+   "old": [
+    "8|Mangoes10kg"
+   ],
+   "new": [
+    "8|Mangoes:",
+    "8|Certifiedorganic20kg",
+    "8|Other40kg"
+   ],
+   "ln": 10888,
+   "at": "0804.50.80"
+  },
+  {
+   "old": [
+    "8|Other70kg"
+   ],
+   "new": [
+    "8|Other:",
+    "8|Certifiedorganic75kg",
+    "8|Other85kg"
+   ],
+   "ln": 11498,
+   "at": "0811.10.00"
+  },
+  {
+   "old": [
+    "8|Wild24kg"
+   ],
+   "new": [
+    "8|Wild",
+    "8|Certifiedorganic25kg",
+    "8|Other27kg"
+   ],
+   "ln": 11546,
+   "at": "0811.90.20"
+  },
+  {
+   "old": [
+    "8|Pineapples000811.90.504.4\u00a2/kgFree(A*,AU,BH,"
+   ],
+   "new": [
+    "8|Pineapples0811.90.504.4\u00a2/kgFree(A*,AU,BH,"
+   ],
+   "ln": 11575,
+   "at": "0811.90.50"
+  },
+  {
+   "old": [
+    "8|kg",
+    "8|Mangoes000811.90.5235%Free(A*,AU,BH,"
+   ],
+   "new": [
+    "8|Certifiedorganic10kg",
+    "8|Other90kg",
+    "8|Mangoes0811.90.5235%Free(A*,AU,BH,"
+   ],
+   "ln": 11580,
+   "at": "0811.90.52"
+  },
+  {
+   "old": [
+    "8|kg"
+   ],
+   "new": [
+    "8|Certifiedorganic10kg",
+    "8|Other90kg"
+   ],
+   "ln": 11586,
+   "at": "0811.90.55"
+  },
+  {
+   "old": [],
+   "new": [
+    "8|RatesofDuty",
+    "8|1",
+    "8|RatesofDutyUnit",
+    "8|of",
+    "8|Quantity",
+    "8|ArticleDescription",
+    "8|Stat.",
+    "8|Suf-",
+    "8|fix",
+    "8|Heading/",
+    "8|Subheading21",
+    "8|SpecialGeneral",
+    "8|Fruitandnuts,uncookedorcookedbysteamingorboilingin",
+    "8|water,frozen,whetherornotcontainingaddedsugarorother",
+    "8|sweeteningmatter:(con.)",
+    "8|0811(con.)",
+    "8|Other:(con.)0811.90",
+    "8|(con.)"
+   ],
+   "ln": 11592,
+   "at": "0811.90.55"
+  },
+  {
+   "old": [
+    "8|RatesofDuty",
+    "8|1",
+    "8|RatesofDutyUnit",
+    "8|of",
+    "8|Quantity",
+    "8|ArticleDescription",
+    "8|Stat.",
+    "8|Suf-",
+    "8|fix",
+    "8|Heading/",
+    "8|Subheading21",
+    "8|SpecialGeneral"
+   ],
+   "new": [],
+   "ln": 11607,
+   "at": "0811.90.80"
+  },
+  {
+   "old": [
+    "11|Ofoats001104.12.001.8\u00a2/kgFree(A,AU,BH,CL,"
+   ],
+   "new": [
+    "11|Ofoats1104.12.001.8\u00a2/kgFree(A,AU,BH,CL,"
+   ],
+   "ln": 12602,
+   "at": "1104.12.00"
+  },
+  {
+   "old": [
+    "11|kg"
+   ],
+   "new": [
+    "11|Certifiedorganic10kg",
+    "11|Other90kg"
+   ],
+   "ln": 12607,
+   "at": "1104.19"
+  },
+  {
+   "old": [
+    "15|Other001513.19.004.4\u00a2/kgFree",
+    "15|kg"
+   ],
+   "new": [
+    "15|Other1513.19.004.4\u00a2/kgFree",
+    "15|Certifiedorganic30kg",
+    "15|Other90kg"
+   ],
+   "ln": 14048,
+   "at": "1513.19.00"
+  },
+  {
+   "old": [
+    "18|Cocoabeans,wholeorbroken,raworroasted001801.00.00FreeFree",
+    "18|kg"
+   ],
+   "new": [
+    "18|Cocoabeans,wholeorbroken,raworroasted1801.00.00FreeFree",
+    "18|Certifiedorganic10kg",
+    "18|Other90kg"
+   ],
+   "ln": 16850,
+   "at": "1802.00.00"
+  },
+  {
+   "old": [
+    "20|Avocados002008.99.1033\u00a2/kgFree(A+,AU,BH,"
+   ],
+   "new": [
+    "20|Avocados2008.99.1033\u00a2/kgFree(A+,AU,BH,"
+   ],
+   "ln": 21006,
+   "at": "2008.99.10"
+  },
+  {
+   "old": [
+    "20|kg"
+   ],
+   "new": [
+    "20|Certifiedorganic10kg",
+    "20|Other90kg"
+   ],
+   "ln": 21011,
+   "at": "2008.99.10"
+  },
+  {
+   "old": [
+    "20|Grapes002008.99.2935%Free(A+,AU,BH,",
+    "20|CL,CO,D,E,IL,",
+    "20|JO,KR,MA,OM,",
+    "20|P,PA,PE,S,SG)",
+    "20|7%",
+    "20|kg"
+   ],
+   "new": [],
+   "ln": 21061,
+   "at": "2008.99.29"
+  },
+  {
+   "old": [],
+   "new": [
+    "20|Grapes002008.99.2935%Free(A+,AU,BH,",
+    "20|CL,CO,D,E,IL,",
+    "20|JO,KR,MA,OM,",
+    "20|P,PA,PE,S,SG)",
+    "20|7%",
+    "20|kg"
+   ],
+   "ln": 21087,
+   "at": "2008.99"
+  },
+  {
+   "old": [
+    "20|Other90kg"
+   ],
+   "new": [
+    "20|Seaweed:",
+    "20|Certifiedorganic50kg",
+    "20|Other55kg",
+    "20|Other95kg"
+   ],
+   "ln": 21186,
+   "at": "2008.99.91"
+  },
+  {
+   "old": [
+    "20|Other20liters"
+   ],
+   "new": [
+    "20|Other:",
+    "20|Certifiedorganic40liters",
+    "20|Other60liters"
+   ],
+   "ln": 21453,
+   "at": "2009.79.00"
+  },
+  {
+   "old": [
+    "20|Other91liters"
+   ],
+   "new": [
+    "20|Coconutwater:",
+    "20|Certifiedorganic95liters",
+    "20|Other97liters",
+    "20|Other99liters"
+   ],
+   "ln": 21520,
+   "at": "2009.89.80"
+  },
+  {
+   "old": [
+    "22|Other20liters"
+   ],
+   "new": [
+    "22|Other:",
+    "22|Almond-baseddrinks:",
+    "22|Certifiedorganic30liters",
+    "22|Other35liters",
+    "22|Other90liters"
+   ],
+   "ln": 23159,
+   "at": "2203.00.00"
+  },
+  {
+   "old": [
+    "24|002404.12.05"
+   ],
+   "new": [
+    "24|2404.12.05"
+   ],
+   "ln": 25060,
+   "at": "2404.12.05"
+  },
+  {
+   "old": [],
+   "new": [
+    "24|Disposableelectroniccigarettes",
+    "24|(e-cigarettes)andsimilardisposable",
+    "24|personalelectronicvaporizingdevices",
+    "24|containingnicotine",
+    "24|10"
+   ],
+   "ln": 25065,
+   "at": "2404.12.05"
+  },
+  {
+   "old": [
+    "24|Other002404.12.1025%Free(A+,AU,BH,"
+   ],
+   "new": [
+    "24|Other90kg",
+    "24|Other2404.12.1025%Free(A+,AU,BH,"
+   ],
+   "ln": 25067,
+   "at": "2404.12.10"
+  },
+  {
+   "old": [],
+   "new": [
+    "24|Disposableelectroniccigarettes",
+    "24|(e-cigarettes)andsimilardisposable",
+    "24|personalelectronicvaporizingdevices",
+    "24|containingnicotine",
+    "24|10"
+   ],
+   "ln": 25071,
+   "at": "2404.12.10"
+  },
+  {
+   "old": [],
+   "new": [
+    "24|Other90kg"
+   ],
+   "ln": 25072,
+   "at": "2404.12.10"
+  },
+  {
+   "old": [],
+   "new": [
+    "24|RatesofDuty",
+    "24|1",
+    "24|RatesofDutyUnit",
+    "24|of",
+    "24|Quantity",
+    "24|ArticleDescription",
+    "24|Stat.",
+    "24|Suf-",
+    "24|fix",
+    "24|Heading/",
+    "24|Subheading21",
+    "24|SpecialGeneral",
+    "24|Productscontainingtobacco,reconstitutedtobacco,nicotine,",
+    "24|ortobaccoornicotinesubstitutes,intendedforinhalation",
+    "24|withoutcombustion;othernicotinecontainingproductsintended",
+    "24|fortheintakeofnicotineintothehumanbody:(con.)",
+    "24|2404(con.)",
+    "24|Productsintendedforinhalationwithoutcombustion:(con.)"
+   ],
+   "ln": 25078,
+   "at": "2404.12.90"
+  },
+  {
+   "old": [
+    "24|002404.19.05"
+   ],
+   "new": [
+    "24|2404.19.05"
+   ],
+   "ln": 25085,
+   "at": "2404.19.05"
+  },
+  {
+   "old": [],
+   "new": [
+    "24|Disposableelectroniccigarettes",
+    "24|(e-cigarettes)andsimilardisposable",
+    "24|personalelectronicvaporizingdevices",
+    "24|containingnicotine",
+    "24|10"
+   ],
+   "ln": 25090,
+   "at": "2404.19.05"
+  },
+  {
+   "old": [
+    "24|Other002404.19.1025%Free(A+,AU,BH,"
+   ],
+   "new": [
+    "24|Other90kg",
+    "24|Other2404.19.1025%Free(A+,AU,BH,"
+   ],
+   "ln": 25092,
+   "at": "2404.19.10"
+  },
+  {
+   "old": [],
+   "new": [
+    "24|Disposableelectroniccigarettes",
+    "24|(e-cigarettes)andsimilardisposable",
+    "24|personalelectronicvaporizingdevices",
+    "24|containingnicotine",
+    "24|10"
+   ],
+   "ln": 25096,
+   "at": "2404.19.10"
+  },
+  {
+   "old": [],
+   "new": [
+    "24|Other90kg"
+   ],
+   "ln": 25097,
+   "at": "2404.19.10"
+  },
+  {
+   "old": [
+    "29|Gluconicacid,itssaltsandesters:2918.16",
+    "29|Gluconicacid002918.16.1025%Free(A,AU,BH,CL,",
+    "29|CO,D,E,IL,JO,",
+    "29|KR,MA,OM,P,",
+    "29|PA,PE,S,SG)",
+    "29|6%",
+    "29|kg",
+    "29|Other2918.16.5025%Free(A,AU,BH,CL,",
+    "29|CO,D,E,IL,JO,K,",
+    "29|KR,MA,OM,P,",
+    "29|PA,PE,S,SG)",
+    "29|3.7%",
+    "29|Sodiumgluconate10kg",
+    "29|Other50kg"
+   ],
+   "new": [],
+   "ln": 33561,
+   "at": "2918.16.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|Gluconicacid,itssaltsandesters:2918.16",
+    "29|Gluconicacid002918.16.1025%Free(A,AU,BH,CL,",
+    "29|CO,D,E,IL,JO,",
+    "29|KR,MA,OM,P,",
+    "29|PA,PE,S,SG)",
+    "29|6%",
+    "29|kg",
+    "29|Other2918.16.5025%Free(A,AU,BH,CL,",
+    "29|CO,D,E,IL,JO,K,",
+    "29|KR,MA,OM,P,",
+    "29|PA,PE,S,SG)",
+    "29|3.7%",
+    "29|Sodiumgluconate10kg",
+    "29|Calciumgluconate20kg",
+    "29|Other90kg"
+   ],
+   "ln": 33594,
+   "at": "2918.16.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|RatesofDuty",
+    "29|1",
+    "29|RatesofDutyUnit",
+    "29|of",
+    "29|Quantity",
+    "29|ArticleDescription",
+    "29|Stat.",
+    "29|Suf-",
+    "29|fix",
+    "29|Heading/",
+    "29|Subheading21",
+    "29|SpecialGeneral",
+    "29|Carboxylicacidswithadditionaloxygenfunctionandtheir",
+    "29|anhydrides,halides,peroxidesandperoxyacids;their",
+    "29|halogenated,sulfonated,nitratedornitrosatedderivatives:",
+    "29|(con.)",
+    "29|2918(con.)",
+    "29|Carboxylicacidswithalcoholfunctionbutwithoutother",
+    "29|oxygenfunction,theiranhydrides,halides,peroxides,",
+    "29|peroxyacidsandtheirderivatives:(con.)"
+   ],
+   "ln": 33611,
+   "at": "2918.18.00"
+  },
+  {
+   "old": [
+    "29|002933.91.00"
+   ],
+   "new": [
+    "29|2933.91.00"
+   ],
+   "ln": 38923,
+   "at": "2933.91.00"
+  },
+  {
+   "old": [
+    "29|Freekg"
+   ],
+   "new": [
+    "29|Free",
+    "29|Lorazepam(INN);saltsthereof10kg",
+    "29|Other50kg"
+   ],
+   "ln": 38926,
+   "at": "2933.92.00"
+  },
+  {
+   "old": [
+    "30|Other90kg"
+   ],
+   "new": [
+    "30|Other:",
+    "30|Heparin65kg",
+    "30|Other95kg"
+   ],
+   "ln": 40392,
+   "at": "3001.90.01"
+  },
+  {
+   "old": [
+    "30|Combinationantibiotics45kg"
+   ],
+   "new": [
+    "30|Combinationantibiotics:",
+    "30|Containingpiperacillinandtazobactamor",
+    "30|itssalts",
+    "30|48",
+    "30|kg",
+    "30|Other49kg"
+   ],
+   "ln": 40543,
+   "at": "3004.10.50"
+  },
+  {
+   "old": [
+    "30|Other75kg",
+    "30|Other,containinghormonesorotherproductsofheading",
+    "30|2937:",
+    "30|Containinginsulin003004.31.0025%Freekg",
+    "30|Containingcorticosteroidhormones,theirderivatives",
+    "30|orstructuralanalogues",
+    "30|003004.32.00",
+    "30|25%Freekg",
+    "30|Other3004.39.0025%Free",
+    "30|Forveterinaryuse10kg",
+    "30|Other50kg"
+   ],
+   "new": [
+    "30|Containingcefdiniroritssalts70kg",
+    "30|Containingcefepimeoritssalts71kg",
+    "30|Containingceftazidimeoritssalts72kg",
+    "30|Containingmeropenemoritssalts76kg",
+    "30|Containingvancomycinoritssalts80kg",
+    "30|Other83kg"
+   ],
+   "ln": 40564,
+   "at": "3004.39.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Other,containinghormonesorotherproductsofheading",
+    "30|2937:",
+    "30|Containinginsulin003004.31.0025%Freekg",
+    "30|Containingcorticosteroidhormonestheirderivatives",
+    "30|orstructuralanalogues",
+    "30|3004.32.00",
+    "30|25%Free",
+    "30|Containingdexamethasoneoritssalts10kg",
+    "30|Containingmethylprednisoloneoritssalts40kg",
+    "30|Other60kg",
+    "30|Other3004.39.0025%Free",
+    "30|Forveterinaryuse10kg",
+    "30|Other:",
+    "30|Containingepinephrine20kg",
+    "30|Containinglevothyroxineoritssalts30kg",
+    "30|Containingnorepinephrine40kg",
+    "30|Containingvasopressin45kg",
+    "30|Other55kg"
+   ],
+   "ln": 40592,
+   "at": "3004.39.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|RatesofDuty",
+    "30|1",
+    "30|RatesofDutyUnit",
+    "30|of",
+    "30|Quantity",
+    "30|ArticleDescription",
+    "30|Stat.",
+    "30|Suf-",
+    "30|fix",
+    "30|Heading/",
+    "30|Subheading21",
+    "30|SpecialGeneral",
+    "30|Medicaments(excludinggoodsofheading3002,3005or3006)",
+    "30|consistingofmixedorunmixedproductsfortherapeuticor",
+    "30|prophylacticuses,putupinmeasureddoses(includingthose",
+    "30|intheformoftransdermaladministrationsystems)orinforms",
+    "30|orpackingsforretailsale:(con.)",
+    "30|3004(con.)"
+   ],
+   "ln": 40620,
+   "at": "3004.49.00"
+  },
+  {
+   "old": [
+    "30|Antivirals02kg",
+    "30|Antifungals:",
+    "30|Containingfluconazoleoritssalts04kg"
+   ],
+   "new": [
+    "30|Antivirals:",
+    "30|Containingacycloviroritssalts03kg",
+    "30|Containingoseltamiviroritssalts04kg",
+    "30|Containingvalganciclovir,peramivir",
+    "30|ortheirsalts",
+    "30|05",
+    "30|kg"
+   ],
+   "ln": 40685,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Antifungals:",
+    "30|Containingfluconazoleoritssalts07kg",
+    "30|Other08kg"
+   ],
+   "ln": 40688,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|08"
+   ],
+   "new": [
+    "30|09"
+   ],
+   "ln": 40693,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Other12kg",
+    "30|Sulfonamides13kg",
+    "30|Other14kg"
+   ],
+   "new": [
+    "30|Other10kg",
+    "30|Sulfonamides11kg",
+    "30|Other:",
+    "30|Containinglevofloxacinoritssalts12kg",
+    "30|Containinglinezolidoritssalts13kg",
+    "30|Other15kg"
+   ],
+   "ln": 40695,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|15"
+   ],
+   "new": [
+    "30|16"
+   ],
+   "ln": 40700,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Containingmetoprololoritssalts16kg",
+    "30|Containingamiodaroneoritssalts17kg",
+    "30|Containingdiltiazemoritssalts18kg",
+    "30|Containinghydralazineoritssalts19kg",
+    "30|Other21kg"
+   ],
+   "new": [
+    "30|Containingmetoprololoritssalts17kg",
+    "30|Containingamiodaroneoritssalts18kg",
+    "30|Containingdiltiazemoritssalts19kg",
+    "30|Containinghydralazineoritssalts20kg",
+    "30|Containingenoxaparinoritssalts22kg",
+    "30|Containinglabetaloloritssalts23kg",
+    "30|Containingargatroban,adenosine,",
+    "30|amlodipine,esmolol,dobutamine,",
+    "30|phenoxybenzamineortheirsalts",
+    "30|24",
+    "30|kg",
+    "30|Other25kg"
+   ],
+   "ln": 40703,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Tolmetin22kg",
+    "30|Tolmetinsodiumdihyrate23kg",
+    "30|Tolmetinsodium(anhydrous)25kg"
+   ],
+   "new": [
+    "30|Tolmetin26kg",
+    "30|Tolmetinsodiumdihydrate27kg",
+    "30|Tolmetinsodium(anhydrous)28kg"
+   ],
+   "ln": 40735,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Fororalsuspension27kg",
+    "30|Other29kg"
+   ],
+   "new": [
+    "30|Fororalsuspension29kg",
+    "30|Other30kg"
+   ],
+   "ln": 40739,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Fororalsuspension31kg",
+    "30|Other32kg"
+   ],
+   "new": [
+    "30|Fororalsuspension32kg",
+    "30|Other33kg"
+   ],
+   "ln": 40742,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|33"
+   ],
+   "new": [
+    "30|34"
+   ],
+   "ln": 40746,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Other34kg",
+    "30|Anticonvulsants,hypnoticsand",
+    "30|sedatives",
+    "30|36"
+   ],
+   "new": [
+    "30|Containingtramadol35kg",
+    "30|Other36kg",
+    "30|Anticonvulsants,hypnoticsandsedatives:",
+    "30|Containingdexmedetomidine,",
+    "30|etomidate,midazolam,propofolor",
+    "30|theirsalts",
+    "30|37"
+   ],
+   "ln": 40748,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Containingmidazolamoritssalts38kg",
+    "30|Containingphenytoinoritssalts39kg",
+    "30|Containingpropofoloritssalts40kg",
+    "30|Containinglevetiracetam,phenytoin",
+    "30|ortheirsalts",
+    "30|41",
+    "30|kg",
+    "30|Containingetomidateoritssalts42kg",
+    "30|Other43kg"
+   ],
+   "ln": 40752,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Containinglorazepamoritssalts37kg",
+    "30|Containingolanzapineoritssalts38kg",
+    "30|Other39kg",
+    "30|Other40kg",
+    "30|Dermatologicalagentsandlocalanesthetics:",
+    "30|Containinglidocaineoritssalts42kg",
+    "30|Other44kg",
+    "30|Medicamentsprimarilyaffectingthedigestive",
+    "30|system:",
+    "30|Laxatives50kg",
+    "30|Antacids55kg",
+    "30|Containingfamotidineoritssalts56kg",
+    "30|Containingpantoprazoleoritssalts57kg",
+    "30|Other59kg"
+   ],
+   "new": [
+    "30|Containinglorazepamoritssalts44kg",
+    "30|Containingolanzapineoritssalts45kg",
+    "30|Other46kg",
+    "30|Other:",
+    "30|Containingrocuroniumoritssalts47kg",
+    "30|Containingsuccinylcholineorits",
+    "30|salts",
+    "30|48",
+    "30|kg",
+    "30|Other49kg"
+   ],
+   "ln": 40755,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Dermatologicalagentsandlocalanesthetics:",
+    "30|Containinglidocaineoritssalts50kg",
+    "30|Other51kg",
+    "30|Medicamentsprimarilyaffectingthedigestive",
+    "30|system:",
+    "30|Laxatives52kg",
+    "30|Antacids53kg",
+    "30|Containingfamotidineoritssalts54kg",
+    "30|Containingpantoprazoleoritssalts55kg",
+    "30|Containingondansetronoritssalts56kg",
+    "30|Containingglycopyrrolateoritssalts57kg",
+    "30|Containingloperamideoritssalts58kg",
+    "30|Other60kg"
+   ],
+   "ln": 40791,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Containingfurosemideanditssalts63kg"
+   ],
+   "new": [
+    "30|Containingfurosemideanditssalts61kg"
+   ],
+   "ln": 40795,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|62",
+    "30|kg",
+    "30|Other63kg",
+    "30|Other:",
+    "30|Containingcalciumgluconate64kg",
+    "30|Containingpotassiumchloride65kg",
+    "30|Containingsodiumbicarbonate,in",
+    "30|injectionform"
+   ],
+   "ln": 40797,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Other68kg",
+    "30|Other70kg"
+   ],
+   "new": [
+    "30|Other67kg"
+   ],
+   "ln": 40800,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Coughandcoldpreparations76kg"
+   ],
+   "new": [
+    "30|Coughandcoldpreparations68kg",
+    "30|Other:",
+    "30|Antihistamines:",
+    "30|Containingdiphenhydramineorits",
+    "30|salts",
+    "30|69",
+    "30|kg",
+    "30|Other70kg",
+    "30|Containingalbuterolsulfate71kg"
+   ],
+   "ln": 40804,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Antihistamines80kg",
+    "30|Containingalbuterolsulfate84kg",
+    "30|Other89kg",
+    "30|Other91kg"
+   ],
+   "new": [
+    "30|Containingtimololmaleate72kg",
+    "30|Other73kg",
+    "30|RatesofDuty",
+    "30|1",
+    "30|RatesofDutyUnit",
+    "30|of",
+    "30|Quantity",
+    "30|ArticleDescription",
+    "30|Stat.",
+    "30|Suf-",
+    "30|fix",
+    "30|Heading/",
+    "30|Subheading21",
+    "30|SpecialGeneral",
+    "30|Medicaments(excludinggoodsofheading3002,3005or3006)",
+    "30|consistingofmixedorunmixedproductsfortherapeuticor",
+    "30|prophylacticuses,putupinmeasureddoses(includingthose",
+    "30|intheformoftransdermaladministrationsystems)orinforms",
+    "30|orpackingsforretailsale:(con.)",
+    "30|3004(con.)",
+    "30|Other:(con.)3004.90",
+    "30|(con.)",
+    "30|Other(con.)3004.90.92",
+    "30|(con.)",
+    "30|Other:(con.)",
+    "30|Other:",
+    "30|Containingheparinsodiumoritssalts74kg",
+    "30|Containingzoledronicacidoritssalts75kg",
+    "30|Other76kg"
+   ],
+   "ln": 40806,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "35|Other003504.00.5030.5%Free(A*,AU,BH,"
+   ],
+   "new": [
+    "35|Other3504.00.5030.5%Free(A*,AU,BH,"
+   ],
+   "ln": 43363,
+   "at": "3504.00.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "35|Frompeas:",
+    "35|Certifiedorganic10kg",
+    "35|Other50kg",
+    "35|Other80kg",
+    "35|RatesofDuty",
+    "35|1",
+    "35|RatesofDutyUnit",
+    "35|of",
+    "35|Quantity",
+    "35|ArticleDescription",
+    "35|Stat.",
+    "35|Suf-",
+    "35|fix",
+    "35|Heading/",
+    "35|Subheading21",
+    "35|SpecialGeneral"
+   ],
+   "ln": 43368,
+   "at": "3504.00.50"
+  },
+  {
+   "old": [
+    "35|RatesofDuty",
+    "35|1",
+    "35|RatesofDutyUnit",
+    "35|of",
+    "35|Quantity",
+    "35|ArticleDescription",
+    "35|Stat.",
+    "35|Suf-",
+    "35|fix",
+    "35|Heading/",
+    "35|Subheading21",
+    "35|SpecialGeneral"
+   ],
+   "new": [],
+   "ln": 43393,
+   "at": "3505.20.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "35|RatesofDuty",
+    "35|1",
+    "35|RatesofDutyUnit",
+    "35|of",
+    "35|Quantity",
+    "35|ArticleDescription",
+    "35|Stat.",
+    "35|Suf-",
+    "35|fix",
+    "35|Heading/",
+    "35|Subheading21",
+    "35|SpecialGeneral"
+   ],
+   "ln": 43453,
+   "at": "3506.99.00"
+  },
+  {
+   "old": [
+    "38|Other003801.90.0045%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "38|Other3801.90.0045%Free(A,AU,BH,CL,"
+   ],
+   "ln": 43996,
+   "at": "3801.90.00"
+  },
+  {
+   "old": [
+    "38|kg"
+   ],
+   "new": [
+    "38|Activeanodematerialcontainingsilicon10kg",
+    "38|Other50kg"
+   ],
+   "ln": 44001,
+   "at": "3801.90.00"
+  },
+  {
+   "old": [
+    "38|003815.12.00"
+   ],
+   "new": [
+    "38|3815.12.00"
+   ],
+   "ln": 44904,
+   "at": "3815.12.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "38|Withplatinumgroupmetalsastheactive",
+    "38|substance",
+    "38|10"
+   ],
+   "ln": 44905,
+   "at": "3815.12.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "38|Other90kg"
+   ],
+   "ln": 44906,
+   "at": "3815.12.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "38|RatesofDuty",
+    "38|1",
+    "38|RatesofDutyUnit",
+    "38|of",
+    "38|Quantity",
+    "38|ArticleDescription",
+    "38|Stat.",
+    "38|Suf-",
+    "38|fix",
+    "38|Heading/",
+    "38|Subheading21",
+    "38|SpecialGeneral"
+   ],
+   "ln": 44931,
+   "at": "3815.90.50"
+  },
+  {
+   "old": [
+    "38|RatesofDuty",
+    "38|1",
+    "38|RatesofDutyUnit",
+    "38|of",
+    "38|Quantity",
+    "38|ArticleDescription",
+    "38|Stat.",
+    "38|Suf-",
+    "38|fix",
+    "38|Heading/",
+    "38|Subheading21",
+    "38|SpecialGeneral"
+   ],
+   "new": [],
+   "ln": 44945,
+   "at": "3816.00.20"
+  },
+  {
+   "old": [
+    "73|Havingawallthicknessoflessthan1.65mm007306.30.1025%Free"
+   ],
+   "new": [
+    "73|Havingawallthicknessoflessthan1.65mm7306.30.1025%Free",
+    "73|Internallycoatedorlinedwithanon-electrically",
+    "73|insulatingmaterial,suitableforuseaselectrical",
+    "73|conduit",
+    "73|10"
+   ],
+   "ln": 97717,
+   "at": "7306.30.10"
+  },
+  {
+   "old": [],
+   "new": [
+    "73|Other90kg"
+   ],
+   "ln": 97718,
+   "at": "7306.30.10"
+  },
+  {
+   "old": [
+    "76|Recyclableusedbeveragecontainers35kg"
+   ],
+   "new": [
+    "76|Recyclablealuminumautoandtruckwheels45kg"
+   ],
+   "ln": 100814,
+   "at": "7602.00.00"
+  },
+  {
+   "old": [
+    "76|95"
+   ],
+   "new": [
+    "76|55"
+   ],
+   "ln": 100817,
+   "at": "7602.00.00"
+  },
+  {
+   "old": [
+    "76|Otherrecyclablealuminum97kg",
+    "76|Other98kg"
+   ],
+   "new": [
+    "76|Otherrecyclablealuminum65kg",
+    "76|Other75kg"
+   ],
+   "ln": 100819,
+   "at": "7602.00.00"
+  },
+  {
+   "old": [
+    "83|Parts008301.60.0045%Free(A*,AU,B,BH,"
+   ],
+   "new": [
+    "83|Parts8301.60.0045%Free(A*,AU,B,BH,"
+   ],
+   "ln": 104008,
+   "at": "8301.60.00"
+  },
+  {
+   "old": [
+    "83|kg",
+    "83|Keyspresentedseparately008301.70.0045%Free(A*,AU,B,BH,"
+   ],
+   "new": [
+    "83|Ofcopperorcopperalloys10kg",
+    "83|Other60kg",
+    "83|Keyspresentedseparately8301.70.0045%Free(A*,AU,B,BH,"
+   ],
+   "ln": 104014,
+   "at": "8301.70.00"
+  },
+  {
+   "old": [
+    "83|kg"
+   ],
+   "new": [
+    "83|Ofcopperorcopperalloys10kg",
+    "83|Other60kg"
+   ],
+   "ln": 104021,
+   "at": "8301.70.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|No."
+   ],
+   "ln": 105110,
+   "at": "8409.91.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|No."
+   ],
+   "ln": 105169,
+   "at": "8409.99.91"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral"
+   ],
+   "ln": 105181,
+   "at": "8409.99.99"
+  },
+  {
+   "old": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral"
+   ],
+   "new": [],
+   "ln": 105213,
+   "at": "8410.90.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral",
+    "84|Turbojets,turbopropellersandothergasturbines,andparts",
+    "84|thereof:(con.)",
+    "84|8411(con.)"
+   ],
+   "ln": 105249,
+   "at": "8411.22.80"
+  },
+  {
+   "old": [
+    "84|Airconditioningevaporatorcoils25No."
+   ],
+   "new": [
+    "84|Airconditioningevaporatorcoils:",
+    "84|Ofcopperorcopperalloys10No.",
+    "84|Other20No."
+   ],
+   "ln": 105972,
+   "at": "9921.01.02"
+  },
+  {
+   "old": [
+    "84|Ofheatpumps65kg"
+   ],
+   "new": [
+    "84|Ofheatpumps:",
+    "84|Ofcopperorcopperalloys50kg",
+    "84|Other70kg"
+   ],
+   "ln": 105975,
+   "at": "9921.01.02"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral"
+   ],
+   "ln": 105993,
+   "at": "8416.90.00"
+  },
+  {
+   "old": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral"
+   ],
+   "new": [],
+   "ln": 106024,
+   "at": "8417.90.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral",
+    "84|Refrigerators,freezersandotherrefrigeratingorfreezing",
+    "84|equipment,electricorother;heatpumps,otherthantheair",
+    "84|conditioningmachinesofheading8415;partsthereof:(con.)",
+    "84|8418(con.)"
+   ],
+   "ln": 106071,
+   "at": "8418.10.00"
+  },
+  {
+   "old": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral",
+    "84|Refrigerators,freezersandotherrefrigeratingorfreezing",
+    "84|equipment,electricorother;heatpumps,otherthantheair",
+    "84|conditioningmachinesofheading8415;partsthereof:(con.)",
+    "84|8418(con.)"
+   ],
+   "new": [],
+   "ln": 106110,
+   "at": "8418.40.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral",
+    "84|Refrigerators,freezersandotherrefrigeratingorfreezing",
+    "84|equipment,electricorother;heatpumps,otherthantheair",
+    "84|conditioningmachinesofheading8415;partsthereof:(con.)",
+    "84|8418(con.)"
+   ],
+   "ln": 106146,
+   "at": "8418.69.01"
+  },
+  {
+   "old": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral"
+   ],
+   "new": [],
+   "ln": 106183,
+   "at": "8418.99.80"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral",
+    "84|Machinery,plantorlaboratoryequipment,whetherornot",
+    "84|electricallyheated(excludingfurnaces,ovensandother",
+    "84|equipmentofheading8514),forthetreatmentofmaterialsby",
+    "84|aprocessinvolvingachangeoftemperaturesuchasheating,",
+    "84|cooking,roasting,distilling,rectifying,sterilizing,pasteurizing,",
+    "84|steaming,drying,evaporating,vaporizing,condensingor",
+    "84|cooling,otherthanmachineryorplantofakindusedfor",
+    "84|domesticpurposes;instantaneousorstoragewaterheaters,",
+    "84|nonelectric;partsthereof:(con.)",
+    "84|8419(con.)"
+   ],
+   "ln": 106215,
+   "at": "8419.20.00"
+  },
+  {
+   "old": [
+    "84|Other90No."
+   ],
+   "new": [
+    "84|Other:",
+    "84|Ofcopperorcopperalloys70No.",
+    "84|Other80No."
+   ],
+   "ln": 107292,
+   "at": "8431.49.90"
+  },
+  {
+   "old": [
+    "84|Other30No."
+   ],
+   "new": [
+    "84|Other:",
+    "84|Ofcopperorcopperalloys32No.",
+    "84|Other34No."
+   ],
+   "ln": 107303,
+   "at": "8431.49.90"
+  },
+  {
+   "old": [
+    "84|Other44No."
+   ],
+   "new": [
+    "84|Other:",
+    "84|Ofcopperorcopperalloys39No.",
+    "84|Other41No."
+   ],
+   "ln": 107310,
+   "at": "8431.49.90"
+  },
+  {
+   "old": [
+    "84|Other95No."
+   ],
+   "new": [
+    "84|Other:",
+    "84|Ofcopperorcopper",
+    "84|alloys",
+    "84|92",
+    "84|No.",
+    "84|Other94No."
+   ],
+   "ln": 107324,
+   "at": "8430.69.01"
+  },
+  {
+   "old": [
+    "84|Other80No."
+   ],
+   "new": [
+    "84|Other:",
+    "84|Externalcylindrical,includinguniversal55No.",
+    "84|Internalcylindrical65No.",
+    "84|Other75No."
+   ],
+   "ln": 109128,
+   "at": "8460.24.00"
+  },
+  {
+   "old": [
+    "84|Other:",
+    "84|Externalcylindrical,includinguniversal10No.",
+    "84|Internalcylindrical30No.",
+    "84|Other50No."
+   ],
+   "new": [
+    "84|Other80No."
+   ],
+   "ln": 109135,
+   "at": "8460.29.01"
+  },
+  {
+   "old": [
+    "84|Other20kg"
+   ],
+   "new": [
+    "84|Ofcopperorcopperalloysasdescribedin",
+    "84|statisticalnote6tothischapter",
+    "84|15",
+    "84|kg",
+    "84|Other30kg"
+   ],
+   "ln": 111903,
+   "at": "8482.91.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113156,
+   "at": "8504.21.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113160,
+   "at": "8504.21.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113164,
+   "at": "8504.21.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113168,
+   "at": "8504.21.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113176,
+   "at": "8504.22.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113180,
+   "at": "8504.22.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113192,
+   "at": "8504.23.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113196,
+   "at": "8504.23.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113200,
+   "at": "8504.23.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113253,
+   "at": "8504.32.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113266,
+   "at": "8504.33.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113270,
+   "at": "8504.33.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|kg"
+   ],
+   "ln": 113280,
+   "at": "8504.34.00"
+  },
+  {
+   "old": [
+    "85|Other20No."
+   ],
+   "new": [
+    "85|Other:",
+    "85|Batteryenergystoragesystemsfullyencased",
+    "85|withinahousing,asdescribedinstatisticalnote2",
+    "85|tothischapter",
+    "85|30",
+    "85|No."
+   ],
+   "ln": 113685,
+   "at": "8703.80"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|Other90No.",
+    "85|kg",
+    "85|RatesofDuty",
+    "85|1",
+    "85|RatesofDutyUnit",
+    "85|of",
+    "85|Quantity",
+    "85|ArticleDescription",
+    "85|Stat.",
+    "85|Suf-",
+    "85|fix",
+    "85|Heading/",
+    "85|Subheading21",
+    "85|SpecialGeneral",
+    "85|Electricstoragebatteries,includingseparatorstherefor,",
+    "85|whetherornotrectangular(includingsquare);partsthereof:",
+    "85|(con.)",
+    "85|8507(con.)"
+   ],
+   "ln": 113686,
+   "at": "8703.80"
+  },
+  {
+   "old": [
+    "85|RatesofDuty",
+    "85|1",
+    "85|RatesofDutyUnit",
+    "85|of",
+    "85|Quantity",
+    "85|ArticleDescription",
+    "85|Stat.",
+    "85|Suf-",
+    "85|fix",
+    "85|Heading/",
+    "85|Subheading21",
+    "85|SpecialGeneral",
+    "85|Electricstoragebatteries,includingseparatorstherefor,",
+    "85|whetherornotrectangular(includingsquare);partsthereof:",
+    "85|(con.)",
+    "85|8507(con.)"
+   ],
+   "new": [],
+   "ln": 113706,
+   "at": "8507.90"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|RatesofDuty",
+    "85|1",
+    "85|RatesofDutyUnit",
+    "85|of",
+    "85|Quantity",
+    "85|ArticleDescription",
+    "85|Stat.",
+    "85|Suf-",
+    "85|fix",
+    "85|Heading/",
+    "85|Subheading21",
+    "85|SpecialGeneral",
+    "85|Semiconductordevices(forexample,diodes,transistors,",
+    "85|semiconductor-basedtransducers);photosensitive",
+    "85|semiconductordevices,includingphotovoltaiccellswhether",
+    "85|ornotassembledinmodulesormadeupintopanels;",
+    "85|light-emittingdiodes(LED),whetherornotassembledwith",
+    "85|otherlight-emittingdiodes(LED);mountedpiezo-electric",
+    "85|crystals;partsthereof:(con.)",
+    "85|8541(con.)"
+   ],
+   "ln": 117339,
+   "at": "8541.10.00"
+  },
+  {
+   "old": [
+    "85|Withanoperatingfrequencynotlessthan"
+   ],
+   "new": [
+    "85|Withanoperatingfrequencylessthan"
+   ],
+   "ln": 117352,
+   "at": "8541.29.00"
+  },
+  {
+   "old": [
+    "85|75"
+   ],
+   "new": [
+    "85|55"
+   ],
+   "ln": 117354,
+   "at": "8541.29.00"
+  },
+  {
+   "old": [
+    "85|Other95No."
+   ],
+   "new": [
+    "85|Withanoperatingfrequency30MHzorgreater",
+    "85|butlessthan30,000MHz",
+    "85|65",
+    "85|No.",
+    "85|Withanoperatingfrequency30,000MHzor",
+    "85|greater",
+    "85|85",
+    "85|No.",
+    "85|Thyristors,diacsandtriacs,otherthanphotosensitive",
+    "85|devices",
+    "85|8541.30.00",
+    "85|35%Free",
+    "85|Unmountedchips,diceandwafers40No.",
+    "85|Other80No."
+   ],
+   "ln": 117356,
+   "at": "8541.29.00"
+  },
+  {
+   "old": [
+    "85|Thyristors,diacsandtriacs,otherthanphotosensitive",
+    "85|devices",
+    "85|8541.30.00",
+    "85|35%Free",
+    "85|Unmountedchips,diceandwafers40No.",
+    "85|Other80No."
+   ],
+   "new": [],
+   "ln": 117377,
+   "at": "8541.30.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|Other80No.",
+    "85|Mountedpiezoelectriccrystals8541.60.0035%Free",
+    "85|Quartzdesignedforoperatingfrequenciesof:",
+    "85|32.768kHz10No.",
+    "85|Notexceeding1MHz,except32.768kHz20No.",
+    "85|Exceeding1MHz,butnotexceeding5MHZ30No.",
+    "85|Exceeding5MHZ,butnotexceeding20MHz50No.",
+    "85|Exceeding20MHZ60No."
+   ],
+   "ln": 117427,
+   "at": "8541.59.00"
+  },
+  {
+   "old": [
+    "85|Mountedpiezoelectriccrystals8541.60.0035%Free",
+    "85|Quartzdesignedforoperatingfrequenciesof:",
+    "85|32.768kHz10No.",
+    "85|Notexceeding1MHz,except32.768kHz20No.",
+    "85|Exceeding1MHz,butnotexceeding5MHZ30No.",
+    "85|Exceeding5MHZ,butnotexceeding20MHz50No.",
+    "85|Exceeding20MHZ60No."
+   ],
+   "new": [
+    "85|Parts8541.90.0035%Free",
+    "85|Framesforphotovoltaiccellsassembledinmodules",
+    "85|ormadeupintopanels(ascoveredbysubheading",
+    "85|8541.43.00)",
+    "85|10",
+    "85|No."
+   ],
+   "ln": 117449,
+   "at": "8541.60.00"
+  },
+  {
+   "old": [
+    "85|Parts008541.90.0035%Free",
+    "85|No"
+   ],
+   "new": [],
+   "ln": 117457,
+   "at": "8541.90.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "88|No."
+   ],
+   "ln": 120826,
+   "at": "8807.90.30"
+  },
+  {
+   "old": [],
+   "new": [
+    "90|No."
+   ],
+   "ln": 122784,
+   "at": "9027.10.20"
+  },
+  {
+   "old": [],
+   "new": [
+    "90|No."
+   ],
+   "ln": 123170,
+   "at": "9030.90.46"
+  },
+  {
+   "old": [
+    "94|Other70No."
+   ],
+   "new": [
+    "94|Ofseatsofakindusedforaircraft40No.",
+    "94|Other85No."
+   ],
+   "ln": 127070,
+   "at": "9401.99.90"
+  },
+  {
+   "old": [],
+   "new": [
+    "94|No."
+   ],
+   "ln": 127367,
+   "at": "9403.20.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "94|No."
+   ],
+   "ln": 128004,
+   "at": "9405.99.40"
+  }
+ ],
+ "2026HTSRev3": [
+  {
+   "old": [],
+   "new": [
+    "76|Recyclableusedbeveragecontainers35kg"
+   ],
+   "ln": 101073,
+   "at": "7602.00.00"
+  }
+ ],
+ "2026HTSRev4": [
+  {
+   "old": [
+    "24|containingnicotine"
+   ],
+   "new": [
+    "24|withoutnicotine"
+   ],
+   "ln": 25177,
+   "at": "2404.19.05"
+  },
+  {
+   "old": [
+    "24|containingnicotine"
+   ],
+   "new": [
+    "24|withoutnicotine"
+   ],
+   "ln": 25189,
+   "at": "2404.19.10"
+  },
+  {
+   "old": [
+    "71|semimanufacturedforms,orinpowderform:"
+   ],
+   "new": [
+    "71|semi-manufacturedforms,orinpowderform:"
+   ],
+   "ln": 93702,
+   "at": "7107.00.00"
+  },
+  {
+   "old": [
+    "85|Solid-statenon-volatilestoragedevices9/008523.51.0080%Free"
+   ],
+   "new": [
+    "85|Solid-statenon-volatilestoragedevices7/008523.51.0080%Free"
+   ],
+   "ln": 115283,
+   "at": "8523.51.00"
+  },
+  {
+   "old": [
+    "85|Notexceeding18mmindiameter19/20No."
+   ],
+   "new": [
+    "85|Notexceeding18mmindiameter17/20No."
+   ],
+   "ln": 116587,
+   "at": "8532.22.00"
+  },
+  {
+   "old": [
+    "85|Exceeding51mmindiameter19/85No."
+   ],
+   "new": [
+    "85|Exceeding51mmindiameter17/85No."
+   ],
+   "ln": 116596,
+   "at": "8532.23.00"
+  },
+  {
+   "old": [
+    "85|Ofatypespecifiedinstatisticalnote7(a)tothis"
+   ],
+   "new": [
+    "85|Ofatypespecifiedinstatisticalnote8(a)tothis"
+   ],
+   "ln": 117355,
+   "at": "8539.52.00"
+  },
+  {
+   "old": [
+    "85|Ofatypespecifiedinstatisticalnote7(b)tothis"
+   ],
+   "new": [
+    "85|Ofatypespecifiedinstatisticalnote8(b)tothis"
+   ],
+   "ln": 117359,
+   "at": "8539.52.00"
+  },
+  {
+   "old": [
+    "85|Ofatypespecifiedinstatisticalnote7(c)tothis"
+   ],
+   "new": [
+    "85|Ofatypespecifiedinstatisticalnote8(c)tothis"
+   ],
+   "ln": 117363,
+   "at": "8539.52.00"
+  },
+  {
+   "old": [
+    "85|Ofatypespecifiedinstatisticalnote7(d)tothis"
+   ],
+   "new": [
+    "85|Ofatypespecifiedinstatisticalnote8(d)tothis"
+   ],
+   "ln": 117367,
+   "at": "8539.52.00"
+  },
+  {
+   "old": [
+    "85|describedinstatisticalnote10tothischapter"
+   ],
+   "new": [
+    "85|describedinstatisticalnote12tothischapter"
+   ],
+   "ln": 117766,
+   "at": "8541.42.00"
+  },
+  {
+   "old": [
+    "85|describedinstatisticalnote10tothischapter"
+   ],
+   "new": [
+    "85|describedinstatisticalnote12tothischapter"
+   ],
+   "ln": 117777,
+   "at": "8541.43.00"
+  },
+  {
+   "old": [
+    "85|note6tothischapter"
+   ],
+   "new": [
+    "85|note7tothischapter"
+   ],
+   "ln": 118195,
+   "at": "8544.42.90"
+  }
+ ],
+ "2026HTSRev5": [
+  {
+   "old": [
+    "73|Other9/88kg"
+   ],
+   "new": [
+    "73|Other6/88kg"
+   ],
+   "ln": 99840,
+   "at": "7326.90.86"
+  },
+  {
+   "old": [
+    "84|Other11/008426.19.0035%Free"
+   ],
+   "new": [
+    "84|Other8/008426.19.0035%Free"
+   ],
+   "ln": 107237,
+   "at": "8426.19.00"
+  },
+  {
+   "old": [
+    "85|Solid-statenon-volatilestoragedevices7/008523.51.0080%Free"
+   ],
+   "new": [
+    "85|Solid-statenon-volatilestoragedevices6/008523.51.0080%Free"
+   ],
+   "ln": 115283,
+   "at": "8523.51.00"
+  },
+  {
+   "old": [
+    "85|Notexceeding18mmindiameter17/20No."
+   ],
+   "new": [
+    "85|Notexceeding18mmindiameter13/20No."
+   ],
+   "ln": 116587,
+   "at": "8532.22.00"
+  },
+  {
+   "old": [
+    "85|Exceeding51mmindiameter17/85No."
+   ],
+   "new": [
+    "85|Exceeding51mmindiameter13/85No."
+   ],
+   "ln": 116596,
+   "at": "8532.23.00"
+  },
+  {
+   "old": [
+    "87|Steelforgings9/70kg"
+   ],
+   "new": [
+    "87|Steelforgings7/70kg"
+   ],
+   "ln": 119903,
+   "at": "8708.40.75"
+  },
+  {
+   "old": [
+    "87|Othertrailersandsemi-trailers9/008716.40.0045%Free"
+   ],
+   "new": [
+    "87|Othertrailersandsemi-trailers7/008716.40.0045%Free"
+   ],
+   "ln": 120874,
+   "at": "8716.40.00"
+  }
+ ],
+ "2026HTSRev6": [
+  {
+   "old": [
+    "30|Preparationspimarilyaffectingtheelectrolytic,"
+   ],
+   "new": [
+    "30|Preparationsprimarilyaffectingtheelectrolytic,"
+   ],
+   "ln": 40986,
+   "at": "3004.90.92"
+  }
+ ],
+ "2026HTSRev7": [],
+ "2026HTSRev8": [],
+ "2026HTSRev9": [],
+ "2026HTSRev10": [],
+ "2026HTSRev11": [
+  {
+   "old": [
+    "7|Brusselssprouts000704.20.0050%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "7|Brusselssprouts0704.20.0050%Free(A,AU,BH,CL,"
+   ],
+   "ln": 8620,
+   "at": "0704.20.00"
+  },
+  {
+   "old": [
+    "7|kg"
+   ],
+   "new": [
+    "7|Certifiedorganic20kg",
+    "7|Other40kg"
+   ],
+   "ln": 8625,
+   "at": "0704.20.00"
+  },
+  {
+   "old": [
+    "7|Other000710.90.9135%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "7|Other0710.90.9135%Free(A,AU,BH,CL,"
+   ],
+   "ln": 9646,
+   "at": "0710.90.91"
+  },
+  {
+   "old": [
+    "7|kg"
+   ],
+   "new": [
+    "7|Certifiedorganic20kg",
+    "7|Other40kg"
+   ],
+   "ln": 9651,
+   "at": "0710.90.91"
+  },
+  {
+   "old": [],
+   "new": [
+    "7|RatesofDuty",
+    "7|1",
+    "7|RatesofDutyUnit",
+    "7|of",
+    "7|Quantity",
+    "7|ArticleDescription",
+    "7|Stat.",
+    "7|Suf-",
+    "7|fix",
+    "7|Heading/",
+    "7|Subheading21",
+    "7|SpecialGeneral",
+    "7|Vegetablesprovisionallypreserved,butunsuitableinthatstate",
+    "7|forimmediateconsumption:(con.)",
+    "7|0711(con.)"
+   ],
+   "ln": 9710,
+   "at": "0711.40.00"
+  },
+  {
+   "old": [
+    "7|RatesofDuty",
+    "7|1",
+    "7|RatesofDutyUnit",
+    "7|of",
+    "7|Quantity",
+    "7|ArticleDescription",
+    "7|Stat.",
+    "7|Suf-",
+    "7|fix",
+    "7|Heading/",
+    "7|Subheading21",
+    "7|SpecialGeneral",
+    "7|Vegetablesprovisionallypreserved,butunsuitableinthatstate",
+    "7|forimmediateconsumption:(con.)",
+    "7|0711(con.)"
+   ],
+   "new": [],
+   "ln": 9741,
+   "at": "0711.90"
+  },
+  {
+   "old": [],
+   "new": [
+    "7|RatesofDuty",
+    "7|1",
+    "7|RatesofDutyUnit",
+    "7|of",
+    "7|Quantity",
+    "7|ArticleDescription",
+    "7|Stat.",
+    "7|Suf-",
+    "7|fix",
+    "7|Heading/",
+    "7|Subheading21",
+    "7|SpecialGeneral"
+   ],
+   "ln": 9776,
+   "at": "0711.90.65"
+  },
+  {
+   "old": [
+    "7|RatesofDuty",
+    "7|1",
+    "7|RatesofDutyUnit",
+    "7|of",
+    "7|Quantity",
+    "7|ArticleDescription",
+    "7|Stat.",
+    "7|Suf-",
+    "7|fix",
+    "7|Heading/",
+    "7|Subheading21",
+    "7|SpecialGeneral",
+    "7|Driedvegetables,whole,cut,sliced,brokenorinpowder,but",
+    "7|notfurtherprepared:(con.)",
+    "7|0712(con.)"
+   ],
+   "new": [],
+   "ln": 9793,
+   "at": "0712.20.40"
+  },
+  {
+   "old": [
+    "8|IfenteredduringthemonthofOctober000805.40.603.3\u00a2/kgFree(AU,BH,CL,"
+   ],
+   "new": [
+    "8|IfenteredduringthemonthofOctober0805.40.603.3\u00a2/kgFree(AU,BH,CL,"
+   ],
+   "ln": 10969,
+   "at": "0805.40.60"
+  },
+  {
+   "old": [
+    "8|kg"
+   ],
+   "new": [
+    "8|Grapefruit10kg",
+    "8|Pomelo90kg"
+   ],
+   "ln": 10974,
+   "at": "0805.40.80"
+  },
+  {
+   "old": [
+    "12|Other60kg",
+    "12|Other91kg"
+   ],
+   "new": [
+    "12|Other:",
+    "12|Certifiedorganic65kg",
+    "12|Other75kg",
+    "12|Other:",
+    "12|Certifiedorganic92kg",
+    "12|Other97kg"
+   ],
+   "ln": 13092,
+   "at": "1207.99.03"
+  },
+  {
+   "old": [
+    "12|Other90kg"
+   ],
+   "new": [
+    "12|Other:",
+    "12|Certifiedorganic92kg",
+    "12|Other97kg"
+   ],
+   "ln": 13386,
+   "at": "1211.90.93"
+  },
+  {
+   "old": [
+    "13|Other40kg"
+   ],
+   "new": [
+    "13|Other:",
+    "13|Certifiedorganic45kg",
+    "13|Other55kg"
+   ],
+   "ln": 13576,
+   "at": "1302.20.00"
+  },
+  {
+   "old": [
+    "15|Other90kg"
+   ],
+   "new": [
+    "15|Avocadooil:",
+    "15|Certifiedorganic20kg",
+    "15|Other40kg",
+    "15|Other:",
+    "15|Certifiedorganic75kg",
+    "15|Other85kg"
+   ],
+   "ln": 14237,
+   "at": "1515.90.81"
+  },
+  {
+   "old": [],
+   "new": [
+    "17|RatesofDuty",
+    "17|1",
+    "17|RatesofDutyUnit",
+    "17|of",
+    "17|Quantity",
+    "17|ArticleDescription",
+    "17|Stat.",
+    "17|Suf-",
+    "17|fix",
+    "17|Heading/",
+    "17|Subheading21",
+    "17|SpecialGeneral",
+    "17|Othersugars,includingchemicallypurelactose,maltose,",
+    "17|glucoseandfructose,insolidform;sugarsyrupsnotcontaining",
+    "17|addedflavoringorcoloringmatter;artificialhoney,whetheror",
+    "17|notmixedwithnaturalhoney;caramel:(con.)",
+    "17|1702(con.)",
+    "17|Other,includinginvertsugarandothersugarandsugar",
+    "17|syrupblendscontaininginthedrystate50percentby",
+    "17|weightoffructose:(con.)",
+    "17|1702.90",
+    "17|(con.)",
+    "17|Other:(con.)"
+   ],
+   "ln": 16583,
+   "at": "1702.90.52"
+  },
+  {
+   "old": [
+    "17|Other001702.90.9020%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "17|Other1702.90.9020%Free(A,AU,BH,CL,"
+   ],
+   "ln": 16633,
+   "at": "1702.90.90"
+  },
+  {
+   "old": [
+    "17|kg"
+   ],
+   "new": [
+    "17|Certifiedorganic20kg",
+    "17|Other50kg"
+   ],
+   "ln": 16638,
+   "at": "1702.90.90"
+  },
+  {
+   "old": [
+    "18|001805.00.00"
+   ],
+   "new": [
+    "18|1805.00.00"
+   ],
+   "ln": 16907,
+   "at": "1805.00.00"
+  },
+  {
+   "old": [
+    "18|kg"
+   ],
+   "new": [
+    "18|Certifiedorganic10kg",
+    "18|Other90kg"
+   ],
+   "ln": 16913,
+   "at": "1805.00.00"
+  },
+  {
+   "old": [
+    "18|Other001806.20.5040%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "18|Other1806.20.5040%Free(A,AU,BH,CL,"
+   ],
+   "ln": 17237,
+   "at": "1806.20.50"
+  },
+  {
+   "old": [
+    "18|kg"
+   ],
+   "new": [
+    "18|Certifiedorganic10kg",
+    "18|Other90kg"
+   ],
+   "ln": 17242,
+   "at": "1806.20.50"
+  },
+  {
+   "old": [
+    "18|Other49kg"
+   ],
+   "new": [
+    "18|Other:",
+    "18|Certifiedorganic55kg",
+    "18|Other65kg"
+   ],
+   "ln": 17638,
+   "at": "1806.31.00"
+  },
+  {
+   "old": [
+    "18|Other001806.32.3040%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "18|Other1806.32.3040%Free(A,AU,BH,CL,"
+   ],
+   "ln": 17787,
+   "at": "1806.32.30"
+  },
+  {
+   "old": [
+    "18|kg"
+   ],
+   "new": [
+    "18|Certifiedorganic10kg",
+    "18|Other90kg"
+   ],
+   "ln": 17792,
+   "at": "1806.32.30"
+  },
+  {
+   "old": [
+    "18|Other001806.32.9040%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "18|Other1806.32.9040%Free(A,AU,BH,CL,"
+   ],
+   "ln": 17862,
+   "at": "1806.32.90"
+  },
+  {
+   "old": [
+    "18|kg"
+   ],
+   "new": [
+    "18|Certifiedorganic10kg",
+    "18|Other90kg"
+   ],
+   "ln": 17867,
+   "at": "1806.32.90"
+  },
+  {
+   "old": [
+    "18|Other19kg",
+    "18|Other90kg"
+   ],
+   "new": [
+    "18|Other:",
+    "18|Certifiedorganic25kg",
+    "18|Other45kg",
+    "18|Other:",
+    "18|Certifiedorganic75kg",
+    "18|Other85kg"
+   ],
+   "ln": 18165,
+   "at": "1806.90.90"
+  },
+  {
+   "old": [
+    "19|Other30kg",
+    "19|ProductofacountryotherthananEU",
+    "19|country",
+    "19|90",
+    "19|kg"
+   ],
+   "new": [
+    "19|Other:",
+    "19|Certifiedorganic40kg",
+    "19|Other50kg",
+    "19|ProductofacountryotherthananEUcountry:",
+    "19|Certifiedorganic75kg",
+    "19|Other85kg"
+   ],
+   "ln": 19407,
+   "at": "1902.19.20"
+  },
+  {
+   "old": [
+    "19|Otherpasta1902.30.0020%Free(A*,AU,BH,",
+    "19|CL,CO,D,E,IL,",
+    "19|JO,KR,MA,OM,",
+    "19|P,PA,PE,S,SG)",
+    "19|6.4%",
+    "19|Canned20kg",
+    "19|Other:",
+    "19|Frozen40kg",
+    "19|Other60kg"
+   ],
+   "new": [],
+   "ln": 19433,
+   "at": "1902.30.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "19|Otherpasta1902.30.0020%Free(A*,AU,BH,",
+    "19|CL,CO,D,E,IL,",
+    "19|JO,KR,MA,OM,",
+    "19|P,PA,PE,S,SG)",
+    "19|6.4%",
+    "19|Canned20kg",
+    "19|Other:",
+    "19|Frozen40kg",
+    "19|Other60kg"
+   ],
+   "ln": 19458,
+   "at": "1902.30.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "19|RatesofDuty",
+    "19|1",
+    "19|RatesofDutyUnit",
+    "19|of",
+    "19|Quantity",
+    "19|ArticleDescription",
+    "19|Stat.",
+    "19|Suf-",
+    "19|fix",
+    "19|Heading/",
+    "19|Subheading21",
+    "19|SpecialGeneral"
+   ],
+   "ln": 19475,
+   "at": "1903.00.40"
+  },
+  {
+   "old": [
+    "19|Other80kg"
+   ],
+   "new": [
+    "19|Other:",
+    "19|Certifiedorganic65kg",
+    "19|Other75kg"
+   ],
+   "ln": 19491,
+   "at": "1904.10.00"
+  },
+  {
+   "old": [
+    "19|Other49kg"
+   ],
+   "new": [
+    "19|Other:",
+    "19|Certifiedorganic42kg",
+    "19|Other45kg"
+   ],
+   "ln": 19552,
+   "at": "1905.32.00"
+  },
+  {
+   "old": [
+    "19|Other90kg"
+   ],
+   "new": [
+    "19|Other:",
+    "19|Certifiedorganic75kg",
+    "19|Other85kg"
+   ],
+   "ln": 19580,
+   "at": "1905.90.90"
+  },
+  {
+   "old": [
+    "20|002009.12.25"
+   ],
+   "new": [
+    "20|2009.12.25"
+   ],
+   "ln": 21253,
+   "at": "2009.12.25"
+  },
+  {
+   "old": [
+    "20|liters"
+   ],
+   "new": [
+    "20|Certifiedorganic10liters",
+    "20|Other90liters"
+   ],
+   "ln": 21259,
+   "at": "2009.12.45"
+  },
+  {
+   "old": [
+    "20|Other65liters"
+   ],
+   "new": [
+    "20|Other:",
+    "20|Certifiedorganic67liters",
+    "20|Other69liters"
+   ],
+   "ln": 21564,
+   "at": "2009.89.70"
+  },
+  {
+   "old": [
+    "20|Other002009.90.4018\u00a2/literFree(A+,AU,BH,"
+   ],
+   "new": [
+    "20|Other2009.90.4018\u00a2/literFree(A+,AU,BH,"
+   ],
+   "ln": 21603,
+   "at": "2009.90.40"
+  },
+  {
+   "old": [
+    "20|liters"
+   ],
+   "new": [
+    "20|Certifiedorganic20liters",
+    "20|Other40liters"
+   ],
+   "ln": 21608,
+   "at": "2009.90.40"
+  },
+  {
+   "old": [
+    "21|Other60kg"
+   ],
+   "new": [
+    "21|Other:",
+    "21|Certifiedorganic55kg",
+    "21|Other65kg"
+   ],
+   "ln": 22143,
+   "at": "2104.20"
+  },
+  {
+   "old": [
+    "21|Frozen95kg"
+   ],
+   "new": [
+    "21|Frozen91kg"
+   ],
+   "ln": 22990,
+   "at": "2106.90.99"
+  },
+  {
+   "old": [
+    "21|97"
+   ],
+   "new": [
+    "21|92"
+   ],
+   "ln": 22996,
+   "at": "?"
+  },
+  {
+   "old": [
+    "21|Other98kg"
+   ],
+   "new": [
+    "21|Other:",
+    "21|Certified",
+    "21|organic",
+    "21|93",
+    "21|kg",
+    "21|Other94kg"
+   ],
+   "ln": 22998,
+   "at": "?"
+  },
+  {
+   "old": [
+    "22|Vodka:2208.60",
+    "22|Incontainerseachholdingnotover4liters:",
+    "22|Valuednotover$2.liter002208.60.10$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Valuedover$2.liter002208.60.20$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Incontainerseachholdingover4liters002208.60.50$1.pf.liter",
+    "22|Free",
+    "22|pf.liters"
+   ],
+   "new": [],
+   "ln": 23733,
+   "at": "2208.60.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "22|Vodka:2208.60",
+    "22|Incontainerseachholdingnotover4liters:",
+    "22|Valuednotover$2.liter002208.60.10$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Valuedover$2.liter2208.60.20$1.pf.liter",
+    "22|Free",
+    "22|Certifiedorganic30pf.liters",
+    "22|Other60pf.liters",
+    "22|Incontainerseachholdingover4liters002208.60.50$1.pf.liter",
+    "22|Free",
+    "22|pf.liters"
+   ],
+   "ln": 23759,
+   "at": "2208.60.50"
+  },
+  {
+   "old": [
+    "22|Kirschwasserandratafia2208.90.46$3.pf.liter",
+    "22|Free",
+    "22|Incontainerseachholdingnotover4liters30pf.liters",
+    "22|Incontainerseachholdingover4liters60pf.liters",
+    "22|Tequila:",
+    "22|Incontainerseachholdingnotover4liters002208.90.50$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Incontainerseachholdingover4liters002208.90.55$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Imitationsofbrandyandotherspirituousbeverages002208.90.71$2.pf.liter",
+    "22|Free",
+    "22|pf.liters"
+   ],
+   "new": [],
+   "ln": 23811,
+   "at": "2208.90.71"
+  },
+  {
+   "old": [],
+   "new": [
+    "22|Kirschwasserandratafia2208.90.46$3.pf.liter",
+    "22|Free",
+    "22|Incontainerseachholdingnotover4liters30pf.liters",
+    "22|Incontainerseachholdingover4liters60pf.liters",
+    "22|Tequila:",
+    "22|Incontainerseachholdingnotover4liters2208.90.50$1.pf.liter",
+    "22|Free",
+    "22|Certifiedorganic30pf.liters",
+    "22|Other60pf.liters",
+    "22|Incontainerseachholdingover4liters002208.90.55$1.pf.liter",
+    "22|Free",
+    "22|pf.liters",
+    "22|Imitationsofbrandyandotherspirituousbeverages002208.90.71$2.pf.liter",
+    "22|Free",
+    "22|pf.liters"
+   ],
+   "ln": 23842,
+   "at": "2208.90"
+  },
+  {
+   "old": [
+    "22|002209.00.00"
+   ],
+   "new": [
+    "22|2209.00.00"
+   ],
+   "ln": 23869,
+   "at": "2209.00.00"
+  },
+  {
+   "old": [
+    "22|pf.liters"
+   ],
+   "new": [
+    "22|Certifiedorganic30pf.liters",
+    "22|liters",
+    "22|Other60pf.liters"
+   ],
+   "ln": 23875,
+   "at": "2209.00.00"
+  },
+  {
+   "old": [
+    "29|002918.30.25"
+   ],
+   "new": [
+    "29|2918.30.25"
+   ],
+   "ln": 34062,
+   "at": "2918.30.25"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|Methyl3-oxo-2-phenylbutanoate(methyl",
+    "29|alpha-phenylacetoacetate,MAPA)",
+    "29|10"
+   ],
+   "ln": 34070,
+   "at": "2918.30.25"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|Other50kg"
+   ],
+   "ln": 34071,
+   "at": "2918.30.25"
+  },
+  {
+   "old": [
+    "29|002918.99.43"
+   ],
+   "new": [
+    "29|2918.99.43"
+   ],
+   "ln": 34222,
+   "at": "2918.99.43"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|2-Methyl-3-phenyloxirane-2-carboxylic",
+    "29|acid(P-2-Pmethylglycidicacid),",
+    "29|itssaltsandesters",
+    "29|10"
+   ],
+   "ln": 34230,
+   "at": "2918.99.43"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|Other50kg"
+   ],
+   "ln": 34231,
+   "at": "2918.99.43"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|RatesofDuty",
+    "29|1",
+    "29|RatesofDutyUnit",
+    "29|of",
+    "29|Quantity",
+    "29|ArticleDescription",
+    "29|Stat.",
+    "29|Suf-",
+    "29|fix",
+    "29|Heading/",
+    "29|Subheading21",
+    "29|SpecialGeneral",
+    "29|Carboxylicacidswithadditionaloxygenfunctionandtheir",
+    "29|anhydrides,halides,peroxidesandperoxyacids;their",
+    "29|halogenated,sulfonated,nitratedornitrosatedderivatives:",
+    "29|(con.)",
+    "29|2918(con.)",
+    "29|Other:(con.)",
+    "29|Other:(con.)2918.99",
+    "29|(con.)"
+   ],
+   "ln": 34239,
+   "at": "2918.99.47"
+  },
+  {
+   "old": [
+    "29|Other002920.90.5125%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "29|Other2920.90.5125%Free(A,AU,BH,CL,"
+   ],
+   "ln": 34426,
+   "at": "2920.90.51"
+  },
+  {
+   "old": [
+    "29|kg"
+   ],
+   "new": [
+    "29|Ethylenecarbonate(1,3-dioxolan-2-one)10kg",
+    "29|Other50kg"
+   ],
+   "ln": 34431,
+   "at": "2920.90.51"
+  },
+  {
+   "old": [
+    "29|Drugs002922.19.0915.4\u00a2/kg+"
+   ],
+   "new": [
+    "29|Drugs2922.19.0915.4\u00a2/kg+"
+   ],
+   "ln": 35307,
+   "at": "2922.19.09"
+  },
+  {
+   "old": [
+    "29|6.5%kg"
+   ],
+   "new": [
+    "29|6.5%",
+    "29|Diphenhydramine(INN)anditssalts10kg",
+    "29|Other90kg"
+   ],
+   "ln": 35314,
+   "at": "2922.19.09"
+  },
+  {
+   "old": [
+    "29|Drugs"
+   ],
+   "new": [
+    "29|Drugs:"
+   ],
+   "ln": 35968,
+   "at": "2922.50"
+  },
+  {
+   "old": [
+    "29|002922.50.13"
+   ],
+   "new": [
+    "29|2922.50.13"
+   ],
+   "ln": 35973,
+   "at": "2922.50.13"
+  },
+  {
+   "old": [
+    "29|Freekg"
+   ],
+   "new": [
+    "29|Free",
+    "29|Phenylephrine(INN)anditssalts10kg",
+    "29|Other90kg"
+   ],
+   "ln": 35976,
+   "at": "2922.50.13"
+  },
+  {
+   "old": [
+    "29|002924.29.71"
+   ],
+   "new": [
+    "29|2924.29.71"
+   ],
+   "ln": 36544,
+   "at": "2924.29.71"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|3-oxo-2-phenylbutanamide",
+    "29|(alpha-phenylacetoacetamide,",
+    "29|APAA)",
+    "29|10"
+   ],
+   "ln": 36552,
+   "at": "2924.29.71"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|Other50kg"
+   ],
+   "ln": 36553,
+   "at": "2924.29.71"
+  },
+  {
+   "old": [
+    "29|Mercaptocarboxylicacids20kg"
+   ],
+   "new": [
+    "29|Mercaptocarboxylicacids:",
+    "29|Acetylcysteine(INN)andits",
+    "29|salts",
+    "29|40",
+    "29|kg",
+    "29|Other45kg"
+   ],
+   "ln": 37440,
+   "at": "2930.90.49"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|RatesofDuty",
+    "29|1",
+    "29|RatesofDutyUnit",
+    "29|of",
+    "29|Quantity",
+    "29|ArticleDescription",
+    "29|Stat.",
+    "29|Suf-",
+    "29|fix",
+    "29|Heading/",
+    "29|Subheading21",
+    "29|SpecialGeneral",
+    "29|Organo-sulfurcompounds:(con.)2930(con.)",
+    "29|Other:(con.)2930.90",
+    "29|(con.)",
+    "29|Other:(con.)",
+    "29|Other:(con.)"
+   ],
+   "ln": 37441,
+   "at": "2930.90.49"
+  },
+  {
+   "old": [
+    "29|Other51kg"
+   ],
+   "new": [
+    "29|Other:",
+    "29|Dimethylsulfide(DMS)(CAS",
+    "29|No.75-18-3)",
+    "29|40",
+    "29|kg",
+    "29|Other55kg"
+   ],
+   "ln": 37478,
+   "at": "2930.90.92"
+  },
+  {
+   "old": [
+    "29|002932.99.61"
+   ],
+   "new": [
+    "29|2932.99.61"
+   ],
+   "ln": 38053,
+   "at": "2932.99.61"
+  },
+  {
+   "old": [
+    "29|6.5%kg"
+   ],
+   "new": [
+    "29|6.5%",
+    "29|3-(1,3-benzodioxol-5-yl)-2-methyloxirane-2-",
+    "29|carboxylicacid(3,4-MDP-2-P-methyl",
+    "29|glycidicacid),itssaltsandesters",
+    "29|10",
+    "29|kg",
+    "29|Other50kg"
+   ],
+   "ln": 38061,
+   "at": "2932.99.70"
+  },
+  {
+   "old": [
+    "29|Other2932.99.9025%",
+    "29|Free(A*,AU,BH,",
+    "29|CL,CO,D,E,IL,",
+    "29|JO,K,KR,MA,",
+    "29|OM,P,PA,PE,S,",
+    "29|SG)",
+    "29|3.7%",
+    "29|Glucosamineanditssaltsandesters10kg",
+    "29|Other90kg"
+   ],
+   "new": [],
+   "ln": 38071,
+   "at": "2932.99.90"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|Heterocycliccompoundswithoxygenhetero-atom(s)only:",
+    "29|(con.)",
+    "29|2932(con.)",
+    "29|Other:(con.)",
+    "29|Other:(con.)2932.99",
+    "29|(con.)",
+    "29|Other2932.99.9025%",
+    "29|Free(A*,AU,BH,",
+    "29|CL,CO,D,E,IL,",
+    "29|JO,K,KR,MA,",
+    "29|OM,P,PA,PE,S,",
+    "29|SG)",
+    "29|3.7%",
+    "29|Glucosamineanditssaltsandesters10kg",
+    "29|Other90kg"
+   ],
+   "ln": 38091,
+   "at": "2932.99.90"
+  },
+  {
+   "old": [
+    "29|2-Chloro-5-sulfophenylmethylpyrazolone;",
+    "29|2,5-Dichloro-4-(3-methyl-5-oxo-2-",
+    "29|pyrazolin-1-yl)benzenesulfonicacid;Phenyl",
+    "29|carbethoxypyrazolone;m-Sulfaminopyrazolone",
+    "29|(m-Sulfamido-phenylmethylpyrazolone);and",
+    "29|1-(p-Sulfophenyl)-3-methylpyrazolone",
+    "29|002933.19.18",
+    "29|15.4\u00a2/kg+",
+    "29|52%",
+    "29|Free",
+    "29|kg"
+   ],
+   "new": [],
+   "ln": 38147,
+   "at": "2933.19.18"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|2-Chloro-5-sulfophenylmethylpyrazolone;",
+    "29|2,5-Dichloro-4-(3-methyl-5-oxo-2-",
+    "29|pyrazolin-1-yl)benzenesulfonicacid;Phenyl",
+    "29|carbethoxypyrazolone;m-Sulfaminopyrazolone",
+    "29|(m-Sulfamido-phenylmethylpyrazolone);and",
+    "29|1-(p-Sulfophenyl)-3-methylpyrazolone",
+    "29|002933.19.18",
+    "29|15.4\u00a2/kg+",
+    "29|52%",
+    "29|Free",
+    "29|kg"
+   ],
+   "ln": 38177,
+   "at": "2933.19"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|RatesofDuty",
+    "29|1",
+    "29|RatesofDutyUnit",
+    "29|of",
+    "29|Quantity",
+    "29|ArticleDescription",
+    "29|Stat.",
+    "29|Suf-",
+    "29|fix",
+    "29|Heading/",
+    "29|Subheading21",
+    "29|SpecialGeneral",
+    "29|Heterocycliccompoundswithnitrogenhetero-atom(s)only:",
+    "29|(con.)",
+    "29|2933(con.)",
+    "29|Compoundscontaininganunfusedpyrazolering(whether",
+    "29|ornothydrogenated)inthestructure:(con.)",
+    "29|Other:(con.)2933.19",
+    "29|(con.)"
+   ],
+   "ln": 38228,
+   "at": "2933.19.43"
+  },
+  {
+   "old": [
+    "29|Other91kg"
+   ],
+   "new": [
+    "29|Other:",
+    "29|N-phenyl-4-piperidinamine(4-AP),",
+    "29|tert-butyl",
+    "29|4-(phenylamino)piperidine-1-carboxylate",
+    "29|(tert-butyl",
+    "29|4-anilinopiperidine-1-carboxylate,",
+    "29|1-boc-4-AP),norfentanyl",
+    "29|(N-phenyl-N-(4-piperidyl)propionamide),",
+    "29|piperidin-4-one(4-piperidone)and",
+    "29|tert-butyl",
+    "29|4-oxopiperidine-1-carboxylate",
+    "29|(1-boc-4-piperidone);salts",
+    "29|thereof",
+    "29|40",
+    "29|kg",
+    "29|Other92kg"
+   ],
+   "ln": 38582,
+   "at": "2933.39.92"
+  },
+  {
+   "old": [
+    "29|Drugs002934.99.4725%Free(A,AU,BH,CL,"
+   ],
+   "new": [
+    "29|Drugs2934.99.4725%Free(A,AU,BH,CL,"
+   ],
+   "ln": 39860,
+   "at": "2934.99.47"
+  },
+  {
+   "old": [
+    "29|3.7%kg"
+   ],
+   "new": [
+    "29|3.7%",
+    "29|Rocuronium(INN)anditssalts20kg",
+    "29|Tacrolimus(INN)anditssalts30kg",
+    "29|Timololmaleateanditssalts40kg",
+    "29|Other90kg"
+   ],
+   "ln": 39864,
+   "at": "2934.99.47"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|RatesofDuty",
+    "29|1",
+    "29|RatesofDutyUnit",
+    "29|of",
+    "29|Quantity",
+    "29|ArticleDescription",
+    "29|Stat.",
+    "29|Suf-",
+    "29|fix",
+    "29|Heading/",
+    "29|Subheading21",
+    "29|SpecialGeneral",
+    "29|Hormones,prostaglandins,thromboxanesandleukotrienes,",
+    "29|naturalorreproducedbysynthesis;derivativesandstructural",
+    "29|analoguesthereof,includingchainmodifiedpolypeptides,used",
+    "29|primarilyashormones:(con.)",
+    "29|2937(con.)"
+   ],
+   "ln": 40154,
+   "at": "2937.19.00"
+  },
+  {
+   "old": [
+    "29|002937.22.00",
+    "29|25%Freeg"
+   ],
+   "new": [
+    "29|2937.22.00",
+    "29|25%Free",
+    "29|Dexamethasone(INN)anditssalts10g",
+    "29|Other90g"
+   ],
+   "ln": 40168,
+   "at": "2937.23"
+  },
+  {
+   "old": [],
+   "new": [
+    "29|Prostaglandins,thromboxanesandleukotrienes,their",
+    "29|derivativesandstructuralanalogues",
+    "29|002937.50.00",
+    "29|25%Freeg"
+   ],
+   "ln": 40202,
+   "at": "2937.29.90"
+  },
+  {
+   "old": [
+    "29|Prostaglandins,thromboxanesandleukotrienes,their",
+    "29|derivativesandstructuralanalogues",
+    "29|002937.50.00",
+    "29|25%Freeg"
+   ],
+   "new": [],
+   "ln": 40220,
+   "at": "2937.90"
+  },
+  {
+   "old": [
+    "29|Other002939.79.0025%Freekg"
+   ],
+   "new": [
+    "29|Other2939.79.0025%Free",
+    "29|Atropine(INN)anditssalts10kg",
+    "29|Other90kg"
+   ],
+   "ln": 40346,
+   "at": "2939.80.00"
+  },
+  {
+   "old": [
+    "29|Tetracyclinesandtheirderivatives;saltsthereof002941.30.0025%Freeg"
+   ],
+   "new": [
+    "29|Tetracyclinesandtheirderivatives;saltsthereof2941.30.0025%Free",
+    "29|Doxycycline(INN)anditssalts10g",
+    "29|Other90g"
+   ],
+   "ln": 40411,
+   "at": "2941.40.00"
+  },
+  {
+   "old": [
+    "29|Aminoglycosideantibiotics10kg"
+   ],
+   "new": [
+    "29|Aminoglycosideantibiotics:",
+    "29|Tobramycin(INN)20kg",
+    "29|Other25kg"
+   ],
+   "ln": 40418,
+   "at": "2941.90.10"
+  },
+  {
+   "old": [
+    "29|Aromaticormodifiedaromatic002941.90.3015.4\u00a2/kg+"
+   ],
+   "new": [
+    "29|Aromaticormodifiedaromatic2941.90.3015.4\u00a2/kg+"
+   ],
+   "ln": 40421,
+   "at": "2941.90.30"
+  },
+  {
+   "old": [
+    "29|Freekg",
+    "29|Other002941.90.5025%Freekg"
+   ],
+   "new": [
+    "29|Free",
+    "29|Vancomycin(INN)anditssalts30kg",
+    "29|Other90kg",
+    "29|Other2941.90.5025%Free",
+    "29|Clindamycin(INN)anditssalts30kg",
+    "29|Other90kg"
+   ],
+   "ln": 40423,
+   "at": "2941.90.50"
+  },
+  {
+   "old": [
+    "30|Other75kg"
+   ],
+   "new": [
+    "30|Containingampicillinoritssalts70kg",
+    "30|Other80kg",
+    "30|RatesofDuty",
+    "30|1",
+    "30|RatesofDutyUnit",
+    "30|of",
+    "30|Quantity",
+    "30|ArticleDescription",
+    "30|Stat.",
+    "30|Suf-",
+    "30|fix",
+    "30|Heading/",
+    "30|Subheading21",
+    "30|SpecialGeneral",
+    "30|Medicaments(excludinggoodsofheading3002,3005or3006)",
+    "30|consistingofmixedorunmixedproductsfortherapeuticor",
+    "30|prophylacticuses,putupinmeasureddoses(includingthose",
+    "30|intheformoftransdermaladministrationsystems)orinforms",
+    "30|orpackingsforretailsale:(con.)",
+    "30|3004(con.)"
+   ],
+   "ln": 40673,
+   "at": "3004.20.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Containingamikacinoritssalts42kg"
+   ],
+   "ln": 40685,
+   "at": "3004.20.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Containingdaptomycinoritssalts58kg"
+   ],
+   "ln": 40687,
+   "at": "3004.20.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Containingceftriaxoneoritssalts73kg",
+    "30|Containingmicafunginoritssalts74kg"
+   ],
+   "ln": 40691,
+   "at": "3004.20.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Containingtobramycinoritssalts78kg"
+   ],
+   "ln": 40692,
+   "at": "3004.20.00"
+  },
+  {
+   "old": [
+    "30|Other83kg"
+   ],
+   "new": [
+    "30|Other85kg"
+   ],
+   "ln": 40694,
+   "at": "3004.20.00"
+  },
+  {
+   "old": [
+    "30|Containinginsulin003004.31.0025%Freekg"
+   ],
+   "new": [
+    "30|Containinginsulin3004.31.0025%Free",
+    "30|Containinginsulinglargine10kg",
+    "30|Other90kg"
+   ],
+   "ln": 40715,
+   "at": "3004.31.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Containinghydrocortisoneoritssalts20kg"
+   ],
+   "ln": 40720,
+   "at": "3004.32.00"
+  },
+  {
+   "old": [
+    "30|Other60kg"
+   ],
+   "new": [
+    "30|Other80kg"
+   ],
+   "ln": 40722,
+   "at": "3004.39.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Containingdesmopressinacetate15kg"
+   ],
+   "ln": 40725,
+   "at": "3004.39.00"
+  },
+  {
+   "old": [
+    "30|Other55kg"
+   ],
+   "new": [
+    "30|Other80kg"
+   ],
+   "ln": 40730,
+   "at": "3004.39.00"
+  },
+  {
+   "old": [
+    "30|Singlevitamins"
+   ],
+   "new": [
+    "30|Singlevitamins:"
+   ],
+   "ln": 40798,
+   "at": "3004.50.50"
+  },
+  {
+   "old": [
+    "30|Other20kg"
+   ],
+   "new": [
+    "30|Other:",
+    "30|VitaminB1(thiamine)15kg",
+    "30|VitaminK1(phytonadione)25kg",
+    "30|Other28kg"
+   ],
+   "ln": 40803,
+   "at": "3004.50.50"
+  },
+  {
+   "old": [
+    "30|Sulfonamides11kg"
+   ],
+   "new": [
+    "30|Sulfonamides:",
+    "30|Containingtrimethoprimand",
+    "30|sulfamethoxazoleortheirsalts",
+    "30|11",
+    "30|kg",
+    "30|Other12kg"
+   ],
+   "ln": 40859,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Containinglevofloxacinoritssalts12kg",
+    "30|Containinglinezolidoritssalts13kg"
+   ],
+   "new": [
+    "30|Containinglevofloxacinoritssalts13kg",
+    "30|Containinglinezolidoritssalts14kg"
+   ],
+   "ln": 40861,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|medicaments"
+   ],
+   "new": [
+    "30|medicaments:",
+    "30|Containinghydroxyureaor",
+    "30|cyclophosphamideortheirsalts"
+   ],
+   "ln": 40865,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [],
+   "new": [
+    "30|Containingtacrolimusormycophenolate",
+    "30|mofetiloritssalts",
+    "30|17",
+    "30|kg",
+    "30|Other18kg",
+    "30|RatesofDuty",
+    "30|1",
+    "30|RatesofDutyUnit",
+    "30|of",
+    "30|Quantity",
+    "30|ArticleDescription",
+    "30|Stat.",
+    "30|Suf-",
+    "30|fix",
+    "30|Heading/",
+    "30|Subheading21",
+    "30|SpecialGeneral",
+    "30|Medicaments(excludinggoodsofheading3002,3005or3006)",
+    "30|consistingofmixedorunmixedproductsfortherapeuticor",
+    "30|prophylacticuses,putupinmeasureddoses(includingthose",
+    "30|intheformoftransdermaladministrationsystems)orinforms",
+    "30|orpackingsforretailsale:(con.)",
+    "30|3004(con.)",
+    "30|Other:(con.)3004.90",
+    "30|(con.)",
+    "30|Other(con.)3004.90.92",
+    "30|(con.)",
+    "30|Other:(con.)"
+   ],
+   "ln": 40867,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Containingmetoprololoritssalts17kg",
+    "30|Containingamiodaroneoritssalts18kg",
+    "30|Containingdiltiazemoritssalts19kg",
+    "30|Containinghydralazineoritssalts20kg",
+    "30|Containingenoxaparinoritssalts22kg",
+    "30|Containinglabetaloloritssalts23kg"
+   ],
+   "new": [
+    "30|Containingmetoprololoritssalts19kg",
+    "30|Containingamiodaroneoritssalts20kg",
+    "30|Containingdiltiazemoritssalts21kg",
+    "30|Containinghydralazineoritssalts22kg",
+    "30|Containingenoxaparinoritssalts23kg",
+    "30|Containinglabetaloloritssalts24kg"
+   ],
+   "ln": 40869,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|24"
+   ],
+   "new": [
+    "30|25"
+   ],
+   "ln": 40878,
+   "at": "?"
+  },
+  {
+   "old": [
+    "30|Other25kg"
+   ],
+   "new": [
+    "30|Other26kg"
+   ],
+   "ln": 40880,
+   "at": "?"
+  },
+  {
+   "old": [
+    "30|Tolmetin26kg",
+    "30|Tolmetinsodiumdihydrate27kg",
+    "30|Tolmetinsodium(anhydrous)28kg"
+   ],
+   "new": [
+    "30|Tolmetin27kg",
+    "30|Tolmetinsodiumdihydrate28kg",
+    "30|Tolmetinsodium(anhydrous)29kg"
+   ],
+   "ln": 40908,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "30|Fororalsuspension29kg",
+    "30|Other30kg"
+   ],
+   "new": [
+    "30|Fororalsuspension30kg",
+    "30|Other31kg"
+   ],
+   "ln": 40912,
+   "at": "3004.90.92"
+  },
+  {
+   "old": [
+    "35|Other003507.90.7025%"
+   ],
+   "new": [
+    "35|Other3507.90.7025%"
+   ],
+   "ln": 43712,
+   "at": "3507.90.70"
+  },
+  {
+   "old": [],
+   "new": [
+    "35|Enzymes\u2013proteases,amylases,lipases,",
+    "35|cellulases,pectinases,oxidases,andcatalases",
+    "35|10"
+   ],
+   "ln": 43713,
+   "at": "3507.90.70"
+  },
+  {
+   "old": [],
+   "new": [
+    "35|Other80kg"
+   ],
+   "ln": 43714,
+   "at": "3507.90.70"
+  },
+  {
+   "old": [
+    "38|Other95kg"
+   ],
+   "new": [
+    "38|Monocrystallinesiliconwafers,doped:",
+    "38|Round(circular)shaped,asdescribedinstatistical",
+    "38|note2tothischapter",
+    "38|40",
+    "38|kg",
+    "38|Pseudo-squareorrectangularinshape,asdescribed",
+    "38|instatisticalnote3tothischapter",
+    "38|45",
+    "38|kg",
+    "38|Other50kg",
+    "38|Other91kg"
+   ],
+   "ln": 45247,
+   "at": "3818.00.00"
+  },
+  {
+   "old": [
+    "38|Preparedculturemediafordevelopmentormaintenanceof",
+    "38|micro-organisms(includingvirusesandthelike)orofplant,",
+    "38|humanoranimalcells",
+    "38|3821.00.00",
+    "38|25%Free(A+,AU,BH,",
+    "38|CL,CO,D,E,IL,",
+    "38|JO,KR,MA,OM,",
+    "38|P,PA,PE,S,SG)",
+    "38|5%",
+    "38|Viraltransportmedia10kg",
+    "38|Other90kg"
+   ],
+   "new": [],
+   "ln": 45266,
+   "at": "3821.00.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "38|Preparedculturemediafordevelopmentormaintenanceof",
+    "38|micro-organisms(includingvirusesandthelike)orofplant,",
+    "38|humanoranimalcells",
+    "38|3821.00.00",
+    "38|25%Free(A+,AU,BH,",
+    "38|CL,CO,D,E,IL,",
+    "38|JO,KR,MA,OM,",
+    "38|P,PA,PE,S,SG)",
+    "38|5%",
+    "38|Viraltransportmedia10kg",
+    "38|Other90kg"
+   ],
+   "ln": 45288,
+   "at": "3821.00.00"
+  },
+  {
+   "old": [
+    "39|Laboratoryware4/10No."
+   ],
+   "new": [
+    "39|Laboratoryware:",
+    "39|Separatoryfunnels15No.",
+    "39|Other20No."
+   ],
+   "ln": 48625,
+   "at": "3926.90.99"
+  },
+  {
+   "old": [
+    "71|Other007113.19.2980%Free(A*,AU,BH,"
+   ],
+   "new": [
+    "71|Other7113.19.2980%Free(A*,AU,BH,"
+   ],
+   "ln": 93939,
+   "at": "7113.19.29"
+  },
+  {
+   "old": [
+    "71|g"
+   ],
+   "new": [
+    "71|Uniformlink10g",
+    "71|Other90g"
+   ],
+   "ln": 93944,
+   "at": "7113.19.30"
+  },
+  {
+   "old": [
+    "72|Ferrosiliconmanganese007202.30.0023%"
+   ],
+   "new": [
+    "72|Ferrosiliconmanganese7202.30.0023%"
+   ],
+   "ln": 94531,
+   "at": "7202.30.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "72|Containingbyweightnotmorethan0.10percentof",
+    "72|carbon",
+    "72|60"
+   ],
+   "ln": 94536,
+   "at": "7202.30.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "72|Mnkg",
+    "72|Other90kg"
+   ],
+   "ln": 94537,
+   "at": "7202.30.00"
+  },
+  {
+   "old": [
+    "83|Other008307.10.6030%Free(A,AU,B,BH,"
+   ],
+   "new": [
+    "83|Other8307.10.6030%Free(A,AU,B,BH,"
+   ],
+   "ln": 104643,
+   "at": "8307.10.60"
+  },
+  {
+   "old": [],
+   "new": [
+    "83|Jacketedcorrugatedstainlesssteeltubingas",
+    "83|describedinstatisticalnote1tothischapter",
+    "83|10"
+   ],
+   "ln": 104647,
+   "at": "8307.10.60"
+  },
+  {
+   "old": [],
+   "new": [
+    "83|Other60kg"
+   ],
+   "ln": 104648,
+   "at": "8307.10.60"
+  },
+  {
+   "old": [
+    "83|beveragesasdescribedinstatisticalnote1tothis"
+   ],
+   "new": [
+    "83|beveragesasdescribedinstatisticalnote2tothis"
+   ],
+   "ln": 104727,
+   "at": "8309.90.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral",
+    "84|Pumpsforliquids,whetherornotfittedwithameasuring",
+    "84|device;liquidelevators;partthereof:(con.)",
+    "84|8413(con.)"
+   ],
+   "ln": 105800,
+   "at": "8413.82.00"
+  },
+  {
+   "old": [
+    "84|Ofsubheading8413.30.9010kg"
+   ],
+   "new": [
+    "84|Ofsubheading8413.30.9015kg"
+   ],
+   "ln": 105818,
+   "at": "8413.30.90"
+  },
+  {
+   "old": [
+    "84|Fluidendblocks55No.",
+    "84|Other60kg"
+   ],
+   "new": [
+    "84|Fluidendblocks20No.",
+    "84|Other29kg"
+   ],
+   "ln": 105820,
+   "at": "8413.50.00"
+  },
+  {
+   "old": [
+    "84|65"
+   ],
+   "new": [
+    "84|31"
+   ],
+   "ln": 105825,
+   "at": "8413.50.00"
+  },
+  {
+   "old": [
+    "84|Other6/85kg",
+    "84|Other6/96kg"
+   ],
+   "new": [
+    "84|Other39kg",
+    "84|Ofcopperorcopperalloysasdescribedin",
+    "84|statisticalnote4tothischapter:",
+    "84|Ofsubheading8413.30.9041kg",
+    "84|Ofhydraulicfluidpowerpumps44kg",
+    "84|Ofsubheading8413.50.0046kg",
+    "84|Other59kg",
+    "84|Other99kg"
+   ],
+   "ln": 105827,
+   "at": "8413.92.00"
+  },
+  {
+   "old": [
+    "84|Forfoodandbeverages40No.",
+    "84|Other80No."
+   ],
+   "new": [
+    "84|Rotaryevaporators10No.",
+    "84|Other90No."
+   ],
+   "ln": 106539,
+   "at": "8419.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|Heatingmantles;drumheatersandheating",
+    "84|beltsforheatingcontainers",
+    "84|10",
+    "84|No.",
+    "84|Other:"
+   ],
+   "ln": 106606,
+   "at": "8419.89.95"
+  },
+  {
+   "old": [
+    "84|Forfoodandbeverages60No.",
+    "84|Forrubberandplastics80No.",
+    "84|Forothermaterials85No."
+   ],
+   "new": [
+    "84|Forfoodandbeverages50No.",
+    "84|Forrubberandplastics70No.",
+    "84|Forothermaterials90No."
+   ],
+   "ln": 106611,
+   "at": "8419.89.95"
+  },
+  {
+   "old": [
+    "84|Other008424.30.9035%Free"
+   ],
+   "new": [
+    "84|Other8424.30.9035%Free",
+    "84|Poweredbyagasoline-fueledinternalcombustion",
+    "84|engine",
+    "84|10"
+   ],
+   "ln": 107112,
+   "at": "8424.30.90"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|Other90kg"
+   ],
+   "ln": 107113,
+   "at": "8424.30.90"
+  },
+  {
+   "old": [
+    "84|Ofsteamandsimilarjetprojectingmachines40kg"
+   ],
+   "new": [
+    "84|Ofsteamandsimilarjetprojectingmachines:",
+    "84|Poweredbyagasoline-fueledinternal",
+    "84|combustionengine",
+    "84|10",
+    "84|kg",
+    "84|Other20kg"
+   ],
+   "ln": 107188,
+   "at": "8424.90.90"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral"
+   ],
+   "ln": 107249,
+   "at": "8426.99.00"
+  },
+  {
+   "old": [
+    "84|Rider-type,counterbalancedfork-lifttrucks008427.10.4035%Free",
+    "84|No"
+   ],
+   "new": [
+    "84|Rider-type,counterbalancedfork-lifttrucks8427.10.4035%Free",
+    "84|Poweredbyatleastonehydrogenfuelcell10No",
+    "84|Other90No"
+   ],
+   "ln": 107254,
+   "at": "8427.10.80"
+  },
+  {
+   "old": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote5tothischapter"
+   ],
+   "ln": 107259,
+   "at": "8427.10.80"
+  },
+  {
+   "old": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote5tothischapter"
+   ],
+   "ln": 107265,
+   "at": "8427.10.80"
+  },
+  {
+   "old": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote5tothischapter"
+   ],
+   "ln": 107271,
+   "at": "8427.10.80"
+  },
+  {
+   "old": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote5tothischapter"
+   ],
+   "ln": 107280,
+   "at": "8427.20.80"
+  },
+  {
+   "old": [
+    "84|statisticalnote4tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote5tothischapter"
+   ],
+   "ln": 107286,
+   "at": "8427.90.00"
+  },
+  {
+   "old": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral"
+   ],
+   "new": [],
+   "ln": 107290,
+   "at": "8427.90.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral"
+   ],
+   "ln": 107337,
+   "at": "8428.90.03"
+  },
+  {
+   "old": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral",
+    "84|Self-propelledbulldozers,angledozers,graders,levelers,",
+    "84|scrapers,mechanicalshovels,excavators,shovelloaders,",
+    "84|tampingmachinesandroadrollers:(con.)",
+    "84|8429(con.)"
+   ],
+   "new": [],
+   "ln": 107361,
+   "at": "8429.40.00"
+  },
+  {
+   "old": [
+    "84|Machinerywitha360\u02darevolvingsuperstructure:8429.52",
+    "84|Backhoes,shovels,clamshellsanddraglines8429.52.1035%Free",
+    "84|New:",
+    "84|Crawlermounted:",
+    "84|Hydraulic10No.",
+    "84|Other20No.",
+    "84|Other:",
+    "84|Hydraulic30No.",
+    "84|Other40No.",
+    "84|Usedorrebuilt50No.",
+    "84|Other8429.52.5035%Free",
+    "84|New10No.",
+    "84|Usedorrebuilt90No."
+   ],
+   "new": [],
+   "ln": 107422,
+   "at": "8429.52.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|Machinerywitha360\u02darevolvingsuperstructure:8429.52",
+    "84|Backhoes,shovels,clamshellsanddraglines8429.52.1035%Free",
+    "84|New:",
+    "84|Crawlermounted:",
+    "84|Hydraulic10No.",
+    "84|Other20No.",
+    "84|Other:",
+    "84|Hydraulic30No.",
+    "84|Other40No.",
+    "84|Usedorrebuilt50No.",
+    "84|Other8429.52.5035%Free",
+    "84|New10No.",
+    "84|Usedorrebuilt90No."
+   ],
+   "ln": 107451,
+   "at": "8429.52.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral"
+   ],
+   "ln": 107464,
+   "at": "8429.59.50"
+  },
+  {
+   "old": [
+    "84|Headersandupsetters,includingcold",
+    "84|headers",
+    "84|30",
+    "84|No."
+   ],
+   "new": [
+    "84|Headersandupsetters30No."
+   ],
+   "ln": 109693,
+   "at": "8462.11.00"
+  },
+  {
+   "old": [
+    "84|Headersandupsetters,includingcold",
+    "84|headers",
+    "84|30",
+    "84|No."
+   ],
+   "new": [
+    "84|Headersandupsetters30No."
+   ],
+   "ln": 109707,
+   "at": "8462.19.00"
+  },
+  {
+   "old": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral",
+    "84|Machinesandmechanicalapplianceshavingindividual",
+    "84|functions,notspecifiedorincludedelsewhereinthischapter;",
+    "84|partsthereof:(con.)",
+    "84|8479(con.)"
+   ],
+   "new": [],
+   "ln": 111467,
+   "at": "8479.79.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|RatesofDuty",
+    "84|1",
+    "84|RatesofDutyUnit",
+    "84|of",
+    "84|Quantity",
+    "84|ArticleDescription",
+    "84|Stat.",
+    "84|Suf-",
+    "84|fix",
+    "84|Heading/",
+    "84|Subheading21",
+    "84|SpecialGeneral",
+    "84|Machinesandmechanicalapplianceshavingindividual",
+    "84|functions,notspecifiedorincludedelsewhereinthischapter;",
+    "84|partsthereof:(con.)",
+    "84|8479(con.)",
+    "84|Othermachinesandmechanicalappliances:(con.)"
+   ],
+   "ln": 111500,
+   "at": "8479.83.00"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|Machinesforpreparingbiologicalsamplesfor",
+    "84|thesubsequentdiagnosis,testing,oranalysis,",
+    "84|asdescribedinstatisticalnote7tothis",
+    "84|chapter",
+    "84|10",
+    "84|No."
+   ],
+   "ln": 111538,
+   "at": "8479.89.95"
+  },
+  {
+   "old": [
+    "84|Other99No."
+   ],
+   "new": [
+    "84|Other97No."
+   ],
+   "ln": 111548,
+   "at": "8479.89.95"
+  },
+  {
+   "old": [],
+   "new": [
+    "84|Ofmachinesforpreparingbiologicalsamplesfor",
+    "84|thesubsequentdiagnosis,testing,oranalysis,as",
+    "84|describedinstatisticalnote7tothischapter",
+    "84|10",
+    "84|No."
+   ],
+   "ln": 111590,
+   "at": "8479.90.95"
+  },
+  {
+   "old": [
+    "84|Other6/96No."
+   ],
+   "new": [
+    "84|Other91No."
+   ],
+   "ln": 111607,
+   "at": "8479.90.95"
+  },
+  {
+   "old": [
+    "84|statisticalnote6tothischapter"
+   ],
+   "new": [
+    "84|statisticalnote8tothischapter"
+   ],
+   "ln": 112219,
+   "at": "8482.91.00"
+  },
+  {
+   "old": [
+    "84|Spherical70No.",
+    "84|kg",
+    "84|Other90No.",
+    "84|kg"
+   ],
+   "new": [
+    "84|Spherical:",
+    "84|Ofcopperorcopperalloys71kg",
+    "84|Other79kg",
+    "84|Other:",
+    "84|Ofcopperorcopperalloys81kg",
+    "84|Other89kg"
+   ],
+   "ln": 112440,
+   "at": "8483.30.80"
+  },
+  {
+   "old": [
+    "84|turbines,asdescribedinstatisticalnote6"
+   ],
+   "new": [
+    "84|turbines,asdescribedinstatisticalnote9"
+   ],
+   "ln": 112489,
+   "at": "8483.40.50"
+  },
+  {
+   "old": [
+    "85|Inverters70No."
+   ],
+   "new": [
+    "85|Inverters:",
+    "85|Ofacapacitynotexceeding200W71No.",
+    "85|Ofacapacityexceeding200Wbutnot",
+    "85|exceeding650W",
+    "85|73",
+    "85|No.",
+    "85|Ofacapacityexceeding650Wbutnot",
+    "85|exceeding20,000W",
+    "85|75",
+    "85|No.",
+    "85|Ofacapacityexceeding20,000Wbutnot",
+    "85|exceeding125,000W",
+    "85|77",
+    "85|No.",
+    "85|Ofacapacityexceeding125,000Wbutnot",
+    "85|exceeding1,000,000W",
+    "85|78",
+    "85|No.",
+    "85|Other79No."
+   ],
+   "ln": 113681,
+   "at": "8504.40.95"
+  },
+  {
+   "old": [
+    "85|Otherinductors:8504.50",
+    "85|Forpowersuppliesforautomaticdataprocessing",
+    "85|machinesorunitsthereofofheading8471;power",
+    "85|suppliesforgoodsofsubheading8443.31or8443.32;",
+    "85|powersuppliesformonitorsofsubheading8528.42",
+    "85|or8528.52orprojectorsofsubheading8528.62;for",
+    "85|telecommunicationapparatus",
+    "85|008504.50.40",
+    "85|35%Free",
+    "85|No",
+    "85|Other008504.50.8035%Free",
+    "85|No"
+   ],
+   "new": [],
+   "ln": 113683,
+   "at": "8504.50.80"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|Otherinductors:8504.50",
+    "85|Forpowersuppliesforautomaticdataprocessing",
+    "85|machinesorunitsthereofofheading8471;power",
+    "85|suppliesforgoodsofsubheading8443.31or8443.32;",
+    "85|powersuppliesformonitorsofsubheading8528.42",
+    "85|or8528.52orprojectorsofsubheading8528.62;for",
+    "85|telecommunicationapparatus",
+    "85|008504.50.40",
+    "85|35%Free",
+    "85|No",
+    "85|Other008504.50.8035%Free",
+    "85|No"
+   ],
+   "ln": 113709,
+   "at": "8504.50.80"
+  },
+  {
+   "old": [
+    "85|Ofakinddescribedinsubheading9903.45.2510No.",
+    "85|W",
+    "85|Other:"
+   ],
+   "new": [],
+   "ln": 113954,
+   "at": "9903.45.25"
+  },
+  {
+   "old": [
+    "85|Other91No."
+   ],
+   "new": [
+    "85|Other92No."
+   ],
+   "ln": 113963,
+   "at": "9903.45.25"
+  },
+  {
+   "old": [
+    "85|RatesofDuty",
+    "85|1",
+    "85|RatesofDutyUnit",
+    "85|of",
+    "85|Quantity",
+    "85|ArticleDescription",
+    "85|Stat.",
+    "85|Suf-",
+    "85|fix",
+    "85|Heading/",
+    "85|Subheading21",
+    "85|SpecialGeneral",
+    "85|Electricstoragebatteries,includingseparatorstherefor,",
+    "85|whetherornotrectangular(includingsquare);partsthereof:",
+    "85|(con.)",
+    "85|8507(con.)"
+   ],
+   "new": [],
+   "ln": 113965,
+   "at": "8507.30"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|RatesofDuty",
+    "85|1",
+    "85|RatesofDutyUnit",
+    "85|of",
+    "85|Quantity",
+    "85|ArticleDescription",
+    "85|Stat.",
+    "85|Suf-",
+    "85|fix",
+    "85|Heading/",
+    "85|Subheading21",
+    "85|SpecialGeneral",
+    "85|Electricstoragebatteries,includingseparatorstherefor,",
+    "85|whetherornotrectangular(includingsquare);partsthereof:",
+    "85|(con.)",
+    "85|8507(con.)"
+   ],
+   "ln": 113998,
+   "at": "8507.30.80"
+  },
+  {
+   "old": [
+    "85|RatesofDuty",
+    "85|1",
+    "85|RatesofDutyUnit",
+    "85|of",
+    "85|Quantity",
+    "85|ArticleDescription",
+    "85|Stat.",
+    "85|Suf-",
+    "85|fix",
+    "85|Heading/",
+    "85|Subheading21",
+    "85|SpecialGeneral",
+    "85|Electricstoragebatteries,includingseparatorstherefor,",
+    "85|whetherornotrectangular(includingsquare);partsthereof:",
+    "85|(con.)",
+    "85|8507(con.)"
+   ],
+   "new": [],
+   "ln": 114026,
+   "at": "8507.80"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|RatesofDuty",
+    "85|1",
+    "85|RatesofDutyUnit",
+    "85|of",
+    "85|Quantity",
+    "85|ArticleDescription",
+    "85|Stat.",
+    "85|Suf-",
+    "85|fix",
+    "85|Heading/",
+    "85|Subheading21",
+    "85|SpecialGeneral"
+   ],
+   "ln": 114073,
+   "at": "8507.90.80"
+  },
+  {
+   "old": [],
+   "new": [
+    "85|Hydrogenelectrolyzers10No."
+   ],
+   "ln": 117943,
+   "at": "8543.30.90"
+  },
+  {
+   "old": [
+    "85|Other80No."
+   ],
+   "new": [
+    "85|Other90No."
+   ],
+   "ln": 117945,
+   "at": "8543.30.90"
+  },
+  {
+   "old": [
+    "87|Forothervehicles40No."
+   ],
+   "new": [
+    "87|Forothervehicles:",
+    "87|Forvehicleshavingoffsetsteeringandafloorboard",
+    "87|widthofatleast114.3cmbutnotmorethan139.7",
+    "87|cm,asdescribedinstatisticalnote2tothis",
+    "87|chapter",
+    "87|30",
+    "87|No.",
+    "87|Other90No."
+   ],
+   "ln": 119726,
+   "at": "8707.90"
+  },
+  {
+   "old": [],
+   "new": [
+    "87|RatesofDuty",
+    "87|1",
+    "87|RatesofDutyUnit",
+    "87|of",
+    "87|Quantity",
+    "87|ArticleDescription",
+    "87|Stat.",
+    "87|Suf-",
+    "87|fix",
+    "87|Heading/",
+    "87|Subheading21",
+    "87|SpecialGeneral"
+   ],
+   "ln": 119742,
+   "at": "8701.29"
+  },
+  {
+   "old": [
+    "87|Other60No.",
+    "87|Brakesandservo-brakes;partsthereof:8708.30",
+    "87|Fortractorssuitableforagriculturaluse8708.30.10FreeFree",
+    "87|Mountedbrakelinings10No."
+   ],
+   "new": [
+    "87|Tonneaucovers50No."
+   ],
+   "ln": 119827,
+   "at": "8708.30.10"
+  },
+  {
+   "old": [
+    "87|Forothervehicles8708.30.5025%",
+    "87|Free(A*,AU,B,BH,",
+    "87|CL,CO,D,E,IL,",
+    "87|JO,KR,MA,OM,",
+    "87|P,PA,PE,S,SG)",
+    "87|2.5%",
+    "87|Brakedrums20No.",
+    "87|Brakerotors(discs)30No.",
+    "87|Mountedbrakelinings40No.",
+    "87|Other90No."
+   ],
+   "new": [],
+   "ln": 119832,
+   "at": "8708.30.50"
+  },
+  {
+   "old": [],
+   "new": [
+    "87|Brakesandservo-brakes;partsthereof:8708.30",
+    "87|Fortractorssuitableforagriculturaluse8708.30.10FreeFree",
+    "87|Mountedbrakelinings10No.",
+    "87|Other90No.",
+    "87|Forothervehicles8708.30.5025%",
+    "87|Free(A*,AU,B,BH,",
+    "87|CL,CO,D,E,IL,",
+    "87|JO,KR,MA,OM,",
+    "87|P,PA,PE,S,SG)",
+    "87|2.5%",
+    "87|Brakedrums20No.",
+    "87|Brakerotors(discs)30No.",
+    "87|Mountedbrakelinings40No.",
+    "87|Other90No."
+   ],
+   "ln": 119856,
+   "at": "8708.30.50"
+  },
+  {
+   "old": [
+    "87|Other008708.80.1625%"
+   ],
+   "new": [
+    "87|Other8708.80.1625%"
+   ],
+   "ln": 120139,
+   "at": "8708.80.16"
+  },
+  {
+   "old": [],
+   "new": [
+    "87|Suspensionassemblieshavingawidthof",
+    "87|atleast94.0cmbutnotmorethan119.4",
+    "87|cm,withawheeltravelnotmorethan12.7",
+    "87|cm",
+    "87|10"
+   ],
+   "ln": 120144,
+   "at": "8708.80.16"
+  },
+  {
+   "old": [],
+   "new": [
+    "87|Other90No"
+   ],
+   "ln": 120145,
+   "at": "8708.80.16"
+  },
+  {
+   "old": [
+    "94|Mattresssupports009404.10.0045%Free",
+    "94|No"
+   ],
+   "new": [
+    "94|Mattresssupports9404.10.0045%Free",
+    "94|Ofakindusedincombinationwithamattress,",
+    "94|madeofwood,whethercoveredoruncovered",
+    "94|20",
+    "94|No.",
+    "94|Other50No."
+   ],
+   "ln": 127762,
+   "at": "9404.10.00"
+  },
+  {
+   "old": [
+    "94|Sleepingbags:9404.30",
+    "94|Containing20percentormorebyweightoffeathers",
+    "94|and/ordown",
+    "94|009404.30.40",
+    "94|60%Free(A*,AU,BH,",
+    "94|CL,CO,D,E,IL,",
+    "94|JO,KR,MA,OM,",
+    "94|P,PA,PE,S,SG)",
+    "94|4.7%No",
+    "94|Other009404.30.8078.5%Free(AU,BH,CL,",
+    "94|CO,E,IL,JO,KR,",
+    "94|MA,OM,P,PA,",
+    "94|PE,S,SG)",
+    "94|9%No"
+   ],
+   "new": [],
+   "ln": 127813,
+   "at": "9404.30.80"
+  },
+  {
+   "old": [],
+   "new": [
+    "94|Sleepingbags:9404.30",
+    "94|Containing20percentormorebyweightoffeathers",
+    "94|and/ordown",
+    "94|009404.30.40",
+    "94|60%Free(A*,AU,BH,",
+    "94|CL,CO,D,E,IL,",
+    "94|JO,KR,MA,OM,",
+    "94|P,PA,PE,S,SG)",
+    "94|4.7%No",
+    "94|Other009404.30.8078.5%Free(AU,BH,CL,",
+    "94|CO,E,IL,JO,KR,",
+    "94|MA,OM,P,PA,",
+    "94|PE,S,SG)",
+    "94|9%No"
+   ],
+   "ln": 127844,
+   "at": "9404.30.80"
+  }
+ ],
+ "2026HTSRev12": [
+  {
+   "old": [
+    "20|Peanuts(ground-nuts):002008.11"
+   ],
+   "new": [
+    "20|Peanuts(ground-nuts):2008.11"
+   ],
+   "ln": 20674,
+   "at": "2008.11"
+  },
+  {
+   "old": [
+    "84|Ofcopperorcopperalloys71kg",
+    "84|Other79kg"
+   ],
+   "new": [
+    "84|Ofcopperorcopperalloys71No.",
+    "84|kg",
+    "84|Other79No.",
+    "84|kg"
+   ],
+   "ln": 112809,
+   "at": "8483.30.80"
+  },
+  {
+   "old": [
+    "84|Ofcopperorcopperalloys81kg",
+    "84|Other89kg"
+   ],
+   "new": [
+    "84|Ofcopperorcopperalloys81No.",
+    "84|kg",
+    "84|Other89No.",
+    "84|kg"
+   ],
+   "ln": 112812,
+   "at": "8483.30.80"
+  }
+ ],
+ "2026HTSRev14": [],
+ "2026HTSRev15": [],
+ "2026HTSRev16": [
+  {
+   "old": [],
+   "new": [
+    "70|m2"
+   ],
+   "ln": 88881,
+   "at": "7020.00.60"
+  }
+ ],
+ "2026HTSRev17": [
+  {
+   "old": [
+    "84|Hydraulicfluidpowerpumps"
+   ],
+   "new": [
+    "84|Hydraulicfluidpowerpumps:"
+   ],
+   "ln": 100436,
+   "at": "8413.50.00"
+  }
+ ],
+ "2026HTSRev18": [],
+ "2026HTSRev19": [
+  {
+   "old": [
+    "29|CO,D,E,IL,JO,L,"
+   ],
+   "new": [
+    "29|CO,D,E,IL,JO,"
+   ],
+   "ln": 29279,
+   "at": "2908.91.00"
+  }
+ ],
+ "2026HTSRev20": []
+}

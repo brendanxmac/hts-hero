@@ -1,7 +1,6 @@
 "use client";
 
-import * as ui from "@/components/ui/styles";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import * as mk from "@/components/ui/marketing/styles";
 import {
   Billing,
   CLASSIFY_LICENSE_PRICE,
@@ -22,6 +21,9 @@ const AUDIENCES = [
   { id: "team", label: "My team" },
 ] as const;
 
+const badge = "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1";
+const priceUnit = "text-sm font-medium text-base-content/60";
+
 type ClassifyInput = Pick<EstimateInput, "audience" | "individualPlan" | "seats" | "teamOption">;
 
 // Who's classifying, and the plan that fits: Starter or Pro for one person; for a team, one
@@ -38,21 +40,37 @@ export const ClassifyControls = ({
   const rate = (listPrice: number) => formatPrice(monthlyRate(listPrice, billing));
   const licensesTotal = input.seats * CLASSIFY_LICENSE_PRICE;
   const workspaceIsCheaper = CLASSIFY_PLANS.team.price < licensesTotal;
-  const bestValue = <span className={ui.badge("success")}>Best value</span>;
+  const bestValue = <span className={`${badge} bg-success/10 text-success ring-success/30`}>Best value</span>;
 
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className={ui.fieldLabel}>
+        <span className={mk.fieldLabel}>
           Who&apos;s classifying?
         </span>
-        <SegmentedControl
-          label="Who's classifying"
-          options={AUDIENCES}
-          value={input.audience}
-          onChange={(audience: ClassifyAudience) => onChange({ audience })}
-          size="sm"
-        />
+        <div
+          role="radiogroup"
+          aria-label="Who's classifying"
+          className="inline-flex shrink-0 gap-1 rounded-full bg-tt-soft p-1 ring-1 ring-inset ring-base-300"
+        >
+          {AUDIENCES.map((option) => {
+            const active = option.id === input.audience;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => onChange({ audience: option.id as ClassifyAudience })}
+                className={`h-9 whitespace-nowrap rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/60 ${
+                  active ? "bg-base-100 text-base-content shadow-xs ring-1 ring-base-300" : "text-base-content/70 hover:text-base-content"
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {input.audience === "individual" ? (
@@ -61,9 +79,9 @@ export const ClassifyControls = ({
             <OptionCard
               key={id}
               title={CLASSIFY_PLANS[id].name}
-              price={<>{rate(CLASSIFY_PLANS[id].price)}<span className={ui.caption}> /mo</span></>}
+              price={<>{rate(CLASSIFY_PLANS[id].price)}<span className={priceUnit}> /mo</span></>}
               detail={CLASSIFY_PLANS[id].features[0]}
-              badge={id === "pro" ? <span className={ui.badge("primary")}>Most popular</span> : undefined}
+              badge={id === "pro" ? <span className={`${badge} bg-primary/10 text-primary ring-primary/30`}>Most popular</span> : undefined}
               selected={input.individualPlan === id}
               onSelect={() => onChange({ individualPlan: id })}
             />
@@ -72,7 +90,7 @@ export const ClassifyControls = ({
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <label htmlFor="classify-seats" className={ui.fieldLabel}>
+            <label htmlFor="classify-seats" className={mk.fieldLabel}>
               People on your team
             </label>
             <NumberStepper
@@ -88,7 +106,7 @@ export const ClassifyControls = ({
           <div role="radiogroup" aria-label="Team plan" className="grid gap-3 sm:grid-cols-2">
             <OptionCard
               title="Team workspace"
-              price={<>{rate(CLASSIFY_PLANS.team.price)}<span className={ui.caption}> /mo for your team</span></>}
+              price={<>{rate(CLASSIFY_PLANS.team.price)}<span className={priceUnit}> /mo for your team</span></>}
               detail="Shared workspace, reviews and approvals, onboarding and training"
               badge={workspaceIsCheaper ? bestValue : undefined}
               selected={input.teamOption === "workspace"}
@@ -99,7 +117,7 @@ export const ClassifyControls = ({
               price={
                 <>
                   {rate(licensesTotal)}
-                  <span className={ui.caption}>
+                  <span className={priceUnit}>
                     {" "}/mo · {input.seats} × {rate(CLASSIFY_LICENSE_PRICE)}
                   </span>
                 </>
@@ -111,7 +129,7 @@ export const ClassifyControls = ({
             />
           </div>
 
-          <p className={ui.caption}>
+          <p className={`${mk.small} leading-relaxed`}>
             The team workspace is for teams classifying at least {TEAM_MIN_CLASSIFICATIONS} products a month.
             From {TEAM_BREAK_EVEN_SEATS} people, it costs less than a license each.
           </p>

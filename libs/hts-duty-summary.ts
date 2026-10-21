@@ -58,23 +58,33 @@ const programName = (id?: string) =>
 
 const PREFERENCE_SHORT_NAMES: Record<string, string> = {
   "United States-Mexico-Canada Agreement": "USMCA",
+  "Dominican Republic-Central America-United States Free Trade Agreement": "CAFTA-DR",
 };
 
 // "Generalized System of Preferences (GSP)" -> "GSP",
-// "United States-Korea Free Trade Agreement" -> "US-Korea FTA"
+// "United States-Korea Free Trade Agreement" -> "US-Korea FTA",
+// "United States-Israel Free Trade Area Implementation Act of 1985" -> "US-Israel FTA",
+// "United States-Peru Trade Promotion Agreement" -> "US-Peru TPA",
+// "Trade Agreement between the United States and Japan" -> "US-Japan Trade Agreement"
 export const preferenceName = (name: string) =>
   PREFERENCE_SHORT_NAMES[name] ??
   name.match(/\(([^)]+)\)\s*$/)?.[1] ??
-  name.replace(/^United States-(.+?) Free Trade Agreement.*$/, "US-$1 FTA");
+  name
+    .replace(/^United States-(.+?) Free Trade (Agreement|Area).*$/, "US-$1 FTA")
+    .replace(/^United States-(.+?) Trade Promotion Agreement.*$/, "US-$1 TPA")
+    .replace(/^Trade Agreement between the United States and (.+)$/, "US-$1 Trade Agreement");
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 // Local date as "YYYY-MM-DD"
 const todayIso = () => new Date().toLocaleDateString("en-CA");
 
+// codes: the countries of origin, in order (the largest sources of US imports by default; the
+// HTS page's "where it's imported from" passes the code's own top suppliers)
 export const getHtsDutySummary = (
   element: HtsElement,
   rateElement: HtsElement,
+  codes: string[] = SUMMARY_COUNTRY_CODES,
 ): HtsDutySummary | null => {
   // Chapter 99 lines are the additional duties themselves; headings above the rate lines have
   // no rates to start from
@@ -99,7 +109,7 @@ export const getHtsDutySummary = (
       transportMode: "ocean",
     });
 
-  const rows = SUMMARY_COUNTRY_CODES.flatMap((code) => {
+  const rows = codes.flatMap((code) => {
     const country = Countries.find((c) => c.code === code);
     if (!country) return [];
     const result = run(code);

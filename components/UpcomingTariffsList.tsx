@@ -190,8 +190,8 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
               Quickly knowing your impacts can mean big savings
             </p>
             <Link
-              href="/about/tariffs#pricing"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
+              href="/pricing-calculator"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-xs hover:shadow-md"
             >
               <span>Be Prepared Today</span>
               <svg
@@ -215,15 +215,15 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
           {tariffAnnouncements.map((tariff, index) => (
             <div
               key={index}
-              className="group relative bg-gradient-to-br from-base-100 to-base-200/50 rounded-xl p-5 border border-base-content/10 hover:border-primary/30 transition-all duration-200 hover:shadow-lg"
+              className="group relative bg-linear-to-br from-base-100 to-base-200/50 rounded-xl p-5 border border-base-content/10 hover:border-primary/30 transition-all duration-200 hover:shadow-lg"
             >
               {/* Decorative gradient on hover */}
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
+              <div className="absolute inset-0 rounded-xl bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
               <div className="relative z-10">
                 {/* Header Section */}
                 <div className="mb-4">
-                  <h3 className="text-base md:text-lg font-semibold text-base-content leading-snug mb-3 group-hover:text-primary transition-colors">
+                  <h3 className="text-base md:text-lg md:leading-7 font-semibold text-base-content leading-snug mb-3 group-hover:text-primary transition-colors">
                     {tariff.name}
                   </h3>
                   <div className="flex items-center justify-between flex-wrap gap-2">

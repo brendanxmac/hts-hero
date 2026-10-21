@@ -46,15 +46,14 @@ export const btn = {
   primary: "btn btn-sm border-0 bg-base-content font-medium text-base-100 hover:bg-base-content/85",
   xsPrimary: "btn btn-xs h-7 min-h-7 border-0 bg-base-content px-2.5 font-medium text-base-100 hover:bg-base-content/85",
   secondary:
-    "btn btn-sm border-base-content/15 bg-base-100 font-medium shadow-sm hover:border-base-content/25 hover:bg-base-200",
+    "btn btn-sm border-base-content/15 bg-base-100 font-medium shadow-xs hover:border-base-content/25 hover:bg-base-200",
   ghost: "btn btn-sm btn-ghost font-medium",
   xsSecondary:
     "btn btn-xs h-7 min-h-7 border-base-content/15 bg-base-100 px-2.5 font-medium hover:border-base-content/25 hover:bg-base-200",
   xsGhost: "btn btn-xs btn-ghost h-7 min-h-7 px-2 font-medium",
 }
 
-export const inputCls = "input input-sm input-bordered border-base-content/15 bg-base-100 placeholder:text-base-content/35"
-export const selectCls = "select select-sm select-bordered border-base-content/15 bg-base-100 font-normal"
+export const inputCls = "input input-sm border-base-content/15 bg-base-100 placeholder:text-base-content/35"
 
 export const Spinner = ({ className = "" }: { className?: string }) => (
   <span className={`loading loading-spinner loading-xs ${className}`} />
@@ -83,7 +82,7 @@ export const Pill = ({ tone = "neutral", children, mono, title }: { tone?: Tone;
 )
 
 export const Kbd = ({ children }: { children: ReactNode }) => (
-  <kbd className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded border border-base-content/15 bg-base-200 px-1 font-mono text-[10px] text-base-content/60">
+  <kbd className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-sm border border-base-content/15 bg-base-200 px-1 font-mono text-[10px] text-base-content/60">
     {children}
   </kbd>
 )
@@ -155,7 +154,7 @@ export const Panel = ({
   className?: string
   bodyClassName?: string
 }) => (
-  <section className={`overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-sm ${className}`}>
+  <section className={`overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs ${className}`}>
     {(title || actions) && (
       <div className="flex min-h-[44px] flex-wrap items-center gap-2 border-b border-base-content/10 px-4 py-2">
         {title && (
@@ -220,7 +219,7 @@ export const Callout = ({
     )}
     <div className="min-w-0 flex-1">
       {title && <div className="font-medium">{title}</div>}
-      {children && <div className={`${title ? "mt-0.5" : ""} break-words text-base-content/75`}>{children}</div>}
+      {children && <div className={`${title ? "mt-0.5" : ""} wrap-break-word text-base-content/75`}>{children}</div>}
     </div>
     {action && <div className="shrink-0">{action}</div>}
   </div>
@@ -256,7 +255,7 @@ export const Stat = ({ label, value, hint, children }: { label: string; value: R
 )
 
 export const StatGrid = ({ children }: { children: ReactNode }) => (
-  <div className="grid grid-cols-2 divide-base-content/10 overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-sm max-md:[&>*:nth-child(n+3)]:border-t max-md:[&>*:nth-child(n+3)]:border-base-content/10 max-md:[&>*:nth-child(even)]:border-l md:flex md:divide-x [&>*]:md:flex-1">
+  <div className="grid grid-cols-2 divide-base-content/10 overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs max-md:[&>*:nth-child(n+3)]:border-t max-md:[&>*:nth-child(n+3)]:border-base-content/10 max-md:[&>*:nth-child(even)]:border-l md:flex md:divide-x md:*:flex-1">
     {children}
   </div>
 )
@@ -334,7 +333,7 @@ export const Segmented = <T extends string>({
         onClick={() => onChange(o.value)}
         className={`flex items-center gap-1 whitespace-nowrap rounded font-medium transition-colors ${
           size === "xs" ? "px-2 py-0.5 text-xs" : "px-2.5 py-1 text-xs"
-        } ${value === o.value ? "bg-base-100 text-base-content shadow-sm" : "text-base-content/55 hover:text-base-content"}`}
+        } ${value === o.value ? "bg-base-100 text-base-content shadow-xs" : "text-base-content/55 hover:text-base-content"}`}
       >
         {o.label}
       </button>
@@ -406,7 +405,7 @@ export const DefList = ({ items }: { items: { label: string; value: ReactNode }[
     {items.map((item) => (
       <div key={item.label} className="contents">
         <dt className="text-xs font-medium text-base-content/50 sm:pt-0.5">{item.label}</dt>
-        <dd className="min-w-0 break-words">{item.value}</dd>
+        <dd className="min-w-0 wrap-break-word">{item.value}</dd>
       </div>
     ))}
   </dl>

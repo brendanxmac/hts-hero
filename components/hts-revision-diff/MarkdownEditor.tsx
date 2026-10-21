@@ -310,7 +310,7 @@ export default function MarkdownEditor({
         </Help>
         {cursorPage && <span className="text-xs tabular-nums text-base-content/45">Cursor on PDF page {cursorPage}</span>}
       </div>
-      <div className="h-[calc(100vh-14rem)] min-h-[28rem]">
+      <div className="h-[calc(100vh-14rem)] min-h-112">
         {loaded ? (
           <CodeMirror
             key={loadCount}

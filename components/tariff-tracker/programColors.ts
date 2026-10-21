@@ -1,15 +1,6 @@
-import { CHART_COLORS } from "@/components/ui/theme";
-import { BASE_PART, RatePart } from "./report";
+import { partColors } from "@/components/ui/charts/partColors";
+import { RatePart } from "./report";
 
-// One color per program across the whole report, in order of first appearance. Same series
-// as the calculator's Cost Breakdown: base duty first.
-export const programColors = (rows: { parts: RatePart[] }[]) => {
-  const map: Record<string, string> = { [BASE_PART]: CHART_COLORS[0] };
-  let next = 1;
-  rows.forEach((r) =>
-    r.parts.forEach((p) => {
-      if (!map[p.key]) map[p.key] = CHART_COLORS[next++ % CHART_COLORS.length] ?? CHART_COLORS[1];
-    })
-  );
-  return map;
-};
+// A color for each part of the rate across a set of products, the same one it has on every other
+// screen (partColors: base duty first, each program by its kind)
+export const programColors = (rows: { parts: RatePart[] }[]) => partColors(rows.flatMap((r) => r.parts.map((p) => p.key)));

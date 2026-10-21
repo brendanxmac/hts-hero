@@ -1,15 +1,24 @@
 import { describe, expect, it } from "../test-runner"
 import { parseCh99NotesMarkdown } from "../../libs/hts-revision-diff/parse-ch99-notes"
 import { parseCh99Json } from "../../libs/hts-revision-diff/parse-ch99-json"
-import { codeChanges, diffCodes, diffNotes } from "../../libs/hts-revision-diff/diff"
+import { codeChanges, diffCodes, diffNotes, diffSharedCodes } from "../../libs/hts-revision-diff/diff"
 import { buildChanges } from "../../libs/hts-revision-diff/build-changes"
 import { wordDiff, renderWordDiff } from "../../libs/hts-revision-diff/word-diff"
-import { extractHtsCodes, extractHtsRanges } from "../../libs/hts-revision-diff/text"
+import { detectRevision, extractHtsCodes, extractHtsRanges, ownEditionRows } from "../../libs/hts-revision-diff/text"
 import type { ChangeRecordItem } from "../../libs/hts-revision-diff/types"
 import { readFileSync } from "fs"
-import { parseCh99HeadingTables } from "../../libs/hts-revision-diff/parse-ch99-tables"
-import { headingRowsAsHtsRows, headingRowsFingerprint, reconcileHeadingRows, uncitedHeadingRowIds } from "../../libs/hts-revision-diff/headings"
-import type { HeadingRow } from "../../libs/hts-revision-diff/types"
+import { parseCh99HeadingTables, takeTrailingMarkers } from "../../libs/hts-revision-diff/parse-ch99-tables"
+import {
+  headingRowsAsHtsRows,
+  headingRowsFingerprint,
+  headingsUsedByChanges,
+  orderRowsByPage,
+  reconcileHeadingRows,
+  uncitedHeadingRowIds,
+  unreviewedHeadings,
+} from "../../libs/hts-revision-diff/headings"
+import { archivedHeadings, headingCoverage } from "../../libs/hts-revision-diff/archive"
+import type { ChangeRow, HeadingRow } from "../../libs/hts-revision-diff/types"
 import { join } from "path"
 import { CH99_JSON_A, CH99_JSON_B, CH99_REV_A, CH99_REV_B } from "./fixtures"
 
@@ -368,6 +377,81 @@ describe("Heading changes without a full heading diff", () => {
     expect((change.payload.citedHeadings ?? []).every((c) => c.status === "unverified")).toBe(true)
     expect(change.payload.warnings.some((w) => w.includes("isn't available"))).toBe(true)
   })
+  const buildWithBefore = (toRows: typeof rowsB | null, fromRows: typeof rowsA | null) =>
+    buildChanges({
+      changeRecordItems: [headingItem],
+      noteDiffs: [],
+      codeDiffs: [],
+      fromNodes: a.nodes,
+      toNodes: b.nodes,
+      toRows,
+      fromRows,
+      fullHeadingDiff: false,
+      toRevisionName: "Rev B",
+    })[0]
+
+  it("adds each cited heading's row in the older revision as the before", () => {
+    const cited = buildWithBefore(rowsB, rowsA).payload.citedHeadings ?? []
+    const byCode = new Map(cited.map((c) => [c.code, c]))
+    // Modified: in both revisions
+    expect(byCode.get("9903.01.25")?.beforeStatus).toBe("found")
+    expect(byCode.get("9903.01.25")?.before?.general.includes("+ 10%")).toBe(true)
+    expect(byCode.get("9903.01.25")?.row?.general.includes("+ 15%")).toBe(true)
+    // Added: only in the newer revision
+    expect(byCode.get("9903.01.31")?.status).toBe("found")
+    expect(byCode.get("9903.01.31")?.beforeStatus).toBe("not_found")
+    expect(byCode.get("9903.01.31")?.before).toBe(null)
+  })
+
+  it("marks the before unverified only when the older revision has no rows", () => {
+    const cited = buildWithBefore(rowsB, null).payload.citedHeadings ?? []
+    expect(cited.every((c) => c.beforeStatus === undefined)).toBe(true)
+  })
+
+  it("includes range rows found only in the older revision", () => {
+    const removedItem = item({
+      id: "CR-R",
+      kind: "hts_code",
+      note_type: null,
+      action: "deleted",
+      hts_code_ranges: [{ from: "9903.01.25", to: "9903.01.30" }],
+      description: "Headings deleted",
+    })
+    const [change] = buildChanges({
+      changeRecordItems: [removedItem],
+      noteDiffs: [],
+      codeDiffs: [],
+      fromNodes: a.nodes,
+      toNodes: b.nodes,
+      toRows: [],
+      fromRows: rowsA,
+      fullHeadingDiff: false,
+      toRevisionName: "Rev B",
+    })
+    const cited = change.payload.citedHeadings ?? []
+    expect(cited.map((c) => `${c.code}:${c.status}:${c.beforeStatus}`)).toEqual([
+      "9903.01.25:not_found:found",
+      "9903.01.30:not_found:found",
+    ])
+  })
+
+  it("keeps the payload hash unchanged when there are no older rows", () => {
+    expect(buildWithBefore(rowsB, null).payload.hash).toBe(build(rowsB).payload.hash)
+    expect(buildWithBefore(rowsB, rowsA).payload.hash === build(rowsB).payload.hash).toBe(false)
+  })
+})
+
+describe("diffSharedCodes", () => {
+  it("diffs only headings on both sides, so trimmed pages don't look like additions", () => {
+    const diffs = diffSharedCodes(rowsA, rowsB)
+    expect(diffs.map((d) => `${d.status}:${d.key}`)).toEqual(["modified:9903.01.25"])
+  })
+
+  it("finds nothing when the two sides share no headings", () => {
+    const onlyA = rowsA.filter((r) => (r.htsno || r.parentHtsno) === "9903.01.25")
+    const onlyB = rowsB.filter((r) => (r.htsno || r.parentHtsno) === "9903.01.31")
+    expect(diffSharedCodes(onlyA, onlyB)).toEqual([])
+  })
 })
 
 // Pages 1-86 of the 2026 HTS Revision 5 Chapter 99 PDF as converted by
@@ -612,6 +696,77 @@ describe("Heading tables", () => {
   it("warns when there are no tables", () => {
     expect(parseCh99HeadingTables("Just text").warnings.map((w) => w.kind)).toEqual(["no_tables"])
   })
+
+  // Seen on the forward revisions: the marker left after the description, or in the units column
+  it("moves footnote markers out of the description and units into the footnotes", () => {
+    const md = `| Heading/ Subheading | Stat. Suf- fix | Article Description | Unit of Quantity | Rates of Duty |  |  |
+|---|---|---|---|---|---|---|
+| 9903.76.24 |  | Wood products of Taiwan as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter 1/ |  | 15% |  |  |
+| 9903.82.15 |  | Articles of copper of the Russian Federation .......... | 1/ | 200% |  |  |
+| 9903.82.16 |  | Articles, see note <sup>1/</sup> <sup>2/</sup> |  | 25% |  |  |
+
+1/ See chapter 99 statistical note 1.
+2/ See subchapter III note 16.
+`
+    const { rows } = parseCh99HeadingTables(md)
+    expect(rows.map((r) => [r.description, r.units, r.footnotes])).toEqual([
+      [
+        "Wood products of Taiwan as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
+        "",
+        ["1/ See chapter 99 statistical note 1."],
+      ],
+      ["Articles of copper of the Russian Federation", "", ["1/ See chapter 99 statistical note 1."]],
+      ["Articles, see note", "", ["1/ See chapter 99 statistical note 1.", "2/ See subchapter III note 16."]],
+    ])
+  })
+})
+
+// Seen on 2026HTSRev4/5: a rate cell split off as its own "1/ …" line, a page footer glued
+// to the footnote, and "2/" meaning different things on different pages
+describe("Heading table footnotes", () => {
+  const page = (n: number, body: string) => `{${n}}------------------------------------------------\n\n${body}`
+  const table = (code: string, desc: string) => `| Heading/ Subheading | Stat. Suf- fix | Article Description | Unit of Quantity | Rates of Duty |  |  |
+|---|---|---|---|---|---|---|
+| ${code} |  | ${desc} 1/ 2/ |  | 25% |  |  |
+`
+  const md = [
+    page(0, `${table("9903.78.01", "Copper")}\n1/ See chapter 99 statistical note 1.**Note: The shaded areas indicate the provision has expired**\n2/ The quantity of copper shall be reported in kg.\n1/ The duty provided in the applicable subheading + 10%\n`),
+    page(1, `${table("9903.88.16", "Articles of China")}\n1/ See chapter 99 statistical note 1.\n2/ Subdivisions (t) and (u) of note 20 are suspended.\n`),
+    page(2, `${table("9903.52.01", "Quota goods")}\n1/ See chapter 99 statistical note 2.\n`),
+  ].join("\n")
+  const { rows } = parseCh99HeadingTables(md)
+
+  it("takes each row's footnote from its own page, ignoring stray lines and page footers", () => {
+    expect(rows.map((r) => r.footnotes[0])).toEqual([
+      "1/ See chapter 99 statistical note 1.",
+      "1/ See chapter 99 statistical note 1.",
+      "1/ See chapter 99 statistical note 2.",
+    ])
+    expect(rows[0].footnotes[1]).toBe("2/ The quantity of copper shall be reported in kg.")
+    expect(rows[1].footnotes[1]).toBe("2/ Subdivisions (t) and (u) of note 20 are suspended.")
+  })
+
+  it("skips what's left of the column header after a page break", () => {
+    const md = `| Heading/ Subheading | Stat. Suf- fix | Article Description | Unit of Quantity | Rates of Duty |  |  |
+|---|---|---|---|---|---|---|
+| 9903.01.26 |  | Articles of a listed country |  | 10% |  |  |
+|  |  |  |  | 1 | | 2 |
+|  |  |  |  | 1 General | Special | 2 |
+| 9903.01.27 |  | Other |  | 15% |  |  |
+`
+    expect(parseCh99HeadingTables(md).rows.map((r) => r.htsno)).toEqual(["9903.01.26", "9903.01.27"])
+  })
+
+  it("leaves off a marker that means different things on different pages when its own page doesn't say", () => {
+    expect(rows[2].footnotes).toEqual(["1/ See chapter 99 statistical note 2."])
+  })
+})
+
+describe("takeTrailingMarkers", () => {
+  it("leaves text without a trailing marker alone", () => {
+    expect(takeTrailingMarkers("Articles of steel, 1/2 inch or more")).toEqual({ text: "Articles of steel, 1/2 inch or more", markers: [] })
+    expect(takeTrailingMarkers("No.")).toEqual({ text: "No.", markers: [] })
+  })
 })
 
 const headingRow = (over: Partial<HeadingRow>): HeadingRow => ({
@@ -653,12 +808,12 @@ describe("Claude check of heading rows", () => {
     expect(update("r3").claude_status).toBe("flagged")
   })
 
-  it("only hands reviewed rows to comparisons", () => {
+  it("hands every row to comparisons, reviewed or not", () => {
     const rows = headingRowsAsHtsRows([
       headingRow({ htsno: "9903.82.18", general: "+ 50%", reviewed: true }),
       headingRow({ htsno: "9903.82.19", general: "25%", reviewed: false }),
     ])
-    expect(rows.map((r) => r.htsno)).toEqual(["9903.82.18"])
+    expect(rows.map((r) => r.htsno)).toEqual(["9903.82.18", "9903.82.19"])
   })
 })
 
@@ -702,14 +857,166 @@ describe("headingRowsFingerprint", () => {
   ] as unknown as HeadingRow[]
   const fp = headingRowsFingerprint(rows)
 
-  it("changes when a reviewed row's text changes or a row is (un)reviewed", () => {
+  it("changes when any row's text changes, or a row is added or removed", () => {
     expect(headingRowsFingerprint([{ ...rows[0], special: "+50%" }, rows[1]]) !== fp).toBe(true)
-    expect(headingRowsFingerprint([rows[0], { ...rows[1], reviewed: true }]) !== fp).toBe(true)
-    expect(headingRowsFingerprint([{ ...rows[0], reviewed: false }, rows[1]]) !== fp).toBe(true)
+    expect(headingRowsFingerprint([rows[0], { ...rows[1], special: "anything" }]) !== fp).toBe(true)
+    expect(headingRowsFingerprint([rows[0]]) !== fp).toBe(true)
   })
 
-  it("ignores unreviewed rows, which comparisons don't use", () => {
-    expect(headingRowsFingerprint([rows[0], { ...rows[1], special: "anything" }])).toBe(fp)
-    expect(headingRowsFingerprint([rows[0]])).toBe(fp)
+  it("ignores whether rows are reviewed, which doesn't change what comparisons read", () => {
+    expect(headingRowsFingerprint([rows[0], { ...rows[1], reviewed: true }])).toBe(fp)
+    expect(headingRowsFingerprint([{ ...rows[0], reviewed: false }, rows[1]])).toBe(fp)
+  })
+})
+
+describe("Reviews needed before pulling", () => {
+  const change = (decision: ChangeRow["decision"], payload: Partial<ChangeRow["payload"]>) =>
+    ({ decision, payload: { codeDiffs: [], citedHeadings: [], ...payload } }) as unknown as ChangeRow
+  const cited = (code: string, found = true) => ({ code, status: found ? "found" : "not_found", row: found ? ({} as never) : (null as never) })
+  const changes = [
+    change("approve", { citedHeadings: [cited("9903.80.01"), cited("9903.99.99", false)] as never }),
+    change("defer", {
+      codeDiffs: [{ status: "modified", key: "9903.81.87~steel", htsno: "", after: { parentHtsno: "9903.81.87" } }] as never,
+    }),
+    change("skip", { citedHeadings: [cited("9903.85.02")] as never }),
+  ]
+
+  it("collects headings that non-skipped changes cite or diff", () => {
+    expect(Array.from(headingsUsedByChanges(changes)).sort()).toEqual(["9903.80.01", "9903.81.87"])
+  })
+
+  it("asks to review only those headings' rows, including description rows under them", () => {
+    const rows = [
+      headingRow({ htsno: "9903.80.01", reviewed: true }),
+      headingRow({ htsno: "", description: "continued", reviewed: false }),
+      headingRow({ htsno: "9903.81.87", reviewed: true }),
+      headingRow({ htsno: "9903.85.02", reviewed: false }),
+      headingRow({ htsno: "9903.85.03", reviewed: false }),
+    ]
+    expect(unreviewedHeadings(rows, headingsUsedByChanges(changes))).toEqual(["9903.80.01"])
+  })
+})
+
+describe("Heading pages against USITC's archive", () => {
+  const expected = Array.from(archivedHeadings("2026HTSRev20") ?? [])
+  const asRows = (codes: string[]) =>
+    headingRowsAsHtsRows(codes.map((htsno) => headingRow({ htsno, description: htsno })))
+
+  it("knows each archived revision's subchapter III headings", () => {
+    expect(expected.length).toBe(637)
+    expect(archivedHeadings("2024HTSRev1")).toBe(null)
+  })
+
+  it("calls complete pages complete, and lists missing and unknown headings otherwise", () => {
+    expect(headingCoverage("2026HTSRev20", asRows(expected))?.complete).toBe(true)
+    const partial = headingCoverage("2026HTSRev20", asRows([...expected.slice(1), "9903.99.98"]))!
+    expect(partial.complete).toBe(false)
+    expect(partial.missing).toEqual([expected.slice().sort()[0]])
+    expect(partial.unexpected).toEqual(["9903.99.98"])
+  })
+
+  it("ignores other subchapters and statistical suffixes", () => {
+    const rows = [...asRows(expected), ...asRows(["9904.10.01"])]
+    expect(headingCoverage("2026HTSRev20", rows)?.unexpected).toEqual([])
+  })
+})
+
+describe("Change record items when subchapter III is diffed in full", () => {
+  const headingItem = item({ id: "CR-F", kind: "hts_code", note_type: null, hts_codes: ["9903.01.30"], description: "Heading modified" })
+  const build = (headingDiffed?: (code: string) => boolean) =>
+    buildChanges({
+      changeRecordItems: [headingItem],
+      noteDiffs: [],
+      codeDiffs: [],
+      fromNodes: a.nodes,
+      toNodes: b.nodes,
+      toRows: rowsB,
+      fromRows: rowsA,
+      fullHeadingDiff: false,
+      headingDiffed,
+      toRevisionName: "Rev B",
+    })[0]
+
+  it("flags a cited heading with no difference, since every heading was diffed", () => {
+    expect(build(() => true).source).toBe("change_record_no_diff")
+  })
+
+  it("otherwise still counts the citation as the change", () => {
+    expect(build().source).toBe("change_record")
+  })
+})
+
+describe("checking some heading rows with Claude", () => {
+  it("keeps pages in order: checked pages in Claude's order, other pages as they were", () => {
+    // Page 2 was re-read: Claude put "c" before "b" and added "x"
+    const rows = [
+      { id: "a", page: 1, order: 0 },
+      { id: "b", page: 2, order: 1 },
+      { id: "c", page: 2, order: 0 },
+      { id: "x", page: 2, order: 2 },
+      { id: "d", page: 3, order: 3 },
+    ]
+    expect(orderRowsByPage(rows)).toEqual(["a", "c", "b", "x", "d"])
+  })
+})
+
+describe("Revision detection", () => {
+  it("reads a revision's title and the revision its change record follows", () => {
+    expect(detectRevision("# Harmonized Tariff Schedule of the United States (2026 Revision 3)\n\nThe modifications … reflect updates made to the HTS after 2026 Revision 2, published February 1, 2026.")).toEqual({
+      name: "2026HTSRev3",
+      previous: "2026HTSRev2",
+    })
+    expect(detectRevision("Harmonized Tariff Schedule of the United States Revision 2 (2026)").name).toBe("2026HTSRev2")
+  })
+
+  it("reads a Basic edition from its bare-year title", () => {
+    expect(detectRevision("# Harmonized Tariff Schedule of the United States (2026)\n\nAnnotated for Statistical Reporting Purposes").name).toBe("2026HTSBasic")
+  })
+
+  it("doesn't take a Basic change record's earlier edition as its name or the revision it follows", () => {
+    // 2026 Basic's change record is cumulative since the last printed edition
+    const head = "# Harmonized Tariff Schedule of the United States (2026)\n\nJanuary 1, 2026\n\n## Change Record\n\nThe modifications set forth in this change record reflect all of the updates made to the HTS since the last printed edition (2025 Basic Edition)."
+    expect(detectRevision(head)).toEqual({ name: "2026HTSBasic", previous: null })
+  })
+
+  it("reads the Basic edition a revision's change record follows", () => {
+    expect(detectRevision("# Harmonized Tariff Schedule of the United States (2026 Revision 1)\n\nupdates made to the HTS after the 2026 Basic Edition").previous).toBe("2026HTSBasic")
+  })
+})
+
+describe("Cumulative Basic change records", () => {
+  const record = [
+    "## Change Record",
+    "",
+    "| Item changed | Nature of change | Effective date | Source | Edition |",
+    "|---|---|---|---|---|",
+    "| 9903.01.25 | Modified | November 14, 2025 | Notice | 2026 |",
+    "| U.S. note 2(v)(xii)-(xiii), subch III, | Modified (renumbered | August 1, 2025 | PP 10962 | Rev 18 |",
+    "| ch 99 | subdivisions (xiii) as (xiv)) | | | |",
+    "| 9903.02.82 | Added | November 14, 2025 | Notice | 2026 |",
+    "| U.S. note 3, ch 2 | Modified (renumbered | January 1, 2026 | Notice | 2026 |",
+    "| | as note 3(a)) | | | |",
+    "",
+    "| <b>Item changed</b> | <b>Nature of change</b> | <b>Effective date</b> | <b>Source</b> | <b>Edition</b> |",
+    "|---|---|---|---|---|",
+    "| 9903.88.16 | Modified | October 1, 2025 | Notice | Rev 26 |",
+  ].join("\n")
+
+  it("keeps only the rows the Basic edition made, with their wrapped lines", () => {
+    const own = ownEditionRows(record, "2026HTSBasic")
+    expect(own.kept).toBe(3)
+    expect(own.dropped).toBe(2)
+    expect(own.markdown.includes("9903.01.25")).toBe(true)
+    expect(own.markdown.includes("9903.02.82")).toBe(true)
+    expect(own.markdown.includes("as note 3(a))")).toBe(true)
+    expect(own.markdown.includes("PP 10962")).toBe(false)
+    expect(own.markdown.includes("subdivisions (xiii) as (xiv))")).toBe(false)
+    expect(own.markdown.includes("9903.88.16")).toBe(false)
+    // Both tables keep their headers
+    expect(own.markdown.includes("<b>Edition</b>")).toBe(true)
+  })
+
+  it("leaves other revisions' change records alone", () => {
+    expect(ownEditionRows(record, "2026HTSRev1").markdown).toBe(record)
   })
 })

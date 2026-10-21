@@ -1,9 +1,17 @@
-// Lists from U.S. note 52 to subchapter III (Section 301 – Forced Labor, 2026HTSRev13, Notice
-// effective 2026-07-24), extracted from the revision's note text. See HowTariffsWork.md §7.
+// Lists from U.S. note 52 to subchapter III (Section 301 – Forced Labor, 2026HTSRev13, USTR notice
+// 91 FR 47318, effective 2026-07-24), extracted from the revision's note text. See HowTariffsWork.md §7.
 import { CodeList } from "../../types";
 
 const FROM = "2026-07-24";
-const SOURCE = { revision: "2026HTSRev13", citation: "Notice" };
+// "applicable with respect to products that are entered for consumption, or withdrawn from
+// warehouse for consumption, on or after 12:01 a.m. eastern time on July 24, 2026" (dockets
+// USTR-2026-0265 and USTR-2026-0266)
+const SOURCE = {
+  revision: "2026HTSRev13",
+  citation: "USTR, Notice of Actions in Section 301 Investigations (forced labor), 91 FR 47318",
+  url: "https://www.govinfo.gov/content/pkg/FR-2026-07-28/html/2026-15181.htm",
+  publishedOn: "2026-07-28",
+};
 
 export const forcedLaborLists: CodeList[] = [
   {

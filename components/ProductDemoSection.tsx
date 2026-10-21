@@ -21,7 +21,7 @@ export default function ProductDemoSection({
         <p className="text-base-content/80 sm:text-lg lg:text-xl">{subtitle}</p>
       </div>
       <div className="relative max-w-3xl mx-auto">
-        <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-tr from-primary/20 via-primary/10 to-transparent blur"></div>
+        <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-linear-to-tr from-primary/20 via-primary/10 to-transparent blur-sm"></div>
         <div className="relative rounded-2xl border border-base-content/10 bg-base-200 shadow-xl">
           <iframe
             className="w-full aspect-video rounded-lg"

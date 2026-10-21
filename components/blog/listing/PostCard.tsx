@@ -9,7 +9,7 @@ export function PostCard({ post, showCategory = true }: { post: PostMeta; showCa
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className={`${ui.card} group flex h-full flex-col gap-3 p-5 transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
+      className={`${ui.card} group flex h-full flex-col gap-3 p-5 transition-colors hover:border-primary/40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40`}
     >
       {showCategory && <span className={ui.kicker}>{categoryBySlug(post.category)?.title}</span>}
       <h3 className="text-lg font-semibold leading-snug tracking-tight text-base-content group-hover:text-primary">

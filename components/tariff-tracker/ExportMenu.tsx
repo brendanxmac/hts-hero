@@ -13,18 +13,18 @@ const EXPORTS: { format: ExportFormat; label: string; note: string; Icon: typeof
 // Downloads the report as a spreadsheet, in the format picked from the menu
 export const ExportMenu = ({ onExport }: { onExport: (format: ExportFormat) => void }) => (
   <Menu as="div" className="relative flex-1 sm:flex-none">
-    <Menu.Button className={`${ui.button({ size: "sm" })} w-full`}>
+    <Menu.Button className={`${ui.button({ variant: "secondary" })} w-full`}>
       <ArrowDownTrayIcon className="h-4 w-4" aria-hidden />
       Export
       <ChevronDownIcon className="-mr-1 h-4 w-4 text-base-content/60" aria-hidden />
     </Menu.Button>
-    <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-64 focus:outline-none`}>
+    <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-64 rounded-2xl p-2 focus:outline-hidden`}>
       {EXPORTS.map(({ format, label, note, Icon }) => (
         <Menu.Item key={format}>
           {({ active }) => (
             <button
               type="button"
-              className={`flex w-full items-start gap-3 rounded-md px-3 py-2.5 text-left text-base-content ${
+              className={`flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left text-base-content ${
                 active ? "bg-primary/10" : ""
               }`}
               onClick={() => onExport(format)}

@@ -54,7 +54,7 @@ export const ProductRateRow = ({
           <button
             key={row.code}
             type="button"
-            className="absolute top-1/2 flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            className="absolute top-1/2 flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-primary"
             style={{ left: x(value), marginTop: offset, zIndex: active ? 20 : 10 }}
             onMouseEnter={() => onHover(row.code)}
             onMouseLeave={() => onHover(null)}

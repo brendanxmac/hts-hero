@@ -36,7 +36,7 @@ const UnauthenticatedTariffsHeader = () => {
     <>
       <header
         className={`sticky top-0 w-full h-16 z-50 flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ${scrolled
-          ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm"
+          ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-xs"
           : "bg-base-100 border-b border-base-content/10"
           }`}
       >
@@ -102,10 +102,10 @@ const UnauthenticatedTariffsHeader = () => {
           {/* Desktop Right Side - CTA & Theme Toggle */}
           <div className="hidden md:flex items-center gap-3">
             <Link
-              href="/about/tariffs"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
+              href="/duty-calculator"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-xs hover:shadow-md"
             >
-              Check Your Tariff Impact
+              Calculate Your Tariffs
             </Link>
             <ButtonSignin text="Sign In" />
             <ThemeToggle />
@@ -115,10 +115,10 @@ const UnauthenticatedTariffsHeader = () => {
 
       {/* Mobile Menu - Rendered outside header */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden">
+        <div className="fixed inset-0 z-100 md:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-base-content/20 backdrop-blur-sm"
+            className="fixed inset-0 bg-base-content/20 backdrop-blur-xs"
             onClick={() => setIsOpen(false)}
           />
 
@@ -186,11 +186,11 @@ const UnauthenticatedTariffsHeader = () => {
             {/* CTA & Theme Toggle */}
             <div className="flex flex-col gap-4">
               <Link
-                href="/about/tariffs"
+                href="/duty-calculator"
                 onClick={() => setIsOpen(false)}
                 className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200"
               >
-                Check Your Tariff Impact
+                Calculate Your Tariffs
               </Link>
               <div className="flex items-center gap-3">
                 <ButtonSignin text="Sign In" />

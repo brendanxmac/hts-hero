@@ -29,12 +29,12 @@ type PlaybookCTAProps = {
 };
 
 const emailSentMessage = (
-  <div className="rounded-xl bg-gradient-to-br from-primary/15 via-primary/5 to-secondary/10 border-2 border-primary/30 p-5 sm:p-6 text-center space-y-3 animate-[fadeIn_0.4s_ease-out]">
-    <div className="text-4xl sm:text-5xl leading-none">🎉</div>
+  <div className="rounded-xl bg-linear-to-br from-primary/15 via-primary/5 to-secondary/10 border-2 border-primary/30 p-5 sm:p-6 text-center space-y-3 animate-[fadeIn_0.4s_ease-out]">
+    <div className="text-4xl sm:text-5xl sm:leading-none leading-none">🎉</div>
     <p className="text-primary font-extrabold text-lg sm:text-xl tracking-tight">
       You&apos;re in! Check your inbox.
     </p>
-    <p className="text-base-content/80 text-sm sm:text-base max-w-sm mx-auto leading-relaxed">
+    <p className="text-base-content/80 text-sm sm:text-base sm:leading-6 max-w-sm mx-auto leading-relaxed">
       Your download link is on its way, check your inbox for a message from HTS Hero.
     </p>
     <p className="text-xs text-base-content/50 italic">
@@ -59,10 +59,10 @@ export default function PlaybookCTA({
     return (
       <div className={`flex flex-col h-full justify-center items-center min-w-0 w-full ${verticalCardStyle} ${className}`.trim()}>
         <div className="min-w-0 w-full px-3 text-center">
-          <p className="text-[10px] min-[360px]:text-xs font-semibold text-primary uppercase tracking-wider mb-4 break-words">
+          <p className="text-[10px] min-[360px]:text-xs font-semibold text-primary uppercase tracking-wider mb-4 wrap-break-word">
             Instant access — no credit card required
           </p>
-          <h2 className="text-2xl md:text-3xl font-bold text-base-content mb-2 sm:mb-3 text-center break-words leading-tight">
+          <h2 className="text-2xl md:text-3xl md:leading-9 font-bold text-base-content mb-2 sm:mb-3 text-center wrap-break-word leading-tight">
             Get The Playbook + 7 Bonuses <span className="text-primary">FREE</span>!
           </h2>
           {emailSent ? (
@@ -82,27 +82,27 @@ export default function PlaybookCTA({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && onSubmit()}
-                  className="input input-bordered input-md md:input-lg w-full min-w-0 text-sm sm:text-base input-primary"
+                  className="input input-md md:input-lg w-full min-w-0 text-sm sm:text-base input-primary"
                   disabled={isLoading}
                   aria-label="Email address"
                 />
                 <button
                   onClick={onSubmit}
                   disabled={isLoading}
-                  className="btn btn-primary btn-md md:btn-lg font-bold w-full min-w-0 text-sm sm:text-base break-words transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-70"
+                  className="btn btn-primary btn-md md:btn-lg font-bold w-full min-w-0 text-sm sm:text-base wrap-break-word transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-70"
                 >
                   {isLoading ? "Sending…" : "Send Me the Playbook!"}
                 </button>
               </div>
               {error && (
-                <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-error font-medium break-words">{error}</p>
+                <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-error font-medium wrap-break-word">{error}</p>
               )}
             </>
           )}
         </div>
         {!emailSent && (
-          <p className="text-center text-xs text-base-content/70 pt-3 break-words">
-            <span className="text-xs text-base-content/60 max-w-lg mx-auto break-words px-1">
+          <p className="text-center text-xs text-base-content/70 pt-3 wrap-break-word">
+            <span className="text-xs text-base-content/60 max-w-lg mx-auto wrap-break-word px-1">
               By submitting, you agree to receive emails from HTS Hero. We never share your email and never spam.</span>
           </p>
         )}
@@ -115,17 +115,17 @@ export default function PlaybookCTA({
       <div
         className={`${cardStyle} text-center border-2 border-primary/30 focus-within:border-primary/50 transition-colors w-full max-w-full`}
       >
-        <p className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-wider my-2 pb-3 break-words">
+        <p className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-wider my-2 pb-3 wrap-break-word">
           Limited Time Offer — expires in {currentMonth}!
         </p>
-        <h2 className="text-2xl md:text-3xl font-bold text-base-content mb-2 sm:mb-3 break-words leading-tight">
+        <h2 className="text-2xl md:text-3xl md:leading-9 font-bold text-base-content mb-2 sm:mb-3 wrap-break-word leading-tight">
           Get Your Playbook + 7 Bonuses for <span className="text-primary">FREE</span> Instantly!
         </h2>
         {emailSent ? (
           emailSentMessage
         ) : (
           <>
-            <p className="text-base-content/80 font-medium text-sm sm:text-base md:text-lg mb-4 sm:mb-6 break-words">
+            <p className="text-base-content/80 font-medium text-sm sm:text-base md:text-lg mb-4 sm:mb-6 wrap-break-word">
               That&apos;s a ${bonusTotalValue} value, FREE by entering your email below!
             </p>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 max-w-xl mx-auto w-full min-w-0">
@@ -135,23 +135,23 @@ export default function PlaybookCTA({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && onSubmit()}
-                className="input input-bordered md:input-lg w-full min-w-0 text-sm sm:text-base input-primary"
+                className="input md:input-lg w-full min-w-0 text-sm sm:text-base input-primary"
                 disabled={isLoading}
                 aria-label="Email address"
               />
               <button
                 onClick={onSubmit}
                 disabled={isLoading}
-                className="btn btn-primary md:btn-lg font-bold w-full sm:w-auto sm:flex-shrink-0 text-sm sm:text-base break-words transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-70"
+                className="btn btn-primary md:btn-lg font-bold w-full sm:w-auto sm:shrink-0 text-sm sm:text-base wrap-break-word transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-70"
               >
                 {isLoading ? "Sending…" : "Send Me the Playbook!"}
               </button>
             </div>
 
-            <p className="mt-4 text-xs text-base-content/60 max-w-lg mx-auto break-words px-1">
+            <p className="mt-4 text-xs text-base-content/60 max-w-lg mx-auto wrap-break-word px-1">
               By submitting, you agree to receive emails from HTS Hero. We never share your email and never spam.</p>
             {error && (
-              <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-error font-medium break-words">{error}</p>
+              <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-error font-medium wrap-break-word">{error}</p>
             )}
           </>
         )}

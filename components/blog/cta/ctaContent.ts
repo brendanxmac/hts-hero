@@ -1,5 +1,6 @@
 import type { CtaKind } from "@/libs/blog/types";
 import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { formatPostDate } from "../lib/format";
 
 // Historical rates go back to the first HTS revision whose tariff data has been verified
@@ -19,7 +20,7 @@ export const CTA_CONTENT: Record<
     body: "Enter an HTS code and a country of origin. HTS Hero stacks the base rate with every Chapter 99 tariff that applies and shows you the math.",
     points: [
       "Section 232, Section 301 and every other program, stacked correctly",
-      "Exemptions and trade preferences you qualify for",
+      "Exemptions and trade preferences that could apply",
       "Compare the same product from every country",
     ],
     button: "Calculate your duty",
@@ -27,26 +28,27 @@ export const CTA_CONTENT: Record<
   },
   history: {
     kicker: "Historical tariff rates",
-    title: "Check what you should have paid on a past entry",
-    body: "Pick an entry date and HTS Hero calculates the duty that applied on that day, from the HTS revision in force at the time. Audit past entries and catch overpayments.",
+    title: "See what duty applied on a past date",
+    body: "Pick an entry date and HTS Hero calculates the duty that applied on that day, from the HTS revision in force at the time. Free, with no account.",
     points: [
       `Verified rates for entries back to ${HISTORY_FROM}`,
       "See how a product's duty changed over time",
       "Every rate tied to its Chapter 99 heading and source",
     ],
-    button: "Audit a past entry",
+    button: "See duty on a past date",
     href: "/duty-calculator",
   },
   tracker: {
     kicker: "Tariff change alerts",
     title: "Know the day a tariff change hits your products",
-    body: "Add your HTS codes and countries once. HTS Hero checks every new HTS revision against your catalog and tells you what changed and what it costs you.",
+    body: "Add your HTS codes and countries once. HTS Hero checks every new tariff action against your imports and tells you exactly how each one is affected.",
     points: [
-      "Alerts when a revision changes duty on your products",
-      "Before and after rates for each product",
-      "Find lower-duty countries and exemptions",
+      "Alerts when a tariff change hits your imports",
+      "Before and after rates for each import, and the change in %",
+      "Impact checks on any tariff action, plus rate history and CSV or Excel exports",
+      `Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card`,
     ],
-    button: "Watch your products",
+    button: `Try it free for ${REVERSE_TRIAL.days} days`,
     href: TRACKER_HREF,
   },
   classify: {

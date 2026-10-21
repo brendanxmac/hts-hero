@@ -1,5 +1,5 @@
 import { HistorySegment } from "@/tariffs/engine-v2/history";
-import { CHART_COLORS } from "@/components/ui/theme";
+import { partColors } from "@/components/ui/charts/partColors";
 import { BASE_SLICE, sliceForProgram } from "../results";
 import { Layer } from "./types";
 
@@ -18,8 +18,8 @@ export const amountsBySlice = (segment: HistorySegment) => {
   return amounts;
 };
 
-// Layers in the order they first appear, base duty at the bottom. A layer takes its Cost
-// Breakdown color, or else a chart color the breakdown isn't using.
+// Layers in the order they first appear, base duty at the bottom, each in its color everywhere
+// (partColors; sliceColors, from the Cost Breakdown, agree with it)
 export const layersFor = (
   history: HistorySegment[],
   sliceColors: Record<string, string>,
@@ -30,15 +30,6 @@ export const layersFor = (
       if (!labels.includes(label) && amount > 0) labels.push(label);
     }),
   );
-  const used = new Set(Object.values(sliceColors));
-  const spare = CHART_COLORS.filter((c) => !used.has(c));
-  let next = 0;
-  return labels.map((label) => ({
-    label,
-    color:
-      sliceColors[label] ??
-      (label === BASE_SLICE
-        ? CHART_COLORS[0]
-        : spare[next++ % Math.max(spare.length, 1)] ?? CHART_COLORS[1]),
-  }));
+  const colors = partColors(labels);
+  return labels.map((label) => ({ label, color: sliceColors[label] ?? colors[label] ?? colors[BASE_SLICE] }));
 };

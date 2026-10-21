@@ -6,7 +6,8 @@ import { loadHeadingDetail } from "@/libs/hts-coverage/server"
 export const dynamic = "force-dynamic"
 
 // One heading: its HTS text, the notes it cites, and what the engine has for it
-export async function GET(_req: Request, { params }: { params: { htsno: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ htsno: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

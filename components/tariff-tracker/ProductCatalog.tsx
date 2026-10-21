@@ -1,15 +1,20 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
-import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
+import { useImportTakeover } from "./onboarding/takeoverStore";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import * as ui from "@/components/ui/styles";
 import { AddMethod, AddProductsDialog } from "./AddProductsDialog";
-import { itemsFromText } from "./catalog";
-import { CatalogEmptyState } from "./CatalogEmptyState";
-import { EXAMPLE_LIST } from "./exampleList";
+import { SetupPage } from "./onboarding/SetupPanel";
 import { ProductView } from "./product/ProductView";
 import { TrackedProduct } from "./report";
+import { SectionHeader } from "./shell/SectionPage";
 import { useTrackerNav } from "./shell/TrackerNav";
+import { sectionBySlug, TRACKER_PATH } from "./sections";
+import { TabBar } from "@/components/ui/TabBar";
+import { Insights } from "./insights-tab/Insights";
+import { ExposureMap } from "./overview/ExposureMap";
+import { OriginDistribution } from "./overview/OriginDistribution";
 import { TariffReport } from "./TariffReport";
 import { useTracker } from "./TrackerContext";
 
@@ -25,52 +30,87 @@ export const ProductCatalog = () => {
     method: "paste",
   });
 
-  // The app's scroll area: a product view starts at the top; the list returns to where it was
+  // (Scroll positions are kept per view in TrackerApp: the list returns to where it was)
   const anchor = useRef<HTMLDivElement>(null);
-  const listScroll = useRef(0);
-  const previous = useRef(nav.product);
-  useLayoutEffect(() => {
-    const scroller = anchor.current?.closest("main");
-    if (!scroller || previous.current === nav.product) return;
-    if (!previous.current) listScroll.current = scroller.scrollTop;
-    scroller.scrollTop = nav.product ? 0 : listScroll.current;
-    previous.current = nav.product;
-  }, [nav.product]);
 
   const openDialog = (method: AddMethod) => setDialog({ open: true, method });
 
-  const loadExample = () => {
-    t.addProducts(itemsFromText(EXAMPLE_LIST), "example");
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_EXAMPLE_USED);
-  };
+  // ?add=paste (or csv) opens the Add products dialog on arrival: links from other pages ("Track
+  // your products") land on the step that matters
+  const searchParams = useSearchParams();
+  const addParam = searchParams.get("add");
+  useEffect(() => {
+    if (addParam === "paste" || addParam === "csv") openDialog(addParam);
+  }, [addParam]);
+  // Without imports of their own the import takeover asks instead (it reads ?add= too)
+  const { open: takeoverOpen } = useImportTakeover();
+  useEffect(() => {
+    if (takeoverOpen) setDialog((d) => ({ ...d, open: false }));
+  }, [takeoverOpen]);
+
+  // Two views: the imports, and Insights on them (where the duty comes from, what moved it)
+  const view = searchParams.get("view") === "insights" ? "insights" : "imports";
+  const views = (
+    <TabBar
+      label="Your Imports"
+      options={[
+        { id: "imports", label: "Imports", count: t.items.length },
+        { id: "insights", label: "Insights" },
+      ]}
+      value={view}
+      onChange={(next) => next !== view && window.history.pushState(null, "", `${TRACKER_PATH}?tab=catalog${next === "insights" ? "&view=insights" : ""}`)}
+    />
+  );
 
   return (
     <div ref={anchor}>
       {nav.product && (
         <ProductView key={nav.product} productKey={nav.product} />
       )}
+      {/* The report draws its own header, with its actions in it */}
       <div hidden={Boolean(nav.product)}>
-        {t.loading ? (
-          <div
-            className={`${ui.card} flex flex-col gap-3 p-5`}
-            aria-busy="true"
-            aria-label="Loading HTS data"
-          >
-            <div className={`${ui.skeleton} h-7 w-48`} />
-            <div className={`${ui.skeleton} h-24 w-full`} />
-            {Array.from({ length: 5 }, (_, i) => (
-              <div key={i} className={`${ui.skeleton} h-14 w-full`} />
-            ))}
-          </div>
-        ) : t.items.length === 0 ? (
-          <CatalogEmptyState onAdd={openDialog} onExample={loadExample} />
-        ) : (
-          <TariffReport
-            rows={t.products}
-            onAdd={() => openDialog("paste")}
-            onOpen={(row: TrackedProduct) => nav.openProduct(row.key, true)}
-          />
-        )}
+        <div className="flex flex-col gap-5">
+          {/* With none of their imports, the page is the pitch for adding them (SetupPage) */}
+          {t.loading && (
+            <SectionHeader section={sectionBySlug("catalog")!} />
+          )}
+          {t.loading ? (
+            <div
+              className={`${ui.card} flex flex-col gap-3 p-5`}
+              aria-busy="true"
+              aria-label="Loading HTS data"
+            >
+              <div className={`${ui.skeleton} h-7 w-48`} />
+              <div className={`${ui.skeleton} h-24 w-full`} />
+              {Array.from({ length: 5 }, (_, i) => (
+                <div key={i} className={`${ui.skeleton} h-14 w-full`} />
+              ))}
+            </div>
+          ) : t.items.length === 0 ? (
+            <SetupPage from="imports" />
+          ) : view === "insights" ? (
+            <div className="tt-enter flex flex-col gap-group">
+              <SectionHeader section={sectionBySlug("catalog")!} tabs={views} />
+              {/* Free for everyone: where the duty on each import comes from, and where they come from */}
+              <div className="grid gap-module xl:grid-cols-12">
+                <div className="flex flex-col *:flex-1 xl:col-span-8">
+                  <ExposureMap products={t.products} onOpen={(key) => nav.openProduct(key)} />
+                </div>
+                <div className="flex flex-col *:flex-1 xl:col-span-4">
+                  <OriginDistribution products={t.products} />
+                </div>
+              </div>
+              <Insights />
+            </div>
+          ) : (
+            <TariffReport
+              rows={t.products}
+              tabs={views}
+              onAdd={() => openDialog("paste")}
+              onOpen={(row: TrackedProduct) => nav.openProduct(row.key, true)}
+            />
+          )}
+        </div>
       </div>
       <AddProductsDialog
         open={dialog.open}

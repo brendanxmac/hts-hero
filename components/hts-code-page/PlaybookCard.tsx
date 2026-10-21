@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 
 // The page-level call to action for the free classifications playbook
 
@@ -17,10 +18,10 @@ const INSIDE = [
 
 export function PlaybookCard() {
   return (
-    <section className={`${ui.card}`}>
+    <section className={`${tt.panel} overflow-hidden`}>
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          <div className="relative w-32 sm:w-36 aspect-[2/3] rounded-md overflow-hidden border border-base-300 shrink-0">
+          <div className="relative w-32 sm:w-36 aspect-2/3 rounded-2xl overflow-hidden border border-base-300 shrink-0">
             <Image
               src={`${STORAGE_BASE}/book-cover.jpg`}
               alt="The Audit-Ready Classifications Playbook"
@@ -30,15 +31,15 @@ export function PlaybookCard() {
             />
           </div>
           <div className="flex flex-col gap-3 text-center sm:text-left">
-            <span className={ui.kicker}>Free · Playbook + 7 Bonuses</span>
-            <h2 className={ui.sectionTitle}>The Audit-Ready Classifications Playbook</h2>
+            <span className={tt.eyebrow("primary")}>Free · Playbook + 7 Bonuses</span>
+            <h2 className={`${ui.sectionTitle} ${tt.display}`}>The Audit-Ready Classifications Playbook</h2>
             <p className={ui.body}>
               Learn how to create HTS classifications that reduce import risk and defend profits — faster than ever.
             </p>
             <div>
               <Link
                 href="/the-audit-ready-classifications-playbook"
-                className={`${ui.button({ variant: "primary", size: "lg" })} mt-1`}
+                className={`${ui.button({ variant: "primary" })} mt-1`}
               >
                 Download Free Playbook
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
@@ -46,8 +47,8 @@ export function PlaybookCard() {
             </div>
           </div>
         </div>
-        <div className="p-6 sm:p-8 border-t lg:border-t-0 lg:border-l border-base-300 bg-base-200 flex flex-col justify-center">
-          <p className={`${ui.label} mb-4`}>What&apos;s inside</p>
+        <div className="p-6 sm:p-8 border-t lg:border-t-0 lg:border-l border-base-300 bg-tt-soft flex flex-col justify-center">
+          <p className={`${tt.eyebrow()} mb-4`}>What&apos;s inside</p>
           <ul className="flex flex-col gap-3">
             {INSIDE.map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-base text-base-content">

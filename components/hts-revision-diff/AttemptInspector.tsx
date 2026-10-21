@@ -1,7 +1,10 @@
 "use client"
 
+import { useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
+import { Select } from "@/components/ui/Select"
+import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table"
 import type { AttemptRow, DocumentRow, ParsedNotes, RevisionRow } from "@/libs/hts-revision-diff/types"
 import { hasParseResults } from "@/libs/hts-revision-diff/types"
 import HeadingsPanel from "./HeadingsPanel"
@@ -18,7 +21,6 @@ import {
   PageSpinner,
   Panel,
   Pill,
-  selectCls,
   Spinner,
   Stat,
   StatGrid,
@@ -36,7 +38,12 @@ interface InspectData {
 
 export default function AttemptInspector({ attemptId }: { attemptId: string }) {
   const [data, setData] = useState<InspectData | null>(null)
-  const [tab, setTab] = useState<"notes" | "warnings" | "change-record" | "headings" | "markdown">("notes")
+  // A comparison links here with ?tab=headings&comparison=<id> to show the rows it needs reviewed
+  const searchParams = useSearchParams()
+  const linkedComparison = searchParams.get("comparison")
+  const [tab, setTab] = useState<"notes" | "warnings" | "change-record" | "headings" | "markdown">(
+    searchParams.get("tab") === "headings" ? "headings" : "notes"
+  )
   const [warningKind, setWarningKind] = useState("all")
   const [focusKey, setFocusKey] = useState<string | null>(null)
   const [extracting, setExtracting] = useState(false)
@@ -107,8 +114,7 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
   const inCh99 = items.filter((i) => i.in_chapter_99).length
   const subchapterTitle = (groupKey: string) => data.notes?.subchapterTitles[groupKey.match(/^sub-([IVXLC]+)/)?.[1] ?? ""]
 
-  const th = "px-4 py-2 text-left text-xs font-medium text-base-content/50"
-  const td = "px-4 py-2.5 align-top"
+  // Rows hold several lines (a pill, a note), so their cells line up at the top
 
   return (
     <div className="flex flex-col gap-5">
@@ -160,28 +166,28 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
               <span className="transition-transform group-open:rotate-90">›</span>
               By note group ({stats.groups.length})
             </summary>
-            <div className="mt-2 overflow-x-auto rounded-lg border border-base-content/10 bg-base-100">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-base-content/10">
-                    <th className={th}>Note group</th>
-                    <th className={`${th} text-right`}>Top-level notes</th>
-                    <th className={`${th} text-right`}>Subdivisions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-base-content/[0.07]">
+            <div className="mt-2">
+              <Table label="Notes by note group" dense valign="top">
+                <THead>
+                  <Tr>
+                    <Th>Note group</Th>
+                    <Th align="right">Top-level notes</Th>
+                    <Th align="right">Subdivisions</Th>
+                  </Tr>
+                </THead>
+                <TBody>
                   {stats.groups.map((g) => (
-                    <tr key={g.groupKey}>
-                      <td className={td}>
+                    <Tr key={g.groupKey}>
+                      <RowHeader>
                         {g.label}
                         {subchapterTitle(g.groupKey) && <span className="ml-2 text-xs text-base-content/45">{subchapterTitle(g.groupKey)}</span>}
-                      </td>
-                      <td className={`${td} text-right tabular-nums`}>{g.topLevelNotes}</td>
-                      <td className={`${td} text-right tabular-nums`}>{g.nodes}</td>
-                    </tr>
+                      </RowHeader>
+                      <Td align="right">{g.topLevelNotes}</Td>
+                      <Td align="right">{g.nodes}</Td>
+                    </Tr>
                   ))}
-                </tbody>
-              </table>
+                </TBody>
+              </Table>
             </div>
           </details>
         </div>
@@ -208,7 +214,7 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
           </div>
         ))}
 
-      {tab === "headings" && <HeadingsPanel attemptId={attemptId} />}
+      {tab === "headings" && <HeadingsPanel attemptId={attemptId} comparisonId={linkedComparison} />}
 
       {markdownOpened && chapter99Doc?.markdown_path && (
         <div className={tab === "markdown" ? "" : "hidden"}>
@@ -233,14 +239,17 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
           count={warnings.length}
           actions={
             warningKinds.length > 1 && (
-              <select className={`${selectCls} select-xs h-8 min-h-8`} value={warningKind} onChange={(e) => setWarningKind(e.target.value)}>
-                <option value="all">All kinds</option>
-                {warningKinds.map((k) => (
-                  <option key={k} value={k}>
-                    {k.replace(/_/g, " ")} ({warnings.filter((w) => w.kind === k).length})
-                  </option>
-                ))}
-              </select>
+              <Select<string>
+                size="sm"
+                label="Warning kind"
+                align="right"
+                value={warningKind}
+                onChange={setWarningKind}
+                options={[
+                  { value: "all", label: "All kinds" },
+                  ...warningKinds.map((k) => ({ value: k, label: `${k.replace(/_/g, " ")} (${warnings.filter((w) => w.kind === k).length})` })),
+                ]}
+              />
             )
           }
         >
@@ -253,58 +262,56 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
           {warnings.length === 0 ? (
             <EmptyState title="No parse warnings" />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-base-content/10">
-                    <th className={th}>Kind</th>
-                    <th className={th}>Message</th>
-                    <th className={th}>Where</th>
-                    <th className={`${th} text-right`}>Page</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-base-content/[0.07]">
-                  {warnings
-                    .filter((w) => warningKind === "all" || w.kind === warningKind)
-                    .map((w, i) => (
-                      <tr key={i} className="hover:bg-base-content/[0.02]">
-                        <td className={`${td} whitespace-nowrap`}>
-                          <Pill tone="warning">{w.kind.replace(/_/g, " ")}</Pill>
-                        </td>
-                        <td className={`${td} text-base-content/80`}>{w.message}</td>
-                        <td className={`${td} font-mono text-xs`}>
-                          {w.key && (
-                            <button
-                              className="text-left underline decoration-base-content/30 underline-offset-2 hover:decoration-base-content"
-                              onClick={() => {
-                                setFocusKey(null)
-                                setTimeout(() => setFocusKey(w.key!), 0)
-                                setTab("notes")
-                              }}
-                            >
-                              {w.key}
-                            </button>
-                          )}
-                        </td>
-                        <td className={`${td} text-right text-xs tabular-nums text-base-content/55`}>
-                          {w.page && (
-                            <button
-                              className="underline decoration-base-content/30 underline-offset-2 hover:decoration-base-content"
-                              title="Open this page's markdown"
-                              onClick={() => {
-                                setMarkdownPage({ page: w.page! })
-                                setTab("markdown")
-                              }}
-                            >
-                              {w.page}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+            <Table label="Parse warnings" framed={false} dense valign="top">
+              <THead>
+                <Tr>
+                  <Th>Kind</Th>
+                  <Th>Message</Th>
+                  <Th>Where</Th>
+                  <Th align="right">Page</Th>
+                </Tr>
+              </THead>
+              <TBody>
+                {warnings
+                  .filter((w) => warningKind === "all" || w.kind === warningKind)
+                  .map((w, i) => (
+                    <Tr key={i}>
+                      <Td className="whitespace-nowrap">
+                        <Pill tone="warning">{w.kind.replace(/_/g, " ")}</Pill>
+                      </Td>
+                      <Td className="text-base-content/80">{w.message}</Td>
+                      <Td className="font-mono text-xs">
+                        {w.key && (
+                          <button
+                            className="text-left underline decoration-base-content/30 underline-offset-2 hover:decoration-base-content"
+                            onClick={() => {
+                              setFocusKey(null)
+                              setTimeout(() => setFocusKey(w.key!), 0)
+                              setTab("notes")
+                            }}
+                          >
+                            {w.key}
+                          </button>
+                        )}
+                      </Td>
+                      <Td align="right" className="text-xs text-base-content/55">
+                        {w.page && (
+                          <button
+                            className="underline decoration-base-content/30 underline-offset-2 hover:decoration-base-content"
+                            title="Open this page's markdown"
+                            onClick={() => {
+                              setMarkdownPage({ page: w.page! })
+                              setTab("markdown")
+                            }}
+                          >
+                            {w.page}
+                          </button>
+                        )}
+                      </Td>
+                    </Tr>
+                  ))}
+              </TBody>
+            </Table>
           )}
         </Panel>
       )}
@@ -334,44 +341,42 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
               <div className="border-b border-base-content/10 px-4 py-2 text-xs text-base-content/50">
                 {inCh99} of {items.length} items are in Chapter 99. The rest are dimmed.
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-base-content/10">
-                      <th className={th}>Item</th>
-                      <th className={th}>Action</th>
-                      <th className={th}>Description</th>
-                      <th className={th}>Cites</th>
-                      <th className={th}>Effective</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-base-content/[0.07]">
-                    {items.map((item) => (
-                      <tr key={item.id} className={item.in_chapter_99 ? "" : "text-base-content/40"}>
-                        <td className={`${td} whitespace-nowrap font-mono text-xs`}>
-                          {item.id}
-                          {!item.in_chapter_99 && <div className="mt-0.5 font-sans text-[10px]">not ch. 99</div>}
-                        </td>
-                        <td className={td}>
-                          <Pill tone={item.action === "added" ? "success" : item.action === "deleted" ? "error" : "neutral"}>{item.action}</Pill>
-                        </td>
-                        <td className={`${td} min-w-[16rem]`}>{item.description}</td>
-                        <td className={`${td} max-w-xs break-words font-mono text-xs`}>
-                          {[
-                            item.subchapter && `sub ${item.subchapter}`,
-                            ...item.note_citations.map((c) => `note ${c}`),
-                            ...item.hts_codes,
-                            ...item.hts_code_ranges.map((r) => `${r.from}–${r.to}`),
-                          ]
-                            .filter(Boolean)
-                            .join(", ")}
-                        </td>
-                        <td className={`${td} whitespace-nowrap text-xs`}>{item.effective_date ?? ""}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <Table label="Change record items" framed={false} dense valign="top">
+                <THead>
+                  <Tr>
+                    <Th>Item</Th>
+                    <Th>Action</Th>
+                    <Th>Description</Th>
+                    <Th>Cites</Th>
+                    <Th>Effective</Th>
+                  </Tr>
+                </THead>
+                <TBody>
+                  {items.map((item) => (
+                    <Tr key={item.id} className={item.in_chapter_99 ? "" : "text-base-content/40"}>
+                      <RowHeader className="whitespace-nowrap font-mono text-xs">
+                        {item.id}
+                        {!item.in_chapter_99 && <div className="mt-0.5 font-sans text-[10px]">not ch. 99</div>}
+                      </RowHeader>
+                      <Td>
+                        <Pill tone={item.action === "added" ? "success" : item.action === "deleted" ? "error" : "neutral"}>{item.action}</Pill>
+                      </Td>
+                      <Td className="min-w-[16rem]">{item.description}</Td>
+                      <Td className="max-w-xs wrap-break-word font-mono text-xs">
+                        {[
+                          item.subchapter && `sub ${item.subchapter}`,
+                          ...item.note_citations.map((c) => `note ${c}`),
+                          ...item.hts_codes,
+                          ...item.hts_code_ranges.map((r) => `${r.from}–${r.to}`),
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </Td>
+                      <Td className="whitespace-nowrap text-xs">{item.effective_date ?? ""}</Td>
+                    </Tr>
+                  ))}
+                </TBody>
+              </Table>
             </>
           )}
           {data.changeRecordMarkdown && (
@@ -380,7 +385,7 @@ export default function AttemptInspector({ attemptId }: { attemptId: string }) {
                 <span className="transition-transform group-open:rotate-90">›</span>
                 Change record markdown (from datalab)
               </summary>
-              <pre className="max-h-[32rem] overflow-auto whitespace-pre-wrap border-t border-base-content/10 bg-base-content/[0.02] px-4 py-3 text-xs leading-relaxed">
+              <pre className="max-h-128 overflow-auto whitespace-pre-wrap border-t border-base-content/10 bg-base-content/[0.02] px-4 py-3 text-xs leading-relaxed">
                 {data.changeRecordMarkdown}
               </pre>
             </details>

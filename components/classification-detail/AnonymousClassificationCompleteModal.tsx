@@ -59,7 +59,7 @@ export function AnonymousClassificationCompleteModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -141,18 +141,18 @@ export function AnonymousClassificationCompleteModal({
                       enterFrom="opacity-0 -translate-y-2"
                       enterTo="opacity-100 translate-y-0"
                     >
-                      <div className="w-full rounded-xl bg-gradient-to-r from-primary/[0.08] via-primary/[0.05] to-secondary/[0.08] border border-primary/20 px-4 py-3 sm:py-3.5 mb-5 flex items-center gap-4">
+                      <div className="w-full rounded-xl bg-linear-to-r from-primary/[0.08] via-primary/[0.05] to-secondary/[0.08] border border-primary/20 px-4 py-3 sm:py-3.5 mb-5 flex items-center gap-4">
                         <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10 shrink-0">
                           <LockClosedIcon className="w-5 h-5 text-primary" />
                         </div>
                         <div className="flex-1 text-left">
-                          <p className="text-sm md:text-base lg:text-lg font-bold text-base-content leading-snug">
+                          <p className="text-sm md:text-base md:leading-6 lg:text-lg lg:leading-7 font-bold text-base-content leading-snug">
                             Create a <span className="underline">FREE</span> Account to Save Your Results & Verify your Code!
                           </p>
                           <p className="text-[11px] text-primary font-semibold mt-3">
                             100% FREE &ensp;· Takes 10 seconds&ensp;· &ensp;No credit card required
                           </p>
-                          {/* <p className="text-xs md:text-sm text-base-content/70 leading-snug">
+                          {/* <p className="text-xs md:text-sm md:leading-5 text-base-content/70 leading-snug">
                             Save this classification, unlock your audit-ready defense report, and get 10 more free classifications.
                           </p> */}
                         </div>

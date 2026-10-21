@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import * as ui from "@/components/ui/styles";
+import * as mk from "@/components/ui/marketing/styles";
 import { Estimator } from "./estimator";
 import { EstimateState } from "./lib/estimateParams";
 import { Billing, EstimateInput } from "./lib/pricing";
@@ -17,14 +17,14 @@ export const PricingCalculator = ({ initial }: { initial: EstimateState }) => {
 
   return (
     <>
-      <div className={ui.band}>
-        <div className={`${ui.container} ${ui.bandPadding} flex flex-col gap-16 sm:gap-20`}>
+      <div className={mk.band}>
+        <div className={`${mk.container} flex flex-col gap-24 sm:gap-28`}>
           <TariffPlans billing={billing} onBillingChange={setBilling} />
           <ClassifyPlans billing={billing} />
         </div>
       </div>
-      <div className={ui.band}>
-        <div className={`${ui.container} ${ui.bandPadding}`}>
+      <div className={`${mk.band} ${mk.bandMuted}`}>
+        <div className={mk.container}>
           <Estimator
             input={input}
             onInputChange={(patch) => setInput((prev) => ({ ...prev, ...patch }))}

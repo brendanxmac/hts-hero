@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { unstable_cache } from "next/cache";
-import { createAdminClient } from "../../supabase/server";
-import { SupabaseBuckets } from "../../../../constants/supabase";
+import { downloadHtsRevision } from "../../../../libs/hts-server";
 import { getHtsRevisionRecord } from "../../../../libs/supabase/hts-revision";
 
 export const dynamic = "force-dynamic";
@@ -11,21 +10,14 @@ const CACHE_TTL_SECONDS = 24 * 60 * 60; // 24 hours
 /**
  * unstable_cache serializes cached values; Blob/ArrayBuffer are not reliably preserved
  * (observed ~15-byte "[object Object]" client body). Base64 string is always cache-safe.
+ * downloadHtsRevision checks the file reads before it's returned (and retries if not), so a
+ * corrupted download is never cached here or at the CDN.
  */
 async function fetchRevisionFromSupabase(
   revisionName: string
 ): Promise<string> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase.storage
-    .from(SupabaseBuckets.HTS_REVISIONS)
-    .download(`${revisionName}.json.gz`);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  const arrayBuffer = await data.arrayBuffer();
-  return Buffer.from(arrayBuffer).toString("base64");
+  const { bytes } = await downloadHtsRevision(revisionName);
+  return Buffer.from(bytes).toString("base64");
 }
 
 export async function GET(req: NextRequest) {

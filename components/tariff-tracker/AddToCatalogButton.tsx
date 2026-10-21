@@ -61,7 +61,7 @@ export const AddToCatalogButton = ({
         }}
       >
         <CheckIcon className="h-4 w-4" aria-hidden />
-        In catalog
+        In your imports
       </a>
     );
   }
@@ -70,7 +70,7 @@ export const AddToCatalogButton = ({
     <button
       type="button"
       className={ui.button({ size: "sm" })}
-      title="Save this product to your Tariff Tracker catalog"
+      title="Save this product to your imports in the Tariff Tracker"
       onClick={() => {
         const { added, withAdjustments } = addToCatalog([product]);
         trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, {
@@ -84,7 +84,7 @@ export const AddToCatalogButton = ({
       }}
     >
       <PlusIcon className="h-4 w-4" aria-hidden />
-      Add to catalog
+      Add to imports
     </button>
   );
 };

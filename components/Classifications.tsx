@@ -33,6 +33,7 @@ import {
 } from "../libs/supabase/importers";
 import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { EmptyResultsConfig } from "./EmptyResults";
+import { Select } from "@/components/ui/Select";
 import { deleteClassification } from "../libs/classification";
 import {
   canCreateClassification,
@@ -565,7 +566,7 @@ export const Classifications = () => {
   return (
     <main className="w-full min-h-full flex flex-col bg-base-100">
       {/* Hero Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60 border-b border-base-content/10">
+      <div className="relative overflow-hidden bg-linear-to-br from-base-200/80 via-base-100 to-base-200/60 border-b border-base-content/10">
         {/* Subtle animated background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
@@ -745,7 +746,7 @@ export const Classifications = () => {
                     <button
                       key={tab.key}
                       className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === tab.key
-                        ? "bg-base-100 text-base-content shadow-sm"
+                        ? "bg-base-100 text-base-content shadow-xs"
                         : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
                         }`}
                       onClick={() =>
@@ -766,9 +767,9 @@ export const Classifications = () => {
           </div>}
 
           {/* Filtering Section */}
-          {classifications && classifications.length > 0 && <div id="onboarding-filters" className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
-            {/* Subtle decorative elements */}
-            <div className="absolute inset-0 pointer-events-none">
+          {classifications && classifications.length > 0 && <div id="onboarding-filters" className="relative rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
+            {/* Subtle decorative elements (clipped here, so the filter menus can open past the box) */}
+            <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
               <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
             </div>
 
@@ -796,7 +797,7 @@ export const Classifications = () => {
                   placeholder="Filter by description or code..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40"
+                  className="w-full h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-hidden focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40"
                 />
               </div>
 
@@ -819,18 +820,19 @@ export const Classifications = () => {
                       </button>
                     )}
                   </div>
-                  <select
+                  <Select
                     value={selectedUserId}
-                    onChange={(e) => setSelectedUserId(e.target.value)}
-                    className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
-                  >
-                    <option value="">All Users</option>
-                    {teamUsers.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {userProfile.id === user.id ? "Me" : user.name || user.email}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(v) => setSelectedUserId(v)}
+                    options={[
+                      { value: "", label: "All Users" },
+                      ...teamUsers.map((user) => ({
+                        value: user.id,
+                        label: userProfile.id === user.id ? "Me" : user.name || user.email,
+                      })),
+                    ]}
+                    label="Classifier"
+                    buttonClassName="h-[42px]! rounded-xl! px-4!"
+                  />
                 </div>
               )}
 
@@ -852,19 +854,20 @@ export const Classifications = () => {
                     </button>
                   )}
                 </div>
-                <select
+                <Select
                   value={selectedImporterId}
-                  onChange={(e) => setSelectedImporterId(e.target.value)}
-                  className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
-                >
-                  <option value="">Select Tag</option>
-                  <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
-                  {importers.map((importer) => (
-                    <option key={importer.id} value={importer.id}>
-                      {importer.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => setSelectedImporterId(v)}
+                  options={[
+                    { value: UNASSIGNED_IMPORTER_VALUE, label: "Unassigned" },
+                    ...importers.map((importer) => ({
+                      value: importer.id,
+                      label: importer.name,
+                    })),
+                  ]}
+                  label="Tag"
+                  placeholder="Select Tag"
+                  buttonClassName="h-[42px]! rounded-xl! px-4!"
+                />
               </div>
             </div>
           </div>}
@@ -873,14 +876,14 @@ export const Classifications = () => {
             <>
               {/* Results Separator */}
               <div className="flex items-center gap-4 my-2">
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/30 to-base-content/30"></div>
+                <div className="flex-1 h-px bg-linear-to-r from-transparent via-base-content/30 to-base-content/30"></div>
                 <span className="text-xs font-semibold uppercase tracking-widest text-base-content/60">
                   {filteredClassifications.length}{" "}
                   {filteredClassifications.length === 1
                     ? "Classification"
                     : "Classifications"}
                 </span>
-                <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/30 to-base-content/30"></div>
+                <div className="flex-1 h-px bg-linear-to-l from-transparent via-base-content/30 to-base-content/30"></div>
               </div>
 
               <div className="flex flex-col gap-3 pb-6">
@@ -926,9 +929,9 @@ export const Classifications = () => {
                   <div className="relative z-10 flex flex-col items-center gap-6">
                     {/* Icon with animated ring */}
                     <div className="relative">
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-30 blur-xl animate-pulse" />
+                      <div className="absolute inset-0 rounded-full bg-linear-to-r from-primary via-secondary to-accent opacity-30 blur-xl animate-pulse" />
                       <div className="relative p-5 rounded-full bg-base-100 shadow-lg border border-base-content/10">
-                        <div className="p-4 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
+                        <div className="p-4 rounded-full bg-linear-to-br from-primary/20 to-secondary/20">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"

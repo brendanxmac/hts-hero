@@ -42,15 +42,22 @@ export const callJson = async <T>(params: {
   user: string
   // A PDF to read alongside the text (base64)
   pdfBase64?: string
+  // Several PDFs, each with a title Claude can refer to
+  pdfs?: { base64: string; title: string }[]
   schema: Record<string, unknown>
   maxTokens: number
   effort: "low" | "medium" | "high"
+  // CLAUDE_MODEL unless given
+  model?: string
 }): Promise<{ data: T; model: string; usage: ClaudeUsage }> => {
   const anthropic = client()
+  const model = params.model ?? CLAUDE_MODEL
+  // Haiku has no server-side refusal fallback
+  const fallbacksAvailable = !model.startsWith("claude-haiku")
   const request = (withFallback: boolean) =>
     anthropic.beta.messages
       .stream({
-        model: CLAUDE_MODEL,
+        model,
         max_tokens: params.maxTokens,
         thinking: { type: "adaptive" },
         output_config: {
@@ -61,13 +68,14 @@ export const callJson = async <T>(params: {
         messages: [
           {
             role: "user",
-            content: params.pdfBase64
+            content: params.pdfBase64 || params.pdfs?.length
               ? [
-                  {
-                    type: "document",
-                    source: { type: "base64", media_type: "application/pdf", data: params.pdfBase64 },
-                  },
-                  { type: "text", text: params.user },
+                  ...(params.pdfBase64 ? [{ base64: params.pdfBase64, title: undefined as string | undefined }] : (params.pdfs ?? [])).map((d) => ({
+                    type: "document" as const,
+                    source: { type: "base64" as const, media_type: "application/pdf" as const, data: d.base64 },
+                    ...(d.title ? { title: d.title } : {}),
+                  })),
+                  { type: "text" as const, text: params.user },
                 ]
               : params.user,
           },
@@ -80,7 +88,7 @@ export const callJson = async <T>(params: {
 
   let message: BetaMessage
   try {
-    message = await request(true)
+    message = await request(fallbacksAvailable)
   } catch (error) {
     if (error instanceof Anthropic.BadRequestError && /fallback/i.test(error.message)) {
       message = await request(false)

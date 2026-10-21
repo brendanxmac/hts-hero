@@ -1,0 +1,158 @@
+import { Metadata } from "next"
+import Link from "next/link"
+import { ArrowRightIcon, RssIcon } from "@heroicons/react/20/solid"
+import config from "@/config"
+import { renderSchemaJsonLd } from "@/libs/seo"
+import { getPublishedUpdates } from "@/libs/tariff-updates/public"
+import { THEME } from "@/components/ui/theme"
+import { trackerDisplay, trackerSans } from "@/components/ui/font"
+import { FaqList } from "@/components/ui/FaqList"
+import { SectionHeader } from "@/components/ui/SectionHeader"
+import * as mk from "@/components/ui/marketing/styles"
+import * as ui from "@/components/ui/styles"
+import * as tt from "@/components/ui/styles/tracker"
+import { UpdatesList } from "@/components/tariff-updates/UpdatesList"
+import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm"
+import { TrackerCtaRow } from "@/components/tariff-updates/TrackerCta"
+import { formatDay } from "@/components/tariff-updates/labels"
+import { SOURCE_LIST, UPDATES_DEFINITION, UPDATES_FAQS } from "@/components/tariff-updates/content"
+
+// Every published tariff update, newest first. Static, refreshed every 15 minutes like the
+// sources behind it.
+export const revalidate = 900
+
+const URL = `https://${config.domainName}/tariff-updates`
+const TITLE = "Latest US Tariff Updates: Every New Tariff Action | HTS Hero"
+const DESCRIPTION =
+  "Every new US tariff action from the White House, Federal Register, CBP and USTR, summarized in plain English and followed into the HTS. Checked every 15 minutes."
+
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: { title: "Latest US Tariff Updates", description: DESCRIPTION, url: URL, siteName: "HTS Hero", type: "website" },
+  twitter: { card: "summary_large_image", title: "Latest US Tariff Updates", description: DESCRIPTION },
+  alternates: { canonical: "/tariff-updates", types: { "application/rss+xml": "/tariff-updates/feed.xml" } },
+}
+
+export default async function TariffUpdatesPage() {
+  const updates = await getPublishedUpdates()
+  const latest = updates[0]?.last_activity_at
+  const since = updates.length ? updates.map((u) => u.first_seen_at).sort()[0] : null
+
+  return (
+    <div className={`${THEME} hts-tracker ${trackerSans.className} ${trackerDisplay.variable} flex w-full flex-1 flex-col bg-base-200`}>
+      {renderSchemaJsonLd({
+        "@type": "CollectionPage",
+        name: "Latest US Tariff Updates",
+        url: URL,
+        description: UPDATES_DEFINITION,
+        ...(latest ? { dateModified: latest } : {}),
+        publisher: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
+        mainEntity: {
+          "@type": "ItemList",
+          itemListElement: updates.slice(0, 50).map((u, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            url: `${URL}/${u.slug}`,
+            name: u.title,
+          })),
+        },
+      })}
+      {renderSchemaJsonLd({
+        "@type": "FAQPage",
+        mainEntity: UPDATES_FAQS.map(({ question, answer }) => ({
+          "@type": "Question",
+          name: question,
+          acceptedAnswer: { "@type": "Answer", text: answer },
+        })),
+      })}
+      {renderSchemaJsonLd({
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "HTS Hero", item: `https://${config.domainName}` },
+          { "@type": "ListItem", position: 2, name: "Tariff updates", item: URL },
+        ],
+      })}
+
+      <div className={`${mk.container} flex flex-col gap-16 pb-20 pt-8`}>
+        {/* The title and, beside it, the sign-up; the updates straight under them, in the first screen */}
+        <div className="flex flex-col gap-6">
+          <header className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
+            <div className="flex max-w-3xl flex-col gap-4">
+              <span className={tt.eyebrow("primary")}>US tariff updates</span>
+              <h1 className={`${tt.display} text-4xl font-semibold leading-tight text-base-content sm:text-5xl sm:leading-none`}>Latest US Tariff Updates</h1>
+              <p className="text-base leading-relaxed text-base-content/70">{UPDATES_DEFINITION}</p>
+              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-base-content/60">
+                <span>
+                  <strong className="font-semibold text-base-content">{updates.length}</strong> tariff actions{since ? ` since ${formatDay(since)}` : ""}
+                </span>
+                <span aria-hidden>·</span>
+                <span>
+                  <strong className="font-semibold text-base-content">{SOURCE_LIST.length}</strong> official sources, checked every 15 minutes
+                </span>
+                {latest && (
+                  <>
+                    <span aria-hidden>·</span>
+                    <span>Latest {formatDay(latest)}</span>
+                  </>
+                )}
+                <span aria-hidden>·</span>
+                <a href="/tariff-updates/feed.xml" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                  <RssIcon className="h-3.5 w-3.5" aria-hidden />
+                  RSS
+                </a>
+              </p>
+              {/* The Tariff Tracker's offer, right under the heading */}
+              <div className="mt-2">
+                <TrackerCtaRow boxed />
+              </div>
+            </div>
+            <section aria-labelledby="subscribe" className={`${tt.panel} flex flex-col gap-3 p-6`}>
+              <h2 id="subscribe" className={`${tt.title} m-0`}>
+                Get Every New Update by Email
+              </h2>
+              <p className="m-0 text-sm leading-relaxed text-base-content/70">A plain english summary with the official documents, as it happens or weekly. Free.</p>
+              <SubscribeForm source="tariff-updates" compact />
+            </section>
+          </header>
+
+          <UpdatesList updates={updates} />
+        </div>
+
+        <section aria-labelledby="sources" className="flex flex-col gap-6">
+          <SectionHeader kicker="Sources" title="Where these updates come from" titleId="sources">
+            Official US government publications only. Each update links to every document it&apos;s based on.
+          </SectionHeader>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {SOURCE_LIST.map((s) => (
+              <li key={s.id} className={`${tt.panel} flex flex-col gap-2 p-6`}>
+                <a href={s.href} target="_blank" rel="noopener noreferrer" className={`${tt.title} hover:text-primary hover:underline underline-offset-4`}>
+                  {s.label}
+                </a>
+                <p className="text-sm leading-relaxed text-base-content/70">{s.note}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className={`${tt.panel} flex flex-wrap items-center justify-between gap-4 p-7`}>
+          <div className="flex max-w-2xl flex-col gap-1">
+            <h2 className={tt.title}>What does an update mean for your import?</h2>
+            <p className="text-sm text-base-content/70">
+              Enter an HTS code and country of origin to see every duty that applies today, line by line. Free, no account needed.
+            </p>
+          </div>
+          <Link href="/duty-calculator" className={ui.button({ variant: "primary" })}>
+            Open the Tariff Calculator
+            <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          </Link>
+        </section>
+
+        <section aria-labelledby="faq" className="flex flex-col gap-6">
+          <SectionHeader kicker="FAQ" title="About these tariff updates" titleId="faq" />
+          <FaqList faqs={UPDATES_FAQS} />
+        </section>
+      </div>
+    </div>
+  )
+}

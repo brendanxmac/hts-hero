@@ -4,6 +4,7 @@ import { usitcHtsFileViewerTabUrl } from "@/libs/usitc-hts-file-url";
 import { mono } from "@/components/ui/font";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import * as ui from "@/components/ui/styles";
+import * as tt from "@/components/ui/styles/tracker";
 import type { SectionChapter } from "./types";
 
 // Links to the USITC's section and chapter notes for this line
@@ -42,13 +43,13 @@ export function LegalNotes({
             href={usitcHtsFileViewerTabUrl(link.file)}
             target="_blank"
             rel="noopener noreferrer"
-            className={`${ui.card} group flex items-start gap-3 p-4 transition-colors hover:border-primary/40`}
+            className={`${tt.panel} overflow-hidden group flex items-start gap-3 p-5 transition-colors hover:border-primary/40`}
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary" aria-hidden>
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden>
               <DocumentTextIcon className="h-5 w-5" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className={`${ui.cardTitle} block group-hover:text-primary`}>{link.title}</span>
+              <span className={`${tt.title} block group-hover:text-primary`}>{link.title}</span>
               <span className={`${ui.bodySm} mt-0.5 block line-clamp-2`}>{link.description}</span>
             </span>
             <ArrowTopRightOnSquareIcon className="h-4 w-4 shrink-0 text-base-content/60 group-hover:text-primary" aria-hidden />

@@ -15,9 +15,9 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { BreadcrumbsProvider, useBreadcrumbs } from "./BreadcrumbsContext";
-import Modal from "../components/Modal";
-import { Explore } from "../components/Explore";
-import type { NavigatableElement } from "../components/Elements";
+import { Explore } from "../components/hts-explorer/Explore";
+import { ExplorerDialog } from "../components/hts-explorer/ExplorerDialog";
+import type { NavigatableElement } from "../components/hts-explorer/types";
 import type { ExplorerSurface } from "../libs/explorer-surface";
 
 interface ExploreModalContextValue {
@@ -113,16 +113,15 @@ export function ExploreModalProvider({ children }: { children: ReactNode }) {
 
       <BreadcrumbsProvider>
         <ModalBreadcrumbSetter register={setModalBreadcrumbsRef} />
-        {isOpen && (
-          <Modal isOpen={isOpen} setIsOpen={setIsOpen} size="viewport">
-            <Explore
-              explorerSurface={explorerSurface}
-              onSearchInputMount={(el) => {
-                exploreSearchInputRef.current = el;
-              }}
-            />
-          </Modal>
-        )}
+        <ExplorerDialog open={isOpen} onClose={closeExplore} label="HTS explorer">
+          <Explore
+            explorerSurface={explorerSurface}
+            dialog={{ title: "HTS Explorer", onClose: closeExplore }}
+            onSearchInputMount={(el) => {
+              exploreSearchInputRef.current = el;
+            }}
+          />
+        </ExplorerDialog>
       </BreadcrumbsProvider>
     </>
   );

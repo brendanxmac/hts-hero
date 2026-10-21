@@ -11,7 +11,7 @@ export function Segmented<T extends string>({
   compact,
 }: {
   label: string;
-  options: readonly { id: T; label: string }[];
+  options: readonly { id: T; label: string; count?: number }[];
   value: T;
   onChange: (value: T) => void;
   compact?: boolean;

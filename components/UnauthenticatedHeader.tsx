@@ -145,10 +145,10 @@ const UnauthenticatedHeader = () => {
 
       {/* Mobile menu - Rendered outside header */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden">
+        <div className="fixed inset-0 z-100 md:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-base-content/20 backdrop-blur-sm"
+            className="fixed inset-0 bg-base-content/20 backdrop-blur-xs"
             onClick={() => setIsOpen(false)}
           />
 

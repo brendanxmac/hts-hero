@@ -7,11 +7,13 @@ import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import { CtaPanel } from "../cta/CtaPanel";
 import { Callout } from "./Callout";
+import { CountryImports } from "./CountryImports";
 import { RevisionTable } from "./RevisionTable";
 import { TariffChangesTable } from "./TariffChangesTable";
 
 // How markdown renders in a post: every element mapped onto the design system, plus the
-// components a post can use by name (<Callout>, <Cta>, <TariffChangesTable>, <RevisionTable>).
+// components a post can use by name (<Callout>, <Cta>, <TariffChangesTable>, <RevisionTable>,
+// <CountryImports>).
 
 // A heading's plain text, for its anchor id
 const nodeText = (node: ReactNode): string => {
@@ -63,7 +65,7 @@ export const mdxComponents = {
   ),
   // Inline code is how a post marks HTS codes and Chapter 99 headings: mono, so the digits line up
   code: ({ children }: ComponentPropsWithoutRef<"code">) => (
-    <code className={`${mono.className} rounded bg-base-200 px-1 py-0.5 text-sm text-base-content`}>{children}</code>
+    <code className={`${mono.className} rounded-sm bg-base-200 px-1 py-0.5 text-sm text-base-content`}>{children}</code>
   ),
   pre: ({ children }: ComponentPropsWithoutRef<"pre">) => (
     <pre className={`${ui.card} overflow-x-auto p-5 text-sm leading-relaxed [&_code]:bg-transparent [&_code]:p-0`}>
@@ -102,4 +104,5 @@ export const mdxComponents = {
   Cta: ({ kind }: { kind: CtaKind }) => <CtaPanel kind={kind} />,
   TariffChangesTable,
   RevisionTable,
+  CountryImports,
 };

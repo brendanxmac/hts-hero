@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic"
 // Runs the comparison again as a new comparison (e.g. after re-parsing or
 // re-reading the change record). Reviews of unchanged changes carry over.
 // Uses each revision's active attempt.
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

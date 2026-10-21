@@ -8,7 +8,7 @@ const proseThemeClasses =
   "prose-h1:text-lg prose-h2:text-base prose-h3:text-sm " +
   "prose-p:text-base-content/80 prose-li:text-base-content/80 prose-td:text-base-content/80 " +
   "prose-strong:text-base-content prose-strong:font-semibold " +
-  "prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline " +
+  "prose-a:text-primary prose-a:font-medium prose-a:no-underline prose-a:hover:underline " +
   "prose-code:rounded-md prose-code:bg-base-200 prose-code:px-1 prose-code:py-0.5 prose-code:text-sm prose-code:font-normal prose-code:text-base-content/90 prose-code:before:content-none prose-code:after:content-none " +
   "prose-pre:bg-base-200 prose-pre:border prose-pre:border-base-300 prose-pre:rounded-lg " +
   "prose-blockquote:border-l-4 prose-blockquote:border-primary/50 prose-blockquote:bg-base-200/40 prose-blockquote:py-0.5 prose-blockquote:not-italic prose-blockquote:text-base-content/75 " +

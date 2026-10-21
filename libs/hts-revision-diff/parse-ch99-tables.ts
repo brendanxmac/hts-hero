@@ -22,6 +22,7 @@ const clean = (text: string) =>
     text
       .replace(/\.{4,}|(?:\.\s){3,}\.?/g, " ") // dot leaders
       .replace(/<br\s*\/?>/gi, " ")
+      .replace(/\[(\d{1,2}\/)\]\([^)]*\)/g, "$1") // footnote markers as links: [1/](#)
       .replace(/<\/?[a-z][^>]*>/gi, "")
       .replace(/\*\*|__/g, "")
       .replace(/\\([\\`*_{}[\]()#+\-.!$|>~])/g, "$1")
@@ -62,6 +63,19 @@ const defaultColumns = (count: number): Partial<Record<Column, number>> => {
   return { heading: 0, description: 1 }
 }
 
+// Footnote markers at the end of a cell ("… subchapter 1/", "<sup>1/</sup>", "1/ 2/"),
+// removed from the text
+const TRAILING_MARKER = /(?:^|\s+)(?:<sup>)?(\d{1,2})\/(?:<\/sup>)?\s*$/
+export const takeTrailingMarkers = (cell: string) => {
+  const markers: string[] = []
+  let text = cell
+  for (let m = text.match(TRAILING_MARKER); m; m = text.match(TRAILING_MARKER)) {
+    markers.unshift(m[1])
+    text = text.slice(0, m.index).trimEnd()
+  }
+  return { text, markers }
+}
+
 export interface ParsedHeadings {
   rows: (HeadingFields & { sort_order: number })[]
   warnings: ParseWarning[]
@@ -70,7 +84,11 @@ export interface ParsedHeadings {
 export const parseCh99HeadingTables = (markdown: string): ParsedHeadings => {
   const rows: ParsedHeadings["rows"] = []
   const warnings: ParseWarning[] = []
-  const footnotes = new Map<string, string>()
+  // Footnote readings per page: marker → texts. Markers are numbered per page ("2/" can
+  // mean different things on different pages), and a page can have stray "1/ …" lines
+  // (a rate cell the conversion split off), so a row takes the reading on its own page
+  // that's most common across the document.
+  const footnoteReadings: { page: number | null; marker: string; text: string }[] = []
   let page: number | null = null
   let columns: Partial<Record<Column, number>> | null = null
   let header: string[] | null = null
@@ -114,7 +132,10 @@ export const parseCh99HeadingTables = (markdown: string): ParsedHeadings => {
       }
       // Footnotes printed below the table: "1/ See subchapter III statistical note 1."
       const fn = clean(trimmed.replace(/^[-*]\s+/, "")).match(FOOTNOTE_LINE)
-      if (fn) footnotes.set(fn[1], fn[2])
+      if (fn) {
+        const text = fn[2].replace(/\s*\**\s*Note:\s*The shaded areas indicate the provision has expired\.?\**\s*$/i, "").trim()
+        if (text) footnoteReadings.push({ page, marker: fn[1], text })
+      }
       continue
     }
     if (isSeparatorRow(trimmed)) continue
@@ -131,6 +152,10 @@ export const parseCh99HeadingTables = (markdown: string): ParsedHeadings => {
       if (fromHeader.heading !== undefined && fromHeader.description !== undefined) columns = fromHeader
       continue
     }
+
+    // What's left of a two-row header after a page break ("1 General | Special | 2" read
+    // as a row): only column numbers and labels, no heading or text
+    if (cells.filter(Boolean).every((c) => /^(?:\d|general|special|rates of duty|\d\s+general)$/i.test(c))) continue
 
     const cols = columns ?? defaultColumns(cells.length)
     const cell = (c: Column) => (cols[c] !== undefined ? (cells[cols[c]!] ?? "") : "")
@@ -151,7 +176,7 @@ export const parseCh99HeadingTables = (markdown: string): ParsedHeadings => {
       sort_order: rows.length,
       htsno: code,
       stat_suffix: (cell("stat").match(/\b\d{2}\b/) ?? [""])[0],
-      indent: 0, // not recoverable from the converted table; set by the Claude check
+      indent: 0, // not recoverable from the converted table; set by the Claude check, if it's run
       description,
       general: cell("general"),
       special: cell("special"),
@@ -162,11 +187,39 @@ export const parseCh99HeadingTables = (markdown: string): ParsedHeadings => {
     })
   }
 
-  // Attach footnotes by their markers ("1/") in any cell
+  const frequency = new Map<string, number>()
+  for (const r of footnoteReadings) frequency.set(`${r.marker}|${r.text}`, (frequency.get(`${r.marker}|${r.text}`) ?? 0) + 1)
+  const mostCommon = (readings: typeof footnoteReadings) =>
+    readings.sort((a, b) => (frequency.get(`${b.marker}|${b.text}`) ?? 0) - (frequency.get(`${a.marker}|${a.text}`) ?? 0))[0]?.text
+  // The reading on the row's page; failing that, the next page that has one (a table can
+  // continue onto a page before its footnotes); failing that, the marker's text only if
+  // it reads the same everywhere (a marker that means different things on different
+  // pages is left off rather than guessed)
+  const footnoteFor = (rowPage: number | null, marker: string) => {
+    const ofMarker = footnoteReadings.filter((r) => r.marker === marker)
+    const onPage = ofMarker.filter((r) => r.page === rowPage)
+    if (onPage.length) return mostCommon(onPage)
+    const later = ofMarker.filter((r) => rowPage !== null && r.page !== null && r.page > rowPage)
+    const nextPage = later.length ? Math.min(...later.map((r) => r.page!)) : null
+    if (nextPage !== null) return mostCommon(later.filter((r) => r.page === nextPage))
+    return new Set(ofMarker.map((r) => r.text)).size === 1 ? ofMarker[0].text : undefined
+  }
+
+  // Attach footnotes by their markers ("1/") in any cell. The conversion often leaves the
+  // marker printed after the dot leaders at the end of the description, or puts it in the
+  // units column: it's moved out of those cells into the footnotes.
   for (const row of rows) {
-    const text = [row.description, row.general, row.special, row.other].join(" ")
-    const markers = Array.from(new Set(Array.from(text.matchAll(/(?:^|\s|\D)(\d{1,2})\//g)).map((m) => m[1])))
-    row.footnotes = markers.filter((m) => footnotes.has(m)).map((m) => `${m}/ ${footnotes.get(m)}`)
+    const description = takeTrailingMarkers(row.description)
+    const units = takeTrailingMarkers(row.units)
+    row.description = description.text.replace(/\s*\.{2,}$/, "") // what's left of the dot leaders
+    row.units = units.text
+    const text = [row.general, row.special, row.other].join(" ")
+    const inRates = Array.from(text.matchAll(/(?:^|\s|\D)(\d{1,2})\//g)).map((m) => m[1])
+    const markers = Array.from(new Set([...description.markers, ...units.markers, ...inRates]))
+    row.footnotes = markers.flatMap((m) => {
+      const text = footnoteFor(row.page, m)
+      return text ? [`${m}/ ${text}`] : []
+    })
   }
 
   if (!tablesSeen) {

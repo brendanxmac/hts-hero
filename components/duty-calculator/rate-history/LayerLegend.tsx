@@ -23,7 +23,7 @@ export const LayerLegend = ({
         onMouseLeave={() => onHighlight?.(null)}
       >
         <span
-          className="h-2.5 w-2.5 rounded shrink-0"
+          className="h-2.5 w-2.5 rounded-sm shrink-0"
           style={{ background: layer.color }}
           aria-hidden
         />

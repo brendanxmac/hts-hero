@@ -16,10 +16,8 @@ async function fetchRulingDetailFromCbp(rulingNumber: string): Promise<unknown> 
   return response.json();
 }
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { rulingNumber: string } }
-) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ rulingNumber: string }> }) {
+  const params = await props.params;
   const { rulingNumber } = params;
 
   if (!rulingNumber) {

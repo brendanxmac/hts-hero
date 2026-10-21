@@ -6,7 +6,8 @@ import { calculate } from "../../tariffs/engine-v2/calculate"
 import { AllRules } from "../../tariffs/engine-v2/data"
 import { CalculationResult } from "../../tariffs/engine-v2/types"
 import { validateRules } from "../../tariffs/engine-v2/validate"
-import { getLatestVerifiedRevision } from "../../tariffs/engine-v2/revisions"
+import { getRevision, getVerifiedRevisions } from "../../tariffs/engine-v2/revisions"
+import ch99Archive from "../../tariffs/engine-v2/data/ch99-first-seen.json"
 import { calculateHistory, ruleChangeDates } from "../../tariffs/engine-v2/history"
 import { HtsLine } from "./hts-fixture"
 import { findNoteCitations } from "../../tariffs/engine-v2/citations"
@@ -117,7 +118,13 @@ describe("engine-v2 real data: corrections over the legacy engine", () => {
 // ============================================================
 describe("engine-v2 real data", () => {
   it("has no validation errors in verified revisions", () => {
-    const { errors } = validateRules(AllRules, { checkFrom: getLatestVerifiedRevision().from })
+    // From the earliest verified revision, checked against when each heading was
+    // in the HTS (data/ch99-first-seen.json)
+    const { errors } = validateRules(AllRules, {
+      checkFrom: getVerifiedRevisions()[0].from,
+      archive: ch99Archive,
+      revisionStart: (name) => getRevision(name)?.from,
+    })
     if (errors.length) console.log(errors.join("\n"))
     expect(errors).toHaveLength(0)
   })
@@ -1285,10 +1292,15 @@ describe("engine-v2 real data: 2026 Rev 18", () => {
     }
   })
 
+  // Updated Oct 2026 (correction, approved): these are exclusions of products "described in" the
+  // numbers (20(vvv)(iii)), so 9903.88.69 now applies once the goods are confirmed to be that
+  // product. Before, it applied to every Chinese good under the number.
   it("recognizes the 20(vvv) exclusions under the July 1, 2026 statistical numbers", () => {
-    expect(applying(calc("8413.91.90.39", "CN", "2026-07-15")).includes("9903.88.69")).toBe(true)
-    expect(applying(calc("3926.90.99.15", "CN", "2026-07-15")).includes("9903.88.69")).toBe(true)
-    expect(applying(calc("8413.91.90.39", "CN", "2026-06-15")).includes("9903.88.69")).toBe(false)
+    const exclusion = yes("9903.88.69")
+    expect(applying(calc("8413.91.90.39", "CN", "2026-07-15", exclusion)).includes("9903.88.69")).toBe(true)
+    expect(applying(calc("3926.90.99.15", "CN", "2026-07-15", exclusion)).includes("9903.88.69")).toBe(true)
+    expect(applying(calc("8413.91.90.39", "CN", "2026-06-15", exclusion)).includes("9903.88.69")).toBe(false)
+    expect(applying(calc("8413.91.90.39", "CN", "2026-07-15")).includes("9903.88.69")).toBe(false)
   })
 
   it("files lean beef trimmings under the additional quota (9903.54.02) when confirmed, at $0", () => {
@@ -1442,5 +1454,826 @@ describe("engine-v2 real data: Section 338 – Canada import bans (Sep 29, 2026)
     const bulk = calc("2203.00.00.30", "CA", AFTER, { alcoholInBulk: true })
     expect(bans(banned)).toEqual(["ban:canada-338-alcohol-packaged"])
     expect(banned.totalDuty).toBe(bulk.totalDuty)
+  })
+})
+
+// ============================================================
+// Corrections (Oct 2026): civil aircraft agreements and note 19 lists, from Rev 5 on
+// ============================================================
+describe("engine-v2 real data: civil aircraft agreements and Russian aluminum (corrections)", () => {
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null },
+      answers,
+    })
+  const metals = (result: CalculationResult) => applying(result).filter((c) => c.startsWith("9903.82"))
+  const AIRCRAFT: [string, string][] = [["GB", "9903.96.01"], ["DE", "9903.02.76"], ["JP", "9903.96.02"], ["KR", "9903.02.81"]]
+
+  // U.S. notes 35(a), 2(v)(xxii), 35(b), 2(v)(xxiv)(b). The EU and Korea headings outlive
+  // IEEPA: Proclamation 11021 clause (10) keeps the Section 232 civil aircraft agreements.
+  // Was: metals duty applied to all four (the exemptions weren't modeled).
+  it("civil aircraft steel tube of the UK, EU, Japan or Korea drops the metals duty once confirmed", () => {
+    for (const asOf of ["2026-04-10", "2026-08-01"]) {
+      for (const [country, heading] of AIRCRAFT) {
+        expect(metals(calc("7304.31.30.00", country, asOf, "Free")).length).toBe(1)
+        const confirmed = calc("7304.31.30.00", country, asOf, "Free", { [`confirm:${heading}`]: true })
+        expect(applying(confirmed)).toContain(heading)
+        expect(metals(confirmed)).toEqual([])
+        expect(confirmed.totalDuty).toBe(0)
+      }
+    }
+  })
+
+  it("the agreements don't cover other countries' aircraft goods", () => {
+    const confirmed = calc("7304.31.30.00", "FR", "2026-04-10", "Free", { "confirm:9903.96.01": true, "confirm:9903.96.02": true })
+    expect(metals(confirmed)).toEqual(["9903.82.02"])
+  })
+
+  // Was: 7612.10.00 and 123 other note 19(i)–(k) codes were missing from the 9903.85.68 list,
+  // so Russian aluminum containers paid 50% under 9903.82.02 instead of 200%
+  it("Russian aluminum containers (19(j)) get 9903.85.68 at 200% instead of 9903.82.02", () => {
+    const v2 = calc("7612.10.00.00", "RU", "2026-04-10", "2.4%", { "confirm:9903.85.68": true })
+    expect(applying(v2)).toContain("9903.85.68")
+    expect(applying(v2)).not.toContain("9903.82.02")
+    expect(v2.lines.find((l) => l.code === "9903.85.68").amount).toBe(20_000)
+  })
+
+  // Note 16(a): "Except as provided in headings 9903.85.67 and 9903.85.68, headings
+  // 9903.82.02–9903.82.17 [later .19, .26] provide …". Was: only 9903.82.02 gave way to both,
+  // so e.g. 7616.99.51.30 of Russia paid 9903.85.67 (200%) plus 9903.82.09 (25%).
+  it("every 9903.82 heading gives way to the Russia headings 9903.85.67/.68 (note 16(a))", () => {
+    for (const asOf of ["2026-04-10", "2026-06-10", "2026-08-01"]) {
+      const casting = calc("7616.99.51.30", "RU", asOf, "2.5%")
+      expect(applying(casting)).toContain("9903.85.67")
+      expect(applying(casting).filter((c) => c.startsWith("9903.82"))).toEqual([])
+      const steel = calc("7308.20.00.35", "RU", asOf, "Free", { "confirm:9903.85.68": true })
+      expect(applying(steel)).toContain("9903.85.68")
+      expect(applying(steel).filter((c) => c.startsWith("9903.82"))).toEqual([])
+    }
+  })
+
+  // 7616.99.51.30/.40/.90 are in 19(g) (9903.85.67) and listed by name in 19(j) (9903.85.68).
+  // Was: both 200% duties applied once .68 was confirmed.
+  it("Russian goods on both 19(g) and 19(j) pay 200% once: .67, or .68 when confirmed as derivatives", () => {
+    for (const asOf of ["2026-03-15", "2026-04-10"]) {
+      const confirmed = calc("7616.99.51.30", "RU", asOf, "2.5%", { aluminumContentPct: 90, "confirm:9903.85.68": true })
+      const russia = applying(confirmed).filter((c) => /^9903\.85\./.test(c))
+      expect(russia).toEqual(["9903.85.68"])
+      expect(applying(calc("7616.99.51.30", "RU", asOf, "2.5%", { aluminumContentPct: 90 })).filter((c) => /^9903\.85\./.test(c))).toEqual(["9903.85.67"])
+    }
+  })
+})
+
+// ============================================================
+// 2026 Rev 4 (Feb 25 – Apr 8, 2026): the Section 232 metals structure before Proclamation
+// 11021, which replaced it for entries on or after April 6, 2026. $10,000, 100 units.
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 4 (before Proclamation 11021)", () => {
+  const BEFORE = "2026-03-15"
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null },
+      answers,
+    })
+  const amount = (result: CalculationResult, code: string) => round(result.lines.find((l) => l.code === code)?.amount ?? 0)
+  const status = (result: CalculationResult, code: string) => result.lines.find((l) => l.code === code)?.status
+
+  it("is a verified revision", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSRev4")
+  })
+
+  it("steel mill product (16(j)): 9903.81.87 at 50% of the full value until April 5, then 9903.82.02", () => {
+    for (const asOf of [BEFORE, "2026-04-05"]) {
+      const v2 = calc("7208.51.00.30", "DE", asOf, "Free", { steelContentPct: 100 })
+      expect(applying(v2)).toEqual(["9903.03.06", "9903.81.87"])
+      expect(v2.totalDuty).toBe(5000)
+    }
+    const after = calc("7208.51.00.30", "DE", "2026-04-06", "Free", { steelContentPct: 100 })
+    expect(applying(after)).toEqual(["9903.03.06", "9903.82.02"])
+    expect(after.totalDuty).toBe(5000)
+  })
+
+  it("Section 122 still applies to the non-steel content (note 2(aa)(v)(a)); unanswered, to the full value", () => {
+    const answered = calc("7208.51.00.30", "DE", BEFORE, "Free", { steelContentPct: 95 })
+    expect(amount(answered, "9903.03.01")).toBe(50) // 10% of the $500 non-steel content
+    const unanswered = calc("7208.51.00.30", "DE", BEFORE, "Free")
+    expect(status(unanswered, "9903.03.06")).toBe("needsAnswer")
+    expect(amount(unanswered, "9903.03.01")).toBe(1000)
+    expect(unanswered.totalDuty).toBe(6000)
+  })
+
+  it("chapter 73 derivative (16(m)) pays on the steel content; 122 on the rest (HowTariffsWork §19.1)", () => {
+    const v2 = calc("7326.90.86.88", "CN", BEFORE, "2.9%", { steelContentPct: 60 })
+    expect(amount(v2, "9903.81.90")).toBe(3000)
+    expect(amount(v2, "9903.88.03")).toBe(2500)
+    expect(round(v2.lines.find((l) => l.code === "9903.03.06").basisValue)).toBe(6000)
+    expect(amount(v2, "9903.03.01")).toBe(400)
+    expect(round(v2.totalDuty)).toBe(6190)
+    // Unanswered, the steel duty needs an answer
+    expect(status(calc("7326.90.86.88", "CN", BEFORE, "2.9%"), "9903.81.90")).toBe("needsAnswer")
+  })
+
+  it("duty history steps up on April 6, when 232 moves to the full value", () => {
+    const rates = RATES["7326.90.86.88"]
+    const segments = calculateHistory(
+      AllRules,
+      { htsCode: "7326.90.86.88", country: "CN", asOf: "2026-02-25", customsValue: VALUE, quantity: UNITS,
+        baseRates: { general: rates.general, special: null, other: null }, answers: { steelContentPct: 60 } },
+      "2026-02-25",
+      "2026-04-23",
+    )
+    expect(segments.map((s) => [s.from, round(s.result.totalDuty)])).toEqual([["2026-02-25", 6190], ["2026-04-06", 7790]])
+    expect(segments[1].changes.map((c) => [c.kind, c.code])).toEqual([
+      ["added", "9903.82.02"], ["removed", "9903.81.90"], ["removed", "9903.03.01"],
+    ])
+  })
+
+  it("16(l)/(m) split 7317.00.55: the listed statistical numbers go to .89, the rest to .90", () => {
+    expect(applying(calc("7317.00.55.03", "DE", BEFORE, "Free", { steelContentPct: 90 }))).toContain("9903.81.89")
+    const other = calc("7317.00.55.18", "DE", BEFORE, "Free", { steelContentPct: 90 })
+    expect(applying(other)).toContain("9903.81.90")
+    expect(applying(other)).not.toContain("9903.81.89")
+  })
+
+  it("16(n) derivative outside chapter 73 pays on the steel content (9903.81.91)", () => {
+    const v2 = calc("8431.49.90.95", "DE", BEFORE, "Free", { steelContentPct: 40 })
+    expect(amount(v2, "9903.81.91")).toBe(2000)
+    expect(amount(v2, "9903.03.01")).toBe(600)
+  })
+
+  it("bumper stampings (16(l)(C), chapter 87) pay steel on the full value, aluminum (19(k)) on its content", () => {
+    const v2 = calc("8708.10.30.50", "DE", BEFORE, "2.5%", { steelContentPct: 50, aluminumContentPct: 10 })
+    expect(amount(v2, "9903.81.89")).toBe(5000)
+    expect(amount(v2, "9903.85.08")).toBe(500)
+    expect(applying(v2)).not.toContain("9903.85.04") // 8708.10.30.50 is listed by name in 19(k)
+    expect(amount(v2, "9903.03.01")).toBe(400) // 122 on everything but the steel and aluminum content
+  })
+
+  it("UK steel: 9903.81.94 at 25% (no 95% test before April 6)", () => {
+    const v2 = calc("7208.51.00.30", "GB", BEFORE, "Free", { steelContentPct: 100 })
+    expect(applying(v2)).toEqual(["9903.03.06", "9903.81.94"])
+    expect(v2.totalDuty).toBe(2500)
+  })
+
+  it("Mexican steel pays the full 50% (no USMCA rate before April 6)", () => {
+    expect(calc("7208.51.00.30", "MX", BEFORE, "Free", { steelContentPct: 100 }).totalDuty).toBe(5000)
+  })
+
+  it("derivatives processed abroad from U.S.-melted steel (9903.81.92) pay no steel duty; 122 still spares the steel content", () => {
+    const v2 = calc("7326.90.86.88", "DE", BEFORE, "2.9%", { steelContentPct: 60, "confirm:9903.81.92": true })
+    expect(status(v2, "9903.81.90")).toBe("excluded")
+    expect(applying(v2)).toContain("9903.81.92")
+    expect(amount(v2, "9903.03.01")).toBe(400)
+  })
+
+  it("FTZ goods admitted under privileged foreign status before June 4, 2025 file 9903.81.88 instead (same duty)", () => {
+    const before = calc("7208.51.00.30", "DE", BEFORE, "Free", { steelContentPct: 100, ftzPrivilegedForeignAdmissionDate: "2025-05-01" })
+    expect(applying(before)).toEqual(["9903.03.06", "9903.81.88"])
+    expect(before.totalDuty).toBe(5000)
+    const after = calc("7208.51.00.30", "DE", BEFORE, "Free", { steelContentPct: 100, ftzPrivilegedForeignAdmissionDate: "2025-07-01" })
+    expect(applying(after)).toEqual(["9903.03.06", "9903.81.87"])
+  })
+
+  it("aluminum (19(g)) and chapter 76 derivatives (19(j)) pay on the aluminum content", () => {
+    expect(amount(calc("7601.10.30.00", "DE", BEFORE, "2.6%", { aluminumContentPct: 100 }), "9903.85.02")).toBe(5000)
+    const container = calc("7612.10.00.00", "DE", BEFORE, "2.4%", { aluminumContentPct: 80 })
+    expect(amount(container, "9903.85.07")).toBe(4000)
+    expect(amount(container, "9903.03.01")).toBe(200)
+    // 7616.99.51.30 is in 19(g) (7616.99.51) and listed by name in 19(j): 9903.85.07 only
+    const casting = calc("7616.99.51.30", "DE", BEFORE, "2.5%", { aluminumContentPct: 90 })
+    expect(applying(casting)).toContain("9903.85.07")
+    expect(applying(casting)).not.toContain("9903.85.02")
+  })
+
+  it("U.S.-smelted aluminum derivatives (9903.85.09) pay no aluminum duty", () => {
+    const v2 = calc("7612.10.00.00", "DE", BEFORE, "2.4%", { aluminumContentPct: 80, "confirm:9903.85.09": true })
+    expect(status(v2, "9903.85.07")).toBe("excluded")
+    expect(round(v2.totalDuty)).toBe(440) // 2.4% base + 122 on the $2,000 non-aluminum content
+  })
+
+  it("Russian aluminum: 9903.85.67/.68 at 200% of the full value, or their FTZ twins .69/.70", () => {
+    const ingot = calc("7601.10.30.00", "RU", BEFORE, "2.6%", { aluminumContentPct: 100 })
+    expect(amount(ingot, "9903.85.67")).toBe(20000)
+    expect(status(ingot, "9903.85.02")).toBe("excluded")
+    const container = { aluminumContentPct: 80, "confirm:9903.85.68": true }
+    expect(amount(calc("7612.10.00.00", "RU", BEFORE, "2.4%", container), "9903.85.68")).toBe(20000)
+    const ftz = calc("7612.10.00.00", "RU", BEFORE, "2.4%", { ...container, ftzPrivilegedForeignAdmissionDate: "2023-01-01" })
+    expect(applying(ftz)).toContain("9903.85.70")
+    expect(applying(ftz)).not.toContain("9903.85.68")
+    // After April 6, .69/.70 are gone and .67 applies regardless of the FTZ date
+    expect(applying(calc("7601.10.30.00", "RU", "2026-04-10", "2.6%", { ftzPrivilegedForeignAdmissionDate: "2023-01-01" }))).toContain("9903.85.67")
+  })
+
+  it("goods on both 16(n) and 19(k) pay both, each on its own content; dropped from the lists on April 6", () => {
+    const before = calc("0402.99.68.00", "DE", BEFORE, "Free", { steelContentPct: 5, aluminumContentPct: 10 })
+    expect(amount(before, "9903.81.91")).toBe(250)
+    expect(amount(before, "9903.85.08")).toBe(500)
+    expect(amount(before, "9903.03.01")).toBe(850)
+    const after = calc("0402.99.68.00", "DE", "2026-04-10", "Free", { steelContentPct: 5, aluminumContentPct: 10 })
+    expect(applying(after).filter((c) => c.startsWith("9903.8"))).toEqual([])
+  })
+
+  it("UK derivatives on 16(u) and 19(s) pay 25% of each content", () => {
+    const v2 = calc("0402.99.68.00", "GB", BEFORE, "Free", { steelContentPct: 5, aluminumContentPct: 10 })
+    expect(amount(v2, "9903.81.98")).toBe(125)
+    expect(amount(v2, "9903.85.15")).toBe(250)
+  })
+
+  it("copper (36(b)): 9903.78.01 at 50% of the copper content, with the 9903.78.02 line for the rest", () => {
+    const v2 = calc("8544.42.90.90", "DE", BEFORE, "2.6%", { copperContentPct: 40 })
+    expect(amount(v2, "9903.78.01")).toBe(2000)
+    expect(applying(v2)).toContain("9903.78.02")
+    expect(amount(v2, "9903.03.01")).toBe(600)
+    expect(round(v2.totalDuty)).toBe(2860)
+    // 8544.42.90 is also in 19(k): with aluminum content, 122 spares both contents
+    const both = calc("8544.42.90.90", "DE", BEFORE, "2.6%", { copperContentPct: 40, aluminumContentPct: 10 })
+    expect(amount(both, "9903.85.08")).toBe(500)
+    expect(amount(both, "9903.03.01")).toBe(500)
+  })
+
+  it("auto parts under their own 232 heading don't pay the old metals duties (notes 33, 38, 39)", () => {
+    const v2 = calc("8708.10.30.50", "CN", BEFORE, "2.5%", { steelContentPct: 50, aluminumContentPct: 10, "confirm:9903.94.05": true })
+    expect(status(v2, "9903.81.89")).toBe("excluded")
+    expect(status(v2, "9903.85.08")).toBe("excluded")
+    expect(applying(v2)).toContain("9903.94.05")
+    expect(status(v2, "9903.03.01")).toBe("excluded")
+  })
+
+  it("civil aircraft of the UK, EU, Japan and Korea don't pay the old metals duties once confirmed", () => {
+    const cases: [string, string, string][] = [["GB", "9903.96.01", "9903.81.94"], ["DE", "9903.02.76", "9903.81.87"], ["JP", "9903.96.02", "9903.81.87"], ["KR", "9903.02.81", "9903.81.87"]]
+    for (const [country, exemption, metals] of cases) {
+      expect(applying(calc("7304.31.30.00", country, BEFORE, "Free", { steelContentPct: 100 }))).toContain(metals)
+      const confirmed = calc("7304.31.30.00", country, BEFORE, "Free", { steelContentPct: 100, [`confirm:${exemption}`]: true })
+      expect(status(confirmed, metals)).toBe("excluded")
+      expect(applying(confirmed)).toContain(exemption)
+      expect(confirmed.totalDuty).toBe(0)
+    }
+  })
+
+  it("non-metal goods are unchanged across April 6", () => {
+    expect(calc("0711.90.30.00", "DE", BEFORE, "8%").totalDuty).toBe(calc("0711.90.30.00", "DE", "2026-04-10", "8%").totalDuty)
+  })
+})
+
+// ============================================================
+// Correction (Oct 2026): Section 301 exclusions (9903.88.69/.70) for described products need a
+// confirmation; whole-number exclusions don't. Extended through Nov 9, 2026 (90 FR 55232).
+// ============================================================
+describe("engine-v2 real data: Section 301 China exclusions (corrections)", () => {
+  const calc = (htsCode: string, answers: Record<string, unknown> = {}, asOf = "2026-08-01") =>
+    calculate(AllRules, {
+      htsCode, country: "CN", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "3%", special: null, other: null }, answers: { steelContentPct: 60, ...answers },
+    })
+  const confirmed = { "confirm:9903.88.69": true }
+
+  it("steel cable hooks (20(vvv)(iii)(41)): 25% unless confirmed as the excluded product", () => {
+    expect(applying(calc("7326.90.86.88"))).toContain("9903.88.03")
+    const hooks = calc("7326.90.86.88", confirmed)
+    expect(applying(hooks)).toContain("9903.88.69")
+    expect(applying(hooks)).not.toContain("9903.88.03")
+  })
+
+  it("the other two added exclusions: rear-view mirrors and telecom conductors", () => {
+    for (const code of ["7009.10.00.00", "8544.42.20.00"]) {
+      expect(applying(calc(code))).toContain("9903.88.03")
+      expect(applying(calc(code, confirmed))).not.toContain("9903.88.03")
+    }
+  })
+
+  it("whole-number exclusions (20(vvv)(i)) apply without a question", () => {
+    const v2 = calc("8483.50.90.40")
+    expect(applying(v2)).toContain("9903.88.69")
+    expect(v2.questions.some((q) => q.input.id === "confirm:9903.88.69")).toBe(false)
+  })
+
+  it("asks only for described-product codes", () => {
+    expect(calc("7326.90.86.88").questions.some((q) => q.input.id === "confirm:9903.88.69")).toBe(true)
+  })
+
+  it("solar wafer equipment (20(www)) needs confirmation too", () => {
+    expect(applying(calc("8486.10.00.00"))).not.toContain("9903.88.70")
+    expect(applying(calc("8486.10.00.00", { "confirm:9903.88.70": true }))).toContain("9903.88.70")
+  })
+
+  it("the exclusions end with Nov 9, 2026", () => {
+    expect(applying(calc("8483.50.90.40", {}, "2026-11-09"))).toContain("9903.88.69")
+    expect(applying(calc("8483.50.90.40", {}, "2026-11-10"))).not.toContain("9903.88.69")
+  })
+})
+
+// ============================================================
+// 2026 Rev 3 (Feb 12 – Feb 25, 2026): the IEEPA duties until they ended on Feb 24, 2026
+// (EO 14389; CSMS # 67834313). $10,000, 100 units.
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 3 (IEEPA, until Feb 24, 2026)", () => {
+  const BEFORE = "2026-02-20"
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}, claimedPreference?: string) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: claimedPreference ? `Free (${claimedPreference})` : null, other: null },
+      answers, claimedPreference,
+    })
+  const amount = (result: CalculationResult, code: string) => round(result.lines.find((l) => l.code === code)?.amount ?? 0)
+  const ieepa = (result: CalculationResult) => applying(result).filter((c) => /^9903\.0[12]\./.test(c))
+  const TEXTILE = "6307.90.98.70" // 7%, not on the Annex II list
+
+  it("is a verified revision", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSRev3")
+  })
+
+  it("Chinese steel hardware: fentanyl 10%, reciprocal 10% on the non-steel content; Section 122 from Feb 24", () => {
+    const before = calc("7326.90.86.88", "CN", BEFORE, "2.9%", { steelContentPct: 60 })
+    expect(amount(before, "9903.01.24")).toBe(1000)
+    expect(amount(before, "9903.01.25")).toBe(400) // 10% of the $4,000 non-steel content (2(v)(vii))
+    expect(amount(before, "9903.81.90")).toBe(3000)
+    expect(round(before.totalDuty)).toBe(7190)
+    const after = calc("7326.90.86.88", "CN", "2026-02-24", "2.9%", { steelContentPct: 60 })
+    expect(ieepa(after)).toEqual([])
+    expect(round(after.totalDuty)).toBe(6190)
+  })
+
+  it("ends on Feb 24: Feb 23 still pays IEEPA, Feb 24 pays Section 122 instead", () => {
+    expect(amount(calc(TEXTILE, "VN", "2026-02-23", "7%"), "9903.02.69")).toBe(2000)
+    const after = calc(TEXTILE, "VN", "2026-02-24", "7%")
+    expect(ieepa(after)).toEqual([])
+    expect(amount(after, "9903.03.01")).toBe(1000)
+  })
+
+  it("country rates and the 10% baseline", () => {
+    expect(amount(calc(TEXTILE, "VN", BEFORE, "7%"), "9903.02.69")).toBe(2000)
+    expect(amount(calc(TEXTILE, "IN", BEFORE, "7%"), "9903.02.26")).toBe(2500) // India's Russian-oil 25% ended Feb 7
+    expect(amount(calc(TEXTILE, "GB", BEFORE, "7%"), "9903.02.66")).toBe(1000)
+    expect(amount(calc(TEXTILE, "SG", BEFORE, "7%"), "9903.01.25")).toBe(1000)
+    // China's 34% (9903.01.63) is suspended, so China pays the baseline plus fentanyl; Macau only the baseline
+    expect(ieepa(calc(TEXTILE, "CN", BEFORE, "7%"))).toEqual(["9903.01.24", "9903.01.25"])
+    expect(ieepa(calc(TEXTILE, "MO", BEFORE, "7%"))).toEqual(["9903.01.25"])
+  })
+
+  it("deals top up to 15% including the base rate; 15% or more pays nothing extra", () => {
+    for (const [country, code] of [["DE", "9903.02.20"], ["JP", "9903.02.73"], ["KR", "9903.02.80"], ["CH", "9903.02.83"], ["LI", "9903.02.88"]]) {
+      const v2 = calc(TEXTILE, country, BEFORE, "7%")
+      expect(ieepa(v2)).toEqual([code])
+      expect(amount(v2, code)).toBe(800)
+    }
+    expect(ieepa(calc("6109.10.00.12", "JP", BEFORE, "16.5%"))).toEqual(["9903.02.72"])
+  })
+
+  it("Brazil: 40% plus its 10% reciprocal; Section 232 goods are exempt from the 40% in full", () => {
+    expect(ieepa(calc(TEXTILE, "BR", BEFORE, "7%"))).toEqual(["9903.01.77", "9903.02.09"])
+    expect(round(calc(TEXTILE, "BR", BEFORE, "7%").totalDuty)).toBe(5700)
+    const hardware = calc("7326.90.86.88", "BR", BEFORE, "2.9%", { steelContentPct: 60 })
+    expect(applying(hardware)).toContain("9903.01.83")
+    expect(amount(hardware, "9903.01.77")).toBe(0)
+    expect(amount(hardware, "9903.02.09")).toBe(400) // the reciprocal still applies to the non-steel content
+  })
+
+  it("Canada and Mexico: 35% / 25%, 10% on energy and potash, nothing under USMCA, nothing on 232 steel or wood", () => {
+    expect(amount(calc(TEXTILE, "CA", BEFORE, "7%"), "9903.01.10")).toBe(3500)
+    expect(amount(calc("2709.00.20.10", "CA", BEFORE, "Free"), "9903.01.13")).toBe(1000)
+    expect(amount(calc("3104.20.00.10", "CA", BEFORE, "Free"), "9903.01.15")).toBe(1000)
+    expect(amount(calc("3104.20.00.10", "MX", BEFORE, "Free"), "9903.01.05")).toBe(1000)
+    expect(amount(calc(TEXTILE, "MX", BEFORE, "7%"), "9903.01.01")).toBe(2500)
+    expect(ieepa(calc(TEXTILE, "CA", BEFORE, "7%", {}, "S"))).toEqual(["9903.01.14", "9903.01.26"])
+    // Note 16(i): no fentanyl duty on Section 232 steel; the reciprocal doesn't apply to Mexico
+    const steel = calc("7208.51.00.30", "MX", BEFORE, "Free", { steelContentPct: 100 })
+    expect(applying(steel)).not.toContain("9903.01.01")
+    expect(round(steel.totalDuty)).toBe(5000)
+    // Note 2(j): no 9903.01.10 on Section 232 wood
+    expect(applying(calc("9401.61.40.11", "CA", BEFORE, "Free"))).not.toContain("9903.01.10")
+    // Transshipped goods: 40% in lieu of 35%
+    const transshipped = calc(TEXTILE, "CA", BEFORE, "7%", { "confirm:9903.01.16": true })
+    expect(ieepa(transshipped)).toEqual(["9903.01.16", "9903.01.26"])
+  })
+
+  it("exemptions: Annex II, donations, Column 2 countries, U.S. content of 20% or more", () => {
+    expect(ieepa(calc("8471.30.01.00", "VN", BEFORE, "Free"))).toEqual(["9903.01.32"])
+    expect(applying(calc(TEXTILE, "CN", BEFORE, "7%", { isDonation: true })).filter((c) => ["9903.01.24", "9903.01.25"].includes(c))).toEqual([])
+    expect(ieepa(calc(TEXTILE, "RU", BEFORE, "7%"))).toEqual(["9903.01.29"])
+    expect(amount(calc(TEXTILE, "VN", BEFORE, "7%", { usContentPct: 30 }), "9903.02.69")).toBe(1400) // 20% of $7,000
+    expect(amount(calc(TEXTILE, "VN", BEFORE, "7%", { usContentPct: 10 }), "9903.02.69")).toBe(2000)
+  })
+
+  it("transshipment (9903.02.01): 40% in lieu of the country rate", () => {
+    const v2 = calc(TEXTILE, "VN", BEFORE, "7%", { "confirm:9903.02.01": true })
+    expect(ieepa(v2)).toEqual(["9903.02.01"])
+    expect(amount(v2, "9903.02.01")).toBe(4000)
+  })
+
+  it("EU steel hardware: the deal top-up applies to the non-steel content only", () => {
+    const v2 = calc("7326.90.86.88", "DE", BEFORE, "2.9%", { steelContentPct: 60 })
+    expect(amount(v2, "9903.02.20")).toBe(484) // (15% − 2.9%) of $4,000
+  })
+
+  // Correction (Oct 2026): 9903.88.15 (List 4A, 7.5%) listed 8507.60.00, which U.S. note 20(s)
+  // doesn't in any revision (Rev 3 to Rev 20); lithium-ion batteries are in note 31 (9903.91.06)
+  it("Chinese lithium-ion batteries don't pay the List 4A 7.5% (9903.88.15)", () => {
+    for (const asOf of [BEFORE, "2026-04-10", "2026-08-01"]) {
+      expect(applying(calc("8507.60.00.20", "CN", asOf, "3.4%"))).not.toContain("9903.88.15")
+    }
+  })
+
+  it("Section 232 autos and semiconductors don't pay the reciprocal duty; China's fentanyl duty still applies to autos", () => {
+    const part = calc("8708.10.30.50", "CN", BEFORE, "2.5%", { steelContentPct: 50, "confirm:9903.94.05": true })
+    expect(applying(part)).toContain("9903.01.24")
+    expect(applying(part)).not.toContain("9903.01.25")
+    expect(ieepa(calc("8471.50.01.50", "TW", BEFORE, "Free", { "confirm:9903.79.01": true })).filter((c) => c !== "9903.01.32")).toEqual([])
+  })
+})
+
+// 2026HTSRev2 backfill (from 2026HTSRev3's change record): India's extra 25% (U.S. note 2(z),
+// 9903.01.84–.89) applies to entries before Feb 7, 2026 (EO 14384). Rev 2 starts Jan 30.
+describe("engine-v2 real data: IEEPA India (2026HTSRev2 backfill)", () => {
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null }, answers,
+    })
+
+  it("adds 25% on top of India's reciprocal 25%, Jan 30 to Feb 6, 2026", () => {
+    for (const asOf of ["2026-01-30", "2026-02-06"]) {
+      const r = calc("6109.10.00.12", "IN", asOf, "16.5%")
+      expect(applying(r)).toEqual(["9903.01.84", "9903.02.26"])
+      expect(round(r.totalDuty)).toBe(6650)
+    }
+  })
+
+  it("ends for entries on or after Feb 7, 2026", () => {
+    for (const asOf of ["2026-02-07", "2026-02-12"]) {
+      const r = calc("6109.10.00.12", "IN", asOf, "16.5%")
+      expect(applying(r)).toEqual(["9903.02.26"])
+      expect(round(r.totalDuty)).toBe(4150)
+    }
+  })
+
+  it("doesn't apply to other countries", () => {
+    expect(applying(calc("6109.10.00.12", "VN", "2026-02-05", "16.5%"))).toEqual(["9903.02.69"])
+  })
+
+  it("exempts Annex II products (2(z)(ii))", () => {
+    const r = calc("2841.90.20.00", "IN", "2026-02-05", "3.1%")
+    expect(applying(r)).toContain("9903.01.86")
+    expect(applying(r)).not.toContain("9903.01.84")
+  })
+
+  it("exempts the 2(v)(iii)(b) particular articles once confirmed", () => {
+    expect(applying(calc("0811.90.80.40", "IN", "2026-02-05", "14.5%"))).toContain("9903.01.84")
+    const confirmed = calc("0811.90.80.40", "IN", "2026-02-05", "14.5%", { "confirm:9903.01.86": true })
+    expect(applying(confirmed)).toContain("9903.01.86")
+    expect(applying(confirmed)).not.toContain("9903.01.84")
+  })
+
+  it("exempts Section 232 articles, the whole article (2(z)(iii)–(xiii))", () => {
+    const r = calc("7208.51.00.30", "IN", "2026-02-05", "Free", { steelContentPct: 100 })
+    expect(applying(r)).toContain("9903.01.87")
+    expect(applying(r)).not.toContain("9903.01.84")
+    expect(round(r.totalDuty)).toBe(5000)
+  })
+
+  it("exempts donations", () => {
+    const r = calc("6109.10.00.12", "IN", "2026-02-05", "16.5%", { isDonation: true })
+    expect(applying(r)).toContain("9903.01.88")
+    expect(applying(r)).not.toContain("9903.01.84")
+  })
+
+  it("2026HTSRev2 is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSRev2")
+  })
+})
+
+// 2026HTSRev1 (Jan 16–29, 2026): Rev 2's change record has no chapter 99 changes, and USITC's
+// archived chapter 99 PDFs for Rev 1 and Rev 2 are word-for-word identical, so Rev 2's records
+// already hold. See PROGRESS.md (Oct 8).
+describe("engine-v2 real data: 2026HTSRev1 verified (no chapter 99 changes)", () => {
+  it("2026HTSRev1 is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSRev1")
+  })
+
+  it("India's 25% applies in Rev 1 too", () => {
+    const r = calculate(AllRules, {
+      htsCode: "6109.10.00.12", country: "IN", asOf: "2026-01-20", customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "16.5%", special: null, other: null },
+    })
+    expect(applying(r)).toEqual(["9903.01.84", "9903.02.26"])
+    expect(round(r.totalDuty)).toBe(6650)
+  })
+})
+
+// 2026HTSBasic backfill (from 2026HTSRev1's change record): Proclamation 11002 (Section 232
+// semiconductors) is effective Jan 15, 2026, Basic's last day. Basic runs from Dec 31, 2025.
+describe("engine-v2 real data: 2026HTSBasic backfill (Section 232 semiconductors)", () => {
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null }, answers,
+    })
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))!
+
+  it("the semiconductor duty starts Jan 15, 2026", () => {
+    const answers = { "confirm:9903.79.01": true }
+    expect(applying(calc("8471.50.01.10", "TW", "2026-01-14", "Free", answers))).not.toContain("9903.79.01")
+    const on = calc("8471.50.01.10", "TW", "2026-01-15", "Free", answers)
+    expect(applying(on)).toEqual(["9903.79.01"])
+    expect(round(on.totalDuty)).toBe(2500)
+  })
+
+  it("keeps the Basic text of the headings PP 11002 renumbered, until Jan 15", () => {
+    expect(recordOn("9903.02.74", "2026-01-10").description.includes("(v)(xix) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2026-01-15").description.includes("(v)(xx) of")).toBe(true)
+    expect(recordOn("9903.01.33", "2026-01-10").description.includes("semiconductor articles")).toBe(false)
+    expect(recordOn("9903.01.33", "2026-01-15").description.includes("semiconductor articles")).toBe(true)
+  })
+
+  it("other duties are unchanged in Basic", () => {
+    expect(round(calc("6109.10.00.12", "VN", "2026-01-10", "16.5%").totalDuty)).toBe(3650)
+    const india = calc("6109.10.00.12", "IN", "2025-12-31", "16.5%")
+    expect(applying(india)).toEqual(["9903.01.84", "9903.02.26"])
+    expect(round(india.totalDuty)).toBe(6650)
+  })
+
+  it("2026HTSBasic is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2026HTSBasic")
+  })
+})
+
+// 2025HTSRev32 backfill (from 2026HTSBasic's change record). The Switzerland–Liechtenstein deal
+// applies from Nov 14, 2025 (Commerce/USTR notice, 90 FR 59281; retroactive, published Dec 18).
+// Rev 32 runs from Dec 5, 2025.
+describe("engine-v2 real data: 2025HTSRev32 backfill (Switzerland and Liechtenstein deal)", () => {
+  const calc = (htsCode: string, country: string, asOf: string, general: string, claimedPreference?: string) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null }, claimedPreference,
+    })
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))!
+
+  it("Switzerland pays its 39% reciprocal rate before Nov 14, 2025, and the deal from then on", () => {
+    const before = calc("6109.10.00.12", "CH", "2025-11-13", "16.5%")
+    expect(applying(before)).toEqual(["9903.02.58"])
+    expect(round(before.totalDuty)).toBe(5550)
+    expect(applying(calc("6109.10.00.12", "CH", "2025-11-14", "16.5%"))).toEqual(["9903.02.82"])
+    expect(round(calc("6109.10.00.12", "CH", "2025-12-10", "16.5%").totalDuty)).toBe(1650)
+    // Base duty under 15%: topped up to 15%
+    expect(round(calc("6307.90.98.70", "CH", "2025-11-14", "7%").totalDuty)).toBe(1500)
+  })
+
+  it("the Swiss, Liechtenstein and Korea reciprocal headings start Aug 7, 2025 (EO 14326)", () => {
+    expect(applying(calc("6109.10.00.12", "CH", "2025-08-06", "16.5%"))).toEqual(["9903.01.25"])
+    expect(applying(calc("6109.10.00.12", "CH", "2025-08-07", "16.5%"))).toEqual(["9903.02.58"])
+    expect(applying(calc("6109.10.00.12", "KR", "2025-08-07", "16.5%"))).toEqual(["9903.02.56"])
+  })
+
+  it("Liechtenstein pays its 15% reciprocal rate before Nov 14, 2025", () => {
+    expect(applying(calc("6109.10.00.12", "LI", "2025-11-13", "16.5%"))).toEqual(["9903.02.36"])
+    expect(applying(calc("6307.90.98.70", "LI", "2025-11-14", "7%"))).toEqual(["9903.02.88"])
+  })
+
+  it("the 10% baseline excepts the Swiss and Liechtenstein headings before the deal", () => {
+    expect(recordOn("9903.01.25", "2025-11-13").exceptions).toContain("9903.02.58")
+    expect(recordOn("9903.01.25", "2025-11-13").exceptions).not.toContain("9903.02.82")
+    expect(recordOn("9903.01.25", "2025-11-14").exceptions).toContain("9903.02.82")
+  })
+
+  it("9903.02.74–.77 take Proclamation 10999's corrected cross-references from Oct 14 and Nov 1, 2025", () => {
+    expect(recordOn("9903.02.74", "2025-10-13").description.includes("(v)(xvi) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2025-10-14").description.includes("(v)(xvii) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2025-11-01").description.includes("(v)(xix) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2025-12-20").description.includes("(v)(xix) of")).toBe(true)
+    expect(recordOn("9903.02.74", "2026-01-15").description.includes("(v)(xx) of")).toBe(true)
+  })
+
+  it("other countries are unchanged in Rev 32", () => {
+    expect(round(calc("6109.10.00.12", "VN", "2025-12-10", "16.5%").totalDuty)).toBe(3650)
+  })
+
+  it("2025HTSRev32 is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2025HTSRev32")
+  })
+})
+
+// Section 301 – Nicaragua (U.S. note 29, 9903.89.01; USTR, 90 FR 57807): 0% in 2026, 10% in
+// 2027, 15% from 2028, not on CAFTA-DR originating goods
+describe("engine-v2 real data: Section 301 Nicaragua", () => {
+  const calc = (asOf: string, claimedPreference?: string) =>
+    calculate(AllRules, {
+      htsCode: "6109.10.00.12", country: "NI", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "16.5%", special: "Free (AU,BH,CL,CO,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: null }, claimedPreference,
+    })
+  const line = (asOf: string, claimedPreference?: string) => calc(asOf, claimedPreference).lines.find((l) => l.code === "9903.89.01" && l.status === "applies")
+
+  it("starts Jan 1, 2026 at 0%", () => {
+    expect(line("2025-12-31")).toBe(undefined)
+    expect(line("2026-01-05")!.amount).toBe(0)
+  })
+
+  it("rises to 10% in 2027 and 15% from 2028", () => {
+    expect(round(line("2027-01-05")!.amount)).toBe(1000)
+    expect(round(line("2028-01-05")!.amount)).toBe(1500)
+  })
+
+  it("doesn't apply to CAFTA-DR originating goods", () => {
+    expect(line("2027-01-05", "P")).toBe(undefined)
+  })
+})
+
+// 2025HTSRev31 backfill (from 2025HTSRev32's change record): the U.S.-Korea deal (Commerce/USTR
+// notice, 90 FR 55964) applies to autos and parts from Nov 1, 2025 and to everything else from
+// Nov 14, 2025, both retroactive. Rev 31 runs from Nov 28, 2025.
+describe("engine-v2 real data: 2025HTSRev31 backfill (U.S.-Korea deal)", () => {
+  const calc = (htsCode: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country: "KR", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null }, answers,
+    })
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))!
+
+  it("Korea pays its 15% reciprocal rate before Nov 14, 2025, and the deal from then on", () => {
+    const before = calc("6109.10.00.12", "2025-11-13", "16.5%")
+    expect(applying(before)).toEqual(["9903.02.56"])
+    expect(round(before.totalDuty)).toBe(3150)
+    expect(applying(calc("6109.10.00.12", "2025-11-14", "16.5%"))).toEqual(["9903.02.79"])
+    expect(round(calc("6109.10.00.12", "2025-12-01", "16.5%").totalDuty)).toBe(1650)
+    expect(round(calc("6307.90.98.70", "2025-11-13", "7%").totalDuty)).toBe(2200)
+    expect(round(calc("6307.90.98.70", "2025-11-14", "7%").totalDuty)).toBe(1500)
+  })
+
+  it("Korean vehicles get 15% including base duty from Nov 1, 2025", () => {
+    const answers = { "confirm:9903.94.61": true }
+    const before = calc("8703.23.01.90", "2025-10-31", "2.5%", answers)
+    expect(applying(before)).toContain("9903.94.01")
+    expect(round(before.totalDuty)).toBe(2750)
+    const after = calc("8703.23.01.90", "2025-11-01", "2.5%", answers)
+    expect(applying(after)).toContain("9903.94.61")
+    expect(round(after.totalDuty)).toBe(1500)
+  })
+
+  it("Korean upholstered furniture pays the general 25% before Nov 14, 2025", () => {
+    expect(applying(calc("9401.61.40.11", "2025-11-13", "Free"))).toContain("9903.76.02")
+    const after = calc("9401.61.40.11", "2025-11-14", "Free")
+    expect(applying(after)).toContain("9903.76.23")
+    expect(round(after.totalDuty)).toBe(1500)
+  })
+
+  it("keeps Rev 31's text: 9903.01.25 excepts 9903.02.56, and 9903.94.01 doesn't name the Korea headings", () => {
+    const baseline = recordOn("9903.01.25", "2025-11-13")
+    expect(baseline.exceptions).toContain("9903.02.56")
+    expect(baseline.exceptions).not.toContain("9903.02.79")
+    expect(baseline.description.includes("9903.02.02–9903.02.78")).toBe(true)
+    expect(recordOn("9903.94.01", "2025-10-31").description.includes("9903.94.60")).toBe(false)
+    // Correction: the verified record's text predated Rev 32; from Nov 1 it names .60 and .61
+    expect(recordOn("9903.94.01", "2025-11-01").description.includes("9903.94.60, and 9903.94.61")).toBe(true)
+  })
+
+  it("2025HTSRev31 is verified", () => {
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2025HTSRev31")
+  })
+})
+
+// 2025HTSRev30 backfill (from 2025HTSRev31's change record): USTR extended the Section 301 China
+// product exclusions from Nov 30, 2025 (90 FR 55232). Text only. Rev 30 runs from Nov 21, 2025.
+describe("engine-v2 real data: 2025HTSRev30 backfill (Section 301 exclusions extended)", () => {
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))!
+  const calc = (asOf: string) =>
+    calculate(AllRules, {
+      htsCode: "8483.50.90.40", country: "CN", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "2.8%", special: null, other: null },
+    })
+
+  it("the exclusions read \"through November 29, 2025\" until the extension on Nov 30", () => {
+    for (const code of ["9903.88.69", "9903.88.70"]) {
+      expect(recordOn(code, "2025-11-29").description.includes("through November 29, 2025")).toBe(true)
+      expect(recordOn(code, "2025-11-30").description.includes("through November 9, 2026")).toBe(true)
+    }
+  })
+
+  it("the exclusions apply without a break", () => {
+    for (const asOf of ["2025-11-25", "2025-11-29", "2025-11-30"]) expect(applying(calc(asOf))).toContain("9903.88.69")
+  })
+
+  it("2025HTSRev30 is verified", () => {
+    // Was "is first verified from 2025HTSRev30, Nov 21, 2025" until 2025HTSRev29 was verified
+    expect(getVerifiedRevisions().map((r) => r.name)).toContain("2025HTSRev30")
+  })
+})
+
+// 2025HTSRev29 backfill (from 2025HTSRev30's change record): EO 14361 (90 FR 54467, signed Nov 20,
+// 2025) took Brazil's agricultural products out of the 40% IEEPA Brazil duty (9903.01.77) from
+// Nov 13, 2025, retroactively: 238 subheadings added to 2(x)(iii), renumbered (iii)(a) (9903.01.81),
+// and new heading 9903.01.90 for 2(x)(iii)(b). Rev 29 runs from Nov 17, so all of it has the new
+// rules. Nov 12 is in Rev 28, whose other IEEPA changes aren't backfilled yet, so those cases check
+// the Brazil 40% lines only.
+describe("engine-v2 real data: 2025HTSRev29 backfill (EO 14361, Brazil agricultural exemptions)", () => {
+  const recordOn = (code: string, date: string) =>
+    AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= date) && (!t.effective.to || t.effective.to > date))
+  const listOn = (id: string, date: string) =>
+    AllRules.lists.find((l) => l.id === id)!.versions.find((v) => (!v.effective.from || v.effective.from <= date) && (!v.effective.to || v.effective.to > date))!
+  const calc = (htsCode: string, country: string, asOf: string, general: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general, special: null, other: null },
+      answers,
+    })
+  const brazil = (result: CalculationResult) => applying(result).filter((c) => /^9903\.01\.(7[7-9]|8\d|90)$/.test(c))
+  const COFFEE = "0901.11.00.15"
+  const BEEF = "0202.30.50.25"
+  const ACAI = "2008.99.21.40"
+  const ORANGE_JUICE = "2009.11.00.20"
+  const TEXTILE = "6307.90.98.70"
+
+  it("coffee and beef pay the 40% until Nov 12 and are exempt under 9903.01.81 from Nov 13", () => {
+    for (const [code, general] of [[COFFEE, "Free"], [BEEF, "26.4%"]]) {
+      expect(brazil(calc(code, "BR", "2025-11-12", general))).toEqual(["9903.01.77"])
+      expect(brazil(calc(code, "BR", "2025-11-13", general))).toEqual(["9903.01.81"])
+      expect(brazil(calc(code, "BR", "2025-11-18", general))).toEqual(["9903.01.81"])
+    }
+    expect(round(calc(COFFEE, "BR", "2025-11-18", "Free").totalDuty)).toBe(0)
+    expect(round(calc(BEEF, "BR", "2025-11-18", "26.4%").totalDuty)).toBe(2640) // base duty only
+  })
+
+  it("açaí pays the 40% until Nov 12 and, once confirmed, is exempt under the new 9903.01.90 from Nov 13", () => {
+    const acai = { "confirm:9903.01.90": true }
+    expect(brazil(calc(ACAI, "BR", "2025-11-12", "Free", acai))).toEqual(["9903.01.77"])
+    expect(recordOn("9903.01.90", "2025-11-12")).toBe(undefined)
+    expect(brazil(calc(ACAI, "BR", "2025-11-13", "Free", acai))).toEqual(["9903.01.90"])
+    const rev29 = calc(ACAI, "BR", "2025-11-18", "Free", acai)
+    expect(brazil(rev29)).toEqual(["9903.01.90"])
+    expect(round(rev29.totalDuty)).toBe(1000) // the 10% reciprocal 9903.02.09 still applies
+    // Unconfirmed, the 40% applies (decided by the user, Oct 9, 2026: see the next describe)
+    expect(brazil(calc(ACAI, "BR", "2025-11-18", "Free"))).toEqual(["9903.01.77"])
+  })
+
+  it("goods already on Rev 29's list stay exempt, and other goods keep paying, on both sides of Nov 13", () => {
+    for (const asOf of ["2025-11-12", "2025-11-13", "2025-11-18"]) {
+      expect(brazil(calc(ORANGE_JUICE, "BR", asOf, "Free"))).toEqual(["9903.01.81"])
+      expect(brazil(calc(TEXTILE, "BR", asOf, "7%"))).toEqual(["9903.01.77"])
+      expect(brazil(calc(COFFEE, "CO", asOf, "Free"))).toEqual([])
+    }
+    expect(round(calc(TEXTILE, "BR", "2025-11-18", "7%").totalDuty)).toBe(5700)
+  })
+
+  it("keeps Rev 29's text and list before Nov 13", () => {
+    const before = recordOn("9903.01.77", "2025-11-12")!
+    expect(before.exceptions).not.toContain("9903.01.90")
+    expect(before.description.startsWith("Except for products described in headings 9903.01.78-9903.01.83, articles")).toBe(true)
+    expect(recordOn("9903.01.77", "2025-11-13")!.exceptions).toContain("9903.01.90")
+    expect(recordOn("9903.01.81", "2025-11-12")!.description.includes("subdivision (x)(iii) of")).toBe(true)
+    expect(recordOn("9903.01.81", "2025-11-13")!.description.includes("subdivision (x)(iii)(a) of")).toBe(true)
+    const rev29List = listOn("brazilExempt2xiiia", "2025-11-12").codes!
+    expect(rev29List.length).toBe(129)
+    expect(rev29List.includes("0901.11.00")).toBe(false)
+    expect(rev29List.includes("2009.11.00")).toBe(true)
+    expect(listOn("brazilExempt2xiiia", "2025-11-13").codes!.length).toBe(367)
+  })
+
+  it("is first verified from 2025HTSRev29, Nov 17, 2025", () => {
+    expect(getVerifiedRevisions()[0].name).toBe("2025HTSRev29")
+    expect(getVerifiedRevisions()[0].from).toBe("2025-11-17")
+  })
+})
+
+// The 11 particular articles of note 2(v)(iii)(b) (argiculturalArticlesExemptFromCertainTariffs)
+// are each narrower than their subheading ("Acai (classifiable in subheading 2008.99.21)"), so
+// every heading that exempts them needs confirming, as 9903.02.78 always did. Decided by the user,
+// Oct 9, 2026. A correction of verified data: 9903.01.90, 9903.03.04, 9903.05.04 and (for these 11)
+// 9903.05.87 applied without asking before.
+describe("engine-v2 real data: the 11 particular agricultural articles need confirming under every heading", () => {
+  const ACAI = "2008.99.21.40"
+  const calc = (htsCode: string, country: string, asOf: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: null, other: null },
+      answers,
+    })
+  const needs = (result: CalculationResult) => result.lines.filter((l) => l.status === "needsAnswer").map((l) => l.code)
+
+  for (const [code, country, asOf, duty] of [
+    ["9903.02.78", "VN", "2025-11-18", 2000], // reciprocal (unchanged)
+    ["9903.01.90", "BR", "2025-11-18", 5000], // IEEPA Brazil 40% (and its 10% reciprocal, also exempt via .78)
+    ["9903.03.04", "VN", "2026-03-15", 1000], // Section 122
+    ["9903.05.04", "BR", "2026-08-01", 3750], // Section 301 Brazil (and 301 forced labor, via .87)
+    ["9903.05.87", "VN", "2026-08-01", 1250], // Section 301 forced labor
+  ] as const) {
+    it(`${code} applies to açaí (${country}, ${asOf}) only once confirmed`, () => {
+      const unconfirmed = calc(ACAI, country, asOf)
+      expect(applying(unconfirmed)).not.toContain(code)
+      expect(needs(unconfirmed)).toContain(code)
+      expect(round(unconfirmed.totalDuty)).toBe(duty)
+      const confirmed = calc(ACAI, country, asOf, {
+        "confirm:9903.02.78": true, "confirm:9903.01.90": true, "confirm:9903.03.04": true,
+        "confirm:9903.05.04": true, "confirm:9903.05.87": true,
+      })
+      expect(applying(confirmed)).toContain(code)
+      expect(round(confirmed.totalDuty)).toBe(0)
+    })
+  }
+
+  it("the rest of note 52(c) (seeds for sowing, plywood) is still exempt without asking", () => {
+    expect(applying(calc("1207.40.00.00", "VN", "2026-08-01"))).toContain("9903.05.87")
   })
 })

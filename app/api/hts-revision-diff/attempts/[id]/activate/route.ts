@@ -7,7 +7,8 @@ import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 export const dynamic = "force-dynamic"
 
 // Makes this attempt the one used for its revision in new comparisons
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { db, denied } = await requireRevisionTool()
   if (denied) return denied
   try {

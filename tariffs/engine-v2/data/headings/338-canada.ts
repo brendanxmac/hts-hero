@@ -20,10 +20,10 @@ const EXCEPTIONS = ["9903.03.15", "9903.03.16"]
 // Column 2: "No change"
 const COLUMN2_FREE = { column2: { kind: "free" } }
 
-const duty = (code: string, subdivision: string, list: string, proclamation: string): Tariff => ({
+const duty = (code: string, subdivision: string, list: string, proclamation: string, name: string): Tariff => ({
   code,
   program: PROGRAM,
-  name: `Section 338 – Canada (note 51${subdivision})`,
+  name,
   description: `Articles the product of Canada as provided in subdivision ${subdivision} of U.S. note 51 to this subchapter`,
   scope: {
     countries: ["CA"],
@@ -46,9 +46,9 @@ const without232Exemption = (proclamation: string) => ({
 })
 
 export const headings: Tariff[] = [
-  ...tariffVersions(duty("9903.03.12", "(b)(1)", "canada338b1", "Proclamation 11046"), [without232Exemption("Proclamation 11064")]),
-  duty("9903.03.13", "(b)(2)", "canada338b2", "Proclamation 11047"),
-  ...tariffVersions(duty("9903.03.14", "(b)(3)", "canada338b3", "Proclamation 11048"), [without232Exemption("Proclamation 11065")]),
+  ...tariffVersions(duty("9903.03.12", "(b)(1)", "canada338b1", "Proclamation 11046", "Section 338 Canada: Alcohol, Cheese, Hides and Other Listed Products"), [without232Exemption("Proclamation 11064")]),
+  duty("9903.03.13", "(b)(2)", "canada338b2", "Proclamation 11047", "Section 338 Canada: Dairy, Sugar and Other Listed Products"),
+  ...tariffVersions(duty("9903.03.14", "(b)(3)", "canada338b3", "Proclamation 11048", "Section 338 Canada: Wood, Furniture, Machinery and Other Listed Products"), [without232Exemption("Proclamation 11065")]),
   {
     code: "9903.03.15",
     program: PROGRAM,

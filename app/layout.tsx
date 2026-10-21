@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Inter } from "next/font/google";
+import { trackerDisplay } from "@/components/ui/font";
 import { Viewport } from "next";
-import Script from "next/script";
 import { getSEOTags } from "@/libs/seo";
 import ClientLayout from "@/components/LayoutClient";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -31,7 +31,9 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="en" className={font.className}>
+    // The script below sets data-theme before React loads, so the client's <html> differs from the
+    // server's on purpose (suppressHydrationWarning covers this element's own attributes only)
+    <html lang="en" className={`${font.className} ${trackerDisplay.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -49,12 +51,6 @@ export default async function RootLayout({
             `,
           }}
         />
-        <Script
-          src="https://datafa.st/js/script.js"
-          data-website-id="dfid_V5rXpvcsDrMXlXyzXFwY5"
-          data-domain="htshero.com"
-          strategy="afterInteractive"
-        />
       </head>
       <body>
         <UserProvider>
@@ -69,7 +65,10 @@ export default async function RootLayout({
           </HtsSectionsProvider>
           {/* </GuideProvider> */}
         </UserProvider>
-        <GoogleAnalytics gaId="G-V2DRE5Y0NV" />
+        {/* Only the production deployment reports to GA — not local dev or Vercel previews */}
+        {process.env.VERCEL_ENV === "production" && (
+          <GoogleAnalytics gaId="G-V2DRE5Y0NV" />
+        )}
       </body>
     </html>
   );

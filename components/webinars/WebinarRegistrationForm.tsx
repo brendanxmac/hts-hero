@@ -143,7 +143,7 @@ export default function WebinarRegistrationForm({
 
   if (variant === "compact") {
     return (
-      <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 p-6">
+      <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-linear-to-br from-primary/5 via-base-100 to-secondary/5 p-6">
         <div className="absolute -top-16 -right-16 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-secondary/10 rounded-full blur-3xl" />
         <div className="relative text-center">
@@ -165,7 +165,7 @@ export default function WebinarRegistrationForm({
               placeholder="you@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="input input-bordered input-lg w-full sm:flex-1 bg-base-100 text-base"
+              className="input input-lg w-full sm:flex-1 bg-base-100 text-base"
               disabled={isSubmitting}
             />
             <button
@@ -192,7 +192,7 @@ export default function WebinarRegistrationForm({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 p-6 md:p-8">
+    <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-linear-to-br from-primary/5 via-base-100 to-secondary/5 p-6 md:p-8">
       <div className="absolute -top-16 -right-16 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-secondary/10 rounded-full blur-3xl" />
       <div className="relative">
@@ -220,7 +220,7 @@ export default function WebinarRegistrationForm({
             placeholder="you@company.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input input-bordered input-lg w-full bg-base-100 text-base"
+            className="input input-lg w-full bg-base-100 text-base"
             disabled={isSubmitting}
           />
 

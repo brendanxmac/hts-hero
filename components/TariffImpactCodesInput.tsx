@@ -115,17 +115,17 @@ export default function TariffImpactCodesInput({
             rows={1}
             onChange={handleInputChange}
             onScroll={handleScroll}
-            className="textarea text-sm sm:text-base w-full max-h-48 min-h-12 rounded-lg resize-none bg-transparent placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-2 overflow-y-auto"
+            className="textarea border-transparent text-sm sm:text-base w-full max-h-48 min-h-12 rounded-lg resize-none bg-transparent placeholder-base-content/30 focus:ring-0 focus:outline-hidden border-none p-2 overflow-y-auto"
           ></textarea>
 
           {/* Top fade overlay */}
           {showTopFade && (
-            <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-base-100 to-transparent pointer-events-none rounded-t-lg" />
+            <div className="absolute top-0 left-0 right-0 h-4 bg-linear-to-b from-base-100 to-transparent pointer-events-none rounded-t-lg" />
           )}
 
           {/* Bottom fade overlay */}
           {showBottomFade && (
-            <div className="absolute bottom-0 left-0 right-0 h-7 bg-gradient-to-t from-base-100 to-transparent pointer-events-none rounded-b-lg" />
+            <div className="absolute bottom-0 left-0 right-0 h-7 bg-linear-to-t from-base-100 to-transparent pointer-events-none rounded-b-lg" />
           )}
         </div>
 
@@ -195,7 +195,7 @@ export default function TariffImpactCodesInput({
 
               {onSubmit && (
                 <button
-                  className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-primary/90 text-primary-content text-xs font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-linear-to-r from-primary to-primary/90 text-primary-content text-xs font-semibold shadow-xs hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isValid === false || disabled}
                   onClick={() => {
                     onSubmit(value);

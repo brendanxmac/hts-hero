@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Webinar } from "@/libs/supabase/webinars";
+import { Select } from "@/components/ui/Select";
 
 interface Props {
   isOpen: boolean;
@@ -138,9 +139,9 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-10 px-4">
+    <div className="fixed inset-0 z-100 flex items-start justify-center pt-10 px-4">
       <div
-        className="fixed inset-0 bg-base-content/30 backdrop-blur-sm"
+        className="fixed inset-0 bg-base-content/30 backdrop-blur-xs"
         onClick={onClose}
       />
 
@@ -168,7 +169,7 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
           {/* Title */}
           <div>
             <label className="label">
-              <span className="label-text font-medium">
+              <span className="text-sm font-medium">
                 Title <span className="text-error">*</span>
               </span>
             </label>
@@ -179,15 +180,15 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
               value={form.title}
               onChange={handleChange}
               placeholder="HTS Classification Masterclass"
-              className="input input-bordered w-full"
+              className="input w-full"
             />
           </div>
 
           {/* Slug */}
           <div>
             <label className="label">
-              <span className="label-text font-medium">Slug</span>
-              <span className="label-text-alt text-base-content/50">
+              <span className="text-sm font-medium">Slug</span>
+              <span className="text-xs text-base-content/50">
                 {isEdit ? "Change will update URL" : "Auto-generated from title if empty"}
               </span>
             </label>
@@ -197,17 +198,17 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
               value={form.slug}
               onChange={handleChange}
               placeholder="hts-classification-masterclass"
-              className="input input-bordered w-full"
+              className="input w-full"
             />
           </div>
 
           {/* Description */}
           <div>
             <label className="label">
-              <span className="label-text font-medium">
+              <span className="text-sm font-medium">
                 Description <span className="text-error">*</span>
               </span>
-              <span className="label-text-alt text-base-content/50">
+              <span className="text-xs text-base-content/50">
                 Markdown supported
               </span>
             </label>
@@ -218,7 +219,7 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
               onChange={handleChange}
               rows={6}
               placeholder={"Join us for a deep dive into...\n\n## What you'll learn\n- Topic one\n- Topic two\n\n**Don't miss it!**"}
-              className="textarea textarea-bordered w-full font-mono text-sm"
+              className="textarea w-full font-mono text-sm"
             />
           </div>
 
@@ -226,10 +227,10 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="label">
-                <span className="label-text font-medium">
+                <span className="text-sm font-medium">
                   Date & Time (EST) <span className="text-error">*</span>
                 </span>
-                <span className="label-text-alt text-base-content/50">
+                <span className="text-xs text-base-content/50">
                   Eastern Time
                 </span>
               </label>
@@ -239,19 +240,19 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
                 required
                 value={form.scheduled_at}
                 onChange={handleChange}
-                className="input input-bordered w-full"
+                className="input w-full"
               />
             </div>
             <div>
               <label className="label">
-                <span className="label-text font-medium">Duration (min)</span>
+                <span className="text-sm font-medium">Duration (min)</span>
               </label>
               <input
                 type="number"
                 name="duration_minutes"
                 value={form.duration_minutes}
                 onChange={handleChange}
-                className="input input-bordered w-full"
+                className="input w-full"
               />
             </div>
           </div>
@@ -260,7 +261,7 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="label">
-                <span className="label-text font-medium">
+                <span className="text-sm font-medium">
                   Presenter Name <span className="text-error">*</span>
                 </span>
               </label>
@@ -270,12 +271,12 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
                 required
                 value={form.presenter_name}
                 onChange={handleChange}
-                className="input input-bordered w-full"
+                className="input w-full"
               />
             </div>
             <div>
               <label className="label">
-                <span className="label-text font-medium">Presenter Title</span>
+                <span className="text-sm font-medium">Presenter Title</span>
               </label>
               <input
                 type="text"
@@ -283,7 +284,7 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
                 value={form.presenter_title}
                 onChange={handleChange}
                 placeholder="Founder of HTS Hero"
-                className="input input-bordered w-full"
+                className="input w-full"
               />
             </div>
           </div>
@@ -291,7 +292,7 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
           {/* Graphic URL */}
           <div>
             <label className="label">
-              <span className="label-text font-medium">Cover Graphic URL</span>
+              <span className="text-sm font-medium">Cover Graphic URL</span>
             </label>
             <input
               type="url"
@@ -299,14 +300,14 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
               value={form.graphic_url}
               onChange={handleChange}
               placeholder="https://..."
-              className="input input-bordered w-full"
+              className="input w-full"
             />
           </div>
 
           {/* Join Link */}
           <div>
             <label className="label">
-              <span className="label-text font-medium">
+              <span className="text-sm font-medium">
                 Join Link (Zoom, Meet, etc.)
               </span>
             </label>
@@ -316,14 +317,14 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
               value={form.join_link}
               onChange={handleChange}
               placeholder="https://zoom.us/j/..."
-              className="input input-bordered w-full"
+              className="input w-full"
             />
           </div>
 
           {/* Promo Video */}
           <div>
             <label className="label">
-              <span className="label-text font-medium">
+              <span className="text-sm font-medium">
                 Promo Video URL (YouTube)
               </span>
             </label>
@@ -333,7 +334,7 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
               value={form.promo_video_url}
               onChange={handleChange}
               placeholder="https://youtube.com/watch?v=..."
-              className="input input-bordered w-full"
+              className="input w-full"
             />
           </div>
 
@@ -341,24 +342,27 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="label">
-                <span className="label-text font-medium">Status</span>
+                <span className="text-sm font-medium">Status</span>
               </label>
-              <select
+              <Select
                 name="status"
                 value={form.status}
-                onChange={handleChange}
-                className="select select-bordered w-full"
-              >
-                <option value="upcoming">Upcoming</option>
-                <option value="live">Live</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+                onChange={(status) => setForm((prev) => ({ ...prev, status }))}
+                options={[
+                  { value: "upcoming", label: "Upcoming" },
+                  { value: "live", label: "Live" },
+                  { value: "completed", label: "Completed" },
+                  { value: "cancelled", label: "Cancelled" },
+                ]}
+                label="Status"
+                className="w-full"
+                buttonClassName="h-12! rounded-lg! px-4!"
+              />
             </div>
             <div>
               <label className="label">
-                <span className="label-text font-medium">Max Registrants</span>
-                <span className="label-text-alt text-base-content/50">
+                <span className="text-sm font-medium">Max Registrants</span>
+                <span className="text-xs text-base-content/50">
                   Leave empty for unlimited
                 </span>
               </label>
@@ -368,7 +372,7 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
                 value={form.max_registrants}
                 onChange={handleChange}
                 placeholder="Unlimited"
-                className="input input-bordered w-full"
+                className="input w-full"
               />
             </div>
           </div>

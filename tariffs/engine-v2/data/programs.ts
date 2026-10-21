@@ -47,13 +47,32 @@ export const programs: Program[] = [
     legalBasis: ["Proclamation 11051"],
   },
   { id: "301-brazil", name: "Section 301 – Brazil", authority: "301" },
+  { id: "301-nicaragua", name: "Section 301 – Nicaragua", authority: "301" },
   { id: "301-forced-labor", name: "Section 301 – Forced Labor", authority: "301" },
+  // Still "deal": these exempt civil aircraft from Section 232 duties, which outlived IEEPA.
+  // The EU (9903.02.76) and Korea (9903.02.81) headings join from Feb 24, 2026, when their
+  // IEEPA role ended; Proclamation 11021 clause (10) keeps the 232 reductions.
   {
     id: "aircraft-agreements",
-    name: "Civil Aircraft Agreements (UK, Japan)",
+    name: "Civil Aircraft Agreements (United Kingdom, European Union, Japan, South Korea, Taiwan)",
     authority: "deal",
+    tradeDeal: true,
   },
-  { id: "deal-eu", name: "U.S.–EU Framework Agreement", authority: "deal" },
-  { id: "deal-jp", name: "U.S.–Japan Agreement", authority: "deal" },
-  { id: "deal-kr", name: "U.S.–Korea Agreement", authority: "deal" },
+  // Implemented under IEEPA (modifications of the reciprocal tariff order) and ended with
+  // every IEEPA duty on Feb 24, 2026 (EO 14389; CSMS # 67834313). Their authority was "deal"
+  // until Oct 7, 2026; `tradeDeal` keeps that.
+  { id: "deal-eu", name: "United States–European Union Framework Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-jp", name: "United States–Japan Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-kr", name: "United States–South Korea Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-ch", name: "United States–Switzerland Agreement", authority: "IEEPA", tradeDeal: true },
+  { id: "deal-li", name: "United States–Liechtenstein Agreement", authority: "IEEPA", tradeDeal: true },
+  // IEEPA duties, all ended for entries on or after Feb 24, 2026 (EO 14389; CSMS # 67834313).
+  // Their authority stays "IEEPA" so refunds can find them (REFUNDS.md).
+  { id: "ieepa-fentanyl-mx", name: "IEEPA – Mexico (Fentanyl and Migration)", authority: "IEEPA" },
+  { id: "ieepa-fentanyl-ca", name: "IEEPA – Canada (Fentanyl)", authority: "IEEPA" },
+  { id: "ieepa-fentanyl-cn", name: "IEEPA – China and Hong Kong (Fentanyl)", authority: "IEEPA" },
+  { id: "ieepa-reciprocal", name: "IEEPA – Reciprocal Tariffs", authority: "IEEPA" },
+  { id: "ieepa-brazil", name: "IEEPA – Brazil", authority: "IEEPA" },
+  // Ended earlier, for entries on or after Feb 7, 2026 (EO 14384)
+  { id: "ieepa-india", name: "IEEPA – India (Russian Oil)", authority: "IEEPA" },
 ]

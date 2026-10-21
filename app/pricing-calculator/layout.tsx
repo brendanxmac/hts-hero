@@ -1,20 +1,13 @@
 import { ReactNode } from "react";
-import { createClient } from "@/app/api/supabase/server";
-import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
-import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
-import { THEME } from "../../components/ui/theme";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import { FollowTheme } from "@/components/ui/marketing/FollowTheme";
 
-export default async function PricingCalculatorLayout({ children }: { children: ReactNode }) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // The analytical theme covers the site header too
+// The Tariff Tracker's look, following the site's light/dark setting, like the homepage
+// (DESIGN_SYSTEM.md §15)
+export default function PricingCalculatorLayout({ children }: { children: ReactNode }) {
   return (
-    <div className={`${THEME} flex flex-col max-h-svh overflow-y-auto`}>
-      {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
-      {children}
-    </div>
+    <FollowTheme>
+      <MarketingLayout>{children}</MarketingLayout>
+    </FollowTheme>
   );
 }

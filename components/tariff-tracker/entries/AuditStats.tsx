@@ -1,0 +1,24 @@
+import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { useTrackerAccess } from "../access/accessContext";
+import { StatStrip } from "@/components/ui/StatStrip";
+import { money } from "./EntriesTable";
+import { AuditTotals } from "./useAuditRows";
+
+// The audit in four numbers: entries checked, possible over- and underpayments, checks left
+export const AuditStats = ({ totals }: { totals: AuditTotals }) => {
+  const { access } = useTrackerAccess();
+  return (
+    <StatStrip
+      stats={[
+        { label: "Entries audited", value: totals.audited.toLocaleString("en-US"), note: `Of ${totals.logged.toLocaleString("en-US")} logged · ${money(totals.paid)} paid` },
+        { label: "Possible overpayments", value: money(totals.overpaid), note: "A refund to ask your broker about", tone: "success" },
+        { label: "Possible underpayments", value: money(totals.underpaid), note: "Worth correcting before Customs does", tone: totals.underpaid > 0 ? "error" : undefined },
+        {
+          label: "Audit checks left",
+          value: access.kind === "paid" || access.kind === "trial" ? "Unlimited" : access.kind === "anonymous" ? "0" : String(Math.max(0, TRIAL_ALLOWANCE.auditChecks - access.usage.auditsChecked.length)),
+          note: access.kind === "paid" || access.kind === "trial" ? "With your plan" : access.kind === "anonymous" ? `${TRIAL_ALLOWANCE.auditChecks} with a free account` : `Of ${TRIAL_ALLOWANCE.auditChecks} free`,
+        },
+      ]}
+    />
+  );
+};

@@ -70,6 +70,43 @@ const metalsHeadingsThrough17 = [
   "9903.82.17",
 ]
 
+// Before April 6, 2026 (2026HTSRev4): the old metals headings notes 33, 38(a)/(h) and 39(a)
+// listed in their items (1)–(5) (copper, aluminum, aluminum derivatives, steel, steel
+// derivatives). 9903.81.92 and 9903.85.09 (no added duty) and the Russia headings aren't named.
+const rev4MetalsHeadings = [
+  "9903.78.01",
+  "9903.85.02",
+  "9903.85.12",
+  "9903.85.04",
+  "9903.85.07",
+  "9903.85.08",
+  "9903.85.13",
+  "9903.85.14",
+  "9903.85.15",
+  "9903.81.87",
+  "9903.81.88",
+  "9903.81.94",
+  "9903.81.95",
+  "9903.81.89",
+  "9903.81.90",
+  "9903.81.91",
+  "9903.81.93",
+  "9903.81.96",
+  "9903.81.97",
+  "9903.81.98",
+  "9903.81.99",
+]
+
+// PP 11021 rewrote these notes for entries on or after 12:01 a.m. EDT April 6, 2026
+const PP_11021_FROM = "2026-04-06"
+const pp11021 = (note: string, revision = "2026HTSRev5") => ({
+  revision,
+  citation: "Proclamation 11021",
+  url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+  publishedOn: "2026-04-02",
+  note,
+})
+
 const metalsNoStack = {
   id: "232-metals-not-on-autos-mhdv-semiconductors",
   kind: "noStack" as const,
@@ -89,6 +126,9 @@ const notOnSemiconductors = [
   ...["9903.74.01", "9903.74.02", "9903.74.03", "9903.74.08", "9903.74.09"],
   ...headingRange("9903.01.24", "9903.01.76"),
   ...headingRange("9903.02.01", "9903.02.71"),
+  // U.S. note 2(v)(xvi) also names the Japan, Korea, Switzerland and Liechtenstein deal headings
+  // (2026HTSRev3); both notes apply
+  ...["9903.02.72", "9903.02.73", "9903.02.80", "9903.02.83", "9903.02.88"],
 ]
 
 // U.S. notes 33(a)(2)–(3), 33(f)(2)–(3), 33(p)(iii)(2)–(3), 33(r)(iii)(2)–(3), 38(a)(2)–(3),
@@ -132,8 +172,15 @@ export const interactions: Interaction[] = [
     description:
       "Auto, MHDV and IEEPA duties don't apply to semiconductor articles under 9903.79.01 (U.S. note 39(a))",
     order: [{ codes: ["9903.79.01"] }, { codes: notOnSemiconductors }],
-    effective: { to: TAIWAN_FROM },
-    source: correction("U.S. note 39(a)(1)–(4) and (8)"),
+    // U.S. note 39 was added by Proclamation 11002, effective Jan 15, 2026
+    effective: { from: "2026-01-15", to: TAIWAN_FROM },
+    source: {
+      ...correction("U.S. note 39(a)(1)–(4) and (8)"),
+      citation: "Proclamation 11002 (91 FR 2443)",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-01-20/html/2026-01052.htm",
+      publishedOn: "2026-01-20",
+      note: "U.S. note 39(a)(1)–(4) and (8). Not modeled before; added as a correction (2026HTSRev6). Start date backfilled from 2026HTSRev1's change record: note 39 was added by PP 11002, effective Jan 15, 2026",
+    },
   },
   {
     id: "232-autos-mhdv-ieepa-not-on-semiconductors",
@@ -149,12 +196,20 @@ export const interactions: Interaction[] = [
   },
   {
     ...metalsNoStack,
+    order: [{ codes: metalsExcludedFor }, { codes: rev4MetalsHeadings }],
+    effective: { to: PP_11021_FROM },
+    source: pp11021(
+      "U.S. notes 33(a), (f), (i)–(l), (n)–(o), (p)(iii), (q)(iii), (r)(iii), (s), (t), 38(a), 38(h) and 39(a)(5)–(9) items naming the old metals headings, as they read before PP 11021. Backfilled from 2026HTSRev5's change record",
+      "2026HTSRev4",
+    ),
+  },
+  {
+    ...metalsNoStack,
     order: [{ codes: metalsExcludedFor }, { codes: metalsHeadingsThrough17 }],
-    effective: { to: "2026-04-23" },
-    source: {
-      revision: "2026HTSRev5",
-      note: "U.S. notes 33, 38(a)(1), 38(h)(1) and 39(a)(5). Not modeled before 2026HTSRev6; added as a correction",
-    },
+    effective: { from: PP_11021_FROM, to: "2026-04-23" },
+    source: pp11021(
+      "U.S. notes 33, 38(a)(1), 38(h)(1) and 39(a)(5). Not modeled before 2026HTSRev6; added as a correction",
+    ),
   },
   {
     ...metalsNoStack,
@@ -210,18 +265,121 @@ export const interactions: Interaction[] = [
     source: taiwanSource("U.S. note 35(c)"),
   },
   {
+    id: "232-metals-not-on-civil-aircraft-agreements",
+    kind: "noStack",
+    description:
+      "Section 232 metals duties don't apply to civil aircraft articles of the UK (9903.96.01), the EU (9903.02.76), Japan (9903.96.02) or Korea (9903.02.81) (U.S. notes 35(a), 2(v)(xxii), 35(b) and 2(v)(xxiv)(b))",
+    // Before April 6, 2026. One group of winners works because each agreement only covers its
+    // own country's goods, and the UK headings and the others never apply to the same goods.
+    // 35(a) names 9903.81.94, .96–.98; .95 and .99 are added because notes 16(p) and 16(r)
+    // except 9903.96.01 from all six UK steel headings.
+    order: [
+      { codes: ["9903.96.01", "9903.02.76", "9903.96.02", "9903.02.81"] },
+      {
+        codes: [
+          "9903.78.01",
+          "9903.81.87",
+          "9903.81.88",
+          "9903.81.89",
+          "9903.81.90",
+          "9903.81.91",
+          "9903.81.93",
+          "9903.81.94",
+          "9903.81.95",
+          "9903.81.96",
+          "9903.81.97",
+          "9903.81.98",
+          "9903.81.99",
+          "9903.85.02",
+          "9903.85.04",
+          "9903.85.07",
+          "9903.85.08",
+          "9903.85.12",
+          "9903.85.13",
+          "9903.85.14",
+          "9903.85.15",
+        ],
+      },
+    ],
+    effective: { to: PP_11021_FROM },
+    source: pp11021(
+      "U.S. notes 35(a), 35(b), 2(v)(xxii), 2(v)(xxiv)(b), 16(i), (k), (p), (r), 19(f), (h), (n), (p) and 36(a) as they read before PP 11021. Backfilled from 2026HTSRev5's change record",
+      "2026HTSRev4",
+    ),
+  },
+  {
+    // Every verified revision (Rev 5–Rev 20) names the same range, "9903.82.02 and
+    // 9903.82.04–9903.82.17", in all four notes
+    id: "232-metals-not-on-civil-aircraft-agreements",
+    kind: "noStack",
+    description:
+      "Section 232 metals duties don't apply to civil aircraft articles of the UK (9903.96.01), the EU (9903.02.76), Japan (9903.96.02) or Korea (9903.02.81) (U.S. notes 35(a), 2(v)(xxii), 35(b) and 2(v)(xxiv)(b))",
+    order: [
+      { codes: ["9903.96.01", "9903.02.76", "9903.96.02", "9903.02.81"] },
+      { codes: metalsHeadingsThrough17 },
+    ],
+    effective: { from: PP_11021_FROM },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation 11021",
+      url: "https://www.govinfo.gov/content/pkg/FR-2026-04-09/html/2026-06960.htm",
+      publishedOn: "2026-04-02",
+      note: "U.S. notes 2(v)(xxii), 2(v)(xxiv)(b), 35(a) and 35(b) as rewritten by PP 11021 (Annex IV), effective 2026-04-06; clause (10) keeps the civil aircraft agreements. Not modeled before; added as a correction",
+    },
+  },
+  {
     id: "ieepa-ca-mx-not-on-autos-mhdv-semiconductors",
     kind: "noStack",
     description:
       "IEEPA duties on goods of Canada (9903.01.10) and Mexico (9903.01.01) don't apply to vehicles, parts and semiconductors under their Section 232 headings (U.S. notes 33, 38 and 39)",
     order: [
-      { codes: caMxExcludedFor },
+      {
+        codes: [
+          ...caMxExcludedFor,
+          // U.S. notes 16(i) and (k), 19(f) and (h) (2026HTSRev3): steel, steel derivative,
+          // aluminum and aluminum derivative products "shall not be subject to" 9903.01.10 or
+          // 9903.01.01. 16(i)'s sentence names only 9903.81.87; its lead-in covers .88 too
+          ...[
+            "9903.81.87",
+            "9903.81.88",
+            "9903.81.89",
+            "9903.81.90",
+            "9903.81.91",
+            "9903.81.93",
+          ],
+          ...["9903.85.02", "9903.85.04", "9903.85.07", "9903.85.08"],
+        ],
+      },
       { codes: ["9903.01.10", "9903.01.01"] },
     ],
-    effective: {},
-    source: correction(
-      "U.S. notes 33(a), (f), (p)(iii), (r)(iii), 38(a), (h) and 39(a)(6)–(7). 9903.01.10 and 9903.01.01 aren't in the data yet (ended Feb 24, 2026), so this has no effect until they're backfilled",
-    ),
+    // Ends with the IEEPA duties it ranks: no IEEPA duty for entries on or after Feb 24, 2026
+    // (EO 14389; CSMS # 67834313). Its start comes with later backfill steps.
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev3",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "U.S. notes 33(a), (f), (p)(iii), (r)(iii), 38(a), (h), 39(a)(6)–(7), 16(i), (k) and 19(f), (h). Backfilled with the IEEPA headings (2026HTSRev3); IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026",
+    },
+  },
+  {
+    id: "ieepa-ca-mx-not-on-232-wood",
+    kind: "noStack",
+    description:
+      "IEEPA duties on goods of Mexico (9903.01.01) and Canada (9903.01.10, 9903.01.16) don't apply to Section 232 wood products under 9903.76.01–9903.76.03 (U.S. notes 2(a), 2(j) and 2(m))",
+    order: [
+      { codes: ["9903.76.01", "9903.76.02", "9903.76.03"] },
+      { codes: ["9903.01.01", "9903.01.10", "9903.01.16"] },
+    ],
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev3",
+      citation: "EO 14389; CSMS # 67834313",
+      url: "https://www.govinfo.gov/content/pkg/DCPD-202600131/html/DCPD-202600131.htm",
+      publishedOn: "2026-02-20",
+      note: "U.S. notes 2(a), (j) and (m) except products described in 9903.76.01–.03; potash (2(c), 2(l)) and energy aren't covered. Backfilled with the IEEPA headings (2026HTSRev3); IEEPA duties ended for entries on or after 12:00 a.m. ET Feb 24, 2026",
+    },
   },
   {
     id: "232-wood-not-on-auto-mhdv-parts",

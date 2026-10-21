@@ -5,12 +5,12 @@ import { getHtsSectionsServer } from "../../../libs/hts-server";
 import { HtsSection } from "../../../interfaces/hts";
 import config from "@/config";
 import { HtsPageShell } from "../../../components/hts-page/HtsPageShell";
-import { PlaybookBanner } from "../../../components/hts-page/PlaybookBanner";
+import { PlaybookCard } from "@/components/hts-code-page/PlaybookCard";
 import { CtaGrid } from "../../../components/hts-page/CtaGrid";
 import { ChildrenList } from "../../../components/hts-page/ChildrenList";
 
 interface SectionPageProps {
-  params: { sectionNumber: string };
+  params: Promise<{ sectionNumber: string }>;
 }
 
 export async function generateStaticParams() {
@@ -18,7 +18,8 @@ export async function generateStaticParams() {
   return sections.map((s) => ({ sectionNumber: String(s.number) }));
 }
 
-export async function generateMetadata({ params }: SectionPageProps): Promise<Metadata> {
+export async function generateMetadata(props: SectionPageProps): Promise<Metadata> {
+  const params = await props.params;
   const sections = await getHtsSectionsServer();
   const section = sections.find((s) => s.number === Number(params.sectionNumber));
 
@@ -52,7 +53,8 @@ export async function generateMetadata({ params }: SectionPageProps): Promise<Me
   };
 }
 
-export default async function SectionPage({ params }: SectionPageProps) {
+export default async function SectionPage(props: SectionPageProps) {
+  const params = await props.params;
   const sections = await getHtsSectionsServer();
   const sectionNum = Number(params.sectionNumber);
   const section = sections.find((s) => s.number === sectionNum);
@@ -62,9 +64,8 @@ export default async function SectionPage({ params }: SectionPageProps) {
   const siblings = sections.filter((s) => s.number !== sectionNum);
 
   return (
-    <main className="w-full min-h-screen bg-base-100">
+    <main className="w-full flex-1 bg-base-200">
       <HtsPageShell
-        bannerMessage="Looking for the right HTS code for your product?"
         breadcrumbs={[
           { label: `Section ${toRoman(section.number)}` },
         ]}
@@ -81,32 +82,29 @@ function SectionContent({ section, siblings }: { section: HtsSection; siblings: 
   return (
     <>
       {/* Hero */}
-      <section className="relative rounded-2xl bg-gradient-to-br from-primary/[0.07] via-base-200/60 to-secondary/[0.05] border border-primary/15 p-6 sm:p-8 md:p-10 mb-8">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col gap-3">
+      <section className="rounded-[28px] border border-base-300 bg-base-100 p-7 sm:p-10 mb-4">
+        <div className="flex flex-col gap-3">
           <h1 className="flex flex-col gap-1.5">
-            <span className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
+            <span className="text-primary text-3xl lg:text-4xl font-semibold tracking-tight [font-family:var(--font-tracker-display)]">
               Section {roman}
             </span>
-            <span className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug max-w-4xl">
+            <span className="text-lg md:text-xl md:leading-7 lg:text-2xl lg:leading-8 text-base-content font-semibold leading-snug max-w-4xl [font-family:var(--font-tracker-display)]">
               {section.description}
             </span>
-            <span className="text-[11px] text-base-content/25 font-medium tracking-wider uppercase mt-0.5">
+            <span className="text-xs text-base-content/60 font-bold tracking-wider uppercase mt-1">
               US Harmonized Tariff Schedule
             </span>
           </h1>
 
-          <h2 className="text-xs sm:text-sm text-base-content/40 font-medium">
+          <h2 className="text-sm text-base-content/60 font-medium">
             U.S. Import Tariff Classifications for HTS Section {roman}
           </h2>
 
-          <h3 className="text-sm text-base-content/50 leading-relaxed max-w-4xl">
+          <h3 className="text-sm text-base-content/70 leading-relaxed max-w-4xl">
             {section.description}, covering {section.chapters.length} chapter{section.chapters.length !== 1 ? "s" : ""} (
             {section.chapters.slice(0, 4).map((c, i, arr) => (
               <span key={c.number}>
-                <Link href={`/chapter/${c.number}`} className="text-primary/70 hover:text-primary hover:underline transition-colors">
+                <Link href={`/chapter/${c.number}`} className="text-primary hover:underline">
                   Chapter {c.number}
                 </Link>
                 {i < arr.length - 1 ? ", " : ""}
@@ -118,7 +116,7 @@ function SectionContent({ section, siblings }: { section: HtsSection; siblings: 
 
           {siblings.length > 0 && (
             <div className="mt-2">
-              <h2 className="text-xs font-bold text-base-content/40 uppercase tracking-wider mb-2">
+              <h2 className="text-xs font-bold text-base-content/60 uppercase tracking-wider mb-2">
                 Other HTS Sections
               </h2>
               <div className="flex flex-wrap gap-1.5">
@@ -126,11 +124,11 @@ function SectionContent({ section, siblings }: { section: HtsSection; siblings: 
                   <Link
                     key={s.number}
                     href={`/section/${s.number}`}
-                    className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-base-100/80 border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 transition-all"
+                    className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-tt-soft hover:bg-primary/10 transition-colors"
                     title={s.description}
                   >
                     <span className="text-xs font-bold text-primary group-hover:underline">Section {toRoman(s.number)}</span>
-                    <span className="text-xs text-base-content/40 max-w-[180px] truncate">{s.description}</span>
+                    <span className="text-xs text-base-content/60 max-w-[180px] truncate">{s.description}</span>
                   </Link>
                 ))}
               </div>
@@ -150,7 +148,7 @@ function SectionContent({ section, siblings }: { section: HtsSection; siblings: 
         }))}
       />
 
-      <PlaybookBanner />
+      <div className="mt-12"><PlaybookCard /></div>
       <CtaGrid contextLabel={`Section ${roman} Codes`} />
     </>
   );

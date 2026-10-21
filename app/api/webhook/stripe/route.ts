@@ -4,7 +4,6 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { PricingPlan } from "../../../../types";
-import { getIsoDateInFuture } from "../../../../utilities/time";
 import { createPurchase } from "../../../../libs/supabase/purchase";
 import {
   fetchUser,
@@ -14,35 +13,12 @@ import {
   UserProfile,
 } from "../../../../libs/supabase/user";
 import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
-
-const getPlanExpirationDate = (plan: PricingPlan) => {
-  switch (plan) {
-    case PricingPlan.CLASSIFY_STARTER:
-    case PricingPlan.CLASSIFY_PRO:
-    case PricingPlan.TARIFF_IMPACT_STANDARD:
-    case PricingPlan.TARIFF_IMPACT_PRO:
-      return getIsoDateInFuture(31);
-  }
-};
-
-const getPlanFromPriceId = (priceId: string): PricingPlan | null => {
-  switch (priceId) {
-    case process.env.STRIPE_TARIFF_IMPACT_STANDARD_PRICE_ID:
-      return PricingPlan.TARIFF_IMPACT_STANDARD;
-    case process.env.STRIPE_TARIFF_IMPACT_PRO_PRICE_ID:
-      return PricingPlan.TARIFF_IMPACT_PRO;
-    case process.env.STRIPE_CLASSIFY_STARTER_PRICE_ID:
-      return PricingPlan.CLASSIFY_STARTER;
-    case process.env.STRIPE_CLASSIFY_PRO_PRICE_ID:
-    case process.env.STRIPE_CLASSIFY_PRO_PRICE_ID_OLD:
-      return PricingPlan.CLASSIFY_PRO;
-    default:
-      return null;
-  }
-};
+import { getPlanExpirationDate, getPlanFromPriceId } from "@/libs/stripe-plans";
+import { isTrackerPlan, TRACKER_PLANS } from "@/libs/tariff-tracker/plan";
+import { RENEWAL_GRACE_DAYS } from "@/libs/tariff-tracker/access";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-05-28.basil",
+  apiVersion: "2026-09-30.endive",
   typescript: true,
 });
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -50,7 +26,7 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 export async function POST(req: NextRequest) {
   const body = await req.text();
 
-  const signature = headers().get("stripe-signature");
+  const signature = (await headers()).get("stripe-signature");
 
   let stripeEvent: Stripe.Event;
 
@@ -96,7 +72,7 @@ export async function POST(req: NextRequest) {
         const customerId = checkoutSession?.customer;
         const priceId = checkoutSession?.line_items?.data[0]?.price.id;
         const userId = stripeObject.client_reference_id;
-        const plan = getPlanFromPriceId(priceId);
+        const plan = await getPlanFromPriceId(priceId);
 
         const customer = (await stripe.customers.retrieve(
           customerId as string
@@ -144,7 +120,7 @@ export async function POST(req: NextRequest) {
             customer_id: checkoutSession.customer as string,
             price_id: checkoutSession.line_items?.data[0]?.price.id,
             product_name: plan,
-            expires_at: getPlanExpirationDate(plan),
+            expires_at: await getPlanExpirationDate(plan, priceId),
           },
           "checkout.session.completed"
         );
@@ -271,7 +247,7 @@ export async function POST(req: NextRequest) {
             );
           }
 
-          const plan = getPlanFromPriceId(updatedPlan.id);
+          const plan = await getPlanFromPriceId(updatedPlan.id);
 
           if (!plan) {
             console.error(
@@ -331,17 +307,32 @@ export async function POST(req: NextRequest) {
 
       case "customer.subscription.deleted": {
         console.log("Stripe Customer Subscription Deleted");
-        // The customer subscription stopped
-        // ❌ Revoke access to the product
-        // const stripeObject: Stripe.Subscription = stripeEvent.data
-        //   .object as Stripe.Subscription;
-        // const subscription = await stripe.subscriptions.retrieve(
-        //   stripeObject.id
-        // );
-        // await supabase
-        //   .from("users")
-        //   .update({ has_access: false }) // TODO: this does not exist, need to update
-        //   .eq("stripe_customer_id", subscription.customer);
+        // The subscription ended: at the end of a cancelled period, cancelled immediately, or after
+        // the last failed payment retry. ❌ Revoke access now: its purchases stop at this moment
+        // instead of running to their expires_at. For a Tariff Tracker plan, every Tracker purchase
+        // of the customer ends (an upgrade leaves the old tier's purchase running to its period end).
+        const subscription = stripeEvent.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string;
+        const plans = (
+          await Promise.all(subscription.items.data.map((item) => getPlanFromPriceId(item.price.id)))
+        ).filter((plan): plan is PricingPlan => !!plan);
+        const ended = Array.from(new Set(plans.flatMap((plan) => (isTrackerPlan(plan) ? TRACKER_PLANS.map((p) => p.plan) : [plan]))));
+        if (!ended.length) {
+          console.log(`Subscription ${subscription.id} ended, but none of its prices is a plan`);
+          break;
+        }
+        const now = new Date().toISOString();
+        // Just past the renewal grace (libs/tariff-tracker/access.ts), so access ends now, not in 2 days
+        const endedAt = new Date(Date.now() - (RENEWAL_GRACE_DAYS * 24 + 1) * 60 * 60 * 1000).toISOString();
+        const { data, error } = await supabase
+          .from("purchases")
+          .update({ expires_at: endedAt })
+          .eq("customer_id", customerId)
+          .in("product_name", ended)
+          .gt("expires_at", now)
+          .select("id");
+        if (error) throw error;
+        console.log(`Subscription ${subscription.id} ended: ${data?.length ?? 0} purchase(s) of ${ended.join(", ")} now expire`);
         break;
       }
 
@@ -360,7 +351,8 @@ export async function POST(req: NextRequest) {
           break;
         }
 
-        const priceId = stripeInvoice.lines.data[0].pricing.price_details.price;
+        const linePrice = stripeInvoice.lines.data[0].pricing.price_details.price;
+        const priceId = typeof linePrice === "string" ? linePrice : linePrice.id;
         const customerId = stripeInvoice.customer;
         console.log("Price ID:", priceId);
         console.log("Customer ID:", customerId);
@@ -383,7 +375,7 @@ export async function POST(req: NextRequest) {
         //   break;
         // }
 
-        const plan = getPlanFromPriceId(priceId);
+        const plan = await getPlanFromPriceId(priceId);
 
         if (!plan) {
           console.error("Plan not found for priceId: ", priceId);
@@ -398,7 +390,7 @@ export async function POST(req: NextRequest) {
             customer_id: customerId as string,
             price_id: priceId,
             product_name: plan,
-            expires_at: getPlanExpirationDate(plan),
+            expires_at: await getPlanExpirationDate(plan, priceId),
           },
           "invoice.paid"
         );

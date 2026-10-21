@@ -14,11 +14,11 @@ interface CTABannerProps {
 
 const gradientClasses: Record<CTABannerColor, string> = {
   primary:
-    "bg-gradient-to-r from-primary via-primary to-primary/90 shadow-md shadow-primary/10",
+    "bg-linear-to-r from-primary via-primary to-primary/90 shadow-md shadow-primary/10",
   secondary:
-    "bg-gradient-to-r from-secondary via-secondary to-secondary/90 shadow-md shadow-secondary/10",
+    "bg-linear-to-r from-secondary via-secondary to-secondary/90 shadow-md shadow-secondary/10",
   accent:
-    "bg-gradient-to-r from-accent via-accent to-accent/90 shadow-md shadow-accent/10",
+    "bg-linear-to-r from-accent via-accent to-accent/90 shadow-md shadow-accent/10",
 };
 
 const textClasses: Record<CTABannerColor, string> = {
@@ -45,7 +45,7 @@ export function CTABanner({
   openInNewTab = false,
   subText,
 }: CTABannerProps) {
-  const btnClassName = `inline-flex items-center gap-1.5 px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm whitespace-nowrap ${buttonClasses[color]}`;
+  const btnClassName = `inline-flex items-center gap-1.5 px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-bold transition-all shadow-xs whitespace-nowrap ${buttonClasses[color]}`;
 
   return (
     <div className={gradientClasses[color]}>
