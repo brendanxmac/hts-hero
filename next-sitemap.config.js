@@ -131,6 +131,8 @@ module.exports = {
     "/signin",
     // The Tariff Tracker app is noindexed; /tariff-monitor is its page
     "/tariff-tracker",
+    // Local previews without sign-in (never committed or deployed)
+    "/zz-*",
     "/sign-out",
     "/reset-password",
     "/settings*",
