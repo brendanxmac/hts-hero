@@ -17,15 +17,15 @@ import { THEME } from "@/components/ui/theme";
 import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { SIGNUP_HOME } from "@/libs/tariff-tracker/onboarding";
+import { SIGNIN_HOME, SIGNUP_HOME } from "@/libs/tariff-tracker/onboarding";
 import PasswordRequirements from "@/components/PasswordRequirements";
 
 // Component that uses useSearchParams wrapped in Suspense
 function LoginContent() {
   const { user } = useUser();
   const searchParams = useSearchParams();
-  // Where to go after signing in: the page that sent them here, else the Tariff Tracker
-  const redirectTo = searchParams.get("redirect") || config.auth.callbackUrl;
+  // Where to go after signing in: the page that sent them here, else the home page
+  const redirectTo = searchParams.get("redirect") || SIGNIN_HOME;
   const isRedirectForSignUp = searchParams.get("sign-up") === "true";
 
   if (user) {

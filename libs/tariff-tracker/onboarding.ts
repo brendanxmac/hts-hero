@@ -5,6 +5,8 @@ export type SignupSource = "generic" | "calculator" | "tracker" | "classify";
 
 // Where a generic sign-up lands: the home page, with every product on it
 export const SIGNUP_HOME = "/?welcome=1";
+// Where a sign-in with nowhere it was headed lands: the home page, with every product (2026-10-21)
+export const SIGNIN_HOME = "/";
 
 // The sign-up's source, from where it was headed after the auth callback. Calculator CTAs come back
 // to the calculator, Tracker asks to the Tracker; anything else is a generic sign-up.

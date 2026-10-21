@@ -1,12 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/app/api/supabase/server";
-import config from "@/config";
 import { createAdminClient } from "@/app/api/supabase/server";
-import { signupSourceFor } from "@/libs/tariff-tracker/onboarding";
+import { SIGNIN_HOME, signupSourceFor } from "@/libs/tariff-tracker/onboarding";
 
 export const dynamic = "force-dynamic";
 
-// This route is called after a successful login. It exchanges the code for a session and redirects to the callback URL (see config.js).
+// This route is called after a successful login. It exchanges the code for a session and redirects to where they were headed, or the home page (SIGNIN_HOME).
 export async function GET(req: NextRequest) {
   const requestUrl = new URL(req.url);
   const code = requestUrl.searchParams.get("code");
@@ -27,10 +26,10 @@ export async function GET(req: NextRequest) {
   }
 
   // URL to redirect to after sign in process completes
-  // Use the redirectTo parameter if provided, otherwise fallback to default callback URL
+  // Use the redirectTo parameter if provided, otherwise the home page
   // Only paths on this site ("/tariff-tracker"), never another host ("//evil.com")
   const path = redirectTo ? decodeURIComponent(redirectTo) : "";
-  const safe = path.startsWith("/") && !path.startsWith("//") && !path.startsWith("/\\") ? path : config.auth.callbackUrl;
+  const safe = path.startsWith("/") && !path.startsWith("//") && !path.startsWith("/\\") ? path : SIGNIN_HOME;
   const finalRedirectUrl = requestUrl.origin + safe;
 
   return NextResponse.redirect(finalRedirectUrl);
