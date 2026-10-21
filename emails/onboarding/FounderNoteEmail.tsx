@@ -46,7 +46,7 @@ const ReasonLine = ({ reason, note }: { reason?: string | null; note?: string | 
     case "someone_else":
       return (
         <Para>
-          You mentioned someone else handles your customs{note ? ` (${note})` : ""}. Feel free to forward this to them, or loop them in on a reply, and I&apos;ll help
+          You mentioned someone else manages your imports{note ? ` (${note})` : ""}. Feel free to forward this to them, or loop them in on a reply, and I&apos;ll help
           them get it set up.
         </Para>
       )

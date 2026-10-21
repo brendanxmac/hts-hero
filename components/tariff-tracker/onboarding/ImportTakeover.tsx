@@ -463,7 +463,6 @@ export const ImportTakeover = () => {
                     : "Add my imports"
               }
               onBack={backFromSkip}
-              onExplain={() => go("explain")}
               onSkip={skip}
             />
           </div>

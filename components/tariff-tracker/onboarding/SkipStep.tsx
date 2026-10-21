@@ -21,8 +21,8 @@ import { delay } from "./parts";
 
 // "Skip setup": not a door out but a last word. What the Tracker can't do without their imports and
 // that the trial is waiting on them, a way to talk to us in the support chat, then the two choices
-// side by side. Skipping opens a popup asking why, optionally (it tells us what's in the way; "not
-// sure what an import is" goes back to the explainer, "something else" takes a note).
+// side by side. Skipping opens a popup asking why, optionally (it tells us what's in the way;
+// "something else" takes a note).
 
 const WITHOUT = [
   "Alert you the day a tariff change hits one of your products",
@@ -35,12 +35,10 @@ const WITHOUT = [
 export const SkipStep = ({
   backLabel,
   onBack,
-  onExplain,
   onSkip,
 }: {
   backLabel: string;
   onBack: () => void;
-  onExplain: () => void;
   onSkip: (reason: SkipReason | null, note: string) => void;
 }) => {
   const [asking, setAsking] = useState(false);
@@ -127,10 +125,6 @@ export const SkipStep = ({
       <SkipReasonDialog
         open={asking}
         onClose={() => setAsking(false)}
-        onExplain={() => {
-          setAsking(false);
-          onExplain();
-        }}
         onSkip={onSkip}
       />
     </div>
@@ -174,12 +168,10 @@ const SupportBox = () => (
 const SkipReasonDialog = ({
   open,
   onClose,
-  onExplain,
   onSkip,
 }: {
   open: boolean;
   onClose: () => void;
-  onExplain: () => void;
   onSkip: (reason: SkipReason | null, note: string) => void;
 }) => {
   const [reason, setReason] = useState<SkipReason | null>(null);
@@ -220,11 +212,7 @@ const SkipReasonDialog = ({
                   type="button"
                   role="radio"
                   aria-checked={picked}
-                  onClick={() =>
-                    r.id === "what_is_import"
-                      ? onExplain()
-                      : setReason(picked ? null : r.id)
-                  }
+                  onClick={() => setReason(picked ? null : r.id)}
                   className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 text-left text-sm transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
                     picked
                       ? "border-primary bg-primary/10 font-semibold text-base-content"
