@@ -19,9 +19,9 @@ order; tick items as they land, and add new ones as they come up.
       preview URL: the framework upgrade is the riskiest part of the release, and a preview shows
       build or runtime breakage before `master` does. Click through the home page, a blog post (MDX
       3), /duty-calculator and the Tracker there.
-- [ ] **Commit everything except** `.vscode/` and every `app/zz-*` folder (`app/zz-tracker/`,
+- [x] **Commit everything except** `.vscode/` and every `app/zz-*` folder (`app/zz-tracker/`,
       `app/zz-adcvd/`: local previews without sign-in). They must never be committed or deployed.
-- [ ] **Set the trial's fresh start to the deploy day**: `REVERSE_TRIAL.freshStartOn` in
+- [x] **Set the trial's fresh start to the deploy day**: `REVERSE_TRIAL.freshStartOn` in
       `components/pricing-calculator/lib/pricing.ts` (now `2026-10-21`). Existing accounts get 14 days
       from it; a date before the deploy shortens their trial.
 - [ ] **Confirm the launch-pricing deadline**: `LAUNCH_PRICING` (now Fri, Nov 13, 2026). Savings
@@ -33,8 +33,8 @@ order; tick items as they land, and add new ones as they come up.
       first real (non-example) import, and the backfill for accounts that already have imports. Its
       backfill date (`2026-10-21`) must match `REVERSE_TRIAL.freshStartOn`: move both together.
       Until it's applied the app falls back to sign-up-based trials and emails.
-- [ ] **Regenerate the auth emails** (their copy changed for the trial): `npm run email:auth`.
-- [ ] **Run the checks**: `npm run tests`, `npx tsc --noEmit -p .`, and a production build
+- [x] **Regenerate the auth emails** (their copy changed for the trial): `npm run email:auth`.
+- [x] **Run the checks**: `npm run tests`, `npx tsc --noEmit -p .`, and a production build
       (`npm run build`).
 - [ ] **Test signed in, in dev** (needs a real account):
   - [ ] A new account from a generic link lands on `/` with the welcome strip; from a calculator
