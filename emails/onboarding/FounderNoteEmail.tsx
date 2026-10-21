@@ -57,13 +57,6 @@ const ReasonLine = ({ reason, note }: { reason?: string | null; note?: string | 
           your real duty on each one and start getting alerts when a change hits.
         </Para>
       )
-    case "unclear_product":
-      return (
-        <Para>
-          You mentioned the Tracker wasn&apos;t clear yet, which is on me. In short: you add the HTS codes and countries of origin you import, and it shows the duty on
-          each one today and tells you the day a tariff change hits one. Reply with any question and I&apos;ll answer it myself.
-        </Para>
-      )
     case "pricing":
       return (
         <Para>

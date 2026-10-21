@@ -17,13 +17,12 @@ export const signupSourceFor = (redirect: string | null | undefined): SignupSour
 };
 
 // Why "Skip setup" was pressed on the import takeover, if they said (tracker_onboarding.skip_reason).
-// What could stop someone at this point: no list, not their job, not getting the product, the
-// price, sharing their data, or too few imports. The founder emails answer each (FounderNoteEmail),
+// What could stop someone at this point: no list, not their job, the price, sharing their data,
+// or too few imports. The founder emails answer each (FounderNoteEmail),
 // and still answer "looking" from accounts that skipped before it was dropped (2026-10-21).
 export const SKIP_REASONS = [
   { id: "no_list", label: "I don't have my list right now" },
   { id: "someone_else", label: "Someone else manages our imports" },
-  { id: "unclear_product", label: "I don't understand the product" },
   { id: "pricing", label: "I want to know what it costs first" },
   { id: "data_privacy", label: "I'm not comfortable sharing my import data" },
   { id: "few_imports", label: "I only import a few products" },
