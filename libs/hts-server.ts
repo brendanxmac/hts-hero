@@ -53,7 +53,7 @@ async function loadElements(): Promise<HtsElement[]> {
     throw new Error(`Failed to get latest HTS revision: ${revError.message}`);
   }
 
-  cachedElements = await downloadElements(revisionInstance.name);
+  cachedElements = (await downloadHtsRevision(revisionInstance.name)).elements;
   cachedRevisionName = revisionInstance.name;
 
   return cachedElements;
@@ -89,13 +89,15 @@ const downloadFile = (url: string, key: string) =>
     req.setTimeout(60_000, () => req.destroy(new Error("Failed to download HTS data: timed out")));
   });
 
-async function downloadElements(revisionName: string): Promise<HtsElement[]> {
+// The revision's file (gzipped JSON), checked: it decompresses and parses before it's returned, so
+// a bad download is tried again instead of being kept anywhere. Also serves /api/hts/get-hts-data.
+export async function downloadHtsRevision(revisionName: string): Promise<{ bytes: Uint8Array; elements: HtsElement[] }> {
   const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/${SupabaseBuckets.HTS_REVISIONS}/${encodeURIComponent(`${revisionName}.json.gz`)}`;
   for (let attempt = 1; ; attempt++) {
     try {
       const bytes = await downloadFile(url, process.env.SUPABASE_SERVICE_ROLE_KEY!);
       try {
-        return JSON.parse(decompressOnServer(bytes)) as HtsElement[];
+        return { bytes, elements: JSON.parse(decompressOnServer(bytes)) as HtsElement[] };
       } catch (e) {
         const sha = createHash("sha256").update(bytes).digest("hex").slice(0, 16);
         throw new Error(
