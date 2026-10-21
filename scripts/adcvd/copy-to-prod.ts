@@ -4,6 +4,8 @@
 //
 //   npm run adcvd:copy-to-prod                # dry run: what would be copied, table by table
 //   npm run adcvd:copy-to-prod -- --apply     # copy it
+//   ... --skip-usage                           # leave dev's AI spend (ai_usage) behind, so it
+//                                              # doesn't count against prod's monthly AI budget
 //
 // Rows are matched on their natural keys (an item's source + external id, an update's slug, a
 // case's number, an event's document + case), so rows prod already collected on its own are
@@ -23,6 +25,8 @@ const fail = (message: string): never => {
 
 const args = process.argv.slice(2)
 const apply = args.includes("--apply")
+// Dev's AI spend is dev's: copied, it would count against prod's monthly budget (adcvd_settings)
+const skipUsage = args.includes("--skip-usage")
 const PAGE = 1000
 const CHUNK = 300
 
@@ -72,7 +76,7 @@ const main = async () => {
     readAll(dev, "adcvd_events"),
     readAll(dev, "adcvd_months"),
     readAll(dev, "adcvd_settings"),
-    readAll(dev, "ai_usage"),
+    skipUsage ? Promise.resolve([] as Row[]) : readAll(dev, "ai_usage"),
   ])
   const [prodItems, prodUpdates, prodCases, prodEvents, prodMonths, prodUsage] = await Promise.all([
     readAll(prod, "tariff_source_items", "id, source, external_id"),
@@ -97,7 +101,8 @@ const main = async () => {
   report("adcvd_events", events.length, events.filter((e) => prodEventKeys.has(eventKey(e))).length)
   report("adcvd_months", months.length, months.filter((m) => prodMonthKeys.has(m.month)).length)
   report("adcvd_settings", settings.length, settings.length)
-  report("ai_usage", usage.length, usage.filter((u) => prodUsageIds.has(u.id)).length)
+  if (skipUsage) console.log(`  ${"ai_usage".padEnd(22)} skipped (--skip-usage): dev's AI spend stays in dev`)
+  else report("ai_usage", usage.length, usage.filter((u) => prodUsageIds.has(u.id)).length)
   if (!apply) {
     console.log("\nRun again with --apply to copy.\n")
     return
