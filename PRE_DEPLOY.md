@@ -226,6 +226,15 @@ account in local dev) with `?trialPreview=trial`, `?trialPreview=ending` or `?tr
 It changes only what you see (not what your alerts cover), stays on while you move around, and
 `?trialPreview=off` (or the "Previewing · Stop" link on the plan card) ends it.
 
+## The day after launch (Oct 22)
+
+- [ ] **The post-import education series.** Today, once someone adds imports, they get one email
+      (`first_look`, the morning after) and then nothing until the trial-ending email on day 11.
+      Add about three more, counted from the first imports (`tracker_snapshots.first_products_at`):
+      e.g. day 3 alerts and where they go (email, Slack, Teams), day 6 Insights and AD/CVD, day 9
+      impact checks, rate history and exports. Skip accounts that have paid, like the trial emails.
+      The trial starts only at the first real import; no email may say otherwise.
+
 ## Within two weeks: savings, audits and the price change
 
 - [ ] **Automatic entry auditing**, then switch savings and audits back on
