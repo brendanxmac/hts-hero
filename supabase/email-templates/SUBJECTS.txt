@@ -1,4 +1,4 @@
-confirm: Confirm your email to open your Tariff Tracker
+confirm: Confirm your email for HTS Hero
 magic_link: Your HTS Hero sign-in code
 reset: Reset your HTS Hero password
 email_change: Confirm your new email for HTS Hero

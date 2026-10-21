@@ -3,7 +3,6 @@ import { Cta, Eyebrow, P, Title } from "../kit/parts"
 import { C } from "../kit/brand"
 import { Link, Text } from "@react-email/components"
 import { SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
-import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
 // The emails Supabase Auth sends (confirm sign-up, magic link, password reset, email change,
 // invite), in the HTS Hero look. Supabase fills the {{ .ConfirmationURL }}-style placeholders, so
@@ -24,16 +23,15 @@ export const AUTH_EMAILS: Record<
   AuthKind,
   { subject: string; eyebrow: string; title: string; body: string; button: string; preview: string; href?: string; passcode?: boolean }
 > = {
+  // Everyone who signs up gets this one, from any page, so it promises nothing about one product:
+  // the link brings them back to wherever they were headed
   confirm: {
-    subject: "Confirm your email to open your Tariff Tracker",
+    subject: "Confirm your email for HTS Hero",
     eyebrow: "One step left",
     title: "Confirm your email",
-    // The Tracker MVP (features.ts): no savings line while savings are off
-    body: SAVINGS_ENABLED
-      ? "Confirm this address to access Tariff Tracker. Then, add your HTS codes and countries, and see every duty, change, and possible saving on each import."
-      : `Confirm this address to start your free ${REVERSE_TRIAL.days}-day Tariff Tracker trial: everything, on up to ${REVERSE_TRIAL.imports} imports, with no credit card. Then, add your HTS codes and countries, see every duty on each import, and get an alert when a tariff change hits one.`,
-    button: "Confirm and open Tariff Tracker",
-    preview: `Confirm your email to start your free ${REVERSE_TRIAL.days}-day Tariff Tracker trial.`,
+    body: "Confirm this address to finish setting up your HTS Hero account. You'll go straight back to where you left off: look up any duty with the free Tariff Calculator, track your imports with the Tariff Tracker, or classify a product with the Classification Assistant.",
+    button: "Confirm my email",
+    preview: "Confirm your email to finish setting up your HTS Hero account.",
   },
   magic_link: {
     subject: "Your HTS Hero sign-in code",
