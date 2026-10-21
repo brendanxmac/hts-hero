@@ -54,7 +54,7 @@ export const TrackerControls = ({
           </label>
           <p className={`${mk.small} mt-1 max-w-md leading-relaxed`}>
             One HTS code from one country of origin. The same code from China and Vietnam is two imports.
-            Every new account gets the Tracker free for {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports} imports, no credit card,
+            Every new account gets the Tracker free for {REVERSE_TRIAL.days} days from its first imports, on up to {REVERSE_TRIAL.imports} imports, no credit card,
             then {FREE_FOREVER_SHORT} stay free, forever.
             {!TRACKER_ANNUAL_ENABLED && " Tracker plans are billed monthly."}
           </p>

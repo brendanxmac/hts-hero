@@ -324,7 +324,7 @@ export const ConversionDialog = ({
                 <p className={`${tt.subtitle} mt-2`}>{trial.subtitle}</p>
               </div>
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold text-base-content/60">Free for {REVERSE_TRIAL.days} days with every new account:</p>
+                <p className="text-xs font-semibold text-base-content/60">Free for {REVERSE_TRIAL.days} days from your first imports, with every new account:</p>
                 <ul className="flex flex-col gap-2.5">
                   {TRIAL_INCLUDES.map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-sm text-base-content">

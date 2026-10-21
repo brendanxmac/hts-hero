@@ -128,7 +128,7 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
           <p className="m-0 text-xs text-base-content/60">
-            Free, no credit card: your {REVERSE_TRIAL.days}-day trial starts on its own. Takes a minute; then add your HTS codes and countries.
+            Free, no credit card. Takes a minute; then add your HTS codes and countries, and your {REVERSE_TRIAL.days}-day trial starts.
           </p>
         </div>
       </div>

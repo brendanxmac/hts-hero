@@ -31,7 +31,7 @@ export const PRICING_FAQS = [
   },
   {
     question: "Do I need a credit card to start?",
-    answer: `No. Create a free account and the ${REVERSE_TRIAL.days}-day Tariff Tracker trial starts on its own. You only add a card if you decide to subscribe.`,
+    answer: `No. Create a free account, add your imports, and the ${REVERSE_TRIAL.days}-day Tariff Tracker trial starts then, with no card. You only add a card if you decide to subscribe.`,
   },
   {
     question: "What counts as an import?",

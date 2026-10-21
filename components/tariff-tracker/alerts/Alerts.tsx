@@ -21,7 +21,7 @@ export const Alerts = () => (
     feature="alerts"
     page="tracker_alerts"
     title="Get Alerts When Tariffs Change on Your Products"
-    teaser={`Every new account gets alerts on up to ${REVERSE_TRIAL.imports} imports free for ${REVERSE_TRIAL.days} days, and Tariff News alerts free, forever.`}
+    teaser={`Every new account gets alerts on up to ${REVERSE_TRIAL.imports} imports free for ${REVERSE_TRIAL.days} days from its first imports, and Tariff News alerts free, forever.`}
     preview={<TableStandIn columns={["Alert", "Products", "Change", "Date"]} />}
   >
     <div className="flex flex-col gap-4">
