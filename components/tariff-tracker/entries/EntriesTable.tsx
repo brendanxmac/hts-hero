@@ -71,7 +71,7 @@ const columnsFor = ({
             product ? (
               <span className="flex flex-col">
                 <span className={`${mono.className} text-sm font-semibold text-base-content`}>{product.entry.element.htsno}</span>
-                <span className="text-xs text-base-content/60">
+                <span className="text-xs text-base-content">
                   {product.entry.country.flag} {product.entry.country.name}
                 </span>
               </span>

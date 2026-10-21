@@ -47,7 +47,7 @@ export default function WelcomeEmail({ footer }: WelcomeEmailProps) {
         <Text style={{ margin: "0 0 12px", fontSize: 13, lineHeight: "20px", color: C.muted }}>
           After {REVERSE_TRIAL.days} days, {FREE_FOREVER_SHORT} stay free, forever. Nothing is deleted.
         </Text>
-        <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
+        <Cta href={siteLink("/tariff-tracker?setup=add", CAMPAIGN)} variant="next">
           Open the Tariff Tracker
         </Cta>
       </Card>

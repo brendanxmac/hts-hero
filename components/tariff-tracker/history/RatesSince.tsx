@@ -33,7 +33,7 @@ const COLUMNS: TableColumnDef<Row, any>[] = [
     cell: ({ row: { original: { p } } }) => (
       <span className="text-left">
         <span className={`${mono.className} font-semibold text-base-content`}>{p.entry.element.htsno}</span>{" "}
-        <span className="text-base-content/70">
+        <span className="text-base-content">
           {p.entry.country.flag} {p.entry.country.name}
         </span>
       </span>

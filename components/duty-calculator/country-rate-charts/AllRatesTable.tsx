@@ -68,7 +68,7 @@ export const AllRatesTable = ({
                   onClick={() => toggle(row.code)}
                   aria-pressed={chosenRow}
                   className={`inline-flex items-center gap-2 text-sm hover:text-primary ${
-                    chosenRow ? "font-semibold text-base-content" : "text-base-content/70"
+                    chosenRow ? "font-semibold text-base-content" : "text-base-content"
                   }`}
                 >
                   <span aria-hidden>{row.flag}</span>

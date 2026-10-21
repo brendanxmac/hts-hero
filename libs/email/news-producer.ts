@@ -17,7 +17,7 @@ import { newsEmailProps, UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForE
 type Db = SupabaseClient
 
 // Events before this aren't sent: subscriptions started here, so the backlog stays on the page
-export const NEWS_ALERTS_FROM = "2026-10-15T00:00:00Z"
+export const NEWS_ALERTS_FROM = "2026-10-21T00:00:00Z"
 // How far back an event is still news
 const INSTANT_WINDOW_DAYS = 7
 

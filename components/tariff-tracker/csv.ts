@@ -18,7 +18,9 @@ export interface ParsedImport<T> {
   errors: CatalogError[];
 }
 
-type Column = "code" | "country" | "value" | "quantity" | "mode";
+export type Column = "code" | "country" | "value" | "quantity" | "mode";
+// Where each column is in a table's rows
+export type Columns = Partial<Record<Column, number>>;
 
 // Header names each column answers to, compared without case, spaces or punctuation
 const ALIASES: Record<Column, string[]> = {
@@ -72,8 +74,8 @@ export const splitRow = (line: string, delimiter: string): string[] => {
 const detectDelimiter = (header: string) =>
   header.includes(",") ? "," : header.includes(";") ? ";" : header.includes("\t") ? "\t" : ",";
 
-const findColumns = (headers: string[]) => {
-  const columns: Partial<Record<Column, number>> = {};
+export const findColumns = (headers: string[]) => {
+  const columns: Columns = {};
   headers.forEach((header, index) => {
     const name = normalize(header);
     (Object.keys(ALIASES) as Column[]).forEach((column) => {
@@ -92,30 +94,45 @@ const readMode = (text: string): TransportMode | null =>
   TRANSPORT_MODES.find((m) => m.id === text.toLowerCase() || m.label.toLowerCase() === text.toLowerCase())?.id ??
   null;
 
-export const parseCsv = <T>(text: string, findElement: (digits: string) => T | undefined): ParsedImport<T> => {
+// A CSV's rows as fields, one row per line (blank lines kept, so row numbers are line numbers)
+export const tableFromText = (text: string): string[][] => {
   // A byte order mark (Excel adds one) would hide the first header
   const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/);
-  const headerIndex = lines.findIndex((l) => l.trim());
-  if (headerIndex === -1) return { entries: [], errors: [] };
+  const first = lines.find((l) => l.trim());
+  if (!first) return [];
+  const delimiter = detectDelimiter(first);
+  return lines.map((l) => (l.trim() ? splitRow(l, delimiter) : []));
+};
 
-  const delimiter = detectDelimiter(lines[headerIndex]);
-  const columns = findColumns(splitRow(lines[headerIndex], delimiter));
+export const parseCsv = <T>(text: string, findElement: (digits: string) => T | undefined): ParsedImport<T> => {
+  const rows = tableFromText(text);
+  const headerIndex = rows.findIndex((r) => r.length > 0);
+  if (headerIndex === -1) return { entries: [], errors: [] };
+  const columns = findColumns(rows[headerIndex]);
   // No header we know: read it like a pasted list
   if (columns.code === undefined || columns.country === undefined) return parseCatalog(text, findElement);
+  return parseTable(rows, headerIndex, columns, findElement);
+};
 
+// A table's products (rows after `headerIndex`; -1 when there's no header), from the columns
+// given: a CSV's, or a spreadsheet's (spreadsheet.ts). Row numbers are 1-based, as the user sees them.
+export const parseTable = <T>(
+  rows: string[][],
+  headerIndex: number,
+  columns: Columns,
+  findElement: (digits: string) => T | undefined
+): ParsedImport<T> => {
   const entries: ImportedEntry<T>[] = [];
   const errors: CatalogError[] = [];
-  lines.forEach((raw, index) => {
+  rows.forEach((fields, index) => {
     const line = index + 1;
-    const trimmed = raw.trim();
-    if (index <= headerIndex || !trimmed) return;
-    const fields = splitRow(raw, delimiter);
-    if (fields.every((f) => !f)) return;
+    if (index <= headerIndex || fields.every((f) => !f?.trim())) return;
+    const trimmed = fields.filter((f) => f?.trim()).join(", ");
     const field = (column: Column) => (columns[column] === undefined ? "" : fields[columns[column]!] ?? "");
     const fail = (message: string) => errors.push({ line, text: trimmed, message });
 
     const product = readProduct(field("code"), field("country"), findElement);
-    if ("message" in product) return fail(product.message);
+    if ("message" in product) return errors.push({ line, text: trimmed, message: product.message, code: field("code").trim(), country: field("country").trim() });
 
     const adjustments: Adjustments = {};
     if (field("value")) {

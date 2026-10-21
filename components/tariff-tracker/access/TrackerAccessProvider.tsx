@@ -14,6 +14,7 @@ import {
   NO_USAGE,
   TrackerAccess,
   trackerAccessFrom,
+  trialNotStarted,
 } from "@/libs/tariff-tracker/plan";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { TrackerAccessContext, TrackerAccessValue } from "./accessContext";
@@ -28,7 +29,7 @@ import { UpgradeDialog } from "./UpgradeDialog";
 
 // Signed in, plan unknown (the request failed): the free plan, without a trial date (so nothing
 // says the trial ended); the server decides what's actually covered
-const FALLBACK_ACCESS: TrackerAccess = { ...trackerAccessFrom({ usage: NO_USAGE, activePlans: [], now: Infinity }), trialEndsAt: null };
+const FALLBACK_ACCESS: TrackerAccess = { ...trackerAccessFrom({ usage: NO_USAGE, activePlans: [], trialStartedAt: "2000-01-01T00:00:00Z", now: Infinity }), trialEndsAt: null };
 
 export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => {
   const { user, isLoading: userLoading } = useUser();
@@ -89,6 +90,14 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     return () => clearTimeout(retry);
   }, [userId, load]);
 
+  // After something on the server changed the plan (the first imports start the trial)
+  const refreshAccess = useCallback(() => {
+    if (!userId) return;
+    load()
+      .then(setAccess)
+      .catch((e: unknown) => console.error("Error refreshing Tariff Tracker access:", e));
+  }, [userId, load]);
+
   const value: TrackerAccessValue = useMemo(() => {
     const signedIn = Boolean(userId);
     const openUpgrade = (feature: PremiumFeature) => {
@@ -146,8 +155,9 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
         else openUpgrade(feature);
       },
       unlockLabel: !signedIn ? "Create a free account" : "See plans",
+      refreshAccess,
     };
-  }, [access, loading, userLoading, userId, user?.email]);
+  }, [access, loading, userLoading, userId, user?.email, refreshAccess]);
 
   // Back from the calculator's sign-up for a Tracker feature (`trial=<feature>`): the trial is
   // already on, so say what it includes. `upgrade=<feature>` opens the plans for that feature,
@@ -163,7 +173,9 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
     if (trial && !value.paid) {
       toast.success(
-        value.access.kind === "trial"
+        trialNotStarted(value.access)
+          ? `Your ${REVERSE_TRIAL.days}-day free trial is ready. It starts when you add your imports to the Tariff Tracker.`
+          : value.access.kind === "trial"
           ? `Your ${REVERSE_TRIAL.days}-day free trial is on: everything in the Tariff Tracker, on up to ${REVERSE_TRIAL.imports} imports.`
           : "Your free plan is on: Tariff News alerts, sourcing insights and your whole catalog.",
         { duration: 6000 }

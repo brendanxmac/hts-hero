@@ -109,7 +109,10 @@ const ideaColumns = (year?: number): TableColumnDef<SourcingIdea, any>[] => [
           {product.description}
         </span>
         <span className="text-xs text-base-content/60">
-          From {product.entry.country.flag} {product.entry.country.name}
+          From{" "}
+          <span className="text-base-content">
+            {product.entry.country.flag} {product.entry.country.name}
+          </span>
         </span>
       </span>
     ),

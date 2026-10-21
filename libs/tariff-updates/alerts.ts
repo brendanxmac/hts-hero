@@ -3,7 +3,7 @@ import type { HtsElement } from "../../interfaces/hts"
 import type { AlertedImport, ImpactAlertEmailProps } from "../../emails/tariff-updates/ImpactAlertEmail"
 import { readAdjustments } from "../../components/tariff-tracker/adjustments"
 import { alertKinds, alertsOn, type AlertSettingsRow } from "../../components/tariff-tracker/alerts/alertPrefs"
-import { readCatalog } from "../../components/tariff-tracker/catalog"
+import { readCatalog, realItems } from "../../components/tariff-tracker/catalog"
 import { NEWS_ALERTS_FROM } from "../email/news-producer"
 import { createBatch, type OutboxMessage } from "../email/outbox"
 import { accountSubscriber, subscriberFooter } from "../email/subscribers"
@@ -129,7 +129,8 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
     const prefs = settings.find((s) => s.user_id === userId)
     if (!alertsOn(prefs) || !alertKinds(prefs).includes(update.kind)) continue
     const catalog = catalogs.find((c) => c.user_id === userId)
-    const items = catalog ? (readCatalog(JSON.stringify(catalog.items)) ?? []) : []
+    // The example list isn't theirs: never alerted
+    const items = catalog ? realItems(readCatalog(JSON.stringify(catalog.items)) ?? []) : []
     const products = trackedProducts(items, catalog ? readAdjustments(JSON.stringify(catalog.adjustments)) : {}, htsElements)
     const byKey = new Map(products.map((p) => [p.key, p]))
     const access = await readTrackerAccess(db, userId)

@@ -52,7 +52,7 @@ export const RecentlyHit = ({ input, count = 8 }: { input: InsightsInput; count?
                 <span className="min-w-0">
                   <span className="flex items-center gap-2">
                     <span className={`${mono.className} font-semibold text-base-content`}>{c.product.entry.element.htsno}</span>
-                    <span className="truncate text-base-content/70">
+                    <span className="truncate text-base-content">
                       {c.product.entry.country.flag} {c.product.entry.country.name}
                     </span>
                   </span>

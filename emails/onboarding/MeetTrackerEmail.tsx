@@ -30,10 +30,10 @@ export default function MeetTrackerEmail({ optInUrl, footer }: MeetTrackerEmailP
       <P>US tariffs change every week. Your account now watches your imports for you. Add them once (just HTS codes and countries) to:</P>
       <Checklist items={TRACKER_POINTS} />
       <P>
-        Your account gets the full Tariff Tracker free for {REVERSE_TRIAL.days} days, on up to {REVERSE_TRIAL.imports} imports, with no credit card and nothing to start.
+        Your account gets the full Tariff Tracker free for {REVERSE_TRIAL.days} days, on up to {REVERSE_TRIAL.imports} imports, with no credit card. The 14 days start when you add your imports.
         After that, {FREE_FOREVER_SHORT} stay free, forever.
       </P>
-      <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
+      <Cta href={siteLink("/tariff-tracker?setup=add", CAMPAIGN)} variant="next">
         Add my imports
       </Cta>
       <Panel>

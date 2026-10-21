@@ -178,25 +178,6 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
               </p>
             </div>
 
-            {/* {stats && stats.changes12m > 0 && (
-              <div className={`${tt.tile} flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:gap-3`}>
-                <BoltIcon className="hidden h-5 w-5 shrink-0 text-error sm:block" aria-hidden />
-                <p className="m-0 text-sm text-base-content/75">
-                  In the last 12 months, <span className={`${tt.numberChip("error")} font-semibold tabular-nums`}>{number(stats.changes12m)}</span> tariff{" "}
-                  {stats.changes12m === 1 ? "change" : "changes"} hit{" "}
-                  <span className={`${tt.numberChip("primary")} font-semibold tabular-nums`}>{number(stats.productsHit12m)}</span> of your imports.
-                  {stats.biggestRise && (
-                    <>
-                      {" "}
-                      The biggest: <span className={`${tt.numberChip("error")} font-semibold tabular-nums`}>+{stats.biggestRise.pct}%</span> on{" "}
-                      <span className="font-semibold text-base-content">{stats.biggestRise.code}</span> from {stats.biggestRise.country}.
-                    </>
-                  )}{" "}
-                  The next one could land any day.
-                </p>
-              </div>
-            )} */}
-
             {/* The tiers, the one that fits picked out */}
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {TRACKER_PLANS.map((plan) => {

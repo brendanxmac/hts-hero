@@ -4,6 +4,7 @@
 //   npm run tariff-sources:collect -- --since 2026-07-01            # backfill from a date
 //   npm run tariff-sources:collect -- --since 2026-07-01 --source csms --source ustr
 //   npm run tariff-sources:collect -- --since 2026-10-01 --dry-run  # print, store nothing
+//   npm run tariff-sources:collect -- --since 2025-11-01 --until 2025-11-30   # one period only
 //
 // Needs NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (.env.local) unless --dry-run.
 
@@ -29,13 +30,17 @@ const main = async () => {
   const sinceArg = arg("since") ?? fail("--since YYYY-MM-DD is required.")
   if (!/^\d{4}-\d{2}-\d{2}$/.test(sinceArg)) fail("--since must be YYYY-MM-DD.")
   const since = new Date(`${sinceArg}T00:00:00Z`)
+  const untilArg = arg("until")
+  if (untilArg !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(untilArg)) fail("--until must be YYYY-MM-DD.")
+  // Through the end of that day
+  const until = untilArg ? new Date(`${untilArg}T23:59:59Z`) : undefined
   const sources = all("source") as SourceId[]
   const unknown = sources.filter((s) => !SOURCE_IDS.includes(s))
   if (unknown.length) fail(`Unknown source ${unknown.join(", ")}. Sources: ${SOURCE_IDS.join(", ")}`)
 
   if (args.includes("--dry-run")) {
     for (const collector of COLLECTORS.filter((c) => !sources.length || sources.includes(c.id))) {
-      const items = await collector.collect({ since, backfill: true })
+      const items = (await collector.collect({ since, until, backfill: true })).filter((item) => !until || new Date(item.publishedAt) <= until)
       const tariffish = items.filter((item) => matchTerms(item.title, item.summary).length)
       console.log(`\n${collector.id}: ${items.length} items, ${tariffish.length} with tariff terms`)
       for (const item of items.slice(0, 5)) console.log(`  ${item.publishedAt.slice(0, 16)}  ${item.docType ?? ""}  ${item.title.slice(0, 100)}`)
@@ -50,6 +55,7 @@ const main = async () => {
 
   const results = await collectSources(createClient(url, key), {
     since,
+    until,
     backfill: true,
     trigger: "backfill",
     sources: sources.length ? sources : undefined,

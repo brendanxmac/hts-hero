@@ -15,6 +15,7 @@
 ALTER TABLE tariff_updates
   ADD COLUMN IF NOT EXISTS scope_codes               text[],   -- covered: HTS codes, headings or "Chapter NN"
   ADD COLUMN IF NOT EXISTS scope_excluded_codes      text[],   -- carved out of the codes above
+  ADD COLUMN IF NOT EXISTS scope_conditional_exclusions jsonb, -- [{condition, codes}]: carved out only for a use or claim (still matched, shown as "may be exempt")
   ADD COLUMN IF NOT EXISTS scope_countries           text[],   -- ISO alpha-2, or ['ALL']
   ADD COLUMN IF NOT EXISTS scope_excluded_countries  text[],
   ADD COLUMN IF NOT EXISTS scope_headings            text[],   -- Chapter 99 headings it creates or changes

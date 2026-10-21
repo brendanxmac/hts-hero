@@ -5,7 +5,7 @@ import { getUsImports } from "../us-imports-server"
 import { readTrackerAccess } from "./access"
 import { byDuty, checksLeft, savingsUnlocked } from "./plan"
 import { readAdjustments, type Adjustments } from "../../components/tariff-tracker/adjustments"
-import { readCatalog, type CatalogItem } from "../../components/tariff-tracker/catalog"
+import { readCatalog, realItems, type CatalogItem } from "../../components/tariff-tracker/catalog"
 import { catalogChanges, productHistory, type ProductHistory } from "../../components/tariff-tracker/insights/catalogHistory"
 import { bestSavings, productSavings, type Saving } from "../../components/tariff-tracker/insights/savings"
 import { opportunityKey } from "../../components/tariff-tracker/opportunities/review"
@@ -90,7 +90,8 @@ export const coveredKeys = (items: CatalogItem[], products: TrackedProduct[], li
 export const computeSnapshot = async (db: Db, userId: string, htsElements: HtsElement[]): Promise<TrackerSnapshot | null> => {
   const { data: catalog } = await db.from("tracker_catalogs").select("items, adjustments, updated_at").eq("user_id", userId).maybeSingle()
   // Stored the way the Tracker saves it (catalogSync.ts), read the way it reads it
-  const items = catalog ? (readCatalog(JSON.stringify(catalog.items)) ?? []) : []
+  // The user's own imports: the example list isn't counted (onboarding emails quote these)
+  const items = catalog ? realItems(readCatalog(JSON.stringify(catalog.items)) ?? []) : []
   const adjustments = catalog ? readAdjustments(JSON.stringify(catalog.adjustments)) : {}
   const [access, { data: opportunities }] = await Promise.all([
     readTrackerAccess(db, userId),

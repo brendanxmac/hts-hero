@@ -4,6 +4,7 @@
 //   npm run tariff-updates:process
 //   npm run tariff-updates:process -- --retry-errors   # clear failed items' errors first
 //   npm run tariff-updates:process -- --sort 50 --read 10 --group 10   # one small sample run, to see costs
+//   npm run tariff-updates:process -- --before 2025-12-01   # only items published before a date (a backfill)
 //
 // Needs NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and ANTHROPIC_API_KEY (.env.local).
 
@@ -61,6 +62,9 @@ const main = async () => {
   }
 
   const limits: StepLimits = { sort: numberArg("sort"), read: numberArg("read"), group: numberArg("group") }
+  const beforeIndex = args.indexOf("--before")
+  const before = beforeIndex >= 0 ? args[beforeIndex + 1] : undefined
+  if (before !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(before)) fail("--before must be YYYY-MM-DD.")
   const sample = Object.values(limits).some((n) => n !== undefined)
   const total = { sort: 0, read: 0, group: 0 }
   const asked = { sort: 0, read: 0, group: 0 }
@@ -68,6 +72,7 @@ const main = async () => {
   for (let round = 1; ; round++) {
     const r = await processTariffUpdates(db, {
       deadline: Date.now() + 10 * 60 * 1000,
+      before,
       // A sample run skips the steps it wasn't given a number for
       limits: sample ? { sort: limits.sort ?? 0, read: limits.read ?? 0, group: limits.group ?? 0 } : undefined,
     })

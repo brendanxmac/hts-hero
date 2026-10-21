@@ -25,13 +25,13 @@ export const TRIAL_ALLOWANCE = {
 } as const;
 
 // The Tariff Tracker's reverse trial (PRICING.md): every account gets everything the Tracker sells,
-// on up to `imports` imports, for `days` days from sign-up, with no card and nothing to start.
+// on up to `imports` imports, for `days` days from the account's first imports, with no card and nothing to start.
 // Accounts made before `freshStartOn` get their `days` from that day instead (set it to the deploy
 // day). After it, the account is on the free plan: TRIAL_ALLOWANCE.alertImports tracked imports.
 export const REVERSE_TRIAL = {
   days: 14,
   imports: 200,
-  freshStartOn: "2026-10-20",
+  freshStartOn: "2026-10-21",
 } as const;
 
 // Tariff Tracker is priced by the number of imports (HTS code + country of origin pairs) it covers.

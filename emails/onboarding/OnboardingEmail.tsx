@@ -1,86 +1,88 @@
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { AlertSample, Checklist, Chip, Cta, Eyebrow, P, PlanStrip, Signature, Title, UpdateSummary } from "../kit/parts"
+import { AlertSample, Checklist, Cta, Eyebrow, P, Panel, PlanStrip, Signature, Title, UpdateBlock, UpdateSummary } from "../kit/parts"
 import { siteLink } from "../kit/brand"
-import { AUDITS_ENABLED, SAVINGS_AUDITS_LABEL, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
-import { AUTO_AUDITING, SAVINGS_DETECTION } from "../../components/ui/marketing/comingSoon"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
-// The "no imports yet" onboarding emails. Both lead to one thing, adding imports, and land on the
-// Tracker's Add products dialog (?tab=catalog&add=paste):
-//   step 1 (day 1)  excitement: everything the Tracker does for them, then add your imports (only
-//                   sent while they have none)
-//   step 2 (day 4)  the Tracker is still empty: what an alert on your imports looks like
+// The "no imports yet" email the day after an account first opened the Tracker and left it empty
+// (libs/email/lifecycle.ts tracker_no_imports_1). Value first: the tariff actions of the last 30
+// days, the latest ones in full, and the question only their imports can answer. Then the three
+// ways in from the Tracker's takeover, and what to do without the list (ask the broker). The CTA
+// lands on the takeover's ways in (?setup=add). `reminder`: they asked for it ("Remind me tomorrow").
+//   step 2 (no longer sent, kept for queued messages): what an alert on your imports looks like
 
 export interface OnboardingEmailProps {
   step: 1 | 2
-  // Tariff actions in the last 30 days, and the latest ones (no longer shown, kept for queued messages)
+  // Tariff actions in the last 30 days, and the latest ones
   actionsThisMonth: number
   recent: UpdateSummary[]
+  // They pressed "Remind me tomorrow" in the takeover
+  reminder?: boolean
   footer: EmailFooter
 }
 
 const actions = (n: number) => (n > 0 ? `${n} US tariff changes in the last 30 days` : "US tariffs change every week")
 
-export const onboardingSubject = (p: OnboardingEmailProps) => (p.step === 1 ? "You just made tariffs easy" : "Which new tariffs hit your imports?")
+export const onboardingSubject = (p: OnboardingEmailProps) =>
+  p.step === 2
+    ? "Which new tariffs hit your imports?"
+    : p.reminder
+      ? "Your reminder: add your imports"
+      : p.actionsThisMonth > 0
+        ? `${p.actionsThisMonth} tariff changes this month. Do any hit your imports?`
+        : "Do this week's tariff changes hit your imports?"
 
 const preview = (p: OnboardingEmailProps) =>
   p.step === 1
-    ? "No more tracking rates by hand. Here's everything your Tariff Tracker does for you."
+    ? "Add your imports and your Tracker shows which ones every change hits. About a minute, three ways to do it."
     : `${actions(p.actionsThisMonth)}. Your Tracker can tell you which ones hit you, once your imports are in.`
 
 const CAMPAIGN = (step: number) => `onboarding-${step}`
 
-// Opens the Add products dialog on the paste step (ProductCatalog's ?add=)
-export const ADD_IMPORTS_URL = "/tariff-tracker?tab=catalog&add=paste"
+// Opens the Tracker's import takeover on its ways in (ImportTakeover's ?setup=)
+export const ADD_IMPORTS_URL = "/tariff-tracker?setup=add"
 
 export default function OnboardingEmail(props: OnboardingEmailProps) {
-  const { step, actionsThisMonth, footer } = props
+  const { step, actionsThisMonth, recent, reminder, footer } = props
   const campaign = CAMPAIGN(step)
   if (step === 1) {
     return (
       <EmailLayout preview={preview(props)} footer={footer}>
-        <Eyebrow>Welcome to Tariff Tracker</Eyebrow>
-        <Title>You just made tariffs a whole lot easier</Title>
-        <P>No more digging through the HTS, Federal Register notices and CBP messages. Tariff Tracker does it for you:</P>
+        <Eyebrow tone="up">{reminder ? "Your reminder" : "Tariff Tracker"}</Eyebrow>
+        <Title>{actionsThisMonth > 0 ? `${actionsThisMonth} tariff changes in 30 days. Which hit you?` : "Which tariff changes hit your imports?"}</Title>
+        <P>
+          {reminder ? "Here's the reminder you asked for. " : ""}Your Tariff Tracker is set up and watching every US tariff action. It just doesn&apos;t know what you
+          import yet, so it can&apos;t tell you which of these hit you:
+        </P>
+        {recent.slice(0, 2).map((u) => (
+          <UpdateBlock key={u.slug} update={u} campaign={campaign} compact />
+        ))}
+        <P>
+          <strong>Add your imports in about a minute</strong>, any of three ways:
+        </P>
         <Checklist
           items={[
             <>
-              <strong>Every rate, always current.</strong> The full duty on each import, line by line, updated the moment anything changes.
+              <strong>Paste a list.</strong> Copy the HTS code and country of origin columns from any spreadsheet.
             </>,
             <>
-              <strong>Alerts before it costs you.</strong> When a new tariff hits one of your imports, you hear about it first, by email, Slack or Teams. AD/CVD alerts
-              included.
+              <strong>Upload a spreadsheet.</strong> Excel or CSV, as it is. We find the right columns.
             </>,
-            // The Tracker MVP (features.ts): impact checks and exports in place of savings and audits
-            ...(SAVINGS_ENABLED || AUDITS_ENABLED
-              ? [
-                  <>
-                    <strong>Savings you may qualify for.</strong> Trade programs, exclusions and lower-duty countries, checked for every import.
-                  </>,
-                  <>
-                    <strong>Duty you may have overpaid.</strong> Audit past entries against the rates in force on the day.
-                  </>,
-                ]
-              : [
-                  <>
-                    <strong>Impact checks.</strong> Pick any tariff action and see exactly how it affects each of your imports.
-                  </>,
-                  <>
-                    <strong>Every tariff, exported.</strong> The full duty on every import, to CSV or Excel in one click.
-                  </>,
-                  <>
-                    <strong>Savings and audits, on their way.</strong> {SAVINGS_DETECTION.name} and {AUTO_AUDITING.name.toLowerCase()}: programs you may qualify for, and
-                    possible over- and underpayments flagged, included when they launch <Chip tone="heads-up">{SAVINGS_AUDITS_LABEL}</Chip>
-                  </>,
-                ]),
+            <>
+              <strong>Start from your searches.</strong> The imports you looked up in the duty calculator, in one click.
+            </>,
           ]}
         />
+        <Panel>
+          <P small>
+            <strong>No list to hand?</strong> Your customs broker has every entry you&apos;ve filed. Ask them for the HTS codes and countries of origin on your entries from
+            the last 12 months, and drop their spreadsheet straight in.
+          </P>
+        </Panel>
         <P>
-          Your free {REVERSE_TRIAL.days}-day trial includes all of it, on up to {REVERSE_TRIAL.imports} imports, with no credit card. It all starts with your imports.
-          Paste your HTS codes and countries, and you&apos;re set in about a minute.
+          Your free {REVERSE_TRIAL.days}-day trial starts when you add them: everything the Tracker does, on up to {REVERSE_TRIAL.imports} imports, no credit card.
         </P>
         <Cta href={siteLink(ADD_IMPORTS_URL, campaign)} variant="next">
-          Add your imports &rarr;
+          Add my imports &rarr;
         </Cta>
         <Signature />
         <PlanStrip campaign={campaign} />
@@ -126,6 +128,7 @@ const SAMPLE: UpdateSummary = {
 
 OnboardingEmail.PreviewProps = {
   step: 1,
+  reminder: false,
   actionsThisMonth: 14,
   recent: [SAMPLE],
   footer: {

@@ -74,7 +74,7 @@ const codeList = (v: unknown) =>
 
 // The update's scope, from review:
 // { action: "read-scope" } has the reader read its PDFs again (replacing an admin's scope);
-// { action: "save-scope", codes, excludedCodes, countries, excludedCountries, headings } sets it
+// { action: "save-scope", codes, excludedCodes, conditionalExclusions, countries, excludedCountries, headings } sets it
 // by hand (kept from then on). Either way the users' matches are worked out again.
 export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -98,6 +98,9 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         .update({
           scope_codes: codeList(body.codes),
           scope_excluded_codes: codeList(body.excludedCodes),
+          scope_conditional_exclusions: (Array.isArray(body.conditionalExclusions) ? body.conditionalExclusions : [])
+            .map((c: { condition?: unknown; codes?: unknown }) => ({ condition: String(c?.condition ?? "").trim(), codes: codeList(c?.codes) }))
+            .filter((c: { condition: string; codes: string[] }) => c.condition && c.codes.length),
           scope_countries: iso(body.countries),
           scope_excluded_countries: iso(body.excludedCountries).filter((c) => c !== "ALL"),
           scope_headings: codeList(body.headings),

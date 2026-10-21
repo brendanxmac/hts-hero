@@ -43,7 +43,7 @@ export const AverageByCountryChart = ({
                 className="grid w-full grid-cols-[7rem_minmax(0,1fr)_3rem] items-center gap-3 rounded-md px-1.5 py-1 text-left hover:bg-base-200"
                 aria-label={`${row.name}: ${pct(average)} average`}
               >
-                <span className={`truncate text-sm ${chosenRow ? "font-semibold text-base-content" : "text-base-content/70"}`}>
+                <span className={`truncate text-sm ${chosenRow ? "font-semibold text-base-content" : "text-base-content"}`}>
                   <span aria-hidden className="mr-1.5">{row.flag}</span>
                   {row.name}
                 </span>
@@ -53,7 +53,7 @@ export const AverageByCountryChart = ({
                     style={{ width: barWidth(average, maxAverage), background: barOf(row.code) }}
                   />
                 </span>
-                <span className={`text-right text-sm ${chosenRow ? "font-semibold text-base-content" : "text-base-content/70"}`}>
+                <span className={`text-right text-sm ${chosenRow ? "font-semibold text-base-content" : "text-base-content"}`}>
                   {pct(average)}
                 </span>
               </button>

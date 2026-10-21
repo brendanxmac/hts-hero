@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { readAdjustments, writeAdjustments } from "./adjustments";
@@ -80,6 +80,23 @@ export const resolveCatalog = ({
   return { next: account, push: false };
 };
 
+// Whose catalog this device has loaded from the account, this visit: until then a signed-in
+// catalog that looks empty may just not be here yet (the import takeover waits for it)
+let syncedFor: string | null = null;
+const syncedListeners = new Set<() => void>();
+const markSynced = (userId: string) => {
+  syncedFor = userId;
+  syncedListeners.forEach((l) => l());
+};
+const subscribeSynced = (l: () => void) => {
+  syncedListeners.add(l);
+  return () => {
+    syncedListeners.delete(l);
+  };
+};
+export const useCatalogSynced = (userId: string | null | undefined) =>
+  useSyncExternalStore(subscribeSynced, () => Boolean(userId) && syncedFor === userId, () => false);
+
 // userId: null when signed out; undefined while that's still being found out
 export const useCatalogSync = (userId: string | null | undefined) => {
   useEffect(() => {
@@ -128,6 +145,7 @@ export const useCatalogSync = (userId: string | null | undefined) => {
       if (next !== device) replaceCatalog(next);
       writeOwner(userId);
       loaded = true;
+      markSynced(userId);
       if (push) await save();
       else markCatalogSaved();
       trackEvent(MixpanelEvent.TARIFF_TRACKER_CATALOG_SYNCED, {

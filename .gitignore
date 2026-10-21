@@ -51,3 +51,7 @@ tariffs/revision-diffs/
 
 # next dev --experimental-https
 certificates
+
+# Local previews without sign-in: never commit or deploy
+/app/zz-*/
+.vscode/

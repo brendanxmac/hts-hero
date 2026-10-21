@@ -1,19 +1,7 @@
 "use client";
 
-import { AddProductsPanel } from "./AddProductsPanel";
-import { ExamplePreview } from "./ExamplePreview";
-import { NewsTape } from "./NewsTape";
-import { OverviewHeader } from "./OverviewHeader";
-import { RecentLookups } from "./RecentLookups";
+import { SetupPage } from "../onboarding/SetupPanel";
 
-// The Overview before there are any products: the latest tariff news (why it matters), the ask,
-// a head start from the user's recent calculator lookups, then an example of what they'll get
-export const EmptyOverview = () => (
-  <div className="flex flex-col gap-4">
-    <NewsTape />
-    <OverviewHeader title="Let's Build Your Tariff Dashboard" />
-    <AddProductsPanel />
-    <RecentLookups />
-    <ExamplePreview />
-  </div>
-);
+// The Overview before there are any products: the whole page is the pitch for adding them
+// (SetupPage), with the latest tariff actions in it. No example dashboard.
+export const EmptyOverview = () => <SetupPage from="overview" />;

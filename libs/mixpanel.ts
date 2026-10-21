@@ -121,6 +121,13 @@ export enum MixpanelEvent {
   /** "Send Test" for a Slack or Teams channel in the Alerts tab */
   TARIFF_TRACKER_ALERT_TEST_SENT = "Tariff Tracker Alert Test Sent",
   TARIFF_TRACKER_LOOKUPS_ADDED = "Tariff Tracker Lookups Added",
+  // The first-run import takeover (components/tariff-tracker/onboarding): shown, each step seen,
+  // imports added through it, skipped (and why), and the "don't have it handy" help used
+  TARIFF_TRACKER_ONBOARDING_SHOWN = "Tariff Tracker Onboarding Shown",
+  TARIFF_TRACKER_ONBOARDING_STEP = "Tariff Tracker Onboarding Step",
+  TARIFF_TRACKER_ONBOARDING_COMPLETED = "Tariff Tracker Onboarding Completed",
+  TARIFF_TRACKER_ONBOARDING_SKIPPED = "Tariff Tracker Onboarding Skipped",
+  TARIFF_TRACKER_ONBOARDING_HELP_USED = "Tariff Tracker Onboarding Help Used",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** A tool call to the MCP server (Claude, ChatGPT and other AI clients) */

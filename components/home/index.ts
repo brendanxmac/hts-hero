@@ -12,3 +12,4 @@ export { OfferCta } from "./cta/OfferCta";
 export { DEFINITION, HOME_FAQS } from "./lib/copy";
 // The HTS code + country lookup, for any page that opens the calculator
 export { QuickLookup } from "./hero/QuickLookup";
+export { WelcomeNotice } from "./welcome/WelcomeNotice";

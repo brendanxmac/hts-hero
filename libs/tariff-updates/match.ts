@@ -19,6 +19,9 @@ export interface UpdateScope {
   codes: string[]
   // Digit prefixes carved out of them
   excludedCodes: string[]
+  // Carved out only for a use or a claim ("for use in civil aircraft"): an import named here may be
+  // exempt, but it's still matched
+  conditional: { condition: string; codes: string[] }[]
   excludedCountries: string[]
   // Chapter 99 headings it names ("9903.81.90")
   headings: string[]
@@ -33,6 +36,7 @@ export interface MatchableUpdate {
   // The scope read from the update's PDFs or set in review (scope.ts), when there is one
   scope_codes?: string[] | null
   scope_excluded_codes?: string[] | null
+  scope_conditional_exclusions?: { condition: string; codes: string[] }[] | null
   scope_countries?: string[] | null
   scope_excluded_countries?: string[] | null
   scope_headings?: string[] | null
@@ -109,7 +113,10 @@ const countryCodes = (raw: string[]) =>
   )
 
 // What an update covers: its scope when one was read or set, else what its sources named
-export const scopeOf = (u: Pick<MatchableUpdate, "hts_codes" | "countries" | "scope_codes" | "scope_excluded_codes" | "scope_countries" | "scope_excluded_countries" | "scope_headings">): UpdateScope => {
+export const scopeOf = (
+  u: Pick<MatchableUpdate, "hts_codes" | "countries" | "scope_codes" | "scope_excluded_codes" | "scope_countries" | "scope_excluded_countries" | "scope_headings"> &
+    Pick<Partial<MatchableUpdate>, "scope_conditional_exclusions">
+): UpdateScope => {
   const scoped = !!u.scope_codes
   const headings = new Set<string>()
   prefixes(u.scope_headings ?? [], headings)
@@ -122,6 +129,7 @@ export const scopeOf = (u: Pick<MatchableUpdate, "hts_codes" | "countries" | "sc
     allProducts: scoped && (u.scope_codes!.some((c) => c.trim().toUpperCase() === "ALL") || (!codes.length && excludedCodes.length > 0)),
     codes,
     excludedCodes,
+    conditional: (u.scope_conditional_exclusions ?? []).map((c) => ({ condition: c.condition, codes: prefixes(c.codes) })).filter((c) => c.codes.length),
     excludedCountries: countryCodes(u.scope_excluded_countries ?? []),
     headings: Array.from(headings),
     countries: countries.includes("ALL") ? "all" : countries,
@@ -142,6 +150,12 @@ export const matchImport = (scope: UpdateScope, item: MatchableImport): Exclude<
     return named && (countryNamed || (scope.countries !== "all" && !scope.countries.length)) ? "likely" : null
   }
   return scope.countries !== "all" && scope.countries.includes(country) ? "possible" : null
+}
+
+// The conditions under which an import may be exempt from the update ("for use in civil aircraft")
+export const mayBeExempt = (scope: UpdateScope, code: string) => {
+  const digits = code.replace(/\D/g, "")
+  return scope.conditional.filter((c) => c.codes.some((prefix) => codeExcluded(prefix, digits))).map((c) => c.condition)
 }
 
 // The prefix (or range) in an update's scope that names an import's code, if one does

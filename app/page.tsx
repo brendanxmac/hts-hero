@@ -15,6 +15,7 @@ import {
   ToolShowcase,
   ClassifySection,
   ManagedSection,
+  WelcomeNotice,
 } from "@/components/home";
 import { Testimonials } from "@/components/classify-landing";
 import { monitorFacts } from "@/components/tariff-monitor";
@@ -109,6 +110,7 @@ export default async function Home() {
           })),
         })}
         <main className={`${mk.page} w-full flex-1 shrink-0`}>
+          <WelcomeNotice />
           <HeroTicker />
           <ToolShowcase
             example={example}

@@ -1,6 +1,6 @@
 # Deploying the PLG / Tariff Tracker release
 
-The release on `release/2026-10-10` (170+ commits since `master`, Oct 8 to Oct 19): the free Tariff
+The release on `release/2026-10-10` (194 commits since `master`, Oct 8 to Oct 20, plus the uncommitted import onboarding from Oct 20): the free Tariff
 Calculator rework, the Tariff Tracker with alerts, impact checks, Insights, rate history and
 Tariff News, AD/CVD flags, the tariff sources and updates pipeline, the email outbox and lifecycle
 emails, the 14-day reverse trial, launch pricing, the Content Studio, and a framework upgrade
@@ -9,8 +9,8 @@ order; tick items as they land, and add new ones as they come up.
 
 ## 1. Before merging
 
-- [ ] **Pick the deploy day, then set the dates around it.** `freshStartOn` is `2026-10-20`
-      (tomorrow as of Oct 19): if you deploy later, move it to the real day (see below). The
+- [ ] **Pick the deploy day, then set the dates around it.** `freshStartOn` is `2026-10-21`
+      (the planned deploy day): if you deploy later, move it to the real day (see below). The
       "Coming Oct 2026" label leaves only days in October: change it now if savings and audits
       won't ship by Oct 31.
 - [ ] **Vercel Node version 20.9 or newer** (Project Settings → Build and Deployment → Node.js
@@ -22,20 +22,33 @@ order; tick items as they land, and add new ones as they come up.
 - [ ] **Commit everything except** `.vscode/` and every `app/zz-*` folder (`app/zz-tracker/`,
       `app/zz-adcvd/`: local previews without sign-in). They must never be committed or deployed.
 - [ ] **Set the trial's fresh start to the deploy day**: `REVERSE_TRIAL.freshStartOn` in
-      `components/pricing-calculator/lib/pricing.ts` (now `2026-10-20`). Existing accounts get 14 days
+      `components/pricing-calculator/lib/pricing.ts` (now `2026-10-21`). Existing accounts get 14 days
       from it; a date before the deploy shortens their trial.
 - [ ] **Confirm the launch-pricing deadline**: `LAUNCH_PRICING` (now Fri, Nov 13, 2026). Savings
       detection and auditing are sold everywhere as "Coming Oct 2026" (`SAVINGS_AUDITS_LABEL`); if
       they slip, change the label.
+- [ ] **Apply `supabase/migrations/tracker_onboarding.sql` on the deploy day** (paste into the SQL
+      editor; added 2026-10-20). It adds `tracker_onboarding` (sign-up source, first Tracker visit,
+      skip reason, trial start), the trigger on `tracker_catalogs` that starts the 14-day trial at the
+      first real (non-example) import, and the backfill for accounts that already have imports. Its
+      backfill date (`2026-10-21`) must match `REVERSE_TRIAL.freshStartOn`: move both together.
+      Until it's applied the app falls back to sign-up-based trials and emails.
 - [ ] **Regenerate the auth emails** (their copy changed for the trial): `npm run email:auth`.
 - [ ] **Run the checks**: `npm run tests`, `npx tsc --noEmit -p .`, and a production build
       (`npm run build`).
 - [ ] **Test signed in, in dev** (needs a real account):
-  - [ ] A new account: the sidebar shows "Free Trial · 14 days left", alerts cover up to 200
-        imports, Insights opens.
+  - [ ] A new account from a generic link lands on `/` with the welcome strip; from a calculator
+        CTA it stays on the calculator (no redirect to the Tracker any more).
+  - [ ] First Tracker visit with no imports: the full-screen import takeover. Walk each way in
+        (recent searches, paste, Excel/CSV with odd headers), "I don't have my list handy", Skip
+        (asks why), the Finish Setup banner after a skip, and the takeover again in a new tab.
+        `?onboardingPreview=1` opens it in development on any account, signed out too.
+  - [ ] Before any imports the sidebar shows "Free Trial · 14 days, starts when you add your
+        imports"; after the first real ones, "14 days left", alerts cover up to 200 imports,
+        Insights opens. The example list doesn't start it.
   - [ ] The trial's last 3 days: banner, countdown in amber, the "Here's what you'll lose" dialog
-        once a day. Set the account's `users.created_at` back 12 days in dev to see it.
-  - [ ] After the trial (`created_at` 15+ days back, or `?trialPreview=ended`): free plan, no alerts
+        once a day. Set the account's `tracker_onboarding.trial_started_at` back 12 days in dev to see it.
+  - [ ] After the trial (`trial_started_at` 15+ days back, or `?trialPreview=ended`): free plan, no alerts
         on any import (Tariff News alerts still on), "Insights Was Part of Your Free Trial", the ended
         banner and dialog, "Get it all back" opens the plans.
   - [ ] Checkout of a Tracker plan in the Stripe sandbox, then the plan card and coverage.
@@ -65,8 +78,12 @@ Paste each migration into the SQL editor, in this order (foreign keys):
 - [ ] `adcvd.sql` (AD/CVD cases, events, months, settings, ai_usage)
 - [ ] `audit_requests.sql`
 - [ ] `social_ideas.sql`, then `social_ideas_sources.sql`
+- [ ] `tracker_onboarding.sql` last (needs `tracker_catalogs`): the trial-start trigger and its
+      backfill, dated to match `freshStartOn` (see step 1).
 
-No migration is needed for the 14-day trial: it's worked out from each account's sign-up date.
+**Dev database too:** re-run `tariff_update_scopes.sql` there (it gained
+`scope_conditional_exclusions` on Oct 20; every line is `IF NOT EXISTS`), or `adcvd:copy-to-prod`
+and the scope reader fail on the missing column.
 
 ## 3. Copy the processed data to prod
 
@@ -74,6 +91,9 @@ No migration is needed for the 14-day trial: it's worked out from each account's
 - [ ] `npm run adcvd:copy-to-prod` (dry run: counts per table), then
       `npm run adcvd:copy-to-prod -- --apply`. It copies the tariff sources, tariff updates and
       AD/CVD data; nothing is re-processed or paid for twice.
+- [ ] **Once only, before deploying.** After launch prod is the source of truth for tariff actions:
+      never run the copy again. It would overwrite prod's reviews, approvals and AI budget with dev's.
+      More history goes in through the Backfill button instead (step 6).
 
 ## 4. Services and settings
 
@@ -92,7 +112,8 @@ No migration is needed for the 14-day trial: it's worked out from each account's
       `?redirect=`; paste the email templates from `supabase/email-templates/` (subjects in
       `SUBJECTS.txt`) into Authentication → Email Templates.
 - [ ] **Vercel env:** `BASE_URL` is the live site (email links use it); `CRON_SECRET` is set; the
-      Anthropic key the AD/CVD and tariff-updates pipelines use is set.
+      Anthropic key the AD/CVD and tariff-updates pipelines use is set; `DATALAB_API_KEY` is set
+      (the tariff-updates scope reader now turns PDFs into markdown with datalab).
 - [ ] **Slack app (HTS Hero):** Redirect URLs include `https://htshero.com/api/slack/callback`,
       public distribution is activated, and the logo is uploaded. Vercel env has
       `SLACK_CLIENT_ID` and `SLACK_CLIENT_SECRET`. Then run Add to Slack once on the live site.
@@ -112,8 +133,9 @@ No migration is needed for the 14-day trial: it's worked out from each account's
 ## 6. After deploying
 
 - [ ] **Smoke test prod:** the home page, /duty-calculator (a lookup signed out, the AD/CVD flag),
-      /tariff-monitor, /pricing-calculator, /tariff-updates, sign up with a new account (lands in
-      the Tracker on the trial), one Stripe checkout and refund.
+      /tariff-monitor, /pricing-calculator, /tariff-updates, sign up with a new account (a generic
+      sign-up lands on `/`; opening the Tracker shows the import takeover; the trial starts at the
+      first real import), one Stripe checkout and refund.
 - [ ] **The "everything is unlocked" email** (`trial_unlocked`): the lifecycle cron queues it for
       every existing account on `freshStartOn`. That batch is held for review: check it in
       /email-outbox and approve it. It replaces the older "Meet the Tariff Tracker" email; don't
@@ -122,8 +144,11 @@ No migration is needed for the 14-day trial: it's worked out from each account's
       day, and the day after (`libs/email/lifecycle.ts`). Existing accounts' trials all end on the
       same day (`freshStartOn` + 14), so expect one large batch then, and every free account's import
       alerts stop that day.
-- [ ] **Full tariff sources backfill** to January 2025 (`npm run tariff-sources:collect -- --since
-      2025-01-01`), if prod should launch with the whole history.
+- [ ] **Older tariff history, if you want it:** /tariff-sources → pick a date → **Backfill** (admin
+      only, in prod). It collects every source back to that date (the Federal Register a month at a
+      time), skips what's stored, and the 15-minute cron processes the rest on prod's AI budget.
+      Safe to run again. Anything before `NEWS_ALERTS_FROM` (Oct 21) is history: no alerts, no news
+      emails.
 - [ ] **Watch the first days:** /adcvd (AI spend per month), /email-outbox, Vercel cron logs.
 
 ## What you manage by hand after launch

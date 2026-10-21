@@ -21,7 +21,7 @@ import { THEME } from "@/components/ui/theme";
 import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { SAVINGS_AUDITS_LABEL } from "@/libs/tariff-tracker/features";
-import { TRACKER_PLANS, TrackerAccess, trialDaysLeft } from "@/libs/tariff-tracker/plan";
+import { TRACKER_PLANS, TrackerAccess, trialDaysLeft, trialNotStarted } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "../access/accessContext";
 import { UpgradeStats, useUpgradeStats } from "../access/upgradeStats";
 import { useTracker } from "../TrackerContext";
@@ -41,6 +41,8 @@ export const trialState = (access: TrackerAccess, now = Date.now()) => {
   const daysLeft = trialDaysLeft(access, now);
   return {
     onTrial: access.kind === "trial",
+    // Signed in with no imports yet: the 14 days start with the first ones
+    notStarted: trialNotStarted(access),
     daysLeft,
     ending: access.kind === "trial" && daysLeft !== null && daysLeft <= TRIAL_ENDING_DAYS,
     // A free account whose trial has a date (the fallback when access fails to load has none)
@@ -241,5 +243,5 @@ export const TrialDialog = () => {
   );
 };
 
-// For the plan card: how far into the trial the account is
-export const trialProgress = (daysLeft: number | null) => Math.min(REVERSE_TRIAL.days, Math.max(0, REVERSE_TRIAL.days - (daysLeft ?? 0)));
+// For the plan card: the days left on the trial, within 0 and its length
+export const trialDaysRemaining = (daysLeft: number | null) => Math.min(REVERSE_TRIAL.days, Math.max(0, daysLeft ?? 0));

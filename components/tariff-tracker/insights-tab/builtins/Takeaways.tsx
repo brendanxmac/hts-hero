@@ -87,7 +87,11 @@ export const Takeaways = ({ input, scale }: { input: InsightsInput; scale: Catal
           tone: "neutral",
           text: (
             <>
-              on {top.product.entry.element.htsno} from {top.product.entry.country.flag} {top.product.entry.country.name}.
+              on {top.product.entry.element.htsno} from{" "}
+              <span className="text-base-content">
+                {top.product.entry.country.flag} {top.product.entry.country.name}
+              </span>
+              .
             </>
           ),
         });

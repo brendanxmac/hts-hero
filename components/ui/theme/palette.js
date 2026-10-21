@@ -155,6 +155,16 @@ const tracker = {
       "--tt-side-active": "#20273d",
       "--tt-sky": "#7cc4f2",
       "--tt-slate": "#cdd2e0",
+      // The import takeover (onboarding/ImportTakeover): headlines and callouts sit straight on its
+      // ground, so in light it's near white and neutral, never the app's blue-gray, which turns
+      // every warm tint on it muddy. Its lifts are a neutral shadow: a colored glow only reads as
+      // light on a dark ground.
+      "--tt-ob-ground": "#f7f8fb",
+      "--tt-ob-glow": "rgb(14 18 32 / 0.3)",
+      "--tt-ob-glow-success": "rgb(14 18 32 / 0.3)",
+      // A tile straight on that ground: a white card with a hairline, not a gray fill
+      "--tt-ob-tile": "#ffffff",
+      "--tt-ob-tile-edge": "#d4d7e0",
     },
     dark: {
       "--tt-soft": "#1f232c",
@@ -168,6 +178,12 @@ const tracker = {
       "--tt-side-active": "#20252f",
       "--tt-sky": "#5cc3f5",
       "--tt-slate": "#3a4154",
+      // The import takeover: the app's ground, and lifts that glow in the color they're under
+      "--tt-ob-ground": "#0b0d13",
+      "--tt-ob-glow": "var(--color-primary)",
+      "--tt-ob-glow-success": "var(--color-success)",
+      "--tt-ob-tile": "var(--tt-soft)",
+      "--tt-ob-tile-edge": "transparent",
     },
   },
   // Product chart parts in the Tracker: base duty a clear gray, then each program in a hue far

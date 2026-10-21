@@ -1,5 +1,6 @@
 "use client";
 
+import { FinishSetupBanner } from "../onboarding/FinishSetupBanner";
 import { MouseEvent, ReactNode, useEffect, useState } from "react";
 import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
@@ -16,6 +17,7 @@ import { SECTIONS, sectionUrl, TrackerSection } from "../sections";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { NavMeta, useNavMeta } from "./useNavMeta";
 import { useTrackerNav } from "./TrackerNav";
+import { useHomeWaitsForImports } from "./useNoImportsYet";
 
 // The Tariff Tracker as an app (DESIGN_SYSTEM.md §15): a floating sidebar, dark in both modes,
 // beside the open section. Each tab's dot and count say what's waiting there (free checks left,
@@ -155,6 +157,9 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
     });
   const { paid, loading } = useTrackerAccess();
   const meta = useNavMeta();
+  // No imports yet: no Home (the setup page is on Your Imports), and a visit to it lands there
+  const noImports = useHomeWaitsForImports();
+  const shown = noImports ? SHOWN.filter((s) => s.slug !== "overview") : SHOWN;
 
   return (
     // Exactly the screen's height, and the box everything inside is positioned in (relative,
@@ -192,14 +197,14 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
               ) : (
                 <span className="px-3 pb-1 text-[0.7rem] font-bold uppercase tracking-wider text-base-content/60">{group.label}</span>
               )}
-              {SHOWN.filter((s) => s.group === group.id).map((section) => (
+              {shown.filter((s) => s.group === group.id).map((section) => (
                 <SidebarTab key={section.slug} section={section} meta={meta[section.slug]} locked={section.paidOnly && section.ready && !paid && !loading} collapsed={collapsed} />
               ))}
             </div>
           ))}
           {/* Help sits apart from the daily work, above the plan */}
           <div className="mt-auto flex flex-col gap-1">
-            {SHOWN.filter((s) => s.group === "foot").map((section) => (
+            {shown.filter((s) => s.group === "foot").map((section) => (
               <SidebarTab key={section.slug} section={section} meta={meta[section.slug]} locked={false} collapsed={collapsed} />
             ))}
           </div>
@@ -217,7 +222,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
 
       {/* Phones and tablets; the sidebar's tabs carry the ids the panels point to */}
       <nav role="tablist" aria-label="Tariff Tracker" className="flex shrink-0 gap-1 overflow-x-auto border-b border-base-300 bg-base-100 px-2 py-2 lg:hidden">
-        {SHOWN.map((section) => (
+        {shown.map((section) => (
           <TopTab key={section.slug} section={section} />
         ))}
       </nav>
@@ -226,6 +231,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
           clipped) with it */}
       <main className="relative min-h-0 min-w-0 flex-1 overflow-y-auto">
         <div className="px-4 pt-4 empty:hidden sm:px-6 lg:px-2 lg:pt-0">
+          <FinishSetupBanner />
           <PlanBanner />
           <TrialDialog />
         </div>

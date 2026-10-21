@@ -126,7 +126,8 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addProducts = (incoming: NewProduct[], source: AddSource) => {
-    const { added, duplicates, withAdjustments } = store.addToCatalog(incoming);
+    // The example list is marked, so it never counts as the user's imports (realItems)
+    const { added, duplicates, withAdjustments } = store.addToCatalog(source === "example" ? incoming.map((p) => ({ ...p, example: true as const })) : incoming);
     trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, { added, duplicates, source, with_adjustments: withAdjustments });
     return { added, duplicates };
   };

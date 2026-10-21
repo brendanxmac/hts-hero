@@ -5,7 +5,7 @@ for product code, plan copy, landing pages, comparison pages, blog FAQs, `llms.t
 tools. If code or copy disagrees with this file, this file wins. Change this file first when
 pricing changes.
 
-_Last updated 2026-10-18 (14-day reverse trial)._
+_Last updated 2026-10-20 (the 14-day reverse trial starts at the first import)._
 
 ## The rule
 
@@ -93,8 +93,10 @@ What the Tracker sells now:
 | Insights across the catalog | n/a | No (locked, shown as lost) | Yes | Yes |
 | Impact checks on untracked imports | n/a | A count only | A count only | A count only |
 
-**The 14-day trial is a reverse trial.** Every account starts it automatically at sign-up: no card,
-nothing to click. It gets everything the Tracker sells on up to **200 imports**
+**The 14-day trial is a reverse trial.** Every account gets it, and it starts automatically the
+moment the account adds its first imports (decided 2026-10-20; it used to start at sign-up): no card,
+nothing to click. An account that only uses the calculator keeps its 14 days for when it's ready.
+The example list doesn't start it. It gets everything the Tracker sells on up to **200 imports**
 (`REVERSE_TRIAL` in `components/pricing-calculator/lib/pricing.ts`). When it ends without a plan,
 the account drops to the free plan: **no alerts, impact checks or AD/CVD updates on its own
 imports** (changed from 5 imports on 2026-10-18). It keeps the Tariff News alerts on every new US
@@ -103,9 +105,12 @@ of the trial and the paid plans (decided 2026-10-18): a free account sees only w
 apply, as a signed-out visitor does (`/api/adcvd/match` answers it with a 402 and the summary).
 Nothing is deleted.
 
-- **Existing accounts** get a fresh 14 days from `REVERSE_TRIAL.freshStartOn` (set to the deploy
-  day). A trial ends `days` after the later of sign-up and that day (`trialEndsAt` in
-  `libs/tariff-tracker/plan.ts`).
+- **When it starts:** `tracker_onboarding.trial_started_at`, set once by a database trigger the first
+  time the account's catalog holds a real (non-example) import. A trial ends `days` after that
+  (`trialEndsAt` in `libs/tariff-tracker/plan.ts`). Before it starts the account has the trial's
+  access with no countdown, and copy says "Your 14-day trial starts when you add your imports".
+- **Existing accounts** that already had imports get a fresh 14 days from `REVERSE_TRIAL.freshStartOn`
+  (the deploy day); those without start on their first import, like everyone else.
 - **Lean into loss.** In the last days and after it ends, show what the account loses: tariff alerts,
   impact checks, and AD/CVD checks and updates on all its imports, Insights, and automatic auditing and savings
   detection (labeled "Coming Oct 2026"). The emails name no numbers.
@@ -113,7 +118,7 @@ Nothing is deleted.
   before it ends and the day after (`libs/email/lifecycle.ts`).
 - **Subscribe during the trial to keep launch pricing.** The upgrade card recommends the tier that
   fits the catalog.
-- Copy: "Free for 14 days", "Everything, on up to 200 imports", "No credit card", "Then Tariff News
+- Copy: "Free for 14 days", "Starts when you add your imports", "Everything, on up to 200 imports", "No credit card", "Then Tariff News
   alerts and sourcing insights stay free, forever". Never say "no time limit" or
   "never expires" for the Tracker's alerts.
 - **Savings and audits in copy (decided 2026-10-18):** marketing, CTAs, emails and the in-app loss

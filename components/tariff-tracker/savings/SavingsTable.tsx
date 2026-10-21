@@ -35,7 +35,7 @@ const COLUMNS: TableColumnDef<SavingRow, any>[] = [
     cell: ({ row: { original: r } }) => (
       <span className="flex flex-col gap-0.5 text-left">
         <span className={`${mono.className} text-sm font-semibold text-base-content`}>{r.product.entry.element.htsno}</span>
-        <span className="text-xs text-base-content/60">
+        <span className="text-xs text-base-content">
           {r.product.entry.country.flag} {r.product.entry.country.name}
         </span>
       </span>

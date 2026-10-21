@@ -247,8 +247,8 @@ export const PlanStrip = ({ campaign, signedUp = true }: { campaign: string; sig
       ) : (
         <>
           gives you Tariff News alerts on every new US tariff action, the duty on every import you add, its rate history and sourcing insights, free forever, plus the
-          full Tariff Tracker (AD/CVD checks included) free for {signedUp ? "your first" : "its first"} {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports}{" "}
-          imports, no credit card. Automatic savings detection and automatic auditing are {COMING_LOWER}, included in every plan.
+          full Tariff Tracker (AD/CVD checks included) free for {REVERSE_TRIAL.days} days from {signedUp ? "your" : "its"} first imports, on up to{" "}
+          {REVERSE_TRIAL.imports} imports, no credit card. Automatic savings detection and automatic auditing are {COMING_LOWER}, included in every plan.
         </>
       )}{" "}
       Plans with alerts on your imports start at {formatPrice(TRACKER_TIERS[0].price)}/mo, as low as {formatPrice(LOWEST_PER_IMPORT)} per import.{" "}

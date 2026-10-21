@@ -10,7 +10,8 @@ import { formatPrefix } from "./format";
 
 // What a tariff action covers, as its scope reads (libs/tariff-updates/match.ts): the countries,
 // the HTS codes (a long list folds to its first few), the Chapter 99 numbers it adds, and what it
-// leaves out. It's what Your Imports are checked against, so each import's "why" points back here.
+// leaves out, for everyone or only for a use or a claim. It's what Your Imports are checked
+// against, so each import's "why" points back here.
 
 const MOST = 12;
 
@@ -62,6 +63,16 @@ export const ActionScope = ({ update }: { update: TrackerUpdate }) => {
     },
     ...(scope.headings.length ? [{ label: "Chapter 99", value: <Chips items={scope.headings} mono /> }] : []),
     ...(scope.excludedCodes.length ? [{ label: "Except codes", value: <Chips items={scope.excludedCodes.map(formatPrefix)} mono /> }] : []),
+    // Exempt only for a use or a claim: such imports are still matched
+    ...scope.conditional.map((c) => ({
+      label: "May be exempt",
+      value: (
+        <span className="flex flex-col gap-1.5">
+          <span className={tt.body}>If {c.condition}</span>
+          <Chips items={c.codes.map(formatPrefix)} mono />
+        </span>
+      ),
+    })),
     ...(scope.excludedCountries.length
       ? [{ label: "Except", value: <Chips items={scope.excludedCountries.map((c) => countryOf(c)?.name ?? c)} /> }]
       : []),

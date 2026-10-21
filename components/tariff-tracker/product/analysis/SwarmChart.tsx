@@ -260,7 +260,7 @@ export const SwarmChart = ({
           </div>
           <ul className="mt-3 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-5">
             {pile.origins.map((o) => (
-              <li key={o.country.code} className="flex items-center gap-2 px-2 py-1 text-sm text-base-content/80">
+              <li key={o.country.code} className="flex items-center gap-2 px-2 py-1 text-sm text-base-content">
                 <span aria-hidden>{o.country.flag}</span>
                 <span className="truncate">{o.country.name}</span>
               </li>

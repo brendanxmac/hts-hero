@@ -171,6 +171,130 @@ layer(base);
 }
 
 /*
+  The import takeover (components/tariff-tracker/onboarding): its one moment to show off, so a
+  little more motion than the rest of the Tracker, still short and never looping. Each piece rises
+  into place in turn (--tt-delay staggers them); the import explainer slides a code and a country
+  together into one import; the example dashboard's alert slides in and its rate line draws (wiped in left to right). None
+  for anyone who asks for reduced motion: everything just shows.
+*/
+@keyframes tt-ob-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tt-ob-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tt-ob-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tt-ob-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.015);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tt-ob-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes tt-ob-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes tt-ob-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.tt-ob-rise {
+  animation: tt-ob-rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--tt-delay, 0ms) both;
+}
+.tt-ob-from-left {
+  animation: tt-ob-from-left 520ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--tt-delay, 0ms) both;
+}
+.tt-ob-from-right {
+  animation: tt-ob-from-right 520ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--tt-delay, 0ms) both;
+}
+.tt-ob-pop {
+  animation: tt-ob-pop 460ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--tt-delay, 0ms) both;
+}
+.tt-ob-draw {
+  animation: tt-ob-draw 1200ms cubic-bezier(0.4, 0, 0.2, 1) var(--tt-delay, 0ms) both;
+}
+.tt-ob-fill {
+  transform-origin: left;
+  animation: tt-ob-fill 600ms cubic-bezier(0.4, 0, 0.2, 1) var(--tt-delay, 0ms) both;
+}
+.tt-ob-ping {
+  animation: tt-ob-ping 1400ms cubic-bezier(0, 0, 0.2, 1) var(--tt-delay, 0ms) 3;
+}
+/* A step that should land fast (the "What's an import?" step): the same motions, shorter */
+.tt-ob-quick .tt-ob-rise {
+  animation-duration: 280ms;
+}
+.tt-ob-quick .tt-ob-from-left,
+.tt-ob-quick .tt-ob-from-right {
+  animation-duration: 320ms;
+}
+.tt-ob-quick .tt-ob-pop {
+  animation-duration: 300ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tt-ob-rise,
+  .tt-ob-from-left,
+  .tt-ob-from-right,
+  .tt-ob-pop,
+  .tt-ob-fill,
+  .tt-ob-ping {
+    animation: none;
+  }
+  .tt-ob-draw {
+    animation: none;
+  }
+}
+
+/*
   daisyUI 4's control sizes, which the layouts were built around (daisyUI 5 made buttons and
   inputs 40px tall instead of 48px, and badges taller). Only the size variables are set, so
   utilities such as h-10 still win. The responsive sizes the code uses are repeated in their

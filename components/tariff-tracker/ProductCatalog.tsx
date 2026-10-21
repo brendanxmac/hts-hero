@@ -1,13 +1,11 @@
 "use client";
 
+import { useImportTakeover } from "./onboarding/takeoverStore";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import * as ui from "@/components/ui/styles";
 import { AddMethod, AddProductsDialog } from "./AddProductsDialog";
-import { itemsFromText } from "./catalog";
-import { CatalogEmptyState } from "./CatalogEmptyState";
-import { EXAMPLE_LIST } from "./exampleList";
+import { SetupPage } from "./onboarding/SetupPanel";
 import { ProductView } from "./product/ProductView";
 import { TrackedProduct } from "./report";
 import { SectionHeader } from "./shell/SectionPage";
@@ -44,6 +42,11 @@ export const ProductCatalog = () => {
   useEffect(() => {
     if (addParam === "paste" || addParam === "csv") openDialog(addParam);
   }, [addParam]);
+  // Without imports of their own the import takeover asks instead (it reads ?add= too)
+  const { open: takeoverOpen } = useImportTakeover();
+  useEffect(() => {
+    if (takeoverOpen) setDialog((d) => ({ ...d, open: false }));
+  }, [takeoverOpen]);
 
   // Two views: the imports, and Insights on them (where the duty comes from, what moved it)
   const view = searchParams.get("view") === "insights" ? "insights" : "imports";
@@ -59,11 +62,6 @@ export const ProductCatalog = () => {
     />
   );
 
-  const loadExample = () => {
-    t.addProducts(itemsFromText(EXAMPLE_LIST), "example");
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_EXAMPLE_USED);
-  };
-
   return (
     <div ref={anchor}>
       {nav.product && (
@@ -72,7 +70,8 @@ export const ProductCatalog = () => {
       {/* The report draws its own header, with its actions in it */}
       <div hidden={Boolean(nav.product)}>
         <div className="flex flex-col gap-5">
-          {(t.loading || t.items.length === 0) && (
+          {/* With none of their imports, the page is the pitch for adding them (SetupPage) */}
+          {t.loading && (
             <SectionHeader section={sectionBySlug("catalog")!} />
           )}
           {t.loading ? (
@@ -88,7 +87,7 @@ export const ProductCatalog = () => {
               ))}
             </div>
           ) : t.items.length === 0 ? (
-            <CatalogEmptyState onAdd={openDialog} onExample={loadExample} />
+            <SetupPage from="imports" />
           ) : view === "insights" ? (
             <div className="tt-enter flex flex-col gap-group">
               <SectionHeader section={sectionBySlug("catalog")!} tabs={views} />

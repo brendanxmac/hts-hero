@@ -11,7 +11,8 @@ import { currentPath, signupHref } from "../access/signup";
 import { useTracker } from "../TrackerContext";
 import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
-import { endDate, endsIn, keepPlan, trialProgress, trialState } from "./trial";
+import { endDate, endsIn, keepPlan, trialDaysRemaining, trialState } from "./trial";
+import { openImportTakeover } from "../onboarding/takeoverStore";
 
 // The plan at the foot of the sidebar (dark in both modes): what it is, how much of the catalog
 // has alerts, and, short of all of it, the next step up; all of it, a well done. Always in view, so
@@ -23,6 +24,15 @@ const Meter = ({ value, max, tone = "bg-warning" }: { value: number; max: number
   <div className="h-1.5 overflow-hidden rounded-full bg-base-content/15" aria-hidden>
     {/* Runtime width (DESIGN_SYSTEM §10) */}
     <div className={`h-full rounded-full ${tone}`} style={{ width: `${Math.min(100, (value / Math.max(max, 1)) * 100)}%` }} />
+  </div>
+);
+
+// The trial's countdown: a segment per day, lit for each day left, so it drains as the trial runs out
+const DaysLeft = ({ left, ending }: { left: number; ending: boolean }) => (
+  <div className="flex gap-0.5" aria-hidden>
+    {Array.from({ length: REVERSE_TRIAL.days }, (_, day) => (
+      <div key={day} className={`h-1.5 flex-1 rounded-full ${day < left ? (ending ? "bg-warning" : "bg-primary") : "bg-base-content/15"}`} />
+    ))}
   </div>
 );
 
@@ -78,8 +88,27 @@ export const PlanCard = () => {
     </a>
   );
 
-  // On the 14-day trial: the countdown, and what its end takes away, in their own numbers
+  // On the 14-day trial: the countdown, and what its end takes away, in their own numbers. Before
+  // the first imports, all 14 days are still waiting for them.
   const trial = trialState(access);
+  if (trial.notStarted) {
+    return (
+      <div className={BOX}>
+        {previewNote}
+        <div className="flex items-center justify-between gap-2">
+          <span className={tt.eyebrow("primary")}>Free Trial</span>
+          <span className="text-xs font-semibold tabular-nums text-base-content/70">{REVERSE_TRIAL.days} days</span>
+        </div>
+        <DaysLeft left={REVERSE_TRIAL.days} ending={false} />
+        <span className="text-sm leading-snug text-base-content/75">
+          Your {REVERSE_TRIAL.days}-day trial starts when you add your imports. Every day of it is yours.
+        </span>
+        <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => openImportTakeover("plan-card")}>
+          Add my imports
+        </button>
+      </div>
+    );
+  }
   if (trial.onTrial) {
     const plan = keepPlan(imports);
     return (
@@ -88,10 +117,13 @@ export const PlanCard = () => {
         <div className="flex items-center justify-between gap-2">
           <span className={tt.eyebrow(trial.ending ? "warning" : "primary")}>Free Trial</span>
           <span className={`text-xs font-semibold tabular-nums ${trial.ending ? "text-warning" : "text-base-content/70"}`}>
-            {trial.daysLeft !== null && trial.daysLeft <= 1 ? "Last day" : `${trial.daysLeft} days left`}
+            {trial.daysLeft !== null && trial.daysLeft <= 1 ? "Last day" : `${trial.daysLeft} of ${REVERSE_TRIAL.days} days left`}
           </span>
         </div>
-        <Meter value={trialProgress(trial.daysLeft)} max={REVERSE_TRIAL.days} tone={trial.ending ? "bg-warning" : "bg-primary"} />
+        <div className="flex flex-col gap-1">
+          <DaysLeft left={trialDaysRemaining(trial.daysLeft)} ending={trial.ending} />
+          {endDate(access) && <span className="text-xs text-base-content/60">Trial ends {endDate(access)}</span>}
+        </div>
         {imports > 0 && (
           <span className="text-sm leading-snug text-base-content/75">
             <span className="font-semibold text-warning">Upgrade to keep tariff alerts, savings detection, and audits for all your imports.

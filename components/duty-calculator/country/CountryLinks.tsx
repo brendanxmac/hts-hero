@@ -16,7 +16,7 @@ export function CountryLinks({ current, showAll = true }: { current?: string; sh
         <li key={c.slug} className="min-w-0">
           <Link
             href={`/duty-calculator/${c.slug}`}
-            className={`${tile} border-slate-200 skin:border-base-300 font-medium text-slate-700 skin:text-base-content/80 hover:border-teal-300 skin:hover:border-primary/30 skin:hover:border-primary/40 hover:text-teal-700 skin:hover:text-primary skin:hover:text-primary`}
+            className={`${tile} border-slate-200 skin:border-base-300 font-medium text-slate-900 skin:text-base-content hover:border-teal-300 skin:hover:border-primary/30 skin:hover:border-primary/40 hover:text-teal-700 skin:hover:text-primary skin:hover:text-primary`}
           >
             {/* Flags next to country names are data */}
             <span aria-hidden className="shrink-0">{Countries.find((x) => x.code === c.code)?.flag}</span>

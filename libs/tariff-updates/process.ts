@@ -96,9 +96,12 @@ const errorText = (e: unknown) => (e instanceof Error ? e.message : String(e)).s
 
 // ---------- 1. Sort ----------
 
-const sortPending = async (db: Db, deadline: number, costs: StepCosts, asked: StepCosts, limit = 1000) => {
+// Items published before `before` only, when given (a backfill of one period)
+const upTo = <Q extends { lt: (column: string, value: string) => Q }>(query: Q, before?: string) => (before ? query.lt("published_at", before) : query)
+
+const sortPending = async (db: Db, deadline: number, costs: StepCosts, asked: StepCosts, limit = 1000, before?: string) => {
   const items = must<ItemRow[]>(
-    await db.from("tariff_source_items").select(ITEM_COLUMNS).is("categorized_at", null).order("published_at").limit(limit),
+    await upTo(db.from("tariff_source_items").select(ITEM_COLUMNS).is("categorized_at", null), before).order("published_at").limit(limit),
     "Loading items to sort"
   )
   const now = () => new Date().toISOString()
@@ -156,14 +159,12 @@ const sortPending = async (db: Db, deadline: number, costs: StepCosts, asked: St
 
 // ---------- 2. Read ----------
 
-const readPending = async (db: Db, deadline: number, costs: StepCosts, asked: StepCosts, limit = 200) => {
+const readPending = async (db: Db, deadline: number, costs: StepCosts, asked: StepCosts, limit = 200, before?: string) => {
   const items = must<ItemRow[]>(
-    await db
-      .from("tariff_source_items")
-      .select(ITEM_COLUMNS)
-      .eq("category", "tariff_action")
-      .is("extracted_at", null)
-      .is("process_error", null)
+    await upTo(
+      db.from("tariff_source_items").select(ITEM_COLUMNS).eq("category", "tariff_action").is("extracted_at", null).is("process_error", null),
+      before
+    )
       .order("published_at")
       .limit(limit),
     "Loading tariff actions to read"
@@ -377,14 +378,17 @@ const candidatesFor = async (db: Db, item: ItemRow & { extraction: Extraction })
   return rows.map((r) => ({ ...r, first_seen: r.first_seen_at.slice(0, 10), summary: r.summary.slice(0, 400) }))
 }
 
-const groupPending = async (db: Db, deadline: number, costs: StepCosts, asked: StepCosts, limit = 300) => {
+const groupPending = async (db: Db, deadline: number, costs: StepCosts, asked: StepCosts, limit = 300, before?: string) => {
   const items = must<ItemRow[]>(
-    await db
-      .from("tariff_source_items")
-      .select(ITEM_COLUMNS)
-      .or("and(category.eq.tariff_action,extracted_at.not.is.null),category.eq.hts_revision")
-      .is("grouped_at", null)
-      .is("process_error", null)
+    await upTo(
+      db
+        .from("tariff_source_items")
+        .select(ITEM_COLUMNS)
+        .or("and(category.eq.tariff_action,extracted_at.not.is.null),category.eq.hts_revision")
+        .is("grouped_at", null)
+        .is("process_error", null),
+      before
+    )
       .order("published_at")
       .limit(limit),
     "Loading tariff actions to group"
@@ -451,14 +455,15 @@ const skipped = { sorted: 0, read: 0, grouped: 0, created: 0, errors: 0, remaini
 
 export const processTariffUpdates = async (
   db: Db,
-  { deadline, limits = {} }: { deadline: number; limits?: StepLimits }
+  // `before`: only items published before this (ISO date), for backfilling one period
+  { deadline, limits = {}, before }: { deadline: number; limits?: StepLimits; before?: string }
 ): Promise<ProcessResult> => {
   const costs = newCosts()
   const asked = newCosts()
   // A limit of 0 skips the step
-  const sort = limits.sort === 0 ? skipped : await sortPending(db, deadline, costs, asked, limits.sort)
-  const read = limits.read === 0 ? skipped : await readPending(db, deadline, costs, asked, limits.read)
-  const group = limits.group === 0 ? skipped : await groupPending(db, deadline, costs, asked, limits.group)
+  const sort = limits.sort === 0 ? skipped : await sortPending(db, deadline, costs, asked, limits.sort, before)
+  const read = limits.read === 0 ? skipped : await readPending(db, deadline, costs, asked, limits.read, before)
+  const group = limits.group === 0 ? skipped : await groupPending(db, deadline, costs, asked, limits.group, before)
   return {
     costs,
     asked,

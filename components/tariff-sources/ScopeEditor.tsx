@@ -14,6 +14,16 @@ import { adminCall, type UpdateRow } from "./types"
 
 const toText = (list: string[] | null) => (list ?? []).join("\n")
 const toList = (text: string) => text.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean)
+// Carve-outs for a use or a claim, one per line: "for use in civil aircraft | 8411.11, 8411.12"
+const conditionalText = (list: { condition: string; codes: string[] }[] | null) => (list ?? []).map((c) => `${c.condition} | ${c.codes.join(", ")}`).join("\n")
+const toConditional = (text: string) =>
+  text
+    .split("\n")
+    .map((line) => {
+      const [condition, codes = ""] = line.split("|")
+      return { condition: condition.trim(), codes: toList(codes) }
+    })
+    .filter((c) => c.condition && c.codes.length)
 
 const area = "textarea min-h-24 border-base-content/15 font-mono text-xs leading-relaxed"
 
@@ -23,6 +33,7 @@ export default function ScopeEditor({ update }: { update: UpdateRow }) {
   const initial = () => ({
     codes: toText(update.scope_codes ?? update.hts_codes),
     excludedCodes: toText(update.scope_excluded_codes),
+    conditional: conditionalText(update.scope_conditional_exclusions),
     countries: toText(update.scope_countries ?? update.countries),
     excludedCountries: toText(update.scope_excluded_countries),
     headings: toText(update.scope_headings),
@@ -42,6 +53,7 @@ export default function ScopeEditor({ update }: { update: UpdateRow }) {
               action: "save-scope",
               codes: toList(form.codes),
               excludedCodes: toList(form.excludedCodes),
+              conditionalExclusions: toConditional(form.conditional),
               countries: toList(form.countries),
               excludedCountries: toList(form.excludedCountries),
               headings: toList(form.headings),
@@ -81,6 +93,13 @@ export default function ScopeEditor({ update }: { update: UpdateRow }) {
         </Field>
         <Field label={`Codes excluded (${toList(form.excludedCodes).length})`}>
           <textarea className={area} value={form.excludedCodes} onChange={set("excludedCodes")} />
+        </Field>
+        <Field
+          label={`May be exempt (${toConditional(form.conditional).length})`}
+          hint='Carved out only for a use or a claim, one condition per line: "for use in civil aircraft | 8411.11, 8411.12". These imports are still matched.'
+          className="sm:col-span-2"
+        >
+          <textarea className={`${area} min-h-12`} value={form.conditional} onChange={set("conditional")} />
         </Field>
         <Field label="Countries" hint='Two-letter codes, or "ALL"'>
           <textarea className={`${area} min-h-12`} value={form.countries} onChange={set("countries")} />

@@ -37,7 +37,7 @@ describe("Tariff Tracker: reading the list", () => {
     expect(errors[0].message).toBe("HTS codes need 8 or 10 digits (this has 6)")
     expect(errors[1].message).toBe("Add a country of origin after the code")
     expect(errors[3].message).toBe("The country of origin can't be the United States")
-    expect(errors[4].message).toBe("9999999999 isn't in the current HTS")
+    expect(errors[4].message).toBe("9999.99.99.99 isn't in the current HTS")
   })
 
   it("keeps duplicates, in order", () => {

@@ -57,7 +57,8 @@ const runCollector = async (
       : null
 
   try {
-    const items = await collector.collect({ since, until, agencies, backfill })
+    // Some sources page back from today whatever `until` is: what's after it is left out here
+    const items = (await collector.collect({ since, until, agencies, backfill })).filter((item) => !until || new Date(item.publishedAt) <= until)
     // One row per item, even when a source lists it twice
     const rows = Array.from(new Map(items.map((item) => [item.externalId, rowOf(item)])).values())
     let added = 0

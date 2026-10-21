@@ -86,7 +86,10 @@ const ToCheck = () => {
                 {product.entry.element.htsno}
               </span>
               <span className="block truncate text-xs text-base-content/60">
-                {product.entry.country.flag} {product.entry.country.name} · {product.description}
+                <span className="text-base-content">
+                  {product.entry.country.flag} {product.entry.country.name}
+                </span>{" "}
+                · {product.description}
               </span>
             </div>
             <span className="text-right text-sm tabular-nums">

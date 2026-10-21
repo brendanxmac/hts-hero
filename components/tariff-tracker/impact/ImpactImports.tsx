@@ -220,7 +220,7 @@ const Row = ({ r, colors, maxPct, today, adcvd }: { r: RowData; colors: Record<s
           <span className="flex min-w-0 flex-col gap-0.5">
             <span className="flex min-w-0 items-baseline gap-2 text-sm">
               <span className="font-semibold tabular-nums text-base-content">{product.entry.element.htsno}</span>
-              <span className="shrink-0 whitespace-nowrap text-base-content/70">
+              <span className="shrink-0 whitespace-nowrap text-base-content">
                 <span aria-hidden>{product.entry.country.flag}</span> {product.entry.country.name}
               </span>
               <span className="hidden min-w-0 truncate text-xs text-base-content/60 sm:inline">· {product.description}</span>

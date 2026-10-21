@@ -80,7 +80,7 @@ export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder;
               className="group grid w-full grid-cols-[minmax(0,9rem)_minmax(0,1fr)_auto_1rem] items-center gap-4 px-6 py-3 text-left text-sm tabular-nums transition-colors hover:bg-tt-soft focus-visible:bg-tt-soft focus-visible:outline-hidden"
             >
               <span className={`${mono.className} font-semibold text-base-content`}>{r.element.htsno}</span>
-              <span className="flex min-w-0 items-baseline gap-2 truncate text-base-content/80">
+              <span className="flex min-w-0 items-baseline gap-2 truncate text-base-content">
                 <span aria-hidden>{r.country.flag}</span>
                 {r.country.name}
                 <span className="text-xs text-base-content/60">{ago(r.lookup.at)}</span>

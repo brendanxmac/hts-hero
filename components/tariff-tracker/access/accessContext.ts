@@ -25,6 +25,8 @@ export interface TrackerAccessValue {
   unlock: (feature: PremiumFeature) => void;
   // What that step is called on a button
   unlockLabel: string;
+  // Asks the server again: after the first imports start the trial
+  refreshAccess: () => void;
 }
 
 export const TrackerAccessContext = createContext<TrackerAccessValue | null>(null);

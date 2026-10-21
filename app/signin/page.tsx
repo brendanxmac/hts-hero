@@ -18,6 +18,7 @@ import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { SIGNUP_HOME } from "@/libs/tariff-tracker/onboarding";
 import PasswordRequirements from "@/components/PasswordRequirements";
 
 // Component that uses useSearchParams wrapped in Suspense
@@ -112,7 +113,15 @@ function LoginContent() {
         }
       } else {
         toast.success("Successfully signed in!");
-        window.location.href = redirectTo;
+        // A typed code skips the auth callback: say where a new account came from here (the
+        // server keeps it only for an account made in the last hour)
+        const target = searchParams.get("redirect") || (isSignUp ? SIGNUP_HOME : redirectTo);
+        await fetch("/api/tracker/onboarding", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "signup", redirect: target }),
+        }).catch((): null => null);
+        window.location.href = target;
       }
     } catch (error) {
       console.error(error);
@@ -146,7 +155,7 @@ function LoginContent() {
         const signUpRedirect =
           window.location.origin +
           "/api/auth/callback" +
-          `?redirect=${encodeURIComponent(searchParams.get("redirect") || "/tariff-tracker?welcome=1")}`;
+          `?redirect=${encodeURIComponent(searchParams.get("redirect") || SIGNUP_HOME)}`;
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -195,7 +204,8 @@ function LoginContent() {
 
     try {
       const { type, provider } = options;
-      const redirectParam = `?redirect=${encodeURIComponent(redirectTo)}`;
+      // A new account with nowhere it was headed starts on the home page, with every product
+      const redirectParam = `?redirect=${encodeURIComponent(searchParams.get("redirect") || (isSignUp ? SIGNUP_HOME : redirectTo))}`;
       const redirectURL =
         window.location.origin + "/api/auth/callback" + redirectParam;
 
@@ -249,7 +259,7 @@ function LoginContent() {
       : showOtpForm
         ? "We'll email you a one-time passcode. No password needed."
         : isSignUp
-          ? `Free for ${REVERSE_TRIAL.days} days: the full Tariff Tracker on up to ${REVERSE_TRIAL.imports} imports, no credit card. Then Tariff News alerts stay free, forever.`
+          ? `Free for ${REVERSE_TRIAL.days} days from your first imports: the full Tariff Tracker on up to ${REVERSE_TRIAL.imports} imports, no credit card. Then Tariff News alerts stay free, forever.`
           : "Welcome back. Pick up where you left off.";
 
   return (

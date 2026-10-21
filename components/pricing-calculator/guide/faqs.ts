@@ -23,7 +23,7 @@ export const PRICING_FAQS = [
   },
   {
     question: "Is there a free trial of the Tariff Tracker?",
-    answer: `Yes. Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, with no credit card and nothing to start: everything it does, on up to ${REVERSE_TRIAL.imports} imports. That's alerts when a tariff change hits an import (AD/CVD alerts included), impact checks, Insights across your catalog, Tariff News, rate history and exports. The trial starts on its own when you create your account.`,
+    answer: `Yes. Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, with no credit card and nothing to start: everything it does, on up to ${REVERSE_TRIAL.imports} imports. That's alerts when a tariff change hits an import (AD/CVD alerts included), impact checks, Insights across your catalog, Tariff News, rate history and exports. The trial starts on its own when you add your first imports, so every one of the 14 days is spent on your own products.`,
   },
   {
     question: "What happens when my trial ends?",

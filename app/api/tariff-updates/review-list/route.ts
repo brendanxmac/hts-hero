@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic"
 // hidden), which users don't see, and where each update's impact check stands, so impacts can be
 // checked on the admin's own catalog before approving an alert. Everyone else gets a 404.
 const COLUMNS =
-  "id, slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, first_seen_at, last_activity_at, scope_codes, scope_excluded_codes, scope_countries, scope_excluded_countries, scope_headings, status, needs_review, impact_approved_at, impact_alerted"
+  "id, slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, first_seen_at, last_activity_at, scope_codes, scope_excluded_codes, scope_conditional_exclusions, scope_countries, scope_excluded_countries, scope_headings, status, needs_review, impact_approved_at, impact_alerted"
 
 export async function GET() {
   const { db, denied } = await requireAdmin()

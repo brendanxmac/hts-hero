@@ -2,10 +2,11 @@ import { REVERSE_TRIAL, TRACKER_TIERS, TRIAL_ALLOWANCE } from "@/components/pric
 import { PricingPlan } from "@/types";
 
 // What a visitor gets in the Tariff Tracker, worked out the same way on the server (which
-// decides) and in the browser (which shows it). The rules are in PRICING.md: every account starts
-// a 14-day reverse trial at sign-up (REVERSE_TRIAL: everything, on up to 200 imports), then drops
-// to the free plan (alerts on TRIAL_ALLOWANCE.alertImports imports). Paid plans cover their tier's
-// imports, with unlimited checks.
+// decides) and in the browser (which shows it). The rules are in PRICING.md: every account gets
+// a 14-day reverse trial (REVERSE_TRIAL: everything, on up to 200 imports) that starts when it adds
+// its first real imports, then drops to the free plan (alerts on TRIAL_ALLOWANCE.alertImports
+// imports). Before it starts, the account has the trial's access with no end date. Paid plans
+// cover their tier's imports, with unlimited checks.
 
 export type TrackerPlanKind = "anonymous" | "trial" | "free" | "paid";
 
@@ -27,7 +28,7 @@ export interface TrackerAccess {
   // How many imports (pairs) the plan covers with alerts (and, paid, savings)
   pairLimit: number;
   usage: TrackerUsage;
-  // When the 14-day trial ends (or ended); null signed out
+  // When the 14-day trial ends (or ended); null signed out, and on a trial not started yet
   trialEndsAt: string | null;
   // Set when the admin is previewing a trial stage (?trialPreview=): what's shown, not what's covered
   preview?: TrialPreview;
@@ -74,14 +75,18 @@ export const ANONYMOUS_ACCESS: TrackerAccess = {
 
 const DAY = 24 * 60 * 60 * 1000;
 
-// When an account's trial ends: REVERSE_TRIAL.days after the later of its sign-up and the day
-// existing accounts got a fresh trial
-export const trialEndsAt = (createdAt: string | null | undefined) => {
+// When an account's trial ends: REVERSE_TRIAL.days after it started (its first real imports, or
+// the day existing accounts got a fresh trial, whichever is later); null until it starts
+export const trialEndsAt = (startedAt: string | null | undefined) => {
+  const started = startedAt ? Date.parse(startedAt) : NaN;
+  if (Number.isNaN(started)) return null;
   const fresh = Date.parse(`${REVERSE_TRIAL.freshStartOn}T00:00:00Z`);
-  const created = createdAt ? Date.parse(createdAt) : NaN;
-  const start = Number.isNaN(created) ? fresh : Math.max(created, fresh);
-  return new Date(start + REVERSE_TRIAL.days * DAY).toISOString();
+  return new Date(Math.max(started, fresh) + REVERSE_TRIAL.days * DAY).toISOString();
 };
+
+// Signed in, on the trial, and it hasn't started: no imports yet, so no countdown
+export const trialNotStarted = (access: Pick<TrackerAccess, "kind" | "trialEndsAt">) =>
+  access.kind === "trial" && access.trialEndsAt === null;
 
 // Days left on the trial, rounded up (1 on its last day, 0 or less once it's over); null without one
 export const trialDaysLeft = (access: Pick<TrackerAccess, "trialEndsAt">, now = Date.now()) =>
@@ -91,19 +96,19 @@ export const trialDaysLeft = (access: Pick<TrackerAccess, "trialEndsAt">, now = 
 export const trackerAccessFrom = ({
   usage,
   activePlans,
-  createdAt,
+  trialStartedAt,
   now = Date.now(),
 }: {
   usage: TrackerUsage;
   activePlans: PricingPlan[];
-  // The account's sign-up
-  createdAt?: string | null;
+  // When the trial started (tracker_onboarding.trial_started_at); null until the first imports
+  trialStartedAt?: string | null;
   now?: number;
 }): TrackerAccess => {
-  const ends = trialEndsAt(createdAt);
+  const ends = trialEndsAt(trialStartedAt);
   const paid = TRACKER_PLANS.filter((p) => activePlans.includes(p.plan)).pop();
   if (paid) return { kind: "paid", paidPlan: paid.plan, pairLimit: paid.maxPairs, usage, trialEndsAt: ends };
-  if (now < Date.parse(ends)) return { kind: "trial", paidPlan: null, pairLimit: REVERSE_TRIAL.imports, usage, trialEndsAt: ends };
+  if (ends === null || now < Date.parse(ends)) return { kind: "trial", paidPlan: null, pairLimit: REVERSE_TRIAL.imports, usage, trialEndsAt: ends };
   return { kind: "free", paidPlan: null, pairLimit: TRIAL_ALLOWANCE.alertImports, usage, trialEndsAt: ends };
 };
 

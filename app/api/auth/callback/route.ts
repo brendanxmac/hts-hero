@@ -1,6 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/app/api/supabase/server";
 import config from "@/config";
+import { createAdminClient } from "@/app/api/supabase/server";
+import { signupSourceFor } from "@/libs/tariff-tracker/onboarding";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +14,16 @@ export async function GET(req: NextRequest) {
 
   if (code) {
     const supabase = createClient();
-    await supabase.auth.exchangeCodeForSession(code);
+    const { data } = await supabase.auth.exchangeCodeForSession(code);
+    // A new account: where its sign-up was headed says what it came for (the onboarding emails
+    // follow it, libs/email/lifecycle.ts). Kept from the first callback only.
+    const user = data?.user;
+    if (user && Date.now() - Date.parse(user.created_at) < 60 * 60 * 1000) {
+      const { error } = await createAdminClient()
+        .from("tracker_onboarding")
+        .upsert({ user_id: user.id, signup_source: signupSourceFor(redirectTo ? decodeURIComponent(redirectTo) : null) }, { onConflict: "user_id", ignoreDuplicates: true });
+      if (error) console.error("Recording the sign-up source:", error.message);
+    }
   }
 
   // URL to redirect to after sign in process completes

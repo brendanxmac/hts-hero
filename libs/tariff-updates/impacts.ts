@@ -31,7 +31,7 @@ export interface ImpactRow {
 export const recentUpdates = async (db: Db, { ids }: { ids?: string[] } = {}) => {
   let query = db
     .from("tariff_updates")
-    .select("id, slug, hts_codes, countries, authority, kind, effective_on, scope_codes, scope_excluded_codes, scope_countries, scope_excluded_countries, scope_headings")
+    .select("id, slug, hts_codes, countries, authority, kind, effective_on, scope_codes, scope_excluded_codes, scope_conditional_exclusions, scope_countries, scope_excluded_countries, scope_headings")
     .eq("status", "published")
     .eq("needs_review", false)
     // An HTS revision carries out actions that have their own updates: it only confirms them

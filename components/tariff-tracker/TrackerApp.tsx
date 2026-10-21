@@ -8,6 +8,7 @@ import { DEFAULT_SECTION, MOVED_TABS, productUrl, SECTIONS, SectionSlug, section
 import { PlannedSection } from "./shell/PlannedSection";
 import { SectionPage } from "./shell/SectionPage";
 import { TrackerNav, TrackerNavContext } from "./shell/TrackerNav";
+import { ImportTakeover } from "./onboarding/ImportTakeover";
 import { TrackerShell } from "./shell/TrackerShell";
 import { TrackerProvider } from "./TrackerContext";
 import { TrackerAccessProvider } from "./access/TrackerAccessProvider";
@@ -213,6 +214,8 @@ export const TrackerApp = () => {
                       );
                     })}
                   </TrackerShell>
+                  {/* Over everything, until the account has imports of its own */}
+                  <ImportTakeover />
                 </TrackerNavContext.Provider>
               </EntriesProvider>
             </AlertSettingsProvider>

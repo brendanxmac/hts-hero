@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { updateSession } from "@/app/api/supabase/middleware"
 import { canonicalHtsCode } from "@/libs/hts-code"
-import { countryPageBySlug } from "@/libs/country-pages/countries"
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -69,8 +68,10 @@ export async function proxy(req: NextRequest) {
   const { response, user } = await updateSession(req)
 
   // The Tariff Tracker is for signed-in accounts only: anyone else signs in (or up) first and comes
-  // back to the same page, tab and inputs
-  if (!user && (pathname === "/tariff-tracker" || pathname.startsWith("/tariff-tracker/"))) {
+  // back to the same page, tab and inputs. In development, ?onboardingPreview=1 opens it signed out
+  // to check the import takeover (ImportTakeover)
+  const onboardingPreview = process.env.NODE_ENV === "development" && req.nextUrl.searchParams.get("onboardingPreview") === "1"
+  if (!user && !onboardingPreview && (pathname === "/tariff-tracker" || pathname.startsWith("/tariff-tracker/"))) {
     const url = req.nextUrl.clone()
     url.pathname = "/signin"
     url.search = ""
@@ -80,23 +81,9 @@ export async function proxy(req: NextRequest) {
     return redirect
   }
 
-  // The Tariff Tracker is every account's home: signed-in visitors to the calculator's landing
-  // page, or a country calculator page, go to the Tracker's Calculator tab with whatever they'd
-  // entered (PRICING.md)
-  // A country page counts too, with its country chosen unless the link names one
-  const countryPage = pathname.startsWith("/duty-calculator/")
-    ? countryPageBySlug(pathname.slice("/duty-calculator/".length))
-    : undefined
-  if (user && (pathname === "/duty-calculator" || countryPage)) {
-    const url = req.nextUrl.clone()
-    url.pathname = "/tariff-tracker"
-    url.searchParams.set("tab", "calculator")
-    if (countryPage && !url.searchParams.get("country")) url.searchParams.set("country", countryPage.code)
-    const redirect = NextResponse.redirect(url)
-    // Keep any refreshed session cookies
-    response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie))
-    return redirect
-  }
+  // Signed-in visitors stay on the calculator (decided 2026-10-20): someone who signed up for more
+  // calculator features keeps using it, and its CTAs and the onboarding emails invite them into
+  // the Tracker. (It used to send them to the Tracker's Calculator tab.)
 
   // Ensure the x-pathname header is preserved in the response
   if (response instanceof NextResponse) {

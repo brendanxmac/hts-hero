@@ -125,7 +125,9 @@ export const InsightsTab = ({
         <p className="m-0 text-lg leading-relaxed text-base-content/80">
           {lead ? (
             <>
-              {lead.origin.country.flag} <span className="font-semibold text-base-content">{lead.origin.country.name}</span>
+              <span className="font-semibold text-base-content">
+                {lead.origin.country.flag} {lead.origin.country.name}
+              </span>
               {lead.agreement ? ` with ${shortAgreement(lead.agreement.name)}` : ""} could lower your duty rate by up to{" "}
               <span className="font-semibold text-success">{formatRate(saving(lead))}</span>
               {value(lead.origin.country.code) > 0 && (
