@@ -29,12 +29,12 @@ order; tick items as they land, and add new ones as they come up.
 - [ ] **Confirm the launch-pricing deadline**: `LAUNCH_PRICING` (now Fri, Nov 13, 2026). Savings
       detection and auditing are sold everywhere as "Coming Oct 2026" (`SAVINGS_AUDITS_LABEL`); if
       they slip, change the label.
-- [ ] **Apply `supabase/migrations/tracker_onboarding.sql` on the deploy day** (paste into the SQL
-      editor; added 2026-10-20). It adds `tracker_onboarding` (sign-up source, first Tracker visit,
-      skip reason, trial start), the trigger on `tracker_catalogs` that starts the 14-day trial at the
-      first real (non-example) import, and the backfill for accounts that already have imports. Its
-      backfill date (`2026-10-21`) must match `REVERSE_TRIAL.freshStartOn`: move both together.
-      Until it's applied the app falls back to sign-up-based trials and emails.
+- [ ] **`tracker_onboarding.sql` is the last migration** (step 2; added 2026-10-20). It adds
+      `tracker_onboarding` (sign-up source, first Tracker visit, skip reason, trial start) and the
+      trigger on `tracker_catalogs` that starts the 14-day trial at the first real (non-example)
+      import. Its backfill finds nothing on prod: `master` keeps imports only in the browser, so no
+      account has stored imports yet. An existing user's browser catalog is saved to their account the
+      first time they open the new Tracker, and that starts their trial then.
 - [x] **Regenerate the auth emails** (their copy changed for the trial): `npm run email:auth`.
 - [x] **Run the checks**: `npm run tests`, `npx tsc --noEmit -p .`, and a production build
       (`npm run build`).
@@ -149,14 +149,13 @@ and the scope reader fail on the missing column.
       /tariff-monitor, /pricing-calculator, /tariff-updates, sign up with a new account (a generic
       sign-up lands on `/`; opening the Tracker shows the import takeover; the trial starts at the
       first real import), one Stripe checkout and refund.
-- [ ] **The "everything is unlocked" email** (`trial_unlocked`): the lifecycle cron queues it for
-      every existing account on `freshStartOn`. That batch is held for review: check it in
-      /email-outbox and approve it. It replaces the older "Meet the Tariff Tracker" email; don't
-      also run `npm run email:meet-tracker`.
+- [ ] **The "everything is unlocked" email** (`trial_unlocked`): only for an existing account whose
+      browser catalog syncs on `freshStartOn` itself (its trial starting that day), so expect few or
+      none. If a batch appears, it's held for review in /email-outbox. It replaces the older "Meet
+      the Tariff Tracker" email; don't also run `npm run email:meet-tracker`.
 - [ ] **Trial emails from then on** send themselves daily: 3 days before the trial ends, its last
-      day, and the day after (`libs/email/lifecycle.ts`). Existing accounts' trials all end on the
-      same day (`freshStartOn` + 14), so expect one large batch then, and every free account's import
-      alerts stop that day.
+      day, and the day after (`libs/email/lifecycle.ts`). Each trial ends 14 days after that account's
+      first real imports, so they arrive a few at a time, not as one batch.
 - [ ] **Older tariff history, if you want it:** /tariff-sources → pick a date → **Backfill** (admin
       only, in prod). It collects every source back to that date (the Federal Register a month at a
       time), skips what's stored, and the 15-minute cron processes the rest on prod's AI budget.
@@ -214,9 +213,6 @@ emails). These need you:
 - [ ] **Before Nov 13 (`LAUNCH_PRICING.endsAt`).** When it passes, the countdown and the struck-through
       prices disappear on their own, but **prices don't change on their own**: update `TRACKER_TIERS`
       and the Stripe prices when savings and audits ship, or move the date.
-- [ ] **`freshStartOn` + 14 days.** Every existing account's trial ends that day: one large "trial
-      ended" batch goes out, and every account that hasn't paid loses its import alerts at once. Watch the outbox
-      and Stripe that week.
 - [ ] **Once a year:** refresh the Census import data (below).
 
 **To see the trial screens yourself:** open the Tracker signed in as brendan@htshero.com (or any
