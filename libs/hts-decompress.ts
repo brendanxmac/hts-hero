@@ -11,6 +11,11 @@ const GZIP_ID2 = 0x8b;
  * - **Zlib** (often `78 …`): legacy zlib-wrapped deflate; older `pako.deflate` pipelines.
  */
 export function decompressHtsRevisionPayload(bytes: Uint8Array): string {
+  // Already JSON: a fetch that undid the gzip itself (a Content-Encoding: gzip response)
+  const first = bytes.find((b) => b !== 0x20 && b !== 0x0a && b !== 0x0d && b !== 0x09);
+  if (first === 0x5b || first === 0x7b) {
+    return new TextDecoder().decode(bytes);
+  }
   if (
     bytes.length >= 2 &&
     bytes[0] === GZIP_ID1 &&
