@@ -186,7 +186,7 @@ export const MicroCalculator = ({
                 rel="nofollow"
                 className={ui.button({ variant: "primary" })}
               >
-                Find Best Rate
+                Open Tariff Calculator
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </Link>
               <span className={`${ui.caption} text-center`}>Free · No sign-up</span>
