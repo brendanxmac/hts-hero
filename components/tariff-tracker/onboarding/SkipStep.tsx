@@ -190,7 +190,7 @@ const SkipReasonDialog = ({
       <div className="fixed inset-0 bg-black/50" aria-hidden />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel
-          className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} relative flex max-h-[92vh] w-full max-w-lg flex-col gap-5 overflow-y-auto p-6 shadow-2xl sm:p-7`}
+          className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} relative flex max-h-[92vh] w-full max-w-2xl flex-col gap-5 overflow-y-auto p-6 shadow-2xl sm:p-8`}
         >
           <button
             type="button"
@@ -210,26 +210,39 @@ const SkipReasonDialog = ({
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {SKIP_REASONS.map((r) => (
-              <button
-                key={r.id}
-                type="button"
-                aria-pressed={reason === r.id}
-                onClick={() =>
-                  r.id === "what_is_import"
-                    ? onExplain()
-                    : setReason(reason === r.id ? null : r.id)
-                }
-                className={`rounded-full border px-3.5 py-2 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
-                  reason === r.id
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-base-300 bg-base-100 text-base-content/80 hover:border-base-content/30"
-                }`}
-              >
-                {r.label}
-              </button>
-            ))}
+          {/* A list of choices (radio rows), not buttons: one or none */}
+          <div role="radiogroup" aria-label="What's in the way" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {SKIP_REASONS.map((r) => {
+              const picked = reason === r.id;
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={picked}
+                  onClick={() =>
+                    r.id === "what_is_import"
+                      ? onExplain()
+                      : setReason(picked ? null : r.id)
+                  }
+                  className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 text-left text-sm transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                    picked
+                      ? "border-primary bg-primary/10 font-semibold text-base-content"
+                      : "border-base-300 bg-base-200/40 text-base-content/80 hover:border-base-content/30 hover:bg-base-200"
+                  }`}
+                >
+                  <span
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${
+                      picked ? "border-primary" : "border-base-content/30"
+                    }`}
+                    aria-hidden
+                  >
+                    {picked && <span className="h-2 w-2 rounded-full bg-primary" />}
+                  </span>
+                  {r.label}
+                </button>
+              );
+            })}
           </div>
           {reason === "other" && (
             <textarea
