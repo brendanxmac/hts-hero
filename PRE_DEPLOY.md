@@ -130,6 +130,11 @@ and the scope reader fail on the missing column.
 - [ ] **Slack app (HTS Hero):** Redirect URLs include `https://htshero.com/api/slack/callback`,
       public distribution is activated, and the logo is uploaded. Vercel env has
       `SLACK_CLIENT_ID` and `SLACK_CLIENT_SECRET`. Then run Add to Slack once on the live site.
+- [ ] **Supabase sign-up webhook (prod):** Database → Webhooks has one on `public.users` INSERT
+      calling `https://htshero.com/api/webhook/supabase/user-created` with the `x-supabase-secret`
+      header (= Vercel's `SUPABASE_WEBHOOK_SECRET`). It's what sends the welcome email; same path and
+      contract as on `master`, so it should already be there. Dev can't reach localhost, so dev
+      sign-ups get no welcome email.
 - [ ] **Vercel plan allows 15-minute crons** (`tariff-sources`, `tariff-updates`, `adcvd`); Hobby
       only runs daily crons and rejects the deploy.
 
@@ -147,8 +152,9 @@ and the scope reader fail on the missing column.
 
 - [ ] **Smoke test prod:** the home page, /duty-calculator (a lookup signed out, the AD/CVD flag),
       /tariff-monitor, /pricing-calculator, /tariff-updates, sign up with a new account (a generic
-      sign-up lands on `/`; opening the Tracker shows the import takeover; the trial starts at the
-      first real import), one Stripe checkout and refund.
+      sign-up lands on `/`; the welcome email arrives within a minute; the Tracker's empty pages
+      ask for imports and nothing opens by itself; the trial starts at the first real import), one
+      Stripe checkout and refund.
 - [ ] **The "everything is unlocked" email** (`trial_unlocked`): only for an existing account whose
       browser catalog syncs on `freshStartOn` itself (its trial starting that day), so expect few or
       none. If a batch appears, it's held for review in /email-outbox. It replaces the older "Meet
