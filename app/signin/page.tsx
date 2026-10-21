@@ -17,7 +17,6 @@ import { THEME } from "@/components/ui/theme";
 import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { SIGNUP_HOME } from "@/libs/tariff-tracker/onboarding";
 import PasswordRequirements from "@/components/PasswordRequirements";
 
@@ -259,7 +258,7 @@ function LoginContent() {
       : showOtpForm
         ? "We'll email you a one-time passcode. No password needed."
         : isSignUp
-          ? `Free for ${REVERSE_TRIAL.days} days from your first imports: the full Tariff Tracker on up to ${REVERSE_TRIAL.imports} imports, no credit card. Then Tariff News alerts stay free, forever.`
+          ? null
           : "Welcome back. Pick up where you left off.";
 
   return (
@@ -284,7 +283,7 @@ function LoginContent() {
         <section className={`${tt.panel} ${tt.panelPad} flex flex-col gap-6`}>
           <header className="flex flex-col gap-1.5">
             <h1 className={`${tt.display} text-2xl font-semibold tracking-tight text-base-content`}>{title}</h1>
-            <p className={tt.subtitle}>{subtitle}</p>
+            {subtitle && <p className={tt.subtitle}>{subtitle}</p>}
           </header>
 
           {showForgotPassword ? (
