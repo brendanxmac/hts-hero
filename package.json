@@ -2,6 +2,9 @@
   "name": "hts-hero",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "email": "email dev",
     "email:meet-tracker": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/meet-tracker.ts",

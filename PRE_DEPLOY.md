@@ -13,8 +13,10 @@ order; tick items as they land, and add new ones as they come up.
       (the planned deploy day): if you deploy later, move it to the real day (see below). The
       "Coming Oct 2026" label leaves only days in October: change it now if savings and audits
       won't ship by Oct 31.
-- [ ] **Vercel Node version 20.9 or newer** (Project Settings → Build and Deployment → Node.js
-      Version; 22.x matches local). Next 16 won't build on Node 18.
+- [x] **Node 22 for this release:** `package.json` `engines.node` = `22.x`, which Vercel uses over
+      the dashboard setting. `master` keeps its current Node until the merge, and the release
+      branch's preview builds on 22 (Next 16 won't build on Node 18). After launch, set the
+      dashboard's Node.js Version to 22.x too, so the two agree.
 - [ ] **A Vercel preview deploy of the branch first.** Push `release/2026-10-10` and open its
       preview URL: the framework upgrade is the riskiest part of the release, and a preview shows
       build or runtime breakage before `master` does. Click through the home page, a blog post (MDX
