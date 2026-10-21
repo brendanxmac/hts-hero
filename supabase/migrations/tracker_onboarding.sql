@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS tracker_onboarding (
   signup_source     text,                     -- generic, calculator, tracker, classify (the auth callback)
   first_visit_at    timestamptz,              -- the first time the Tracker opened, signed in
   skipped_at        timestamptz,              -- the latest "Skip for now" on the import takeover
-  skip_reason       text,                     -- no_list, looking, someone_else, other, remind_me
+  skip_reason       text,                     -- SKIP_REASONS ids (libs/tariff-tracker/onboarding.ts) or remind_me; null if none given
   skip_note         text,
   trial_started_at  timestamptz,              -- the first real imports (the trigger below)
   updated_at        timestamptz NOT NULL DEFAULT now()

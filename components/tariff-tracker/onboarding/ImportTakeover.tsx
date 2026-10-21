@@ -43,7 +43,7 @@ import {
 // the person asks for it (the empty Home and Imports pages, SetupPanel; the plan card; an email's
 // link), never by itself (2026-10-21). Why it matters (HookStep), what an import is
 // (ExplainStep), the ways in (ChooseStep and AddSteps), help without the list (HandyStep), and the
-// finish (DoneStep), which starts the trial. "Skip for now" asks why first (SkipStep); after it the
+// finish (DoneStep), which starts the trial. "Skip setup" leads to a last word (SkipStep); after it the
 // empty Home and Imports pages keep asking. Signed out, the Overview's empty state asks instead.
 
 // The first Tracker visit, recorded once per tab (the no-imports emails count from it)
@@ -160,7 +160,7 @@ export const ImportTakeover = () => {
   const realCount = realItems(items).length;
   const autoOpened = useRef(false);
   const scroller = useRef<HTMLDivElement>(null);
-  // "Skip for now" opens over the step they were on, which stays as it was underneath (a sheet
+  // "Skip setup" opens over the step they were on, which stays as it was underneath (a sheet
   // half fixed, a pasted list), so Back puts them right where they left off, scrolled to the spot
   const [skipping, setSkipping] = useState(false);
   const leftAt = useRef(0);
@@ -447,7 +447,7 @@ export const ImportTakeover = () => {
                 className="rounded-full px-3 py-1.5 text-sm font-medium text-base-content/55 hover:bg-base-300/60 hover:text-base-content"
                 onClick={startSkip}
               >
-                Skip for now
+                Skip setup
               </button>
             )}
           </span>

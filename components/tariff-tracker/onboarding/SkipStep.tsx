@@ -19,10 +19,10 @@ import { SAVINGS_AUDITS_LABEL } from "@/libs/tariff-tracker/features";
 import { SKIP_REASONS, SkipReason } from "@/libs/tariff-tracker/onboarding";
 import { delay } from "./parts";
 
-// "Skip for now": not a door out but a last word. What the Tracker can't do without their
-// imports and that the trial is waiting on them, then the two choices side by side. Skipping opens
-// a popup asking why, optionally (it tells us what's in the way; "not sure what an import is" goes
-// back to the explainer), with a way to talk to us in the support chat instead.
+// "Skip setup": not a door out but a last word. What the Tracker can't do without their imports and
+// that the trial is waiting on them, a way to talk to us in the support chat, then the two choices
+// side by side. Skipping opens a popup asking why, optionally (it tells us what's in the way; "not
+// sure what an import is" goes back to the explainer, "something else" takes a note).
 
 const WITHOUT = [
   "Alert you the day a tariff change hits one of your products",
@@ -98,9 +98,13 @@ export const SkipStep = ({
         </li>
       </ul>
 
+      <div className="tt-ob-rise" style={delay(240)}>
+        <SupportBox />
+      </div>
+
       <div
         className="tt-ob-rise grid grid-cols-1 gap-3 sm:grid-cols-2"
-        style={delay(260)}
+        style={delay(300)}
       >
         <button
           type="button"
@@ -116,7 +120,7 @@ export const SkipStep = ({
           className={`${ui.button({ variant: "secondary", size: "lg" })} w-full justify-center`}
           onClick={() => setAsking(true)}
         >
-          Skip for now
+          Skip setup
         </button>
       </div>
 
@@ -143,7 +147,29 @@ const openSupportChat = () => {
   }
 };
 
-// Why they're skipping, if they'd like to say (never required), or talk to us instead. Above the
+// Help instead of a skip: talk to us in the support chat
+const SupportBox = () => (
+  <div className="flex items-start gap-3 rounded-xl border border-base-300 bg-tt-soft p-4">
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden>
+      <ChatBubbleLeftRightIcon className="h-5 w-5" />
+    </span>
+    <div className="flex flex-1 flex-col gap-2">
+      <p className="m-0 text-sm leading-relaxed text-base-content/80">
+        <span className="font-semibold text-base-content">Stuck, or not sure where to start?</span> Talk to us. We&apos;ll help you get your imports in.
+      </p>
+      <button
+        type="button"
+        className={`${ui.button({ variant: "secondary", size: "sm" })} self-start`}
+        onClick={openSupportChat}
+      >
+        <ChatBubbleLeftRightIcon className="h-4 w-4" aria-hidden />
+        Chat with support
+      </button>
+    </div>
+  </div>
+);
+
+// Why they're skipping, if they'd like to say (never required). Above the
 // takeover (z-[70]), so it sits at z-[80] and carries the Tracker's look itself.
 const SkipReasonDialog = ({
   open,
@@ -205,37 +231,15 @@ const SkipReasonDialog = ({
               </button>
             ))}
           </div>
-          {reason && reason !== "looking" && (
+          {reason === "other" && (
             <textarea
               className={`${ui.textarea} tt-enter min-h-20 text-sm`}
-              placeholder={
-                reason === "someone_else"
-                  ? "Who handles it? We can help you get the list from them."
-                  : "Anything we could make easier? (optional)"
-              }
+              placeholder="What's in the way? (optional)"
               value={note}
               onChange={(e) => setNote(e.target.value)}
+              autoFocus
             />
           )}
-
-          <div className="flex items-start gap-3 rounded-xl border border-base-300 bg-tt-soft p-4">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden>
-              <ChatBubbleLeftRightIcon className="h-5 w-5" />
-            </span>
-            <div className="flex flex-1 flex-col gap-2">
-              <p className="m-0 text-sm leading-relaxed text-base-content/80">
-                <span className="font-semibold text-base-content">Stuck, or not sure where to start?</span> Talk to us. We&apos;ll help you get your imports in.
-              </p>
-              <button
-                type="button"
-                className={`${ui.button({ variant: "secondary", size: "sm" })} self-start`}
-                onClick={openSupportChat}
-              >
-                <ChatBubbleLeftRightIcon className="h-4 w-4" aria-hidden />
-                Chat with support
-              </button>
-            </div>
-          </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <button
@@ -248,9 +252,9 @@ const SkipReasonDialog = ({
             <button
               type="button"
               className={`${ui.button({ variant: "primary", size: "md" })} w-full justify-center`}
-              onClick={() => onSkip(reason, note)}
+              onClick={() => onSkip(reason, reason === "other" ? note : "")}
             >
-              Skip for now
+              Skip setup
             </button>
           </div>
         </Dialog.Panel>

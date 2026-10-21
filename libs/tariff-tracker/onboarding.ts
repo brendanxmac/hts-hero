@@ -16,12 +16,19 @@ export const signupSourceFor = (redirect: string | null | undefined): SignupSour
   return "generic";
 };
 
-// Why "Skip for now" was pressed on the import takeover (tracker_onboarding.skip_reason)
+// Why "Skip setup" was pressed on the import takeover, if they said (tracker_onboarding.skip_reason).
+// What could stop someone at this point: no list, not their job, not getting the product or what an
+// import is (that one opens the explainer), the price, sharing their data, too few imports, or just
+// looking. The founder emails answer each (FounderNoteEmail).
 export const SKIP_REASONS = [
   { id: "no_list", label: "I don't have my list right now" },
-  { id: "looking", label: "I'm just looking around first" },
   { id: "someone_else", label: "Someone else handles our customs" },
+  { id: "unclear_product", label: "I don't understand the product" },
   { id: "what_is_import", label: "I'm not sure what counts as an import" },
+  { id: "pricing", label: "I want to know what it costs first" },
+  { id: "data_privacy", label: "I'm not comfortable sharing my import data" },
+  { id: "few_imports", label: "I only import a few products" },
+  { id: "looking", label: "I'm just looking around first" },
   { id: "other", label: "Something else" },
 ] as const;
 

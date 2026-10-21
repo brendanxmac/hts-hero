@@ -3,6 +3,7 @@ import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Cta, Signature } from "../kit/parts"
 import { C, siteLink } from "../kit/brand"
 import { AUDITS_ENABLED, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
+import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
 // A note from Brendan to an account that opened the Tracker and hasn't added its imports, plain
 // like a personal email (libs/email/lifecycle.ts):
@@ -54,6 +55,34 @@ const ReasonLine = ({ reason, note }: { reason?: string | null; note?: string | 
         <Para>
           You said you were looking around first, which makes total sense. The Tracker only really comes alive with your own imports, though: that&apos;s when you see
           your real duty on each one and start getting alerts when a change hits.
+        </Para>
+      )
+    case "unclear_product":
+      return (
+        <Para>
+          You mentioned the Tracker wasn&apos;t clear yet, which is on me. In short: you add the HTS codes and countries of origin you import, and it shows the duty on
+          each one today and tells you the day a tariff change hits one. Reply with any question and I&apos;ll answer it myself.
+        </Para>
+      )
+    case "pricing":
+      return (
+        <Para>
+          You wanted to know what it costs first, fair enough. The {REVERSE_TRIAL.days}-day trial is free with no card, so you can see it working on your own imports
+          before deciding anything, and if you reply with roughly how many products you import, I&apos;ll tell you which plan fits.
+        </Para>
+      )
+    case "data_privacy":
+      return (
+        <Para>
+          You mentioned you weren&apos;t comfortable sharing your import data. All the Tracker needs is HTS codes and countries of origin: no prices, suppliers or
+          customers, and only your account can see them. Happy to answer anything else about it.
+        </Para>
+      )
+    case "few_imports":
+      return (
+        <Para>
+          You mentioned you only import a few products. That&apos;s plenty: the Tracker watches each one and tells you the day a tariff change hits it, and with only a
+          few, setup takes a minute.
         </Para>
       )
     case "other":
