@@ -12,7 +12,8 @@ import { ThemeSwitch } from "@/components/tariff-tracker/shell/ThemeSwitch";
 import * as mk from "./styles";
 
 // The site header for landing pages: light, or in the Tracker's look with a light/dark toggle on
-// pages that opt in (skin:). The tariff products first, sign in or open the app on the right.
+// pages that opt in (skin:). The tariff products first (the tools themselves when signed in),
+// sign in or the Tariff Tracker on the right.
 // Sticky, with a frosted background.
 
 // Tariff Audit (/tariff-audit) is off the nav for now; the page stays live
@@ -23,10 +24,19 @@ const NAV = [
   { href: "/classify", label: "Classification Assistant" },
 ];
 
+// Signed in, the products open the tools themselves rather than their marketing pages
+const SIGNED_IN_NAV = [
+  { href: "/duty-calculator", label: "Tariff Calculator" },
+  { href: "/tariff-tracker", label: "Tariff Tracker" },
+  { href: "/tariff-updates", label: "Tariff News" },
+  { href: "/classifications", label: "Classification Assistant" },
+];
+
 export const MarketingHeader = () => {
   const { user } = useUser();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const nav = user ? SIGNED_IN_NAV : NAV;
 
   // Only on pages in the Tracker's look; the rest of the marketing layer is always light
   const themeSwitch = (
@@ -37,15 +47,16 @@ export const MarketingHeader = () => {
 
   const actions = user ? (
     <Link href="/tariff-tracker" className={`${mk.buttonPrimary} h-10 px-4 text-sm`}>
-      Open HTS Hero
+      Launch Tariff Tracker
     </Link>
   ) : (
     <>
       <Link href={config.auth.loginUrl} className="text-sm font-semibold text-slate-700 skin:text-base-content/80 hover:text-slate-900 skin:hover:text-base-content">
         Sign in
       </Link>
-      <Link href="/duty-calculator" className={`${mk.buttonPrimary} h-10 px-4 text-sm`}>
-        Calculate free
+      {/* Signed out, /tariff-tracker signs in or up first and comes back */}
+      <Link href="/tariff-tracker" className={`${mk.buttonPrimary} h-10 px-4 text-sm`}>
+        Try Tariff Tracker
       </Link>
     </>
   );
@@ -58,7 +69,7 @@ export const MarketingHeader = () => {
           <span className="text-lg font-extrabold text-slate-900 skin:text-base-content">{config.appName}</span>
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-0 lg:flex xl:gap-1">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -88,7 +99,7 @@ export const MarketingHeader = () => {
       {open && (
         <nav aria-label="Main" className="border-t border-slate-200 skin:border-base-300 bg-white skin:bg-base-100 lg:hidden">
           <div className={`${mk.container} flex flex-col gap-1 py-4`}>
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <Link key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 font-semibold text-slate-700 skin:text-base-content/80 hover:bg-slate-50 hover:skin:bg-tt-soft" onClick={() => setOpen(false)}>
                 {item.label}
               </Link>
