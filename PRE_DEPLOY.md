@@ -9,10 +9,10 @@ order; tick items as they land, and add new ones as they come up.
 
 ## 1. Before merging
 
-- [ ] **Pick the deploy day, then set the dates around it.** `freshStartOn` is `2026-10-21`
-      (the planned deploy day): if you deploy later, move it to the real day (see below). The
-      "Coming Oct 2026" label leaves only days in October: change it now if savings and audits
-      won't ship by Oct 31.
+- [x] **Deploy day: Wed, Oct 21, 2026.** `freshStartOn` and `tracker_onboarding.sql`'s backfill are
+      both `2026-10-21`. If the deploy slips past today, move both to the real day.
+- [ ] **The "Coming Oct 2026" label** (`SAVINGS_AUDITS_LABEL`, `libs/tariff-tracker/features.ts`)
+      leaves only Oct 22–31: change it now if savings and audits won't ship by Oct 31.
 - [x] **Node 22 for this release:** `package.json` `engines.node` = `22.x`, which Vercel uses over
       the dashboard setting. `master` keeps its current Node until the merge, and the release
       branch's preview builds on 22 (Next 16 won't build on Node 18). After launch, set the
