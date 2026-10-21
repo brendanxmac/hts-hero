@@ -9,6 +9,7 @@ import logo from "@/app/logo.svg";
 import config from "@/config";
 import { useUser } from "@/contexts/UserContext";
 import { ThemeSwitch } from "@/components/tariff-tracker/shell/ThemeSwitch";
+import ButtonAccount from "@/components/ButtonAccount";
 import * as mk from "./styles";
 
 // The site header for landing pages: light, or in the Tracker's look with a light/dark toggle on
@@ -46,9 +47,13 @@ export const MarketingHeader = () => {
   );
 
   const actions = user ? (
-    <Link href="/tariff-tracker" className={`${mk.buttonPrimary} h-10 px-4 text-sm`}>
-      Launch Tariff Tracker
-    </Link>
+    <>
+      {/* The account menu: settings, billing and signing out, as on the app's other pages */}
+      <ButtonAccount />
+      <Link href="/tariff-tracker" className={`${mk.buttonPrimary} h-10 px-4 text-sm`}>
+        Launch Tariff Tracker
+      </Link>
+    </>
   ) : (
     <>
       <Link href={config.auth.loginUrl} className="text-sm font-semibold text-slate-700 skin:text-base-content/80 hover:text-slate-900 skin:hover:text-base-content">
