@@ -9,12 +9,21 @@ import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 // invite), in the HTS Hero look. Supabase fills the {{ .ConfirmationURL }}-style placeholders, so
 // these are exported as HTML (`npm run email:auth`) and pasted into the Supabase dashboard
 // (Authentication → Email Templates). Each says what's waiting on the other side of the button.
+//
+// Two follow the app rather than Supabase's default link: the sign-in email also carries the
+// one-time passcode (/signin asks for one), and the reset email opens /reset-password with a token
+// hash, verified only when the person presses the button there, so an email scanner opening the
+// link doesn't use it up.
 
 export type AuthKind = "confirm" | "magic_link" | "reset" | "email_change" | "invite"
 
-const URL = "{{ .ConfirmationURL }}"
+const CONFIRMATION_URL = "{{ .ConfirmationURL }}"
+const RESET_URL = "{{ .SiteURL }}/reset-password?token_hash={{ .TokenHash }}"
 
-export const AUTH_EMAILS: Record<AuthKind, { subject: string; eyebrow: string; title: string; body: string; button: string; preview: string }> = {
+export const AUTH_EMAILS: Record<
+  AuthKind,
+  { subject: string; eyebrow: string; title: string; body: string; button: string; preview: string; href?: string; passcode?: boolean }
+> = {
   confirm: {
     subject: "Confirm your email to open your Tariff Tracker",
     eyebrow: "One step left",
@@ -27,12 +36,13 @@ export const AUTH_EMAILS: Record<AuthKind, { subject: string; eyebrow: string; t
     preview: `Confirm your email to start your free ${REVERSE_TRIAL.days}-day Tariff Tracker trial.`,
   },
   magic_link: {
-    subject: "Your HTS Hero sign-in link",
+    subject: "Your HTS Hero sign-in code",
     eyebrow: "Sign in",
-    title: "Your sign-in link",
-    body: "Use this button to sign in to HTS Hero. It works once and expires soon.",
+    title: "Your sign-in code",
+    body: "Enter this passcode on the sign-in page, or use the button. Either works once and expires soon.",
     button: "Sign in to HTS Hero",
-    preview: "Your one-time sign-in link for HTS Hero.",
+    preview: "Your one-time passcode for HTS Hero: {{ .Token }}",
+    passcode: true,
   },
   reset: {
     subject: "Reset your HTS Hero password",
@@ -41,6 +51,7 @@ export const AUTH_EMAILS: Record<AuthKind, { subject: string; eyebrow: string; t
     body: "Someone asked to reset the password for this HTS Hero account. If it was you, choose a new one here. If not, you can ignore this email: nothing changes.",
     button: "Choose a new password",
     preview: "Choose a new password for your HTS Hero account.",
+    href: RESET_URL,
   },
   email_change: {
     subject: "Confirm your new email for HTS Hero",
@@ -64,18 +75,38 @@ export const AUTH_EMAILS: Record<AuthKind, { subject: string; eyebrow: string; t
 
 export default function AuthEmail({ kind = "confirm" }: { kind?: AuthKind }) {
   const e = AUTH_EMAILS[kind]
+  const href = e.href ?? CONFIRMATION_URL
   return (
     <EmailLayout preview={e.preview} footer={{ reason: "You're getting this because of a request made with this email address on htshero.com." }}>
       <Eyebrow>{e.eyebrow}</Eyebrow>
       <Title>{e.title}</Title>
       <P>{e.body}</P>
-      <Cta href={URL} variant="next">
+      {e.passcode && (
+        <Text
+          style={{
+            margin: "8px 0 20px",
+            padding: "14px 0",
+            textAlign: "center",
+            fontSize: 30,
+            lineHeight: "36px",
+            fontWeight: 700,
+            letterSpacing: "8px",
+            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+            color: C.text,
+            backgroundColor: C.soft,
+            borderRadius: 8,
+          }}
+        >
+          {"{{ .Token }}"}
+        </Text>
+      )}
+      <Cta href={href} variant="next">
         {e.button}
       </Cta>
       <Text style={{ margin: "4px 0 0", fontSize: 12, lineHeight: "18px", color: C.muted }}>
         Button not working? Copy this link:{" "}
-        <Link href={URL} style={{ color: C.cobalt, wordBreak: "break-all" }}>
-          {URL}
+        <Link href={href} style={{ color: C.cobalt, wordBreak: "break-all" }}>
+          {href}
         </Link>
       </Text>
     </EmailLayout>

@@ -31,10 +31,13 @@ function ResetPasswordContent() {
     setTokenError(null);
 
     try {
+      // The reset email links here with ?token_hash= (no email in the link, so an address with a
+      // "+" can't break it); links from the older email carry ?token=&email=
+      const tokenHash = searchParams.get("token_hash");
       const token = searchParams.get("token");
       const email = searchParams.get("email");
 
-      if (!token || !email) {
+      if (!tokenHash && (!token || !email)) {
         setTokenError(
           "Missing token or email. Please use the link from your email."
         );
@@ -43,11 +46,9 @@ function ResetPasswordContent() {
         return;
       }
 
-      const { error } = await supabase.auth.verifyOtp({
-        email,
-        token,
-        type: "recovery",
-      });
+      const { error } = tokenHash
+        ? await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" })
+        : await supabase.auth.verifyOtp({ email: email!, token: token!, type: "recovery" });
 
       if (error) {
         setTokenError(error.message);
