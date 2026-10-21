@@ -110,6 +110,10 @@ and the scope reader fail on the missing column.
       the four Tracker products, and cancel at period end. Check it all with
       `npm run stripe:check-tracker` using the live key. Also confirm the live Classify prices match
       the site ($39 / $89; the sandbox has $29 / $80).
+- [ ] **Resend on Pro ($20/mo: 50,000 emails, no daily limit) before deploying.** The free plan
+      stops at 100 emails a day, and the outbox doesn't retry a failed send: the trial-unlocked batch,
+      welcome and onboarding emails and Tariff News would be lost past the 100th. If Supabase Auth
+      sends through Resend SMTP, sign-in codes share that limit too.
 - [ ] **Supabase Auth, both projects:** redirect URLs allow `/api/auth/callback` with any
       `?redirect=`; paste the email templates from `supabase/email-templates/` (subjects in
       `SUBJECTS.txt`) into Authentication → Email Templates.
