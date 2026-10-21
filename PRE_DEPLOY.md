@@ -60,28 +60,28 @@ order; tick items as they land, and add new ones as they come up.
 
 ## 2. Production database (Supabase, prod project)
 
-- [ ] **Back up prod first** (Database → Backups, or a `pg_dump`). `tariff_tracker_accounts.sql`
+- [x] **Back up prod first** (Database → Backups, or a `pg_dump`). `tariff_tracker_accounts.sql`
       drops `tracker_trials`, which can't be undone.
 
 Paste each migration into the SQL editor, in this order (foreign keys):
 
-- [ ] `tariff_sources.sql` (tariff_source_items, tariff_source_runs)
-- [ ] `tariff_updates.sql`
-- [ ] `tariff_update_scopes.sql`
-- [ ] `tariff_update_impacts.sql`
-- [ ] `email_outbox.sql` (email_batches, email_messages)
-- [ ] `email_subscribers.sql`
-- [ ] `lifecycle_emails.sql`
-- [ ] `tariff_impact_alerts.sql`
-- [ ] `tariff_tracker_accounts.sql` (tracker_catalogs, tracker_checks, tracker_entries,
+- [x] `tariff_sources.sql` (tariff_source_items, tariff_source_runs)
+- [x] `tariff_updates.sql`
+- [x] `tariff_update_scopes.sql`
+- [x] `tariff_update_impacts.sql`
+- [x] `email_outbox.sql` (email_batches, email_messages)
+- [x] `email_subscribers.sql`
+- [x] `lifecycle_emails.sql`
+- [x] `tariff_impact_alerts.sql`
+- [x] `tariff_tracker_accounts.sql` (tracker_catalogs, tracker_checks, tracker_entries,
       tracker_opportunities, tracker_opportunity_events, tracker_alert_settings; drops tracker_trials)
-- [ ] `tariff_alert_preferences.sql`
-- [ ] `slack_app.sql` (the Slack channel and workspace "Add to Slack" connected)
-- [ ] `tracker_snapshots.sql`
-- [ ] `adcvd.sql` (AD/CVD cases, events, months, settings, ai_usage)
-- [ ] `audit_requests.sql`
-- [ ] `social_ideas.sql`, then `social_ideas_sources.sql`
-- [ ] `tracker_onboarding.sql` last (needs `tracker_catalogs`): the trial-start trigger and its
+- [x] `tariff_alert_preferences.sql`
+- [x] `slack_app.sql` (the Slack channel and workspace "Add to Slack" connected)
+- [x] `tracker_snapshots.sql`
+- [x] `adcvd.sql` (AD/CVD cases, events, months, settings, ai_usage)
+- [x] `audit_requests.sql`
+- [x] `social_ideas.sql`, then `social_ideas_sources.sql`
+- [x] `tracker_onboarding.sql` last (needs `tracker_catalogs`): the trial-start trigger and its
       backfill, dated to match `freshStartOn` (see step 1).
 
 **Dev database too:** re-run `tariff_update_scopes.sql` there (it gained
@@ -90,11 +90,11 @@ and the scope reader fail on the missing column.
 
 ## 3. Copy the processed data to prod
 
-- [ ] Add `PROD_SUPABASE_URL` and `PROD_SUPABASE_SERVICE_ROLE_KEY` to `.env.local`.
-- [ ] `npm run adcvd:copy-to-prod` (dry run: counts per table), then
-      `npm run adcvd:copy-to-prod -- --apply`. It copies the tariff sources, tariff updates and
+- [x] Add `PROD_SUPABASE_URL` and `PROD_SUPABASE_SERVICE_ROLE_KEY` to `.env.local`.
+- [x] `npm run adcvd:copy-to-prod` (dry run: counts per table), then
+      `npm run adcvd:copy-to-prod -- --apply --skip-usage` (done 2026-10-21: 221 updates, 3,133 items, 976 cases, 3,683 events; dev's AI spend left behind). Then remove the `PROD_` lines from `.env.local`. It copies the tariff sources, tariff updates and
       AD/CVD data; nothing is re-processed or paid for twice.
-- [ ] **Once only, before deploying.** After launch prod is the source of truth for tariff actions:
+- [x] **Once only, before deploying.** After launch prod is the source of truth for tariff actions:
       never run the copy again. It would overwrite prod's reviews, approvals and AI budget with dev's.
       More history goes in through the Backfill button instead (step 6).
 
