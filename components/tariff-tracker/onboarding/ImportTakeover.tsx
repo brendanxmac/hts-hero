@@ -39,16 +39,14 @@ import {
   useImportTakeover,
 } from "./takeoverStore";
 
-// The first-run import takeover (PRICING.md and the onboarding plan, 2026-10-20). A signed-in
-// account whose catalog has none of its own imports gets the whole screen, every visit, until it
-// adds some: why it matters (HookStep), what an import is (ExplainStep), the ways in (ChooseStep and
-// AddSteps), help without the list (HandyStep), and the finish (DoneStep), which starts the trial.
-// "Skip for now" asks why first (SkipStep); after a skip the empty Home and Imports pages keep asking (SetupPanel), and
-// the takeover comes back on the next visit. Signed out, the Overview's empty state asks instead.
+// The import takeover (PRICING.md and the onboarding plan, 2026-10-20): the whole screen, opened when
+// the person asks for it (the empty Home and Imports pages, SetupPanel; the plan card; an email's
+// link), never by itself (2026-10-21). Why it matters (HookStep), what an import is
+// (ExplainStep), the ways in (ChooseStep and AddSteps), help without the list (HandyStep), and the
+// finish (DoneStep), which starts the trial. "Skip for now" asks why first (SkipStep); after it the
+// empty Home and Imports pages keep asking. Signed out, the Overview's empty state asks instead.
 
-// Dismissed for this visit (a new tab or tomorrow brings it back), and seen at all on this device
-const DISMISSED_KEY = "tt-import-takeover-dismissed";
-const SEEN_KEY = "tt-import-takeover-seen";
+// The first Tracker visit, recorded once per tab (the no-imports emails count from it)
 const VISIT_KEY = "tt-tracker-visit-recorded";
 
 const store = (kind: "session" | "local") => {
@@ -188,7 +186,11 @@ export const ImportTakeover = () => {
     openImportTakeover("preview", "hook");
   }, []);
 
-  // Opens by itself once the account's catalog is known to have none of its own imports
+  // Opens only when asked for (decided 2026-10-21: opening by itself on a first visit was abrupt;
+  // the empty Home and Imports pages sell the Tracker and ask, SetupPanel). A link can ask for it
+  // too, once the account's catalog is known to have none of its own imports: an email's "Add my
+  // imports" or a "Track your products" link (?setup=add, ?add=paste), straight to the ways in or
+  // the one named.
   useEffect(() => {
     if (
       autoOpened.current ||
@@ -199,14 +201,10 @@ export const ImportTakeover = () => {
       open
     )
       return;
-    if (store("session")?.getItem(DISMISSED_KEY)) return;
-    autoOpened.current = true;
-    const returning = Boolean(store("local")?.getItem(SEEN_KEY));
-    store("local")?.setItem(SEEN_KEY, "1");
-    // From an email or a "Track your products" link (?setup=add, ?add=paste): straight to the
-    // ways in, or the one asked for
     const url = new URL(window.location.href);
     const asked = url.searchParams.get("setup") ?? url.searchParams.get("add");
+    autoOpened.current = true;
+    if (!asked) return;
     if (url.searchParams.has("setup")) {
       url.searchParams.delete("setup");
       window.history.replaceState(
@@ -220,20 +218,17 @@ export const ImportTakeover = () => {
         ? "paste"
         : asked === "csv" || asked === "file"
           ? "file"
-          : asked || returning
-            ? "choose"
-            : "hook";
-    openImportTakeover("auto", first);
+          : "choose";
+    openImportTakeover("link", first);
     trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_SHOWN, {
-      from: "auto",
-      returning,
+      from: "link",
       asked,
     });
   }, [signedIn, accessLoading, synced, realCount, open]);
 
   // Opened from an ask (the empty pages, the plan card, the imports-to-finish banner)
   useEffect(() => {
-    if (open && from !== "auto")
+    if (open && from !== "link")
       trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_SHOWN, { from });
   }, [open, from]);
 
@@ -255,7 +250,6 @@ export const ImportTakeover = () => {
   if (!open) return null;
 
   const dismiss = () => {
-    store("session")?.setItem(DISMISSED_KEY, "1");
     setSkipping(false);
     closeImportTakeover();
   };

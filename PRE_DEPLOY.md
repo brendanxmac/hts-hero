@@ -41,9 +41,10 @@ order; tick items as they land, and add new ones as they come up.
 - [ ] **Test signed in, in dev** (needs a real account):
   - [ ] A new account from a generic link lands on `/` with the welcome strip; from a calculator
         CTA it stays on the calculator (no redirect to the Tracker any more).
-  - [ ] First Tracker visit with no imports: the full-screen import takeover. Walk each way in
-        (recent searches, paste, Excel/CSV with odd headers), "I don't have my list handy", Skip
-        (asks why), the Finish Setup banner after a skip, and the takeover again in a new tab.
+  - [ ] First Tracker visit with no imports: the empty Home and Imports pages sell the Tracker and
+        ask; nothing opens by itself (2026-10-21). Their "Add imports" opens the import takeover:
+        walk each way in (recent searches, paste, Excel/CSV with odd headers), "I don't have my list
+        handy", and Skip (asks why). An email's `?setup=add` link opens it straight to the ways in.
         `?onboardingPreview=1` opens it in development on any account, signed out too.
   - [ ] Before any imports the sidebar shows "Free Trial · 14 days, starts when you add your
         imports"; after the first real ones, "14 days left", alerts cover up to 200 imports,

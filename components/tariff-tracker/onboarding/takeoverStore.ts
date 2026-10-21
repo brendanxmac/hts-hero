@@ -2,9 +2,9 @@
 
 import { useSyncExternalStore } from "react";
 
-// Whether the import takeover is open, and at which step: opened by itself on a visit without
-// imports (ImportTakeover), and again from the empty Home and Imports pages (SetupPanel), the plan
-// card or the imports-to-finish banner. An ask starts at the beginning unless it names a step. One copy for the whole Tracker, outside React so any component can open it.
+// Whether the import takeover is open, and at which step: opened from the empty Home and Imports
+// pages (SetupPanel), the plan card, the imports-to-finish banner, or a link that asks for it
+// (ImportTakeover); never by itself. An ask starts at the beginning unless it names a step. One copy for the whole Tracker, outside React so any component can open it.
 
 // "finish": the rows left to fix from an earlier sheet (toFinish.ts), opened from the Tracker
 export type TakeoverStep = "hook" | "explain" | "choose" | "recent" | "paste" | "file" | "handy" | "done" | "finish";
@@ -12,7 +12,7 @@ export type TakeoverStep = "hook" | "explain" | "choose" | "recent" | "paste" | 
 interface TakeoverState {
   open: boolean;
   step: TakeoverStep;
-  // What opened it, for analytics: "auto" on arrival, else the ask that was clicked
+  // What opened it, for analytics: "link" from a URL that asks for it, else the ask that was clicked
   from: string;
 }
 
