@@ -55,11 +55,12 @@ export default function AuditRequestReceivedEmail({ name, company, footer }: Aud
         <>
           <P>
             Automatic auditing in the Tariff Tracker is {COMING_LOWER}: every entry checked against the duty in force on its date, flagging possible over and
-            underpayments. In the meantime, try the Tariff Tracker free for {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports} imports, with no credit card:
-            we&apos;ll alert you the moment a tariff change hits one, with the rate before and after. After that, {FREE_FOREVER_SHORT} stay free, forever.
+            underpayments. In the meantime, try the Tariff Tracker free for {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports} imports, with no credit card
+            (the {REVERSE_TRIAL.days} days start when you add your imports): we&apos;ll alert you the moment a tariff change hits one, with the rate before and after.
+            After that, {FREE_FOREVER_SHORT} stay free, forever.
           </P>
-          <Cta href={siteLink("/tariff-tracker?tab=catalog&add=paste", CAMPAIGN)} variant="next">
-            Start my free {REVERSE_TRIAL.days}-day trial
+          <Cta href={siteLink("/tariff-tracker?setup=add", CAMPAIGN)} variant="next">
+            Try the Tariff Tracker free
           </Cta>
         </>
       )}

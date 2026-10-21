@@ -4,12 +4,13 @@ import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Checklist, Cta, Eyebrow, P, Title, TRACKER_POINTS, UpdateSummary } from "../kit/parts"
 import { C, FONT_DISPLAY, siteLink } from "../kit/brand"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
-import { FREE_FOREVER_SHORT } from "../../components/ui/marketing/comingSoon"
+import { NUM_FREE_CLASSIFICATIONS } from "../../constants/classification"
 
-// Sent the moment an account is created. General, like the old one: welcome to HTS Hero, then the
-// two places to start, each a card with what it does and one button (the Tariff Tracker, led by the
-// 14-day reverse trial that started with the account, then the Classification Assistant), then a
-// note from Brendan that he's a reply away.
+// Sent the moment an account is created, to everyone, from any page: welcome to HTS Hero, then the
+// three tools, each a card with what it does and one button (the Tariff Calculator, free; the
+// Tariff Tracker, whose 14-day trial starts at the first imports, not at sign-up; the
+// Classification Assistant), then a note from Brendan that he's a reply away. It promises no one
+// product, since the sign-up may have been for any of them.
 
 export interface WelcomeEmailProps {
   // Not shown any more; the sign-up webhook still passes it
@@ -31,28 +32,31 @@ const Card = ({ title, intro, children }: { title: string; intro: string; childr
 
 export default function WelcomeEmail({ footer }: WelcomeEmailProps) {
   return (
-    <EmailLayout
-      preview={`Your ${REVERSE_TRIAL.days}-day Tariff Tracker trial has started: everything, on up to ${REVERSE_TRIAL.imports} imports. Here's where to start.`}
-      footer={footer}
-    >
+    <EmailLayout preview="Welcome to HTS Hero. Here's what your account can do, and where to start." footer={footer}>
       <Eyebrow>Welcome</Eyebrow>
       <Title>Welcome to HTS Hero!</Title>
-      <P>Thanks for signing up. There are two ways to get started:</P>
+      <P>Thanks for signing up. Here&apos;s what your account can do:</P>
 
-      <Card
-        title="Tariff Tracker: Your Free Trial Has Started"
-        intro={`For the next ${REVERSE_TRIAL.days} days you get everything the Tracker does, on up to ${REVERSE_TRIAL.imports} imports, with no credit card. Add your imports once and we watch them for you.`}
-      >
-        <Checklist items={TRACKER_POINTS} />
-        <Text style={{ margin: "0 0 12px", fontSize: 13, lineHeight: "20px", color: C.muted }}>
-          After {REVERSE_TRIAL.days} days, {FREE_FOREVER_SHORT} stay free, forever. Nothing is deleted.
-        </Text>
-        <Cta href={siteLink("/tariff-tracker?setup=add", CAMPAIGN)} variant="next">
-          Open the Tariff Tracker
-        </Cta>
+      <Card title="Tariff Calculator" intro="The duty on any import, with every tariff stacked up line by line. Free and unlimited.">
+        <Checklist
+          items={[
+            "The base rate plus Section 232, Section 301, reciprocal and every other tariff on top",
+            "Duty over time, so you see what changed and when",
+            "Where else you could source it, and for how much less duty",
+          ]}
+        />
+        <Cta href={siteLink("/duty-calculator", CAMPAIGN)}>Calculate a duty</Cta>
       </Card>
 
-      <Card title="Classification Assistant" intro="Find the right HTS code for a product, with the reasoning to back it up.">
+      <Card
+        title="Tariff Tracker"
+        intro={`Add your imports once and the Tracker watches them for you. Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card, and the ${REVERSE_TRIAL.days} days only start when you add your imports.`}
+      >
+        <Checklist items={TRACKER_POINTS} />
+        <Cta href={siteLink("/tariff-tracker", CAMPAIGN)}>Open the Tariff Tracker</Cta>
+      </Card>
+
+      <Card title="Classification Assistant" intro={`Find the right HTS code for a product, with the reasoning to back it up. ${NUM_FREE_CLASSIFICATIONS} classifications free.`}>
         <Checklist
           items={[
             "Find the candidate codes in minutes",

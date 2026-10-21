@@ -52,7 +52,7 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
           tracker
             ? [
               "Add the rest of your imports, so every one is covered",
-              "Turn on alerts, so you're notified the next time a tariff change hits your imports",
+              "Choose where alerts go (email, Slack or Microsoft Teams), so the right people hear the day a tariff change hits your imports",
               savingsAudits
                 ? "Check for savings on your imports: trade programs, exemptions and lower-duty origins you may qualify for"
                 : "Run an impact check: pick a recent tariff action and see exactly how it affects each of your imports",

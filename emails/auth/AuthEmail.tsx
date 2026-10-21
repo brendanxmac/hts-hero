@@ -2,7 +2,6 @@ import { EmailLayout } from "../kit/Layout"
 import { Cta, Eyebrow, P, Title } from "../kit/parts"
 import { C } from "../kit/brand"
 import { Link, Text } from "@react-email/components"
-import { SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
 
 // The emails Supabase Auth sends (confirm sign-up, magic link, password reset, email change,
 // invite), in the HTS Hero look. Supabase fills the {{ .ConfirmationURL }}-style placeholders, so
@@ -63,9 +62,7 @@ export const AUTH_EMAILS: Record<
     subject: "You're invited to HTS Hero",
     eyebrow: "Invitation",
     title: "You've been invited to HTS Hero",
-    body: SAVINGS_ENABLED
-      ? "Accept to set up your account. The Tariff Tracker shows every duty on the imports you add, alerts you when tariffs change, and finds where you could pay less."
-      : "Accept to set up your account. The Tariff Tracker shows every duty on the imports you add, alerts you when tariffs change, and shows exactly how any tariff action affects each one.",
+    body: "Accept to set up your account. HTS Hero helps you work out what you'll pay on imports: look up any duty with the free Tariff Calculator, track your imports with the Tariff Tracker, or classify a product with the Classification Assistant.",
     button: "Accept the invitation",
     preview: "Accept your invitation to HTS Hero.",
   },

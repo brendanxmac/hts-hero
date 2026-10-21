@@ -1,3 +1,4 @@
+import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 import { Link } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { C, formatDay, siteLink } from "../kit/brand"
@@ -43,9 +44,9 @@ export const TrackerLine = ({ signedIn, campaign }: { signedIn?: boolean; campai
     </P>
   ) : (
     <P muted small>
-      Want to get alerted when a change like this hits your own imports?{" "}
-      <Link href={siteLink("/tariff-tracker?tab=catalog&add=paste", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
-        Track your imports here, free.
+      Want an alert when a change like this hits your own imports?{" "}
+      <Link href={siteLink("/tariff-tracker?setup=add", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
+        Try the Tariff Tracker free for {REVERSE_TRIAL.days} days.
       </Link>
     </P>
   )
