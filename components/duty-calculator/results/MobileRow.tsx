@@ -20,6 +20,7 @@ export const MobileRow = ({
   rate,
   rateText,
   amount,
+  amountText,
   link,
   compact,
 }: RowProps & { link?: RowLink; compact?: boolean }) => {
@@ -42,7 +43,7 @@ export const MobileRow = ({
           </div>
         </div>
         <div className="tabular-nums text-base font-semibold whitespace-nowrap">
-          {formatMoney(amount)}
+          {amountText ?? formatMoney(amount)}
         </div>
       </div>
       <div className="tabular-nums text-sm text-base-content/70 flex flex-col">

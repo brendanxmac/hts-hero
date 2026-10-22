@@ -62,6 +62,52 @@ export const parseRateColumnWithFailures = (
 export const parseRateColumn = (raw: string | null): BaseTariffI[] =>
   parseRateColumnWithFailures(raw).tariffs
 
+// Why a rate can't be calculated, in plain English
+export const explainNotCalculated = (raw: string): string => {
+  const text = raw.trim()
+  if (/^see\s/i.test(text))
+    return `The rate is set out in ${text.replace(/^see\s+/i, "")}, which the calculator doesn't look up.`
+  if (/^\[?(the duty provided|no change|a duty of)/i.test(text))
+    return "This is Chapter 99 wording for an additional duty. Enter the goods' own HTS code instead."
+  if (/percent of the fair retail value/i.test(text))
+    return "It's a percentage of the goods' fair retail value, which the calculator doesn't ask for."
+  if (/percent of the cost of/i.test(text))
+    return "It's a percentage of the cost of the parts or repairs, which the calculator doesn't ask for."
+  if (/^a duty upon the (full )?value/i.test(text))
+    return "It's the article's own rate, charged on only part of its value as the Chapter 98 note sets out, which the calculator doesn't model."
+  if (/^a duty (equal|\(in lieu)/i.test(text))
+    return "It depends on the duty and drawback on like articles, which the calculator doesn't model."
+  if (/^the (rate|duty rate|rate of duty) (applicable|provided)/i.test(text))
+    return "It's the rate of another HTS code, which the calculator doesn't look up here."
+  if (/for each other piece or part/i.test(text))
+    return "It's charged per piece, with a cap the calculator doesn't model."
+  return "The HTS gives this rate in words the calculator can't calculate."
+}
+
+// Every rate part in a column, including those that can't be calculated: wording the parser
+// can't read ("The rate applicable to…", "3 percent of the fair retail value") and references
+// ("See 9822.04.25") stay in, with no value and the reason, so a rate is never shown as Free
+// just because it couldn't be read
+export const parseRateColumnParts = (raw: string | null): BaseTariffI[] =>
+  splitOnClosingParen(raw ?? "").flatMap((segment) => {
+    const parsed = parsePart(segment)
+    const programs = segment.match(PROGRAM_LIST)?.[1].split(",").map((p) => p.trim()) ?? []
+    return [
+      ...parsed.tariffs.map((t) =>
+        t.value === null ? { ...t, notCalculated: explainNotCalculated(t.raw) } : t,
+      ),
+      ...parsed.parsingFailures.map(
+        (failure): BaseTariffI => ({
+          value: null,
+          type: "percent",
+          raw: failure,
+          programs,
+          notCalculated: explainNotCalculated(failure),
+        }),
+      ),
+    ]
+  })
+
 export const getBaseRateParts = (
   baseRates: {
     general: string | null
@@ -71,13 +117,13 @@ export const getBaseRateParts = (
   column: DutyColumn,
   claimedPreference?: string,
 ): BaseTariffI[] => {
-  if (column === "column2") return parseRateColumn(baseRates.other)
+  if (column === "column2") return parseRateColumnParts(baseRates.other)
   if (column === "special") {
-    return parseRateColumn(baseRates.special).filter((t) =>
+    return parseRateColumnParts(baseRates.special).filter((t) =>
       t.programs?.includes(claimedPreference),
     )
   }
-  return parseRateColumn(baseRates.general)
+  return parseRateColumnParts(baseRates.general)
 }
 
 // ── Components ──
@@ -197,6 +243,18 @@ export const calculateBase = (
   const parts: BasePart[] = rates.map((t) => {
     const rate = t.value ?? 0
     const component = componentOf(t)
+
+    if (t.notCalculated) {
+      return {
+        raw: t.raw,
+        kind: "percent",
+        rate: 0,
+        basis: customsValue,
+        assumed: false,
+        amount: 0,
+        notCalculated: t.notCalculated,
+      }
+    }
 
     if (t.type === "percent") {
       if (!component) {

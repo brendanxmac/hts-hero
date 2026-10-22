@@ -88,11 +88,13 @@ export const calculate = (
     column,
     input.claimedPreference,
   )
-  if (baseRates.some((t) => t.value === null)) {
-    warnings.push(
-      `Base rate "${baseRates.find((t) => t.value === null)?.raw}" couldn't be computed and was counted as 0`,
+  baseRates
+    .filter((t) => t.notCalculated)
+    .forEach((t) =>
+      warnings.push(
+        `The base rate "${t.raw}" can't be calculated, so the total excludes base duty. ${t.notCalculated}`,
+      ),
     )
-  }
   if (baseRates.some((t) => t.type === "amount") && !input.quantity) {
     warnings.push(
       "The base rate includes a per-unit amount, but no quantity was given",
@@ -405,6 +407,7 @@ export const calculate = (
     ),
     base,
     baseParts: baseCalc.parts,
+    baseNotCalculated: baseCalc.parts.some((p) => p.notCalculated),
     lines,
     fees,
     totalDuty,
@@ -652,6 +655,9 @@ const getBaseLine = (
             "Uses the full rate for 100 degrees polarity until you enter the polarity, so this is the most it can be",
           ]
         : []),
+      ...baseCalc.parts
+        .filter((p) => p.notCalculated)
+        .map((p) => `Not calculated: ${p.notCalculated}`),
     ],
   }
 }

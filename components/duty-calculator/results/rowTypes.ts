@@ -12,6 +12,8 @@ export interface RowProps {
   rate?: number;
   rateText?: string;
   amount: number;
+  // In place of the amount: "Not calculated" when the base rate can't be worked out
+  amountText?: string;
   // The plain-English why is locked (signed out): a link to sign up takes the detail's place
   whyLocked?: boolean;
 }

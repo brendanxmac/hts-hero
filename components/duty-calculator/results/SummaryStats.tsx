@@ -34,7 +34,13 @@ export const SummaryStats = ({
           note: "Of the customs value",
           extra: note,
         },
-        { label: "Total duty", value: formatMoney(result.totalDuty), note: `On ${valueAmount(customsValue)} customs value` },
+        {
+          label: "Total duty",
+          value: formatMoney(result.totalDuty),
+          note: result.baseNotCalculated
+            ? "Excludes base duty, which can't be calculated"
+            : `On ${valueAmount(customsValue)} customs value`,
+        },
         { label: "Fees", value: formatMoney(result.totalFees), note: result.fees.map((f) => f.id.toUpperCase()).join(" + ") || "None" },
         {
           label: "Landed cost",

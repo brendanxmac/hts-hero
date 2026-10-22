@@ -13,7 +13,13 @@ export const EstimateStats = ({ estimate, customsValue }: { estimate: MicroEstim
       lead
       className="border-b border-base-300"
       stats={[
-        { label: "Total duty", value: rate(estimate.totalDuty), note: `${formatMoney(estimate.totalDuty)} on this shipment` },
+        {
+          label: "Total duty",
+          value: rate(estimate.totalDuty),
+          note: estimate.baseNotCalculated
+            ? "Excludes base duty, which can't be calculated"
+            : `${formatMoney(estimate.totalDuty)} on this shipment`,
+        },
         { label: "Fees", value: rate(estimate.totalFees), note: `${estimate.fees} · ${formatMoney(estimate.totalFees)}` },
         { label: "Duty + fees", value: rate(dutyAndFees), note: "Payable to CBP" },
         { label: "Landed cost", value: formatMoney(customsValue + dutyAndFees), note: `On ${formatMoney(customsValue)} customs value`, wide: true },

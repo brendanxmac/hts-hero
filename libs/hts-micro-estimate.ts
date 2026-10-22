@@ -21,6 +21,8 @@ export interface MicroEstimate {
   slices: { label: string; amount: number }[];
   // The base rate is per unit, so the duty assumes MICRO_QUANTITY units
   requiresQuantity: boolean;
+  // Part of the base rate can't be calculated ("The rate applicable to…"), so the totals exclude it
+  baseNotCalculated: boolean;
   // Trade preferences the goods might claim ("USMCA"), and questions that could change the duty
   preferences: string[];
   openQuestions: number;
@@ -69,6 +71,7 @@ export const microEstimate = ({
       { label: "Customs fees", amount: result.totalFees },
     ],
     requiresQuantity: result.requiresQuantity,
+    baseNotCalculated: result.baseNotCalculated,
     preferences: Array.from(new Set(result.availablePreferences.map((p) => preferenceName(p.name)))),
     openQuestions: result.unansweredInputs.length,
   };

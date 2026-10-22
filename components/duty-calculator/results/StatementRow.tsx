@@ -22,6 +22,7 @@ export const StatementRow = ({
   rate,
   rateText,
   amount,
+  amountText,
   whyLocked,
   link,
   compact,
@@ -79,7 +80,7 @@ export const StatementRow = ({
         <td
           className={`tabular-nums ${pad} pl-3 pr-5 sm:pr-6 text-base font-semibold text-right whitespace-nowrap`}
         >
-          {formatMoney(amount)}
+          {amountText ?? formatMoney(amount)}
         </td>
       </tr>
       {full && legal && legalOpen && (

@@ -55,6 +55,11 @@ export const SimpleSummary = ({
           </span>
           .
         </p>
+        {result.baseNotCalculated && (
+          <p className="text-sm text-base-content/70 max-w-md">
+            Plus the base duty, which can&apos;t be calculated for this code. See the warning for why.
+          </p>
+        )}
       </div>
 
       <dl className="w-full max-w-md divide-y divide-base-300 border-y border-base-300 text-left">

@@ -1090,6 +1090,9 @@ export interface BaseTariffI {
   // rate at `underDegrees`; each degree of polarity below it takes off `perDegree`, down to
   // `minimum` (all dollars per unit)
   slidingScale?: { perDegree: number; underDegrees: number; minimum: number };
+  // Why the duty for this part can't be worked out ("It's a percentage of the fair retail
+  // value…"); `value` is null. Set by engine-v2 for wording it can't read and for references.
+  notCalculated?: string;
 }
 
 export interface ParsedBaseTariff {

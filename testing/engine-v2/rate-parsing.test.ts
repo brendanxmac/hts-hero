@@ -115,6 +115,20 @@ describe("rate parsing: every HTS rate string", () => {
     expect(changed).toEqual([])
   })
 
+  it("keeps every part it can't read, so no rate is shown as Free by mistake", () => {
+    const dropped = entries
+      .map((e) => ({ raw: e.raw, parsed: parse(e.raw), parts: quietly(() => baseRates.parseRateColumnParts(e.raw)) }))
+      .filter(
+        ({ parsed, parts }) =>
+          parts.length !== parsed.tariffs.length + parsed.parsingFailures.length ||
+          parts.some((p) => p.value === null && !p.notCalculated) ||
+          // Zero only where the HTS says so: "Free…" or "0%"
+          parts.some((p) => p.value === 0 && !/^(free\b|0+(\.0+)?\s*%)/i.test(p.raw)),
+      )
+      .map((e) => e.raw)
+    expect(dropped).toEqual([])
+  })
+
   it("reads conditional free rates as free", () => {
     // 9813.00.05, 9804.00.60, 5101.11.10 (column 2)
     ;[
@@ -327,5 +341,57 @@ describe("engine-v2: new base rate shapes", () => {
 
   it("leaves other per-unit amounts alone whatever the quantity's unit", () => {
     expect(cents(run("3.3¢/kg", { quantity: 100, quantityUnit: "No." }).base.amount)).toBe(3.3)
+  })
+})
+
+describe("engine-v2: base rates that can't be calculated", () => {
+  it("never shows a rate it can't read as Free", () => {
+    // 6103.22.00: before, the part was dropped and the base read "Free", $0, with no warning
+    const result = run("The rate applicable to each garment in the ensemble if separately entered")
+    expect(result.base.reasons[0]).toBe("The rate applicable to each garment in the ensemble if separately entered")
+    expect(result.baseNotCalculated).toBe(true)
+    expect(result.baseParts.map((p) => [p.amount, Boolean(p.notCalculated)])).toEqual([[0, true]])
+    expect(result.warnings.some((w) => w.includes("can't be calculated, so the total excludes base duty"))).toBe(true)
+  })
+
+  it("explains Chapter 98 formulas", () => {
+    // 9816.00.20
+    const result = run("3 percent of the fair retail value")
+    expect(result.baseNotCalculated).toBe(true)
+    expect(result.base.reasons.some((r) => r.includes("fair retail value, which the calculator doesn't ask for"))).toBe(true)
+  })
+
+  it("keeps the parts it can calculate next to one it can't", () => {
+    // 9110.90.40: 4.3% and 1.7¢/jewel still count; the per-piece part with a cap is flagged
+    const result = run(
+      "4.3% + 1.7¢/jewel + 0.2¢ for each other piece or part, but if consisting in part of a plate or a set of plates the total duty shall not exceed the duty for the complete movement",
+      { quantity: 100 },
+    )
+    expect(cents(result.base.amount)).toBe(430 + 1.7)
+    expect(result.baseNotCalculated).toBe(true)
+  })
+
+  it("keeps a special-column wording rate with its programs", () => {
+    // 2106.90.52 special, claimed under D
+    const parts = baseRates.getBaseRateParts(
+      { general: null, special: "Free (AU,BH,CL)The rate applicable to the natural juice in heading 2009 (A*,D)", other: null },
+      "special",
+      "D",
+    )
+    expect(parts.map((p) => [p.raw, p.value, Boolean(p.notCalculated)])).toEqual([
+      ["The rate applicable to the natural juice in heading 2009", null, true],
+    ])
+  })
+
+  it("flags a 'See' reference as not calculated, with no question", () => {
+    const result = run("See additional U.S. note 2")
+    expect(result.baseNotCalculated).toBe(true)
+    expect(result.unansweredInputs.length).toBe(0)
+  })
+
+  it("leaves plain rates alone", () => {
+    expect(run("2.5%").baseNotCalculated).toBe(false)
+    expect(run("Free").baseNotCalculated).toBe(false)
+    expect(run("Free, under bond").baseNotCalculated).toBe(false)
   })
 })

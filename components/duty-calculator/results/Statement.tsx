@@ -51,6 +51,10 @@ export const Statement = ({
       : `${p.basis.toLocaleString("en-US")} ${p.unit === "each" ? unitLabel : p.unit}`) +
     (p.assumed ? " (assumed)" : "");
   const applied = result.lines.filter((l) => l.status === "applies");
+  // Part of the base rate can't be calculated (wording, a reference): the totals leave it out
+  const notCalculated = result.baseParts.filter((p) => p.notCalculated);
+  const allNotCalculated = notCalculated.length > 0 && notCalculated.length === result.baseParts.length;
+  const totalLabel = (label: string) => (result.baseNotCalculated ? `${label} (excludes base duty)` : label);
   const dutyAndFees = result.totalDuty + result.totalFees;
   const rows: RowProps[] = [
     {
@@ -68,6 +72,7 @@ export const Statement = ({
         ? result.baseParts.map((p) => p.raw).join(" + ")
         : undefined,
       amount: result.base.amount,
+      amountText: allNotCalculated ? "Not calculated" : undefined,
     },
     ...applied.map((line) => ({
       code: line.code,
@@ -124,7 +129,7 @@ export const Statement = ({
             compact={compact}
           />
         ))}
-        <MobileTotal label="Total duty" amount={result.totalDuty} />
+        <MobileTotal label={totalLabel("Total duty")} amount={result.totalDuty} />
         {feeRows.map((row) => (
           <MobileRow
             key={row.code}
@@ -133,7 +138,7 @@ export const Statement = ({
             compact={compact}
           />
         ))}
-        <MobileTotal label="Total duty and fees" amount={dutyAndFees} strong />
+        <MobileTotal label={totalLabel("Total duty and fees")} amount={dutyAndFees} strong />
       </ul>
 
       <div className="hidden sm:block overflow-x-auto">
@@ -170,7 +175,7 @@ export const Statement = ({
                 hideBasis={hideBasis}
               />
             ))}
-            <TotalRow label="Total duty" amount={result.totalDuty} hideBasis={hideBasis} />
+            <TotalRow label={totalLabel("Total duty")} amount={result.totalDuty} hideBasis={hideBasis} />
             {feeRows.map((row) => (
               <StatementRow
                 key={row.code}
@@ -180,7 +185,7 @@ export const Statement = ({
                 hideBasis={hideBasis}
               />
             ))}
-            <TotalRow label="Total duty and fees" amount={dutyAndFees} strong hideBasis={hideBasis} />
+            <TotalRow label={totalLabel("Total duty and fees")} amount={dutyAndFees} strong hideBasis={hideBasis} />
           </tbody>
         </table>
       </div>

@@ -298,6 +298,8 @@ export interface BasePart {
   inputId?: string // the answer that supplies the component's value or weight
   basis: number // the value (USD) or quantity the rate applies to
   assumed: boolean // the component wasn't given, so the whole value or quantity was used
+  // Why this part's duty can't be worked out; it's left out of the total (amount 0)
+  notCalculated?: string
   amount: number
 }
 
@@ -313,6 +315,8 @@ export interface CalculationResult {
   requiresQuantity: boolean
   base: DutyLine
   baseParts: BasePart[]
+  // Part of the base rate can't be calculated, so the totals exclude it (see baseParts)
+  baseNotCalculated: boolean
   lines: DutyLine[] // Chapter 99 lines, in evaluation order
   fees: FeeLine[]
   totalDuty: number
