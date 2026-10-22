@@ -231,6 +231,9 @@ export interface CalculationInput {
   asOf: IsoDate
   customsValue: number
   quantity?: number
+  // The unit the quantity is in: the HTS line's first unit ("No.", "kg", "thousands"). Rates
+  // per thousand ("$6/1000") divide the quantity by 1,000 unless it's already in thousands.
+  quantityUnit?: string
   baseRates: BaseRates
   claimedPreference?: string // SPI symbol
   answers?: Answers

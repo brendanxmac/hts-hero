@@ -7,6 +7,8 @@ import {
   BellAlertIcon,
   CheckIcon,
   DocumentMagnifyingGlassIcon,
+  LockClosedIcon,
+  PlayIcon,
   ReceiptPercentIcon,
   ScaleIcon,
   ShieldCheckIcon,
@@ -21,12 +23,15 @@ import { shortDate } from "../../duty-calculator/rate-history/format";
 import { NEWS_DOTS as DOTS, newsToneOf as toneOf } from "../news/tone";
 import { useTariffUpdates } from "../overview/useTariffUpdates";
 import { openImportTakeover } from "./takeoverStore";
+import { openFeatureTour } from "./tour/tourStore";
+import { delay } from "./parts";
 
 // The Tracker with none of the user's imports yet (the Home and Imports pages): the whole page is
 // the pitch for adding them. What it does for them, the tariff actions landing right now (why it
 // matters today), every feature, and one ask, made twice: "Set up my imports", which always opens
 // the import takeover at its start, so everyone goes through the same setup flow. No example
-// dashboard and no banner above it: this is the one ask on the page.
+// dashboard and no banner above it: this is the one ask on the page. Under the pitch, the feature
+// tour's teaser (TourTeaser): what's waiting once the imports are in, and the way into the tour.
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -54,7 +59,7 @@ const FEATURES: { Icon: Icon; title: string; body: string; tone: string; soon?: 
 ];
 
 const PROMISES = ["Takes about a minute", `Free for ${REVERSE_TRIAL.days} days`, "No credit card"];
-const ACTIONS = 5;
+const ACTIONS = 3;
 
 const Cta = ({ from, where }: { from: string; where: string }) => (
   <button
@@ -133,23 +138,112 @@ const LatestActions = () => {
   );
 };
 
+// What the tour shows, as things that would already be happening with their imports in: each
+// card one feature, locked until there are imports. Examples, in the Tracker's own terms (rates
+// before → after in %, savings as "may qualify").
+const TEASERS: { Icon: Icon; tone: string; label: string; title: string; detail: string; soon?: boolean }[] = [
+  { Icon: BellAlertIcon, tone: "bg-error/15 text-error", label: "Tariff alert", title: "A rate change hits 3 of your imports", detail: "Steel brackets, China: 52.9% → 77.9%" },
+  { Icon: ScaleIcon, tone: "bg-warning/15 text-warning", label: "AD/CVD", title: "A case may cover one of your imports", detail: "Aluminum extrusions from China" },
+  { Icon: TableCellsIcon, tone: "bg-primary/15 text-primary", label: "Every tariff", title: "50.0% duty, every tariff stacked up", detail: "Pump parts from Brazil" },
+  {
+    Icon: ReceiptPercentIcon,
+    tone: "bg-success/15 text-success",
+    label: "Savings",
+    title: "May qualify for USMCA",
+    detail: "Centrifugal pumps, Mexico: 25.0% → 0.0%",
+    soon: !SAVINGS_ENABLED,
+  },
+];
+
+// The feature tour's banner: dark, glowing, and a little out of reach. What they're missing, and
+// a two-minute look at it.
+const TourTeaser = ({ from }: { from: string }) => (
+  <section
+    aria-labelledby="tt-tour-teaser"
+    className="hts-tracker-on-dark relative grid items-center gap-8 overflow-hidden rounded-lg bg-tt-side p-6 text-base-content sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:px-12 lg:py-7"
+  >
+    <div
+      className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_22rem_at_85%_20%,color-mix(in_oklab,var(--color-primary)_28%,transparent),transparent),radial-gradient(30rem_18rem_at_10%_110%,color-mix(in_oklab,var(--color-secondary)_18%,transparent),transparent)]"
+      aria-hidden
+    />
+    <div className="relative flex flex-col gap-4">
+      <span className={`${tt.eyebrow("primary")} flex items-center gap-2`}>
+        <PlayIcon className="h-3.5 w-3.5" aria-hidden />
+        Product Tour · 2 minutes
+      </span>
+      <h2 id="tt-tour-teaser" className={`${tt.display} m-0 text-4xl font-semibold leading-[1.08] tracking-tight lg:text-[2.4rem]`}>
+        See What You&apos;re Missing
+      </h2>
+      <p className="m-0 max-w-xl text-base leading-relaxed text-base-content/75">
+        Alerts the day a tariff hits, every duty stacked up, AD/CVD cases flagged before they surprise you. Take a quick tour of everything
+        that starts working the moment your imports are in.
+      </p>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+        <button
+          type="button"
+          className={`${ui.button({ variant: "primary", size: "lg" })} h-14 px-7 text-lg shadow-[0_14px_34px_-12px_var(--color-primary)]`}
+          onClick={() => openFeatureTour(`${from}-teaser`, "imports")}
+        >
+          <PlayIcon className="h-5 w-5" aria-hidden />
+          Take the tour
+        </button>
+        <button
+          type="button"
+          className="text-sm font-semibold text-base-content/70 underline-offset-4 hover:text-base-content hover:underline"
+          onClick={() => openImportTakeover(`${from}-teaser`, "hook")}
+        >
+          or set up my imports
+        </button>
+      </div>
+    </div>
+
+    {/* What's waiting: each card a feature, locked until the imports are in */}
+    <ul className="relative m-0 grid list-none gap-2.5 p-0 sm:grid-cols-2" aria-label="What the Tracker does with your imports">
+      {TEASERS.map((t, i) => (
+        <li
+          key={t.label}
+          className={`tt-ob-rise relative flex flex-col gap-2 rounded-xl bg-tt-side-card p-3.5 ring-1 ring-white/5 ${i % 2 ? "sm:translate-y-4" : ""}`}
+          style={delay(150 + i * 110)}
+        >
+          <span className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <span className={`relative flex h-8 w-8 items-center justify-center rounded-lg ${t.tone}`} aria-hidden>
+                {i === 0 && <span className="tt-ob-ping absolute inset-0 rounded-lg bg-error/30" style={delay(900)} />}
+                <t.Icon className="relative h-4 w-4" />
+              </span>
+              <span className="text-xs font-bold uppercase tracking-wider text-base-content/60">{t.label}</span>
+            </span>
+            {t.soon && <span className={tt.chip("neutral")}>Soon</span>}
+          </span>
+          <span className="text-sm font-semibold leading-snug text-base-content">{t.title}</span>
+          <span className="text-xs text-base-content/60">{t.detail}</span>
+          <span className="mt-0.5 flex items-center gap-1.5 border-t border-white/10 pt-2 text-[0.7rem] font-semibold text-base-content/50">
+            <LockClosedIcon className="h-3 w-3" aria-hidden />
+            Waits for your imports
+          </span>
+        </li>
+      ))}
+    </ul>
+  </section>
+);
+
 // `from`: where it sits, for analytics ("overview", "imports")
 export const SetupPage = ({ from }: { from: string }) => (
   <div className="tt-enter flex flex-col gap-6">
     {/* The pitch, the ask, and why it matters today */}
     <section
       aria-labelledby="tt-setup-title"
-      className={`${tt.panel} relative grid min-h-[min(40rem,calc(100vh-8rem))] items-center gap-10 overflow-hidden p-6 sm:p-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:p-14`}
+      className={`${tt.panel} relative grid items-center gap-10 overflow-hidden p-6 sm:p-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:px-12 lg:py-8`}
     >
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60rem_30rem_at_0%_0%,color-mix(in_oklab,var(--color-primary)_14%,transparent),transparent)]"
         aria-hidden
       />
-      <div className="relative flex flex-col gap-7">
+      <div className="relative flex flex-col gap-4">
         <span className={`${tt.chip("primary")} self-start`}>Tariff Tracker</span>
         <h1
           id="tt-setup-title"
-          className={`${tt.display} m-0 max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-base-content lg:text-[3.4rem]`}
+          className={`${tt.display} m-0 max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-base-content lg:text-[3rem]`}
         >
           {/* The home page's headline (components/home/hero/HeroTicker.tsx) */}
           Tariff Alerts, Savings, &amp; Audits <span className="text-primary">on Autopilot</span>
@@ -173,6 +267,8 @@ export const SetupPage = ({ from }: { from: string }) => (
         <LatestActions />
       </div>
     </section>
+
+    <TourTeaser from={from} />
 
     {/* Everything it does */}
     <section aria-labelledby="tt-setup-features" className="flex flex-col gap-5 py-4">

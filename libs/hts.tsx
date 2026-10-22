@@ -44,10 +44,6 @@ import { Color } from "../enums/style";
 import { UserProfile } from "./supabase/user";
 import { notes } from "../public/notes/notes";
 import { decompressHtsRevisionPayload } from "./hts-decompress";
-import {
-  getStringBeforeOpeningParenthesis,
-  getStringBetweenParenthesis,
-} from "../utilities/hts";
 import { ClassificationTier } from "../contexts/ClassificationContext";
 import { NoteRecord } from "../types/hts";
 import Fuse from "fuse.js";
@@ -1089,6 +1085,11 @@ export interface BaseTariffI {
   details?: string;
   raw: string;
   programs?: string[];
+  // Sugar sliding scales: "3.6606¢/kg less 0.020668¢/kg for each degree under 100 degrees
+  // (and fractions of a degree in proportion) but not less than 3.143854¢/kg". `value` is the
+  // rate at `underDegrees`; each degree of polarity below it takes off `perDegree`, down to
+  // `minimum` (all dollars per unit)
+  slidingScale?: { perDegree: number; underDegrees: number; minimum: number };
 }
 
 export interface ParsedBaseTariff {
@@ -1096,10 +1097,52 @@ export interface ParsedBaseTariff {
   parsingFailures: string[];
 }
 
+// A list of trade program symbols, "(A+,AU,BH)". Other parentheses, such as the sugar scale's
+// "(and fractions of a degree in proportion)", are part of the rate.
+export const PROGRAM_LIST = /\(\s*([A-Z][^()]*)\)/;
+
 export const splitOnClosingParen = (input: string): string[] => {
-  const parts = input.split(/(?<=\))/g); // Split *after* each closing parenthesis ")"
+  // Split *after* each closing parenthesis of a program list
+  const parts = input.split(/(?<=\(\s*[A-Z][^()]*\))/g);
   return parts.map((part) => part.trim()).filter(Boolean); // Trim whitespace and remove empty strings
 };
+
+const roundTo = (value: number, places: number) =>
+  Math.round(value * 10 ** places) / 10 ** places;
+
+const NUMBER = "\\d+(?:\\.\\d+)?";
+
+// Units the first amount patterns can't read: digits ("m2", "/1,000"), periods ("pr.", "doz.",
+// "lin. m") and spaces or slashes ("clean kg", "line/ gross", "1,000 pins")
+const OTHER_UNITS = [
+  "m2",
+  "m3",
+  "pr\\.",
+  "doz\\.",
+  "clean kg",
+  "lin\\. m",
+  "line\\/\\s*gross",
+  "1,?000 pins",
+  "1,?000",
+  "[a-zA-Z]+",
+].join("|");
+
+// "$1.27/m3", "86.1¢/m2 of recording surface", "$1.32/t, including weight of container",
+// "15¢/jewel over 7"
+const otherAmountPattern = new RegExp(
+  `^(?:([$¢])\\s*(${NUMBER})|(${NUMBER})\\s*¢)\\s*\\/\\s*(${OTHER_UNITS})(?:\\s*,?\\s+((?:on|of|including|over)\\s+.+))?$`
+);
+
+// "/1000" and "/1,000" mean per thousand, like "/thousand"
+const normalizeUnit = (unit: string) =>
+  unit
+    .replace(/^1,?000$/, "thousand")
+    .replace(/^1,?000 pins$/, "thousand pins")
+    .replace(/^line\/\s*gross$/, "line/gross");
+
+const slidingScalePattern = new RegExp(
+  `^(${NUMBER})\\s*¢\\s*\\/\\s*kg\\s+less\\s+(${NUMBER})\\s*¢\\s*\\/\\s*kg\\s+for each degree under (\\d+) degrees\\s*\\(and fractions of a degree in proportion\\)\\s*,?\\s*but not less(?:\\s+than)?\\s+(${NUMBER})\\s*¢\\s*\\/\\s*kg$`
+);
 
 // TODO: consider filtering out any agreements that might not apply in this case given `country` param
 //  Item for the future to clean this up properly once we have lists of countries mapped to programs
@@ -1107,11 +1150,13 @@ export function getBaseTariffs(input: string): ParsedBaseTariff {
   const tariffs: BaseTariffI[] = [];
   const parsingFailures: string[] = [];
 
-  const programsString = getStringBetweenParenthesis(input);
+  const programMatch = input.match(PROGRAM_LIST);
 
   const programs =
-    (programsString && programsString.split(",").map((p) => p.trim())) || [];
-  const cleaned = getStringBeforeOpeningParenthesis(input);
+    (programMatch && programMatch[1].split(",").map((p) => p.trim())) || [];
+  const cleaned = (
+    programMatch ? input.slice(0, programMatch.index) : input
+  ).trim();
   const parts = cleaned.split(/\s+\+\s+/);
 
   for (const part of parts) {
@@ -1121,9 +1166,8 @@ export function getBaseTariffs(input: string): ParsedBaseTariff {
       return { tariffs: [], parsingFailures: [] };
     }
 
-    // Check for "free" case-insensitively, with or without parentheses
-    const freeMatch = trimmed.toLowerCase().match(/free/i);
-    if (freeMatch) {
+    // "Free" on its own ("Free, under bond" is not a plain free rate)
+    if (/^free$/i.test(trimmed)) {
       tariffs.push({
         value: 0,
         type: "percent",
@@ -1133,9 +1177,8 @@ export function getBaseTariffs(input: string): ParsedBaseTariff {
       continue;
     }
 
-    // Check for "see" case-insensitively, with or without parentheses
-    const seeMatch = trimmed.toLowerCase().match(/see/i);
-    if (seeMatch) {
+    // "See 9822.05.20", "See additional U.S. note 1": a pointer, with no rate of its own
+    if (/^see\s/i.test(trimmed)) {
       tariffs.push({
         value: null,
         type: "percent",
@@ -1210,6 +1253,71 @@ export function getBaseTariffs(input: string): ParsedBaseTariff {
       }
 
       tariffs.push(resultObj);
+      continue;
+    }
+
+    // A fraction of a percent: "33 1/3%"
+    const fractionMatch = trimmed.match(
+      /^(\d+)\s+(\d+)\s*\/\s*(\d+)\s*%(?:\s+(.*))?$/
+    );
+    if (fractionMatch && Number(fractionMatch[3]) > 0) {
+      const [, whole, numerator, denominator, details] = fractionMatch;
+      const resultObj: BaseTariffI = {
+        value: roundTo(
+          Number(whole) + Number(numerator) / Number(denominator),
+          4
+        ),
+        type: "percent",
+        raw: trimmed,
+        programs,
+      };
+      if (details?.trim()) {
+        resultObj.details = details.trim();
+      }
+      tariffs.push(resultObj);
+      continue;
+    }
+
+    // Amounts in units the patterns above can't read. Cents like "3.6606¢" are kept in full.
+    const otherAmountMatch = trimmed.match(otherAmountPattern);
+    if (otherAmountMatch) {
+      const [, symbol, symbolValue, centsValue, unit, details] =
+        otherAmountMatch;
+      const valueInDollars =
+        symbol === "$"
+          ? parseFloat(symbolValue)
+          : parseFloat(symbolValue ?? centsValue) / 100;
+
+      const resultObj: BaseTariffI = {
+        value: roundTo(valueInDollars, 10),
+        type: "amount",
+        unit: normalizeUnit(unit),
+        raw: trimmed,
+        programs,
+      };
+      if (details) {
+        resultObj.details = details.trim();
+      }
+      tariffs.push(resultObj);
+      continue;
+    }
+
+    // Sugar sliding scale. Its cents are tiny ("0.0622005¢"), so they're kept in full.
+    const slidingMatch = trimmed.match(slidingScalePattern);
+    if (slidingMatch) {
+      const [, base, perDegree, underDegrees, minimum] = slidingMatch;
+      tariffs.push({
+        value: roundTo(parseFloat(base) / 100, 10),
+        type: "amount",
+        unit: "kg",
+        raw: trimmed,
+        programs,
+        slidingScale: {
+          perDegree: roundTo(parseFloat(perDegree) / 100, 10),
+          underDegrees: Number(underDegrees),
+          minimum: roundTo(parseFloat(minimum) / 100, 10),
+        },
+      });
       continue;
     }
 

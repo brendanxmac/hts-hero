@@ -470,8 +470,8 @@ export const CommandCenter = () => {
           </span>
           <p className="mt-6 text-2xl font-semibold [font-family:var(--font-tracker-display)] tracking-tight text-base-content">
             {shared > CHANNELS.length
-              ? "Shared with your team"
-              : "Sharing with your team…"}
+              ? "Alerted your Team"
+              : "Alerting your Team…"}
           </p>
           <ul className="mt-8 grid w-full max-w-md grid-cols-4 gap-3">
             {CHANNELS.map(({ name, Icon, tint }, i) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { TrashIcon } from "@heroicons/react/16/solid";
+import { useEscapeToClose } from "@/hooks";
 
 export interface DeleteConfirmationModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export function DeleteConfirmationModal({
   onClose,
   onConfirm,
 }: DeleteConfirmationModalProps) {
+  useEscapeToClose(isOpen, onClose);
   if (!isOpen) return null;
 
   return (

@@ -21,6 +21,8 @@ interface CreateCheckoutParams {
 interface CreateCustomerPortalParams {
   customerId: string;
   returnUrl: string;
+  // Deep links into the portal (a plan change), tried in order; the portal's home when none works
+  flows?: Stripe.BillingPortal.SessionCreateParams.FlowData[];
 }
 
 // This is used to create a Stripe Checkout for one-time payments. It's usually triggered with the <ButtonCheckout /> component. Webhooks are used to update the user's state in the database.
@@ -110,6 +112,7 @@ export const createCustomerPortal = async ({
   customerId,
   returnUrl,
   app,
+  flows = [],
 }: CreateCustomerPortalParams & { app?: string }): Promise<string> => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2026-09-30.endive",
@@ -117,13 +120,16 @@ export const createCustomerPortal = async ({
   });
 
   const configuration = app ? await portalConfigurationFor(stripe, app) : null;
-  const portalSession = await stripe.billingPortal.sessions.create({
-    customer: customerId,
-    return_url: returnUrl,
-    ...(configuration ? { configuration } : {}),
-  });
-
-  return portalSession.url;
+  const params = { customer: customerId, return_url: returnUrl, ...(configuration ? { configuration } : {}) };
+  // Stripe refuses a flow the portal's configuration doesn't allow (a price it doesn't list)
+  for (const flow_data of flows) {
+    try {
+      return (await stripe.billingPortal.sessions.create({ ...params, flow_data })).url;
+    } catch (e) {
+      console.error(`Billing portal ${flow_data.type} flow refused, trying the next:`, (e as Error).message);
+    }
+  }
+  return (await stripe.billingPortal.sessions.create(params)).url;
 };
 
 // This is used to get the uesr checkout session and populate the data so we get the planId the user subscribed to

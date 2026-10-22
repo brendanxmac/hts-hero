@@ -43,6 +43,8 @@ export const buildEstimateInput = ({
   asOf,
   customsValue,
   quantity,
+  // The first unit is the one duty is charged in, and the one the quantity is entered in
+  quantityUnit: [...(element.units ?? []), ...(tariffElement.units ?? [])].find(Boolean),
   baseRates: {
     general: tariffElement.general,
     special: tariffElement.special,

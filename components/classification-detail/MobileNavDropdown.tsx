@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useEscapeToClose } from "@/hooks";
 import Link from "next/link";
 import Image from "next/image";
 import config from "@/config";
@@ -77,6 +78,7 @@ export const MobileNavDropdown = ({
 }: Props) => {
   const readOnly = useIsReadOnly();
   const [isOpen, setIsOpen] = useState(false);
+  useEscapeToClose(isOpen, () => setIsOpen(false));
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const activeItem = navItems.find((item) => item.id === activeTab);

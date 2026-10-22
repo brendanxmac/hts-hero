@@ -9,6 +9,8 @@ import { PlannedSection } from "./shell/PlannedSection";
 import { SectionPage } from "./shell/SectionPage";
 import { TrackerNav, TrackerNavContext } from "./shell/TrackerNav";
 import { ImportTakeover } from "./onboarding/ImportTakeover";
+import { FeatureTour } from "./onboarding/tour/FeatureTour";
+import { TourTriggers } from "./onboarding/tour/TourTriggers";
 import { TrackerShell } from "./shell/TrackerShell";
 import { TrackerProvider } from "./TrackerContext";
 import { TrackerAccessProvider } from "./access/TrackerAccessProvider";
@@ -216,6 +218,9 @@ export const TrackerApp = () => {
                   </TrackerShell>
                   {/* Over everything, until the account has imports of its own */}
                   <ImportTakeover />
+                  {/* The feature tour: by itself on the first visit and after the first imports, and from the sidebar */}
+                  <FeatureTour />
+                  <TourTriggers />
                 </TrackerNavContext.Provider>
               </EntriesProvider>
             </AlertSettingsProvider>

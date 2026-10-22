@@ -7,8 +7,8 @@ import { REVISION_DIFF_ADMIN_EMAIL } from "@/libs/hts-revision-diff/constants";
 export const dynamic = "force-dynamic";
 
 // The signed-in visitor's Tariff Tracker plan: free, trial or paid, and how many products it tracks.
-// ?trialPreview=trial|ending|ended shows the admin (or anyone in local development) a trial stage
-// on their own account; only what the Tracker shows changes, never what alerts cover.
+// ?trialPreview=start|trial|ending|ended|paid|lapsed shows the admin (or anyone in local
+// development) a plan stage on their own account; only what the Tracker shows changes, never what alerts cover.
 export async function GET(req: Request) {
   try {
     const {

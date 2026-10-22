@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Dialog } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   ArrowRightIcon,
   BellSlashIcon,
@@ -45,8 +45,11 @@ export const trialState = (access: TrackerAccess, now = Date.now()) => {
     notStarted: trialNotStarted(access),
     daysLeft,
     ending: access.kind === "trial" && daysLeft !== null && daysLeft <= TRIAL_ENDING_DAYS,
-    // A free account whose trial has a date (the fallback when access fails to load has none)
-    ended: access.kind === "free" && access.trialEndsAt !== null,
+    // A free account whose trial has a date (the fallback when access fails to load has none), and
+    // that never paid (a plan that ended says so instead: lapsed)
+    ended: access.kind === "free" && access.trialEndsAt !== null && !access.pastPlan,
+    // Was on a paid plan, and isn't any more
+    lapsed: access.kind === "free" && Boolean(access.pastPlan),
   };
 };
 

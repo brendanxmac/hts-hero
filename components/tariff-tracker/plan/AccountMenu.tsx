@@ -4,25 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Menu } from "@headlessui/react";
 import { ArrowRightOnRectangleIcon, CreditCardIcon, UserCircleIcon } from "@heroicons/react/20/solid";
-import toast from "react-hot-toast";
 import config from "@/config";
 import * as ui from "@/components/ui/styles";
 import { useUser } from "@/contexts/UserContext";
 import { useTrackerAccess } from "../access/accessContext";
 import { currentPath } from "../access/signup";
 
-// Who's signed in, with billing and signing out; a sign-in link for everyone else
-const openBilling = async () => {
-  const res = await fetch("/api/stripe/create-portal", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    // The Tracker's own billing portal, which switches between Tracker plans only
-    body: JSON.stringify({ returnUrl: window.location.href, app: "tracker" }),
-  });
-  const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
-  if (body.url) window.location.href = body.url;
-  else toast.error(body.error ?? "Billing isn't available right now.");
-};
+import { openBillingPortal } from "./billing";
+
+// Who's signed in, with billing (a plan now or before: invoices, card, resubscribing) and signing
+// out; a sign-in link for everyone else
 
 const itemClass = (active: boolean) =>
   `flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-base-content ${active ? "bg-base-200" : ""}`;
@@ -57,10 +48,10 @@ export const AccountMenu = () => {
         <span className="truncate">{email}</span>
       </Menu.Button>
       <Menu.Items className={`${ui.popover} absolute bottom-full left-0 z-30 mb-2 w-56 focus:outline-hidden`}>
-        {access.kind === "paid" && (
+        {(access.kind === "paid" || access.pastPlan) && (
           <Menu.Item>
             {({ active }) => (
-              <button type="button" className={itemClass(active)} onClick={openBilling}>
+              <button type="button" className={itemClass(active)} onClick={() => openBillingPortal()}>
                 <CreditCardIcon className="h-4 w-4" aria-hidden />
                 Billing
               </button>

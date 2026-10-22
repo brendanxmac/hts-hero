@@ -1,5 +1,6 @@
 import { createCheckout, StripePaymentMode } from "@/libs/stripe";
-import { createClient } from "@/app/api/supabase/server";
+import { createAdminClient, createClient } from "@/app/api/supabase/server";
+import { readTrackerAccess } from "@/libs/tariff-tracker/access";
 import { NextRequest, NextResponse } from "next/server";
 import { PricingPlan } from "../../../../types";
 import { fetchUser, UserProfile } from "../../../../libs/supabase/user";
@@ -71,6 +72,11 @@ export async function POST(req: NextRequest) {
           return StripePaymentMode.SUBSCRIPTION;
       }
     };
+
+    // A second Tracker subscription would bill twice: a plan changes in the billing portal
+    if (isTrackerPlan(itemId) && user && (await readTrackerAccess(createAdminClient(), user.id)).kind === "paid") {
+      return NextResponse.json({ error: "You already have a Tariff Tracker plan. Change it in Billing." }, { status: 409 });
+    }
 
     const successUrl = `${process.env.BASE_URL}${successEndpoint ? successEndpoint : "/"}`;
     const priceId = await getPriceId(itemId);

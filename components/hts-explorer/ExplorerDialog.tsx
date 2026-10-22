@@ -1,7 +1,8 @@
 "use client";
 
 import { Fragment, ReactNode } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import { THEME } from "@/components/ui/theme";
 
 // The explorer floating over a page: a big round panel on a dimmed backdrop, in the Tracker's

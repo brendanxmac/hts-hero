@@ -101,7 +101,7 @@ export const ChooseStep = ({
     <div className="mx-auto flex max-w-5xl flex-col gap-10">
       <StepHeading
         eyebrow={`Step ${ADD_STEP} · Add your imports`}
-        title="How would you like to add them?"
+        title="Choose a way to add your imports"
         lead="Pick whatever's easiest. Start with a handful if that's what you have; you can add the rest any time."
         size="md"
       />

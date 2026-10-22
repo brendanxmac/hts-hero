@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import { Crisp } from "crisp-sdk-web";
 import {
   ArrowLeftIcon,
-  ArrowRightIcon,
   ChatBubbleLeftRightIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
@@ -33,11 +32,9 @@ const WITHOUT = [
 
 // Back (and the main button) returns them to the exact step they left, as they left it
 export const SkipStep = ({
-  backLabel,
   onBack,
   onSkip,
 }: {
-  backLabel: string;
   onBack: () => void;
   onSkip: (reason: SkipReason | null, note: string) => void;
 }) => {
@@ -110,8 +107,7 @@ export const SkipStep = ({
           onClick={onBack}
           autoFocus
         >
-          {backLabel}
-          <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          Add my imports
         </button>
         <button
           type="button"

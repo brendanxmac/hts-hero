@@ -104,6 +104,7 @@ export const calculate = (
     input.customsValue,
     input.quantity,
     answers,
+    input.quantityUnit,
   )
   baseCalc.parts
     .filter(
@@ -623,8 +624,12 @@ const getBaseLine = (
     .filter((p) => p.assumed && p.kind === "percent")
     .map((p) => p.component)
   const assumedWeight = baseCalc.parts
-    .filter((p) => p.assumed && p.kind === "amount")
+    .filter((p) => p.assumed && p.kind === "amount" && p.component)
     .map((p) => p.component)
+  // Sugar sliding scales use the full rate (100 degrees) until the polarity is entered
+  const assumedPolarity = baseCalc.parts.some(
+    (p) => p.assumed && p.kind === "amount" && !p.component,
+  )
   return {
     code: "BASE",
     name: `Base duty (${columnName})`,
@@ -641,6 +646,11 @@ const getBaseLine = (
         : []),
       ...(assumedWeight.length
         ? [`Uses the total quantity for ${assumedWeight.join(", ")} until you enter it`]
+        : []),
+      ...(assumedPolarity
+        ? [
+            "Uses the full rate for 100 degrees polarity until you enter the polarity, so this is the most it can be",
+          ]
         : []),
     ],
   }

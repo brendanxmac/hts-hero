@@ -9,7 +9,7 @@ import {
   ChevronRightIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
-import { useOnboardingTour, type OnboardingStep } from "../../hooks";
+import { useEscapeToClose, useOnboardingTour, type OnboardingStep } from "../../hooks";
 
 interface OnboardingTourProps {
   tourId: string;
@@ -192,6 +192,7 @@ export default function OnboardingTour({
     prev,
     skip,
   } = useOnboardingTour({ tourId, steps, enabled, onComplete });
+  useEscapeToClose(isActive, skip);
 
   const [mounted, setMounted] = useState(false);
   const tooltipRef = useRef<HTMLDivElement | null>(null);

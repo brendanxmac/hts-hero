@@ -1,5 +1,6 @@
 import { Fragment } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   CheckCircleIcon,
   ScaleIcon,

@@ -6,12 +6,15 @@ import * as ui from "@/components/ui/styles";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { SAVINGS_AUDITS_LABEL } from "@/libs/tariff-tracker/features";
 import { useTariffUpdates } from "../overview/useTariffUpdates";
-import { PreviewDashboard } from "./PreviewDashboard";
+import { CommandCenter } from "@/components/home/command/CommandCenter";
 import { delay, StepHeading } from "./parts";
 
 // The first thing a new account sees in the Tracker: what it'll do for them once their imports
-// are in, the example dashboard coming to life beside it, and a real reason not to wait: how many
-// US tariff actions came out in the last 30 days.
+// are in, and beside it the homepage hero's picture of the product (alerts, savings and audits
+// running over an example catalog). The "tariff actions in the last 30 days" box is switched off
+// for now (too busy for a first screen); flip SHOW_RECENT_ACTIONS to bring it back.
+
+const SHOW_RECENT_ACTIONS = false;
 
 const BENEFITS = [
   {
@@ -76,7 +79,7 @@ export const HookStep = ({ onNext }: { onNext: () => void }) => {
         </ul>
 
         {/* Why now: real numbers from Tariff News */}
-        {actions && actions.length > 0 && (
+        {SHOW_RECENT_ACTIONS && actions && actions.length > 0 && (
           <div className="tt-ob-rise flex items-start gap-4 rounded-2xl border border-error/25 bg-error/5 p-4" style={delay(200)}>
             <span className={`${tt.display} shrink-0 text-[2.25rem] font-semibold leading-none tabular-nums text-error`}>{actions.length}</span>
             <div className="flex min-w-0 flex-col gap-1">
@@ -103,8 +106,8 @@ export const HookStep = ({ onNext }: { onNext: () => void }) => {
         </div>
       </div>
 
-      <div className="hidden pb-8 pl-10 xl:block">
-        <PreviewDashboard />
+      <div className="hidden xl:block">
+        <CommandCenter />
       </div>
     </div>
   );

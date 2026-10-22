@@ -13,7 +13,7 @@ import { PlayIcon } from "@heroicons/react/16/solid";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import ThemeToggle from "./ThemeToggle";
 import { ToolsDropdown, MobileToolsMenu } from "./ToolsDropdown";
-import { requestOnboardingReplay } from "../hooks";
+import { requestOnboardingReplay, useEscapeToClose } from "../hooks";
 
 const TOUR_IDS_BY_PATH: Record<string, string> = {
   "/classifications": "classifications",
@@ -23,6 +23,7 @@ export const AuthenticatedHeader = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  useEscapeToClose(isOpen, () => setIsOpen(false));
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorial, setTutorial] = useState<TutorialI | null>(null);
 

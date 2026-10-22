@@ -9,6 +9,7 @@ import { trackerSans } from "@/components/ui/font";
 import * as tt from "@/components/ui/styles/tracker";
 import { THEME } from "@/components/ui/theme";
 import { useUser } from "@/contexts/UserContext";
+import { useEscapeToClose } from "@/hooks";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { SkipReason } from "@/libs/tariff-tracker/onboarding";
 import { useTrackerAccess } from "../access/accessContext";
@@ -31,6 +32,7 @@ import { HandyStep } from "./HandyStep";
 import { HookStep } from "./HookStep";
 import { SHOW_EXPLAINER } from "./parts";
 import { SkipStep } from "./SkipStep";
+import { openTourOnce } from "./tour/tourStore";
 import {
   closeImportTakeover,
   openImportTakeover,
@@ -247,6 +249,9 @@ export const ImportTakeover = () => {
     return () => clearTimeout(timer);
   }, [open, step]);
 
+  // Escape closes it, keeping its place (a cell being edited or picked takes the first Escape)
+  useEscapeToClose(open, closeImportTakeover);
+
   if (!open) return null;
 
   const dismiss = () => {
@@ -279,8 +284,6 @@ export const ImportTakeover = () => {
     setSkipping(false);
     setTakeoverStep(next);
   };
-  // Where Back goes, in their words
-  const adding = step === "recent" || step === "paste" || step === "file";
 
   const add = (products: NewProduct[], method: AddMethod) => {
     if (!products.length) return;
@@ -396,6 +399,8 @@ export const ImportTakeover = () => {
             onOpen={() => {
               closeImportTakeover();
               nav.openTab("overview");
+              // The tour, once, from the alerts on: the imports are in
+              if (user?.id) openTourOnce(user.id, "imports_added", "alerts");
             }}
           />
         );
@@ -408,9 +413,10 @@ export const ImportTakeover = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="tt-onboarding-title"
-      className={`${THEME} hts-tracker ${trackerSans.className} fixed inset-0 z-[70] overflow-y-auto bg-(--tt-ob-ground) text-base-content`}
+      className={`${THEME} hts-tracker ${trackerSans.className} fixed inset-0 z-[70] overflow-y-auto bg-(--tt-ob-ground) text-base-content has-[:not([hidden])>[data-fit]]:overflow-hidden`}
     >
-      <div className="mx-auto flex min-h-full w-full max-w-7xl flex-col px-6 pb-16 lg:px-10">
+      {/* A step marked data-fit (the sheet) is held to the screen's height and scrolls inside */}
+      <div className="mx-auto flex min-h-full w-full max-w-7xl flex-col px-6 pb-16 lg:px-10 has-[:not([hidden])>[data-fit]]:h-full has-[:not([hidden])>[data-fit]]:pb-6">
         <header className="sticky top-0 z-10 -mx-6 flex items-center justify-between gap-6 bg-(--tt-ob-ground) px-6 py-5 lg:-mx-10 lg:px-10">
           <button
             type="button"
@@ -455,13 +461,6 @@ export const ImportTakeover = () => {
         {skipping && (
           <div className="flex flex-1 flex-col justify-center py-8">
             <SkipStep
-              backLabel={
-                adding
-                  ? "Back to my imports"
-                  : step === "hook" || step === "explain"
-                    ? "Back to where I was"
-                    : "Add my imports"
-              }
               onBack={backFromSkip}
               onSkip={skip}
             />
@@ -470,7 +469,7 @@ export const ImportTakeover = () => {
         <div
           key={step}
           hidden={skipping}
-          className="flex flex-1 flex-col justify-center py-8"
+          className="flex flex-1 flex-col justify-center py-8 has-[>[data-fit]]:min-h-0 has-[>[data-fit]]:py-2"
         >
           {body}
         </div>

@@ -73,7 +73,7 @@ export interface Tracker {
   filterContext: FilterContext;
 }
 
-const TrackerContext = createContext<Tracker | null>(null);
+export const TrackerContext = createContext<Tracker | null>(null);
 
 export const useTracker = () => {
   const tracker = useContext(TrackerContext);

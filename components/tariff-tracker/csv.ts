@@ -157,6 +157,16 @@ export const parseTable = <T>(
 };
 
 // Saves the template, so users start from the right columns
+// The onboarding template (public/templates): an Excel file with just the HTS code and country of
+// origin columns, and example rows marked "example: remove this row" (left in, their countries
+// don't read, so they're flagged rather than tracked)
+export const downloadImportTemplate = () => {
+  const link = document.createElement("a");
+  link.href = "/templates/hts-hero-imports-template.xlsx";
+  link.download = "hts-hero-imports-template.xlsx";
+  link.click();
+};
+
 export const downloadCsvTemplate = () => {
   const url = URL.createObjectURL(new Blob([CSV_TEMPLATE], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");

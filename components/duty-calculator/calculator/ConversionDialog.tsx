@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useContext, useEffect, useState } from "react";
-import { Dialog } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,

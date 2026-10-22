@@ -4,8 +4,14 @@
 // off, and come back soon as their own subscription. Flip these to bring them back, then follow
 // MVP_TRIM.md for the copy.
 
-export const SAVINGS_ENABLED = false;
-export const AUDITS_ENABLED = false;
+//
+// Demos: NEXT_PUBLIC_DEMO_SAVINGS_AUDITS=1 (in .env.local, or a preview deploy's env) turns both on
+// everywhere they're gated, so they can be shown before launch. Never on production.
+export const DEMO_SAVINGS_AUDITS =
+  process.env.NEXT_PUBLIC_DEMO_SAVINGS_AUDITS === "1" && process.env.NEXT_PUBLIC_VERCEL_ENV !== "production";
+
+export const SAVINGS_ENABLED = DEMO_SAVINGS_AUDITS;
+export const AUDITS_ENABLED = DEMO_SAVINGS_AUDITS;
 
 // The marketing pages show savings detection and auditing in full (the homepage's scan passes and
 // blocks, their visuals) ahead of the Tracker: while a feature is off it carries

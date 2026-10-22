@@ -2,7 +2,7 @@
 
 import { FinishSetupBanner } from "../onboarding/FinishSetupBanner";
 import { MouseEvent, ReactNode, useEffect, useState } from "react";
-import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon, LockClosedIcon } from "@heroicons/react/20/solid";
+import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon, LockClosedIcon, PlayCircleIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/app/logo.svg";
@@ -14,6 +14,7 @@ import { useTrackerAccess } from "../access/accessContext";
 import { AccountMenu, PlanBanner, PlanCard } from "../plan";
 import { TrialDialog } from "../plan/trial";
 import { SECTIONS, sectionUrl, TrackerSection } from "../sections";
+import { openFeatureTour } from "../onboarding/tour/tourStore";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { NavMeta, useNavMeta } from "./useNavMeta";
 import { useTrackerNav } from "./TrackerNav";
@@ -118,6 +119,29 @@ const TopTab = ({ section }: { section: TrackerSection }) => {
   );
 };
 
+// The feature tour, any time: in the sidebar's foot, looking like a tab but opening over the page
+const TourTab = ({ collapsed }: { collapsed: boolean }) =>
+  collapsed ? (
+    <button
+      type="button"
+      onClick={() => openFeatureTour("sidebar")}
+      title="Product Tour"
+      aria-label="Product Tour"
+      className="flex h-10 w-10 items-center justify-center self-center rounded-xl text-base-content/70 transition-colors hover:bg-tt-side-active hover:text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+    >
+      <PlayCircleIcon className="h-5 w-5" aria-hidden />
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={() => openFeatureTour("sidebar")}
+      className="flex h-10 items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-base-content/70 transition-colors hover:bg-tt-side-active hover:text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+    >
+      <PlayCircleIcon className="h-[18px] w-[18px] shrink-0 text-base-content/60" aria-hidden />
+      <span className="flex-1 truncate">Product Tour</span>
+    </button>
+  );
+
 const GROUPS = [{ label: "Workspace", id: "workspace" }] as const;
 
 // The sections in the sidebar (some are left out for now: sections.ts)
@@ -204,6 +228,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
           ))}
           {/* Help sits apart from the daily work, above the plan */}
           <div className="mt-auto flex flex-col gap-1">
+            <TourTab collapsed={collapsed} />
             {shown.filter((s) => s.group === "foot").map((section) => (
               <SidebarTab key={section.slug} section={section} meta={meta[section.slug]} locked={false} collapsed={collapsed} />
             ))}
@@ -225,6 +250,13 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
         {shown.map((section) => (
           <TopTab key={section.slug} section={section} />
         ))}
+        <button
+          type="button"
+          onClick={() => openFeatureTour("sidebar")}
+          className="whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-medium text-base-content/70 hover:bg-tt-soft"
+        >
+          Product Tour
+        </button>
       </nav>
 
       {/* The one scroller: positioned, so what's absolutely positioned inside scrolls (and is

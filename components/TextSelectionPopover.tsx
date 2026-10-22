@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { PlusIcon } from "@heroicons/react/16/solid";
+import { useEscapeToClose } from "@/hooks";
 
 interface TextSelectionPopoverProps {
   children: ReactNode;
@@ -28,6 +29,7 @@ export const TextSelectionPopover = ({
 }: TextSelectionPopoverProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [popover, setPopover] = useState<PopoverState | null>(null);
+  useEscapeToClose(popover !== null, () => setPopover(null));
 
   const updatePopover = useCallback(() => {
     const selection = window.getSelection();

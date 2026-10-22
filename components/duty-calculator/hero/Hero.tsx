@@ -52,7 +52,7 @@ const TariffNews = ({ updates, today }: { updates: PublicUpdate[]; today: string
     </ul>
     <Link
       href="/tariff-updates"
-      className="group mt-auto flex items-center justify-between gap-2 rounded-b-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-content transition-colors hover:bg-primary/90"
+      className="group mt-auto flex items-center justify-between gap-2 rounded-b-lg border-t border-base-300 bg-primary/5 px-5 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
     >
       <span className="flex items-center gap-2">
         <BellAlertIcon className="h-4 w-4" aria-hidden />

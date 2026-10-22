@@ -128,6 +128,11 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_ONBOARDING_COMPLETED = "Tariff Tracker Onboarding Completed",
   TARIFF_TRACKER_ONBOARDING_SKIPPED = "Tariff Tracker Onboarding Skipped",
   TARIFF_TRACKER_ONBOARDING_HELP_USED = "Tariff Tracker Onboarding Help Used",
+  TARIFF_TRACKER_TOUR_SHOWN = "Tariff Tracker Tour Shown",
+  TARIFF_TRACKER_TOUR_STEP = "Tariff Tracker Tour Step",
+  TARIFF_TRACKER_TOUR_COMPLETED = "Tariff Tracker Tour Completed",
+  TARIFF_TRACKER_TOUR_CLOSED = "Tariff Tracker Tour Closed",
+  TARIFF_TRACKER_TOUR_ACTION = "Tariff Tracker Tour Action",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** A tool call to the MCP server (Claude, ChatGPT and other AI clients) */

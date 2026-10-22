@@ -3,6 +3,7 @@ import { printResults } from "./test-runner"
 // Import all test suites — add new test files here
 import "./engine-v2/engine.test"
 import "./engine-v2/real-data.test"
+import "./engine-v2/rate-parsing.test"
 import "./tariff-tracker.test"
 import "./tariff-tracker-plan.test"
 import "./tariff-tracker-onboarding.test"

@@ -72,14 +72,18 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     };
   }, [userId, userLoading, load]);
 
-  // Back from Stripe checkout: the webhook may land a moment after the redirect, so look twice
+  // Back from Stripe checkout (or a plan change): the webhook may land a moment after the redirect, so look twice
   useEffect(() => {
     if (!userId || typeof window === "undefined") return;
     const url = new URL(window.location.href);
-    if (url.searchParams.get("checkout") !== "success") return;
+    // Or from a plan change in the billing portal (?plan=changed)
+    const checkout = url.searchParams.get("checkout") === "success";
+    const changed = url.searchParams.get("plan") === "changed";
+    if (!checkout && !changed) return;
     url.searchParams.delete("checkout");
+    url.searchParams.delete("plan");
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
-    toast.success("Thanks! Your Tariff Tracker plan is active.");
+    toast.success(changed ? "Your Tariff Tracker plan is updated." : "Thanks! Your Tariff Tracker plan is active.");
     const refresh = () => {
       load()
         .then(setAccess)

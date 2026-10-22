@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useEffect } from "react"
+import { useEscapeToClose } from "@/hooks"
 import { STATUS_LABELS } from "@/libs/hts-coverage/constants"
 import type { CoverageItem } from "@/libs/hts-coverage/types"
 import { Callout, Kbd, Pill, btn } from "../hts-revision-diff/ui"
@@ -29,18 +30,19 @@ export default function HeadingDetail({
   const { detail, error } = useHeadingDetail(htsno)
   const item = data.items.find((i) => i.htsno === htsno) ?? detail?.item
 
-  // j/k or arrows move, Esc closes, unless typing
+  useEscapeToClose(true, onClose)
+
+  // j/k or arrows move, unless typing
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement
       if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return
-      if (e.key === "Escape") onClose()
       if (e.key === "j" || e.key === "ArrowDown") (e.preventDefault(), onMove(1))
       if (e.key === "k" || e.key === "ArrowUp") (e.preventDefault(), onMove(-1))
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [onClose, onMove])
+  }, [onMove])
 
   if (!item) return null
   const membership = data.memberships[htsno]

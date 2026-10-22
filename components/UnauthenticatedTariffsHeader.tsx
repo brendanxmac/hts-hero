@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useEscapeToClose } from "@/hooks";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/logo.svg";
@@ -16,6 +17,7 @@ const UnauthenticatedTariffsHeader = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  useEscapeToClose(isOpen, () => setIsOpen(false));
   const [scrolled, setScrolled] = useState(false);
 
   // Add scroll listener for header background

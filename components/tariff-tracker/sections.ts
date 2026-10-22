@@ -12,6 +12,7 @@ import {
   ReceiptPercentIcon,
   Squares2X2Icon,
 } from "@heroicons/react/20/solid"
+import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 
 // The Tariff Tracker's sections, in sidebar order: tabs on the one /tariff-tracker page, picked
 // with ?tab=. Sections that aren't built yet, or are held back as coming soon, show what's
@@ -115,8 +116,8 @@ export const SECTIONS: TrackerSection[] = [
     Icon: ReceiptPercentIcon,
     title: "Savings",
     summary: "Ways you could pay less duty on the products you already import.",
-    ready: false,
-    comingSoon: true,
+    ready: SAVINGS_ENABLED,
+    comingSoon: !SAVINGS_ENABLED,
     group: "workspace",
     paidOnly: false,
     planned: [
@@ -130,10 +131,10 @@ export const SECTIONS: TrackerSection[] = [
     label: "Audits",
     Icon: ClipboardDocumentCheckIcon,
     title: "Audits",
-    comingSoon: true,
+    comingSoon: !AUDITS_ENABLED,
     summary:
       "Check the duty paid on every shipment against the rates in force that day.",
-    ready: false,
+    ready: AUDITS_ENABLED,
     group: "workspace",
     paidOnly: false,
     planned: [
