@@ -30,17 +30,24 @@ export const MicroCalculator = ({
   baseRates,
   initial,
   inExplorer = false,
+  inClassification = false,
   onUseCode,
+  useCodeLabel = "Use this code",
 }: {
   htsno: string;
   baseRates: { general: string | null; special: string | null; other: string | null };
   initial: MicroEstimate;
   // Shown in the HTS explorer rather than on the code's own page, for analytics
   inExplorer?: boolean;
+  // A classification's Overview, for analytics
+  inClassification?: boolean;
   // Over a calculator: the way on is putting this code in it, rather than opening another one
+  // (a classification's: opening its Duty & Tariffs tab)
   onUseCode?: () => void;
+  useCodeLabel?: string;
 }) => {
-  const surface = () => (inExplorer ? estimateSurface("explorer") : "hts_code_page");
+  const surface = () =>
+    inClassification ? estimateSurface("classification") : inExplorer ? estimateSurface("explorer") : "hts_code_page";
   const [country, setCountry] = useState<Country | null>(
     Countries.find((c) => c.code === initial.country) ?? null,
   );
@@ -174,7 +181,7 @@ export const MicroCalculator = ({
         <div className="flex shrink-0 flex-col items-stretch sm:items-center gap-1">
           {onUseCode ? (
             <button type="button" onClick={onUseCode} className={ui.button({ variant: "primary" })}>
-              Use this code
+              {useCodeLabel}
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </button>
           ) : (

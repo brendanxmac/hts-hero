@@ -13,7 +13,7 @@ import { ExploreModal } from "@/components/duty-calculator/calculator/ExploreMod
 import { useTariffFinder } from "@/components/duty-calculator/lib/useTariffFinder";
 import { todayIso } from "@/components/duty-calculator/lib/format";
 import { trackerSans } from "@/components/ui/font";
-import { THEME } from "@/components/ui/theme";
+import { THEME_EMBEDDED } from "@/components/ui/theme";
 import * as ui from "@/components/ui/styles";
 
 interface Props {
@@ -31,7 +31,8 @@ const Calculator = ({ element, country }: { element: HtsElement; country: Countr
     initial: { element, country, customsValue: 10000, quantity: 1000, entryDate: todayIso(), transportMode: "ocean" },
   });
   return (
-    <div className={`${THEME} hts-tracker ${trackerSans.className} flex flex-col gap-4`}>
+    // Themed, on the classification page's own background
+    <div className={`${THEME_EMBEDDED} hts-tracker ${trackerSans.className} flex flex-col gap-4`}>
       <CalculatorWorkspace f={f} page="calculator" />
       <Disclaimer />
       <ExploreModal f={f} />
