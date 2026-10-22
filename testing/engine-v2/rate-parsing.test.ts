@@ -362,14 +362,21 @@ describe("engine-v2: base rates that can't be calculated", () => {
     expect(result.base.reasons.some((r) => r.includes("fair retail value, which the calculator doesn't ask for"))).toBe(true)
   })
 
-  it("keeps the parts it can calculate next to one it can't", () => {
-    // 9110.90.40: 4.3% and 1.7¢/jewel still count; the per-piece part with a cap is flagged
-    const result = run(
-      "4.3% + 1.7¢/jewel + 0.2¢ for each other piece or part, but if consisting in part of a plate or a set of plates the total duty shall not exceed the duty for the complete movement",
-      { quantity: 100 },
-    )
-    expect(cents(result.base.amount)).toBe(430 + 1.7)
-    expect(result.baseNotCalculated).toBe(true)
+  it("charges watch movements' other pieces, with the cap as a note", () => {
+    // 9110.90.40: 4.3% + 1.7¢/jewel + 0.2¢ for each other piece or part (capped at the complete
+    // movement's duty when it has plates, which isn't applied)
+    const watch = (answers = {}) =>
+      run(
+        "4.3% + 1.7¢/jewel + 0.2¢ for each other piece or part, but if consisting in part of a plate or a set of plates the total duty shall not exceed the duty for the complete movement",
+        { quantity: 100, answers },
+      )
+    expect(watch().baseNotCalculated).toBe(false)
+    expect(cents(watch().base.amount)).toBe(430 + 1.7 + 0.2)
+    expect(watch().unansweredInputs.map((u) => [u.input.id, u.input.label])).toEqual([
+      ["baseQuantity:other-pieces-or-parts", "How many other pieces or parts are in the shipment, in all?"],
+    ])
+    expect(cents(watch({ "baseQuantity:other-pieces-or-parts": 500 }).base.amount)).toBe(430 + 1.7 + 1)
+    expect(watch().base.reasons.some((r) => r.startsWith("If the movement consists in part of a plate"))).toBe(true)
   })
 
   it("keeps a special-column wording rate with its programs", () => {

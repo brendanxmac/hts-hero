@@ -130,6 +130,25 @@ const POINTERS: { test: RegExp; key: string; question: string; help: string }[] 
   },
 ]
 
+// Watch movements (9110.90.40, 9114.90.30): "0.2¢ for each other piece or part, but if
+// consisting in part of a plate or a set of plates the total duty shall not exceed the duty for
+// the complete movement". The per-piece amount is charged; the cap is noted, not applied.
+const watchPieces = (raw: string, programs: string[]): BaseTariffI | null => {
+  const match = raw
+    .trim()
+    .match(/^(\d+(?:\.\d+)?)\s*¢ for each other piece or part, but if consisting in part of a plate or a set of plates the total duty shall not exceed the duty for the complete movement$/i)
+  if (!match) return null
+  return {
+    value: parseFloat(match[1]) / 100,
+    type: "amount",
+    unit: "piece",
+    details: "for each other piece or part",
+    raw: raw.trim(),
+    programs,
+    note: "If the movement consists in part of a plate or a set of plates, its total duty can't be more than the duty for the complete movement. The calculator doesn't apply that cap.",
+  }
+}
+
 const pointerFor = (raw: string) => {
   const pointer = POINTERS.find((p) => p.test.test(raw.trim()))
   return pointer ? { key: pointer.key, question: pointer.question, help: pointer.help } : undefined
@@ -148,6 +167,8 @@ export const parseRateColumnParts = (raw: string | null): BaseTariffI[] =>
         t.value === null ? { ...t, notCalculated: explainNotCalculated(t.raw) } : t,
       ),
       ...parsed.parsingFailures.map((failure): BaseTariffI => {
+        const pieces = watchPieces(failure, programs)
+        if (pieces) return pieces
         const pointsTo = pointerFor(failure)
         return {
           value: null,
@@ -305,6 +326,7 @@ const componentOf = (t: BaseTariffI) => {
   if (t.unit === "line/gross") return "gross lines"
   if (!t.details) return null
   if (/^over\s+\d+$/i.test(t.details)) return `${t.unit ?? "unit"}s ${t.details}`
+  if (t.details === "for each other piece or part") return "other pieces or parts"
   const component = t.details
     .replace(/^(on|of)\s+/i, "")
     .replace(/^the value of\s+/i, "")
@@ -332,6 +354,7 @@ const quantityQuestion = (component: string, unit: string) => {
   if (component === "gross lines")
     return "How many gross lines (button size in lines × gross) are in the shipment?"
   if (/\bover\s+\d+$/.test(name)) return `How many ${name} are there across the shipment?`
+  if (name === "other pieces or parts") return "How many other pieces or parts are in the shipment, in all?"
   if (/\bweight$/.test(name)) return `What is the ${name}, in ${unit}?`
   return `How many ${unit} of ${name} are in the shipment?`
 }
