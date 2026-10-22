@@ -22,6 +22,7 @@ import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { countryFacet, openColumn } from "../tableColumns";
 import { CountryIdea, SourcingIdea, SourcingOption, sourcingIdeas } from "./ideas";
+import { ExcludesBase } from "@/components/duty-calculator/results/ExcludesBase";
 
 // The Sourcing tab: for each product, the countries that pay less duty than its origin and
 // already ship it to the US (Census imports), and the countries that could supply the most of the
@@ -130,7 +131,12 @@ const ideaColumns = (year?: number): TableColumnDef<SourcingIdea, any>[] => [
     header: "Rate now",
     sortDescFirst: true,
     meta: { align: "right", width: "w-28" },
-    cell: ({ getValue }) => formatRate(getValue()),
+    cell: ({ row: { original: i } }) => (
+      <span className="flex flex-col items-end">
+        {formatRate(i.product.totalPct)}
+        {i.product.baseNotCalculated && <ExcludesBase />}
+      </span>
+    ),
   },
   {
     id: "options",

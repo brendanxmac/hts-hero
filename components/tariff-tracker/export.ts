@@ -91,7 +91,8 @@ export const buildTariffSheet = (rows: TrackedProduct[], asOf: string): Sheet =>
       r.entry.country.code,
       r.entry.country.name,
       result.base.reasons[0] ?? "Free",
-      round((result.base.amount / r.customsValue) * 100),
+      // Empty, not 0%, when the base rate can't be calculated (the notes say why)
+      result.baseNotCalculated ? null : round((result.base.amount / r.customsValue) * 100),
       ...typeCells,
       round(r.totalPct),
       r.openQuestions,

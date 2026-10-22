@@ -15,6 +15,7 @@ import { formatImportValue, UsImports } from "../lib/usImports";
 import { programName } from "../results/labels";
 import { CountryPicker, PickOption } from "./CountryPicker";
 import { CompareOption, shortAgreement } from "./options";
+import { EXCLUDES_BASE_HELP, ExcludesBase } from "@/components/duty-calculator/results/ExcludesBase";
 
 // One country's duty on this shipment, as a card that reads top to bottom: who (and "Yours" or
 // the agreement used), what it costs and against yours, a bar of what the duty is made of, then
@@ -219,6 +220,7 @@ export const CountryCard = ({
         <span className={`${ui.metric.secondary} ${cheapest ? "!text-success" : ""}`}>{byPct ? formatRate(pct) : money(result.totalDuty)}</span>
         <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           <span className="tabular-nums text-base-content/60">{byPct ? `${money(result.totalDuty)} duty` : `${formatRate(pct)} duty`}</span>
+          {result.baseNotCalculated && <ExcludesBase />}
           {diff !== undefined &&
             (Math.abs(diff) < 0.005 ? (
               <span className="rounded-full bg-base-200 px-2 py-0.5 text-xs font-semibold text-base-content/70">Same as yours</span>
@@ -255,7 +257,11 @@ export const CountryCard = ({
               <dd className="m-0 flex shrink-0 items-center gap-2">
                 {baseline && <Change line={line} before={before} value={value} byPct={byPct} />}
                 <span className="flex flex-col items-end leading-tight">
-                {line ? (
+                {row.key === BASE_PART && result.baseNotCalculated && (line?.amount ?? 0) < 0.005 ? (
+                  <span className="text-xs font-medium text-warning" title={EXCLUDES_BASE_HELP}>
+                    Not calculated
+                  </span>
+                ) : line ? (
                   <>
                     <span className="font-medium tabular-nums text-base-content">{byPct ? formatRate(line.ratePct ?? (line.amount / value) * 100) : money(line.amount)}</span>
                     <span className="text-[11px] tabular-nums text-base-content/60">{byPct ? money(line.amount) : line.ratePct !== undefined ? formatRate(line.ratePct) : ""}</span>
@@ -276,6 +282,7 @@ export const CountryCard = ({
             <span className="flex flex-col items-end leading-tight">
               <span className="tabular-nums">{byPct ? formatRate(pct) : money(result.totalDuty)}</span>
               <span className="text-[11px] font-normal tabular-nums text-base-content/60">{byPct ? money(result.totalDuty) : formatRate(pct)}</span>
+              {result.baseNotCalculated && <ExcludesBase className="text-[11px]" />}
             </span>
           </dd>
         </div>

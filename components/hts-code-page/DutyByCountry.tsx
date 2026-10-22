@@ -129,6 +129,7 @@ export function DutyByCountry({
                 </RowHeader>
                 <Td muted className="whitespace-nowrap">
                   {row.baseRate}
+                  {row.baseNotCalculated && <span className={`${ui.caption} block`}>Not calculated</span>}
                   {row.column === "column2" && (
                     <span className={`${ui.caption} block`}>Column 2</span>
                   )}

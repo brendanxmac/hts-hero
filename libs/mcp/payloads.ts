@@ -138,6 +138,8 @@ export const originRow = (o: OriginRate, customsValue: number, rank: number, bas
     ? { symbol: o.agreement.symbol, name: o.agreement.name, effective_duty_rate_pct: round(o.agreement.pct, 3) }
     : null,
   is_requested_origin: o.isOrigin,
+  // The base rate can't be calculated, so the rates leave base duty out
+  base_calculated: !o.result.baseNotCalculated,
 });
 
 export type OriginRow = ReturnType<typeof originRow>;

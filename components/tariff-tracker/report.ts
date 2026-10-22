@@ -47,7 +47,9 @@ export interface TrackedProduct {
   input: Omit<CalculationInput, "answers">;
   result: CalculationResult;
   description: string;
+  // Of the customs value; leaves out a base rate that can't be calculated (baseNotCalculated)
   totalPct: number;
+  baseNotCalculated: boolean;
   parts: RatePart[];
   // What answering each yes/no question would change, in dollars
   impacts: Record<string, number>;
@@ -122,6 +124,7 @@ export const trackProduct = (
     result,
     description: describe(entry.element, htsElements),
     totalPct: (result.totalDuty / customsValue) * 100,
+    baseNotCalculated: result.baseNotCalculated,
     parts: rateParts(result, customsValue),
     impacts,
     openQuestions: countOpenQuestions(result, impacts),

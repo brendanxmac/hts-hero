@@ -130,8 +130,11 @@ const CUSTOMS_VALUE = 10000;
 export interface ExampleDuty {
   label: string;
   htsno: string;
+  // null when the base rate is per unit or can't be calculated
   totalPct: number | null;
   totalDuty: number;
+  // The base rate can't be calculated, so totalDuty leaves it out
+  baseNotCalculated: boolean;
   // The Chapter 99 headings charged, by name
   tariffs: { code: string; name: string; ratePct?: number }[];
 }
@@ -157,8 +160,12 @@ export const countryExamples = (code: string, asOf: string, elements: HtsElement
       {
         label: product.label,
         htsno: element.htsno,
-        totalPct: result.requiresQuantity ? null : Number(((result.totalDuty / CUSTOMS_VALUE) * 100).toFixed(2)),
+        totalPct:
+          result.requiresQuantity || result.baseNotCalculated
+            ? null
+            : Number(((result.totalDuty / CUSTOMS_VALUE) * 100).toFixed(2)),
         totalDuty: result.totalDuty,
+        baseNotCalculated: result.baseNotCalculated,
         tariffs: result.lines
           .filter((l) => l.status === "applies" && l.amount > 0)
           .map((l) => ({ code: l.code, name: l.name, ratePct: l.ratePct })),

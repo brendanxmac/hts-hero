@@ -17,6 +17,7 @@ import { countryFacet, openColumn } from "../tableColumns";
 import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { AdcvdChipFor } from "@/components/adcvd/AdcvdChip";
 import type { AdcvdMark } from "@/components/adcvd/useCatalogAdcvd";
+import { ExcludesBase } from "@/components/duty-calculator/results/ExcludesBase";
 
 // The columns of the user's imports (ImportsTable): what each shows, how it sorts, and the ones
 // people filter by (origin, HTS chapter, tariff, savings, alerts), each with its values' labels
@@ -193,6 +194,7 @@ export const importColumns = (ctx: ImportColumnContext): TableColumnDef<TrackedP
     cell: ({ row: { original: r } }) => (
       <span className="flex flex-col items-end gap-1">
         <span className={`${tt.display} text-xl font-semibold leading-none tabular-nums text-base-content`}>{formatRate(r.totalPct)}</span>
+        {r.baseNotCalculated && <ExcludesBase />}
         <Status row={r} ctx={ctx} />
       </span>
     ),

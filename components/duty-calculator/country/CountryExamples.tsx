@@ -6,6 +6,7 @@ import type { ExampleComparison } from "./countryCopy";
 import { PRIMARY_MARK } from "@/components/ui/theme";
 import { dutyTint } from "./dutyTint";
 import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table/Table";
+import { ExcludesBase } from "@/components/duty-calculator/results/ExcludesBase";
 
 const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
@@ -51,6 +52,7 @@ export function CountryExamples({
               <Td align="right" style={{ background: dutyTint(e.totalPct, PRIMARY_MARK) }}>
                 <span className="text-base font-bold text-slate-900 skin:text-base-content">{usd(e.totalDuty)}</span>
                 {e.totalPct !== null && <span className="block text-xs text-slate-600 skin:text-base-content/70">{e.totalPct}%</span>}
+                {e.baseNotCalculated && <ExcludesBase className="block" />}
               </Td>
               {comparison && (
                 <Td align="right" className="text-slate-500 skin:text-base-content/60">
@@ -58,6 +60,7 @@ export function CountryExamples({
                     <>
                       <span className="font-medium">{usd(other(e.htsno)!.totalDuty)}</span>
                       {other(e.htsno)!.totalPct !== null && <span className="block text-xs">{other(e.htsno)!.totalPct}%</span>}
+                      {other(e.htsno)!.baseNotCalculated && <ExcludesBase className="block" />}
                     </>
                   ) : (
                     "–"

@@ -5,6 +5,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { formatRate } from "../formatRate";
 import { TrackedProduct } from "../report";
 import { exposure } from "./lib/metrics";
+import { ExcludesBase } from "@/components/duty-calculator/results/ExcludesBase";
 
 // What each tariff adds to the highest-duty products: a heat grid in one hue, cobalt, deeper
 // for more. Empty cells stay soft.
@@ -53,7 +54,10 @@ export const ExposureMap = ({ products, onOpen }: { products: TrackedProduct[]; 
                     {pct ? formatRate(pct) : "·"}
                   </td>
                 ))}
-                <td className={`${tt.display} pl-2 text-right font-semibold text-base-content`}>{formatRate(product.totalPct)}</td>
+                <td className={`${tt.display} pl-2 text-right font-semibold text-base-content`}>
+                  {formatRate(product.totalPct)}
+                  {product.baseNotCalculated && <ExcludesBase className="block font-sans" />}
+                </td>
               </tr>
             ))}
           </tbody>
