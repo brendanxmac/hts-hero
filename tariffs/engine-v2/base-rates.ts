@@ -64,7 +64,7 @@ export const parseRateColumn = (raw: string | null): BaseTariffI[] =>
 
 // Why a rate can't be calculated, in plain English
 export const explainNotCalculated = (raw: string): string => {
-  const text = raw.trim()
+  const text = raw.trim().replace(/\s+/g, " ")
   if (/^see\s/i.test(text))
     return `The rate is set out in ${text.replace(/^see\s+/i, "")}, which the calculator doesn't look up.`
   if (/^\[?(the duty provided|no change|a duty of)/i.test(text))
@@ -77,6 +77,8 @@ export const explainNotCalculated = (raw: string): string => {
     return "It's the article's own rate, charged on only part of its value as the Chapter 98 note sets out, which the calculator doesn't model."
   if (/^a duty (equal|\(in lieu)/i.test(text))
     return "It depends on the duty and drawback on like articles, which the calculator doesn't model."
+  if (/^the (duty rate|rate) provided (in|for) (such subheading|originating|origin- ating|beneficiary)/i.test(text))
+    return "It's the rate of the subheading the goods are classified in, adjusted as the Chapter 98 provision sets out, which the calculator doesn't model."
   if (/^the (rate|duty rate|rate of duty) (applicable|provided)/i.test(text))
     return "It's the rate of another HTS code, which the calculator doesn't look up here."
   if (/for each other piece or part/i.test(text))
