@@ -16,7 +16,8 @@ export const GATEWAY_LINES: Tool = {
     freeToTry: { support: "yes", note: "5 a week without an account, unlimited with a free one" },
     selfServe: { support: "yes" },
     publishedPricing: { support: "no", note: "Free tool; alerts and API through sales" },
-    fullStack: { support: "yes", note: "With Chapter 99 citations and AD/CVD" },
+    fullStack: { support: "yes", note: "With Chapter 99 citations" },
+    adcvd: { support: "partial", note: "Flags possible cases; adds rates for reviewed orders only" },
     tradePreferences: { support: "partial", note: "Shows FTA savings; no claim to make" },
     adjustments: { support: "partial", note: "Questions for drones and AD/CVD only" },
     entryDate: { support: "no", note: "Current-day entries only, per its own code" },
@@ -54,7 +55,7 @@ export const GATEWAY_LINES: Tool = {
     ],
     chooseThem: [
       "You want free bulk lookups and a free MCP server",
-      "You want antidumping and countervailing duties added into the duty total",
+      "You want AD/CVD deposits added into the duty total, for the orders it has reviewed",
     ],
     differences: [
       {

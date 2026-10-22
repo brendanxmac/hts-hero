@@ -16,6 +16,7 @@ export const AMZ_PREP: Tool = {
     selfServe: { support: "yes" },
     publishedPricing: { support: "yes", note: "Free" },
     fullStack: { support: "partial", note: "Flat country and sector rates; excludes the MFN base duty" },
+    adcvd: { support: "no", note: "Not modeled, per its FAQ" },
     tradePreferences: { support: "partial", note: "USMCA and EU as country flags" },
     adjustments: { support: "partial", note: "Notes 22 exempt codes without changing the total" },
     entryDate: { support: "no" },

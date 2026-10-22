@@ -38,6 +38,7 @@ export const HTS_HERO: Tool = {
     selfServe: { support: "yes", note: "Every plan is self-serve, with no demo or contract" },
     publishedPricing: { support: "yes" },
     fullStack: { support: "yes", note: "Each tariff on its own line, with its Chapter 99 heading and legal note" },
+    adcvd: { support: "yes", note: "Free with an account: each case, its rates and companies; not added to the estimate" },
     tradePreferences: { support: "yes", note: "USMCA, CAFTA-DR, KORUS and every program on the line" },
     adjustments: { support: "yes", note: "Answer each question and see the new total" },
     entryDate: { support: "yes", note: `Duty on any past entry date, free, with verified rates back to ${historyFrom}` },

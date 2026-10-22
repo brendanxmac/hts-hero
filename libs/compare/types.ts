@@ -25,6 +25,7 @@ export type FeatureKey =
   | "selfServe"
   | "publishedPricing"
   | "fullStack"
+  | "adcvd"
   | "tradePreferences"
   | "adjustments"
   | "entryDate"

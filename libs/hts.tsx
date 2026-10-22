@@ -1166,8 +1166,9 @@ export function getBaseTariffs(input: string): ParsedBaseTariff {
       return { tariffs: [], parsingFailures: [] };
     }
 
-    // "Free" on its own ("Free, under bond" is not a plain free rate)
-    if (/^free$/i.test(trimmed)) {
+    // "Free", or free on a condition: "Free, under bond, as prescribed in U.S. note 1 to this
+    // subchapter" (9813.00.05), "Free, for such temporary periods as…" (9804.00.60)
+    if (/^free(\s*,.*)?$/i.test(trimmed)) {
       tariffs.push({
         value: 0,
         type: "percent",

@@ -16,6 +16,7 @@ export const GINGER_CONTROL: Tool = {
     selfServe: { support: "partial", note: "Calculator is self-serve; plan prices only after login" },
     publishedPricing: { support: "no" },
     fullStack: { support: "yes", note: "Each layer as its own line item" },
+    adcvd: { support: "no", note: "Not calculated, per its FAQ" },
     tradePreferences: { support: "partial", note: "Paid area only; none on the free calculator" },
     adjustments: { support: "no", note: "Uncertain tariffs shown as \"Potential\" and left out of the total" },
     entryDate: { support: "yes" },

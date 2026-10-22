@@ -320,23 +320,9 @@ export const CalculatorWorkspace = ({
       ) : (
         <BellAlertIcon className="h-4 w-4" aria-hidden />
       )}
-      {SAVINGS_ENABLED ? "Find ways to save" : "Get Alerts, Insights & News"}
+      Get Tariff Alerts, Savings, & Audits
       <ArrowRightIcon className="h-4 w-4" aria-hidden />
     </button>
-  );
-  // Under each tab on /duty-calculator: what tracking it would add
-  const trackStrip = page === "calculator" && track && (
-    <div className={`${ui.cardSection} flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between`}>
-      <p className="m-0 text-sm text-base-content/70">
-        <span className="font-semibold text-base-content">
-          {historyChanges > 0 ? `Its duty has changed ${historyChanges} ${historyChanges === 1 ? "time" : "times"}. Know the moment it changes again, free.` : "Know the moment tariffs change on this import, free."}
-        </span>{" "}
-        {SAVINGS_ENABLED || AUDITS_ENABLED
-          ? "See what you could save on it (trade programs, exemptions, cheaper origins) and check your past entries for duty you may have overpaid."
-          : "Alerts with the rate before and after, insights on how its duty could be lower, and every tariff update that touches it."}
-      </p>
-      {trackButton}
-    </div>
   );
   // A locked "why" opens the free account's pitch, led by what was clicked
   const unlockWhy = (where: string) =>
@@ -658,7 +644,7 @@ export const CalculatorWorkspace = ({
                 <div className={`${ui.skeleton} h-96 w-full`} />
               ))}
             {/* Compare ends with its own way up (to Sourcing) */}
-            {tab !== "compare" && trackStrip}
+            {/* {tab !== "compare" && trackStrip} */}
           </ResultsBox>
         </WhyUnlockContext.Provider>
       )}

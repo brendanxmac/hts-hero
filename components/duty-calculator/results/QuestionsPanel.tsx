@@ -113,7 +113,7 @@ export const QuestionsPanel = ({
         {goods.length > 0 && (
           <AdjustmentSection
             title="Questions About Your Goods"
-            description="Part of the base rate is charged on part of the goods. Answer these for the exact base duty; until then, the most it can be is shown."
+            description="Part of the base rate is charged on part of the goods. Answer these for more accurate base duty"
           >
             <ul className="flex flex-col divide-y divide-base-300">{goods.map(row)}</ul>
           </AdjustmentSection>

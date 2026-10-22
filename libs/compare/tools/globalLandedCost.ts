@@ -19,6 +19,7 @@ export const AVALARA: Tool = {
     selfServe: { support: "no", note: "Cross-border is enabled by Avalara, after a demo" },
     publishedPricing: { support: "no" },
     fullStack: { support: "no", note: "One import duty line in the API" },
+    adcvd: { support: "unknown" },
     tradePreferences: { support: "yes" },
     adjustments: { support: "no" },
     entryDate: { support: "partial", note: "A date field in the API" },
@@ -113,6 +114,7 @@ export const ZONOS: Tool = {
     selfServe: { support: "partial", note: "Self-serve on Shopify; otherwise through sales" },
     publishedPricing: { support: "partial", note: "$2 per order + 10% of duties and taxes" },
     fullStack: { support: "no", note: "One duty total" },
+    adcvd: { support: "partial", note: "Flags affected items; AD/CVD left out of totals" },
     tradePreferences: { support: "partial" },
     adjustments: { support: "unknown" },
     entryDate: { support: "no" },
@@ -129,7 +131,7 @@ export const ZONOS: Tool = {
     "Designed for store checkouts, with no documented US Chapter 99 breakdown",
     "No published prices on its landed cost page",
   ],
-  sources: [{ title: "Zonos Landed Cost", url: "https://zonos.com/landed-cost" }],
+  sources: [{ title: "Zonos Landed Cost", url: "https://zonos.com/landed-cost" }, { title: "How Zonos handles AD/CVD", url: "https://zonos.com/docs/guides/country-guides/united-states/antidumping-countervailing-duties/how-zonos-handles-ad-cvd" }],
   checkedAt: "2026-10-06",
   vs: {
     verdict:
@@ -194,6 +196,7 @@ export const SIMPLY_DUTY: Tool = {
     selfServe: { support: "yes" },
     publishedPricing: { support: "yes", note: "In GBP" },
     fullStack: { support: "no", note: "US additional tariffs as one layer" },
+    adcvd: { support: "unknown" },
     tradePreferences: { support: "partial", note: "USMCA not modeled" },
     adjustments: { support: "no" },
     entryDate: { support: "no" },
@@ -272,6 +275,7 @@ export const DESCARTES: Tool = {
     selfServe: { support: "no", note: "Demo or contact form" },
     publishedPricing: { support: "no" },
     fullStack: { support: "partial", note: "Chapter 99 data, for customers" },
+    adcvd: { support: "gated", note: "AD/CVD rates and lookup tool, for subscribers" },
     tradePreferences: { support: "paid" },
     adjustments: { support: "partial" },
     entryDate: { support: "unknown" },
@@ -288,6 +292,7 @@ export const DESCARTES: Tool = {
   sources: [
     { title: "Descartes CustomsInfo product information (PDF)", url: "https://www.descartes.com/sites/default/files/documents/pi_descartes_customs_info.pdf" },
     { title: "Descartes CustomsInfo on Capterra", url: "https://www.capterra.co.za/software/220216/descartes-customsinfo" },
+    { title: "Descartes CustomsInfo catalog", url: "https://www.descartes.com/resources/knowledge-center/descartes-customsinfo-catalog" },
   ],
   checkedAt: "2026-10-06",
   alternatives: {
@@ -326,6 +331,7 @@ export const EASYSHIP: Tool = {
     selfServe: { support: "yes" },
     publishedPricing: { support: "partial", note: "Shipping plans from $29/mo" },
     fullStack: { support: "no", note: "One rate per product category" },
+    adcvd: { support: "unknown" },
     tradePreferences: { support: "no" },
     adjustments: { support: "no" },
     entryDate: { support: "no" },
@@ -381,6 +387,7 @@ export const AIRLIFT_USA: Tool = {
     selfServe: { support: "yes" },
     publishedPricing: { support: "yes", note: "Free" },
     fullStack: { support: "partial", note: "Itemized; pharma and semiconductor 232 as notes" },
+    adcvd: { support: "no", note: "Not in estimates, per its FAQ; a separate order lookup" },
     tradePreferences: { support: "partial", note: "Listed as not included on the web page" },
     adjustments: { support: "partial", note: "Annex exemptions not evaluated" },
     entryDate: { support: "yes" },
@@ -398,6 +405,6 @@ export const AIRLIFT_USA: Tool = {
     "Prices some banned Canadian goods, such as beer at 60%",
     "Trade agreements and annex exemptions not evaluated on the web page",
   ],
-  sources: [{ title: "Airlift USA tariff simulator", url: "https://airliftusa.com/tariff-simulator" }],
+  sources: [{ title: "Airlift USA tariff simulator", url: "https://airliftusa.com/tariff-simulator" }, { title: "Airlift USA AD/CVD orders", url: "https://airliftusa.com/tools/ad-cvd" }],
   checkedAt: "2026-10-06",
 };

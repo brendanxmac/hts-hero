@@ -1,34 +1,61 @@
 // The base-rate parser on every general/special/other string in the HTS, and engine-v2 on the
 // rate shapes it learned in Oct 2026 (33 1/3%, m2/m3, pr./doz., per thousand, the sugar
-// sliding scale, "of total sugars"…). Strings are real ones from the USITC export.
+// sliding scale, "of total sugars"…). Strings are real ones from the USITC exports.
 //
-// fixtures/rate-parsing-snapshot.json is what the parser returned for each distinct string
-// before those changes (scripts/engine-v2/snapshot-rate-parsing.ts). Strings that parsed then
-// must parse exactly the same now.
+// The golden snapshots in fixtures/ are what the parser and engine did BEFORE those changes
+// (commit 835b6f65), over every line of every export we have: 2026 Rev 20 and Rev 15, the
+// chapter 1–97 and chapter 98 exports, and the older all-chapters export. Every string that
+// parsed then must parse exactly the same now, and every base duty worked out from it must come
+// out the same, apart from the changes listed below. testing/engine-v2/rate-snapshot.ts builds
+// them; scripts/engine-v2/snapshot-rate-parsing.ts rewrites them from the current code once a
+// change is reviewed.
 import { describe, it, expect } from "../test-runner"
 import { calculate } from "../../tariffs/engine-v2/calculate"
+import * as baseRates from "../../tariffs/engine-v2/base-rates"
 import { parseRateColumn, parseRateColumnWithFailures } from "../../tariffs/engine-v2/base-rates"
 import { CalculationInput, RuleSet } from "../../tariffs/engine-v2/types"
-import { BaseTariffI } from "../../libs/hts"
-import snapshot from "./fixtures/rate-parsing-snapshot.json"
+import { BaseEntry, calculateEntry, ParseEntry } from "./rate-snapshot"
+import parseSnapshot from "./fixtures/rate-parsing-snapshot.json"
+import baseSnapshot from "./fixtures/base-duty-snapshot.json"
 
-interface SnapshotEntry {
-  raw: string
-  tariffs: BaseTariffI[]
-  parsingFailures: string[]
-}
-
-// Results that were meant to change, with why
+// Results that were meant to change, with why. Each read a lowercase note letter or a typo as a
+// trade program list, a program no claim can match, so the duty is the same.
 const INTENDED_CHANGES: Record<string, string> = {
-  // Read as Free because it contained "free"; it's a condition, not a plain free rate
-  "Free, under bond": "now a parsing failure",
+  // 9822.01.05, 9822.01.10: "(b)" read as a program "b"
+  "Free, under the terms of U.S. note 1(b) to this subchapter": "now Free with no programs",
+  "Free, under the terms of U.S. note 1(c) to this subchapter": "now Free with no programs",
+  // 9901.00.50, 9901.00.52 (older export): "(e)" read as a program "e"
+  "No change (A) Free (CA,IL, MX) See U.S. note 3 to this sub- chapter (E) See U.S. note 3(e) (CO,PE)":
+    "now 'See U.S. note 3(e)' for CO and PE",
+  "No change (A,E) Free (CA,IL, MX) See U.S. note 3(e) (CO,PE)": "now 'See U.S. note 3(e)' for CO and PE",
+  // 0406.90.94 (older export): "(PA (PA)" read as a program "PA (PA"
+  "Free (BH,CL,JO,MA,OM,SG) 11.2¢/kg (P) 15¢/kg (KR) See 9823.04.01-9823.04.54 (S+) See 9908.04.05 (IL) See 9915.04.80, 9915.04.88, 9915.04.97 (P+) See 9917.04.50, 9917.04.58 (PE) See 9918.04.50, 9918.04.58 (CO) See 9919.04.50, 9919.04.57, 9919.04.67 (PA (PA)":
+    "now the last 'See' is for PA",
 }
 
-// Rates with no number of their own. Not handled yet: they still fail to parse.
+// Rates with no number of their own, Chapter 98 formulas and Chapter 99 wording (which the
+// engine models in its own tariff data). Not handled yet: they still fail to parse.
 const isOutOfScope = (failure: string) =>
-  /^The rate (of duty )?applicable/.test(failure) ||
+  /^\[?(The|A|a) (rate|duty)\b/.test(failure) ||
+  /^no change\.?$/i.test(failure) ||
+  /^\d+(\.\d+)? percent of the /.test(failure) ||
   /for each other piece or part, but if consisting in part of a plate/.test(failure) ||
-  INTENDED_CHANGES[failure] !== undefined
+  // Chapter 99 text split on its brackets
+  failure === "100%]" ||
+  failure === ":"
+// How many distinct failures there are; lower it as they're handled
+const OUT_OF_SCOPE_FAILURES = 52
+
+// A "See 9822.05.20" reference used to become a question for "the value of the See 9822.05.20";
+// it no longer does. Nothing else about the result may change.
+const withoutSeeQuestions = (result: string) => {
+  const r = JSON.parse(result)
+  return JSON.stringify({
+    ...r,
+    parts: r.parts.map((p: unknown[]) => (/^See /.test(String(p[3] ?? "")) ? [...p.slice(0, 3), null, p[4]] : p)),
+    inputs: r.inputs.filter((id: string) => !id.startsWith("baseValue:see-")),
+  })
+}
 
 const quietly = <T>(fn: () => T): T => {
   const error = console.error
@@ -43,10 +70,12 @@ const quietly = <T>(fn: () => T): T => {
 const parse = (raw: string) => quietly(() => parseRateColumnWithFailures(raw))
 
 describe("rate parsing: every HTS rate string", () => {
-  const entries = snapshot as SnapshotEntry[]
+  const entries = parseSnapshot as ParseEntry[]
+  const failedBefore = new Set(entries.filter((e) => e.parsingFailures.length).map((e) => e.raw))
 
-  it("covers the whole HTS export", () => {
-    expect(entries.length).toBeGreaterThan(1900)
+  it("covers every export, chapter 98 included", () => {
+    expect(entries.length).toBeGreaterThan(2200)
+    expect(entries.some((e) => e.raw.startsWith("Free, under bond, as prescribed in U.S. note 1"))).toBe(true)
   })
 
   it("parses every string that parsed before exactly as before", () => {
@@ -61,17 +90,9 @@ describe("rate parsing: every HTS rate string", () => {
     expect(changed).toEqual([])
   })
 
-  it("now parses every string that failed before, except rates with no number", () => {
-    const stillFailing = entries
-      .filter((e) => e.parsingFailures.length)
-      .flatMap((e) => parse(e.raw).parsingFailures)
-      .filter((f) => !isOutOfScope(f))
-    expect(stillFailing).toEqual([])
-  })
-
   it("keeps the parts it could already read in strings that failed before", () => {
     const lost = entries
-      .filter((e) => e.parsingFailures.length)
+      .filter((e) => e.parsingFailures.length && INTENDED_CHANGES[e.raw] === undefined)
       .filter((e) => {
         const now = parse(e.raw).tariffs.map((t) => JSON.stringify(t))
         return e.tariffs.some((t) => !now.includes(JSON.stringify(t)))
@@ -80,8 +101,43 @@ describe("rate parsing: every HTS rate string", () => {
     expect(lost).toEqual([])
   })
 
-  it("no longer reads 'Free, under bond' as free", () => {
-    expect(parse("Free, under bond")).toEqual({ tariffs: [], parsingFailures: ["Free, under bond"] })
+  it("parses every string except rates with no number of their own", () => {
+    const failures = new Set(entries.flatMap((e) => parse(e.raw).parsingFailures))
+    expect(Array.from(failures).filter((f) => !isOutOfScope(f))).toEqual([])
+    expect(failures.size).toBe(OUT_OF_SCOPE_FAILURES)
+  })
+
+  it("works out the same base duty as before for every line, column and program", () => {
+    const changed = (baseSnapshot as BaseEntry[])
+      .filter((e) => !failedBefore.has(e.raw) && INTENDED_CHANGES[e.raw] === undefined)
+      .filter((e) => withoutSeeQuestions(quietly(() => calculateEntry(baseRates, e))) !== withoutSeeQuestions(e.result))
+      .map((e) => `${e.column}${e.program ? ` (${e.program})` : ""}: ${e.raw}`)
+    expect(changed).toEqual([])
+  })
+
+  it("reads conditional free rates as free", () => {
+    // 9813.00.05, 9804.00.60, 5101.11.10 (column 2)
+    ;[
+      "Free, under bond, as prescribed in U.S. note 1 to this subchapter",
+      "Free, for such temporary periods as the Secretary of the Treasury by regulation may prescribe",
+      "Free, under bond",
+    ].forEach((raw) => {
+      const { tariffs, parsingFailures } = parse(raw)
+      expect(parsingFailures).toEqual([])
+      expect(tariffs.map((t) => [t.value, t.type, t.details ?? null])).toEqual([[0, "percent", null]])
+    })
+  })
+
+  it("asks nothing about a 'See' reference", () => {
+    // 1701.91.48 special, claimed under P+
+    const result = quietly(() =>
+      calculateEntry(baseRates, {
+        column: "special",
+        raw: "Free (BH,CL,JO,KR,OM,SG) See 9822.05.20 (P+) See 9822.06.10 (PE)",
+        program: "P+",
+      }),
+    )
+    expect(JSON.parse(result).inputs).toEqual([])
   })
 })
 

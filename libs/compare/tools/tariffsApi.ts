@@ -16,6 +16,7 @@ export const TARIFFS_API: Tool = {
     selfServe: { support: "yes", note: "Card required for the trial" },
     publishedPricing: { support: "yes" },
     fullStack: { support: "partial", note: "Legal sources on paid plans" },
+    adcvd: { support: "no", note: "Not included, per its calculator page and API docs" },
     tradePreferences: { support: "yes", note: "FTA rates such as USMCA and KORUS" },
     adjustments: { support: "partial", note: "Lists claimable exemptions; no questions" },
     entryDate: { support: "paid", note: "Through the API's as_of date" },
@@ -36,6 +37,7 @@ export const TARIFFS_API: Tool = {
   sources: [
     { title: "TariffsAPI tariff calculator", url: "https://tariffsapi.com/tariff-calculator" },
     { title: "TariffsAPI pricing", url: "https://tariffsapi.com/pricing" },
+    { title: "TariffsAPI API documentation", url: "https://tariffsapi.com/api-documentation" },
   ],
   checkedAt: "2026-10-06",
   vs: {

@@ -1,39 +1,32 @@
-// Writes what the base-rate parser returns for every distinct general/special/other string in
-// a USITC HTS export, so testing/engine-v2/rate-parsing.test.ts can check that parser changes
-// don't alter results for strings that already parse.
+// Writes the golden snapshots testing/engine-v2/rate-parsing.test.ts checks against: what the
+// base-rate parser returns for every distinct general/special/other string in the given USITC
+// HTS exports, and the base duty for every line, column and trade program.
 //
-//   npx tsx scripts/engine-v2/snapshot-rate-parsing.ts <path to HTS export .json>
+//   npx tsx scripts/engine-v2/snapshot-rate-parsing.ts <export.json> [<export.json> …]
 //
-// Re-run only when a change to a result is intended, and review the diff.
+// Pass every export there is (all chapters, including 98). Re-run only when a change to a result
+// is intended, and review the diff: the snapshots are what the parser and engine did before.
 import { readFileSync, writeFileSync } from "fs"
 import path from "path"
-import { parseRateColumnWithFailures } from "../../tariffs/engine-v2/base-rates"
+import * as current from "../../tariffs/engine-v2/base-rates"
+import { buildSnapshots } from "../../testing/engine-v2/rate-snapshot"
 
-const source = process.argv[2]
-if (!source) {
-  console.error("Usage: npx tsx scripts/engine-v2/snapshot-rate-parsing.ts <hts.json>")
+const sources = process.argv.slice(2)
+if (!sources.length) {
+  console.error("Usage: npx tsx scripts/engine-v2/snapshot-rate-parsing.ts <hts.json> [<hts.json> …]")
   process.exit(1)
-}
-
-const elements: { general?: string; special?: string; other?: string }[] =
-  JSON.parse(readFileSync(source, "utf8"))
-
-const raws = new Set<string>()
-for (const e of elements) {
-  for (const field of ["general", "special", "other"] as const) {
-    const value = e[field]
-    if (value && value.trim()) raws.add(value)
-  }
 }
 
 // Silence the parser's per-failure console.error while snapshotting
 const error = console.error
 console.error = () => {}
-const snapshot = Array.from(raws)
-  .sort()
-  .map((raw) => ({ raw, ...parseRateColumnWithFailures(raw) }))
+const { parsing, base } = buildSnapshots(
+  sources.map((source) => JSON.parse(readFileSync(source, "utf8"))),
+  current,
+)
 console.error = error
 
-const out = path.join(__dirname, "../../testing/engine-v2/fixtures/rate-parsing-snapshot.json")
-writeFileSync(out, JSON.stringify(snapshot) + "\n")
-console.log(`Wrote ${snapshot.length} strings to ${out}`)
+const dir = path.join(__dirname, "../../testing/engine-v2/fixtures")
+writeFileSync(path.join(dir, "rate-parsing-snapshot.json"), JSON.stringify(parsing) + "\n")
+writeFileSync(path.join(dir, "base-duty-snapshot.json"), JSON.stringify(base) + "\n")
+console.log(`Wrote ${parsing.length} rate strings and ${base.length} base calculations to ${dir}`)

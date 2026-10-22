@@ -17,6 +17,7 @@ export const FLEXPORT: Tool = {
     selfServe: { support: "partial", note: "Free tool is self-serve; Pro needs a Flexport client account" },
     publishedPricing: { support: "no", note: "Pro has no published price" },
     fullStack: { support: "partial", note: "By tariff type; its FAQ says not all Chapter 99 programs are supported" },
+    adcvd: { support: "partial", note: "Flags possible AD/CVD; doesn't calculate it, per its FAQ" },
     tradePreferences: { support: "yes", note: "Applied automatically when eligible" },
     adjustments: { support: "yes", note: "Metal content, melt country and U.S. content" },
     entryDate: { support: "yes", note: "Back to January 1, 2025, per its FAQ" },

@@ -89,6 +89,8 @@ const WHOLE_ARTICLE = /^((the )?entire set|including weight of container)$/
 // "on the value of the telescopic sight, if any" → "the telescopic sight",
 // "33.9¢/kg of total sugars" → "total sugars", "15¢/jewel over 7" → "jewels over 7"
 const componentOf = (t: BaseTariffI) => {
+  // "See 9822.05.20" points to another provision; it has no rate of its own to apply to a part
+  if (t.value === null) return null
   // "0.3¢/line/ gross": per line of button size per gross, so the quantity is in gross lines
   if (t.unit === "line/gross") return "gross lines"
   if (!t.details) return null
