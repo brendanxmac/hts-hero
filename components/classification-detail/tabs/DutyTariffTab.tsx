@@ -1,18 +1,43 @@
 "use client";
 
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { useClassification } from "../../../contexts/ClassificationContext";
+import { BreadcrumbsProvider } from "../../../contexts/BreadcrumbsContext";
 import { UserProfile } from "../../../libs/supabase/user";
-import { ClassificationRecord } from "../../../interfaces/hts";
+import { ClassificationRecord, HtsElement } from "../../../interfaces/hts";
 import { Countries, Country } from "../../../constants/countries";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
-import { DutyEstimateEmbed } from "@/components/duty-calculator/embed";
+import { CalculatorWorkspace } from "@/components/duty-calculator/calculator/CalculatorWorkspace";
+import { Disclaimer } from "@/components/duty-calculator/calculator/Disclaimer";
+import { ExploreModal } from "@/components/duty-calculator/calculator/ExploreModal";
+import { useTariffFinder } from "@/components/duty-calculator/lib/useTariffFinder";
+import { todayIso } from "@/components/duty-calculator/lib/format";
+import { trackerSans } from "@/components/ui/font";
+import { THEME } from "@/components/ui/theme";
+import * as ui from "@/components/ui/styles";
 
 interface Props {
   classificationRecord?: ClassificationRecord;
   userProfile: UserProfile | null;
   countryOfOrigin?: Country | null;
 }
+
+// The same Tariff Calculator as /duty-calculator (CalculatorWorkspace), started on the
+// classification's code and country of origin (China when it has none, as on /duty-calculator).
+// It leaves the page's address alone.
+const Calculator = ({ element, country }: { element: HtsElement; country: Country }) => {
+  const f = useTariffFinder({
+    syncAddress: false,
+    initial: { element, country, customsValue: 10000, quantity: 1000, entryDate: todayIso(), transportMode: "ocean" },
+  });
+  return (
+    <div className={`${THEME} hts-tracker ${trackerSans.className} flex flex-col gap-4`}>
+      <CalculatorWorkspace f={f} page="calculator" />
+      <Disclaimer />
+      <ExploreModal f={f} />
+    </div>
+  );
+};
 
 export const DutyTariffTab = ({
   classificationRecord,
@@ -50,6 +75,9 @@ export const DutyTariffTab = ({
     );
   }
 
+  const country =
+    countryOfOrigin ?? initialSelectedCountry ?? Countries.find((c) => c.code === "CN")!;
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -66,12 +94,13 @@ export const DutyTariffTab = ({
       </div>
 
       <div className="mt-6">
-        <DutyEstimateEmbed
-          element={element}
-          initialCountry={initialSelectedCountry}
-          countryOfOrigin={countryOfOrigin}
-          surface="classification"
-        />
+        {/* Its own breadcrumbs, so the calculator's don't replace the page's. Started again when
+            the classification's code or country changes */}
+        <BreadcrumbsProvider>
+          <Suspense fallback={<div className={`${ui.card} h-64`} />}>
+            <Calculator key={`${element.htsno}-${country.code}`} element={element} country={country} />
+          </Suspense>
+        </BreadcrumbsProvider>
       </div>
     </div>
   );

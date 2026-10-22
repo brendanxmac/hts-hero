@@ -78,6 +78,7 @@ export function TariffDashboardSection({
                   code="Base"
                   name={summary.result.base.reasons[0] ?? "Free"}
                   amount={summary.result.base.amount}
+                  notCalculated={summary.result.baseNotCalculated}
                 />
                 {summary.result.lines
                   .filter((l) => l.status === "applies")
@@ -115,7 +116,20 @@ export function TariffDashboardSection({
   );
 }
 
-const SummaryLine = ({ code, name, rate, amount }: { code: string; name: string; rate?: number; amount: number }) => (
+const SummaryLine = ({
+  code,
+  name,
+  rate,
+  amount,
+  notCalculated,
+}: {
+  code: string;
+  name: string;
+  rate?: number;
+  amount: number;
+  // The base rate can't be calculated: no amount to show
+  notCalculated?: boolean;
+}) => (
   <li className="flex items-baseline justify-between gap-4 px-5 py-3">
     <span className="min-w-0 flex items-baseline gap-2.5">
       <span className={`${mono.className} text-sm font-semibold text-primary shrink-0`}>{code}</span>
@@ -123,7 +137,9 @@ const SummaryLine = ({ code, name, rate, amount }: { code: string; name: string;
     </span>
     <span className="flex items-baseline gap-3 shrink-0">
       {rate !== undefined && <span className="tabular-nums text-xs text-base-content/60">{formatPct(rate)}</span>}
-      <span className="tabular-nums text-sm font-semibold text-base-content">{formatMoney(amount)}</span>
+      <span className="tabular-nums text-sm font-semibold text-base-content">
+        {notCalculated && amount < 0.005 ? "Not calculated" : formatMoney(amount)}
+      </span>
     </span>
   </li>
 );

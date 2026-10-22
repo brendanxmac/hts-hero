@@ -57,7 +57,7 @@ Checked in the browser:
 | `tariffs/engine-v2/data/` | Programs, headings, lists, inputs, columns, preferences, fees |
 | `testing/engine-v2/` | Mechanics and real-data tests, HTS fixture loader (every USITC line with its base rates) |
 | `components/TariffFinderPage.tsx` | Tariff Calculator |
-| `components/duty-calculator/` | Calculator UI, `DutyEstimateEmbed` (explorer, classification pages), shared estimate helpers |
+| `components/duty-calculator/` | Calculator UI (`CalculatorWorkspace`, also the classification Duty & Tariffs tab and the Tracker), shared estimate helpers |
 | `components/tariff-tracker/` | Tariff Tracker: catalog parsing, report, CSV/Excel export, app shell |
 
 ## Completed work

@@ -93,7 +93,6 @@ The reference features:
 | `components/duty-calculator/country-rate-charts/` | Rates-by-country charts and table |
 | `components/duty-calculator/guide/` | The tariff guide under the calculator (and its FAQ content) |
 | `components/duty-calculator/hero/`, `changelog/`, `notices/`, `referenced-notes/` | Hero, changelog, date notices, cited legal notes |
-| `components/duty-calculator/embed/` | The duty estimate embedded in classification and explorer pages |
 | `components/duty-calculator/lib/` | `useTariffFinder`, `estimate`, `questions`, `format` |
 | `components/hts-code-page/` | The `/hts/[code]` page |
 | `components/tariff-tracker/` | The Tariff Tracker app (`/tariff-tracker`) |
