@@ -172,7 +172,8 @@ export interface FeeSchedule extends Dated {
 
 // ── Inputs ──
 
-export type InputType = "boolean" | "percent" | "number" | "date"
+// "htsCode": an HTS code, as typed ("6104.42.00")
+export type InputType = "boolean" | "percent" | "number" | "date" | "htsCode"
 
 export interface InputDefinition {
   id: string
@@ -235,6 +236,9 @@ export interface CalculationInput {
   // per thousand ("$6/1000") divide the quantity by 1,000 unless it's already in thousands.
   quantityUnit?: string
   baseRates: BaseRates
+  // Another HTS line's rates, for base rates that point to another code ("The rate applicable to
+  // the natural juice in heading 2009"). Without it those rates aren't calculated.
+  lookupBaseRates?: (htsCode: string) => BaseRates | null
   claimedPreference?: string // SPI symbol
   answers?: Answers
   // Mode of transport, for fees such as HMF (ocean only). All fees apply when omitted.
@@ -300,6 +304,8 @@ export interface BasePart {
   assumed: boolean // the component wasn't given, so the whole value or quantity was used
   // Why this part's duty can't be worked out; it's left out of the total (amount 0)
   notCalculated?: string
+  // The part is the rate of another code, which the answer to a question gave
+  resolvedFrom?: { raw: string; code: string }
   amount: number
 }
 

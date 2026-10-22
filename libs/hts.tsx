@@ -1093,6 +1093,11 @@ export interface BaseTariffI {
   // Why the duty for this part can't be worked out ("It's a percentage of the fair retail
   // value…"); `value` is null. Set by engine-v2 for wording it can't read and for references.
   notCalculated?: string;
+  // "The rate applicable to the natural juice in heading 2009": the rate is another HTS code's,
+  // so engine-v2 asks for that code (inputId, when the caller can look codes up)
+  pointsTo?: { key: string; question: string; help: string; inputId?: string };
+  // A part of the rate of the code a pointer was answered with
+  resolvedFrom?: { raw: string; code: string; inputId: string; question: string; help: string };
 }
 
 export interface ParsedBaseTariff {

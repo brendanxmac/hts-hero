@@ -37,6 +37,7 @@ const useDutySummary = (countryOfOrigin: Country | null, classification: Classif
       customsValue: DEFAULT_CUSTOMS_VALUE,
       quantity: DEFAULT_UNITS,
       transportMode: "ocean",
+      htsElements,
     });
     const result = calculate(AllRules, { ...input, answers: {} });
     return { result, openQuestions: countOpenQuestions(result, questionImpacts(input, result, {})) };

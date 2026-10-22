@@ -82,9 +82,11 @@ export const useDutyEstimate = ({
             quantity,
             transportMode,
             claimedPreference: preference,
+            htsElements,
           })
         : null,
     [
+      htsElements,
       element,
       tariffElement,
       country,

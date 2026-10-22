@@ -62,13 +62,15 @@ export const QuestionControl = ({
       </span>
       <span className="relative">
         <input
-          type={input.type === "date" ? "date" : "number"}
+          type={input.type === "date" ? "date" : input.type === "htsCode" ? "text" : "number"}
+          // An HTS code is kept as typed; the calculator looks it up
+          {...(input.type === "htsCode" ? { inputMode: "decimal" as const, placeholder: "e.g. 6104.42.00", spellCheck: false } : {})}
           className={`${ui.inputSm} ${input.unit ? "pr-16" : ""}`}
           value={(value as string | number) ?? ""}
           onChange={(e) =>
             onChange(
-              input.type === "date" || e.target.value === ""
-                ? e.target.value || undefined
+              input.type === "date" || input.type === "htsCode" || e.target.value === ""
+                ? e.target.value.trim() || undefined
                 : Number(e.target.value),
             )
           }

@@ -308,9 +308,10 @@ export const useTariffFinder = ({
             quantity,
             transportMode,
             claimedPreference,
+            htsElements,
           })
         : null,
-    [selectedElement, country, tariffElement, entryDate, customsValue, quantity, claimedPreference, transportMode]
+    [selectedElement, country, tariffElement, entryDate, customsValue, quantity, claimedPreference, transportMode, htsElements]
   );
 
   const result: CalculationResult | null = useMemo(

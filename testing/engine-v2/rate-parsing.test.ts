@@ -15,6 +15,7 @@ import * as baseRates from "../../tariffs/engine-v2/base-rates"
 import { parseRateColumn, parseRateColumnWithFailures } from "../../tariffs/engine-v2/base-rates"
 import { CalculationInput, RuleSet } from "../../tariffs/engine-v2/types"
 import { BaseEntry, calculateEntry, ParseEntry } from "./rate-snapshot"
+import { encodeAnswers, parseAnswers } from "../../components/duty-calculator/lib/estimate"
 import parseSnapshot from "./fixtures/rate-parsing-snapshot.json"
 import baseSnapshot from "./fixtures/base-duty-snapshot.json"
 
@@ -393,5 +394,108 @@ describe("engine-v2: base rates that can't be calculated", () => {
     expect(run("2.5%").baseNotCalculated).toBe(false)
     expect(run("Free").baseNotCalculated).toBe(false)
     expect(run("Free, under bond").baseNotCalculated).toBe(false)
+  })
+})
+
+describe("engine-v2: base rates that point to another code", () => {
+  // A few real lines, as the calculator's lookup would return them
+  const LINES: Record<string, { general: string | null; special: string | null; other: string | null }> = {
+    "6104.42.00": { general: "11.5%", special: "Free (AU,BH,CL,CO,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "90%" },
+    "2009.89.20": { general: "0.5¢/liter", special: "Free (A+,AU,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "4.4¢/liter" },
+    "6103.22.00": { general: "The rate applicable to each garment in the ensemble if separately entered", special: null, other: null },
+    "6104.42": { general: null, special: null, other: null },
+  }
+  const lookupBaseRates = (code: string) => LINES[code.trim()] ?? null
+  const ensemble = "The rate applicable to each garment in the ensemble if separately entered"
+
+  it("asks for the code the rate points to, and leaves it out of the total until then", () => {
+    const result = run(ensemble, { lookupBaseRates })
+    expect(result.baseNotCalculated).toBe(true)
+    expect(result.unansweredInputs.map((u) => [u.input.id, u.input.type])).toEqual([["baseCode:garment", "htsCode"]])
+    expect(result.questions[0].input.label).toBe("What is the HTS code of a garment in the ensemble?")
+    expect(result.base.reasons.some((r) => r.startsWith("Not calculated: It's the rate of another HTS code"))).toBe(true)
+  })
+
+  it("uses that code's rate in the same column once it's given", () => {
+    const general = run(ensemble, { lookupBaseRates, answers: { "baseCode:garment": "6104.42.00" } })
+    expect(general.baseNotCalculated).toBe(false)
+    expect(cents(general.base.amount)).toBe(1150)
+    expect(general.base.reasons).toContain(`${ensemble}: the rate of 6104.42.00`)
+    expect(general.unansweredInputs.length).toBe(0)
+    // Still asked, with its answer, so it can be changed
+    expect(general.questions.some((q) => q.input.id === "baseCode:garment" && q.answered)).toBe(true)
+
+    const column2 = run("", {
+      country: "RU",
+      lookupBaseRates,
+      answers: { "baseCode:garment": "6104.42.00" },
+      baseRates: { general: "", special: null, other: ensemble },
+    })
+    // RU isn't a column 2 country in these test rules; check the parts directly
+    const parts = baseRates.resolveBaseParts(baseRates.getBaseRateParts({ general: null, special: null, other: ensemble }, "column2"), {
+      answers: { "baseCode:garment": "6104.42.00" },
+      lookupBaseRates,
+      column: "column2",
+    })
+    expect(column2.baseNotCalculated).toBe(false)
+    expect(parts.map((p) => [p.value, p.resolvedFrom?.code])).toEqual([[90, "6104.42.00"]])
+  })
+
+  it("uses the referenced code's rate under the same trade program", () => {
+    // 2106.90.52 special: "The rate applicable to the natural juice in heading 2009 (A*,D)", claimed under D
+    const parts = baseRates.resolveBaseParts(
+      baseRates.getBaseRateParts(
+        { general: null, special: "Free (AU,BH,CL)The rate applicable to the natural juice in heading 2009 (A*,D)", other: null },
+        "special",
+        "D",
+      ),
+      { answers: { "baseCode:juice": "2009.89.20" }, lookupBaseRates, column: "special", claimedPreference: "D" },
+    )
+    expect(parts.map((p) => [p.value, p.raw, p.resolvedFrom?.code])).toEqual([[0, "Free", "2009.89.20"]])
+  })
+
+  it("says why when the code can't be used", () => {
+    const why = (code: string) =>
+      run(ensemble, { lookupBaseRates, answers: { "baseCode:garment": code } }).baseParts[0].notCalculated
+    expect(why("9999.99.99")).toBe("HTS code 9999.99.99 wasn't found. Check the code under Questions About Your Goods.")
+    expect(why("6104.42")).toBe("HTS code 6104.42 has no rate of its own. Enter the full code of the line with the rate.")
+    // A code whose rate points elsewhere isn't followed
+    expect(why("6103.22.00")).toBe("The rate of HTS code 6103.22.00 can't be calculated either.")
+  })
+
+  it("doesn't ask when the caller can't look codes up", () => {
+    const result = run(ensemble)
+    expect(result.baseNotCalculated).toBe(true)
+    expect(result.unansweredInputs.length).toBe(0)
+  })
+
+  it("covers every pointer wording in the HTS", () => {
+    const ask = (raw: string) => baseRates.parseRateColumnParts(raw)[0]?.pointsTo?.key
+    expect(
+      [
+        "The rate applicable to each garment in the ensemble if separately entered",
+        "The rate applicable to each garment in the ensemble if entered separately",
+        "The rate applicable to each garment in the in the ensemble if separately entered",
+        "The rate of duty applicable to that article in the set subject to the highest rate of duty",
+        "The rate of duty appli- cable to that article in the set subject to the high- est rate of duty",
+        "The rate applicable to the article of which it is a part or accessory",
+        "The rate applicable to the article of which it is an accessory",
+        "The rate applicable to the natural juice in heading 2009",
+        "The rate applicable to the complete, assembled movement",
+        "The rate applicable to the complete, assembled",
+        "The rate applicable to each article in the absence of this subheading",
+        "The rate applicable, to each article in the absence of this subheading",
+        "The rate applicable in the absence of this heading",
+        "The rate applicable in the absence of this subheading",
+      ].map((raw) => quietly(() => ask(raw))),
+    ).toEqual(["garment", "garment", "garment", "set-article", "set-article", "article", "article", "juice", "movement", "movement", "absent", "absent", "absent", "absent"])
+    // Chapter 98's "…on the cost of such parts" isn't a plain pointer
+    expect(quietly(() => ask("The rate applicable in the absence of this subheading on the cost of such parts"))).toBeUndefined()
+  })
+
+  it("reads base-rate answers from links", () => {
+    const answers = { "baseCode:garment": "6104.42.00", "baseValue:case": 200, basePolarity: 96 }
+    expect(parseAnswers(encodeAnswers(answers))).toEqual(answers)
+    expect(parseAnswers("baseCode:garment=not-a-code")).toEqual({})
   })
 })

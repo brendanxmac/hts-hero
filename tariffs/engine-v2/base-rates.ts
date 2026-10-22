@@ -16,7 +16,7 @@ import {
   PROGRAM_LIST,
   splitOnClosingParen,
 } from "../../libs/hts"
-import { Answers, BasePart, DutyColumn, InputDefinition } from "./types"
+import { Answers, BasePart, BaseRates, DutyColumn, InputDefinition } from "./types"
 
 // ── Parsing ──
 
@@ -84,6 +84,57 @@ export const explainNotCalculated = (raw: string): string => {
   return "The HTS gives this rate in words the calculator can't calculate."
 }
 
+// Rates that are another HTS code's rate, and the question that asks for that code
+const POINTERS: { test: RegExp; key: string; question: string; help: string }[] = [
+  {
+    // 6103.22.00 and the other ensembles
+    test: /^the rate applicable to each garment in the ensemble/i,
+    key: "garment",
+    question: "What is the HTS code of a garment in the ensemble?",
+    help: "Each garment in the ensemble is charged at the rate it would have if entered on its own. Enter one garment's code, with that garment's value as the customs value, and work out each garment the same way.",
+  },
+  {
+    // 8205.90.60, 8211.10.00
+    test: /^the rate of duty applicable to that article in the set subject to the highest rate/i,
+    key: "set-article",
+    question: "What is the HTS code of the article in the set with the highest rate?",
+    help: "The whole set is charged at the rate of the article in it with the highest rate of duty.",
+  },
+  {
+    // 9005.90.40, 9620.00.15
+    test: /^the rate applicable to the article of which it is (a part or )?an? accessory|^the rate applicable to the article of which it is a part/i,
+    key: "article",
+    question: "What is the HTS code of the article it's a part or accessory of?",
+    help: "It's charged at the rate of the article it belongs to.",
+  },
+  {
+    // 2106.90.52, 2202.99.36
+    test: /^the rate applicable to the natural juice in heading 2009/i,
+    key: "juice",
+    question: "What is the HTS code of the natural juice (heading 2009)?",
+    help: "It's charged at the rate of the natural juice in heading 2009.",
+  },
+  {
+    // 9110.11.00, 9110.90.20
+    test: /^the rate applicable to the complete, assembled( movement)?$/i,
+    key: "movement",
+    question: "What is the HTS code of the complete, assembled movement?",
+    help: "It's charged at the rate of the complete, assembled movement.",
+  },
+  {
+    // 9608.50.00, 9810.00.35, 9810.00.85, 9817.61.01
+    test: /^the rate applicable,? (to each article )?in the absence of this (sub)?heading$/i,
+    key: "absent",
+    question: "What HTS code would the goods have without this provision?",
+    help: "It's charged at the rate the goods would have under their usual HTS code.",
+  },
+]
+
+const pointerFor = (raw: string) => {
+  const pointer = POINTERS.find((p) => p.test.test(raw.trim()))
+  return pointer ? { key: pointer.key, question: pointer.question, help: pointer.help } : undefined
+}
+
 // Every rate part in a column, including those that can't be calculated: wording the parser
 // can't read ("The rate applicable to…", "3 percent of the fair retail value") and references
 // ("See 9822.04.25") stay in, with no value and the reason, so a rate is never shown as Free
@@ -96,15 +147,17 @@ export const parseRateColumnParts = (raw: string | null): BaseTariffI[] =>
       ...parsed.tariffs.map((t) =>
         t.value === null ? { ...t, notCalculated: explainNotCalculated(t.raw) } : t,
       ),
-      ...parsed.parsingFailures.map(
-        (failure): BaseTariffI => ({
+      ...parsed.parsingFailures.map((failure): BaseTariffI => {
+        const pointsTo = pointerFor(failure)
+        return {
           value: null,
           type: "percent",
           raw: failure,
           programs,
           notCalculated: explainNotCalculated(failure),
-        }),
-      ),
+          ...(pointsTo ? { pointsTo } : {}),
+        }
+      }),
     ]
   })
 
@@ -125,6 +178,60 @@ export const getBaseRateParts = (
   }
   return parseRateColumnParts(baseRates.general)
 }
+
+// Base rates that point to another code: with a way to look codes up, each asks for the code and,
+// once it's given, is replaced by that code's rate in the same column (or under the same
+// program). A code whose own rate points elsewhere, or can't be calculated, isn't followed.
+export const resolveBaseParts = (
+  parts: BaseTariffI[],
+  {
+    answers,
+    lookupBaseRates,
+    column,
+    claimedPreference,
+  }: {
+    answers: Answers
+    lookupBaseRates?: (htsCode: string) => BaseRates | null
+    column: DutyColumn
+    claimedPreference?: string
+  },
+): BaseTariffI[] =>
+  parts.flatMap((t): BaseTariffI[] => {
+    if (!t.pointsTo || !lookupBaseRates) return [t]
+    const inputId = `baseCode:${t.pointsTo.key}`
+    const pointsTo = { ...t.pointsTo, inputId }
+    const code = String(answers[inputId] ?? "").trim()
+    if (!code) {
+      return [{ ...t, pointsTo, notCalculated: `It's the rate of another HTS code. Answer "${pointsTo.question}" to calculate it.` }]
+    }
+    const rates = lookupBaseRates(code)
+    if (!rates) {
+      return [{ ...t, pointsTo, notCalculated: `HTS code ${code} wasn't found. Check the code under Questions About Your Goods.` }]
+    }
+    if (![rates.general, rates.special, rates.other].some((r) => r && r.trim())) {
+      return [{ ...t, pointsTo, notCalculated: `HTS code ${code} has no rate of its own. Enter the full code of the line with the rate.` }]
+    }
+    const referenced = getBaseRateParts(rates, column, claimedPreference)
+    if (!referenced.length) {
+      return [
+        {
+          ...t,
+          pointsTo,
+          notCalculated:
+            column === "special"
+              ? `HTS code ${code} has no special rate under ${claimedPreference}.`
+              : `HTS code ${code} has no rate in this column.`,
+        },
+      ]
+    }
+    if (referenced.some((r) => r.notCalculated || r.pointsTo)) {
+      return [{ ...t, pointsTo, notCalculated: `The rate of HTS code ${code} can't be calculated either.` }]
+    }
+    return referenced.map((r) => ({
+      ...r,
+      resolvedFrom: { raw: t.raw, code, inputId, question: pointsTo.question, help: pointsTo.help },
+    }))
+  })
 
 // ── Components ──
 
@@ -172,10 +279,25 @@ const quantityQuestion = (component: string, unit: string) => {
   return `How many ${unit} of ${name} are in the shipment?`
 }
 
-// The questions the base rate asks (a component's value or weight, a sugar's polarity): shown
-// in their own section of Possible Adjustments, before the Chapter 99 provisions
+// The questions the base rate asks (a component's value or weight, a sugar's polarity, the code
+// a rate points to): shown in their own section of Possible Adjustments, before the Chapter 99
+// provisions
 export const isBaseRateInput = (id: string) =>
-  id.startsWith("baseValue:") || id.startsWith("baseQuantity:") || id === POLARITY_INPUT
+  id.startsWith("baseValue:") ||
+  id.startsWith("baseQuantity:") ||
+  id.startsWith("baseCode:") ||
+  id === POLARITY_INPUT
+
+// An answer to a base-rate question from a link or an API call, in the type it takes (a code as
+// typed, otherwise a number), or undefined when it isn't valid
+export const baseRateAnswer = (id: string, value: unknown) => {
+  if (id.startsWith("baseCode:")) {
+    const code = String(value ?? "").trim()
+    return /^\d{4}(\.?\d{2}){0,3}$/.test(code) ? code : undefined
+  }
+  const number = typeof value === "number" ? value : parseFloat(String(value))
+  return Number.isFinite(number) ? number : undefined
+}
 
 // Units as people read them ("pfliter" was normalized from "pf. liter")
 const unitLabel = (unit: string) =>
@@ -244,21 +366,36 @@ export const calculateBase = (
     const rate = t.value ?? 0
     const component = componentOf(t)
 
+    // The code a rate points to: asked for while it isn't given, and kept once it is
+    const pointer = t.pointsTo?.inputId ? t.pointsTo : t.resolvedFrom
+    if (pointer?.inputId) {
+      inputs.set(pointer.inputId, {
+        id: pointer.inputId,
+        label: pointer.question,
+        help: pointer.help,
+        type: "htsCode",
+      })
+    }
+
     if (t.notCalculated) {
       return {
         raw: t.raw,
         kind: "percent",
         rate: 0,
         basis: customsValue,
-        assumed: false,
+        // Waiting on the code it points to
+        ...(t.pointsTo?.inputId ? { inputId: t.pointsTo.inputId } : {}),
+        assumed: Boolean(t.pointsTo?.inputId),
         amount: 0,
         notCalculated: t.notCalculated,
       }
     }
+    const from = t.resolvedFrom ? { resolvedFrom: { raw: t.resolvedFrom.raw, code: t.resolvedFrom.code } } : {}
 
     if (t.type === "percent") {
       if (!component) {
         return {
+          ...from,
           raw: t.raw,
           kind: "percent",
           rate,
@@ -282,6 +419,7 @@ export const calculateBase = (
         Number.isFinite(answer)
       const basis = answered ? answer : customsValue
       return {
+        ...from,
         raw: t.raw,
         kind: "percent",
         rate,
@@ -307,6 +445,7 @@ export const calculateBase = (
       const slidRate = slidingRate(t, polarity)
       const basis = quantity ?? 0
       return {
+        ...from,
         raw: t.raw,
         kind: "amount",
         rate: slidRate,
@@ -320,6 +459,7 @@ export const calculateBase = (
     if (!component) {
       const basis = quantityFor(t, quantity, quantityUnit) ?? 0
       return {
+        ...from,
         raw: t.raw,
         kind: "amount",
         rate,
@@ -344,6 +484,7 @@ export const calculateBase = (
       Number.isFinite(answer)
     const basis = answered ? answer : (quantity ?? 0)
     return {
+      ...from,
       raw: t.raw,
       kind: "amount",
       rate,

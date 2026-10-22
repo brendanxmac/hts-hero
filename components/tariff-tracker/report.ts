@@ -107,6 +107,7 @@ export const trackProduct = (
     quantity,
     transportMode: adjustments.transportMode ?? DEFAULT_MODE,
     claimedPreference: adjustments.claimedPreference,
+    htsElements,
   });
   const result = calculate(AllRules, { ...input, answers });
   const impacts = questionImpacts(input, result, answers);
