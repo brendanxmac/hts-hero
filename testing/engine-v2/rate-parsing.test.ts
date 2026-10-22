@@ -563,3 +563,74 @@ describe("engine-v2: 5810 embroidery, rates from chapter 58's additional U.S. no
     expect(embroidery("6001.10.00.00", "See additional U.S. note 2").baseNotCalculated).toBe(true)
   })
 })
+
+describe("engine-v2: special rates on a Chapter 98/99 line ('See 9822.04.25 (AU)')", () => {
+  // Real lines from 2026 Rev 20
+  const LINES: Record<string, { general: string | null; special: string | null; other: string | null }> = {
+    "9908.04.05": { general: null, special: "Free (IL)", other: null },
+    "9918.04.50": { general: null, special: "Free (CO)", other: null },
+    "9918.04.56": { general: null, special: "Free (CO)", other: null },
+    "9919.04.50": { general: null, special: "Free (PA)", other: null },
+    "9919.04.55": { general: null, special: "53.7¢/kg (PA)", other: null },
+    "9919.04.65": { general: null, special: "$1.34/kg (PA)", other: null },
+    "9919.04.14": { general: null, special: "Free (PA)", other: null },
+    "9919.04.10": { general: null, special: "Free (PA)", other: null },
+    "9919.04.12": { general: null, special: "Free (PA)", other: null },
+  }
+  const lookupBaseRates = (code: string) => {
+    const digits = code.replace(/\D/g, "")
+    const key = Object.keys(LINES).find((k) => k.replace(/\D/g, "") === digits)
+    return key ? LINES[key] : null
+  }
+  // 0406.10.58 special, as in the HTS
+  const SPECIAL =
+    "Free (BH,CL,JO,KR,MA,OM,P,PE,SG) See 9822.04.40 (AU) See 9823.04.01-9823.04.54 (S+) See 9908.04.05 (IL) See 9918.04.50, 9918.04.56 (CO) See 9919.04.50, 9919.04.55, 9919.04.65 (PA)"
+  const claim = (program: string, special = SPECIAL, lookup: "none" | "hts" = "hts") =>
+    baseRates.resolveBaseParts(baseRates.getBaseRateParts({ general: null, special, other: null }, "special", program), {
+      answers: {},
+      lookupBaseRates: lookup === "hts" ? lookupBaseRates : undefined,
+      column: "special",
+      claimedPreference: program,
+    })
+
+  it("uses the line's rate, flagged as subject to its quota", () => {
+    const parts = claim("IL")
+    expect(parts.map((p) => [p.value, p.raw, Boolean(p.notCalculated)])).toEqual([[0, "Free", false]])
+    expect(parts[0].note).toBe(
+      "You may qualify for this rate: it's subject to the quota and conditions of 9908.04.05. Over the quota, a different rate applies.",
+    )
+  })
+
+  it("uses the rate when every line listed agrees", () => {
+    expect(claim("CO").map((p) => [p.value, p.resolvedFrom?.code])).toEqual([[0, "9918.04.50, 9918.04.56"]])
+  })
+
+  it("doesn't pick between lines within and over the quota", () => {
+    const [part] = claim("PA")
+    expect(part.notCalculated).toBe(
+      "It depends on the quota: Free under 9919.04.50, 53.7¢/kg under 9919.04.55, $1.34/kg under 9919.04.65.",
+    )
+  })
+
+  it("doesn't pick a line from a range", () => {
+    expect(claim("S+")[0].notCalculated).toBe(
+      "The rate is on one of the lines from 9823.04.01 to 9823.04.54, which differ by product and quota; the calculator doesn't pick one.",
+    )
+  })
+
+  it("says so when the line isn't in the HTS it has", () => {
+    expect(claim("AU")[0].notCalculated).toBe("The rate is on 9822.04.40, which the calculator couldn't read for AU.")
+  })
+
+  it("reads the '99.19.04.14' typo as 9919.04.14", () => {
+    // 0402.99.45 special
+    const special = "Free (BH,CL,CO,JO,KR,MA,OM,P,PE,SG) See 9919.04.10, 9919.04.12, 99.19.04.14 (PA)"
+    expect(claim("PA", special).map((p) => [p.value, Boolean(p.notCalculated)])).toEqual([[0, false]])
+  })
+
+  it("stays not calculated without a way to look lines up", () => {
+    expect(claim("IL", SPECIAL, "none")[0].notCalculated).toBe(
+      "The rate is set out in 9908.04.05, which the calculator doesn't look up.",
+    )
+  })
+})

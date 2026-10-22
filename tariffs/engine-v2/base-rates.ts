@@ -252,6 +252,58 @@ const noteRateFor = (
   )
 }
 
+// A special rate given as "See 9822.04.25 (AU)": the trade program's rate is on that Chapter 98/99
+// line, usually Free within a quota. One line, or several that agree, give the rate, flagged as
+// subject to the line's quota and conditions; lines that disagree (within and over the quota) or
+// a range of lines (one per product) depend on facts the calculator doesn't have.
+const SEE_LINES = /^see\s+(9[89][\d.]*\d(?:\s*[,-]\s*9[89][\d.]*\d)*)$/i
+const seeLinesRate = (
+  t: BaseTariffI,
+  column: DutyColumn,
+  claimedPreference: string | undefined,
+  lookupBaseRates?: (htsCode: string) => BaseRates | null,
+): BaseTariffI[] | null => {
+  const match = t.raw.trim().match(SEE_LINES)
+  if (!match || column !== "special" || !lookupBaseRates) return null
+  const list = match[1]
+  if (list.includes("-")) {
+    const [from, to] = list.split("-").map((c) => c.trim())
+    return [
+      {
+        ...t,
+        notCalculated: `The rate is on one of the lines from ${from} to ${to}, which differ by product and quota; the calculator doesn't pick one.`,
+      },
+    ]
+  }
+  const codes = list.split(",").map((c) => c.trim())
+  const lines = codes.map((code) => {
+    const rates = lookupBaseRates(code)
+    const parts = rates ? getBaseRateParts(rates, "special", claimedPreference) : []
+    return { code, parts }
+  })
+  const unusable = lines.find((l) => !l.parts.length || l.parts.some((p) => p.notCalculated || p.pointsTo))
+  if (unusable) {
+    return [{ ...t, notCalculated: `The rate is on ${unusable.code}, which the calculator couldn't read for ${claimedPreference}.` }]
+  }
+  const rateOf = (parts: BaseTariffI[]) => parts.map((p) => p.raw).join(" + ")
+  if (new Set(lines.map((l) => JSON.stringify(l.parts.map((p) => [p.value, p.type, p.unit ?? null, p.details ?? null])))).size > 1) {
+    return [
+      {
+        ...t,
+        notCalculated: `It depends on the quota: ${lines.map((l) => `${rateOf(l.parts)} under ${l.code}`).join(", ")}.`,
+      },
+    ]
+  }
+  const where = codes.join(", ")
+  return lines[0].parts.map((p, i) => ({
+    ...p,
+    resolvedFrom: { raw: t.raw, code: where, source: `the rate under ${where}` },
+    ...(i === 0
+      ? { note: `You may qualify for this rate: it's subject to the quota and conditions of ${where}. Over the quota, a different rate applies.` }
+      : {}),
+  }))
+}
+
 // Base rates that point to another code: with a way to look codes up, each asks for the code and,
 // once it's given, is replaced by that code's rate in the same column (or under the same
 // program). A code whose own rate points elsewhere, or can't be calculated, isn't followed.
@@ -275,6 +327,8 @@ export const resolveBaseParts = (
   parts.flatMap((t): BaseTariffI[] => {
     const noteRate = noteRateFor(t, htsCode, column, answers, lookupBaseRates)
     if (noteRate) return noteRate
+    const seeLines = seeLinesRate(t, column, claimedPreference, lookupBaseRates)
+    if (seeLines) return seeLines
     if (!t.pointsTo || !lookupBaseRates) return [t]
     const inputId = `baseCode:${t.pointsTo.key}`
     const pointsTo = { ...t.pointsTo, inputId }
