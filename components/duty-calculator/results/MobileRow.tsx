@@ -53,13 +53,15 @@ export const MobileRow = ({
           // One line per part, e.g. "4.5% on the case of $2,000.00"
           rateText.split(" + ").map((part, i) => (
             <span key={i}>
-              {part} of {basisText.split(" · ")[i]}
+              {part}
+              {basisText.split(" · ")[i] ? ` of ${basisText.split(" · ")[i]}` : ""}
             </span>
           ))
         ) : (
           <span>
-            {rateText ?? (rate === undefined ? "—" : formatPct(rate))} of{" "}
-            {basisText ?? formatMoney(basis)}
+            {rateText ?? (rate === undefined ? "—" : formatPct(rate))}
+            {/* No basis for a rate that can't be calculated */}
+            {basisText === "" ? "" : ` of ${basisText ?? formatMoney(basis)}`}
           </span>
         )}
       </div>

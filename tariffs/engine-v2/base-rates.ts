@@ -422,11 +422,14 @@ export const isBaseRateInput = (id: string) =>
   id.startsWith("baseValue:") ||
   id.startsWith("baseQuantity:") ||
   id.startsWith("baseCode:") ||
-  id === POLARITY_INPUT
+  id === POLARITY_INPUT ||
+  id === EMBROIDERY_INPUT
 
 // An answer to a base-rate question from a link or an API call, in the type it takes (a code as
 // typed, otherwise a number), or undefined when it isn't valid
 export const baseRateAnswer = (id: string, value: unknown) => {
+  // A yes (a link writes it as the bare id)
+  if (id === EMBROIDERY_INPUT) return value === undefined || value === true || value === "true" ? true : undefined
   if (id.startsWith("baseCode:")) {
     const code = String(value ?? "").trim()
     return /^\d{4}(\.?\d{2}){0,3}$/.test(code) ? code : undefined

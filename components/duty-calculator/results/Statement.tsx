@@ -42,14 +42,18 @@ export const Statement = ({
   // Per-unit and compound base rates are shown as written in the HTS
   // Rates with several parts, per-unit amounts, or parts that apply to a component
   // (the case, lead content) are shown one part per line, each against its own basis
+  // (and a part that can't be calculated shows its wording, not 0%)
   const itemized =
     result.baseParts.length > 1 ||
-    result.baseParts.some((p) => p.kind === "amount" || p.component);
+    result.baseParts.some((p) => p.kind === "amount" || p.component || p.notCalculated);
   const partBasis = (p: CalculationResult["baseParts"][number]) =>
-    (p.kind === "percent"
-      ? formatMoney(p.basis)
-      : `${p.basis.toLocaleString("en-US")} ${p.unit === "each" ? unitLabel : p.unit}`) +
-    (p.assumed ? " (assumed)" : "");
+    // A part that can't be calculated has no basis to show
+    p.notCalculated
+      ? ""
+      : (p.kind === "percent"
+          ? formatMoney(p.basis)
+          : `${p.basis.toLocaleString("en-US")} ${p.unit === "each" ? unitLabel : p.unit}`) +
+        (p.assumed ? " (assumed)" : "");
   const applied = result.lines.filter((l) => l.status === "applies");
   // Part of the base rate can't be calculated (wording, a reference): the totals leave it out
   const notCalculated = result.baseParts.filter((p) => p.notCalculated);

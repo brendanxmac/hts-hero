@@ -504,6 +504,11 @@ describe("engine-v2: base rates that point to another code", () => {
     const answers = { "baseCode:garment": "6104.42.00", "baseValue:case": 200, basePolarity: 96 }
     expect(parseAnswers(encodeAnswers(answers))).toEqual(answers)
     expect(parseAnswers("baseCode:garment=not-a-code")).toEqual({})
+    // A yes is the bare id
+    expect(parseAnswers(encodeAnswers({ baseEmbroideryInPiece: true, "baseCode:unembroidered": "5407.52.20" }))).toEqual({
+      baseEmbroideryInPiece: true,
+      "baseCode:unembroidered": "5407.52.20",
+    })
   })
 })
 
