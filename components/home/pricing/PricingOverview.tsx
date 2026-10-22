@@ -30,12 +30,14 @@ import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 // (one import per HTS code + country of origin), then classification as its own line. Every number
 // comes from the price list (PRICING.md).
 
-// After the trial: no alerts on the account's own imports (TRIAL_ALLOWANCE.alertImports is 0)
+// After the trial: no alerts on the account's own imports (TRIAL_ALLOWANCE.alertImports is 0).
+// AD/CVD checks are free with any account; only AD/CVD alerts on tracked imports are paid
 const FREE_INCLUDES: Include[] = [
   `The whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, on up to ${REVERSE_TRIAL.imports} imports`,
   "Then Tariff News alerts on every new US tariff action, free forever",
   "Your whole catalog, with current duty, rate history and exports to CSV or Excel",
   "Sourcing intelligence on any import",
+  "AD/CVD checks on any import: the cases that may cover it, their rates and the companies named",
   "Tariff Calculator: unlimited lookups, no account",
   "Works in AI assistants over MCP",
 ];
@@ -45,7 +47,7 @@ type Include = string | { text: string; coming: true };
 
 const TRACKER_INCLUDES: Include[] = [
   "Alerts by email, in-app, Slack and Teams",
-  "AD/CVD checks and alerts on every import",
+  "AD/CVD alerts on every tracked import",
   "Insights across your whole catalog",
   "Impact checks: how any tariff action hits each import",
   "Tariff News from every official source",
@@ -109,7 +111,7 @@ export const PricingOverview = () => {
               Free
             </h3>
             <p className="mt-1 text-base-content/70">
-              {REVERSE_TRIAL.days} days of the full Tracker, then the essentials free, forever.
+              {REVERSE_TRIAL.days} days of the full Tracker, then the essentials stay free.
             </p>
             <p className="mt-8 flex items-baseline gap-2">
               <span className="text-7xl font-semibold [font-family:var(--font-tracker-display)] tracking-tight text-base-content">$0</span>

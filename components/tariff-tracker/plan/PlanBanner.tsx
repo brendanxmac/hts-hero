@@ -37,13 +37,13 @@ export const PlanBanner = () => {
         <p className={`${ui.bodySm} flex-1`}>
           {trial.ended ? (
             <>
-              <span className="font-semibold text-base-content">Your free trial has ended.</span> Your {n(imports)} imports have no tariff alerts, impact checks or
-              AD/CVD checks, and Insights is locked.
+              <span className="font-semibold text-base-content">Your free trial has ended.</span> Your {n(imports)} imports have no tariff alerts, AD/CVD alerts or
+              impact checks, and Insights is locked.
             </>
           ) : (
             <>
               <span className="font-semibold text-base-content">Your free trial ends {endsIn(access)}.</span>{" "}
-              Your imports will lose their tariff alerts, impact checks and AD/CVD checks, and Insights will lock.
+              Your imports will lose their tariff alerts, AD/CVD alerts and impact checks, and Insights will lock.
             </>
           )}
         </p>
@@ -64,8 +64,8 @@ export const PlanBanner = () => {
       <div role="status" className={`${ui.notice("error")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
         <ClockIcon className="h-5 w-5 shrink-0 text-error" aria-hidden />
         <p className={`${ui.bodySm} flex-1`}>
-          <span className="font-semibold text-base-content">Your Tariff Tracker plan has ended.</span> Your {n(imports)} imports have no tariff alerts, impact checks or
-          AD/CVD checks, and Insights is locked.
+          <span className="font-semibold text-base-content">Your Tariff Tracker plan has ended.</span> Your {n(imports)} imports have no tariff alerts, AD/CVD alerts or
+          impact checks, and Insights is locked.
         </p>
         <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={() => openUpgrade("plan")}>
           Resubscribe

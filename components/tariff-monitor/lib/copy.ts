@@ -68,7 +68,7 @@ export const FEATURES: { title: string; text: string; href?: string; linkText?: 
   },
   {
     title: "AD/CVD Alerts",
-    text: "A flag when a tracked import may fall under an antidumping or countervailing duty case, with the range of rates Commerce set and links to the case, so you and your broker can check it.",
+    text: "A flag when an antidumping or countervailing duty case or new petition may cover a tracked import, and an update when one changes, with the rates Commerce set and links to the case, so you and your broker can check it. The AD/CVD check itself is free with any account.",
   },
   {
     title: "Insights Across Your Catalog",
@@ -155,15 +155,15 @@ export const MONITOR_FAQS = [
   {
     question: "Which tariffs does it cover?",
     answer:
-      "The base rate and every Chapter 99 tariff: Section 232 (steel, aluminum, copper, autos, wood, pharmaceuticals, semiconductors, drones and more), Section 301 (China, Brazil, forced labor), Section 201 safeguards, Section 338 on Canada, country trade deals and quotas, plus trade preferences like USMCA and the MPF and HMF fees. Antidumping and countervailing duties are flagged rather than added to the duty, since they're set for specific producers: the Tracker flags imports that may fall under a case, with the range of rates and links to the source, so you and your broker can check.",
+      "The base rate and every Chapter 99 tariff: Section 232 (steel, aluminum, copper, autos, wood, pharmaceuticals, semiconductors, drones and more), Section 301 (China, Brazil, forced labor), Section 201 safeguards, Section 338 on Canada, country trade deals and quotas, plus trade preferences like USMCA and the MPF and HMF fees. Antidumping and countervailing duties are flagged rather than added to the duty, since they're set for specific producers: any free account can check an import for the cases that may cover it, with their rates, the companies named and links to the source, and the Tracker alerts you when a case may cover a tracked import, so you and your broker can check.",
   },
   {
     question: "How much does the Tariff Tracker cost?",
-    answer: `Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, with no credit card and nothing to start (the 14 days begin when you add your imports): alerts (AD/CVD alerts included), impact checks, Insights, Tariff News, rate history and exports, on up to ${REVERSE_TRIAL.imports} imports (an import is one HTS code from one country of origin). After the trial, ${FREE_FOREVER_SHORT} stay free, forever, and so do your whole catalog with its current duty, rate history and exports. Nothing is deleted. To keep alerts and impact checks on your imports, paid plans start at ${from} a month to track up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly. Per import, that's ${TRACKER_TIERS.map((t) => `${formatPrice(perImportPrice(t))} on the ${t.maxPairs}-import plan`).join(", ")}: as low as ${lowestPerImport} per import, per month. ${SAVINGS_AUDITS_COMING}`,
+    answer: `Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, with no credit card and nothing to start (the 14 days begin when you add your imports): alerts (AD/CVD alerts included), impact checks, Insights, Tariff News, rate history and exports, on up to ${REVERSE_TRIAL.imports} imports (an import is one HTS code from one country of origin). After the trial, ${FREE_FOREVER_SHORT} stay free, forever, and so do your whole catalog with its current duty, rate history and exports. AD/CVD checks on any import stay free with your account too. Nothing is deleted. To keep alerts (AD/CVD alerts included) and impact checks on your imports, paid plans start at ${from} a month to track up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly. Per import, that's ${TRACKER_TIERS.map((t) => `${formatPrice(perImportPrice(t))} on the ${t.maxPairs}-import plan`).join(", ")}: as low as ${lowestPerImport} per import, per month. ${SAVINGS_AUDITS_COMING}`,
   },
   {
     question: "What happens when the free trial ends?",
-    answer: `If you don't pick a plan, your account moves to the free plan on its own. Alerts, impact checks and AD/CVD checks on your own imports stop, but you keep Tariff News alerts (every new US tariff action, by email) and sourcing insights on any import, free, forever, and your whole catalog stays in your account with its current duty, rate history and exports. You're never charged unless you choose a plan.`,
+    answer: `If you don't pick a plan, your account moves to the free plan on its own. Alerts (AD/CVD alerts included) and impact checks on your own imports stop, but you keep Tariff News alerts (every new US tariff action, by email) and sourcing insights on any import, free, forever, and your whole catalog stays in your account with its current duty, rate history and exports. AD/CVD checks on any import stay free with your account too. You're never charged unless you choose a plan.`,
   },
   {
     question: "Does the Tariff Tracker find savings or audit my entries?",

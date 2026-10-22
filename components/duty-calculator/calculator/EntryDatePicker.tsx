@@ -1,36 +1,40 @@
 "use client";
 
 import { Popover } from "@headlessui/react";
-import { CalendarDaysIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import { CalendarDaysIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import { formatDate, formatPct, todayIso } from "../lib/format";
 import { TariffFinder } from "../lib/useTariffFinder";
 
 // The import's entry date, picked the useful way: today, any date this import's rates changed (each
-// with what changed and what it did to the duty), or any other date. The same date as Entry details
-// and the import's header, so changing it here changes it everywhere.
+// with what changed and what it did to the duty), or any other date. In Entry details (and an
+// import's header), as a field the height and look of the inputs beside it.
 
 // A change in duty as a change in the rate (true at any value): "+12.5%"
 const signedRate = (usd: number, value: number) => `${usd > 0 ? "+" : "−"}${formatPct(Math.round((Math.abs(usd) / (value || 1)) * 10000) / 100)}`;
 
-export const EntryDatePicker = ({ f, align = "right" }: { f: TariffFinder; align?: "left" | "right" }) => {
+export const EntryDatePicker = ({ f, id }: { f: TariffFinder; id?: string }) => {
   const today = todayIso();
   // The dates its rates changed, newest first
   const changes = f.history.filter((s, i) => i > 0 && s.changes.length > 0).reverse();
   const pick = (date: string, close: () => void) => {
-    f.setEntryDate(date, "compare_date_picker");
+    f.setEntryDate(date, "entry_date_picker");
     close();
   };
   const isToday = f.entryDate === today;
 
   return (
     <Popover className="relative">
-      <Popover.Button className={`${ui.button({ size: "sm" })} gap-1.5`} aria-label={`Rates on ${formatDate(f.entryDate)}. Change the date`}>
-        <CalendarDaysIcon className="h-4 w-4 text-base-content/60" aria-hidden />
-        <span className="tabular-nums">{isToday ? "Today" : formatDate(f.entryDate)}</span>
-        <ChevronDownIcon className="-mr-1 h-4 w-4 text-base-content/60" aria-hidden />
+      <Popover.Button
+        id={id}
+        className={`${ui.input} flex items-center gap-2 text-left`}
+        aria-label={`Rates on ${formatDate(f.entryDate)}. Change the date`}
+      >
+        <CalendarDaysIcon className="h-4 w-4 shrink-0 text-base-content/60" aria-hidden />
+        <span className="min-w-0 flex-1 truncate font-medium tabular-nums">{isToday ? "Today" : formatDate(f.entryDate)}</span>
+        <ChevronUpDownIcon className="h-4 w-4 shrink-0 text-base-content/60" aria-hidden />
       </Popover.Button>
-      <Popover.Panel className={`${ui.popover} absolute ${align === "right" ? "right-0" : "left-0"} z-30 mt-2 flex w-96 flex-col gap-1 tracker:rounded-2xl tracker:p-2`}>
+      <Popover.Panel className={`${ui.popover} absolute left-0 z-30 mt-2 flex w-96 flex-col gap-1 tracker:rounded-2xl tracker:p-2`}>
         {({ close }) => (
           <>
             <button
@@ -75,12 +79,12 @@ export const EntryDatePicker = ({ f, align = "right" }: { f: TariffFinder; align
             )}
 
             <label className="flex items-center justify-between gap-3 border-t border-base-300 px-3 pb-1 pt-3">
-              <span className="text-sm text-base-content/70">Another date</span>
+              <span className="whitespace-nowrap text-sm text-base-content/70">Another date</span>
               <input
                 type="date"
                 className={`${ui.inputSm} w-40`}
                 value={f.entryDate}
-                onChange={(e) => e.target.value && f.setEntryDate(e.target.value, "compare_date_picker")}
+                onChange={(e) => e.target.value && f.setEntryDate(e.target.value, "entry_date_picker")}
               />
             </label>
           </>

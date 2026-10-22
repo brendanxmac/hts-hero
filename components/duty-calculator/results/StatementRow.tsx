@@ -8,7 +8,7 @@ import { formatMoney, formatPct } from "../lib/format";
 import { LegalPanel } from "./LegalPanel";
 import { LegalToggle } from "./LegalToggle";
 import { Stacked } from "./Stacked";
-import { linkClass, RowChange, RowLink, RowProps } from "./rowTypes";
+import { linkClass, RowLink, RowProps } from "./rowTypes";
 import { Swatch } from "./Swatch";
 import { WhyLocked } from "../calculator/WhyGate";
 
@@ -22,7 +22,6 @@ export const StatementRow = ({
   rate,
   rateText,
   amount,
-  change,
   whyLocked,
   link,
   compact,
@@ -34,7 +33,7 @@ export const StatementRow = ({
   return (
     <>
       <tr
-        className={`border-t border-base-300 align-top transition-colors ${linkClass(link)} ${CHANGE_ROW[change?.kind ?? "none"]}`}
+        className={`border-t border-base-300 align-top transition-colors ${linkClass(link)}`}
         onMouseEnter={link?.onHover && (() => link.onHover?.(true))}
         onMouseLeave={link?.onHover && (() => link.onHover?.(false))}
       >
@@ -47,10 +46,9 @@ export const StatementRow = ({
                 <Swatch color={link?.color} />
                 {code}
               </span>
-              <span className={`text-base font-medium text-base-content ${change?.kind === "removed" ? "line-through decoration-base-content/40 text-base-content/60" : ""}`}>
+              <span className="text-base font-medium text-base-content">
                 {name}
               </span>
-              {change && <ChangeBadge change={change} amount={amount} />}
             </div>
             {full && detail && (
               <span className={ui.bodySm}>{detail}</span>
@@ -81,9 +79,6 @@ export const StatementRow = ({
         <td
           className={`tabular-nums ${pad} pl-3 pr-5 sm:pr-6 text-base font-semibold text-right whitespace-nowrap`}
         >
-          {change?.before !== undefined && (
-            <span className="block text-xs font-normal text-base-content/60 line-through">{formatMoney(change.before)}</span>
-          )}
           {formatMoney(amount)}
         </td>
       </tr>
@@ -96,23 +91,4 @@ export const StatementRow = ({
       )}
     </>
   );
-};
-
-// A row the last answer changed: tinted green when added, blue when its amount moved, red when
-// switched off
-const CHANGE_ROW = { added: "bg-success/[0.06]", changed: "bg-primary/[0.06]", removed: "bg-error/[0.06]", none: "" };
-
-const ChangeBadge = ({ change, amount }: { change: RowChange; amount: number }) => {
-  const diff = amount - (change.before ?? 0);
-  const label =
-    change.kind === "added"
-      ? "Added by your answer"
-      : change.kind === "removed"
-        ? "Removed by your answer"
-        : `${diff < 0 ? "−" : "+"}${formatMoney(Math.abs(diff))}`;
-  // Added lines green, switched-off lines red; a line whose amount moved, green when it lowered the
-  // duty and red when it raised it
-  const tone =
-    change.kind === "added" ? "bg-success/10 text-success" : change.kind === "removed" || diff > 0.005 ? "bg-error/10 text-error" : "bg-success/10 text-success";
-  return <span className={`rounded-md px-1.5 py-0.5 text-xs font-semibold ${tone}`}>{label}</span>;
 };

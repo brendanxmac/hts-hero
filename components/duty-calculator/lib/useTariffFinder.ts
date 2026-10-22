@@ -179,7 +179,7 @@ export const useTariffFinder = ({
 
   // ── Selecting a code (from the field, the URL, an example, or the explorer) ──
   const openExplorerAt = useCallback(
-    (element: HtsElement) => {
+    (element: HtsElement, source = "sub_tariff_code_selected") => {
       const sectionAndChapter = getSectionAndChapterFromChapterNumber(sections, Number(element.chapter));
       if (sectionAndChapter) {
         setBreadcrumbs(
@@ -190,7 +190,7 @@ export const useTariffFinder = ({
         );
       }
       setShowExplore(true);
-      track(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source: "sub_tariff_code_selected" });
+      track(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source });
     },
     [sections, htsElements, setBreadcrumbs]
   );
@@ -613,6 +613,7 @@ export const useTariffFinder = ({
     selectExample,
     showExplore,
     openExplore,
+    openExplorerAt,
     closeExplore,
   };
 };

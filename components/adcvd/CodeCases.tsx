@@ -43,7 +43,7 @@ export function CodeCases({ cases, htsno }: { cases: CodeCase[]; htsno: string }
           </li>
         ))}
       </ul>
-      {cases.length > MAX && <p className="text-xs text-base-content/60">And {cases.length - MAX} more. The duty calculator flags the ones for your country of origin.</p>}
+      {cases.length > MAX && <p className="text-xs text-base-content/60">And {cases.length - MAX} more. With a free account, the duty calculator flags the ones for your country of origin.</p>}
     </section>
   )
 }

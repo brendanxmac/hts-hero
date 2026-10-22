@@ -29,10 +29,10 @@ export const HTS_HERO: Tool = {
   url: "https://htshero.com/duty-calculator",
   kind: "US tariff calculator and tariff tracker",
   summary:
-    "A US tariff calculator built for importers who need the exact number: every Chapter 99 tariff stacked line by line with its legal source, the duty on any past entry date, duty over time, tracking for every tariff on your imports with alerts and impact checks when a tariff change hits them, and results by API and MCP for your own systems.",
+    "A US tariff calculator built for importers who need the exact number: every Chapter 99 tariff stacked line by line with its legal source, the duty on any past entry date, duty over time, a free AD/CVD check on any import, tracking for every tariff on your imports with alerts and impact checks when a tariff change hits them, and results by API and MCP for your own systems.",
   bestFor: "Importers, brokers and compliance teams who need exact, auditable US duty",
   price: `Calculator free; Tracker ${REVERSE_TRIAL.days}-day free trial, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import`,
-  priceDetail: `${FREE_TIER}. Tariff Tracker ${REVERSE_TRIAL.days}-day free trial, no credit card: everything on up to ${REVERSE_TRIAL.imports} imports, then ${FREE_FOREVER_SHORT} stay free, forever; paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo for up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly, which comes to ${TRACKER_TIERS.map((t) => formatPrice(perImportPrice(t))).join(", ")} per import, per month by plan size (as low as ${formatPrice(LOWEST_PER_IMPORT)}). Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo, ${ANNUAL_DISCOUNT * 100}% off annually. No contract. ${SAVINGS_AUDITS_COMING}`,
+  priceDetail: `${FREE_TIER}. A free account adds the AD/CVD check on any import and sourcing intelligence. Tariff Tracker ${REVERSE_TRIAL.days}-day free trial, no credit card: everything on up to ${REVERSE_TRIAL.imports} imports, then ${FREE_FOREVER_SHORT} stay free, forever; paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo for up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly, which comes to ${TRACKER_TIERS.map((t) => formatPrice(perImportPrice(t))).join(", ")} per import, per month by plan size (as low as ${formatPrice(LOWEST_PER_IMPORT)}). Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo, ${ANNUAL_DISCOUNT * 100}% off annually. No contract. ${SAVINGS_AUDITS_COMING}`,
   features: {
     freeToTry: { support: "yes", note: `${FREE_TIER}; Tariff Tracker ${REVERSE_TRIAL.days}-day free trial, no credit card` },
     selfServe: { support: "yes", note: "Every plan is self-serve, with no demo or contract" },
@@ -53,6 +53,7 @@ export const HTS_HERO: Tool = {
     "Every Chapter 99 tariff as its own line, with the heading and U.S. note behind it",
     "The duty on a past entry date, from the HTS revision in force that day",
     "Duty Over Time shows how a product's duty changed across revisions",
+    "A free AD/CVD check on any import: the antidumping and countervailing duty cases and new petitions that may cover it, their deposit rates and the companies named",
     "Alerts and impact checks when a tariff change hits your imports, with the rate before and after",
     "Export every tariff on every import to CSV or Excel",
     `A ${REVERSE_TRIAL.days}-day free trial of the Tariff Tracker on up to ${REVERSE_TRIAL.imports} imports, with no credit card`,
@@ -67,5 +68,5 @@ export const HTS_HERO: Tool = {
     { title: "HTS Hero pricing", url: "https://htshero.com/pricing-calculator" },
     { title: "HTS Hero tariff data changelog", url: "https://htshero.com/duty-calculator/changelog" },
   ],
-  checkedAt: "2026-10-06",
+  checkedAt: "2026-10-22",
 };

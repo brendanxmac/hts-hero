@@ -9,7 +9,7 @@ import { SAVINGS_AUDITS_LABEL } from "../../libs/tariff-tracker/features"
 //   unlocked  existing accounts, once, when their fresh 14 days start: everything is on
 //   ending    3 days and 1 day before it ends: what the account is about to lose, in its numbers
 //   ended     the day after: what it lost, and how to get it back
-// Loss first (TRIAL_LOSSES: alerts, impact checks and AD/CVD checks on all their imports, and
+// Loss first (TRIAL_LOSSES: alerts, impact checks and AD/CVD alerts on all their imports, and
 // auditing and savings detection, labeled until they launch), then the plan that keeps everything
 // at its launch price while that lasts, then what stays free. No numbers on the loss.
 
@@ -95,8 +95,8 @@ export const TRIAL_LOSSES: Loss[] = [
   },
   { title: "Tariff impact checks on all your imports", body: "Exactly how each new tariff action hits each of your imports." },
   {
-    title: "AD/CVD checks and updates on all your imports",
-    body: "Which antidumping and countervailing duty cases may cover each import, their rates, and a heads-up when one changes.",
+    title: "AD/CVD alerts and updates on all your imports",
+    body: "A heads-up when an antidumping or countervailing duty case or new petition may cover one of your imports, or its rates change. Checking an import for cases stays free.",
   },
   {
     title: "Automatic auditing on your imports",
@@ -107,7 +107,7 @@ export const TRIAL_LOSSES: Loss[] = [
 ]
 
 const FREE_FOREVER =
-  "Tariff News alerts on every new US tariff action, sourcing insights on any import, your whole catalog with its rate history and exports, and the Tariff Calculator."
+  "Tariff News alerts on every new US tariff action, sourcing insights and AD/CVD checks on any import, your whole catalog with its rate history and exports, and the Tariff Calculator."
 
 export default function TrialEmail(p: TrialEmailProps) {
   const { variant, imports, changes12m = 0, productsHit12m = 0, plan, launchEndsDay, footer } = p
@@ -135,7 +135,7 @@ export default function TrialEmail(p: TrialEmailProps) {
               <strong>Tariff impact checks.</strong> Pick any tariff action and see exactly how it hits each import.
             </>,
             <>
-              <strong>AD/CVD checks.</strong> Which antidumping and countervailing cases may cover each import, their rates, and a heads-up when one changes.
+              <strong>AD/CVD alerts.</strong> A heads-up when an antidumping or countervailing case or new petition may cover one of your imports, or its rates change.
             </>,
             <>
               <strong>Insights.</strong> Where your duty comes from, what moved it, and your most exposed imports and countries.
@@ -161,8 +161,8 @@ export default function TrialEmail(p: TrialEmailProps) {
     <EmailLayout
       preview={
         ended
-          ? "Tariff alerts, impact checks and AD/CVD checks are off on your imports. Here's how to get them back."
-          : `On ${p.endsOn}, tariff alerts, impact checks and AD/CVD checks stop on your imports. Here's what changes.`
+          ? "Tariff alerts, AD/CVD alerts and impact checks are off on your imports. Here's how to get them back."
+          : `On ${p.endsOn}, tariff alerts, AD/CVD alerts and impact checks stop on your imports. Here's what changes.`
       }
       footer={footer}
     >

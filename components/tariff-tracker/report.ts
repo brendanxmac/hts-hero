@@ -66,6 +66,10 @@ export const describe = (element: HtsElement, htsElements: HtsElement[]) => {
   return levels.slice(-2).join(" › ") || "Other";
 };
 
+// Every level from the heading down to the code itself, "Other" levels included
+export const describePath = (element: HtsElement, htsElements: HtsElement[]) =>
+  [...getHtsElementParents(element, htsElements), element].map((el) => plain(el.description)).filter(Boolean);
+
 // A result's total as parts of the customs value: base duty, then each program that applies
 export const rateParts = (result: CalculationResult, customsValue: number): RatePart[] => {
   const byProgram = new Map<string, number>();

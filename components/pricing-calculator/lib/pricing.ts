@@ -8,7 +8,7 @@ export type Billing = "monthly" | "annual";
 export const ANNUAL_DISCOUNT = 0.15;
 
 // The Tariff Calculator is free: unlimited lookups, no account. A free account unlocks Analysis
-// and the plain-English why. See PRICING.md.
+// and the plain-English why, and the AD/CVD check on any import. See PRICING.md.
 
 // The free plan's allowances (PRICING.md). alertImports is what every account tracks free once its
 // 14-day trial (REVERSE_TRIAL) is over: none (2026-10-18). Free accounts keep the Tariff News alerts

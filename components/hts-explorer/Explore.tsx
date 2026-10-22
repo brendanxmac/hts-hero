@@ -30,7 +30,7 @@ export type { ExplorerSurface };
 // headings, codes), with whatever is selected shown in full in a panel beside it, and a search
 // that lists matches in the outline's place. Nothing jumps: opening and selecting rows leaves the
 // list where it is. In the Tariff Tracker's look (DESIGN_SYSTEM.md §15) wherever it's shown: the
-// /explore page, and in a dialog over the calculator (where "Use" puts a code in its input bar)
+// /explore page, and in a dialog over the calculator (where "Calculate duty" puts a code in its input bar)
 // or a classification.
 
 type Tab = "codes" | "notes";
@@ -49,7 +49,8 @@ interface ExploreProps {
   initialBreadcrumbs?: NavigatableElement[];
   // The global dialog wires this so Cmd/Ctrl+S can refocus the search while open
   onSearchInputMount?: (el: HTMLInputElement | null) => void;
-  // Over a calculator: put the chosen code in its input bar
+  // Over a calculator: put the chosen code in its input bar (the calculator then being the
+  // estimate, a line shows none of its own)
   onUseCode?: (element: HtsElement) => void;
   // Open on this line (the code already in the calculator), unless the trail was set from outside
   startAt?: HtsElement | null;
@@ -391,8 +392,10 @@ const Layout = ({
       // Two columns that each scroll on their own, filling the dialog, or on a page the screen under
       // the site's sticky header (65px). At either end, scrolling carries on to the page.
       <div
-        className={`grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[minmax(0,1fr)] ${
-          dialog ? "lg:h-full" : "lg:h-[calc(100dvh-6rem)] lg:min-h-128 lg:scroll-mt-20"
+        className={`grid gap-4 lg:grid-rows-[minmax(0,1fr)] ${
+          dialog
+            ? "lg:h-full lg:grid-cols-[minmax(0,6fr)_minmax(0,7fr)]"
+            : "lg:h-[calc(100dvh-6rem)] lg:min-h-128 lg:scroll-mt-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
         }`}
       >
         {list}

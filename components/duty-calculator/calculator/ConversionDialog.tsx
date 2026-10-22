@@ -42,7 +42,7 @@ import { thisPageWith } from "../landing/redirect";
 //   explanation of this import, a past date) when the host says
 // - "trial": what the Tariff Tracker's 14-day reverse trial adds (REVERSE_TRIAL: every new account
 //   gets it, no card; then no alerts on their own imports, TRIAL_ALLOWANCE.alertImports being 0, but
-//   Tariff News alerts and sourcing insights free; AD/CVD checks are the trial's), led by the feature
+//   Tariff News alerts, sourcing insights and AD/CVD checks free), led by the feature
 //   they reached for (tracking, the qualification check, refunds, sourcing); "See everything else" steps over to the account view
 // Each view's button runs the host's own action (where sign-up should come back to).
 // useConversion opens it from anywhere, sending signed-in users the right way instead.
@@ -57,7 +57,7 @@ export const ACCOUNT_BENEFITS: { id: AccountBenefit; text: string }[] = ([
   { id: "ruled-out", text: "Why other tariffs don't apply, so you know nothing was missed" },
   { id: "history", text: "Any import's full duty on any past date, line by line" },
   { id: "analysis", text: "Sourcing intelligence: any import's duty from every country of origin, as insights, a globe, a table and a chart" },
-  { id: "adcvd", text: `AD/CVD checks free for ${REVERSE_TRIAL.days} days: whether an import may fall under an antidumping or countervailing duty case, and its rates` },
+  { id: "adcvd", text: "AD/CVD checks on any import: the antidumping and countervailing duty cases that may cover it, their rates and the suppliers they name" },
   {
     id: "alerts",
     text: `The Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, with an alert when a tariff change hits one (before → after); then Tariff News alerts on every new US tariff action, free forever`,
@@ -73,18 +73,23 @@ const BENEFIT_POINTS: Record<AccountBenefit, SellingPoint> = {
   legal: { icon: "legal", title: "The legal text on every line", body: "Every tariff and exemption, with the notes it cites." },
   "ruled-out": { icon: "shield", title: "Why the others don't apply", body: "So you know nothing was missed." },
   history: { icon: "clock", title: "Any date's duty", body: "Line by line, for any entry date, past or scheduled." },
-  analysis: { icon: "globe", title: "Your duty from every country", body: "See where it could cost less to source it." },
-  adcvd: { icon: "shield", title: "AD/CVD checks", body: `See if an import may fall under an antidumping or countervailing case, free for ${REVERSE_TRIAL.days} days.` },
+  analysis: { icon: "globe", title: "Advanced sourcing intelligence", body: "Your duty from every country of origin, as insights, a globe, a table and a chart." },
+  adcvd: { icon: "shield", title: "AD/CVD checks", body: "See if any import may fall under an antidumping or countervailing duty case, and its rates." },
   alerts: { icon: "bell", title: "Alerts the moment rates change", body: `The full Tracker free for ${REVERSE_TRIAL.days} days, on up to ${REVERSE_TRIAL.imports} imports.` },
   impacts: { icon: "bolt", title: "How each tariff action hits you", body: "See exactly which of your imports it touches." },
   savings: { icon: "money", title: "Ways to pay less", body: "Trade programs, exemptions and cheaper origins." },
   audits: { icon: "receipt", title: "Find what you overpaid", body: "Past entries checked against what you owed." },
 };
 
+// What the account itself gives, free: the Tracker's alerts, impact checks, savings and audits are
+// the paid offer (the trial view), so the account view never leads with them or lists them
+const PAID_BENEFITS: AccountBenefit[] = ["alerts", "impacts", "savings", "audits"];
+const FREE_BENEFITS = ACCOUNT_BENEFITS.filter((b) => !PAID_BENEFITS.includes(b.id));
+
 const pointsFor = (account: AccountPitch): SellingPoint[] => {
   if (account.points?.length) return account.points.slice(0, 3);
-  const ids = Array.from(new Set([account.highlight, "alerts", "why", "analysis"].filter(Boolean) as AccountBenefit[])).filter((id) =>
-    ACCOUNT_BENEFITS.some((b) => b.id === id),
+  const ids = Array.from(new Set([account.highlight, "adcvd", "analysis"].filter(Boolean) as AccountBenefit[])).filter((id) =>
+    FREE_BENEFITS.some((b) => b.id === id),
   );
   return ids.slice(0, 3).map((id) => BENEFIT_POINTS[id]);
 };
@@ -239,7 +244,7 @@ const AccountView = ({
           </span>
           <span className="inline-flex items-center gap-1">
             <CheckIcon className="h-3.5 w-3.5 text-success" aria-hidden />
-            {REVERSE_TRIAL.days} days of the full Tracker
+            100% free
           </span>
         </div>
         {!account.hideNote && accountNote && <p className="m-0 text-center text-xs text-base-content/60">{accountNote}</p>}
@@ -257,7 +262,7 @@ const AccountView = ({
         </button>
         {more && (
           <ul className="mt-3 flex flex-col gap-1.5">
-            {ACCOUNT_BENEFITS.map((b) => (
+            {FREE_BENEFITS.map((b) => (
               <li key={b.id} className="flex items-start gap-2 text-sm text-base-content/80">
                 <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
                 {b.text}

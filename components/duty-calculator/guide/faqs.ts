@@ -58,12 +58,12 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "How do I compare duty from different countries?",
         answer:
-          "Use Compare to see the same product from up to three countries of origin side by side, with each country's duty, fees and total. It's the fastest way to check whether moving a supplier would lower your landed cost.",
+          "Use Compare to see the same product from up to four countries of origin side by side, with each country's duty, fees and total. It's the fastest way to check whether moving a supplier would lower your landed cost.",
       },
       {
         question: "Is this US tariff calculator free?",
         answer:
-          "Yes. The HTS Hero duty and tariff calculator is free to use with no sign-up. You get the full line-by-line breakdown: the base rate, every Chapter 99 tariff and exemption, trade preferences and customs fees. Duty Over Time is free too. A free account adds the plain-English why behind every result (why each tariff applies and why others don't, with the legal text), and Analysis (the duty from every country of origin).",
+          "Yes. The HTS Hero duty and tariff calculator is free to use with no sign-up. You get the full line-by-line breakdown: the base rate, every Chapter 99 tariff and exemption, trade preferences and customs fees. Duty Over Time is free too. A free account adds the plain-English why behind every result (why each tariff applies and why others don't, with the legal text), Analysis (the duty from every country of origin), and an AD/CVD check on every import: the antidumping and countervailing duty cases and new petitions that may cover it, with their deposit rates and the companies named.",
       },
       {
         question: "Can I save or share a calculation?",
@@ -115,7 +115,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "What are the questions under Possible Adjustments?",
         answer:
-          "They're the facts that can change your duty: whether the goods contain steel, aluminum or copper, whether a drug is generic, whether the goods are a donation, whether Canadian alcohol is shipped in bulk, and more. Each one shows how much it would change the total. Answer the ones that apply to your goods and the estimate updates, with the exemption heading shown on its line.",
+          "They're the facts that can change your duty: whether the goods contain steel, aluminum or copper, whether a drug is generic, whether the goods are a donation, whether Canadian alcohol is shipped in bulk, and more. Each one shows how much it would change the total. Answer the ones that apply to your goods and the estimate updates, with the exemption heading shown on its line. When the base rate is charged on part of the goods (the value of a watch case, the total sugars, a sugar's polarity), those questions come first, under Questions About Your Goods.",
       },
     ],
   },
@@ -153,12 +153,12 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "Does the calculator include antidumping and countervailing duties?",
         answer:
-          "No. Antidumping and countervailing duties (AD/CVD) are set case by case by the Commerce Department for specific producers and exporters, so they aren't included. If your product is covered by an AD/CVD order, check the order's rates with CBP or your customs broker and add them to the estimate.",
+          "Not in the estimate. Antidumping and countervailing duties (AD/CVD) are set case by case by the Commerce Department for specific producers and exporters, so the calculator doesn't add them to the total. HTS Hero does check every import against live AD/CVD cases and new petitions that may cover it, and shows the cases, the deposit rates Commerce set (the all-others rate and company-specific rates) and the companies named, free with an account. Without an account, you'll see that AD/CVD duties may apply. Whether a case covers your goods depends on the product and the producer, so confirm it with your customs broker.",
       },
       {
         question: "What doesn't the calculator include?",
         answer:
-          "Antidumping and countervailing duties, federal excise taxes (such as on alcohol and tobacco), other agency fees and assessments, the flat MPF on informal entries under $2,500, Chapter 98 claims such as American goods returned, and freight, insurance, brokerage and state taxes. For some auto and truck parts it charges the full rate before any manufacturer's import adjustment offset.",
+          "Antidumping and countervailing duties (HTS Hero checks for cases that may cover your import separately, free with an account), federal excise taxes (such as on alcohol and tobacco), other agency fees and assessments, the flat MPF on informal entries under $2,500, Chapter 98 claims such as American goods returned, and freight, insurance, brokerage and state taxes. For some auto and truck parts it charges the full rate before any manufacturer's import adjustment offset.",
       },
       {
         question: "Why does the calculator ask for a quantity?",
@@ -198,7 +198,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "Can I see how a product's duty changed over time?",
         answer:
-          "Yes. Duty Over Time charts the duty on your product across every HTS revision, with each change and the heading that caused it, so you can see when a tariff started, ended or changed rate. It needs a free account.",
+          "Yes. Duty Over Time charts the duty on your product across every HTS revision, with each change and the heading that caused it, so you can see when a tariff started, ended or changed rate. It's free, with no account needed.",
       },
     ],
   },
@@ -214,7 +214,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "Can I track tariff changes across my product catalog?",
         answer:
-          "Yes, with Tariff Tracker. Load your HTS codes and countries of origin, by paste or CSV, and see the current duty on every product, which products a tariff change hits and by how much, with alerts when a new revision affects you.",
+          "Yes, with Tariff Tracker. Load your HTS codes and countries of origin, by paste or CSV, and see the current duty on every product, which products a tariff change hits and by how much, with alerts when a new revision affects you, AD/CVD alerts included.",
       },
       {
         question: "How much does HTS Hero cost?",

@@ -193,7 +193,8 @@ export function DutyByCountry({
           <p className={`${ui.caption} leading-relaxed`}>
             Duties on goods entered {formatSummaryDate(summary.asOf)} at the general rate (Column 2 where it
             applies), with tariff data verified through {summary.revision.title.replace(/^Revision (\d+) \((\d{4})\)$/, "$2 HTS Revision $1")}.
-            Totals are before customs fees (MPF, HMF) and any antidumping or countervailing duties.
+            Totals are before customs fees (MPF, HMF) and any antidumping or countervailing duties
+            (AD/CVD); with a free account, the calculator checks the AD/CVD cases that may cover your import.
             Some tariffs and exemptions depend on details such as metal content or end use, which the
             calculator asks about.{" "}
             <Link href="/duty-calculator/countries" className={ui.link}>

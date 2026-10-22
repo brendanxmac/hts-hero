@@ -89,7 +89,9 @@ export const ToolShowcase = ({
           <p className={`${mk.lead} mt-4`}>
             Base rate, every Chapter 99 tariff with its legal source,
             exemptions, trade preferences and fees, for any HTS code and country
-            of origin. Free and unlimited.
+            of origin. Free and unlimited. A free account adds the AD/CVD
+            check: the antidumping and countervailing duty cases that may cover
+            it.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
             <Link href="/duty-calculator" className={`${mk.buttonPrimary} h-14 px-8 text-lg shadow-lg shadow-base-content/10`}>

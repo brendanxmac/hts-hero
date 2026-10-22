@@ -7,8 +7,6 @@ import * as ui from "@/components/ui/styles";
 import { Statement } from "../results";
 import { sameBasis } from "../results/Statement";
 import { formatDate } from "../lib/format";
-import { ChangeSummary } from "../results/ChangeSummary";
-import { LineChanges } from "../lib/useLineChanges";
 import { TariffFinder } from "../lib/useTariffFinder";
 import { valueLabel } from "../lib/valueBasis";
 
@@ -28,8 +26,6 @@ export const DutyBreakdown = ({
   summary,
   headerAction,
   footer,
-  changes,
-  onClearChanges,
   lockWhy,
 }: {
   result: NonNullable<TariffFinder["result"]>;
@@ -48,10 +44,6 @@ export const DutyBreakdown = ({
   headerAction?: ReactNode;
   // Inside the card, under the lines (the headings checked but not applied)
   footer?: ReactNode;
-  // What the last answer or trade program changed: marked in the lines (summed up under the
-  // adjustment in Possible Adjustments)
-  changes?: LineChanges | null;
-  onClearChanges?: () => void;
   // Signed out: the plain-English why on each line is locked
   lockWhy?: boolean;
 }) => {
@@ -93,12 +85,7 @@ export const DutyBreakdown = ({
         </div>
       </div>
       {summary}
-      {/* Under the adjustment that was changed, normally; here only when that isn't known */}
-      {changes && !changes.source && (
-        <ChangeSummary result={result} changes={changes} onClear={onClearChanges} where="below" customsValue={customsValue} className="mx-5 sm:mx-6 mb-3 mt-2" />
-      )}
       <Statement
-        changes={changes}
         lockWhy={lockWhy}
         result={result}
         customsValue={customsValue}

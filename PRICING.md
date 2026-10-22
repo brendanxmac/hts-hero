@@ -5,7 +5,7 @@ for product code, plan copy, landing pages, comparison pages, blog FAQs, `llms.t
 tools. If code or copy disagrees with this file, this file wins. Change this file first when
 pricing changes.
 
-_Last updated 2026-10-20 (the 14-day reverse trial starts at the first import)._
+_Last updated 2026-10-22 (the AD/CVD check on any import is free with any account)._
 
 ## The rule
 
@@ -14,7 +14,9 @@ _Last updated 2026-10-20 (the 14-day reverse trial starts at the first import)._
 - The Tariff Calculator is 100% free: unlimited lookups, no account, no sign-up wall on a
   duty result, and available over MCP.
 - **Duty over time** (how the duty on an entry changed) is free, with no account.
-- A **free account** unlocks Analysis (the product's duty from every country of origin) and the
+- A **free account** unlocks Analysis (the product's duty from every country of origin), the
+  **AD/CVD check** on any import (the antidumping and countervailing duty cases and new petitions
+  that may cover it, their rates and suppliers; decided 2026-10-22) and the
   **plain-English why** behind every result: why each tariff applies, why other headings don't
   apply, and the full summary of the duty. What each possible adjustment would change is free
   for everyone; working out which adjustments the goods qualify for is the Tracker's
@@ -84,7 +86,7 @@ What the Tracker sells now:
 |---|---|---|---|---|
 | Tariff Calculator, Duty over time | Unlimited | Unlimited | Unlimited | Unlimited |
 | Calculator extras (the why, Overview, News) | Teased | Yes | Yes | Yes |
-| AD/CVD check on any import (cases, rates, suppliers) | Teased: whether a case may apply | Teased: whether a case may apply | Yes | Yes |
+| AD/CVD check on any import (cases, rates, suppliers) | Teased: that a case may apply (never whether one does; nothing looked up) | Yes | Yes | Yes |
 | Sourcing intelligence (Compare: Insights, Globe, Table, Chart) | Side by side only | Yes | Yes | Yes |
 | Catalog, current duty, rate history, export | n/a | Unlimited | Unlimited | Unlimited |
 | Tariff News alerts (every new US tariff action) | Yes (subscribe) | Yes | Yes | Yes |
@@ -100,10 +102,11 @@ The example list doesn't start it. It gets everything the Tracker sells on up to
 (`REVERSE_TRIAL` in `components/pricing-calculator/lib/pricing.ts`). When it ends without a plan,
 the account drops to the free plan: **no alerts, impact checks or AD/CVD updates on its own
 imports** (changed from 5 imports on 2026-10-18). It keeps the Tariff News alerts on every new US
-tariff action, sourcing intelligence on any import, and its whole catalog. AD/CVD checks are part
-of the trial and the paid plans (decided 2026-10-18): a free account sees only whether a case may
-apply, as a signed-out visitor does (`/api/adcvd/match` answers it with a 402 and the summary).
-Nothing is deleted.
+tariff action, sourcing intelligence on any import, the AD/CVD check on any import, and its whole
+catalog. The AD/CVD check is free with any account (decided 2026-10-22; it was trial and paid
+only from 2026-10-18): `/api/adcvd/match` answers any signed-in account. What stays paid is AD/CVD
+**alerts and updates** on tracked imports, with the other alerts. Copy doesn't promise it stays free
+forever; it just says it's free. Nothing is deleted.
 
 - **When it starts:** `tracker_onboarding.trial_started_at`, set once by a database trigger the first
   time the account's catalog holds a real (non-example) import. A trial ends `days` after that
@@ -112,14 +115,15 @@ Nothing is deleted.
 - **Existing accounts** that already had imports get a fresh 14 days from `REVERSE_TRIAL.freshStartOn`
   (the deploy day); those without start on their first import, like everyone else.
 - **Lean into loss.** In the last days and after it ends, show what the account loses: tariff alerts,
-  impact checks, and AD/CVD checks and updates on all its imports, Insights, and automatic auditing and savings
+  impact checks, and AD/CVD alerts and updates on all its imports (the AD/CVD check itself stays), Insights, and automatic auditing and savings
   detection (labeled "Coming Oct 2026"). The emails name no numbers.
   Shown in the sidebar plan card (countdown), a trial-ending dialog, and emails 3 days and 1 day
   before it ends and the day after (`libs/email/lifecycle.ts`).
 - **Subscribe during the trial to keep launch pricing.** The upgrade card recommends the tier that
   fits the catalog.
 - Copy: "Free for 14 days", "Starts when you add your imports", "Everything, on up to 200 imports", "No credit card", "Then Tariff News
-  alerts and sourcing insights stay free, forever". Never say "no time limit" or
+  alerts and sourcing insights stay free, forever" (AD/CVD checks: "free with any account", no
+  "forever"). Never say "no time limit" or
   "never expires" for the Tracker's alerts.
 - **Savings and audits in copy (decided 2026-10-18):** marketing, CTAs, emails and the in-app loss
   screens sell "Automatic savings detection" and "Automatic auditing" as part of the trial and every

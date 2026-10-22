@@ -11,12 +11,14 @@ export const CALCULATOR_FEATURES = [
   "Trade preferences like USMCA and CAFTA-DR, plus MPF and HMF",
   "Compare countries and duty over time, plus every origin with a free account",
   "The plain-English why behind every tariff, with a free account",
+  "AD/CVD checks on any import: the cases that may cover it, their rates and the companies named, with a free account",
   "Works in AI assistants through the HTS Hero MCP server",
 ]
 
 // What every account gets free in the Tracker: the 14-day reverse trial (REVERSE_TRIAL, no card,
 // nothing to start), then the free plan forever: no alerts on its own imports (TRIAL_ALLOWANCE.alertImports
-// is 0), but Tariff News alerts and sourcing insights. Savings detection and auditing
+// is 0), but Tariff News alerts and sourcing insights, and the AD/CVD check (free with any account,
+// never "forever"). Savings detection and auditing
 // aren't live yet (features.ts), so each mention carries the "coming" label
 export const TRACKER_TRIAL_FEATURES = [
   `${REVERSE_TRIAL.days} days of everything the Tracker does, on up to ${REVERSE_TRIAL.imports} imports`,
@@ -24,6 +26,7 @@ export const TRACKER_TRIAL_FEATURES = [
   "Insights across your catalog, plus Tariff News as it happens",
   `${SAVINGS_DETECTION.name} and ${AUTO_AUDITING.name.toLowerCase()} in the trial too, when they launch ${COMING_NOTE}`,
   `Then ${FREE_FOREVER_SHORT}, free forever`,
+  "AD/CVD checks on any import, free with your account",
   "Your whole catalog, with current duty, rate history and exports to CSV or Excel, always free",
 ]
 

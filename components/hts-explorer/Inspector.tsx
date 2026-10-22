@@ -8,13 +8,13 @@ import { Menu } from "@headlessui/react";
 import {
   ArrowRightIcon,
   ArrowTopRightOnSquareIcon,
+  CalculatorIcon,
   CheckIcon,
   ChevronDownIcon,
   CursorArrowRaysIcon,
   DocumentTextIcon,
   LinkIcon,
   ListBulletIcon,
-  PlusIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/16/solid";
 import { useHts } from "@/contexts/HtsContext";
@@ -251,7 +251,8 @@ const LineDetail = ({ element }: { element: HtsElement }) => {
         )}
       </header>
 
-      {estimable && (
+      {/* Over a calculator (it can take the code), the calculator is the estimate */}
+      {estimable && !applyCode && (
         <div className="flex flex-col gap-2">
           <Estimate element={element} tariffElement={tariffElement} onUseCode={applyCode ? () => applyCode(element) : undefined} />
           <p className="px-2 text-xs text-base-content/60">
@@ -319,8 +320,8 @@ const LineActions = ({ element, usable }: { element: HtsElement; usable: boolean
     <div className="flex flex-wrap items-center gap-2">
       {usable && applyCode && (
         <button type="button" className={ui.button({ variant: "primary" })} onClick={() => applyCode(element)}>
-          <PlusIcon className="h-4 w-4" aria-hidden />
-          Use this code
+          <CalculatorIcon className="h-4 w-4" aria-hidden />
+          Calculate duty
         </button>
       )}
       {usable && !applyCode && htsno && !htsno.startsWith("98") && !htsno.startsWith("99") && (

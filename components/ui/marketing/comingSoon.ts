@@ -29,7 +29,8 @@ export const AUTO_AUDITING = {
 export const SAVINGS_AUDITS_COMING = `Automatic savings detection and automatic auditing are ${COMING_LOWER}, included in the trial and every paid Tracker plan at no extra cost when they launch.`
 
 // What every account keeps after the trial, forever (TRIAL_ALLOWANCE.alertImports is 0: no alerts
-// on its own imports, only the Tariff News alerts; AD/CVD checks are part of the trial and plans)
+// on its own imports, only the Tariff News alerts; AD/CVD checks are free with any account too, but
+// never sold as "forever", so they aren't in this list)
 export const FREE_FOREVER_SHORT =
   "Tariff News alerts and sourcing insights"
 export const FREE_FOREVER_LINE = `Then ${FREE_FOREVER_SHORT} stay free, forever.`

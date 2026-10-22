@@ -28,8 +28,9 @@ import { useTracker } from "../TrackerContext";
 
 // The 14-day reverse trial (PRICING.md): everything, on up to REVERSE_TRIAL.imports imports, then
 // the free plan (no alerts on the user's own imports). As it ends, and once it has, the Tracker
-// shows what the account loses (alerts, impact checks and AD/CVD checks on all its imports,
-// Insights, and auditing and savings detection when they launch), next to what stays free. Loss
+// shows what the account loses (alerts, AD/CVD alerts included, and impact checks on all its imports,
+// Insights, and auditing and savings detection when they launch), next to what stays free (the
+// AD/CVD check itself is free with any account, so only its alerts and updates are lost). Loss
 // sells harder than gain: the plan card counts down, a banner and this dialog say what goes.
 
 // The days before the end when the trial starts saying so
@@ -80,11 +81,11 @@ export const trialLosses = (stats: UpgradeStats | null) => {
     { Icon: BoltIcon, title: "Tariff impact checks on all your imports", body: "Exactly how each new tariff action hits each of your imports." },
     {
       Icon: ScaleIcon,
-      title: "AD/CVD checks and updates on all your imports",
+      title: "AD/CVD alerts and updates on all your imports",
       body:
         flagged > 0
-          ? `An antidumping or countervailing case may cover ${n(flagged)} of your imports. You'd lose its rates, your suppliers' rates and the heads-up when it changes.`
-          : "Which antidumping and countervailing cases may cover each import, their rates, and a heads-up when one changes.",
+          ? `An antidumping or countervailing case may cover ${n(flagged)} of your imports. You'd lose the heads-up when a case or its rates change. Checking an import for cases stays free.`
+          : "A heads-up when an antidumping or countervailing case or new petition may cover one of your imports, or its rates change. Checking an import for cases stays free.",
     },
     { Icon: ChartBarIcon, title: "Insights across your catalog", body: "Where your duty comes from, what moved it, and your most exposed imports and countries." },
     {

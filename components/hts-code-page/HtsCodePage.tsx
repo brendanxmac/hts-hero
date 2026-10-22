@@ -84,7 +84,7 @@ export function HtsCodePage({
   const offerCalculator = !summary && !hasDutyData && !!element.htsno && !element.htsno.startsWith("99");
   const hasRelated = children.length > 0 || siblings.length > 0;
   const importNames = Object.fromEntries((importDuty?.rows ?? []).map((r) => [r.country.code, r.country.name]));
-  const faqs = htsFaqs({ element, productName, summary, tariffElement, children, sectionChapter, imports, importNames });
+  const faqs = htsFaqs({ element, productName, summary, tariffElement, children, sectionChapter, imports, importNames, adcvdCases });
 
   const sections = [
     { id: "duty-by-country", label: "Duty by Country", show: !!summary },

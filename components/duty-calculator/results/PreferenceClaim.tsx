@@ -13,7 +13,6 @@ export const PreferenceClaim = ({
   stable,
   notes = {},
   qualifyLink,
-  changeSummary,
 }: {
   options: { symbol: string; name: string }[];
   value: string;
@@ -23,8 +22,6 @@ export const PreferenceClaim = ({
   stable?: boolean;
   notes?: Record<string, React.ReactNode>;
   qualifyLink?: React.ReactNode;
-  // What the last claim (or drop) did, under that program (by its symbol)
-  changeSummary?: { id: string; node: React.ReactNode };
 }) => (
   <ul className="flex flex-col divide-y divide-base-300">
     {options.map((p) => (
@@ -40,7 +37,6 @@ export const PreferenceClaim = ({
           note={notes[p.symbol]}
           qualifyLink={qualifyLink}
         />
-        {changeSummary?.id === p.symbol && <div className="mt-3">{changeSummary.node}</div>}
       </li>
     ))}
   </ul>

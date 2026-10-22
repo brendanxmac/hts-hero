@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, LinkIcon } from "@heroicons/react/20/solid";
+import { CheckIcon, LinkIcon, ListBulletIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import { TariffFinder } from "../lib/useTariffFinder";
 
@@ -17,3 +17,16 @@ export const ShareButtons = ({ f }: { f: TariffFinder }) => (
     <span className="sm:hidden">{f.copied ? "Copied" : "Share"}</span>
   </button>
 );
+
+// The code in the HTS itself: the Explorer opens on its line (secondary, beside Share)
+export const ViewInHtsButton = ({ f }: { f: TariffFinder }) =>
+  f.selectedElement && (
+    <button
+      type="button"
+      className={ui.button({ variant: "secondary", size: "sm" })}
+      onClick={() => f.selectedElement && f.openExplorerAt(f.selectedElement, "results_heading_path")}
+    >
+      <ListBulletIcon className="w-4 h-4" />
+      View in HTS
+    </button>
+  );

@@ -56,7 +56,7 @@ export const INCLUDED: { title: string; text: string; items?: string[] }[] = [
 export const EXCLUDED: { title: string; text: string }[] = [
   {
     title: "Antidumping and countervailing duties",
-    text: "Set case by case by the Commerce Department for specific producers and exporters.",
+    text: "Set case by case by the Commerce Department for specific producers and exporters. HTS Hero checks each import for cases that may cover it separately, free with an account.",
   },
   {
     title: "Federal excise taxes",

@@ -50,10 +50,11 @@ export const GATEWAY_LINES: Tool = {
       "You want to see a product's duty across HTS revisions",
       "You want an independent tool that isn't part of a freight sales funnel",
       "You want every plan's price on the website",
+      "You want a free AD/CVD check that lists each case that may cover an import, its deposit rates and the companies named",
     ],
     chooseThem: [
       "You want free bulk lookups and a free MCP server",
-      "You also want antidumping and countervailing duty tracking in the same tool",
+      "You want antidumping and countervailing duties added into the duty total",
     ],
     differences: [
       {

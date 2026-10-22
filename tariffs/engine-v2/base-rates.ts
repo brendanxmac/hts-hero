@@ -112,8 +112,22 @@ const slug = (text: string) =>
 const withArticle = (component: string) =>
   /^the\s/i.test(component) ? component : `the ${component}`
 
-const capitalize = (text: string) =>
-  text.charAt(0).toUpperCase() + text.slice(1)
+const POLARITY_INPUT = "basePolarity"
+
+// Questions for a component's weight or count: "How many kg of total sugars are in the shipment?"
+const quantityQuestion = (component: string, unit: string) => {
+  const name = component.replace(/^the\s+/i, "")
+  if (component === "gross lines")
+    return "How many gross lines (button size in lines × gross) are in the shipment?"
+  if (/\bover\s+\d+$/.test(name)) return `How many ${name} are there across the shipment?`
+  if (/\bweight$/.test(name)) return `What is the ${name}, in ${unit}?`
+  return `How many ${unit} of ${name} are in the shipment?`
+}
+
+// The questions the base rate asks (a component's value or weight, a sugar's polarity): shown
+// in their own section of Possible Adjustments, before the Chapter 99 provisions
+export const isBaseRateInput = (id: string) =>
+  id.startsWith("baseValue:") || id.startsWith("baseQuantity:") || id === POLARITY_INPUT
 
 // Units as people read them ("pfliter" was normalized from "pf. liter")
 const unitLabel = (unit: string) =>
@@ -138,7 +152,6 @@ const quantityFor = (
 
 // Sugar sliding scales take off `perDegree` for each degree of polarity under `underDegrees`
 // (fractions in proportion), down to `minimum`
-const POLARITY_INPUT = "basePolarity"
 const slidingRate = (t: BaseTariffI, polarity: number | null) => {
   const scale = t.slidingScale!
   const rate = t.value ?? 0
@@ -197,7 +210,7 @@ export const calculateBase = (
       const inputId = `baseValue:${slug(component)}`
       inputs.set(inputId, {
         id: inputId,
-        label: `Value of ${withArticle(component)} (USD)`,
+        label: `What is the value of ${withArticle(component)}?`,
         help: `The HTS charges ${t.raw}. Until you enter it, the whole customs value is used, so the duty shown is the most it can be.`,
         type: "number",
         unit: "USD",
@@ -225,7 +238,7 @@ export const calculateBase = (
     if (t.slidingScale) {
       inputs.set(POLARITY_INPUT, {
         id: POLARITY_INPUT,
-        label: "Polarity (degrees)",
+        label: "What is the sugar's polarity?",
         help: `The HTS charges ${t.raw}. Until you enter it, ${t.slidingScale.underDegrees} degrees is used, so the duty shown is the most it can be.`,
         type: "number",
         unit: "degrees",
@@ -259,7 +272,7 @@ export const calculateBase = (
     const inputId = `baseQuantity:${slug(component)}`
     inputs.set(inputId, {
       id: inputId,
-      label: `${capitalize(component.replace(/^the\s+/i, ""))} (${unit})`,
+      label: quantityQuestion(component, unit),
       help: `The HTS charges ${t.raw}. Until you enter it, the total quantity is used.`,
       type: "number",
       unit,

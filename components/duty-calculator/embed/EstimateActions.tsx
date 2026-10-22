@@ -19,7 +19,7 @@ export const EstimateActions = ({
     <span className={ui.caption}>
       {estimate.openQuestions > 0
         ? "Answer the questions above to refine this estimate."
-        : "Estimates don't include antidumping or countervailing duties."}
+        : "Estimates don't include antidumping or countervailing duties; the Tariff Calculator checks for cases that may apply."}
     </span>
     <div className="flex items-center gap-2">
       <button type="button" className={ui.button({ size: "sm" })} onClick={estimate.copy}>

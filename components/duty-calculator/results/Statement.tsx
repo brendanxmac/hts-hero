@@ -11,7 +11,6 @@ import { MobileRow } from "./MobileRow";
 import { MobileTotal } from "./MobileTotal";
 import { BASE_SLICE, FEES_SLICE, sliceForProgram } from "./slices";
 import { whyApplies } from "../lib/explain";
-import { LineChanges } from "../lib/useLineChanges";
 import { RowLink, RowProps } from "./rowTypes";
 import { StatementRow } from "./StatementRow";
 import { TotalRow } from "./TotalRow";
@@ -25,7 +24,6 @@ export const Statement = ({
   highlight,
   onHighlight,
   compact,
-  changes,
   lockWhy = false,
 }: {
   result: CalculationResult;
@@ -38,8 +36,6 @@ export const Statement = ({
   onHighlight?: (slice: string | null) => void;
   // One tight line per row: no reasons or legal text
   compact?: boolean;
-  // What the last answer or trade program changed, to mark in the rows
-  changes?: LineChanges | null;
   // The plain-English why for each line takes a free account: signed out, it's locked
   lockWhy?: boolean;
 }) => {
@@ -88,21 +84,6 @@ export const Statement = ({
       amount: line.amount,
     })),
   ];
-  if (changes) {
-    rows.forEach((row) => (row.change = changes.byCode[row.code]));
-    // Lines the change switched off stay in view, struck through
-    changes.removed.forEach((line) =>
-      rows.push({
-        code: line.code,
-        slice: sliceForProgram(line.program),
-        name: line.name,
-          basis: line.basisValue,
-        rate: line.ratePct,
-        amount: 0,
-        change: { kind: "removed", before: line.amount },
-      })
-    );
-  }
   const feeRows: RowProps[] = result.fees.map((fee) => ({
     code: fee.id.toUpperCase(),
     slice: FEES_SLICE,
@@ -189,7 +170,7 @@ export const Statement = ({
                 hideBasis={hideBasis}
               />
             ))}
-            <TotalRow label="Total duty" amount={result.totalDuty} before={changes?.totalDutyBefore} hideBasis={hideBasis} />
+            <TotalRow label="Total duty" amount={result.totalDuty} hideBasis={hideBasis} />
             {feeRows.map((row) => (
               <StatementRow
                 key={row.code}
@@ -199,7 +180,7 @@ export const Statement = ({
                 hideBasis={hideBasis}
               />
             ))}
-            <TotalRow label="Total duty and fees" amount={dutyAndFees} strong before={changes ? changes.totalDutyBefore + result.totalFees : undefined} hideBasis={hideBasis} />
+            <TotalRow label="Total duty and fees" amount={dutyAndFees} strong hideBasis={hideBasis} />
           </tbody>
         </table>
       </div>

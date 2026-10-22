@@ -2,15 +2,14 @@
 
 import { ReactNode, useEffect, useMemo, useRef } from "react";
 import { toRoman } from "@javascript-packages/roman-numerals";
-import { ChevronRightIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { useHtsSections } from "@/contexts/HtsSectionsContext";
 import { HtsElement, HtsSection, HtsSectionAndChapterBase } from "@/interfaces/hts";
 import { mono } from "@/components/ui/font";
-import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CandidateToggle } from "./CodeRow";
-import { chapterKey, isTariffLevel, lineKey, sectionKey, useExplorer } from "./useExplorer";
+import { chapterKey, lineKey, sectionKey, useExplorer } from "./useExplorer";
 
 // The whole schedule as one outline: sections open to chapters, chapters to headings, headings
 // to the lines under them, all in place. Opening or selecting a row never moves the list; the
@@ -209,24 +208,29 @@ const SectionRow = ({ row }: { row: Extract<Row, { kind: "section" }> }) => {
       label={`Section ${toRoman(section.number)}`}
     >
       <span
-        className={`${tt.display} mt-px flex h-6 min-w-9 shrink-0 items-center justify-center rounded-lg px-1.5 text-xs font-semibold ${
+        className={`${tt.display} mt-px flex h-6 min-w-9 shrink-0 items-center justify-center rounded-lg px-1.5 text-xs ${weight(open)} ${
           open ? "bg-primary text-primary-content" : "bg-tt-soft text-base-content/70 group-hover:bg-base-100"
         }`}
       >
         {toRoman(section.number)}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold leading-snug text-base-content">{section.description}</span>
+        <span className={`block text-sm leading-snug text-base-content ${weight(open)}`}>{section.description}</span>
         <span className="block text-xs text-base-content/60">{first === last ? `Chapter ${first}` : `Chapters ${first}–${last}`}</span>
       </span>
     </RowShell>
   );
 };
 
+// Only what's open (and the line selected) is bold, extra bold, so the way down to a line stands
+// out; the rest is regular
+const weight = (open: boolean) => (open ? "font-extrabold" : "font-normal");
+
 const ChapterRow = ({ row }: { row: Extract<Row, { kind: "chapter" }> }) => {
   const { expanded, toggle, selectedKey, navigate, trailToChapter } = useExplorer();
   const { chapter } = row;
   const selected = selectedKey === row.key;
+  const open = expanded.has(row.key);
   return (
     <RowShell
       rowKey={row.key}
@@ -243,13 +247,13 @@ const ChapterRow = ({ row }: { row: Extract<Row, { kind: "chapter" }> }) => {
       label={`Chapter ${chapter.number}`}
     >
       <span
-        className={`${tt.display} mt-px flex h-6 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-semibold tabular-nums ${
+        className={`${tt.display} mt-px flex h-6 w-12 shrink-0 items-center justify-center whitespace-nowrap rounded-lg text-xs tabular-nums ${weight(open)} ${
           selected ? "bg-primary text-primary-content" : "bg-primary/10 text-primary"
         }`}
       >
-        {String(chapter.number).padStart(2, "0")}
+        Ch {chapter.number}
       </span>
-      <span className={`min-w-0 flex-1 text-sm leading-snug ${selected ? "font-semibold text-base-content" : "text-base-content"}`}>
+      <span className={`min-w-0 flex-1 text-sm leading-snug text-base-content ${weight(open)}`}>
         {chapter.description}
       </span>
     </RowShell>
@@ -257,9 +261,12 @@ const ChapterRow = ({ row }: { row: Extract<Row, { kind: "chapter" }> }) => {
 };
 
 const LineRow = ({ row }: { row: Extract<Row, { kind: "line" }> }) => {
-  const { expanded, toggle, selectedKey, navigate, trailTo, applyCode } = useExplorer();
+  const { expanded, toggle, selectedKey, navigate, trailTo } = useExplorer();
   const { line, count } = row;
   const selected = selectedKey === row.key;
+  const open = count > 0 && expanded.has(row.key);
+  // The line being looked at is bold too, at the end of the bold path down to it
+  const bold = open || selected;
   // A short rate only; Chapter 99 lines carry sentences in the rate column
   const rate = line.general && line.general.length <= 14 ? line.general : null;
   const select = () => {
@@ -287,32 +294,21 @@ const LineRow = ({ row }: { row: Extract<Row, { kind: "line" }> }) => {
       after={
         <>
           {rate && (
-            <span className="hidden rounded-full bg-tt-soft px-2 py-0.5 text-xs font-semibold tabular-nums text-base-content/80 group-hover:bg-base-100 xl:inline">
+            <span className="hidden rounded-full bg-tt-soft px-2 py-0.5 text-xs tabular-nums text-base-content/80 group-hover:bg-base-100 xl:inline">
               {rate}
             </span>
-          )}
-          {applyCode && isTariffLevel(line) && (
-            <button
-              type="button"
-              className={`${ui.button({ variant: "secondary", size: "sm" })} h-7 px-3 group-hover:border-primary/40 group-hover:text-primary`}
-              onClick={() => applyCode(line)}
-              title={`Use ${line.htsno} in the calculator`}
-            >
-              <PlusIcon className="h-3.5 w-3.5" aria-hidden />
-              Use
-            </button>
           )}
         </>
       }
     >
       {line.htsno ? (
         <span className="flex min-w-0 flex-1 flex-col gap-0.5 2xl:flex-row 2xl:gap-3">
-          <span className={`${mono.className} shrink-0 text-sm font-semibold tabular-nums text-primary 2xl:w-32`}>{line.htsno}</span>
-          <span className={`min-w-0 text-sm leading-snug text-base-content ${selected ? "font-semibold" : ""}`}>{line.description}</span>
+          <span className={`${mono.className} shrink-0 text-sm tabular-nums text-primary 2xl:w-32 ${weight(bold)}`}>{line.htsno}</span>
+          <span className={`min-w-0 text-sm leading-snug text-base-content ${weight(bold)}`}>{line.description}</span>
         </span>
       ) : (
         // A line with no code of its own ("Men's or boys'") just groups the lines under it
-        <span className="min-w-0 flex-1 text-sm font-semibold leading-snug text-base-content/70">{line.description}</span>
+        <span className={`min-w-0 flex-1 text-sm leading-snug text-base-content/70 ${weight(bold)}`}>{line.description}</span>
       )}
       {count > 0 && !expanded.has(row.key) && (
         <span className="mt-0.5 shrink-0 text-xs tabular-nums text-base-content/60">{count}</span>
