@@ -71,14 +71,16 @@ export const QuestionsPanel = ({
     Math.abs(impacts[q.input.id] ?? 0) >= 0.005;
   const sorted = sortBySpecificity(questions, asOf);
   const primary = sorted.filter(matters);
-  const secondary = sorted.filter((q) => !matters(q));
+  // (the base rate's own questions always show, in their own section)
+  const secondary = sorted.filter((q) => !matters(q) && !isBaseRateInput(q.input.id));
   const stable = Boolean(stableQuestions);
   const current = new Set(questions.map((q) => q.input.id));
   const visible = stableQuestions ?? (showAll ? [...primary, ...secondary] : primary);
   const open = primary.filter((q) => !q.answered).length;
   // The base rate's own questions (the value of the case, the total sugars, the polarity) lead,
   // in their own section; the Chapter 99 provisions follow
-  const goods = visible.filter((q) => isBaseRateInput(q.input.id));
+  // (all of them: one can matter only once another is answered, like embroidery in the piece)
+  const goods = (stableQuestions ?? sorted).filter((q) => isBaseRateInput(q.input.id));
   const provisions = visible.filter((q) => !isBaseRateInput(q.input.id));
   const hasProvisions = (stableQuestions ?? questions).some((q) => !isBaseRateInput(q.input.id));
 

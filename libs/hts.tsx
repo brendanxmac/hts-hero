@@ -1096,8 +1096,12 @@ export interface BaseTariffI {
   // "The rate applicable to the natural juice in heading 2009": the rate is another HTS code's,
   // so engine-v2 asks for that code (inputId, when the caller can look codes up)
   pointsTo?: { key: string; question: string; help: string; inputId?: string };
-  // A part of the rate of the code a pointer was answered with
-  resolvedFrom?: { raw: string; code: string; inputId: string; question: string; help: string };
+  // A part of the rate of the code a pointer was answered with, or of a note's rate (`source`)
+  resolvedFrom?: { raw: string; code: string; inputId?: string; question?: string; help?: string; source?: string };
+  // Something about this part the duty doesn't account for, shown with the base duty
+  note?: string;
+  // 5810 embroidery: in the piece, it pays at least the un-embroidered fabric's rate
+  embroidery?: { inPiece: boolean; floor?: BaseTariffI[] };
 }
 
 export interface ParsedBaseTariff {

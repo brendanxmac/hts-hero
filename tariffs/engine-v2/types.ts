@@ -304,8 +304,10 @@ export interface BasePart {
   assumed: boolean // the component wasn't given, so the whole value or quantity was used
   // Why this part's duty can't be worked out; it's left out of the total (amount 0)
   notCalculated?: string
-  // The part is the rate of another code, which the answer to a question gave
-  resolvedFrom?: { raw: string; code: string }
+  // The part is the rate of another code, which the answer to a question gave, or a note's rate
+  resolvedFrom?: { raw: string; code: string; source?: string }
+  // Something about this part the duty doesn't account for
+  note?: string
   amount: number
 }
 

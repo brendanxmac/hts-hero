@@ -91,6 +91,7 @@ export const calculate = (
       lookupBaseRates: input.lookupBaseRates,
       column,
       claimedPreference: input.claimedPreference,
+      htsCode: input.htsCode,
     },
   )
   baseRates
@@ -666,9 +667,10 @@ const getBaseLine = (
         new Set(
           baseCalc.parts
             .filter((p) => p.resolvedFrom)
-            .map((p) => `${p.resolvedFrom!.raw}: the rate of ${p.resolvedFrom!.code}`),
+            .map((p) => `${p.resolvedFrom!.raw}: ${p.resolvedFrom!.source ?? `the rate of ${p.resolvedFrom!.code}`}`),
         ),
       ),
+      ...Array.from(new Set(baseCalc.parts.filter((p) => p.note).map((p) => p.note!))),
       ...baseCalc.parts
         .filter((p) => p.notCalculated)
         .map((p) => `Not calculated: ${p.notCalculated}`),

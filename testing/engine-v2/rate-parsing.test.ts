@@ -499,3 +499,60 @@ describe("engine-v2: base rates that point to another code", () => {
     expect(parseAnswers("baseCode:garment=not-a-code")).toEqual({})
   })
 })
+
+describe("engine-v2: 5810 embroidery, rates from chapter 58's additional U.S. notes", () => {
+  const LINES: Record<string, { general: string | null; special: string | null; other: string | null }> = {
+    // A fabric that, un-embroidered, pays more than the note's 4.2%
+    "5407.52.20": { general: "12%", special: "Free (AU,BH,CL,CO,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "81%" },
+    // and one that pays less
+    "5208.21.20": { general: "2.5%", special: "Free (AU,BH,CL,CO,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "10%" },
+  }
+  const lookupBaseRates = (code: string) => LINES[code.trim()] ?? null
+  const embroidery = (htsCode: string, general: string, answers = {}) =>
+    run(general, { htsCode, lookupBaseRates, answers })
+
+  it("uses the note's rate for each subheading", () => {
+    expect(cents(embroidery("5810.91.00.20", "See additional U.S. note 1").base.amount)).toBe(0)
+    expect(cents(embroidery("5810.92.10.00", "See additional U.S. note 2").base.amount)).toBe(420)
+    expect(cents(embroidery("5810.92.90.80", "See additional U.S. note 3").base.amount)).toBe(740)
+    expect(cents(embroidery("5810.99.10.00", "See additional U.S. note 4").base.amount)).toBe(740)
+    expect(cents(embroidery("5810.99.90.00", "See additional U.S. note 5").base.amount)).toBe(420)
+    const result = embroidery("5810.92.10.00", "See additional U.S. note 2")
+    expect(result.baseNotCalculated).toBe(false)
+    expect(result.base.reasons).toContain("See additional U.S. note 2: 4.2% under additional U.S. note 2 to chapter 58")
+  })
+
+  it("uses 90% in column 2", () => {
+    const parts = baseRates.resolveBaseParts(baseRates.getBaseRateParts({ general: null, special: null, other: "See additional U.S. note 2" }, "column2"), {
+      answers: {},
+      column: "column2",
+      htsCode: "5810.92.10.00",
+    })
+    expect(parts.map((p) => p.value)).toEqual([90])
+  })
+
+  it("asks about embroidery in the piece and charges the fabric's rate when it's higher", () => {
+    const asked = embroidery("5810.92.10.00", "See additional U.S. note 2")
+    expect(asked.questions.map((q) => q.input.id)).toContain("baseEmbroideryInPiece")
+    const inPiece = embroidery("5810.92.10.00", "See additional U.S. note 2", { baseEmbroideryInPiece: true })
+    expect(inPiece.questions.map((q) => q.input.id)).toContain("baseCode:unembroidered")
+    expect(cents(inPiece.base.amount)).toBe(420) // until the fabric's code is given
+    expect(inPiece.base.reasons.some((r) => r.startsWith("Embroidery in the piece pays at least"))).toBe(true)
+    const higher = embroidery("5810.92.10.00", "See additional U.S. note 2", {
+      baseEmbroideryInPiece: true,
+      "baseCode:unembroidered": "5407.52.20",
+    })
+    expect(cents(higher.base.amount)).toBe(1200)
+    expect(higher.base.reasons).toContain("See additional U.S. note 2: not less than the rate of 5407.52.20")
+    const lower = embroidery("5810.92.10.00", "See additional U.S. note 2", {
+      baseEmbroideryInPiece: true,
+      "baseCode:unembroidered": "5208.21.20",
+    })
+    expect(cents(lower.base.amount)).toBe(420)
+  })
+
+  it("leaves other 'See additional U.S. note' rates alone", () => {
+    expect(embroidery("5810.92.10.00", "See additional U.S. note 3").baseNotCalculated).toBe(true)
+    expect(embroidery("6001.10.00.00", "See additional U.S. note 2").baseNotCalculated).toBe(true)
+  })
+})

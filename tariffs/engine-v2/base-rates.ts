@@ -179,6 +179,58 @@ export const getBaseRateParts = (
   return parseRateColumnParts(baseRates.general)
 }
 
+// Chapter 58's additional U.S. notes 1–5 set the rates of 5810.91.00–5810.99.90, which the HTS
+// columns give only as "See additional U.S. note N". Embroidery in the piece pays at least the
+// rate it would have if it weren't embroidered.
+const NOTE_RATES: Record<string, { note: number; general: string; column2: string }> = {
+  "5810.91.00": { note: 1, general: "Free", column2: "90%" },
+  "5810.92.10": { note: 2, general: "4.2%", column2: "90%" },
+  "5810.92.90": { note: 3, general: "7.4%", column2: "90%" },
+  "5810.99.10": { note: 4, general: "7.4%", column2: "90%" },
+  "5810.99.90": { note: 5, general: "4.2%", column2: "90%" },
+}
+export const EMBROIDERY_INPUT = "baseEmbroideryInPiece"
+const UNEMBROIDERED_INPUT = "baseCode:unembroidered"
+const UNEMBROIDERED_QUESTION = "What is the HTS code of the fabric if it weren't embroidered?"
+const UNEMBROIDERED_HELP = "Embroidery in the piece pays at least the rate the fabric would have if it weren't embroidered."
+
+// "See additional U.S. note 2" on 5810.92.10 → 4.2% (general) or 90% (column 2)
+const noteRateFor = (
+  t: BaseTariffI,
+  htsCode: string | undefined,
+  column: DutyColumn,
+  answers: Answers,
+  lookupBaseRates?: (htsCode: string) => BaseRates | null,
+): BaseTariffI[] | null => {
+  const note = t.raw.match(/^see additional u\.s\. note (\d+)$/i)
+  const entry = htsCode ? NOTE_RATES[htsCode.slice(0, 10)] : undefined
+  if (!note || !entry || entry.note !== Number(note[1]) || column === "special") return null
+  const rate = column === "column2" ? entry.column2 : entry.general
+  const source = `${rate} under additional U.S. note ${entry.note} to chapter 58`
+  const parts = parseRateColumnParts(rate).map((p) => ({ ...p, resolvedFrom: { raw: t.raw, code: htsCode!, source } }))
+  const inPiece = answers[EMBROIDERY_INPUT] === true
+  let floor: BaseTariffI[] | undefined
+  if (inPiece && lookupBaseRates) {
+    const code = String(answers[UNEMBROIDERED_INPUT] ?? "").trim()
+    const rates = code ? lookupBaseRates(code) : null
+    const referenced = rates ? getBaseRateParts(rates, column) : []
+    if (referenced.length && !referenced.some((r) => r.notCalculated || r.pointsTo)) {
+      floor = referenced.map((r) => ({ ...r, resolvedFrom: { raw: t.raw, code, source: `not less than the rate of ${code}` } }))
+    }
+  }
+  return parts.map((p, i) =>
+    i === 0
+      ? {
+          ...p,
+          embroidery: { inPiece, ...(floor ? { floor } : {}) },
+          ...(inPiece && !floor
+            ? { note: "Embroidery in the piece pays at least the un-embroidered fabric's rate. Enter its code to check; the note's rate is shown until then." }
+            : {}),
+        }
+      : p,
+  )
+}
+
 // Base rates that point to another code: with a way to look codes up, each asks for the code and,
 // once it's given, is replaced by that code's rate in the same column (or under the same
 // program). A code whose own rate points elsewhere, or can't be calculated, isn't followed.
@@ -189,14 +241,19 @@ export const resolveBaseParts = (
     lookupBaseRates,
     column,
     claimedPreference,
+    htsCode,
   }: {
     answers: Answers
     lookupBaseRates?: (htsCode: string) => BaseRates | null
     column: DutyColumn
     claimedPreference?: string
+    // The entry's code, for rates a note sets (5810)
+    htsCode?: string
   },
 ): BaseTariffI[] =>
   parts.flatMap((t): BaseTariffI[] => {
+    const noteRate = noteRateFor(t, htsCode, column, answers, lookupBaseRates)
+    if (noteRate) return noteRate
     if (!t.pointsTo || !lookupBaseRates) return [t]
     const inputId = `baseCode:${t.pointsTo.key}`
     const pointsTo = { ...t.pointsTo, inputId }
@@ -362,6 +419,37 @@ export const calculateBase = (
       : null
   }
 
+  // Embroidery in the piece: ask, and once the fabric's code is given, use its rate when that
+  // comes to more
+  rates.forEach((t) => {
+    if (!t.embroidery) return
+    inputs.set(EMBROIDERY_INPUT, {
+      id: EMBROIDERY_INPUT,
+      label: "Is it embroidery in the piece (embroidered fabric, not motifs)?",
+      help: UNEMBROIDERED_HELP,
+      type: "boolean",
+    })
+    if (t.embroidery.inPiece) {
+      inputs.set(UNEMBROIDERED_INPUT, {
+        id: UNEMBROIDERED_INPUT,
+        label: UNEMBROIDERED_QUESTION,
+        help: UNEMBROIDERED_HELP,
+        type: "htsCode",
+      })
+    }
+  })
+  const floor = rates.find((t) => t.embroidery?.floor)?.embroidery?.floor
+  if (floor) {
+    const withoutFloor = rates.map(({ embroidery: _embroidery, ...t }) => t)
+    const own = calculateBase(withoutFloor, customsValue, quantity, answers, quantityUnit)
+    const fabric = calculateBase(floor, customsValue, quantity, answers, quantityUnit)
+    const higher = fabric.amount > own.amount ? fabric : own
+    return {
+      ...higher,
+      inputs: [...Array.from(inputs.values()), ...higher.inputs.filter((i) => !inputs.has(i.id))],
+    }
+  }
+
   const parts: BasePart[] = rates.map((t) => {
     const rate = t.value ?? 0
     const component = componentOf(t)
@@ -390,7 +478,12 @@ export const calculateBase = (
         notCalculated: t.notCalculated,
       }
     }
-    const from = t.resolvedFrom ? { resolvedFrom: { raw: t.resolvedFrom.raw, code: t.resolvedFrom.code } } : {}
+    const from = {
+      ...(t.resolvedFrom
+        ? { resolvedFrom: { raw: t.resolvedFrom.raw, code: t.resolvedFrom.code, ...(t.resolvedFrom.source ? { source: t.resolvedFrom.source } : {}) } }
+        : {}),
+      ...(t.note ? { note: t.note } : {}),
+    }
 
     if (t.type === "percent") {
       if (!component) {
