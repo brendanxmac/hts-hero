@@ -1334,7 +1334,8 @@ export function getBaseTariffs(input: string): ParsedBaseTariff {
       continue;
     }
 
-    console.error(`Unable to parse duty string: "${trimmed}" from "${input}"`);
+    // Returned, not logged: engine-v2 handles every piece it can't read (a per-piece charge, a
+    // code to ask for, or "not calculated" with a warning)
     parsingFailures.push(trimmed);
   }
 
