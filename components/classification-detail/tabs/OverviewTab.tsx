@@ -291,7 +291,7 @@ export const OverviewTab = ({
                       id="onboarding-detail-share"
                       className="btn btn-sm btn-outline gap-1.5 h-9"
                       onClick={() => {
-                        trackEvent(MixpanelEvent.CLASSIFICATION_SHARED, {
+                        trackEvent(MixpanelEvent.CLASSIFICATION_SHARE_OPENED, {
                           classification_id: classificationRecord.id,
                         });
                         setShowShareModal(true);

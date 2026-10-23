@@ -113,6 +113,12 @@ export function HeroClassifyInput({
         } = await canCreateClassification(user);
 
         if (!allowed) {
+          trackEvent(MixpanelEvent.CLASSIFICATION_BLOCKED, {
+            block_reason: blockReason,
+            is_anonymous: !user,
+            source: "cta",
+            entry_point: entryPoint,
+          });
           if (blockReason === "anonymous_limit_reached") {
             setSignUpGateArticleDescription(text.trim());
             setShowSignUpGate(true);
@@ -130,13 +136,10 @@ export function HeroClassifyInput({
 
         if (!user) {
           trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+            classification_id: newId,
             item: text,
             is_anonymous: true,
-            source: "cta",
-            entry_point: entryPoint,
-          });
-          trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_STARTED, {
-            classification_id: newId,
+            entry_mode: "product_description",
             source: "cta",
             entry_point: entryPoint,
           });
@@ -145,7 +148,10 @@ export function HeroClassifyInput({
           const isTrialUserWithinLimit =
             !isPayingUser && !isOnTeam && count < NUM_FREE_CLASSIFICATIONS;
           trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+            classification_id: newId,
             item: text,
+            is_anonymous: false,
+            entry_mode: "product_description",
             is_paying_user: isPayingUser,
             is_team_member: isOnTeam,
             is_trial_user: isTrialUserWithinLimit,

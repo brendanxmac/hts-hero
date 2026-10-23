@@ -34,11 +34,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       } = await supabase.auth.getUser();
 
       if (error) {
-        // "Auth session missing" just means no one is logged in — not a real error
+        // "Auth session missing" just means no one is logged in — not a real error. Keep Mixpanel's
+        // anonymous id (no reset): resetting here gave every logged-out page load a new "user",
+        // and broke the merge of a visitor's history into their account when they sign up
         if (error.message?.includes("Auth session missing")) {
           setUser(null);
           setError(null);
-          resetUser();
           registerMixpanelSuperProperties({ is_anonymous: true });
           return;
         }
@@ -49,13 +50,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setError(null);
 
       if (user) {
+        // Links this browser's anonymous events (before sign-up or sign-in) to the account
         identifyUser(user.id, {
           email: user.email,
+          $email: user.email, // Mixpanel's own field: shows the person by email in reports
           created_at: user.created_at,
         });
         registerMixpanelSuperProperties({ is_anonymous: false });
       } else {
-        resetUser();
         registerMixpanelSuperProperties({ is_anonymous: true });
       }
     } catch (err) {

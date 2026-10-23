@@ -152,7 +152,7 @@ export const CalculatorWorkspace = ({
   const ownTab: ResultsView = f.view === "compare" ? "compare" : localTab;
   const tab: ResultsView = viewOf(hostTab ?? ownTab);
   useEffect(() => {
-    if (searchParams.get("view") === "analysis") f.changeView("compare");
+    if (searchParams.get("view") === "analysis") f.changeView("compare", true);
     if (searchParams.get("view") === "adcvd") showAdcvd();
     // Once, on arrival
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -212,10 +212,13 @@ export const CalculatorWorkspace = ({
     const picks = provenPicks(product, imports, 2);
     autoPicked.current.set(pickKey, picks);
     if (picks.length) {
-      f.changeCountries([
-        ...f.countries,
-        ...Countries.filter((c) => picks.includes(c.code)).sort((a, b) => picks.indexOf(a.code) - picks.indexOf(b.code)),
-      ]);
+      f.changeCountries(
+        [
+          ...f.countries,
+          ...Countries.filter((c) => picks.includes(c.code)).sort((a, b) => picks.indexOf(a.code) - picks.indexOf(b.code)),
+        ],
+        true
+      );
     }
     // When Compare opens on a product, or its figures arrive
     // eslint-disable-next-line react-hooks/exhaustive-deps

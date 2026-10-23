@@ -28,6 +28,7 @@ interface Props {
 const Calculator = ({ element, country }: { element: HtsElement; country: Country }) => {
   const f = useTariffFinder({
     syncAddress: false,
+    surface: "classification",
     initial: { element, country, customsValue: 10000, quantity: 1000, entryDate: todayIso(), transportMode: "ocean" },
   });
   return (

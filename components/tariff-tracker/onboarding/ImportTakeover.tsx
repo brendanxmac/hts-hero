@@ -283,12 +283,14 @@ export const ImportTakeover = () => {
   const add = (products: NewProduct[], method: AddMethod) => {
     if (!products.length) return;
     const firstImports = realCount === 0;
-    addProducts(products, SOURCES[method]);
+    const { added } = addProducts(products, SOURCES[method]);
     setAddedKeys(products.map(itemKey));
     setTakeoverStep("done");
+    // imports: how many were new to the catalog (not the rows submitted, which can repeat ones it has)
     trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_COMPLETED, {
       method,
-      imports: products.length,
+      imports: added,
+      submitted: products.length,
       first: firstImports,
     });
     // The catalog saves a moment later (catalogSync.ts) and its first real imports start the
@@ -373,7 +375,8 @@ export const ImportTakeover = () => {
               const { added } = addProducts(products, "csv");
               trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
                 step: "finish_tracked",
-                imports: products.length,
+                imports: added,
+                submitted: products.length,
               });
               toast.success(
                 added === 0

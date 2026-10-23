@@ -90,8 +90,12 @@ export const TeamsConnect = ({ webhook, onWebhookChange, onConnect, saving }: { 
 
       {editing && (
         <>
-          <details className="group" onToggle={(e) => (e.currentTarget as HTMLDetailsElement).open && trackEvent(MixpanelEvent.TARIFF_TRACKER_TEAMS_STEPS_OPENED)} open={!connected}>
-            <summary className={`${ui.link} cursor-pointer text-xs`}>How to get the URL (about a minute)</summary>
+          {/* Counted on the user's click: the toggle event also fires when it renders already open */}
+          <details className="group" open={!connected}>
+            <summary
+              className={`${ui.link} cursor-pointer text-xs`}
+              onClick={(e) => !(e.currentTarget.parentElement as HTMLDetailsElement).open && trackEvent(MixpanelEvent.TARIFF_TRACKER_TEAMS_STEPS_OPENED)}
+            >How to get the URL (about a minute)</summary>
             <ol className="mt-2 flex list-decimal flex-col gap-1.5 pl-4 text-xs leading-snug text-base-content/70">
               {STEPS.map((step, i) => (
                 <li key={i}>{step}</li>

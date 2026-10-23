@@ -21,7 +21,7 @@ import {
 import { useHts } from "../../contexts/HtsContext";
 import { openUsitcHtsFileInNewTab } from "@/libs/usitc-hts-file-url";
 import { isAboveSixDigits } from "../../libs/hts-code";
-import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
+import { MixpanelEvent, trackEvent, trackEventOnce } from "../../libs/mixpanel";
 import {
   Product,
   userHasActivePurchaseForProduct,
@@ -67,19 +67,14 @@ export const VerticalCandidateElement = ({
       ? await userHasActivePurchaseForProduct(user.id, Product.CLASSIFY)
       : false;
 
-    trackEvent(MixpanelEvent.CLASSIFICATION_COMPLETED, {
+    // Once per classification: picking a different final code later isn't a new completion
+    trackEventOnce(`classification-completed:${classificationId}`, MixpanelEvent.CLASSIFICATION_COMPLETED, {
+      classification_id: classificationId,
       hts_code: element.htsno,
       item: classification.articleDescription,
       is_paying_user: isPayingUser,
       is_anonymous: !user,
     });
-    if (!user) {
-      trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_COMPLETED, {
-        classification_id: classificationId,
-        hts_code: element.htsno,
-        item: classification.articleDescription,
-      });
-    }
   };
 
   const handleSelect = () => {

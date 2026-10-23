@@ -160,7 +160,8 @@ export const TrialDialog = () => {
     const timer = setTimeout(() => {
       markSeen(key);
       setOpen(true);
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature: "plan", from: ended ? "trial-ended" : "trial-ending", plan: access.kind, daysLeft });
+      // Opened by the Tracker, not the user (trigger), so "Keep everything" counted after it isn't a second ask
+      trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature: "plan", from: ended ? "trial-ended" : "trial-ending", plan: access.kind, daysLeft, trigger: "auto" });
     }, 1500);
     return () => clearTimeout(timer);
   }, [loading, catalogLoading, signedIn, ending, ended, items.length, key, access.preview]); // eslint-disable-line react-hooks/exhaustive-deps

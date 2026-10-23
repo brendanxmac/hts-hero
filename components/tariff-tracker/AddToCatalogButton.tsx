@@ -54,7 +54,7 @@ export const AddToCatalogButton = ({
         className={`${ui.button({ size: "sm" })} text-success`}
         title="Open it in the Tariff Tracker"
         onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-          trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCT_OPENED, { from: source });
+          // "Product Opened" is counted by the product view it opens
           if (!onOpen || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
           e.preventDefault();
           onOpen(key);

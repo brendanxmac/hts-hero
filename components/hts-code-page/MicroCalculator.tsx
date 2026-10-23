@@ -89,6 +89,7 @@ export const MicroCalculator = ({
       country_code: shown.country,
       surface: surface(),
       country_source: "user",
+      trigger: "user",
     });
     // surface() only reads where the page is
     // eslint-disable-next-line react-hooks/exhaustive-deps

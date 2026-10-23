@@ -21,7 +21,7 @@ const CALCULATOR_TAB = { tab: "calculator" };
 const CALCULATOR = sectionBySlug("calculator")!;
 
 const Calculator = ({ active }: { active: boolean }) => {
-  const f = useTariffFinder({ path: TRACKER_PATH, extraParams: CALCULATOR_TAB, syncAddress: active });
+  const f = useTariffFinder({ path: TRACKER_PATH, extraParams: CALCULATOR_TAB, syncAddress: active, surface: "tracker" });
   const nav = useTrackerNav();
   const { products } = useTracker();
   // This import's own Savings tab when it's one of the user's imports; the Savings section if not

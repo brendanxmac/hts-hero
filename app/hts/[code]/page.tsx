@@ -9,6 +9,7 @@ import {
 } from "../../../libs/hts-server";
 import { HtsElement } from "../../../interfaces/hts";
 import { HtsCodePage as HtsCodePageContent } from "@/components/hts-code-page";
+import TrackCodePageView from "@/components/hts-code-page/TrackCodePageView";
 import config from "@/config";
 import {
   describeTotal,
@@ -183,6 +184,7 @@ export default async function HtsCodePage(props: HtsCodePageProps) {
 
   return (
     <main className="w-full min-h-screen">
+      <TrackCodePageView htsCode={element.htsno} chapter={String(element.chapter)} digits={element.htsno.replace(/\D/g, "").length} />
       <HtsCodePageContent
         element={element}
         productName={productName}

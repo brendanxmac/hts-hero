@@ -3,7 +3,7 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useUser } from "@/contexts/UserContext";
-import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+import { MixpanelEvent, registerMixpanelSuperProperties, trackEvent, trackEventOnce } from "@/libs/mixpanel";
 import {
   ANONYMOUS_ACCESS,
   canSpendCheck,
@@ -72,6 +72,21 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     };
   }, [userId, userLoading, load]);
 
+  // On every event after this: the account's Tracker plan, to split any report by plan. And the
+  // trial's start, counted once when the access shows it began in the last hour (the database
+  // starts it with the first real imports, wherever they were added)
+  useEffect(() => {
+    if (!userId || loading || access.preview) return;
+    registerMixpanelSuperProperties({ tracker_plan: access.kind, is_paying: isPaid(access) });
+    if (!access.trialEndsAt) return;
+    const started = new Date(access.trialEndsAt).getTime() - REVERSE_TRIAL.days * 24 * 60 * 60 * 1000;
+    if (Date.now() - started < 60 * 60 * 1000) {
+      trackEventOnce(`tracker-trial-started:${userId}`, MixpanelEvent.TARIFF_TRACKER_TRIAL_STARTED, {
+        trial_ends_at: access.trialEndsAt,
+      });
+    }
+  }, [userId, loading, access]);
+
   // Back from Stripe checkout (or a plan change): the webhook may land a moment after the redirect, so look twice
   useEffect(() => {
     if (!userId || typeof window === "undefined") return;
@@ -106,7 +121,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     const signedIn = Boolean(userId);
     const openUpgrade = (feature: PremiumFeature) => {
       setDialog({ feature, open: true });
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature, plan: access.kind });
+      trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature, plan: access.kind, trigger: "user" });
     };
     const toSignup = () => (window.location.href = signupHref(currentPath()));
 

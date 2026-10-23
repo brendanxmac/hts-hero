@@ -227,19 +227,24 @@ const Layout = ({
     if (!trail) return;
     directlyOpened.current = true;
     setSearchValue("");
-    navigate(trail, "url_code", { hts_code: match.htsno || null });
+    // Counted only for a ?code= link; opening on the host's code (the calculator's) isn't a move
+    navigate(trail, "url_code", { hts_code: match.htsno || null }, true, !startAt);
     // Once the schedule is in
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeParam, htsElements, trailTo]);
 
-  // Analytics for each search
+  // Analytics for each search: once the schedule is in (no empty results before it), and once
+  // per query (going back to the Codes tab doesn't search again)
+  const lastTrackedQuery = useRef<string | null>(null);
   useEffect(() => {
-    if (!query || tab !== "codes") return;
+    if (!query || tab !== "codes" || !fuse || lastTrackedQuery.current === query) return;
+    lastTrackedQuery.current = query;
     trackEvent(MixpanelEvent.EXPLORER_COMPLETED_CODE_SEARCH, {
       explorer_surface: explorerSurface,
       query_length: query.length,
       result_count: results.length,
       from_url_code_param: Boolean(codeParam) && query === codeParam?.trim(),
+      from_url_search_param: query === searchParams.get("search")?.trim(),
     });
     // Once per search
     // eslint-disable-next-line react-hooks/exhaustive-deps

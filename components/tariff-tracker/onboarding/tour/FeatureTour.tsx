@@ -132,10 +132,13 @@ export const FeatureTour = () => {
   const [playing, setPlaying] = useState<TourStep | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
 
-  // Opening starts at the step asked for
+  // Opening starts at the step asked for. Until that step is on, the one left from the last time
+  // isn't counted as seen
+  const startingAt = useRef<number | null>(null);
   useEffect(() => {
     if (!open) return;
-    setAt(Math.max(0, steps.findIndex((s) => s.id === start)));
+    startingAt.current = Math.max(0, steps.findIndex((s) => s.id === start));
+    setAt(startingAt.current);
     trackEvent(MixpanelEvent.TARIFF_TRACKER_TOUR_SHOWN, { from, start });
   }, [open]);
 
@@ -145,6 +148,8 @@ export const FeatureTour = () => {
   // Each step starts at the top, its title focused for screen readers
   useEffect(() => {
     if (!open || !step) return;
+    if (startingAt.current !== null && at !== startingAt.current) return;
+    startingAt.current = null;
     scroller.current?.scrollTo({ top: 0 });
     const timer = setTimeout(() => document.getElementById("tt-tour-title")?.focus({ preventScroll: true }), 50);
     trackEvent(MixpanelEvent.TARIFF_TRACKER_TOUR_STEP, { step: step.id, index: at + 1, of: steps.length });
