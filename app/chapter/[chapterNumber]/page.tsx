@@ -11,6 +11,7 @@ import { HtsPageShell } from "../../../components/hts-page/HtsPageShell";
 import { PlaybookCard } from "@/components/hts-code-page/PlaybookCard";
 import { CtaGrid } from "../../../components/hts-page/CtaGrid";
 import { ChildrenList } from "../../../components/hts-page/ChildrenList";
+import { htsChapterPdfUrl } from "../../../libs/official-sources";
 
 interface ChapterPageProps {
   params: Promise<{ chapterNumber: string }>;
@@ -143,6 +144,13 @@ function ChapterContent({
             )}
             .
           </h3>
+
+          <p className="text-xs text-base-content/60">
+            Source: USITC,{" "}
+            <a href={htsChapterPdfUrl(chapter.number)} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+              Harmonized Tariff Schedule, Chapter {chapter.number} with its notes (PDF)
+            </a>
+          </p>
 
           {siblingChapters.length > 0 && (
             <div className="mt-2">

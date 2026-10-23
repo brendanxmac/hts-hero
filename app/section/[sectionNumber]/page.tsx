@@ -8,6 +8,7 @@ import { HtsPageShell } from "../../../components/hts-page/HtsPageShell";
 import { PlaybookCard } from "@/components/hts-code-page/PlaybookCard";
 import { CtaGrid } from "../../../components/hts-page/CtaGrid";
 import { ChildrenList } from "../../../components/hts-page/ChildrenList";
+import { htsChapterPdfUrl } from "../../../libs/official-sources";
 
 interface SectionPageProps {
   params: Promise<{ sectionNumber: string }>;
@@ -113,6 +114,15 @@ function SectionContent({ section, siblings }: { section: HtsSection; siblings: 
             {section.chapters.length > 4 && <>, and {section.chapters.length - 4} more</>}
             ) in the Harmonized Tariff Schedule.
           </h3>
+
+          {section.chapters[0] && (
+            <p className="text-xs text-base-content/60">
+              Source: USITC,{" "}
+              <a href={htsChapterPdfUrl(section.chapters[0].number)} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                Harmonized Tariff Schedule, Section {roman} notes, printed with Chapter {section.chapters[0].number} (PDF)
+              </a>
+            </p>
+          )}
 
           {siblings.length > 0 && (
             <div className="mt-2">

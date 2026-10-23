@@ -51,7 +51,7 @@ export const ROUNDUP_FAQS: Faq[] = [
   {
     question: "Is there a free US tariff calculator?",
     answer:
-      "Yes, several. HTS Hero is free to start with no sign-up and shows the full line-by-line breakdown, and GingerControl, Flexport, Gateway Lines, Airlift USA and AMZ Prep all offer free calculators with different limits and levels of detail.",
+      "Yes, several. HTS Hero is free to start with no sign-up and shows the full line-by-line breakdown, and Flexport, Gateway Lines, Airlift USA and AMZ Prep offer free calculators with different limits and levels of detail. GingerControl's calculator is part of a paid app.",
   },
   {
     question: "Does the US government have an official tariff calculator?",
@@ -66,6 +66,6 @@ export const ROUNDUP_FAQS: Faq[] = [
   {
     question: "Can a tariff calculator tell me what I owed on a past entry?",
     answer:
-      "Only if it calculates by entry date. HTS Hero uses the HTS revision in force on the date you pick and shows how the duty changed over time. Flexport's simulator keeps rates back to January 1, 2025, and GingerControl and Airlift USA's free simulator also accept an entry date.",
+      "Only if it calculates by entry date. HTS Hero uses the HTS revision in force on the date you pick and shows how the duty changed over time. Flexport's simulator keeps rates back to January 1, 2025, and Airlift USA's free simulator and GingerControl's paid app also accept an entry date.",
   },
 ];

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import config from "@/config";
 import { FEATURES } from "@/libs/compare/features";
 import type { Tool } from "@/libs/compare/types";
 import * as ui from "@/components/ui/styles";
@@ -72,8 +73,14 @@ export function FeatureMatrix({
         </table>
       </div>
       <div className={`${ui.cardFooter} ${ui.caption}`}>
-        Checked against each tool&apos;s public website on {formatPostDate(checkedAt)}. &ldquo;Not found&rdquo; means we
-        couldn&apos;t find it on the vendor&apos;s public pages, so we don&apos;t count it either way.
+        Checked against each tool&apos;s public website on {formatPostDate(checkedAt)}; each value for another tool links the vendor page
+        that shows it. &ldquo;No&rdquo; means the vendor&apos;s own pages say it isn&apos;t offered. &ldquo;Not found&rdquo;
+        means we couldn&apos;t find it on the pages listed, so we don&apos;t count it either way. Something out of date?
+        Email{" "}
+        <a href={`mailto:${config.resend.supportEmail}`} className={ui.link}>
+          {config.resend.supportEmail}
+        </a>{" "}
+        and we&apos;ll recheck it.
       </div>
     </div>
   );

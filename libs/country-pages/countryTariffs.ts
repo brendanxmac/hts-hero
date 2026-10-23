@@ -5,6 +5,7 @@ import type { Tariff } from "@/tariffs/engine-v2/types";
 import type { HtsElement } from "@/interfaces/hts";
 import { findRateElement, preferenceName } from "@/libs/hts-duty-summary";
 import { getHtsElementByCode, getHtsElementParentsServer } from "@/libs/hts-server";
+import { sourceDocuments, type OfficialSource } from "@/libs/official-sources";
 
 // What a country page says about the tariffs on its goods, worked out from the engine's rules
 // for today, so the page matches the calculator on every build.
@@ -17,6 +18,8 @@ export interface ProgramSummary {
   // Every product of the country, or only listed products
   allProducts: boolean;
   headings: string[];
+  // The proclamations and notices behind its headings
+  sources: OfficialSource[];
 }
 
 const AUTHORITY_ORDER = ["301", "232", "338", "201", "122", "IEEPA", "deal", "other"];
@@ -57,6 +60,7 @@ const summarize = (tariffs: Tariff[], programName: (id: string) => string) => {
     rates: describeRates(group),
     allProducts: group.some((t) => t.scope.codes === "all"),
     headings: Array.from(new Set(group.map((t) => t.code))).sort(),
+    sources: sourceDocuments(group.map((t) => t.source)),
   }));
 };
 
@@ -64,7 +68,7 @@ export interface CountryTariffs {
   // Programs aimed at this country by name (Section 301 China, forced labor, Brazil, Canada 338)
   programs: ProgramSummary[];
   // The country's own Section 232 headings (deal and reduced rates), each with what it covers
-  dealRates: { code: string; name: string; rate: string }[];
+  dealRates: { code: string; name: string; rate: string; sources: OfficialSource[] }[];
 }
 
 // The Chapter 99 tariffs written for this country on `asOf`. Section 232 applies to every
@@ -98,6 +102,7 @@ export const countryTariffs = (code: string, asOf: string): CountryTariffs => {
           t.rate.kind === "topUpTo"
             ? `${formatPct(Number(t.rate.pct))} including the base rate`
             : `+${formatPct(Number(t.rate.pct))}`,
+        sources: sourceDocuments([t.source]),
       }))
       .sort((a, b) => a.code.localeCompare(b.code)),
   };

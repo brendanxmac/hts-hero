@@ -3,7 +3,7 @@ import { HtsElement } from "../interfaces/hts";
 import { calculate } from "../tariffs/engine-v2/calculate";
 import { AllRules } from "../tariffs/engine-v2/data";
 import { getLatestVerifiedRevision, HtsRevision } from "../tariffs/engine-v2/revisions";
-import { DutyColumn, IsoDate } from "../tariffs/engine-v2/types";
+import { DutyColumn, IsoDate, Source } from "../tariffs/engine-v2/types";
 
 // Server-side duty summaries for the /hts/[code] pages: what an import under the code pays
 // from the largest sources of US imports, from the same engine as the Tariff Calculator.
@@ -24,6 +24,7 @@ export interface AdditionalDuty {
   program: string; // "Section 301 – China"
   name: string;
   ratePct: number;
+  source?: Source; // the legal document behind the heading, cited on the page
 }
 
 export interface CountryDuty {
@@ -126,6 +127,7 @@ export const getHtsDutySummary = (
         program: programName(l.program),
         name: l.name,
         ratePct: l.ratePct ?? 0,
+        source: l.source,
       }));
     const additionalAmount = result.lines
       .filter((l) => l.status === "applies")

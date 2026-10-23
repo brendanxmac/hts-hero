@@ -25,6 +25,7 @@ import { OnThisPage } from "./OnThisPage";
 import { PlaybookCard } from "./PlaybookCard";
 import { RelatedCodes } from "./RelatedCodes";
 import { RelatedRulings } from "./RelatedRulings";
+import { Sources } from "./Sources";
 import { StructuredData } from "./StructuredData";
 import { CodeUpdates } from "@/components/tariff-updates/CodeUpdates";
 import { CodeCases } from "@/components/adcvd/CodeCases";
@@ -93,6 +94,7 @@ export function HtsCodePage({
     { id: "notes", label: "Relevant Notes", show: !!(sectionChapter && element.chapter) },
     { id: "rulings", label: "Related CROSS Rulings", show: !!element.htsno },
     { id: "faq", label: "FAQ", show: true },
+    { id: "sources", label: "Sources", show: !!element.htsno },
   ].filter((s) => s.show);
 
   return (
@@ -184,6 +186,16 @@ export function HtsCodePage({
           {element.htsno && <RelatedRulings htsno={element.htsno} />}
 
           <HtsFaq htsno={element.htsno} faqs={faqs} />
+
+          {element.htsno && (
+            <Sources
+              htsno={element.htsno}
+              chapter={element.chapter}
+              sectionNumber={sectionChapter?.sectionNumber}
+              summaries={[summary, importDuty]}
+              hasImports={!!imports}
+            />
+          )}
         </div>
       </div>
 

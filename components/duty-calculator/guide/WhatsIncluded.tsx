@@ -23,6 +23,17 @@ export const WhatsIncluded = ({ asOf }: { asOf: string }) => (
             {item.title}
           </h4>
           <p className="mt-2 text-sm leading-relaxed text-slate-600 skin:text-base-content/70">{item.text}</p>
+          <p className={`${mk.small} mt-2`}>
+            Source:{" "}
+            {item.sources.map((source, i) => (
+              <span key={source.url}>
+                {i > 0 && " · "}
+                <a href={source.url} target="_blank" rel="noopener noreferrer" className={mk.link}>
+                  {source.label}
+                </a>
+              </span>
+            ))}
+          </p>
           {item.items && (
             <ul className="mt-4 flex flex-wrap gap-2">
               {item.items.map((program) => (
