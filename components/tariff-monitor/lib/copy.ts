@@ -5,7 +5,7 @@ import {
   formatPrice,
   perImportPrice,
 } from "@/components/pricing-calculator/lib/pricing";
-import { AUTO_AUDITING, COMING_LOWER, FREE_FOREVER_SHORT, SAVINGS_AUDITS_COMING, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
+import { AUTO_AUDITING, FREE_FOREVER_SHORT, SAVINGS_AUDITS_INCLUDED, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 
 // The monitoring page's fixed copy. The FAQ is shown on the page and in its FAQPage schema, so
 // the two always match. Prices come from the price list (PRICING.md).
@@ -48,8 +48,7 @@ export const CHANNELS = [
   { name: "Microsoft Teams", detail: "Posted to the channel your team picks", short: "Your team's channel" },
 ];
 
-// coming: not live yet (libs/tariff-tracker/features.ts), shown with the SAVINGS_AUDITS_LABEL chip
-export const FEATURES: { title: string; text: string; href?: string; linkText?: string; coming?: boolean }[] = [
+export const FEATURES: { title: string; text: string; href?: string; linkText?: string }[] = [
   {
     title: "Tariff Alerts by HTS Code",
     text: "Alerts only for changes that touch your codes and countries, with the old rate, the new rate, the change in % and the date it takes effect.",
@@ -88,13 +87,11 @@ export const FEATURES: { title: string; text: string; href?: string; linkText?: 
   },
   {
     title: SAVINGS_DETECTION.title,
-    text: `${SAVINGS_DETECTION.text} Included in the trial and every plan at no extra cost when it launches.`,
-    coming: true,
+    text: `${SAVINGS_DETECTION.text} Included in the trial and every plan at no extra cost.`,
   },
   {
     title: AUTO_AUDITING.title,
-    text: `${AUTO_AUDITING.text} Included in the trial and every plan at no extra cost when it launches.`,
-    coming: true,
+    text: `${AUTO_AUDITING.text} Included in the trial and every plan at no extra cost.`,
   },
 ];
 
@@ -159,7 +156,7 @@ export const MONITOR_FAQS = [
   },
   {
     question: "How much does the Tariff Tracker cost?",
-    answer: `Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, with no credit card and nothing to start (the 14 days begin when you add your imports): alerts (AD/CVD alerts included), impact checks, Insights, Tariff News, rate history and exports, on up to ${REVERSE_TRIAL.imports} imports (an import is one HTS code from one country of origin). After the trial, ${FREE_FOREVER_SHORT} stay free, forever, and so do your whole catalog with its current duty, rate history and exports. AD/CVD checks on any import stay free with your account too. Nothing is deleted. To keep alerts (AD/CVD alerts included) and impact checks on your imports, paid plans start at ${from} a month to track up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly. Per import, that's ${TRACKER_TIERS.map((t) => `${formatPrice(perImportPrice(t))} on the ${t.maxPairs}-import plan`).join(", ")}: as low as ${lowestPerImport} per import, per month. ${SAVINGS_AUDITS_COMING}`,
+    answer: `Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, with no credit card and nothing to start (the 14 days begin when you add your imports): alerts (AD/CVD alerts included), impact checks, Insights, Tariff News, rate history and exports, on up to ${REVERSE_TRIAL.imports} imports (an import is one HTS code from one country of origin). After the trial, ${FREE_FOREVER_SHORT} stay free, forever, and so do your whole catalog with its current duty, rate history and exports. AD/CVD checks on any import stay free with your account too. Nothing is deleted. To keep alerts (AD/CVD alerts included) and impact checks on your imports, paid plans start at ${from} a month to track up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly. Per import, that's ${TRACKER_TIERS.map((t) => `${formatPrice(perImportPrice(t))} on the ${t.maxPairs}-import plan`).join(", ")}: as low as ${lowestPerImport} per import, per month. ${SAVINGS_AUDITS_INCLUDED}`,
   },
   {
     question: "What happens when the free trial ends?",
@@ -167,7 +164,7 @@ export const MONITOR_FAQS = [
   },
   {
     question: "Does the Tariff Tracker find savings or audit my entries?",
-    answer: `Not yet: automatic savings detection and automatic auditing are ${COMING_LOWER}. Savings detection will check every import for trade programs, exemptions and lower-duty origins you may qualify for. Auditing will check every entry against the duty in force on its date and flag possible over- and underpayments, for you and your broker to review. Both will be included in the trial and every paid plan at no extra cost.`,
+    answer: "Yes: automatic savings detection checks every import for trade programs, exemptions and lower-duty origins you may qualify for, and automatic auditing checks every entry against the duty in force on its date and flags possible over- and underpayments, for you and your broker to review. Both are included in the trial and every paid plan at no extra cost.",
   },
   {
     question: "What's the difference between the Tariff Calculator and the Tariff Tracker?",

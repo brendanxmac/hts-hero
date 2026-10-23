@@ -16,7 +16,6 @@ import {
 } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
 import { mono } from "@/components/ui/font";
-import { SAVINGS_AUDITS_LABEL } from "@/libs/tariff-tracker/features";
 import { delay } from "../parts";
 import { Cursor, MockTitle, MockWindow, useBeats } from "./mock";
 
@@ -491,7 +490,7 @@ export const AdcvdVisual = ({ run }: Props) => {
   );
 };
 
-// ── 5. Check for savings (coming soon) ───────────────────────────────────────────────────────────
+// ── 5. Check for savings ───────────────────────────────────────────────────────────────────────
 const SAVINGS = [
   { name: "Centrifugal pumps", flag: "🇲🇽", what: "Trade program: may qualify for USMCA", from: "25.0%", to: "0.0%" },
   { name: "Hand valves", flag: "🇻🇳", what: "Cheaper country of origin worth checking", from: "24.0%", to: "10.0%" },
@@ -502,7 +501,7 @@ export const SavingsVisual = ({ run }: Props) => {
   const b = useBeats([700, 1500, 2200, 2900, 3800], run);
   return (
     <MockWindow tab="savings">
-      <MockTitle title="Savings" action={<span className={tt.chip("warning")}>{SAVINGS_AUDITS_LABEL}</span>} />
+      <MockTitle title="Savings" />
       <div className="relative mb-2.5 overflow-hidden rounded-lg border border-base-300 bg-base-100 p-3">
         <span className="flex items-center gap-1.5 text-[0.65rem] font-semibold text-base-content">
           <SparklesIcon className="h-3.5 w-3.5 text-primary" />
@@ -538,7 +537,7 @@ export const SavingsVisual = ({ run }: Props) => {
   );
 };
 
-// ── 6. Audit your entries (coming soon) ──────────────────────────────────────────────────────────
+// ── 6. Audit your entries ──────────────────────────────────────────────────────────────────────
 const ENTRIES = [
   { id: "ABC-1234567-8", date: "Mar 4", paid: "25.0%", due: "25.0%", verdict: "ok" as const },
   { id: "ABC-1234612-0", date: "Apr 18", paid: "35.0%", due: "10.0%", verdict: "over" as const },
@@ -551,7 +550,7 @@ export const AuditsVisual = ({ run }: Props) => {
   const ECOLS = "grid-cols-[minmax(0,1.3fr)_auto_auto_minmax(0,1.3fr)]";
   return (
     <MockWindow tab="entries">
-      <MockTitle title="Audits" action={<span className={tt.chip("warning")}>{SAVINGS_AUDITS_LABEL}</span>} />
+      <MockTitle title="Audits" action={<span className={tt.chip("warning")}>Beta</span>} />
       <div className="mb-2 flex items-center gap-2 rounded-lg border border-success/30 bg-success/5 px-3 py-2">
         <ClipboardDocumentListIcon className="h-3.5 w-3.5 text-success" />
         <span className="flex-1 text-[0.62rem] font-semibold text-base-content">entry-summaries-q2.pdf</span>

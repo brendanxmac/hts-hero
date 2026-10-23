@@ -11,8 +11,9 @@ order; tick items as they land, and add new ones as they come up.
 
 - [x] **Deploy day: Wed, Oct 21, 2026.** `freshStartOn` and `tracker_onboarding.sql`'s backfill are
       both `2026-10-21`. If the deploy slips past today, move both to the real day.
-- [ ] **The "Coming Oct 2026" label** (`SAVINGS_AUDITS_LABEL`, `libs/tariff-tracker/features.ts`)
-      leaves only Oct 22–31: change it now if savings and audits won't ship by Oct 31.
+- [x] **The "Coming Oct 2026" label** (`SAVINGS_AUDITS_LABEL`, `libs/tariff-tracker/features.ts`)
+      leaves only Oct 22–31: change it now if savings and audits won't ship by Oct 31. _Done
+      2026-10-22: savings and audits are live and the label is gone._
 - [x] **Node 22 for this release:** `package.json` `engines.node` = `22.x`, which Vercel uses over
       the dashboard setting. `master` keeps its current Node until the merge, and the release
       branch's preview builds on 22 (Next 16 won't build on Node 18). After launch, set the
@@ -30,8 +31,7 @@ order; tick items as they land, and add new ones as they come up.
       `components/pricing-calculator/lib/pricing.ts` (now `2026-10-21`). Existing accounts get 14 days
       from it; a date before the deploy shortens their trial.
 - [ ] **Confirm the launch-pricing deadline**: `LAUNCH_PRICING` (now Fri, Nov 13, 2026). Savings
-      detection and auditing are sold everywhere as "Coming Oct 2026" (`SAVINGS_AUDITS_LABEL`); if
-      they slip, change the label.
+      detection and auditing are live (2026-10-22) and sold as included.
 - [ ] **`tracker_onboarding.sql` is the last migration** (step 2; added 2026-10-20). It adds
       `tracker_onboarding` (sign-up source, first Tracker visit, skip reason, trial start) and the
       trigger on `tracker_catalogs` that starts the 14-day trial at the first real (non-example)
@@ -216,9 +216,10 @@ emails). These need you:
 
 **On a date**
 
-- [ ] **When savings and audits ship (October):** flip `SAVINGS_ENABLED` / `AUDITS_ENABLED`
+- [x] **When savings and audits ship (October):** flip `SAVINGS_ENABLED` / `AUDITS_ENABLED`
       (`libs/tariff-tracker/features.ts`), then remove the "Coming Oct 2026" labels
-      (search for `SAVINGS_AUDITS_LABEL`).
+      (search for `SAVINGS_AUDITS_LABEL`). _Done 2026-10-22: the flags and labels are removed;
+      `NEXT_PUBLIC_DEMO_SAVINGS_AUDITS` is no longer read and can come out of every env._
 - [ ] **Before Nov 13 (`LAUNCH_PRICING.endsAt`).** When it passes, the countdown and the struck-through
       prices disappear on their own, but **prices don't change on their own**: update `TRACKER_TIERS`
       and the Stripe prices when savings and audits ship, or move the date.
@@ -240,8 +241,9 @@ It changes only what you see (not what your alerts cover), stays on while you mo
 
 ## Within two weeks: savings, audits and the price change
 
-- [ ] **Automatic entry auditing**, then switch savings and audits back on
-      (`libs/tariff-tracker/features.ts`; `MVP_TRIM.md` lists every change to put back).
+- [x] **Automatic entry auditing**, then switch savings and audits back on
+      (`libs/tariff-tracker/features.ts`; `MVP_TRIM.md` lists every change to put back). _Switched
+      on 2026-10-22._
 - [ ] **New prices** for new subscribers ($19 / $49 / $149 / $249) when `LAUNCH_PRICING` ends;
       launch subscribers keep theirs. Create the new Stripe prices with the same lookup keys
       ("transfer lookup key").

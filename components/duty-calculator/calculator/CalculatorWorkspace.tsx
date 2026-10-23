@@ -59,7 +59,6 @@ import { ArrowLink } from "./ArrowLink";
 import { RefundCheckCard } from "./RefundCheckCard";
 import { useTrackImport } from "../landing/TrackImportButton";
 import { ResultsSkeleton } from "./ResultsSkeleton";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { useStickyColumn } from "./useStickyColumn";
 
 // The Tariff Calculator, as on /duty-calculator, the country pages and the Tariff Tracker's
@@ -309,7 +308,7 @@ export const CalculatorWorkspace = ({
     <button
       type="button"
       className={`${ui.button({ variant: "primary", size: "sm" })} relative`}
-      onClick={() => track.start("overview", insightsPitch(overview, { news: newsCount, adcvd: adcvdFlagged }))}
+      onClick={() => track.getStarted(insightsPitch)}
     >
       {urgent ? (
         <span className="relative flex h-2 w-2" aria-hidden>
@@ -320,7 +319,7 @@ export const CalculatorWorkspace = ({
       ) : (
         <BellAlertIcon className="h-4 w-4" aria-hidden />
       )}
-      Get Tariff Alerts, Savings, & Audits
+      Get Tariff Alerts, Audits, & Savings
       <ArrowRightIcon className="h-4 w-4" aria-hidden />
     </button>
   );
@@ -586,7 +585,7 @@ export const CalculatorWorkspace = ({
                   page={page}
                   action={page === "calculator" && track ? <ArrowLink onClick={() => track.start("overview")}>Get alerts for this import</ArrowLink> : undefined}
                 />
-                {page === "calculator" && AUDITS_ENABLED && (
+                {page === "calculator" && (
                   <RefundCheckCard
                     history={f.history}
                     customsValue={f.customsValue}

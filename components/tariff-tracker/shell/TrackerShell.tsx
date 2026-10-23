@@ -72,14 +72,14 @@ const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSect
       <a
         {...props}
         id={`tt-tab-${section.slug}`}
-        title={section.comingSoon ? `${section.label} · Coming soon` : meta ? `${section.label} · ${meta.text}` : section.label}
+        title={meta ? `${section.label} · ${meta.text}` : section.label}
         aria-label={section.label}
         className={`relative flex h-10 w-10 items-center justify-center self-center rounded-xl transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
           active ? "bg-tt-side-active text-base-content" : "text-base-content/70 hover:bg-tt-side-active hover:text-base-content"
         } ${section.ready ? "" : "opacity-60"}`}
       >
         <section.Icon className="h-5 w-5" aria-hidden />
-        {!section.comingSoon && meta && meta.tone !== "neutral" && <span className={`absolute right-1.5 top-1.5 h-2 w-2 rounded-full ${DOTS[meta.tone]}`} aria-hidden />}
+        {meta && meta.tone !== "neutral" && <span className={`absolute right-1.5 top-1.5 h-2 w-2 rounded-full ${DOTS[meta.tone]}`} aria-hidden />}
       </a>
     );
   return (
@@ -92,9 +92,7 @@ const SidebarTab = ({ section, meta, locked, collapsed }: { section: TrackerSect
       {/* The section's icon, as in the collapsed sidebar; what's waiting shows on the right */}
       <section.Icon className={`h-[18px] w-[18px] shrink-0 ${active ? "text-base-content" : "text-base-content/60"}`} aria-hidden />
       <span className="flex-1 truncate">{section.label}</span>
-      {section.comingSoon ? (
-        <span className="rounded-full bg-tt-side-active px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-base-content/60">Soon</span>
-      ) : locked ? (
+      {locked ? (
         <LockClosedIcon className="h-3.5 w-3.5 text-base-content/60" aria-label="Paid plans" />
       ) : (
         meta && (

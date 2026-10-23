@@ -8,7 +8,6 @@ import * as tt from "@/components/ui/styles/tracker";
 import { TabBar } from "@/components/ui/TabBar";
 import { TrackedProduct } from "../report";
 import { ProductTab, ProductView } from "../sections";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { useInsights } from "../insights/InsightsContext";
 import { wholeDollars } from "../insights/teasers";
 import { AlertsToggle } from "./AlertsToggle";
@@ -61,14 +60,14 @@ export const ProductHeader = ({
   const adcvd = useAdcvdFlagged(entry.element.htsno, entry.country.code);
   const news = useNewsCount(entry.element.htsno, entry.country.code);
   // Each view, with what's waiting on it: AD/CVD on Duty (it's duty too), the changes and news on
-  // Changes, savings found (always "up to"); Savings and Audits marked until they launch
+  // Changes, savings found (always "up to"); Audits marked Beta
   const tabs: { id: ProductView; label: string; count?: number; badge?: string; badgeTone?: "success" | "warning" | "neutral" }[] = [
     { id: "overview", label: "Overview" },
     { id: "duty", label: "Duty", badge: adcvd ? "AD/CVD may apply" : undefined, badgeTone: "warning" },
     { id: "compare", label: "Compare" },
     { id: "changes", label: "Changes", count: historyChanges + (news ?? 0) || undefined },
-    { id: "savings", label: "Savings", badge: !SAVINGS_ENABLED ? "Soon" : saving > 0.005 ? `Up to ${wholeDollars(saving)}` : undefined, badgeTone: SAVINGS_ENABLED ? "success" : "neutral" },
-    { id: "audit", label: "Audits", badge: AUDITS_ENABLED ? "Beta" : "Soon", badgeTone: AUDITS_ENABLED ? "warning" : "neutral" },
+    { id: "savings", label: "Savings", badge: saving > 0.005 ? `Up to ${wholeDollars(saving)}` : undefined, badgeTone: "success" },
+    { id: "audit", label: "Audits", badge: "Beta", badgeTone: "warning" },
   ];
   return (
     <header className={`${tt.panel} flex flex-col`} aria-label={`${entry.element.htsno} from ${entry.country.name}`}>

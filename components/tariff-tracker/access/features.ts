@@ -1,4 +1,3 @@
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 import { SectionSlug } from "../sections"
 
 // What each premium part of the Tracker is, for the plans dialog: what the user was looking at
@@ -82,10 +81,9 @@ export const PREMIUM_FEATURES: Record<
 }
 
 // Everything the paid plans include, for the plans dialog's list
-// (the Tracker MVP leaves out savings and audits: libs/tariff-tracker/features.ts)
 export const PREMIUM_INCLUDES = [
-  ...(SAVINGS_ENABLED ? ["Savings checks on every import your plan covers, with the qualification check"] : []),
-  ...(AUDITS_ENABLED ? ["Unlimited audit checks: what you paid on past entries against what you owed"] : []),
+  "Savings checks on every import your plan covers, with the qualification check",
+  "Unlimited audit checks: what you paid on past entries against what you owed",
   "Alerts when a tariff change hits any import your plan tracks, and by how much",
   "Impact checks: see exactly how any tariff action affects each import",
   "Insights across your whole catalog: where the duty comes from and what moved it",
@@ -100,10 +98,10 @@ export const featureTab = (feature: PremiumFeature): SectionSlug => {
   switch (feature) {
     case "qualify":
     case "savings":
-      return SAVINGS_ENABLED ? "savings" : "catalog"
+      return "savings"
     case "refunds":
     case "entries":
-      return AUDITS_ENABLED ? "entries" : "catalog"
+      return "entries"
     case "tracking":
     case "limit":
     case "alerts":

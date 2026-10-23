@@ -82,7 +82,7 @@ export const TrackerApp = () => {
     document.title = section && tab !== DEFAULT_SECTION ? `${section.title} · ${BASE_TITLE}` : BASE_TITLE;
   }, [tab]);
 
-  // The built tabs; the rest (and those held back as coming soon) show what's planned
+  // The built tabs; the rest show what's planned
   const built: Partial<Record<SectionSlug, (active: boolean) => ReactNode>> = {
     calculator: (active) => <TrackerCalculator key={calculatorRun} active={active} />,
     catalog: () => <ProductCatalog />,

@@ -13,7 +13,7 @@ import {
   perImportPrice,
 } from "../lib/pricing";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
-import { COMING_LOWER, LAUNCH_PITCH } from "@/components/ui/marketing/comingSoon";
+import { LAUNCH_PITCH } from "@/components/ui/marketing/comingSoon";
 
 // The page's questions. Shown in the FAQ and in its FAQPage schema, so they always match.
 export const PRICING_FAQS = [
@@ -23,7 +23,7 @@ export const PRICING_FAQS = [
   },
   {
     question: "Is there a free trial of the Tariff Tracker?",
-    answer: `Yes. Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, with no credit card and nothing to start: everything it does, on up to ${REVERSE_TRIAL.imports} imports. That's alerts when a tariff change hits an import (AD/CVD alerts included), impact checks, Insights across your catalog, Tariff News, rate history and exports. The trial starts on its own when you add your first imports, so every one of the 14 days is spent on your own products.`,
+    answer: `Yes. Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, with no credit card and nothing to start: everything it does, on up to ${REVERSE_TRIAL.imports} imports. That's alerts when a tariff change hits an import (AD/CVD alerts included), impact checks, Insights across your catalog, Tariff News, rate history and exports, plus automatic savings detection and automatic auditing. The trial starts on its own when you add your first imports, so every one of the 14 days is spent on your own products.`,
   },
   {
     question: "What happens when my trial ends?",
@@ -47,7 +47,7 @@ export const PRICING_FAQS = [
   },
   {
     question: "Are savings detection and auditing included?",
-    answer: `Yes, when they launch: automatic savings detection and automatic auditing are ${COMING_LOWER}, and they'll be part of the ${REVERSE_TRIAL.days}-day trial and every paid Tariff Tracker plan at no extra cost. Savings detection checks every import for trade programs, exemptions and lower-duty origins you may qualify for. Auditing checks every entry against the duty in force on its date and flags possible over- and underpayments for you and your broker to review. Neither is live yet.`,
+    answer: `Yes: automatic savings detection and automatic auditing are part of the ${REVERSE_TRIAL.days}-day trial and every paid Tariff Tracker plan at no extra cost. Savings detection checks every import for trade programs, exemptions and lower-duty origins you may qualify for. Auditing checks every entry against the duty in force on its date and flags possible over- and underpayments for you and your broker to review.`,
   },
   {
     question: `What if I need to track more than ${TRACKER_MAX_LISTED_PAIRS} imports?`,

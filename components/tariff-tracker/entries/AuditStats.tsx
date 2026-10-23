@@ -1,4 +1,4 @@
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { useTrackerAccess } from "../access/accessContext";
 import { StatStrip } from "@/components/ui/StatStrip";
 import { money } from "./EntriesTable";
@@ -15,8 +15,13 @@ export const AuditStats = ({ totals }: { totals: AuditTotals }) => {
         { label: "Possible underpayments", value: money(totals.underpaid), note: "Worth correcting before Customs does", tone: totals.underpaid > 0 ? "error" : undefined },
         {
           label: "Audit checks left",
-          value: access.kind === "paid" || access.kind === "trial" ? "Unlimited" : access.kind === "anonymous" ? "0" : String(Math.max(0, TRIAL_ALLOWANCE.auditChecks - access.usage.auditsChecked.length)),
-          note: access.kind === "paid" || access.kind === "trial" ? "With your plan" : access.kind === "anonymous" ? `${TRIAL_ALLOWANCE.auditChecks} with a free account` : `Of ${TRIAL_ALLOWANCE.auditChecks} free`,
+          value: access.kind === "paid" || access.kind === "trial" ? "Unlimited" : "0",
+          note:
+            access.kind === "paid" || access.kind === "trial"
+              ? "With your plan"
+              : access.kind === "anonymous"
+                ? `Free for ${REVERSE_TRIAL.days} days with an account`
+                : "They come with a Tracker plan",
         },
       ]}
     />

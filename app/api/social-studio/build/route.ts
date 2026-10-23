@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireSocialStudio } from "@/libs/social-studio/access"
 import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 import { DutyInputError } from "@/libs/mcp/duty"
-import { buildCountryPosts, buildFactPosts, buildProductPosts, FACT_KINDS, FactKind } from "@/libs/social-studio/build"
+import { buildCountryPosts, buildFactPosts, buildOddRatePosts, buildOddRatesRoundup, buildProductPosts, FACT_KINDS, FactKind } from "@/libs/social-studio/build"
 import { saveIdea } from "@/libs/social-studio/ideas"
 import { newsIdea, newsPost, officialSources, UPDATE_COLUMNS, UpdateRow, writeNewsWords } from "@/libs/social-studio/news"
 
 export const dynamic = "force-dynamic"
 
-// Posts made by hand: from a product, a country, or a fact across the schedule
+// Posts made by hand: from a product, a country, a fact across the schedule, or an odd rate
 export async function POST(req: NextRequest) {
   const { db, denied } = await requireSocialStudio()
   if (denied) return denied
@@ -37,6 +37,10 @@ export async function POST(req: NextRequest) {
       notes.push(...saved.warnings)
       return NextResponse.json({ title: update.title, posts: [post], notes, idea: saved.idea, costUsd })
     }
+    if (body.mode === "odd-rate") {
+      return NextResponse.json(await buildOddRatePosts({ htsCode: String(body.htsCode ?? ""), column: body.column === "other" ? "other" : "general", theme }))
+    }
+    if (body.mode === "odd-rates-roundup") return NextResponse.json(await buildOddRatesRoundup({ theme }))
     if (body.mode === "fact") {
       if (!(body.kind in FACT_KINDS)) return errorResponse(new Error("Unknown fact"), 400)
       return NextResponse.json(await buildFactPosts({ kind: body.kind as FactKind, theme }))

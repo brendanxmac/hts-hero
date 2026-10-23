@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
-import { FREE_FOREVER_LINE, SAVINGS_AUDITS_COMING } from "@/components/ui/marketing/comingSoon";
+import { FREE_FOREVER_LINE, SAVINGS_AUDITS_INCLUDED } from "@/components/ui/marketing/comingSoon";
 import { LINKS } from "../lib/links";
 import { Billing, LAUNCH_PRICING, LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice, launchPricingActive, trackerBilling } from "../lib/pricing";
 import { CALCULATOR_FEATURES, TRACKER_FEATURES } from "../tariff-pricing/plans";
@@ -29,7 +29,7 @@ export const TariffPlans = ({
         </Link>{" "}
         tracks every tariff on your imports and runs impact checks to show exactly how each tariff action hits them. Try it free
         for {REVERSE_TRIAL.days} days: everything, on up to {REVERSE_TRIAL.imports} imports, no credit card. {FREE_FOREVER_LINE}{" "}
-        {SAVINGS_AUDITS_COMING}
+        {SAVINGS_AUDITS_INCLUDED}
       </SectionIntro>
       <div className="shrink-0">
         <BillingSwitch billing={billing} onChange={onBillingChange} />

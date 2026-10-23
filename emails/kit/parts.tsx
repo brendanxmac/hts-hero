@@ -1,8 +1,6 @@
 import React, { ReactNode } from "react"
 import { Button, Column, Heading, Hr, Link, Row, Section, Text } from "@react-email/components"
-import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice } from "../../components/pricing-calculator/lib/pricing"
-import { AUDITS_ENABLED, SAVINGS_AUDITS_LABEL, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
-import { AUTO_AUDITING, COMING_LOWER, SAVINGS_DETECTION } from "../../components/ui/marketing/comingSoon"
+import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "../../components/pricing-calculator/lib/pricing"
 import { C, FONT_DISPLAY, formatDay, SITE, TONES, Tone } from "./brand"
 
 // The pieces every email is made of, in the Tracker's look: a small bold eyebrow in a role color,
@@ -205,22 +203,16 @@ export const Checklist = ({ items }: { items: ReactNode[] }) => (
   </Section>
 )
 
-// What the Tariff Tracker does, as a checklist (the welcome and meet-the-Tracker emails). The
-// Tracker MVP (features.ts) sells tracking, alerts and impact checks; savings detection and
-// auditing show as coming, with their label, until they're on.
-export const TRACKER_POINTS: ReactNode[] =
-  SAVINGS_ENABLED || AUDITS_ENABLED
-    ? ["Track the duty rate on every import", "Get alerted when a new tariff hits one", "Find savings you may qualify for", "Audit past entries for overpaid duty"]
-    : [
-        "Track the duty rate on every import",
-        "Get alerted when a new tariff hits one, with the rate before and after",
-        "AD/CVD alerts when an import may fall under a case",
-        "See exactly how any tariff action affects each import, with Insights across your catalog",
-        "Export every tariff on every import to CSV or Excel",
-        <>
-          {SAVINGS_DETECTION.name} and {AUTO_AUDITING.name.toLowerCase()}, included when they launch <Chip tone="heads-up">{SAVINGS_AUDITS_LABEL}</Chip>
-        </>,
-      ]
+// What the Tariff Tracker does, as a checklist (the welcome and meet-the-Tracker emails)
+export const TRACKER_POINTS: ReactNode[] = [
+  "Track the duty rate on every import",
+  "Get alerted when a new tariff hits one, with the rate before and after",
+  "AD/CVD alerts when an import may fall under a case",
+  "See exactly how any tariff action affects each import, with Insights across your catalog",
+  "Find savings you may qualify for, on every import",
+  "Audit past entries for possible overpaid duty",
+  "Export every tariff on every import to CSV or Excel",
+]
 
 // Signed by the founder: every email is from a person, and replies reach him
 export const Signature = ({ line = "Founder, HTS Hero" }: { line?: string }) => (
@@ -232,25 +224,16 @@ export const Signature = ({ line = "Founder, HTS Hero" }: { line?: string }) => 
 )
 
 // The way up, always in view but never the ask: what the free account already does, and where
-// the plans are. Value first, then the door. The Tracker MVP (features.ts) sells tracking only, so
-// savings and audit checks drop out of it while they're off. Worded to hold whether the reader is in
-// the 14-day trial (REVERSE_TRIAL) or past it, since emails don't know which.
+// the plans are. Value first, then the door. Worded to hold whether the reader is in the 14-day
+// trial (REVERSE_TRIAL) or past it, since emails don't know which.
 export const PlanStrip = ({ campaign, signedUp = true }: { campaign: string; signedUp?: boolean }) => (
   <Section style={{ marginTop: 24, borderTop: `1px solid ${C.border}`, paddingTop: 18 }}>
     <Text style={{ margin: 0, fontSize: 13, lineHeight: "20px", color: C.muted }}>
       {signedUp ? "Your free account" : "A free HTS Hero account"}{" "}
-      {SAVINGS_ENABLED || AUDITS_ENABLED ? (
-        <>
-          gives you the duty on every import you add, its rate history and sourcing, {TRIAL_ALLOWANCE.savingsChecks} savings checks, {TRIAL_ALLOWANCE.auditChecks} audit
-          checks and Tariff News alerts on every new US tariff action.
-        </>
-      ) : (
-        <>
-          gives you Tariff News alerts on every new US tariff action, the duty on every import you add, its rate history and sourcing insights, free forever, and AD/CVD checks on any
-          import, plus the full Tariff Tracker (AD/CVD alerts included) free for {REVERSE_TRIAL.days} days from {signedUp ? "your" : "its"} first imports, on up to{" "}
-          {REVERSE_TRIAL.imports} imports, no credit card. Automatic savings detection and automatic auditing are {COMING_LOWER}, included in every plan.
-        </>
-      )}{" "}
+      gives you Tariff News alerts on every new US tariff action, the duty on every import you add, its rate history and sourcing insights, free forever, AD/CVD checks on any
+      import, plus the full Tariff Tracker (AD/CVD alerts, automatic savings
+      detection and automatic auditing included) free for {REVERSE_TRIAL.days} days from {signedUp ? "your" : "its"} first imports, on up to {REVERSE_TRIAL.imports}{" "}
+      imports, no credit card.{" "}
       Plans with alerts on your imports start at {formatPrice(TRACKER_TIERS[0].price)}/mo, as low as {formatPrice(LOWEST_PER_IMPORT)} per import.{" "}
       <Link href={`${SITE}/pricing-calculator?utm_source=email&utm_medium=email&utm_campaign=${campaign}`} style={{ color: C.cobalt, fontWeight: 600 }}>
         See plans

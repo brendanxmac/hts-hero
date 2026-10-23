@@ -1,6 +1,4 @@
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing"
-import { AUDITS_ENABLED } from "@/libs/tariff-tracker/features"
-import { COMING_LOWER } from "@/components/ui/marketing/comingSoon"
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing"
 
 // The audit page's fixed copy. The FAQ is shown on the page and in its FAQPage schema, so the two
 // always match.
@@ -81,9 +79,6 @@ export const AUDIT_FAQS = [
   },
   {
     question: "Is the audit free?",
-    // Self-serve audits are off for the Tracker MVP (features.ts); the request is done by hand
-    answer: AUDITS_ENABLED
-      ? `Self-audits run in the Tariff Tracker. Every account gets ${TRIAL_ALLOWANCE.auditChecks} free audit checks (one per past entry) with no credit card, and paid Tracker plans include unlimited audit checks. Two ways are free outright: upload your entries for a one-time check with the results emailed to you, or request an audit and we'll review your entries and send you a report.`
-      : `Requesting an audit is free, with no obligation: tell us about your company and we'll review your entries and send you a report of potential overpaid and underpaid duty, for your customs broker to review. Automatic auditing in the Tariff Tracker is ${COMING_LOWER}: every entry checked against the duty in force on its date, flagging possible over and underpayments, included in the trial and every Tracker plan at no extra cost.`,
+    answer: `Self-audits run in the Tariff Tracker, free for ${REVERSE_TRIAL.days} days with every new account (no credit card), and paid Tracker plans include unlimited audit checks. Two ways are free outright: upload your entries for a one-time check with the results emailed to you, or request an audit and we'll review your entries and send you a report.`,
   },
 ]

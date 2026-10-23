@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowDownTrayIcon, ArrowRightIcon, BellAlertIcon, BoltIcon, NewspaperIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
-import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { AUTO_AUDITING, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 import { LINKS } from "../lib/links";
 import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "../lib/pricing";
@@ -70,13 +69,11 @@ export const TrackerCore = () => (
       </p>
       <span className="shrink-0 text-sm text-base-content/60">Free with every account</span>
     </div>
-    {/* Not live yet (features.ts): labeled, and included at no extra cost when they launch */}
+    {/* Savings detection and auditing, included at no extra cost */}
     <ul className="m-0 grid grid-cols-1 gap-4 border-t border-base-300 px-7 py-5 sm:px-8 md:grid-cols-2">
       {[SAVINGS_DETECTION, AUTO_AUDITING].map(({ title, text }) => (
         <li key={title} className="flex flex-col gap-1">
-          <span className="flex flex-wrap items-center gap-2 font-semibold text-base-content">
-            {title} <ComingChip />
-          </span>
+          <span className="font-semibold text-base-content">{title}</span>
           <span className="text-sm leading-relaxed text-base-content/70">{text} Included in every Tracker plan at no extra cost.</span>
         </li>
       ))}

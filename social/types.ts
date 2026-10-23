@@ -149,6 +149,30 @@ export interface NewsProps extends PostBase {
   slug: string
 }
 
+// One part of an odd rate, worked out on the standard shipment, or the question the calculator
+// asks to work it out
+export interface OddRateStep {
+  rate: string // "15¢/jewel over 7"
+  detail?: string // "× 1,000 kg", "of $10,000.00"
+  amount?: string // "$150.00"
+  asks?: string // "What is the value of the case?"
+}
+
+// A rate the HTS charges in an odd way (per jewel, by the degree, in fractions), word for word,
+// and how HTS Hero works it out
+export interface OddRateProps extends PostBase {
+  headline: string
+  product: string
+  htsCode: string
+  rate: string // as the HTS writes it
+  column: string // "General rate", "Column 2 rate"
+  columnNote?: string // who the column applies to
+  shipment: string // "On a $10,000 shipment of 1,000 units"
+  steps: OddRateStep[]
+  total?: string // the base duty, when no part needs an answer
+  footnote?: string
+}
+
 export type TemplateId =
   | "RateTimeline"
   | "BigNumber"
@@ -161,6 +185,7 @@ export type TemplateId =
   | "TopList"
   | "Quiz"
   | "News"
+  | "OddRate"
 
 export interface TemplatePropsMap {
   RateTimeline: RateTimelineProps
@@ -174,6 +199,7 @@ export interface TemplatePropsMap {
   TopList: TopListProps
   Quiz: QuizProps
   News: NewsProps
+  OddRate: OddRateProps
 }
 
 // Where a claim in a post can be checked: an official document or dataset, or the HTS Hero

@@ -8,7 +8,7 @@ import {
   formatPrice,
   perImportPrice,
 } from "@/components/pricing-calculator/lib/pricing";
-import { FREE_FOREVER_SHORT, SAVINGS_AUDITS_COMING } from "@/components/ui/marketing/comingSoon";
+import { FREE_FOREVER_SHORT, SAVINGS_AUDITS_INCLUDED } from "@/components/ui/marketing/comingSoon";
 import { getVerifiedRevisions } from "@/tariffs/engine-v2/revisions";
 import type { Tool } from "../types";
 
@@ -32,7 +32,7 @@ export const HTS_HERO: Tool = {
     "A US tariff calculator built for importers who need the exact number: every Chapter 99 tariff stacked line by line with its legal source, the duty on any past entry date, duty over time, a free AD/CVD check on any import, tracking for every tariff on your imports with alerts and impact checks when a tariff change hits them, and results by API and MCP for your own systems.",
   bestFor: "Importers, brokers and compliance teams who need exact, auditable US duty",
   price: `Calculator free; Tracker ${REVERSE_TRIAL.days}-day free trial, then from ${formatPrice(TRACKER_TIERS[0].price)}/mo, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import`,
-  priceDetail: `${FREE_TIER}. A free account adds the AD/CVD check on any import and sourcing intelligence. Tariff Tracker ${REVERSE_TRIAL.days}-day free trial, no credit card: everything on up to ${REVERSE_TRIAL.imports} imports, then ${FREE_FOREVER_SHORT} stay free, forever; paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo for up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly, which comes to ${TRACKER_TIERS.map((t) => formatPrice(perImportPrice(t))).join(", ")} per import, per month by plan size (as low as ${formatPrice(LOWEST_PER_IMPORT)}). Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo, ${ANNUAL_DISCOUNT * 100}% off annually. No contract. ${SAVINGS_AUDITS_COMING}`,
+  priceDetail: `${FREE_TIER}. A free account adds the AD/CVD check on any import and sourcing intelligence. Tariff Tracker ${REVERSE_TRIAL.days}-day free trial, no credit card: everything on up to ${REVERSE_TRIAL.imports} imports, then ${FREE_FOREVER_SHORT} stay free, forever; paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo for up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly, which comes to ${TRACKER_TIERS.map((t) => formatPrice(perImportPrice(t))).join(", ")} per import, per month by plan size (as low as ${formatPrice(LOWEST_PER_IMPORT)}). Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo, ${ANNUAL_DISCOUNT * 100}% off annually. No contract. ${SAVINGS_AUDITS_INCLUDED}`,
   features: {
     freeToTry: { support: "yes", note: `${FREE_TIER}; Tariff Tracker ${REVERSE_TRIAL.days}-day free trial, no credit card` },
     selfServe: { support: "yes", note: "Every plan is self-serve, with no demo or contract" },

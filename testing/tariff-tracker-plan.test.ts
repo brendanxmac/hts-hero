@@ -71,10 +71,10 @@ describe("Tariff Tracker: plans", () => {
     expect(trialEndsAt("2025-03-01T00:00:00Z")).toBe(new Date(Date.parse(`${REVERSE_TRIAL.freshStartOn}T00:00:00Z`) + 14 * DAY).toISOString())
   })
 
-  it("free accounts' checks count down and stop at the allowance", () => {
+  it("free accounts get no savings or audit checks after the trial (PRICING.md, 2026-10-22)", () => {
     const access = trackerAccessFrom({ usage: usage(5, 3), activePlans: [], trialStartedAt: signedUp, now: afterTrial })
     expect(checksLeft(access, "savings")).toBe(0)
-    expect(checksLeft(access, "audit")).toBe(7)
+    expect(checksLeft(access, "audit")).toBe(0)
     expect(canSpendCheck(access, "savings", "9999-VN")).toBe(false)
     // One checked before costs nothing again
     expect(canSpendCheck(access, "savings", "6100-CN")).toBe(true)

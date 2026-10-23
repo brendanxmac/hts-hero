@@ -190,20 +190,15 @@ export const ImportTakeover = () => {
 
   // Opens only when asked for (decided 2026-10-21: opening by itself on a first visit was abrupt;
   // the empty Home and Imports pages sell the Tracker and ask, SetupPanel). A link can ask for it
-  // too, once the account's catalog is known to have none of its own imports: an email's "Add my
-  // imports" or a "Track your products" link (?setup=add, ?add=paste), straight to the ways in or
-  // the one named.
+  // too, once the account's catalog is known: an email's "Add my imports" or a "Track your
+  // products" link (?setup=add, ?add=paste), straight to the ways in or the one named. ?add= asks
+  // only while the account has none of its own imports; ?setup= (the calculator's "Get Tariff
+  // Alerts, Audits, & Savings", signed in) asks whatever the catalog holds.
   useEffect(() => {
-    if (
-      autoOpened.current ||
-      !signedIn ||
-      accessLoading ||
-      !synced ||
-      realCount > 0 ||
-      open
-    )
+    if (autoOpened.current || !signedIn || accessLoading || !synced || open)
       return;
     const url = new URL(window.location.href);
+    if (realCount > 0 && !url.searchParams.has("setup")) return;
     const asked = url.searchParams.get("setup") ?? url.searchParams.get("add");
     autoOpened.current = true;
     if (!asked) return;

@@ -213,10 +213,9 @@ export const FeatureTour = () => {
           <div className="flex flex-col gap-7">
             <div className="flex flex-col gap-3">
               <span className="tt-ob-rise flex items-center gap-2">
-                <span className={tt.eyebrow(step.soon ? "warning" : "primary")}>
+                <span className={tt.eyebrow("primary")}>
                   Step {at + 1} of {steps.length} · {step.rail}
                 </span>
-                {step.soon && <span className={tt.chip("warning")}>{step.soon}</span>}
               </span>
               <h1
                 id="tt-tour-title"

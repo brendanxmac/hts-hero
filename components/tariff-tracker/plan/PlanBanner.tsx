@@ -4,7 +4,6 @@ import { useState } from "react";
 import { ClockIcon, SparklesIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import { useTrackerAccess } from "../access/accessContext";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { useUpgradeStats } from "../access/upgradeStats";
 import { useTracker } from "../TrackerContext";
 import { endsIn, trialState } from "./trial";
@@ -79,7 +78,7 @@ export const PlanBanner = () => {
   }
 
   // Both checks used up on the free plan: the one nudge to a plan
-  if (SAVINGS_ENABLED && AUDITS_ENABLED && access.kind === "free" && savingsLeft === 0 && auditsLeft === 0) {
+  if (access.kind === "free" && savingsLeft === 0 && auditsLeft === 0) {
     return (
       <div role="status" className={`${ui.notice("warning")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
         <SparklesIcon className="h-5 w-5 shrink-0 text-warning" aria-hidden />

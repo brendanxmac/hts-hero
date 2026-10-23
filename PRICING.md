@@ -5,7 +5,7 @@ for product code, plan copy, landing pages, comparison pages, blog FAQs, `llms.t
 tools. If code or copy disagrees with this file, this file wins. Change this file first when
 pricing changes.
 
-_Last updated 2026-10-22 (the AD/CVD check on any import is free with any account)._
+_Last updated 2026-10-22 (savings detection and auditing are live, in the trial and every paid Tracker plan; the AD/CVD check on any import is free with any account)._
 
 ## The rule
 
@@ -22,7 +22,7 @@ _Last updated 2026-10-22 (the AD/CVD check on any import is free with any accoun
   for everyone; working out which adjustments the goods qualify for is the Tracker's
   qualification check. They stay unlocked for every account, forever, whatever its plan.
 - Two calculator tools that work out money for the user are **Tracker features**, teased in the
-  calculator and free to try with every account's usage allowance: the **qualification check**
+  calculator and free to try in every account's 14-day trial: the **qualification check**
   (which exemptions and trade programs the goods could qualify for, and the proof needed; part
   of a product's **savings check**) and the **refund check** (what was paid on a past entry
   against the duty in force then: a refund to request through a broker, or an underpayment to
@@ -61,12 +61,13 @@ calculations" upgrade.
 
 ## Tariff Tracker: account required
 
-### Tracker MVP: what's live now (2026-10-18)
+### What's live now (2026-10-22)
 
-The Tracker sells tracking. **Savings (savings checks, the qualification check) and audits (entry
-audit, refund check) are switched off** (`libs/tariff-tracker/features.ts`) and arrive with
-automatic entry auditing, when prices go up (below). Copy says "Savings and audits are coming soon."
-Every change made for the MVP is listed in `MVP_TRIM.md`, so it can be put back.
+**Savings (savings checks, the qualification check) and audits (entry audit, refund check) are
+live** since 2026-10-22, included in the 14-day trial and every paid Tracker plan. The feature
+flags that switched them off for the Tracker MVP (2026-10-16 to 2026-10-22, `MVP_TRIM.md`) are
+gone, along with every "Coming Oct 2026" label. Copy sells them as features, never certain:
+"could save", "up to", "may qualify".
 
 What the Tracker sells now:
 
@@ -79,6 +80,10 @@ What the Tracker sells now:
 - **Tariff News**: every tariff action from CBP, the Federal Register, USTR, USITC and the White House
 - **Rate history**: how each import's duty changed, and why
 - **Export** every tariff on every import to CSV or Excel
+- **Automatic savings detection**: trade programs, exemptions and lower-duty origins each import
+  may qualify for, with the qualification check
+- **Automatic auditing**: every entry checked against the duty in force on its date (entry audit,
+  refund check), flagging possible over- and underpayments
 
 ### Who gets what (decided 2026-10-18)
 
@@ -91,7 +96,7 @@ What the Tracker sells now:
 | Catalog, current duty, rate history, export | n/a | Unlimited | Unlimited | Unlimited |
 | Tariff News alerts (every new US tariff action) | Yes (subscribe) | Yes | Yes | Yes |
 | Tracked imports (alerts, AD/CVD updates, impact checks) | n/a | None | 200 | The tier's imports |
-| Automatic savings detection, automatic auditing (Coming Oct 2026) | n/a | No | Yes, when live | Yes, when live |
+| Automatic savings detection, automatic auditing | n/a | No | Yes | Yes |
 | Insights across the catalog | n/a | No (locked, shown as lost) | Yes | Yes |
 | Impact checks on untracked imports | n/a | A count only | A count only | A count only |
 
@@ -116,7 +121,7 @@ forever; it just says it's free. Nothing is deleted.
   (the deploy day); those without start on their first import, like everyone else.
 - **Lean into loss.** In the last days and after it ends, show what the account loses: tariff alerts,
   impact checks, and AD/CVD alerts and updates on all its imports (the AD/CVD check itself stays), Insights, and automatic auditing and savings
-  detection (labeled "Coming Oct 2026"). The emails name no numbers.
+  detection. The emails name no numbers.
   Shown in the sidebar plan card (countdown), a trial-ending dialog, and emails 3 days and 1 day
   before it ends and the day after (`libs/email/lifecycle.ts`).
 - **Subscribe during the trial to keep launch pricing.** The upgrade card recommends the tier that
@@ -125,9 +130,9 @@ forever; it just says it's free. Nothing is deleted.
   alerts and sourcing insights stay free, forever" (AD/CVD checks: "free with any account", no
   "forever"). Never say "no time limit" or
   "never expires" for the Tracker's alerts.
-- **Savings and audits in copy (decided 2026-10-18):** marketing, CTAs, emails and the in-app loss
-  screens sell "Automatic savings detection" and "Automatic auditing" as part of the trial and every
-  plan, always labeled "Coming Oct 2026" (`SAVINGS_AUDITS_LABEL`), until the features are switched on.
+- **Savings and audits in copy (decided 2026-10-18, live 2026-10-22):** marketing, CTAs, emails and
+  the in-app loss screens sell "Automatic savings detection" and "Automatic auditing" as part of the
+  trial and every paid plan, with no "coming" label.
 
 | Imports tracked | Price / month |
 |---|---|
@@ -139,9 +144,9 @@ forever; it just says it's free. Nothing is deleted.
 
 **Launch pricing** (`LAUNCH_PRICING` in `components/pricing-calculator/lib/pricing.ts`): these
 are launch prices until **Fri, Nov 13, 2026** (moved from Oct 23 on 2026-10-18); savings detection
-and auditing ship in October, included. Anyone who subscribes before then keeps their price for as
+and auditing are included. Anyone who subscribes before then keeps their price for as
 long as they stay subscribed (old Stripe prices keep working: see `libs/tariff-tracker/prices.ts`)
-and gets savings and audits when they arrive. From then, new subscribers pay **$19 / $49 / $149 /
+with savings and audits included. From then, new subscribers pay **$19 / $49 / $149 /
 $249**. The plans dialog shows the deadline, a countdown and those coming prices struck through; it
 all disappears on its own after the deadline.
 
@@ -151,12 +156,15 @@ Classification and Managed keep their annual billing.
 **Coming later, not on offer yet:** one-time offers to find savings and audit an importer's prior
 entries. Don't mention them in copy.
 
-### Paused until savings and audits return
+### The plan before the MVP (for reference)
 
 Everything below this line in the Tariff Tracker section describes the plan before the MVP
 (usage-based trial with savings and audit checks, $19 / $49 / $149 / $249). It is kept for
-reference; it is not what's live, and its "no time-limited trial" rule is replaced by the 14-day
-reverse trial above.
+reference; where it disagrees with the sections above, they win, and its "no time-limited trial"
+rule is replaced by the 14-day reverse trial above. There is **no free allowance** of savings or
+audit checks (decided 2026-10-22): they're unlimited during the trial and on paid plans, and none on
+the free plan (`TRIAL_ALLOWANCE.savingsChecks` and `.auditChecks` are 0). Copy says "free for 14
+days", never "5 free savings checks" or "10 free audit checks".
 
 ### Usage-based trial: every account, no time limit
 
@@ -250,7 +258,7 @@ client's licensed customs broker or counsel, and we work with them directly.
 
 ## Free tariff audit check (lead magnet)
 
-The self-audit in the Tracker (Entry audit) uses audit checks: 10 free with every account, unlimited on a paid plan. Copy says "10 free audit checks". The two free paths on `/tariff-audit` are this one-time check and a requested audit.
+The self-audit in the Tracker (Entry audit) uses audit checks: unlimited during the 14-day trial and on a paid plan, none on the free plan after it. Copy says "Free for 14 days". The two free paths on `/tariff-audit` are this one-time check and a requested audit.
 
 The audit landing page offers a free, one-time overpayment check: the importer shares entry data
 and gets a report of likely over- and underpaid duty. It is a lead, not a plan: no price is

@@ -29,12 +29,11 @@ import {
   monthlyRate,
   perImportPrice,
   REVERSE_TRIAL,
-  TRACKER_MAX_LISTED_PAIRS,
-  TRIAL_ALLOWANCE,
+  TRACKER_MAX_LISTED_PAIRS
 } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { TRACKER_PLANS, TrackerAccess, TrackerPlan } from "@/libs/tariff-tracker/plan";
-import { AUDITS_ENABLED, SAVINGS_AUDITS_LABEL, SAVINGS_ENABLED, TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
+import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { useCatalog } from "../catalogStore";
 import { openBillingPortal } from "../plan/billing";
 import { useUpgradeStats } from "./upgradeStats";
@@ -73,21 +72,18 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
   const [billing, setBilling] = useState<Billing>(TRACKER_ANNUAL_ENABLED ? "annual" : "monthly");
   const [busy, setBusy] = useState<string | null>(null);
   const changing = access.kind === "paid";
-  // Savings and audits are off for the Tracker MVP, so their upsells talk about tracking
-  const shown: PremiumFeature =
-    (!SAVINGS_ENABLED && (feature === "savings" || feature === "qualify")) || (!AUDITS_ENABLED && (feature === "entries" || feature === "refunds")) ? "plan" : feature;
   const usedUp =
     access.kind === "trial"
-      ? shown === "alerts" || shown === "tracking"
+      ? feature === "alerts" || feature === "tracking"
         ? `Your free trial tracks up to ${REVERSE_TRIAL.imports} imports.`
         : null
       : access.kind !== "free"
         ? null
-        : shown === "savings" || shown === "qualify"
-          ? `You've used your ${TRIAL_ALLOWANCE.savingsChecks} free savings checks.`
-          : shown === "entries" || shown === "refunds"
-            ? `You've used your ${TRIAL_ALLOWANCE.auditChecks} free audit checks.`
-            : shown === "alerts" || shown === "tracking"
+        : feature === "savings" || feature === "qualify"
+          ? "Savings checks come with a Tracker plan."
+          : feature === "entries" || feature === "refunds"
+            ? "Audit checks come with a Tracker plan."
+            : feature === "alerts" || feature === "tracking"
               ? "Alerts on your own imports come with a Tracker plan."
               : null;
 
@@ -362,11 +358,10 @@ const PricingCard = ({
       <div className="flex flex-col gap-5 p-6">
         {/* What's included */}
         <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
-          {VALUE_STACK.map(({ Icon, title, soon }) => (
+          {VALUE_STACK.map(({ Icon, title }) => (
             <li key={title} className="flex items-center gap-2.5 text-sm text-base-content/85">
-              <Icon className={`h-4 w-4 shrink-0 ${soon ? "text-base-content/40" : "text-primary"}`} aria-hidden />
+              <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
               <span className="flex-1">{title}</span>
-              {soon && <span className={`${tt.chip("neutral")} shrink-0`}>{SAVINGS_AUDITS_LABEL}</span>}
             </li>
           ))}
         </ul>
@@ -424,7 +419,7 @@ const RANGES: { from: number; to: number | null }[] = [
   { from: TRACKER_MAX_LISTED_PAIRS + 1, to: null },
 ];
 
-// Outcomes of tracking (the Tracker MVP: libs/tariff-tracker/features.ts)
+// Outcomes of tracking (savings detection and auditing follow them in VALUE_STACK)
 export const BENEFITS = [
   { Icon: BellAlertIcon, title: "Hear the day a tariff hits", body: "Alerts by email, Slack or Teams, with each rate before and after." },
   { Icon: BoltIcon, title: "Know exactly what changed", body: "Impact checks show how any tariff action moves each of your imports." },
@@ -434,12 +429,12 @@ export const BENEFITS = [
   { Icon: ArrowDownTrayIcon, title: "Export every tariff", body: "Every tariff on every import, to CSV or Excel, for your team or broker." },
 ];
 
-// What every plan includes, as the pricing card lists it: every outcome of tracking, then what's on
-// the way, included
-const VALUE_STACK: { Icon: typeof BellAlertIcon; title: string; soon?: boolean }[] = [
+// What every plan includes, as the pricing card lists it: every outcome of tracking, then savings
+// detection and auditing
+const VALUE_STACK: { Icon: typeof BellAlertIcon; title: string }[] = [
   ...BENEFITS.map(({ Icon, title }) => ({ Icon, title })),
-  { Icon: SparklesIcon, title: "Automatic savings detection", soon: !SAVINGS_ENABLED },
-  { Icon: ClipboardDocumentCheckIcon, title: "Automatic auditing", soon: !AUDITS_ENABLED },
+  { Icon: SparklesIcon, title: "Automatic savings detection" },
+  { Icon: ClipboardDocumentCheckIcon, title: "Automatic auditing" },
 ];
 
 const REASSURANCE = ["Cancel anytime", "No contract", "Secure checkout with Stripe"];

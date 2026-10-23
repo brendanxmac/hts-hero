@@ -15,15 +15,13 @@ import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { Answers, TransportMode } from "@/tariffs/engine-v2/types";
 import { Adjustments, DEFAULT_MODE, DEFAULT_UNITS, DEFAULT_VALUE, isAdjusted } from "../adjustments";
 import { TrackedProduct } from "../report";
-import { isProductTab, ProductTab, productViewOf, ProductView as View, sectionBySlug, TRACKER_PATH } from "../sections";
-import { PlannedSection } from "../shell/PlannedSection";
+import { isProductTab, ProductTab, productViewOf, ProductView as View, TRACKER_PATH } from "../sections";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ProductAudit } from "./audit/ProductAudit";
 import { ImportPromises } from "./ImportPromises";
 import { ProductHeader } from "./ProductHeader";
 import { ProductSavings } from "./savings/ProductSavings";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // One import, opened from its row: a small header (what it is, and its one row of tabs), then
 // - Overview (where it opens), Duty (with its AD/CVD check), Compare, Changes (its history and
@@ -33,7 +31,6 @@ import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features"
 //   the way back.
 // - Savings: every way to pay less on it, guided, once its savings are unlocked
 // - Audits: its past entries, checked against the duty in force on each entry date
-// Until Savings and Audits launch, their tabs say what's coming.
 
 
 const CALCULATOR_TAB = { tab: "calculator" };
@@ -157,15 +154,15 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
           f={f}
           page="tracker_product"
           fixedProduct
-          onCheckSavings={SAVINGS_ENABLED ? () => openTab("savings") : undefined}
+          onCheckSavings={() => openTab("savings")}
           tab={calculatorTab ? tab : "duty"}
           onTabChange={openTab}
           overviewLead={<ImportPromises productKey={row.key} onOpenTab={openTab} />}
         />
         <Disclaimer />
       </div>
-      {tab === "savings" && (SAVINGS_ENABLED ? <ProductSavings product={row} /> : <PlannedSection section={sectionBySlug("savings")!} productKey={row.key} />)}
-      {tab === "audit" && (AUDITS_ENABLED ? <ProductAudit product={row} /> : <PlannedSection section={sectionBySlug("entries")!} productKey={row.key} />)}
+      {tab === "savings" && <ProductSavings product={row} />}
+      {tab === "audit" && <ProductAudit product={row} />}
     </div>
   );
 };

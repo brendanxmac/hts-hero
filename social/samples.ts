@@ -151,4 +151,20 @@ export const SAMPLES: TemplatePropsMap = {
     imports: { value: 4_200_000_000, year: 2025 },
     slug: "sample",
   },
+  OddRate: {
+    ...base,
+    source: "Harmonized Tariff Schedule (USITC) · HTS Hero tariff engine",
+    headline: "Sample: a US tariff charged per jewel",
+    product: "Sample clocks",
+    htsCode: "0000.00.00",
+    rate: "43¢ each + 2.8¢/jewel over 7 + 3.7% on the case",
+    column: "General rate",
+    shipment: "Worked out by HTS Hero on a $10,000 shipment",
+    steps: [
+      { rate: "43¢ each", detail: "× 1,000", amount: "$430.00" },
+      { rate: "2.8¢/jewel over 7", asks: "How many jewels over 7 are there across the shipment?" },
+      { rate: "3.7% on the case", asks: "What is the value of the case?" },
+    ],
+    footnote: "HTS Hero asks for what the rate needs, then works out the duty.",
+  },
 }

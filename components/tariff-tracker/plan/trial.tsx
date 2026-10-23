@@ -20,7 +20,6 @@ import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
 import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
-import { SAVINGS_AUDITS_LABEL } from "@/libs/tariff-tracker/features";
 import { TRACKER_PLANS, TrackerAccess, trialDaysLeft, trialNotStarted } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "../access/accessContext";
 import { UpgradeStats, useUpgradeStats } from "../access/upgradeStats";
@@ -29,7 +28,7 @@ import { useTracker } from "../TrackerContext";
 // The 14-day reverse trial (PRICING.md): everything, on up to REVERSE_TRIAL.imports imports, then
 // the free plan (no alerts on the user's own imports). As it ends, and once it has, the Tracker
 // shows what the account loses (alerts, AD/CVD alerts included, and impact checks on all its imports,
-// Insights, and auditing and savings detection when they launch), next to what stays free (the
+// Insights, auditing and savings detection), next to what stays free (the
 // AD/CVD check itself is free with any account, so only its alerts and updates are lost). Loss
 // sells harder than gain: the plan card counts down, a banner and this dialog say what goes.
 
@@ -69,7 +68,7 @@ export const endDate = (access: TrackerAccess) =>
 export const keepPlan = (imports: number) => TRACKER_PLANS.find((p) => imports <= p.maxPairs) ?? null;
 
 // What the free plan takes away (the trial emails list the same five, TrialEmail.tsx), plus
-// Insights, which locks in the app. Savings detection and auditing carry their launch label.
+// Insights, which locks in the app.
 export const trialLosses = (stats: UpgradeStats | null) => {
   const flagged = stats?.adcvdFlagged ?? 0;
   return [
@@ -92,13 +91,11 @@ export const trialLosses = (stats: UpgradeStats | null) => {
       Icon: ClipboardDocumentCheckIcon,
       title: "Automatic auditing on your imports",
       body: "Every entry checked against the duty in force on its date, flagging possible over and underpayments.",
-      soon: true,
     },
     {
       Icon: SparklesIcon,
       title: "Automatic savings detection on all your imports",
       body: "Trade programs, exemptions and lower-duty origins your imports may qualify for.",
-      soon: true,
     },
   ];
 };
@@ -114,7 +111,7 @@ export const FREE_FOREVER = [
 // The trial's loss, as a list
 export const LossList = ({ stats }: { stats: UpgradeStats | null }) => (
   <ul className="m-0 flex list-none flex-col gap-3 p-0">
-    {trialLosses(stats).map(({ Icon, title, body, soon }) => (
+    {trialLosses(stats).map(({ Icon, title, body }) => (
       <li key={title} className="flex items-start gap-3">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-error/10 text-error" aria-hidden>
           <Icon className="h-4 w-4" />
@@ -122,7 +119,6 @@ export const LossList = ({ stats }: { stats: UpgradeStats | null }) => (
         <span className="flex min-w-0 flex-col gap-0.5">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-base-content">
             {title}
-            {soon && <span className={tt.chip("warning")}>{SAVINGS_AUDITS_LABEL}</span>}
           </span>
           <span className="text-sm leading-snug text-base-content/65">{body}</span>
         </span>
@@ -231,7 +227,7 @@ export const TrialDialog = () => {
               {plan && (
                 <span className="text-center text-xs text-base-content/60">
                   Just <span className="font-semibold text-success">{formatPrice(perImportPrice(plan))}</span> per import, per month. Tracker {n(plan.maxPairs)}: up to{" "}
-                  {n(plan.maxPairs)} imports, with auditing and savings detection included when they arrive
+                  {n(plan.maxPairs)} imports, with auditing and savings detection included
                   {launch ? `. Launch price, locked in for good if you subscribe by ${LAUNCH_PRICING.endsDay}; prices go up after that` : ""}.
                 </span>
               )}

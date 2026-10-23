@@ -6,6 +6,7 @@ import { Format, FORMATS, Theme } from "@/social/brand"
 import { captionsFor } from "@/social/captions"
 import type { Post } from "@/social/types"
 import type { Idea } from "@/libs/social-studio/ideas"
+import type { OddColumn, OddRate } from "@/libs/social-studio/unusual"
 import { btn, Callout, CopyCommand, EmptyState, Field, inputCls, PageHeader, Panel, Pill, Segmented, Spinner, Tabs } from "../hts-revision-diff/ui"
 import { Select } from "@/components/ui/Select"
 import IdeaCard from "./IdeaCard"
@@ -13,10 +14,30 @@ import PostCard from "./PostCard"
 
 // Makes branded posts from the tariff engine, Census data and the /tariff-updates feed. Ideas:
 // what the daily miners and Claude found worth posting. News: a post for any tariff update.
-// Product, Country and Facts: make posts by hand. Every number is computed; you edit the words,
+// Product, Country, Facts and Odd rates: make posts by hand. Every number is computed; you edit the words,
 // then download PNGs or MP4s (rendered in the browser).
 
-type Tab = "ideas" | "news" | "product" | "country" | "facts"
+type Tab = "ideas" | "news" | "product" | "country" | "facts" | "odd"
+
+// One odd rate and every line that has it
+interface OddGroup {
+  rate: OddRate
+  codes: string[]
+}
+
+// The odd rates, one row per distinct rate in a column, in the order the server ranked them
+const groupOddRates = (rates: OddRate[]) => {
+  const groups = new Map<string, OddGroup>()
+  rates.forEach((r) => {
+    const key = `${r.column}|${r.rate}`
+    const group = groups.get(key)
+    if (group) group.codes.push(r.htsno)
+    else groups.set(key, { rate: r, codes: [r.htsno] })
+  })
+  return Array.from(groups.values())
+}
+
+const ODD_SHOWN = 60
 
 interface NewsRow {
   slug: string
@@ -99,6 +120,11 @@ export default function SocialStudio() {
   const [newsSlug, setNewsSlug] = useState<string | null>(null)
   const [newsWarning, setNewsWarning] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [oddRates, setOddRates] = useState<OddRate[] | null>(null)
+  const [oddColumn, setOddColumn] = useState<OddColumn | "all">("general")
+  const [oddAll, setOddAll] = useState(false)
+  const [oddQuery, setOddQuery] = useState("")
+  const [oddPicked, setOddPicked] = useState<string | null>(null)
 
   const loadIdeas = useCallback(async () => {
     setIdeasError(null)
@@ -128,6 +154,14 @@ export default function SocialStudio() {
       })
       .catch((e) => setError(e.message))
   }, [tab, news])
+
+  useEffect(() => {
+    if (tab !== "odd" || oddRates) return
+    fetch("/api/social-studio/odd-rates", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => (d.rates ? setOddRates(d.rates) : setError(d.error)))
+      .catch((e) => setError(e.message))
+  }, [tab, oddRates])
 
   const findIdeas = async () => {
     setFinding(true)
@@ -206,6 +240,16 @@ export default function SocialStudio() {
     setIdeas((list) => list && list.map((idea) => ({ ...idea, props: { ...idea.props, theme: next } as Idea["props"] })))
   }
 
+  const oddGroups = groupOddRates(oddRates ?? [])
+  const oddQ = oddQuery.trim().toLowerCase()
+  const oddShown = oddGroups.filter(
+    (g) =>
+      (oddColumn === "all" || g.rate.column === oddColumn) &&
+      (oddAll || g.rate.calculable) &&
+      (!oddQ || `${g.rate.rate} ${g.rate.product} ${g.rate.why} ${g.codes.join(" ")}`.toLowerCase().includes(oddQ))
+  )
+  const oddNotCalculated = oddGroups.filter((g) => !g.rate.calculable).length
+
   const days = Array.from(new Set((ideas ?? []).map((i) => i.run_on)))
 
   const viewBar = (
@@ -238,7 +282,7 @@ export default function SocialStudio() {
             <Cost claude="under 1¢" /> <b>Make post</b> or <b>Remake</b> on the News tab
           </span>
           <span>
-            <Cost /> Everything else: the Product, Country and Facts tabs, previews, editing, saving, Mark used / Skip, and PNG and MP4 downloads
+            <Cost /> Everything else: the Product, Country, Facts and Odd rates tabs, previews, editing, saving, Mark used / Skip, and PNG and MP4 downloads
             (rendered in your browser)
           </span>
         </div>
@@ -258,6 +302,7 @@ export default function SocialStudio() {
           { value: "product", label: "Product" },
           { value: "country", label: "Country" },
           { value: "facts", label: "Facts" },
+          { value: "odd", label: "Odd rates" },
         ]}
       />
 
@@ -464,6 +509,87 @@ export default function SocialStudio() {
             <Cost />
           </div>
           {error && <Callout tone="error">{error}</Callout>}
+        </Panel>
+      )}
+
+      {tab === "odd" && (
+        <Panel
+          title="Odd rates in the HTS"
+          count={oddRates ? oddShown.length : undefined}
+          actions={
+            <div className="flex items-center gap-2">
+              <Cost />
+              <button className={btn.secondary} disabled={loading || !oddRates} onClick={() => {
+                  setOddPicked(null)
+                  build({ mode: "odd-rates-roundup" })
+                }}>
+                {loading && !oddPicked && <Spinner />} Make roundup
+              </button>
+            </div>
+          }
+          bodyClassName="flex flex-col gap-3 p-4 text-sm"
+        >
+          <p className="text-base-content/70">
+            Duty rates charged per jewel, by the degree of a sugar&apos;s polarity, in fractions or on one part of the goods, found in the HTS the
+            site has loaded. A post quotes the rate word for word and shows HTS Hero working it out on a $10,000 shipment. Only rates HTS Hero
+            calculates get posts{oddRates ? `; ${oddNotCalculated} it can't calculate yet are hidden unless you show them` : ""}.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Segmented<OddColumn | "all">
+              value={oddColumn}
+              onChange={setOddColumn}
+              options={[
+                { value: "general", label: "General", title: "What most countries pay" },
+                { value: "other", label: "Column 2", title: "Cuba, North Korea, Russia, Belarus" },
+                { value: "all", label: "Both" },
+              ]}
+            />
+            <input className={`${inputCls} w-64`} value={oddQuery} onChange={(e) => setOddQuery(e.target.value)} placeholder="Search: jewel, sugar, 9105…" />
+            <label className="flex items-center gap-2 text-xs text-base-content/60">
+              <input type="checkbox" className="checkbox checkbox-xs" checked={oddAll} onChange={(e) => setOddAll(e.target.checked)} />
+              Show rates HTS Hero can&apos;t calculate yet
+            </label>
+          </div>
+          {error && <Callout tone="error">{error}</Callout>}
+          {!oddRates && !error && <Spinner />}
+          {oddRates && oddShown.length === 0 && <EmptyState title="No odd rates match">Try another search or column.</EmptyState>}
+          <div className="divide-y divide-base-content/10 rounded-lg border border-base-content/10">
+            {oddShown.slice(0, ODD_SHOWN).map((g) => {
+              const key = `${g.rate.column}|${g.rate.htsno}`
+              return (
+                <div key={`${g.rate.column}|${g.rate.rate}`} className={`flex items-start gap-4 px-3 py-2.5 ${oddPicked === key ? "bg-base-content/[0.04]" : ""}`}>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium">&ldquo;{g.rate.rate}&rdquo;</div>
+                    <div className="text-xs text-base-content/55">
+                      {g.rate.product} · <span className="font-mono">{g.codes[0]}</span>
+                      {g.codes.length > 1 ? ` +${g.codes.length - 1} more` : ""} · {g.rate.column === "other" ? "Column 2" : "General"} · {g.rate.why}
+                    </div>
+                  </div>
+                  {g.rate.calculable ? (
+                    <button
+                      className={btn.xsSecondary}
+                      disabled={loading}
+                      onClick={() => {
+                        setOddPicked(key)
+                        build({ mode: "odd-rate", htsCode: g.rate.htsno, column: g.rate.column })
+                      }}
+                    >
+                      {loading && oddPicked === key && <Spinner />} Make post
+                    </button>
+                  ) : (
+                    <Pill tone="neutral" title="The calculator can't work this rate out yet, so it gets no post">
+                      Not calculated yet
+                    </Pill>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          {oddShown.length > ODD_SHOWN && (
+            <div className="text-xs text-base-content/50">
+              Showing the {ODD_SHOWN} most post-worthy of {oddShown.length}. Search to find others.
+            </div>
+          )}
         </Panel>
       )}
 

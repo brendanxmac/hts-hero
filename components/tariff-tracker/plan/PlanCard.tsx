@@ -6,12 +6,11 @@ import config from "@/config";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CheckBadgeIcon } from "@heroicons/react/20/solid";
-import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice, REVERSE_TRIAL, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { TRACKER_PLANS, trackerPlanFor } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "../access/accessContext";
 import { currentPath, signupHref } from "../access/signup";
 import { useTracker } from "../TrackerContext";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { endDate, keepPlan, trialDaysRemaining, trialState } from "./trial";
 import { openBillingPortal, shortDate, useTrackerSubscription } from "./billing";
 import { openImportTakeover } from "../onboarding/takeoverStore";
@@ -301,8 +300,6 @@ export const PlanCard = () => {
           trial.ended && <span className="text-xs text-base-content/60">Your free trial ended {endDate(access)}.</span>
         )}
       </div>
-      {SAVINGS_ENABLED && <Usage label="Savings checks" value={access.usage.savingsChecked.length} max={TRIAL_ALLOWANCE.savingsChecks} tone="bg-warning" />}
-      {AUDITS_ENABLED && <Usage label="Audit checks" value={access.usage.auditsChecked.length} max={TRIAL_ALLOWANCE.auditChecks} tone="bg-warning" />}
 
       {imports === 0 ? (
         <>

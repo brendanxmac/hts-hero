@@ -12,13 +12,15 @@ export const ANNUAL_DISCOUNT = 0.15;
 
 // The free plan's allowances (PRICING.md). alertImports is what every account tracks free once its
 // 14-day trial (REVERSE_TRIAL) is over: none (2026-10-18). Free accounts keep the Tariff News alerts
-// (every new US tariff action), not alerts on their own imports. The savings and audit checks are
-// paused with savings and audits (libs/tariff-tracker/features.ts) and never reset
+// (every new US tariff action), not alerts on their own imports. The savings and audit checks never
+// reset
 export const TRIAL_ALLOWANCE = {
-  // Imports (pairs) whose savings can be checked, the qualification check included
-  savingsChecks: 5,
-  // Past entries checked against the duty in force on their date (entry audit, refund check)
-  auditChecks: 10,
+  // Imports (pairs) whose savings can be checked, the qualification check included. None on the free
+  // plan (2026-10-22): savings checks are the trial's and the paid plans'
+  savingsChecks: 0,
+  // Past entries checked against the duty in force on their date (entry audit, refund check). None
+  // on the free plan, as savings
+  auditChecks: 0,
   // Tracked imports: alerts and impact checks run on these; the slots can be moved. 10 before the
   // Tracker MVP (MVP_TRIM.md), 5 until the reverse trial
   alertImports: 0,

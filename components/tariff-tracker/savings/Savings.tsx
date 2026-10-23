@@ -24,7 +24,7 @@ import { SavingRow, SavingsTable } from "./SavingsTable";
 // The Savings tab: every way to pay less duty across the catalog, worked out for each product's
 // own shipment. Trade programs and exemptions keep the supplier; sourcing means moving it. A
 // product's savings show once they're unlocked: checked with one of the trial's savings checks
-// (PRICING.md: TRIAL_ALLOWANCE.savingsChecks, never reset, can't be moved), or covered by a paid
+// (PRICING.md: the trial's; none on the free plan, TRIAL_ALLOWANCE.savingsChecks being 0), or covered by a paid
 // plan. The rest are listed with what checking them could find, and the button to check.
 
 type Show = "all" | "keep" | "origin";

@@ -17,7 +17,6 @@ import {
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { AUTHORITIES } from "@/libs/tariff-updates/types";
 import { shortDate } from "../../duty-calculator/rate-history/format";
 import { NEWS_DOTS as DOTS, newsToneOf as toneOf } from "../news/tone";
@@ -35,9 +34,7 @@ import { delay } from "./parts";
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 
-// Savings and audits are still to come for the Tracker MVP (libs/tariff-tracker/features.ts):
-// key features all the same, marked Soon until they're on
-const FEATURES: { Icon: Icon; title: string; body: string; tone: string; soon?: boolean }[] = [
+const FEATURES: { Icon: Icon; title: string; body: string; tone: string }[] = [
   { Icon: TableCellsIcon, title: "Every Tariff on Every Import", body: "Base duty, Section 232, 301, 122 and reciprocal, worked out for each code and country.", tone: "bg-primary/10 text-primary" },
   { Icon: BellAlertIcon, title: "Alerts the Day a Tariff Hits", body: "Every new tariff action is checked against your imports, and you hear about the ones that touch them.", tone: "bg-error/10 text-error" },
   { Icon: ArrowTrendingUpIcon, title: "What Changed, and When", body: "Each rate's history for the last 12 months, before and after every change.", tone: "bg-info/10 text-info" },
@@ -47,14 +44,12 @@ const FEATURES: { Icon: Icon; title: string; body: string; tone: string; soon?: 
     title: "Where You Could Pay Less",
     body: "Trade programs and lower-duty origins your imports may qualify for.",
     tone: "bg-success/10 text-success",
-    soon: !SAVINGS_ENABLED,
   },
   {
     Icon: DocumentMagnifyingGlassIcon,
     title: "Your Past Entries, Checked",
     body: "Duty you may have overpaid on past entries, and could recover.",
     tone: "bg-secondary/10 text-secondary",
-    soon: !AUDITS_ENABLED,
   },
 ];
 
@@ -141,7 +136,7 @@ const LatestActions = () => {
 // What the tour shows, as things that would already be happening with their imports in: each
 // card one feature, locked until there are imports. Examples, in the Tracker's own terms (rates
 // before → after in %, savings as "may qualify").
-const TEASERS: { Icon: Icon; tone: string; label: string; title: string; detail: string; soon?: boolean }[] = [
+const TEASERS: { Icon: Icon; tone: string; label: string; title: string; detail: string }[] = [
   { Icon: BellAlertIcon, tone: "bg-error/15 text-error", label: "Tariff alert", title: "A rate change hits 3 of your imports", detail: "Steel brackets, China: 52.9% → 77.9%" },
   { Icon: ScaleIcon, tone: "bg-warning/15 text-warning", label: "AD/CVD", title: "A case may cover one of your imports", detail: "Aluminum extrusions from China" },
   { Icon: TableCellsIcon, tone: "bg-primary/15 text-primary", label: "Every tariff", title: "50.0% duty, every tariff stacked up", detail: "Pump parts from Brazil" },
@@ -151,7 +146,6 @@ const TEASERS: { Icon: Icon; tone: string; label: string; title: string; detail:
     label: "Savings",
     title: "May qualify for USMCA",
     detail: "Centrifugal pumps, Mexico: 25.0% → 0.0%",
-    soon: !SAVINGS_ENABLED,
   },
 ];
 
@@ -213,7 +207,6 @@ const TourTeaser = ({ from }: { from: string }) => (
               </span>
               <span className="text-xs font-bold uppercase tracking-wider text-base-content/60">{t.label}</span>
             </span>
-            {t.soon && <span className={tt.chip("neutral")}>Soon</span>}
           </span>
           <span className="text-sm font-semibold leading-snug text-base-content">{t.title}</span>
           <span className="text-xs text-base-content/60">{t.detail}</span>
@@ -286,7 +279,6 @@ export const SetupPage = ({ from }: { from: string }) => (
             </span>
             <span className="flex flex-wrap items-center gap-2 text-base font-semibold text-base-content">
               {f.title}
-              {f.soon && <span className={tt.chip("neutral")}>Soon</span>}
             </span>
             <span className="text-sm leading-relaxed text-base-content/65">{f.body}</span>
           </li>

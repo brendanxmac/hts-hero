@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRightIcon, CalculatorIcon, ChevronRightIcon, MagnifyingGlassIcon, SignalIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
-import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { AUTO_AUDITING, FREE_FOREVER_LINE, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { ANNUAL_DISCOUNT, CLASSIFY_PLANS, LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "../lib/pricing";
@@ -52,11 +51,8 @@ export const PricingHero = () => (
         <p className={`${mk.lead} mt-6 max-w-2xl`}>
           The Tariff Calculator is free and unlimited. When you want to track every tariff on your own imports, get alerted when a change hits one, and run impact checks to see exactly how each new tariff affects them, try the Tariff Tracker free for {REVERSE_TRIAL.days} days: everything, on up to {REVERSE_TRIAL.imports} imports, with no credit card. {FREE_FOREVER_LINE}
         </p>
-        <p className={`${mk.body} mt-4 flex max-w-2xl flex-wrap items-center gap-x-2 gap-y-1`}>
-          <ComingChip />
-          <span>
-            {SAVINGS_DETECTION.name} and {AUTO_AUDITING.name.toLowerCase()}, included in the trial and every Tracker plan at no extra cost when they launch.
-          </span>
+        <p className={`${mk.body} mt-4 max-w-2xl`}>
+          {SAVINGS_DETECTION.name} and {AUTO_AUDITING.name.toLowerCase()}, included in the trial and every Tracker plan at no extra cost.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <a href="#estimate" className={`${mk.buttonPrimary} h-14 px-8 text-lg`}>

@@ -4,6 +4,7 @@ import { CountrySnapshot } from "./templates/CountrySnapshot"
 import { HeadToHead } from "./templates/HeadToHead"
 import { Quiz } from "./templates/Quiz"
 import { News } from "./templates/News"
+import { OddRate } from "./templates/OddRate"
 import { Ranking } from "./templates/Ranking"
 import { RateSpread } from "./templates/RateSpread"
 import { RateTimeline } from "./templates/RateTimeline"
@@ -24,4 +25,5 @@ export const COMPONENTS: Record<TemplateId, ComponentType<any>> = {
   TopList,
   Quiz,
   News,
+  OddRate,
 }

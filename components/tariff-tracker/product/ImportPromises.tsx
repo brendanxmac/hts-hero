@@ -5,17 +5,16 @@ import { BellAlertIcon, ClipboardDocumentCheckIcon, ReceiptPercentIcon } from "@
 import { CardRow, CardSections } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { AUDITS_ENABLED, SAVINGS_AUDITS_LABEL, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { ProductTab } from "../sections";
 import { useTracker } from "../TrackerContext";
 import { useTrackerNav } from "../shell/TrackerNav";
 
 // The top of an import's Overview (DESIGN_SYSTEM.md §15): what the Tracker does for this import,
 // its alerts, savings and audits, side by side in one module. Each says where it stands (a chip),
-// what it means in one line, and has one button that moves it on (alerts turn on and off in the import's header, on every tab). Savings and Audits say
-// they're coming until they launch (libs/tariff-tracker/features.ts).
+// what it means in one line, and has one button that moves it on (alerts turn on and off in the import's header, on every tab).
+// Savings and Audits have no chip: their buttons open the tab.
 
-const Pillar = ({ icon, title, status, body, action }: { icon: ReactNode; title: string; status: ReactNode; body: string; action: ReactNode }) => (
+const Pillar = ({ icon, title, status, body, action }: { icon: ReactNode; title: string; status?: ReactNode; body: string; action: ReactNode }) => (
   <section className={`${ui.cardSection} flex flex-col gap-2 py-5!`} aria-label={title}>
     <div className="flex items-center justify-between gap-3">
       <span className="flex items-center gap-2">
@@ -35,7 +34,6 @@ export const ImportPromises = ({ productKey, onOpenTab }: { productKey: string; 
   const { trackedKeys } = useTracker();
   const nav = useTrackerNav();
   const alertsOn = trackedKeys.has(productKey);
-  const soon = <span className={tt.chip()}>{SAVINGS_AUDITS_LABEL}</span>;
   return (
     <CardSections>
       <div className={`${ui.cardSection} pb-0! pt-5!`}>
@@ -61,22 +59,20 @@ export const ImportPromises = ({ productKey, onOpenTab }: { productKey: string; 
         <Pillar
           icon={<ReceiptPercentIcon className="h-4 w-4" />}
           title="Savings"
-          status={SAVINGS_ENABLED ? undefined : soon}
           body="Trade programs, exemptions and cheaper countries that could lower the duty on it, checked for you."
           action={
             <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => onOpenTab("savings")}>
-              {SAVINGS_ENABLED ? "See savings" : "See what's coming"}
+              See savings
             </button>
           }
         />
         <Pillar
           icon={<ClipboardDocumentCheckIcon className="h-4 w-4" />}
           title="Audits"
-          status={AUDITS_ENABLED ? undefined : soon}
           body="The duty on each of its past entries, checked against the rates in force on the entry date."
           action={
             <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => onOpenTab("audit")}>
-              {AUDITS_ENABLED ? "Audit entries" : "See what's coming"}
+              Audit entries
             </button>
           }
         />

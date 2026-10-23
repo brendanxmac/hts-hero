@@ -1,5 +1,4 @@
 import { ComponentType, ReactNode } from "react";
-import { SAVINGS_AUDITS_LABEL } from "@/libs/tariff-tracker/features";
 import { SectionSlug } from "../../sections";
 import { TourStepId } from "./tourStore";
 import { AdcvdVisual, AlertsVisual, AuditsVisual, ImportsVisual, ManageVisual, SavingsVisual } from "./visuals";
@@ -30,8 +29,6 @@ export interface TourStep {
   // "Take me there": its label, and the tab it opens (adding imports opens the import flow)
   action?: string;
   tab: SectionSlug;
-  // Not out yet: when it will be
-  soon?: string;
   video: string | null;
   videoLength?: string;
   Visual: ComponentType<{ run: number }>;
@@ -130,17 +127,16 @@ export const TOUR_STEPS: TourStep[] = [
     id: "savings",
     rail: "Savings",
     title: "Find ways to pay less duty",
-    lead: "We'll check every import for duty you may not need to pay, and rank what could save the most.",
+    lead: "We check every import for duty you may not need to pay, and rank what could save the most.",
     how: [
-      <>Nothing to set up: it runs on the imports you&apos;ve already added, the day it launches.</>,
+      <>Nothing to set up: it runs on the imports you&apos;ve already added.</>,
       <>
         Open <B>Savings</B> to see trade programs you may qualify for, exclusions worth checking and cheaper countries of origin.
       </>,
       <>Each finding says what it would take, ready to talk through with your broker.</>,
     ],
-    action: "See what's coming",
+    action: "Open Savings",
     tab: "savings",
-    soon: SAVINGS_AUDITS_LABEL,
     ...video("savings"),
     Visual: SavingsVisual,
   },
@@ -156,9 +152,8 @@ export const TOUR_STEPS: TourStep[] = [
       <>We check every line against the rates in force on its entry date, exclusions included.</>,
       <>You get a clear report: entries that may have overpaid, and any underpayments to fix, ready for your broker.</>,
     ],
-    action: "See what's coming",
+    action: "Open Audits",
     tab: "entries",
-    soon: SAVINGS_AUDITS_LABEL,
     ...video("audits"),
     Visual: AuditsVisual,
   },

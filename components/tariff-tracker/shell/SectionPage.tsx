@@ -27,7 +27,6 @@ export const SectionHeader = ({
         <h1 className={`${tt.pageTitle} flex items-center gap-3`}>
           {section.title}
           {section.beta && <BetaChip />}
-          {section.comingSoon && <span className={tt.chip("primary")}>Coming soon</span>}
         </h1>
         <p className={`${tt.subtitle} m-0`}>{summary ?? section.summary}</p>
       </div>

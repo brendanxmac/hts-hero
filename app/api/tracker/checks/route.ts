@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient, createClient } from "@/app/api/supabase/server";
 import { readTrackerAccess } from "@/libs/tariff-tracker/access";
 import { canSpendCheck, CheckKind, hasChecked, isPaid } from "@/libs/tariff-tracker/plan";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 export const dynamic = "force-dynamic";
 
@@ -28,17 +27,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unknown check." }, { status: 400 });
     }
 
-    // Off for the Tracker MVP (libs/tariff-tracker/features.ts)
-    if ((kind === "savings" && !SAVINGS_ENABLED) || (kind === "audit" && !AUDITS_ENABLED)) {
-      return NextResponse.json({ error: "Savings and audits are coming soon." }, { status: 403 });
-    }
-
     const admin = createAdminClient();
     const access = await readTrackerAccess(admin, user.id);
     if (isPaid(access) || hasChecked(access, kind as CheckKind, ref)) return NextResponse.json(access);
     if (!canSpendCheck(access, kind as CheckKind, ref)) {
       return NextResponse.json(
-        { error: kind === "savings" ? "You've used your free savings checks." : "You've used your free audit checks.", access },
+        { error: kind === "savings" ? "Savings checks come with a Tracker plan." : "Audit checks come with a Tracker plan.", access },
         { status: 402 }
       );
     }

@@ -27,7 +27,6 @@ import { programColors } from "../programColors";
 import { TrackedProduct } from "../report";
 import { useTracker } from "../TrackerContext";
 import { importColumns } from "./importColumns";
-import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { useCatalogAdcvd } from "@/components/adcvd/useCatalogAdcvd";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import type { Density } from "@/components/ui/table";
@@ -41,7 +40,7 @@ import type { Density } from "@/components/ui/table";
 // covers what's showing; the summary sums it up). The search, filters and bulk actions sit in the
 // table's panel, over the rows they act on.
 
-const FACETS = ["country", "chapter", "tariffs", ...(SAVINGS_ENABLED ? ["savings"] : []), "alerts"];
+const FACETS = ["country", "chapter", "tariffs", "savings", "alerts"];
 
 export const ImportsTable = ({
   rows,

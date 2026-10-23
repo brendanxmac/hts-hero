@@ -4,7 +4,6 @@ import { ArrowRightIcon, BellAlertIcon, ChartBarIcon, CurrencyDollarIcon, ScaleI
 import * as tt from "@/components/ui/styles/tracker";
 import * as ui from "@/components/ui/styles";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
-import { SAVINGS_AUDITS_LABEL } from "@/libs/tariff-tracker/features";
 import { useTariffUpdates } from "../overview/useTariffUpdates";
 import { CommandCenter } from "@/components/home/command/CommandCenter";
 import { delay, StepHeading } from "./parts";
@@ -35,7 +34,7 @@ const BENEFITS = [
   {
     Icon: CurrencyDollarIcon,
     title: "Savings and Audits",
-    text: `Programs you may qualify for, and duty you may have overpaid. ${SAVINGS_AUDITS_LABEL}.`,
+    text: "Programs you may qualify for, and duty you may have overpaid.",
   },
 ];
 

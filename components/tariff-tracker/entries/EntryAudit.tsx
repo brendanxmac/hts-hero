@@ -2,7 +2,7 @@
 
 import * as ui from "@/components/ui/styles";
 import { TableStandIn } from "@/components/ui/stand-ins";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { AccountGate } from "../access/AccountGate";
 import { sectionBySlug } from "../sections";
 import { NeedsProducts } from "../shell/NeedsProducts";
@@ -18,7 +18,7 @@ import { useAuditRows } from "./useAuditRows";
 
 // The Entry audit tab (Beta): every logged entry across the catalog, checked against the duty in
 // force on its entry date. Each check spends one of the trial's audit checks
-// (TRIAL_ALLOWANCE.auditChecks, never reset; checking the same entry again is free); paid plans
+// (the trial and paid plans; none on the free plan, TRIAL_ALLOWANCE.auditChecks being 0); paid plans
 // audit without limit (PRICING.md). Each product's Audit tab is the same, for that product.
 
 const AuditReport = () => {
@@ -57,7 +57,7 @@ export const EntryAudit = () => {
       feature="entries"
       page="tracker"
       title="Check What You Paid on Past Entries"
-      teaser={`Every account gets ${TRIAL_ALLOWANCE.auditChecks} free audit checks.`}
+      teaser={`Free for ${REVERSE_TRIAL.days} days with every new account.`}
       points={section.planned}
       preview={<TableStandIn columns={["Entry", "Product", "Paid", "Owed"]} />}
       minHeight="min-h-112"

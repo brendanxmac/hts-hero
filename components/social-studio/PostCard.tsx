@@ -64,6 +64,11 @@ const EDITABLE: Record<TemplateId, { key: string; label: string }[]> = {
     { key: "rateNote", label: "Rate applies to" },
     { key: "products", label: "What" },
   ],
+  OddRate: [
+    { key: "headline", label: "Headline" },
+    { key: "product", label: "Product" },
+    { key: "footnote", label: "Footnote" },
+  ],
 }
 
 const CopyBox = ({ label, text, onChange }: { label: string; text: string; onChange?: (text: string) => void }) => (

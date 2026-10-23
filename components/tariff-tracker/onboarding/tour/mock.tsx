@@ -51,7 +51,6 @@ export const MockWindow = ({ tab, children, cursor }: { tab: SectionSlug; childr
           >
             <s.Icon className="h-3 w-3 shrink-0" />
             <span className="flex-1 truncate">{s.label}</span>
-            {s.comingSoon && <span className="rounded-full bg-tt-side-active px-1 text-[0.5rem] font-bold uppercase text-base-content/50">Soon</span>}
           </span>
         ))}
       </div>
