@@ -29,7 +29,6 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
 }
 
 const SITE = `https://${config.domainName}`
-const HTS_SHOWN = 40
 
 const clip = (text: string, max: number) => (text.length <= max ? text : `${text.slice(0, text.lastIndexOf(" ", max - 1))}…`)
 
@@ -60,25 +59,13 @@ const HtsCode = ({ code, href }: { code: string; href: string | null }) => {
   )
 }
 
-// A list of codes, the first HTS_SHOWN shown and the rest behind "Show all"
+// A list of codes, every one shown
 const CodeList = ({ codes, links }: { codes: string[]; links: Record<string, string | null> }) => (
-  <>
-    <div className="flex flex-wrap gap-1.5">
-      {codes.slice(0, HTS_SHOWN).map((code) => (
-        <HtsCode key={code} code={code} href={links[code]} />
-      ))}
-    </div>
-    {codes.length > HTS_SHOWN && (
-      <details className="mt-3">
-        <summary className="cursor-pointer text-xs font-semibold text-primary">Show all {codes.length}</summary>
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {codes.slice(HTS_SHOWN).map((code) => (
-            <HtsCode key={code} code={code} href={links[code]} />
-          ))}
-        </div>
-      </details>
-    )}
-  </>
+  <div className="flex flex-wrap gap-1.5">
+    {codes.map((code) => (
+      <HtsCode key={code} code={code} href={links[code]} />
+    ))}
+  </div>
 )
 
 // "https://www.whitehouse.gov/wp-content/uploads/2026/09/ANNEX-I-AUTO.pdf" → "ANNEX-I-AUTO.pdf", "whitehouse.gov"

@@ -18,7 +18,7 @@ import { recordLookup } from "../../../libs/recent-lookups";
 import { copyToClipboard } from "../../../utilities/data";
 import { calculate } from "../../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../../tariffs/engine-v2/data";
-import { addDays, calculateHistory } from "../../../tariffs/engine-v2/history";
+import { addDays, calculateHistory, lastScheduledChange } from "../../../tariffs/engine-v2/history";
 import {
   getLatestVerifiedRevision,
   getRevisionForDate,
@@ -349,7 +349,10 @@ export const useTariffFinder = ({
   const historyRange = useMemo(() => {
     const verified = getVerifiedRevisions();
     const last = verified[verified.length - 1];
-    return { from: verified[0].from, to: last.to ?? addDays(todayIso(), 1) };
+    // Through today, or two weeks past the last change already entered for the next 90 days
+    const today = todayIso();
+    const scheduled = lastScheduledChange(AllRules, today, 90);
+    return { from: verified[0].from, to: last.to ?? (scheduled ? addDays(scheduled, 15) : addDays(today, 1)) };
   }, []);
   const history = useMemo(
     () =>
