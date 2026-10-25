@@ -10,12 +10,8 @@ import {
   DocumentIcon,
   ExclamationTriangleIcon,
   ShieldCheckIcon,
-  SparklesIcon,
 } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
-import { useHts } from "@/contexts/HtsContext";
-import { useUser } from "@/contexts/UserContext";
 import * as ui from "@/components/ui/styles";
 import { Countries } from "@/constants/countries";
 import { HtsElement } from "@/interfaces/hts";
@@ -26,7 +22,6 @@ import { Columns, downloadImportTemplate, ParsedImport, parseTable, tableFromTex
 import { parseCatalog } from "../parse";
 import { DetectedColumns, detectColumns, pickSheet, readSpreadsheet, SheetTable } from "../spreadsheet";
 import { useTracker } from "../TrackerContext";
-import { generateProducts, OriginPool } from "../generate";
 import { ADD_STEP, delay, HowTo, Key, SheetIllustration, StepHeading } from "./parts";
 import { Fixing, ReviewPanel, useReview } from "./ReviewPanel";
 import { applyFixes, Fix, Fixes } from "./fixes";
@@ -382,56 +377,9 @@ export const PasteStep = ({ onAdd, onBack, few = false }: { onAdd: OnAdd; onBack
           onChange={(e) => setText(e.target.value)}
           onPaste={onPaste}
         />
-        <DevGenerator onGenerate={setText} />
         <ReviewPanel review={review} fixing={fixing} />
       </>
     </AddLayout>
-  );
-};
-
-// Temporary, for Brendan's testing only: random imports from real 10-digit HTS codes and
-// countries, dropped into the paste box to review before adding. Remove before launch.
-const DEV_GENERATOR_EMAIL = "brendan@htshero.com";
-
-const DevGenerator = ({ onGenerate }: { onGenerate: (text: string) => void }) => {
-  const { user } = useUser();
-  const { htsElements } = useHts();
-  const [count, setCount] = useState(50);
-  const [origins, setOrigins] = useState<OriginPool>("common");
-  if (user?.email !== DEV_GENERATOR_EMAIL) return null;
-  return (
-    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-3">
-      <span className={`${ui.caption} font-semibold`}>Dev: random imports</span>
-      <label htmlFor="tt-ob-generate-count" className="sr-only">
-        How many imports
-      </label>
-      <input
-        id="tt-ob-generate-count"
-        type="number"
-        min={1}
-        className={`${ui.input} w-24 tabular-nums`}
-        value={count}
-        onChange={(e) => setCount(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
-      />
-      <SegmentedControl<OriginPool>
-        label="Countries of origin"
-        options={[
-          { id: "common", label: "Top partners" },
-          { id: "all", label: "Any country" },
-        ]}
-        value={origins}
-        onChange={setOrigins}
-      />
-      <button
-        type="button"
-        className={ui.button({ variant: "primary" })}
-        disabled={!htsElements.length}
-        onClick={() => onGenerate(generateProducts(htsElements, count, origins))}
-      >
-        <SparklesIcon className="h-4 w-4" aria-hidden />
-        Generate {n(count)}
-      </button>
-    </div>
   );
 };
 

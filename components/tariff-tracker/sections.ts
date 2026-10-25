@@ -217,6 +217,8 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "sourcing",
+    // Off for now (2026-10-25): its Storage files aren't in prod yet
+    hidden: true,
     label: "Sourcing",
     Icon: GlobeAltIcon,
     title: "Sourcing",
