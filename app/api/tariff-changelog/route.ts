@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 import { createAdminClient, createClient } from "../supabase/server"
-import { CHANGELOG_ADMIN_EMAIL, parseChangelogInput } from "@/libs/supabase/tariff-changelog"
+import { CHANGELOG_ADMIN_EMAIL, getChangelogEntries, parseChangelogInput } from "@/libs/supabase/tariff-changelog"
 
-// Admin-only writes to the tariff calculator changelog. Reads happen on the pages themselves.
+// Admin-only writes to the tariff calculator changelog, and the admin's read with drafts. Public
+// reads happen on the pages themselves.
 
 async function requireAdmin() {
   const supabase = createClient()
@@ -19,6 +20,12 @@ const refreshPages = () => {
 }
 
 const unauthorized = () => NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+
+// Every entry, drafts too, for the editor on the static changelog page
+export async function GET() {
+  if (!(await requireAdmin())) return unauthorized()
+  return NextResponse.json({ entries: await getChangelogEntries(createAdminClient(), { includeDrafts: true }) })
+}
 
 export async function POST(req: NextRequest) {
   if (!(await requireAdmin())) return unauthorized()

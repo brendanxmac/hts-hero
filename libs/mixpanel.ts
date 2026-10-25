@@ -4,8 +4,17 @@ import mixpanel from "mixpanel-browser"
 // You'll need to replace this with your actual Mixpanel project token
 const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN || ""
 
+// Scripted browsers (Puppeteer, Playwright, Selenium, headless Chrome) and crawlers that run
+// JavaScript aren't tracked: they inflated visitors and every funnel (2026-10 scraper traffic). Most
+// of that traffic is stopped by the Vercel Firewall before the page loads; this catches the rest
+// that says what it is.
+const isAutomated = () =>
+  navigator.webdriver === true || /bot\/|crawler|spider|HeadlessChrome|PhantomJS|Lighthouse/i.test(navigator.userAgent)
+
+const ENABLED = typeof window !== "undefined" && !!MIXPANEL_TOKEN && !isAutomated()
+
 // Browser-side Mixpanel initialization
-if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+if (ENABLED) {
   mixpanel.init(MIXPANEL_TOKEN, {
     debug: process.env.NODE_ENV === "development",
     // Page views on client-side navigation too (Next <Link> between /hts pages), not just full loads
@@ -157,7 +166,7 @@ export const trackEvent = (
   eventName: MixpanelEvent,
   properties?: Record<string, any>,
 ) => {
-  if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+  if (ENABLED) {
     mixpanel.track(eventName, properties)
   }
 }
@@ -166,7 +175,7 @@ export const identifyUser = (
   userId: string,
   userProperties?: Record<string, any>,
 ) => {
-  if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+  if (ENABLED) {
     mixpanel.identify(userId)
     if (userProperties) {
       mixpanel.people.set(userProperties)
@@ -175,7 +184,7 @@ export const identifyUser = (
 }
 
 export const resetUser = () => {
-  if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+  if (ENABLED) {
     mixpanel.reset()
   }
 }
@@ -187,7 +196,7 @@ export const trackEventOnce = (
   eventName: MixpanelEvent,
   properties?: Record<string, any>,
 ) => {
-  if (typeof window === "undefined" || !MIXPANEL_TOKEN) return
+  if (!ENABLED) return
   const storageKey = `mp-once:${key}`
   try {
     if (localStorage.getItem(storageKey)) return
@@ -202,7 +211,7 @@ export const trackEventOnce = (
 export const registerMixpanelSuperProperties = (
   properties: Record<string, unknown>,
 ) => {
-  if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+  if (ENABLED) {
     mixpanel.register(properties)
   }
 }

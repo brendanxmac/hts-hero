@@ -18,6 +18,13 @@ export const sortEntries = (entries: ChangelogEntry[]) =>
     (a, b) => b.entry_date.localeCompare(a.entry_date) || b.created_at.localeCompare(a.created_at),
   );
 
+// Every entry, drafts too; null when the API says this isn't the admin
+export const loadAllEntries = async () => {
+  const res = await fetch("/api/tariff-changelog");
+  if (!res.ok) return null;
+  return ((await res.json()) as { entries: ChangelogEntry[] }).entries;
+};
+
 export const request = async (method: "POST" | "PATCH" | "DELETE", body?: object, id?: string) => {
   const res = await fetch(`/api/tariff-changelog${id ? `?id=${encodeURIComponent(id)}` : ""}`, {
     method,

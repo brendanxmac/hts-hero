@@ -30,7 +30,7 @@ interface HtsCodePageProps {
   params: Promise<{ code: string }>;
 }
 
-export const revalidate = 86400;
+export const revalidate = 432000; // 5 days
 
 export async function generateStaticParams(): Promise<{ code: string }[]> {
   return [];

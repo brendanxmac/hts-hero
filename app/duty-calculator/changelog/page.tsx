@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import config from "@/config";
-import { createAdminClient, createClient } from "@/app/api/supabase/server";
-import { CHANGELOG_ADMIN_EMAIL, getChangelogEntries } from "@/libs/supabase/tariff-changelog";
+import { createPublicClient } from "@/app/api/supabase/server";
+import { getChangelogEntries } from "@/libs/supabase/tariff-changelog";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
 import { ChangelogList } from "@/components/duty-calculator/changelog/ChangelogList";
 import { THEME_LIGHT } from "@/components/ui/theme";
@@ -22,14 +22,13 @@ export const metadata: Metadata = {
   },
 };
 
+// Static: published entries only, rebuilt when an entry is saved (app/api/tariff-changelog). The
+// calculator's pages link here, so every visit to them prefetches it; reading the visitor's session
+// would render it on each of those. The admin's drafts and editor load in the browser (ChangelogList).
+export const revalidate = 86400;
+
 export default async function TariffChangelogPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const isAdmin = user?.email === CHANGELOG_ADMIN_EMAIL;
-  // The admin also sees drafts, so the read uses the service role only for them
-  const entries = await getChangelogEntries(isAdmin ? createAdminClient() : supabase, { includeDrafts: isAdmin });
+  const entries = await getChangelogEntries(createPublicClient());
   const latestVerified = getLatestVerifiedRevision();
 
   return (
@@ -64,7 +63,7 @@ export default async function TariffChangelogPage() {
 
       <div className={`${mk.container} pb-24 pt-6 sm:pt-10`}>
         <div className="w-full max-w-3xl">
-          <ChangelogList initialEntries={entries} isAdmin={isAdmin} />
+          <ChangelogList initialEntries={entries} />
         </div>
       </div>
     </main>
