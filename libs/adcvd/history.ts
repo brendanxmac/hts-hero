@@ -21,9 +21,9 @@ export const fillHistory = async (db: Db, c: CaseRow) => {
   ])
   const steps: { date: string; event: EventType; title: string }[] = [
     ...docs.map((d) => ({ date: d.publication_date, event: eventOf(d.title, "commerce"), title: d.title })),
-    // Ours: the ITC's votes and the list appearances aren't in the Commerce docket
+    // Ours: the ITC's votes and the list appearances (and final-period rows) aren't in the Commerce docket
     ...((own ?? []) as Pick<EventRow, "published_on" | "event" | "title" | "agency">[])
-      .filter((e) => e.agency === "itc" || ["review_opportunity", "review_init", "sunset_init", "suspension"].includes(e.event))
+      .filter((e) => e.agency === "itc" || ["review_opportunity", "review_init", "sunset_init", "suspension", "final_period"].includes(e.event))
       .map((e) => ({ date: e.published_on, event: e.event, title: e.title })),
   ].sort((a, b) => a.date.localeCompare(b.date))
 

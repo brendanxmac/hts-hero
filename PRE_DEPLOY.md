@@ -87,6 +87,14 @@ Paste each migration into the SQL editor, in this order (foreign keys):
 - [x] `tracker_onboarding.sql` last (needs `tracker_catalogs`): the trial-start trigger and its
       backfill, dated to match `freshStartOn` (see step 1).
 
+- [ ] `adcvd.sql` again for its **2026-10-23** section (fr_* / ita_* / hts_sources: scope codes from
+      ITA's case pages), in dev and prod, **before** deploying the code that writes them: without
+      it the scope reader's writes fail. Then `npm run adcvd:golden -- --strict` in dev.
+- [ ] After that migration and before the AD/CVD copy below: `adcvd:copy-to-prod` only adds and
+      updates cases, so the 8 typo cases removed in dev (2026-10-23) stay in prod. Run
+      `npm run adcvd:phantoms` against prod (prod keys in `.env.local`), check the list, then
+      `-- --apply`. Then copy, so prod gets dev's ITA codes, merged codes and corrected statuses.
+
 **Dev database too:** re-run `tariff_update_scopes.sql` there (it gained
 `scope_conditional_exclusions` on Oct 20; every line is `IF NOT EXISTS`), or `adcvd:copy-to-prod`
 and the scope reader fail on the missing column.
@@ -100,6 +108,13 @@ and the scope reader fail on the missing column.
 - [x] **Once only, before deploying.** After launch prod is the source of truth for tariff actions:
       never run the copy again. It would overwrite prod's reviews, approvals and AI budget with dev's.
       More history goes in through the Backfill button instead (step 6).
+- [ ] **Sourcing tab: upload the country-to-country files to prod's Storage** (added 2026-10-24).
+      The tab's "Where Its Exports Go" panel, "What Other Sources Say" table and supply mismatch
+      evidence read `sourcing/bilateral/<hs6>.json` from Supabase Storage (a public bucket the script
+      creates). Build them once (`scripts/sourcing/build_bilateral.py`, from the Atlas's CC0
+      country-to-country CSV), then point `.env.local` at prod for one run of
+      `npm run sourcing:upload-bilateral -- <out dir>`, and back. Without them those panels are
+      simply missing; nothing breaks.
 
 ## 4. Services and settings
 

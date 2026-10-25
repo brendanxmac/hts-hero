@@ -2,10 +2,12 @@ import TariffSourcesDashboard from "@/components/tariff-sources/TariffSourcesDas
 import type { SourceItemRow, SourceRunRow, UpdateRow } from "@/components/tariff-sources/types"
 import { createAdminClient } from "../api/supabase/server"
 import { guardAdmin } from "@/libs/admin/access"
+import { impactChecksWaiting } from "@/libs/admin/queue"
+import { NEWS_ALERTS_FROM } from "@/libs/email/news-producer"
 
 export const dynamic = "force-dynamic"
 export const metadata = {
-  title: "Tariff sources | HTS Hero",
+  title: "Tariff Updates | HTS Hero Admin",
   robots: { index: false, follow: false },
 }
 
@@ -35,7 +37,7 @@ const loadAll = async <T,>(db: Db, table: string, columns: string, orderBy: stri
 export default async function TariffSourcesPage() {
   await guardAdmin()
   const db = createAdminClient()
-  const [items, updates, runs] = await Promise.all([
+  const [items, updates, runs, impactWaiting] = await Promise.all([
     loadAll<SourceItemRow>(
       db,
       "tariff_source_items",
@@ -49,12 +51,15 @@ export default async function TariffSourcesPage() {
       "last_activity_at"
     ),
     db.from("tariff_source_runs").select("source, trigger, started_at, finished_at, found, added, error").order("started_at", { ascending: false }).limit(300),
+    impactChecksWaiting(db).catch((): Awaited<ReturnType<typeof impactChecksWaiting>> => []),
   ])
   return (
     <TariffSourcesDashboard
       items={items.rows}
       updates={updates.rows}
       runs={(runs.data ?? []) as SourceRunRow[]}
+      impactWaiting={impactWaiting}
+      alertsFrom={NEWS_ALERTS_FROM}
       loadError={items.error ?? updates.error ?? runs.error?.message ?? null}
     />
   )

@@ -1,4 +1,5 @@
 import { decodeEntities } from "../tariff-sources/text"
+import { countryFromName, countryOfCase } from "./countries"
 import type { EventType } from "./types"
 
 // Reading AD/CVD notices without AI: case numbers, ITC investigation numbers, what kind of notice
@@ -103,9 +104,10 @@ export const eventOf = (title: string, agency: "commerce" | "itc"): EventType =>
   if (/Advance Notification of Sunset Reviews?/i.test(t)) return "list_sunset_notice"
   if (/Notice of Scope Rulings?\b|Scope Ruling Applications Filed/i.test(t)) return "list_scope_rulings"
   if (/Circumvention/i.test(t)) return "circumvention"
-  if (/Court Decision|Court of International Trade|Federal Circuit/i.test(t)) return "court"
+  // "Notice of Court Decision…; and Notice of Revocation of Antidumping Order": the order ends
+  if (/Court Decision|Court of International Trade|Federal Circuit/i.test(t)) return /Revocation of (?:the )?(?:Antidumping|Countervailing) (?:Duty )?Orders?/i.test(t) && !/in Part/i.test(t) ? "revocation" : "court"
   if (/Revocation of (?:the )?(?:Antidumping|Countervailing|Orders?)|and Revocation of|Revocation of .*Orders?$/i.test(t) && !/in Part/i.test(t)) return "revocation"
-  if (/Continuation of (?:the )?(?:Antidumping|Countervailing|Orders?|Suspension)/i.test(t)) return "continuation"
+  if (/Continuation of (?:the )?(?:Antidumping|Countervailing|Orders?|Suspension|Suspended)/i.test(t)) return "continuation"
   if (/Sunset Reviews?|Five-Year Reviews?/i.test(t)) return /Initiation/i.test(t) ? "sunset_init" : "sunset_result"
   if (/Scope Ruling/i.test(t)) return "scope_ruling"
   if (/Changed Circumstances/i.test(t)) return "changed_circumstances"
@@ -115,8 +117,11 @@ export const eventOf = (title: string, agency: "commerce" | "itc"): EventType =>
     if (/Final Results/i.test(t)) return "review_final"
     return "review_other"
   }
-  if (/Suspension Agreement|Suspended Investigation|Agreement Suspending/i.test(t)) return "suspension"
-  if (/Termination of (?:the )?(?:Less-Than-Fair-Value |Countervailing Duty |Antidumping Duty )?Investigations?|Rescission of (?:the )?(?:Less-Than-Fair-Value|Countervailing Duty|Antidumping Duty) Investigation/i.test(t)) return "termination"
+  // A suspension agreement ended and the order issued instead
+  if (/Termination of (?:the )?(?:Suspension Agreement|Agreement Suspending)/i.test(t) && /\bOrders?\b/i.test(t)) return "order"
+  if (/Suspension Agreement|Suspended Investigation|Agreement Suspending|^Suspension of (?:the )?(?:Antidumping|Countervailing)/i.test(t)) return "suspension"
+  // \b: "Amended Preliminary Determination of the Less-Than-Fair-Value Investigation" isn't one
+  if (/\bTermination of (?:the )?(?:Less-Than-Fair-Value |Countervailing Duty |Antidumping Duty )?Investigations?|\bRescission of (?:the )?(?:Less-Than-Fair-Value|Countervailing Duty|Antidumping Duty) Investigation/i.test(t)) return "termination"
   if (/Initiation of (?:Less-Than-Fair-Value|Countervailing Duty|Antidumping Duty) Investigations?/i.test(t)) return "initiation"
   // An order wins over the determination it follows ("Amended Final Determination; … Antidumping Duty Orders")
   if (/(?:Antidumping|Countervailing) (?:Duty )?Orders?\b/i.test(t) && !/Review|Continuation|Revocation|Rescission|Court|Scope|Circumvention/i.test(t)) return "order"
@@ -143,8 +148,89 @@ export const revokedCountries = (title: string) => {
     .filter(Boolean)
 }
 
+// The countries a continuation's suspended investigations cover, when the same notice continues
+// other countries' orders: "Continuation of Antidumping Duty Order on Certain Cut-to-Length Carbon
+// Steel Plate From the People's Republic of China and Continuation of Suspended Antidumping Duty
+// Investigations on Certain Cut-to-Length Carbon Steel Plate From the Russian Federation and
+// Ukraine" → ["Russian Federation", "Ukraine"]
+export const suspendedCountries = (title: string) => {
+  const flat = title.replace(/\s+/g, " ")
+  const at = flat.search(/Suspen/i)
+  if (at < 0) return []
+  const from = flat.slice(at).match(/\b[Ff]rom (?:the )?(.+?)(?:[;:]|\band Continuation\b|$)/)?.[1]
+  if (!from) return []
+  return from
+    .replace(/\(.*?\)/g, "")
+    .split(/,\s*(?:and\s+)?|\s+and\s+(?!Herzegovina|Tobago)/)
+    .map((c) => c.replace(/^the\s+/i, "").trim())
+    .filter(Boolean)
+}
+
+// A title about a suspension agreement (a suspended investigation, not an order)
+export const isSuspension = (title: string) => /Agreement Suspending|Suspension Agreement|Suspended (?:Antidumping |Countervailing )?(?:Duty )?Investigations?|Continuation of Suspension/i.test(title)
+
 // A final or preliminary decision that ended a case: "Negative" in a determination's title
 export const isNegative = (title: string) => /\bNegative\b/i.test(title) && !/\bAffirmative\b/i.test(title)
+
+// The cases an ITC final vote ends, from its text (titles only say "Determinations"): countries
+// found "not materially injured" (or "not materially retarded"), or whose imports were negligible
+// and the investigation terminated. A split vote ends only those countries: Float Glass, March
+// 2026, injured by imports from China, Malaysia's antidumping investigation terminated.
+//   kind: AD or CVD when the clause names only less-than-fair-value or only subsidized imports
+export interface ItcEnded {
+  kind: "AD" | "CVD" | null
+  countries: string[]
+}
+
+const countriesIn = (text: string) => {
+  const words = text.replace(/[(),;]/g, " ").split(/\s+/).filter(Boolean)
+  const out: string[] = []
+  for (let i = 0; i < words.length; i++) {
+    // The longest name starting here ("Bosnia and Herzegovina", "Republic of Korea")
+    for (let n = 4; n >= 1; n--) {
+      const country = /^[A-Z]/.test(words[i]) ? countryFromName(words.slice(i, i + n).join(" ")) : null
+      if (country) {
+        if (!out.includes(country)) out.push(country)
+        i += n - 1
+        break
+      }
+    }
+  }
+  return out
+}
+
+const kindOf = (clause: string): ItcEnded["kind"] => {
+  const ltfv = /less than fair value|LTFV|antidumping/i.test(clause)
+  const subsidy = /subsidi[sz]ed|countervailing/i.test(clause)
+  return ltfv && !subsidy ? "AD" : subsidy && !ltfv ? "CVD" : null
+}
+
+export const itcEndedCases = (text: string): ItcEnded[] => {
+  const flat = text.slice(0, 10_000).replace(/\s+/g, " ").replace(/``|''/g, '"')
+  const out: ItcEnded[] = []
+  for (const sentence of flat.split(/(?<=[a-z0-9)"'])\.\s+(?=[A-Z])/)) {
+    // "…is not materially injured or threatened with material injury, and the establishment of an
+    // industry … is not materially retarded, by reason of imports of X from Y …"
+    const no = sentence.search(/\b(?:is|are) not materially (?:injured|retarded)\b/i)
+    if (no >= 0) {
+      const clause = sentence.slice(no).split(/\bThe Commission further\b/)[0]
+      // Just "by reason of imports of X from Y": not the HTS sentence or "the United States" after it
+      const imports = clause.slice(Math.max(0, clause.search(/by reason of imports/i))).split(/,? provided for in|,? that (?:have been|are|were) |\bfound by\b/i)[0]
+      const countries = countriesIn(imports).filter((c) => c !== "US")
+      if (countries.length) out.push({ kind: kindOf(clause), countries })
+    }
+    // "…are negligible and terminates the antidumping duty investigation concerning Malaysia"
+    for (const m of Array.from(sentence.matchAll(/terminates? (?:the|its) (antidumping|countervailing)(?: duty)? investigations? (?:concerning|on|of|with respect to) ([^.;]+)/gi))) {
+      const countries = countriesIn(m[2]).filter((c) => c !== "US")
+      if (countries.length) out.push({ kind: /antidumping/i.test(m[1]) ? "AD" : "CVD", countries })
+    }
+  }
+  return out
+}
+
+// Whether a case is among the ones an ITC vote ended
+export const itcEnded = (ended: ItcEnded[], kind: "AD" | "CVD", country: string | null) =>
+  !!country && ended.some((e) => (!e.kind || e.kind === kind) && e.countries.includes(country))
 
 const CODE = /\b(\d{4})\.(\d{2})(?:\.(\d{4})|\.(\d{2})(?:\.(\d{2}))?)?\b/g
 
@@ -255,80 +341,164 @@ export interface ListRow {
   // Under the "Suspension Agreements" heading of a list notice
   suspended: boolean
   itc_number: string | null
+  // The row's review period's last day ("12/1/24-12/15/24" → 2024-12-15), when it gives one. Review
+  // periods end on a month's last day; one ending mid-month is the final stub of an order that
+  // ended (revoked on the 16th): see finalPeriod
+  period_end: string | null
+  // A footnote on the row says the order has been revoked ("revoked due to litigation")
+  revoked_note: boolean
+}
+
+// A row a list names but that can't be the case it prints: a typo (the number's country or kind
+// doesn't fit the heading it's under). A case we already know is kept anyway (notices.ts): a list's
+// layout can mislead the check too.
+export interface RejectedRow {
+  case_number: string
+  reason: string
+  row: ListRow
 }
 
 const DATE_RANGE = /\d{1,2}\/\d{1,2}\/\d{2,4}\s*[-–]\s*\d{1,2}\/\d{1,2}\/\d{2,4}/g
 // "INDIA: Mattresses, A-533-919" or "The People's Republic of China:" at the start of a line
 const COUNTRY_LINE = /^((?:THE |The )?[A-Z][A-Za-z'’[\]. ()-]{1,60}?):\s*(.*)$/
 // Headings inside the list, which end whatever came before them
-const SECTION_LINE = /^(?:(?:Antidumping|Countervailing) Duty Proceedings|Suspension Agreements?|Suspended Investigations?|(?:AD|CVD) Proceedings)\s*$/i
+// (with the table's column heading on the same line: "CVD Proceedings Period")
+const SECTION_LINE = /^(?:(?:Antidumping|Countervailing) Duty Proceedings|Suspension Agreements?|Suspended Investigations?|(?:AD|CVD) Proceedings)(?:\s+Period(?: of Review)?)?\s*$/i
 const COUNTRY_MARK = "\u0001"
 const SECTION_MARK = "\u0002"
+const PERIOD_MARK = "\u0003"
+// A case number, or one printed without its letter ("Polyethylene Terephthalate Resin, -122-855"):
+// the letter then comes from the section it's under. A number that wraps has the row's period
+// between its parts ("A-  9/1/25-8/31/26 \n 570-941"), which is that row's period.
+const PERIOD_IN = `(?:${PERIOD_MARK}([^${PERIOD_MARK}]*)${PERIOD_MARK}\\s?)?`
+const LIST_CASE = new RegExp(`(?:\\b([AC])|(?<![A-Za-z0-9/-]))-\\s?${PERIOD_IN}(\\d{3})-\\s?${PERIOD_IN}(\\d{3})\\b`, "g")
+
+// "12/15/24" → "2024-12-15"
+const isoDay = (us: string) => {
+  const [m, d, y] = us.split("/").map(Number)
+  const year = y < 100 ? 2000 + y : y
+  return `${year}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`
+}
+
+// Footnotes that say an order listed has been revoked ("\5\ We are listing this order, however,
+// this order has been revoked due to litigation."): their numbers
+const revokedFootnotes = (text: string) => {
+  const out = new Set<string>()
+  for (const m of Array.from(text.matchAll(/^\s*\\(\d{1,2})\\\s([\s\S]*?)(?=^\s*\\\d{1,2}\\\s|^-{20,}|$(?![\s\S]))/gm))) {
+    if (/\b(?:has|have) been revoked\b|\brevoked due to\b/i.test(m[2].replace(/\s+/g, " "))) out.add(m[1])
+  }
+  return out
+}
 
 // The cases a list notice names (annual review opportunities, review initiations, sunset
-// initiations), each with the product and country its row gives. The lists are tables: a country
-// heading ("INDIA:"), then a row per product ("Mattresses, A-533-919 ..... 9/1/25-8/31/26"), long
-// names and case numbers wrapping onto the next line. Read line by line: country headings and
-// section headings become markers, the date column and dot leaders are dropped, and each case's
-// product is the text since the previous case, heading or marker.
-export const listRows = (text: string): ListRow[] => {
+// initiations), each with the product, country and review period its row gives. The lists are
+// tables: a country heading ("INDIA:"), then a row per product ("Mattresses, A-533-919 .....
+// 9/1/25-8/31/26"), long names and case numbers wrapping onto the next line. Read line by line:
+// country headings, section headings and review periods become markers, dot leaders are dropped,
+// and each case's product is the text since the previous case, heading or marker. A row whose
+// number can't be right (its country code isn't the heading's country, or its letter isn't the
+// section's kind) is rejected as a typo.
+export const listRowsChecked = (text: string): { rows: ListRow[]; rejected: RejectedRow[] } => {
+  const footnotes = revokedFootnotes(text)
   const marked = text
     .split("\n")
     .map((line) => {
-      const clean = line.replace(DATE_RANGE, " ").replace(/\.{3,}/g, " ").replace(/\s+$/, "")
+      const clean = line.replace(DATE_RANGE, (range) => ` ${PERIOD_MARK}${range.replace(/\s/g, "")}${PERIOD_MARK} `).replace(/\.{3,}/g, " ").replace(/\s+$/, "")
       // Headings are centered: the whole line, whatever its indent
-      if (SECTION_LINE.test(clean.trim())) return `${SECTION_MARK}${/Suspen/i.test(clean) ? "S" : "-"} `
-      const country = /^\S/.test(clean) && !/^[AC]-\s?\d/.test(clean) ? clean.match(COUNTRY_LINE) : null
+      if (SECTION_LINE.test(clean.trim())) {
+        const kind = /Suspen/i.test(clean) ? "S" : /Countervailing|CVD/i.test(clean) ? "C" : "A"
+        return `${SECTION_MARK}${kind} `
+      }
+      const country = /^\S/.test(clean) && !/^[AC]?-\s?\d/.test(clean) ? clean.match(COUNTRY_LINE) : null
       if (country && !/\d{3}-\d{3}/.test(country[1])) return `${COUNTRY_MARK}${country[1].trim()}${COUNTRY_MARK} ${country[2]}`
+      // A heading with a comma for its colon ("SERBIA, Mattresses, A-801-002"): a country in capitals
+      const comma = /^\S/.test(clean) ? clean.match(/^([A-Z][A-Z'’[\]. ()-]{2,60}?),\s+(.*)$/) : null
+      if (comma && countryFromName(comma[1])) return `${COUNTRY_MARK}${comma[1].trim()}${COUNTRY_MARK} ${comma[2]}`
       return clean
     })
     .join(" ")
     .replace(/\s+/g, " ")
   const rows = new Map<string, ListRow>()
-  let suspended = false
+  const rejected: RejectedRow[] = []
+  let section: "A" | "C" | "S" | null = null
   let country: string | null = null
   let from = 0
-  for (const m of Array.from(marked.matchAll(CASE))) {
+  const matches = Array.from(marked.matchAll(LIST_CASE))
+  matches.forEach((m, i) => {
     const at = m.index ?? 0
     // Markers between the previous case and this one; the product starts after the last
     const between = marked.slice(from, at)
     let start = 0
-    for (const mark of Array.from(between.matchAll(new RegExp(`${COUNTRY_MARK}([^${COUNTRY_MARK}]+)${COUNTRY_MARK}|${SECTION_MARK}(S|-)`, "g")))) {
+    for (const mark of Array.from(between.matchAll(new RegExp(`${COUNTRY_MARK}([^${COUNTRY_MARK}]+)${COUNTRY_MARK}|${SECTION_MARK}([ACS])`, "g")))) {
       if (mark[1]) country = mark[1]
-      else {
-        suspended = mark[2] === "S"
+      else if (mark[2]) {
+        section = mark[2] as "A" | "C" | "S"
         country = null
       }
       start = (mark.index ?? 0) + mark[0].length
     }
-    const product = between.slice(start).replace(/\s+/g, " ").replace(/[,\s]+$/, "").trim()
+    // Periods aren't part of the name: a long name wraps around its row's period column
+    const raw = between.slice(start).replace(new RegExp(`${PERIOD_MARK}[^${PERIOD_MARK}]*${PERIOD_MARK}`, "g"), " ")
+    const product = raw.replace(/\\\d{1,2}\\/g, "").replace(/\s+/g, " ").replace(/[,\s]+$/, "").trim()
     from = at + m[0].length
-    const caseNumber = `${m[1]}-${m[2]}-${m[3]}`
-    if (/^[AC]-000-000$/.test(caseNumber)) continue
-    const itc = marked.slice(at, at + 40).match(/^[AC]-\s?\d{3}-\s?\d{3}\s+((?:701|731)-TA-\d+(?:-[A-Z])?)/)?.[1] ?? null
+    // The row's review period: inside its wrapped number, else the first one after it
+    const next = matches[i + 1]?.index ?? marked.length
+    const period = m[2] ?? m[4] ?? marked.slice(from, next).match(new RegExp(`${PERIOD_MARK}([^${PERIOD_MARK}]*)${PERIOD_MARK}`))?.[1] ?? null
+    const letter = m[1] ?? (section === "A" || section === "C" ? section : null)
+    if (!letter) return
+    const caseNumber = `${letter}-${m[3]}-${m[5]}`
+    if (/^[AC]-000-000$/.test(caseNumber)) return
+    const heading = country ? countryFromName(country) : null
+    const own = countryOfCase(caseNumber)
+    // Not when the row itself names its number's country (a heading the list mistyped)
+    const namesOwn = !!own && raw.split(/[^A-Za-z'’[\]]+/).some((word, i, words) => [word, `${word} ${words[i + 1] ?? ""}`].some((w) => w.length > 3 && countryFromName(w) === own))
+    const reason =
+      m[1] && (section === "A" || section === "C") && m[1] !== section
+        ? `a ${m[1] === "A" ? "antidumping" : "countervailing"} number under the ${section === "A" ? "antidumping" : "countervailing"} heading`
+        : heading && own && heading !== own && !namesOwn
+          ? `its country code (${m[3]}) isn't ${country}'s`
+          : null
+    const itc = marked.slice(at, at + 80).replace(new RegExp(`${PERIOD_MARK}[^${PERIOD_MARK}]*${PERIOD_MARK}\\s?`, "g"), "").match(/^[AC]?-\s?\d{3}-\s?\d{3}\s+((?:701|731)-TA-\d+(?:-[A-Z])?)/)?.[1] ?? null
     const existing = rows.get(caseNumber)
     // A product name is a few words of letters, not a sentence or a table's column headings
     const usable =
       product && product.length >= 3 && product.length <= 140 && /^[A-Z0-9(]/.test(product) && !/\b(?:Period|Commerce|Federal Register|notice)\b|TA-\d|\(\d{3}\)/i.test(product)
-    rows.set(caseNumber, {
+    const marks = Array.from(raw.matchAll(/\\(\d{1,2})\\/g), (f) => f[1])
+    const row: ListRow = {
       case_number: caseNumber,
       product: existing?.product ?? (usable ? product : null),
       country_name: existing?.country_name ?? country,
-      suspended: existing?.suspended ?? suspended,
+      suspended: existing?.suspended ?? section === "S",
       itc_number: existing?.itc_number ?? itc,
-    })
-  }
-  return Array.from(rows.values())
+      // The later date: Commerce has printed a period backwards ("8/31/26-9/1/25")
+      period_end: existing?.period_end ?? (period ? period.split(/[-–]/).map(isoDay).sort()[1] : null),
+      revoked_note: (existing?.revoked_note ?? false) || marks.some((n) => footnotes.has(n)),
+    }
+    if (reason) rejected.push({ case_number: caseNumber, reason, row })
+    else rows.set(caseNumber, row)
+  })
+  return { rows: Array.from(rows.values()), rejected }
 }
 
-// A list notice's case numbers that weren't read as rows: every "A-" or "C-" followed by digits in
-// the text, against the case numbers read (Commerce's "A-000-000" example aside). Above zero means
-// a row was lost to the table's wrapping.
+export const listRows = (text: string): ListRow[] => listRowsChecked(text).rows
+
+// A review period that ends mid-month: the order ended the next day, and the list names it only
+// for the entries made before (kegs from China, "12/1/24-12/15/24", revoked 12/16/24)
+export const finalPeriod = (periodEnd: string | null) => {
+  if (!periodEnd) return false
+  const next = new Date(`${periodEnd}T12:00:00Z`)
+  next.setUTCDate(next.getUTCDate() + 1)
+  return next.getUTCDate() !== 1
+}
+
+// A list notice's case numbers that weren't read as rows: every case number start in the text
+// ("A-525-", or a bare "-122-" printed without its letter), against the rows read and rejected
+// (Commerce's "A-000-000" example aside). Above zero means a row was lost to the table's wrapping.
 export const listGap = (text: string) => {
   const flat = text.replace(DATE_RANGE, " ").replace(/\.{3,}/g, " ").replace(/\s+/g, " ")
-  // A case number's start ("A-525-"), however its end wrapped; not a standard's ("ASTM A-312")
-  const loose = (flat.match(/(?<![A-Za-z0-9]|ASTM )[AC]-\s?\d{3}-/g) ?? []).length
-  const read = (flat.match(CASE) ?? []).length
+  // A case number's start, however its end wrapped; not a standard's ("ASTM A-312")
+  const loose = (flat.match(/(?<![A-Za-z0-9/-]|ASTM )[AC]?-\s?\d{3}-/g) ?? []).length
+  const read = (flat.match(LIST_CASE) ?? []).length
   return Math.max(0, loose - read)
 }
 

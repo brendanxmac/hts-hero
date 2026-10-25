@@ -113,7 +113,6 @@ export const CalculatorWorkspace = ({
   onCheckSavings,
   tab: hostTab,
   onTabChange,
-  overviewLead,
   pageTitle,
 }: {
   f: TariffFinder;
@@ -133,8 +132,6 @@ export const CalculatorWorkspace = ({
   // results then show no tab row of their own), and the way to change it
   tab?: ResultsTab;
   onTabChange?: (tab: ResultsView) => void;
-  // On an import's page: the first module of its Overview (its alerts, savings and audits)
-  overviewLead?: ReactNode;
   // In the Tracker: the page's title and line, in the Entry details card (the page's header)
   pageTitle?: { title: string; summary: string };
 }) => {
@@ -404,7 +401,6 @@ export const CalculatorWorkspace = ({
                 <ProhibitedNotice prohibitions={result.prohibitions} />
               </div>
             )}
-            {tab === "overview" && overviewLead}
             {tab === "overview" && (
               <OverviewPanel
                 o={overview}

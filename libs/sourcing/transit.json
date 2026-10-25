@@ -1,0 +1,1714 @@
+{
+ "source": "Sea distances from searoute (Apache-2.0), on Eurostat's maritime network",
+ "url": "https://github.com/genthalili/searoute-py",
+ "knots": 16,
+ "us": {
+  "west": "Los Angeles / Long Beach",
+  "east": "New York / New Jersey",
+  "gulf": "Houston"
+ },
+ "countries": {
+  "CN": {
+   "port": "Shanghai",
+   "west": {
+    "nm": 5750,
+    "days": 15
+   },
+   "east": {
+    "nm": 10662,
+    "days": 28
+   },
+   "gulf": {
+    "nm": 10178,
+    "days": 27
+   }
+  },
+  "VN": {
+   "port": "Cai Mep (Ho Chi Minh City)",
+   "west": {
+    "nm": 7303,
+    "days": 19
+   },
+   "east": {
+    "nm": 10811,
+    "days": 28
+   },
+   "gulf": {
+    "nm": 11731,
+    "days": 31
+   }
+  },
+  "IN": {
+   "port": "Nhava Sheva (Mumbai)",
+   "west": {
+    "nm": 10296,
+    "days": 27
+   },
+   "east": {
+    "nm": 8179,
+    "days": 21
+   },
+   "gulf": {
+    "nm": 9748,
+    "days": 25
+   }
+  },
+  "BD": {
+   "port": "Chittagong",
+   "west": {
+    "nm": 9302,
+    "days": 24
+   },
+   "east": {
+    "nm": 9900,
+    "days": 26
+   },
+   "gulf": {
+    "nm": 11469,
+    "days": 30
+   }
+  },
+  "PK": {
+   "port": "Karachi",
+   "west": {
+    "nm": 10785,
+    "days": 28
+   },
+   "east": {
+    "nm": 8005,
+    "days": 21
+   },
+   "gulf": {
+    "nm": 9574,
+    "days": 25
+   }
+  },
+  "LK": {
+   "port": "Colombo",
+   "west": {
+    "nm": 9390,
+    "days": 24
+   },
+   "east": {
+    "nm": 8634,
+    "days": 22
+   },
+   "gulf": {
+    "nm": 10203,
+    "days": 27
+   }
+  },
+  "TH": {
+   "port": "Laem Chabang",
+   "west": {
+    "nm": 7841,
+    "days": 20
+   },
+   "east": {
+    "nm": 10978,
+    "days": 29
+   },
+   "gulf": {
+    "nm": 12269,
+    "days": 32
+   }
+  },
+  "MY": {
+   "port": "Port Klang",
+   "west": {
+    "nm": 8071,
+    "days": 21
+   },
+   "east": {
+    "nm": 9997,
+    "days": 26
+   },
+   "gulf": {
+    "nm": 11566,
+    "days": 30
+   }
+  },
+  "ID": {
+   "port": "Tanjung Priok (Jakarta)",
+   "west": {
+    "nm": 8029,
+    "days": 21
+   },
+   "east": {
+    "nm": 10459,
+    "days": 27
+   },
+   "gulf": {
+    "nm": 12028,
+    "days": 31
+   }
+  },
+  "PH": {
+   "port": "Manila",
+   "west": {
+    "nm": 6621,
+    "days": 17
+   },
+   "east": {
+    "nm": 11515,
+    "days": 30
+   },
+   "gulf": {
+    "nm": 11030,
+    "days": 29
+   }
+  },
+  "KH": {
+   "port": "Sihanoukville",
+   "west": {
+    "nm": 7605,
+    "days": 20
+   },
+   "east": {
+    "nm": 10814,
+    "days": 28
+   },
+   "gulf": {
+    "nm": 12032,
+    "days": 31
+   }
+  },
+  "MM": {
+   "port": "Yangon",
+   "west": {
+    "nm": 8894,
+    "days": 23
+   },
+   "east": {
+    "nm": 9882,
+    "days": 26
+   },
+   "gulf": {
+    "nm": 11451,
+    "days": 30
+   }
+  },
+  "LA": {
+   "port": "Laem Chabang",
+   "via": "via Thailand",
+   "west": {
+    "nm": 7841,
+    "days": 20
+   },
+   "east": {
+    "nm": 10978,
+    "days": 29
+   },
+   "gulf": {
+    "nm": 12269,
+    "days": 32
+   }
+  },
+  "NP": {
+   "port": "Kolkata",
+   "via": "via India",
+   "west": {
+    "nm": 9403,
+    "days": 24
+   },
+   "east": {
+    "nm": 9809,
+    "days": 26
+   },
+   "gulf": {
+    "nm": 11378,
+    "days": 30
+   }
+  },
+  "MN": {
+   "port": "Tianjin",
+   "via": "via China",
+   "west": {
+    "nm": 5986,
+    "days": 16
+   },
+   "east": {
+    "nm": 10898,
+    "days": 28
+   },
+   "gulf": {
+    "nm": 10414,
+    "days": 27
+   }
+  },
+  "TW": {
+   "port": "Kaohsiung",
+   "west": {
+    "nm": 6191,
+    "days": 16
+   },
+   "east": {
+    "nm": 11103,
+    "days": 29
+   },
+   "gulf": {
+    "nm": 10618,
+    "days": 28
+   }
+  },
+  "KR": {
+   "port": "Busan",
+   "west": {
+    "nm": 5295,
+    "days": 14
+   },
+   "east": {
+    "nm": 10207,
+    "days": 27
+   },
+   "gulf": {
+    "nm": 9722,
+    "days": 25
+   }
+  },
+  "JP": {
+   "port": "Yokohama",
+   "west": {
+    "nm": 4920,
+    "days": 13
+   },
+   "east": {
+    "nm": 9832,
+    "days": 26
+   },
+   "gulf": {
+    "nm": 9347,
+    "days": 24
+   }
+  },
+  "HK": {
+   "port": "Hong Kong",
+   "west": {
+    "nm": 6441,
+    "days": 17
+   },
+   "east": {
+    "nm": 11353,
+    "days": 30
+   },
+   "gulf": {
+    "nm": 10869,
+    "days": 28
+   }
+  },
+  "MO": {
+   "port": "Hong Kong",
+   "via": "via Hong Kong",
+   "west": {
+    "nm": 6441,
+    "days": 17
+   },
+   "east": {
+    "nm": 11353,
+    "days": 30
+   },
+   "gulf": {
+    "nm": 10869,
+    "days": 28
+   }
+  },
+  "SG": {
+   "port": "Singapore",
+   "west": {
+    "nm": 7791,
+    "days": 20
+   },
+   "east": {
+    "nm": 10182,
+    "days": 27
+   },
+   "gulf": {
+    "nm": 11751,
+    "days": 31
+   }
+  },
+  "AU": {
+   "port": "Melbourne",
+   "west": {
+    "nm": 7154,
+    "days": 19
+   },
+   "east": {
+    "nm": 10164,
+    "days": 26
+   },
+   "gulf": {
+    "nm": 9680,
+    "days": 25
+   }
+  },
+  "NZ": {
+   "port": "Auckland",
+   "west": {
+    "nm": 5797,
+    "days": 15
+   },
+   "east": {
+    "nm": 8919,
+    "days": 23
+   },
+   "gulf": {
+    "nm": 8435,
+    "days": 22
+   }
+  },
+  "FJ": {
+   "port": "Suva",
+   "west": {
+    "nm": 4968,
+    "days": 13
+   },
+   "east": {
+    "nm": 8424,
+    "days": 22
+   },
+   "gulf": {
+    "nm": 7940,
+    "days": 21
+   }
+  },
+  "GT": {
+   "port": "Puerto Barrios",
+   "west": {
+    "nm": 3782,
+    "days": 10
+   },
+   "east": {
+    "nm": 1808,
+    "days": 5
+   },
+   "gulf": {
+    "nm": 1091,
+    "days": 3
+   }
+  },
+  "HN": {
+   "port": "Puerto Cortés",
+   "west": {
+    "nm": 3712,
+    "days": 10
+   },
+   "east": {
+    "nm": 1738,
+    "days": 5
+   },
+   "gulf": {
+    "nm": 1021,
+    "days": 3
+   }
+  },
+  "SV": {
+   "port": "Acajutla",
+   "west": {
+    "nm": 2126,
+    "days": 6
+   },
+   "east": {
+    "nm": 2880,
+    "days": 8
+   },
+   "gulf": {
+    "nm": 2396,
+    "days": 6
+   }
+  },
+  "NI": {
+   "port": "Corinto",
+   "west": {
+    "nm": 2276,
+    "days": 6
+   },
+   "east": {
+    "nm": 2730,
+    "days": 7
+   },
+   "gulf": {
+    "nm": 2246,
+    "days": 6
+   }
+  },
+  "CR": {
+   "port": "Limón",
+   "west": {
+    "nm": 3201,
+    "days": 8
+   },
+   "east": {
+    "nm": 2117,
+    "days": 6
+   },
+   "gulf": {
+    "nm": 1437,
+    "days": 4
+   }
+  },
+  "PA": {
+   "port": "Colón",
+   "west": {
+    "nm": 2996,
+    "days": 8
+   },
+   "east": {
+    "nm": 1997,
+    "days": 5
+   },
+   "gulf": {
+    "nm": 1513,
+    "days": 4
+   }
+  },
+  "DO": {
+   "port": "Caucedo",
+   "west": {
+    "nm": 3840,
+    "days": 10
+   },
+   "east": {
+    "nm": 1523,
+    "days": 4
+   },
+   "gulf": {
+    "nm": 1673,
+    "days": 4
+   }
+  },
+  "HT": {
+   "port": "Port-au-Prince",
+   "west": {
+    "nm": 3788,
+    "days": 10
+   },
+   "east": {
+    "nm": 1369,
+    "days": 4
+   },
+   "gulf": {
+    "nm": 1422,
+    "days": 4
+   }
+  },
+  "JM": {
+   "port": "Kingston",
+   "west": {
+    "nm": 3599,
+    "days": 9
+   },
+   "east": {
+    "nm": 1494,
+    "days": 4
+   },
+   "gulf": {
+    "nm": 1265,
+    "days": 3
+   }
+  },
+  "TT": {
+   "port": "Port of Spain",
+   "west": {
+    "nm": 4167,
+    "days": 11
+   },
+   "east": {
+    "nm": 2002,
+    "days": 5
+   },
+   "gulf": {
+    "nm": 2237,
+    "days": 6
+   }
+  },
+  "BS": {
+   "port": "Freeport",
+   "west": {
+    "nm": 4223,
+    "days": 11
+   },
+   "east": {
+    "nm": 948,
+    "days": 2
+   },
+   "gulf": {
+    "nm": 1022,
+    "days": 3
+   }
+  },
+  "CO": {
+   "port": "Cartagena",
+   "west": {
+    "nm": 3299,
+    "days": 9
+   },
+   "east": {
+    "nm": 2232,
+    "days": 6
+   },
+   "gulf": {
+    "nm": 1750,
+    "days": 5
+   }
+  },
+  "VE": {
+   "port": "La Guaira",
+   "west": {
+    "nm": 3856,
+    "days": 10
+   },
+   "east": {
+    "nm": 2001,
+    "days": 5
+   },
+   "gulf": {
+    "nm": 2004,
+    "days": 5
+   }
+  },
+  "EC": {
+   "port": "Guayaquil",
+   "west": {
+    "nm": 3308,
+    "days": 9
+   },
+   "east": {
+    "nm": 2859,
+    "days": 7
+   },
+   "gulf": {
+    "nm": 2374,
+    "days": 6
+   }
+  },
+  "PE": {
+   "port": "Callao",
+   "west": {
+    "nm": 3651,
+    "days": 10
+   },
+   "east": {
+    "nm": 3408,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 2924,
+    "days": 8
+   }
+  },
+  "CL": {
+   "port": "San Antonio",
+   "west": {
+    "nm": 4923,
+    "days": 13
+   },
+   "east": {
+    "nm": 4680,
+    "days": 12
+   },
+   "gulf": {
+    "nm": 4196,
+    "days": 11
+   }
+  },
+  "BR": {
+   "port": "Santos",
+   "west": {
+    "nm": 7565,
+    "days": 20
+   },
+   "east": {
+    "nm": 5032,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 5606,
+    "days": 15
+   }
+  },
+  "AR": {
+   "port": "Buenos Aires",
+   "west": {
+    "nm": 7500,
+    "days": 20
+   },
+   "east": {
+    "nm": 5923,
+    "days": 15
+   },
+   "gulf": {
+    "nm": 6496,
+    "days": 17
+   }
+  },
+  "UY": {
+   "port": "Montevideo",
+   "west": {
+    "nm": 7392,
+    "days": 19
+   },
+   "east": {
+    "nm": 5815,
+    "days": 15
+   },
+   "gulf": {
+    "nm": 6388,
+    "days": 17
+   }
+  },
+  "PY": {
+   "port": "Montevideo",
+   "via": "via Uruguay",
+   "west": {
+    "nm": 7392,
+    "days": 19
+   },
+   "east": {
+    "nm": 5815,
+    "days": 15
+   },
+   "gulf": {
+    "nm": 6388,
+    "days": 17
+   }
+  },
+  "BO": {
+   "port": "Arica",
+   "via": "via Chile",
+   "west": {
+    "nm": 4233,
+    "days": 11
+   },
+   "east": {
+    "nm": 3990,
+    "days": 10
+   },
+   "gulf": {
+    "nm": 3505,
+    "days": 9
+   }
+  },
+  "TR": {
+   "port": "Ambarlı (Istanbul)",
+   "west": {
+    "nm": 9125,
+    "days": 24
+   },
+   "east": {
+    "nm": 4969,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 6538,
+    "days": 17
+   }
+  },
+  "EG": {
+   "port": "Port Said",
+   "west": {
+    "nm": 9265,
+    "days": 24
+   },
+   "east": {
+    "nm": 5109,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 6678,
+    "days": 17
+   }
+  },
+  "MA": {
+   "port": "Tanger Med",
+   "west": {
+    "nm": 7354,
+    "days": 19
+   },
+   "east": {
+    "nm": 3198,
+    "days": 8
+   },
+   "gulf": {
+    "nm": 4767,
+    "days": 12
+   }
+  },
+  "TN": {
+   "port": "Radès",
+   "west": {
+    "nm": 8149,
+    "days": 21
+   },
+   "east": {
+    "nm": 3993,
+    "days": 10
+   },
+   "gulf": {
+    "nm": 5562,
+    "days": 14
+   }
+  },
+  "DZ": {
+   "port": "Algiers",
+   "west": {
+    "nm": 7788,
+    "days": 20
+   },
+   "east": {
+    "nm": 3632,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5201,
+    "days": 14
+   }
+  },
+  "ZA": {
+   "port": "Durban",
+   "west": {
+    "nm": 10269,
+    "days": 27
+   },
+   "east": {
+    "nm": 7645,
+    "days": 20
+   },
+   "gulf": {
+    "nm": 8309,
+    "days": 22
+   }
+  },
+  "LS": {
+   "port": "Durban",
+   "via": "via South Africa",
+   "west": {
+    "nm": 10269,
+    "days": 27
+   },
+   "east": {
+    "nm": 7645,
+    "days": 20
+   },
+   "gulf": {
+    "nm": 8309,
+    "days": 22
+   }
+  },
+  "SZ": {
+   "port": "Durban",
+   "via": "via South Africa",
+   "west": {
+    "nm": 10269,
+    "days": 27
+   },
+   "east": {
+    "nm": 7645,
+    "days": 20
+   },
+   "gulf": {
+    "nm": 8309,
+    "days": 22
+   }
+  },
+  "BW": {
+   "port": "Durban",
+   "via": "via South Africa",
+   "west": {
+    "nm": 10269,
+    "days": 27
+   },
+   "east": {
+    "nm": 7645,
+    "days": 20
+   },
+   "gulf": {
+    "nm": 8309,
+    "days": 22
+   }
+  },
+  "ZW": {
+   "port": "Durban",
+   "via": "via South Africa",
+   "west": {
+    "nm": 10269,
+    "days": 27
+   },
+   "east": {
+    "nm": 7645,
+    "days": 20
+   },
+   "gulf": {
+    "nm": 8309,
+    "days": 22
+   }
+  },
+  "KE": {
+   "port": "Mombasa",
+   "west": {
+    "nm": 11911,
+    "days": 31
+   },
+   "east": {
+    "nm": 8210,
+    "days": 21
+   },
+   "gulf": {
+    "nm": 9779,
+    "days": 25
+   }
+  },
+  "UG": {
+   "port": "Mombasa",
+   "via": "via Kenya",
+   "west": {
+    "nm": 11911,
+    "days": 31
+   },
+   "east": {
+    "nm": 8210,
+    "days": 21
+   },
+   "gulf": {
+    "nm": 9779,
+    "days": 25
+   }
+  },
+  "TZ": {
+   "port": "Dar es Salaam",
+   "west": {
+    "nm": 11898,
+    "days": 31
+   },
+   "east": {
+    "nm": 8361,
+    "days": 22
+   },
+   "gulf": {
+    "nm": 9930,
+    "days": 26
+   }
+  },
+  "ET": {
+   "port": "Djibouti",
+   "via": "via Djibouti",
+   "west": {
+    "nm": 10641,
+    "days": 28
+   },
+   "east": {
+    "nm": 6486,
+    "days": 17
+   },
+   "gulf": {
+    "nm": 8054,
+    "days": 21
+   }
+  },
+  "MG": {
+   "port": "Toamasina",
+   "west": {
+    "nm": 11568,
+    "days": 30
+   },
+   "east": {
+    "nm": 8845,
+    "days": 23
+   },
+   "gulf": {
+    "nm": 9684,
+    "days": 25
+   }
+  },
+  "MU": {
+   "port": "Port Louis",
+   "west": {
+    "nm": 11098,
+    "days": 29
+   },
+   "east": {
+    "nm": 8923,
+    "days": 23
+   },
+   "gulf": {
+    "nm": 9800,
+    "days": 26
+   }
+  },
+  "NG": {
+   "port": "Lagos",
+   "west": {
+    "nm": 8243,
+    "days": 21
+   },
+   "east": {
+    "nm": 5058,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 6114,
+    "days": 16
+   }
+  },
+  "GH": {
+   "port": "Tema",
+   "west": {
+    "nm": 8044,
+    "days": 21
+   },
+   "east": {
+    "nm": 4858,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 5914,
+    "days": 15
+   }
+  },
+  "CI": {
+   "port": "Abidjan",
+   "west": {
+    "nm": 7798,
+    "days": 20
+   },
+   "east": {
+    "nm": 4612,
+    "days": 12
+   },
+   "gulf": {
+    "nm": 5668,
+    "days": 15
+   }
+  },
+  "SN": {
+   "port": "Dakar",
+   "west": {
+    "nm": 6854,
+    "days": 18
+   },
+   "east": {
+    "nm": 3525,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 4581,
+    "days": 12
+   }
+  },
+  "CM": {
+   "port": "Douala",
+   "west": {
+    "nm": 8607,
+    "days": 22
+   },
+   "east": {
+    "nm": 5421,
+    "days": 14
+   },
+   "gulf": {
+    "nm": 6477,
+    "days": 17
+   }
+  },
+  "JO": {
+   "port": "Aqaba",
+   "west": {
+    "nm": 9712,
+    "days": 25
+   },
+   "east": {
+    "nm": 5556,
+    "days": 14
+   },
+   "gulf": {
+    "nm": 7125,
+    "days": 19
+   }
+  },
+  "IL": {
+   "port": "Haifa",
+   "west": {
+    "nm": 9359,
+    "days": 24
+   },
+   "east": {
+    "nm": 5203,
+    "days": 14
+   },
+   "gulf": {
+    "nm": 6772,
+    "days": 18
+   }
+  },
+  "AE": {
+   "port": "Jebel Ali",
+   "west": {
+    "nm": 11287,
+    "days": 29
+   },
+   "east": {
+    "nm": 8079,
+    "days": 21
+   },
+   "gulf": {
+    "nm": 9648,
+    "days": 25
+   }
+  },
+  "SA": {
+   "port": "Jeddah",
+   "west": {
+    "nm": 9981,
+    "days": 26
+   },
+   "east": {
+    "nm": 5825,
+    "days": 15
+   },
+   "gulf": {
+    "nm": 7394,
+    "days": 19
+   }
+  },
+  "OM": {
+   "port": "Salalah",
+   "west": {
+    "nm": 11171,
+    "days": 29
+   },
+   "east": {
+    "nm": 7146,
+    "days": 19
+   },
+   "gulf": {
+    "nm": 8715,
+    "days": 23
+   }
+  },
+  "QA": {
+   "port": "Hamad",
+   "west": {
+    "nm": 11466,
+    "days": 30
+   },
+   "east": {
+    "nm": 8257,
+    "days": 22
+   },
+   "gulf": {
+    "nm": 9826,
+    "days": 26
+   }
+  },
+  "KW": {
+   "port": "Shuwaikh",
+   "west": {
+    "nm": 11711,
+    "days": 30
+   },
+   "east": {
+    "nm": 8503,
+    "days": 22
+   },
+   "gulf": {
+    "nm": 10072,
+    "days": 26
+   }
+  },
+  "BH": {
+   "port": "Khalifa Bin Salman",
+   "west": {
+    "nm": 11500,
+    "days": 30
+   },
+   "east": {
+    "nm": 8291,
+    "days": 22
+   },
+   "gulf": {
+    "nm": 9860,
+    "days": 26
+   }
+  },
+  "DE": {
+   "port": "Hamburg",
+   "west": {
+    "nm": 8079,
+    "days": 21
+   },
+   "east": {
+    "nm": 3496,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5235,
+    "days": 14
+   }
+  },
+  "NL": {
+   "port": "Rotterdam",
+   "west": {
+    "nm": 7809,
+    "days": 20
+   },
+   "east": {
+    "nm": 3303,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5031,
+    "days": 13
+   }
+  },
+  "BE": {
+   "port": "Antwerp",
+   "west": {
+    "nm": 7806,
+    "days": 20
+   },
+   "east": {
+    "nm": 3300,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5028,
+    "days": 13
+   }
+  },
+  "LU": {
+   "port": "Antwerp",
+   "via": "via Belgium",
+   "west": {
+    "nm": 7806,
+    "days": 20
+   },
+   "east": {
+    "nm": 3300,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5028,
+    "days": 13
+   }
+  },
+  "FR": {
+   "port": "Le Havre",
+   "west": {
+    "nm": 7634,
+    "days": 20
+   },
+   "east": {
+    "nm": 3128,
+    "days": 8
+   },
+   "gulf": {
+    "nm": 4856,
+    "days": 13
+   }
+  },
+  "GB": {
+   "port": "Felixstowe",
+   "west": {
+    "nm": 7754,
+    "days": 20
+   },
+   "east": {
+    "nm": 3248,
+    "days": 8
+   },
+   "gulf": {
+    "nm": 4976,
+    "days": 13
+   }
+  },
+  "IE": {
+   "port": "Dublin",
+   "west": {
+    "nm": 7539,
+    "days": 20
+   },
+   "east": {
+    "nm": 2966,
+    "days": 8
+   },
+   "gulf": {
+    "nm": 4705,
+    "days": 12
+   }
+  },
+  "ES": {
+   "port": "Valencia",
+   "west": {
+    "nm": 7746,
+    "days": 20
+   },
+   "east": {
+    "nm": 3590,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5159,
+    "days": 13
+   }
+  },
+  "PT": {
+   "port": "Sines",
+   "west": {
+    "nm": 7215,
+    "days": 19
+   },
+   "east": {
+    "nm": 2996,
+    "days": 8
+   },
+   "gulf": {
+    "nm": 4602,
+    "days": 12
+   }
+  },
+  "IT": {
+   "port": "Genoa",
+   "west": {
+    "nm": 8217,
+    "days": 21
+   },
+   "east": {
+    "nm": 4061,
+    "days": 11
+   },
+   "gulf": {
+    "nm": 5630,
+    "days": 15
+   }
+  },
+  "MT": {
+   "port": "Marsaxlokk",
+   "west": {
+    "nm": 8341,
+    "days": 22
+   },
+   "east": {
+    "nm": 4185,
+    "days": 11
+   },
+   "gulf": {
+    "nm": 5754,
+    "days": 15
+   }
+  },
+  "GR": {
+   "port": "Piraeus",
+   "west": {
+    "nm": 8789,
+    "days": 23
+   },
+   "east": {
+    "nm": 4633,
+    "days": 12
+   },
+   "gulf": {
+    "nm": 6202,
+    "days": 16
+   }
+  },
+  "CY": {
+   "port": "Limassol",
+   "west": {
+    "nm": 9247,
+    "days": 24
+   },
+   "east": {
+    "nm": 5091,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 6660,
+    "days": 17
+   }
+  },
+  "PL": {
+   "port": "Gdańsk",
+   "west": {
+    "nm": 8515,
+    "days": 22
+   },
+   "east": {
+    "nm": 3812,
+    "days": 10
+   },
+   "gulf": {
+    "nm": 5550,
+    "days": 14
+   }
+  },
+  "LT": {
+   "port": "Klaipėda",
+   "west": {
+    "nm": 8554,
+    "days": 22
+   },
+   "east": {
+    "nm": 3850,
+    "days": 10
+   },
+   "gulf": {
+    "nm": 5589,
+    "days": 15
+   }
+  },
+  "LV": {
+   "port": "Riga",
+   "west": {
+    "nm": 8700,
+    "days": 23
+   },
+   "east": {
+    "nm": 3997,
+    "days": 10
+   },
+   "gulf": {
+    "nm": 5736,
+    "days": 15
+   }
+  },
+  "EE": {
+   "port": "Tallinn",
+   "west": {
+    "nm": 8761,
+    "days": 23
+   },
+   "east": {
+    "nm": 4058,
+    "days": 11
+   },
+   "gulf": {
+    "nm": 5797,
+    "days": 15
+   }
+  },
+  "FI": {
+   "port": "Helsinki",
+   "west": {
+    "nm": 8781,
+    "days": 23
+   },
+   "east": {
+    "nm": 4078,
+    "days": 11
+   },
+   "gulf": {
+    "nm": 5816,
+    "days": 15
+   }
+  },
+  "SE": {
+   "port": "Gothenburg",
+   "west": {
+    "nm": 8119,
+    "days": 21
+   },
+   "east": {
+    "nm": 3415,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5154,
+    "days": 13
+   }
+  },
+  "DK": {
+   "port": "Aarhus",
+   "west": {
+    "nm": 8217,
+    "days": 21
+   },
+   "east": {
+    "nm": 3514,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5253,
+    "days": 14
+   }
+  },
+  "NO": {
+   "port": "Oslo",
+   "west": {
+    "nm": 8159,
+    "days": 21
+   },
+   "east": {
+    "nm": 3456,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5194,
+    "days": 14
+   }
+  },
+  "IS": {
+   "port": "Reykjavík",
+   "west": {
+    "nm": 7237,
+    "days": 19
+   },
+   "east": {
+    "nm": 2507,
+    "days": 7
+   },
+   "gulf": {
+    "nm": 4246,
+    "days": 11
+   }
+  },
+  "SI": {
+   "port": "Koper",
+   "west": {
+    "nm": 9048,
+    "days": 24
+   },
+   "east": {
+    "nm": 4892,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 6461,
+    "days": 17
+   }
+  },
+  "HR": {
+   "port": "Rijeka",
+   "west": {
+    "nm": 9002,
+    "days": 23
+   },
+   "east": {
+    "nm": 4846,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 6415,
+    "days": 17
+   }
+  },
+  "RO": {
+   "port": "Constanța",
+   "west": {
+    "nm": 9342,
+    "days": 24
+   },
+   "east": {
+    "nm": 5186,
+    "days": 14
+   },
+   "gulf": {
+    "nm": 6755,
+    "days": 18
+   }
+  },
+  "BG": {
+   "port": "Varna",
+   "west": {
+    "nm": 9303,
+    "days": 24
+   },
+   "east": {
+    "nm": 5147,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 6716,
+    "days": 17
+   }
+  },
+  "UA": {
+   "port": "Odesa",
+   "west": {
+    "nm": 9483,
+    "days": 25
+   },
+   "east": {
+    "nm": 5327,
+    "days": 14
+   },
+   "gulf": {
+    "nm": 6896,
+    "days": 18
+   }
+  },
+  "CZ": {
+   "port": "Hamburg",
+   "via": "via Germany",
+   "west": {
+    "nm": 8079,
+    "days": 21
+   },
+   "east": {
+    "nm": 3496,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5235,
+    "days": 14
+   }
+  },
+  "SK": {
+   "port": "Hamburg",
+   "via": "via Germany",
+   "west": {
+    "nm": 8079,
+    "days": 21
+   },
+   "east": {
+    "nm": 3496,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5235,
+    "days": 14
+   }
+  },
+  "AT": {
+   "port": "Hamburg",
+   "via": "via Germany",
+   "west": {
+    "nm": 8079,
+    "days": 21
+   },
+   "east": {
+    "nm": 3496,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5235,
+    "days": 14
+   }
+  },
+  "CH": {
+   "port": "Rotterdam",
+   "via": "via the Netherlands",
+   "west": {
+    "nm": 7809,
+    "days": 20
+   },
+   "east": {
+    "nm": 3303,
+    "days": 9
+   },
+   "gulf": {
+    "nm": 5031,
+    "days": 13
+   }
+  },
+  "HU": {
+   "port": "Koper",
+   "via": "via Slovenia",
+   "west": {
+    "nm": 9048,
+    "days": 24
+   },
+   "east": {
+    "nm": 4892,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 6461,
+    "days": 17
+   }
+  },
+  "RS": {
+   "port": "Constanța",
+   "via": "via Romania",
+   "west": {
+    "nm": 9342,
+    "days": 24
+   },
+   "east": {
+    "nm": 5186,
+    "days": 14
+   },
+   "gulf": {
+    "nm": 6755,
+    "days": 18
+   }
+  },
+  "BA": {
+   "port": "Ploče",
+   "via": "via Croatia",
+   "west": {
+    "nm": 8805,
+    "days": 23
+   },
+   "east": {
+    "nm": 4650,
+    "days": 12
+   },
+   "gulf": {
+    "nm": 6219,
+    "days": 16
+   }
+  },
+  "MK": {
+   "port": "Thessaloniki",
+   "via": "via Greece",
+   "west": {
+    "nm": 9038,
+    "days": 24
+   },
+   "east": {
+    "nm": 4882,
+    "days": 13
+   },
+   "gulf": {
+    "nm": 6451,
+    "days": 17
+   }
+  },
+  "AL": {
+   "port": "Durrës",
+   "west": {
+    "nm": 8680,
+    "days": 23
+   },
+   "east": {
+    "nm": 4524,
+    "days": 12
+   },
+   "gulf": {
+    "nm": 6093,
+    "days": 16
+   }
+  },
+  "GE": {
+   "port": "Poti",
+   "west": {
+    "nm": 9716,
+    "days": 25
+   },
+   "east": {
+    "nm": 5560,
+    "days": 14
+   },
+   "gulf": {
+    "nm": 7129,
+    "days": 19
+   }
+  },
+  "AM": {
+   "port": "Poti",
+   "via": "via Georgia",
+   "west": {
+    "nm": 9716,
+    "days": 25
+   },
+   "east": {
+    "nm": 5560,
+    "days": 14
+   },
+   "gulf": {
+    "nm": 7129,
+    "days": 19
+   }
+  }
+ }
+}

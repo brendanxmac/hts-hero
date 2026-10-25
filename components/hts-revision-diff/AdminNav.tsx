@@ -4,15 +4,16 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 const TOOLS = [
-  { href: "/revision-checker", label: "Revision checker" },
-  { href: "/coverage-checker", label: "Coverage checker" },
-  { href: "/tariff-sources", label: "Tariff sources" },
+  { href: "/admin", label: "Needs You" },
+  { href: "/revision-checker", label: "Revision Checker" },
+  { href: "/coverage-checker", label: "Coverage Checker" },
+  { href: "/tariff-sources", label: "Tariff Updates" },
   { href: "/adcvd", label: "AD/CVD" },
   { href: "/email-outbox", label: "Outbox" },
   { href: "/content-studio", label: "Content Studio" },
 ]
 
-// Switches between the admin tools that share AdminShell
+// The revision checker's links to the other admin tools (they're in components/admin/AdminFrame)
 export default function AdminNav() {
   const pathname = usePathname() ?? ""
   return (

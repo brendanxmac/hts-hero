@@ -1,6 +1,7 @@
 // Works out every AD/CVD case's status and milestones again from scratch (no AI): reads the annual
-// review lists again (so each case's "listed" evidence is recorded), then each case's full Federal
-// Register history, then the checks. Prints the counts to compare with ITA's ADCVD Proceedings
+// review lists again (opportunities and initiations) (so each case's "listed" evidence is recorded, and rows for orders that have
+// ended), and the ITC's final votes (the countries a "no" vote ended), then each case's full
+// Federal Register history, then the checks. Prints the counts to compare with ITA's ADCVD Proceedings
 // dashboard (orders, suspension agreements, investigations).
 //
 //   npm run adcvd:recompute -- [--since 2025-11-01]
@@ -11,6 +12,7 @@ import { checkCases } from "../../libs/adcvd/checks"
 import { noticeText } from "../../libs/adcvd/fr"
 import { fillHistory } from "../../libs/adcvd/history"
 import { readNotice, type NoticeItem } from "../../libs/adcvd/notices"
+import { eventOf } from "../../libs/adcvd/parse"
 import type { CaseRow } from "../../libs/adcvd/types"
 
 const args = process.argv.slice(2)
@@ -26,13 +28,31 @@ const main = async () => {
     .from("tariff_source_items")
     .select("id, title, url, published_at, agencies, document_number, external_id, raw")
     .eq("source", "federal_register")
-    .ilike("title", "%Opportunity To Request Administrative Review%")
+    .or("title.ilike.%Opportunity To Request Administrative Review%,title.ilike.Initiation of Antidumping and Countervailing Duty Administrative Reviews%")
     .gte("published_at", since)
     .order("published_at")
   for (const item of (lists ?? []) as NoticeItem[]) {
     const r = await readNotice(db, item, await noticeText(item.raw.raw_text_url))
     log(`List ${item.document_number} (${item.published_at.slice(0, 10)}): ${r.newCases} new cases${r.note ? `; ${r.note}` : ""}`)
   }
+
+  // ---- 1b. The ITC's final votes, read again: the countries a "no" vote ended (only in the text)
+  const { data: votes } = await db
+    .from("tariff_source_items")
+    .select("id, title, url, published_at, agencies, document_number, external_id, raw")
+    .eq("source", "federal_register")
+    .contains("agencies", ["International Trade Commission"])
+    .ilike("title", "%; Determination%")
+    .not("title", "ilike", "Investigations;%")
+    .gte("published_at", since)
+    .order("published_at")
+  let itcRead = 0
+  for (const item of (votes ?? []) as NoticeItem[]) {
+    if (eventOf(item.title, "itc") !== "itc_final") continue
+    await readNotice(db, item, await noticeText(item.raw.raw_text_url))
+    itcRead++
+  }
+  log(`ITC final votes read again: ${itcRead}`)
 
   // ---- 2. Every case's history, from scratch
   const cases: CaseRow[] = []

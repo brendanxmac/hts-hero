@@ -2,7 +2,8 @@ import Link from "next/link"
 import { ReactNode } from "react"
 import AdminNav from "./AdminNav"
 
-// Admin shell for the revision and coverage checkers: slim top bar over a neutral canvas.
+// The revision checker's shell: slim top bar over a neutral canvas. The other admin tools are in
+// components/admin/AdminFrame.
 // Buttons keep sentence case here (the site capitalizes .btn globally).
 export default function AdminShell({ children }: { children: ReactNode }) {
   return (

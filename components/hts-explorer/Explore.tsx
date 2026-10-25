@@ -22,7 +22,7 @@ import { NotesView } from "./NotesView";
 import { Outline } from "./Outline";
 import { SearchResults } from "./SearchResults";
 import type { NavigatableElement } from "./types";
-import { chapterKey, ExplorerProvider, lineKey, sectionKey, sectionOfChapter, useExplorer } from "./useExplorer";
+import { chapterKey, ExplorerProvider, lineKey, sectionKey, sectionOfChapter, useExplorer, type UseCodeAction } from "./useExplorer";
 
 export type { ExplorerSurface };
 
@@ -52,6 +52,8 @@ interface ExploreProps {
   // Over a calculator: put the chosen code in its input bar (the calculator then being the
   // estimate, a line shows none of its own)
   onUseCode?: (element: HtsElement) => void;
+  // What that button says ("Calculate duty" when left out): Sourcing's is "Find Sources"
+  useCodeAction?: UseCodeAction;
   // Open on this line (the code already in the calculator), unless the trail was set from outside
   startAt?: HtsElement | null;
   // On a page: its title and intro, which the search sits beside
@@ -103,7 +105,7 @@ export const Explore = (props: ExploreProps) => {
 
 // What the explorer remembers while it's open: the search, the tab, the outline-solid's open rows
 const ExplorerState = (props: ExploreProps & { loading: boolean }) => {
-  const { explorerSurface, onUseCode, startAt } = props;
+  const { explorerSurface, onUseCode, useCodeAction, startAt } = props;
   const searchParams = useSearchParams();
   const { breadcrumbs } = useBreadcrumbs();
   const { sections } = useHtsSections();
@@ -136,6 +138,7 @@ const ExplorerState = (props: ExploreProps & { loading: boolean }) => {
       value={{
         explorerSurface,
         onUseCode,
+        useCodeAction,
         expanded,
         setExpanded,
         reveal,

@@ -19,7 +19,6 @@ import { isProductTab, ProductTab, productViewOf, ProductView as View, TRACKER_P
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ProductAudit } from "./audit/ProductAudit";
-import { ImportPromises } from "./ImportPromises";
 import { ProductHeader } from "./ProductHeader";
 import { ProductSavings } from "./savings/ProductSavings";
 
@@ -157,7 +156,6 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
           onCheckSavings={() => openTab("savings")}
           tab={calculatorTab ? tab : "duty"}
           onTabChange={openTab}
-          overviewLead={<ImportPromises productKey={row.key} onOpenTab={openTab} />}
         />
         <Disclaimer />
       </div>

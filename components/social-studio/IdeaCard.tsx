@@ -61,7 +61,7 @@ export default function IdeaCard({ idea, format, onChange }: { idea: Idea; forma
       onCaptions={(captions) => edit({ captions })}
       badge={<Pill tone={STATUS_TONE[idea.status]}>{STATUS_LABEL[idea.status]}</Pill>}
       about={
-        <div className="rounded-lg bg-base-content/[0.04] px-3 py-2 text-sm text-base-content/70">
+        <div className="rounded-lg bg-base-content/[0.04] px-3 py-2 text-sm text-base-content/70 tracker:rounded-xl tracker:bg-tt-soft">
           <span className="font-medium text-base-content">Why: </span>
           {idea.why} <span className="text-base-content/40">· {idea.kind}</span>
         </div>

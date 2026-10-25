@@ -1,17 +1,22 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { countryFromName, countryOfCase } from "./countries"
-import { noticeText } from "./fr"
+import { caseDocuments, noticeText } from "./fr"
 import {
   caseNumbers,
   circumventionCountries,
   eventOf,
+  finalPeriod,
   headerLine,
   isNegative,
+  isSuspension,
   itcCodes,
   itcNumbers,
+  itcEnded,
+  itcEndedCases,
   listGap,
-  listRows,
+  listRowsChecked,
   revokedCountries,
+  suspendedCountries,
   scopeOf,
   storedScope,
   titleParts,
@@ -71,6 +76,8 @@ const union = (a: string[] | null | undefined, b: string[]) => Array.from(new Se
 const minDate = (a: string | null | undefined, b: string | null) => (!a ? b : !b ? a : a < b ? a : b)
 const maxDate = (a: string | null | undefined, b: string | null) => (!a ? b : !b ? a : a > b ? a : b)
 
+// Every column a case has: saved in a batch with stored cases, a column a new one lacked would be
+// written as null (and the NOT NULL ones fail the whole batch)
 const blankCase = (caseNumber: string): CaseRow => ({
   case_number: caseNumber,
   kind: caseNumber.startsWith("C") ? "CVD" : "AD",
@@ -89,6 +96,19 @@ const blankCase = (caseNumber: string): CaseRow => ({
   hts_also: [],
   hts_excluded: [],
   hts_outdated: [],
+  hts_successors: {},
+  hts_sources: {},
+  fr_main: [],
+  fr_also: [],
+  fr_excluded: [],
+  ita_found: null,
+  ita_hts: [],
+  ita_scope: null,
+  ita_main: [],
+  ita_also: [],
+  ita_excluded: [],
+  ita_method: null,
+  ita_fetched_at: null,
   scope_text: null,
   scope_doc: null,
   scope_published_on: null,
@@ -130,6 +150,13 @@ export const applyEvent = (c: CaseRow, event: EventType, date: string, title: st
         next.ended_on = date
       }
       break
+    case "itc_negative":
+      // The ITC found no injury: no order follows
+      if (!c.order_on && newer) {
+        next.status = "terminated"
+        next.ended_on = maxDate(c.ended_on, date)
+      }
+      break
     case "order":
       next.order_on = minDate(c.order_on, date)
       if (newer || c.status === "unknown" || c.status === "investigation") next.status = "order"
@@ -137,9 +164,21 @@ export const applyEvent = (c: CaseRow, event: EventType, date: string, title: st
     case "suspension":
       if (newer || c.status === "unknown") next.status = "suspended"
       break
-    case "continuation":
+    case "continuation": {
       next.last_continued_on = maxDate(c.last_continued_on, date)
-      if (newer || c.status === "unknown") next.status = "order"
+      // "Continuation of Suspension of the Countervailing Duty Investigation" continues an
+      // agreement, not an order; a notice continuing both says which countries are suspended
+      const suspended =
+        isSuspension(title) && (!/\bOrders?\b/i.test(title) || (!!c.country && suspendedCountries(title).map(countryFromName).includes(c.country)))
+      if (newer || c.status === "unknown") next.status = suspended ? "suspended" : "order"
+      break
+    }
+    case "final_period":
+      // Listed only for the entries before it ended: never a sign the order is live
+      if (c.status !== "revoked" && c.status !== "terminated") {
+        next.status = "revoked"
+        next.ended_on = maxDate(c.ended_on, date)
+      }
       break
     case "revocation": {
       // A notice that continues some countries' orders and revokes others': only the countries the
@@ -162,7 +201,7 @@ export const applyEvent = (c: CaseRow, event: EventType, date: string, title: st
       break
     default:
       // A review, scope ruling or circumvention inquiry means there's an order (or agreement)
-      if (c.status === "unknown" && !["other", "correction", "court"].includes(event)) next.status = "order"
+      if (c.status === "unknown" && !["other", "correction", "court"].includes(event)) next.status = isSuspension(title) ? "suspended" : "order"
   }
   // Signs an order thought ended is still live: listed for annual review after it "ended", or
   // reviewed long after (a final review result can come months after a real revocation)
@@ -179,12 +218,32 @@ export const applyEvent = (c: CaseRow, event: EventType, date: string, title: st
   return next
 }
 
-// A list notice names the case as an order in effect on its date
+// The day after a date: an order listed for a final period ending 12/15/24 ended 12/16/24
+const dayAfter = (iso: string) => {
+  const d = new Date(`${iso}T12:00:00Z`)
+  d.setUTCDate(d.getUTCDate() + 1)
+  return d.toISOString().slice(0, 10)
+}
+
+// A row naming an order that has ended: listed only for its final stub period, or with a footnote
+// saying it has been revoked (Mattresses from Indonesia, revoked by a court, May 2026)
+export const rowEnded = (row: Pick<ListRow, "period_end" | "revoked_note">) => row.revoked_note || finalPeriod(row.period_end)
+
+// A list notice names the case as an order in effect on its date, unless the row shows it ended
 const applyListRow = (c: CaseRow, row: ListRow, date: string): CaseRow => {
   const next = { ...c }
   if (!next.country && row.country_name) next.country = countryFromName(row.country_name)
   if (!next.product && row.product) next.product = row.product
   if (row.itc_number) next.itc_numbers = union(c.itc_numbers, [row.itc_number])
+  if (rowEnded(row)) {
+    if (c.status !== "revoked" && c.status !== "terminated") {
+      next.status = "revoked"
+      next.ended_on = row.revoked_note || !row.period_end ? maxDate(c.ended_on, date) : dayAfter(row.period_end)
+    }
+    next.first_seen_on = minDate(c.first_seen_on, date)
+    next.last_activity_on = maxDate(c.last_activity_on, date)
+    return next
+  }
   const live = row.suspended ? "suspended" : "order"
   if (c.status === "unknown" || ((c.status === "revoked" || c.status === "terminated") && date > (c.ended_on ?? ""))) next.status = live as CaseStatus
   next.first_seen_on = minDate(c.first_seen_on, date)
@@ -194,14 +253,16 @@ const applyListRow = (c: CaseRow, row: ListRow, date: string): CaseRow => {
 
 // A newer notice's scope replaces the case's; an older one only fills in a case with none
 const applyScope = (c: CaseRow, scope: Scope, documentNumber: string, date: string): CaseRow => {
-  if (c.scope_published_on && date < c.scope_published_on && (c.hts_main.length || c.hts_also.length)) return c
+  const hasCodes = !!(c.fr_main?.length || c.fr_also?.length)
+  if (c.scope_published_on && date < c.scope_published_on && hasCodes) return c
   // The same notice read again: its text is refreshed, the codes (perhaps checked by Sonnet) stay
-  if (c.scope_doc === documentNumber && (c.hts_main.length || c.hts_also.length)) return { ...c, scope_text: storedScope(scope.text) }
+  if (c.scope_doc === documentNumber && hasCodes) return { ...c, scope_text: storedScope(scope.text) }
+  // The Federal Register's codes; the check step merges them with ITA's into hts_* (codes.ts)
   return {
     ...c,
-    hts_main: scope.main,
-    hts_also: scope.also,
-    hts_excluded: scope.excluded,
+    fr_main: scope.main,
+    fr_also: scope.also,
+    fr_excluded: scope.excluded,
     scope_text: storedScope(scope.text),
     scope_doc: documentNumber,
     scope_published_on: date,
@@ -259,6 +320,24 @@ const saveEvents = async (db: Db, events: EventRow[]) => {
   if (error) throw new Error(`Saving events: ${error.message}`)
 }
 
+// Case numbers new to us that are real: the notice's own Federal Register docket names them, or
+// the Federal Register has a docket for them. A typo ("A-533-849" for A-533-848) has none. When
+// the Federal Register can't be reached, the number is trusted (as before this check).
+const confirmNew = async (caseNumbers: string[], docketed: string[]) => {
+  const confirmed: string[] = []
+  const unconfirmed: string[] = []
+  for (const caseNumber of caseNumbers) {
+    if (docketed.includes(caseNumber)) {
+      confirmed.push(caseNumber)
+      continue
+    }
+    const docs = await caseDocuments(caseNumber).catch((): null => null)
+    if (docs === null || docs.length) confirmed.push(caseNumber)
+    else unconfirmed.push(caseNumber)
+  }
+  return { confirmed, unconfirmed }
+}
+
 // Reads one notice into cases and events. Returns whether it was about any case.
 export const readNotice = async (db: Db, item: NoticeItem, text: string | null): Promise<{ linked: boolean; newCases: number; note?: string }> => {
   const agency = item.agencies.includes(AGENCY_NAMES.itc) ? "itc" : "commerce"
@@ -286,6 +365,9 @@ export const readNotice = async (db: Db, item: NoticeItem, text: string | null):
     const { data, error } = await db.from("adcvd_cases").select("*").overlaps("itc_numbers", numbers)
     if (error) throw new Error(`Loading cases: ${error.message}`)
     const cases = (data ?? []) as CaseRow[]
+    // "…; Determinations": the vote is in the text, country by country
+    const ended = event === "itc_final" ? itcEndedCases(body) : []
+    const eventFor = (c: CaseRow): EventType => (itcEnded(ended, c.kind, c.country) ? "itc_negative" : event)
     const shared: Omit<EventRow, "case_number"> = {
       ...base,
       event,
@@ -299,8 +381,8 @@ export const readNotice = async (db: Db, item: NoticeItem, text: string | null):
       await saveEvents(db, [{ ...shared, case_number: null }])
       return { linked: true, newCases: 0 }
     }
-    await saveCases(db, cases.map((c) => ({ ...applyEvent(c, event, date, item.title), itc_numbers: union(c.itc_numbers, numbers) })))
-    await saveEvents(db, cases.map((c) => ({ ...shared, case_number: c.case_number })))
+    await saveCases(db, cases.map((c) => ({ ...applyEvent(c, eventFor(c), date, item.title), itc_numbers: union(c.itc_numbers, numbers) })))
+    await saveEvents(db, cases.map((c) => ({ ...shared, event: eventFor(c), case_number: c.case_number })))
     return { linked: true, newCases: 0 }
   }
 
@@ -309,9 +391,17 @@ export const readNotice = async (db: Db, item: NoticeItem, text: string | null):
     // Only the annual review lists are "Country: Product, case" rows; sunset tables put each
     // case's product after it, and scope ruling lists are prose, so those give case numbers only
     const tabular = event === "list_opportunity" || event === "list_review_init"
-    const rows = listRows(body).map((r) => (tabular ? r : { ...r, product: null, country_name: null }))
-    if (!rows.length) return { linked: false, newCases: 0 }
-    const existing = await loadCases(db, rows.map((r) => r.case_number))
+    const read = listRowsChecked(body)
+    const known = await loadCases(db, read.rejected.map((r) => r.case_number))
+    // A row that looked like a typo is kept when it's a case we know (the list's layout misled us)
+    const kept = [...read.rows, ...read.rejected.filter((r) => known.has(r.case_number)).map((r) => r.row)]
+    const typos = read.rejected.filter((r) => !known.has(r.case_number))
+    const listed = kept.map((r) => (tabular ? r : { ...r, product: null, country_name: null, period_end: null, revoked_note: false }))
+    if (!listed.length) return { linked: false, newCases: 0 }
+    const existing = await loadCases(db, listed.map((r) => r.case_number))
+    // A case number new to us becomes a case only if the Federal Register has a docket for it
+    const { confirmed, unconfirmed } = await confirmNew(listed.map((r) => r.case_number).filter((n) => !existing.has(n)), [])
+    const rows = listed.filter((r) => existing.has(r.case_number) || confirmed.includes(r.case_number))
     const cases = rows.map((row) => applyListRow(existing.get(row.case_number) ?? blankCase(row.case_number), row, date))
     await saveCases(db, cases)
     const listEvent = LIST_EVENTS[event]
@@ -321,9 +411,17 @@ export const readNotice = async (db: Db, item: NoticeItem, text: string | null):
         rows.map((row): EventRow => ({
           ...base,
           case_number: row.case_number,
-          // A suspension agreement's row says so (the status follows from it)
-          event: event === "list_opportunity" && row.suspended ? "suspension" : listEvent.event,
-          summary: event === "list_opportunity" && row.suspended ? "A suspension agreement in its anniversary month: an annual review of it could be requested." : listEvent.summary,
+          // A suspension agreement's row says so (the status follows from it), and so does a row
+          // for an order that has ended
+          event: tabular && rowEnded(row) ? "final_period" : event === "list_opportunity" && row.suspended ? "suspension" : listEvent.event,
+          summary:
+            tabular && row.revoked_note
+              ? "Listed with a note that the order has been revoked: only entries made before it ended can still be reviewed."
+              : tabular && rowEnded(row)
+                ? `Listed only for its final period, which ended ${row.period_end}: the order has ended, and only entries made before then can still be reviewed.`
+                : event === "list_opportunity" && row.suspended
+                  ? "A suspension agreement in its anniversary month: an annual review of it could be requested."
+                  : listEvent.summary,
           significant: false,
           itc_numbers: row.itc_number ? [row.itc_number] : [],
           countries: [],
@@ -336,14 +434,24 @@ export const readNotice = async (db: Db, item: NoticeItem, text: string | null):
     // The advance sunset lists split each case number around a contact column; they only repeat
     // orders the annual review lists name, so their gaps don't cost coverage
     const gap = event === "list_sunset_notice" ? 0 : listGap(body)
-    const note = gap ? `Check ${documentNumber}: ${gap} case number${gap === 1 ? "" : "s"} in this list weren't read as rows (${item.url})` : undefined
+    const notes = [
+      gap ? `${gap} case number${gap === 1 ? "" : "s"} in this list weren't read as rows` : null,
+      ...typos.map((r) => `${r.case_number} left out as a typo (${r.reason})`),
+      ...unconfirmed.map((n) => `${n} left out: the Federal Register has no docket for it (a typo?)`),
+    ].filter(Boolean)
+    const note = notes.length ? `Check ${documentNumber} (${item.url}): ${notes.join("; ")}` : undefined
     return { linked: true, newCases: rows.length - existing.size, note }
   }
 
   // ---- A notice about its own cases
-  const own = Array.from(new Set([...(item.raw.docket_ids ?? []).flatMap((d) => caseNumbers(d)), ...caseNumbers(header)]))
-  if (!own.length) return { linked: false, newCases: 0 }
-  const existing = await loadCases(db, own)
+  const docketed = (item.raw.docket_ids ?? []).flatMap((d) => caseNumbers(d))
+  const named = Array.from(new Set([...docketed, ...caseNumbers(header)]))
+  if (!named.length) return { linked: false, newCases: 0 }
+  const existing = await loadCases(db, named)
+  // A number only in the header, new to us, needs a docket of its own (a typo makes a phantom case)
+  const { confirmed, unconfirmed } = await confirmNew(named.filter((n) => !existing.has(n)), docketed)
+  const own = named.filter((n) => existing.has(n) || confirmed.includes(n))
+  if (!own.length) return { linked: false, newCases: 0, note: `Check ${documentNumber}: ${unconfirmed.join(", ")} left out, no Federal Register docket (a typo?)` }
   const scope = scopeOf(body)
   const single = titleCountries.length === 1 ? countryFromName(titleCountries[0]) : null
   const affirmativeCircumvention = event === "circumvention" && /Affirmative/i.test(item.title)

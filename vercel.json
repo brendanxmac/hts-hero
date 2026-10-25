@@ -2,15 +2,15 @@
   "crons": [
     {
       "path": "/api/cron/tariff-sources",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 * * * *"
     },
     {
       "path": "/api/cron/tariff-updates",
-      "schedule": "5,20,35,50 * * * *"
+      "schedule": "5 * * * *"
     },
     {
       "path": "/api/cron/adcvd",
-      "schedule": "8,23,38,53 * * * *"
+      "schedule": "8 * * * *"
     },
     {
       "path": "/api/cron/social-ideas",
@@ -18,11 +18,11 @@
     },
     {
       "path": "/api/cron/email-outbox",
-      "schedule": "*/5 * * * *"
+      "schedule": "*/15 * * * *"
     },
     {
       "path": "/api/cron/tariff-news",
-      "schedule": "10,25,40,55 * * * *"
+      "schedule": "10 * * * *"
     },
     {
       "path": "/api/cron/tariff-digest",
@@ -35,6 +35,10 @@
     {
       "path": "/api/cron/tracker-snapshots",
       "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/cron/admin-digest",
+      "schedule": "0 0 * * *"
     }
   ]
 }

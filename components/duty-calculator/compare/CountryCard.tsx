@@ -114,6 +114,7 @@ export const CountryCard = ({
   scale = 1,
   diff,
   show = "usd",
+  noDollars = false,
   supply,
   supplyTop,
   onChange,
@@ -144,6 +145,8 @@ export const CountryCard = ({
   diff?: number;
   // What leads: the rate (Side by Side: %s first, dollars under them) or the dollars
   show?: "pct" | "usd";
+  // Rates only: no dollar figures, fees or landed cost (the Tracker's Savings tab)
+  noDollars?: boolean;
   // US imports from it (Census), as the last row; left out when there are no figures
   supply?: Supply | null;
   // The largest share any country shown has, so the volume bars compare (the largest fills it)
@@ -168,7 +171,7 @@ export const CountryCard = ({
   const rows = lines ?? linesOf(result);
 
   return (
-    <article className="flex min-w-0 flex-col gap-4" aria-label={`${country.name}: ${money(result.totalDuty)} duty`}>
+    <article className="flex min-w-0 flex-col gap-4" aria-label={`${country.name}: ${noDollars ? formatRate(pct) : money(result.totalDuty)} duty`}>
       {/* Who */}
       <header className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
@@ -219,7 +222,7 @@ export const CountryCard = ({
       <div className="flex flex-col gap-1">
         <span className={`${ui.metric.secondary} ${cheapest ? "!text-success" : ""}`}>{byPct ? formatRate(pct) : money(result.totalDuty)}</span>
         <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-          <span className="tabular-nums text-base-content/60">{byPct ? `${money(result.totalDuty)} duty` : `${formatRate(pct)} duty`}</span>
+          {!noDollars && <span className="tabular-nums text-base-content/60">{byPct ? `${money(result.totalDuty)} duty` : `${formatRate(pct)} duty`}</span>}
           {result.baseNotCalculated && <ExcludesBase />}
           {diff !== undefined &&
             (Math.abs(diff) < 0.005 ? (
@@ -264,7 +267,7 @@ export const CountryCard = ({
                 ) : line ? (
                   <>
                     <span className="font-medium tabular-nums text-base-content">{byPct ? formatRate(line.ratePct ?? (line.amount / value) * 100) : money(line.amount)}</span>
-                    <span className="text-[11px] tabular-nums text-base-content/60">{byPct ? money(line.amount) : line.ratePct !== undefined ? formatRate(line.ratePct) : ""}</span>
+                    {!noDollars && <span className="text-[11px] tabular-nums text-base-content/60">{byPct ? money(line.amount) : line.ratePct !== undefined ? formatRate(line.ratePct) : ""}</span>}
                   </>
                 ) : (
                   <span className="text-base-content/30">—</span>
@@ -281,19 +284,23 @@ export const CountryCard = ({
             {baseline && <Change line={{ amount: result.totalDuty }} before={{ amount: baseline.totalDuty }} value={value} byPct={byPct} />}
             <span className="flex flex-col items-end leading-tight">
               <span className="tabular-nums">{byPct ? formatRate(pct) : money(result.totalDuty)}</span>
-              <span className="text-[11px] font-normal tabular-nums text-base-content/60">{byPct ? money(result.totalDuty) : formatRate(pct)}</span>
+              {!noDollars && <span className="text-[11px] font-normal tabular-nums text-base-content/60">{byPct ? money(result.totalDuty) : formatRate(pct)}</span>}
               {result.baseNotCalculated && <ExcludesBase className="text-[11px]" />}
             </span>
           </dd>
         </div>
-        <div className="flex h-9 items-center justify-between gap-3 border-t border-base-300 text-base-content/70">
-          <dt title={result.fees.map((f) => f.name).join(", ")}>Fees ({result.fees.map((f) => f.id.toUpperCase()).join(" + ") || "none"})</dt>
-          <dd className="m-0 tabular-nums">{money(result.totalFees)}</dd>
-        </div>
-        <div className="flex h-10 items-center justify-between gap-3 border-t border-base-300 font-semibold text-base-content">
-          <dt>Landed cost</dt>
-          <dd className="m-0 tabular-nums">{money(value + result.totalDuty + result.totalFees)}</dd>
-        </div>
+        {!noDollars && (
+          <>
+            <div className="flex h-9 items-center justify-between gap-3 border-t border-base-300 text-base-content/70">
+              <dt title={result.fees.map((f) => f.name).join(", ")}>Fees ({result.fees.map((f) => f.id.toUpperCase()).join(" + ") || "none"})</dt>
+              <dd className="m-0 tabular-nums">{money(result.totalFees)}</dd>
+            </div>
+            <div className="flex h-10 items-center justify-between gap-3 border-t border-base-300 font-semibold text-base-content">
+              <dt>Landed cost</dt>
+              <dd className="m-0 tabular-nums">{money(value + result.totalDuty + result.totalFees)}</dd>
+            </div>
+          </>
+        )}
       </dl>
 
       {/* A separate question from the duty: how much the US already buys from there */}

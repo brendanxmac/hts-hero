@@ -3,9 +3,17 @@
 import Link from "next/link"
 import { ReactNode, useEffect, useRef } from "react"
 
-// Building blocks for the revision checker's admin UI. Color is reserved for
-// meaning: green = added/approved/done, red = removed/failed, amber = needs
-// attention, blue = in progress. Everything else is neutral.
+// Building blocks for the admin tools. Color is reserved for meaning: green = added/approved/done,
+// red = removed/failed, amber = needs attention, blue = in progress. Everything else is neutral.
+// Inside the admin frame (components/admin/AdminFrame, .hts-tracker) the `tracker:` classes give
+// them the Tracker's look (DESIGN_SYSTEM.md §15): round cards on the ground, Sora titles and
+// numbers, pill buttons and tabs, cobalt for the one main action. The revision checker keeps the
+// old shell, so it looks as it did.
+
+// Sora, for titles and big numbers, in the Tracker's look
+const SORA = "tracker:[font-family:var(--font-tracker-display)]"
+// A card on the ground, in the Tracker's look
+const CARD = "tt-card tracker:rounded-lg tracker:border-base-300 tracker:shadow-[var(--tt-shadow)]"
 
 export type Tone = "neutral" | "info" | "success" | "warning" | "error"
 
@@ -18,8 +26,8 @@ const DOT: Record<Tone, string> = {
 }
 
 const PILL: Record<Tone, string> = {
-  neutral: "bg-base-content/[0.06] text-base-content/70 ring-base-content/10",
-  info: "bg-info/10 text-info ring-info/20",
+  neutral: "bg-base-content/[0.06] text-base-content/70 ring-base-content/10 tracker:bg-tt-soft",
+  info: "bg-info/10 text-info ring-info/20 tracker:bg-primary/10 tracker:text-primary",
   success: "bg-success/10 text-success ring-success/20",
   warning: "bg-warning/10 text-warning ring-warning/25",
   error: "bg-error/10 text-error ring-error/20",
@@ -27,7 +35,7 @@ const PILL: Record<Tone, string> = {
 
 const CALLOUT: Record<Tone, string> = {
   neutral: "border-base-content/10 bg-base-content/[0.03]",
-  info: "border-info/25 bg-info/[0.06]",
+  info: "border-info/25 bg-info/[0.06] tracker:bg-primary/[0.07]",
   success: "border-success/25 bg-success/[0.06]",
   warning: "border-warning/30 bg-warning/[0.07]",
   error: "border-error/25 bg-error/[0.06]",
@@ -35,25 +43,32 @@ const CALLOUT: Record<Tone, string> = {
 
 const CALLOUT_ICON: Record<Tone, string> = {
   neutral: "text-base-content/50",
-  info: "text-info",
+  info: "text-info tracker:text-primary",
   success: "text-success",
   warning: "text-warning",
   error: "text-error",
 }
 
-// Shared button looks (daisyUI btn sizes, neutral styling)
+// Shared button looks (daisyUI btn sizes, neutral styling; in the Tracker's look, pills with the
+// one main action in cobalt)
+const PRIMARY_TT = "tracker:rounded-full tracker:bg-primary tracker:text-primary-content tracker:hover:bg-primary/90 tracker:shadow-none"
+const SECONDARY_TT = "tracker:rounded-full tracker:border-base-300 tracker:shadow-none tracker:hover:border-base-content/25 tracker:hover:bg-tt-soft"
 export const btn = {
-  primary: "btn btn-sm border-0 bg-base-content font-medium text-base-100 hover:bg-base-content/85",
-  xsPrimary: "btn btn-xs h-7 min-h-7 border-0 bg-base-content px-2.5 font-medium text-base-100 hover:bg-base-content/85",
-  secondary:
-    "btn btn-sm border-base-content/15 bg-base-100 font-medium shadow-xs hover:border-base-content/25 hover:bg-base-200",
-  ghost: "btn btn-sm btn-ghost font-medium",
-  xsSecondary:
-    "btn btn-xs h-7 min-h-7 border-base-content/15 bg-base-100 px-2.5 font-medium hover:border-base-content/25 hover:bg-base-200",
-  xsGhost: "btn btn-xs btn-ghost h-7 min-h-7 px-2 font-medium",
+  primary: `btn btn-sm border-0 bg-base-content font-medium text-base-100 hover:bg-base-content/85 ${PRIMARY_TT} tracker:h-9 tracker:min-h-9 tracker:px-4 tracker:font-semibold`,
+  xsPrimary: `btn btn-xs h-7 min-h-7 border-0 bg-base-content px-2.5 font-medium text-base-100 hover:bg-base-content/85 ${PRIMARY_TT} tracker:h-8 tracker:min-h-8 tracker:px-3.5 tracker:font-semibold`,
+  secondary: `btn btn-sm border-base-content/15 bg-base-100 font-medium shadow-xs hover:border-base-content/25 hover:bg-base-200 ${SECONDARY_TT} tracker:h-9 tracker:min-h-9 tracker:px-4`,
+  ghost: "btn btn-sm btn-ghost font-medium tracker:rounded-full tracker:h-9 tracker:min-h-9 tracker:hover:bg-tt-soft",
+  xsSecondary: `btn btn-xs h-7 min-h-7 border-base-content/15 bg-base-100 px-2.5 font-medium hover:border-base-content/25 hover:bg-base-200 ${SECONDARY_TT} tracker:h-8 tracker:min-h-8 tracker:px-3`,
+  xsGhost: "btn btn-xs btn-ghost h-7 min-h-7 px-2 font-medium tracker:rounded-full tracker:h-8 tracker:min-h-8 tracker:px-3 tracker:hover:bg-tt-soft",
 }
 
-export const inputCls = "input input-sm border-base-content/15 bg-base-100 placeholder:text-base-content/35"
+// A table inside a Panel (daisyUI's table): in the Tracker's look, the head over a 2px rule, roomier
+// hairline rows, and the first and last columns lined up with the card's padding
+export const tableCls =
+  "table table-sm tracker:[&_thead_tr]:border-b-2 tracker:[&_thead_tr]:border-tt-rule tracker:[&_th]:py-3 tracker:[&_th]:text-xs tracker:[&_th]:font-semibold tracker:[&_th]:text-base-content/60 tracker:[&_td]:py-3 tracker:[&_tbody_tr]:border-base-300 tracker:[&_tr>*:first-child]:pl-6 tracker:[&_tr>*:last-child]:pr-6"
+
+export const inputCls =
+  "input input-sm border-base-content/15 bg-base-100 placeholder:text-base-content/35 tracker:h-9 tracker:rounded-xl tracker:border-base-300"
 
 export const Spinner = ({ className = "" }: { className?: string }) => (
   <span className={`loading loading-spinner loading-xs ${className}`} />
@@ -73,7 +88,7 @@ export const StatusDot = ({ tone, label, busy }: { tone: Tone; label: ReactNode;
 export const Pill = ({ tone = "neutral", children, mono, title }: { tone?: Tone; children: ReactNode; mono?: boolean; title?: string }) => (
   <span
     title={title}
-    className={`inline-flex items-center whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] font-medium leading-4 ring-1 ring-inset ${PILL[tone]} ${
+    className={`inline-flex items-center whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] font-medium leading-4 ring-1 ring-inset tracker:rounded-full tracker:px-2 tracker:font-semibold tracker:ring-0 ${PILL[tone]} ${
       mono ? "font-mono" : ""
     }`}
   >
@@ -89,7 +104,7 @@ export const Kbd = ({ children }: { children: ReactNode }) => (
 
 export const SectionLabel = ({ children, right }: { children: ReactNode; right?: ReactNode }) => (
   <div className="flex items-center gap-2">
-    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-base-content/50">{children}</h3>
+    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-base-content/50 tracker:text-[0.9375rem] tracker:normal-case tracker:tracking-normal tracker:text-base-content">{children}</h3>
     {right && <div className="ml-auto flex items-center gap-2">{right}</div>}
   </div>
 )
@@ -124,12 +139,14 @@ export const PageHeader = ({
   actions?: ReactNode
   children?: ReactNode
 }) => (
-  <header className="flex flex-col gap-3">
+  // In the Tracker's look, the page's header card: title, its one line, its actions, then its views
+  // (Tabs) at the card's foot (DESIGN_SYSTEM.md §15 "Page frame")
+  <header className={`flex flex-col gap-3 tracker:gap-4 tracker:border tracker:bg-base-100 tracker:px-6 tracker:pb-4 tracker:pt-6 ${CARD}`}>
     {crumbs && <Crumbs items={crumbs} />}
     <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
       <div className="min-w-0 flex-1 basis-80">
-        <h1 className="flex flex-wrap items-center gap-3 text-xl font-semibold tracking-tight">{title}</h1>
-        {meta && <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-base-content/55">{meta}</div>}
+        <h1 className={`flex flex-wrap items-center gap-3 text-xl font-semibold tracking-tight tracker:text-[1.75rem] tracker:leading-tight ${SORA}`}>{title}</h1>
+        {meta && <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-base-content/55 tracker:mt-1.5 tracker:text-base-content/70">{meta}</div>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
@@ -154,11 +171,11 @@ export const Panel = ({
   className?: string
   bodyClassName?: string
 }) => (
-  <section className={`overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs ${className}`}>
+  <section className={`overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs ${CARD} ${className}`}>
     {(title || actions) && (
-      <div className="flex min-h-[44px] flex-wrap items-center gap-2 border-b border-base-content/10 px-4 py-2">
+      <div className="flex min-h-[44px] flex-wrap items-center gap-2 border-b border-base-content/10 px-4 py-2 tracker:min-h-14 tracker:border-base-300 tracker:px-6 tracker:py-3">
         {title && (
-          <h2 className="text-sm font-semibold">
+          <h2 className={`text-sm font-semibold tracker:text-lg ${SORA}`}>
             {title}
             {count !== undefined && <span className="ml-1.5 font-normal text-base-content/40">{count}</span>}
           </h2>
@@ -209,7 +226,7 @@ export const Callout = ({
   action?: ReactNode
   busy?: boolean
 }) => (
-  <div className={`flex items-start gap-3 rounded-lg border px-3.5 py-3 text-sm ${CALLOUT[tone]}`}>
+  <div className={`flex items-start gap-3 rounded-lg border px-3.5 py-3 text-sm tracker:rounded-xl tracker:border-transparent tracker:px-4 tracker:py-3.5 ${CALLOUT[tone]}`}>
     {busy ? (
       <span className="loading loading-spinner mt-0.5 h-4 w-4 shrink-0 text-info" />
     ) : (
@@ -239,23 +256,23 @@ export const Help = ({ children, label = "How this works" }: { children: ReactNo
       {label}
       <span className="transition-transform group-open:rotate-90">›</span>
     </summary>
-    <div className="mt-2 max-w-3xl space-y-2 rounded-lg border border-base-content/10 bg-base-content/[0.02] px-3.5 py-3 leading-relaxed text-base-content/70">
+    <div className="mt-2 max-w-3xl space-y-2 rounded-lg border border-base-content/10 bg-base-content/[0.02] px-3.5 py-3 leading-relaxed text-base-content/70 tracker:rounded-xl tracker:border-0 tracker:bg-tt-soft tracker:px-4">
       {children}
     </div>
   </details>
 )
 
 export const Stat = ({ label, value, hint, children }: { label: string; value: ReactNode; hint?: ReactNode; children?: ReactNode }) => (
-  <div className="flex min-w-0 flex-col gap-1 px-4 py-3">
-    <div className="text-xs font-medium text-base-content/50">{label}</div>
-    <div className="text-xl font-semibold tabular-nums tracking-tight">{value}</div>
+  <div className="flex min-w-0 flex-col gap-1 px-4 py-3 tracker:gap-1.5 tracker:px-6 tracker:py-5">
+    <div className="text-xs font-medium text-base-content/50 tracker:font-bold tracker:uppercase tracker:tracking-wider tracker:text-base-content/60">{label}</div>
+    <div className={`text-xl font-semibold tabular-nums tracking-tight tracker:text-[1.75rem] tracker:leading-tight ${SORA}`}>{value}</div>
     {children}
-    {hint && <div className="text-xs leading-snug text-base-content/50">{hint}</div>}
+    {hint && <div className="text-xs leading-snug text-base-content/50 tracker:text-base-content/60">{hint}</div>}
   </div>
 )
 
 export const StatGrid = ({ children }: { children: ReactNode }) => (
-  <div className="grid grid-cols-2 divide-base-content/10 overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs max-md:[&>*:nth-child(n+3)]:border-t max-md:[&>*:nth-child(n+3)]:border-base-content/10 max-md:[&>*:nth-child(even)]:border-l md:flex md:divide-x md:*:flex-1">
+  <div className={`grid grid-cols-2 divide-base-content/10 overflow-hidden rounded-lg border border-base-content/10 bg-base-100 shadow-xs tracker:divide-base-300 ${CARD} max-md:[&>*:nth-child(n+3)]:border-t max-md:[&>*:nth-child(n+3)]:border-base-content/10 max-md:[&>*:nth-child(even)]:border-l md:flex md:divide-x md:*:flex-1`}>
     {children}
   </div>
 )
@@ -263,8 +280,8 @@ export const StatGrid = ({ children }: { children: ReactNode }) => (
 export const ProgressBar = ({ value, max, className = "" }: { value: number; max: number; className?: string }) => {
   const pct = max ? Math.round((value / max) * 100) : 0
   return (
-    <div className={`h-1.5 overflow-hidden rounded-full bg-base-content/10 ${className}`}>
-      <div className={`h-full rounded-full ${pct === 100 ? "bg-success" : "bg-base-content/60"}`} style={{ width: `${pct}%` }} />
+    <div className={`h-1.5 overflow-hidden rounded-full bg-base-content/10 tracker:bg-tt-soft-high ${className}`}>
+      <div className={`h-full rounded-full ${pct === 100 ? "bg-success" : "bg-base-content/60 tracker:bg-primary"}`} style={{ width: `${pct}%` }} />
     </div>
   )
 }
@@ -285,24 +302,24 @@ export const Tabs = <T extends string>({
   value: T
   onChange: (value: T) => void
 }) => (
-  <div role="tablist" className="flex gap-5 overflow-x-auto border-b border-base-content/10">
+  <div role="tablist" className="flex gap-5 overflow-x-auto border-b border-base-content/10 tracker:-mx-1 tracker:gap-1 tracker:border-0 tracker:px-1 tracker:py-0.5">
     {tabs.map((t) => (
       <button
         key={t.value}
         role="tab"
         aria-selected={value === t.value}
         onClick={() => onChange(t.value)}
-        className={`-mb-px flex items-center gap-1.5 whitespace-nowrap border-b-2 pb-2.5 pt-1 text-sm font-medium transition-colors ${
+        className={`-mb-px flex items-center gap-1.5 whitespace-nowrap border-b-2 pb-2.5 pt-1 text-sm font-medium transition-colors tracker:mb-0 tracker:h-9 tracker:rounded-full tracker:border-0 tracker:px-3.5 tracker:py-0 ${
           value === t.value
-            ? "border-base-content text-base-content"
-            : "border-transparent text-base-content/50 hover:text-base-content/80"
+            ? "border-base-content text-base-content tracker:bg-primary/10 tracker:font-semibold tracker:text-primary"
+            : "border-transparent text-base-content/50 hover:text-base-content/80 tracker:text-base-content/70 tracker:hover:bg-tt-soft tracker:hover:text-base-content"
         }`}
       >
         {t.label}
         {t.count !== undefined && (
           <span
-            className={`rounded px-1.5 text-[11px] tabular-nums ${
-              t.tone === "warning" && t.count > 0 ? "bg-warning/15 text-warning" : "bg-base-content/[0.07] text-base-content/60"
+            className={`rounded px-1.5 text-[11px] tabular-nums tracker:rounded-full tracker:font-semibold ${
+              t.tone === "warning" && t.count > 0 ? "bg-warning/15 text-warning" : "bg-base-content/[0.07] text-base-content/60 tracker:bg-base-content/10 tracker:text-base-content/70"
             }`}
           >
             {t.count}
@@ -325,15 +342,15 @@ export const Segmented = <T extends string>({
   onChange: (value: T) => void
   size?: "xs" | "sm"
 }) => (
-  <div className="inline-flex rounded-md border border-base-content/10 bg-base-content/[0.04] p-0.5">
+  <div className="inline-flex rounded-md border border-base-content/10 bg-base-content/[0.04] p-0.5 tracker:rounded-full tracker:border-0 tracker:bg-tt-soft tracker:p-1">
     {options.map((o) => (
       <button
         key={o.value}
         title={o.title}
         onClick={() => onChange(o.value)}
-        className={`flex items-center gap-1 whitespace-nowrap rounded font-medium transition-colors ${
-          size === "xs" ? "px-2 py-0.5 text-xs" : "px-2.5 py-1 text-xs"
-        } ${value === o.value ? "bg-base-100 text-base-content shadow-xs" : "text-base-content/55 hover:text-base-content"}`}
+        className={`flex items-center gap-1 whitespace-nowrap rounded font-medium transition-colors tracker:rounded-full ${
+          size === "xs" ? "px-2 py-0.5 text-xs tracker:px-2.5 tracker:py-1" : "px-2.5 py-1 text-xs tracker:px-3 tracker:py-1.5 tracker:text-sm"
+        } ${value === o.value ? "bg-base-100 text-base-content shadow-xs tracker:font-semibold" : "text-base-content/55 hover:text-base-content tracker:text-base-content/70"}`}
       >
         {o.label}
       </button>
@@ -367,19 +384,19 @@ export const Modal = ({
   }, [open])
   return (
     <dialog ref={ref} className="modal" onClose={onClose}>
-      <div className={`modal-box flex max-h-[90vh] flex-col gap-0 rounded-xl p-0 ${wide ? "max-w-3xl" : "max-w-lg"}`}>
-        <div className="flex items-start gap-3 border-b border-base-content/10 px-5 py-4">
+      <div className={`modal-box flex max-h-[90vh] flex-col gap-0 rounded-xl p-0 tracker:rounded-lg tracker:border tracker:border-base-300 ${wide ? "max-w-3xl" : "max-w-lg"}`}>
+        <div className="flex items-start gap-3 border-b border-base-content/10 px-5 py-4 tracker:border-base-300 tracker:px-6">
           <div className="min-w-0 flex-1">
-            <h3 className="font-semibold">{title}</h3>
+            <h3 className={`font-semibold tracker:text-lg ${SORA}`}>{title}</h3>
             {description && <p className="mt-0.5 text-sm text-base-content/55">{description}</p>}
           </div>
           <button className="btn btn-circle btn-ghost btn-sm -mr-2 -mt-1" onClick={onClose} aria-label="Close">
             ✕
           </button>
         </div>
-        <div className="overflow-y-auto px-5 py-4">{children}</div>
+        <div className="overflow-y-auto px-5 py-4 tracker:px-6 tracker:py-5">{children}</div>
         {footer && (
-          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-base-content/10 bg-base-content/[0.02] px-5 py-3">
+          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-base-content/10 bg-base-content/[0.02] px-5 py-3 tracker:border-base-300 tracker:bg-tt-soft tracker:px-6">
             {footer}
           </div>
         )}
@@ -393,18 +410,19 @@ export const Modal = ({
 
 export const Field = ({ label, hint, children, className = "" }: { label: ReactNode; hint?: ReactNode; children: ReactNode; className?: string }) => (
   <label className={`flex flex-col gap-1.5 ${className}`}>
-    <span className="text-xs font-medium text-base-content/70">{label}</span>
+    <span className="text-xs font-medium text-base-content/70 tracker:text-sm tracker:font-semibold tracker:text-base-content">{label}</span>
     {children}
-    {hint && <span className="text-xs leading-snug text-base-content/50">{hint}</span>}
+    {hint && <span className="text-xs leading-snug text-base-content/50 tracker:text-base-content/60">{hint}</span>}
   </label>
 )
 
 // Label/value rows for detail panels
-export const DefList = ({ items }: { items: { label: string; value: ReactNode }[] }) => (
-  <dl className="grid grid-cols-1 gap-x-6 gap-y-2.5 text-sm sm:grid-cols-[9rem_minmax(0,1fr)]">
+// narrow: in a side rail, with a shorter label column
+export const DefList = ({ items, narrow }: { items: { label: string; value: ReactNode }[]; narrow?: boolean }) => (
+  <dl className={`grid grid-cols-1 gap-x-6 gap-y-2.5 text-sm ${narrow ? "sm:grid-cols-[5.5rem_minmax(0,1fr)] sm:gap-x-3" : "sm:grid-cols-[9rem_minmax(0,1fr)]"}`}>
     {items.map((item) => (
       <div key={item.label} className="contents">
-        <dt className="text-xs font-medium text-base-content/50 sm:pt-0.5">{item.label}</dt>
+        <dt className="text-xs font-medium text-base-content/50 sm:pt-0.5 tracker:text-base-content/60">{item.label}</dt>
         <dd className="min-w-0 wrap-break-word">{item.value}</dd>
       </div>
     ))}
@@ -429,3 +447,62 @@ export const PageSpinner = () => (
     <span className="loading loading-spinner loading-md text-base-content/40" />
   </div>
 )
+
+// A full-height panel from the right, for working through one thing (an update to review, a case)
+// with the list still behind it: a header (title, a line, its own controls), a scrolling body, and
+// a footer for the decision. Escape or the backdrop closes it.
+export const Drawer = ({
+  open,
+  onClose,
+  title,
+  description,
+  top,
+  children,
+  footer,
+}: {
+  open: boolean
+  onClose: () => void
+  title: ReactNode
+  description?: ReactNode
+  // Above the title: e.g. stepping through a queue
+  top?: ReactNode
+  children: ReactNode
+  footer?: ReactNode
+}) => {
+  const ref = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    const dialog = ref.current
+    if (!dialog) return
+    if (open && !dialog.open) dialog.showModal()
+    if (!open && dialog.open) dialog.close()
+  }, [open])
+  return (
+    <dialog
+      ref={ref}
+      onClose={onClose}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      className="fixed inset-0 m-0 ml-auto h-svh max-h-svh w-[min(76rem,96vw)] max-w-none bg-transparent p-0 backdrop:bg-black/40 lg:p-3"
+    >
+      <div className="flex h-full flex-col overflow-hidden bg-base-100 text-base-content tracker:border tracker:border-base-300 lg:rounded-lg">
+        <div className="flex flex-col gap-3 border-b border-base-content/10 px-6 pb-4 pt-5 tracker:border-base-300">
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">{top}</div>
+            <button type="button" className={`${btn.xsGhost} -mr-2`} onClick={onClose} aria-label="Close">
+              ✕
+            </button>
+          </div>
+          <div className="min-w-0">
+            <h2 className={`text-lg font-semibold leading-snug tracker:text-[1.375rem] ${SORA}`}>{title}</h2>
+            {description && <div className="mt-1 text-sm text-base-content/60">{description}</div>}
+          </div>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+        {footer && (
+          <div className="flex flex-wrap items-center gap-2 border-t border-base-content/10 bg-base-content/[0.02] px-6 py-3 tracker:border-base-300 tracker:bg-tt-soft">
+            {footer}
+          </div>
+        )}
+      </div>
+    </dialog>
+  )
+}

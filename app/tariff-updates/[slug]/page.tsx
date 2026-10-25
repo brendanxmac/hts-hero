@@ -19,7 +19,7 @@ import { authorityLabel, formatDay, kindLabel, STAGE_DETAIL, STAGE_LABELS } from
 // One tariff update: what changed in plain English, the stages it has reached with the official
 // document for each, and what it covers (countries, products, HTS codes, linked to their pages).
 
-export const revalidate = 900
+export const revalidate = 3600
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   return []

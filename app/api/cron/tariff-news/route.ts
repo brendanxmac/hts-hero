@@ -5,7 +5,7 @@ import { createAdminClient } from "../../supabase/server"
 export const dynamic = "force-dynamic"
 export const maxDuration = 120
 
-// Every 15 minutes (vercel.json), after updates are processed: a batch in the outbox for each new
+// Every hour (vercel.json), after updates are processed: a batch in the outbox for each new
 // tariff update event that instant subscribers want, sent with the next outbox run.
 export async function GET(req: NextRequest) {
   if (req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {

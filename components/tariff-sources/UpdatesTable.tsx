@@ -1,17 +1,13 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import type { TableColumnDef } from "@/components/ui/table/features";
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table"
 import { AUTHORITIES, KINDS, STAGE_ORDER, STAGES, type Authority, type Stage } from "@/libs/tariff-updates/types"
-import { Pill, Segmented } from "../hts-revision-diff/ui"
+import { Pill } from "../hts-revision-diff/ui"
 import { type SourceItemRow, type UpdateRow } from "./types"
-import UpdateDetail from "./UpdateDetail"
 
-// The tariff updates built from the source items, latest activity first. "Needs review" shows
-// what Claude wasn't sure about; a row opens the update to fix it.
-
-type Scope = "review" | "all"
+// The tariff updates built from the source items, latest activity first; a row opens the update.
 
 const day = (iso: string | null) => (iso ? new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString(undefined, { dateStyle: "medium" }) : "")
 
@@ -101,24 +97,16 @@ const columnsFor = (sourceCounts: Map<string, number>): TableColumnDef<UpdateRow
   },
 ]
 
-export default function UpdatesTable({ updates, items }: { updates: UpdateRow[]; items: SourceItemRow[] }) {
-  const reviewCount = updates.filter((u) => u.needs_review).length
-  const [scope, setScope] = useState<Scope>(reviewCount ? "review" : "all")
-  const [openId, setOpenId] = useState<string | null>(null)
-  // ?update=<id> opens that update (the Tracker's Tariff Impacts tab links here to review one)
-  useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("update")
-    if (id && updates.some((u) => u.id === id)) setOpenId(id)
-  }, [updates])
+// Every update, as a table to search and filter; a row opens it for review (UpdateDetail)
+export default function UpdatesTable({ updates, items, onOpen }: { updates: UpdateRow[]; items: SourceItemRow[]; onOpen: (id: string) => void }) {
   const sourceCounts = useMemo(() => {
     const counts = new Map<string, number>()
     for (const i of items) if (i.update_id) counts.set(i.update_id, (counts.get(i.update_id) ?? 0) + 1)
     return counts
   }, [items])
   const columns = useMemo(() => columnsFor(sourceCounts), [sourceCounts])
-  const rows = useMemo(() => (scope === "review" ? updates.filter((u) => u.needs_review) : updates), [updates, scope])
   const table = useDataTable<UpdateRow>({
-    data: rows,
+    data: updates,
     columns,
     getRowId: (u) => u.id,
     searchText: (u) => `${u.title} ${u.summary} ${u.products ?? ""} ${u.countries.join(" ")} ${u.hts_codes.join(" ")}`,
@@ -126,35 +114,17 @@ export default function UpdatesTable({ updates, items }: { updates: UpdateRow[];
     hidden: ["authority"],
   })
   return (
-    <>
-      <div className="max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg">
-        <DataTable
-          table={table}
-          label="Tariff updates"
-          onRowClick={(u) => setOpenId(u.id)}
-          toolbar={
-            <TableToolbar
-              table={table}
-              placeholder="Search titles, summaries, countries, HTS codes"
-              facets={["authority", "stage", "status"]}
-              noun={["update", "updates"]}
-              actions={
-                <Segmented
-                  options={[
-                    { value: "review", label: `Needs review (${reviewCount})` },
-                    { value: "all", label: "All" },
-                  ]}
-                  value={scope}
-                  onChange={(v) => setScope(v as Scope)}
-                  size="xs"
-                />
-              }
-            />
-          }
-          empty={<p className="text-sm text-base-content/60">{updates.length ? "No updates match." : "No updates yet. Process the source items to build them."}</p>}
-        />
-      </div>
-      <UpdateDetail update={updates.find((u) => u.id === openId) ?? null} items={items} updates={updates} onClose={() => setOpenId(null)} />
-    </>
+    // The table only draws the rows in view past 300, measured against its scrolling parent
+    <div className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-lg">
+      <DataTable
+        table={table}
+        label="Tariff updates"
+        onRowClick={(u) => onOpen(u.id)}
+        toolbar={
+          <TableToolbar table={table} placeholder="Search titles, summaries, countries, HTS codes" facets={["authority", "stage", "status"]} noun={["update", "updates"]} />
+        }
+        empty={<p className="text-sm text-base-content/60">{updates.length ? "No updates match." : "No updates yet. Process the source items to build them."}</p>}
+      />
+    </div>
   )
 }

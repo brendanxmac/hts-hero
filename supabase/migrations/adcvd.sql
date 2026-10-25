@@ -173,3 +173,34 @@ CREATE TABLE IF NOT EXISTS adcvd_company_rates (
 ALTER TABLE adcvd_company_rates ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "AD/CVD company rates are public" ON adcvd_company_rates;
 CREATE POLICY "AD/CVD company rates are public" ON adcvd_company_rates FOR SELECT USING (true);
+
+-- ============================================================
+-- Added 2026-10-23 (safe to run again)
+-- ============================================================
+
+-- Scope codes from more than one source. fr_* are the codes the Federal Register scope gives (what
+-- hts_* held until now); ita_* are ITA's public case page (trade.gov/adcvd?adcvdcase=…): its HTS
+-- list and its current scope text, sorted like a Federal Register scope. The check step merges
+-- them into hts_* (what imports match on) and records where each code came from in hts_sources:
+-- {"2903441010": ["ita-scope"], "2903491010": ["fr:2022-04505"]}
+ALTER TABLE adcvd_cases
+  ADD COLUMN IF NOT EXISTS fr_main        text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS fr_also        text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS fr_excluded    text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS ita_found      boolean,          -- null until fetched; false: no case page
+  ADD COLUMN IF NOT EXISTS ita_hts        text[] NOT NULL DEFAULT '{}', -- digits, as the page lists them
+  ADD COLUMN IF NOT EXISTS ita_scope      text,
+  ADD COLUMN IF NOT EXISTS ita_main       text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS ita_also       text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS ita_excluded   text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS ita_method     text CHECK (ita_method IN ('regex', 'sonnet')),
+  ADD COLUMN IF NOT EXISTS ita_fetched_at timestamptz,
+  ADD COLUMN IF NOT EXISTS hts_sources    jsonb NOT NULL DEFAULT '{}';
+
+-- Until now hts_* held the Federal Register codes: keep them as the fr_* source (once)
+UPDATE adcvd_cases
+SET fr_main = hts_main, fr_also = hts_also, fr_excluded = hts_excluded
+WHERE fr_main = '{}' AND fr_also = '{}' AND fr_excluded = '{}'
+  AND (hts_main <> '{}' OR hts_also <> '{}' OR hts_excluded <> '{}');
+
+CREATE INDEX IF NOT EXISTS idx_adcvd_cases_ita_fetched ON adcvd_cases (ita_fetched_at NULLS FIRST);

@@ -56,6 +56,7 @@ const OriginCompare = ({ product, option, imports, measure }: { product: Tracked
       lines={lines}
       scale={result.totalDuty / top}
       show={measure}
+      noDollars={measure === "pct"}
       diff={which === "option" ? result.totalDuty - today.totalDuty : undefined}
       cheapest={which === "option"}
       supply={which === "today" ? supplies[0] : supplies[1]}
@@ -83,7 +84,7 @@ const RateTile = ({ label, result, value, colors, top, measure, tone }: { label:
       <span className={tt.eyebrow(tone)}>{label}</span>
       <div className="flex items-baseline gap-2">
         <span className={`${tt.metricLg} ${tone === "success" ? "!text-success" : ""}`}>{measure === "pct" ? formatRate(pct) : money(result.totalDuty)}</span>
-        <span className="text-sm tabular-nums text-base-content/60">{measure === "pct" ? `${money(result.totalDuty)} duty` : `${formatRate(pct)} duty`}</span>
+        {measure === "usd" && <span className="text-sm tabular-nums text-base-content/60">{formatRate(pct)} duty</span>}
       </div>
       <div className="h-2.5">
         {parts.length ? (

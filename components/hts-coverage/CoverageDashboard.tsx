@@ -463,9 +463,9 @@ export default function CoverageDashboard() {
   const missingTable = error && /hts_coverage_\w+/.test(error) && /does not exist|schema cache/i.test(error)
 
   return (
-    <div className="flex flex-col gap-5">
+    <>
       <PageHeader
-        title="Coverage checker"
+        title="Coverage Checker"
         meta={
           lastSnapshot ? (
             <>
@@ -548,17 +548,17 @@ export default function CoverageDashboard() {
             </Callout>
           )}
 
-          <div className="grid gap-5 lg:grid-cols-3">
-            <Panel title="Coverage over time" className="lg:col-span-1">
+          <div className="grid gap-4 lg:grid-cols-3">
+            <Panel title="Coverage Over Time" className="lg:col-span-1">
               <ProgressChart snapshots={data.snapshots} />
             </Panel>
-            <Panel title="By subchapter" bodyClassName="max-h-72 overflow-y-auto">
+            <Panel title="By Subchapter" bodyClassName="max-h-72 overflow-y-auto">
               <ul className="divide-y divide-base-content/5">
                 {breakdown.bySub.map(([sub, c]) => (
                   <li key={sub}>
                     <button
-                      className={`flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-base-content/[0.03] ${
-                        filters.subchapter === sub ? "bg-base-content/[0.05]" : ""
+                      className={`flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-base-content/[0.03] tracker:px-6 tracker:hover:bg-tt-soft ${
+                        filters.subchapter === sub ? "bg-base-content/[0.05] tracker:bg-tt-soft-high" : ""
                       }`}
                       onClick={() => setFilter("subchapter", filters.subchapter === sub ? "" : sub)}
                       title={subchapterLabel(sub)}
@@ -573,13 +573,13 @@ export default function CoverageDashboard() {
                 ))}
               </ul>
             </Panel>
-            <Panel title="By program" bodyClassName="max-h-72 overflow-y-auto">
+            <Panel title="By Program" bodyClassName="max-h-72 overflow-y-auto">
               <ul className="divide-y divide-base-content/5">
                 {breakdown.byProgram.map(([program, c]) => (
                   <li key={program}>
                     <button
-                      className={`flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-base-content/[0.03] ${
-                        filters.program === program ? "bg-base-content/[0.05]" : ""
+                      className={`flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-base-content/[0.03] tracker:px-6 tracker:hover:bg-tt-soft ${
+                        filters.program === program ? "bg-base-content/[0.05] tracker:bg-tt-soft-high" : ""
                       }`}
                       onClick={() => setFilter("program", filters.program === program ? "" : program)}
                     >
@@ -608,7 +608,7 @@ export default function CoverageDashboard() {
               </>
             }
           >
-            <div className="flex flex-wrap items-center gap-2 border-b border-base-content/10 px-4 py-2.5">
+            <div className="flex flex-wrap items-center gap-2 border-b border-base-content/10 px-4 py-2.5 tracker:border-base-300 tracker:px-6 tracker:py-3">
               <input
                 className={`${inputCls} input-xs h-7 w-64`}
                 placeholder="Search code, text, notes…"
@@ -771,7 +771,7 @@ export default function CoverageDashboard() {
             )}
 
             {pages > 1 && (
-              <div className="flex items-center justify-end gap-2 border-t border-base-content/10 px-4 py-2 text-xs text-base-content/60">
+              <div className="flex items-center justify-end gap-2 border-t border-base-content/10 px-4 py-2 text-xs text-base-content/60 tracker:border-base-300 tracker:px-6 tracker:py-3">
                 <span className="tabular-nums">
                   {page * PAGE + 1}–{Math.min(filtered.length, (page + 1) * PAGE)} of {filtered.length}
                 </span>
@@ -814,6 +814,6 @@ export default function CoverageDashboard() {
           />
         </>
       )}
-    </div>
+    </>
   )
 }

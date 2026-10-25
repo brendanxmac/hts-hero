@@ -62,7 +62,6 @@ export const RuleOutAll = ({
   const items = all.filter((i) => inScope(scope, i.option, i.opportunity));
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState(copy.reasons[0].id);
-  const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
 
   // Options not yet tracked, and tracked ones still open
@@ -81,8 +80,7 @@ export const RuleOutAll = ({
   }
 
   const confirm = async () => {
-    const label = copy.reasons.find((x) => x.id === reason)!.label;
-    const text = note.trim() ? `${label}. ${note.trim()}` : label;
+    const text = copy.reasons.find((x) => x.id === reason)!.label;
     setBusy(true);
     const results = await Promise.all(
       pending.map((i) =>
@@ -94,7 +92,6 @@ export const RuleOutAll = ({
     if (failed) return toast.error(`Couldn't rule out ${failed} of them. Please try again.`);
     toast.success(`Ruled out ${pending.length} ${pending.length === 1 ? "option" : "options"}.`);
     setOpen(false);
-    setNote("");
   };
 
   if (!open) {
@@ -121,14 +118,6 @@ export const RuleOutAll = ({
           </label>
         ))}
       </div>
-      <textarea
-        className={ui.textarea}
-        rows={2}
-        maxLength={400}
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        placeholder="Anything to add for the record (optional): why, who decided…"
-      />
       <div className="flex flex-wrap gap-2">
         <button type="button" className={ui.button({ variant: "primary", size: "sm" })} disabled={busy} onClick={confirm}>
           {busy ? "Ruling out…" : "Rule them all out"}

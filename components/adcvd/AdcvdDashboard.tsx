@@ -1,20 +1,22 @@
 "use client"
 
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import { Countries } from "@/constants/countries"
 import { LIVE_STATUSES, STATUSES, type MonthRow } from "@/libs/adcvd/types"
-import { Callout, Help, PageHeader, Panel, Segmented, Spinner, Stat, StatGrid, StatusDot, Tabs, btn, inputCls, type Tone } from "../hts-revision-diff/ui"
+import { Callout, Help, PageHeader, Panel, Segmented, Spinner, Stat, StatGrid, StatusDot, Tabs, btn, inputCls, tableCls, type Tone } from "../hts-revision-diff/ui"
 import { adminCall } from "../tariff-sources/types"
 import CaseDetail from "./CaseDetail"
 import type { CaseListRow, UsageRow } from "./types"
 
-// /adcvd: the AD/CVD case registry built from Commerce and ITC notices (libs/adcvd). Months of
-// notices are processed here one at a time, newest first, with what each cost; the cases, the
-// automatic checks' notes and all AI spend can be looked through.
+// /adcvd: the AD/CVD case registry built from Commerce and ITC notices (libs/adcvd). Opens on the
+// cases; the automatic checks' notes, the months of notices (processed one at a time, newest
+// first, with what each cost) and all AI spend are the other views (?view=). The cron's health is
+// one line in the header, and a callout only when it has stopped.
 
-type Tab = "months" | "cases" | "problems" | "costs"
+type Tab = "cases" | "problems" | "months" | "costs"
+const TABS: Tab[] = ["cases", "problems", "months", "costs"]
 
 // The backfill reaches back to here (PRE_DEPLOY.md: the full tariff sources backfill)
 const FIRST_MONTH = "2025-01"
@@ -77,8 +79,21 @@ export default function AdcvdDashboard({
   loadError: string | null
 }) {
   const router = useRouter()
-  const [tab, setTab] = useState<Tab>("months")
+  const [tab, setTab] = useState<Tab>("cases")
   const [open, setOpen] = useState<string | null>(null)
+  // ?view= from a link (Needs You, the morning email)
+  useEffect(() => {
+    const view = new URLSearchParams(window.location.search).get("view")
+    if (view && TABS.includes(view as Tab)) setTab(view as Tab)
+  }, [])
+  const openTab = (next: Tab) => {
+    setTab(next)
+    const url = new URL(window.location.href)
+    if (next === "cases") url.searchParams.delete("view")
+    else url.searchParams.set("view", next)
+    window.history.replaceState(null, "", url)
+  }
+  const stuck = months.filter((m) => m.status === "error" || m.status === "paused").length
 
   const live = cases.filter((c) => LIVE_STATUSES.includes(c.status))
   const liveWithCodes = live.filter((c) => c.hts_main.length || c.hts_also.length)
@@ -88,10 +103,15 @@ export default function AdcvdDashboard({
   const adcvdSpent = usage.filter((u) => u.pipeline === "adcvd").reduce((n, u) => n + Number(u.cost_usd), 0)
 
   return (
-    <div className="flex flex-col gap-5">
+    <>
       <PageHeader
         title="AD/CVD Cases"
-        meta={<span>Antidumping and countervailing duty cases, read from Commerce and ITC notices in the Federal Register.</span>}
+        meta={
+          <>
+            <span>Antidumping and countervailing duty cases, read from Commerce and ITC notices in the Federal Register.</span>
+            <CronStatus lastCron={lastCron} />
+          </>
+        }
       >
         <Help>
           <p>
@@ -101,12 +121,22 @@ export default function AdcvdDashboard({
           </p>
           <p>
             Process months newest first. Each month&apos;s AI steps pause once it has cost the budget below; reading and linking keep going. New notices are
-            read every 15 minutes by the cron. Imports are flagged from these cases on the calculator and the Tracker.
+            read every hour by the cron. Imports are flagged from these cases on the calculator and the Tracker.
           </p>
         </Help>
+        <Tabs<Tab>
+          tabs={[
+            { value: "cases", label: "Cases", count: cases.length },
+            { value: "problems", label: "Notes", count: withProblems.length },
+            { value: "months", label: "Months", count: stuck || undefined, tone: "warning" },
+            { value: "costs", label: "AI Costs" },
+          ]}
+          value={tab}
+          onChange={openTab}
+        />
       </PageHeader>
 
-      <CronHealth lastCron={lastCron} />
+      <CronAlarm lastCron={lastCron} />
 
       {loadError && <Callout tone="error" title="Couldn't load everything">{loadError}. Has supabase/migrations/adcvd.sql been applied?</Callout>}
 
@@ -121,24 +151,13 @@ export default function AdcvdDashboard({
         <Stat label="AD/CVD Spend So Far" value={usd(adcvdSpent)} hint={`The backfill was estimated at ${ESTIMATE}`} />
       </StatGrid>
 
-      <Tabs<Tab>
-        tabs={[
-          { value: "months", label: "Months", count: months.filter((m) => m.status === "done").length },
-          { value: "cases", label: "Cases", count: cases.length },
-          { value: "problems", label: "Notes", count: withProblems.length },
-          { value: "costs", label: "AI Costs" },
-        ]}
-        value={tab}
-        onChange={setTab}
-      />
-
       {tab === "months" && <MonthsTab months={months} budget={budget} onDone={() => router.refresh()} />}
       {tab === "cases" && <CasesTab cases={cases} onOpen={setOpen} />}
       {tab === "problems" && <ProblemsTab cases={withProblems} onOpen={setOpen} />}
       {tab === "costs" && <CostsTab usage={usage} />}
 
       <CaseDetail caseNumber={open} onClose={() => setOpen(null)} onChanged={() => router.refresh()} />
-    </div>
+    </>
   )
 }
 
@@ -146,15 +165,32 @@ export default function AdcvdDashboard({
 
 const STALE_HOURS = 6
 
-function CronHealth({ lastCron }: { lastCron: { at: string; run: Record<string, unknown> | null } | null }) {
-  if (!lastCron) return <Callout title="The cron hasn't run here yet">New notices are read every 15 minutes once deployed (/api/cron/adcvd).</Callout>
-  const hours = (Date.now() - new Date(lastCron.at).getTime()) / 3_600_000
-  const months = (lastCron.run?.months as { month: string; status: string; log: string[] }[] | undefined) ?? []
+const hoursSinceCron = (lastCron: { at: string } | null) => (lastCron ? (Date.now() - new Date(lastCron.at).getTime()) / 3_600_000 : null)
+
+// The cron's health, as one line in the header
+function CronStatus({ lastCron }: { lastCron: { at: string; run: Record<string, unknown> | null } | null }) {
+  const hours = hoursSinceCron(lastCron)
+  if (hours === null) return <StatusDot tone="neutral" label="The cron hasn't run here yet" />
+  const months = (lastCron?.run?.months as { month: string; status: string; log: string[] }[] | undefined) ?? []
   const summary = months.map((m) => `${monthLabel(m.month)}: ${m.log.join(", ") || m.status}`).join(" · ")
-  return hours > STALE_HOURS ? (
-    <Callout tone="error" title={`The cron hasn't run for ${Math.round(hours)} hours`}>Last run {new Date(lastCron.at).toLocaleString()}. An email went to the admin; check Vercel&apos;s cron logs.</Callout>
-  ) : (
-    <Callout tone="success" title={`Cron ran ${Math.max(1, Math.round(hours * 60))} minutes ago`}>{summary || "Nothing new."}</Callout>
+  return (
+    <span title={summary || "Nothing new"}>
+      <StatusDot
+        tone={hours > STALE_HOURS ? "error" : "success"}
+        label={hours > STALE_HOURS ? `Cron stopped ${Math.round(hours)} hours ago` : `Cron ran ${Math.max(1, Math.round(hours * 60))} min ago`}
+      />
+    </span>
+  )
+}
+
+// Only when the cron has stopped
+function CronAlarm({ lastCron }: { lastCron: { at: string; run: Record<string, unknown> | null } | null }) {
+  const hours = hoursSinceCron(lastCron)
+  if (hours === null || hours <= STALE_HOURS) return null
+  return (
+    <Callout tone="error" title={`The cron hasn't run for ${Math.round(hours)} hours`}>
+      Last run {new Date(lastCron!.at).toLocaleString()}. An email went to the admin; check Vercel&apos;s cron logs.
+    </Callout>
   )
 }
 
@@ -210,19 +246,19 @@ function MonthsTab({ months, budget, onDone }: { months: MonthRow[]; budget: num
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-end gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         {next && (
-          <button className={btn.primary} disabled={!!running} onClick={() => run(next)}>
+          <button className={btn.secondary} disabled={!!running} onClick={() => run(next)}>
             {running === next ? <Spinner /> : null}
             Process {monthLabel(next)}
           </button>
         )}
         {running && (
-          <button className={btn.secondary} onClick={() => (stop.current = true)}>
+          <button className={btn.ghost} onClick={() => (stop.current = true)}>
             Stop after this run
           </button>
         )}
-        <label className="ml-auto flex items-center gap-2 text-sm text-base-content/60">
+        <label className="ml-auto flex items-center gap-2 text-sm text-base-content/70">
           AI budget per month of notices
           <span className="flex items-center gap-1">
             $
@@ -241,9 +277,9 @@ function MonthsTab({ months, budget, onDone }: { months: MonthRow[]; budget: num
       )}
 
       <Panel bodyClassName="overflow-x-auto">
-        <table className="table table-sm">
+        <table className={tableCls}>
           <thead>
-            <tr className="text-xs text-base-content/50">
+            <tr className="text-xs text-base-content/60">
               <th>Month</th>
               <th>Status</th>
               <th className="text-right">Notices</th>
@@ -302,9 +338,9 @@ const statusTone = (s: CaseListRow["status"]): Tone => (s === "order" || s === "
 
 const CaseTable = ({ rows, onOpen, notes }: { rows: CaseListRow[]; onOpen: (c: string) => void; notes?: boolean }) => (
   <Panel bodyClassName="overflow-x-auto">
-    <table className="table table-sm">
+    <table className={tableCls}>
       <thead>
-        <tr className="text-xs text-base-content/50">
+        <tr className="text-xs text-base-content/60">
           <th>Case</th>
           <th>Product</th>
           <th>Country</th>
@@ -317,7 +353,7 @@ const CaseTable = ({ rows, onOpen, notes }: { rows: CaseListRow[]; onOpen: (c: s
       </thead>
       <tbody>
         {rows.slice(0, 500).map((c) => (
-          <tr key={c.case_number} className="cursor-pointer align-top hover:bg-base-content/[0.03]" onClick={() => onOpen(c.case_number)}>
+          <tr key={c.case_number} className="cursor-pointer align-top hover:bg-base-content/[0.03] tracker:hover:bg-tt-soft" onClick={() => onOpen(c.case_number)}>
             <td className="whitespace-nowrap font-mono text-xs">{c.case_number}</td>
             <td className="max-w-xs">{c.product ?? <span className="text-base-content/40">Not named yet</span>}</td>
             <td className="whitespace-nowrap">{countryName(c.country)}</td>
@@ -332,7 +368,7 @@ const CaseTable = ({ rows, onOpen, notes }: { rows: CaseListRow[]; onOpen: (c: s
         ))}
       </tbody>
     </table>
-    {rows.length > 500 && <div className="border-t border-base-content/10 px-4 py-2 text-xs text-base-content/50">Showing 500 of {rows.length}. Search to narrow it down.</div>}
+    {rows.length > 500 && <div className="border-t border-base-content/10 px-6 py-3 text-xs text-base-content/60 tracker:border-base-300">Showing 500 of {rows.length}. Search to narrow it down.</div>}
   </Panel>
 )
 
@@ -385,7 +421,7 @@ function CasesTab({ cases, onOpen }: { cases: CaseListRow[]; onOpen: (c: string)
 function ProblemsTab({ cases, onOpen }: { cases: CaseListRow[]; onOpen: (c: string) => void }) {
   return (
     <div className="flex flex-col gap-3">
-      <Callout tone="info" title="Nothing here needs you">
+      <Callout tone="success" title="Nothing here needs you">
         These are the automatic checks&apos; notes on each case, and each says what happens next. Cases without codes are tried again next month; renumbered
         codes match only as &ldquo;possible&rdquo;.
       </Callout>
@@ -418,9 +454,9 @@ function CostsTab({ usage }: { usage: UsageRow[] }) {
   for (const u of usage) byModel.set(u.model, (byModel.get(u.model) ?? 0) + Number(u.cost_usd))
 
   const table = (rows: Map<string, Record<string, number>>, cols: string[], first: string) => (
-    <table className="table table-sm">
+    <table className={tableCls}>
       <thead>
-        <tr className="text-xs text-base-content/50">
+        <tr className="text-xs text-base-content/60">
           <th>{first}</th>
           {cols.map((s) => (
             <th key={s} className="text-right">
@@ -450,14 +486,14 @@ function CostsTab({ usage }: { usage: UsageRow[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Panel title="AD/CVD, By Month Of Notices" bodyClassName="overflow-x-auto">
-        {byMonth.size ? table(byMonth, steps, "Notices of") : <p className="px-4 py-3 text-sm text-base-content/50">No AD/CVD AI calls yet.</p>}
+      <Panel title="AD/CVD, by Month of Notices" bodyClassName="overflow-x-auto">
+        {byMonth.size ? table(byMonth, steps, "Notices of") : <p className="px-6 py-4 text-sm text-base-content/60">No AD/CVD AI calls yet.</p>}
       </Panel>
-      <Panel title="Tariff Updates, By Calendar Month" bodyClassName="overflow-x-auto">
-        {updatesByMonth.size ? table(updatesByMonth, updateSteps, "Month") : <p className="px-4 py-3 text-sm text-base-content/50">Logged from now on.</p>}
+      <Panel title="Tariff Updates, by Calendar Month" bodyClassName="overflow-x-auto">
+        {updatesByMonth.size ? table(updatesByMonth, updateSteps, "Month") : <p className="px-6 py-4 text-sm text-base-content/60">Logged from now on.</p>}
       </Panel>
       <Panel title="By Model" bodyClassName="overflow-x-auto">
-        <table className="table table-sm">
+        <table className={tableCls}>
           <tbody>
             {Array.from(byModel)
               .sort((a, b) => b[1] - a[1])

@@ -67,12 +67,12 @@ export const Inspector = ({ className = "" }: { className?: string }) => {
 };
 
 const NothingSelected = () => {
-  const { applyCode } = useExplorer();
+  const { applyCode, useCodeAction } = useExplorer();
   const tips = [
     "Open a section, then a chapter, to drill down. Each level opens in place, so you never lose your spot.",
     "Select any line to see its rates, a duty estimate, notes and CBP rulings here.",
     applyCode
-      ? "Press Use on any 8- or 10-digit code to put it in the calculator."
+      ? `Press ${useCodeAction?.label ?? "Calculate duty"} on any 8- or 10-digit code to use it.`
       : "Search by product or code above to jump straight to a line.",
   ];
   return (
@@ -308,10 +308,11 @@ const CopyLink = ({ htsno }: { htsno: string }) => {
   );
 };
 
-// Use it (over a calculator) or calculate its duty, confirm it's the right code with the
+// Use it (over a calculator or Sourcing: the host names the button) or calculate its duty, confirm it's the right code with the
 // classification assistant, or (from a search) find it in the schedule
 const LineActions = ({ element, usable }: { element: HtsElement; usable: boolean }) => {
-  const { applyCode, showInSchedule } = useExplorer();
+  const { applyCode, useCodeAction, showInSchedule } = useExplorer();
+  const { label: useLabel, Icon: UseIcon } = useCodeAction ?? { label: "Calculate duty", Icon: CalculatorIcon };
   const htsno = element.htsno?.trim();
   // The assistant confirms full 10-digit codes
   const confirmable = htsno && isValidTenDigitHtsInput(htsno) && !htsno.startsWith("98") && !htsno.startsWith("99");
@@ -320,8 +321,8 @@ const LineActions = ({ element, usable }: { element: HtsElement; usable: boolean
     <div className="flex flex-wrap items-center gap-2">
       {usable && applyCode && (
         <button type="button" className={ui.button({ variant: "primary" })} onClick={() => applyCode(element)}>
-          <CalculatorIcon className="h-4 w-4" aria-hidden />
-          Calculate duty
+          <UseIcon className="h-4 w-4" aria-hidden />
+          {useLabel}
         </button>
       )}
       {usable && !applyCode && htsno && !htsno.startsWith("98") && !htsno.startsWith("99") && (

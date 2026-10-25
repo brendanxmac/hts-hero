@@ -6,6 +6,7 @@ import { scopeCases } from "./scope"
 import { linkItcEvents, summarizeMonth } from "./summaries"
 import { updateMonth } from "./updates"
 import { readCbpMessages } from "./cbp"
+import { refreshItaPages } from "./ita"
 import { budgetTracker, spentFor } from "./usage"
 import type { MonthRow } from "./types"
 
@@ -214,6 +215,8 @@ export const resetMonth = async (db: Db, month: string) => {
 export const CATCH_UP_DAYS = 3
 // Cases without codes the cron tries again per run (any month's)
 const RETRY_PER_RUN = 3
+// ITA case pages read per run: every live case within a day, then each about monthly
+const ITA_PER_RUN = 60
 
 export const runNew = async (db: Db, { deadline }: { deadline: number }) => {
   const started = new Date()
@@ -239,6 +242,11 @@ export const runNew = async (db: Db, { deadline }: { deadline: number }) => {
   if (Date.now() < deadline - 20_000) {
     const scope = await scopeCases(db, { deadline: deadline - 10_000, budget: await budgetTracker(db, thisMonth), limit: RETRY_PER_RUN }).catch((e) => ({ error: String(e) }))
     extras.scopeRetry = "found" in scope ? scope.found : scope
+  }
+  // ITA's case pages: a few per run, never read or read over a month ago (one request a second)
+  if (Date.now() < deadline - 45_000) {
+    const ita = await refreshItaPages(db, { deadline: deadline - 15_000, budget: await budgetTracker(db, thisMonth), limit: ITA_PER_RUN }).catch((e) => ({ error: String(e) }))
+    extras.ita = "read" in ita ? { read: ita.read, sorted: ita.sorted, errors: ita.errors.slice(0, 5) } : ita
   }
   // Recorded for /adcvd's health line and the "cron stopped" email
   await db

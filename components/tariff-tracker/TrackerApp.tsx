@@ -88,7 +88,7 @@ export const TrackerApp = () => {
     catalog: () => <ProductCatalog />,
     overview: () => <Overview />,
     savings: () => <Savings />,
-    sourcing: () => <Sourcing />,
+    sourcing: (active) => <Sourcing active={active} />,
     changes: () => <TariffChanges />,
     entries: () => <EntryAudit />,
     "expert-help": () => <ExpertHelp />,
@@ -209,7 +209,7 @@ export const TrackerApp = () => {
                           hidden={!active}
                           className="tt-enter"
                         >
-                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "changes", "calculator"].includes(section.slug)}>
+                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "changes", "calculator", "sourcing"].includes(section.slug)}>
                             {panel ? panel(active) : <PlannedSection section={section} />}
                           </SectionPage>
                         </div>

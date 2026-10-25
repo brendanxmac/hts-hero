@@ -151,7 +151,7 @@ const HeadingReview = ({
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 tracker:gap-4">
       <Panel bodyClassName="flex flex-col gap-4 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-mono text-base font-semibold">{row.htsno}</h2>
@@ -192,7 +192,7 @@ const HeadingReview = ({
       </Panel>
 
       <div className="grid items-start gap-5 xl:grid-cols-2">
-        <Panel title="HTS and notes" bodyClassName="flex flex-col gap-6 p-4">
+        <Panel title="HTS and Notes" bodyClassName="flex flex-col gap-6 p-4">
           {error && <Callout tone="error">{error}</Callout>}
           <HtsSection item={row.item} />
           <NotesSection item={row.item} detail={detail} error={error} data={data} onNoteProgram={onNoteProgram} />
@@ -387,7 +387,7 @@ export default function BatchReview({ batchId }: { batchId: string }) {
   const claudeCost = rows.reduce((sum, r) => sum + (r.item.claude_suggestion?.usage?.cost_usd ?? 0), 0)
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 tracker:gap-4">
       <PageHeader
         crumbs={[{ label: "Coverage checker", href: "/coverage-checker" }, { label: "Batch" }]}
         title={

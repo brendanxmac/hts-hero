@@ -93,6 +93,7 @@ What the Tracker sells now:
 | Calculator extras (the why, Overview, News) | Teased | Yes | Yes | Yes |
 | AD/CVD check on any import (cases, rates, suppliers) | Teased: that a case may apply (never whether one does; nothing looked up) | Yes | Yes | Yes |
 | Sourcing intelligence (Compare: Insights, Globe, Table, Chart) | Side by side only | Yes | Yes | Yes |
+| Sourcing tab, Find a Source (any HTS code, every country ranked; added 2026-10-23) | Locked (sign-up) | Yes | Yes | Yes |
 | Catalog, current duty, rate history, export | n/a | Unlimited | Unlimited | Unlimited |
 | Tariff News alerts (every new US tariff action) | Yes (subscribe) | Yes | Yes | Yes |
 | Tracked imports (alerts, AD/CVD updates, impact checks) | n/a | None | 200 | The tier's imports |

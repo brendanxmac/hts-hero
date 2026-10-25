@@ -1,38 +1,46 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import toast from "react-hot-toast";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CENSUS_NOTICE } from "../../../duty-calculator/lib/census";
 import { useInsights } from "../../insights/InsightsContext";
 import { useOpportunities } from "../../opportunities/OpportunitiesContext";
-import { Measure, MEASURES } from "../../opportunities/measure";
+import { Measure } from "../../opportunities/measure";
 import { REVIEW_LABELS } from "../../opportunities/review";
 import { optionId, productOptions } from "../../opportunities/options";
+import { OpportunityStatus } from "../../opportunities/statuses";
 import { RuleOutAll } from "../../opportunities/RuleOutAll";
 import { TrackedProduct } from "../../report";
 import { useTracker } from "../../TrackerContext";
 import { FreeChecksNotice } from "../../access/FreeChecksNotice";
 import { LockedSavings } from "./LockedSavings";
-import { ListItem, OptionList } from "./OptionList";
-import { OptionReview } from "./OptionReview";
-import { ShipmentsPerYearField } from "./ShipmentsPerYearField";
+import { exemptionName, ListItem, OptionList } from "./OptionList";
+import { keyIsElsewhere, OptionReview } from "./OptionReview";
 
 // A product's Savings tab: once its savings are unlocked (a savings check, or a plan: PRICING.md),
 // every way to pay less on it: the options down one side (under the %/$ switch), and the open one
-// beside them, to review against today and accept or reject, then secure (OptionReview). Amounts
+// beside them, one question each to answer No or Yes, then secure (OptionReview). Amounts
 // show as percentages of the value first, or in dollars. Under the quick wins, and under sourcing it
 // elsewhere, the way to rule that group out. Origins come from Census first (the catalog's
 // figures, loaded with the insights). Securing one applies it to the catalog and keeps the record
 // (opportunities/).
 
+// A key in the keyboard hint
+const KEY = "rounded border border-base-300 bg-base-100 px-1.5 font-sans text-[11px] font-semibold leading-4 text-base-content/70";
+
+// An option's short name, as the rail shows it
+const itemName = ({ option, opportunity }: ListItem) =>
+  option?.kind === "origin" ? option.setup.country.name : option?.kind === "exemption" ? exemptionName(option) : (option?.title ?? opportunity?.title ?? "");
+
 const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
   const insights = useInsights();
   const { itemFor } = useTracker();
-  const { opportunities } = useOpportunities();
+  const { opportunities, setStatus } = useOpportunities();
   const imports = insights.importsFor(product.entry.element.htsno);
-  const [measure, setMeasure] = useState<Measure>("pct");
+  // The Savings tab speaks in rates only: what comes off the rate, never dollars
+  const measure: Measure = "pct";
   const shipmentsPerYear = itemFor(product.key)?.shipmentsPerYear ?? 1;
   const costs = insights.origins.get(product.key);
 
@@ -67,11 +75,62 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
     if (!selectedId && listed.length) setSelectedId((listed.find(undecided) ?? listed[0]).id);
   }, [listed, selectedId]);
   const selected = items.find((i) => i.id === selectedId);
-  // After a rejection, on to the next option still to review (the list wraps round)
+  // After a Yes or a No, on to the next option still to review (the list wraps round); with none
+  // left, the one just answered stays open
   const next = () => {
     const at = listed.findIndex((i) => i.id === selectedId);
     const after = [...listed.slice(at + 1), ...listed.slice(0, at)].find(undecided);
     if (after) select(after.id);
+  };
+  // Up and down arrows step through the list (not while typing, or in a dialog)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.key !== "ArrowDown" && e.key !== "ArrowUp") || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      if (keyIsElsewhere(e)) return;
+      const at = listed.findIndex((i) => i.id === selectedId);
+      const to = listed[at + (e.key === "ArrowDown" ? 1 : -1)];
+      if (!to) return;
+      e.preventDefault();
+      select(to.id);
+      document.getElementById(`savings-option-${to.id}`)?.scrollIntoView({ block: "nearest" });
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+  // The latest items, for an Undo pressed after they've changed
+  const latest = useRef(items);
+  useEffect(() => {
+    latest.current = items;
+  }, [items]);
+  const undo = async (id: string) => {
+    const opportunity = latest.current.find((i) => i.id === id)?.opportunity;
+    if (opportunity && (await setStatus(opportunity, "found", null))) select(id);
+    else toast.error("Couldn't undo this. Please try again.");
+  };
+  const answered = (to: OpportunityStatus) => {
+    const item = selected;
+    next();
+    if (!item) return;
+    toast(
+      (t) => (
+        <span className="flex items-center gap-3 text-sm">
+          <span>
+            {to === "researching" ? "Pursuing" : "Ruled out"}: <span className="font-semibold">{itemName(item)}</span>
+          </span>
+          <button
+            type="button"
+            className={ui.link}
+            onClick={() => {
+              toast.dismiss(t.id);
+              undo(item.id);
+            }}
+          >
+            Undo
+          </button>
+        </span>
+      ),
+      { id: "savings-decided", duration: 6000 }
+    );
   };
   const review = insights.review.get(product.key) ?? "to_review";
   const toReview = items.filter(undecided).length;
@@ -95,7 +154,6 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
             <div className="flex flex-col gap-3 px-3 pt-3">
               <div className="flex items-center justify-between gap-3">
                 <h2 className={`${tt.title} m-0 whitespace-nowrap`}>Possible Savings Options</h2>
-                <SegmentedControl<Measure> label="Show amounts as" options={MEASURES} value={measure} onChange={setMeasure} size="sm" />
               </div>
               {/* How far the review has got */}
               <div className="flex flex-col gap-1.5">
@@ -107,12 +165,17 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
                   {/* Runtime width (DESIGN_SYSTEM §10) */}
                   <div className="h-full rounded-full bg-success transition-[width]" style={{ width: `${reviewable ? (decided / reviewable) * 100 : 100}%` }} />
                 </div>
+                {/* The keyboard way through */}
+                <p className="m-0 hidden items-center gap-1.5 text-xs text-base-content/60 sm:flex">
+                  <kbd className={KEY}>↑</kbd>
+                  <kbd className={KEY}>↓</kbd>
+                  to move
+                  <span aria-hidden>·</span>
+                  <kbd className={KEY}>Y</kbd>
+                  <kbd className={KEY}>N</kbd>
+                  to answer
+                </p>
               </div>
-              {measure === "usd" && (
-                <span className="flex items-center justify-between gap-2 text-xs text-base-content/60">
-                  Shipments a year <ShipmentsPerYearField productKey={product.key} />
-                </span>
-              )}
             </div>
             <OptionList
               items={listed}
@@ -135,7 +198,7 @@ const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
                 imports={imports}
                 shipmentsPerYear={shipmentsPerYear}
                 measure={measure}
-                onRejected={next}
+                onDecided={answered}
               />
             )}
           </div>

@@ -139,16 +139,19 @@ const alertedStages = async (db: Db, updateIds: string[]) => {
 // `from` overrides the start (tests and previews; the cron never passes it)
 export const produceInstantNews = async (db: Db, { from }: { from?: string } = {}) => {
   const since = from ?? new Date(Math.max(new Date(NEWS_ALERTS_FROM).getTime(), Date.now() - INSTANT_WINDOW_DAYS * 86_400_000)).toISOString()
-  const [updates, subscribers] = await Promise.all([loadUpdatesWithEvents(db, since), activeSubscribers(db, "instant")])
-  const [settings, alerted] = await Promise.all([
-    channelSettings(db, subscribers.flatMap((s) => (s.user_id ? [s.user_id] : []))),
-    alertedStages(db, updates.map(({ update }) => update.id)),
-  ])
-  let batches = 0
-  for (const { update, events } of updates) {
+  const updates = await loadUpdatesWithEvents(db, since)
+  const alerted = await alertedStages(db, updates.map(({ update }) => update.id))
+  const due = updates.flatMap(({ update, events }) => {
     const before = alerted.get(update.id)
     const fresh = events.filter((e) => e.at >= since && !before?.has(e.stage))
-    if (!fresh.length) continue
+    return fresh.length ? [{ update, before, fresh }] : []
+  })
+  // Most runs: nothing new since the last alerts, so the subscribers aren't loaded
+  if (!due.length) return { batches: 0 }
+  const subscribers = await activeSubscribers(db, "instant")
+  const settings = await channelSettings(db, subscribers.flatMap((s) => (s.user_id ? [s.user_id] : [])))
+  let batches = 0
+  for (const { update, before, fresh } of due) {
     const latest = fresh[fresh.length - 1]
     const recipients = subscribers.filter((s) => matchesPreferences(update, s) && (s.news_scope === "all_steps" || fresh.some((e) => e.isAction)))
     if (!recipients.length) continue

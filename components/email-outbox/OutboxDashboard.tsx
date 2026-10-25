@@ -4,12 +4,14 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import type { ChatMessage } from "@/emails/chat"
 import toast from "react-hot-toast"
 import { formatTime } from "../hts-revision-diff/shared"
-import { Callout, EmptyState, PageHeader, Pill, Segmented, Spinner, btn, type Tone } from "../hts-revision-diff/ui"
+import { Callout, EmptyState, PageHeader, Panel, Pill, Spinner, Tabs, btn, type Tone } from "../hts-revision-diff/ui"
 import { Select } from "@/components/ui/Select"
 
-// The outbox: every batch of email, Slack and Teams messages waiting for the admin. Pick a batch,
-// step through each recipient's message exactly as it will arrive (← →), take recipients out, add
-// a note at the top, send yourself a test, then approve (it sends at once) or skip.
+// The outbox: every batch of email, Slack and Teams messages. Batches that wait for the admin (the
+// weekly digest, the "trial unlocked" email) lead; the rest sent on their own and are here as the
+// record. Pick a batch, step through each recipient's message exactly as it will arrive (← →),
+// take recipients out, add a note at the top, send yourself a test, then approve (it sends at
+// once) or skip. ?batch=<id> and ?view= open a batch or a view from a link.
 
 interface Batch {
   id: string
@@ -42,7 +44,8 @@ interface Preview {
   payload?: unknown
 }
 
-type View = "pending" | "done" | "all"
+type View = "pending" | "done" | "failed" | "all"
+const VIEWS: View[] = ["pending", "done", "failed", "all"]
 
 const STATUS_TONE: Record<string, Tone> = {
   pending: "warning",
@@ -76,6 +79,8 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
   const [note, setNote] = useState("")
   const [busy, setBusy] = useState<string | null>(null)
   const [draftFrom, setDraftFrom] = useState("")
+  // The note field shows once asked for, or when the batch has one
+  const [noteOpen, setNoteOpen] = useState(false)
 
   const loadBatches = useCallback(async () => {
     const { batches } = await call<{ batches: Batch[] }>("/api/email-outbox")
@@ -88,15 +93,41 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
   }, [loadBatches])
 
   const shown = useMemo(
-    () => (batches ?? []).filter((b) => (view === "pending" ? b.status === "pending" : view === "done" ? b.status !== "pending" : true)),
+    () =>
+      (batches ?? []).filter((b) =>
+        view === "pending" ? b.status === "pending" : view === "done" ? b.status !== "pending" : view === "failed" ? !!b.counts.failed : true
+      ),
     [batches, view]
   )
   const open = batches?.find((b) => b.id === openId) ?? null
 
-  // The first waiting batch opens by itself
+  // ?view= and ?batch= from a link (Needs You, the morning email)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const v = params.get("view")
+    if (v && VIEWS.includes(v as View)) setView(v as View)
+    const id = params.get("batch")
+    if (id) setOpenId(id)
+  }, [])
+  // A linked batch shows in whichever view holds it
+  useEffect(() => {
+    if (!openId || !batches) return
+    const b = batches.find((x) => x.id === openId)
+    if (b && !shown.some((x) => x.id === openId)) setView(b.status === "pending" ? "pending" : "all")
+  }, [openId, batches, shown])
+
+  // The first batch of the view opens by itself
   useEffect(() => {
     if (!openId && shown.length) setOpenId(shown[0].id)
   }, [openId, shown])
+
+  const pick = (id: string | null) => {
+    setOpenId(id)
+    const url = new URL(window.location.href)
+    if (id) url.searchParams.set("batch", id)
+    else url.searchParams.delete("batch")
+    window.history.replaceState(null, "", url)
+  }
 
   const loadBatch = useCallback(async (id: string) => {
     const { batch, messages } = await call<{ batch: Batch; messages: Message[] }>(`/api/email-outbox/${id}`)
@@ -108,6 +139,7 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
   useEffect(() => {
     if (!openId) return
     setIndex(0)
+    setNoteOpen(false)
     loadBatch(openId).catch((e) => toast.error(e.message))
   }, [openId, loadBatch])
 
@@ -170,20 +202,16 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
   }
 
   const waiting = (batches ?? []).filter((b) => b.status === "pending").length
+  const failing = (batches ?? []).filter((b) => b.counts.failed).length
 
   return (
-    <div className="flex flex-col gap-6">
+    <>
       <PageHeader
         title="Outbox"
         meta={
-          batches === null ? (
-            "Loading…"
-          ) : (
-            <>
-              {waiting ? `${waiting} batch${waiting === 1 ? "" : "es"} waiting for review.` : "Nothing waiting."} Nothing is sent until it&apos;s approved here, except
-              confirmations and sign-in links.
-            </>
-          )
+          batches === null
+            ? "Loading…"
+            : `${waiting ? `${waiting} batch${waiting === 1 ? "" : "es"} waiting for you.` : "Nothing waiting for you."} The weekly digest and the “trial unlocked” email wait here; news, onboarding emails and approved alerts send on their own.`
         }
         actions={
           <>
@@ -192,7 +220,7 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
               onChange={(v) => setDraftFrom(v)}
               options={updates.map((u) => ({ value: u.id, label: u.title }))}
               label="Draft a test from an update"
-              placeholder="Draft a test news alert from…"
+              placeholder="Draft a test news email from…"
               size="sm"
               className="w-72"
               menuClassName="w-96"
@@ -202,13 +230,14 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
               type="button"
               className={btn.secondary}
               disabled={!draftFrom || !!busy}
+              title="A batch of one, addressed to you, to see a news email before it goes out"
               onClick={() =>
                 act(
                   "draft",
                   async () => {
                     const { id } = await call<{ id: string }>("/api/email-outbox", { method: "POST", body: JSON.stringify({ action: "draft-test", updateId: draftFrom }) })
                     setView("pending")
-                    setOpenId(id)
+                    pick(id)
                     setDraftFrom("")
                   },
                   "Test batch drafted, addressed to you"
@@ -216,122 +245,149 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
               }
             >
               {busy === "draft" && <Spinner />}
-              Draft
+              Draft test
             </button>
           </>
         }
-      />
+      >
+        <Tabs<View>
+          tabs={[
+            { value: "pending", label: "Waiting", count: waiting, tone: "warning" },
+            { value: "done", label: "Sent and Skipped" },
+            ...(failing ? [{ value: "failed" as View, label: "With Failures", count: failing, tone: "warning" as Tone }] : []),
+            { value: "all", label: "All", count: batches?.length },
+          ]}
+          value={view}
+          onChange={(v) => {
+            setView(v)
+            pick(null)
+          }}
+        />
+      </PageHeader>
 
-      <div className="grid gap-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
-        <aside className="flex flex-col gap-3">
-          <Segmented
-            options={[
-              { value: "pending", label: `Waiting (${waiting})` },
-              { value: "done", label: "Sent and skipped" },
-              { value: "all", label: "All" },
-            ]}
-            value={view}
-            onChange={(v) => {
-              setView(v)
-              setOpenId(null)
-            }}
-            size="xs"
-          />
+      <div className="grid items-start gap-4 lg:grid-cols-[20rem_minmax(0,1fr)]">
+        <Panel bodyClassName="max-h-[calc(100svh-2rem)] overflow-y-auto">
           {batches === null ? (
-            <Spinner />
+            <div className="flex justify-center p-8">
+              <Spinner />
+            </div>
           ) : shown.length === 0 ? (
-            <EmptyState title={view === "pending" ? "Nothing waiting" : "No batches"}>New tariff alerts, digests and lifecycle emails appear here for review.</EmptyState>
+            <EmptyState title={view === "pending" ? "Nothing waiting" : "No batches"}>
+              {view === "pending" ? "Weekly digests and the trial-unlocked email land here for you to approve." : "Nothing here yet."}
+            </EmptyState>
           ) : (
-            <ul className="flex flex-col gap-2">
+            <ul>
               {shown.map((b) => (
-                <li key={b.id}>
+                <li key={b.id} className="border-t border-base-300 first:border-t-0">
                   <button
                     type="button"
-                    onClick={() => setOpenId(b.id)}
-                    className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
-                      b.id === openId ? "border-base-content/30 bg-base-100 shadow-xs" : "border-base-content/10 bg-base-100/60 hover:bg-base-100"
-                    }`}
+                    onClick={() => pick(b.id)}
+                    aria-current={b.id === openId}
+                    className={`flex w-full flex-col gap-1 px-5 py-3.5 text-left transition-colors ${b.id === openId ? "bg-tt-soft-high" : "hover:bg-tt-soft"}`}
                   >
-                    <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-2">
                       <Pill tone={STATUS_TONE[b.status]}>{b.status}</Pill>
-                      <span className="text-xs text-base-content/50">{b.kind.replace(/_/g, " ")}</span>
-                    </div>
-                    <div className="mt-1.5 line-clamp-2 text-sm font-medium">{b.title}</div>
-                    <div className="mt-1 text-xs text-base-content/50">
+                      <span className="text-xs text-base-content/60">{b.kind.replace(/_/g, " ")}</span>
+                      {b.counts.failed ? <span className="text-xs font-semibold text-error">{b.counts.failed} failed</span> : null}
+                    </span>
+                    <span className="line-clamp-2 text-sm font-semibold">{b.title}</span>
+                    <span className="text-xs text-base-content/60">
                       {total(b)} message{total(b) === 1 ? "" : "s"} · {formatTime(b.created_at)}
-                      {b.counts.failed ? ` · ${b.counts.failed} failed` : ""}
-                    </div>
+                    </span>
                   </button>
                 </li>
               ))}
             </ul>
           )}
-        </aside>
+        </Panel>
 
         {open ? (
           <section className="flex min-w-0 flex-col gap-4">
-            <div className="flex flex-wrap items-start gap-3">
-              <div className="min-w-0 flex-1">
-                <h2 className="text-lg font-semibold">{open.title}</h2>
-                <p className="text-sm text-base-content/55">
-                  {open.counts.channel_email ?? 0} email · {open.counts.channel_slack ?? 0} Slack · {open.counts.channel_teams ?? 0} Teams
-                  {open.counts.removed ? ` · ${open.counts.removed} taken out` : ""}
-                  {open.approved_at ? ` · approved ${formatTime(open.approved_at)}` : ""}
-                </p>
-              </div>
-              {pending && (
-                <div className="flex flex-wrap gap-2">
-                  <button type="button" className={btn.secondary} disabled={!!busy} onClick={() => act("skip", () => call(`/api/email-outbox/${open.id}`, { method: "POST", body: JSON.stringify({ action: "skip" }) }), "Skipped")}>
-                    Skip
-                  </button>
-                  <button type="button" className={btn.primary} disabled={!!busy || !toSend} onClick={approve}>
-                    {busy === "approve" && <Spinner />}
-                    Approve and send {toSend}
-                  </button>
-                </div>
-              )}
-              {open.status === "skipped" && (
-                <button type="button" className={btn.secondary} disabled={!!busy} onClick={() => act("reopen", () => call(`/api/email-outbox/${open.id}`, { method: "POST", body: JSON.stringify({ action: "reopen" }) }), "Back in review")}>
-                  Reopen
-                </button>
-              )}
-            </div>
-
-            {pending && (
-              <div className="flex flex-col gap-2 rounded-lg border border-base-content/10 bg-base-100 p-4">
-                <label className="text-xs font-medium text-base-content/70" htmlFor="batch-note">
-                  Note at the top of every message (optional)
-                </label>
-                <textarea
-                  id="batch-note"
-                  className="textarea min-h-16 border-base-content/15 text-sm"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="e.g. Heads-up: this one hits steel derivatives hard. Check your Chapter 73 imports."
-                />
-                {noteChanged && (
-                  <div className="flex gap-2">
-                    <button type="button" className={btn.xsPrimary} disabled={!!busy} onClick={() => act("note", () => call(`/api/email-outbox/${open.id}`, { method: "PATCH", body: JSON.stringify({ note }) }), "Note saved")}>
-                      Save note
-                    </button>
-                    <button type="button" className={btn.xsGhost} onClick={() => setNote(open.note ?? "")}>
-                      Undo
-                    </button>
+            <Panel>
+              <div className="flex flex-col gap-4 px-6 py-5">
+                <div className="flex flex-wrap items-start gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-lg font-semibold tracker:[font-family:var(--font-tracker-display)]">{open.title}</h2>
+                    <p className="mt-1 text-sm text-base-content/60">
+                      {open.counts.channel_email ?? 0} email · {open.counts.channel_slack ?? 0} Slack · {open.counts.channel_teams ?? 0} Teams
+                      {open.counts.removed ? ` · ${open.counts.removed} taken out` : ""}
+                      {open.approved_at ? ` · approved ${formatTime(open.approved_at)}` : ""}
+                    </p>
                   </div>
-                )}
+                  {pending && (
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className={btn.ghost}
+                        disabled={!!busy}
+                        onClick={() => act("skip", () => call(`/api/email-outbox/${open.id}`, { method: "POST", body: JSON.stringify({ action: "skip" }) }), "Skipped")}
+                      >
+                        Skip
+                      </button>
+                      <button type="button" className={btn.primary} disabled={!!busy || !toSend} onClick={approve}>
+                        {busy === "approve" && <Spinner />}
+                        Approve and send {toSend}
+                      </button>
+                    </div>
+                  )}
+                  {open.status === "skipped" && (
+                    <button
+                      type="button"
+                      className={btn.secondary}
+                      disabled={!!busy}
+                      onClick={() => act("reopen", () => call(`/api/email-outbox/${open.id}`, { method: "POST", body: JSON.stringify({ action: "reopen" }) }), "Back in review")}
+                    >
+                      Reopen
+                    </button>
+                  )}
+                </div>
+                {pending &&
+                  (noteOpen || note || open.note ? (
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-semibold" htmlFor="batch-note">
+                        Note at the top of every message
+                      </label>
+                      <textarea
+                        id="batch-note"
+                        className="textarea min-h-16 w-full border-base-300 text-sm tracker:rounded-xl"
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        placeholder="e.g. Heads-up: this one hits steel derivatives hard. Check your Chapter 73 imports."
+                      />
+                      {noteChanged && (
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            className={btn.xsSecondary}
+                            disabled={!!busy}
+                            onClick={() => act("note", () => call(`/api/email-outbox/${open.id}`, { method: "PATCH", body: JSON.stringify({ note }) }), "Note saved")}
+                          >
+                            Save note
+                          </button>
+                          <button type="button" className={btn.xsGhost} onClick={() => setNote(open.note ?? "")}>
+                            Undo
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <button type="button" className="self-start text-sm font-medium text-primary hover:underline" onClick={() => setNoteOpen(true)}>
+                      + Add a note at the top of every message
+                    </button>
+                  ))}
               </div>
-            )}
+            </Panel>
 
-            <div className="grid gap-4 xl:grid-cols-[18rem_minmax(0,1fr)]">
-              <ul className="flex max-h-[70vh] flex-col overflow-y-auto rounded-lg border border-base-content/10 bg-base-100">
+            <Panel className="grid xl:grid-cols-[17rem_minmax(0,1fr)]" bodyClassName="contents">
+              <ul className="flex max-h-[80vh] flex-col overflow-y-auto border-base-300 max-xl:border-b xl:border-r">
                 {messages.map((m, i) => (
                   <li key={m.id}>
                     <button
                       type="button"
                       onClick={() => setIndex(i)}
-                      className={`flex w-full flex-col gap-0.5 border-b border-base-content/5 px-3 py-2 text-left text-xs ${i === index ? "bg-base-content/[0.06]" : "hover:bg-base-content/[0.03]"}`}
+                      className={`flex w-full flex-col gap-1 border-b border-base-300 px-4 py-2.5 text-left text-xs ${i === index ? "bg-tt-soft-high" : "hover:bg-tt-soft"}`}
                     >
-                      <span className={`truncate font-medium ${m.status === "removed" ? "text-base-content/40 line-through" : ""}`}>{shortRecipient(m)}</span>
+                      <span className={`truncate text-sm font-medium ${m.status === "removed" ? "text-base-content/40 line-through" : ""}`}>{shortRecipient(m)}</span>
                       <span className="flex items-center gap-1.5">
                         <Pill tone={STATUS_TONE[m.status]}>{m.status}</Pill>
                         {m.error && <span className="truncate text-error">{m.error}</span>}
@@ -341,49 +397,70 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
                 ))}
               </ul>
 
-              <div className="flex min-w-0 flex-col gap-3">
+              <div className="flex min-w-0 flex-col">
                 {current && (
-                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <div className="flex flex-wrap items-center gap-2 border-b border-base-300 px-5 py-3 text-sm">
                     <button type="button" className={btn.xsSecondary} onClick={() => setIndex((i) => Math.max(0, i - 1))} disabled={index === 0} aria-label="Previous recipient">
                       ←
                     </button>
                     <button type="button" className={btn.xsSecondary} onClick={() => setIndex((i) => Math.min(messages.length - 1, i + 1))} disabled={index >= messages.length - 1} aria-label="Next recipient">
                       →
                     </button>
-                    <span className="text-base-content/60">
+                    <span className="min-w-0 truncate text-base-content/60">
                       {index + 1} of {messages.length} · {shortRecipient(current)}
                     </span>
                     <span className="ml-auto flex gap-2">
                       {current.channel === "email" && (
-                        <button type="button" className={btn.xsSecondary} disabled={!!busy} onClick={() => act("test", () => call(`/api/email-outbox/messages/${current.id}`, { method: "POST", body: JSON.stringify({ action: "test" }) }), "Test sent to you")}>
+                        <button
+                          type="button"
+                          className={btn.xsSecondary}
+                          disabled={!!busy}
+                          onClick={() => act("test", () => call(`/api/email-outbox/messages/${current.id}`, { method: "POST", body: JSON.stringify({ action: "test" }) }), "Test sent to you")}
+                        >
                           Send me this one
                         </button>
                       )}
                       {pending && current.status === "pending" && (
-                        <button type="button" className={btn.xsSecondary} disabled={!!busy} onClick={() => act("remove", () => call(`/api/email-outbox/messages/${current.id}`, { method: "POST", body: JSON.stringify({ action: "remove" }) }), "Taken out")}>
+                        <button
+                          type="button"
+                          className={btn.xsSecondary}
+                          disabled={!!busy}
+                          onClick={() => act("remove", () => call(`/api/email-outbox/messages/${current.id}`, { method: "POST", body: JSON.stringify({ action: "remove" }) }), "Taken out")}
+                        >
                           Take out
                         </button>
                       )}
                       {pending && current.status === "removed" && (
-                        <button type="button" className={btn.xsSecondary} disabled={!!busy} onClick={() => act("restore", () => call(`/api/email-outbox/messages/${current.id}`, { method: "POST", body: JSON.stringify({ action: "restore" }) }), "Back in")}>
+                        <button
+                          type="button"
+                          className={btn.xsSecondary}
+                          disabled={!!busy}
+                          onClick={() => act("restore", () => call(`/api/email-outbox/messages/${current.id}`, { method: "POST", body: JSON.stringify({ action: "restore" }) }), "Back in")}
+                        >
                           Put back
                         </button>
                       )}
                     </span>
                   </div>
                 )}
-                {previewError && <Callout tone="error" title="Couldn't render this message">{previewError}</Callout>}
-                {preview?.channel === "email" && preview.html && (
-                  <div className="overflow-hidden rounded-lg border border-base-content/10 bg-base-100">
-                    <div className="border-b border-base-content/10 px-4 py-2.5 text-sm">
-                      <span className="text-base-content/50">Subject </span>
-                      <span className="font-medium">{preview.subject}</span>
-                    </div>
-                    <iframe title="Email preview" srcDoc={preview.html} className="h-[75vh] w-full bg-white" sandbox="allow-popups allow-popups-to-escape-sandbox" />
+                {previewError && (
+                  <div className="p-5">
+                    <Callout tone="error" title="Couldn't render this message">
+                      {previewError}
+                    </Callout>
                   </div>
                 )}
+                {preview?.channel === "email" && preview.html && (
+                  <>
+                    <div className="border-b border-base-300 px-5 py-2.5 text-sm">
+                      <span className="text-base-content/60">Subject </span>
+                      <span className="font-semibold">{preview.subject}</span>
+                    </div>
+                    <iframe title="Email preview" srcDoc={preview.html} className="h-[75vh] w-full bg-white" sandbox="allow-popups allow-popups-to-escape-sandbox" />
+                  </>
+                )}
                 {preview && preview.channel !== "email" && preview.chat && (
-                  <div className="flex flex-col gap-3 rounded-lg border border-base-content/10 bg-base-100 p-4 text-sm">
+                  <div className="flex flex-col gap-3 p-5 text-sm">
                     {preview.chat.eyebrow && <div className="text-xs font-semibold text-base-content/60">{preview.chat.eyebrow}</div>}
                     <div className="text-base font-semibold">{preview.chat.title}</div>
                     {preview.chat.summary && <p className="whitespace-pre-line text-base-content/80">{preview.chat.summary.replace(/\*/g, "")}</p>}
@@ -394,7 +471,7 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
                       </div>
                     ))}
                     {preview.chat.rows?.map((r, i) => (
-                      <div key={i} className="flex items-start justify-between gap-4 border-t border-base-content/10 pt-2">
+                      <div key={i} className="flex items-start justify-between gap-4 border-t border-base-300 pt-2">
                         <div>
                           <div className="font-semibold">{r.label}</div>
                           {r.detail && <div className="text-xs text-base-content/60">{r.detail}</div>}
@@ -409,25 +486,32 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
                     ))}
                     <div className="flex flex-wrap gap-2">
                       {preview.chat.actions.map((a) => (
-                        <a key={a.url} href={a.url} target="_blank" rel="noreferrer" className="rounded-md bg-base-content px-3 py-1.5 text-xs font-medium text-base-100">
+                        <a key={a.url} href={a.url} target="_blank" rel="noreferrer" className={btn.xsSecondary}>
                           {a.label}
                         </a>
                       ))}
                     </div>
                     <details>
-                      <summary className="cursor-pointer text-xs text-base-content/50">Payload</summary>
+                      <summary className="cursor-pointer text-xs text-base-content/60">Payload</summary>
                       <pre className="mt-2 overflow-x-auto text-[11px]">{JSON.stringify(preview.payload, null, 2)}</pre>
                     </details>
                   </div>
                 )}
-                {!preview && !previewError && current && <Spinner />}
+                {!preview && !previewError && current && (
+                  <div className="flex justify-center p-10">
+                    <Spinner />
+                  </div>
+                )}
+                {!messages.length && <EmptyState title="No messages in this batch" />}
               </div>
-            </div>
+            </Panel>
           </section>
         ) : (
-          <EmptyState title="Pick a batch" />
+          <Panel>
+            <EmptyState title="Pick a batch">Its messages show here exactly as they&apos;ll arrive.</EmptyState>
+          </Panel>
         )}
       </div>
-    </div>
+    </>
   )
 }

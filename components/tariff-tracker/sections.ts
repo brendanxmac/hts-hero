@@ -217,19 +217,18 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "sourcing",
-    hidden: true,
     label: "Sourcing",
     Icon: GlobeAltIcon,
     title: "Sourcing",
     summary:
-      "Find cheaper countries that already make your products for the US.",
+      "Where to source any product: every country ranked on landed cost, proven production, reliability and transit time.",
     ready: true,
     group: "workspace",
     paidOnly: false,
     planned: [
-      "Cheaper countries of origin for each product that already ship it to the US, with how much",
-      "The trade agreements that could lower each country's rate",
-      "The countries that could supply the most of your imports for less, and what moving could save",
+      "Every country's landed cost for any HTS code: duty plus the freight Census records",
+      "Who really makes it: world exports, specialization and what the US already buys from each country",
+      "Reliability, compliance flags and days at sea, with the source behind every figure",
     ],
   }),
   section({

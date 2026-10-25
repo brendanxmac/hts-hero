@@ -3,7 +3,7 @@ import { getPublishedUpdates } from "@/libs/tariff-updates/public"
 
 // The tariff updates as RSS, newest activity first, for readers and for crawlers that find new
 // pages through feeds. Refreshed with the page.
-export const revalidate = 900
+export const revalidate = 3600
 
 const SITE = `https://${config.domainName}`
 

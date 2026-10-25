@@ -15,7 +15,7 @@ import { adminCall, type SourceItemRow } from "./types"
 // Every collected source item, newest first, with how it was sorted. The category can be changed
 // here; the item is then read and grouped again on the next run.
 
-type Scope = "terms" | "all"
+type Scope = "terms" | "failed" | "all"
 
 export const sourceLabel = (source: string) => SOURCES[source as SourceId]?.label ?? source
 
@@ -149,9 +149,13 @@ const columns: TableColumnDef<SourceItemRow, any>[] = [
   },
 ]
 
-export default function ItemsTable({ items }: { items: SourceItemRow[] }) {
-  const [scope, setScope] = useState<Scope>("terms")
-  const rows = useMemo(() => (scope === "terms" ? items.filter((i) => i.matched_terms.length > 0) : items), [items, scope])
+export default function ItemsTable({ items, initialScope = "terms" }: { items: SourceItemRow[]; initialScope?: Scope }) {
+  const [scope, setScope] = useState<Scope>(initialScope)
+  const failed = useMemo(() => items.filter((i) => i.process_error).length, [items])
+  const rows = useMemo(
+    () => (scope === "terms" ? items.filter((i) => i.matched_terms.length > 0) : scope === "failed" ? items.filter((i) => i.process_error) : items),
+    [items, scope]
+  )
   const table = useDataTable<SourceItemRow>({
     data: rows,
     columns,
@@ -161,9 +165,8 @@ export default function ItemsTable({ items }: { items: SourceItemRow[] }) {
     hidden: ["type", "terms"],
   })
   return (
-    // The table only draws the rows in view past 300, measured against its scrolling parent;
-    // the admin page scrolls the window, so the list gets its own scroller
-    <div className="max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg">
+    // The table only draws the rows in view past 300, measured against its scrolling parent
+    <div className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-lg">
       <DataTable
         table={table}
         label="Collected tariff source items"
@@ -177,6 +180,7 @@ export default function ItemsTable({ items }: { items: SourceItemRow[] }) {
               <Segmented<Scope>
                 options={[
                   { value: "terms", label: "With tariff words" },
+                  ...(failed ? [{ value: "failed" as Scope, label: `Failed (${failed})` }] : []),
                   { value: "all", label: "Everything" },
                 ]}
                 value={scope}
