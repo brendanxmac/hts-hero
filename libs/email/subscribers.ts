@@ -8,8 +8,9 @@ import { sendTransactional } from "./outbox"
 // Email subscribers (email_subscribers): tariff news subscriptions for anyone, and every
 // account's email choices. A row's token is the key in its manage and unsubscribe links.
 // Visitors confirm by email before anything else is sent (double opt-in); an address that's
-// already confirmed gets a link to change its choices instead, so nobody can change another
-// person's subscription by typing their address.
+// already getting the news gets a link to change its choices instead, so nobody can change another
+// person's subscription by typing their address. An account's address with the news off (accounts
+// from before subscriptions) confirms like a visitor, with the choices carried in the link.
 
 type Db = SupabaseClient
 
@@ -46,7 +47,16 @@ export const appUrl = (path: string) => `${(process.env.BASE_URL || `https://${c
 
 export const manageUrl = (token: string) => appUrl(`/tariff-updates/subscription?token=${token}`)
 export const unsubscribeUrl = (token: string) => appUrl(`/api/email/unsubscribe?token=${token}`)
-export const confirmUrl = (token: string) => appUrl(`/api/email/confirm?token=${token}`)
+export const confirmUrl = (token: string, prefs?: NewsPreferences) => {
+  const params = new URLSearchParams({ token })
+  if (prefs) {
+    params.set("frequency", prefs.frequency)
+    params.set("scope", prefs.scope)
+    if (prefs.authorities.length) params.set("authorities", prefs.authorities.join(","))
+    if (prefs.countries.length) params.set("countries", prefs.countries.join(","))
+  }
+  return appUrl(`/api/email/confirm?${params}`)
+}
 
 export const subscriberFooter = (s: Pick<Subscriber, "token">, reason: string): EmailFooter => ({
   reason,
@@ -98,7 +108,8 @@ export type SubscribeResult = "confirm_sent" | "manage_link_sent" | "throttled"
 export const subscribe = async (db: Db, { email, prefs, source }: { email: string; prefs: NewsPreferences; source: string }): Promise<SubscribeResult> => {
   const address = email.trim().toLowerCase()
   let s = await byEmail(db, address)
-  const active = s?.confirmed_at && !s.unsubscribed_at
+  const confirmed = !!s?.confirmed_at && !s.unsubscribed_at
+  const active = confirmed && s!.news_frequency !== "off"
 
   if (s && throttled(s)) return "throttled"
 
@@ -115,7 +126,10 @@ export const subscribe = async (db: Db, { email, prefs, source }: { email: strin
     return "manage_link_sent"
   }
 
-  if (s) {
+  if (s && confirmed) {
+    // An account with the news off: nothing changes until they confirm from their inbox
+    await db.from("email_subscribers").update({ confirm_sent_at: new Date().toISOString() }).eq("id", s.id)
+  } else if (s) {
     const { data } = await db
       .from("email_subscribers")
       .update({ ...preferenceColumns(prefs), confirm_sent_at: new Date().toISOString(), source })
@@ -137,7 +151,7 @@ export const subscribe = async (db: Db, { email, prefs, source }: { email: strin
     subscriberId: s.id,
     template: "news_confirm",
     props: {
-      confirmUrl: confirmUrl(s.token),
+      confirmUrl: confirmUrl(s.token, confirmed ? prefs : undefined),
       frequency: prefs.frequency,
       footer: { reason: "You're getting this because this address was entered to get US tariff updates from HTS Hero. If that wasn't you, ignore it: nothing is sent without your confirmation." },
     },
@@ -145,12 +159,18 @@ export const subscribe = async (db: Db, { email, prefs, source }: { email: strin
   return "confirm_sent"
 }
 
-export const confirmSubscriber = async (db: Db, token: string) => {
+// The confirmation link; `prefs` are the choices carried in it (an account turning the news on)
+export const confirmSubscriber = async (db: Db, token: string, prefs?: NewsPreferences) => {
   const s = await subscriberByToken(db, token)
   if (!s) return null
   await db
     .from("email_subscribers")
-    .update({ confirmed_at: s.confirmed_at ?? new Date().toISOString(), unsubscribed_at: null, updated_at: new Date().toISOString() })
+    .update({
+      ...(prefs ? preferenceColumns(prefs) : {}),
+      confirmed_at: s.confirmed_at ?? new Date().toISOString(),
+      unsubscribed_at: null,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", s.id)
   return s
 }
@@ -193,11 +213,12 @@ export const ensureAccountSubscriber = async (
   })
 }
 
-// The signed-in user's row, made on first use (accounts from before subscriptions existed)
+// The signed-in user's row, made on first use (accounts from before subscriptions existed, so the
+// news starts off)
 export const accountSubscriber = async (db: Db, { userId, email }: { userId: string; email: string }) => {
   const { data } = await db.from("email_subscribers").select(SUBSCRIBER_COLUMNS).eq("user_id", userId).maybeSingle()
   if (data) return data as Subscriber
-  await ensureAccountSubscriber(db, { userId, email })
+  await ensureAccountSubscriber(db, { userId, email, newsFrequency: "off" })
   const { data: created } = await db.from("email_subscribers").select(SUBSCRIBER_COLUMNS).eq("user_id", userId).single()
   return created as Subscriber
 }
