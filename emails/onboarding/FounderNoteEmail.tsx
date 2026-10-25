@@ -2,7 +2,6 @@ import { Link, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Cta, Signature } from "../kit/parts"
 import { C, siteLink } from "../kit/brand"
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "../../libs/tariff-tracker/features"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
 // A note from Brendan to an account that opened the Tracker and hasn't added its imports, plain
@@ -113,16 +112,9 @@ export default function FounderNoteEmail({ variant = "last", skipReason, skipNot
         <strong>The easiest way: just reply to this email with your spreadsheet attached.</strong> Any format, any columns, as long as the HTS codes and countries of origin
         are in there somewhere. I&apos;ll add your imports for you myself and let you know when your dashboard is ready.
       </Para>
-      {SAVINGS_ENABLED || AUDITS_ENABLED ? (
-        <Para>
-          Once they&apos;re in, we work out the duty on each one, look for savings you may qualify for, and alert you the moment a new tariff affects any of them.
-        </Para>
-      ) : (
-        // The Tracker MVP (features.ts): tracking, alerts and impact checks
-        <Para>
-          Once they&apos;re in, you&apos;ll see the duty on every one of them, and we&apos;ll alert you the moment a new tariff hits one, with the rate before and after.
-        </Para>
-      )}
+      <Para>
+        Once they&apos;re in, we work out the duty on each one, look for savings you may qualify for, and alert you the moment a new tariff affects any of them.
+      </Para>
       <Para>Or, if you&apos;d rather do it yourself, it takes about a minute:</Para>
       <Cta href={siteLink("/tariff-tracker?setup=add", campaign)} variant="next">
         Add my imports

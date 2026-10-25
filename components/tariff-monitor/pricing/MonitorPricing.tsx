@@ -14,7 +14,7 @@ import {
   launchPricingActive,
 } from "@/components/pricing-calculator/lib/pricing";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
-import { FREE_FOREVER_SHORT, LAUNCH_PITCH, SAVINGS_AUDITS_COMING } from "@/components/ui/marketing/comingSoon";
+import { FREE_FOREVER_SHORT, LAUNCH_PITCH, SAVINGS_AUDITS_INCLUDED } from "@/components/ui/marketing/comingSoon";
 import { TRACKER_FEATURES, TRACKER_TRIAL_FEATURES } from "@/components/pricing-calculator/tariff-pricing/plans";
 
 const Features = ({ items, dark = false }: { items: string[]; dark?: boolean }) => (
@@ -105,7 +105,7 @@ export const MonitorPricing = () => (
       </div>
       <p className={`${mk.small} mx-auto mt-6 max-w-5xl text-center`}>
         An import is one HTS code from one country of origin. Prices in USD;{" "}
-        {TRACKER_ANNUAL_ENABLED ? `save ${ANNUAL_DISCOUNT * 100}% with annual billing.` : "billed monthly."} {SAVINGS_AUDITS_COMING} The{" "}
+        {TRACKER_ANNUAL_ENABLED ? `save ${ANNUAL_DISCOUNT * 100}% with annual billing.` : "billed monthly."} {SAVINGS_AUDITS_INCLUDED} The{" "}
         <Link href="/duty-calculator" className={mk.link}>
           Tariff Calculator
         </Link>{" "}

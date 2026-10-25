@@ -149,6 +149,19 @@ export const captionsFor = <T extends TemplateId>(template: T, props: TemplatePr
         x: x(`${p.authority}: ${p.headline}`, `${p.rateAfter ? `${p.rateBefore ? `${p.rateBefore} → ` : ""}${p.rateAfter}. ` : ""}${link}`).replace(/\n\nhtshero\.com$/, ""),
       }
     }
+    case "OddRate": {
+      const p = props as TemplatePropsMap["OddRate"]
+      const lines = p.steps.map((s) => (s.asks ? `${s.rate}: HTS Hero asks "${s.asks}"` : `${s.rate} ${s.detail ?? ""} = ${s.amount}`.replace(/\s+=/, " =")))
+      const working = p.total ? `${p.shipment}: ${p.total} in base duty.` : `${p.shipment}, it asks what the rate needs.`
+      return {
+        linkedin: linkedin(
+          `${p.headline}.`,
+          [`The ${p.column.toLowerCase()} for ${p.product} (HTS ${p.htsCode}), word for word: "${p.rate}"`, ...lines],
+          [working, p.footnote].filter(Boolean).join(" ")
+        ),
+        x: x(`${p.headline}.`, `HTS ${p.htsCode}: "${p.rate}"`),
+      }
+    }
   }
   return { linkedin: "", x: "" }
 }

@@ -1,3 +1,74 @@
+# Next deploy: `release/2026-10-10` → `master` (23 commits, Oct 22–25)
+
+Everything on the branch since PR #295 (`b00364b4`, the Oct 21 launch): base-rate parser and
+"not calculated" base duty, savings and audits live, primary sources and comparison evidence,
+share cards, Mixpanel tracking fixes, hourly crons, the /admin queue and daily admin digest,
+general notes, AD/CVD ITA scope codes, the static changelog, the Section 338 Canada (b)(3) change
+from Oct 30, tariff update pages that show their scope, and Duty Over Time through scheduled
+changes. The Sourcing tab ships hidden.
+
+**Deploy before Thu, Oct 30:** the Section 338 Canada list change takes effect then. Until it's
+deployed, the Oct 23 update's impact check can only say "may apply", and the calculator in prod
+still charges the 50% on the 22 removed subheadings.
+
+### Before merging
+
+- [x] **Sourcing tab hidden** (`hidden: true` in `components/tariff-tracker/sections.ts`, as on
+      `master`): out of the sidebar and the product tour; a `?tab=sourcing` link still opens it.
+      To turn it on later: remove `hidden` and upload the bilateral files (step 3 below).
+- [x] **Remove `DevGenerator`** (`components/tariff-tracker/onboarding/AddSteps.tsx`), carried
+      over from the launch list. _Removed 2026-10-25._ The Add imports dialog's "Generate (dev)"
+      stays: it only shows in local development.
+- [ ] **Checks:** `npm run tests` (645 pass on Oct 25), `npx tsc --noEmit -p .`, `npm run build`.
+- [ ] **Vercel preview** (`npx vercel deploy --target=preview --yes`, then alias it to
+      hts-hero-preview.vercel.app) and click through:
+  - [ ] /duty-calculator: 6103.22 (base "Not calculated", asks for the garment's code),
+        5810.92.10 (4.2%, embroidery question), 9110.90.40 (per-piece question).
+  - [ ] /duty-calculator?code=4819.10.00.20&country=CA&date=2026-10-30 → Changes: 9903.03.14
+        added Aug 22, removed Oct 30; chart runs to mid-January.
+  - [ ] An /hts code page: Primary Sources section; a code with a "not calculated" base shows
+        "+ base duty (not calculated)" in duty by country.
+  - [ ] /compare pages: every competitor value has a dated link.
+  - [ ] A classification's Duty & Tariffs tab: the full calculator, no grey band.
+  - [ ] /tariff-updates/<a scoped update>: What it covers, every code shown, PDF links.
+  - [ ] /admin (Needs You) and /duty-calculator/changelog.
+  - [ ] The Tracker sidebar: no Sourcing.
+
+### Production database
+
+- [ ] **`adcvd.sql`'s 2026-10-23 section in prod** (fr_* / ita_* / hts_sources; every line is
+      `IF NOT EXISTS` or runs once), **before deploying**: the hourly AD/CVD cron writes those
+      columns and fails without them. Also in dev if not done, then `npm run adcvd:golden -- --strict`.
+- [ ] **Decide on the AD/CVD phantom cases** (step 2 of the launch list): `npm run adcvd:phantoms`
+      against prod, check, `-- --apply`. That item then says to copy dev to prod, but step 3 says
+      never to run `adcvd:copy-to-prod` again after launch. Settle which before running either.
+
+### Vercel
+
+- [ ] **Crons** after the deploy: 10 in Vercel. tariff-sources (:00), tariff-updates (:05), adcvd
+      (:08), tariff-news (:10) hourly; email-outbox every 15 minutes; social-ideas, tariff-digest,
+      lifecycle, tracker-snapshots daily; **new admin-digest at 00:00 UTC** (7 a.m. Bangkok). The
+      15-minute outbox still needs a paid plan.
+- [ ] **No new env vars.** `CENSUS_API_KEY` is used by the Sourcing APIs too (hidden for now).
+- [ ] **Vercel Firewall:** `libs/mixpanel.ts` counts on a rule stopping cloud scrapers before the
+      page loads. Check it's on in the production project.
+
+### After deploying
+
+- [ ] **The Oct 23 Section 338 update** in /tariff-sources: What It Covers has 100 covered, 22
+      excluded, heading `9903.03.14`, effective Oct 30. The impact check should now say Confirmed
+      with before → after rates; approve it to send the alerts.
+- [ ] Its public page shows Added to the duty (100), Removed from the duty (22) and the annex links.
+- [ ] /hts/4819.10.00.20 lists the update under the code's tariff news (scope match).
+- [ ] The admin digest email arrives the next morning (7 a.m. Bangkok).
+- [ ] Save a changelog entry; /duty-calculator/changelog shows it (static, rebuilt on save).
+- [ ] Share cards: preview htshero.com, /duty-calculator and /classify in LinkedIn's Post
+      Inspector and an X post.
+- [ ] Mixpanel (project 3768432): Sign Up, Purchase Completed and Tariff Tracker Trial Started
+      come through on the first real ones; the Business Pulse board fills in.
+
+---
+
 # Deploying the PLG / Tariff Tracker release
 
 The release on `release/2026-10-10` (194 commits since `master`, Oct 8 to Oct 20, plus the uncommitted import onboarding from Oct 20): the free Tariff
@@ -11,12 +82,16 @@ order; tick items as they land, and add new ones as they come up.
 
 - [x] **Deploy day: Wed, Oct 21, 2026.** `freshStartOn` and `tracker_onboarding.sql`'s backfill are
       both `2026-10-21`. If the deploy slips past today, move both to the real day.
-- [ ] **The "Coming Oct 2026" label** (`SAVINGS_AUDITS_LABEL`, `libs/tariff-tracker/features.ts`)
-      leaves only Oct 22–31: change it now if savings and audits won't ship by Oct 31.
+- [x] **The "Coming Oct 2026" label** (`SAVINGS_AUDITS_LABEL`, `libs/tariff-tracker/features.ts`)
+      leaves only Oct 22–31: change it now if savings and audits won't ship by Oct 31. _Done
+      2026-10-22: savings and audits are live and the label is gone._
 - [x] **Node 22 for this release:** `package.json` `engines.node` = `22.x`, which Vercel uses over
       the dashboard setting. `master` keeps its current Node until the merge, and the release
       branch's preview builds on 22 (Next 16 won't build on Node 18). After launch, set the
       dashboard's Node.js Version to 22.x too, so the two agree.
+- [x] **Remove the temporary dev generator** (added 2026-10-21; removed 2026-10-25): `DevGenerator` in
+      `components/tariff-tracker/onboarding/AddSteps.tsx`, shown only to brendan@htshero.com on the
+      import flow's Paste step. Harmless if it ships (email-gated), but it's meant for testing only.
 - [ ] **A Vercel preview deploy of the branch first.** Push `release/2026-10-10` and open its
       preview URL: the framework upgrade is the riskiest part of the release, and a preview shows
       build or runtime breakage before `master` does. Click through the home page, a blog post (MDX
@@ -27,8 +102,7 @@ order; tick items as they land, and add new ones as they come up.
       `components/pricing-calculator/lib/pricing.ts` (now `2026-10-21`). Existing accounts get 14 days
       from it; a date before the deploy shortens their trial.
 - [ ] **Confirm the launch-pricing deadline**: `LAUNCH_PRICING` (now Fri, Nov 13, 2026). Savings
-      detection and auditing are sold everywhere as "Coming Oct 2026" (`SAVINGS_AUDITS_LABEL`); if
-      they slip, change the label.
+      detection and auditing are live (2026-10-22) and sold as included.
 - [ ] **`tracker_onboarding.sql` is the last migration** (step 2; added 2026-10-20). It adds
       `tracker_onboarding` (sign-up source, first Tracker visit, skip reason, trial start) and the
       trigger on `tracker_catalogs` that starts the 14-day trial at the first real (non-example)
@@ -84,6 +158,14 @@ Paste each migration into the SQL editor, in this order (foreign keys):
 - [x] `tracker_onboarding.sql` last (needs `tracker_catalogs`): the trial-start trigger and its
       backfill, dated to match `freshStartOn` (see step 1).
 
+- [ ] `adcvd.sql` again for its **2026-10-23** section (fr_* / ita_* / hts_sources: scope codes from
+      ITA's case pages), in dev and prod, **before** deploying the code that writes them: without
+      it the scope reader's writes fail. Then `npm run adcvd:golden -- --strict` in dev.
+- [ ] After that migration and before the AD/CVD copy below: `adcvd:copy-to-prod` only adds and
+      updates cases, so the 8 typo cases removed in dev (2026-10-23) stay in prod. Run
+      `npm run adcvd:phantoms` against prod (prod keys in `.env.local`), check the list, then
+      `-- --apply`. Then copy, so prod gets dev's ITA codes, merged codes and corrected statuses.
+
 **Dev database too:** re-run `tariff_update_scopes.sql` there (it gained
 `scope_conditional_exclusions` on Oct 20; every line is `IF NOT EXISTS`), or `adcvd:copy-to-prod`
 and the scope reader fail on the missing column.
@@ -97,6 +179,13 @@ and the scope reader fail on the missing column.
 - [x] **Once only, before deploying.** After launch prod is the source of truth for tariff actions:
       never run the copy again. It would overwrite prod's reviews, approvals and AI budget with dev's.
       More history goes in through the Backfill button instead (step 6).
+- [ ] **Sourcing tab: upload the country-to-country files to prod's Storage** (added 2026-10-24).
+      The tab's "Where Its Exports Go" panel, "What Other Sources Say" table and supply mismatch
+      evidence read `sourcing/bilateral/<hs6>.json` from Supabase Storage (a public bucket the script
+      creates). Build them once (`scripts/sourcing/build_bilateral.py`, from the Atlas's CC0
+      country-to-country CSV), then point `.env.local` at prod for one run of
+      `npm run sourcing:upload-bilateral -- <out dir>`, and back. Without them those panels are
+      simply missing; nothing breaks.
 
 ## 4. Services and settings
 
@@ -213,9 +302,10 @@ emails). These need you:
 
 **On a date**
 
-- [ ] **When savings and audits ship (October):** flip `SAVINGS_ENABLED` / `AUDITS_ENABLED`
+- [x] **When savings and audits ship (October):** flip `SAVINGS_ENABLED` / `AUDITS_ENABLED`
       (`libs/tariff-tracker/features.ts`), then remove the "Coming Oct 2026" labels
-      (search for `SAVINGS_AUDITS_LABEL`).
+      (search for `SAVINGS_AUDITS_LABEL`). _Done 2026-10-22: the flags and labels are removed;
+      `NEXT_PUBLIC_DEMO_SAVINGS_AUDITS` is no longer read and can come out of every env._
 - [ ] **Before Nov 13 (`LAUNCH_PRICING.endsAt`).** When it passes, the countdown and the struck-through
       prices disappear on their own, but **prices don't change on their own**: update `TRACKER_TIERS`
       and the Stripe prices when savings and audits ship, or move the date.
@@ -237,8 +327,9 @@ It changes only what you see (not what your alerts cover), stays on while you mo
 
 ## Within two weeks: savings, audits and the price change
 
-- [ ] **Automatic entry auditing**, then switch savings and audits back on
-      (`libs/tariff-tracker/features.ts`; `MVP_TRIM.md` lists every change to put back).
+- [x] **Automatic entry auditing**, then switch savings and audits back on
+      (`libs/tariff-tracker/features.ts`; `MVP_TRIM.md` lists every change to put back). _Switched
+      on 2026-10-22._
 - [ ] **New prices** for new subscribers ($19 / $49 / $149 / $249) when `LAUNCH_PRICING` ends;
       launch subscribers keep theirs. Create the new Stripe prices with the same lookup keys
       ("transfer lookup key").

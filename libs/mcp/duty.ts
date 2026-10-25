@@ -6,6 +6,7 @@ import { preferenceImpacts, questionImpacts, sortBySpecificity } from "../../com
 import { findCountry } from "../../components/tariff-tracker/parse";
 import { calculate } from "../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../tariffs/engine-v2/data";
+import { baseRateAnswer, isBaseRateInput } from "../../tariffs/engine-v2/base-rates";
 import { getRevisionForDate, getVerifiedRevisions, isVerifiedDate } from "../../tariffs/engine-v2/revisions";
 import { Answers, CalculationInput, CalculationResult, TransportMode } from "../../tariffs/engine-v2/types";
 import { discontinuedCodes2026 } from "../../discontinued-codes-2026";
@@ -135,6 +136,12 @@ export const cleanAnswers = (raw: Record<string, unknown> | undefined) => {
   const answers: Answers = {};
   const unknown: string[] = [];
   Object.entries(raw ?? {}).forEach(([id, value]) => {
+    // The base rate's own questions (the value of the case, the code a rate points to)
+    if (isBaseRateInput(id)) {
+      const answer = baseRateAnswer(id, value);
+      if (answer !== undefined) answers[id] = answer;
+      return;
+    }
     const input = AllRules.inputs.find((i) => i.id === id);
     if (!input) return unknown.push(id);
     if (input.type === "boolean") {
@@ -174,6 +181,7 @@ export const calculateDuty = async (req: DutyRequest): Promise<DutyCalculation> 
     quantity,
     transportMode,
     claimedPreference: req.tradeProgram,
+    htsElements: line.elements,
   });
   const result = calculate(AllRules, { ...input, answers });
 

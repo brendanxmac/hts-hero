@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useEscapeToClose } from "@/hooks";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,6 +19,7 @@ const AboutHeader = () => {
   const searchParams = useSearchParams();
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  useEscapeToClose(isOpen, () => setIsOpen(false));
 
   const links: {
     href: string;

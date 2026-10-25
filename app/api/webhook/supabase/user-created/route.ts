@@ -7,7 +7,7 @@ import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "@/l
 import { MixpanelEvent } from "../../../../../libs/mixpanel";
 import {
   identifyUserServer,
-  trackEventServer,
+  trackEventServerAsync,
 } from "../../../../../libs/mixpanel-server";
 
 export const dynamic = "force-dynamic";
@@ -114,10 +114,14 @@ export async function POST(req: NextRequest) {
     try {
       identifyUserServer(user.id, {
         email: user.email || "",
+        $email: user.email || "",
+        $created: user.created_at,
       });
 
-      trackEventServer(MixpanelEvent.SIGN_UP, user.id, {
-        email: user.email || "",
+      // Awaited, so the serverless function isn't frozen before Mixpanel has it. The $insert_id
+      // makes a retried webhook count once
+      await trackEventServerAsync(MixpanelEvent.SIGN_UP, user.id, {
+        $insert_id: `sign-up-${user.id}`,
       });
     } catch (e) {
       console.error("Failed to identify user in Mixpanel:", e);

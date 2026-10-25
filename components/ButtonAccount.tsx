@@ -5,6 +5,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import apiClient from "@/libs/api";
 import { useUser } from "../contexts/UserContext";
+import { useEscapeToClose } from "@/hooks";
 
 const PANEL_WIDTH = 224;
 const PANEL_GAP = 8;
@@ -12,6 +13,7 @@ const PANEL_GAP = 8;
 const ButtonAccount = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  useEscapeToClose(isOpen, () => setIsOpen(false));
   const { user, signOut } = useUser();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -69,14 +71,9 @@ const ButtonAccount = () => {
         setIsOpen(false);
       }
     };
-    const onEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
     document.addEventListener("mousedown", onClickOutside);
-    document.addEventListener("keydown", onEscape);
     return () => {
       document.removeEventListener("mousedown", onClickOutside);
-      document.removeEventListener("keydown", onEscape);
     };
   }, [isOpen]);
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowDownIcon, ArrowRightIcon, CheckBadgeIcon, CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/20/solid"
+import { ArrowDownIcon, ArrowRightIcon, CheckBadgeIcon, CheckCircleIcon, ExclamationTriangleIcon, ShieldExclamationIcon } from "@heroicons/react/20/solid"
 import { useUser } from "@/contexts/UserContext"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
@@ -9,20 +9,21 @@ import { lookupOf, useAdcvdLookup, useAdcvdSummary } from "./useAdcvd"
 import { useAdcvdAnswers, useOpenFlags } from "./useAdcvdAnswers"
 
 // AD/CVD in short: a line under the Duty tab's totals (whether a case may apply, and the way down
-// to the check further down the tab; signed out, only whether one may), and the Overview's summary card, which says
-// plainly whether we found any (celebrated when not), always with what it's based on.
+// to the check further down the tab), and the Overview's summary card, which says plainly whether
+// we found any (celebrated when not), always with what it's based on. Signed out, neither says
+// what we found (nothing is even looked up): each only teases that AD/CVD may apply, and the way to
+// the check.
 
 const pct = (n: number) => `${Number(n.toFixed(2))}%`
 
 // Whether any live case or new petition may cover the import: from the full lookup on the trial or
-// a plan, the summary signed out or on the free plan. null until known (or when it couldn't be
-// checked)
+// a plan, the summary on the free plan. null until known, when it couldn't be checked, or signed
+// out (visitors aren't told)
 // (cases the user ruled out don't count)
 export const useAdcvdFlagged = (code: string, country: string) => {
-  const { user, isLoading } = useUser()
   const state = useAdcvdLookup(code, country)
   const full = lookupOf(state)
-  const summary = lookupOf(useAdcvdSummary(code, country, (!user && !isLoading) || state === "locked"))
+  const summary = lookupOf(useAdcvdSummary(code, country, state === "locked"))
   const open = useOpenFlags(code, country, full?.flags.filter((f) => f.level !== "history"))
   if (full) return (open?.length ?? 0) > 0 || full.petitions.length > 0
   if (summary) return summary.cases > 0 || summary.petitions > 0
@@ -30,9 +31,29 @@ export const useAdcvdFlagged = (code: string, country: string) => {
 }
 
 export const AdcvdDutyTeaser = ({ code, country, onOpen }: { code: string; country: string; onOpen: () => void }) => {
-  const { user } = useUser()
+  const { user, isLoading } = useUser()
   const locked = useAdcvdLookup(code, country) === "locked"
   const flagged = useAdcvdFlagged(code, country)
+  if (isLoading) return null
+  // Signed out: that AD/CVD may apply, never whether we found any, in amber so it isn't missed. The
+  // host's onOpen offers the free account
+  if (!user)
+    return (
+      <div className={`${ui.cardSection} border-t border-base-300 py-3!`}>
+        <button
+          type="button"
+          onClick={onOpen}
+          className="group flex w-full items-center gap-2.5 rounded-xl bg-warning/10 px-3.5 py-2 text-left text-sm text-base-content transition-colors hover:bg-warning/15"
+        >
+          <ExclamationTriangleIcon className="h-4 w-4 shrink-0 text-warning" aria-hidden />
+          <span className="min-w-0 flex-1">
+            <b>AD/CVD duties may apply to this import</b>
+            <span className="text-base-content/70"> and aren&apos;t in this estimate.</span>
+          </span>
+          <span className="shrink-0 font-medium text-primary group-hover:underline">See if they apply</span>
+        </button>
+      </div>
+    )
   // Still checking
   if (flagged === null) return null
   if (!flagged)
@@ -55,7 +76,7 @@ export const AdcvdDutyTeaser = ({ code, country, onOpen }: { code: string; count
           <span className="text-base-content/70"> and aren&apos;t in this estimate.</span>
         </span>
         <span className="inline-flex shrink-0 items-center gap-1 font-medium text-primary group-hover:underline">
-          {user && !locked ? "Check the cases" : user ? "See which cases" : "See if they apply"}
+          {locked ? "See which cases" : "Check the cases"}
           <ArrowDownIcon className="h-3.5 w-3.5" aria-hidden />
         </span>
       </button>
@@ -68,7 +89,7 @@ export const AdcvdSummaryCard = ({ code, country, onOpen }: { code: string; coun
   const { user, isLoading } = useUser()
   const full = useAdcvdLookup(code, country)
   const locked = full === "locked"
-  const summary = useAdcvdSummary(code, country, (!user && !isLoading) || locked)
+  const summary = useAdcvdSummary(code, country, locked)
   const state = user && !locked ? full : summary
   const { of: answerOf } = useAdcvdAnswers(code, country)
   const header = (
@@ -83,6 +104,26 @@ export const AdcvdSummaryCard = ({ code, country, onOpen }: { code: string; coun
       </button>
     </div>
   )
+  // Signed out: that cases may exist, never whether we found any
+  if (!user && !isLoading) {
+    return (
+      <section className={`${ui.cardSection} flex flex-col gap-4 py-5!`}>
+        {header}
+        <div className="flex items-center gap-4 rounded-xl bg-primary/5 px-5 py-4">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary" aria-hidden>
+            <ShieldExclamationIcon className="h-6 w-6" />
+          </span>
+          <span className="min-w-0">
+            <span className={`${tt.display} block text-lg font-semibold text-base-content`}>AD/CVD cases may cover this import</span>
+            <span className="block text-sm text-base-content/75">
+              Antidumping and countervailing duties can be many times the regular rate, and aren&apos;t in the estimate. See whether any case covers this
+              import.
+            </span>
+          </span>
+        </div>
+      </section>
+    )
+  }
   if (state === null || state === "loading" || state === "locked") {
     return (
       <section className={`${ui.cardSection} flex flex-col gap-4 py-5!`}>

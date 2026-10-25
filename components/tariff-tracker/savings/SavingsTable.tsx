@@ -10,6 +10,7 @@ import { wholeDollars } from "../insights/teasers";
 import { Saving, SavingKind } from "../insights/savings";
 import { TrackedProduct } from "../report";
 import { countryFacet, openColumn } from "../tableColumns";
+import { ExcludesBase } from "@/components/duty-calculator/results/ExcludesBase";
 
 // Every saving across the catalog, biggest first: the product, what to do, and what it's worth
 // on one shipment, on the shared table (search, a filter by origin, sorting by the figures). A row
@@ -74,7 +75,12 @@ const COLUMNS: TableColumnDef<SavingRow, any>[] = [
     header: "Rate now",
     sortDescFirst: true,
     meta: { align: "right", width: "w-28" },
-    cell: ({ getValue }) => formatRate(getValue()),
+    cell: ({ row: { original: r } }) => (
+      <span className="flex flex-col items-end">
+        {formatRate(r.product.totalPct)}
+        {r.product.baseNotCalculated && <ExcludesBase />}
+      </span>
+    ),
   },
   {
     id: "pts",

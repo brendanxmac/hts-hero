@@ -10,12 +10,12 @@ import {
   PricingHero,
   parseEstimateParams,
 } from "@/components/pricing-calculator";
-import { COMING_NOTE, FREE_FOREVER_SHORT } from "@/components/ui/marketing/comingSoon";
+import { FREE_FOREVER_SHORT } from "@/components/ui/marketing/comingSoon";
 import { CLASSIFY_PLANS, LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "@/components/pricing-calculator/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Pricing — Tariff Calculator, Tariff Tracker & Classify | HTS Hero",
-  description: `HTS Hero pricing. The Tariff Calculator is free and unlimited with no account. Try the Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card, then ${FREE_FOREVER_SHORT} stay free, forever. Automatic savings detection and auditing ${COMING_NOTE}. Paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import. Classify from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo.`,
+  description: `HTS Hero pricing. The Tariff Calculator is free and unlimited with no account. Try the Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card, then ${FREE_FOREVER_SHORT} stay free, forever. Automatic savings detection and auditing included. Paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import. Classify from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo.`,
   openGraph: {
     title: "HTS Hero Pricing",
     description: `The Tariff Calculator is free. Try the Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, build your plan, and see your price before you sign up.`,

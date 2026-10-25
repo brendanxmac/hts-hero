@@ -9,6 +9,8 @@ import { PlannedSection } from "./shell/PlannedSection";
 import { SectionPage } from "./shell/SectionPage";
 import { TrackerNav, TrackerNavContext } from "./shell/TrackerNav";
 import { ImportTakeover } from "./onboarding/ImportTakeover";
+import { FeatureTour } from "./onboarding/tour/FeatureTour";
+import { TourTriggers } from "./onboarding/tour/TourTriggers";
 import { TrackerShell } from "./shell/TrackerShell";
 import { TrackerProvider } from "./TrackerContext";
 import { TrackerAccessProvider } from "./access/TrackerAccessProvider";
@@ -80,13 +82,13 @@ export const TrackerApp = () => {
     document.title = section && tab !== DEFAULT_SECTION ? `${section.title} · ${BASE_TITLE}` : BASE_TITLE;
   }, [tab]);
 
-  // The built tabs; the rest (and those held back as coming soon) show what's planned
+  // The built tabs; the rest show what's planned
   const built: Partial<Record<SectionSlug, (active: boolean) => ReactNode>> = {
     calculator: (active) => <TrackerCalculator key={calculatorRun} active={active} />,
     catalog: () => <ProductCatalog />,
     overview: () => <Overview />,
     savings: () => <Savings />,
-    sourcing: () => <Sourcing />,
+    sourcing: (active) => <Sourcing active={active} />,
     changes: () => <TariffChanges />,
     entries: () => <EntryAudit />,
     "expert-help": () => <ExpertHelp />,
@@ -207,7 +209,7 @@ export const TrackerApp = () => {
                           hidden={!active}
                           className="tt-enter"
                         >
-                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "changes", "calculator"].includes(section.slug)}>
+                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "changes", "calculator", "sourcing"].includes(section.slug)}>
                             {panel ? panel(active) : <PlannedSection section={section} />}
                           </SectionPage>
                         </div>
@@ -216,6 +218,9 @@ export const TrackerApp = () => {
                   </TrackerShell>
                   {/* Over everything, until the account has imports of its own */}
                   <ImportTakeover />
+                  {/* The feature tour: by itself on the first visit and after the first imports, and from the sidebar */}
+                  <FeatureTour />
+                  <TourTriggers />
                 </TrackerNavContext.Provider>
               </EntriesProvider>
             </AlertSettingsProvider>

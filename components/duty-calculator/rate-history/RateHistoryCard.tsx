@@ -136,8 +136,7 @@ export const RateHistoryCard = ({
         {!inRange && entryDate >= historyRange.to && (
           <>
             {" "}
-            Tariff changes after {formatDate(lastDate)} aren&apos;t entered yet, so they
-            aren&apos;t shown.
+            The chart runs to {formatDate(lastDate)}; changes after that aren&apos;t shown.
           </>
         )}
       </p>

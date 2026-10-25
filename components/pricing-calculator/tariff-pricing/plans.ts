@@ -1,5 +1,5 @@
 import { Billing, REVERSE_TRIAL, TRACKER_MAX_LISTED_PAIRS, TRACKER_TIERS, formatPrice, monthlyRate, perImportPrice, trackerBilling } from "../lib/pricing"
-import { AUTO_AUDITING, COMING_NOTE, FREE_FOREVER_SHORT, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon"
+import { AUTO_AUDITING, FREE_FOREVER_SHORT, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon"
 
 // The copy for each tariff plan, shared by /pricing-calculator and the pricing section on
 // /duty-calculator so both always say the same thing. See PRICING.md.
@@ -11,19 +11,21 @@ export const CALCULATOR_FEATURES = [
   "Trade preferences like USMCA and CAFTA-DR, plus MPF and HMF",
   "Compare countries and duty over time, plus every origin with a free account",
   "The plain-English why behind every tariff, with a free account",
+  "AD/CVD checks on any import: the cases that may cover it, their rates and the companies named, with a free account",
   "Works in AI assistants through the HTS Hero MCP server",
 ]
 
 // What every account gets free in the Tracker: the 14-day reverse trial (REVERSE_TRIAL, no card,
 // nothing to start), then the free plan forever: no alerts on its own imports (TRIAL_ALLOWANCE.alertImports
-// is 0), but Tariff News alerts and sourcing insights. Savings detection and auditing
-// aren't live yet (features.ts), so each mention carries the "coming" label
+// is 0), but Tariff News alerts and sourcing insights, and the AD/CVD check (free with any account,
+// never "forever"). Savings detection and auditing are in the trial and every paid plan
 export const TRACKER_TRIAL_FEATURES = [
   `${REVERSE_TRIAL.days} days of everything the Tracker does, on up to ${REVERSE_TRIAL.imports} imports`,
   "Alerts and impact checks on every tracked import, AD/CVD alerts included",
   "Insights across your catalog, plus Tariff News as it happens",
-  `${SAVINGS_DETECTION.name} and ${AUTO_AUDITING.name.toLowerCase()} in the trial too, when they launch ${COMING_NOTE}`,
+  `${SAVINGS_DETECTION.name} and ${AUTO_AUDITING.name.toLowerCase()} in the trial too`,
   `Then ${FREE_FOREVER_SHORT}, free forever`,
+  "AD/CVD checks on any import, free with your account",
   "Your whole catalog, with current duty, rate history and exports to CSV or Excel, always free",
 ]
 
@@ -36,8 +38,8 @@ export const TRACKER_FEATURES = [
   "Rate history for your whole catalog: compare with past rates and see why duty changed",
   "Export every tariff on every import to CSV or Excel",
   "Paste or upload your catalog as CSV",
-  `${SAVINGS_DETECTION.name} ${COMING_NOTE}: trade programs, exemptions and lower-duty origins you may qualify for, on every import`,
-  `${AUTO_AUDITING.name} ${COMING_NOTE}: every entry checked against the duty in force on its date, flagging possible over and underpayments`,
+  `${SAVINGS_DETECTION.name}: trade programs, exemptions and lower-duty origins you may qualify for, on every import`,
+  `${AUTO_AUDITING.name}: every entry checked against the duty in force on its date, flagging possible over and underpayments`,
 ]
 
 // One stop on the Tracker card's tier picker; a null price means the plan is quoted

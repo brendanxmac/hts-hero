@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ArrowPathIcon, CheckIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { addDays, HistorySegment } from "@/tariffs/engine-v2/history";
 import { formatMoney, formatPct } from "../lib/format";
 import { shortDate } from "../rate-history/format";
@@ -117,7 +117,7 @@ export const RefundCheckCard = ({
           <button type="button" className={ui.button({ variant: "primary" })} onClick={onCheck}>
             Check my entries
           </button>
-          <span className="text-xs text-base-content/60">{TRIAL_ALLOWANCE.auditChecks} free audit checks</span>
+          <span className="text-xs text-base-content/60">Free for {REVERSE_TRIAL.days} days</span>
         </div>
       </div>
 

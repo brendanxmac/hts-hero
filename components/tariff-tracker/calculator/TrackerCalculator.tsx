@@ -12,7 +12,6 @@ import { productKey } from "../adjustments";
 import { sectionBySlug, TRACKER_PATH } from "../sections";
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
-import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // The Tariff Calculator tab: the same calculator as /duty-calculator (CalculatorWorkspace),
 // without that page's marketing, with "Add to catalog" in its results. While it's the open tab,
@@ -22,7 +21,7 @@ const CALCULATOR_TAB = { tab: "calculator" };
 const CALCULATOR = sectionBySlug("calculator")!;
 
 const Calculator = ({ active }: { active: boolean }) => {
-  const f = useTariffFinder({ path: TRACKER_PATH, extraParams: CALCULATOR_TAB, syncAddress: active });
+  const f = useTariffFinder({ path: TRACKER_PATH, extraParams: CALCULATOR_TAB, syncAddress: active, surface: "tracker" });
   const nav = useTrackerNav();
   const { products } = useTracker();
   // This import's own Savings tab when it's one of the user's imports; the Savings section if not
@@ -30,7 +29,7 @@ const Calculator = ({ active }: { active: boolean }) => {
   const checkSavings = () => (key && products.some((p) => p.key === key) ? nav.openProduct(key, false, "savings") : nav.openTab("savings"));
   return (
     <div className="flex flex-col gap-4">
-      <CalculatorWorkspace f={f} page="tracker_calculator" pageTitle={{ title: CALCULATOR.title, summary: CALCULATOR.summary }} onCheckSavings={SAVINGS_ENABLED ? checkSavings : undefined} actions={<AddToCatalogButton f={f} source="tracker_calculator" onOpen={nav.openProduct} />} />
+      <CalculatorWorkspace f={f} page="tracker_calculator" pageTitle={{ title: CALCULATOR.title, summary: CALCULATOR.summary }} onCheckSavings={checkSavings} actions={<AddToCatalogButton f={f} source="tracker_calculator" onOpen={nav.openProduct} />} />
       <Disclaimer />
       <ExploreModal f={f} />
     </div>

@@ -24,7 +24,6 @@ import { AttentionList } from "./AttentionList";
 import { PulseEvent, RatePulse } from "./RatePulse";
 import { NewsSummary } from "./SummaryBoxes";
 import { TariffHealth } from "./TariffHealth";
-import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 
 // Home (DESIGN_SYSTEM.md §15 "Home"): the header card with the three numbers that sum up the
 // imports (with their 12-month lines), what needs the user, ranked (AttentionList), how their
@@ -140,8 +139,7 @@ export const Overview = () => {
       yearAgo,
       rise: rise && rise.date ? rise : undefined,
       drop: drop && drop.date && drop.date !== rise?.date ? drop : undefined,
-      // Savings are off for the Tracker MVP: only the latest increases
-      picks: productsToLookAt(insights.products, SAVINGS_ENABLED ? insights.savings : new Map(), insights.changes),
+      picks: productsToLookAt(insights.products, insights.savings, insights.changes),
       lastYearChanges: insights.changes.filter((c) => c.date >= yearAgo),
     };
   }, [t.products, t.items.length, insights, today]);

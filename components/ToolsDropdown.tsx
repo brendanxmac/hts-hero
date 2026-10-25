@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useEscapeToClose } from "@/hooks";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -59,6 +60,7 @@ interface ToolsDropdownProps {
 
 export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  useEscapeToClose(isOpen, () => setIsOpen(false));
   const pathname = usePathname();
 
   // Find the currently selected tool based on URL

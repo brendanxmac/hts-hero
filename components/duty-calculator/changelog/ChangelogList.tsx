@@ -1,25 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChangelogEntry, ChangelogEntryInput } from "@/libs/supabase/tariff-changelog";
+import { CHANGELOG_ADMIN_EMAIL, ChangelogEntry, ChangelogEntryInput } from "@/libs/supabase/tariff-changelog";
+import { createSupabaseClient } from "@/libs/supabase/client";
 import * as mk from "@/components/ui/marketing/styles";
 import { ChangelogArticle } from "./ChangelogArticle";
 import { ChangelogEntryForm } from "./ChangelogEntryForm";
-import { emptyDraft, request, sortEntries } from "./changelogEntries";
+import { emptyDraft, loadAllEntries, request, sortEntries } from "./changelogEntries";
 
-// The full changelog. The admin can add, edit, publish and delete entries.
-export const ChangelogList = ({
-  initialEntries,
-  isAdmin,
-}: {
-  initialEntries: ChangelogEntry[];
-  isAdmin: boolean;
-}) => {
+// The full changelog. The page is static with the published entries; for the admin, the drafts
+// and the editor load here. The session is read from the browser's cookies, so other visitors
+// make no request.
+export const ChangelogList = ({ initialEntries }: { initialEntries: ChangelogEntry[] }) => {
   const router = useRouter();
   const [entries, setEntries] = useState(initialEntries);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [editing, setEditing] = useState<string | "new" | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const {
+        data: { session },
+      } = await createSupabaseClient().auth.getSession();
+      if (session?.user.email !== CHANGELOG_ADMIN_EMAIL) return;
+      // The API checks the session properly; this only skips the call for everyone else
+      const all = await loadAllEntries();
+      if (cancelled || !all) return;
+      setEntries(all);
+      setIsAdmin(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const replace = (entry: ChangelogEntry) =>
     setEntries((current) => sortEntries([...current.filter((e) => e.id !== entry.id), entry]));

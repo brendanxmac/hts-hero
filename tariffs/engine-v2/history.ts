@@ -55,6 +55,14 @@ export const ruleChangeDates = (rules: RuleSet, from: IsoDate, to: IsoDate): Iso
   return Array.from(dates).sort()
 }
 
+// The last date after `today`, up to `days` ahead, on which a rule already entered starts or stops
+// (a change announced for a later date), or null when there's none. Not further: quotas and
+// phase-ins are entered years ahead.
+export const lastScheduledChange = (rules: RuleSet, today: IsoDate, days: number): IsoDate | null => {
+  const dates = ruleChangeDates(rules, today, addDays(today, days + 1)).filter((d) => d > today)
+  return dates.length ? dates[dates.length - 1] : null
+}
+
 const charged = (result: CalculationResult) => [
   result.base,
   ...result.lines.filter((l) => l.status === "applies" && l.amount > 0),

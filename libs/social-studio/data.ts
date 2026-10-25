@@ -21,7 +21,7 @@ import { getUsImports } from "../us-imports-server"
 // request, how the main origin's rate moved over the verified data.
 
 export const VALUE = 10000
-const UNITS = 1000
+export const UNITS = 1000
 
 export const SOURCE_ENGINE = "HTS Hero tariff engine"
 export const SOURCE_BOTH = "HTS Hero tariff engine · US Census Bureau"

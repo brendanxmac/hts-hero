@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { useEscapeToClose } from "@/hooks";
 import { useWidth } from "@/components/duty-calculator/rate-history/useWidth";
 import { useCardClass } from "@/components/ui/Card";
 import { axis, figurePad } from "@/components/duty-calculator/country-rate-charts/scale";
@@ -118,6 +119,7 @@ export const SwarmChart = ({
   const { ref, width } = useWidth();
   const [hover, setHover] = useState<string | null>(null);
   const [openPile, setOpenPile] = useState<string | null>(null);
+  useEscapeToClose(openPile !== null, () => setOpenPile(null));
   // Flags start on the axis and rise into place once there's a frame to animate from
   const [risen, setRisen] = useState(false);
   useEffect(() => {

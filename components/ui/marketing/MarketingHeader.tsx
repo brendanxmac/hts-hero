@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useEscapeToClose } from "@/hooks";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,6 +38,7 @@ export const MarketingHeader = () => {
   const { user } = useUser();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  useEscapeToClose(open, () => setOpen(false));
   const nav = user ? SIGNED_IN_NAV : NAV;
 
   // Only on pages in the Tracker's look; the rest of the marketing layer is always light

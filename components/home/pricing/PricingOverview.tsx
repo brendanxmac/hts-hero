@@ -6,7 +6,6 @@ import { ArrowRightIcon, CheckIcon, MagnifyingGlassIcon, UserGroupIcon } from "@
 import config from "@/config";
 import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
-import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { AUTO_AUDITING, FREE_FOREVER_LINE, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 import { darkBand, display, moneyButtonMd } from "../lib/theme";
 import {
@@ -30,29 +29,29 @@ import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 // (one import per HTS code + country of origin), then classification as its own line. Every number
 // comes from the price list (PRICING.md).
 
-// After the trial: no alerts on the account's own imports (TRIAL_ALLOWANCE.alertImports is 0)
-const FREE_INCLUDES: Include[] = [
+// After the trial: no alerts on the account's own imports (TRIAL_ALLOWANCE.alertImports is 0).
+// AD/CVD checks are free with any account; only AD/CVD alerts on tracked imports are paid
+const FREE_INCLUDES: string[] = [
   `The whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, on up to ${REVERSE_TRIAL.imports} imports`,
   "Then Tariff News alerts on every new US tariff action, free forever",
   "Your whole catalog, with current duty, rate history and exports to CSV or Excel",
   "Sourcing intelligence on any import",
+  "AD/CVD checks on any import: the cases that may cover it, their rates and the companies named",
   "Tariff Calculator: unlimited lookups, no account",
   "Works in AI assistants over MCP",
 ];
 
-// coming: not live yet (libs/tariff-tracker/features.ts), shown with the "Coming Oct 2026" chip
-type Include = string | { text: string; coming: true };
 
-const TRACKER_INCLUDES: Include[] = [
+const TRACKER_INCLUDES: string[] = [
   "Alerts by email, in-app, Slack and Teams",
-  "AD/CVD checks and alerts on every import",
+  "AD/CVD alerts on every tracked import",
   "Insights across your whole catalog",
   "Impact checks: how any tariff action hits each import",
   "Tariff News from every official source",
   "Rate history for every product",
   "Export every tariff on every import to CSV or Excel",
-  { text: SAVINGS_DETECTION.name, coming: true },
-  { text: AUTO_AUDITING.name, coming: true },
+  SAVINGS_DETECTION.name,
+  AUTO_AUDITING.name,
 ];
 
 type Tier = { label: string; pairs: number | null; price: number | null };
@@ -62,22 +61,16 @@ const TIERS: Tier[] = [
 ];
 
 // Theme classes only, so the same list reads right on the dark card
-const Includes = ({ items }: { items: Include[] }) => (
+const Includes = ({ items }: { items: string[] }) => (
   <ul className="flex flex-col gap-3.5">
-    {items.map((i) => {
-      const text = typeof i === "string" ? i : i.text;
-      return (
-        <li key={text} className="flex gap-3 text-base text-base-content/70">
-          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/15">
-            <CheckIcon className="h-3.5 w-3.5 text-success" aria-hidden />
-          </span>
-          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            {text}
-            {typeof i !== "string" && <ComingChip />}
-          </span>
-        </li>
-      );
-    })}
+    {items.map((text) => (
+      <li key={text} className="flex gap-3 text-base text-base-content/70">
+        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/15">
+          <CheckIcon className="h-3.5 w-3.5 text-success" aria-hidden />
+        </span>
+        <span>{text}</span>
+      </li>
+    ))}
   </ul>
 );
 
@@ -109,7 +102,7 @@ export const PricingOverview = () => {
               Free
             </h3>
             <p className="mt-1 text-base-content/70">
-              {REVERSE_TRIAL.days} days of the full Tracker, then the essentials free, forever.
+              {REVERSE_TRIAL.days} days of the full Tracker, then the essentials stay free.
             </p>
             <p className="mt-8 flex items-baseline gap-2">
               <span className="text-7xl font-semibold [font-family:var(--font-tracker-display)] tracking-tight text-base-content">$0</span>

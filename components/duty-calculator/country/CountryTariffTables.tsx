@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CountryTariffs } from "@/libs/country-pages/countryTariffs";
+import type { OfficialSource } from "@/libs/official-sources";
 import { mono } from "@/components/ui/font";
 import { PROGRAM } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
@@ -23,6 +24,26 @@ const HeadingLinks = ({ codes }: { codes: string[] }) => (
     ))}
   </span>
 );
+
+// The proclamations and notices behind a row, linked to the publisher
+const SourceLinks = ({ sources }: { sources: OfficialSource[] }) =>
+  sources.length > 0 ? (
+    <span className="mt-1.5 block text-xs font-normal leading-snug text-slate-500 skin:text-base-content/60">
+      Source:{" "}
+      {sources.map((source, i) => (
+        <span key={source.url ?? source.label}>
+          {i > 0 && "; "}
+          {source.url ? (
+            <a href={source.url} target="_blank" rel="noopener noreferrer" className="underline decoration-slate-300 underline-offset-2 hover:text-teal-700 skin:decoration-base-content/20 skin:hover:text-primary">
+              {source.label}
+            </a>
+          ) : (
+            source.label
+          )}
+        </span>
+      ))}
+    </span>
+  ) : null;
 
 // The programs written for this country, then its own Section 232 rates
 export function CountryTariffTables({ tariffs, countryName }: { tariffs: CountryTariffs; countryName: string }) {
@@ -50,6 +71,7 @@ export function CountryTariffTables({ tariffs, countryName }: { tariffs: Country
                         {color && <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} aria-hidden />}
                         {p.name}
                       </span>
+                      <SourceLinks sources={p.sources} />
                     </RowHeader>
                     <Td className="font-semibold text-slate-900 skin:text-base-content">{p.rates}</Td>
                     <Td className="text-slate-600 skin:text-base-content/70">{p.allProducts ? "All products" : "Listed products"}</Td>
@@ -80,7 +102,10 @@ export function CountryTariffTables({ tariffs, countryName }: { tariffs: Country
               {tariffs.dealRates.map((d) => (
                 <Tr key={d.code}>
                   <Td><HeadingLinks codes={[d.code]} /></Td>
-                  <RowHeader className="text-slate-700 skin:text-base-content/80">{d.name}</RowHeader>
+                  <RowHeader className="text-slate-700 skin:text-base-content/80">
+                    {d.name}
+                    <SourceLinks sources={d.sources} />
+                  </RowHeader>
                   <Td className="whitespace-nowrap font-semibold text-slate-900 skin:text-base-content">{d.rate}</Td>
                 </Tr>
               ))}

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic"
 export const fetchCache = "force-no-store"
 export const maxDuration = 300
 
-// Every 15 minutes (vercel.json), a few minutes after the sources are collected: reads new
+// Every hour (vercel.json), a few minutes after the sources are collected: reads new
 // Commerce and ITC notices into AD/CVD cases (libs/adcvd/process.ts), within this month's AI
 // budget. Stops starting new work 40 seconds before the limit; the next run picks up the rest.
 export async function GET(req: NextRequest) {

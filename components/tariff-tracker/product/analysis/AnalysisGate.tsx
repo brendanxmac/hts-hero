@@ -70,7 +70,7 @@ export const AnalysisGate = ({ product, page, children }: { product: TrackedProd
     <AccountGate
       feature="analysis"
       page={page}
-      title="Get Advanced Comparisons, 100% Free"
+      title="Unlock Advanced Sourcing Intelligence, 100% Free"
       teaser={pitch?.teaser}
       points={pitch?.points ?? []}
       // The real content, blurred: what they'd unlock is the best pitch for it

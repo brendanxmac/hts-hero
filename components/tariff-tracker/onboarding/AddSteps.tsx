@@ -18,7 +18,7 @@ import { HtsElement } from "@/interfaces/hts";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { readRecentLookups, RecentLookup } from "@/libs/recent-lookups";
 import { itemKey, NewProduct, realItems } from "../catalog";
-import { Columns, downloadCsvTemplate, ParsedImport, parseTable, tableFromText } from "../csv";
+import { Columns, downloadImportTemplate, ParsedImport, parseTable, tableFromText } from "../csv";
 import { parseCatalog } from "../parse";
 import { DetectedColumns, detectColumns, pickSheet, readSpreadsheet, SheetTable } from "../spreadsheet";
 import { useTracker } from "../TrackerContext";
@@ -27,6 +27,7 @@ import { Fixing, ReviewPanel, useReview } from "./ReviewPanel";
 import { applyFixes, Fix, Fixes } from "./fixes";
 import { SheetReview } from "./SheetReview";
 import { AiTidy } from "./AiTidy";
+import { FormatSpec } from "./FormatSpec";
 
 // The three ways to add imports, each a page of its own: what to do on the left, step by step and
 // drawn, and on the right the input and, as soon as there's something in it, what will be added.
@@ -215,9 +216,8 @@ export const PrivacyNote = () => (
   <div className="flex items-start gap-3 rounded-2xl border border-success/30 bg-success/5 p-4">
     <ShieldCheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-success" aria-hidden />
     <p className="m-0 text-sm leading-relaxed text-base-content/80">
-      <strong className="font-semibold text-base-content">Your file stays private.</strong> It&apos;s read right here in your browser and never uploaded. We
-      keep only the HTS codes and countries of origin; prices, suppliers, descriptions and every other column are thrown away, never saved. No need to delete
-      anything first.
+      <strong className="font-semibold text-base-content">Your file stays private.</strong> It&apos;s read right here in your browser and never saved. We
+      extract only the HTS codes and countries of origin, so feel free to upload your sheet as it is.
     </p>
   </div>
 );
@@ -407,7 +407,7 @@ export const Dropzone = ({ file, reading, onFile }: { file: string | null; readi
         {file ? <DocumentIcon className="h-6 w-6" /> : <ArrowUpTrayIcon className="h-6 w-6" />}
       </span>
       <span className="text-base font-semibold text-base-content">{reading ? "Reading…" : (file ?? "Drop your spreadsheet here, or choose a file")}</span>
-      <span className="text-xs text-base-content/60">{file ? "Choose another file to replace it" : "Excel (.xlsx) or CSV"}</span>
+      <span className="text-xs text-base-content/60">{file ? "Choose another file to replace it" : "Excel (.xlsx) or CSV, with an HTS code column and a country of origin column"}</span>
       <input
         type="file"
         accept=".xlsx,.xls,.csv,.txt,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -497,28 +497,22 @@ export const FileStep = ({ onAdd, onBack }: { onAdd: OnAdd; onBack: () => void }
       lead="Your product list, a parts master, an invoice export or your broker's entry report. We find the HTS code and country of origin columns and throw everything else away."
       instructions={
         <div className="flex flex-col gap-6">
-          <HowTo
-            steps={[
-              "Find the file your products live in. Excel (.xlsx) or CSV both work.",
-              "Check it has an HTS code column and a country of origin column. Any order, any headers. No need to delete the other columns: we skip them.",
-              "Drop it in. Repeated lines count once, and anything we can't read is listed so you can fix it.",
-            ]}
-          />
-          <SheetIllustration caption="We read the two highlighted columns. The rest is thrown away, never saved." wait={420} />
-          <button
-            type="button"
-            className={`${ui.link} tt-ob-rise inline-flex items-center gap-1.5 self-start text-sm`}
-            style={delay(520)}
-            onClick={() => {
-              downloadCsvTemplate();
-              trackEvent(MixpanelEvent.TARIFF_TRACKER_CSV_TEMPLATE_DOWNLOADED, {
-                from: "onboarding",
-              });
-            }}
-          >
-            <ArrowDownTrayIcon className="h-4 w-4" aria-hidden />
-            Starting from scratch? Download our template
-          </button>
+          <FormatSpec />
+          <div className="tt-ob-rise flex flex-wrap items-center gap-x-5 gap-y-2" style={delay(520)}>
+            <button
+              type="button"
+              className={`${ui.link} inline-flex items-center gap-1.5 text-sm`}
+              onClick={() => {
+                downloadImportTemplate();
+                trackEvent(MixpanelEvent.TARIFF_TRACKER_CSV_TEMPLATE_DOWNLOADED, {
+                  from: "onboarding",
+                });
+              }}
+            >
+              <ArrowDownTrayIcon className="h-4 w-4" aria-hidden />
+              Starting from scratch? Download our Excel template
+            </button>
+          </div>
         </div>
       }
       count={0}

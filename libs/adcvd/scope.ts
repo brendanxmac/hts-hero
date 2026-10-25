@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
+import { checkCases } from "./checks"
 import { checkScopeCodes, readCaseHistory } from "./claude"
 import { caseDocuments, FederalRegisterUnavailable, noticeText, type CaseDocument } from "./fr"
 import { scopeOf, storedScope, type Scope } from "./parse"
@@ -29,7 +30,7 @@ const scopeRank = (title: string) => {
   return i < 0 ? SCOPE_TITLES.length : i
 }
 
-const needsCheck = (c: Pick<CaseRow, "scope_method" | "hts_also" | "hts_excluded">) => c.scope_method === "regex" && (c.hts_also.length > 0 || c.hts_excluded.length > 0)
+const needsCheck = (c: Pick<CaseRow, "scope_method" | "fr_also" | "fr_excluded">) => c.scope_method === "regex" && ((c.fr_also ?? []).length > 0 || (c.fr_excluded ?? []).length > 0)
 
 const save = (db: Db, caseNumber: string, fields: Partial<CaseRow>) =>
   db
@@ -43,7 +44,7 @@ const checkSort = async (db: Db, c: CaseRow, budget: Budget): Promise<void> => {
   const { scope, usage } = await checkScopeCodes({
     caseNumber: c.case_number,
     scopeText: c.scope_text,
-    regex: { main: c.hts_main, also: c.hts_also, excluded: c.hts_excluded },
+    regex: { main: c.fr_main ?? [], also: c.fr_also ?? [], excluded: c.fr_excluded ?? [] },
   })
   await budget.record(usage, "scope_check", c.case_number)
   // Sonnet found nothing to correct: the regex sort stands, marked checked so it isn't asked again
@@ -51,12 +52,12 @@ const checkSort = async (db: Db, c: CaseRow, budget: Budget): Promise<void> => {
     await save(db, c.case_number, { scope_method: "sonnet" })
     return
   }
-  await save(db, c.case_number, { hts_main: scope.main, hts_also: scope.also, hts_excluded: scope.excluded, scope_method: "sonnet" })
+  await save(db, c.case_number, { fr_main: scope.main, fr_also: scope.also, fr_excluded: scope.excluded, scope_method: "sonnet" })
   // Siblings sharing this scope text get the same sort
   if (c.siblings.length) {
     await db
       .from("adcvd_cases")
-      .update({ hts_main: scope.main, hts_also: scope.also, hts_excluded: scope.excluded, scope_method: "sonnet", scope_checked_at: new Date().toISOString() })
+      .update({ fr_main: scope.main, fr_also: scope.also, fr_excluded: scope.excluded, scope_method: "sonnet", scope_checked_at: new Date().toISOString() })
       .in("case_number", c.siblings)
       .eq("scope_doc", c.scope_doc ?? "")
   }
@@ -75,7 +76,7 @@ const fromHistory = async (c: CaseRow): Promise<{ scope: Scope | null; doc: Case
 const fromSibling = async (db: Db, c: CaseRow) => {
   if (!c.siblings.length) return null
   const { data } = await db.from("adcvd_cases").select("*").in("case_number", c.siblings)
-  return ((data ?? []) as CaseRow[]).find((s) => s.hts_main.length || s.hts_also.length) ?? null
+  return ((data ?? []) as CaseRow[]).find((s) => s.fr_main?.length || s.fr_also?.length) ?? null
 }
 
 export const findScope = async (db: Db, c: CaseRow, budget: Budget): Promise<CaseRow["scope_method"]> => {
@@ -90,9 +91,9 @@ export const findScope = async (db: Db, c: CaseRow, budget: Budget): Promise<Cas
   if (scope && doc) {
     const updated: CaseRow = {
       ...c,
-      hts_main: scope.main,
-      hts_also: scope.also,
-      hts_excluded: scope.excluded,
+      fr_main: scope.main,
+      fr_also: scope.also,
+      fr_excluded: scope.excluded,
       scope_text: storedScope(scope.text),
       scope_doc: doc.document_number,
       scope_published_on: doc.publication_date,
@@ -106,9 +107,9 @@ export const findScope = async (db: Db, c: CaseRow, budget: Budget): Promise<Cas
   const sibling = await fromSibling(db, c)
   if (sibling) {
     await save(db, c.case_number, {
-      hts_main: sibling.hts_main,
-      hts_also: sibling.hts_also,
-      hts_excluded: sibling.hts_excluded,
+      fr_main: sibling.fr_main,
+      fr_also: sibling.fr_also,
+      fr_excluded: sibling.fr_excluded,
       scope_text: sibling.scope_text,
       scope_doc: sibling.scope_doc,
       scope_published_on: sibling.scope_published_on,
@@ -129,9 +130,9 @@ export const findScope = async (db: Db, c: CaseRow, budget: Budget): Promise<Cas
       if (read.main.length || read.also.length) {
         const source = picked.find((d) => d.document_number === read.document_number)
         await save(db, c.case_number, {
-          hts_main: read.main,
-          hts_also: read.also,
-          hts_excluded: read.excluded,
+          fr_main: read.main,
+          fr_also: read.also,
+          fr_excluded: read.excluded,
           scope_text: read.scope_text,
           scope_doc: read.document_number,
           scope_published_on: source?.publication_date ?? null,
@@ -157,7 +158,7 @@ export const casesNeedingScope = async (
   let query = db
     .from("adcvd_cases")
     .select("*")
-    .or(`and(hts_main.eq.{},hts_also.eq.{},or(scope_checked_at.is.null,scope_checked_at.lt.${retryBefore})),and(scope_method.eq.regex,or(hts_also.neq.{},hts_excluded.neq.{}))`)
+    .or(`and(hts_main.eq.{},hts_also.eq.{},or(scope_checked_at.is.null,scope_checked_at.lt.${retryBefore})),and(scope_method.eq.regex,or(fr_also.neq.{},fr_excluded.neq.{}))`)
     .order("last_activity_on", { ascending: false, nullsFirst: false })
     .limit(limit)
   if (caseNumbers) query = query.in("case_number", caseNumbers)
@@ -186,5 +187,7 @@ export const scopeCases = async (
       await save(db, c.case_number, {})
     }
   }
+  // The new codes merged into what imports match on (codes.ts)
+  await checkCases(db, cases.map((c) => c.case_number))
   return { found, errors, remaining: cases.length === limit, unavailable: false }
 }

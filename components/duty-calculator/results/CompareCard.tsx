@@ -13,6 +13,7 @@ import { ArrowLink } from "../calculator/ArrowLink";
 import { CompareEntry } from "./compareEntry";
 import { PreferencePicker } from "./PreferencePicker";
 import { BASE_SLICE, sliceForProgram } from "./slices";
+import { ExcludesBase } from "@/components/duty-calculator/results/ExcludesBase";
 
 const pct = (n: number) => formatPct(Math.round(n * 100) / 100);
 
@@ -106,6 +107,7 @@ export const CompareCard = ({
           <span className={ui.metric.primaryCompact}>{formatMoney(result.totalDuty)}</span>
           <span className="tabular-nums text-sm text-base-content/60">{pct((result.totalDuty / value) * 100)}</span>
         </div>
+        {result.baseNotCalculated && <ExcludesBase className="mt-1 block" />}
         {!single && (
           <div className="mt-1.5 text-sm font-medium tabular-nums">
             {allTied ? (

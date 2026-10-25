@@ -15,7 +15,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
-import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { FEATURES } from "../lib/copy";
 
 // One icon and tint per feature, in FEATURES order
@@ -48,9 +47,7 @@ export const FeatureGrid = () => (
               <span className={`flex h-12 w-12 items-center justify-center rounded-xl ${tint}`}>
                 <Icon className="h-6 w-6" aria-hidden />
               </span>
-              <h3 className={`${mk.h3} flex flex-wrap items-center gap-2`}>
-                {f.title} {f.coming && <ComingChip />}
-              </h3>
+              <h3 className={mk.h3}>{f.title}</h3>
               <p className={mk.body}>{f.text}</p>
               {f.href && (
                 <Link href={f.href} className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary">

@@ -56,6 +56,19 @@ export const RefundGroups = ({ verifiedFrom }: { verifiedFrom: string }) => (
                 <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ring-1 ${STATUS[g.tone]}`}>{g.status}</span>
               </div>
               <p className={mk.body}>{g.summary}</p>
+              {g.sources.length > 0 && (
+                <p className="text-xs leading-snug text-base-content/60">
+                  Source:{" "}
+                  {g.sources.map((source, i) => (
+                    <span key={source.url}>
+                      {i > 0 && " · "}
+                      <a href={source.url} target="_blank" rel="noopener noreferrer" className="underline decoration-base-content/20 underline-offset-2 hover:text-primary">
+                        {source.label}
+                      </a>
+                    </span>
+                  ))}
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-2 rounded-b-2xl border-t border-base-300 bg-tt-soft px-7 py-4">
               <p className="flex gap-2 text-sm text-base-content/70">

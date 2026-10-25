@@ -7,7 +7,7 @@ import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { LINKS, contactLink } from "../lib/links";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
-import { FREE_FOREVER_LINE, LAUNCH_PITCH, SAVINGS_AUDITS_COMING } from "@/components/ui/marketing/comingSoon";
+import { FREE_FOREVER_LINE, LAUNCH_PITCH, SAVINGS_AUDITS_INCLUDED } from "@/components/ui/marketing/comingSoon";
 import { ANNUAL_DISCOUNT, Billing, REVERSE_TRIAL, TRACKER_TIERS, launchPricingActive } from "../lib/pricing";
 import { PlanPrice } from "../plans/PlanPrice";
 import { CALCULATOR_FEATURES, TRACKER_FEATURES, TRACKER_OPTIONS, TrackerOption, optionPerImport } from "./plans";
@@ -40,7 +40,7 @@ export const TariffPricing = () => {
           <SectionIntro eyebrow="Pricing" title="Calculate for free. Track your imports when you're ready." id="pricing-title">
             This calculator is free and unlimited. Track your own imports with the Tariff Tracker and run impact checks to see
             exactly how each tariff action hits them. Try it free for {REVERSE_TRIAL.days} days: everything, on up to{" "}
-            {REVERSE_TRIAL.imports} imports, no credit card. {FREE_FOREVER_LINE} {SAVINGS_AUDITS_COMING}
+            {REVERSE_TRIAL.imports} imports, no credit card. {FREE_FOREVER_LINE} {SAVINGS_AUDITS_INCLUDED}
           </SectionIntro>
           {TRACKER_ANNUAL_ENABLED && (
             <div className="shrink-0">

@@ -1,15 +1,13 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
-import { REVERSE_TRIAL, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "@/components/ui/marketing/styles";
-import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { DEFINITION } from "../lib/copy";
-import { REQUEST_ANCHOR, SELF_AUDIT_LIVE, SIGN_UP_TO_AUDIT, SIGN_UP_TO_TRACK } from "../lib/links";
+import { REQUEST_ANCHOR, SIGN_UP_TO_AUDIT } from "../lib/links";
 import { AuditDashboard } from "./AuditDashboard";
 
-// While self-serve audits are coming soon (SELF_AUDIT_LIVE), the first promise is the free request
 const PROMISES = [
-  SELF_AUDIT_LIVE ? `${TRIAL_ALLOWANCE.auditChecks} free audit checks, no card` : "Request an audit free, no obligation",
+  `Free for ${REVERSE_TRIAL.days} days, no card`,
   "Every line checked at its entry date",
   "Ready to hand to your broker",
 ];
@@ -28,31 +26,13 @@ export const AuditHero = () => (
         </h1>
         <p className={`${mk.lead} mt-6`}>{DEFINITION}</p>
         <div className="mt-10 flex flex-wrap gap-4">
-          {SELF_AUDIT_LIVE ? (
-            <>
-              <Link href={SIGN_UP_TO_AUDIT} className={mk.buttonPrimary}>
-                Start free <ArrowRightIcon className="h-4 w-4" aria-hidden />
-              </Link>
-              <a href={REQUEST_ANCHOR} className={mk.buttonSecondary}>
-                Request an audit
-              </a>
-            </>
-          ) : (
-            <>
-              <a href={REQUEST_ANCHOR} className={mk.buttonPrimary}>
-                Request an audit <ArrowRightIcon className="h-4 w-4" aria-hidden />
-              </a>
-              <Link href={SIGN_UP_TO_TRACK} className={mk.buttonSecondary}>
-                Try the Tariff Tracker free for {REVERSE_TRIAL.days} days
-              </Link>
-            </>
-          )}
+          <Link href={SIGN_UP_TO_AUDIT} className={mk.buttonPrimary}>
+            Start free <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          </Link>
+          <a href={REQUEST_ANCHOR} className={mk.buttonSecondary}>
+            Request an audit
+          </a>
         </div>
-        {!SELF_AUDIT_LIVE && (
-          <p className={`${mk.small} mt-4 flex flex-wrap items-center gap-2`}>
-            <ComingChip /> Automatic auditing in the Tariff Tracker: every entry checked, possible over- and underpayments flagged.
-          </p>
-        )}
         <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
           {PROMISES.map((p) => (
             <li key={p} className={`${mk.small} flex items-center gap-1.5`}>

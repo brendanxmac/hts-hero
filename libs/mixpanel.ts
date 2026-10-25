@@ -4,11 +4,21 @@ import mixpanel from "mixpanel-browser"
 // You'll need to replace this with your actual Mixpanel project token
 const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN || ""
 
+// Scripted browsers (Puppeteer, Playwright, Selenium, headless Chrome) and crawlers that run
+// JavaScript aren't tracked: they inflated visitors and every funnel (2026-10 scraper traffic). Most
+// of that traffic is stopped by the Vercel Firewall before the page loads; this catches the rest
+// that says what it is.
+const isAutomated = () =>
+  navigator.webdriver === true || /bot\/|crawler|spider|HeadlessChrome|PhantomJS|Lighthouse/i.test(navigator.userAgent)
+
+const ENABLED = typeof window !== "undefined" && !!MIXPANEL_TOKEN && !isAutomated()
+
 // Browser-side Mixpanel initialization
-if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+if (ENABLED) {
   mixpanel.init(MIXPANEL_TOKEN, {
     debug: process.env.NODE_ENV === "development",
-    track_pageview: true,
+    // Page views on client-side navigation too (Next <Link> between /hts pages), not just full loads
+    track_pageview: "url-with-path",
     persistence: "localStorage",
   })
 }
@@ -24,14 +34,20 @@ export enum MixpanelEvent {
   CLICKED_TARIFF_TEAM_LETS_TALK = "Tariff Team Let's Talk Clicked",
   CODE_SET_CREATED = "Code Set Created",
   TARIFF_IMPACT_CHECK = "Tariff Impact Check",
+  /** One per classification created, signed in or not (is_anonymous), always with classification_id */
   CLASSIFICATION_STARTED = "Classification Started",
+  /** The first time a classification reaches a final 10-digit code (once per classification_id) */
   CLASSIFICATION_COMPLETED = "Classification Completed",
+  /** A classification attempt stopped by a limit (block_reason): the sign-up gate or the pricing modal */
+  CLASSIFICATION_BLOCKED = "Classification Blocked",
   SIGN_UP = "Sign Up",
   TARIFF_IMPACT_TRIAL_STARTED = "Tariff Impact Trial Started",
-  /** Logged-out user created a classification (browser session) */
-  ANONYMOUS_CLASSIFICATION_STARTED = "Anonymous Classification Started",
-  /** Logged-out user reached a final HTS selection */
-  ANONYMOUS_CLASSIFICATION_COMPLETED = "Anonymous Classification Completed",
+  /** The Tracker's 14-day trial began (the account's first real imports), once per account */
+  TARIFF_TRACKER_TRIAL_STARTED = "Tariff Tracker Trial Started",
+  /** Server (Stripe webhook): a checkout paid, any plan (plan, is_tracker_plan, amount_usd) */
+  PURCHASE_COMPLETED = "Purchase Completed",
+  /** Server (Stripe webhook): a subscription ended for good (cancelled, or payments failed) */
+  SUBSCRIPTION_ENDED = "Subscription Ended",
   /** Public read-only link enabled or disabled */
   CLASSIFICATION_PUBLIC_SHARE_TOGGLED = "Classification Public Share Toggled",
   CLASSIFICATION_PUBLIC_LINK_COPIED = "Classification Public Link Copied",
@@ -39,7 +55,8 @@ export enum MixpanelEvent {
   /** Someone opened a /c/[token] shared classification */
   SHARED_CLASSIFICATION_VIEWED = "Shared Classification Viewed",
   CANDIDATE_SELECTED = "Candidate Selected",
-  CLASSIFICATION_SHARED = "Classification Shared",
+  /** The Share button: opens the share options (sharing itself is Public Share Toggled / Link Copied) */
+  CLASSIFICATION_SHARE_OPENED = "Classification Share Opened",
   CLASSIFICATION_REPORT_DOWNLOADED = "Classification Report Downloaded",
   CLASSIFICATION_STATUS_CHANGED = "Classification Status Changed",
   CLASSIFICATION_DELETED = "Classification Deleted",
@@ -59,7 +76,6 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_COUNTRY_CHANGED = "Duty Calculator Country Changed",
   DUTY_CALCULATOR_CUSTOMS_VALUE_SET = "Duty Calculator Customs Value Set",
   DUTY_CALCULATOR_UNITS_SET = "Duty Calculator Units Set",
-  DUTY_CALCULATOR_CONTENT_PERCENTAGE_SET = "Duty Calculator Content Percentage Set",
   /** A duty result shown for a code and country, on any surface: the calculator or an embedded estimate */
   DUTY_CALCULATOR_RESULTS_VIEWED = "Duty Calculator Results Viewed",
   DUTY_CALCULATOR_SUPPORT_CLICKED = "Duty Calculator Support Clicked",
@@ -68,7 +84,6 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_VIEW_CHANGED = "Duty Calculator View Changed",
   DUTY_CALCULATOR_QUESTION_ANSWERED = "Duty Calculator Question Answered",
   DUTY_CALCULATOR_PREFERENCE_CLAIMED = "Duty Calculator Trade Preference Claimed",
-  DUTY_CALCULATOR_RESULTS_COPIED = "Duty Calculator Results Copied",
   DUTY_CALCULATOR_EXAMPLE_SELECTED = "Duty Calculator Example Selected",
   DUTY_CALCULATOR_COMPARE_CHANGED = "Duty Calculator Compare Countries Changed",
   /** Duty estimate embedded in the explorer, a classification or an HTS code page, opened in the calculator */
@@ -82,18 +97,12 @@ export enum MixpanelEvent {
   TARIFF_AUDIT_REQUESTED = "Tariff Audit Requested",
   TARIFF_TRACKER_PRODUCTS_REMOVED = "Tariff Tracker Products Removed",
   TARIFF_TRACKER_CSV_TEMPLATE_DOWNLOADED = "Tariff Tracker CSV Template Downloaded",
-  TARIFF_TRACKER_EXAMPLE_USED = "Tariff Tracker Example Used",
   TARIFF_TRACKER_DATE_SET = "Tariff Tracker Date Set",
   TARIFF_TRACKER_PRODUCT_ADJUSTED = "Tariff Tracker Product Adjusted",
   TARIFF_TRACKER_ADJUSTMENTS_RESET = "Tariff Tracker Adjustments Reset",
   TARIFF_TRACKER_FILTERED = "Tariff Tracker Filtered",
-  TARIFF_TRACKER_SORTED = "Tariff Tracker Sorted",
   TARIFF_TRACKER_EXPORTED = "Tariff Tracker Exported",
   TARIFF_TRACKER_PRODUCT_OPENED = "Tariff Tracker Product Opened",
-  TARIFF_TRACKER_ANALYSIS_VIEWED = "Tariff Tracker Analysis Viewed",
-  TARIFF_TRACKER_ANALYSIS_BASIS_CHANGED = "Tariff Tracker Analysis Basis Changed",
-  TARIFF_TRACKER_ANALYSIS_ORIGIN_SELECTED = "Tariff Tracker Analysis Origin Selected",
-  TARIFF_TRACKER_ANALYSIS_COUNTRIES_CHOSEN = "Tariff Tracker Analysis Countries Chosen",
   /** Funnel (PRICING.md): a locked feature shown, and its call to action clicked */
   LOCKED_FEATURE_VIEWED = "Locked Feature Viewed",
   LOCKED_FEATURE_CTA_CLICKED = "Locked Feature CTA Clicked",
@@ -108,7 +117,6 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_PRODUCT_TAB_OPENED = "Tariff Tracker Product Tab Opened",
   TARIFF_TRACKER_UPGRADE_OPENED = "Tariff Tracker Upgrade Opened",
   TARIFF_TRACKER_CHECKOUT_STARTED = "Tariff Tracker Checkout Started",
-  TARIFF_TRACKER_SETUP_STEP_CLICKED = "Tariff Tracker Setup Step Clicked",
   TARIFF_TRACKER_CATALOG_SYNCED = "Tariff Tracker Catalog Synced",
   TARIFF_TRACKER_ALERTS_SAVED = "Tariff Tracker Alerts Saved",
   /** "Add to Slack" in the Alerts tab: clicked, back from Slack connected, disconnected */
@@ -128,12 +136,18 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_ONBOARDING_COMPLETED = "Tariff Tracker Onboarding Completed",
   TARIFF_TRACKER_ONBOARDING_SKIPPED = "Tariff Tracker Onboarding Skipped",
   TARIFF_TRACKER_ONBOARDING_HELP_USED = "Tariff Tracker Onboarding Help Used",
+  TARIFF_TRACKER_TOUR_SHOWN = "Tariff Tracker Tour Shown",
+  TARIFF_TRACKER_TOUR_STEP = "Tariff Tracker Tour Step",
+  TARIFF_TRACKER_TOUR_COMPLETED = "Tariff Tracker Tour Completed",
+  TARIFF_TRACKER_TOUR_CLOSED = "Tariff Tracker Tour Closed",
+  TARIFF_TRACKER_TOUR_ACTION = "Tariff Tracker Tour Action",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** A tool call to the MCP server (Claude, ChatGPT and other AI clients) */
   MCP_TOOL_CALLED = "MCP Tool Called",
+  /** An /hts/[code] page shown (hts_code, chapter, digit_count) */
+  HTS_CODE_PAGE_VIEWED = "HTS Code Page Viewed",
   /** HTS Explorer (/explore and embedded Explore) */
-  EXPLORER_FINISHED_LOADING = "Explorer Finished Loading",
   EXPLORER_COMPLETED_CODE_SEARCH = "Explorer Completed a Code Search",
   EXPLORER_CLEARED_SEARCH = "Explorer Cleared Search",
   EXPLORER_OPENED_CODES_TAB = "Explorer Opened Codes Tab",
@@ -152,7 +166,7 @@ export const trackEvent = (
   eventName: MixpanelEvent,
   properties?: Record<string, any>,
 ) => {
-  if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+  if (ENABLED) {
     mixpanel.track(eventName, properties)
   }
 }
@@ -161,7 +175,7 @@ export const identifyUser = (
   userId: string,
   userProperties?: Record<string, any>,
 ) => {
-  if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+  if (ENABLED) {
     mixpanel.identify(userId)
     if (userProperties) {
       mixpanel.people.set(userProperties)
@@ -170,16 +184,34 @@ export const identifyUser = (
 }
 
 export const resetUser = () => {
-  if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+  if (ENABLED) {
     mixpanel.reset()
   }
+}
+
+// Tracks an event once per browser for `key` (a classification completed, a gate seen), so
+// re-renders, re-opens and repeat visits don't count it again
+export const trackEventOnce = (
+  key: string,
+  eventName: MixpanelEvent,
+  properties?: Record<string, any>,
+) => {
+  if (!ENABLED) return
+  const storageKey = `mp-once:${key}`
+  try {
+    if (localStorage.getItem(storageKey)) return
+    localStorage.setItem(storageKey, "1")
+  } catch {
+    // Storage blocked: track anyway
+  }
+  mixpanel.track(eventName, properties)
 }
 
 /** Included on all subsequent events until changed (e.g. is_anonymous for segmentation). */
 export const registerMixpanelSuperProperties = (
   properties: Record<string, unknown>,
 ) => {
-  if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
+  if (ENABLED) {
     mixpanel.register(properties)
   }
 }

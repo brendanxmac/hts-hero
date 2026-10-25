@@ -22,7 +22,7 @@ import { NotesView } from "./NotesView";
 import { Outline } from "./Outline";
 import { SearchResults } from "./SearchResults";
 import type { NavigatableElement } from "./types";
-import { chapterKey, ExplorerProvider, lineKey, sectionKey, sectionOfChapter, useExplorer } from "./useExplorer";
+import { chapterKey, ExplorerProvider, lineKey, sectionKey, sectionOfChapter, useExplorer, type UseCodeAction } from "./useExplorer";
 
 export type { ExplorerSurface };
 
@@ -30,7 +30,7 @@ export type { ExplorerSurface };
 // headings, codes), with whatever is selected shown in full in a panel beside it, and a search
 // that lists matches in the outline's place. Nothing jumps: opening and selecting rows leaves the
 // list where it is. In the Tariff Tracker's look (DESIGN_SYSTEM.md §15) wherever it's shown: the
-// /explore page, and in a dialog over the calculator (where "Use" puts a code in its input bar)
+// /explore page, and in a dialog over the calculator (where "Calculate duty" puts a code in its input bar)
 // or a classification.
 
 type Tab = "codes" | "notes";
@@ -49,8 +49,11 @@ interface ExploreProps {
   initialBreadcrumbs?: NavigatableElement[];
   // The global dialog wires this so Cmd/Ctrl+S can refocus the search while open
   onSearchInputMount?: (el: HTMLInputElement | null) => void;
-  // Over a calculator: put the chosen code in its input bar
+  // Over a calculator: put the chosen code in its input bar (the calculator then being the
+  // estimate, a line shows none of its own)
   onUseCode?: (element: HtsElement) => void;
+  // What that button says ("Calculate duty" when left out): Sourcing's is "Find Sources"
+  useCodeAction?: UseCodeAction;
   // Open on this line (the code already in the calculator), unless the trail was set from outside
   startAt?: HtsElement | null;
   // On a page: its title and intro, which the search sits beside
@@ -102,7 +105,7 @@ export const Explore = (props: ExploreProps) => {
 
 // What the explorer remembers while it's open: the search, the tab, the outline-solid's open rows
 const ExplorerState = (props: ExploreProps & { loading: boolean }) => {
-  const { explorerSurface, onUseCode, startAt } = props;
+  const { explorerSurface, onUseCode, useCodeAction, startAt } = props;
   const searchParams = useSearchParams();
   const { breadcrumbs } = useBreadcrumbs();
   const { sections } = useHtsSections();
@@ -135,6 +138,7 @@ const ExplorerState = (props: ExploreProps & { loading: boolean }) => {
       value={{
         explorerSurface,
         onUseCode,
+        useCodeAction,
         expanded,
         setExpanded,
         reveal,
@@ -226,19 +230,24 @@ const Layout = ({
     if (!trail) return;
     directlyOpened.current = true;
     setSearchValue("");
-    navigate(trail, "url_code", { hts_code: match.htsno || null });
+    // Counted only for a ?code= link; opening on the host's code (the calculator's) isn't a move
+    navigate(trail, "url_code", { hts_code: match.htsno || null }, true, !startAt);
     // Once the schedule is in
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeParam, htsElements, trailTo]);
 
-  // Analytics for each search
+  // Analytics for each search: once the schedule is in (no empty results before it), and once
+  // per query (going back to the Codes tab doesn't search again)
+  const lastTrackedQuery = useRef<string | null>(null);
   useEffect(() => {
-    if (!query || tab !== "codes") return;
+    if (!query || tab !== "codes" || !fuse || lastTrackedQuery.current === query) return;
+    lastTrackedQuery.current = query;
     trackEvent(MixpanelEvent.EXPLORER_COMPLETED_CODE_SEARCH, {
       explorer_surface: explorerSurface,
       query_length: query.length,
       result_count: results.length,
       from_url_code_param: Boolean(codeParam) && query === codeParam?.trim(),
+      from_url_search_param: query === searchParams.get("search")?.trim(),
     });
     // Once per search
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -391,8 +400,10 @@ const Layout = ({
       // Two columns that each scroll on their own, filling the dialog, or on a page the screen under
       // the site's sticky header (65px). At either end, scrolling carries on to the page.
       <div
-        className={`grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[minmax(0,1fr)] ${
-          dialog ? "lg:h-full" : "lg:h-[calc(100dvh-6rem)] lg:min-h-128 lg:scroll-mt-20"
+        className={`grid gap-4 lg:grid-rows-[minmax(0,1fr)] ${
+          dialog
+            ? "lg:h-full lg:grid-cols-[minmax(0,6fr)_minmax(0,7fr)]"
+            : "lg:h-[calc(100dvh-6rem)] lg:min-h-128 lg:scroll-mt-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
         }`}
       >
         {list}

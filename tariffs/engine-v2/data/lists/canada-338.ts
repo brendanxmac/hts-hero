@@ -1,12 +1,73 @@
 // Section 338 – Canada lists from U.S. note 51 to subchapter III (2026HTSRev17, Proclamations
 // 11046, 11047, 11048 and 11056, effective 2026-08-22), extracted from the note text. See
 // HowTariffsWork.md §7.
-import { CodeList } from "../../types"
+import { CodeList, CodeListVersion } from "../../types"
+import { CodeListChange } from "../../versioning"
 
 const FROM = "2026-08-22"
 // 2026HTSRev19: lists (b)(1) and (b)(3) change from September 15, 2026
 const REV19 = "2026-09-15"
+// Proclamation of October 23, 2026 (Further Modifying the Scope of Products of Canada ... Motor
+// Vehicles), Annex II: list (b)(3) changes from October 30, 2026. Not in an HTS revision yet.
+const OCT30 = "2026-10-30"
 const SOURCE = { revision: "2026HTSRev17", citation: "Proclamations 11046, 11047, 11048, 11056" }
+
+// Ends the last version the day `change` starts and adds one without `remove` and with `add`
+// (HowTariffsWork.md §7.2). Throws when a removed code isn't on the list or an added one already
+// is, so a mistyped code can't pass silently.
+const thenChange = (versions: CodeListVersion[], change: CodeListChange): CodeListVersion[] => {
+  const last = versions[versions.length - 1]
+  const codes = last.codes ?? []
+  const missing = (change.remove ?? []).filter((c) => !codes.includes(c))
+  const present = (change.add ?? []).filter((c) => codes.includes(c))
+  if (missing.length || present.length)
+    throw new Error(`List change from ${change.from}: not on the list ${missing.join(", ") || "-"}; already on it ${present.join(", ") || "-"}`)
+  const removed = new Set(change.remove)
+  return [
+    ...versions.slice(0, -1),
+    { ...last, effective: { ...last.effective, to: change.from } },
+    { codes: [...codes.filter((c) => !removed.has(c)), ...(change.add ?? [])].sort(), effective: { from: change.from }, source: change.source ?? last.source },
+  ]
+}
+
+// Annex II §A.1(a): subheadings deleted from note 51(b)(3) (Annex I, Part A)
+const B3_OCT30_REMOVED = [
+  "1212.21.00", "3920.20.00", "3923.10.90", "3923.21.00",
+  "4412.33.06", "4412.33.26", "4412.33.32", "4412.33.57",
+  "4412.34.26", "4412.34.32", "4412.34.57", "4811.51.20",
+  "4811.51.40", "4819.10.00", "4819.40.00", "4823.70.00",
+  "4823.90.10", "8418.69.01", "8419.89.95", "8422.30.91",
+  "8422.40.91", "8433.60.00",
+]
+
+// Annex II §A.1(b): subheadings inserted in note 51(b)(3) (Annex I, Part B)
+const B3_OCT30_ADDED = [
+  "1806.10.05", "1806.10.10", "1806.10.15", "1806.10.22",
+  "1806.10.24", "1806.10.28", "1806.10.34", "1806.10.38",
+  "1806.10.43", "1806.10.45", "1806.10.55", "1806.10.65",
+  "1806.10.75", "3208.20.00", "3214.10.00", "3305.10.00",
+  "3401.11.50", "3402.50.51", "3403.19.50", "3403.99.00",
+  "3404.90.51", "3822.19.00", "3822.90.00", "3825.10.01",
+  "3825.20.00", "3825.30.00", "3907.61.00", "3909.50.10",
+  "3918.10.20", "3926.90.30", "4016.91.00", "4409.10.05",
+  "4411.12.10", "4411.12.90", "4411.92.10", "4415.10.30",
+  "4418.75.70", "4418.91.91", "4421.20.20", "4421.99.60",
+  "4802.56.70", "4804.31.60", "4807.00.94", "4811.41.10",
+  "4811.59.20", "4811.59.40", "4819.30.00", "4821.90.20",
+  "5701.10.16", "5701.10.40", "5701.10.90", "5701.90.10",
+  "5701.90.20", "5702.10.90", "5702.20.10", "5702.20.20",
+  "5702.31.10", "5702.31.20", "5702.32.10", "5702.32.20",
+  "5702.39.20", "5702.41.10", "5702.41.20", "5702.42.10",
+  "5702.42.20", "5702.49.10", "5702.49.20", "5702.50.20",
+  "5702.50.40", "5702.50.52", "5702.50.56", "5702.50.59",
+  "5702.91.40", "5702.92.10", "5702.92.90", "5702.99.05",
+  "5702.99.15", "5702.99.20", "5703.10.20", "5703.10.80",
+  "5703.21.00", "5703.29.10", "5703.29.20", "5703.31.00",
+  "5703.39.10", "5703.90.00", "5704.10.00", "5704.20.00",
+  "5704.90.01", "5705.00.10", "5705.00.20", "8415.10.30",
+  "8418.30.00", "8467.29.00", "8481.80.30", "8903.93.05",
+  "9018.90.60", "9023.00.00", "9027.30.80", "9506.99.05",
+]
 
 export const canada338Lists: CodeList[] = [
   {
@@ -262,7 +323,7 @@ export const canada338Lists: CodeList[] = [
     id: "canada338b3",
     kind: "hts",
     description: "Products of Canada subject to 9903.03.14, U.S. note 51(b)(3) to subchapter III",
-    versions: [
+    versions: thenChange([
       {
         codes: [
           "0409.00.00",
@@ -1228,7 +1289,17 @@ export const canada338Lists: CodeList[] = [
         effective: { from: REV19 },
         source: { revision: "2026HTSRev19", citation: "Proclamation 11065", note: "U.S. note 51(b)(3)" },
       },
-    ],
+    ], {
+      from: OCT30,
+      remove: B3_OCT30_REMOVED,
+      add: B3_OCT30_ADDED,
+      source: {
+        citation: "Proclamation of October 23, 2026, Annex II",
+        url: "https://www.whitehouse.gov/wp-content/uploads/2026/10/2026ModifyingAuto338.prc_.AnnexII-2.pdf",
+        publishedOn: "2026-10-23",
+        note: "U.S. note 51(b)(3): 22 subheadings deleted, 100 inserted, for goods entered on or after 12:01 a.m. ET, October 30, 2026",
+      },
+    }),
   },
   // 51(d): identical to the existing civil aircraft list (554 provisions)
   {

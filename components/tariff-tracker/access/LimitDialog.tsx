@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import { ArrowRightIcon, BellSlashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";

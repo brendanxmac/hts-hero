@@ -9,7 +9,7 @@ import { createAdminClient } from "../../supabase/server"
 export const dynamic = "force-dynamic"
 export const maxDuration = 300
 
-// Every 15 minutes (vercel.json), after the sources are collected: sort new items, read tariff
+// Every hour (vercel.json), after the sources are collected: sort new items, read tariff
 // actions and group them into updates; then read the full scope of up to two actions from their
 // PDFs (libs/tariff-updates/scope.ts) and work out which users' imports they affect. Stops
 // starting new work 40 seconds before the limit; whatever is left is picked up by the next run.

@@ -25,6 +25,11 @@ export const FEATURES: { key: FeatureKey; label: string; help: string }[] = [
     help: "The base rate plus Section 232, Section 301 and every other additional duty, each as its own line with exemptions applied.",
   },
   {
+    key: "adcvd",
+    label: "Antidumping and countervailing duty (AD/CVD) check",
+    help: "Whether an AD/CVD case may cover the import, with the deposit rates Commerce set and the companies named.",
+  },
+  {
     key: "tradePreferences",
     label: "Trade agreements and preference programs",
     help: "Claim USMCA, CAFTA-DR, KORUS and other programs and see the preferential rate.",

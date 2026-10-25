@@ -5,6 +5,7 @@ import PurchaseConfirmationEmail, { purchaseConfirmationSubject, type PurchaseCo
 import PlaybookEmail, { playbookSubject, type PlaybookEmailProps } from "./leads/PlaybookEmail"
 import AuditRequestReceivedEmail, { auditRequestReceivedSubject, type AuditRequestReceivedEmailProps } from "./leads/AuditRequestReceivedEmail"
 import InternalNoticeEmail, { internalNoticeSubject, type InternalNoticeEmailProps } from "./internal/InternalNoticeEmail"
+import AdminDigestEmail, { adminDigestSubject, type AdminDigestEmailProps } from "./internal/AdminDigestEmail"
 import NewsConfirmEmail, { newsConfirmSubject, type NewsConfirmEmailProps } from "./tariff-updates/NewsConfirmEmail"
 import NewsManageLinkEmail, { newsManageLinkSubject, type NewsManageLinkEmailProps } from "./tariff-updates/NewsManageLinkEmail"
 import OnboardingEmail, { onboardingSubject, type OnboardingEmailProps } from "./onboarding/OnboardingEmail"
@@ -120,6 +121,7 @@ export const TEMPLATES = {
   product_tour: template<ProductTourEmailProps>({ subject: productTourSubject, email: (p) => <ProductTourEmail {...p} /> }),
   trial: template<TrialEmailProps>({ subject: trialSubject, email: (p) => <TrialEmail {...p} /> }),
   internal_notice: template<InternalNoticeEmailProps>({ subject: internalNoticeSubject, email: (p) => <InternalNoticeEmail {...p} /> }),
+  admin_digest: template<AdminDigestEmailProps>({ subject: adminDigestSubject, email: (p) => <AdminDigestEmail {...p} /> }),
 }
 
 export type TemplateName = keyof typeof TEMPLATES

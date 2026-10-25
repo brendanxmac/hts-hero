@@ -22,7 +22,6 @@ import { monitorFacts } from "@/components/tariff-monitor";
 import { getAuditExample } from "@/libs/tariff-audit-example";
 import { getSavingsExamples } from "@/libs/tariff-savings-example";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
-import { MARKET_AUDITS, MARKET_SAVINGS } from "@/libs/tariff-tracker/features";
 import * as mk from "@/components/ui/marketing/styles";
 
 // Static, refreshed daily with the tariff data
@@ -36,25 +35,17 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   openGraph: {
-    title: "HTS Hero: know every tariff on every import",
+    title: "HTS Hero: Tariff Alerts, Savings, & Audits on Autopilot",
     description: DESCRIPTION,
     url: `https://${config.domainName}`,
     siteName: "HTS Hero",
     type: "website",
-    images: [
-      {
-        url: `https://${config.domainName}/hero-tariffs.png`,
-        width: 1200,
-        height: 630,
-        alt: "HTS Hero tariff software",
-      },
-    ],
+    // The image comes from app/opengraph-image.tsx
   },
   twitter: {
     card: "summary_large_image",
-    title: "HTS Hero: know every tariff on every import",
+    title: "HTS Hero: Tariff Alerts, Savings, & Audits on Autopilot",
     description: DESCRIPTION,
-    images: [`https://${config.domainName}/hero-tariffs.png`],
   },
   alternates: { canonical: "/" },
 };
@@ -63,9 +54,8 @@ export default async function Home() {
   const facts = monitorFacts();
   const [{ example }, audit, savings] = await Promise.all([
     getDutyCalculatorContent(),
-    // Only fetched while the homepage shows the audit and savings blocks (MVP_TRIM.md)
-    MARKET_AUDITS ? getAuditExample() : null,
-    MARKET_SAVINGS ? getSavingsExamples() : [],
+    getAuditExample(),
+    getSavingsExamples(),
   ]);
 
   return (

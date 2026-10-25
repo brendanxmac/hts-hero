@@ -4,7 +4,6 @@ import config from "@/config";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
-import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { FREE_FOREVER_LINE } from "@/components/ui/marketing/comingSoon";
 
 export const ClosingCta = () => (
@@ -17,8 +16,8 @@ export const ClosingCta = () => (
         Try the Tariff Tracker free for {REVERSE_TRIAL.days} days: everything, on up to {REVERSE_TRIAL.imports} imports. No credit card, no sales
         call. {FREE_FOREVER_LINE}
       </p>
-      <p className={`${cta.lead} mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-2 text-base sm:text-lg`}>
-        <ComingChip /> Automatic savings detection and automatic auditing, included at no extra cost when they launch.
+      <p className={`${cta.lead} mt-4 max-w-2xl text-base sm:text-lg`}>
+        Automatic savings detection and automatic auditing included, at no extra cost.
       </p>
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
         <Link href={config.auth.loginUrl} className={cta.button}>

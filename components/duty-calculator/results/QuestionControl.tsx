@@ -60,18 +60,27 @@ export const QuestionControl = ({
       <span className="text-sm leading-snug text-base-content">
         {input.label}
       </span>
-      <input
-        type={input.type === "date" ? "date" : "number"}
-        className={ui.inputSm}
-        value={(value as string | number) ?? ""}
-        onChange={(e) =>
-          onChange(
-            input.type === "date" || e.target.value === ""
-              ? e.target.value || undefined
-              : Number(e.target.value),
-          )
-        }
-      />
+      <span className="relative">
+        <input
+          type={input.type === "date" ? "date" : input.type === "htsCode" ? "text" : "number"}
+          // An HTS code is kept as typed; the calculator looks it up
+          {...(input.type === "htsCode" ? { inputMode: "decimal" as const, placeholder: "e.g. 6104.42.00", spellCheck: false } : {})}
+          className={`${ui.inputSm} ${input.unit ? "pr-16" : ""}`}
+          value={(value as string | number) ?? ""}
+          onChange={(e) =>
+            onChange(
+              input.type === "date" || input.type === "htsCode" || e.target.value === ""
+                ? e.target.value.trim() || undefined
+                : Number(e.target.value),
+            )
+          }
+        />
+        {input.unit && (
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-base-content/60">
+            {input.unit}
+          </span>
+        )}
+      </span>
       {input.help && <span className={ui.caption}>{input.help}</span>}
     </label>
   );

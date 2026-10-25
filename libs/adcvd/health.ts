@@ -27,7 +27,7 @@ export const checkAdcvdHealth = async (db: Db, now = new Date()) => {
       title: `The AD/CVD cron hasn't run for ${Math.round(hours)} hours`,
       rows: [
         { label: "Last run", value: new Date(data.last_cron_at).toUTCString() },
-        { label: "Route", value: "/api/cron/adcvd (vercel.json, every 15 minutes)" },
+        { label: "Route", value: "/api/cron/adcvd (vercel.json, every hour)" },
         { label: "Check", value: "Vercel's cron logs, and /adcvd for the last run's result" },
       ],
     },

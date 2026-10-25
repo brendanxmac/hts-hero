@@ -6,7 +6,7 @@ import { authorityLabel } from "@/components/tariff-updates/labels"
 export const size = SOCIAL_IMAGE_SIZE
 export const contentType = "image/png"
 export const alt = "US tariff update from HTS Hero"
-export const revalidate = 900
+export const revalidate = 3600
 
 export default async function Image({ params }: { params: { slug: string } }) {
   const found = await getPublishedUpdate(params.slug)

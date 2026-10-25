@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEscapeToClose } from "@/hooks";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useUser } from "../contexts/UserContext";
@@ -51,6 +52,7 @@ export const ClassificationSummary = ({
   isDeleting = false,
 }: Props) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  useEscapeToClose(showDeleteModal, () => setShowDeleteModal(false));
   const { user: currentUser } = useUser();
   const classification = classificationRecord.classification;
 

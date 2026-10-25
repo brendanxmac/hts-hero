@@ -148,10 +148,15 @@ export const useCatalogSync = (userId: string | null | undefined) => {
       markSynced(userId);
       if (push) await save();
       else markCatalogSaved();
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_CATALOG_SYNCED, {
-        products: next.items.length,
-        merged_from_device: owner === null && device.items.length > 0,
-      });
+      // Only when this device's imports actually went into the account (made before signing in),
+      // not on every load
+      if (owner === null && device.items.length > 0 && push) {
+        trackEvent(MixpanelEvent.TARIFF_TRACKER_CATALOG_SYNCED, {
+          products: next.items.length,
+          from_device: device.items.length,
+          account_had_catalog: Boolean(account),
+        });
+      }
     })();
 
     const unsubscribe = subscribeCatalog(() => {

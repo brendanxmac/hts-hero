@@ -2,7 +2,8 @@ import { Country } from "../../../constants/countries";
 import { HtsElement } from "../../../interfaces/hts";
 import { getHtsElementParents } from "../../../libs/hts-parents";
 import { AllRules } from "../../../tariffs/engine-v2/data";
-import { Answers, CalculationInput, CalculationResult, TransportMode } from "../../../tariffs/engine-v2/types";
+import { baseRateAnswer, isBaseRateInput } from "../../../tariffs/engine-v2/base-rates";
+import { Answers, BaseRates, CalculationInput, CalculationResult, TransportMode } from "../../../tariffs/engine-v2/types";
 import { formatDate, formatMoney, formatPct } from "./format";
 
 // Pieces of a duty estimate shared by the Tariff Finder page and the estimates embedded
@@ -19,6 +20,23 @@ export const findTariffElement = (element: HtsElement, htsElements: HtsElement[]
   return element;
 };
 
+// Looks up an HTS code's rates (from the line that carries them), for base rates that point to
+// another code ("The rate applicable to the natural juice in heading 2009"). One per element list.
+const lookups = new WeakMap<HtsElement[], (htsCode: string) => BaseRates | null>();
+export const baseRatesLookup = (htsElements: HtsElement[]) => {
+  const cached = lookups.get(htsElements);
+  if (cached) return cached;
+  const byDigits = new Map(htsElements.map((e) => [e.htsno.replace(/\D/g, ""), e]));
+  const lookup = (htsCode: string) => {
+    const element = byDigits.get(htsCode.replace(/\D/g, ""));
+    if (!element) return null;
+    const rates = findTariffElement(element, htsElements);
+    return { general: rates.general ?? null, special: rates.special ?? null, other: rates.other ?? null };
+  };
+  lookups.set(htsElements, lookup);
+  return lookup;
+};
+
 export const buildEstimateInput = ({
   element,
   tariffElement,
@@ -28,6 +46,7 @@ export const buildEstimateInput = ({
   quantity,
   transportMode,
   claimedPreference,
+  htsElements,
 }: {
   element: HtsElement;
   tariffElement: HtsElement;
@@ -37,12 +56,16 @@ export const buildEstimateInput = ({
   quantity: number;
   transportMode: TransportMode;
   claimedPreference?: string;
+  // The HTS, so base rates that point to another code can use its rate
+  htsElements?: HtsElement[];
 }): Omit<CalculationInput, "answers"> => ({
   htsCode: element.htsno,
   country: country.code,
   asOf,
   customsValue,
   quantity,
+  // The first unit is the one duty is charged in, and the one the quantity is entered in
+  quantityUnit: [...(element.units ?? []), ...(tariffElement.units ?? [])].find(Boolean),
   baseRates: {
     general: tariffElement.general,
     special: tariffElement.special,
@@ -50,6 +73,7 @@ export const buildEstimateInput = ({
   },
   claimedPreference: claimedPreference || undefined,
   transportMode,
+  ...(htsElements?.length ? { lookupBaseRates: baseRatesLookup(htsElements) } : {}),
 });
 
 // Answers in a link: "confirm:9903.82.18,steelContentPct=40,loadingDate=2026-02-20".
@@ -65,6 +89,12 @@ export const parseAnswers = (raw: string | null): Answers => {
   const answers: Answers = {};
   (raw ?? "").split(",").forEach((part) => {
     const [id, value] = part.split("=");
+    // The base rate's own questions (the value of the case, the code a rate points to)
+    if (isBaseRateInput(id)) {
+      const answer = baseRateAnswer(id, value);
+      if (answer !== undefined) answers[id] = answer;
+      return;
+    }
     const input = AllRules.inputs.find((i) => i.id === id);
     if (!input) return;
     if (input.type === "boolean") {

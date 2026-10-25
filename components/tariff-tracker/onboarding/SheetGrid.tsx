@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   CheckCircleIcon,
@@ -9,6 +9,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
+import * as tt from "@/components/ui/styles/tracker";
 import { Countries } from "@/constants/countries";
 import { HtsElement } from "@/interfaces/hts";
 import { canonicalHtsCode } from "@/libs/hts-code";
@@ -21,7 +22,8 @@ import { SheetRow } from "./sheet";
 // context (never saved). A cell is picked with a click or the arrow keys; typing, Enter or a double
 // click edits it; Enter saves and moves down, Tab across, Escape cancels. The picked row is the
 // page's (SheetReview), so the fix panel beside the grid can follow it. Rows are drawn as they
-// scroll into view (TanStack Virtual), so a sheet of thousands stays quick.
+// scroll into view (TanStack Virtual), so a sheet of thousands stays quick. Below the last row,
+// blank rows fill the rest of the box, as in a spreadsheet, so a short sheet still reads as one.
 
 type EditCol = "code" | "country";
 const EDIT_COLS: EditCol[] = ["code", "country"];
@@ -38,6 +40,8 @@ const LIT_SOLID =
   "bg-[color-mix(in_oklab,var(--color-primary)_12%,var(--color-base-100))]";
 
 interface Props {
+  // The card's head, over the sheet: the page's title and directions
+  above?: ReactNode;
   sheet: SheetRow<HtsElement>[];
   // The rows shown (by index), in order
   shown: number[];
@@ -81,6 +85,7 @@ const StatusIcon = ({ row }: { row: SheetRow<HtsElement> }) => {
 };
 
 export const SheetGrid = ({
+  above,
   sheet,
   shown,
   header,
@@ -91,6 +96,11 @@ export const SheetGrid = ({
   onSelect,
 }: Props) => {
   const scroller = useRef<HTMLDivElement>(null);
+  const heading = useRef<HTMLDivElement>(null);
+  // The room left under the rows, for the blank ones
+  const [room, setRoom] = useState(0);
+  // The sticky column headings' height: the rows start under them, and scrolling to a row allows for them
+  const [headH, setHeadH] = useState(0);
   // The picked cell: its row comes from the page, its column is the grid's own
   const [col, setCol] = useState<EditCol>("code");
   const pos = selected === null ? -1 : shown.indexOf(selected);
@@ -113,10 +123,42 @@ export const SheetGrid = ({
     getScrollElement: () => scroller.current,
     estimateSize: () => ROW_H,
     overscan: 10,
+    scrollMargin: headH,
+    scrollPaddingStart: headH,
   });
+  // The picked row into view: centered after a jump (the first row to fix as the page opens, the
+  // fix panel's next and previous), just enough for a step to the next row (the arrow keys)
+  // (the same row again, once the headings are measured, keeps how it was placed)
+  const last = useRef<{ pos: number; align: "center" | "auto" }>({ pos: -1, align: "auto" });
   useEffect(() => {
-    if (pos >= 0) virtualizer.scrollToIndex(pos, { align: "auto" });
-  }, [pos]); // eslint-disable-line react-hooks/exhaustive-deps
+    const align =
+      pos === last.current.pos
+        ? last.current.align
+        : Math.abs(pos - last.current.pos) > 1
+          ? "center"
+          : "auto";
+    if (pos >= 0) virtualizer.scrollToIndex(pos, { align });
+    last.current = { pos, align };
+  }, [pos, headH]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const box = scroller.current;
+    if (!box) return;
+    const measure = () => {
+      setHeadH(heading.current?.offsetHeight ?? 0);
+      setRoom(
+        Math.max(
+          0,
+          box.clientHeight -
+            (heading.current?.offsetHeight ?? 0) -
+            shown.length * ROW_H,
+        ),
+      );
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, [shown.length]);
 
   const colIndex = (col: EditCol) =>
     col === "code" ? columns.code : columns.country;
@@ -170,6 +212,8 @@ export const SheetGrid = ({
         move(0, e.shiftKey ? -1 : 1);
       } else if (e.key === "Escape") {
         e.preventDefault();
+        // The edit takes this Escape, not the popup the sheet is in
+        e.stopPropagation();
         setEditing(null);
         scroller.current?.focus({ preventScroll: true });
       }
@@ -189,6 +233,8 @@ export const SheetGrid = ({
     };
     if (keys[e.key]) {
       e.preventDefault();
+      // Unpicking the cell takes this Escape, not the popup the sheet is in
+      if (e.key === "Escape") e.stopPropagation();
       keys[e.key]();
     } else if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
       // Typing over the cell, as in a spreadsheet
@@ -197,10 +243,11 @@ export const SheetGrid = ({
     }
   };
 
+  // The last column has no right border: the box's own border closes it
   const head = (label: string, sub: string, lit: boolean, key: string) => (
     <div
       key={key}
-      className={`flex min-w-0 flex-col justify-center border-b border-r border-base-300 px-2.5 py-1.5 ${lit ? LIT_SOLID : "bg-tt-soft"}`}
+      className={`flex min-w-0 flex-col justify-center border-b border-base-300 px-2.5 py-1.5 ${key === "country" ? "" : "border-r"} ${lit ? LIT_SOLID : "bg-tt-soft"}`}
     >
       <span
         className={`text-[0.65rem] font-bold ${lit ? "text-primary" : "text-base-content/45"}`}
@@ -216,7 +263,16 @@ export const SheetGrid = ({
   );
 
   return (
-    <div className="flex shrink-0 flex-col gap-2" style={{ width: total + 2 }}>
+    // One card: the head (title, directions), then the sheet flush under it
+    <div
+      className={`${tt.panel} flex min-h-0 shrink-0 flex-col overflow-hidden`}
+      style={{ width: total + 2 }}
+    >
+      {above && (
+        <div className="flex shrink-0 flex-col gap-3 border-b border-base-300 p-4">
+          {above}
+        </div>
+      )}
       <div
         ref={scroller}
         tabIndex={0}
@@ -224,10 +280,11 @@ export const SheetGrid = ({
         aria-label="Your sheet"
         aria-rowcount={shown.length}
         onKeyDown={onKey}
-        className="relative h-[min(72vh,46rem)] overflow-auto rounded-xl border border-base-300 bg-base-100 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30"
+        className="relative min-h-0 flex-1 overflow-auto bg-base-100 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30"
       >
         {/* Column headings: the file's letters and names; sticky as the rows scroll */}
         <div
+          ref={heading}
           className="sticky top-0 z-20 grid"
           style={{ gridTemplateColumns: template, minWidth: total }}
           role="row"
@@ -269,7 +326,7 @@ export const SheetGrid = ({
                 (col === "country"
                   ? !findCountry(value)
                   : !/^\d{8}$|^\d{10}$/.test(value.replace(/[.\s]/g, "")) ||
-                    row.reason?.includes("current HTS"));
+                  row.reason?.includes("current HTS"));
               return (
                 <div
                   key={col}
@@ -284,9 +341,8 @@ export const SheetGrid = ({
                     setCursor({ pos: item.index, col });
                     setEditing({ value });
                   }}
-                  className={`relative flex min-w-0 items-center border-b border-r border-base-300 px-2.5 ${col === "code" ? `${mono.className} font-semibold` : ""} ${
-                    on ? "z-10 outline-2 -outline-offset-2 outline-primary" : ""
-                  } ${bad ? "text-warning" : row.kind === "ok" || row.kind === "error" ? "text-base-content" : ""}`}
+                  className={`relative flex min-w-0 items-center border-b border-base-300 px-2.5 ${col === "code" ? "border-r" : ""} ${col === "code" ? `${mono.className} font-semibold` : ""} ${on ? "z-10 outline-2 -outline-offset-2 outline-primary" : ""
+                    } ${bad ? "text-warning" : row.kind === "ok" || row.kind === "error" ? "text-base-content" : ""}`}
                 >
                   {on && editing ? (
                     <input
@@ -317,7 +373,7 @@ export const SheetGrid = ({
                 key={row.index}
                 className="absolute left-0 top-0"
                 style={{
-                  transform: `translateY(${item.start}px)`,
+                  transform: `translateY(${item.start - headH}px)`,
                   width: "100%",
                   minWidth: total,
                 }}
@@ -329,11 +385,10 @@ export const SheetGrid = ({
                 >
                   {/* The row number, and on hover the one-click way to take the row out (or put it back) */}
                   <div
-                    className={`sticky left-0 z-[5] flex items-center justify-between gap-1 border-b border-r border-base-300 pl-1 pr-2 text-xs tabular-nums ${
-                      picked
-                        ? `${LIT_SOLID} font-semibold text-primary`
-                        : "bg-tt-soft text-base-content/45"
-                    }`}
+                    className={`sticky left-0 z-[5] flex items-center justify-between gap-1 border-b border-r border-base-300 pl-1 pr-2 text-xs tabular-nums ${picked
+                      ? `${LIT_SOLID} font-semibold text-primary`
+                      : "bg-tt-soft text-base-content/45"
+                      }`}
                   >
                     <button
                       type="button"
@@ -368,13 +423,29 @@ export const SheetGrid = ({
             );
           })}
         </div>
+
+        {/* Blank rows to the foot of the box, clipped to fit so they never make it scroll */}
+        {room > 0 && (
+          <div
+            className="overflow-hidden"
+            style={{ height: room, minWidth: total }}
+            aria-hidden
+          >
+            {Array.from({ length: Math.ceil(room / ROW_H) }, (_, i) => (
+              <div
+                key={i}
+                className="grid"
+                style={{ gridTemplateColumns: template, height: ROW_H }}
+              >
+                <div className="sticky left-0 border-b border-r border-base-300 bg-tt-soft" />
+                <div className="border-b border-r border-base-300" />
+                <div className="border-b border-r border-base-300" />
+                <div className="border-b border-base-300" />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      <p className="m-0 text-xs text-base-content/55">
-        Click a cell and type to change it.{" "}
-        <span className="font-semibold">Enter</span> saves,{" "}
-        <span className="font-semibold">Tab</span> moves across. Only these two
-        columns are kept.
-      </p>
       <datalist id={COUNTRY_LIST_ID}>
         {ORIGINS.map((c) => (
           <option key={c.code} value={c.name} />

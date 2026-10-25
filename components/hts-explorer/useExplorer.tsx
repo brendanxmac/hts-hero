@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, type ReactNode } from "react";
+import { createContext, useCallback, useContext, type ComponentType, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useBreadcrumbs } from "@/contexts/BreadcrumbsContext";
 import { useHts } from "@/contexts/HtsContext";
@@ -39,6 +39,8 @@ interface ExplorerState {
   explorerSurface?: ExplorerSurface;
   // Over a calculator: puts the chosen code in its input bar
   onUseCode?: (element: HtsElement) => void;
+  // What that button says, for the page it's over ("Calculate duty" when left out)
+  useCodeAction?: UseCodeAction;
   // The outline's open rows
   expanded: Set<string>;
   setExpanded: (update: (prev: Set<string>) => Set<string>) => void;
@@ -47,6 +49,11 @@ interface ExplorerState {
   setReveal: (reveal: { key: string; at: number } | null) => void;
   // While searching: go back to the outline, at the selection
   showInSchedule?: () => void;
+}
+
+export interface UseCodeAction {
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
 }
 
 const ExplorerContext = createContext<ExplorerState | null>(null);
@@ -71,16 +78,20 @@ export const useExplorer = () => {
       trail: NavigatableElement[],
       kind: ExplorerNavigationKind,
       extra: { hts_code?: string | null; chapter_number?: number | null; breadcrumb_index?: number; hts_path_index?: number } = {},
-      reveal = true
+      reveal = true,
+      // false for moves the explorer makes itself (opening on its host's code), not the user's
+      track = true
     ) => {
-      trackExplorerNavigatedToLevel({
-        pathname,
-        explorerSurface: state.explorerSurface,
-        navigation_kind: kind,
-        from_depth: breadcrumbs.length,
-        to_depth: trail.length,
-        ...extra,
-      });
+      if (track) {
+        trackExplorerNavigatedToLevel({
+          pathname,
+          explorerSurface: state.explorerSurface,
+          navigation_kind: kind,
+          from_depth: breadcrumbs.length,
+          to_depth: trail.length,
+          ...extra,
+        });
+      }
       setBreadcrumbs(trail);
       const key = keyOfCrumb(trail[trail.length - 1]);
       if (reveal && key) setReveal({ key, at: Date.now() });

@@ -20,6 +20,7 @@ import { CountryCard, optionSub, supplyOf } from "./CountryCard";
 import { optionResult, optionsFor, ProgramMode } from "./options";
 import { OriginsList } from "./OriginsList";
 import { RatesShown, SideBySide } from "./SideBySide";
+import { Switch } from "@/components/ui/Switch";
 import { Origins, useOrigins } from "./useOrigins";
 import { onShipment } from "../lib/valueBasis";
 
@@ -44,13 +45,13 @@ type View = "side" | "insights" | "globe" | "table" | "chart";
 const viewsFor = (signedIn: boolean): { id: View; label: string }[] => [
   ...(signedIn
     ? [
-        { id: "insights" as const, label: "Insights" },
-        { id: "side" as const, label: "Side by Side" },
-      ]
+      { id: "insights" as const, label: "Insights" },
+      { id: "side" as const, label: "Side by Side" },
+    ]
     : [
-        { id: "side" as const, label: "Side by Side" },
-        { id: "insights" as const, label: "Insights" },
-      ]),
+      { id: "side" as const, label: "Side by Side" },
+      { id: "insights" as const, label: "Insights" },
+    ]),
   { id: "globe", label: "Globe" },
   { id: "table", label: "Table" },
   { id: "chart", label: "Chart" },
@@ -62,7 +63,6 @@ export const ComparePanel = ({
   countries,
   max,
   entryDate,
-  dateControl,
   onAdd,
   onRemove,
   onReplace,
@@ -77,8 +77,6 @@ export const ComparePanel = ({
   countries: Country[];
   max: number;
   entryDate: string;
-  // The entry date's picker, in the header
-  dateControl: ReactNode;
   onAdd: (country: Country) => void;
   onRemove: (countryCode: string) => void;
   onReplace: (countryCode: string, country: Country) => void;
@@ -158,7 +156,7 @@ export const ComparePanel = ({
   return (
     // One module: the header, then the open view (and its note) under it, ruled apart
     <CardSections>
-      {/* One line: what it is, then the view and the two controls every view follows */}
+      {/* One line: what it is, then the view and the rates every view shows (its date is in Entry details) */}
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4 sm:px-6">
         <div className="min-w-0">
           <h3 className={ui.cardTitle}>Duty Comparison</h3>
@@ -168,16 +166,11 @@ export const ComparePanel = ({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegmentedControl<View> label="Compare as" options={viewsFor(Boolean(user))} value={view} onChange={setView} size="sm" />
-          {dateControl}
-          <SegmentedControl<RatesShown>
-            label="Rates shown"
-            options={[
-              { id: "standard", label: "Standard" },
-              { id: "programs", label: "Trade programs" },
-            ]}
-            value={shown}
-            onChange={setShown}
-            size="sm"
+          <Switch
+            label="Include Trade Programs?"
+            checked={shown === "programs"}
+            onChange={(on) => setShown(on ? "programs" : "standard")}
+            title="Show each country's rate with the free trade agreement or preference program it may qualify for"
           />
         </div>
       </div>
@@ -206,9 +199,9 @@ export const ComparePanel = ({
                 <GlobeAltIcon className="h-5 w-5 shrink-0" />
               </span>
               <p className="m-0 flex-1 text-sm text-base-content/70">
-                <span className="font-semibold text-base-content">{onCreateAccount ? "Get advanced comparisons, free." : "Find a cheaper country for this import."}</span>{" "}
+                <span className="font-semibold text-base-content">{onCreateAccount ? "Get Advanced Sourcing Intelligence, free." : "Find a cheaper country for this import."}</span>{" "}
                 {cheaper
-                  ? `${cheaper} of ${rates.length} countries could pay less than ${yours?.country.name ?? "yours"}. See every one ranked, on a globe, in a table and over time.`
+                  ? `${cheaper} of ${rates.length} countries could pay less than ${yours?.country.name ?? "yours"}.`
                   : `See all ${rates.length} countries ranked, on a globe, in a table and over time.`}
               </p>
               <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={action}>

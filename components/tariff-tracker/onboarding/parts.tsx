@@ -70,7 +70,7 @@ export const StepHeading = ({
       {title}
     </h1>
     {lead && (
-      <p className="tt-ob-rise m-0 max-w-xl text-base leading-relaxed text-base-content/75" style={delay(120)}>
+      <p className="tt-ob-rise m-0 max-w-3xl text-base leading-relaxed text-base-content/75" style={delay(120)}>
         {lead}
       </p>
     )}
@@ -129,9 +129,8 @@ export const SheetIllustration = ({ caption, wait = 200 }: { caption?: string; w
             {SHEET.headers.map((h, i) => (
               <th
                 key={h}
-                className={`truncate border-b border-r border-base-300 px-2 py-1.5 text-left font-semibold last:border-r-0 ${
-                  SHEET.lit.includes(i) ? "bg-primary/15 text-primary" : "text-base-content/50"
-                }`}
+                className={`truncate border-b border-r border-base-300 px-2 py-1.5 text-left font-semibold last:border-r-0 ${SHEET.lit.includes(i) ? "bg-primary/15 text-primary" : "text-base-content/50"
+                  }`}
               >
                 {h}
               </th>
@@ -144,9 +143,8 @@ export const SheetIllustration = ({ caption, wait = 200 }: { caption?: string; w
               {row.map((cell, i) => (
                 <td
                   key={i}
-                  className={`truncate border-b border-r border-base-300 px-2 py-1.5 last:border-r-0 ${
-                    SHEET.lit.includes(i) ? `bg-primary/8 font-semibold text-base-content ${i === 2 ? mono.className : ""}` : "text-base-content/40"
-                  }`}
+                  className={`truncate border-b border-r border-base-300 px-2 py-1.5 last:border-r-0 ${SHEET.lit.includes(i) ? `bg-primary/8 font-semibold text-base-content ${i === 2 ? mono.className : ""}` : "text-base-content/40"
+                    }`}
                 >
                   {cell}
                 </td>

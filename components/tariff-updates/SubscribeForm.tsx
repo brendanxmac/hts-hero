@@ -7,7 +7,7 @@ import { signupHref } from "@/components/tariff-tracker/access/signup"
 import * as ui from "@/components/ui/styles"
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel"
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing"
-import { AUTO_AUDITING, COMING_NOTE, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon"
+import { AUTO_AUDITING, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon"
 import { DEFAULT_NEWS_PREFERENCES, NewsPreferencesFields, type NewsPreferencesValue } from "./NewsPreferencesFields"
 
 // Subscribe to US tariff updates by email, on /tariff-updates and every update page. Weekly digest
@@ -21,7 +21,7 @@ const UPSELL = [
   "See which of your imports each new tariff update affects",
   "Get alerted with the rate before and after, by email, Slack or Teams",
   "Run impact checks to see exactly how any tariff action affects each import",
-  `${SAVINGS_DETECTION.name} and ${AUTO_AUDITING.name.toLowerCase()} ${COMING_NOTE}, included`,
+  `${SAVINGS_DETECTION.name} and ${AUTO_AUDITING.name.toLowerCase()}, included`,
   `Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card`,
 ]
 

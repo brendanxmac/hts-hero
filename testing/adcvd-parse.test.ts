@@ -1,6 +1,8 @@
 import { readFileSync } from "fs"
 import { describe, it, expect } from "./test-runner"
 import { countryFromName, countryOfCase } from "../libs/adcvd/countries"
+import { applyEvent } from "../libs/adcvd/notices"
+import type { CaseRow } from "../libs/adcvd/types"
 import {
   caseNumbers,
   circumventionCountries,
@@ -8,12 +10,17 @@ import {
   frText,
   headerLine,
   htsCodes,
+  isSuspension,
   itcCodes,
+  itcEndedCases,
   itcNumbers,
+  finalPeriod,
   listGap,
   listRows,
+  listRowsChecked,
   revokedCountries,
   scopeOf,
+  suspendedCountries,
   titleParts,
 } from "../libs/adcvd/parse"
 
@@ -105,6 +112,59 @@ describe("AD/CVD notices: titles", () => {
     expect(titleParts("Notice of Extension of the Deadline for Determining the Adequacy of the Antidumping and Countervailing Duty Petitions: Certain Corrugated Die-Cut Cardboard Boxes From China").product).toBe("Certain Corrugated Die-Cut Cardboard Boxes")
   })
 
+  it("reads suspension agreements as agreements, and their end as an order", () => {
+    // Russia's cut-to-length plate agreement ended in 2023 with an order
+    expect(eventOf("Certain Cut-to-Length Carbon Steel Plate From the Russian Federation: Termination of the Suspension Agreement and Issuance of Antidumping Duty Order", "commerce")).toBe("order")
+    expect(eventOf("Suspension of Antidumping Investigation: Certain Cut-to-Length Carbon Steel Plate From Ukraine", "commerce")).toBe("suspension")
+    expect(eventOf("Sugar From Mexico: Continuation of Suspension of the Countervailing Duty Investigation", "commerce")).toBe("continuation")
+    expect(isSuspension("Sugar From Mexico: Continuation of Suspension of the Countervailing Duty Investigation")).toBe(true)
+    expect(
+      suspendedCountries(
+        "Continuation of Antidumping Duty Order on Certain Cut-to-Length Carbon Steel Plate From the People's Republic of China and Continuation of Suspended Antidumping Duty Investigations on Certain Cut-to-Length Carbon Steel Plate From the Russian Federation and Ukraine"
+      )
+    ).toEqual(["Russian Federation", "Ukraine"])
+  })
+
+  it("a continuation keeps a suspension agreement suspended, and an order an order, when one notice continues both", () => {
+    const title =
+      "Continuation of Antidumping Duty Order on Certain Cut-to-Length Carbon Steel Plate From the People's Republic of China and Continuation of Suspended Antidumping Duty Investigations on Certain Cut-to-Length Carbon Steel Plate From the Russian Federation and Ukraine"
+    const blank = { status: "unknown", initiated_on: null, order_on: null, last_continued_on: null, ended_on: null, first_seen_on: null, last_activity_on: null } as unknown as CaseRow
+    expect(applyEvent({ ...blank, country: "UA" }, "continuation", "2021-07-01", title).status).toBe("suspended")
+    expect(applyEvent({ ...blank, country: "CN" }, "continuation", "2021-07-01", title).status).toBe("order")
+    expect(applyEvent({ ...blank, country: "MX" }, "review_final", "2024-03-21", "Agreement Suspending the Countervailing Duty Investigation on Sugar From Mexico: Final Results of the 2022 Administrative Review").status).toBe("suspended")
+  })
+
+  it("an amended preliminary determination is not a termination", () => {
+    expect(
+      eventOf("Crystalline Silicon Photovoltaic Cells, Whether or Not Assembled Into Modules, From the Lao People's Democratic Republic: Amended Preliminary Determination of the Less-Than-Fair-Value Investigation", "commerce")
+    ).toBe("prelim")
+    expect(eventOf("Certain Freight Rail Couplers From Mexico: Termination of Less-Than-Fair-Value Investigation", "commerce")).toBe("termination")
+  })
+
+  it("a court decision that revokes an order is a revocation", () => {
+    expect(
+      eventOf("Mattresses From Indonesia: Notice of Court Decision Not in Harmony With the Final Determination of Antidumping Duty Investigation; Notice of Amended Final Determination; and Notice of Revocation of Antidumping Order", "commerce")
+    ).toBe("revocation")
+    expect(eventOf("Certain Steel Nails From Taiwan: Notice of Court Decision Not in Harmony With the Results of Administrative Review", "commerce")).toBe("court")
+  })
+
+  it("a listing for an order's final period ends it; only a later regular listing means it's live again", () => {
+    const order = { status: "order", initiated_on: "2018-10-16", order_on: "2019-12-16", last_continued_on: null, ended_on: null, first_seen_on: null, last_activity_on: null } as unknown as CaseRow
+    const ended = applyEvent(order, "final_period", "2025-12-08", "Opportunity To Request Administrative Review")
+    expect(ended.status).toBe("revoked")
+    expect(applyEvent(ended, "review_opportunity", "2026-12-01", "Opportunity To Request Administrative Review").status).toBe("order")
+    expect(applyEvent({ ...order, status: "revoked", ended_on: "2024-12-16" }, "final_period", "2025-12-08", "").status).toBe("revoked")
+  })
+
+  it("reads which countries an ITC final vote ended, from its text", () => {
+    // Titles only say "Determinations"
+    expect(itcEndedCases(notice("itc-final-2026-12219"))).toEqual([{ kind: null, countries: ["RU"] }])
+    // "…not materially retarded…"
+    expect(itcEndedCases(notice("itc-final-2026-06488"))).toEqual([{ kind: null, countries: ["CN"] }])
+    // A split vote: injured by imports from China; Malaysia's antidumping investigation terminated
+    expect(itcEndedCases(notice("itc-final-2026-06129"))).toEqual([{ kind: "AD", countries: ["MY"] }])
+  })
+
   it("reads the countries a circumvention ruling reaches", () => {
     expect(circumventionCountries("Certain Corrosion-Resistant Steel Products From China: Affirmative Final Determination of Circumvention With Respect to Malaysia")).toEqual(["Malaysia"])
     expect(circumventionCountries("Aluminum Foil From China: Affirmative Determination of Circumvention; Foil Completed in the Republic of Korea and Thailand")).toEqual(["Republic of Korea", "Thailand"])
@@ -182,5 +242,42 @@ describe("AD/CVD notices: list notices", () => {
   it("links Commerce cases to ITC investigations from a sunset initiation table", () => {
     const rows = listRows(notice("sunset-initiation"))
     expect(rows.find((r) => r.case_number === "A-831-804")?.itc_number).toBe("731-TA-1538")
+  })
+
+  it("reads a case number printed without its letter from the section it's under", () => {
+    // May 2026: "Polyethylene Terephthalate Resin, -122-855"
+    const rows = listRows(notice("opportunity-list-2026-05"))
+    const pet = rows.find((r) => r.case_number === "A-122-855")!
+    expect(pet.country_name).toBe("CANADA")
+    expect(pet.period_end).toBe("2026-04-30")
+    expect(listGap(notice("opportunity-list-2026-05"))).toBe(0)
+  })
+
+  it("keeps each row's review period, and spots a final stub period (the order ended)", () => {
+    // December 2025: kegs from China were revoked 12/16/24 and listed for "12/1/24-12/15/24"
+    const rows = listRows(notice("opportunity-list-2025-12"))
+    expect(rows.find((r) => r.case_number === "A-570-093")!.period_end).toBe("2024-12-15")
+    expect(rows.filter((r) => finalPeriod(r.period_end)).map((r) => r.case_number)).toEqual(["A-570-093", "C-570-094"])
+    // A period printed backwards ("8/31/26-9/1/25", Belarus rebar, September 2026) ends on the later date
+    expect(listRows("BELARUS: Steel Concrete Reinforcing Bars, A-822-804..     8/31/26-9/1/25")[0].period_end).toBe("2026-08-31")
+    // A calendar-year countervailing review ending a year before the notice is not a stub
+    expect(finalPeriod(rows.find((r) => r.case_number === "C-570-971")!.period_end)).toBe(false)
+  })
+
+  it("marks a row whose footnote says the order has been revoked", () => {
+    // May 2026: "Mattresses,\5\ A-560-836", footnote 5: "revoked due to litigation"
+    const rows = listRows(notice("opportunity-list-2026-05"))
+    expect(rows.filter((r) => r.revoked_note).map((r) => r.case_number)).toEqual(["A-560-836"])
+  })
+
+  it("rejects a number that can't be the row's case: wrong country for its heading, wrong kind for its section", () => {
+    // April 2026: Türkiye's aluminum sheet printed with Taiwan's code (583)
+    expect(listRowsChecked(notice("opportunity-list-2026-04")).rejected.map((r) => r.case_number)).toEqual(["A-583-839", "C-583-840"])
+    // June 2026: "C-555-003" under the antidumping heading
+    expect(listRowsChecked(notice("opportunity-list-2026-06")).rejected.map((r) => r.case_number)).toEqual(["C-555-003"])
+    // May 2026: "SERBIA, Mattresses, A-801-002" (a comma for the heading's colon) is kept
+    const may = listRowsChecked(notice("opportunity-list-2026-05"))
+    expect(may.rejected).toEqual([])
+    expect(may.rows.find((r) => r.case_number === "A-801-002")?.country_name).toBe("SERBIA")
   })
 })

@@ -13,18 +13,17 @@ import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { UpdatesList } from "@/components/tariff-updates/UpdatesList"
 import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm"
-import { TrackerCtaRow } from "@/components/tariff-updates/TrackerCta"
 import { formatDay } from "@/components/tariff-updates/labels"
 import { SOURCE_LIST, UPDATES_DEFINITION, UPDATES_FAQS } from "@/components/tariff-updates/content"
 
-// Every published tariff update, newest first. Static, refreshed every 15 minutes like the
+// Every published tariff update, newest first. Static, refreshed every hour like the
 // sources behind it.
-export const revalidate = 900
+export const revalidate = 3600
 
 const URL = `https://${config.domainName}/tariff-updates`
 const TITLE = "Latest US Tariff Updates: Every New Tariff Action | HTS Hero"
 const DESCRIPTION =
-  "Every new US tariff action from the White House, Federal Register, CBP and USTR, summarized in plain English and followed into the HTS. Checked every 15 minutes."
+  "Every new US tariff action from the White House, Federal Register, CBP and USTR, summarized in plain English and followed into the HTS. Checked every hour."
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -88,7 +87,7 @@ export default async function TariffUpdatesPage() {
                 </span>
                 <span aria-hidden>·</span>
                 <span>
-                  <strong className="font-semibold text-base-content">{SOURCE_LIST.length}</strong> official sources, checked every 15 minutes
+                  <strong className="font-semibold text-base-content">{SOURCE_LIST.length}</strong> official sources, checked every hour
                 </span>
                 {latest && (
                   <>
@@ -102,10 +101,6 @@ export default async function TariffUpdatesPage() {
                   RSS
                 </a>
               </p>
-              {/* The Tariff Tracker's offer, right under the heading */}
-              <div className="mt-2">
-                <TrackerCtaRow boxed />
-              </div>
             </div>
             <section aria-labelledby="subscribe" className={`${tt.panel} flex flex-col gap-3 p-6`}>
               <h2 id="subscribe" className={`${tt.title} m-0`}>

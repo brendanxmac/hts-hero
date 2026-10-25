@@ -36,15 +36,27 @@ export const LockedPreview = ({
   framed?: boolean;
   // Tailwind min-height class for the whole panel
   minHeight?: string;
-  // Called once, when it's first shown
+  // Called once, when its lock box is first on screen (not when it mounts: it can sit below the
+  // fold, or in a tab that's hidden)
   onShown?: () => void;
 }) => {
   const inCard = useInCard();
   const shown = useRef(false);
+  const lockBox = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (shown.current) return;
-    shown.current = true;
-    onShown?.();
+    const el = lockBox.current;
+    if (shown.current || !onShown || !el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || shown.current || document.visibilityState !== "visible") return;
+        shown.current = true;
+        observer.disconnect();
+        onShown();
+      },
+      { threshold: 0.6 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [onShown]);
 
   const button = ui.button({ variant: "primary" });
@@ -64,7 +76,7 @@ export const LockedPreview = ({
       </div>
       {/* Near the top, and in view while scrolling past a tall preview */}
       <div className="absolute inset-0 p-4 pt-12">
-        <div className="sticky top-24 mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-lg border border-base-300 bg-base-100 p-6 text-center shadow-lg">
+        <div ref={lockBox} className="sticky top-24 mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-lg border border-base-300 bg-base-100 p-6 text-center shadow-lg">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden>
             <LockClosedIcon className="h-5 w-5" />
           </span>

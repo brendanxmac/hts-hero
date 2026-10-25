@@ -268,8 +268,8 @@ export const AdcvdTab = ({
 }) => {
   const { user, isLoading } = useUser()
   const state = useAdcvdLookup(code, country)
-  // Signed out, or on the free plan: only whether any case may apply
-  const summary = lookupOf(useAdcvdSummary(code, country, (!user && !isLoading) || state === "locked"))
+  // On the free plan: only whether any case may apply (signed out, not even that: the gate teases)
+  const summary = lookupOf(useAdcvdSummary(code, country, state === "locked"))
   const tracker = useOptionalTrackerAccess()
 
   if (isLoading) return <Loading />

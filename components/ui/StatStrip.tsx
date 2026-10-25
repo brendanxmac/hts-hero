@@ -35,12 +35,15 @@ export const StatStrip = ({
   stats,
   framed = true,
   lead = false,
+  columns,
   label,
   className = "",
 }: {
   stats: StatItem[];
   framed?: boolean;
   lead?: boolean;
+  // The grid's columns, in place of the default (a short leading number can take less room)
+  columns?: string;
   // Names the strip for screen readers
   label?: string;
   className?: string;
@@ -48,7 +51,7 @@ export const StatStrip = ({
   <dl
     aria-label={label}
     className={`m-0 grid gap-px bg-base-300 ${
-      lead && stats.length === 4 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr]" : (COLUMNS[stats.length] ?? "grid-cols-1 sm:grid-cols-3")
+      columns ?? (lead && stats.length === 4 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr]" : (COLUMNS[stats.length] ?? "grid-cols-1 sm:grid-cols-3"))
     } ${framed ? `${ui.card} !bg-base-300` : ""} ${className}`}
   >
     {stats.map((s, i) => {

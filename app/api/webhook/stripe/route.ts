@@ -16,6 +16,8 @@ import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confi
 import { getPlanExpirationDate, getPlanFromPriceId } from "@/libs/stripe-plans";
 import { isTrackerPlan, TRACKER_PLANS } from "@/libs/tariff-tracker/plan";
 import { RENEWAL_GRACE_DAYS } from "@/libs/tariff-tracker/access";
+import { MixpanelEvent } from "@/libs/mixpanel";
+import { trackEventServerAsync } from "@/libs/mixpanel-server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2026-09-30.endive",
@@ -133,6 +135,16 @@ export async function POST(req: NextRequest) {
         }
 
         console.log("Purchase created:", purchase.id);
+
+        // Once per checkout, even if Stripe sends the event again
+        await trackEventServerAsync(MixpanelEvent.PURCHASE_COMPLETED, user.id, {
+          $insert_id: `purchase-${stripeObject.id}`,
+          plan,
+          is_tracker_plan: isTrackerPlan(plan),
+          mode: stripeObject.mode,
+          amount_usd: (stripeObject.amount_total ?? 0) / 100,
+          currency: stripeObject.currency,
+        });
 
         try {
           await sendPurchaseConfirmationEmail(
@@ -333,6 +345,15 @@ export async function POST(req: NextRequest) {
           .select("id");
         if (error) throw error;
         console.log(`Subscription ${subscription.id} ended: ${data?.length ?? 0} purchase(s) of ${ended.join(", ")} now expire`);
+        const endedUser = await fetchUserByStripeCustomerId(customerId);
+        if (endedUser) {
+          await trackEventServerAsync(MixpanelEvent.SUBSCRIPTION_ENDED, endedUser.id, {
+            $insert_id: `subscription-ended-${subscription.id}`,
+            plans: plans.join(","),
+            is_tracker_plan: plans.some(isTrackerPlan),
+            reason: subscription.cancellation_details?.reason ?? null,
+          });
+        }
         break;
       }
 

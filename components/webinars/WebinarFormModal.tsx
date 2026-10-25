@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useEscapeToClose } from "@/hooks";
 import { useRouter } from "next/navigation";
 import { Webinar } from "@/libs/supabase/webinars";
 import { Select } from "@/components/ui/Select";
@@ -66,6 +67,7 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  useEscapeToClose(isOpen, onClose);
 
   if (!isOpen) return null;
 

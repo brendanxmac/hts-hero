@@ -64,6 +64,8 @@ export const dutyPayload = (calc: DutyCalculation, ctx: LinkContext) => {
       column: result.column,
       rate: result.base.reasons[0] ?? "Free",
       amount_usd: round(result.base.amount),
+      // Part of the base rate can't be calculated: the totals exclude it (see warnings)
+      calculated: !result.baseNotCalculated,
       requires_quantity: result.requiresQuantity,
     },
     // Chapter 99 duties the engine considered; ones that can't apply to this entry are left out
@@ -111,7 +113,9 @@ export const dutySummary = (p: DutyPayload) => {
   return [
     `HTS ${p.product.hts_code} (${p.product.description}) from ${p.product.country_of_origin.name}, entered ${p.as_of}, customs value $${p.product.customs_value_usd.toLocaleString("en-US")}:`,
     `Total duty $${p.totals.duty_usd.toLocaleString("en-US")} (${p.totals.effective_duty_rate_pct}% of value) + fees $${p.totals.fees_usd.toLocaleString("en-US")}.`,
-    `Base rate ${p.base.rate} = $${p.base.amount_usd.toLocaleString("en-US")}.`,
+    p.base.calculated
+      ? `Base rate ${p.base.rate} = $${p.base.amount_usd.toLocaleString("en-US")}.`
+      : `Base rate ${p.base.rate}: can't be calculated, so the totals exclude base duty.`,
     ...applied.map((l) => `${l.code} ${l.program ?? l.name}: ${l.rate_pct ?? "?"}% = $${l.amount_usd.toLocaleString("en-US")}.`),
     open.length ? `Open questions that could change the duty: ${open.map((q) => `${q.id} (${q.question})`).join("; ")}.` : "",
     ...p.warnings.map((w) => `Warning: ${w}`),
@@ -134,6 +138,8 @@ export const originRow = (o: OriginRate, customsValue: number, rank: number, bas
     ? { symbol: o.agreement.symbol, name: o.agreement.name, effective_duty_rate_pct: round(o.agreement.pct, 3) }
     : null,
   is_requested_origin: o.isOrigin,
+  // The base rate can't be calculated, so the rates leave base duty out
+  base_calculated: !o.result.baseNotCalculated,
 });
 
 export type OriginRow = ReturnType<typeof originRow>;

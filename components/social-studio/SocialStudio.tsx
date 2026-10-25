@@ -6,17 +6,38 @@ import { Format, FORMATS, Theme } from "@/social/brand"
 import { captionsFor } from "@/social/captions"
 import type { Post } from "@/social/types"
 import type { Idea } from "@/libs/social-studio/ideas"
-import { btn, Callout, CopyCommand, EmptyState, Field, inputCls, PageHeader, Panel, Pill, Segmented, Spinner, Tabs } from "../hts-revision-diff/ui"
+import type { OddColumn, OddRate } from "@/libs/social-studio/unusual"
+import { btn, Callout, CopyCommand, EmptyState, Field, Help, inputCls, PageHeader, Panel, Pill, Segmented, Spinner, Tabs } from "../hts-revision-diff/ui"
 import { Select } from "@/components/ui/Select"
 import IdeaCard from "./IdeaCard"
 import PostCard from "./PostCard"
 
 // Makes branded posts from the tariff engine, Census data and the /tariff-updates feed. Ideas:
 // what the daily miners and Claude found worth posting. News: a post for any tariff update.
-// Product, Country and Facts: make posts by hand. Every number is computed; you edit the words,
+// Product, Country, Facts and Odd rates: make posts by hand. Every number is computed; you edit the words,
 // then download PNGs or MP4s (rendered in the browser).
 
-type Tab = "ideas" | "news" | "product" | "country" | "facts"
+type Tab = "ideas" | "news" | "product" | "country" | "facts" | "odd"
+
+// One odd rate and every line that has it
+interface OddGroup {
+  rate: OddRate
+  codes: string[]
+}
+
+// The odd rates, one row per distinct rate in a column, in the order the server ranked them
+const groupOddRates = (rates: OddRate[]) => {
+  const groups = new Map<string, OddGroup>()
+  rates.forEach((r) => {
+    const key = `${r.column}|${r.rate}`
+    const group = groups.get(key)
+    if (group) group.codes.push(r.htsno)
+    else groups.set(key, { rate: r, codes: [r.htsno] })
+  })
+  return Array.from(groups.values())
+}
+
+const ODD_SHOWN = 60
 
 interface NewsRow {
   slug: string
@@ -99,6 +120,11 @@ export default function SocialStudio() {
   const [newsSlug, setNewsSlug] = useState<string | null>(null)
   const [newsWarning, setNewsWarning] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [oddRates, setOddRates] = useState<OddRate[] | null>(null)
+  const [oddColumn, setOddColumn] = useState<OddColumn | "all">("general")
+  const [oddAll, setOddAll] = useState(false)
+  const [oddQuery, setOddQuery] = useState("")
+  const [oddPicked, setOddPicked] = useState<string | null>(null)
 
   const loadIdeas = useCallback(async () => {
     setIdeasError(null)
@@ -128,6 +154,14 @@ export default function SocialStudio() {
       })
       .catch((e) => setError(e.message))
   }, [tab, news])
+
+  useEffect(() => {
+    if (tab !== "odd" || oddRates) return
+    fetch("/api/social-studio/odd-rates", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => (d.rates ? setOddRates(d.rates) : setError(d.error)))
+      .catch((e) => setError(e.message))
+  }, [tab, oddRates])
 
   const findIdeas = async () => {
     setFinding(true)
@@ -206,6 +240,16 @@ export default function SocialStudio() {
     setIdeas((list) => list && list.map((idea) => ({ ...idea, props: { ...idea.props, theme: next } as Idea["props"] })))
   }
 
+  const oddGroups = groupOddRates(oddRates ?? [])
+  const oddQ = oddQuery.trim().toLowerCase()
+  const oddShown = oddGroups.filter(
+    (g) =>
+      (oddColumn === "all" || g.rate.column === oddColumn) &&
+      (oddAll || g.rate.calculable) &&
+      (!oddQ || `${g.rate.rate} ${g.rate.product} ${g.rate.why} ${g.codes.join(" ")}`.toLowerCase().includes(oddQ))
+  )
+  const oddNotCalculated = oddGroups.filter((g) => !g.rate.calculable).length
+
   const days = Array.from(new Set((ideas ?? []).map((i) => i.run_on)))
 
   const viewBar = (
@@ -223,66 +267,71 @@ export default function SocialStudio() {
   )
 
   return (
-    <div className="flex flex-col gap-6">
+    <>
       <PageHeader
         title="Content Studio"
         meta="Branded posts from the tariff engine and Census data. Every number is computed; edit the words, then download."
-      />
-      <div className="flex flex-wrap items-start gap-x-8 gap-y-2 rounded-lg border border-base-content/10 bg-base-100 px-4 py-3 text-sm">
-        <div className="font-semibold">What costs money</div>
-        <div className="flex flex-col gap-1 text-base-content/70">
-          <span>
+      >
+        <Help label="What costs money">
+          <p>
             <Cost claude="about 5–7¢" /> Daily ideas, automatically every morning (about $2 a month), and each <b>Find ideas now</b>
-          </span>
-          <span>
+          </p>
+          <p>
             <Cost claude="under 1¢" /> <b>Make post</b> or <b>Remake</b> on the News tab
-          </span>
-          <span>
-            <Cost /> Everything else: the Product, Country and Facts tabs, previews, editing, saving, Mark used / Skip, and PNG and MP4 downloads
+          </p>
+          <p>
+            <Cost /> Everything else: the Product, Country, Facts and Odd Rates tabs, previews, editing, saving, Mark used / Skip, and PNG and MP4 downloads
             (rendered in your browser)
-          </span>
-        </div>
-        <div className="basis-full text-xs text-base-content/45">Claude calls are billed to the Anthropic API key (ANTHROPIC_API_KEY), not a Claude subscription.</div>
-      </div>
-      <Tabs<Tab>
-        value={tab}
-        onChange={(t) => {
-          setTab(t)
-          setError(null)
-          // Picks up posts saved from the News tab
-          if (t === "ideas") loadIdeas()
-        }}
-        tabs={[
-          { value: "ideas", label: "Ideas", count: ideas?.filter((i) => i.status === "new").length },
-          { value: "news", label: "News" },
-          { value: "product", label: "Product" },
-          { value: "country", label: "Country" },
-          { value: "facts", label: "Facts" },
-        ]}
-      />
+          </p>
+          <p className="text-xs">Claude calls are billed to the Anthropic API key (ANTHROPIC_API_KEY), not a Claude subscription.</p>
+        </Help>
+        <Tabs<Tab>
+          value={tab}
+          onChange={(t) => {
+            setTab(t)
+            setError(null)
+            // Picks up posts saved from the News tab
+            if (t === "ideas") loadIdeas()
+          }}
+          tabs={[
+            { value: "ideas", label: "Ideas", count: ideas?.filter((i) => i.status === "new").length },
+            { value: "news", label: "News" },
+            { value: "product", label: "Product" },
+            { value: "country", label: "Country" },
+            { value: "facts", label: "Facts" },
+            { value: "odd", label: "Odd Rates" },
+          ]}
+        />
+      </PageHeader>
 
       {tab === "ideas" && (
         <>
           <Panel
-            title="Daily ideas"
+            title="Daily Ideas"
             actions={
               <div className="flex items-center gap-2">
                 <Cost claude="about 5–7¢" />
-                <button className={btn.primary} disabled={finding} onClick={findIdeas}>
+                <button className={btn.secondary} disabled={finding} onClick={findIdeas}>
                   {finding && <Spinner />} {finding ? "Finding ideas…" : "Find ideas now"}
                 </button>
               </div>
             }
-            bodyClassName="flex flex-col gap-3 p-4 text-sm text-base-content/70"
+            bodyClassName="flex flex-col gap-3 px-6 py-4 text-sm text-base-content/70"
           >
             <p>
-              Every morning the miners scan the 150 most-imported products and the biggest suppliers for sourcing gaps, rate swings, trade shifts and
-              fun facts. Claude picks 8 varied ideas and writes their words; any number it writes that isn&apos;t in the data falls back to the
-              drafted text. Stories offered in the last 30 days aren&apos;t repeated.
+              8 new ideas every morning: sourcing gaps, rate swings, trade shifts and fun facts from the 150 most-imported products and the biggest suppliers.
+              Mark the one you post as used and skip the rest.
             </p>
-            <div className="flex flex-wrap items-center gap-2 text-xs">
-              Same run from the terminal: <CopyCommand command="npm run social:ideas" />
-            </div>
+            <Help label="How ideas are found">
+              <p>
+                Every morning the miners scan the 150 most-imported products and the biggest suppliers for sourcing gaps, rate swings, trade shifts and fun
+                facts. Claude picks 8 varied ideas and writes their words; any number it writes that isn&apos;t in the data falls back to the drafted text.
+                Stories offered in the last 30 days aren&apos;t repeated.
+              </p>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                Same run from the terminal: <CopyCommand command="npm run social:ideas" />
+              </div>
+            </Help>
             {runNotes.map((n) => (
               <Callout key={n} tone={n.startsWith("Couldn't") || n.includes("failed") ? "warning" : "info"}>
                 {n}
@@ -300,7 +349,7 @@ export default function SocialStudio() {
           {ideas?.length === 0 && !ideasError && <EmptyState title="No ideas yet">They arrive every morning, or find some now.</EmptyState>}
           {days.map((day) => (
             <div key={day} className="flex flex-col gap-4">
-              <h2 className="text-sm font-semibold text-base-content/60">
+              <h2 className="text-sm font-semibold text-base-content/60 tracker:pt-2 tracker:text-lg tracker:text-base-content tracker:[font-family:var(--font-tracker-display)]">
                 {new Date(`${day}T00:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
               </h2>
               {ideas!.map((idea, i) =>
@@ -315,14 +364,14 @@ export default function SocialStudio() {
 
       {tab === "news" && (
         <Panel
-          title="Tariff updates, last 30 days"
+          title="Tariff Updates, Last 30 Days"
           count={news?.length}
           actions={
             <span className="flex items-center gap-2 text-xs text-base-content/50">
               Make post and Remake: <Cost claude="under 1¢ each" />
             </span>
           }
-          bodyClassName="divide-y divide-base-content/10"
+          bodyClassName="divide-y divide-base-content/10 tracker:divide-base-300"
         >
           {!news && !error && (
             <div className="p-4">
@@ -340,7 +389,7 @@ export default function SocialStudio() {
             </div>
           )}
           {news?.map((u) => (
-            <div key={u.slug} className={`flex items-center gap-4 px-4 py-2.5 text-sm ${newsSlug === u.slug ? "bg-base-content/[0.04]" : ""}`}>
+            <div key={u.slug} className={`flex items-center gap-4 px-4 py-2.5 text-sm tracker:px-6 tracker:py-3 ${newsSlug === u.slug ? "bg-base-content/[0.04] tracker:bg-tt-soft-high" : ""}`}>
               <span className="w-20 shrink-0 text-xs text-base-content/45">
                 {new Date(u.last_activity_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               </span>
@@ -386,7 +435,7 @@ export default function SocialStudio() {
       })()}
 
       {tab === "product" && (
-        <Panel title="A product" bodyClassName="flex flex-col gap-4 p-4">
+        <Panel title="A Product" bodyClassName="flex flex-col gap-4 px-6 py-5">
           <div className="flex flex-wrap items-end gap-3">
             <Field label="HTS code" className="w-44">
               <input className={`${inputCls} w-full font-mono`} value={htsCode} onChange={(e) => setHtsCode(e.target.value)} placeholder="8711.60.0050" />
@@ -415,7 +464,7 @@ export default function SocialStudio() {
       )}
 
       {tab === "country" && (
-        <Panel title="A country" bodyClassName="flex flex-col gap-4 p-4">
+        <Panel title="A Country" bodyClassName="flex flex-col gap-4 px-6 py-5">
           <div className="flex flex-wrap items-end gap-3">
             <Field label="Country" hint="Two-letter code or name" className="w-56">
               <input className={`${inputCls} w-full`} value={country} onChange={(e) => setCountry(e.target.value)} placeholder="VN" />
@@ -446,7 +495,7 @@ export default function SocialStudio() {
       )}
 
       {tab === "facts" && (
-        <Panel title="A fact across the schedule" bodyClassName="flex flex-col gap-4 p-4">
+        <Panel title="A Fact Across the Schedule" bodyClassName="flex flex-col gap-4 px-6 py-5">
           <div className="flex flex-wrap items-end gap-3">
             <Field label="Fact" className="w-96">
               <Select
@@ -464,6 +513,87 @@ export default function SocialStudio() {
             <Cost />
           </div>
           {error && <Callout tone="error">{error}</Callout>}
+        </Panel>
+      )}
+
+      {tab === "odd" && (
+        <Panel
+          title="Odd Rates in the HTS"
+          count={oddRates ? oddShown.length : undefined}
+          actions={
+            <div className="flex items-center gap-2">
+              <Cost />
+              <button className={btn.secondary} disabled={loading || !oddRates} onClick={() => {
+                  setOddPicked(null)
+                  build({ mode: "odd-rates-roundup" })
+                }}>
+                {loading && !oddPicked && <Spinner />} Make roundup
+              </button>
+            </div>
+          }
+          bodyClassName="flex flex-col gap-3 px-6 py-5 text-sm"
+        >
+          <p className="text-base-content/70">
+            Duty rates charged per jewel, by the degree of a sugar&apos;s polarity, in fractions or on one part of the goods, found in the HTS the
+            site has loaded. A post quotes the rate word for word and shows HTS Hero working it out on a $10,000 shipment. Only rates HTS Hero
+            calculates get posts{oddRates ? `; ${oddNotCalculated} it can't calculate yet are hidden unless you show them` : ""}.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Segmented<OddColumn | "all">
+              value={oddColumn}
+              onChange={setOddColumn}
+              options={[
+                { value: "general", label: "General", title: "What most countries pay" },
+                { value: "other", label: "Column 2", title: "Cuba, North Korea, Russia, Belarus" },
+                { value: "all", label: "Both" },
+              ]}
+            />
+            <input className={`${inputCls} w-64`} value={oddQuery} onChange={(e) => setOddQuery(e.target.value)} placeholder="Search: jewel, sugar, 9105…" />
+            <label className="flex items-center gap-2 text-xs text-base-content/60">
+              <input type="checkbox" className="checkbox checkbox-xs" checked={oddAll} onChange={(e) => setOddAll(e.target.checked)} />
+              Show rates HTS Hero can&apos;t calculate yet
+            </label>
+          </div>
+          {error && <Callout tone="error">{error}</Callout>}
+          {!oddRates && !error && <Spinner />}
+          {oddRates && oddShown.length === 0 && <EmptyState title="No odd rates match">Try another search or column.</EmptyState>}
+          <div className="divide-y divide-base-content/10 rounded-lg border border-base-content/10 tracker:divide-base-300 tracker:rounded-xl tracker:border-base-300">
+            {oddShown.slice(0, ODD_SHOWN).map((g) => {
+              const key = `${g.rate.column}|${g.rate.htsno}`
+              return (
+                <div key={`${g.rate.column}|${g.rate.rate}`} className={`flex items-start gap-4 px-3 py-2.5 ${oddPicked === key ? "bg-base-content/[0.04]" : ""}`}>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium">&ldquo;{g.rate.rate}&rdquo;</div>
+                    <div className="text-xs text-base-content/55">
+                      {g.rate.product} · <span className="font-mono">{g.codes[0]}</span>
+                      {g.codes.length > 1 ? ` +${g.codes.length - 1} more` : ""} · {g.rate.column === "other" ? "Column 2" : "General"} · {g.rate.why}
+                    </div>
+                  </div>
+                  {g.rate.calculable ? (
+                    <button
+                      className={btn.xsSecondary}
+                      disabled={loading}
+                      onClick={() => {
+                        setOddPicked(key)
+                        build({ mode: "odd-rate", htsCode: g.rate.htsno, column: g.rate.column })
+                      }}
+                    >
+                      {loading && oddPicked === key && <Spinner />} Make post
+                    </button>
+                  ) : (
+                    <Pill tone="neutral" title="The calculator can't work this rate out yet, so it gets no post">
+                      Not calculated yet
+                    </Pill>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          {oddShown.length > ODD_SHOWN && (
+            <div className="text-xs text-base-content/50">
+              Showing the {ODD_SHOWN} most post-worthy of {oddShown.length}. Search to find others.
+            </div>
+          )}
         </Panel>
       )}
 
@@ -489,6 +619,6 @@ export default function SocialStudio() {
           ))}
         </>
       )}
-    </div>
+    </>
   )
 }

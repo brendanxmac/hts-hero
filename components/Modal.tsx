@@ -1,6 +1,7 @@
 "use client";
 
-import { Dialog, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   Fragment,
   type Dispatch,

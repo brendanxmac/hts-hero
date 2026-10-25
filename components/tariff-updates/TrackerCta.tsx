@@ -8,37 +8,14 @@ import { LOWEST_PER_IMPORT, REVERSE_TRIAL, formatPrice } from "@/components/pric
 
 // The Tariff Tracker's offer beside tariff news: the updates, matched to the reader's own imports.
 // Free for 14 days (REVERSE_TRIAL), then Tariff News alerts free forever, so the ask is an account, and
-// it opens straight on adding imports. Two sizes: a row in the /tariff-updates list, and a card on an HTS code page (named for the code, with what an alert
-// looks like), inverted from the page so it stands out.
+// it opens straight on adding imports. A card on an HTS code page (named for the code, with what an
+// alert looks like), inverted from the page so it stands out. The /tariff-updates pages have
+// TariffAlertsBanner above the header instead.
 
 const HREF = "/tariff-tracker?tab=catalog&add=paste"
 
-export function TrackerCtaRow({ boxed = false }: { boxed?: boolean }) {
-  return (
-    // A cobalt band with an accent bar and a solid cobalt icon: it stands out without the full
-    // inversion of the HTS page card. Boxed, it stands on its own under the page's heading.
-    <div
-      className={`relative flex flex-col gap-4 overflow-hidden bg-primary/[0.09] px-6 py-5 sm:flex-row sm:items-center sm:justify-between ${
-        boxed ? "rounded-2xl border border-primary/25" : "border-b border-primary/20"
-      }`}
-    >
-      <span className="absolute inset-y-0 left-0 w-1 bg-primary" aria-hidden />
-      <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-content shadow-xs" aria-hidden>
-          <BellAlertIcon className="h-5 w-5" />
-        </span>
-        <p className="m-0 self-center text-base font-semibold text-base-content">Get alerted the moment a new tariff update affects any of your imports</p>
-      </div>
-      <Link href={HREF} className={`${ui.button({ variant: "primary" })} shrink-0 self-start sm:self-center`}>
-        Get tariff alerts for your imports
-        <ArrowRightIcon className="h-4 w-4" aria-hidden />
-      </Link>
-    </div>
-  )
-}
-
 const POINTS = [
-  "Every new US tariff action checked against your imports, every 15 minutes",
+  "Every new US tariff action checked against your imports, every hour",
   "An alert with the rate before and after, by email, Slack or Teams",
   "Impact checks: see exactly how any tariff action affects each import",
   "AD/CVD alerts when an import may fall under a case",

@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
-import { Dialog, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,

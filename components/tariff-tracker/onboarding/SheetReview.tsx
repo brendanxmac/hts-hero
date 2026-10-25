@@ -7,9 +7,7 @@ import {
   CheckCircleIcon,
   CheckIcon,
   DocumentTextIcon,
-  ExclamationTriangleIcon,
   ShieldCheckIcon,
-  SparklesIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
@@ -193,7 +191,6 @@ const SummaryStat = ({
   );
 };
 
-type View = "fix" | "aside" | "all";
 
 export const SheetReview = ({
   file,
@@ -282,27 +279,17 @@ export const SheetReview = ({
     );
     return c;
   }, [sheet]);
-  // The rows to fix first; with none left it falls back to every row
-  const [view, setView] = useState<View>("fix");
-  const activeView: View =
-    view === "fix" && counts.error === 0 && touched.size === 0 ? "all" : view;
+  // Every row, as the sheet has it (no filters): the ones set aside stay, dimmed, and the fix
+  // panel steps through the ones to fix. Only blank rows, the header and deleted rows are left out.
   const shown = useMemo(
     () =>
       sheet
-        .filter((r) =>
-          activeView === "fix"
-            ? r.kind === "error" ||
-              (touched.has(r.index) &&
-                r.kind !== "blank" &&
-                r.kind !== "skipped")
-            : activeView === "aside"
-              ? r.kind === "ignored" || r.kind === "above"
-              : r.kind !== "blank" &&
-                r.kind !== "header" &&
-                r.kind !== "skipped",
+        .filter(
+          (r) =>
+            r.kind !== "blank" && r.kind !== "header" && r.kind !== "skipped",
         )
         .map((r) => r.index),
-    [sheet, activeView, touched],
+    [sheet],
   );
 
   const touch = (row: number) =>
@@ -334,25 +321,16 @@ export const SheetReview = ({
   const latestSheet = useRef(sheet);
   latestSheet.current = sheet;
   const issues = sheet.filter((r) => r.kind === "error").map((r) => r.index);
+  // Only a row the sheet shows (not one just deleted)
   const panelRow =
     selected !== null &&
+    shown.includes(selected) &&
     sheet[selected] &&
     (sheet[selected].kind !== "ok" || touched.has(selected)) &&
     sheet[selected].kind !== "header" &&
     sheet[selected].kind !== "blank"
       ? sheet[selected]
       : null;
-  // A picked row the tab doesn't show (the next issue, from Set aside): show all rows
-  useEffect(() => {
-    if (
-      selected !== null &&
-      !shown.includes(selected) &&
-      sheet[selected]?.kind !== "skipped" &&
-      sheet[selected]?.kind !== "ignored" &&
-      sheet[selected]?.kind !== "above"
-    )
-      setView("all");
-  }, [selected]); // eslint-disable-line react-hooks/exhaustive-deps
   // The sheet opens on the first row to fix, its panel open (once: closing the panel keeps it closed)
   const autoPicked = useRef(false);
   const firstIssue = issues[0];
@@ -392,17 +370,9 @@ export const SheetReview = ({
       [...left].reverse().find((i) => i < from) ?? left[left.length - 1] ?? null
     );
   };
-  // Deleting a row moves on within the tab: the next row set aside (on Set aside), else the next
-  // that needs a fix, so the page never jumps to another tab
+  // Deleting the picked row moves on to the next that needs a fix
   const deleteRow = (row: number) => {
-    if (row === selected) {
-      const rest = shown.filter((i) => i !== row);
-      setSelected(
-        activeView === "aside"
-          ? (rest.find((i) => i > row) ?? rest[0] ?? null)
-          : nextIssue(row),
-      );
-    }
+    if (row === selected) setSelected(nextIssue(row));
     skip(row, true);
   };
   const descCol = useMemo(
@@ -428,6 +398,27 @@ export const SheetReview = ({
       .filter((b) => b.to && b.list.length > 1)
       .sort((a, b) => b.list.length - a.list.length);
   }, [sheet]);
+
+  // One country fix on every row with the same unrecognized value (offered in the fix panel)
+  const applyBulk = (b: (typeof bulk)[number]) => {
+    setEdits((e) => ({
+      ...e,
+      cells: {
+        ...e.cells,
+        ...Object.fromEntries(
+          b.list.map((r) => [`${r}:${cols.country}`, b.to!.name]),
+        ),
+      },
+    }));
+    setTouched((prev) => new Set([...prev, ...b.list]));
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, {
+      help: "sheet_country_bulk",
+      rows: b.list.length,
+    });
+  };
+  const panelBulk = panelRow
+    ? bulk.find((b) => b.list.includes(panelRow.index))
+    : undefined;
 
   const header = columns.headerIndex >= 0 ? rows[columns.headerIndex] : null;
   const name = (i: number | undefined) =>
@@ -480,7 +471,6 @@ export const SheetReview = ({
       onFix={() => {
         setConfirming(false);
         setStage("sheet");
-        setView("fix");
         setSelected(issues[0] ?? null);
         trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
           step: "sheet_leave_rows_fix",
@@ -699,48 +689,40 @@ export const SheetReview = ({
     );
   }
 
-  const tab = (id: View, label: string, count: number) => (
-    <button
-      type="button"
-      onClick={() => setView(id)}
-      className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors ${activeView === id ? "bg-base-content text-base-100" : "text-base-content/65 hover:bg-tt-soft"}`}
-    >
-      {label} <span className="tabular-nums opacity-70">{n(count)}</span>
-    </button>
-  );
+  // What starting says, in the footer and once every row is fixed
+  const startLabel = finishing
+    ? products.length
+      ? `Track the ${n(products.length)} fixed`
+      : "Done for now"
+    : !products.length
+      ? "Track my imports"
+      : counts.error > 0
+        ? `Start with the ${n(products.length)} ready`
+        : `Track ${n(products.length)} ${products.length === 1 ? "import" : "imports"}`;
 
+  // Exactly the screen's height (data-fit, read by ImportTakeover): the page never scrolls, the
+  // sheet and its panel scroll inside, and the header stays at the top however short the sheet is
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-base-content/60 hover:text-base-content"
-        >
-          <ArrowLeftIcon className="h-4 w-4" aria-hidden />
-          Back
-        </button>
-        {!finishing && (
-          <button
-            type="button"
-            onClick={onReplace}
-            className={`${ui.link} text-sm`}
-          >
-            {replace}
-          </button>
-        )}
-      </div>
-
-      {/* The file, its sheet, and which columns were read: three short lines */}
-      <div className="flex flex-col gap-1.5">
+    <div data-fit className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-4">
+      {/* The header: the step; the file, its sheet and columns; then what's kept, and a way to start over */}
+      <div className="flex shrink-0 flex-col gap-1.5">
         <span className={tt.eyebrow(finishing ? "warning" : "primary")}>
           {finishing ? "Imports to finish" : `Step ${ADD_STEP} · Check your sheet`}
         </span>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <button
+            type="button"
+            onClick={onBack}
+            className="-ml-1.5 rounded-full p-1.5 text-base-content/60 hover:bg-tt-soft hover:text-base-content"
+            aria-label="Back"
+            title="Back"
+          >
+            <ArrowLeftIcon className="h-5 w-5" aria-hidden />
+          </button>
           <h1
             id="tt-onboarding-title"
             tabIndex={-1}
-            className={`${tt.display} m-0 text-[2rem] font-semibold leading-tight tracking-tight text-base-content outline-hidden`}
+            className={`${tt.display} -ml-2 m-0 text-2xl font-semibold leading-tight tracking-tight text-base-content outline-hidden`}
           >
             {finishing ? "Finish your imports" : file}
           </h1>
@@ -757,8 +739,6 @@ export const SheetReview = ({
               }))}
             />
           )}
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
           <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-base-content/75">
             {finishing ? (
               <span>
@@ -793,17 +773,28 @@ export const SheetReview = ({
               </span>
             )}
           </p>
-          <span className="flex items-center gap-1.5 text-xs text-base-content/65">
-            <ShieldCheckIcon className="h-4 w-4 text-success" aria-hidden />
+        </div>
+        <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-base-content/65">
+          <span className="flex items-center gap-1.5">
+            <ShieldCheckIcon className="h-4 w-4 shrink-0 text-success" aria-hidden />
             {counts.error > 0
               ? "Read in your browser. Only codes and countries are kept, plus product names on rows left to fix (on this device)."
               : "Read in your browser. Only HTS codes and countries are kept."}
           </span>
-        </div>
+          {!finishing && (
+            <button
+              type="button"
+              onClick={onReplace}
+              className={`${ui.link} shrink-0 text-xs`}
+            >
+              {replace}
+            </button>
+          )}
+        </p>
       </div>
 
       {picking && (
-        <div className="flex flex-col gap-2">
+        <div className="flex max-h-[45%] shrink-0 flex-col gap-2 overflow-y-auto">
           <ColumnPicker rows={rows} found={columns} onChange={onColumns} />
           {ready && (
             <button
@@ -819,187 +810,165 @@ export const SheetReview = ({
 
       {ready && (
         <>
-          {/* One toolbar: the tabs, the one-click fixes, and where the sheet stands */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1 rounded-full bg-base-100 p-1">
-                  {tab("all", "All rows", counts.ok + counts.error)}
-                  {tab("fix", "Needs a fix", counts.error)}
-                  {tab("aside", "Set aside", counts.aside)}
-                </div>
-                {bulk.map((b) => (
-                  <button
-                    key={b.value}
-                    type="button"
-                    className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/10"
-                    onClick={() => {
-                      setEdits((e) => ({
-                        ...e,
-                        cells: {
-                          ...e.cells,
-                          ...Object.fromEntries(
-                            b.list.map((r) => [
-                              `${r}:${cols.country}`,
-                              b.to!.name,
-                            ]),
-                          ),
-                        },
-                      }));
-                      setTouched((prev) => new Set([...prev, ...b.list]));
-                      trackEvent(
-                        MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED,
-                        { help: "sheet_country_bulk", rows: b.list.length },
-                      );
-                    }}
-                  >
-                    <SparklesIcon className="h-3.5 w-3.5" aria-hidden />
-                    &ldquo;{b.value}&rdquo; → {b.to!.flag} {b.to!.name} on all{" "}
-                    {b.list.length}
-                  </button>
-                ))}
-              </div>
-              <span className="text-sm text-base-content/70">
-                <strong className="text-success">{n(products.length)}</strong>{" "}
-                {products.length === 1 ? "import" : "imports"} ready
-                {counts.error > 0 && (
-                  <>
-                    {" · "}
-                    <strong className="text-warning">
-                      {n(counts.error)}
-                    </strong>{" "}
-                    to fix
-                  </>
-                )}
-                {review.alreadyTracked > 0 &&
-                  ` · ${n(review.alreadyTracked)} already tracked`}
-                {counts.aside > 0 && ` · ${n(counts.aside)} set aside`}
-              </span>
-            </div>
-
-            {counts.error === 0 && counts.ok > 0 ? (
-              <p
-                className={`${ui.notice("success")} m-0 flex items-center gap-2 text-sm`}
-              >
-                <CheckCircleIcon className="h-4 w-4 text-success" aria-hidden />
-                Every row reads. {touched.size > 0 ? "Nice work: " : ""}
-                {n(products.length)}{" "}
-                {products.length === 1 ? "import is" : "imports are"} ready to
-                track.
-              </p>
-            ) : (
-              <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-base-content/70">
-                {counts.error > 0 && (
-                  <span>
-                    <ExclamationTriangleIcon
-                      className="mr-1 inline h-4 w-4 text-warning"
-                      aria-hidden
-                    />
-                    Click a row to see what&apos;s wrong and fix it, or track
-                    the rest now and fix these later.
-                  </span>
-                )}
-                {counts.deleted > 0 && (
-                  <span className="flex items-center gap-x-3">
-                    <TrashIcon
-                      className="h-4 w-4 text-base-content/45"
-                      aria-hidden
-                    />
-                    {lastDeleted !== null && edits.skipped.includes(lastDeleted)
-                      ? `Row ${lastDeleted + 1} deleted.`
-                      : `${n(counts.deleted)} ${counts.deleted === 1 ? "row" : "rows"} deleted.`}
-                    {lastDeleted !== null &&
-                      edits.skipped.includes(lastDeleted) && (
-                        <button
-                          type="button"
-                          className={`${ui.link} text-sm`}
-                          onClick={() => skip(lastDeleted, false)}
-                        >
-                          Undo
-                        </button>
-                      )}
-                    {counts.deleted > 1 && (
-                      <button
-                        type="button"
-                        className={`${ui.link} text-sm`}
-                        onClick={() => {
-                          setEdits((e) => ({ ...e, skipped: [] }));
-                          setLastDeleted(null);
-                        }}
-                      >
-                        Restore all {n(counts.deleted)}
-                      </button>
+          {/* The sheet, and beside it the picked row's fix panel. Over the sheet, in its card: the
+              title and what to do */}
+          <div ref={sheetBox} className="flex min-h-48 flex-1 items-stretch gap-4">
+            <SheetGrid
+              above={
+                <>
+                  <div className="flex flex-col gap-1">
+                    <span
+                      className={`${tt.display} text-base font-semibold text-base-content`}
+                    >
+                      Your Imports
+                    </span>
+                    {counts.error > 0 ? (
+                      <p className="m-0 text-sm text-base-content/70">
+                        Click a row to see what&apos;s wrong and fix it, or
+                        track the rest now and fix these later.
+                      </p>
+                    ) : (
+                      <p className="m-0 flex items-start gap-1.5 text-sm text-base-content/70">
+                        <CheckCircleIcon
+                          className="mt-0.5 h-4 w-4 shrink-0 text-success"
+                          aria-hidden
+                        />
+                        <span>
+                          Every row reads.{" "}
+                          {touched.size > 0 ? "Nice work: " : ""}
+                          {n(products.length)}{" "}
+                          {products.length === 1 ? "import is" : "imports are"}{" "}
+                          ready to track.
+                        </span>
+                      </p>
                     )}
+                    {counts.deleted > 0 && (
+                      <p className="m-0 flex flex-wrap items-center gap-x-3 text-sm text-base-content/70">
+                        <TrashIcon
+                          className="h-4 w-4 text-base-content/45"
+                          aria-hidden
+                        />
+                        {lastDeleted !== null && edits.skipped.includes(lastDeleted)
+                          ? `Row ${lastDeleted + 1} deleted.`
+                          : `${n(counts.deleted)} ${counts.deleted === 1 ? "row" : "rows"} deleted.`}
+                        {lastDeleted !== null &&
+                          edits.skipped.includes(lastDeleted) && (
+                            <button
+                              type="button"
+                              className={`${ui.link} text-sm`}
+                              onClick={() => skip(lastDeleted, false)}
+                            >
+                              Undo
+                            </button>
+                          )}
+                        {counts.deleted > 1 && (
+                          <button
+                            type="button"
+                            className={`${ui.link} text-sm`}
+                            onClick={() => {
+                              setEdits((e) => ({ ...e, skipped: [] }));
+                              setLastDeleted(null);
+                            }}
+                          >
+                            Restore all {n(counts.deleted)}
+                          </button>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                </>
+              }
+              sheet={sheet}
+              shown={shown}
+              header={header}
+              columns={{ code: cols.code!, country: cols.country! }}
+              onEdit={edit}
+              onSkip={(row, on) => (on ? deleteRow(row) : skip(row, false))}
+              selected={selected}
+              onSelect={setSelected}
+            />
+            {panelRow ? (
+              <div className="tt-ob-from-right flex min-w-0 flex-1 flex-col">
+                <RowFixPanel
+                  key={panelRow.index}
+                  row={panelRow}
+                  rows={rows}
+                  columns={{ code: cols.code!, country: cols.country! }}
+                  descCol={descCol}
+                  position={issuePosition}
+                  everywhere={
+                    panelBulk
+                      ? {
+                          count: panelBulk.list.length,
+                          apply: () => applyBulk(panelBulk),
+                        }
+                      : undefined
+                  }
+                  onEdit={(column, value) =>
+                    edit(panelRow.index, column, value)
+                  }
+                  onDelete={() => deleteRow(panelRow.index)}
+                  onInclude={() => include(panelRow.index)}
+                  onPrev={() => setSelected(prevIssue(panelRow.index))}
+                  onNext={() => setSelected(nextIssue(panelRow.index))}
+                  onClose={() => setSelected(null)}
+                />
+              </div>
+            ) : issues.length === 0 && products.length > 0 ? (
+              // Every row fixed: the way on, though never automatic, so the changes can be looked over first
+              <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-5 overflow-y-auto rounded-xl border border-success/30 bg-success/5 p-6 text-center">
+                <span
+                  className="tt-ob-pop flex h-14 w-14 items-center justify-center rounded-full bg-success text-success-content"
+                  aria-hidden
+                >
+                  <CheckCircleIcon className="h-8 w-8" />
+                </span>
+                <div className="tt-ob-rise flex flex-col gap-1.5">
+                  <span
+                    className={`${tt.display} text-2xl font-semibold leading-tight text-base-content`}
+                  >
+                    {touched.size > 0 ? "All fixed. Nice work." : "Every row reads."}
                   </span>
+                  <span className="text-sm text-base-content/70">
+                    Click any row to look over your changes, or carry on.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className={`${ui.button({ variant: "primary", size: "lg" })} tt-ob-rise px-7`}
+                  style={delay(120)}
+                  onClick={askStart}
+                >
+                  {startLabel}
+                  <ArrowRightIcon className="h-4 w-4" aria-hidden />
+                </button>
+              </div>
+            ) : (
+              // No row picked: the panel's place, saying how to open it
+              <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-base-300 p-6 text-center">
+                <p className="m-0 text-sm text-base-content/70">
+                  {!shown.length
+                    ? `We found the columns, but no rows under them. Check you picked the right ${pasted ? "columns" : "sheet"}.`
+                    : issues.length
+                      ? "Click a row to see what's wrong and fix it."
+                      : "Every row reads. Click one to check or change it."}
+                </p>
+                {issues.length > 0 && (
+                  <button
+                    type="button"
+                    className={ui.button({ size: "sm" })}
+                    onClick={() => setSelected(issues[0])}
+                  >
+                    Fix the first one
+                  </button>
                 )}
-              </p>
+              </div>
             )}
           </div>
 
-          {shown.length ? (
-            // The sheet, and beside it the picked row's fix panel
-            <div ref={sheetBox} className="flex scroll-mt-20 items-start gap-4">
-              <SheetGrid
-                sheet={sheet}
-                shown={shown}
-                header={header}
-                columns={{ code: cols.code!, country: cols.country! }}
-                onEdit={edit}
-                onSkip={(row, on) => (on ? deleteRow(row) : skip(row, false))}
-                selected={selected}
-                onSelect={setSelected}
-              />
-              {panelRow ? (
-                <div className="tt-ob-from-right min-w-0 flex-1">
-                  <RowFixPanel
-                    key={panelRow.index}
-                    row={panelRow}
-                    rows={rows}
-                    header={header}
-                    columns={{ code: cols.code!, country: cols.country! }}
-                    descCol={descCol}
-                    position={issuePosition}
-                    onEdit={(column, value) =>
-                      edit(panelRow.index, column, value)
-                    }
-                    onDelete={() => deleteRow(panelRow.index)}
-                    onInclude={() => include(panelRow.index)}
-                    onPrev={() => setSelected(prevIssue(panelRow.index))}
-                    onNext={() => setSelected(nextIssue(panelRow.index))}
-                    onClose={() => setSelected(null)}
-                  />
-                </div>
-              ) : (
-                // No row picked: the panel's place, saying how to open it
-                <div className="flex h-[min(72vh,46rem)] min-w-0 flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-base-300 p-6 text-center">
-                  <p className="m-0 text-sm text-base-content/70">
-                    {issues.length
-                      ? "Click a row to see what's wrong and fix it."
-                      : "Every row reads. Click one to check or change it."}
-                  </p>
-                  {issues.length > 0 && (
-                    <button
-                      type="button"
-                      className={ui.button({ size: "sm" })}
-                      onClick={() => setSelected(issues[0])}
-                    >
-                      Fix the first one
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          ) : (
-            <p className="m-0 rounded-xl border border-dashed border-base-300 p-6 text-center text-sm text-base-content/60">
-              {activeView === "aside"
-                ? "Nothing set aside."
-                : `We found the columns, but no rows under them. Check you picked the right ${pasted ? "columns" : "sheet"}.`}
-            </p>
-          )}
-
-          {/* Always in view, so starting never waits on the fixes: rows still to fix don't hold
-              the rest back, and the button says so */}
-          <div className="sticky bottom-0 z-20 -mx-2 flex flex-wrap items-center justify-between gap-3 rounded-t-2xl border-t border-base-300 bg-(--tt-ob-ground)/95 px-2 py-4 backdrop-blur">
+          {/* Always in view at the foot of the page, so starting never waits on the fixes: rows still
+              to fix don't hold the rest back, and the button says so */}
+          <div className={`${tt.panel} mt-auto flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 py-3.5`}>
             <span className="text-sm text-base-content/65">
               {finishing
                 ? counts.error > 0
@@ -1019,15 +988,7 @@ export const SheetReview = ({
               disabled={!products.length && !finishing}
               onClick={askStart}
             >
-              {finishing
-                ? products.length
-                  ? `Track the ${n(products.length)} fixed`
-                  : "Done for now"
-                : !products.length
-                  ? "Track my imports"
-                  : counts.error > 0
-                    ? `Start with the ${n(products.length)} ready`
-                    : `Track ${n(products.length)} ${products.length === 1 ? "import" : "imports"}`}
+              {startLabel}
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </button>
           </div>

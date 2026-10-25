@@ -66,10 +66,10 @@ const Option = ({
 export const RowFixPanel = ({
   row,
   rows,
-  header,
   columns,
   descCol,
   position,
+  everywhere,
   onEdit,
   onDelete,
   onInclude,
@@ -79,12 +79,13 @@ export const RowFixPanel = ({
 }: {
   row: SheetRow<HtsElement>;
   rows: string[][];
-  header: string[] | null;
   columns: { code: number; country: number };
   // The column that says what the product is (guide.ts describingColumn)
   descCol: number | null;
   // Which issue this is, of how many still to fix (null: not one of them)
   position: { index: number; total: number } | null;
+  // The same country fix for every row with this unrecognized country, when there are others
+  everywhere?: { count: number; apply: () => void };
   onEdit: (column: number, value: string) => void;
   onDelete: () => void;
   onInclude: () => void;
@@ -147,21 +148,18 @@ export const RowFixPanel = ({
     if (k >= 1 && k <= Math.min(OPTIONS, codes.length)) {
       e.preventDefault();
       pickCode(codes[k - 1].htsno);
-    } else if (e.key === "Escape") onClose();
+    } else if (e.key === "Escape") {
+      e.stopPropagation();
+      onClose();
+    }
   };
 
-  const context = (rows[row.index] ?? [])
-    .map((value, i) => ({ value, label: header?.[i] || `Column ${i + 1}`, i }))
-    .filter(
-      (c) => c.value?.trim() && c.i !== columns.code && c.i !== columns.country,
-    )
-    .slice(0, 5);
   const product = descCol !== null ? rows[row.index]?.[descCol] : null;
 
   return (
     <aside
       onKeyDown={onKey}
-      className={`${tt.panel} group/panel flex h-[min(72vh,46rem)] flex-col overflow-hidden`}
+      className={`${tt.panel} group/panel flex min-h-0 flex-1 flex-col overflow-hidden`}
       aria-label={`Fix row ${row.index + 1}`}
     >
       {/* Which row, which issue, and the way through them */}
@@ -256,60 +254,7 @@ export const RowFixPanel = ({
           </p>
         )}
 
-        {/* The row, as the file has it */}
-        {context.length > 0 && (
-          <dl className="m-0 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 rounded-xl bg-tt-soft px-4 py-3 text-sm">
-            {context.map((c) => (
-              <div key={c.i} className="contents">
-                <dt className="text-base-content/55">{c.label}</dt>
-                <dd className="m-0 truncate font-medium text-base-content">
-                  {c.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        )}
-
-        {/* The likely fixes */}
-        {codes.length > 0 && (
-          <div className="flex flex-col gap-2">
-            <span className="flex items-center gap-1.5 text-sm font-semibold text-base-content">
-              <SparklesIcon className="h-4 w-4 text-primary" aria-hidden />
-              {isHs6Like(row.code) ? "Choose the full US code" : "Did you mean"}
-              <span className="hidden font-normal text-base-content/50 group-focus-within/panel:inline">
-                · press 1–{Math.min(OPTIONS, codes.length)}
-              </span>
-            </span>
-            {codes.slice(0, OPTIONS).map((c, i) => (
-              <Option key={c.digits} index={i} onPick={() => pickCode(c.htsno)}>
-                <HighlightedCode written={row.code} htsno={c.htsno} />
-                <span className="line-clamp-2 text-xs text-base-content/65">
-                  {c.description}
-                </span>
-              </Option>
-            ))}
-            {codes.length > OPTIONS && (
-              <CodeSuggestionSelect
-                written={row.code}
-                codes={codes.slice(OPTIONS)}
-                onPick={pickCode}
-                label="More codes"
-              />
-            )}
-          </div>
-        )}
-        {country && (
-          <button
-            type="button"
-            className="flex items-center gap-2 self-start rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary/10"
-            onClick={() => pickCountry(country.name)}
-          >
-            <SparklesIcon className="h-4 w-4" aria-hidden />
-            Use {country.flag} {country.name}
-          </button>
-        )}
-
-        {/* Or type it */}
+        {/* The code and country, to type in; the likely fixes follow */}
         {!setAside && (
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1.5">
@@ -355,6 +300,61 @@ export const RowFixPanel = ({
             </div>
           </div>
         )}
+        {/* The likely fixes */}
+        {codes.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <span className="flex items-center gap-1.5 text-sm font-semibold text-base-content">
+              <SparklesIcon className="h-4 w-4 text-primary" aria-hidden />
+              {isHs6Like(row.code) ? "Choose the full US code" : "Did you mean"}
+              <span className="hidden font-normal text-base-content/50 group-focus-within/panel:inline">
+                · press 1–{Math.min(OPTIONS, codes.length)}
+              </span>
+            </span>
+            {codes.slice(0, OPTIONS).map((c, i) => (
+              <Option key={c.digits} index={i} onPick={() => pickCode(c.htsno)}>
+                <HighlightedCode written={row.code} htsno={c.htsno} />
+                <span className="line-clamp-2 text-xs text-base-content/65">
+                  {c.description}
+                </span>
+              </Option>
+            ))}
+            {codes.length > OPTIONS && (
+              <CodeSuggestionSelect
+                written={row.code}
+                codes={codes.slice(OPTIONS)}
+                onPick={pickCode}
+                label="More codes"
+              />
+            )}
+          </div>
+        )}
+        {country && (
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary/10"
+              onClick={() => pickCountry(country.name)}
+            >
+              <SparklesIcon className="h-4 w-4" aria-hidden />
+              Use {country.flag} {country.name}
+            </button>
+            {everywhere && (
+              <button
+                type="button"
+                className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary/10"
+                onClick={() => {
+                  everywhere.apply();
+                  if (!codeBad) setTimeout(onNext, ADVANCE_MS);
+                }}
+              >
+                <SparklesIcon className="h-4 w-4" aria-hidden />
+                Use {country.flag} {country.name} on all {n(everywhere.count)} rows
+                with &ldquo;{row.country.trim()}&rdquo;
+              </button>
+            )}
+          </div>
+        )}
+
         {row.kind === "error" && !codeBad && !countryBad && (
           <p className="m-0 flex items-start gap-1.5 text-xs text-base-content/65">
             <ExclamationTriangleIcon

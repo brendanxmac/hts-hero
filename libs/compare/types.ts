@@ -25,6 +25,7 @@ export type FeatureKey =
   | "selfServe"
   | "publishedPricing"
   | "fullStack"
+  | "adcvd"
   | "tradePreferences"
   | "adjustments"
   | "entryDate"
@@ -36,9 +37,23 @@ export type FeatureKey =
   | "api"
   | "changelog";
 
+// The vendor page that shows a cell's value, linked on the page so anyone can check it
+export interface Evidence {
+  url: string;
+  // YYYY-MM-DD: when the page was read
+  checkedAt: string;
+  // The page's own words, kept for our records and not shown on the site (at most ~20 words)
+  quote?: string;
+}
+
 export interface FeatureValue {
   support: Support;
   note?: string;
+  // Required for every competitor value except "unknown": a "no" needs the vendor's own
+  // statement, or the page that would list it (the pricing page, for published pricing)
+  evidence?: Evidence;
+  // For "unknown": the vendor pages searched without finding it, and when
+  searched?: { urls: string[]; checkedAt: string };
 }
 
 export interface VsContent {

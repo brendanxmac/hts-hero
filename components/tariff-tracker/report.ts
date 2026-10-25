@@ -47,7 +47,9 @@ export interface TrackedProduct {
   input: Omit<CalculationInput, "answers">;
   result: CalculationResult;
   description: string;
+  // Of the customs value; leaves out a base rate that can't be calculated (baseNotCalculated)
   totalPct: number;
+  baseNotCalculated: boolean;
   parts: RatePart[];
   // What answering each yes/no question would change, in dollars
   impacts: Record<string, number>;
@@ -65,6 +67,10 @@ export const describe = (element: HtsElement, htsElements: HtsElement[]) => {
     .filter((text) => text && !/^other\b[\s.,]*$/i.test(text));
   return levels.slice(-2).join(" › ") || "Other";
 };
+
+// Every level from the heading down to the code itself, "Other" levels included
+export const describePath = (element: HtsElement, htsElements: HtsElement[]) =>
+  [...getHtsElementParents(element, htsElements), element].map((el) => plain(el.description)).filter(Boolean);
 
 // A result's total as parts of the customs value: base duty, then each program that applies
 export const rateParts = (result: CalculationResult, customsValue: number): RatePart[] => {
@@ -103,6 +109,7 @@ export const trackProduct = (
     quantity,
     transportMode: adjustments.transportMode ?? DEFAULT_MODE,
     claimedPreference: adjustments.claimedPreference,
+    htsElements,
   });
   const result = calculate(AllRules, { ...input, answers });
   const impacts = questionImpacts(input, result, answers);
@@ -117,6 +124,7 @@ export const trackProduct = (
     result,
     description: describe(entry.element, htsElements),
     totalPct: (result.totalDuty / customsValue) * 100,
+    baseNotCalculated: result.baseNotCalculated,
     parts: rateParts(result, customsValue),
     impacts,
     openQuestions: countOpenQuestions(result, impacts),

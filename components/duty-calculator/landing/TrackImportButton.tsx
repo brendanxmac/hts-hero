@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { useUser } from "@/contexts/UserContext";
-import { REVERSE_TRIAL, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { signupHref } from "@/components/tariff-tracker/access/signup";
 import * as ui from "@/components/ui/styles";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
-import { SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { itemKey } from "@/components/tariff-tracker/catalog";
 import { addToCatalog } from "@/components/tariff-tracker/catalogStore";
 import { ProductTab, productUrl } from "@/components/tariff-tracker/sections";
@@ -51,6 +50,8 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
   const [landOn, setLandOn] = useState<ProductTab | undefined>(undefined);
   // What the account's pitch leads with, when the host has its own (Get Insights)
   const [pitch, setPitch] = useState<AccountPitch | null>(null);
+  // Signed in, from getStarted: the pitch's button opens the Tracker's import onboarding
+  const [member, setMember] = useState(false);
   if (!f.selectedElement || !f.country) return null;
   const product = { code: htsCodeDigitsOnly(f.selectedElement.htsno), country: f.country.code };
   const save = () => {
@@ -72,6 +73,7 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
   const start = (tab?: ProductTab, account?: AccountPitch) => {
     setLandOn(tab);
     setPitch(account ?? null);
+    setMember(false);
     if (user) {
       save();
       window.location.href = productUrl(itemKey(product), tab);
@@ -80,23 +82,34 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
     setOpen(true);
     trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature: source, reason: "account", page: "calculator" });
   };
+  // The calculator's "Get Tariff Alerts, Audits, & Savings": signed out, the free account's pitch
+  // (as start); signed in, the same pitch for an account, whose button opens the import onboarding
+  // on the Tracker (?setup=add, ImportTakeover) to add all their imports. This one isn't saved: it's
+  // in their recent lookups, which the onboarding offers.
+  const getStarted = (pitchFor: (member: boolean) => AccountPitch) => {
+    if (!user) return start("overview", pitchFor(false));
+    setPitch(pitchFor(true));
+    setMember(true);
+    setOpen(true);
+    trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature: "get-started", reason: "signed-in", page: "calculator" });
+  };
   const dialog = (
     <ConversionDialog
       open={open}
       view="account"
-      account={pitch ?? { title: `Get alerts and news for this import, free for ${REVERSE_TRIAL.days} days`, highlight: SAVINGS_ENABLED ? "savings" : "alerts", cta: "Create my free account" }}
-      accountNote={
-        SAVINGS_ENABLED
-          ? `This import is saved to your Tracker, with ${TRIAL_ALLOWANCE.savingsChecks} free savings checks and ${TRIAL_ALLOWANCE.auditChecks} free entry audits.`
-          : `This import is saved to your Tracker, with the full Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports.`
-      }
+      account={pitch ?? { title: `Get alerts and news for this import, free for ${REVERSE_TRIAL.days} days`, highlight: "alerts", cta: "Create my free account" }}
+      accountNote={`This import is saved to your Tracker, with the full Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports.`}
       onClose={() => setOpen(false)}
       onCreateAccount={() => {
+        if (member) {
+          window.location.href = "/tariff-tracker?setup=add";
+          return;
+        }
         save();
         window.location.href = signupHref(productUrl(itemKey(product), landOn));
       }}
       page="calculator"
     />
   );
-  return { url, start, dialog };
+  return { url, start, getStarted, dialog };
 };

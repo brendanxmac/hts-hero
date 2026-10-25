@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, BellAlertIcon } from "@heroicons/react/20/solid";
 import { useUser } from "@/contexts/UserContext";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "./styles";
@@ -31,3 +31,24 @@ export const TrackerBanner = () => {
     </div>
   );
 };
+
+// The same bar on the tariff updates pages: alerts when an update affects the reader's imports.
+// Above the header, so it doesn't compete with the page's own email sign-up. It opens straight on
+// adding imports.
+export const TariffAlertsBanner = () => (
+  <div className="hts-tracker-on-dark bg-neutral text-neutral-content scheme-dark">
+    <div className={`${mk.container} flex flex-col items-center justify-center gap-2 py-2.5 sm:flex-row sm:justify-between sm:gap-6`}>
+      <p className="flex items-center gap-2 text-center text-sm font-semibold sm:text-left">
+        <BellAlertIcon className="hidden h-4 w-4 shrink-0 text-success sm:block" aria-hidden />
+        Get alerted the moment a new tariff update affects any of your imports
+      </p>
+      <Link
+        href="/tariff-tracker?tab=catalog&add=paste"
+        className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-success px-3.5 text-xs font-semibold text-success-content transition-colors hover:bg-success/90"
+      >
+        Get tariff alerts for your imports
+        <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+      </Link>
+    </div>
+  </div>
+);

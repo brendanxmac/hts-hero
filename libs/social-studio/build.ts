@@ -6,7 +6,10 @@ import stats from "../country-pages/import-stats.json"
 import { countryTopImports, TOP_IMPORTS_YEAR } from "../country-pages/topImports"
 import { getHtsElementParentsServer, getHtsElementsServer } from "../hts-server"
 import { DutyInputError, findOrigin } from "../mcp/duty"
-import { dotted, isKnownCountry, pctText, postCountry, productData, productNameOf, rateHistory, round1, SOURCE_CENSUS, topImportedCodes } from "./data"
+import { dotted, isKnownCountry, pctText, postCountry, productData, productNameOf, rateHistory, round1, SOURCE_CENSUS, topImportedCodes, VALUE } from "./data"
+import type { HtsElement } from "../../interfaces/hts"
+import { inSentence } from "../hts-duty-summary"
+import { column2Countries, COLUMN_LABEL, findOddRates, OddColumn, OddRate, workedExample } from "./unusual"
 import { calculatorLink, censusCodeLink, censusCountryLink, censusWorldLink, dedupe, htsLink } from "./sources"
 import { bigNumberPost, headToHeadPost, quizPost, rankingPost, sourcingPost, spreadPost, timelinePost, tradeShiftPost } from "./posts"
 
@@ -268,4 +271,98 @@ export const buildFactPosts = async ({ kind, theme = "dark" }: { kind: FactKind;
     subhead: "By 10-digit HTS code, leaving out fuels, precious metals and US goods returned",
     rows: rows.map((r) => ({ label: r.name, sublabel: r.code, value: millions(r.value / 1e6), share: r.value / max })),
   }, rows.map((r) => censusCodeLink(`${r.name}: ${millions(r.value / 1e6)} of US imports in ${TOP_IMPORTS_YEAR} (all countries)`, r.code, TOP_IMPORTS_YEAR)))
+}
+
+// ---------- Odd rates ----------
+
+let oddRates: { elements: HtsElement[]; rates: OddRate[] } | null = null
+
+// Every odd rate in the HTS the app has loaded (worked out again after a new revision loads)
+export const listOddRates = async () => {
+  const elements = await getHtsElementsServer()
+  if (oddRates?.elements !== elements) oddRates = { elements, rates: findOddRates(elements) }
+  return oddRates.rates
+}
+
+const ENGINE_AND_HTS = "Harmonized Tariff Schedule (USITC) · HTS Hero tariff engine"
+
+// A country the column applies to, for the calculator link
+const columnCountry = (column: OddColumn, asOf: string) => (column === "other" ? column2Countries(asOf)[0]?.code ?? "CU" : "CN")
+
+export const oddRatePost = (odd: OddRate, units: string[], theme: Theme, asOf = todayIso()): Post<"OddRate"> => {
+  const worked = workedExample(odd.rate, units[0])
+  const whose = odd.column === "other" ? "Column 2 tariff" : "US tariff"
+  const names = column2Countries(asOf).map((c) => c.name)
+  return {
+    key: `odd-${odd.htsno}-${odd.column}`,
+    template: "OddRate",
+    title: `${odd.product}: "${odd.rate}"`,
+    props: {
+      theme,
+      asOf,
+      source: ENGINE_AND_HTS,
+      headline: `The ${whose} on ${inSentence(odd.product)} is charged ${odd.hook}`,
+      product: odd.product,
+      htsCode: odd.htsno,
+      rate: odd.rate,
+      column: COLUMN_LABEL[odd.column],
+      columnNote: odd.column === "other" ? `Applies to ${names.join(", ")}` : "What most countries pay, before trade deals and Chapter 99 duties",
+      shipment: `Worked out by HTS Hero on a ${usdWhole(VALUE)} shipment`,
+      steps: worked.steps,
+      total: worked.total,
+      footnote: worked.total ? "Base duty only; Chapter 99 duties can apply on top." : "HTS Hero asks for what the rate needs, then works out the duty.",
+    },
+    sources: dedupe([
+      htsLink(`HTS ${odd.htsno}: the ${COLUMN_LABEL[odd.column].toLowerCase()}, word for word`, odd.htsno),
+      calculatorLink(`HTS Hero's working of "${odd.rate}"`, odd.htsno, columnCountry(odd.column, asOf)),
+    ]),
+  }
+}
+
+const usdWhole = (n: number) => `$${n.toLocaleString("en-US")}`
+
+export const buildOddRatePosts = async ({ htsCode, column, theme = "dark" }: { htsCode: string; column: OddColumn; theme?: Theme }): Promise<BuildResult> => {
+  const odd = (await listOddRates()).find((r) => r.htsno === htsCode.trim() && r.column === column)
+  if (!odd) throw new DutyInputError(`HTS ${htsCode} has no odd ${COLUMN_LABEL[column].toLowerCase()}.`)
+  if (!odd.calculable) throw new DutyInputError(`HTS Hero can't calculate "${odd.rate}" yet, so there's no post for it.`)
+  const elements = await getHtsElementsServer()
+  const units = elements.find((e) => e.htsno === odd.htsno)?.units ?? []
+  const post = oddRatePost(odd, units, theme)
+  return { title: `${odd.product} · HTS ${odd.htsno}`, posts: [post as Post], notes: [] }
+}
+
+// A hook short enough for a list's value column: "per jewel over 7", "by the degree", "on the case"
+export const shortHook = (hook: string) =>
+  /^by the degree/.test(hook) ? "by the degree" : hook.length <= 24 ? hook : hook.replace(/^partly /, "").split(/,| and /)[0].slice(0, 24).trim()
+
+// The strangest General rates HTS Hero works out, one per kind of oddity, as a list
+export const buildOddRatesRoundup = async ({ theme = "dark" }: { theme?: Theme }): Promise<BuildResult> => {
+  const seen = new Set<string>()
+  const rows = (await listOddRates())
+    .filter((r) => r.calculable && r.column === "general")
+    .filter((r) => !seen.has(shortHook(r.hook)) && !!seen.add(shortHook(r.hook)))
+    .slice(0, 8)
+  const title = "The oddest rates in the US tariff schedule"
+  return {
+    title,
+    posts: [
+      {
+        key: "odd-rates-roundup",
+        template: "TopList",
+        title,
+        props: {
+          theme,
+          asOf: todayIso(),
+          source: ENGINE_AND_HTS,
+          kind: "Odd rates",
+          headline: "Tariffs charged per jewel, by the degree, and other odd ways",
+          subhead: "General rates in the US schedule. HTS Hero works out every one.",
+          rows: rows.map((r) => ({ label: r.product, sublabel: r.htsno, value: shortHook(r.hook), share: 1, tone: "heads-up" as const })),
+          footnote: "Base rates, before any Chapter 99 duties.",
+        },
+        sources: dedupe(rows.flatMap((r) => [htsLink(`${r.product}: "${r.rate}"`, r.htsno), calculatorLink(`HTS Hero's working of "${r.rate}"`, r.htsno, "CN")])),
+      },
+    ],
+    notes: [],
+  }
 }

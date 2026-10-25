@@ -1,0 +1,561 @@
+[
+ {
+  "id": "T1",
+  "code": "2903441010",
+  "country": "CN",
+  "group": "chemicals",
+  "why": "R-125 itself; HTS line '1,1,1,2,2-Pentafluoroethane (HFC-125)'",
+  "expect": {
+   "A-570-137": "likely",
+   "C-570-138": "likely",
+   "A-570-121": "none",
+   "A-570-044": "none"
+  }
+ },
+ {
+  "id": "T2",
+  "code": "2903421000",
+  "country": "CN",
+  "group": "chemicals",
+  "why": "R-32; HTS line 'Difluoromethane (HFC-32)'",
+  "expect": {
+   "A-570-121": "likely",
+   "A-570-137": "none",
+   "A-570-044": "none"
+  }
+ },
+ {
+  "id": "T3",
+  "code": "3827650000",
+  "country": "CN",
+  "group": "chemicals",
+  "why": "R-410A (50% R-32 / 50% R-125) is named in the HFC blends scope; line '>=20% HFC-32 and >=20% HFC-125'",
+  "expect": {
+   "A-570-028": "flag"
+  }
+ },
+ {
+  "id": "T4",
+  "code": "3827610000",
+  "country": "CN",
+  "group": "chemicals",
+  "why": "R-404A / R-507A (>=15% HFC-143a) are named in the HFC blends scope",
+  "expect": {
+   "A-570-028": "flag"
+  }
+ },
+ {
+  "id": "T5",
+  "code": "3907610010",
+  "country": "CN",
+  "group": "chemicals",
+  "why": "PET resin, viscosity number 78-88 ml/g; scope is IV 0.70-0.88 dl/g",
+  "expect": {
+   "A-570-024": "flag",
+   "C-570-025": "flag"
+  }
+ },
+ {
+  "id": "T6",
+  "code": "3907610010",
+  "country": "IN",
+  "group": "chemicals",
+  "why": "same PET line, India order",
+  "expect": {
+   "A-533-861": "flag",
+   "C-533-862": "flag"
+  }
+ },
+ {
+  "id": "T7",
+  "code": "3907690050",
+  "country": "CN",
+  "group": "chemicals",
+  "why": "PET 'Other' (viscosity number < 70 ml/g) - below the scope's IV floor",
+  "expect": {
+   "A-570-024": "none",
+   "C-570-025": "none"
+  }
+ },
+ {
+  "id": "T8",
+  "code": "0802510000",
+  "country": "IR",
+  "group": "food",
+  "why": "in-shell pistachios; scopes cover in-shell raw (and roasted) pistachios",
+  "expect": {
+   "C-507-501": "likely",
+   "A-507-502": "likely",
+   "C-507-601": "any"
+  }
+ },
+ {
+  "id": "T9",
+  "code": "0802520000",
+  "country": "IR",
+  "group": "food",
+  "why": "SHELLED pistachios - the scopes cover in-shell only",
+  "expect": {
+   "C-507-501": "none",
+   "A-507-502": "none",
+   "C-507-601": "none"
+  }
+ },
+ {
+  "id": "T10",
+  "code": "7019634030",
+  "country": "CN",
+  "group": "textiles",
+  "why": "line 'Silica filament fabric ... silica content greater than 93 percent'; scope >=90% silica, >8in wide",
+  "expect": {
+   "A-570-038": "flag",
+   "C-570-039": "flag"
+  }
+ },
+ {
+  "id": "T11",
+  "code": "7019120080",
+  "country": "CN",
+  "group": "textiles",
+  "why": "glass fiber rovings - not fabric, not amorphous silica",
+  "expect": {
+   "A-570-038": "none",
+   "C-570-039": "none"
+  }
+ },
+ {
+  "id": "T12",
+  "code": "9403200075",
+  "country": "CN",
+  "group": "furniture",
+  "why": "line 'Boltless or press-fit steel shelving units prepackaged for sale'",
+  "expect": {
+   "A-570-018": "likely",
+   "C-570-019": "likely",
+   "A-570-088": "none"
+  }
+ },
+ {
+  "id": "T13",
+  "code": "9403200082",
+  "country": "CN",
+  "group": "furniture",
+  "why": "line 'Steel racks, other than ... 9403.20.0075'",
+  "expect": {
+   "A-570-088": "likely",
+   "C-570-089": "likely",
+   "A-570-018": "none"
+  }
+ },
+ {
+  "id": "T14",
+  "code": "7310100005",
+  "country": "CN",
+  "group": "metals",
+  "why": "stainless kegs; both China keg orders were REVOKED 2024-12-16 (ITA)",
+  "expect": {
+   "A-570-093": "none",
+   "C-570-094": "none"
+  }
+ },
+ {
+  "id": "T15",
+  "code": "7607116090",
+  "country": "CN",
+  "group": "metals",
+  "why": "aluminum foil >0.01 & <=0.15mm, not backed; 7607.11.6000 split into 6010/6090",
+  "expect": {
+   "A-570-053": "likely",
+   "C-570-054": "likely"
+  }
+ },
+ {
+  "id": "T16",
+  "code": "9403409060",
+  "country": "CN",
+  "group": "furniture",
+  "why": "control: 'Cabinets designed for permanent installation' (current code)",
+  "expect": {
+   "A-570-106": "likely",
+   "C-570-107": "likely"
+  }
+ },
+ {
+  "id": "T17",
+  "code": "6810990040",
+  "country": "IN",
+  "group": "building",
+  "why": "'Agglomerated quartz slabs of the type used for countertops'; 6810.99.0010 split into 0020/0040",
+  "expect": {
+   "A-533-889": "likely",
+   "C-533-890": "likely"
+  }
+ },
+ {
+  "id": "T18",
+  "code": "9404210010",
+  "country": "CN",
+  "group": "furniture",
+  "why": "control: mattresses (current code)",
+  "expect": {
+   "A-570-092": "likely",
+   "C-570-128": "likely"
+  }
+ },
+ {
+  "id": "T19",
+  "code": "2922494300",
+  "country": "IN",
+  "group": "chemicals",
+  "why": "control: glycine line",
+  "expect": {
+   "A-533-883": "likely",
+   "C-533-884": "likely"
+  }
+ },
+ {
+  "id": "T20",
+  "code": "2922494300",
+  "country": "CN",
+  "group": "chemicals",
+  "why": "glycine from China; A-570-836 lists dead 2922.49.4020",
+  "expect": {
+   "A-570-836": "likely",
+   "C-570-081": "likely"
+  }
+ },
+ {
+  "id": "T21",
+  "code": "6907211005",
+  "country": "CN",
+  "group": "building",
+  "why": "control: ceramic tile (current code)",
+  "expect": {
+   "A-570-108": "likely",
+   "C-570-109": "likely"
+  }
+ },
+ {
+  "id": "T22",
+  "code": "2903451000",
+  "country": "CN",
+  "group": "chemicals",
+  "why": "R-134a; HTS line '1,1,1,2-Tetrafluoroethane (HFC-134a)'",
+  "expect": {
+   "A-570-044": "likely",
+   "A-570-137": "none",
+   "A-570-121": "none"
+  }
+ },
+ {
+  "id": "T23",
+  "code": "5407619935",
+  "country": "CN",
+  "group": "textiles",
+  "why": "woven polyester FABRIC - not textured yarn",
+  "expect": {
+   "A-570-097": "none",
+   "C-570-098": "none"
+  }
+ },
+ {
+  "id": "T24",
+  "code": "2903441010",
+  "country": "IN",
+  "group": "no order",
+  "why": "R-125 from India - no order",
+  "expect": {}
+ },
+ {
+  "id": "T25",
+  "code": "9404210010",
+  "country": "DE",
+  "group": "no order",
+  "why": "mattresses from Germany - no order",
+  "expect": {}
+ },
+ {
+  "id": "T26",
+  "code": "2903441020",
+  "country": "CN",
+  "group": "chemicals",
+  "why": "HFC-143a, a different chemical on R-125's 8-digit line",
+  "expect": {
+   "A-570-137": "none",
+   "C-570-138": "none"
+  }
+ },
+ {
+  "id": "T27",
+  "code": "0306170004",
+  "country": "VN",
+  "group": "shrimp",
+  "why": "shrimp: frozen farmed shell-on warmwater ('Other shrimps and prawns')",
+  "expect": {
+   "A-552-802": "likely",
+   "C-552-838": "likely"
+  }
+ },
+ {
+  "id": "T28",
+  "code": "1605211030",
+  "country": "IN",
+  "group": "shrimp",
+  "why": "shrimp: frozen prepared, not breaded (scope covers frozen shrimp with marinade/spices)",
+  "expect": {
+   "A-533-840": "flag",
+   "C-533-921": "flag"
+  }
+ },
+ {
+  "id": "T29",
+  "code": "1605211020",
+  "country": "IN",
+  "group": "shrimp",
+  "why": "shrimp: BREADED - excluded by name in the scope",
+  "expect": {
+   "A-533-840": "none",
+   "C-533-921": "none"
+  }
+ },
+ {
+  "id": "T30",
+  "code": "0306160040",
+  "country": "IN",
+  "group": "shrimp",
+  "why": "shrimp: COLDWATER (Pandalus) - excluded by name",
+  "expect": {
+   "A-533-840": "none",
+   "C-533-921": "none"
+  }
+ },
+ {
+  "id": "T31",
+  "code": "0306170004",
+  "country": "EC",
+  "group": "shrimp",
+  "why": "shrimp: Ecuador CVD order",
+  "expect": {
+   "C-331-806": "likely"
+  }
+ },
+ {
+  "id": "T32",
+  "code": "0306170004",
+  "country": "MX",
+  "group": "shrimp",
+  "why": "shrimp from Mexico - no order",
+  "expect": {}
+ },
+ {
+  "id": "T33",
+  "code": "8541430010",
+  "country": "CN",
+  "group": "solar",
+  "why": "solar: crystalline silicon modules (stat note 12) from China",
+  "expect": {
+   "A-570-979": "likely",
+   "C-570-980": "likely",
+   "A-570-010": "flag",
+   "C-570-011": "flag"
+  }
+ },
+ {
+  "id": "T34",
+  "code": "8541430010",
+  "country": "VN",
+  "group": "solar",
+  "why": "solar: modules from Vietnam (2025 orders; China order reaches VN via circumvention ruling)",
+  "expect": {
+   "A-552-841": "likely",
+   "C-552-842": "likely",
+   "A-570-979": "flag"
+  }
+ },
+ {
+  "id": "T35",
+  "code": "8541430080",
+  "country": "CN",
+  "group": "solar",
+  "why": "solar: 'Other' PV modules (not crystalline silicon, e.g. thin film - excluded)",
+  "expect": {
+   "A-570-979": "none",
+   "C-570-980": "none"
+  }
+ },
+ {
+  "id": "T36",
+  "code": "8541420010",
+  "country": "TH",
+  "group": "solar",
+  "why": "solar: crystalline cells from Thailand",
+  "expect": {
+   "A-549-851": "likely",
+   "C-549-852": "likely"
+  }
+ },
+ {
+  "id": "T37",
+  "code": "8541430010",
+  "country": "IN",
+  "group": "solar",
+  "why": "solar: India investigations (in progress)",
+  "expect": {
+   "A-533-942": "likely",
+   "C-533-943": "likely"
+  }
+ },
+ {
+  "id": "T38",
+  "code": "8541430010",
+  "country": "KR",
+  "group": "solar",
+  "why": "solar from Korea - no order",
+  "expect": {}
+ },
+ {
+  "id": "T39",
+  "code": "4412330670",
+  "country": "CN",
+  "group": "plywood",
+  "why": "plywood: birch face ply, hardwood plywood",
+  "expect": {
+   "A-570-051": "likely",
+   "C-570-052": "likely",
+   "A-570-211": "likely",
+   "C-570-212": "likely",
+   "A-570-970": "none"
+  }
+ },
+ {
+  "id": "T40",
+  "code": "4418754000",
+  "country": "CN",
+  "group": "plywood",
+  "why": "flooring: assembled multilayer flooring panels",
+  "expect": {
+   "A-570-970": "likely",
+   "C-570-971": "likely",
+   "A-570-051": "none",
+   "C-570-052": "none"
+  }
+ },
+ {
+  "id": "T41",
+  "code": "4412330665",
+  "country": "CN",
+  "group": "plywood",
+  "why": "flooring: birch-face plywood 'Wood flooring' line",
+  "expect": {
+   "A-570-970": "flag",
+   "C-570-971": "flag"
+  }
+ },
+ {
+  "id": "T42",
+  "code": "4412330670",
+  "country": "VN",
+  "group": "plywood",
+  "why": "plywood: Vietnam investigations",
+  "expect": {
+   "A-552-851": "likely",
+   "C-552-852": "likely"
+  }
+ },
+ {
+  "id": "T43",
+  "code": "4412330670",
+  "country": "BR",
+  "group": "plywood",
+  "why": "plywood from Brazil - no order",
+  "expect": {}
+ },
+ {
+  "id": "T44",
+  "code": "7317005503",
+  "country": "CN",
+  "group": "steel",
+  "why": "steel: collated coil nails from China",
+  "expect": {
+   "A-570-909": "likely"
+  }
+ },
+ {
+  "id": "T45",
+  "code": "7317005503",
+  "country": "VN",
+  "group": "steel",
+  "why": "steel: nails from Vietnam",
+  "expect": {
+   "A-552-818": "likely",
+   "C-552-819": "likely"
+  }
+ },
+ {
+  "id": "T46",
+  "code": "7318155051",
+  "country": "TW",
+  "group": "steel",
+  "why": "steel: threaded rod from Taiwan",
+  "expect": {
+   "A-583-865": "likely"
+  }
+ },
+ {
+  "id": "T47",
+  "code": "7214200000",
+  "country": "MX",
+  "group": "steel",
+  "why": "steel: rebar from Mexico",
+  "expect": {
+   "A-201-844": "likely"
+  }
+ },
+ {
+  "id": "T48",
+  "code": "7210490091",
+  "country": "CN",
+  "group": "steel",
+  "why": "steel: galvanized flat-rolled >=0.4mm (corrosion-resistant)",
+  "expect": {
+   "A-570-026": "likely"
+  }
+ },
+ {
+  "id": "T49",
+  "code": "7304291010",
+  "country": "KR",
+  "group": "steel",
+  "why": "steel: OCTG casing from Korea",
+  "expect": {
+   "A-580-870": "likely",
+   "C-580-913": "likely"
+  }
+ },
+ {
+  "id": "T50",
+  "code": "7213913011",
+  "country": "ID",
+  "group": "steel",
+  "why": "steel: tire-cord wire rod from Indonesia",
+  "expect": {
+   "A-560-815": "likely"
+  }
+ },
+ {
+  "id": "T51",
+  "code": "7318155051",
+  "country": "KR",
+  "group": "steel",
+  "why": "steel: threaded rod from Korea - no order",
+  "expect": {}
+ },
+ {
+  "id": "T52",
+  "code": "7317005503",
+  "country": "DE",
+  "group": "steel",
+  "why": "steel: nails from Germany - no order",
+  "expect": {}
+ }
+]

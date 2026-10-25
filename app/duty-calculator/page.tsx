@@ -51,21 +51,12 @@ export const metadata: Metadata = {
     url: `https://${config.domainName}/duty-calculator`,
     siteName: "HTS Hero",
     type: "website",
-    images: [
-      {
-        url: `https://${config.domainName}/hero-tariffs.png`,
-        width: 1200,
-        height: 630,
-        alt: "HTS Hero US Import Duty & Tariff Calculator",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `US Tariff Calculator ${new Date().getFullYear()}: Free Import Duty Calculator`,
     description:
       "Enter an HTS code and country of origin to see the full duty breakdown: base rate, Section 232, 301 and 122 tariffs, exemptions and customs fees.",
-    images: [`https://${config.domainName}/hero-tariffs.png`],
   },
   alternates: {
     canonical: "/duty-calculator",

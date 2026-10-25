@@ -64,6 +64,11 @@ const EDITABLE: Record<TemplateId, { key: string; label: string }[]> = {
     { key: "rateNote", label: "Rate applies to" },
     { key: "products", label: "What" },
   ],
+  OddRate: [
+    { key: "headline", label: "Headline" },
+    { key: "product", label: "Product" },
+    { key: "footnote", label: "Footnote" },
+  ],
 }
 
 const CopyBox = ({ label, text, onChange }: { label: string; text: string; onChange?: (text: string) => void }) => (
@@ -80,7 +85,7 @@ const CopyBox = ({ label, text, onChange }: { label: string; text: string; onCha
       readOnly={!onChange}
       value={text}
       onChange={(e) => onChange?.(e.target.value)}
-      className="textarea h-36 w-full border-base-content/15 text-xs leading-relaxed"
+      className="textarea h-36 w-full border-base-content/15 text-xs leading-relaxed tracker:rounded-xl tracker:border-base-300"
     />
   </div>
 )
@@ -99,14 +104,14 @@ const VerifyList = ({ sources }: { sources: SourceLink[] }) => {
     })
   if (!sources.length) {
     return (
-      <div className="rounded-lg border border-warning/30 bg-warning/[0.07] px-3 py-2 text-sm text-base-content/75">
+      <div className="rounded-lg border border-warning/30 bg-warning/[0.07] px-3 py-2 text-sm text-base-content/75 tracker:rounded-xl tracker:border-transparent">
         No sources were saved with this post (it was made before sources were added). Remake it, or check its figures in the calculator before posting.
       </div>
     )
   }
   return (
-    <div className="rounded-lg border border-base-content/10">
-      <div className="flex items-center justify-between border-b border-base-content/10 px-3 py-2">
+    <div className="rounded-lg border border-base-content/10 tracker:rounded-xl tracker:border-base-300">
+      <div className="flex items-center justify-between border-b border-base-content/10 px-3 py-2 tracker:border-base-300">
         <span className="text-sm font-semibold">Verify before posting</span>
         <span className={`text-xs font-medium ${done === ordered.length ? "text-success" : "text-base-content/50"}`}>
           {done === ordered.length ? "All checked" : `${done} of ${ordered.length} checked`}
@@ -118,7 +123,7 @@ const VerifyList = ({ sources }: { sources: SourceLink[] }) => {
             <input type="checkbox" className="checkbox checkbox-xs mt-0.5" checked={checked.has(s.url)} onChange={() => toggle(s.url)} aria-label={`Checked: ${s.claim}`} />
             <div className="min-w-0 flex-1">
               <div className="font-medium">{s.claim}</div>
-              <a href={s.url} target="_blank" rel="noreferrer" className="wrap-break-word text-xs text-info hover:underline">
+              <a href={s.url} target="_blank" rel="noreferrer" className="wrap-break-word text-xs text-info hover:underline tracker:text-primary">
                 {s.label} ↗
               </a>
             </div>
@@ -194,8 +199,8 @@ export default function PostCard({
       }
       actions={actions}
     >
-      <div className="flex gap-6 p-4">
-        <div style={{ width: previewWidth }} className="shrink-0 overflow-hidden rounded-lg border border-base-content/10">
+      <div className="flex gap-6 p-4 tracker:p-6">
+        <div style={{ width: previewWidth }} className="shrink-0 overflow-hidden rounded-lg border border-base-content/10 tracker:rounded-xl tracker:border-base-300">
           <Player
             key={`${post.key}-${format}`}
             component={COMPONENTS[post.template]}

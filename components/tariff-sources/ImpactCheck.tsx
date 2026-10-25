@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { formatTime } from "../hts-revision-diff/shared"
-import { Pill, Spinner, btn } from "../hts-revision-diff/ui"
+import { Pill, SectionLabel, Spinner, btn } from "../hts-revision-diff/ui"
 import { adminCall } from "./types"
 
 // An update's impact check: the products it affects across the users' catalogs (from its scope,
@@ -62,9 +62,9 @@ export default function ImpactCheck({ updateId, version }: { updateId: string; v
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-lg border border-base-content/10 p-3 text-sm">
+    <section className="flex flex-col gap-3 text-sm">
       <div className="flex flex-wrap items-center gap-2">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-base-content/50">Impact check</h4>
+        <SectionLabel>Impact Check</SectionLabel>
         {impact && !impact.eligible ? (
           <Pill tone="neutral">Before alerts started: not alerted</Pill>
         ) : impact?.approvedAt ? (
@@ -94,9 +94,9 @@ export default function ImpactCheck({ updateId, version }: { updateId: string; v
             {impact.levels.possible ? `; ${impact.levels.possible} possible (country only, never alerted)` : ""}. Check these against the official sources
             before approving.
           </p>
-          <ul className="flex max-h-72 flex-col overflow-y-auto rounded-md border border-base-content/10">
+          <ul className="flex max-h-72 flex-col overflow-y-auto rounded-xl border border-base-content/10 tracker:border-base-300">
             {(all ? impact.products : impact.products.slice(0, SHOWN)).map((p) => (
-              <li key={p.key} className="flex items-center gap-2 border-b border-base-content/5 px-3 py-1.5 text-xs last:border-b-0">
+              <li key={p.key} className="flex items-center gap-2 border-b border-base-content/5 px-3 py-2 text-xs last:border-b-0 tracker:border-base-300">
                 <span className="font-mono">{p.key.replace("-", " · ")}</span>
                 <Pill tone={p.level === "confirmed" ? "error" : "warning"}>{p.level}</Pill>
                 <span className="text-base-content/70">{change(p)}</span>

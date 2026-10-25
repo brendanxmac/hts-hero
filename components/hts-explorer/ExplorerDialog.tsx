@@ -1,7 +1,8 @@
 "use client";
 
 import { Fragment, ReactNode } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import { THEME } from "@/components/ui/theme";
 
 // The explorer floating over a page: a big round panel on a dimmed backdrop, in the Tracker's
@@ -31,7 +32,7 @@ export const ExplorerDialog = ({
       >
         <div className="fixed inset-0 bg-black/60" aria-hidden />
       </Transition.Child>
-      <div className="fixed inset-0 flex items-center justify-center p-3 sm:p-6">
+      <div className="fixed inset-0 flex items-center justify-center p-3 sm:p-5">
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -42,7 +43,7 @@ export const ExplorerDialog = ({
           leaveTo="opacity-0 scale-[0.98]"
         >
           <Dialog.Panel
-            className={`${THEME} hts-tracker flex h-[min(94dvh,64rem)] w-full max-w-7xl flex-col overflow-hidden rounded-[28px] border border-base-300 shadow-2xl`}
+            className={`${THEME} hts-tracker flex h-[min(94dvh,64rem)] w-full max-w-[112rem] flex-col overflow-hidden rounded-[28px] border border-base-300 shadow-2xl`}
           >
             {children}
           </Dialog.Panel>

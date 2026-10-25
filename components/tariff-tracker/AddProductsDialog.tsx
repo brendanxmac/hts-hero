@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Dialog } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import { ArrowDownTrayIcon, ArrowUpTrayIcon, SparklesIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useHts } from "../../contexts/HtsContext";
 import { HtsElement } from "../../interfaces/hts";

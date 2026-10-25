@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { PricingPlan } from "@/types";
-import { TRACKER_PLANS, TrackerAccess, trackerAccessFrom, TrackerUsage } from "./plan";
+import { PastPlan, TRACKER_PLANS, TrackerAccess, trackerAccessFrom, TrackerUsage } from "./plan";
 
 // A signed-in account's Tariff Tracker access, read with the service role (server only)
 
@@ -37,6 +37,23 @@ const readActivePlans = async (admin: SupabaseClient, userId: string): Promise<P
   return (data ?? []).map((row: { product_name: PricingPlan }) => row.product_name);
 };
 
+// The account's last Tracker plan, when none is active any more: which, and when it ended
+const readPastPlan = async (admin: SupabaseClient, userId: string): Promise<PastPlan | null> => {
+  const { data, error } = await admin
+    .from("purchases")
+    .select("product_name, expires_at")
+    .eq("user_id", userId)
+    .in(
+      "product_name",
+      TRACKER_PLANS.map((p) => p.plan)
+    )
+    .order("expires_at", { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  const row = (data ?? [])[0] as { product_name: PricingPlan; expires_at: string } | undefined;
+  return row ? { plan: row.product_name, endedAt: row.expires_at } : null;
+};
+
 // When the account's 14-day trial started: its first real imports (tracker_onboarding, set by a
 // trigger on tracker_catalogs); null until then. Until that migration is applied, its sign-up.
 export const readTrialStartedAt = async (admin: SupabaseClient, userId: string): Promise<string | null> => {
@@ -48,6 +65,11 @@ export const readTrialStartedAt = async (admin: SupabaseClient, userId: string):
 };
 
 export const readTrackerAccess = async (admin: SupabaseClient, userId: string): Promise<TrackerAccess> => {
-  const [usage, activePlans, trialStartedAt] = await Promise.all([readUsage(admin, userId), readActivePlans(admin, userId), readTrialStartedAt(admin, userId)]);
-  return trackerAccessFrom({ usage, activePlans, trialStartedAt });
+  const [usage, activePlans, trialStartedAt, pastPlan] = await Promise.all([
+    readUsage(admin, userId),
+    readActivePlans(admin, userId),
+    readTrialStartedAt(admin, userId),
+    readPastPlan(admin, userId),
+  ]);
+  return trackerAccessFrom({ usage, activePlans, trialStartedAt, pastPlan });
 };

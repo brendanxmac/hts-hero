@@ -5,14 +5,11 @@ export const TotalRow = ({
   label,
   amount,
   strong,
-  before,
   hideBasis,
 }: {
   label: string;
   amount: number;
   strong?: boolean;
-  // The total before the last answer, when it moved
-  before?: number;
   // The table has no "Applies to" column
   hideBasis?: boolean;
 }) => (
@@ -28,9 +25,6 @@ export const TotalRow = ({
       {label}
     </td>
     <td className="tabular-nums py-3.5 pl-3 pr-5 sm:pr-6 text-right whitespace-nowrap text-base font-semibold">
-      {before !== undefined && Math.abs(before - amount) >= 0.005 && (
-        <span className="block text-xs font-normal text-base-content/60 line-through">{formatMoney(before)}</span>
-      )}
       {formatMoney(amount)}
     </td>
   </tr>

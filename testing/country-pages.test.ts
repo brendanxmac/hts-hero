@@ -44,7 +44,7 @@ describe("Country pages: wording", () => {
   })
 
   it("counts products that cost less, the same or more than from another country", () => {
-    const ex = (htsno: string, totalPct: number): ExampleDuty => ({ label: htsno, htsno, totalPct, totalDuty: totalPct * 100, tariffs: [] })
+    const ex = (htsno: string, totalPct: number): ExampleDuty => ({ label: htsno, htsno, totalPct, totalDuty: totalPct * 100, baseNotCalculated: false, tariffs: [] })
     const result = compareExamples([ex("a", 10), ex("b", 20), ex("c", 30)], { name: "China", examples: [ex("a", 35), ex("b", 20), ex("c", 5)] })
     expect([result.lower, result.same, result.higher]).toEqual([1, 1, 1])
   })

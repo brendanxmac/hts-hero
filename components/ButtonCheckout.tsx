@@ -139,6 +139,8 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
           }
         );
 
+        // Counted only when checkout actually opens
+        logCheckoutAttempt();
         window.location.href = url;
       } else if (hasActiveProductSubscription && !userAttemptingUpgrade) {
         toast.success(
@@ -153,10 +155,9 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
           }
         );
 
+        logCheckoutAttempt();
         window.location.href = url;
       }
-
-      logCheckoutAttempt();
     } catch (e) {
       console.error(e);
     } finally {

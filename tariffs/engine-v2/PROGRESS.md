@@ -57,7 +57,7 @@ Checked in the browser:
 | `tariffs/engine-v2/data/` | Programs, headings, lists, inputs, columns, preferences, fees |
 | `testing/engine-v2/` | Mechanics and real-data tests, HTS fixture loader (every USITC line with its base rates) |
 | `components/TariffFinderPage.tsx` | Tariff Calculator |
-| `components/duty-calculator/` | Calculator UI, `DutyEstimateEmbed` (explorer, classification pages), shared estimate helpers |
+| `components/duty-calculator/` | Calculator UI (`CalculatorWorkspace`, also the classification Duty & Tariffs tab and the Tracker), shared estimate helpers |
 | `components/tariff-tracker/` | Tariff Tracker: catalog parsing, report, CSV/Excel export, app shell |
 
 ## Completed work
@@ -393,6 +393,12 @@ These are corrections to verified data (Rev 5–20). The backfill itself is paus
 - **`motorcycleParts16cg`:** 8516.90.50.00 → 8516.90.50, as listed in note 16(c)(vi).
 - **9903.03.06 description** replaced with the Rev 5 heading text. It was a paraphrase; no duty effect.
 - **Not changed:** 9903.96.02's `exceptions: ["9903.94.06"]`, which note 35 doesn't support. Left for a decision.
+
+## Oct 25: Section 338 Canada list (b)(3) changes (from Oct 30, 2026)
+
+- **Data:** `canada338b3` (9903.03.14) has a third version from 2026-10-30: the Rev 19 list less the 22 subheadings Annex II §A.1(a) deletes (seaweed, plastic sacks and boxes, thin plywood, corrugated cartons, paper pulp articles, packing and refrigerating machinery) plus the 100 it inserts (cocoa powder, paints, shampoo, soap, lubricants, carpets and rugs, fiberboard, paper, window air conditioners, chest freezers, hand tools, canoes, archery), 513 → 591. Source: the proclamation of October 23, 2026 (Further Modifying the Scope … Motor Vehicles); Annex I Parts A and B list the same codes. `thenChange` in `lists/canada-338.ts` throws if a removed code isn't on the list or an added one already is.
+- **Tests:** "Section 338 – Canada (b)(3) changes (Oct 30, 2026)" in `testing/engine-v2/real-data.test.ts`.
+- **Not done:** no HTS revision carries it yet (and no proclamation number was given). Check the note 51(b)(3) text against this version when the revision lands.
 
 ## Oct 6: import bans (Section 338 Canada, from Sep 29, 2026)
 

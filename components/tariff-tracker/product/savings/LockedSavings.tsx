@@ -6,10 +6,10 @@ import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { useTrackerAccess } from "../../access/accessContext";
 import { useInsights } from "../../insights/InsightsContext";
-import { wholeDollars } from "../../insights/teasers";
+import { formatRate } from "../../formatRate";
 import { TrackedProduct } from "../../report";
 
-// A product's Savings before they're unlocked: what a check found (the amount, not the how), what
+// A product's Savings before they're unlocked: what a check found (as a rate, not the how), what
 // the check includes, and the check itself: one of the trial's savings checks, or a plan
 // (PRICING.md). Savings are only ever potential.
 
@@ -45,7 +45,7 @@ export const LockedSavings = ({ product }: { product: TrackedProduct }) => {
             : found > 0.005
               ? (
                   <>
-                    Up to <span className="text-success">{wholeDollars(found)}</span> less duty per shipment found on this import
+                    Up to <span className="text-success">{formatRate((found / product.customsValue) * 100)}</span> off the duty rate found on this import
                   </>
                 )
               : "Check every way to pay less on this import"}

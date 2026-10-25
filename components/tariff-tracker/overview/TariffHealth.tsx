@@ -5,7 +5,6 @@ import { ArrowRightIcon, BellAlertIcon, BoltIcon, ClipboardDocumentCheckIcon, Re
 import { InfoTip } from "@/components/ui/InfoTip";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { AUDITS_ENABLED, SAVINGS_AUDITS_LABEL, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { useTrackerAccess } from "../access/accessContext";
 import { useAlertSettings } from "../alerts/AlertSettingsContext";
 import { entryProductKey } from "../entries/entries";
@@ -18,9 +17,8 @@ import { REVIEW_DAYS, useActionReviews } from "../impact/reviews";
 // Tariff Health (DESIGN_SYSTEM.md §15 "Home"): one score for how well the user's imports are looked
 // after, from the three things the Tracker does for them. Alerts: the share of imports with alerts
 // on (and somewhere for them to go). Savings: the share whose ways to pay less are all secured or
-// ruled out. Audits: the share with an entry audited. The score is the average of those that are
-// live: until Savings and Audits launch (libs/tariff-tracker/features.ts) it's alerts alone, and
-// they show as coming, outside the score. A ring for the score, then a bar for each.
+// ruled out. Audits: the share with an entry audited. The score is the average of them (impact
+// checks join once alerts are on). A ring for the score, then a bar for each.
 
 const share = (part: number, total: number) => (total > 0 ? Math.round((part / total) * 100) : 0);
 
@@ -53,7 +51,7 @@ export const useTariffHealth = () => {
   const reviewedCount = due - reviews.outstanding.length;
   const reviewsPct = due ? share(reviewedCount, due) : 100;
 
-  const live = [alertsPct, ...(checking ? [reviewsPct] : []), ...(SAVINGS_ENABLED ? [savingsPct] : []), ...(AUDITS_ENABLED ? [auditPct] : [])];
+  const live = [alertsPct, ...(checking ? [reviewsPct] : []), savingsPct, auditPct];
   const overall = Math.round(live.reduce((sum, n) => sum + n, 0) / live.length);
   return { imports, covered, alertsSet, alertsPct, checking, due, reviewedCount, toReview: reviews.outstanding.length, reviewsPct, savingsPct, reviewed: insights.reviewStats, auditPct, audited: audited.size, overall, signedIn };
 };
@@ -88,7 +86,6 @@ const Part = ({
   icon,
   label,
   pct,
-  soon,
   muted,
   text,
   action,
@@ -96,7 +93,6 @@ const Part = ({
   icon: ReactNode;
   label: string;
   pct: number;
-  soon?: boolean;
   // Not in the score yet (no imports with alerts on): shown, but quiet
   muted?: boolean;
   text: string;
@@ -105,20 +101,18 @@ const Part = ({
   <li className="flex flex-col gap-1.5">
     <span className="flex items-center justify-between gap-3 text-sm">
       <span className="flex items-center gap-2 font-semibold text-base-content">
-        <span className={soon ? "text-base-content/40" : "text-primary"} aria-hidden>
+        <span className="text-primary" aria-hidden>
           {icon}
         </span>
         {label}
       </span>
-      {soon ? (
-        <span className={tt.chip()}>{SAVINGS_AUDITS_LABEL}</span>
-      ) : muted ? (
+      {muted ? (
         <span className="font-semibold text-base-content/40">—</span>
       ) : (
         <span className="font-semibold tabular-nums text-base-content">{pct}%</span>
       )}
     </span>
-    {soon || muted ? (
+    {muted ? (
       <span className="block h-2 w-full rounded-full border border-dashed border-base-300" aria-hidden />
     ) : (
       <span className="block h-2 w-full overflow-hidden rounded-full bg-tt-soft-high" aria-hidden>
@@ -143,7 +137,6 @@ export const TariffHealth = () => {
   const { openTab } = useTrackerNav();
   const { moreToTrack, trackMore } = useTracker();
   const n = (count: number) => count.toLocaleString("en-US");
-  const parts = [!SAVINGS_ENABLED && "savings", !AUDITS_ENABLED && "audits"].filter(Boolean);
   const scoreLine =
     h.overall >= 80
       ? "Your imports are well looked after."
@@ -161,7 +154,6 @@ export const TariffHealth = () => {
         <InfoTip label="About Tariff Health">
           One score for how well your imports are looked after: the share with alerts on, the share of tariff actions that may affect them you&apos;ve
           reviewed (from the last {REVIEW_DAYS} days), the share whose savings are reviewed, and the share with an entry audited, averaged.
-          {parts.length ? ` Until ${parts.join(" and ")} launch, they aren't in the score.` : ""}
         </InfoTip>
       </div>
       <div className="flex items-center gap-5">
@@ -192,7 +184,6 @@ export const TariffHealth = () => {
           icon={<BoltIcon className="h-4 w-4" />}
           label="Impact Checks"
           pct={h.reviewsPct}
-          soon={false}
           muted={!h.checking}
           text={
             !h.checking
@@ -207,17 +198,15 @@ export const TariffHealth = () => {
           icon={<ReceiptPercentIcon className="h-4 w-4" />}
           label="Savings"
           pct={h.savingsPct}
-          soon={!SAVINGS_ENABLED}
-          text={SAVINGS_ENABLED ? `${n(h.reviewed.reviewed)} of ${n(h.reviewed.total)} imports reviewed` : "Joins the score when it launches"}
-          action={{ label: SAVINGS_ENABLED ? "Review" : "See what's coming", go: () => openTab("savings") }}
+          text={`${n(h.reviewed.reviewed)} of ${n(h.reviewed.total)} imports reviewed`}
+          action={{ label: "Review", go: () => openTab("savings") }}
         />
         <Part
           icon={<ClipboardDocumentCheckIcon className="h-4 w-4" />}
           label="Audits"
           pct={h.auditPct}
-          soon={!AUDITS_ENABLED}
-          text={AUDITS_ENABLED ? `${n(h.audited)} of ${n(h.imports)} imports audited` : "Joins the score when it launches"}
-          action={{ label: AUDITS_ENABLED ? "Audit" : "See what's coming", go: () => openTab("entries") }}
+          text={`${n(h.audited)} of ${n(h.imports)} imports audited`}
+          action={{ label: "Audit", go: () => openTab("entries") }}
         />
       </ul>
     </section>

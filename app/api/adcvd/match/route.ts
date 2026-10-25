@@ -2,28 +2,23 @@ import { NextRequest, NextResponse } from "next/server"
 import { matchCases, matchPetition, evidenceSentence, nextDates, strongest, HISTORY_DAYS, type AdcvdFlag, type AdcvdLookup, type AdcvdSummary, type FlagCase, type FlagCompany, type FlagEvent, type MatchableCase } from "@/libs/adcvd/match"
 import { EVENTS, LIVE_STATUSES, MILESTONE_EVENTS, type CaseRow, type EventRow } from "@/libs/adcvd/types"
 import { createAdminClient, createClient } from "../../supabase/server"
-import { readTrackerAccess } from "@/libs/tariff-tracker/access"
-import { hasFullAccess } from "@/libs/tariff-tracker/plan"
 
 export const dynamic = "force-dynamic"
 // Supabase reads go through fetch: never from Next's data cache (the lookups set their own HTTP caching)
 export const fetchCache = "force-no-store"
 
-// The AD/CVD cases that may cover one import: GET ?code=3203008000&country=IN. The cases
-// themselves are part of the Tariff Tracker's 14-day trial and paid plans (PRICING.md): signed out
-// it's a 401, on the free plan a 402 with the summary. With &summary=1, anyone gets only whether
-// any may (AdcvdSummary: the teaser), cached for an hour.
+// The AD/CVD cases that may cover one import: GET ?code=3203008000&country=IN. The cases are free
+// with any account, on every plan (PRICING.md); signed out it's a 401. With &summary=1, anyone gets
+// only whether any may (AdcvdSummary), cached for an hour.
 
-// Who may see the cases: the service role (scripts, local previews), or an account on the trial or
-// a paid plan. "signed-out" and "free" get the summary at most.
-const viewer = async (req: NextRequest): Promise<"full" | "free" | "signed-out"> => {
+// Who may see the cases: the service role (scripts, local previews), or any account
+const viewer = async (req: NextRequest): Promise<"full" | "signed-out"> => {
   const token = req.headers.get("authorization")?.split(" ")[1]
   if (process.env.SUPABASE_SERVICE_ROLE_KEY && token === process.env.SUPABASE_SERVICE_ROLE_KEY) return "full"
   const {
     data: { user },
   } = await createClient().auth.getUser()
-  if (!user) return "signed-out"
-  return hasFullAccess(await readTrackerAccess(createAdminClient(), user.id)) ? "full" : "free"
+  return user ? "full" : "signed-out"
 }
 
 const MATCH_COLUMNS = "case_number, kind, country, product, status, ended_on, third_countries, hts_main, hts_also, hts_excluded, hts_outdated, hts_successors"
@@ -136,8 +131,6 @@ export async function GET(req: NextRequest) {
   const live = flags.filter((f) => f.level !== "history")
   const summary: AdcvdSummary = { code, country, checked_at: body.checked_at, cases: live.flatMap((f) => f.cases).length, likely: live.some((f) => f.level === "likely"), petitions: petitions.length }
   if (summaryOnly) return NextResponse.json(summary, { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" } })
-  // The free plan: what anyone may know, and that the rest takes a plan
-  if (who === "free") return NextResponse.json({ error: "AD/CVD checks are part of Tariff Tracker plans", summary }, { status: 402, headers: { "Cache-Control": "private, no-store" } })
   // Per user, so never from a shared cache
   return NextResponse.json(body, { headers: { "Cache-Control": "private, max-age=3600" } })
 }

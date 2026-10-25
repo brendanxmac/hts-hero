@@ -68,7 +68,7 @@ export const NewsSummary = () => {
     <SummaryBox
       id="tt-news-summary"
       title="Latest Tariff Actions"
-      info="The newest US tariff actions from the White House, the Federal Register, CBP, USTR and the USITC, checked every 15 minutes. Open one to see what it does to your imports."
+      info="The newest US tariff actions from the White House, the Federal Register, CBP, USTR and the USITC, checked every hour. Open one to see what it does to your imports."
       page="changes"
       link="All actions"
     >

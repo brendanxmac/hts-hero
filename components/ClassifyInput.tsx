@@ -140,6 +140,12 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
           } = await canCreateClassification(user);
 
           if (!allowed) {
+            trackEvent(MixpanelEvent.CLASSIFICATION_BLOCKED, {
+              block_reason: blockReason,
+              is_anonymous: !user,
+              source,
+              entry_point: entryPoint ?? "unspecified",
+            });
             if (blockReason === "anonymous_limit_reached") {
               setSignUpGateArticleDescription(text.trim());
               setShowSignUpGate(true);
@@ -157,13 +163,10 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
           const resolvedEntry = entryPoint ?? "unspecified";
           if (!user) {
             trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+              classification_id: newId,
               item: text,
               is_anonymous: true,
-              source,
-              entry_point: resolvedEntry,
-            });
-            trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_STARTED, {
-              classification_id: newId,
+              entry_mode: "product_description",
               source,
               entry_point: resolvedEntry,
             });
@@ -174,7 +177,10 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
               !isOnTeam &&
               count < NUM_FREE_CLASSIFICATIONS;
             trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+              classification_id: newId,
               item: text,
+              is_anonymous: false,
+              entry_mode: "product_description",
               is_paying_user: isPayingUser,
               is_team_member: isOnTeam,
               is_trial_user: isTrialUserWithinLimit,

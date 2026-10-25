@@ -43,8 +43,10 @@ export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder;
     f.selectElement(row.element, "recent_lookup");
   };
   const trackAll = () => {
-    addToCatalog(rows.map((r) => ({ code: r.lookup.code, country: r.lookup.country })));
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_LOOKUPS_ADDED, { added: rows.length, offered: rows.length, from: "calculator" });
+    const { added, duplicates } = addToCatalog(rows.map((r) => ({ code: r.lookup.code, country: r.lookup.country })));
+    // "Products Added" is the one count of imports added, wherever they come from
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, { added, duplicates, source: "recent_lookups" });
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_LOOKUPS_ADDED, { added, offered: rows.length, from: "calculator" });
     window.location.href = `${TRACKER_PATH}?tab=catalog`;
   };
 

@@ -3,7 +3,6 @@ import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import config from "@/config";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "@/components/ui/marketing/styles";
-import { ComingChip } from "@/components/ui/marketing/ComingChip";
 import { DEFINITION } from "../lib/copy";
 import { ExposureDashboard } from "./ExposureDashboard";
 
@@ -43,8 +42,8 @@ export const MonitorHero = () => (
             </li>
           ))}
         </ul>
-        <p className={`${mk.small} mt-4 flex flex-wrap items-center gap-2`}>
-          <ComingChip /> Automatic savings detection and automatic auditing, included in the trial and every plan when they launch
+        <p className={`${mk.small} mt-4`}>
+          Automatic savings detection and automatic auditing, included in the trial and every plan
         </p>
         <p className={`${mk.small} mt-8`}>Trusted by hundreds of customs brokers, freight forwarders and manufacturers.</p>
       </div>

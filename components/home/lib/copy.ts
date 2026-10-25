@@ -2,8 +2,8 @@ import {
   ANNUAL_DISCOUNT,
   CLASSIFY_PLANS,
   LOWEST_PER_IMPORT,
+  REVERSE_TRIAL,
   TRACKER_TIERS,
-  TRIAL_ALLOWANCE,
   formatPrice,
 } from "@/components/pricing-calculator/lib/pricing"
 
@@ -12,7 +12,7 @@ import {
 
 // The one-sentence answer to "what is HTS Hero?", written so it can be quoted on its own
 export const DEFINITION =
-  "HTS Hero is US tariff software for importers, customs brokers and freight forwarders: it calculates the full duty on any HTS code and country of origin, alerts you when a tariff change hits your products, and audits past entries for duty you can get back."
+  "HTS Hero is US tariff software for importers, customs brokers and freight forwarders: it calculates the full duty on any HTS code and country of origin, checks it for antidumping and countervailing duty (AD/CVD) cases, alerts you when a tariff change hits your products, and audits past entries for duty you can get back."
 
 const trackerFrom = formatPrice(TRACKER_TIERS[0].price)
 
@@ -24,11 +24,11 @@ export const HOME_FAQS = [
   {
     question: "Is the tariff calculator free?",
     answer:
-      "Yes. The HTS Hero Tariff Calculator is free and unlimited, with no account. Enter an HTS code and country of origin to see every duty line: the base rate, each Chapter 99 tariff with its legal source, exemptions, trade preferences and fees.",
+      "Yes. The HTS Hero Tariff Calculator is free and unlimited, with no account. Enter an HTS code and country of origin to see every duty line: the base rate, each Chapter 99 tariff with its legal source, exemptions, trade preferences and fees. A free account adds the AD/CVD check: the antidumping and countervailing duty cases that may cover the import, their deposit rates and the companies named.",
   },
   {
     question: "How do I get alerts when tariffs change on my products?",
-    answer: `Add your products to the Tariff Tracker as HTS code and country of origin pairs. When a tariff is announced, and again when it reaches the HTS, you get an alert by email, in the app, or in Slack or Microsoft Teams. Alerts are free on ${TRIAL_ALLOWANCE.alertImports} imports with any account, no credit card.`,
+    answer: `Add your products to the Tariff Tracker as HTS code and country of origin pairs. When a tariff is announced, and again when it reaches the HTS, you get an alert by email, in the app, or in Slack or Microsoft Teams. Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, alerts included, with no credit card. After that, alerts on your own imports come with a paid plan.`,
   },
   {
     question: "Can HTS Hero find duty I overpaid?",
@@ -37,7 +37,7 @@ export const HOME_FAQS = [
   },
   {
     question: "How much does HTS Hero cost?",
-    answer: `The Tariff Calculator is free. The Tariff Tracker is free to start: check ${TRIAL_ALLOWANCE.savingsChecks} imports for savings, run ${TRIAL_ALLOWANCE.auditChecks} audit checks and get alerts on ${TRIAL_ALLOWANCE.alertImports} imports, then from ${trackerFrom} a month, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import a month on the largest plan. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. Monthly plans, no contract, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
+    answer: `The Tariff Calculator is free. A free account adds AD/CVD checks and sourcing intelligence on any import. The Tariff Tracker is free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, with no credit card, then from ${trackerFrom} a month, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import a month on the largest plan. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. Monthly plans, no contract, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
   },
   {
     question: "Where does HTS Hero's tariff data come from?",

@@ -3,7 +3,7 @@ import { HtsElement } from "../interfaces/hts";
 import { calculate } from "../tariffs/engine-v2/calculate";
 import { AllRules } from "../tariffs/engine-v2/data";
 import { getLatestVerifiedRevision, HtsRevision } from "../tariffs/engine-v2/revisions";
-import { DutyColumn, IsoDate } from "../tariffs/engine-v2/types";
+import { DutyColumn, IsoDate, Source } from "../tariffs/engine-v2/types";
 
 // Server-side duty summaries for the /hts/[code] pages: what an import under the code pays
 // from the largest sources of US imports, from the same engine as the Tariff Calculator.
@@ -24,6 +24,7 @@ export interface AdditionalDuty {
   program: string; // "Section 301 – China"
   name: string;
   ratePct: number;
+  source?: Source; // the legal document behind the heading, cited on the page
 }
 
 export interface CountryDuty {
@@ -33,7 +34,10 @@ export interface CountryDuty {
   additional: AdditionalDuty[]; // Chapter 99 duties that apply, above 0%
   additionalPct: number;
   // Base rate plus additional duties as a percent of value; null when the base rate is per unit
+  // or can't be calculated
   totalPct: number | null;
+  // The base rate can't be calculated ("The rate applicable to…"), so there's no total
+  baseNotCalculated: boolean;
   // The lowest total from claiming a trade preference, when it's lower
   preference?: { symbol: string; name: string; totalPct: number | null };
 }
@@ -114,7 +118,7 @@ export const getHtsDutySummary = (
     if (!country) return [];
     const result = run(code);
     const totalPctOf = (r: typeof result) =>
-      r.requiresQuantity ? null : round2((r.totalDuty / CUSTOMS_VALUE) * 100);
+      r.requiresQuantity || r.baseNotCalculated ? null : round2((r.totalDuty / CUSTOMS_VALUE) * 100);
 
     const additional = result.lines
       .filter((l) => l.status === "applies" && (l.ratePct ?? 0) > 0)
@@ -123,6 +127,7 @@ export const getHtsDutySummary = (
         program: programName(l.program),
         name: l.name,
         ratePct: l.ratePct ?? 0,
+        source: l.source,
       }));
     const additionalAmount = result.lines
       .filter((l) => l.status === "applies")
@@ -133,7 +138,8 @@ export const getHtsDutySummary = (
     const symbols = Array.from(new Set(result.availablePreferences.map((p) => p.symbol)));
     for (const symbol of symbols) {
       const claimed = run(code, symbol);
-      if (claimed.totalDuty >= lowestDuty) continue;
+      // A claim whose base rate can't be calculated isn't known to be lower
+      if (claimed.baseNotCalculated || claimed.totalDuty >= lowestDuty) continue;
       lowestDuty = claimed.totalDuty;
       const name = result.availablePreferences.find((p) => p.symbol === symbol)?.name ?? symbol;
       preference = { symbol, name: preferenceName(name), totalPct: totalPctOf(claimed) };
@@ -147,6 +153,7 @@ export const getHtsDutySummary = (
         additional,
         additionalPct: round2((additionalAmount / CUSTOMS_VALUE) * 100),
         totalPct: totalPctOf(result),
+        baseNotCalculated: result.baseNotCalculated,
         preference,
       },
     ];
@@ -159,12 +166,18 @@ export const getHtsDutySummary = (
 export const formatDutyPct = (pct: number) => `${round2(pct)}%`;
 
 // A row's total in words: "36.5%", or "6.3¢/liter + 25%" for per-unit base rates
-export const describeTotal = (row: Pick<CountryDuty, "totalPct" | "baseRate" | "additionalPct">) =>
-  row.totalPct !== null
-    ? formatDutyPct(row.totalPct)
-    : row.additionalPct > 0
-      ? `${row.baseRate} + ${formatDutyPct(row.additionalPct)}`
-      : row.baseRate;
+export const describeTotal = (
+  row: Pick<CountryDuty, "totalPct" | "baseRate" | "additionalPct"> & { baseNotCalculated?: boolean },
+) =>
+  row.baseNotCalculated
+    ? row.additionalPct > 0
+      ? `${formatDutyPct(row.additionalPct)} + base duty (not calculated)`
+      : "Base duty not calculated"
+    : row.totalPct !== null
+      ? formatDutyPct(row.totalPct)
+      : row.additionalPct > 0
+        ? `${row.baseRate} + ${formatDutyPct(row.additionalPct)}`
+        : row.baseRate;
 
 // A readable product name for an HTS line. Many descriptions only make sense under their
 // parents ("Of cotton", "Other", "Valued over $12/pair"), so those borrow the nearest
@@ -251,7 +264,11 @@ export const dutyAnswerSentence = ({
   asOf: IsoDate;
 }) => {
   const subject = `As of ${formatSummaryDate(asOf)}, US imports of ${inSentence(productName)} (HTS ${htsno}) from ${row.country.name}`;
-  const base = row.baseRate === "Free" ? "a duty-free base rate" : `the ${row.baseRate} base rate`;
+  const base = row.baseNotCalculated
+    ? `a base rate given as "${row.baseRate}", which isn't calculated here,`
+    : row.baseRate === "Free"
+      ? "a duty-free base rate"
+      : `the ${row.baseRate} base rate`;
   const extras = joinList(row.additional.map((a) => `${a.program} (${formatDutyPct(a.ratePct)})`));
 
   if (!row.additional.length) {

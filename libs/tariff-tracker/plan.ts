@@ -30,22 +30,39 @@ export interface TrackerAccess {
   usage: TrackerUsage;
   // When the 14-day trial ends (or ended); null signed out, and on a trial not started yet
   trialEndsAt: string | null;
+  // The Tracker plan the account had, when it has none now (cancelled or unpaid)
+  pastPlan?: PastPlan | null;
   // Set when the admin is previewing a trial stage (?trialPreview=): what's shown, not what's covered
   preview?: TrialPreview;
 }
 
-// The trial stages the admin can preview on their own account (the access route's ?trialPreview=)
-export type TrialPreview = "trial" | "ending" | "ended";
-export const TRIAL_PREVIEWS: TrialPreview[] = ["trial", "ending", "ended"];
+export interface PastPlan {
+  plan: PricingPlan;
+  endedAt: string;
+}
 
-// The access as it would look at that stage: mid-trial (10 days left), its last days (2 left), or
-// just after it ended
+// The plan stages the admin can preview on their own account (the access route's ?trialPreview=)
+export type TrialPreview = "start" | "trial" | "ending" | "ended" | "paid" | "lapsed";
+export const TRIAL_PREVIEWS: TrialPreview[] = ["start", "trial", "ending", "ended", "paid", "lapsed"];
+
+// The access as it would look at that stage: before the trial starts, mid-trial (10 days left), its
+// last days (2 left), just after it ended, on the 30-import plan, or a week after that plan ended
 export const previewAccess = (access: TrackerAccess, stage: TrialPreview, now = Date.now()): TrackerAccess => {
   const days = stage === "trial" ? 10 : stage === "ending" ? 2 : -1;
   const trialEndsAt = new Date(now + days * DAY - 60 * 60 * 1000).toISOString();
-  return stage === "ended"
-    ? { ...access, kind: "free", paidPlan: null, pairLimit: TRIAL_ALLOWANCE.alertImports, trialEndsAt, preview: stage }
-    : { ...access, kind: "trial", paidPlan: null, pairLimit: REVERSE_TRIAL.imports, trialEndsAt, preview: stage };
+  const free: TrackerAccess = { ...access, kind: "free", paidPlan: null, pairLimit: TRIAL_ALLOWANCE.alertImports, trialEndsAt, pastPlan: null, preview: stage };
+  switch (stage) {
+    case "start":
+      return { ...access, kind: "trial", paidPlan: null, pairLimit: REVERSE_TRIAL.imports, trialEndsAt: null, pastPlan: null, preview: stage };
+    case "ended":
+      return free;
+    case "paid":
+      return { ...access, kind: "paid", paidPlan: TRACKER_PLANS[1].plan, pairLimit: TRACKER_PLANS[1].maxPairs, pastPlan: null, preview: stage };
+    case "lapsed":
+      return { ...free, pastPlan: { plan: TRACKER_PLANS[1].plan, endedAt: new Date(now - 7 * DAY).toISOString() } };
+    default:
+      return { ...access, kind: "trial", paidPlan: null, pairLimit: REVERSE_TRIAL.imports, trialEndsAt, pastPlan: null, preview: stage };
+  }
 };
 
 // Paid plans, smallest first, with the tier each one is
@@ -97,19 +114,22 @@ export const trackerAccessFrom = ({
   usage,
   activePlans,
   trialStartedAt,
+  pastPlan = null,
   now = Date.now(),
 }: {
   usage: TrackerUsage;
   activePlans: PricingPlan[];
   // When the trial started (tracker_onboarding.trial_started_at); null until the first imports
   trialStartedAt?: string | null;
+  // The latest Tracker purchase, active or not
+  pastPlan?: PastPlan | null;
   now?: number;
 }): TrackerAccess => {
   const ends = trialEndsAt(trialStartedAt);
   const paid = TRACKER_PLANS.filter((p) => activePlans.includes(p.plan)).pop();
   if (paid) return { kind: "paid", paidPlan: paid.plan, pairLimit: paid.maxPairs, usage, trialEndsAt: ends };
-  if (ends === null || now < Date.parse(ends)) return { kind: "trial", paidPlan: null, pairLimit: REVERSE_TRIAL.imports, usage, trialEndsAt: ends };
-  return { kind: "free", paidPlan: null, pairLimit: TRIAL_ALLOWANCE.alertImports, usage, trialEndsAt: ends };
+  if (ends === null || now < Date.parse(ends)) return { kind: "trial", paidPlan: null, pairLimit: REVERSE_TRIAL.imports, usage, trialEndsAt: ends, pastPlan };
+  return { kind: "free", paidPlan: null, pairLimit: TRIAL_ALLOWANCE.alertImports, usage, trialEndsAt: ends, pastPlan };
 };
 
 export const isPaid = (access: TrackerAccess) => access.kind === "paid";

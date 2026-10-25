@@ -1,9 +1,9 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useHts } from "@/contexts/HtsContext";
-import { describe } from "@/components/tariff-tracker/report";
+import { describePath } from "@/components/tariff-tracker/report";
 import { mono } from "@/components/ui/font";
 import { ModuleSections } from "@/components/ui/Card";
 import * as ui from "@/components/ui/styles";
@@ -13,61 +13,16 @@ import { CountryField } from "../fields/CountryField";
 import { HtsCodeField } from "../fields/HtsCodeField";
 import { NumberField } from "../fields/NumberField";
 import { TransportField } from "../fields/TransportField";
-import { formatDate, todayIso } from "../lib/format";
 import { TariffFinder } from "../lib/useTariffFinder";
+import { EntryDatePicker } from "./EntryDatePicker";
 import { RailField } from "./RailField";
 
 // The calculator, the same on every page, in two groups a page tier apart. The inputs: Entry details
-// (the fields: the only place the import's details change, the entry date included, with arrows
-// that step to the dates its rates changed). Then, once there's an answer, the results: a heading
+// (the fields: the only place the import's details change, the entry date included, picked from
+// today or the dates its rates changed). Then, once there's an answer, the results: a heading
 // card (what's being looked at, its actions and the tabs, ResultsHeading) with everything the open
 // tab shows as modules close under it (ResultsBox). On an import's own page, its header holds the
 // fields that can change and the tabs, with the HTS code and origin fixed.
-
-// The dates this import's rates changed (from its history), for the date's arrows
-const changeDates = (f: TariffFinder) =>
-  Array.from(new Set(f.history.filter((s, i) => i > 0 && s.changes.length > 0).map((s) => s.from))).sort();
-
-const DateField = ({ f }: { f: TariffFinder }) => {
-  const dates = changeDates(f);
-  const today = todayIso();
-  const earlier = [...dates].reverse().find((d) => d < f.entryDate);
-  // The next change after the date, or today once there's none left
-  const later = dates.find((d) => d > f.entryDate) ?? (f.entryDate < today ? today : undefined);
-  const step = (to: string | undefined) => to && f.setEntryDate(to);
-  const arrow = "flex h-10 w-8 shrink-0 items-center justify-center text-base-content/60 transition-colors hover:bg-base-200 hover:text-base-content disabled:pointer-events-none disabled:opacity-30";
-  return (
-    <div className={`${ui.input} flex items-stretch overflow-hidden px-0!`}>
-      <button
-        type="button"
-        className={`${arrow} border-r border-base-300`}
-        disabled={!earlier}
-        onClick={() => step(earlier)}
-        aria-label={earlier ? `The rates before ${formatDate(earlier)}'s change` : "No earlier change"}
-        title={earlier ? `Jump to ${formatDate(earlier)}, when rates changed` : "No earlier change"}
-      >
-        <ChevronLeftIcon className="h-4 w-4" aria-hidden />
-      </button>
-      <input
-        id="dc-date"
-        type="date"
-        className="min-w-0 flex-1 bg-transparent px-2 text-sm tabular-nums outline-hidden"
-        value={f.entryDate}
-        onChange={(e) => f.setEntryDate(e.target.value)}
-      />
-      <button
-        type="button"
-        className={`${arrow} border-l border-base-300`}
-        disabled={!later}
-        onClick={() => step(later)}
-        aria-label={later ? (later === today ? "Today's rates" : `Jump to ${formatDate(later)}, when rates changed`) : "No later change"}
-        title={later ? (later === today ? "Back to today" : `Jump to ${formatDate(later)}, when rates changed`) : "No later change"}
-      >
-        <ChevronRightIcon className="h-4 w-4" aria-hidden />
-      </button>
-    </div>
-  );
-};
 
 // The fields that can change on any import: its value (and quantity, when its duty is per unit),
 // the entry date and the mode of transport. In Entry details on the calculator; on an import's own
@@ -83,7 +38,7 @@ export const EntryInputs = ({ f }: { f: TariffFinder }) => (
       </RailField>
     )}
     <RailField label="Entry date" htmlFor="dc-date">
-      <DateField f={f} />
+      <EntryDatePicker f={f} id="dc-date" />
     </RailField>
     <RailField label="Mode of transport" htmlFor="dc-transport">
       <TransportField id="dc-transport" value={f.transportMode} onChange={f.setTransportMode} />
@@ -160,8 +115,9 @@ export const EntryDetails = ({ f, description, pageTitle }: { f: TariffFinder; d
 export const ResultsHeading = ({ f, actions, tabs }: { f: TariffFinder; actions?: ReactNode; tabs?: ReactNode }) => {
   const { selectedElement, country } = f;
   const { htsElements } = useHts();
-  // What it is in words: the nearest two levels that say so ("Of pumps › Of subheading 8413.30")
-  const words = selectedElement ? describe(selectedElement, htsElements) : "";
+  // What it is in words: every level from the heading down, the heading and the code's own line
+  // bold, so an "Other (339)" reads in context
+  const path = selectedElement ? describePath(selectedElement, htsElements) : [];
   if (!selectedElement || !country) return null;
   return (
     <div className={`${ui.cardOverflowVisible} flex flex-col px-5 sm:px-6`}>
@@ -176,14 +132,59 @@ export const ResultsHeading = ({ f, actions, tabs }: { f: TariffFinder; actions?
               {country.flag} {country.name}
             </span>
           </h2>
-          <p className="m-0 mt-1 line-clamp-1 text-sm text-base-content/60" title={words}>
-            {words}
-          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">{actions}</div>
       </div>
+      {/* The full width under the code and actions, so the actions never squeeze it */}
+      <PathTrail path={path} />
       {tabs && <div className="-mt-1 pb-4">{tabs}</div>}
     </div>
+  );
+};
+
+// Past these, the trail gives way so the line that's the code itself still shows within its two
+// lines: the heading is cut at a word, then the levels between collapse to "…" (the last of them
+// stays). The whole path is in the tooltip, and View in HTS
+const HEADING_MAX = 100;
+const TRAIL_MAX = 190;
+
+const shorten = (text: string, max: number) =>
+  text.length <= max ? text : `${text.slice(0, text.lastIndexOf(" ", max)).replace(/[\s,;:]+$/, "")}…`;
+
+// "Heading › level › level › the code's line": the heading and the code's line bold, the levels
+// between them quiet, at most two lines
+const fitTrail = (path: string[]) => {
+  if (path.length < 2) return path;
+  const [heading, ...rest] = path;
+  const leaf = rest.pop() as string;
+  const fits = (l: string[]) => l.join(" › ").length <= TRAIL_MAX;
+  const head = shorten(heading, HEADING_MAX);
+  // Drop the levels just under the heading, one more at a time, behind an "…"
+  for (let dropped = 0; dropped < rest.length; dropped++) {
+    const levels = [head, ...(dropped ? ["…"] : []), ...rest.slice(dropped), leaf];
+    if (fits(levels)) return levels;
+  }
+  return [head, ...(rest.length > 1 ? ["…"] : []), ...rest.slice(-1), leaf];
+};
+
+const PathTrail = ({ path }: { path: string[] }) => {
+  const levels = fitTrail(path);
+  return (
+    <p className="m-0 -mt-2 mb-4 line-clamp-2 text-sm leading-relaxed text-base-content/55" title={path.join(" › ")}>
+      {levels.map((level, i) => {
+        const last = i === levels.length - 1;
+        return (
+          <span key={i}>
+            {i > 0 && (
+              <span className="mx-1.5 text-base-content/30" aria-hidden>
+                ›
+              </span>
+            )}
+            <span className={i === 0 || last ? "font-semibold text-base-content/90" : undefined}>{level}</span>
+          </span>
+        );
+      })}
+    </p>
   );
 };
 

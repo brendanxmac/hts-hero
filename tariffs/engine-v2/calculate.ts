@@ -1,6 +1,6 @@
 // The calculation pipeline. See HowTariffsWork.md §12 for the steps.
 
-import { calculateBase, getBaseRateParts, parseRateColumn } from "./base-rates"
+import { calculateBase, getBaseRateParts, parseRateColumnParts, resolveBaseParts } from "./base-rates"
 import {
   basisHandlers,
   conditionHandlers,
@@ -83,16 +83,24 @@ export const calculate = (
     }
   }
 
-  const baseRates = getBaseRateParts(
-    input.baseRates,
-    column,
-    input.claimedPreference,
+  // Rates that point to another code use that code's rate, once it's given
+  const baseRates = resolveBaseParts(
+    getBaseRateParts(input.baseRates, column, input.claimedPreference),
+    {
+      answers,
+      lookupBaseRates: input.lookupBaseRates,
+      column,
+      claimedPreference: input.claimedPreference,
+      htsCode: input.htsCode,
+    },
   )
-  if (baseRates.some((t) => t.value === null)) {
-    warnings.push(
-      `Base rate "${baseRates.find((t) => t.value === null)?.raw}" couldn't be computed and was counted as 0`,
+  baseRates
+    .filter((t) => t.notCalculated)
+    .forEach((t) =>
+      warnings.push(
+        `The base rate "${t.raw}" can't be calculated, so the total excludes base duty. ${t.notCalculated}`,
+      ),
     )
-  }
   if (baseRates.some((t) => t.type === "amount") && !input.quantity) {
     warnings.push(
       "The base rate includes a per-unit amount, but no quantity was given",
@@ -104,6 +112,7 @@ export const calculate = (
     input.customsValue,
     input.quantity,
     answers,
+    input.quantityUnit,
   )
   baseCalc.parts
     .filter(
@@ -404,6 +413,7 @@ export const calculate = (
     ),
     base,
     baseParts: baseCalc.parts,
+    baseNotCalculated: baseCalc.parts.some((p) => p.notCalculated),
     lines,
     fees,
     totalDuty,
@@ -594,7 +604,9 @@ const getAvailablePreferences = (
   input: CalculationInput,
 ) => {
   const symbols = new Set(
-    parseRateColumn(input.baseRates.special).flatMap((t) => t.programs ?? []),
+    // Including programs on rates that can't be calculated yet ("The rate applicable to the
+    // natural juice in heading 2009 (A*,D)")
+    parseRateColumnParts(input.baseRates.special).flatMap((t) => t.programs ?? []),
   )
   // A line that's free under General lists no special programs, but USMCA-originating goods
   // can still be entered under USMCA there. Chapter 99 headings such as 9903.82.18/.19 and
@@ -620,11 +632,15 @@ const getBaseLine = (
     column2: "Column 2",
   }[column]
   const assumedValue = baseCalc.parts
-    .filter((p) => p.assumed && p.kind === "percent")
+    .filter((p) => p.assumed && p.kind === "percent" && p.component)
     .map((p) => p.component)
   const assumedWeight = baseCalc.parts
-    .filter((p) => p.assumed && p.kind === "amount")
+    .filter((p) => p.assumed && p.kind === "amount" && p.component)
     .map((p) => p.component)
+  // Sugar sliding scales use the full rate (100 degrees) until the polarity is entered
+  const assumedPolarity = baseCalc.parts.some(
+    (p) => p.assumed && p.inputId === "basePolarity",
+  )
   return {
     code: "BASE",
     name: `Base duty (${columnName})`,
@@ -642,6 +658,22 @@ const getBaseLine = (
       ...(assumedWeight.length
         ? [`Uses the total quantity for ${assumedWeight.join(", ")} until you enter it`]
         : []),
+      ...(assumedPolarity
+        ? [
+            "Uses the full rate for 100 degrees polarity until you enter the polarity, so this is the most it can be",
+          ]
+        : []),
+      ...Array.from(
+        new Set(
+          baseCalc.parts
+            .filter((p) => p.resolvedFrom)
+            .map((p) => `${p.resolvedFrom!.raw}: ${p.resolvedFrom!.source ?? `the rate of ${p.resolvedFrom!.code}`}`),
+        ),
+      ),
+      ...Array.from(new Set(baseCalc.parts.filter((p) => p.note).map((p) => p.note!))),
+      ...baseCalc.parts
+        .filter((p) => p.notCalculated)
+        .map((p) => `Not calculated: ${p.notCalculated}`),
     ],
   }
 }

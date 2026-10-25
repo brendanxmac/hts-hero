@@ -2,7 +2,6 @@
 
 import { SparklesIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { HistorySegment } from "@/tariffs/engine-v2/history";
 import { formatDate, formatPct } from "../lib/format";
 import { ArrowLink } from "./ArrowLink";
@@ -32,37 +31,30 @@ export const QUALIFY_TRIAL = {
 // What each adjustment would change is free for everyone (on each row of Possible Adjustments);
 // working out which ones the goods qualify for is the Tracker's savings check. In the Tracker,
 // across from Possible Adjustments' title: the way to this import's savings (the host says where)
-// Off for the Tracker MVP (SAVINGS_ENABLED): renders nothing until savings return
-export const CheckSavingsLink = ({ onClick }: { onClick: () => void }) => (SAVINGS_ENABLED ? <ArrowLink onClick={onClick}>Check Possible Savings</ArrowLink> : null);
+export const CheckSavingsLink = ({ onClick }: { onClick: () => void }) => <ArrowLink onClick={onClick}>Check Possible Savings</ArrowLink>;
 
 // On /duty-calculator, across from Possible Adjustments' title: the same check, as a link
-export const QualifyHeaderLink = ({ conversion }: { conversion: Conversion }) => {
-  if (!SAVINGS_ENABLED) return null;
-  return <ArrowLink onClick={() => conversion.openTrial("qualify", QUALIFY_TRIAL)}>Check if you&apos;re qualified</ArrowLink>;
-};
+export const QualifyHeaderLink = ({ conversion }: { conversion: Conversion }) => (
+  <ArrowLink onClick={() => conversion.openTrial("qualify", QUALIFY_TRIAL)}>Check if you&apos;re qualified</ArrowLink>
+);
 
 // On each adjustment that could save money: the same check, from the row
-export const QualifyLink = ({ conversion }: { conversion: Conversion }) => {
-  if (!SAVINGS_ENABLED) return null;
-  return (
-    <button
-      type="button"
-      className="group inline-flex items-center gap-1 text-xs font-medium text-primary"
-      onClick={(e) => {
-        e.preventDefault();
-        conversion.openTrial("qualify", QUALIFY_TRIAL);
-      }}
-    >
-      <span className="underline-offset-2 group-hover:underline">See if you qualify</span>
-    </button>
-  );
-};
+export const QualifyLink = ({ conversion }: { conversion: Conversion }) => (
+  <button
+    type="button"
+    className="group inline-flex items-center gap-1 text-xs font-medium text-primary"
+    onClick={(e) => {
+      e.preventDefault();
+      conversion.openTrial("qualify", QUALIFY_TRIAL);
+    }}
+  >
+    <span className="underline-offset-2 group-hover:underline">See if you qualify</span>
+  </button>
+);
 
 // Duty Over Time's heading: check past entries for refunds, with how much more this import has
 // paid than it does today, when it has
 export const RefundsButton = ({ conversion, history, customsValue: _customsValue }: { conversion: Conversion; history: HistorySegment[]; customsValue: number }) => {
-  // Off for the Tracker MVP (AUDITS_ENABLED): renders nothing until audits return
-  if (!AUDITS_ENABLED) return null;
   const today = new Date().toISOString().slice(0, 10);
   const past = history.filter((s) => s.from <= today);
   const current = past[past.length - 1];

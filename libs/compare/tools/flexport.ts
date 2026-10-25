@@ -13,20 +13,21 @@ export const FLEXPORT: Tool = {
   priceDetail:
     "Free with no registration. Pro is unlocked by signing in with a Flexport Client App account, and no separate price is published.",
   features: {
-    freeToTry: { support: "yes", note: "5 free searches, then a free sign-up" },
-    selfServe: { support: "partial", note: "Free tool is self-serve; Pro needs a Flexport client account" },
-    publishedPricing: { support: "no", note: "Pro has no published price" },
-    fullStack: { support: "partial", note: "By tariff type; its FAQ says not all Chapter 99 programs are supported" },
-    tradePreferences: { support: "yes", note: "Applied automatically when eligible" },
-    adjustments: { support: "yes", note: "Metal content, melt country and U.S. content" },
-    entryDate: { support: "yes", note: "Back to January 1, 2025, per its FAQ" },
-    rateHistory: { support: "unknown" },
-    catalogImpact: { support: "gated", note: "Pro alerts, for Flexport clients" },
-    countryCompare: { support: "gated", note: "Pro, for Flexport clients" },
-    csvUpload: { support: "gated", note: "Pro, up to 500 rows" },
-    classification: { support: "yes", note: "HTS search and AI classification" },
-    api: { support: "no", note: "No public tariff API" },
-    changelog: { support: "yes" },
+    freeToTry: { support: "yes", note: "5 free searches, then a free sign-up", evidence: { url: "https://tariffs.flexport.com/", checkedAt: "2026-10-23", quote: "0 / 5 free searches ... Sign up for unlimited" } },
+    selfServe: { support: "partial", note: "Free tool is self-serve; Pro needs a Flexport client account", evidence: { url: "https://www.flexport.com/tariff-sim/", checkedAt: "2026-10-23", quote: "Sign in with a Flexport Client App account to unlock Tariff Simulator Pro." } },
+    publishedPricing: { support: "no", note: "Pro has no published price", evidence: { url: "https://www.flexport.com/tariff-sim/", checkedAt: "2026-10-23", quote: "What does Tariff Simulator Pro add? Bulk HTS uploads, PGA ... requirements and additional fees, side-by-side comparisons" } },
+    fullStack: { support: "partial", note: "By tariff type; its FAQ says not all Chapter 99 programs are supported", evidence: { url: "https://tariffs.flexport.com/faq", checkedAt: "2026-10-23", quote: "Not all Chapter 98 or 99 programs are supported at this time." } },
+    adcvd: { support: "partial", note: "Flags possible AD/CVD; doesn't calculate it, per its FAQ", evidence: { url: "https://tariffs.flexport.com/faq", checkedAt: "2026-10-23", quote: "identifies when HTS codes may be subject to anti-dumping (AD) or countervailing (CVD) duties and displays appropriate flags" } },
+    tradePreferences: { support: "yes", note: "Applied automatically when eligible", evidence: { url: "https://tariffs.flexport.com/faq", checkedAt: "2026-10-23", quote: "The simulator automatically applies preferential trade agreements when eligible." } },
+    adjustments: { support: "yes", note: "Metal content, melt country and U.S. content", evidence: { url: "https://tariffs.flexport.com/bulk-upload-docs", checkedAt: "2026-10-23", quote: "US Content Percent: The percentage of the product's value that is US content" } },
+    entryDate: { support: "yes", note: "Back to January 2025, per its FAQ", evidence: { url: "https://tariffs.flexport.com/faq", checkedAt: "2026-10-23", quote: "Historical rates are maintained back to January 2025 for compliance verification." } },
+    rateHistory: { support: "unknown", searched: { urls: ["https://tariffs.flexport.com/faq", "https://tariffs.flexport.com/about", "https://tariffs.flexport.com/changelog", "https://www.flexport.com/tariff-sim/"], checkedAt: "2026-10-23" } },
+    catalogImpact: { support: "gated", note: "Pro alerts, for Flexport clients", evidence: { url: "https://www.flexport.com/tariff-sim/", checkedAt: "2026-10-23", quote: "email alerts when a duty change hits one of your codes" } },
+    countryCompare: { support: "partial", note: "Change the origin and recalculate; side-by-side in Pro", evidence: { url: "https://tariffs.flexport.com/faq", checkedAt: "2026-10-23", quote: "switching to different countries in the origin dropdown menu and recalculating" } },
+    csvUpload: { support: "gated", note: "Pro, up to 5,000 rows", evidence: { url: "https://tariffs.flexport.com/bulk-upload-docs", checkedAt: "2026-10-23", quote: "Keep total rows under 5,000" } },
+    classification: { support: "yes", note: "HTS search and AI classification", evidence: { url: "https://tariffs.flexport.com/classification", checkedAt: "2026-10-23", quote: "Simply describe your product and get an HTS code recommendation in seconds." } },
+    api: { support: "no", note: "No tariff API in its developer platform", evidence: { url: "https://developers.flexport.com/", checkedAt: "2026-10-23", quote: "Flexport APIs give you the data to connect everyone in the Flexport Platform—or your ERP." } },
+    changelog: { support: "yes", evidence: { url: "https://tariffs.flexport.com/changelog", checkedAt: "2026-10-23", quote: "Track the latest updates to tariff rates, Section 232 changes, and new features" } },
   },
   strengths: [
     "Well-known brand with a polished interface and trade map",
@@ -39,7 +40,7 @@ export const FLEXPORT: Tool = {
     "Free IEEPA tariff refund calculator",
   ],
   limitations: [
-    "Bulk upload, alerts and country comparison require becoming a Flexport client",
+    "Bulk upload, alerts and side-by-side country comparison require becoming a Flexport client",
     "No published price for Pro",
     "One calculation at a time on the free tool",
     "Its FAQ says not all Chapter 99 programs are supported",
@@ -51,12 +52,12 @@ export const FLEXPORT: Tool = {
     { title: "Flexport Fall 2025 product release", url: "https://www.flexport.com/technology/product-release/fall-2025" },
     { title: "Flexport Tariff Simulator FAQ", url: "https://tariffs.flexport.com/faq" },
   ],
-  checkedAt: "2026-10-06",
+  checkedAt: "2026-10-23",
   vs: {
     verdict:
       "Flexport's simulator is a solid free tool for one-off estimates, with trade agreements and entry-date rates. HTS Hero is the better fit once you need catalog alerts, bulk tools, country comparison or an API without moving your freight to Flexport.",
     chooseHtsHero: [
-      "You want catalog alerts, bulk upload and country comparison without becoming a freight customer",
+      "You want catalog alerts, bulk upload and side-by-side country comparison without becoming a freight customer",
       "You want to see how a product's duty changed revision by revision, with the heading behind each change",
       "You want tariff results in your ERP, TMS or AI tools through an API or MCP",
       "You want to know the price before you sign up, and to pay monthly with no contract",
@@ -70,7 +71,7 @@ export const FLEXPORT: Tool = {
     differences: [
       {
         title: "Who gets the advanced features",
-        body: "Flexport's free simulator covers single lookups. Its Pro features, including bulk upload, email alerts and country comparison, are unlocked by signing in with a Flexport client account, so they come with a freight relationship. On HTS Hero every plan is self-serve: pick one on the pricing page and start.",
+        body: "Flexport's free simulator covers single lookups. Its Pro features, including bulk upload, email alerts and side-by-side country comparison, are unlocked by signing in with a Flexport client account, so they come with a freight relationship. On HTS Hero every plan is self-serve: pick one on the pricing page and start.",
       },
       {
         title: "History and auditing",
@@ -109,7 +110,7 @@ export const FLEXPORT: Tool = {
     intro:
       "Flexport's Tariff Simulator is often the first tariff calculator people try. Most go looking for an alternative when they need more than a quick lookup and find that the advanced features come with a Flexport account.",
     reasons: [
-      "Bulk upload, alerts and country comparison are Pro features for Flexport clients",
+      "Bulk upload, alerts and side-by-side country comparison are Pro features for Flexport clients",
       "There's no published price for Pro",
       "Teams that ship with another forwarder want a neutral tool",
     ],
@@ -117,7 +118,7 @@ export const FLEXPORT: Tool = {
       {
         question: "Why look for a Flexport tariff simulator alternative?",
         answer:
-          "Usually because the features you need next, like bulk upload, alerts and comparing countries, are Pro features that require a Flexport client account. An independent tool lets you use them without changing forwarders.",
+          "Usually because the features you need next, like bulk upload, alerts and side-by-side country comparison, are Pro features that require a Flexport client account. An independent tool lets you use them without changing forwarders.",
       },
       {
         question: "Is there a free alternative to Flexport's tariff simulator?",

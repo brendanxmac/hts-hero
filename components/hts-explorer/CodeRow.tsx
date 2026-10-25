@@ -6,13 +6,10 @@ import { useClassification } from "@/contexts/ClassificationContext";
 import { HtsElement } from "@/interfaces/hts";
 import { MarkdownProse } from "@/components/MarkdownProse";
 import { mono } from "@/components/ui/font";
-import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { isTariffLevel, useExplorer } from "./useExplorer";
 
 // One line of the schedule in a list: its code and description, what's under it, and a way in.
-// Over a calculator, codes with a duty get a "Use" button that puts them straight in the input
-// bar. In a classification, headings can be added to or removed from its candidates.
+// In a classification, headings can be added to or removed from its candidates.
 export const CodeRow = ({
   element,
   onOpen,
@@ -32,7 +29,6 @@ export const CodeRow = ({
   // Shown in the panel beside the list
   selected?: boolean;
 }) => {
-  const { applyCode } = useExplorer();
   const { classification } = useClassification();
   const { htsno, description } = element;
   // A short rate only; Chapter 99 lines carry sentences in the rate column
@@ -88,20 +84,6 @@ export const CodeRow = ({
           <span className="hidden shrink-0 rounded-full bg-tt-soft px-2.5 py-0.5 text-xs font-semibold tabular-nums text-base-content group-hover:bg-base-100 sm:inline">
             {rate}
           </span>
-        )}
-        {applyCode && isTariffLevel(element) && (
-          <button
-            type="button"
-            className={`${ui.button({ variant: "secondary", size: "sm" })} group-hover:border-primary/40 group-hover:text-primary`}
-            onClick={(e) => {
-              e.stopPropagation();
-              applyCode(element);
-            }}
-            title={`Use ${htsno} in the calculator`}
-          >
-            <PlusIcon className="h-3.5 w-3.5" aria-hidden />
-            Use
-          </button>
         )}
         <ChevronRightIcon
           className="h-5 w-5 shrink-0 text-base-content/50 transition-transform group-hover:translate-x-0.5 group-hover:text-primary"

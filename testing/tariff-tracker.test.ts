@@ -514,12 +514,13 @@ describe("Tariff Tracker: rate history across origins", () => {
   })
 })
 
-import { originCosts } from "../components/tariff-tracker/insights/savings"
 import { provenPicks, supplierCodes } from "../components/tariff-tracker/product/analysis/analysis"
-import { sourcingIdeas } from "../components/tariff-tracker/sourcing/ideas"
+import { sourcingRows } from "../components/tariff-tracker/sourcing/finder/model"
+import { coverageOf, usConfidence } from "../components/tariff-tracker/sourcing/finder/coverage"
+import { emptyTotals, type TradeData } from "../libs/sourcing/trade"
 import type { UsImports } from "../components/duty-calculator/lib/usImportsData"
 
-describe("Tariff Tracker: proven suppliers and sourcing ideas", () => {
+describe("Tariff Tracker: proven suppliers and sourcing", () => {
   const steel = product("7326.90.86.88", "2.9%", "CN")
   const rates = originRates(steel)
   const rateFor = (code: string) => rates.find((r) => r.country.code === code)!
@@ -556,22 +557,60 @@ describe("Tariff Tracker: proven suppliers and sourcing ideas", () => {
     expect(!cheaper(first[0]) && cheaper(first[1])).toBe(false)
   })
 
-  it("finds cheaper origins that ship each product, largest supplier first", () => {
-    const sourcing = sourcingIdeas([steel], new Map([[steel.key, originCosts(rates)]]), new Map([[steel.entry.element.htsno, imports]]))
-    expect(sourcing.withFigures).toBe(1)
-    const idea = sourcing.ideas[0]
-    if (idea) {
-      expect(idea.options.every((o) => o.pct < steel.totalPct && ["MX", "VN"].includes(o.country.code))).toBe(true)
-      expect(idea.options.every((o, i) => i === 0 || o.value <= idea.options[i - 1].value)).toBe(true)
-      expect(sourcing.usd).toBe(idea.best.usd)
-      expect(sourcing.countries.every((c) => c.products === 1)).toBe(true)
+  it("flags a supply mismatch and thin data, and leaves steady suppliers alone", () => {
+    const totals = (value: number) => ({ ...emptyTotals(), value, vesVal: value })
+    const country = (last: number, prior: number, monthly: number[]) => ({ last: totals(last), prior, monthly, districts: [] as [string, number][] })
+    const months = Array.from({ length: 36 }, (_, i) => `20${23 + Math.floor((i + 8) / 12)}-${String(((i + 8) % 12) + 1).padStart(2, "0")}`)
+    const flat = (perMonth: number, from = 0) => months.map((_, i) => (i >= from ? perMonth : 0))
+    const trade: TradeData = {
+      code: steel.entry.element.htsno.replace(/\D/g, ""),
+      level: "HS10",
+      requested: "HS10",
+      exact: null,
+      codes: [],
+      elsewhere: {},
+      unit: null,
+      months,
+      districtYear: 2025,
+      total: { last: totals(36e6), prior: 21e6, monthly: flat(1e6) },
+      countries: {
+        // Up from $5M to $20M, against $377K of world exports: the UAE's HFC-125
+        AE: country(20e6, 5e6, flat(1.7e6, 24)),
+        // Steady, and a big exporter: India
+        IN: country(16e6, 15.7e6, flat(1.3e6)),
+        // Stopped: China
+        CN: country(0, 0, flat(1e6).map((v, i) => (i < 12 ? v : 0))),
+      },
+      retrieved: "2026-10-24",
     }
+    const capacity = { w: 105_242, wp: 266_357, wy: [266_357, 208_560, 105_242], n: 3, c: [["CN", 58_505, 153_521, 3.5], ["IN", 17_356, 75_526, 8.6], ["AE", 377, 1_194, 0.3]] as [string, number, number, number][] }
+    const rows = sourcingRows({ rates, withAgreements: true, trade, capacity, htsno: steel.entry.element.htsno, adcvd: null, worldYear: 2024 })
+    const flagsOf = (code: string) => rows.find((r) => r.country.code === code)!.flags.map((f) => f.id)
+    expect(flagsOf("AE").includes("mismatch")).toBe(true)
+    expect(flagsOf("IN").includes("mismatch")).toBe(false)
+    const coverage = coverageOf(rows)
+    // Few suppliers, and China the #1 exporter with no US imports in the last 12 months
+    expect(coverage.thin).toBe(true)
+    expect(coverage.missing.map((r) => r.country.code)).toEqual(["CN"])
+    expect(coverage.stopped.some(([r]) => r.country.code === "CN")).toBe(true)
+    // Two countries on record is thin; a broad market is good
+    expect(usConfidence(trade).level).toBe("thin")
+    const broad = { ...trade, total: { ...trade.total, last: totals(500e6), monthly: flat(40e6) }, countries: Object.fromEntries(Array.from({ length: 12 }, (_, i) => [`C${i}`, country(40e6, 30e6, flat(3e6))])) }
+    expect(usConfidence(broad).level).toBe("good")
+    expect(usConfidence(null).level).toBe("thin")
   })
 
-  it("counts products Census has no figures for", () => {
-    const sourcing = sourcingIdeas([steel], new Map([[steel.key, originCosts(rates)]]), new Map([[steel.entry.element.htsno, null]]))
-    expect(sourcing.withoutFigures).toBe(1)
-    expect(sourcing.ideas.length).toBe(0)
+  it("ranks sourcing options", () => {
+    const fresh = sourcingRows({ rates, withAgreements: true, trade: null, capacity: null, htsno: steel.entry.element.htsno, adcvd: null })
+    // Without Census or Atlas figures nothing is a proven producer
+    expect(fresh.some((r) => r.candidate)).toBe(false)
+    // Sanctioned countries score nothing and are never options
+    const cuba = fresh.find((r) => r.country.code === "CU")!
+    expect(cuba.blocked && !cuba.candidate).toBe(true)
+    // Every metric scores 0 to 100
+    expect(fresh.every((r) => Object.values(r.scores).every((v) => v >= 0 && v <= 100))).toBe(true)
+    // Landed cost is the duty plus the freight used
+    expect(fresh.every((r) => Math.abs(r.landedPct - (r.dutyPct + r.freightUsed)) < 1e-9)).toBe(true)
   })
 })
 

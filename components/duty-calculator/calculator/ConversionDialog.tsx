@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useContext, useEffect, useState } from "react";
-import { Dialog } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -26,14 +26,13 @@ import * as tt from "@/components/ui/styles/tracker";
 import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
 import { useUser } from "@/contexts/UserContext";
-import { REVERSE_TRIAL, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { useOptionalTrackerAccess } from "@/components/tariff-tracker/access/accessContext";
 import { featureTab, PremiumFeature } from "@/components/tariff-tracker/access/features";
 import { sectionUrl } from "@/components/tariff-tracker/sections";
 import { TrackerNavContext } from "@/components/tariff-tracker/shell/TrackerNav";
 import { currentPath, signupHref } from "@/components/tariff-tracker/access/signup";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
-import { AUDITS_ENABLED, SAVINGS_AUDITS_LABEL, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { AUTO_AUDITING, FREE_FOREVER_SHORT, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 import { thisPageWith } from "../landing/redirect";
 
@@ -42,7 +41,7 @@ import { thisPageWith } from "../landing/redirect";
 //   explanation of this import, a past date) when the host says
 // - "trial": what the Tariff Tracker's 14-day reverse trial adds (REVERSE_TRIAL: every new account
 //   gets it, no card; then no alerts on their own imports, TRIAL_ALLOWANCE.alertImports being 0, but
-//   Tariff News alerts and sourcing insights free; AD/CVD checks are the trial's), led by the feature
+//   Tariff News alerts, sourcing insights and AD/CVD checks free), led by the feature
 //   they reached for (tracking, the qualification check, refunds, sourcing); "See everything else" steps over to the account view
 // Each view's button runs the host's own action (where sign-up should come back to).
 // useConversion opens it from anywhere, sending signed-in users the right way instead.
@@ -57,15 +56,15 @@ export const ACCOUNT_BENEFITS: { id: AccountBenefit; text: string }[] = ([
   { id: "ruled-out", text: "Why other tariffs don't apply, so you know nothing was missed" },
   { id: "history", text: "Any import's full duty on any past date, line by line" },
   { id: "analysis", text: "Sourcing intelligence: any import's duty from every country of origin, as insights, a globe, a table and a chart" },
-  { id: "adcvd", text: `AD/CVD checks free for ${REVERSE_TRIAL.days} days: whether an import may fall under an antidumping or countervailing duty case, and its rates` },
+  { id: "adcvd", text: "AD/CVD checks on any import: the antidumping and countervailing duty cases that may cover it, their rates and the suppliers they name" },
   {
     id: "alerts",
     text: `The Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, with an alert when a tariff change hits one (before → after); then Tariff News alerts on every new US tariff action, free forever`,
   },
   { id: "impacts", text: "Impact checks: see exactly how any tariff action affects each import you track" },
-  { id: "savings", text: `What you could save on ${TRIAL_ALLOWANCE.savingsChecks} imports: trade programs, exemptions and cheaper origins` },
-  { id: "audits", text: `${TRIAL_ALLOWANCE.auditChecks} past entries checked for duty you may have overpaid` },
-] as { id: AccountBenefit; text: string }[]).filter((b) => (b.id !== "savings" || SAVINGS_ENABLED) && (b.id !== "audits" || AUDITS_ENABLED));
+  { id: "savings", text: "What you could save on every import: trade programs, exemptions and cheaper origins" },
+  { id: "audits", text: "Every past entry checked for duty you may have overpaid" },
+] as { id: AccountBenefit; text: string }[]);
 
 // Each benefit as a selling point, for pitches without points of their own
 const BENEFIT_POINTS: Record<AccountBenefit, SellingPoint> = {
@@ -73,18 +72,23 @@ const BENEFIT_POINTS: Record<AccountBenefit, SellingPoint> = {
   legal: { icon: "legal", title: "The legal text on every line", body: "Every tariff and exemption, with the notes it cites." },
   "ruled-out": { icon: "shield", title: "Why the others don't apply", body: "So you know nothing was missed." },
   history: { icon: "clock", title: "Any date's duty", body: "Line by line, for any entry date, past or scheduled." },
-  analysis: { icon: "globe", title: "Your duty from every country", body: "See where it could cost less to source it." },
-  adcvd: { icon: "shield", title: "AD/CVD checks", body: `See if an import may fall under an antidumping or countervailing case, free for ${REVERSE_TRIAL.days} days.` },
+  analysis: { icon: "globe", title: "Advanced sourcing intelligence", body: "Your duty from every country of origin, as insights, a globe, a table and a chart." },
+  adcvd: { icon: "shield", title: "AD/CVD checks", body: "See if any import may fall under an antidumping or countervailing duty case, and its rates." },
   alerts: { icon: "bell", title: "Alerts the moment rates change", body: `The full Tracker free for ${REVERSE_TRIAL.days} days, on up to ${REVERSE_TRIAL.imports} imports.` },
   impacts: { icon: "bolt", title: "How each tariff action hits you", body: "See exactly which of your imports it touches." },
   savings: { icon: "money", title: "Ways to pay less", body: "Trade programs, exemptions and cheaper origins." },
   audits: { icon: "receipt", title: "Find what you overpaid", body: "Past entries checked against what you owed." },
 };
 
+// What the account itself gives, free: the Tracker's alerts, impact checks, savings and audits are
+// the paid offer (the trial view), so the account view never leads with them or lists them
+const PAID_BENEFITS: AccountBenefit[] = ["alerts", "impacts", "savings", "audits"];
+const FREE_BENEFITS = ACCOUNT_BENEFITS.filter((b) => !PAID_BENEFITS.includes(b.id));
+
 const pointsFor = (account: AccountPitch): SellingPoint[] => {
   if (account.points?.length) return account.points.slice(0, 3);
-  const ids = Array.from(new Set([account.highlight, "alerts", "why", "analysis"].filter(Boolean) as AccountBenefit[])).filter((id) =>
-    ACCOUNT_BENEFITS.some((b) => b.id === id),
+  const ids = Array.from(new Set([account.highlight, "adcvd", "analysis"].filter(Boolean) as AccountBenefit[])).filter((id) =>
+    FREE_BENEFITS.some((b) => b.id === id),
   );
   return ids.slice(0, 3).map((id) => BENEFIT_POINTS[id]);
 };
@@ -117,7 +121,11 @@ export interface SellingPoint {
 
 // What the account view leads with
 export type AccountPitch = {
+  // Over the title, in place of "Create Free Account"
+  eyebrow?: string;
   title: string;
+  // One line under the title
+  subtitle?: string;
   // The benefit they reached for: its point leads (when the pitch has no points of its own)
   highlight?: AccountBenefit;
   // Three selling points, in this import's own numbers (otherwise from the highlight)
@@ -129,6 +137,11 @@ export type AccountPitch = {
   urgency?: string;
   // Hides the host's note under the button (the points already say it all)
   hideNote?: boolean;
+  // The last chip under the button, in place of "100% free" (a pitch for the trial's features)
+  perk?: string;
+  // For a signed-in account (the button gets them started in the Tracker): no sign-up chips, and no
+  // list of what a free account includes
+  member?: boolean;
   cta: string;
 };
 
@@ -146,18 +159,13 @@ const DEFAULT_TRIAL: TrialPitch = {
   subtitle: `Try the Tariff Tracker free for ${REVERSE_TRIAL.days} days: everything, on up to ${REVERSE_TRIAL.imports} imports. Get an alert the moment a tariff change hits one, and see exactly how any tariff action affects each.`,
 };
 
-// What every new account's 14-day trial includes, for the trial view's list (PRICING.md). The Tracker MVP
-// (features.ts) sells tracking only; the savings and audit list comes back with them
-const TRIAL_INCLUDES = SAVINGS_ENABLED || AUDITS_ENABLED ? [
-  `Savings checks on ${TRIAL_ALLOWANCE.savingsChecks} imports: trade programs, cheaper origins and what you could qualify for`,
-  `${TRIAL_ALLOWANCE.auditChecks} audit checks: what you paid on past entries against what you owed`,
-  `Alerts when a tariff change hits up to ${REVERSE_TRIAL.imports} of your imports`,
-  "Rate history, sourcing and insights across your whole catalog",
-] : [
+// What every new account's 14-day trial includes, for the trial view's list (PRICING.md)
+const TRIAL_INCLUDES = [
   `Track up to ${REVERSE_TRIAL.imports} imports, with every tariff on each one`,
   "An alert when a tariff change hits one of them: the rate before and after, AD/CVD alerts included",
-  "Impact checks and Insights: see exactly how any tariff action affects each import",
-  "Tariff News, rate history, and every tariff exported to CSV or Excel",
+  `${SAVINGS_DETECTION.name}: ${SAVINGS_DETECTION.text.charAt(0).toLowerCase()}${SAVINGS_DETECTION.text.slice(1)}`,
+  `${AUTO_AUDITING.name}: ${AUTO_AUDITING.text.charAt(0).toLowerCase()}${AUTO_AUDITING.text.slice(1)}`,
+  "Impact checks, Insights, Tariff News, rate history, and every tariff exported to CSV or Excel",
   `After ${REVERSE_TRIAL.days} days, ${FREE_FOREVER_SHORT} stay free, forever`,
 ];
 
@@ -189,8 +197,9 @@ const AccountView = ({
             Back to the Tariff Tracker
           </button>
         )}
-        <p className={`${tt.eyebrow("primary")} pr-8`}>Create Free Account</p>
+        <p className={`${tt.eyebrow("primary")} pr-8`}>{account.eyebrow ?? "Create Free Account"}</p>
         <Dialog.Title className={`${tt.display} text-[1.6rem] font-semibold leading-tight text-base-content`}>{account.title}</Dialog.Title>
+        {account.subtitle && <p className={`${tt.subtitle} m-0 -mt-1 text-base`}>{account.subtitle}</p>}
         {account.urgency && (
           <p className="m-0 flex items-start gap-2 rounded-xl bg-warning/10 px-3 py-2 text-sm font-medium text-base-content">
             <span className="relative mt-1.5 flex h-2 w-2 shrink-0" aria-hidden>
@@ -228,6 +237,7 @@ const AccountView = ({
           {account.cta}
           <ArrowRightIcon className="h-5 w-5" aria-hidden />
         </button>
+        {!account.member && (
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-medium text-base-content/70">
           <span className="inline-flex items-center gap-1">
             <ClockIcon className="h-3.5 w-3.5 text-success" aria-hidden />
@@ -239,12 +249,14 @@ const AccountView = ({
           </span>
           <span className="inline-flex items-center gap-1">
             <CheckIcon className="h-3.5 w-3.5 text-success" aria-hidden />
-            {REVERSE_TRIAL.days} days of the full Tracker
+            {account.perk ?? "100% free"}
           </span>
         </div>
+        )}
         {!account.hideNote && accountNote && <p className="m-0 text-center text-xs text-base-content/60">{accountNote}</p>}
       </div>
 
+      {!account.member && (
       <div className="border-t border-base-300 pt-3">
         <button
           type="button"
@@ -257,7 +269,7 @@ const AccountView = ({
         </button>
         {more && (
           <ul className="mt-3 flex flex-col gap-1.5">
-            {ACCOUNT_BENEFITS.map((b) => (
+            {FREE_BENEFITS.map((b) => (
               <li key={b.id} className="flex items-start gap-2 text-sm text-base-content/80">
                 <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
                 {b.text}
@@ -266,6 +278,7 @@ const AccountView = ({
           </ul>
         )}
       </div>
+      )}
     </div>
   );
 };
@@ -332,16 +345,6 @@ export const ConversionDialog = ({
                       {item}
                     </li>
                   ))}
-                  {/* Not live yet (features.ts): labeled, part of the trial when they launch */}
-                  {!SAVINGS_ENABLED && !AUDITS_ENABLED && (
-                    <li className="flex items-start gap-2.5 text-sm text-base-content">
-                      <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-                      <span>
-                        {SAVINGS_DETECTION.name} and {AUTO_AUDITING.name.toLowerCase()}, included when they launch{" "}
-                        <span className={tt.chip("warning")}>{SAVINGS_AUDITS_LABEL}</span>
-                      </span>
-                    </li>
-                  )}
                 </ul>
               </div>
               <div className="flex flex-col gap-2">

@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog } from "@headlessui/react";
+import { Dialog } from "@/components/ui/Dialog";
 import { Crisp } from "crisp-sdk-web";
 import {
   ArrowLeftIcon,
-  ArrowRightIcon,
   ChatBubbleLeftRightIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
@@ -15,7 +14,6 @@ import { THEME } from "@/components/ui/theme";
 import * as tt from "@/components/ui/styles/tracker";
 import * as ui from "@/components/ui/styles";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
-import { SAVINGS_AUDITS_LABEL } from "@/libs/tariff-tracker/features";
 import { SKIP_REASONS, SkipReason } from "@/libs/tariff-tracker/onboarding";
 import { delay } from "./parts";
 
@@ -28,16 +26,14 @@ const WITHOUT = [
   "Alert you the day a tariff change hits one of your products",
   "Show the duty you pay on each import today, every tariff stacked up",
   "Flag antidumping and countervailing duty cases on your imports",
-  `Find savings and audit your entries (${SAVINGS_AUDITS_LABEL})`,
+  "Find possible savings and audit your entries",
 ];
 
 // Back (and the main button) returns them to the exact step they left, as they left it
 export const SkipStep = ({
-  backLabel,
   onBack,
   onSkip,
 }: {
-  backLabel: string;
   onBack: () => void;
   onSkip: (reason: SkipReason | null, note: string) => void;
 }) => {
@@ -110,8 +106,7 @@ export const SkipStep = ({
           onClick={onBack}
           autoFocus
         >
-          {backLabel}
-          <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          Add my imports
         </button>
         <button
           type="button"

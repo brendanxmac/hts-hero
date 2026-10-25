@@ -14,8 +14,7 @@ import {
 } from "@heroicons/react/20/solid"
 
 // The Tariff Tracker's sections, in sidebar order: tabs on the one /tariff-tracker page, picked
-// with ?tab=. Sections that aren't built yet, or are held back as coming soon, show what's
-// planned. Every built section is open to an account; the paid-only sections need a plan
+// with ?tab=. Sections that aren't built yet show what's planned. Every built section is open to an account; the paid-only sections need a plan
 // (PRICING.md). Expert help sells the managed service, sold apart from the plans.
 
 export type SectionSlug =
@@ -48,9 +47,6 @@ export interface TrackerSection {
   paidOnly: boolean
   // Still experimental
   beta?: boolean
-  // Held back for now: marked Coming soon, and shows what's planned (Savings and Entry audit
-  // are built; flip ready back to true to open them again)
-  comingSoon?: boolean
   // What the section will do, until it's built
   planned: string[]
   // Left out of the sidebar for now (links into it still open it)
@@ -115,8 +111,7 @@ export const SECTIONS: TrackerSection[] = [
     Icon: ReceiptPercentIcon,
     title: "Savings",
     summary: "Ways you could pay less duty on the products you already import.",
-    ready: false,
-    comingSoon: true,
+    ready: true,
     group: "workspace",
     paidOnly: false,
     planned: [
@@ -130,10 +125,9 @@ export const SECTIONS: TrackerSection[] = [
     label: "Audits",
     Icon: ClipboardDocumentCheckIcon,
     title: "Audits",
-    comingSoon: true,
     summary:
       "Check the duty paid on every shipment against the rates in force that day.",
-    ready: false,
+    ready: true,
     group: "workspace",
     paidOnly: false,
     planned: [
@@ -223,19 +217,20 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "sourcing",
+    // Off for now (2026-10-25): its Storage files aren't in prod yet
     hidden: true,
     label: "Sourcing",
     Icon: GlobeAltIcon,
     title: "Sourcing",
     summary:
-      "Find cheaper countries that already make your products for the US.",
+      "Where to source any product: every country ranked on landed cost, proven production, reliability and transit time.",
     ready: true,
     group: "workspace",
     paidOnly: false,
     planned: [
-      "Cheaper countries of origin for each product that already ship it to the US, with how much",
-      "The trade agreements that could lower each country's rate",
-      "The countries that could supply the most of your imports for less, and what moving could save",
+      "Every country's landed cost for any HTS code: duty plus the freight Census records",
+      "Who really makes it: world exports, specialization and what the US already buys from each country",
+      "Reliability, compliance flags and days at sea, with the source behind every figure",
     ],
   }),
   section({
@@ -276,7 +271,7 @@ export const sectionUrl = (slug: SectionSlug): string => {
 
 // A catalog product's own view's tabs, in order; Overview is where it opens. AD/CVD is part of Duty,
 // and History and News are Changes: their old names still open them there. Savings and Audits are
-// always shown; until they launch (libs/tariff-tracker/features.ts) they say what's coming.
+// always shown.
 export type ProductView = "overview" | "duty" | "compare" | "changes" | "savings" | "audit"
 export type ProductTab = ProductView | "adcvd" | "history" | "news"
 

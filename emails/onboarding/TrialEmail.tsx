@@ -1,16 +1,15 @@
 import { Column, Row, Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Checklist, Cta, Eyebrow, P, Signature, Title } from "../kit/parts"
-import { C, siteLink, TONES } from "../kit/brand"
+import { C, siteLink } from "../kit/brand"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
-import { SAVINGS_AUDITS_LABEL } from "../../libs/tariff-tracker/features"
 
 // The 14-day reverse trial's emails (PRICING.md), from Brendan:
 //   unlocked  existing accounts, once, when their fresh 14 days start: everything is on
 //   ending    3 days and 1 day before it ends: what the account is about to lose, in its numbers
 //   ended     the day after: what it lost, and how to get it back
-// Loss first (TRIAL_LOSSES: alerts, impact checks and AD/CVD checks on all their imports, and
-// auditing and savings detection, labeled until they launch), then the plan that keeps everything
+// Loss first (TRIAL_LOSSES: alerts, impact checks and AD/CVD alerts on all their imports, and
+// auditing and savings detection), then the plan that keeps everything
 // at its launch price while that lasts, then what stays free. No numbers on the loss.
 
 export interface TrialEmailProps {
@@ -46,7 +45,7 @@ export const trialSubject = (p: TrialEmailProps) =>
 
 const CAMPAIGN = "reverse-trial"
 
-// What goes, with a red cross per line (and the label on what hasn't launched yet)
+// What goes, with a red cross per line
 const Losses = ({ items }: { items: Loss[] }) => (
   <Section style={{ margin: "4px 0 18px" }}>
     {items.map((item) => (
@@ -57,21 +56,6 @@ const Losses = ({ items }: { items: Loss[] }) => (
         <Column style={{ verticalAlign: "top" }}>
           <Text style={{ margin: 0, fontSize: 15, lineHeight: "22px", color: C.text }}>
             <strong>{item.title}</strong>
-            {item.soon && (
-              <span
-                style={{
-                  marginLeft: 6,
-                  padding: "1px 8px",
-                  borderRadius: 999,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: TONES["heads-up"].fg,
-                  backgroundColor: TONES["heads-up"].bg,
-                }}
-              >
-                {SAVINGS_AUDITS_LABEL}
-              </span>
-            )}
             <br />
             <span style={{ color: C.muted }}>{item.body}</span>
           </Text>
@@ -84,7 +68,6 @@ const Losses = ({ items }: { items: Loss[] }) => (
 interface Loss {
   title: string
   body: string
-  soon?: boolean
 }
 
 // What the free plan doesn't have (PRICING.md): the same five lines in every trial email
@@ -95,19 +78,18 @@ export const TRIAL_LOSSES: Loss[] = [
   },
   { title: "Tariff impact checks on all your imports", body: "Exactly how each new tariff action hits each of your imports." },
   {
-    title: "AD/CVD checks and updates on all your imports",
-    body: "Which antidumping and countervailing duty cases may cover each import, their rates, and a heads-up when one changes.",
+    title: "AD/CVD alerts and updates on all your imports",
+    body: "A heads-up when an antidumping or countervailing duty case or new petition may cover one of your imports, or its rates change. Checking an import for cases stays free.",
   },
   {
     title: "Automatic auditing on your imports",
     body: "Every entry checked against the duty in force on its date, flagging possible over and underpayments.",
-    soon: true,
   },
-  { title: "Automatic savings detection on all your imports", body: "Trade programs, exemptions and lower-duty origins your imports may qualify for.", soon: true },
+  { title: "Automatic savings detection on all your imports", body: "Trade programs, exemptions and lower-duty origins your imports may qualify for." },
 ]
 
 const FREE_FOREVER =
-  "Tariff News alerts on every new US tariff action, sourcing insights on any import, your whole catalog with its rate history and exports, and the Tariff Calculator."
+  "Tariff News alerts on every new US tariff action, sourcing insights and AD/CVD checks on any import, your whole catalog with its rate history and exports, and the Tariff Calculator."
 
 export default function TrialEmail(p: TrialEmailProps) {
   const { variant, imports, changes12m = 0, productsHit12m = 0, plan, launchEndsDay, footer } = p
@@ -135,13 +117,13 @@ export default function TrialEmail(p: TrialEmailProps) {
               <strong>Tariff impact checks.</strong> Pick any tariff action and see exactly how it hits each import.
             </>,
             <>
-              <strong>AD/CVD checks.</strong> Which antidumping and countervailing cases may cover each import, their rates, and a heads-up when one changes.
+              <strong>AD/CVD alerts.</strong> A heads-up when an antidumping or countervailing case or new petition may cover one of your imports, or its rates change.
             </>,
             <>
               <strong>Insights.</strong> Where your duty comes from, what moved it, and your most exposed imports and countries.
             </>,
             <>
-              <strong>Automatic auditing and savings detection</strong> ({SAVINGS_AUDITS_LABEL.toLowerCase()}). Possible overpayments on your entries, and the programs
+              <strong>Automatic auditing and savings detection.</strong> Possible overpayments on your entries, and the programs
               and origins that could lower your duty.
             </>,
           ]}
@@ -161,8 +143,8 @@ export default function TrialEmail(p: TrialEmailProps) {
     <EmailLayout
       preview={
         ended
-          ? "Tariff alerts, impact checks and AD/CVD checks are off on your imports. Here's how to get them back."
-          : `On ${p.endsOn}, tariff alerts, impact checks and AD/CVD checks stop on your imports. Here's what changes.`
+          ? "Tariff alerts, AD/CVD alerts and impact checks are off on your imports. Here's how to get them back."
+          : `On ${p.endsOn}, tariff alerts, AD/CVD alerts and impact checks stop on your imports. Here's what changes.`
       }
       footer={footer}
     >
@@ -197,8 +179,7 @@ export default function TrialEmail(p: TrialEmailProps) {
       {imports > 0 && plan && (
         <P muted small>
           That&apos;s just <strong style={{ color: C.green }}>${(Math.round((plan.price / plan.imports) * 100) / 100).toFixed(2)} per import</strong>, per month. Tracker{" "}
-          {plan.imports.toLocaleString("en-US")} covers up to {plan.imports.toLocaleString("en-US")} imports, with auditing and savings detection included when they
-          arrive.
+          {plan.imports.toLocaleString("en-US")} covers up to {plan.imports.toLocaleString("en-US")} imports, with auditing and savings detection included.
           {launchEndsDay ? ` It's a launch price: subscribe by ${launchEndsDay} and it's yours for as long as you stay subscribed. Prices go up after that.` : ""} Cancel
           anytime.
         </P>

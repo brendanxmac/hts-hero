@@ -73,7 +73,7 @@ export interface Tracker {
   filterContext: FilterContext;
 }
 
-const TrackerContext = createContext<Tracker | null>(null);
+export const TrackerContext = createContext<Tracker | null>(null);
 
 export const useTracker = () => {
   const tracker = useContext(TrackerContext);
@@ -247,14 +247,16 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   );
   const room = Math.max(0, access.pairLimit - trackedKeys.size);
   const moreToTrack = Math.min(room, candidates.length);
-  const fill = (keys: string[]) => {
+  // track: false when the Tracker fills it on its own (imports added, an upgrade), not on request
+  const fill = (keys: string[], track = true) => {
     if (!keys.length) return 0;
     const on = Object.fromEntries(keys.map((k) => [k, true]));
     // The first choice keeps what was picked automatically
     store.setProductsCovered(chosen ? on : { ...Object.fromEntries(Array.from(trackedKeys, (k) => [k, true])), ...on });
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_COVERAGE_CHANGED, { covered: true, added: keys.length, picked: trackedKeys.size + keys.length, limit: access.pairLimit });
+    if (track) trackEvent(MixpanelEvent.TARIFF_TRACKER_COVERAGE_CHANGED, { covered: true, added: keys.length, picked: trackedKeys.size + keys.length, limit: access.pairLimit });
     return keys.length;
   };
+  // Also a click handler, so it takes no arguments
   const trackMore = () => fill(candidates.slice(0, room).map((p) => p.key));
 
   // Imports added while there's room get alerts (once the user has chosen; before that they're
@@ -267,7 +269,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
     seenKeys.current = keys;
     if (!before || !chosen) return;
     const added = items.map(itemKey).filter((k) => !before.has(k) && !turnedOff.has(k) && !trackedKeys.has(k));
-    fill(added.slice(0, Math.max(0, access.pairLimit - trackedKeys.size)));
+    fill(added.slice(0, Math.max(0, access.pairLimit - trackedKeys.size)), false);
   }, [items, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A bigger plan (an upgrade) fills its new room straight away
@@ -275,7 +277,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const before = lastLimit.current;
     lastLimit.current = access.pairLimit;
-    if (before > 0 && access.pairLimit > before && chosen && !loading) trackMore();
+    if (before > 0 && access.pairLimit > before && chosen && !loading) fill(candidates.slice(0, room).map((p) => p.key), false);
   }, [access.pairLimit]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

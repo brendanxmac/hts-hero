@@ -25,7 +25,7 @@ export const UPDATES_FAQS = [
   {
     question: "How often is this page updated?",
     answer:
-      "Every source is checked every 15 minutes. A new tariff action appears once it has been read and summarized, and its update moves forward as later documents (the Federal Register notice, CBP guidance, the HTS revision) come out.",
+      "Every source is checked every hour. A new tariff action appears once it has been read and summarized, and its update moves forward as later documents (the Federal Register notice, CBP guidance, the HTS revision) come out.",
   },
   {
     question: "What do the stages mean?",

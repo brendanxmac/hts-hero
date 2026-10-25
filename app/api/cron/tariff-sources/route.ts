@@ -6,7 +6,7 @@ import { createAdminClient } from "../../supabase/server"
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
 
-// Every 15 minutes (vercel.json): collect the latest items from each tariff source. Looks back
+// Every hour (vercel.json): collect the latest items from each tariff source. Looks back
 // three days so a missed run or a late-posted item is still picked up; stored items are skipped.
 // Also emails the admin if the AD/CVD cron has stopped (libs/adcvd/health.ts).
 const LOOKBACK_DAYS = 3

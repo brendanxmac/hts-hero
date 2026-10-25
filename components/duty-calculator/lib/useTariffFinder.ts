@@ -18,7 +18,7 @@ import { recordLookup } from "../../../libs/recent-lookups";
 import { copyToClipboard } from "../../../utilities/data";
 import { calculate } from "../../../tariffs/engine-v2/calculate";
 import { AllRules } from "../../../tariffs/engine-v2/data";
-import { addDays, calculateHistory } from "../../../tariffs/engine-v2/history";
+import { addDays, calculateHistory, lastScheduledChange } from "../../../tariffs/engine-v2/history";
 import {
   getLatestVerifiedRevision,
   getRevisionForDate,
@@ -81,6 +81,15 @@ export interface FinderStart {
   answers?: Answers;
 }
 
+// Where the calculator is, on every event it sends: its own page (and the country pages), the
+// Tracker's Calculator tab, or a classification's Duty tab
+export type CalculatorSurface = "calculator" | "tracker" | "classification";
+
+// How the result on screen came about, for analytics: the user picked it ("user"), a link opened
+// the calculator on it ("link"), its host opened it on a product ("opened"), or a reload or going
+// back put it back ("restore", already counted the first time)
+type ResultTrigger = "user" | "link" | "opened" | "restore";
+
 // path: the page the calculator is on, with any extra params its address needs. The address
 // follows the inputs while syncAddress is on (off while the calculator is hidden on its page), and
 // share links open it. initial starts it from given inputs rather than the address. track: false
@@ -91,6 +100,7 @@ export const useTariffFinder = ({
   syncAddress = true,
   initial,
   track: trackAnalytics = true,
+  surface = "calculator",
   defaultCountry = "CN",
   examples = EXAMPLES,
 }: {
@@ -99,14 +109,16 @@ export const useTariffFinder = ({
   syncAddress?: boolean;
   initial?: FinderStart;
   track?: boolean;
+  surface?: CalculatorSurface;
   // The country of origin when the address names none (a country page's own country)
   defaultCountry?: string;
   examples?: Example[];
 } = {}) => {
   const searchParams = useSearchParams();
   const track = (event: MixpanelEvent, props?: Record<string, unknown>) => {
-    if (trackAnalytics) trackEvent(event, props);
+    if (trackAnalytics) trackEvent(event, { surface, ...props });
   };
+  const resultTrigger = useRef<ResultTrigger>(initial ? "opened" : "user");
   const { htsElements, fetchElements, revision: htsRevisionName } = useHts();
   const { sections, getSections } = useHtsSections();
   const { setBreadcrumbs } = useBreadcrumbs();
@@ -179,7 +191,7 @@ export const useTariffFinder = ({
 
   // ── Selecting a code (from the field, the URL, an example, or the explorer) ──
   const openExplorerAt = useCallback(
-    (element: HtsElement) => {
+    (element: HtsElement, source = "sub_tariff_code_selected") => {
       const sectionAndChapter = getSectionAndChapterFromChapterNumber(sections, Number(element.chapter));
       if (sectionAndChapter) {
         setBreadcrumbs(
@@ -190,28 +202,33 @@ export const useTariffFinder = ({
         );
       }
       setShowExplore(true);
-      track(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source: "sub_tariff_code_selected" });
+      track(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source });
     },
     [sections, htsElements, setBreadcrumbs]
   );
 
+  // trigger: who picked it. Only the user's picks count as "Code Selected"; a link's code is
+  // counted by "Deep Link Opened"
   const selectElement = useCallback(
-    (element: HtsElement | null, source: string) => {
+    (element: HtsElement | null, source: string, trigger: ResultTrigger = "user") => {
       if (!element) {
         if (selectedElement) track(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_CLEARED);
         setSelectedElement(null);
         return;
       }
       if (!isTariffLevel(element)) {
-        openExplorerAt(element);
+        openExplorerAt(element, trigger === "user" ? undefined : "url_partial_code");
         return;
       }
+      resultTrigger.current = trigger;
       setSelectedElement(element);
-      track(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_SELECTED, {
-        hts_code: element.htsno,
-        digit_count: htsCodeDigitsOnly(element.htsno).length,
-        source,
-      });
+      if (trigger === "user") {
+        track(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_SELECTED, {
+          hts_code: element.htsno,
+          digit_count: htsCodeDigitsOnly(element.htsno).length,
+          source,
+        });
+      }
     },
     [selectedElement, openExplorerAt]
   );
@@ -230,7 +247,10 @@ export const useTariffFinder = ({
     const linkedFrom = codeParam ? takeCalculatorHandoff(codeParam) : null;
     landing.current = { arrival, linkedFrom };
     landingCodeHandled.current = !codeParam;
+    // The calculator's own pages only: in the Tracker or a classification it's a tab, not a visit
+    if (surface !== "calculator") return;
     track(MixpanelEvent.DUTY_CALCULATOR_PAGE_LOADED, {
+      path: window.location.pathname,
       arrival,
       link_source: linkedFrom,
       has_code_param: Boolean(codeParam),
@@ -258,7 +278,7 @@ export const useTariffFinder = ({
     const returning = arrival === "reload" || arrival === "back_forward";
     if (match) {
       setShowExplore(false);
-      selectElement(match, linkedFrom ?? (onLanding && returning ? arrival : "url"));
+      selectElement(match, linkedFrom ?? (onLanding && returning ? arrival : "url"), onLanding && returning ? "restore" : "link");
       if (onLanding && !returning) setDeepLinked(true);
     }
     // A deep link is a link into the calculator: not a reload of the page's own address, not
@@ -308,9 +328,10 @@ export const useTariffFinder = ({
             quantity,
             transportMode,
             claimedPreference,
+            htsElements,
           })
         : null,
-    [selectedElement, country, tariffElement, entryDate, customsValue, quantity, claimedPreference, transportMode]
+    [selectedElement, country, tariffElement, entryDate, customsValue, quantity, claimedPreference, transportMode, htsElements]
   );
 
   const result: CalculationResult | null = useMemo(
@@ -328,7 +349,10 @@ export const useTariffFinder = ({
   const historyRange = useMemo(() => {
     const verified = getVerifiedRevisions();
     const last = verified[verified.length - 1];
-    return { from: verified[0].from, to: last.to ?? addDays(todayIso(), 1) };
+    // Through today, or two weeks past the last change already entered for the next 90 days
+    const today = todayIso();
+    const scheduled = lastScheduledChange(AllRules, today, 90);
+    return { from: verified[0].from, to: last.to ?? (scheduled ? addDays(scheduled, 15) : addDays(today, 1)) };
   }, []);
   const history = useMemo(
     () =>
@@ -387,18 +411,31 @@ export const useTariffFinder = ({
   }, [compareCountries.length]);
 
   // ── Analytics ──
+  // "Results Viewed": once per code and country, when the result is on a page the person has in
+  // front of them (a link opened in a background tab counts when the tab is shown). Not for a
+  // reload or going back, which shows a result they already got.
   const lastViewedKey = useRef<string | null>(null);
   useEffect(() => {
     if (!result || !selectedElement || !country || !tariffElement) return;
     const key = `${selectedElement.htsno}-${country.code}`;
     if (lastViewedKey.current === key) return;
     lastViewedKey.current = key;
-    track(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
+    const trigger = resultTrigger.current;
+    const props = {
       hts_code: selectedElement.htsno,
       country_code: country.code,
       tariff_basis_hts_code: tariffElement.htsno,
-      surface: "calculator",
-    });
+      trigger,
+    };
+    if (trigger !== "restore") {
+      const send = () => {
+        if (lastViewedKey.current === key) track(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, props);
+      };
+      if (document.visibilityState === "visible") send();
+      else document.addEventListener("visibilitychange", send, { once: true });
+    }
+    // Anything after this (a new country, the next code) is the user's doing
+    resultTrigger.current = "user";
     // Remembered for the Tracker's "start from your recent lookups" (not a catalog product's own view)
     if (trackAnalytics && customsValue > 0) {
       recordLookup({
@@ -452,12 +489,13 @@ export const useTariffFinder = ({
       else next[id] = value as Answers[string];
       return next;
     });
-    track(MixpanelEvent.DUTY_CALCULATOR_QUESTION_ANSWERED, { input: id, answered: value !== undefined });
+    track(MixpanelEvent.DUTY_CALCULATOR_QUESTION_ANSWERED, { input: id, answered: value !== undefined && value !== "" });
   };
 
-  const changeView = (next: View) => {
+  // auto: the page set it (a link asking for a view), not the user
+  const changeView = (next: View, auto = false) => {
     setView(next);
-    track(MixpanelEvent.DUTY_CALCULATOR_VIEW_CHANGED, { view: next });
+    if (next !== view && !auto) track(MixpanelEvent.DUTY_CALCULATOR_VIEW_CHANGED, { view: next, from_view: view });
     try {
       window.localStorage.setItem(VIEW_STORAGE_KEY, next);
     } catch {
@@ -513,7 +551,6 @@ export const useTariffFinder = ({
     track(MixpanelEvent.DUTY_CALCULATOR_SHARE_RESULTS_COPIED, {
       hts_code: selectedElement?.htsno,
       country_code: country?.code,
-      is_modal: false,
     });
   };
 
@@ -525,11 +562,12 @@ export const useTariffFinder = ({
     track(MixpanelEvent.DUTY_CALCULATOR_EXAMPLE_SELECTED, { hts_code: example.code, country_code: example.country });
   };
 
-  const changeCountries = (next: Country[]) => {
-    if (next[0]?.code !== country?.code) {
+  // auto: the calculator picked them itself (Compare's starting countries), not the user
+  const changeCountries = (next: Country[], auto = false) => {
+    if (!auto && next[0]?.code !== country?.code) {
       track(MixpanelEvent.DUTY_CALCULATOR_COUNTRY_CHANGED, { country_code: next[0]?.code ?? null });
     }
-    if (next.length !== countries.length) {
+    if (!auto && next.length !== countries.length) {
       track(MixpanelEvent.DUTY_CALCULATOR_COMPARE_CHANGED, { countries: next.map((c) => c.code).join(",") });
     }
     setCountries(next);
@@ -613,6 +651,7 @@ export const useTariffFinder = ({
     selectExample,
     showExplore,
     openExplore,
+    openExplorerAt,
     closeExplore,
   };
 };

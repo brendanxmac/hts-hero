@@ -35,6 +35,7 @@ export const EVENTS = {
   sunset_result: "Five-year review results",
   continuation: "Order continued",
   revocation: "Order revoked",
+  final_period: "Listed for a final period: the order has ended",
   termination: "Investigation ended",
   suspension: "Suspension agreement",
   circumvention: "Circumvention inquiry",
@@ -46,6 +47,7 @@ export const EVENTS = {
   itc_institution: "Petition filed: ITC investigation started",
   itc_prelim: "ITC preliminary vote",
   itc_final: "ITC final vote",
+  itc_negative: "ITC voted no: the investigation ends",
   itc_sunset: "ITC five-year review",
   itc_schedule: "ITC schedule",
   itc_other: "ITC notice",
@@ -114,6 +116,21 @@ export interface CaseRow {
   hts_outdated: string[]
   // Renumbered scope codes → the current codes that replaced them
   hts_successors?: Record<string, string[]>
+  // Where each code in hts_* came from (codes.ts): "fr:<document>", "ita-scope", "ita-list", "itc-petition"
+  hts_sources?: Record<string, string[]>
+  // The Federal Register scope's codes (scope.ts, notices.ts); hts_* are these merged with ITA's
+  fr_main?: string[]
+  fr_also?: string[]
+  fr_excluded?: string[]
+  // ITA's public case page (ita.ts): null until fetched, false when ITA has no page for the case
+  ita_found?: boolean | null
+  ita_hts?: string[]
+  ita_scope?: string | null
+  ita_main?: string[]
+  ita_also?: string[]
+  ita_excluded?: string[]
+  ita_method?: "regex" | "sonnet" | null
+  ita_fetched_at?: string | null
   scope_text: string | null
   scope_doc: string | null
   scope_published_on: string | null

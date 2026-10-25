@@ -1,14 +1,11 @@
-import { SOCIAL_IMAGE_SIZE, socialImage } from "@/libs/blog/socialImage";
+import { SOCIAL_IMAGE_SIZE } from "@/libs/blog/socialImage";
+import { homeHeadlineImage } from "@/libs/headlineImage";
 
-// The share card for the Tariff Tracker's page
+// The share card for the Tariff Tracker's page: the homepage's headline (libs/headlineImage.tsx)
 export const size = SOCIAL_IMAGE_SIZE;
 export const contentType = "image/png";
-export const alt = "Tariff Tracker by HTS Hero: alerts when a tariff change hits your products";
+export const alt = "HTS Hero: tariff alerts, savings, & audits on autopilot";
 
 export default function Image() {
-  return socialImage({
-    kicker: "Tariff Tracker · HTS Hero",
-    title: "Know the moment a tariff change hits your products",
-    footer: "htshero.com/tariff-monitor",
-  });
+  return homeHeadlineImage();
 }

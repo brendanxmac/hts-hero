@@ -1,14 +1,11 @@
-import { SOCIAL_IMAGE_SIZE, socialImage } from "@/libs/blog/socialImage";
+import { SOCIAL_IMAGE_SIZE } from "@/libs/blog/socialImage";
+import { homeHeadlineImage } from "@/libs/headlineImage";
 
-// The share card for the tariff audit page
+// The share card for the tariff audit page: the homepage's headline (libs/headlineImage.tsx)
 export const size = SOCIAL_IMAGE_SIZE;
 export const contentType = "image/png";
-export const alt = "Tariff audit by HTS Hero: find the import duty you overpaid";
+export const alt = "HTS Hero: tariff alerts, savings, & audits on autopilot";
 
 export default function Image() {
-  return socialImage({
-    kicker: "Tariff audit · HTS Hero",
-    title: "Find the duty you overpaid. Get it back.",
-    footer: "htshero.com/tariff-audit",
-  });
+  return homeHeadlineImage();
 }

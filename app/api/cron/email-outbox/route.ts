@@ -5,7 +5,7 @@ import { createAdminClient } from "../../supabase/server"
 export const dynamic = "force-dynamic"
 export const maxDuration = 300
 
-// Every 5 minutes (vercel.json): sends what's been approved in the outbox and isn't sent yet
+// Every 15 minutes (vercel.json): sends what's been approved in the outbox and isn't sent yet
 // (big batches finish across runs; approval itself sends the first ones right away)
 export async function GET(req: NextRequest) {
   if (req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {

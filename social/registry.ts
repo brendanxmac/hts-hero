@@ -16,6 +16,7 @@ export const TEMPLATES: Record<TemplateId, { label: string; seconds: number; abo
   TopList: { label: "Top list", seconds: 6, about: "Any ranked list of facts" },
   Quiz: { label: "Guess the tariff", seconds: 7, about: "A question, a countdown, the answer (for Reels and Shorts)" },
   News: { label: "Tariff news", seconds: 6, about: "A tariff action from /tariff-updates, with where it stands" },
+  OddRate: { label: "Odd rate", seconds: 7, about: "A rate the HTS charges in an odd way, word for word, and how HTS Hero works it out" },
 }
 
 export const TEMPLATE_IDS = Object.keys(TEMPLATES) as TemplateId[]

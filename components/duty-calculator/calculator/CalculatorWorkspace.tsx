@@ -24,7 +24,6 @@ import { TabBar } from "@/components/ui/TabBar";
 import { whatClaimingDoes, whatItWouldDo } from "../lib/explain";
 import { plainReasons } from "../lib/plainReason";
 import { sortBySpecificity } from "../lib/questions";
-import { useLineChanges } from "../lib/useLineChanges";
 import { MAX_COMPARE, TariffFinder } from "../lib/useTariffFinder";
 import { ProhibitedNotice } from "../notices/ProhibitedNotice";
 import { AdcvdTab } from "@/components/adcvd/AdcvdTab";
@@ -54,15 +53,12 @@ import { useConversion } from "./ConversionDialog";
 import { OverviewPanel } from "../overview/OverviewPanel";
 import { insightsPitch } from "../overview/insightsPitch";
 import { useOverview } from "../overview/useOverview";
-import { ShareButtons } from "./ShareButtons";
+import { ShareButtons, ViewInHtsButton } from "./ShareButtons";
 import { useCanSeeWhy, WhyLocked, WhyUnlockContext } from "./WhyGate";
-import { ChangeSummary } from "../results/ChangeSummary";
 import { ArrowLink } from "./ArrowLink";
 import { RefundCheckCard } from "./RefundCheckCard";
 import { useTrackImport } from "../landing/TrackImportButton";
-import { EntryDatePicker } from "./EntryDatePicker";
 import { ResultsSkeleton } from "./ResultsSkeleton";
-import { AUDITS_ENABLED, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
 import { useStickyColumn } from "./useStickyColumn";
 
 // The Tariff Calculator, as on /duty-calculator, the country pages and the Tariff Tracker's
@@ -117,7 +113,6 @@ export const CalculatorWorkspace = ({
   onCheckSavings,
   tab: hostTab,
   onTabChange,
-  overviewLead,
   pageTitle,
 }: {
   f: TariffFinder;
@@ -137,8 +132,6 @@ export const CalculatorWorkspace = ({
   // results then show no tab row of their own), and the way to change it
   tab?: ResultsTab;
   onTabChange?: (tab: ResultsView) => void;
-  // On an import's page: the first module of its Overview (its alerts, savings and audits)
-  overviewLead?: ReactNode;
   // In the Tracker: the page's title and line, in the Entry details card (the page's header)
   pageTitle?: { title: string; summary: string };
 }) => {
@@ -156,7 +149,7 @@ export const CalculatorWorkspace = ({
   const ownTab: ResultsView = f.view === "compare" ? "compare" : localTab;
   const tab: ResultsView = viewOf(hostTab ?? ownTab);
   useEffect(() => {
-    if (searchParams.get("view") === "analysis") f.changeView("compare");
+    if (searchParams.get("view") === "analysis") f.changeView("compare", true);
     if (searchParams.get("view") === "adcvd") showAdcvd();
     // Once, on arrival
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,18 +171,6 @@ export const CalculatorWorkspace = ({
   const overview = useOverview(f, tab === "overview" || page === "calculator");
   const [linesDetail, setLinesDetail] = useState<LinesDetail>("compact");
   const [adjustmentsRef, adjustmentsTop] = useStickyColumn();
-  // What the last answer or trade program changed, marked in the breakdown until the next change
-  const lineChanges = useLineChanges(
-    result,
-    JSON.stringify([
-      f.selectedElement?.htsno,
-      f.country?.code,
-      f.customsValue,
-      f.quantity,
-      f.entryDate,
-      f.transportMode,
-    ]),
-  );
 
   // The Analysis is worked out only while Compare is open, and only when an input changes (a beat
   // behind typing): the same product keeps the same identity, so it isn't redone needlessly
@@ -228,10 +209,13 @@ export const CalculatorWorkspace = ({
     const picks = provenPicks(product, imports, 2);
     autoPicked.current.set(pickKey, picks);
     if (picks.length) {
-      f.changeCountries([
-        ...f.countries,
-        ...Countries.filter((c) => picks.includes(c.code)).sort((a, b) => picks.indexOf(a.code) - picks.indexOf(b.code)),
-      ]);
+      f.changeCountries(
+        [
+          ...f.countries,
+          ...Countries.filter((c) => picks.includes(c.code)).sort((a, b) => picks.indexOf(a.code) - picks.indexOf(b.code)),
+        ],
+        true
+      );
     }
     // When Compare opens on a product, or its figures arrive
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -307,8 +291,10 @@ export const CalculatorWorkspace = ({
   const signedOut = !whyLoading && !canSeeWhy;
   // How often the duty on this import changed: counted in the Recent Changes tab
   const historyChanges = f.history.filter((x) => x.changes.length > 0).length;
-  // What's waiting on the AD/CVD and News tabs
+  // What's waiting on the AD/CVD and News tabs. Signed out, AD/CVD isn't looked up (null): the Duty
+  // tab only teases that it may apply
   const adcvdFlagged = useAdcvdFlagged(selectedElement?.htsno ?? "", country?.code ?? "");
+  const adcvdTease = signedOut;
   const newsCount = useNewsCount(selectedElement?.htsno, country?.code);
   // The calculator's one main way up: track this import (a free account, and the import saved to
   // the Tracker, where it's watched for tariff changes; its savings and past entries are checked
@@ -322,7 +308,7 @@ export const CalculatorWorkspace = ({
     <button
       type="button"
       className={`${ui.button({ variant: "primary", size: "sm" })} relative`}
-      onClick={() => track.start("overview", insightsPitch(overview, { news: newsCount, adcvd: adcvdFlagged }))}
+      onClick={() => track.getStarted(insightsPitch)}
     >
       {urgent ? (
         <span className="relative flex h-2 w-2" aria-hidden>
@@ -333,23 +319,9 @@ export const CalculatorWorkspace = ({
       ) : (
         <BellAlertIcon className="h-4 w-4" aria-hidden />
       )}
-      {SAVINGS_ENABLED ? "Find ways to save" : "Get Alerts, Insights & News"}
+      Get Tariff Alerts, Audits, & Savings
       <ArrowRightIcon className="h-4 w-4" aria-hidden />
     </button>
-  );
-  // Under each tab on /duty-calculator: what tracking it would add
-  const trackStrip = page === "calculator" && track && (
-    <div className={`${ui.cardSection} flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between`}>
-      <p className="m-0 text-sm text-base-content/70">
-        <span className="font-semibold text-base-content">
-          {historyChanges > 0 ? `Its duty has changed ${historyChanges} ${historyChanges === 1 ? "time" : "times"}. Know the moment it changes again, free.` : "Know the moment tariffs change on this import, free."}
-        </span>{" "}
-        {SAVINGS_ENABLED || AUDITS_ENABLED
-          ? "See what you could save on it (trade programs, exemptions, cheaper origins) and check your past entries for duty you may have overpaid."
-          : "Alerts with the rate before and after, insights on how its duty could be lower, and every tariff update that touches it."}
-      </p>
-      {trackButton}
-    </div>
   );
   // A locked "why" opens the free account's pitch, led by what was clicked
   const unlockWhy = (where: string) =>
@@ -367,15 +339,6 @@ export const CalculatorWorkspace = ({
         },
       `why-${where}`,
     );
-  // What the last change did, under the adjustment that was changed
-  const changeSummaryFor = (kind: "question" | "preference") => {
-    const changes = lineChanges.changes;
-    if (!result || !changes?.source || changes.source.kind !== kind) return undefined;
-    return {
-      id: changes.source.id,
-      node: <ChangeSummary result={result} changes={changes} onClear={lineChanges.clear} where="breakdown" customsValue={f.customsValue} />,
-    };
-  };
   // Shown while there's anything to adjust, before or after answering
   const hasAdjustments = stableQuestions.length > 0 || preferences.length > 0;
   const explainReason = useMemo(
@@ -403,6 +366,7 @@ export const CalculatorWorkspace = ({
                   f={f}
                   actions={
                     <>
+                      <ViewInHtsButton f={f} />
                       <ShareButtons f={f} />
                       {actions}
                       {trackButton}
@@ -415,8 +379,8 @@ export const CalculatorWorkspace = ({
                         options={TABS.map((t) =>
                           t.id === "changes" && historyChanges + (newsCount ?? 0) > 0
                             ? { ...t, count: historyChanges + (newsCount ?? 0) }
-                            : t.id === "duty" && adcvdFlagged
-                              ? { ...t, badge: "AD/CVD may apply", badgeTone: "warning" as const }
+                            : t.id === "duty" && (adcvdFlagged || adcvdTease)
+                              ? { ...t, badge: "AD/CVD may apply", badgeTone: adcvdFlagged ? ("warning" as const) : ("neutral" as const) }
                               : t,
                         )}
                         value={tab}
@@ -437,7 +401,6 @@ export const CalculatorWorkspace = ({
                 <ProhibitedNotice prohibitions={result.prohibitions} />
               </div>
             )}
-            {tab === "overview" && overviewLead}
             {tab === "overview" && (
               <OverviewPanel
                 o={overview}
@@ -467,7 +430,19 @@ export const CalculatorWorkspace = ({
                   />
                   {/* AD/CVD is never in the estimate: one line says whether a case may apply, and
                       takes the user to the check further down this tab */}
-                  <AdcvdDutyTeaser code={selectedElement.htsno} country={country.code} onOpen={showAdcvd} />
+                  <AdcvdDutyTeaser
+                    code={selectedElement.htsno}
+                    country={country.code}
+                    onOpen={
+                      signedOut
+                        ? () =>
+                          conversion.openAccount(
+                            { title: "See if AD/CVD duties apply to this import, free", highlight: "adcvd", cta: "Create my free account" },
+                            "adcvd-teaser",
+                          )
+                        : showAdcvd
+                    }
+                  />
                 </div>
                 {result.warnings.length > 0 && (
                   <div className={ui.cardSection}>
@@ -517,8 +492,6 @@ export const CalculatorWorkspace = ({
                         />
                       }
                       lockWhy={!canSeeWhy}
-                      changes={lineChanges.changes}
-                      onClearChanges={lineChanges.clear}
                     />
                   </div>
                   {hasAdjustments && (
@@ -532,7 +505,6 @@ export const CalculatorWorkspace = ({
                           notes={questionNotes}
                           qualifyLink={<QualifyLink conversion={conversion} />}
                           hideLegal={!canSeeWhy}
-                          changeSummary={changeSummaryFor("question")}
                           action={
                             page === "calculator" ? (
                               <QualifyHeaderLink conversion={conversion} />
@@ -566,7 +538,6 @@ export const CalculatorWorkspace = ({
                                 qualifyLink={
                                   <QualifyLink conversion={conversion} />
                                 }
-                                changeSummary={changeSummaryFor("preference")}
                               />
                             ) : undefined
                           }
@@ -577,10 +548,15 @@ export const CalculatorWorkspace = ({
                 </CardRow>
                 {/* AD/CVD: the rest of the duty, its check's own modules (each says what it found). The
                     anchor the line under the totals scrolls to: on the ground, taking no room */}
-                <div data-plain id="adcvd-check" className="-mb-module scroll-mt-4">
-                  <span className="sr-only">AD/CVD check</span>
-                </div>
-                <AdcvdTab code={selectedElement.htsno} country={country.code} page={page} customsValue={f.customsValue} dutyUsd={result.totalDuty} />
+                {/* Signed out, there's no check here: the line under the totals offers the free account */}
+                {!signedOut && (
+                  <>
+                    <div data-plain id="adcvd-check" className="-mb-module scroll-mt-4">
+                      <span className="sr-only">AD/CVD check</span>
+                    </div>
+                    <AdcvdTab code={selectedElement.htsno} country={country.code} page={page} customsValue={f.customsValue} dutyUsd={result.totalDuty} />
+                  </>
+                )}
               </>
             )}
 
@@ -608,7 +584,7 @@ export const CalculatorWorkspace = ({
                   page={page}
                   action={page === "calculator" && track ? <ArrowLink onClick={() => track.start("overview")}>Get alerts for this import</ArrowLink> : undefined}
                 />
-                {page === "calculator" && AUDITS_ENABLED && (
+                {page === "calculator" && (
                   <RefundCheckCard
                     history={f.history}
                     customsValue={f.customsValue}
@@ -630,7 +606,6 @@ export const CalculatorWorkspace = ({
                 <ComparePanel
                   product={product}
                   page={page}
-                  dateControl={<EntryDatePicker f={f} />}
                   countries={f.countries}
                   max={MAX_COMPARE}
                   entryDate={f.entryDate}
@@ -640,7 +615,7 @@ export const CalculatorWorkspace = ({
                       ? undefined
                       : () =>
                         conversion.openAccount(
-                          { title: "Get advanced comparisons, 100% free", highlight: "analysis", cta: "Create my free account" },
+                          { title: "Unlock Advanced Sourcing Intelligence, 100% free", highlight: "analysis", cta: "Create my free account" },
                           "compare-advanced",
                         )
                   }
@@ -667,7 +642,7 @@ export const CalculatorWorkspace = ({
                 <div className={`${ui.skeleton} h-96 w-full`} />
               ))}
             {/* Compare ends with its own way up (to Sourcing) */}
-            {tab !== "compare" && trackStrip}
+            {/* {tab !== "compare" && trackStrip} */}
           </ResultsBox>
         </WhyUnlockContext.Provider>
       )}

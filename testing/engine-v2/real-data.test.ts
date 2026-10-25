@@ -1363,6 +1363,53 @@ describe("engine-v2 real data: 2026 Rev 19 (Section 338 – Canada changes)", ()
 })
 
 // ============================================================
+// Section 338 – Canada: list (b)(3) loses 22 subheadings and gains 100 from October 30, 2026
+// (Proclamation of October 23, 2026, Annex II). Not in an HTS revision yet.
+// ============================================================
+describe("engine-v2 real data: Section 338 – Canada (b)(3) changes (Oct 30, 2026)", () => {
+  const BEFORE = "2026-10-29"
+  const AFTER = "2026-10-30"
+  const calc = (htsCode: string, asOf: string) =>
+    calculate(AllRules, {
+      htsCode, country: "CA", asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: "", other: "Free" }, answers: {},
+    })
+  const s338 = (result: CalculationResult) => applying(result).filter((c) => /^9903\.03\.1[2-6]$/.test(c))
+
+  it("removes the deleted subheadings from 9903.03.14 on October 30", () => {
+    for (const code of ["1212.21.00.00", "3923.21.00.11", "4412.33.06.20", "4819.10.00.20", "8433.60.00.10"]) {
+      expect(s338(calc(code, BEFORE))).toEqual(["9903.03.14"])
+      expect(s338(calc(code, AFTER))).toEqual([])
+    }
+    expect(calc("4819.10.00.20", AFTER).totalDuty).toBe(calc("4819.10.00.20", BEFORE).totalDuty - 5000)
+  })
+
+  it("adds the inserted subheadings to 9903.03.14 on October 30", () => {
+    for (const code of ["1806.10.05.00", "3305.10.00.00", "5703.21.00.10", "8903.93.05.00", "9506.99.05.00"]) {
+      expect(s338(calc(code, BEFORE))).toEqual([])
+      expect(s338(calc(code, AFTER))).toEqual(["9903.03.14"])
+    }
+    expect(calc("5703.21.00.10", AFTER).totalDuty).toBe(calc("5703.21.00.10", BEFORE).totalDuty + 5000)
+  })
+
+  it("adds the 50% on top of Section 232 for an added Section 232 article (51(c) covers only .13)", () => {
+    expect(s338(calc("8467.29.00.10", BEFORE))).toEqual(["9903.03.15"])
+    expect(s338(calc("8467.29.00.10", AFTER))).toEqual(["9903.03.14", "9903.03.15"])
+    expect(calc("8467.29.00.10", AFTER).totalDuty).toBe(calc("8467.29.00.10", BEFORE).totalDuty + 5000)
+  })
+
+  it("is the Rev 19 list less 22 and plus 100", () => {
+    const versions = AllRules.lists.find((l) => l.id === "canada338b3")!.versions
+    const at = (date: string) => new Set(versions.find((v) => v.effective.from === date)!.codes)
+    const rev19 = at("2026-09-15")
+    const oct30 = at(AFTER)
+    expect(versions.find((v) => v.effective.from === "2026-09-15")!.effective.to).toBe(AFTER)
+    expect([...rev19].filter((c) => !oct30.has(c)).length).toBe(22)
+    expect([...oct30].filter((c) => !rev19.has(c)).length).toBe(100)
+  })
+})
+
+// ============================================================
 // 2026 Rev 20: Section 232 – Pharmaceuticals, note 40 list re-split, new 9903.04.70 (clinical
 // trials, R&D, non-commercial use), September 29, 2026
 // ============================================================

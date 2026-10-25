@@ -12,18 +12,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
-import { AUDITS_ENABLED, MARKET_AUDITS, MARKET_SAVINGS, SAVINGS_ENABLED } from "@/libs/tariff-tracker/features";
-import { ComingChip } from "@/components/ui/marketing/ComingChip";
 
 // The homepage hero's picture of the product, for an example account: one catalog table, scanned
 // three times. Each pass (monitoring, savings, audit) sweeps the rows and fills its own column as
 // the scan line passes, while that layer's tile counts up live. Earlier layers stay filled, so by
 // the end the table shows the whole picture. Then the results are shared to each channel over
 // the table, and it starts over.
-//
-// The savings and audit passes run ahead of the Tracker (MARKET_SAVINGS / MARKET_AUDITS); while a
-// feature is off in the Tracker (SAVINGS_ENABLED / AUDITS_ENABLED) its tile carries the
-// "Coming Oct 2026" chip.
 //
 // Tariff changes and audit reasons are real 2026 rules; products, volumes and amounts are
 // illustrative. Each tile's total is the sum of its own column.
@@ -123,7 +117,7 @@ const ROWS: {
 ];
 const CATALOG_SIZE = 248;
 
-const ALL_LAYERS = [
+const LAYERS = [
   {
     key: "monitor" as const,
     label: "Changes",
@@ -155,14 +149,7 @@ const ALL_LAYERS = [
     scanColor: "via-warning/20",
   },
 ];
-const LAYERS = ALL_LAYERS.filter(
-  ({ key }) => (key !== "savings" || MARKET_SAVINGS) && (key !== "audit" || MARKET_AUDITS),
-);
-type LayerKey = (typeof ALL_LAYERS)[number]["key"];
-// The passes not live in the Tracker yet
-const COMING: Record<LayerKey, boolean> = { monitor: false, savings: !SAVINGS_ENABLED, audit: !AUDITS_ENABLED };
-// The tiles' grid, by how many passes are on
-const TILE_COLS = ["grid-cols-1", "grid-cols-1", "grid-cols-2", "grid-cols-3"];
+type LayerKey = (typeof LAYERS)[number]["key"];
 
 const ROW_MS = 380;
 const HOLD_MS = 1800;
@@ -356,7 +343,7 @@ export const CommandCenter = () => {
         </div>
 
         <div
-          className={`grid ${TILE_COLS[LAYERS.length]} gap-2.5`}
+          className="grid grid-cols-3 gap-2.5"
           role="tablist"
           aria-label="What HTS Hero does for this account"
         >
@@ -382,7 +369,6 @@ export const CommandCenter = () => {
                 <span className="block text-xs text-base-content/60">
                   {tileSub[key]}
                 </span>
-                {COMING[key] && <ComingChip className="mt-1.5 px-2 text-[10px]" />}
                 {/* How much of this layer's scan is done; the width is a runtime value */}
                 <span
                   className={`absolute bottom-0 left-0 h-1 ${bar} transition-[width] duration-300`}
@@ -470,8 +456,8 @@ export const CommandCenter = () => {
           </span>
           <p className="mt-6 text-2xl font-semibold [font-family:var(--font-tracker-display)] tracking-tight text-base-content">
             {shared > CHANNELS.length
-              ? "Shared with your team"
-              : "Sharing with your team…"}
+              ? "Alerted your Team"
+              : "Alerting your Team…"}
           </p>
           <ul className="mt-8 grid w-full max-w-md grid-cols-4 gap-3">
             {CHANNELS.map(({ name, Icon, tint }, i) => {

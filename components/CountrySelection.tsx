@@ -144,6 +144,8 @@ export const CountrySelection = ({
         }
         break;
       case "Escape":
+        // The list takes this Escape, not a popup the field is in
+        e.stopPropagation();
         setIsOpen(false);
         setHighlightedIndex(-1);
         break;

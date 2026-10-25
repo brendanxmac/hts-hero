@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import { formatTime } from "../hts-revision-diff/shared"
-import { Field, Spinner, btn } from "../hts-revision-diff/ui"
+import { Callout, Field, SectionLabel, Spinner, btn } from "../hts-revision-diff/ui"
 import { adminCall, type UpdateRow } from "./types"
 
 // An update's scope in review: what it covers (codes, countries, exclusions, Chapter 99
@@ -25,7 +25,7 @@ const toConditional = (text: string) =>
     })
     .filter((c) => c.condition && c.codes.length)
 
-const area = "textarea min-h-24 border-base-content/15 font-mono text-xs leading-relaxed"
+const area = "textarea min-h-24 w-full border-base-content/15 font-mono text-xs leading-relaxed tracker:rounded-xl tracker:border-base-300"
 
 export default function ScopeEditor({ update }: { update: UpdateRow }) {
   const router = useRouter()
@@ -77,16 +77,19 @@ export default function ScopeEditor({ update }: { update: UpdateRow }) {
         : "Not read yet: from what the sources named"
 
   return (
-    <section className="flex flex-col gap-3 rounded-lg border border-base-content/10 p-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-base-content/50">What it covers</h4>
-        <span className="text-xs text-base-content/60">{source}</span>
-        <button type="button" className={`${btn.xsSecondary} ml-auto`} disabled={!!busy} onClick={() => run("read")} title="Have Claude read the update's PDFs, annexes included">
-          {busy === "read" && <Spinner />}
-          Read from PDFs
-        </button>
-      </div>
-      {update.scope_notes && <p className="text-xs text-warning">{update.scope_notes}</p>}
+    <section className="flex flex-col gap-3">
+      <SectionLabel
+        right={
+          <button type="button" className={btn.xsSecondary} disabled={!!busy} onClick={() => run("read")} title="Have Claude read the update's PDFs, annexes included">
+            {busy === "read" && <Spinner />}
+            Read from PDFs
+          </button>
+        }
+      >
+        What It Covers
+      </SectionLabel>
+      <p className="-mt-2 text-xs text-base-content/60">{source}</p>
+      {update.scope_notes && <Callout tone="warning">{update.scope_notes}</Callout>}
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label={`Codes covered (${toList(form.codes).length})`} hint='One per line: "7326.90.86", "8703", "Chapter 73", or "ALL" for every product (less the exclusions)'>
           <textarea className={area} value={form.codes} onChange={set("codes")} />
@@ -111,7 +114,7 @@ export default function ScopeEditor({ update }: { update: UpdateRow }) {
           <textarea className={`${area} min-h-12`} value={form.headings} onChange={set("headings")} />
         </Field>
       </div>
-      <button type="button" className={`${btn.xsPrimary} self-start`} disabled={!!busy} onClick={() => run("save")}>
+      <button type="button" className={`${btn.xsSecondary} self-start`} disabled={!!busy} onClick={() => run("save")} title="Keep this scope for good and work out the matches again">
         {busy === "save" && <Spinner />}
         Save scope
       </button>

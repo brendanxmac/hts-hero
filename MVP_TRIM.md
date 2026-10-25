@@ -1,5 +1,10 @@
 # Tracker MVP trim (2026-10-16)
 
+> **2026-10-22: savings and audits are switched back on.** The `SAVINGS_ENABLED` / `AUDITS_ENABLED`
+> flags (and `DEMO_SAVINGS_AUDITS`, the `MARKET_*` flags and the "Coming Oct 2026" labels) are
+> removed: savings detection and auditing are live everywhere, in the trial and every paid Tracker
+> plan (PRICING.md). The rest of this file is history.
+
 The Tariff Tracker ships as tracking only: track imports, alerts, impact checks, Tariff News, rate
 history and CSV / Excel export. **Savings** (savings checks, the qualification check, savings
 discovery) and **audits** (entry audit, refund check, audit checks) are switched off and come back

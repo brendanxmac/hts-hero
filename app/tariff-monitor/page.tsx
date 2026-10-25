@@ -6,7 +6,7 @@ import { renderSchemaJsonLd } from "@/libs/seo";
 import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
 import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "@/components/pricing-calculator/lib/pricing";
-import { COMING_NOTE, FREE_FOREVER_SHORT, SAVINGS_AUDITS_COMING } from "@/components/ui/marketing/comingSoon";
+import { FREE_FOREVER_SHORT, SAVINGS_AUDITS_INCLUDED } from "@/components/ui/marketing/comingSoon";
 import * as mk from "@/components/ui/marketing/styles";
 import {
   AlertsSection,
@@ -33,7 +33,7 @@ export const revalidate = 3600;
 
 const URL = `https://${config.domainName}/tariff-monitor`;
 const TITLE = "Tariff Tracking Software: Alerts by HTS Code | HTS Hero";
-const DESCRIPTION = `Monitor US tariffs on every HTS code and country you import. Get alerts by email, in-app, Slack or Teams when a tariff changes. Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no card; then Tariff News alerts free, forever. Savings detection and auditing ${COMING_NOTE}.`;
+const DESCRIPTION = `Monitor US tariffs on every HTS code and country you import. Get alerts by email, in-app, Slack or Teams when a tariff changes. Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no card; then Tariff News alerts free, forever. Savings detection and auditing included.`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -78,7 +78,7 @@ export default async function TariffMonitorPage() {
           lowPrice: "0",
           highPrice: String(TRACKER_TIERS[TRACKER_TIERS.length - 1].price),
           offerCount: String(TRACKER_TIERS.length + 1),
-          description: `Free ${REVERSE_TRIAL.days}-day trial of everything on up to ${REVERSE_TRIAL.imports} imports, no credit card; then ${FREE_FOREVER_SHORT} stay free, forever. Paid plans are priced by the number of imports tracked, billed monthly, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import, per month. ${SAVINGS_AUDITS_COMING}`,
+          description: `Free ${REVERSE_TRIAL.days}-day trial of everything on up to ${REVERSE_TRIAL.imports} imports, no credit card; then ${FREE_FOREVER_SHORT} stay free, forever. Paid plans are priced by the number of imports tracked, billed monthly, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import, per month. ${SAVINGS_AUDITS_INCLUDED}`,
         },
         provider: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
       })}

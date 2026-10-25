@@ -90,19 +90,13 @@ function NewClassificationContent() {
   };
 
   const reportClassificationEvent = (newId: string, mixpanelBase: Record<string, unknown>) => {
-    if (!user) {
-      trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_STARTED, {
-        classification_id: newId,
-        source: "classifications_new_form",
-        entry_point: "classifications_new",
-        ...mixpanelBase,
-      });
-    } else {
-      trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
-        ...mixpanelBase,
-        entry_point: "classifications_new",
-      });
-    }
+    trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+      ...mixpanelBase,
+      classification_id: newId,
+      is_anonymous: !user,
+      source: "classifications_new_form",
+      entry_point: "classifications_new",
+    });
   };
 
   const handleSubmit = async () => {
@@ -120,6 +114,13 @@ function NewClassificationContent() {
       } = await canCreateClassification(user);
 
       if (!allowed) {
+        trackEvent(MixpanelEvent.CLASSIFICATION_BLOCKED, {
+          block_reason: blockReason,
+          is_anonymous: !user,
+          input_mode: inputMode,
+          source: "classifications_new_form",
+          entry_point: "classifications_new",
+        });
         if (blockReason === "anonymous_limit_reached") {
           setShowSignUpGate(true);
         } else {
@@ -128,11 +129,6 @@ function NewClassificationContent() {
           } else {
             setArticleDescription(signUpGateDescription);
           }
-          trackEvent(MixpanelEvent.CLICKED_CLASSIFY_PRO_UPGRADE, {
-            entry_point: "new_classification",
-            input_mode: inputMode,
-            block_reason: blockReason,
-          });
           setIsStarterUpsell(blockReason === "starter_limit_reached");
           setCurrentClassifyPlan(classifyPlan ?? undefined);
           setShowPricing(true);

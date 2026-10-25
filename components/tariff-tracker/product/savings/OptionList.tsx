@@ -15,7 +15,7 @@ import { statusInfo, StatusTone } from "../../opportunities/statuses";
 // import's review) and, apart, sourcing it somewhere else (longer term). Each row has an icon for its
 // kind (a flag for an origin), its name and one line on it, what it could save, and where it stands.
 // Savings tracked earlier whose option is no longer open (the product has it now) come last. Picking
-// one opens it beside the rail.
+// one opens it beside the rail; the up and down arrows step through them (ProductSavings).
 
 export type ListItem = { option?: SavingOption; opportunity?: Opportunity; id: string };
 
@@ -79,12 +79,12 @@ const Row = ({
     <li>
       <button
         type="button"
+        id={`savings-option-${item.id}`}
         onClick={onSelect}
         aria-pressed={selected}
         title={title}
-        className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
-          selected ? "bg-primary/[0.06] shadow-[inset_0_0_0_1.5px_var(--color-primary)]" : "hover:bg-tt-soft"
-        }`}
+        className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${selected ? "bg-primary/[0.06] shadow-[inset_0_0_0_1.5px_var(--color-primary)]" : "hover:bg-tt-soft"
+          }`}
       >
         {/* Its kind, or the country's flag */}
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${option?.kind === "origin" ? "bg-tt-soft text-lg" : KIND[kind].tint} ${closed ? "opacity-50" : ""}`} aria-hidden>
@@ -188,7 +188,7 @@ export const OptionList = ({
     <div className="flex flex-col gap-6">
       {quick.length > 0 && (
         <section className="flex flex-col gap-2" aria-label="Quick Wins">
-          <TrackHeading title="Quick Wins" note="No change of supplier. Decide each one to finish this import's review." rows={quick} />
+          <TrackHeading title="Exemptions & Trade Programs" note="No change of supplier. Decide each one to finish this import's review." rows={quick} />
           {sub("program")}
           {sub("exemption")}
           <div className="px-1">{afterQuickWins}</div>

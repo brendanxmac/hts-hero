@@ -7,18 +7,22 @@ import { BetaChip } from "./BetaChip";
 // and like an import's header. The title and one line on what the page is for (on Home, the day and
 // the imports), the page's own actions on the right, then its views (TabBar pills) at the card's
 // foot, so the tabs are plainly part of what they switch. children: a last section of the card,
-// under a rule (Home's key numbers). The page's modules follow on the ground.
+// under a rule (Home's key numbers). The page's modules follow on the ground. fields: the children
+// are inputs whose suggestions open over the page (Sourcing's HTS code), so they aren't clipped to
+// the card (clipped, a popover is cut off and the card scrolls inside itself as it opens).
 export const SectionHeader = ({
   section,
   summary,
   actions,
   tabs,
+  fields = false,
   children,
 }: {
   section: TrackerSection;
   summary?: ReactNode;
   actions?: ReactNode;
   tabs?: ReactNode;
+  fields?: boolean;
   children?: ReactNode;
 }) => (
   <header className={`${tt.panel} flex flex-col`}>
@@ -27,7 +31,6 @@ export const SectionHeader = ({
         <h1 className={`${tt.pageTitle} flex items-center gap-3`}>
           {section.title}
           {section.beta && <BetaChip />}
-          {section.comingSoon && <span className={tt.chip("primary")}>Coming soon</span>}
         </h1>
         <p className={`${tt.subtitle} m-0`}>{summary ?? section.summary}</p>
       </div>
@@ -35,7 +38,7 @@ export const SectionHeader = ({
     </div>
     {tabs && <div className="px-5 pb-4 sm:px-6">{tabs}</div>}
     {/* Clipped to the card's rounded foot (the header itself can't clip: its actions' menus open past it) */}
-    {children && <div className="overflow-hidden rounded-b-[inherit] border-t border-base-300">{children}</div>}
+    {children && <div className={`${fields ? "" : "overflow-hidden "}rounded-b-[inherit] border-t border-base-300`}>{children}</div>}
   </header>
 );
 
