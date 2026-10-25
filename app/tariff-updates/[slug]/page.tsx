@@ -5,7 +5,7 @@ import { ArrowRightIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/s
 import config from "@/config"
 import { renderSchemaJsonLd } from "@/libs/seo"
 import { SOURCES } from "@/libs/tariff-sources/types"
-import { getPublishedUpdate, getPublishedUpdates, resolveHtsLinks, stagesReached } from "@/libs/tariff-updates/public"
+import { getPublishedUpdate, getPublishedUpdates, resolveHtsLinks, stagesReached, type PublicScope } from "@/libs/tariff-updates/public"
 import { stagesFor } from "@/libs/tariff-updates/types"
 import { THEME } from "@/components/ui/theme"
 import { mono, trackerDisplay, trackerSans } from "@/components/ui/font"
@@ -18,6 +18,9 @@ import { authorityLabel, formatDay, kindLabel, STAGE_DETAIL, STAGE_LABELS } from
 
 // One tariff update: what changed in plain English, the stages it has reached with the official
 // document for each, and what it covers (countries, products, HTS codes, linked to their pages).
+// When the update's scope was read from its PDFs (or set in review), the page shows that: every
+// code covered and carved out (added and removed, for a coverage change), its Chapter 99 headings
+// and the documents the codes came from. Otherwise, the codes its sources' text named.
 
 export const revalidate = 3600
 
@@ -57,13 +60,115 @@ const HtsCode = ({ code, href }: { code: string; href: string | null }) => {
   )
 }
 
+// A list of codes, the first HTS_SHOWN shown and the rest behind "Show all"
+const CodeList = ({ codes, links }: { codes: string[]; links: Record<string, string | null> }) => (
+  <>
+    <div className="flex flex-wrap gap-1.5">
+      {codes.slice(0, HTS_SHOWN).map((code) => (
+        <HtsCode key={code} code={code} href={links[code]} />
+      ))}
+    </div>
+    {codes.length > HTS_SHOWN && (
+      <details className="mt-3">
+        <summary className="cursor-pointer text-xs font-semibold text-primary">Show all {codes.length}</summary>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {codes.slice(HTS_SHOWN).map((code) => (
+            <HtsCode key={code} code={code} href={links[code]} />
+          ))}
+        </div>
+      </details>
+    )}
+  </>
+)
+
+// "https://www.whitehouse.gov/wp-content/uploads/2026/09/ANNEX-I-AUTO.pdf" → "ANNEX-I-AUTO.pdf", "whitehouse.gov"
+const documentLabel = (url: string) => {
+  try {
+    const { hostname, pathname } = new URL(url)
+    return { name: decodeURIComponent(pathname.split("/").filter(Boolean).pop() ?? hostname), host: hostname.replace(/^www\./, "") }
+  } catch {
+    return { name: url, host: "" }
+  }
+}
+
+// What the update covers, from its scope
+const Coverage = ({ scope, kind, links }: { scope: PublicScope; kind: string; links: Record<string, string | null> }) => {
+  const change = kind === "scope_change"
+  const groups = [
+    { label: change ? "Added to the duty" : "Covered", codes: scope.codes.filter((c) => c.trim().toUpperCase() !== "ALL"), tone: "primary" as const },
+    { label: change ? "Removed from the duty" : "Carved out", codes: scope.excludedCodes, tone: "neutral" as const },
+  ].filter((g) => g.codes.length)
+  const everything = scope.codes.some((c) => c.trim().toUpperCase() === "ALL")
+  return (
+    <section aria-labelledby="coverage" className={`${tt.panel} ${tt.panelPad} flex flex-col gap-5`}>
+      <div className="flex flex-col gap-1">
+        <h2 id="coverage" className={tt.title}>
+          What it covers
+        </h2>
+        <p className="text-sm text-base-content/60">
+          {everything ? "Every product of the countries named, except the codes carved out below. " : ""}
+          HTS codes as listed in the official documents. A heading or subheading covers every code under it.
+        </p>
+      </div>
+      {scope.headings.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <span className={tt.eyebrow()}>Chapter 99 {scope.headings.length === 1 ? "heading" : "headings"}</span>
+          <CodeList codes={scope.headings} links={links} />
+        </div>
+      )}
+      {groups.map((g) => (
+        <div key={g.label} className="flex flex-col gap-2">
+          <span className={tt.eyebrow(g.tone)}>
+            {g.label} ({g.codes.length})
+          </span>
+          <CodeList codes={g.codes} links={links} />
+        </div>
+      ))}
+      {scope.conditional.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <span className={tt.eyebrow()}>May be exempt</span>
+          <ul className="flex flex-col gap-3">
+            {scope.conditional.map((c) => (
+              <li key={c.condition} className="flex flex-col gap-1.5">
+                <span className="text-sm text-base-content/80">{c.condition.charAt(0).toUpperCase() + c.condition.slice(1)}</span>
+                <CodeList codes={c.codes} links={links} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {scope.documents.length > 0 && (
+        <div className="flex flex-col gap-2 border-t border-base-300 pt-5">
+          <span className={tt.eyebrow()}>Where these codes come from</span>
+          <ul className="flex flex-col gap-1.5">
+            {Array.from(new Set(scope.documents)).map((url) => {
+              const { name, host } = documentLabel(url)
+              return (
+                <li key={url} className="text-sm">
+                  <a href={url} target="_blank" rel="noopener noreferrer" className="font-medium text-base-content hover:text-primary hover:underline underline-offset-4">
+                    {name}
+                    <ArrowTopRightOnSquareIcon className="ml-1 inline h-3.5 w-3.5 text-base-content/40" aria-hidden />
+                  </a>
+                  {host && <span className="ml-2 text-xs text-base-content/60">{host}</span>}
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )}
+    </section>
+  )
+}
+
 export default async function TariffUpdatePage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   const found = await getPublishedUpdate(params.slug)
   if (!found) notFound()
-  const { update, sources, revisionEntry } = found
+  const { update, sources, scope, revisionEntry } = found
   const reached = stagesReached(sources)
-  const htsLinks = await resolveHtsLinks(update.hts_codes)
+  const htsLinks = await resolveHtsLinks(
+    scope ? [...scope.headings, ...scope.codes, ...scope.excludedCodes, ...scope.conditional.flatMap((c) => c.codes)] : update.hts_codes
+  )
   const related = (await getPublishedUpdates()).filter((u) => u.authority === update.authority && u.slug !== update.slug).slice(0, 4)
   const url = `${SITE}/tariff-updates/${update.slug}`
 
@@ -86,7 +191,7 @@ export default async function TariffUpdatePage(props: { params: Promise<{ slug: 
         dateModified: update.last_activity_at,
         author: { "@type": "Organization", name: "HTS Hero", url: SITE },
         publisher: { "@type": "Organization", name: "HTS Hero", url: SITE },
-        isBasedOn: sources.map((s) => s.url),
+        isBasedOn: Array.from(new Set([...sources.map((s) => s.url), ...(scope?.documents ?? [])])),
       })}
       {renderSchemaJsonLd({
         "@type": "BreadcrumbList",
@@ -123,51 +228,54 @@ export default async function TariffUpdatePage(props: { params: Promise<{ slug: 
         </header>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-          <section aria-labelledby="timeline" className={`${tt.panel} ${tt.panelPad} flex flex-col gap-5`}>
-            <div className="flex flex-col gap-1">
-              <h2 id="timeline" className={tt.title}>
-                How we got here
-              </h2>
-              <p className="text-sm text-base-content/60">Every official document behind this update, oldest first.</p>
-            </div>
-            <ol className="flex flex-col">
-              {sources.map((s, i) => (
-                <li key={`${s.url}-${i}`} className="relative flex gap-4 pb-6 last:pb-0">
-                  {/* The line down to the next step */}
-                  {i < sources.length - 1 && <span className="absolute left-[7px] top-5 h-full w-px bg-base-300" aria-hidden />}
-                  <span className="relative mt-1 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-primary bg-base-100" aria-hidden />
-                  <div className="flex min-w-0 flex-col gap-1">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-                      <span className="font-bold uppercase tracking-wider text-primary">{s.stage ? STAGE_LABELS[s.stage] : "Source"}</span>
-                      <span className="text-base-content/60">
-                        {formatDay(s.published_at)} · {SOURCES[s.source].label}
-                        {s.doc_type ? ` · ${s.doc_type}` : ""}
-                      </span>
+          <div className="flex min-w-0 flex-col gap-6">
+            <section aria-labelledby="timeline" className={`${tt.panel} ${tt.panelPad} flex flex-col gap-5`}>
+              <div className="flex flex-col gap-1">
+                <h2 id="timeline" className={tt.title}>
+                  How we got here
+                </h2>
+                <p className="text-sm text-base-content/60">Every official document behind this update, oldest first.</p>
+              </div>
+              <ol className="flex flex-col">
+                {sources.map((s, i) => (
+                  <li key={`${s.url}-${i}`} className="relative flex gap-4 pb-6 last:pb-0">
+                    {/* The line down to the next step */}
+                    {i < sources.length - 1 && <span className="absolute left-[7px] top-5 h-full w-px bg-base-300" aria-hidden />}
+                    <span className="relative mt-1 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-primary bg-base-100" aria-hidden />
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                        <span className="font-bold uppercase tracking-wider text-primary">{s.stage ? STAGE_LABELS[s.stage] : "Source"}</span>
+                        <span className="text-base-content/60">
+                          {formatDay(s.published_at)} · {SOURCES[s.source].label}
+                          {s.doc_type ? ` · ${s.doc_type}` : ""}
+                        </span>
+                      </div>
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-base-content hover:text-primary hover:underline underline-offset-4">
+                        {s.title}
+                        <ArrowTopRightOnSquareIcon className="ml-1 inline h-3.5 w-3.5 text-base-content/40" aria-hidden />
+                      </a>
                     </div>
-                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-base-content hover:text-primary hover:underline underline-offset-4">
-                      {s.title}
-                      <ArrowTopRightOnSquareIcon className="ml-1 inline h-3.5 w-3.5 text-base-content/40" aria-hidden />
-                    </a>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <div className="flex flex-col gap-2 border-t border-base-300 pt-5">
-              <span className={tt.eyebrow()}>Stages</span>
-              <ol className="flex flex-wrap gap-2">
-                {stagesFor(update).map((stage) => (
-                  <li
-                    key={stage}
-                    title={STAGE_DETAIL[stage]}
-                    className={reached.includes(stage) ? tt.chip("primary") : `${tt.chip()} opacity-60`}
-                  >
-                    {reached.includes(stage) ? "✓ " : ""}
-                    {STAGE_LABELS[stage]}
                   </li>
                 ))}
               </ol>
-            </div>
-          </section>
+              <div className="flex flex-col gap-2 border-t border-base-300 pt-5">
+                <span className={tt.eyebrow()}>Stages</span>
+                <ol className="flex flex-wrap gap-2">
+                  {stagesFor(update).map((stage) => (
+                    <li
+                      key={stage}
+                      title={STAGE_DETAIL[stage]}
+                      className={reached.includes(stage) ? tt.chip("primary") : `${tt.chip()} opacity-60`}
+                    >
+                      {reached.includes(stage) ? "✓ " : ""}
+                      {STAGE_LABELS[stage]}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </section>
+            {scope && <Coverage scope={scope} kind={update.kind} links={htsLinks} />}
+          </div>
 
           <aside className="flex min-w-0 flex-col gap-4">
             <section aria-labelledby="facts" className={`${tt.panel} p-6`}>
@@ -184,26 +292,12 @@ export default async function TariffUpdatePage(props: { params: Promise<{ slug: 
               </dl>
             </section>
 
-            {update.hts_codes.length > 0 && (
+            {!scope && update.hts_codes.length > 0 && (
               <section aria-labelledby="codes" className={`${tt.panel} p-6`}>
                 <h2 id="codes" className={`${tt.eyebrow()} mb-3`}>
                   HTS codes named ({update.hts_codes.length})
                 </h2>
-                <div className="flex flex-wrap gap-1.5">
-                  {update.hts_codes.slice(0, HTS_SHOWN).map((code) => (
-                    <HtsCode key={code} code={code} href={htsLinks[code]} />
-                  ))}
-                </div>
-                {update.hts_codes.length > HTS_SHOWN && (
-                  <details className="mt-3">
-                    <summary className="cursor-pointer text-xs font-semibold text-primary">Show all {update.hts_codes.length}</summary>
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {update.hts_codes.slice(HTS_SHOWN).map((code) => (
-                        <HtsCode key={code} code={code} href={htsLinks[code]} />
-                      ))}
-                    </div>
-                  </details>
-                )}
+                <CodeList codes={update.hts_codes} links={htsLinks} />
               </section>
             )}
 

@@ -32,7 +32,18 @@ export interface PublicSource {
   stage: Stage | null
 }
 
+// What an update's page adds: its scope (libs/tariff-updates/scope.ts), when one was read or set
+export interface PublicScope {
+  codes: string[]
+  excludedCodes: string[]
+  conditional: { condition: string; codes: string[] }[]
+  headings: string[]
+  documents: string[]
+}
+
 const COLUMNS = "slug, title, summary, kind, authority, countries, hts_codes, products, effective_on, stage, first_seen_at, last_activity_at"
+
+const SCOPE_COLUMNS = "scope_codes, scope_excluded_codes, scope_conditional_exclusions, scope_headings, scope_documents"
 
 // Supabase returns at most 1,000 rows a request
 const PAGE = 1000
@@ -70,7 +81,7 @@ export const getPublishedUpdates = async (): Promise<PublicUpdate[]> => {
 export const getPublishedUpdate = async (slug: string) => {
   const { data: update, error } = await createPublicClient()
     .from("tariff_updates")
-    .select(`id, ${COLUMNS}`)
+    .select(`id, ${COLUMNS}, ${SCOPE_COLUMNS}`)
     .eq("status", "published")
     .eq("slug", slug)
     .maybeSingle()
@@ -82,12 +93,29 @@ export const getPublishedUpdate = async (slug: string) => {
     .eq("update_id", update.id)
     .order("published_at")
   if (sourcesError) throw new Error(`Loading a tariff update's sources: ${sourcesError.message}`)
-  const { id: _id, ...rest } = update as PublicUpdate & { id: string }
+  const { id: _id, scope_codes, scope_excluded_codes, scope_conditional_exclusions, scope_headings, scope_documents, ...rest } = update as PublicUpdate & {
+    id: string
+    scope_codes: string[] | null
+    scope_excluded_codes: string[] | null
+    scope_conditional_exclusions: { condition: string; codes: string[] }[] | null
+    scope_headings: string[] | null
+    scope_documents: string[] | null
+  }
+  const scope: PublicScope | null = scope_codes
+    ? {
+        codes: scope_codes,
+        excludedCodes: scope_excluded_codes ?? [],
+        conditional: scope_conditional_exclusions ?? [],
+        headings: scope_headings ?? [],
+        documents: scope_documents ?? [],
+      }
+    : null
   const publicSources = (sources ?? []) as PublicSource[]
   const revisionEntry = rest.kind === "hts_revision" ? await revisionEntryFor(publicSources) : null
   return {
     update: rest as PublicUpdate,
     sources: publicSources,
+    scope,
     revisionEntry,
     // An HTS revision's page says little beyond "it was posted" until the calculator's changelog
     // describes it, so until then it stays out of search results
@@ -150,7 +178,8 @@ export const codeVariants = (htsno: string) => {
   return Array.from(variants)
 }
 
-// The latest published updates naming an HTS code or a heading above it, for its /hts page.
+// The latest published updates naming an HTS code or a heading above it (in their sources or
+// their scope, added or removed), for its /hts page.
 // Never throws: the code page renders without them.
 export const getUpdatesNamingCode = async (htsno: string, limit = 5): Promise<PublicUpdate[]> => {
   const variants = codeVariants(htsno)
@@ -159,7 +188,7 @@ export const getUpdatesNamingCode = async (htsno: string, limit = 5): Promise<Pu
     .from("tariff_updates")
     .select(COLUMNS)
     .eq("status", "published")
-    .overlaps("hts_codes", variants)
+    .or(["hts_codes", "scope_codes", "scope_excluded_codes"].map((column) => `${column}.ov.{${variants.map((v) => `"${v}"`).join(",")}}`).join(","))
     .order("last_activity_at", { ascending: false })
     .limit(limit)
   if (error) {
