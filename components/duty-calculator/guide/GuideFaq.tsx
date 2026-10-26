@@ -8,7 +8,7 @@ import * as mk from "@/components/ui/marketing/styles";
 export const GuideFaq = ({ faqs }: { faqs: { question: string; answer: string }[] }) => (
   <section id="faq" className={`${mk.band} scroll-mt-6`}>
     <div className={`${mk.container} grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]`}>
-      <div className="lg:sticky lg:top-24 lg:self-start">
+      <div className="lg:sticky lg:top-6 lg:self-start">
         <SectionIntro eyebrow="Questions" title="Frequently asked questions">
           Something else? <a href="mailto:support@htshero.com" className={mk.link}>Ask us</a>.
         </SectionIntro>

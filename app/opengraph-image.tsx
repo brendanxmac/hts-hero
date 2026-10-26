@@ -4,7 +4,7 @@ import { homeHeadlineImage } from "@/libs/headlineImage";
 // The share card for the homepage: its headline (libs/headlineImage.tsx)
 export const size = SOCIAL_IMAGE_SIZE;
 export const contentType = "image/png";
-export const alt = "HTS Hero: tariff alerts, savings, & audits on autopilot";
+export const alt = "HTS Hero: eliminate tariff overpayments and surprises";
 
 export default function Image() {
   return homeHeadlineImage();

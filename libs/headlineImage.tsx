@@ -98,5 +98,5 @@ export async function headlineImage({
 export const homeHeadlineImage = () =>
   headlineImage({
     kicker: "US Tariff Intelligence",
-    lines: ["Tariff Alerts,", "Savings, & Audits", "on Autopilot"],
+    lines: ["Eliminate Tariff", "Overpayments", "and Surprises"],
   });

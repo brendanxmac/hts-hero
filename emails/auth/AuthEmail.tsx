@@ -8,8 +8,8 @@ import { Link, Text } from "@react-email/components"
 // these are exported as HTML (`npm run email:auth`) and pasted into the Supabase dashboard
 // (Authentication → Email Templates). Each says what's waiting on the other side of the button.
 //
-// Two follow the app rather than Supabase's default link: the sign-in email also carries the
-// one-time passcode (/signin asks for one), and the reset email opens /reset-password with a token
+// Two follow the app rather than Supabase's default link: the sign-in and confirm emails also carry
+// the one-time passcode (/signin and the one-click flows ask for one), and the reset email opens /reset-password with a token
 // hash, verified only when the person presses the button there, so an email scanner opening the
 // link doesn't use it up.
 
@@ -24,13 +24,16 @@ export const AUTH_EMAILS: Record<
 > = {
   // Everyone who signs up gets this one, from any page, so it promises nothing about one product:
   // the link brings them back to wherever they were headed
+  // It carries the passcode too: the one-click flows (InlineAccount) make the account on the page
+  // they're on and ask for this code there
   confirm: {
-    subject: "Confirm your email for HTS Hero",
+    subject: "Your HTS Hero code: {{ .Token }}",
     eyebrow: "One step left",
     title: "Confirm your email",
-    body: "Confirm this address to finish setting up your HTS Hero account. You'll go straight back to where you left off: look up any duty with the free Tariff Calculator, track your imports with the Tariff Tracker, or classify a product with the Classification Assistant.",
+    body: "Enter this code where you signed up, or use the button. You'll go straight back to where you left off: the import you're tracking in the Tariff Tracker, the free Tariff Calculator, or the Classification Assistant.",
     button: "Confirm my email",
-    preview: "Confirm your email to finish setting up your HTS Hero account.",
+    preview: "Your HTS Hero code: {{ .Token }}",
+    passcode: true,
   },
   magic_link: {
     subject: "Your HTS Hero sign-in code",

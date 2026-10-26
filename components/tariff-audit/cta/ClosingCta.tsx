@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
 import { REQUEST_ANCHOR, SIGN_UP_TO_AUDIT } from "../lib/links";
@@ -16,7 +16,7 @@ export const ClosingCta = () => (
       </p>
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
         <Link href={SIGN_UP_TO_AUDIT} className={cta.button}>
-          Audit free for {REVERSE_TRIAL.days} days <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+          {TRY_IT_FREE} <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
         <a href={REQUEST_ANCHOR} className={cta.secondary}>
           Request an audit

@@ -12,7 +12,7 @@ import {
   Billing,
   Estimate,
   LAUNCH_PRICING,
-  REVERSE_TRIAL,
+  TRY_IT_FREE,
   TRACKER_MAX_LISTED_PAIRS,
   formatPerImport,
   formatPrice,
@@ -170,7 +170,7 @@ export const EstimateSummary = ({
               aria-disabled={isEmpty}
               className={`${mk.buttonOnDark} w-full ${isEmpty ? "pointer-events-none opacity-50" : ""}`}
             >
-              {hasTracker ? `Start your free ${REVERSE_TRIAL.days}-day trial` : "Get started"}
+              {hasTracker ? TRY_IT_FREE : "Get started"}
             </Link>
             {hasTracker && (
               <p className="m-0 text-center text-xs leading-relaxed text-base-content/60">

@@ -8,7 +8,7 @@ import * as mk from "@/components/ui/marketing/styles";
 import { LINKS, contactLink } from "../lib/links";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { FREE_FOREVER_LINE, LAUNCH_PITCH, SAVINGS_AUDITS_INCLUDED } from "@/components/ui/marketing/comingSoon";
-import { ANNUAL_DISCOUNT, Billing, REVERSE_TRIAL, TRACKER_TIERS, launchPricingActive } from "../lib/pricing";
+import { ANNUAL_DISCOUNT, Billing, REVERSE_TRIAL, TRACKER_TIERS, launchPricingActive, TRY_IT_FREE } from "../lib/pricing";
 import { PlanPrice } from "../plans/PlanPrice";
 import { CALCULATOR_FEATURES, TRACKER_FEATURES, TRACKER_OPTIONS, TrackerOption, optionPerImport } from "./plans";
 import { TierCard } from "./TierCard";
@@ -101,7 +101,7 @@ export const TariffPricing = () => {
                 </a>
               ) : (
                 <Link href={LINKS.signUp} className={`${BUTTON_ON_DARK}`}>
-                  Start your free {REVERSE_TRIAL.days}-day trial
+                  {TRY_IT_FREE}
                   <ArrowRightIcon className="h-5 w-5" aria-hidden />
                 </Link>
               )

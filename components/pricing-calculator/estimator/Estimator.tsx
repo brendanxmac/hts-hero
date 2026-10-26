@@ -72,7 +72,7 @@ export const Estimator = ({
           </ProductCard>
         </div>
 
-        <div className="min-w-0 lg:sticky lg:top-24">
+        <div className="min-w-0 lg:sticky lg:top-6">
           <EstimateSummary est={est} billing={billing} onBillingChange={onBillingChange} query={query} pairs={input.pairs} />
         </div>
       </div>

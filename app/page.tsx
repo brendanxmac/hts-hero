@@ -27,15 +27,15 @@ import * as mk from "@/components/ui/marketing/styles";
 // Static, refreshed daily with the tariff data
 export const revalidate = 86400;
 
-const TITLE = "HTS Hero: US Tariff Calculator & Tariff Tracking for Your Imports";
+const TITLE = "HTS Hero: Eliminate Tariff Overpayments and Surprises";
 const DESCRIPTION =
-  "Calculate the US duty on any HTS code free, track every tariff on your imports, get alerts when tariffs change, and see exactly how each new tariff affects you. For importers and customs brokers.";
+  "Find duty you may have overpaid on every import and get alerted the moment a tariff change hits your products. Plus a free US tariff calculator for any HTS code. For importers and customs brokers.";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   openGraph: {
-    title: "HTS Hero: Tariff Alerts, Savings, & Audits on Autopilot",
+    title: TITLE,
     description: DESCRIPTION,
     url: `https://${config.domainName}`,
     siteName: "HTS Hero",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HTS Hero: Tariff Alerts, Savings, & Audits on Autopilot",
+    title: TITLE,
     description: DESCRIPTION,
   },
   alternates: { canonical: "/" },

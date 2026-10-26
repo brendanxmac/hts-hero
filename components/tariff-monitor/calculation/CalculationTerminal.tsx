@@ -79,9 +79,9 @@ export const CalculationTerminal = ({ example, revision }: { example: WorkedExam
             <span className="font-semibold text-white">Total duty and fees</span>
             <span className="text-right text-lg font-semibold text-white">{usd(total)}</span>
           </div>
-          <p className={`mt-3 text-xs text-teal-300 ${fade(rows.length + 1)}`}>
+          {/* <p className={`mt-3 text-xs text-teal-300 ${fade(rows.length + 1)}`}>
             ✓ Watching {example.htsno} from {example.countryName}: every HTS revision and announcement checked
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

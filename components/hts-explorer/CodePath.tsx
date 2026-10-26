@@ -1,6 +1,5 @@
 "use client";
 
-import { toRoman } from "@javascript-packages/roman-numerals";
 import { ArrowTopRightOnSquareIcon, DocumentTextIcon } from "@heroicons/react/16/solid";
 import { HtsElement } from "@/interfaces/hts";
 import { getFirstChapterOfSection, getHtsElementParents } from "@/libs/hts";
@@ -20,7 +19,7 @@ export const CodePath = ({ element, sectionChapter }: { element: HtsElement; sec
 
   // Each step and how much of the trail it keeps: the sections, the chapter, then each line
   const steps = [
-    { code: `Section ${toRoman(sectionChapter.sectionNumber)}`, description: sectionChapter.sectionDescription, keep: 1 },
+    { code: `Section ${sectionChapter.sectionNumber}`, description: sectionChapter.sectionDescription, keep: 1 },
     { code: `Chapter ${element.chapter}`, description: sectionChapter.chapterDescription, keep: 2 },
     ...[...parents, element].map((line, i) => ({ code: line.htsno, description: line.description, keep: 3 + i })),
   ];
@@ -95,10 +94,10 @@ export const CodeNotes = ({ sectionChapter, chapter }: { sectionChapter: Section
   const sectionNoteChapter = getFirstChapterOfSection(sectionChapter.sectionNumber) ?? chapter;
   const links = [
     ...(sectionNoteChapter !== chapter
-      ? [{ title: `Section ${toRoman(sectionChapter.sectionNumber)} notes`, description: sectionChapter.sectionDescription, file: `Chapter ${sectionNoteChapter}` }]
+      ? [{ title: `Section ${sectionChapter.sectionNumber} notes`, description: sectionChapter.sectionDescription, file: `Chapter ${sectionNoteChapter}` }]
       : []),
     {
-      title: `Chapter ${chapter} notes${sectionNoteChapter === chapter ? ` (with Section ${toRoman(sectionChapter.sectionNumber)})` : ""}`,
+      title: `Chapter ${chapter} notes${sectionNoteChapter === chapter ? ` (with Section ${sectionChapter.sectionNumber})` : ""}`,
       description: sectionChapter.chapterDescription,
       file: `Chapter ${chapter}`,
     },

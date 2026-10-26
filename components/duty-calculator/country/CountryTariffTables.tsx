@@ -5,6 +5,7 @@ import { mono } from "@/components/ui/font";
 import { PROGRAM } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table/Table";
+import { hubForProgram, hubPath } from "@/libs/tariff-programs/hubs";
 
 
 // A program's color, when its name starts with one of the marketing programs ("Section 301 ...")
@@ -69,7 +70,13 @@ export function CountryTariffTables({ tariffs, countryName }: { tariffs: Country
                       <span className="flex items-baseline gap-2.5">
                         {/* Program colors are data colors, set inline (DESIGN_SYSTEM §14) */}
                         {color && <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} aria-hidden />}
-                        {p.name}
+                        {hubForProgram(p.id) ? (
+                          <Link href={hubPath(hubForProgram(p.id)!)} className="hover:text-teal-700 skin:hover:text-primary hover:underline">
+                            {p.name}
+                          </Link>
+                        ) : (
+                          p.name
+                        )}
                       </span>
                       <SourceLinks sources={p.sources} />
                     </RowHeader>

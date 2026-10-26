@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode, useEffect, useMemo, useRef } from "react";
-import { toRoman } from "@javascript-packages/roman-numerals";
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { useHtsSections } from "@/contexts/HtsSectionsContext";
@@ -205,14 +204,14 @@ const SectionRow = ({ row }: { row: Extract<Row, { kind: "section" }> }) => {
       selected={false}
       onToggle={() => toggle(row.key)}
       onSelect={() => toggle(row.key)}
-      label={`Section ${toRoman(section.number)}`}
+      label={`Section ${section.number}`}
     >
       <span
-        className={`${tt.display} mt-px flex h-6 min-w-9 shrink-0 items-center justify-center rounded-lg px-1.5 text-xs ${weight(open)} ${
+        className={`${tt.display} mt-px flex h-6 w-[4.75rem] shrink-0 items-center justify-center rounded-lg px-1.5 text-xs whitespace-nowrap ${weight(open)} ${
           open ? "bg-primary text-primary-content" : "bg-tt-soft text-base-content/70 group-hover:bg-base-100"
         }`}
       >
-        {toRoman(section.number)}
+        Section {section.number}
       </span>
       <span className="min-w-0 flex-1">
         <span className={`block text-sm leading-snug text-base-content ${weight(open)}`}>{section.description}</span>

@@ -6,7 +6,7 @@ import { htsCodeDigitsOnly } from "../../../libs/hts-code";
 export type ResultSurface = "calculator" | "explorer" | "explorer_modal" | "classification" | "hts_code_page";
 
 // The pages that link into the calculator with a code
-export type CalculatorLinkSource = Exclude<ResultSurface, "calculator">;
+export type CalculatorLinkSource = Exclude<ResultSurface, "calculator"> | "tariff_program_page";
 
 // Over the calculator, the explorer is the calculator's own search modal
 export const estimateSurface = (surface: "explorer" | "classification"): CalculatorLinkSource =>

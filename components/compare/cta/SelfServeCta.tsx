@@ -7,7 +7,7 @@ import * as ui from "@/components/ui/styles";
 
 const PROMISES = [
   "Free and unlimited, no sign-up: every tariff on your import, line by line",
-  `Tariff Tracker free for ${REVERSE_TRIAL.days} days, no credit card`,
+  `Tariff Tracker free for ${REVERSE_TRIAL.days} days: overpayment audits and tariff change alerts, no credit card`,
   `Published prices: Tracker plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import`,
   "Monthly plans, no contract",
   "No demo, no sales call, no freight account",
@@ -25,7 +25,7 @@ export function SelfServeCta({ title = "Try HTS Hero now. No demo required." }: 
           <h2 className={ui.sectionTitle}>{title}</h2>
           <p className={`${ui.body} max-w-prose`}>
             Enter an HTS code and a country of origin and see the full US duty: the base rate, every Chapter 99 tariff
-            and the fees. It&apos;s free and unlimited. To watch your own imports for tariff changes, try the Tariff
+            and the fees. It&apos;s free and unlimited. To catch overpayments and tariff changes on your own imports, try the Tariff
             Tracker free for {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports} imports. {FREE_FOREVER_LINE}
           </p>
           <div className="mt-2 flex flex-wrap gap-3">

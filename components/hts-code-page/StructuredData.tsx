@@ -12,6 +12,7 @@ export function StructuredData({
   parentElements: parents,
   sectionChapter,
   faqs,
+  modifiedOn,
 }: {
   element: HtsElement;
   productName: string;
@@ -19,6 +20,8 @@ export function StructuredData({
   tariffElement: HtsElement;
   parentElements: HtsElement[];
   sectionChapter: SectionChapter;
+  // When the data was last checked, for a page without a duty summary (a Chapter 99 heading)
+  modifiedOn?: string | null;
   faqs: FaqEntry[];
 }) {
   const breadcrumbItems = [
@@ -74,7 +77,7 @@ export function StructuredData({
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: `HTS ${element.htsno}: ${productName} – Duty Rates & Tariffs`,
-    ...(summary ? { dateModified: summary.asOf } : {}),
+    ...(summary ? { dateModified: summary.asOf } : modifiedOn ? { dateModified: modifiedOn } : {}),
     description: `HTS code ${element.htsno}: ${productName}.${dutyCtx}`,
     url: `https://${config.domainName}/hts/${element.htsno}`,
     isPartOf: {

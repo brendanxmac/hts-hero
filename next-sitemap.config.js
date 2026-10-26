@@ -77,6 +77,15 @@ function blogPostDates() {
 // The "[Country] to US tariff calculator" pages, from the same list the pages are built from
 const COUNTRY_PAGES = require("./libs/country-pages/countries.json");
 
+// The /tariffs program pages, by the slugs in the list they're built from (a TypeScript file, read
+// as text here)
+function programHubSlugs() {
+  const fs = require("fs");
+  const path = require("path");
+  const source = fs.readFileSync(path.join(__dirname, "libs/tariff-programs/hubs.ts"), "utf8");
+  return Array.from(source.matchAll(/slug: "([a-z0-9-]+)"/g), (m) => m[1]);
+}
+
 // Server-rendered pages to list, with their priority
 const KEY_PAGES = [
   ["/duty-calculator", 1.0],
@@ -87,6 +96,8 @@ const KEY_PAGES = [
   ["/tariff-monitor", 0.9],
   ["/tariff-audit", 0.9],
   ["/tariff-updates", 0.9],
+  ["/tariffs", 0.8],
+  ...programHubSlugs().map((slug) => [`/tariffs/${slug}`, 0.8]),
   ["/classify", 0.8],
   ["/pricing-calculator", 0.6],
   ["/explore", 0.5],
@@ -143,9 +154,11 @@ module.exports = {
     "/llms.txt",
     // Retired or stale: the Tariff Impact Checker (being sunset; its tool stays up for existing
     // users), the old tariff coverage and pending-announcement pages, and /about/tariffs, which
-    // redirects to /duty-calculator
+    // redirects to /duty-calculator. The /tariffs program pages are listed in KEY_PAGES.
     "/about/*",
-    "/tariffs/*",
+    "/tariffs/impact-checker*",
+    "/tariffs/coverage*",
+    "/tariffs/pending*",
     // HTS browsing hubs: still crawlable (they link down to the /hts pages) but not pages to
     // rank in their own right
     "/chapter/*",

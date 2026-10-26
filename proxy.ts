@@ -1,15 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { updateSession } from "@/app/api/supabase/middleware"
 import { canonicalHtsCode } from "@/libs/hts-code"
+import { KNOWN_ACCOUNT_COOKIE } from "@/components/tariff-tracker/access/signup"
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
-
-  const isTariffPath = pathname === "/tariffs"
-
-  if (isTariffPath) {
-    return NextResponse.redirect(new URL("/explore", req.url))
-  }
 
   const isOldClassifyPath = pathname === "/app"
 
@@ -67,14 +62,22 @@ export async function proxy(req: NextRequest) {
 
   const { response, user } = await updateSession(req)
 
-  // The Tariff Tracker is for signed-in accounts only: anyone else signs in (or up) first and comes
-  // back to the same page, tab and inputs. In development, ?onboardingPreview=1 opens it signed out
-  // to check the import takeover (ImportTakeover)
+  // Remember that this browser has had an account, so a signed-out visit to the Tracker later
+  // opens the sign-in form for them and the sign-up form for everyone new
+  const knownAccount = !!req.cookies.get(KNOWN_ACCOUNT_COOKIE)
+  if (user && !knownAccount) {
+    response.cookies.set(KNOWN_ACCOUNT_COOKIE, "1", { path: "/", maxAge: 60 * 60 * 24 * 400, sameSite: "lax" })
+  }
+
+  // The Tariff Tracker is for signed-in accounts only: anyone else signs up (or, with an account
+  // here before, signs in) first and comes back to the same page, tab and inputs. In development,
+  // ?onboardingPreview=1 opens it signed out to check the import takeover (ImportTakeover)
   const onboardingPreview = process.env.NODE_ENV === "development" && req.nextUrl.searchParams.get("onboardingPreview") === "1"
   if (!user && !onboardingPreview && (pathname === "/tariff-tracker" || pathname.startsWith("/tariff-tracker/"))) {
     const url = req.nextUrl.clone()
     url.pathname = "/signin"
     url.search = ""
+    if (!knownAccount) url.searchParams.set("sign-up", "true")
     url.searchParams.set("redirect", `${pathname}${req.nextUrl.search}`)
     const redirect = NextResponse.redirect(url)
     response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie))

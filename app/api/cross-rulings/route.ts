@@ -1,26 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
-import { unstable_cache } from "next/cache";
-import { CrossRuling } from "../../../interfaces/cross-rulings";
+import { CROSS_CACHE_TTL_SECONDS, getCachedRulings } from "@/libs/cross-rulings-server";
 
 export const dynamic = "force-dynamic";
 
-const CACHE_TTL_SECONDS = 8 * 60 * 60; // 8 hours
-
-async function fetchRulingsFromCbp(term: string): Promise<CrossRuling[]> {
-  const url = `https://rulings.cbp.gov/api/search?term=${encodeURIComponent(term)}&sortBy=RELEVANCE`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`CBP API returned ${response.status}`);
-  }
-
-  const data = await response.json();
-  const results: CrossRuling[] = data?.rulings ?? [];
-  return results.filter(
-    (item) =>
-      item.categories && item.categories.toLowerCase().includes("classification")
-  );
-}
+const CACHE_TTL_SECONDS = CROSS_CACHE_TTL_SECONDS;
 
 export async function GET(req: NextRequest) {
   const term = req.nextUrl.searchParams.get("term");
@@ -33,13 +16,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const getCachedRulings = unstable_cache(
-      () => fetchRulingsFromCbp(term),
-      [`cross-rulings-search-${term}`],
-      { revalidate: CACHE_TTL_SECONDS }
-    );
-
-    const rulings = await getCachedRulings();
+    const rulings = await getCachedRulings(term);
 
     return NextResponse.json(rulings, {
       headers: {

@@ -10,7 +10,7 @@ import {
 } from "@/libs/hts-duty-summary";
 import { mono } from "@/components/ui/font";
 import { heat } from "@/components/ui/theme";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { CardSection } from "./CardSection";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { countryPageByCode } from "@/libs/country-pages/countries";
@@ -27,7 +27,7 @@ export const countryAnchor = (name: string) =>
   `from-${name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
 
 const Fact = ({ label, value, note }: { label: string; value: string; note: string }) => (
-  <div className={`${tt.panel} px-6 py-5`}>
+  <div className="px-6 py-5">
     <div className={tt.eyebrow()}>{label}</div>
     <div className={`${tt.metric} mt-2`}>{value}</div>
     <div className={`${ui.bodySm} mt-1.5`}>{note}</div>
@@ -38,22 +38,24 @@ export function DutyByCountry({
   htsno,
   productName,
   summary,
+  linkCodes = false,
 }: {
   htsno: string;
   productName: string;
   summary: HtsDutySummary;
+  // Each Chapter 99 number links to its own page
+  linkCodes?: boolean;
 }) {
   const china = summary.rows.find((r) => r.country.code === "CN") ?? summary.rows[0];
   const lowest = lowestTotal(summary.rows);
   const withTariffs = summary.rows.filter((r) => r.additional.length > 0).length;
 
   return (
-    <section id="duty-by-country" className={ui.section}>
-      <SectionHeader wide
-        kicker={`Tariffs by country · ${formatSummaryDate(summary.asOf)}`}
-        title={`US Import Duty on HTS ${htsno} by Country of Origin`}
-      >
-        {china && (
+    <CardSection
+      id="duty-by-country"
+      kicker={`Tariffs by country · ${formatSummaryDate(summary.asOf)}`}
+      title={`US Import Duty on HTS ${htsno} by Country of Origin`}
+      lead={china && (
           <>
             {dutyAnswerSentence({ productName, htsno, row: china, asOf: summary.asOf })}
             {lowest && summary.rows.length > 1 && (
@@ -65,9 +67,9 @@ export function DutyByCountry({
             )}
           </>
         )}
-      </SectionHeader>
-
-      <div className="grid gap-4 sm:grid-cols-3">
+    >
+      {/* The key figures as one strip across the card, then the table edge to edge */}
+      <div className="grid divide-y divide-base-300 border-b border-base-300 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {china && (
           <Fact
             label={`Total duty from ${china.country.name}`}
@@ -89,7 +91,7 @@ export function DutyByCountry({
         />
       </div>
 
-      <div className={`${tt.panel} overflow-hidden`}>
+      <div>
         <Table framed={false} valign="top">
           <THead>
             <Tr>
@@ -141,7 +143,13 @@ export function DutyByCountry({
                         <li key={a.code} className="flex flex-wrap items-baseline gap-x-2">
                           <span>{a.program}</span>
                           <span className="font-semibold text-base-content">{formatDutyPct(a.ratePct)}</span>
-                          <span className={`${mono.className} ${ui.caption}`}>{a.code}</span>
+                          {linkCodes ? (
+                            <Link href={`/hts/${a.code}`} className={`${mono.className} ${ui.caption} underline-offset-4 hover:text-primary hover:underline`}>
+                              {a.code}
+                            </Link>
+                          ) : (
+                            <span className={`${mono.className} ${ui.caption}`}>{a.code}</span>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -209,6 +217,6 @@ export function DutyByCountry({
           </Link>
         </div>
       </div>
-    </section>
+    </CardSection>
   );
 }

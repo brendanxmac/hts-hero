@@ -9,7 +9,7 @@ import { PRICING_FAQS } from "./faqs";
 export const PricingFaq = () => (
   <section id="faq" className={`${mk.band} scroll-mt-6`} aria-labelledby="faq-title">
     <div className={`${mk.container} grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]`}>
-      <div className="lg:sticky lg:top-24 lg:self-start">
+      <div className="lg:sticky lg:top-6 lg:self-start">
         <SectionIntro eyebrow="Questions" title="Pricing questions" id="faq-title">
           Something else?{" "}
           <a href={LINKS.contact} className={mk.link}>

@@ -5,6 +5,7 @@ import {
   REVERSE_TRIAL,
   TRACKER_TIERS,
   formatPrice,
+  TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing"
 
 // The homepage's fixed copy. The FAQ is shown on the page and in its FAQPage schema, so the two
@@ -28,7 +29,7 @@ export const HOME_FAQS = [
   },
   {
     question: "How do I get alerts when tariffs change on my products?",
-    answer: `Add your products to the Tariff Tracker as HTS code and country of origin pairs. When a tariff is announced, and again when it reaches the HTS, you get an alert by email, in the app, or in Slack or Microsoft Teams. Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, alerts included, with no credit card. After that, alerts on your own imports come with a paid plan.`,
+    answer: `Add your products to the Tariff Tracker as HTS code and country of origin pairs. When a tariff is announced, and again when it reaches the HTS, you get an alert by email, in the app, or in Slack or Microsoft Teams. Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, alerts included, with no credit card. After that, alerts on ${TRIAL_ALLOWANCE.alertImports} of your imports stay free, and the rest come with a paid plan.`,
   },
   {
     question: "Can HTS Hero find duty I overpaid?",

@@ -16,8 +16,8 @@ export const CALCULATOR_FEATURES = [
 ]
 
 // What every account gets free in the Tracker: the 14-day reverse trial (REVERSE_TRIAL, no card,
-// nothing to start), then the free plan forever: no alerts on its own imports (TRIAL_ALLOWANCE.alertImports
-// is 0), but Tariff News alerts and sourcing insights, and the AD/CVD check (free with any account,
+// nothing to start), then the free plan forever: alerts on TRIAL_ALLOWANCE.alertImports of its own
+// imports, Tariff News alerts and sourcing insights, and the AD/CVD check (free with any account,
 // never "forever"). Savings detection and auditing are in the trial and every paid plan
 export const TRACKER_TRIAL_FEATURES = [
   `${REVERSE_TRIAL.days} days of everything the Tracker does, on up to ${REVERSE_TRIAL.imports} imports`,

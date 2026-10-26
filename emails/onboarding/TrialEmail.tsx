@@ -2,7 +2,7 @@ import { Column, Row, Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Checklist, Cta, Eyebrow, P, Signature, Title } from "../kit/parts"
 import { C, siteLink } from "../kit/brand"
-import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
+import { REVERSE_TRIAL, TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
 
 // The 14-day reverse trial's emails (PRICING.md), from Brendan:
 //   unlocked  existing accounts, once, when their fresh 14 days start: everything is on
@@ -18,8 +18,8 @@ export interface TrialEmailProps {
   daysLeft?: number
   // "Oct 26"
   endsOn: string
-  // Imports in the Tracker, and those that lose alerts on the free plan (all of them since
-  // 2026-10-18; kept for messages already queued)
+  // Imports in the Tracker, and those that lose alerts on the free plan (all but
+  // TRIAL_ALLOWANCE.alertImports since 2026-10-26; all of them from 2026-10-18)
   imports: number
   losing?: number
   // Rate changes that hit the imports in the last 12 months, and how many imports they hit
@@ -36,12 +36,23 @@ const count = (n: number, one: string, many = `${one}s`) => `${n.toLocaleString(
 
 const when = (daysLeft?: number) => (!daysLeft || daysLeft <= 1 ? "tomorrow" : `in ${daysLeft} days`)
 
+// The imports that lose their alerts on the free plan, which keeps them on TRIAL_ALLOWANCE.alertImports
+const losingCount = (p: Pick<TrialEmailProps, "losing" | "imports">) =>
+  p.losing ?? Math.max(0, p.imports - TRIAL_ALLOWANCE.alertImports)
+
+// "12 of your imports lose…", or what goes when every import keeps its alerts
+const whatGoes = (p: Pick<TrialEmailProps, "losing" | "imports">, ended: boolean) => {
+  const losing = losingCount(p)
+  if (!losing) return ended ? "auditing and savings detection are off" : "auditing and savings detection stop"
+  return `${count(losing, "of your imports", "of your imports")} ${ended ? "just lost" : losing === 1 ? "loses" : "lose"} tariff alerts`
+}
+
 export const trialSubject = (p: TrialEmailProps) =>
   p.variant === "unlocked"
     ? `Everything in your Tariff Tracker is unlocked for ${REVERSE_TRIAL.days} days`
     : p.variant === "ending"
-      ? `Your free trial ends ${when(p.daysLeft)}: your imports lose tariff alerts`
-      : "Your imports just lost their tariff alerts"
+      ? `Your free trial ends ${when(p.daysLeft)}: ${whatGoes(p, false)}`
+      : `Your free trial ended: ${whatGoes(p, true)}`
 
 const CAMPAIGN = "reverse-trial"
 
@@ -89,7 +100,7 @@ export const TRIAL_LOSSES: Loss[] = [
 ]
 
 const FREE_FOREVER =
-  "Tariff News alerts on every new US tariff action, sourcing insights and AD/CVD checks on any import, your whole catalog with its rate history and exports, and the Tariff Calculator."
+  `Tariff alerts on ${TRIAL_ALLOWANCE.alertImports} of your imports, Tariff News alerts on every new US tariff action, sourcing insights and AD/CVD checks on any import, your whole catalog with its rate history and exports, and the Tariff Calculator.`
 
 export default function TrialEmail(p: TrialEmailProps) {
   const { variant, imports, changes12m = 0, productsHit12m = 0, plan, launchEndsDay, footer } = p
@@ -143,8 +154,8 @@ export default function TrialEmail(p: TrialEmailProps) {
     <EmailLayout
       preview={
         ended
-          ? "Tariff alerts, AD/CVD alerts and impact checks are off on your imports. Here's how to get them back."
-          : `On ${p.endsOn}, tariff alerts, AD/CVD alerts and impact checks stop on your imports. Here's what changes.`
+          ? `Tariff alerts, AD/CVD alerts and impact checks are off on all but ${TRIAL_ALLOWANCE.alertImports} of your imports. Here's how to get them back.`
+          : `On ${p.endsOn}, tariff alerts, AD/CVD alerts and impact checks stop on all but ${TRIAL_ALLOWANCE.alertImports} of your imports. Here's what changes.`
       }
       footer={footer}
     >

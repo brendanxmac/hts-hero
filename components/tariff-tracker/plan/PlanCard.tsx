@@ -6,7 +6,7 @@ import config from "@/config";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CheckBadgeIcon } from "@heroicons/react/20/solid";
-import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice, REVERSE_TRIAL, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
 import { TRACKER_PLANS, trackerPlanFor } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "../access/accessContext";
 import { currentPath, signupHref } from "../access/signup";
@@ -303,7 +303,7 @@ export const PlanCard = () => {
 
       {imports === 0 ? (
         <>
-          <span className="text-sm leading-snug text-base-content/70">Alerts on your own imports come with a Tracker plan. Tariff News alerts stay free.</span>
+          <span className="text-sm leading-snug text-base-content/70">Alerts on {TRIAL_ALLOWANCE.alertImports} of your imports and the Tariff News alerts stay free. The rest come with a Tracker plan.</span>
           <button type="button" className={ui.button({ variant: trial.lapsed ? "primary" : "secondary", size: "sm" })} onClick={() => openUpgrade("plan")}>
             {trial.lapsed ? "Resubscribe" : "See plans"}
           </button>

@@ -1,4 +1,3 @@
-import { PlaybookBanner } from "@/components/hts-page/PlaybookBanner";
 import { ClassifyCTA } from "@/components/ClassifyCTA";
 import Link from "next/link";
 
@@ -76,8 +75,6 @@ export default function WebinarFreeResources() {
           </Link>
         </div>
 
-        {/* Playbook Banner */}
-        <PlaybookBanner />
 
       </div>
     </section>

@@ -29,7 +29,8 @@ import {
   monthlyRate,
   perImportPrice,
   REVERSE_TRIAL,
-  TRACKER_MAX_LISTED_PAIRS
+  TRACKER_MAX_LISTED_PAIRS,
+  TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { TRACKER_PLANS, TrackerAccess, TrackerPlan } from "@/libs/tariff-tracker/plan";
@@ -84,7 +85,7 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
           : feature === "entries" || feature === "refunds"
             ? "Audit checks come with a Tracker plan."
             : feature === "alerts" || feature === "tracking"
-              ? "Alerts on your own imports come with a Tracker plan."
+              ? `Alerts on ${TRIAL_ALLOWANCE.alertImports} of your imports are free. The rest come with a Tracker plan.`
               : null;
 
   const buy = async (plan: TrackerPlan, chosen: number) => {

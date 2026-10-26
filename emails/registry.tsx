@@ -15,6 +15,7 @@ import MeetTrackerEmail, { meetTrackerSubject, type MeetTrackerEmailProps } from
 import TrackerIntroEmail, { trackerIntroSubject, type TrackerIntroEmailProps } from "./onboarding/TrackerIntroEmail"
 import ProductTourEmail, { productTourSubject, type ProductTourEmailProps } from "./onboarding/ProductTourEmail"
 import TrialEmail, { trialSubject, type TrialEmailProps } from "./onboarding/TrialEmail"
+import WatchingEmail, { watchingSubject, type WatchingEmailProps } from "./onboarding/WatchingEmail"
 import ImpactAlertEmail, { impactAlertSubject, type ImpactAlertEmailProps } from "./tariff-updates/ImpactAlertEmail"
 import TariffDigestEmail, { tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
 import TariffNewsEmail, { tariffNewsSubject, type TariffNewsEmailProps } from "./tariff-updates/TariffNewsEmail"
@@ -108,6 +109,7 @@ export const TEMPLATES = {
     },
   }),
   welcome: template<WelcomeEmailProps>({ subject: welcomeSubject, email: (p) => <WelcomeEmail {...p} /> }),
+  watching: template<WatchingEmailProps>({ subject: watchingSubject, email: (p) => <WatchingEmail {...p} /> }),
   purchase_confirmation: template<PurchaseConfirmationEmailProps>({ subject: purchaseConfirmationSubject, email: (p) => <PurchaseConfirmationEmail {...p} /> }),
   playbook: template<PlaybookEmailProps>({ subject: playbookSubject, email: (p) => <PlaybookEmail {...p} /> }),
   audit_request_received: template<AuditRequestReceivedEmailProps>({ subject: auditRequestReceivedSubject, email: (p) => <AuditRequestReceivedEmail {...p} /> }),

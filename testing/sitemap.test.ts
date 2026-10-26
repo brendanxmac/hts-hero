@@ -1,5 +1,6 @@
 import { describe, it, expect } from "./test-runner"
 import { COUNTRY_PAGES } from "../libs/country-pages/countries"
+import { PROGRAM_HUBS } from "../libs/tariff-programs/hubs"
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const sitemap = require("../next-sitemap.config.js") as {
@@ -21,6 +22,14 @@ describe("Sitemap", () => {
   })
 
   it("leaves out retired and stale pages", () => {
-    ;["/about/*", "/tariffs/*", "/chapter/*", "/section/*"].forEach((p) => expect(sitemap.exclude.includes(p)).toBe(true))
+    ;["/about/*", "/tariffs/coverage*", "/tariffs/pending*", "/tariffs/impact-checker*", "/chapter/*", "/section/*"].forEach((p) =>
+      expect(sitemap.exclude.includes(p)).toBe(true)
+    )
+  })
+
+  it("lists every /tariffs program page", () => {
+    const listed = sitemap.KEY_PAGES.map(([loc]) => loc)
+    expect(listed.includes("/tariffs")).toBe(true)
+    PROGRAM_HUBS.forEach((h) => expect(listed.includes(`/tariffs/${h.slug}`)).toBe(true))
   })
 })

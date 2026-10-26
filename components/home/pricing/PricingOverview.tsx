@@ -1,5 +1,6 @@
 "use client";
 
+import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, MagnifyingGlassIcon, UserGroupIcon } from "@heroicons/react/20/solid";
@@ -19,6 +20,7 @@ import {
   monthlyRate,
   perImportPrice,
   trackerBilling,
+  TRY_IT_FREE,
 } from "@/components/pricing-calculator/lib/pricing";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 
@@ -29,7 +31,7 @@ import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 // (one import per HTS code + country of origin), then classification as its own line. Every number
 // comes from the price list (PRICING.md).
 
-// After the trial: no alerts on the account's own imports (TRIAL_ALLOWANCE.alertImports is 0).
+// After the trial: alerts on TRIAL_ALLOWANCE.alertImports (3) of the account's own imports.
 // AD/CVD checks are free with any account; only AD/CVD alerts on tracked imports are paid
 const FREE_INCLUDES: string[] = [
   `The whole Tariff Tracker free for ${REVERSE_TRIAL.days} days, on up to ${REVERSE_TRIAL.imports} imports`,
@@ -110,8 +112,8 @@ export const PricingOverview = () => {
             <div className="mt-8 flex-1 border-t border-base-300 pt-8">
               <Includes items={FREE_INCLUDES} />
             </div>
-            <Link href={config.auth.loginUrl} className={`${mk.buttonSecondary} mt-10 h-14 w-full text-lg`}>
-              Start your free {REVERSE_TRIAL.days}-day trial
+            <Link href={TRY_FREE_HREF} className={`${mk.buttonSecondary} mt-10 h-14 w-full text-lg`}>
+              {TRY_IT_FREE}
             </Link>
             <Link href="/duty-calculator" className={`${mk.link} mt-4 self-center text-sm`}>
               Or calculate a duty free, no account
@@ -199,8 +201,8 @@ export const PricingOverview = () => {
                   Talk to us <ArrowRightIcon className="h-5 w-5" aria-hidden />
                 </a>
               ) : (
-                <Link href={config.auth.loginUrl} className={`${moneyButtonMd} h-14 px-8 text-lg`}>
-                  Start your free {REVERSE_TRIAL.days}-day trial <ArrowRightIcon className="h-5 w-5" aria-hidden />
+                <Link href={TRY_FREE_HREF} className={`${moneyButtonMd} h-14 px-8 text-lg`}>
+                  {TRY_IT_FREE} <ArrowRightIcon className="h-5 w-5" aria-hidden />
                 </Link>
               )}
               <span className="text-sm text-base-content/60">

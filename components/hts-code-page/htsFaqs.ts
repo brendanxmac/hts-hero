@@ -4,6 +4,7 @@ import type { FaqEntry, SectionChapter } from "./types";
 import { formatImportValue, UsImports } from "@/components/duty-calculator/lib/usImportsData";
 import { Countries } from "@/constants/countries";
 import type { CodeCase } from "@/libs/adcvd/public";
+import { CodeDutyHistory, dutyHistorySentence, latestChangeSentence } from "@/libs/hts-duty-history";
 
 // "China, India and Vietnam"; past four, "China, India, Vietnam, Mexico and 3 other countries"
 const countryNames = (codes: string[]) => {
@@ -28,6 +29,7 @@ export function htsFaqs({
   imports,
   importNames = {},
   adcvdCases = [],
+  dutyHistory = null,
 }: {
   element: HtsElement;
   productName: string;
@@ -40,7 +42,10 @@ export function htsFaqs({
   importNames?: Record<string, string>;
   // Live AD/CVD cases whose scope lists the code (or a heading above it)
   adcvdCases?: CodeCase[];
+  // How the duty has changed (the Duty History section, on the SEO test's chapters)
+  dutyHistory?: CodeDutyHistory | null;
 }): FaqEntry[] {
+  const historyRow = dutyHistory?.rows.find((r) => r.country.code === "CN");
   const chapterCtx = sectionChapter
     ? `, classified under Chapter ${element.chapter} (${sectionChapter.chapterDescription})`
     : "";
@@ -74,6 +79,13 @@ export function htsFaqs({
       ? [[
         `What is the US tariff on ${inSentence(productName)} (HTS ${element.htsno}) from China?`,
         dutyAnswerSentence({ productName, htsno: element.htsno, row: china, asOf: summary.asOf }),
+      ] as FaqEntry]
+      : []),
+    // Whether that duty has changed: the Duty History section's lead, and its latest change
+    ...(dutyHistory && historyRow
+      ? [[
+        `Has the US duty on HTS ${element.htsno} from China changed?`,
+        [dutyHistorySentence(element.htsno, dutyHistory, historyRow), latestChangeSentence(historyRow)].filter(Boolean).join(" "),
       ] as FaqEntry]
       : []),
     // The other origins people ask about most, after China

@@ -9,8 +9,8 @@ import type { AccountPitch } from "../calculator/ConversionDialog"
 // member: signed in, so the button gets them started: their imports into the Tracker (a line under
 // the title says so)
 export const insightsPitch = (member = false): AccountPitch => ({
-  eyebrow: "Unlock US Tariff Intelligence",
-  title: "Get Tariff Alerts, Audits, and Savings, For All Your Imports",
+  eyebrow: "US Tariff Intelligence",
+  title: "Get Tariff Alerts & Audits, For All Your Imports",
   subtitle: member ? "Add your imports to get started." : undefined,
   points: [
     {

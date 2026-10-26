@@ -14,7 +14,7 @@ export const display = "[font-family:var(--font-tracker-display)]";
 
 // The big call to action: the trial is money, so green (one per band)
 export const moneyButton =
-  "group inline-flex h-16 items-center gap-3 rounded-full bg-success px-9 text-lg font-semibold text-success-content transition-colors hover:bg-success/90 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-success/50";
+  "group inline-flex h-16 w-full items-center justify-center gap-3 rounded-full bg-success px-9 sm:w-auto sm:min-w-80 text-lg font-semibold text-success-content transition-colors hover:bg-success/90 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-success/50";
 
 // The same at the size of the page's other buttons
 export const moneyButtonMd =

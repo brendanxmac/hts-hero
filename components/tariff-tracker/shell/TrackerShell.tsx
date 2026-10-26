@@ -1,5 +1,6 @@
 "use client";
 
+import { arrivalSource, EXPAND_SIDEBAR_EVENT } from "../onboarding/arrival";
 import { FinishSetupBanner } from "../onboarding/FinishSetupBanner";
 import { MouseEvent, ReactNode, useEffect, useState } from "react";
 import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon, LockClosedIcon, PlayCircleIcon } from "@heroicons/react/20/solid";
@@ -155,18 +156,27 @@ const useLockPageScroll = () => {
   }, []);
 };
 
-// The sidebar folds down to its icons, for more room; remembered on this device
+// The sidebar folds down to its icons, for more room; remembered on this device. An arrival from
+// Get Alerts or Stop Overpaying (arrival.ts) starts folded, without saving it, so the import they
+// asked for is what they see; "Explore the Tracker" on its panel opens it
 const COLLAPSED_KEY = "hts-hero-tariff-tracker-sidebar-collapsed";
 
 export const TrackerShell = ({ children }: { children: ReactNode }) => {
   useLockPageScroll();
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
-    try {
-      setCollapsed(window.localStorage.getItem(COLLAPSED_KEY) === "1");
-    } catch {
-      // Not critical
+    if (arrivalSource()) {
+      setCollapsed(true);
+    } else {
+      try {
+        setCollapsed(window.localStorage.getItem(COLLAPSED_KEY) === "1");
+      } catch {
+        // Not critical
+      }
     }
+    const expand = () => setCollapsed(false);
+    window.addEventListener(EXPAND_SIDEBAR_EVENT, expand);
+    return () => window.removeEventListener(EXPAND_SIDEBAR_EVENT, expand);
   }, []);
   const toggleCollapsed = () =>
     setCollapsed((was) => {

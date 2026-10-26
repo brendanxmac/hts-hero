@@ -1,13 +1,13 @@
 "use client";
 
+import { signupHref, TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import config from "@/config";
 import type { TariffFinder } from "@/components/duty-calculator/lib/useTariffFinder";
 import { NewProduct, addToCatalog, itemKey, productUrl } from "@/components/tariff-tracker";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
-import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 
 // Saves the demo's product to the Tariff Tracker catalog, then sends the visitor to sign up
 // (or in) and on to that product in the Tracker
@@ -16,9 +16,7 @@ export const TrackProductButton = ({ f }: { f: TariffFinder }) => {
     f.selectedElement && f.country
       ? { code: htsCodeDigitsOnly(f.selectedElement.htsno), country: f.country.code }
       : null;
-  const href = product
-    ? `${config.auth.loginUrl}?redirect=${encodeURIComponent(productUrl(itemKey(product)))}`
-    : config.auth.loginUrl;
+  const href = product ? signupHref(productUrl(itemKey(product))) : TRY_FREE_HREF;
 
   return (
     <a
@@ -44,7 +42,7 @@ export const TrackProductButton = ({ f }: { f: TariffFinder }) => {
         }
       }}
     >
-      Track it free for {REVERSE_TRIAL.days} days
+      {TRY_IT_FREE}
       <ArrowRightIcon className="h-4 w-4" aria-hidden />
     </a>
   );

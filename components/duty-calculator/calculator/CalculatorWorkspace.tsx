@@ -308,7 +308,7 @@ export const CalculatorWorkspace = ({
     <button
       type="button"
       className={`${ui.button({ variant: "primary", size: "sm" })} relative`}
-      onClick={() => track.getStarted(insightsPitch)}
+      onClick={() => track.start("overview", insightsPitch(false))}
     >
       {urgent ? (
         <span className="relative flex h-2 w-2" aria-hidden>
@@ -319,7 +319,7 @@ export const CalculatorWorkspace = ({
       ) : (
         <BellAlertIcon className="h-4 w-4" aria-hidden />
       )}
-      Get Tariff Alerts, Audits, & Savings
+      Stop Overpaying for This Import
       <ArrowRightIcon className="h-4 w-4" aria-hidden />
     </button>
   );
@@ -593,7 +593,6 @@ export const CalculatorWorkspace = ({
                         title: "Find out if you overpaid, or underpaid, on past entries",
                         subtitle:
                           "Check every past entry against the duty in force on its date, across your entire product catalog, with the Tariff Tracker.",
-                        cta: "Check my entries free",
                       })
                     }
                   />

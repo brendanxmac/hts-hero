@@ -25,7 +25,6 @@ export const QUALIFY_TRIAL = {
   title: "See what savings you might qualify for, across your entire product catalog",
   subtitle:
     "Find the exemptions and trade programs that could lower the duty on every product you import. See what proof you'd need to qualify and never miss out on savings as tariffs change.",
-  cta: "See what I qualify for",
 };
 
 // What each adjustment would change is free for everyone (on each row of Possible Adjustments);
@@ -74,7 +73,6 @@ export const RefundsButton = ({ conversion, history, customsValue: _customsValue
           conversion.openTrial("refunds", {
             title: "Find out if you overpaid, or underpaid, on past entries",
             subtitle: `${over > 0.005 && peak ? `The duty on this import is ${changeText.charAt(0).toLowerCase()}${changeText.slice(1)}. ` : ""} Check every past entry against the duty in force on its date across your entire product catalog with our Tariff Tracker.`,
-            cta: "Check my entries free",
           })
         }
       >

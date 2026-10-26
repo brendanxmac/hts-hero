@@ -4,7 +4,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { readAdjustments, writeAdjustments } from "./adjustments";
-import { mergeItems, readCatalog, writeCatalog } from "./catalog";
+import { itemKey, mergeItems, NewProduct, readCatalog, writeCatalog } from "./catalog";
 import { CatalogSnapshot, getCatalog, hasUnsavedChanges, markCatalogSaved, replaceCatalog, subscribeCatalog } from "./catalogStore";
 
 // Saves a signed-in user's catalog to their account (tracker_catalogs), so it follows them
@@ -183,4 +183,31 @@ export const useCatalogSync = (userId: string | null | undefined) => {
       flush();
     };
   }, [userId]);
+};
+
+// Adds imports to a signed-in account's saved catalog straight away, from outside the Tracker (the
+// calculator's "Stop Overpaying", which keeps the visitor on the calculator): the account's copy
+// plus these, so alerts start on them without waiting for the next Tracker visit. Adjustments the
+// account already has for an import win, as in merge. Best effort: the device keeps them too, and
+// the next sync saves them if this fails.
+export const addToAccountCatalog = async (userId: string, products: NewProduct[]) => {
+  const supabase = createSupabaseClient();
+  const { data, error } = await supabase
+    .from("tracker_catalogs")
+    .select("items, adjustments")
+    .eq("user_id", userId)
+    .maybeSingle<{ items: unknown; adjustments: unknown }>();
+  if (error) throw error;
+  const account = data ? fromRow(data) : { items: [], adjustments: {} };
+  const now = new Date().toISOString();
+  const incoming = products.map(({ adjustments: _adjustments, ...item }) => ({ ...item, addedAt: now }));
+  const adjustments = Object.fromEntries(products.filter((p) => p.adjustments).map((p) => [itemKey(p), p.adjustments!]));
+  const next: CatalogSnapshot = {
+    items: mergeItems(account.items, incoming).items,
+    adjustments: { ...adjustments, ...account.adjustments },
+  };
+  const { error: saveError } = await supabase
+    .from("tracker_catalogs")
+    .upsert({ user_id: userId, ...toRow(next), updated_at: now });
+  if (saveError) throw saveError;
 };

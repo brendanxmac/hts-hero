@@ -13,6 +13,7 @@ import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CostBar } from "./CostBar";
+import { EstimateLines } from "./EstimateLines";
 import { EstimateStats } from "./EstimateStats";
 
 // A quick duty estimate on the /hts/[code] page: pick a country, see the calculator's
@@ -33,6 +34,7 @@ export const MicroCalculator = ({
   inClassification = false,
   onUseCode,
   useCodeLabel = "Use this code",
+  showLines = false,
 }: {
   htsno: string;
   baseRates: { general: string | null; special: string | null; other: string | null };
@@ -45,6 +47,8 @@ export const MicroCalculator = ({
   // (a classification's: opening its Duty & Tariffs tab)
   onUseCode?: () => void;
   useCodeLabel?: string;
+  // The Chapter 99 line behind each tariff, linked (the /hts/[code] pages)
+  showLines?: boolean;
 }) => {
   const surface = () =>
     inClassification ? estimateSurface("classification") : inExplorer ? estimateSurface("explorer") : "hts_code_page";
@@ -162,6 +166,7 @@ export const MicroCalculator = ({
         <div className={`transition-opacity ${loading ? "opacity-50" : ""}`} aria-busy={loading} aria-live="polite">
           <EstimateStats estimate={shown} customsValue={CUSTOMS_VALUE} />
           <CostBar slices={shown.slices} customsValue={CUSTOMS_VALUE} />
+          {showLines && <EstimateLines lines={shown.lines} />}
         </div>
       ) : (
         <div className="flex min-h-36 items-center justify-center px-6 py-8 text-center text-base text-base-content/70" aria-live="polite">
