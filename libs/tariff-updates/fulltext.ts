@@ -1,7 +1,8 @@
+import { govInfoUrl } from "../adcvd/fr"
 import { fetchText, htmlToText } from "../tariff-sources/text"
 import type { SourceId } from "../tariff-sources/types"
 
-// The full text of a source item, for Claude to read: the Federal Register's plain-text copy, the
+// The full text of a source item, for Claude to read: the Federal Register notice's plain text (GovInfo's copy), the
 // public inspection PDF, or the page's article. Annexes can run to thousands of HTS lines, so text
 // past MAX_TEXT_CHARS is cut and the extraction is marked truncated (and sent for review).
 
@@ -32,7 +33,11 @@ const pdfText = async (url: string) => {
 
 const rawText = async (item: ItemForText): Promise<string> => {
   if (item.source === "federal_register" && typeof item.raw.raw_text_url === "string") {
-    return (await fetchText(item.raw.raw_text_url)) ?? ""
+    // GovInfo's identical copy first: the Federal Register's text pages ask automated clients for
+    // a browser check
+    const copy = govInfoUrl(item.raw.raw_text_url)
+    const text = copy ? await fetchText(copy).catch((): null => null) : null
+    return text ?? (await fetchText(item.raw.raw_text_url)) ?? ""
   }
   if (item.source === "federal_register_pi" && typeof item.raw.pdf_url === "string") {
     return pdfText(item.raw.pdf_url)

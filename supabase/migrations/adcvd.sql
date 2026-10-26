@@ -204,3 +204,7 @@ WHERE fr_main = '{}' AND fr_also = '{}' AND fr_excluded = '{}'
   AND (hts_main <> '{}' OR hts_also <> '{}' OR hts_excluded <> '{}');
 
 CREATE INDEX IF NOT EXISTS idx_adcvd_cases_ita_fetched ON adcvd_cases (ita_fetched_at NULLS FIRST);
+
+-- 2026-10-26: when the Federal Register last blocked us, its API and its website ({"api": ts,
+-- "site": ts}), so the next run skips that part until then (libs/adcvd/fr.ts)
+ALTER TABLE adcvd_settings ADD COLUMN IF NOT EXISTS fr_blocked jsonb NOT NULL DEFAULT '{}';
