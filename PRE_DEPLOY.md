@@ -33,6 +33,12 @@ still charges the 50% on the 22 removed subheadings.
   - [ ] /tariff-updates/<a scoped update>: What it covers, every code shown, PDF links.
   - [ ] /admin (Needs You) and /duty-calculator/changelog.
   - [ ] The Tracker sidebar: no Sourcing.
+  - [ ] /hts/9401.61.60 and /hts/7318.15.80: Duty History section, "last changed" line and FAQ.
+        A chapter 84 page (8471.30.01) has none of them.
+- [ ] **Duty History SEO test baseline** (`DUTY_HISTORY_CHAPTERS` in `libs/hts-duty-history.ts`:
+      chapters 73 and 94; controls 84 and 61): export Search Console Performance (web + Generative
+      AI features, last 3 months) into `seo-data/` **before** this deploy. Compare impressions,
+      position and AI-feature impressions by chapter 3–4 weeks after it.
 
 ### Production database
 

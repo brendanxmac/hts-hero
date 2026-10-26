@@ -11,6 +11,7 @@ import {
   formatPrice,
   launchPricingActive,
   perImportPrice,
+  TRIAL_ALLOWANCE,
 } from "../lib/pricing";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { LAUNCH_PITCH } from "@/components/ui/marketing/comingSoon";
@@ -27,7 +28,7 @@ export const PRICING_FAQS = [
   },
   {
     question: "What happens when my trial ends?",
-    answer: `If you don't pick a plan, your account moves to the free plan. Alerts (AD/CVD alerts included) and impact checks on your own imports stop, but you keep Tariff News alerts (every new US tariff action, by email), sourcing insights on any import, and your whole catalog with its current duty, rate history and exports, free, forever. AD/CVD checks on any import stay free with your account too. Nothing is deleted, and you're never charged unless you choose a plan. To keep alerts (AD/CVD alerts included) and impact checks on your imports, plans start at ${formatPrice(TRACKER_TIERS[0].price)} a month for up to ${TRACKER_TIERS[0].maxPairs} imports.`,
+    answer: `If you don't pick a plan, your account moves to the free plan. Alerts (AD/CVD alerts included) and impact checks stay on ${TRIAL_ALLOWANCE.alertImports} of your imports, the ones you pick, and stop on the rest. You keep Tariff News alerts (every new US tariff action, by email), sourcing insights on any import, and your whole catalog with its current duty, rate history and exports, free, forever. AD/CVD checks on any import stay free with your account too. Nothing is deleted, and you're never charged unless you choose a plan. To keep alerts (AD/CVD alerts included) and impact checks on all your imports, plans start at ${formatPrice(TRACKER_TIERS[0].price)} a month for up to ${TRACKER_TIERS[0].maxPairs} imports.`,
   },
   {
     question: "Do I need a credit card to start?",
@@ -39,7 +40,7 @@ export const PRICING_FAQS = [
   },
   {
     question: "What's free in the Tariff Tracker, forever?",
-    answer: `Tariff News alerts (an email on every new US tariff action), sourcing intelligence (the duty from every country of origin, as insights, a globe, a table and a chart), and your whole catalog with every tariff on each import, its current duty, rate history and exports to CSV or Excel. The Tariff Calculator stays free and unlimited too, and AD/CVD checks on any import are free with any account. Alerts (AD/CVD alerts included) and impact checks on your own imports are part of the ${REVERSE_TRIAL.days}-day trial and the paid plans, which start at ${formatPrice(TRACKER_TIERS[0].price)} a month to track up to ${TRACKER_TIERS[0].maxPairs} imports.`,
+    answer: `Tariff alerts on ${TRIAL_ALLOWANCE.alertImports} of your imports (AD/CVD alerts and impact checks included), Tariff News alerts (an email on every new US tariff action), sourcing intelligence (the duty from every country of origin, as insights, a globe, a table and a chart), and your whole catalog with every tariff on each import, its current duty, rate history and exports to CSV or Excel. The Tariff Calculator stays free and unlimited too, and AD/CVD checks on any import are free with any account. Alerts (AD/CVD alerts included) and impact checks on more than ${TRIAL_ALLOWANCE.alertImports} imports are part of the ${REVERSE_TRIAL.days}-day trial and the paid plans, which start at ${formatPrice(TRACKER_TIERS[0].price)} a month to track up to ${TRACKER_TIERS[0].maxPairs} imports.`,
   },
   {
     question: "What does a paid Tariff Tracker plan cost?",

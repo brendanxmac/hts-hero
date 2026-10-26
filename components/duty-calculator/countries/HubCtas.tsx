@@ -1,5 +1,6 @@
 "use client";
 
+import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
@@ -61,7 +62,7 @@ export function HubCtaCards({ placement }: { placement: string }) {
         </p>
         <div className="relative mt-auto pt-4">
           <Link href={TRACKER_HREF} onClick={() => track("tracker", placement)} className={mk.buttonOnDark}>
-            Track your products
+            {TRY_IT_FREE}
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
         </div>

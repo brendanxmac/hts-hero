@@ -23,24 +23,27 @@ interface RelatedCrossRulingsSectionProps {
   bare?: boolean;
   /** Rulings shown before a "Show all" button; all of them when unset */
   initialCount?: number;
+  /** The rulings, already fetched on the server (in the page's HTML); fetched here when left out */
+  initialRulings?: CrossRuling[] | null;
 }
 
-export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }: RelatedCrossRulingsSectionProps) {
-  const [rulings, setRulings] = useState<CrossRuling[]>([]);
+export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount, initialRulings = null }: RelatedCrossRulingsSectionProps) {
+  const [rulings, setRulings] = useState<CrossRuling[]>(initialRulings ?? []);
   const [showAll, setShowAll] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const digitCount = htsno.replace(/\D/g, "").length;
+  const canFetch = digitCount >= 4;
+  // Until the search answers, it's loading: never "No rulings found" before it knows
+  const [loading, setLoading] = useState(canFetch && !initialRulings);
   const [error, setError] = useState<string | null>(null);
 
   const [selectedRuling, setSelectedRuling] = useState<CrossRulingDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
 
-  const digitCount = htsno.replace(/\D/g, "").length;
-  const canFetch = digitCount >= 4;
   const searchTermDisplay = canFetch ? trimHtsTo8Digits(htsno) : null;
 
   useEffect(() => {
-    if (!canFetch) return;
+    if (!canFetch || initialRulings) return;
 
     const fetchRulings = async () => {
       setLoading(true);
@@ -58,7 +61,7 @@ export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount }
     };
 
     fetchRulings();
-  }, [canFetch, htsno]);
+  }, [canFetch, htsno, initialRulings]);
 
   const handleRulingClick = useCallback(async (ruling: CrossRuling) => {
     setLoadingDetail(true);

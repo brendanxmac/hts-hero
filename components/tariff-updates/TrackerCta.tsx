@@ -1,3 +1,4 @@
+import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import Link from "next/link"
 import { ArrowRightIcon, BellAlertIcon, CheckIcon } from "@heroicons/react/20/solid"
 import { formatPct } from "@/components/duty-calculator/lib/format"
@@ -15,9 +16,9 @@ import { LOWEST_PER_IMPORT, REVERSE_TRIAL, formatPrice } from "@/components/pric
 const HREF = "/tariff-tracker?tab=catalog&add=paste"
 
 const POINTS = [
+  "Every entry audited for duty you may have overpaid",
   "Every new US tariff action checked against your imports, every hour",
   "An alert with the rate before and after, by email, Slack or Teams",
-  "Impact checks: see exactly how any tariff action affects each import",
   "AD/CVD alerts when an import may fall under a case",
 ]
 
@@ -38,14 +39,14 @@ export function TrackerCtaFeature({ htsno, today }: { htsno: string; today?: { p
       <div className="flex flex-col gap-4">
         <span className={`${tt.eyebrow("primary")} flex items-center gap-2`}>
           <BellAlertIcon className="h-4 w-4" aria-hidden />
-          Tariff alerts, free for {REVERSE_TRIAL.days} days
+          Eliminate taiff overpayments &amp; surprises
         </span>
         <h2 id="tracker-cta" className={`${tt.display} m-0 text-2xl font-semibold leading-tight text-base-content sm:text-3xl sm:leading-9`}>
-          Know the moment an update hits <span className={`${mono.className} text-primary`}>{htsno}</span>
+          Know the moment a tariff update hits <span className={`${mono.className} text-primary`}>{htsno}</span>
         </h2>
         <p className="m-0 text-base leading-relaxed text-base-content/70">
-          Add it, with your country of origin, to the Tariff Tracker, free for {REVERSE_TRIAL.days} days. When a new tariff action affects it, you hear about it first,
-          with exactly what changes.
+          Add it, with your country of origin, to the Tariff Tracker, free for {REVERSE_TRIAL.days} days. It flags duty you may have overpaid on your entries,
+          and when a new tariff action affects it, you hear about it first, with exactly what changes.
         </p>
         <ul className="m-0 flex list-none flex-col gap-2 p-0">
           {POINTS.map((point) => (
@@ -57,7 +58,7 @@ export function TrackerCtaFeature({ htsno, today }: { htsno: string; today?: { p
         </ul>
         <div className="flex flex-wrap items-center gap-3 pt-1">
           <Link href={HREF} className={ui.button({ variant: "primary" })}>
-            Start my free {REVERSE_TRIAL.days}-day trial
+            {TRY_IT_FREE}
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
           <span className="text-xs text-base-content/60">

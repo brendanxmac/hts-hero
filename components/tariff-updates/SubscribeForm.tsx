@@ -1,5 +1,6 @@
 "use client"
 
+import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import { FormEvent, useState } from "react"
 import Link from "next/link"
 import { ArrowRightIcon, CheckCircleIcon, CheckIcon, EnvelopeIcon } from "@heroicons/react/20/solid"
@@ -98,7 +99,7 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
               affects your imports.
             </p>
             <Link href={signup} onClick={() => upsellClicked(source)} className={`${ui.button({ variant: "primary", size: "sm" })} self-start`}>
-              Create my free account
+              {TRY_IT_FREE}
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>
           </div>

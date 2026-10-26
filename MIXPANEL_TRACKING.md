@@ -84,6 +84,8 @@ The quick estimate on `/hts/[code]` and in the explorer sends `surface` as `hts_
 ### HTS pages and explorer
 
 - **HTS Code Page Viewed**: each `/hts/[code]` page shown (`hts_code`, `chapter`, `digit_count`).
+- **HTS Code Watch Submitted**: "Watch this code" submitted on an `/hts/[code]` page (`hts_code`, `country_code`, `signed_in`, `digest`: also subscribed to the weekly news). Signed out, the import is saved on the device and the Tracker sends them to sign up, then back to it.
+- **Tariff Program Code Checked**: a code checked in the "Is your HTS code on the list?" box on `/tariffs` and `/tariffs/[slug]` (`program`: the page's slug or `all`, `hts_code`, `digit_count`, `listed_here`, `listed_programs`). Its "Calculate Total Duty" link arrives as **Duty Calculator Deep Link Opened** with `link_source` `tariff_program_page`.
 - Page views are tracked on client-side navigation too (`track_pageview: "url-with-path"`), so
   moving between `/hts` pages with links counts.
 - **Explorer Navigated to Level**: user moves only. Opening the explorer on the calculator's code
@@ -109,7 +111,8 @@ The quick estimate on `/hts/[code]` and in the explorer sends `surface` as `hts_
 - **Tariff Tracker Products Added**: the one count of imports added, from every path:
   - the Add dialog
   - the onboarding takeover
-  - the calculator's Track button
+  - the calculator's Track button (`source` = `calculator`; signed in, it saves in place)
+  - the HTS pages' Get Alerts box (`source` = `hts-watch`)
   - the monitor page
   - the calculator's "Track all" recent searches
   - an origin moved by a saving (`source` = `savings`, not a new import)
@@ -125,6 +128,11 @@ The quick estimate on `/hts/[code]` and in the explorer sends `surface` as `hts_
   into the account, not on every load.
 - **Tariff Tracker Coverage Changed**: the user picking imports for alerts, not the automatic
   fill.
+- **HTS Code Watch Submitted**: the Get Alerts box on an /hts page, before the visitor goes on to
+  sign-up (or straight to the import when signed in).
+- **Tariff Tracker Arrival Panel**: the panel on an import's first visit from Get Alerts or the
+  calculator's Track button. `action` is `shown`, `add_imports`, `explore` or `dismissed`; `source`
+  is `watch` or `track`. Showing it also sends the "You're watching" email, once per import.
 - **Tariff Tracker Onboarding Completed**: `imports` is how many were new to the catalog;
   `submitted` is the rows given.
 

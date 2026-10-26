@@ -24,7 +24,9 @@ export const RulingCard = ({
   const isRevoked = rulingIsRevoked(ruling);
 
   return (
-    <button onClick={onClick} className={classNames("text-left w-full", uniform && "h-full")}>
+    // A card, not a button around one: its heading stays a heading. The stretched button over it
+    // makes the whole card the click target
+    <div className={classNames("relative text-left w-full", uniform && "h-full")}>
       <DashboardCard
         className={classNames(
           "transition-colors cursor-pointer",
@@ -44,6 +46,13 @@ export const RulingCard = ({
               >
                 {ruling.subject}
               </h3>
+              <button
+                type="button"
+                onClick={onClick}
+                className="absolute inset-0 z-10 rounded-[inherit] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+              >
+                <span className="sr-only">Open ruling {ruling.rulingNumber}</span>
+              </button>
             </div>
             <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg text-base-content/30">
               <ChevronRightIcon className="w-5 h-5" />
@@ -69,6 +78,6 @@ export const RulingCard = ({
           )}
         </div>
       </DashboardCard>
-    </button>
+    </div>
   );
 }

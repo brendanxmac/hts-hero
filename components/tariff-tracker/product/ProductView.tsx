@@ -19,7 +19,9 @@ import { isProductTab, ProductTab, productViewOf, ProductView as View, TRACKER_P
 import { useTrackerNav } from "../shell/TrackerNav";
 import { useTracker } from "../TrackerContext";
 import { ProductAudit } from "./audit/ProductAudit";
+import { ArrivalPanel } from "./ArrivalPanel";
 import { ProductHeader } from "./ProductHeader";
+import { EXPAND_SIDEBAR_EVENT } from "../onboarding/arrival";
 import { ProductSavings } from "./savings/ProductSavings";
 
 // One import, opened from its row: a small header (what it is, and its one row of tabs), then
@@ -144,6 +146,8 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
         historyChanges={f.history.filter((x) => x.changes.length > 0).length}
       />
       <MovingNotice row={row} movingTo={itemFor(row.key)?.movingTo} hasNew={(key) => products.some((p) => p.key === key)} />
+      {/* The first visit from Get Alerts or Stop Overpaying: what they asked for, done */}
+      <ArrivalPanel row={row} f={f} onExplore={() => window.dispatchEvent(new Event(EXPAND_SIDEBAR_EVENT))} />
 
       {/* The calculator, on the menu's Duty, Compare or History (and every country under Compare).
           Kept mounted, so it keeps its state while another view is open. A class, not the

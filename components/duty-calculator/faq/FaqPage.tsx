@@ -47,7 +47,7 @@ export function FaqPage({ sections }: { sections: FaqSection[] }) {
       <div className={`${mk.container} py-16 sm:py-20`}>
         <div className="grid gap-10 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-16">
           <nav aria-label="FAQ sections" className="hidden lg:block">
-            <div className={`${mk.card} sticky top-24 p-2`}>
+            <div className={`${mk.card} sticky top-6 p-2`}>
               <span className="block px-3 pb-2 pt-2 text-xs font-bold uppercase tracking-wider text-slate-500">Sections</span>
               <ul>
                 {sections.map((s) => (

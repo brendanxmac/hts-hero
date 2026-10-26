@@ -15,7 +15,7 @@ import * as mk from "./styles";
 
 // The site header for landing pages: light, or in the Tracker's look with a light/dark toggle on
 // pages that opt in (skin:). The tariff products first (the tools themselves when signed in),
-// sign in or the Tariff Tracker on the right.
+// sign in (or the account menu and the Tariff Tracker, signed in) on the right.
 // Sticky, with a frosted background.
 
 // Tariff Audit (/tariff-audit) is off the nav for now; the page stays live
@@ -49,27 +49,18 @@ export const MarketingHeader = () => {
   );
 
   const actions = user ? (
-    <>
-      {/* The account menu: settings, billing and signing out, as on the app's other pages */}
-      <ButtonAccount />
-      <Link href="/tariff-tracker" className={`${mk.buttonPrimary} h-10 px-4 text-sm`}>
-        Launch Tariff Tracker
-      </Link>
-    </>
+    // The account menu: settings, billing and signing out, as on the app's other pages. No
+    // Tracker button: the nav's "Tariff Tracker" opens it (2026-10-26)
+    <ButtonAccount />
   ) : (
-    <>
-      <Link href={config.auth.loginUrl} className="text-sm font-semibold text-slate-700 skin:text-base-content/80 hover:text-slate-900 skin:hover:text-base-content">
-        Sign in
-      </Link>
-      {/* Signed out, /tariff-tracker signs in or up first and comes back */}
-      <Link href="/tariff-tracker" className={`${mk.buttonPrimary} h-10 px-4 text-sm`}>
-        Try Tariff Tracker
-      </Link>
-    </>
+    // The "Try it free" button is off the header for now
+    <Link href={config.auth.loginUrl} className="text-sm font-semibold text-slate-700 skin:text-base-content/80 hover:text-slate-900 skin:hover:text-base-content">
+      Sign in
+    </Link>
   );
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 skin:border-base-300 bg-white/85 skin:bg-base-100/85 backdrop-blur-sm scheme-light follow-dark:scheme-dark">
+    <header className="relative z-40 border-b border-slate-200/80 skin:border-base-300 bg-white/85 skin:bg-base-100/85 backdrop-blur-sm scheme-light follow-dark:scheme-dark">
       <div className={`${mk.container} flex h-16 items-center justify-between gap-6`}>
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <Image src={logo} alt={`${config.appName} logo`} width={28} height={28} priority />

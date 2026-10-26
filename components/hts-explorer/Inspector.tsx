@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { toRoman } from "@javascript-packages/roman-numerals";
 import { Menu } from "@headlessui/react";
 import {
   ArrowRightIcon,
@@ -114,7 +113,7 @@ const ChapterDetail = ({ chapter }: { chapter: HtsSectionAndChapterBase }) => {
       <div>
         <span className={tt.eyebrow("primary")}>
           Chapter {chapter.number}
-          {section && ` · Section ${toRoman(section.number)}`}
+          {section && ` · Section ${section.number}`}
         </span>
         <h3 className={`${tt.display} mt-1 text-2xl font-semibold leading-tight tracking-tight text-base-content`}>{chapter.description}</h3>
         {section && <p className="mt-1.5 text-sm text-base-content/70">{section.description}</p>}
@@ -124,7 +123,7 @@ const ChapterDetail = ({ chapter }: { chapter: HtsSectionAndChapterBase }) => {
         {notesFile && section && (
           <UsitcHtsDocumentLink fileName={notesFile} className={ui.button({ variant: "secondary", size: "sm" })} title={`Section ${section.number} notes (USITC)`}>
             <DocumentTextIcon className="h-3.5 w-3.5 text-primary" aria-hidden />
-            Section {toRoman(section.number)} notes
+            Section {section.number} notes
           </UsitcHtsDocumentLink>
         )}
         {showInSchedule && (

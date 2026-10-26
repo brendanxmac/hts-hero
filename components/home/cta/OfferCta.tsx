@@ -11,7 +11,7 @@ export const OfferCta = () => (
     <div aria-hidden className={glow} />
     <div className={`${mk.container} relative flex flex-col items-center text-center`}>
       <h2 id="offer-title" className={cta.title}>
-        Put the US tariff masters <span className={cta.accent}>on your imports.</span>
+        No more tariff overpayments <span className={cta.accent}>or surprises.</span>
       </h2>
       <p className={`${cta.lead} mt-6 max-w-2xl`}>{OFFER.note}</p>
       <Link href={OFFER.href} className={`${cta.button} mt-10`}>

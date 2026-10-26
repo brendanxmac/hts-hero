@@ -26,7 +26,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
 import { useUser } from "@/contexts/UserContext";
-import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import { useOptionalTrackerAccess } from "@/components/tariff-tracker/access/accessContext";
 import { featureTab, PremiumFeature } from "@/components/tariff-tracker/access/features";
 import { sectionUrl } from "@/components/tariff-tracker/sections";
@@ -40,8 +40,8 @@ import { thisPageWith } from "../landing/redirect";
 // - "account": everything a free account adds (PRICING.md), led by what they reached for (an
 //   explanation of this import, a past date) when the host says
 // - "trial": what the Tariff Tracker's 14-day reverse trial adds (REVERSE_TRIAL: every new account
-//   gets it, no card; then no alerts on their own imports, TRIAL_ALLOWANCE.alertImports being 0, but
-//   Tariff News alerts, sourcing insights and AD/CVD checks free), led by the feature
+//   gets it, no card; then alerts on TRIAL_ALLOWANCE.alertImports of their own imports, Tariff
+//   News alerts, sourcing insights and AD/CVD checks free), led by the feature
 //   they reached for (tracking, the qualification check, refunds, sourcing); "See everything else" steps over to the account view
 // Each view's button runs the host's own action (where sign-up should come back to).
 // useConversion opens it from anywhere, sending signed-in users the right way instead.
@@ -150,7 +150,6 @@ export type TrialPitch = {
   eyebrow?: string;
   title: string;
   subtitle: string;
-  cta?: string;
 };
 
 const DEFAULT_ACCOUNT: AccountPitch = { title: "Understand every import, free", cta: "Create my free account" };
@@ -349,7 +348,7 @@ export const ConversionDialog = ({
               </div>
               <div className="flex flex-col gap-2">
                 <button type="button" className={`${ui.button({ variant: "primary" })} h-12 w-full text-base`} onClick={onStartTrial}>
-                  {trial.cta ?? `Start your free ${REVERSE_TRIAL.days}-day trial`}
+                  {TRY_IT_FREE}
                 </button>
                 <p className="text-center text-xs text-base-content/60">
                   No credit card, nothing to cancel. A free account takes less than 30 seconds.

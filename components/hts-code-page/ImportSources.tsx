@@ -3,9 +3,8 @@ import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/20/
 import { describeTotal, formatDutyPct, HtsDutySummary } from "@/libs/hts-duty-summary";
 import { CENSUS_NOTICE } from "@/components/duty-calculator/lib/census";
 import { formatImportValue, UsImports } from "@/components/duty-calculator/lib/usImportsData";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { CardSection } from "./CardSection";
 import * as ui from "@/components/ui/styles";
-import * as tt from "@/components/ui/styles/tracker";
 import { countryPageByCode } from "@/libs/country-pages/countries";
 import { RowHeader, Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table/Table";
 
@@ -42,14 +41,17 @@ export function ImportSources({
   const totalTrend = priorTotal > 0 ? (imports.totalValue - priorTotal) / priorTotal : null;
 
   return (
-    <section id="us-imports" className={ui.section}>
-      <SectionHeader wide kicker={`Top origins · US imports ${imports.year}`} title={`Top Origins: Countries the US Imports HTS ${htsno} From`}>
+    <CardSection
+      id="us-imports"
+      kicker={`Top origins · US imports ${imports.year}`}
+      title={`Top Origins: Countries the US Imports HTS ${htsno} From`}
+      lead={<>
         In {imports.year} the US imported {formatImportValue(imports.totalValue)} of {productName.toLowerCase()} ({scope})
         {totalTrend !== null && `, ${totalTrend >= 0 ? "up" : "down"} ${Math.abs(Math.round(totalTrend * 100))}% on ${imports.prior}`}, mostly from{" "}
         {joinNames(top)}. Each country&apos;s total duty today is shown beside its imports.
-      </SectionHeader>
-
-      <div className={`${tt.panel} overflow-hidden`}>
+      </>}
+    >
+      <div>
         <Table framed={false}>
           <THead>
             <Tr>
@@ -116,11 +118,11 @@ export function ImportSources({
             })}
           </TBody>
         </Table>
-        <p className="border-t border-base-300 px-6 py-4 text-xs leading-snug text-base-content/60">
+        <p className="m-0 border-t border-base-300 bg-tt-soft px-6 py-4 text-xs leading-snug text-base-content/60">
           Source: U.S. Census Bureau, general imports{imports.level === 10 ? "" : ` (${imports.level}-digit group, as Census has no figures for this exact line)`}. Duty on a $10,000
           ocean shipment entered today, before customs fees. {CENSUS_NOTICE}
         </p>
       </div>
-    </section>
+    </CardSection>
   );
 }

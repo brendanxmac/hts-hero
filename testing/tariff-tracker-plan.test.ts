@@ -38,10 +38,10 @@ describe("Tariff Tracker: plans", () => {
     expect(savingsUnlocked(access, new Set(["7000-MX"])).has("7000-MX")).toBe(true)
   })
 
-  it("after 14 days the account is on the free plan: no alerts on its imports", () => {
+  it("after 14 days the account is on the free plan: alerts on 3 of its imports", () => {
     const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [], trialStartedAt: signedUp, now: afterTrial })
     expect(access.kind).toBe("free")
-    expect(access.pairLimit).toBe(0)
+    expect(access.pairLimit).toBe(3)
     expect(trialDaysLeft(access, afterTrial)! < 0).toBe(true)
   })
 
@@ -53,7 +53,7 @@ describe("Tariff Tracker: plans", () => {
     expect(trialDaysLeft(previewAccess(paid, "ending", now), now)).toBe(2)
     const ended = previewAccess(paid, "ended", now)
     expect(ended.kind).toBe("free")
-    expect(ended.pairLimit).toBe(0)
+    expect(ended.pairLimit).toBe(3)
     expect(ended.preview).toBe("ended")
   })
 

@@ -10,10 +10,10 @@ export const ANNUAL_DISCOUNT = 0.15;
 // The Tariff Calculator is free: unlimited lookups, no account. A free account unlocks Analysis
 // and the plain-English why, and the AD/CVD check on any import. See PRICING.md.
 
-// The free plan's allowances (PRICING.md). alertImports is what every account tracks free once its
-// 14-day trial (REVERSE_TRIAL) is over: none (2026-10-18). Free accounts keep the Tariff News alerts
-// (every new US tariff action), not alerts on their own imports. The savings and audit checks never
-// reset
+// The free plan's allowances (PRICING.md). alertImports is what every account tracks free, with
+// alerts, once its 14-day trial (REVERSE_TRIAL) is over: 3, forever (2026-10-26; none from
+// 2026-10-18). Free accounts also keep the Tariff News alerts (every new US tariff action). The
+// savings and audit checks never reset
 export const TRIAL_ALLOWANCE = {
   // Imports (pairs) whose savings can be checked, the qualification check included. None on the free
   // plan (2026-10-22): savings checks are the trial's and the paid plans'
@@ -22,9 +22,13 @@ export const TRIAL_ALLOWANCE = {
   // on the free plan, as savings
   auditChecks: 0,
   // Tracked imports: alerts and impact checks run on these; the slots can be moved. 10 before the
-  // Tracker MVP (MVP_TRIM.md), 5 until the reverse trial
-  alertImports: 0,
+  // Tracker MVP (MVP_TRIM.md), 5 until the reverse trial, none from 2026-10-18 to 2026-10-26
+  alertImports: 3,
 } as const;
+
+// The button on every Tariff Tracker call to action, everywhere on the site (decided 2026-10-26).
+// The 14 days and the rest of the offer go in the text around it, never on the button.
+export const TRY_IT_FREE = "Try it free";
 
 // The Tariff Tracker's reverse trial (PRICING.md): every account gets everything the Tracker sells,
 // on up to `imports` imports, for `days` days from the account's first imports, with no card and nothing to start.

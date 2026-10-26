@@ -4,7 +4,7 @@ import { BillingSwitch, SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { FREE_FOREVER_LINE, SAVINGS_AUDITS_INCLUDED } from "@/components/ui/marketing/comingSoon";
 import { LINKS } from "../lib/links";
-import { Billing, LAUNCH_PRICING, LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice, launchPricingActive, trackerBilling } from "../lib/pricing";
+import { Billing, LAUNCH_PRICING, LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice, launchPricingActive, trackerBilling, TRY_IT_FREE } from "../lib/pricing";
 import { CALCULATOR_FEATURES, TRACKER_FEATURES } from "../tariff-pricing/plans";
 import { CoverageGrid } from "./CoverageGrid";
 import { ManagedTeaser } from "./ManagedTeaser";
@@ -77,7 +77,7 @@ export const TariffPlans = ({
         features={TRACKER_FEATURES}
         cta={
           <Link href={LINKS.signUp} className={`${mk.buttonOnDark} h-12 px-6`}>
-            Start your free {REVERSE_TRIAL.days}-day trial <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            {TRY_IT_FREE} <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
         }
       >

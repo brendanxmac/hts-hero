@@ -8,7 +8,6 @@ import {
 import { HtsElement, HtsSection } from "../../../interfaces/hts";
 import config from "@/config";
 import { HtsPageShell } from "../../../components/hts-page/HtsPageShell";
-import { PlaybookCard } from "@/components/hts-code-page/PlaybookCard";
 import { CtaGrid } from "../../../components/hts-page/CtaGrid";
 import { ChildrenList } from "../../../components/hts-page/ChildrenList";
 import { htsChapterPdfUrl } from "../../../libs/official-sources";
@@ -187,7 +186,6 @@ function ChapterContent({
         }))}
       />
 
-      <div className="mt-12"><PlaybookCard /></div>
       <CtaGrid contextLabel={`Chapter ${chapter.number} Codes`} />
     </>
   );

@@ -21,10 +21,15 @@ import {
   inSentence,
 } from "@/libs/hts-duty-summary";
 import { microEstimate } from "@/libs/hts-micro-estimate";
+import { codeRateChanges } from "@/libs/hts-rate-changes";
 import { getUsImports } from "@/libs/us-imports-server";
 import { IMPORT_SOURCES_SHOWN } from "@/components/hts-code-page/ImportSources";
 import { getUpdatesNamingCode } from "@/libs/tariff-updates/public";
+import { codeInfoFor } from "@/libs/tariff-programs/codeLinks";
 import { getCasesNamingCode } from "@/libs/adcvd/public";
+import { codeDutyHistory, DUTY_HISTORY_COUNTRIES, showsDutyHistory } from "@/libs/hts-duty-history";
+import { headingAnswer, headingProfile, isModeledHeading } from "@/libs/tariff-programs/heading";
+import { COVERED_CODES_SHOWN } from "@/components/tariff-programs/HeadingSections";
 
 interface HtsCodePageProps {
   params: Promise<{ code: string }>;
@@ -45,12 +50,17 @@ async function loadHtsPage(code: string) {
   const sections = await getHtsSectionsServer();
   const parents = getHtsElementParentsServer(element, elements);
   const rateElement = findRateElement(element, parents);
+  // A Chapter 99 heading the engine models is described from its records, not its HTS text
+  const heading = element.htsno.startsWith("99") && isModeledHeading(element.htsno) ? headingProfile(element.htsno) : null;
   return {
+    heading,
     elements,
     element,
     parents,
     rateElement,
     sectionChapter: getSectionAndChapterForElement(sections, element.chapter),
+    // The same name as every other code (and as the live pages have had): the title, H1, answer
+    // sentences and FAQ that search and AI answers quote stay word for word
     productName: htsProductName(element, parents),
     summary: getHtsDutySummary(element, rateElement),
   };
@@ -107,6 +117,8 @@ export async function generateMetadata(props: HtsCodePageProps): Promise<Metadat
 
   const { element, parents, rateElement, productName, summary } = page;
   const shortName = htsProductName(element, parents, 40);
+  // Chapter 99 headings keep the title and description they rank with; the heading's program,
+  // rate and status are added on the page itself (decided 2026-10-26)
   const title = pageTitle(element.htsno, productName, shortName);
   const description = pageDescription(element.htsno, productName, shortName, rateElement.general, summary);
   const nameLower = productName.toLowerCase();
@@ -152,7 +164,7 @@ export default async function HtsCodePage(props: HtsCodePageProps) {
     notFound();
   }
 
-  const { elements, element, parents, rateElement, sectionChapter, productName, summary } = page;
+  const { elements, element, parents, rateElement, sectionChapter, productName, summary, heading } = page;
   // Where the US imports it from (Census), and the duty from each of its top suppliers
   const imports = summary ? getUsImports(element.htsno) : null;
   const importDuty = imports
@@ -166,17 +178,33 @@ export default async function HtsCodePage(props: HtsCodePageProps) {
       )
     : null;
   // The quick estimate opens on China, the most-looked-up country of origin
-  const estimate = summary
-    ? microEstimate({
+  const estimateInput = summary
+    ? {
       htsCode: element.htsno,
       baseRates: { general: rateElement.general, special: rateElement.special, other: rateElement.other },
       country: "CN",
       asOf: summary.asOf,
-    })
+    }
+    : null;
+  const estimate = estimateInput ? microEstimate(estimateInput) : null;
+  // How often that duty has changed, for the sentence under the heading
+  const rateChanges = estimateInput ? codeRateChanges(estimateInput) : null;
+  // The Duty History section, on the SEO test's chapters only (see DUTY_HISTORY_CHAPTERS)
+  const dutyHistory = estimateInput && showsDutyHistory(element.chapter, element.htsno)
+    ? codeDutyHistory(estimateInput, summary.rows.slice(0, DUTY_HISTORY_COUNTRIES).map((r) => r.country.code))
     : null;
   const tariffUpdates = element.htsno ? await getUpdatesNamingCode(element.htsno) : [];
   const adcvdCases = element.htsno ? await getCasesNamingCode(element.htsno) : [];
   const children = getDirectChildren(element, elements);
+  // Where each code a heading lists links and its name, as far as the page lists them
+  const codeInfo = heading
+    ? await codeInfoFor([
+      ...heading.coverage.codes.slice(0, COVERED_CODES_SHOWN),
+      ...heading.coverage.excluded,
+      ...heading.exceptions,
+      ...heading.siblings.map((s) => s.code),
+    ])
+    : {};
   const nearestParent = parents[parents.length - 1];
   const siblings = nearestParent
     ? getDirectChildren(nearestParent, elements).filter((e) => e.uuid !== element.uuid)
@@ -198,6 +226,9 @@ export default async function HtsCodePage(props: HtsCodePageProps) {
         importDuty={importDuty}
         tariffUpdates={tariffUpdates}
         adcvdCases={adcvdCases}
+        heading={heading ? { profile: heading, answer: headingAnswer(heading), codeInfo } : null}
+        rateChanges={rateChanges}
+        dutyHistory={dutyHistory}
       />
     </main>
   );

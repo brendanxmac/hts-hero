@@ -1,13 +1,13 @@
+import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
-import config from "@/config";
-import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "@/components/ui/marketing/styles";
 import { DEFINITION } from "../lib/copy";
 import { ExposureDashboard } from "./ExposureDashboard";
 
-// The reverse trial first (REVERSE_TRIAL), then what stays free forever (no alerts on the account's
-// own imports: TRIAL_ALLOWANCE.alertImports is 0, but Tariff News alerts and the free checks)
+// The reverse trial first (REVERSE_TRIAL), then what stays free forever (alerts on
+// TRIAL_ALLOWANCE.alertImports of the account's imports, Tariff News alerts and the free checks)
 const PROMISES = [
   `Free for ${REVERSE_TRIAL.days} days, on up to ${REVERSE_TRIAL.imports} imports`,
   "No credit card",
@@ -28,8 +28,8 @@ export const MonitorHero = () => (
         </h1>
         <p className={`${mk.lead} mt-6`}>{DEFINITION}</p>
         <div className="mt-10 flex flex-wrap gap-4">
-          <Link href={config.auth.loginUrl} className={mk.buttonPrimary}>
-            Start your free {REVERSE_TRIAL.days}-day trial <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          <Link href={TRY_FREE_HREF} className={mk.buttonPrimary}>
+            {TRY_IT_FREE} <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
           <a href="#try-it" className={mk.buttonSecondary}>
             Try it on your product

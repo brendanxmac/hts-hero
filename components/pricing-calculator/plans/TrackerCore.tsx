@@ -3,7 +3,7 @@ import { ArrowDownTrayIcon, ArrowRightIcon, BellAlertIcon, BoltIcon, NewspaperIc
 import * as mk from "@/components/ui/marketing/styles";
 import { AUTO_AUDITING, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 import { LINKS } from "../lib/links";
-import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "../lib/pricing";
+import { LOWEST_PER_IMPORT, TRACKER_TIERS, TRY_IT_FREE, formatPrice } from "../lib/pricing";
 
 // The core of the Tariff Tracker in one place, under the tariff plans: impact checks, Tariff News
 // and alerts side by side, then export and rate history as one strip. Tracker MVP (MVP_TRIM.md).
@@ -42,7 +42,7 @@ export const TrackerCore = () => (
           </p>
         </div>
         <Link href={LINKS.signUp} className={`${mk.buttonPrimary} h-12 px-6`}>
-          Try it free for {REVERSE_TRIAL.days} days <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          {TRY_IT_FREE} <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </Link>
       </div>
       <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">

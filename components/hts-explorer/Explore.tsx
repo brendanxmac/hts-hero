@@ -397,13 +397,13 @@ const Layout = ({
     tab === "notes" ? (
       <NotesView searchValue={query} matches={noteMatches} />
     ) : (
-      // Two columns that each scroll on their own, filling the dialog, or on a page the screen under
-      // the site's sticky header (65px). At either end, scrolling carries on to the page.
+      // Two columns that each scroll on their own, filling the dialog, or on a page the screen (the
+      // site's header scrolls away with the page). At either end, scrolling carries on to the page.
       <div
         className={`grid gap-4 lg:grid-rows-[minmax(0,1fr)] ${
           dialog
             ? "lg:h-full lg:grid-cols-[minmax(0,6fr)_minmax(0,7fr)]"
-            : "lg:h-[calc(100dvh-6rem)] lg:min-h-128 lg:scroll-mt-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
+            : "lg:h-[calc(100dvh-2rem)] lg:min-h-128 lg:scroll-mt-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
         }`}
       >
         {list}

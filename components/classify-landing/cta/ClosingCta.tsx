@@ -1,7 +1,7 @@
+import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import config from "@/config";
-import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
 import { FREE_FOREVER_LINE } from "@/components/ui/marketing/comingSoon";
@@ -20,8 +20,8 @@ export const ClosingCta = () => (
         already worked out. Try it free for {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports} imports, no credit card. {FREE_FOREVER_LINE}
       </p>
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <Link href={config.auth.loginUrl} className={cta.button}>
-          Start your free {REVERSE_TRIAL.days}-day trial <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+        <Link href={TRY_FREE_HREF} className={cta.button}>
+          {TRY_IT_FREE} <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
         <Link href="/tariff-monitor" className={cta.secondary}>
           How the Tariff Tracker works

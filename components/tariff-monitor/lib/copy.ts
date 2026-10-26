@@ -4,6 +4,7 @@ import {
   TRACKER_TIERS,
   formatPrice,
   perImportPrice,
+  TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing";
 import { AUTO_AUDITING, FREE_FOREVER_SHORT, SAVINGS_AUDITS_INCLUDED, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon";
 
@@ -160,7 +161,7 @@ export const MONITOR_FAQS = [
   },
   {
     question: "What happens when the free trial ends?",
-    answer: `If you don't pick a plan, your account moves to the free plan on its own. Alerts (AD/CVD alerts included) and impact checks on your own imports stop, but you keep Tariff News alerts (every new US tariff action, by email) and sourcing insights on any import, free, forever, and your whole catalog stays in your account with its current duty, rate history and exports. AD/CVD checks on any import stay free with your account too. You're never charged unless you choose a plan.`,
+    answer: `If you don't pick a plan, your account moves to the free plan on its own. Alerts (AD/CVD alerts included) and impact checks stay on ${TRIAL_ALLOWANCE.alertImports} of your imports, the ones you pick, and stop on the rest. You keep Tariff News alerts (every new US tariff action, by email) and sourcing insights on any import, free, forever, and your whole catalog stays in your account with its current duty, rate history and exports. AD/CVD checks on any import stay free with your account too. You're never charged unless you choose a plan.`,
   },
   {
     question: "Does the Tariff Tracker find savings or audit my entries?",

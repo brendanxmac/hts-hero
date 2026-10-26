@@ -2,7 +2,7 @@ import { ArrowTopRightOnSquareIcon, DocumentTextIcon } from "@heroicons/react/20
 import { getFirstChapterOfSection } from "@/libs/hts";
 import { usitcHtsFileViewerTabUrl } from "@/libs/usitc-hts-file-url";
 import { mono } from "@/components/ui/font";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { CardSection } from "./CardSection";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import type { SectionChapter } from "./types";
@@ -31,19 +31,23 @@ export function LegalNotes({
   ];
 
   return (
-    <section id="notes" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:items-center lg:gap-12">
-      <SectionHeader kicker="Legal notes" title="Relevant HTS Notes">
+    <CardSection
+      id="notes"
+      kicker="Legal notes"
+      title="Relevant HTS Notes"
+      lead={<>
         Official USITC notes that may affect classification under HTS{" "}
         {htsno ? <span className={`${mono.className} font-medium text-base-content`}>{htsno}</span> : "this code"}.
-      </SectionHeader>
-      <div className="grid gap-3 sm:grid-cols-2">
+      </>}
+    >
+      <div className="grid divide-y divide-base-300 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
         {links.map((link) => (
           <a
             key={link.title}
             href={usitcHtsFileViewerTabUrl(link.file)}
             target="_blank"
             rel="noopener noreferrer"
-            className={`${tt.panel} overflow-hidden group flex items-start gap-3 p-5 transition-colors hover:border-primary/40`}
+            className="group flex items-start gap-3 px-6 py-5 transition-colors hover:bg-tt-soft"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden>
               <DocumentTextIcon className="h-5 w-5" />
@@ -56,6 +60,6 @@ export function LegalNotes({
           </a>
         ))}
       </div>
-    </section>
+    </CardSection>
   );
 }

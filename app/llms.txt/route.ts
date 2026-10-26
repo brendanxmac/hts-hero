@@ -13,6 +13,7 @@ import { CATEGORIES } from "@/libs/blog/catalog";
 import { getPostsInCategory } from "@/libs/blog/posts";
 import { COMPARE_PAGES, comparePageTitle } from "@/libs/compare/pages";
 import { COUNTRY_PAGES, capitalized } from "@/libs/country-pages/countries";
+import { PROGRAM_HUBS } from "@/libs/tariff-programs/hubs";
 
 // /llms.txt (llmstxt.org): a plain map of the site for AI assistants and answer engines, so
 // they can find the tools and the guides worth citing. Rebuilt with every deploy.
@@ -31,6 +32,8 @@ export function GET() {
   const countries = COUNTRY_PAGES.map(
     (c) => `- [${capitalized(c.name.replace(/^the /, ""))} to US tariff calculator](${SITE}/duty-calculator/${c.slug})`
   ).join("\n");
+
+  const programs = PROGRAM_HUBS.map((h) => `- [${h.title}](${SITE}/tariffs/${h.slug}): every Chapter 99 heading and HTS code it covers, with rates, dates and sources`).join("\n");
 
   const comparisons = COMPARE_PAGES.map((p) => `- [${comparePageTitle(p)}](${SITE}/compare/${p.slug})`).join("\n");
 
@@ -51,6 +54,12 @@ export function GET() {
 - [Pricing](${SITE}/pricing-calculator): the Tariff Calculator is free, and a free account adds the plain-English why, sourcing intelligence and the AD/CVD check on any import; the Tariff Tracker is free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports (no credit card), then from ${formatPrice(TRACKER_TIERS[0].price)}/mo for up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly; per import per month that's ${TRACKER_TIERS.map((t) => `${formatPrice(perImportPrice(t))} (up to ${t.maxPairs})`).join(", ")}, as low as ${formatPrice(LOWEST_PER_IMPORT)} (${FREE_FOREVER_SHORT} stay free, forever); classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo
 
 ${guides.join("\n")}
+## US tariff programs
+
+- [US tariff programs](${SITE}/tariffs): every Section 232, 301, 338, 122, 201 and IEEPA tariff program, with what each has in force today
+${programs}
+- Chapter 99 heading pages (e.g. [9903.88.15](${SITE}/hts/9903.88.15)): what each heading is, its program, rate, status and dates, the codes it covers and its legal text
+
 ## Tariff calculators by country
 
 - [US tariffs by country: every country of origin in one table](${SITE}/duty-calculator/countries)

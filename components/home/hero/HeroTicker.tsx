@@ -58,17 +58,16 @@ const Tape = () => (
 export const HeroTicker = () => (
   <header className={`relative overflow-hidden ${darkBand}`}>
     <div aria-hidden className={glow} />
-    <Tape />
+    {/* <Tape /> */}
     <div className="relative mx-auto grid max-w-(--breakpoint-xl) grid-cols-1 items-center gap-14 px-6 pb-24 pt-16 lg:grid-cols-[minmax(0,6fr)_minmax(0,6fr)] lg:px-8 lg:pt-10">
       <div>
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary">US Tariff Intelligence</p>
         <h1 className={`${display} mt-4 text-5xl font-semibold leading-[1.04] tracking-tight lg:text-[3.4rem]`}>
-          Tariff Alerts, Savings, &amp; Audits {" "}
-          <span className="text-primary">on Autopilot</span>
+          Eliminate Tariff Overpayments and Surprises
         </h1>
         <p className="mt-5 text-xl leading-relaxed text-base-content/70">
-          HTS Hero calculates every duty, alerts you the moment a change hits your products, uncovers possible savings, and audits every
-          import for duty you may get back, 24/7.
+          HTS Hero audits every import for duty you may have overpaid, alerts you the moment a tariff change hits your products, and
+          uncovers possible savings, 24/7.
         </p>
         <Link
           href={OFFER.href}

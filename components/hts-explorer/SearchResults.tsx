@@ -1,7 +1,6 @@
 "use client";
 
 import { Fragment, useEffect, useRef } from "react";
-import { toRoman } from "@javascript-packages/roman-numerals";
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { useHts } from "@/contexts/HtsContext";
 import { useHtsSections } from "@/contexts/HtsSectionsContext";
@@ -69,7 +68,7 @@ const WhereItSits = ({ element }: { element: HtsElement }) => {
   const steps = [
     ...(sectionAndChapter
       ? [
-          { label: toRoman(sectionAndChapter.section.number), title: sectionAndChapter.section.description },
+          { label: `Section ${sectionAndChapter.section.number}`, title: sectionAndChapter.section.description },
           { label: `Ch ${sectionAndChapter.chapter.number}`, title: sectionAndChapter.chapter.description },
         ]
       : []),

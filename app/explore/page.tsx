@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { toRoman } from "@javascript-packages/roman-numerals";
 import { Explore } from "@/components/hts-explorer/Explore";
 import * as tt from "@/components/ui/styles/tracker";
 import { NewsAlertsBox } from "@/components/tariff-updates/NewsAlertsBox";
@@ -86,7 +85,7 @@ export default async function Home() {
                 className="tt-card group flex h-full flex-col gap-1 rounded-2xl border border-base-300 bg-base-100 px-5 py-4 shadow-[var(--tt-shadow)] transition-colors hover:border-primary/40"
               >
                 <span className="text-xs font-bold text-primary group-hover:underline">
-                  Section {toRoman(s.number)}
+                  Section {s.number}
                 </span>
                 <span className="text-sm text-base-content/70 leading-snug">
                   {s.description}

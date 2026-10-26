@@ -1,6 +1,6 @@
+import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
-import config from "@/config";
 import { SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import {
@@ -12,6 +12,7 @@ import {
   formatPerImport,
   formatPrice,
   launchPricingActive,
+  TRY_IT_FREE,
 } from "@/components/pricing-calculator/lib/pricing";
 import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 import { FREE_FOREVER_SHORT, LAUNCH_PITCH, SAVINGS_AUDITS_INCLUDED } from "@/components/ui/marketing/comingSoon";
@@ -37,7 +38,7 @@ export const MonitorPricing = () => (
       <SectionIntro eyebrow="Pricing" title={`Free for ${REVERSE_TRIAL.days} Days. Then Pay as Your Catalog Grows.`} id="pricing-title" center>
         Every new account gets the whole Tariff Tracker free for {REVERSE_TRIAL.days} days, on up to {REVERSE_TRIAL.imports} imports, with
         no credit card and nothing to start: the 14 days begin when you add your imports. After that, {FREE_FOREVER_SHORT} stay free, forever. To keep alerts
-        and impact checks on your imports, pick a plan for the size of your catalog.
+        and impact checks on all your imports, pick a plan for the size of your catalog.
       </SectionIntro>
 
       <div className="mx-auto mt-14 grid grid-cols-1 max-w-5xl gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
@@ -50,8 +51,8 @@ export const MonitorPricing = () => (
           <div className="mt-8 flex-1">
             <Features items={TRACKER_TRIAL_FEATURES} />
           </div>
-          <Link href={config.auth.loginUrl} className={`${mk.buttonSecondary} mt-8 w-full`}>
-            Start your free {REVERSE_TRIAL.days}-day trial
+          <Link href={TRY_FREE_HREF} className={`${mk.buttonSecondary} mt-8 w-full`}>
+            {TRY_IT_FREE}
           </Link>
         </article>
 
@@ -89,8 +90,8 @@ export const MonitorPricing = () => (
             <Features items={TRACKER_FEATURES} dark />
           </div>
           <div className="relative mt-8 flex flex-wrap items-center gap-4">
-            <Link href={config.auth.loginUrl} className={mk.buttonOnDark}>
-              Try it free for {REVERSE_TRIAL.days} days <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            <Link href={TRY_FREE_HREF} className={mk.buttonOnDark}>
+              {TRY_IT_FREE} <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>
             <Link href="/pricing-calculator#estimate" className="text-sm font-semibold text-primary hover:text-primary">
               Estimate your price

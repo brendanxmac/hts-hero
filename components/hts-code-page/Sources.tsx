@@ -10,9 +10,8 @@ import {
   legalSources,
   type OfficialSource,
 } from "@/libs/official-sources";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { CardSection } from "./CardSection";
 import * as ui from "@/components/ui/styles";
-import * as tt from "@/components/ui/styles/tracker";
 
 // The primary sources behind this page, linked straight to the publisher: the line in the USITC's
 // schedule, its chapter (and section) notes, the legal documents behind each Chapter 99 duty shown,
@@ -50,14 +49,18 @@ export function Sources({
   ];
 
   return (
-    <section id="sources" className="scroll-mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
-      <SectionHeader kicker="Sources" title="Primary Sources">
+    <CardSection
+      id="sources"
+      kicker="Sources"
+      title="Primary Sources"
+      lead={<>
         The official documents behind the rates and tariffs on this page. Duties are worked out from them
         {revision ? ` as of ${revision}` : ""}; check the legal text before you file.
-      </SectionHeader>
-      <ul className={`${tt.panel} m-0 list-none divide-y divide-base-300 p-0`}>
+      </>}
+    >
+      <ul className="m-0 list-none divide-y divide-base-300 p-0">
         {sources.map((source) => (
-          <li key={`${source.publisher}-${source.label}`} className="flex items-start gap-3 px-5 py-3.5">
+          <li key={`${source.publisher}-${source.label}`} className="flex items-start gap-3 px-6 py-3.5">
             <span className="min-w-0 flex-1">
               <span className={`${ui.caption} block`}>{source.publisher}</span>
               {source.url ? (
@@ -77,6 +80,6 @@ export function Sources({
           </li>
         ))}
       </ul>
-    </section>
+    </CardSection>
   );
 }

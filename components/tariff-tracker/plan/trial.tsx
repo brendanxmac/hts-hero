@@ -26,8 +26,8 @@ import { UpgradeStats, useUpgradeStats } from "../access/upgradeStats";
 import { useTracker } from "../TrackerContext";
 
 // The 14-day reverse trial (PRICING.md): everything, on up to REVERSE_TRIAL.imports imports, then
-// the free plan (no alerts on the user's own imports). As it ends, and once it has, the Tracker
-// shows what the account loses (alerts, AD/CVD alerts included, and impact checks on all its imports,
+// the free plan (alerts on TRIAL_ALLOWANCE.alertImports of the user's imports). As it ends, and once it has, the Tracker
+// shows what the account loses (alerts, AD/CVD alerts included, and impact checks on all but TRIAL_ALLOWANCE.alertImports of its imports,
 // Insights, auditing and savings detection), next to what stays free (the
 // AD/CVD check itself is free with any account, so only its alerts and updates are lost). Loss
 // sells harder than gain: the plan card counts down, a banner and this dialog say what goes.

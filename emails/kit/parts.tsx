@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react"
 import { Button, Column, Heading, Hr, Link, Row, Section, Text } from "@react-email/components"
-import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "../../components/pricing-calculator/lib/pricing"
+import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice } from "../../components/pricing-calculator/lib/pricing"
 import { C, FONT_DISPLAY, formatDay, SITE, TONES, Tone } from "./brand"
 
 // The pieces every email is made of, in the Tracker's look: a small bold eyebrow in a role color,
@@ -230,11 +230,11 @@ export const PlanStrip = ({ campaign, signedUp = true }: { campaign: string; sig
   <Section style={{ marginTop: 24, borderTop: `1px solid ${C.border}`, paddingTop: 18 }}>
     <Text style={{ margin: 0, fontSize: 13, lineHeight: "20px", color: C.muted }}>
       {signedUp ? "Your free account" : "A free HTS Hero account"}{" "}
-      gives you Tariff News alerts on every new US tariff action, the duty on every import you add, its rate history and sourcing insights, free forever, AD/CVD checks on any
+      gives you tariff alerts on {TRIAL_ALLOWANCE.alertImports} of your imports, Tariff News alerts on every new US tariff action, the duty on every import you add, its rate history and sourcing insights, free forever, AD/CVD checks on any
       import, plus the full Tariff Tracker (AD/CVD alerts, automatic savings
       detection and automatic auditing included) free for {REVERSE_TRIAL.days} days from {signedUp ? "your" : "its"} first imports, on up to {REVERSE_TRIAL.imports}{" "}
       imports, no credit card.{" "}
-      Plans with alerts on your imports start at {formatPrice(TRACKER_TIERS[0].price)}/mo, as low as {formatPrice(LOWEST_PER_IMPORT)} per import.{" "}
+      Plans with alerts on all your imports start at {formatPrice(TRACKER_TIERS[0].price)}/mo, as low as {formatPrice(LOWEST_PER_IMPORT)} per import.{" "}
       <Link href={`${SITE}/pricing-calculator?utm_source=email&utm_medium=email&utm_campaign=${campaign}`} style={{ color: C.cobalt, fontWeight: 600 }}>
         See plans
       </Link>

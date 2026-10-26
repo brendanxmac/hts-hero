@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRightIcon, CloudArrowUpIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
-import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import { SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { REQUEST_ANCHOR, SELF_AUDIT_URL, SIGN_UP_TO_AUDIT } from "../lib/links";
@@ -17,7 +17,7 @@ const PATHS: {
     {
       title: "Audit it yourself",
       text: `Run the audit in the Tariff Tracker: free for ${REVERSE_TRIAL.days} days with a new account, no credit card. Results appear as soon as your entries are checked, and stay in your account.`,
-      cta: "Start free",
+      cta: TRY_IT_FREE,
       href: SIGN_UP_TO_AUDIT,
       Icon: UserCircleIcon,
       featured: true,

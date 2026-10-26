@@ -147,6 +147,10 @@ export enum MixpanelEvent {
   MCP_TOOL_CALLED = "MCP Tool Called",
   /** An /hts/[code] page shown (hts_code, chapter, digit_count) */
   HTS_CODE_PAGE_VIEWED = "HTS Code Page Viewed",
+  /** "Watch this code" submitted on an /hts/[code] page (hts_code, country_code, signed_in, digest) */
+  HTS_CODE_WATCH_SUBMITTED = "HTS Code Watch Submitted",
+  /** The arrival panel on an import's first visit from Get Alerts / Stop Overpaying: action shown, add_imports, explore or dismissed; source watch or track */
+  TARIFF_TRACKER_ARRIVAL_PANEL = "Tariff Tracker Arrival Panel",
   /** HTS Explorer (/explore and embedded Explore) */
   EXPLORER_COMPLETED_CODE_SEARCH = "Explorer Completed a Code Search",
   EXPLORER_CLEARED_SEARCH = "Explorer Cleared Search",
@@ -159,6 +163,8 @@ export enum MixpanelEvent {
   TARIFF_UPDATES_SUBSCRIBED = "Tariff Updates Subscribed",
   // After subscribing: "Create my free account" for the Tariff Tracker
   TARIFF_UPDATES_TRACKER_UPSELL_CLICKED = "Tariff Updates Tracker Upsell Clicked",
+  // A code checked in the /tariffs pages' "Is your code on a list?" box (program: the page's slug, or "all")
+  TARIFF_PROGRAM_CODE_CHECKED = "Tariff Program Code Checked",
 }
 
 // Browser-side tracking functions

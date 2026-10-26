@@ -639,3 +639,92 @@ describe("engine-v2: special rates on a Chapter 98/99 line ('See 9822.04.25 (AU)
     )
   })
 })
+
+// Lines the parser logged "Unable to parse duty string" for in production on Oct 25, 2026,
+// before the Oct 2026 parser changes were deployed. Every column of each, word for word.
+describe("rate parsing: lines that failed in production (Oct 25, 2026)", () => {
+  const LINES = {
+    "0806.10.60": {
+      general: "$1.80/m3",
+      special: "Free (A+,AU,BH,CL,CO,D,E, IL,JO,KR,MA,OM,P,PA,PE,S, SG)",
+      other: "$8.83/m3",
+    },
+    "1701.99.05.00": {
+      general:
+        "3.6606¢/kg less 0.020668¢/kg for each degree under 100 degrees (and fractions of a degree in proportion) but not less than 3.143854¢/kg",
+      special: "Free (A*,AU,BH,CL,CO,D,E*,IL,JO,KR,MA,OM,P,PA,PE,S,SG)",
+      other:
+        "6.58170¢/kg less 0.0622005¢ /kg for each degree under 100 degrees (and fractions of a degree in proportion) but not less than 5.031562¢ /kg",
+    },
+    "6103.22.00": {
+      general: "The rate applicable to each garment in the ensemble if separately entered",
+      special: "Free (AU,BH, CL,CO,IL,JO,KR, MA,OM,P, PA,PE,S,SG)",
+      other: "The rate applicable to each garment in the ensemble if separately entered",
+    },
+  }
+
+  it("reads the grape rates per cubic meter (0806.10.60.25)", () => {
+    const { general, special, other } = LINES["0806.10.60"]
+    expect(parse(general)).toEqual({
+      tariffs: [{ value: 1.8, type: "amount", unit: "m3", raw: "$1.80/m3", programs: [] }],
+      parsingFailures: [],
+    })
+    expect(parse(other).tariffs.map((t) => [t.value, t.unit])).toEqual([[8.83, "m3"]])
+    expect(parse(other).parsingFailures).toEqual([])
+    const free = parse(special)
+    expect(free.parsingFailures).toEqual([])
+    expect(free.tariffs.map((t) => [t.value, t.programs?.length])).toEqual([[0, 17]])
+    expect(free.tariffs[0].programs).toContain("A+")
+    // $1.80 × 1,000 m3 and $8.83 × 1,000 m3
+    expect(cents(run(general).base.amount)).toBe(1800)
+    expect(cents(run(other).base.amount)).toBe(8830)
+    expect(run(general).baseNotCalculated).toBe(false)
+  })
+
+  it("reads both sugar sliding scales and the starred programs (1701.99.05.00)", () => {
+    const { general, special, other } = LINES["1701.99.05.00"]
+    for (const raw of [general, other, special]) expect(parse(raw).parsingFailures).toEqual([])
+    expect(parse(general).tariffs[0].slidingScale).toEqual({ perDegree: 0.00020668, underDegrees: 100, minimum: 0.03143854 })
+    expect(parse(other).tariffs[0].value).toBe(0.065817)
+    expect(parse(other).tariffs[0].slidingScale).toEqual({ perDegree: 0.000622005, underDegrees: 100, minimum: 0.05031562 })
+    expect(parse(special).tariffs[0].programs).toEqual(
+      ["A*", "AU", "BH", "CL", "CO", "D", "E*", "IL", "JO", "KR", "MA", "OM", "P", "PA", "PE", "S", "SG"],
+    )
+    // Full rate on 1,000 kg until the polarity is given; the floor at 70 degrees
+    expect(cents(run(general).base.amount)).toBe(36.61)
+    expect(cents(run(other).base.amount)).toBe(65.82)
+    expect(cents(run(other, { answers: { basePolarity: 70 } }).base.amount)).toBe(50.32)
+  })
+
+  it("asks for a garment's code on the ensemble rate, never treating it as Free (6103.22.00.40)", () => {
+    const { general, special } = LINES["6103.22.00"]
+    // The wording has no rate of its own: it stays a failure, and the engine asks for the code
+    expect(parse(general)).toEqual({ tariffs: [], parsingFailures: [general] })
+    expect(parse(special).parsingFailures).toEqual([])
+    expect(parse(special).tariffs[0].programs).toEqual(
+      ["AU", "BH", "CL", "CO", "IL", "JO", "KR", "MA", "OM", "P", "PA", "PE", "S", "SG"],
+    )
+    const shorts = { general: "11.5%", special: "Free (AU,BH,CL,CO,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "90%" }
+    const lookupBaseRates = (code: string) => (code === "6104.62.20" ? shorts : null)
+    const result = run(general, { lookupBaseRates })
+    expect(result.baseNotCalculated).toBe(true)
+    expect(result.base.amount).toBe(0)
+    expect(result.unansweredInputs.map((u) => u.input.id)).toEqual(["baseCode:garment"])
+    // Once a garment's code is given, its rate is charged
+    const answered = run(general, { lookupBaseRates, answers: { "baseCode:garment": "6104.62.20" } })
+    expect(answered.baseNotCalculated).toBe(false)
+    expect(cents(answered.base.amount)).toBe(1150)
+  })
+
+  it("doesn't log a parse failure to the console", () => {
+    const logged: unknown[] = []
+    const error = console.error
+    console.error = (...args: unknown[]) => logged.push(args)
+    try {
+      for (const line of Object.values(LINES)) for (const raw of Object.values(line)) parseRateColumnWithFailures(raw)
+    } finally {
+      console.error = error
+    }
+    expect(logged).toEqual([])
+  })
+})

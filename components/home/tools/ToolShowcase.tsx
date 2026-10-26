@@ -1,3 +1,4 @@
+import { SIGN_UP_TO_AUDIT } from "@/components/tariff-audit/lib/links";
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { CalculationTerminal, CatalogFrame } from "@/components/tariff-monitor";
@@ -8,7 +9,7 @@ import {
   LOWEST_PER_IMPORT,
   REVERSE_TRIAL,
   TRACKER_TIERS,
-  formatPrice
+  formatPrice, TRY_IT_FREE
 } from "@/components/pricing-calculator/lib/pricing";
 import type { WorkedExample } from "@/libs/duty-calculator-content";
 import type { AuditExample } from "@/libs/tariff-audit-example";
@@ -69,22 +70,21 @@ export const ToolShowcase = ({
         <div>
           <Step n="1" verb="Calculate" />
           <h2 id="tool-calc-title" className={`${mk.h2} mt-4`}>
-            The exact duty on any import,{" "}
+            See the duty for any import,{" "}
             <span className={mk.accent}>line by line.</span>
           </h2>
           <p className={`${mk.lead} mt-4`}>
-            Base rate, every Chapter 99 tariff with its legal source,
+            We show you the base rate, Chapter 99 tariffs,
             exemptions, trade preferences and fees, for any HTS code and country
-            of origin. Free and unlimited. A free account adds the AD/CVD
-            check: the antidumping and countervailing duty cases that may cover
+            of origin. Free and unlimited. Free accounts can also see the antidumping and countervailing duty cases that may cover
             it.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
             <Link href="/duty-calculator" className={`${mk.buttonPrimary} h-14 px-8 text-lg shadow-lg shadow-base-content/10`}>
-              Calculate duty
+              Try Tariff Calculator
               <ArrowRightIcon className="h-5 w-5" aria-hidden />
             </Link>
-            <span className="text-sm text-slate-500 skin:text-base-content/60">Free and unlimited · No sign-up</span>
+            {/* <span className="text-sm text-slate-500 skin:text-base-content/60">Free and unlimited · No sign-up</span> */}
           </div>
         </div>
         {example && (
@@ -131,7 +131,7 @@ export const ToolShowcase = ({
           />
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link href={OFFER.href} className={mk.buttonPrimary}>
-              Try it free for {REVERSE_TRIAL.days} days <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              {TRY_IT_FREE} <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>
             <Link href="/tariff-monitor" className={mk.link}>
               How the Tariff Tracker works
@@ -172,7 +172,7 @@ export const ToolShowcase = ({
             />
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link href={OFFER.href} className={moneyButtonMd}>
-                Find your savings{" "}
+                {TRY_IT_FREE}{" "}
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </Link>
               <Link
@@ -200,24 +200,23 @@ export const ToolShowcase = ({
         <div>
           <Step n="4" verb="Audit" />
           <h2 id="tool-audit-title" className={`${mk.h2} mt-4`}>
-            Find duty you may have overpaid.{" "}
-            <span className={mk.accent}>See what you could get back.</span>
+            Find duty you may have overpaid.
           </h2>
           <p className={`${mk.lead} mt-4`}>
             Every past entry recalculated with the rules in force on its entry
             date: wrong stacking, missed exemptions, and refundable tariffs like
             IEEPA, flagged for your broker to file.
           </p>
-          <Points
+          {/* <Points
             items={[
               "Paid vs. owed, line by line",
               "Where IEEPA and Section 122 refunds stand",
               `Free for ${REVERSE_TRIAL.days} days, or we'll do it for you`,
             ]}
-          />
+          /> */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/tariff-audit" className={mk.buttonPrimary}>
-              Run a free audit{" "}
+            <Link href={SIGN_UP_TO_AUDIT} className={mk.buttonPrimary}>
+              {TRY_IT_FREE}{" "}
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>
             <Link href="/tariff-audit#request" className={mk.link}>

@@ -103,10 +103,10 @@ export function UpdatesList({ updates }: { updates: PublicUpdate[] }) {
     }`
 
   return (
-    // One card: its title, the search and filters on top (pinned under the site's sticky header
+    // One card: its title, the search and filters on top (pinned to the top of the screen
     // while the list scrolls), then the updates by month, each month a band of its own
     <div className={`${tt.panel} overflow-clip`}>
-      <div className="sticky top-[65px] z-20 flex flex-col gap-3 rounded-t-lg border-b border-base-300 bg-base-100 px-5 py-4">
+      <div className="sticky top-0 z-20 flex flex-col gap-3 rounded-t-lg border-b border-base-300 bg-base-100 px-5 py-4">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           <h2 className={`${tt.title} m-0 flex items-baseline gap-2`}>
             All Tariff Updates

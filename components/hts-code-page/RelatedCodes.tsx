@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import type { HtsElement } from "@/interfaces/hts";
 import { mono } from "@/components/ui/font";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { CardSection } from "./CardSection";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 
@@ -11,7 +11,7 @@ import * as tt from "@/components/ui/styles/tracker";
 // there are codes under it too.
 
 const CodeList = ({ codes }: { codes: HtsElement[] }) => (
-  <ul className={`${tt.panel} overflow-hidden grid md:grid-cols-2`}>
+  <ul className="m-0 grid list-none overflow-hidden p-0 md:grid-cols-2 md:[&>li:nth-child(odd):last-child]:col-span-2 md:[&>li:nth-child(odd):last-child]:border-r-0">
     {codes.map((code) => {
       const rate = code.general && code.general.length <= 20 ? code.general : null;
       const body = (
@@ -49,24 +49,24 @@ export function RelatedCodes({
   siblings: HtsElement[];
 }) {
   return (
-    <section id="related-codes" className={ui.section}>
-      <SectionHeader
-        wide
-        kicker="Related codes"
-        title={children.length > 0 ? `HTS Codes Under ${element.htsno || "This Classification"}` : "Other HTS Codes at This Level"}
-      />
-
+    <CardSection
+      id="related-codes"
+      kicker="Related codes"
+      title={children.length > 0 ? `HTS Codes Under ${element.htsno || "This Classification"}` : "Other HTS Codes at This Level"}
+    >
       {children.length > 0 && <CodeList codes={children} />}
 
       {siblings.length > 0 &&
         (children.length > 0 ? (
-          <div className="mt-4 flex flex-col gap-4">
-            <h3 className={`${tt.title} m-0`}>Other HTS Codes at This Level</h3>
-            <CodeList codes={siblings} />
+          <div className="border-t border-base-300">
+            <h3 className={`${tt.title} m-0 bg-tt-soft px-6 py-3.5 text-[0.95rem]`}>Other HTS Codes at This Level</h3>
+            <div className="border-t border-base-300">
+              <CodeList codes={siblings} />
+            </div>
           </div>
         ) : (
           <CodeList codes={siblings} />
         ))}
-    </section>
+    </CardSection>
   );
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
-import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "@/components/ui/marketing/styles";
 import { DEFINITION } from "../lib/copy";
 import { REQUEST_ANCHOR, SIGN_UP_TO_AUDIT } from "../lib/links";
@@ -27,7 +27,7 @@ export const AuditHero = () => (
         <p className={`${mk.lead} mt-6`}>{DEFINITION}</p>
         <div className="mt-10 flex flex-wrap gap-4">
           <Link href={SIGN_UP_TO_AUDIT} className={mk.buttonPrimary}>
-            Start free <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            {TRY_IT_FREE} <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
           <a href={REQUEST_ANCHOR} className={mk.buttonSecondary}>
             Request an audit

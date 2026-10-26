@@ -1,10 +1,11 @@
+import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
 import config from "@/config";
 
 // Where the page's calls to action go
 export const LINKS = {
   calculator: "/duty-calculator",
   classify: "/classify",
-  signUp: config.auth.loginUrl,
+  signUp: TRY_FREE_HREF,
   estimate: "#estimate",
   contact: `mailto:${config.resend.supportEmail}`,
 };

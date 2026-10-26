@@ -167,11 +167,11 @@ export function CountryCalculatorPage({
             <div className="relative flex flex-col items-center">
               <p className={tt.eyebrow("primary")}>Tariff Tracker</p>
               <p className={`${tt.display} mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-base-content sm:text-5xl sm:leading-none`}>
-                Get alerted when tariffs on goods from <span className="text-primary">{name}</span> change.
+                No overpayments or surprises on goods from <span className="text-primary">{name}</span>.
               </p>
               <p className="mt-5 max-w-3xl text-lg leading-relaxed text-base-content/70">
-                Add your HTS codes once. HTS Hero checks every new HTS revision against your products and tells you what changed
-                and what it costs you.
+                Add your HTS codes once. HTS Hero audits your entries for duty you may have overpaid, checks every new tariff action
+                against your products and tells you what changed.
               </p>
               <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
                 <Link href={OFFER.href} className={`${ui.button({ variant: "primary" })} h-12 px-7 text-base`}>
