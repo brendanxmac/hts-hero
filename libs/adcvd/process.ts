@@ -6,6 +6,7 @@ import { scopeCases } from "./scope"
 import { linkItcEvents, summarizeMonth } from "./summaries"
 import { updateMonth } from "./updates"
 import { readCbpMessages } from "./cbp"
+import { FederalRegisterOutOfTime, withFederalRegister } from "./fr"
 import { refreshItaPages } from "./ita"
 import { budgetTracker, spentFor } from "./usage"
 import type { MonthRow } from "./types"
@@ -107,7 +108,10 @@ const monthCounts = async (db: Db, month: string) => {
 
 // Runs a month's steps from where it stopped until done or the deadline. `collect: false` for the
 // cron, whose own collector already gathers new notices.
-export const runMonth = async (
+export const runMonth = (db: Db, month: string, options: { deadline: number; collect?: boolean; restart?: boolean; quiet?: boolean }) =>
+  withFederalRegister(db, options.deadline, () => runMonthSteps(db, month, options))
+
+const runMonthSteps = async (
   db: Db,
   month: string,
   { deadline, collect = true, restart = false, quiet = false }: { deadline: number; collect?: boolean; restart?: boolean; quiet?: boolean }
@@ -191,6 +195,8 @@ export const runMonth = async (
     }
     return finish("done", null, false)
   } catch (e) {
+    // Out of time waiting on the Federal Register: the next run picks up this step
+    if (e instanceof FederalRegisterOutOfTime) return finish("running", (await loadMonth(db, month))?.step as Step | null, true)
     const message = e instanceof Error ? e.message : String(e)
     return finish("error", (await loadMonth(db, month))?.step as Step | null, false, message)
   }
@@ -218,7 +224,9 @@ const RETRY_PER_RUN = 3
 // ITA case pages read per run: every live case within a day, then each about monthly
 const ITA_PER_RUN = 60
 
-export const runNew = async (db: Db, { deadline }: { deadline: number }) => {
+export const runNew = (db: Db, { deadline }: { deadline: number }) => withFederalRegister(db, deadline, () => runNewSteps(db, deadline))
+
+const runNewSteps = async (db: Db, deadline: number) => {
   const started = new Date()
   const thisMonth = started.toISOString().slice(0, 7)
   const results: MonthResult[] = []

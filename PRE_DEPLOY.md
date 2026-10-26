@@ -39,6 +39,9 @@ still charges the 50% on the 22 removed subheadings.
 - [ ] **`adcvd.sql`'s 2026-10-23 section in prod** (fr_* / ita_* / hts_sources; every line is
       `IF NOT EXISTS` or runs once), **before deploying**: the hourly AD/CVD cron writes those
       columns and fails without them. Also in dev if not done, then `npm run adcvd:golden -- --strict`.
+- [ ] **`adcvd.sql`'s 2026-10-26 line in prod and dev** (`adcvd_settings.fr_blocked`): lets each
+      AD/CVD run remember a Federal Register block for the next. Without it the cron still runs,
+      but logs "Loading blocks" / "Saving blocks" warnings and finds each block afresh.
 - [ ] **Decide on the AD/CVD phantom cases** (step 2 of the launch list): `npm run adcvd:phantoms`
       against prod, check, `-- --apply`. That item then says to copy dev to prod, but step 3 says
       never to run `adcvd:copy-to-prod` again after launch. Settle which before running either.

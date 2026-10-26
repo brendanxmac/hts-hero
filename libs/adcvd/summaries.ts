@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { linkItcNotice, summarizeNotice } from "./claude"
 import { saveCompanyRates } from "./companies"
-import { noticeText } from "./fr"
+import { FederalRegisterOutOfTime, noticeText } from "./fr"
 import { monthRange } from "./notices"
 import { EVENTS, LIVE_STATUSES, ratesSet, type CaseRow, type EventRow, type Rates } from "./types"
 import type { Budget } from "./usage"
@@ -61,6 +61,8 @@ export const summarizeMonth = async (db: Db, month: string, { deadline, budget }
       }
       summarized++
     } catch (e) {
+      // Out of time: summarized by the next run
+      if (e instanceof FederalRegisterOutOfTime) return { summarized, errors, remaining: true }
       errors.push(`${documentNumber}: ${e instanceof Error ? e.message : String(e)}`)
       // Leave a plain line so the notice isn't asked about forever; the title says what it is
       await db.from("adcvd_events").update({ summarized_at: new Date().toISOString() }).eq("document_number", documentNumber)

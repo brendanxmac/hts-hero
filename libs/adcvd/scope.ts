@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { checkCases } from "./checks"
 import { checkScopeCodes, readCaseHistory } from "./claude"
-import { caseDocuments, FederalRegisterUnavailable, noticeText, type CaseDocument } from "./fr"
+import { caseDocuments, FederalRegisterOutOfTime, FederalRegisterUnavailable, noticeText, type CaseDocument } from "./fr"
 import { scopeOf, storedScope, type Scope } from "./parse"
 import type { CaseRow } from "./types"
 import type { Budget } from "./usage"
@@ -38,6 +38,13 @@ const save = (db: Db, caseNumber: string, fields: Partial<CaseRow>) =>
     .update({ ...fields, scope_checked_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq("case_number", caseNumber)
 
+// A notice's text, or null when it can't be had; out of time stops the case (not marked as tried)
+const textOrNull = (url: string | null) =>
+  noticeText(url).catch((e): string | null => {
+    if (e instanceof FederalRegisterOutOfTime) throw e
+    return null
+  })
+
 // Sonnet's check of a regex sort
 const checkSort = async (db: Db, c: CaseRow, budget: Budget): Promise<void> => {
   if (!c.scope_text || budget.reached) return
@@ -66,7 +73,7 @@ const checkSort = async (db: Db, c: CaseRow, budget: Budget): Promise<void> => {
 const fromHistory = async (c: CaseRow): Promise<{ scope: Scope | null; doc: CaseDocument | null; docs: CaseDocument[] }> => {
   const docs = (await caseDocuments(c.case_number)).sort((a, b) => scopeRank(a.title) - scopeRank(b.title) || b.publication_date.localeCompare(a.publication_date))
   for (const doc of docs.slice(0, NOTICES_TRIED)) {
-    const text = await noticeText(doc.raw_text_url).catch((): string | null => null)
+    const text = await textOrNull(doc.raw_text_url)
     const scope = text ? scopeOf(text) : null
     if (scope) return { scope, doc, docs }
   }
@@ -120,7 +127,7 @@ export const findScope = async (db: Db, c: CaseRow, budget: Budget): Promise<Cas
   // 3. Opus reads the history
   if (docs.length && !budget.reached) {
     const picked = docs.slice(0, HISTORY_NOTICES)
-    const texts = await Promise.all(picked.map((d) => noticeText(d.raw_text_url).catch((): string | null => null)))
+    const texts = await Promise.all(picked.map((d) => textOrNull(d.raw_text_url)))
     const notices = picked
       .map((d, i) => ({ document_number: d.document_number, title: d.title, date: d.publication_date, text: (texts[i] ?? "").slice(0, HISTORY_CHARS) }))
       .filter((n) => n.text)

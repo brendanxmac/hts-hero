@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { countryFromName, countryOfCase } from "./countries"
-import { caseDocuments, noticeText } from "./fr"
+import { caseDocuments, FederalRegisterOutOfTime, noticeText } from "./fr"
 import {
   caseNumbers,
   circumventionCountries,
@@ -504,6 +504,8 @@ export const readMonth = async (db: Db, month: string, { deadline, limit = 400 }
       else result.skipped++
       result.newCases += newCases
     } catch (e) {
+      // Out of time: left unread for the next run
+      if (e instanceof FederalRegisterOutOfTime) return { ...result, remaining: true }
       // Marked read anyway, so one bad notice can't stall the month; "Read again" on /adcvd retries it
       result.errors.push(`${item.document_number ?? item.external_id}: ${e instanceof Error ? e.message : String(e)}`)
     }
