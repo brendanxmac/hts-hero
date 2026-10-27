@@ -67,6 +67,7 @@ export default async function ProgramRoute(props: Props) {
         url,
         dateModified: page.asOf,
         creator: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
+        license: `https://${config.domainName}/tos`,
         isAccessibleForFree: true,
         ...(page.sources.some((s) => s.url) ? { citation: page.sources.filter((s) => s.url).map((s) => s.url) } : {}),
       })}

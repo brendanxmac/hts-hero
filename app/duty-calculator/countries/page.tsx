@@ -94,6 +94,7 @@ export default function CountriesHubRoute() {
           "Pays Column 2 Rates",
           "Trade agreements and preference programs",
         ],
+        license: `https://${config.domainName}/tos`,
         isAccessibleForFree: true,
       })}
       {renderSchemaJsonLd({
