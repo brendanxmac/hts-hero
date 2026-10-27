@@ -10,14 +10,16 @@ import { Select } from "@/components/ui/Select"
 // The outbox: every batch of email, Slack and Teams messages. Batches that wait for the admin (the
 // weekly digest, the "trial unlocked" email) lead; the rest sent on their own and are here as the
 // record. Pick a batch, step through each recipient's message exactly as it will arrive (← →),
-// take recipients out, add a note at the top, send yourself a test, then approve (it sends at
-// once) or skip. ?batch=<id> and ?view= open a batch or a view from a link.
+// take recipients out, add a note at the top, change the subject, send yourself a test, then
+// approve (it sends at once) or skip. ?batch=<id> and ?view= open a batch or a view from a link.
 
 interface Batch {
   id: string
   kind: string
   title: string
   note: string | null
+  // The admin's subject for every email in the batch; null: each template's own
+  subject: string | null
   status: "pending" | "approved" | "sending" | "sent" | "skipped"
   created_at: string
   approved_at: string | null
@@ -81,6 +83,8 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
   const [draftFrom, setDraftFrom] = useState("")
   // The note field shows once asked for, or when the batch has one
   const [noteOpen, setNoteOpen] = useState(false)
+  // The subject being edited; null when not editing
+  const [subjectDraft, setSubjectDraft] = useState<string | null>(null)
 
   const loadBatches = useCallback(async () => {
     const { batches } = await call<{ batches: Batch[] }>("/api/email-outbox")
@@ -140,6 +144,7 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
     if (!openId) return
     setIndex(0)
     setNoteOpen(false)
+    setSubjectDraft(null)
     loadBatch(openId).catch((e) => toast.error(e.message))
   }, [openId, loadBatch])
 
@@ -156,8 +161,8 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
     return () => {
       cancelled = true
     }
-    // Re-render when the note is saved (the batch reloads)
-  }, [current, open?.note])
+    // Re-render when the note or subject is saved (the batch reloads)
+  }, [current, open?.note, open?.subject])
 
   // ← → step through recipients
   useEffect(() => {
@@ -191,6 +196,7 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
   const approve = () => {
     if (!open) return
     if (noteChanged) return toast.error("Save or undo the note first")
+    if (subjectDraft !== null) return toast.error("Save or cancel the subject first")
     if (!window.confirm(`Send ${toSend} message${toSend === 1 ? "" : "s"} now?`)) return
     act(
       "approve",
@@ -200,6 +206,16 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
       }
     )
   }
+
+  const saveSubject = (subject: string) =>
+    act(
+      "subject",
+      async () => {
+        await call(`/api/email-outbox/${open!.id}`, { method: "PATCH", body: JSON.stringify({ subject }) })
+        setSubjectDraft(null)
+      },
+      subject.trim() ? "Subject saved for every email in this batch" : "Back to the default subject"
+    )
 
   const waiting = (batches ?? []).filter((b) => b.status === "pending").length
   const failing = (batches ?? []).filter((b) => b.counts.failed).length
@@ -452,10 +468,53 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
                 )}
                 {preview?.channel === "email" && preview.html && (
                   <>
-                    <div className="border-b border-base-300 px-5 py-2.5 text-sm">
-                      <span className="text-base-content/60">Subject </span>
-                      <span className="font-semibold">{preview.subject}</span>
-                    </div>
+                    {subjectDraft === null ? (
+                      <div className="flex items-center gap-2 border-b border-base-300 px-5 py-2.5 text-sm">
+                        <span className="text-base-content/60">Subject</span>
+                        <span className="min-w-0 truncate font-semibold">{preview.subject}</span>
+                        {open.subject && <Pill tone="info">edited</Pill>}
+                        {pending && (
+                          <span className="ml-auto flex shrink-0 gap-2">
+                            {open.subject && (
+                              <button type="button" className={btn.xsGhost} disabled={!!busy} onClick={() => saveSubject("")}>
+                                Use default
+                              </button>
+                            )}
+                            <button type="button" className={btn.xsSecondary} disabled={!!busy} onClick={() => setSubjectDraft(preview.subject ?? "")}>
+                              Edit subject
+                            </button>
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <form
+                        className="flex flex-wrap items-center gap-2 border-b border-base-300 px-5 py-2.5 text-sm"
+                        onSubmit={(e) => {
+                          e.preventDefault()
+                          if (subjectDraft.trim()) saveSubject(subjectDraft)
+                        }}
+                      >
+                        <label className="text-base-content/60" htmlFor="batch-subject">
+                          Subject
+                        </label>
+                        <input
+                          id="batch-subject"
+                          autoFocus
+                          maxLength={200}
+                          className="input input-sm min-w-0 flex-1 border-base-300 font-semibold tracker:rounded-lg"
+                          value={subjectDraft}
+                          onChange={(e) => setSubjectDraft(e.target.value)}
+                          onKeyDown={(e) => e.key === "Escape" && setSubjectDraft(null)}
+                        />
+                        <button type="submit" className={btn.xsSecondary} disabled={!!busy || !subjectDraft.trim()}>
+                          {busy === "subject" && <Spinner />}
+                          Save for every email
+                        </button>
+                        <button type="button" className={btn.xsGhost} onClick={() => setSubjectDraft(null)}>
+                          Cancel
+                        </button>
+                      </form>
+                    )}
                     <iframe title="Email preview" srcDoc={preview.html} className="h-[75vh] w-full bg-white" sandbox="allow-popups allow-popups-to-escape-sandbox" />
                   </>
                 )}

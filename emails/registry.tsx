@@ -130,16 +130,17 @@ export type TemplateName = keyof typeof TEMPLATES
 
 export const isTemplate = (name: string): name is TemplateName => name in TEMPLATES
 
-// The batch's note is added at render time, so editing it in the outbox changes every message
+// The batch's note and subject are added at render time, so editing them in the outbox changes
+// every message
 const withNote = (props: Record<string, unknown>, note: string | null | undefined) => (note ? { ...props, note } : props)
 
-export const renderEmail = async (name: string, props: Record<string, unknown>, note?: string | null) => {
+export const renderEmail = async (name: string, props: Record<string, unknown>, note?: string | null, subject?: string | null) => {
   if (!isTemplate(name)) throw new Error(`No email template named ${name}`)
   const t = TEMPLATES[name] as unknown as Template<Record<string, unknown>>
   const p = withNote(props, note)
   const element = t.email(p)
   const [html, text] = await Promise.all([render(element), render(element, { plainText: true })])
-  return { subject: t.subject(p), html, text }
+  return { subject: subject?.trim() || t.subject(p), html, text }
 }
 
 export const subjectOf = (name: string, props: Record<string, unknown>) => {

@@ -7,7 +7,8 @@ import { renderChat, renderEmail, slackPayload, subjectOf, teamsPayload } from "
 // - Producers call createBatch with every message they want sent. Batches the admin reviews (the
 //   weekly digest) wait as "pending"; the rest (autoSend: instant news, onboarding, impact alerts
 //   after their impact check is approved) start approved and go with the next send.
-// - The admin reviews each rendered message in /email-outbox, then approves or skips the batch.
+// - The admin reviews each rendered message in /email-outbox (and can set the batch's note and
+//   subject), then approves or skips the batch.
 // - sendApproved sends approved messages (the cron, and right after approval) and records the
 //   result on each one.
 // - sendTransactional sends at once (confirmations, sign-in links) and records it too.
@@ -103,8 +104,8 @@ const unsubscribeUrlOf = (props: Record<string, unknown>) => {
   return footer?.unsubscribeUrl
 }
 
-const emailOptions = async (m: MessageRow, note: string | null, batchKind: string): Promise<CreateEmailOptions> => {
-  const { subject, html, text } = await renderEmail(m.template, m.props, note)
+const emailOptions = async (m: MessageRow, note: string | null, batchKind: string, batchSubject?: string | null): Promise<CreateEmailOptions> => {
+  const { subject, html, text } = await renderEmail(m.template, m.props, note, batchSubject)
   const unsubscribe = unsubscribeUrlOf(m.props)
   return {
     from: config.resend.fromAdmin,
@@ -126,8 +127,12 @@ const postJson = async (url: string, body: unknown) => {
   if (!response.ok) throw new Error(`Webhook answered ${response.status}: ${(await response.text()).slice(0, 200)}`)
 }
 
-const markSent = (db: Db, id: string, providerId?: string | null) =>
-  db.from("email_messages").update({ status: "sent", sent_at: new Date().toISOString(), provider_id: providerId ?? null, error: null }).eq("id", id)
+// `subject` records what went out when the batch's subject replaced the template's
+const markSent = (db: Db, id: string, providerId?: string | null, subject?: string) =>
+  db
+    .from("email_messages")
+    .update({ status: "sent", sent_at: new Date().toISOString(), provider_id: providerId ?? null, error: null, ...(subject ? { subject } : {}) })
+    .eq("id", id)
 const markFailed = (db: Db, id: string, error: unknown) =>
   db.from("email_messages").update({ status: "failed", error: (error instanceof Error ? error.message : String(error)).slice(0, 500) }).eq("id", id)
 
@@ -135,8 +140,8 @@ const EMAIL_CHUNK = 100
 
 // Sends approved batches' pending messages until `deadline`; batches with nothing left become sent
 export const sendApproved = async (db: Db, { deadline }: { deadline: number }) => {
-  const batches = must<{ id: string; kind: string; note: string | null }[]>(
-    await db.from("email_batches").select("id, kind, note").in("status", ["approved", "sending"]).order("approved_at"),
+  const batches = must<{ id: string; kind: string; note: string | null; subject: string | null }[]>(
+    await db.from("email_batches").select("id, kind, note, subject").in("status", ["approved", "sending"]).order("approved_at"),
     "Loading approved batches"
   )
   let sent = 0
@@ -154,10 +159,10 @@ export const sendApproved = async (db: Db, { deadline }: { deadline: number }) =
       const chunk = emails.slice(i, i + EMAIL_CHUNK)
       await db.from("email_messages").update({ status: "sending" }).in("id", chunk.map((m) => m.id))
       try {
-        const options = await Promise.all(chunk.map((m) => emailOptions(m, batch.note, batch.kind)))
+        const options = await Promise.all(chunk.map((m) => emailOptions(m, batch.note, batch.kind, batch.subject)))
         const { data, error } = await resend().batch.send(options)
         if (error) throw new Error(error.message)
-        await Promise.all(chunk.map((m, j) => markSent(db, m.id, data?.data?.[j]?.id)))
+        await Promise.all(chunk.map((m, j) => markSent(db, m.id, data?.data?.[j]?.id, options[j].subject)))
         sent += chunk.length
       } catch (e) {
         await Promise.all(chunk.map((m) => markFailed(db, m.id, e)))
@@ -222,9 +227,9 @@ export const sendTestCopy = async (db: Db, messageId: string, to: string) => {
     "Loading the message"
   )
   const batch = m.batch_id
-    ? must<{ note: string | null; kind: string }>(await db.from("email_batches").select("note, kind").eq("id", m.batch_id).single(), "Loading the batch")
-    : { note: null, kind: "test" }
-  const options = await emailOptions({ ...m, recipient: to }, batch.note, batch.kind)
+    ? must<{ note: string | null; kind: string; subject: string | null }>(await db.from("email_batches").select("note, kind, subject").eq("id", m.batch_id).single(), "Loading the batch")
+    : { note: null, kind: "test", subject: null }
+  const options = await emailOptions({ ...m, recipient: to }, batch.note, batch.kind, batch.subject)
   const { error } = await resend().emails.send({ ...options, subject: `[Test → ${m.recipient}] ${options.subject}` })
   if (error) throw new Error(error.message)
 }

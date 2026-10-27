@@ -48,6 +48,9 @@ still charges the 50% on the 22 removed subheadings.
 - [ ] **`adcvd.sql`'s 2026-10-26 line in prod and dev** (`adcvd_settings.fr_blocked`): lets each
       AD/CVD run remember a Federal Register block for the next. Without it the cron still runs,
       but logs "Loading blocks" / "Saving blocks" warnings and finds each block afresh.
+- [ ] **`email_outbox.sql`'s 2026-10-27 line in prod and dev** (`email_batches.subject`),
+      **before deploying**: the outbox sender selects it, so sending fails without it. Lets the
+      admin change a batch's subject in /email-outbox.
 - [ ] **Decide on the AD/CVD phantom cases** (step 2 of the launch list): `npm run adcvd:phantoms`
       against prod, check, `-- --apply`. That item then says to copy dev to prod, but step 3 says
       never to run `adcvd:copy-to-prod` again after launch. Settle which before running either.

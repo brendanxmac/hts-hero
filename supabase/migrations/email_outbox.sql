@@ -56,3 +56,6 @@ CREATE INDEX IF NOT EXISTS idx_email_messages_batch ON email_messages (batch_id,
 CREATE INDEX IF NOT EXISTS idx_email_messages_recipient ON email_messages (recipient, created_at DESC);
 
 ALTER TABLE email_messages ENABLE ROW LEVEL SECURITY;
+
+-- 2026-10-27: the admin's subject for every email in the batch (null: each template's own)
+ALTER TABLE email_batches ADD COLUMN IF NOT EXISTS subject text;

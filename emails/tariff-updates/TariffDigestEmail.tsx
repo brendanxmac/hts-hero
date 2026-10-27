@@ -16,11 +16,8 @@ export interface TariffDigestEmailProps {
   footer: EmailFooter
 }
 
-export const tariffDigestSubject = (p: TariffDigestEmailProps) => {
-  const first = p.updates[0]?.title ?? ""
-  const lead = first.length > 80 ? `${first.slice(0, 77).trim()}…` : first
-  return p.updates.length > 1 ? `${lead}, + ${p.updates.length - 1} more tariff ${p.updates.length === 2 ? "change" : "changes"}` : lead
-}
+// Short and the same every week; the admin can change it per batch in the outbox
+export const tariffDigestSubject = (_p: TariffDigestEmailProps) => "Your Weekly Tariff Brief"
 
 export default function TariffDigestEmail({ period, updates, signedIn, note, footer }: TariffDigestEmailProps) {
   return (
