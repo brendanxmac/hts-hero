@@ -93,6 +93,7 @@ const KEY_PAGES = [
   ...COUNTRY_PAGES.map((c) => [`/duty-calculator/${c.slug}`, 0.9]),
   ["/duty-calculator/faq", 0.7],
   ["/duty-calculator/changelog", 0.6],
+  ["/tariff-alerts", 0.9],
   ["/tariff-monitor", 0.9],
   ["/tariff-audit", 0.9],
   ["/tariff-updates", 0.9],

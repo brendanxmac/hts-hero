@@ -70,8 +70,7 @@ export const ManagedSection = () => {
                 <ArrowRightIcon className="h-5 w-5" aria-hidden />
               </a>
               <span className="text-base text-base-content/70">
-                From <strong className={`${display} text-2xl font-semibold text-base-content`}>{formatPrice(from.price)}</strong>/mo · up to{" "}
-                {from.maxPairs} imports
+                From <strong className={`${display} text-2xl font-semibold text-base-content`}>{formatPrice(from.price)}</strong>/mo
               </span>
             </div>
           </div>

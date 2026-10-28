@@ -12,9 +12,9 @@ const LOOK = [
 ];
 
 export const OverpaymentCauses = () => (
-  <section className={`${mk.band} ${mk.bandMuted}`} aria-labelledby="causes-title">
+  <section id="why-overpay" className={`${mk.band} ${mk.bandMuted}`} aria-labelledby="causes-title">
     <div className={mk.container}>
-      <SectionIntro eyebrow="Why importers overpay" title="Four ways duty gets overpaid" id="causes-title" center>
+      <SectionIntro eyebrow="Why importers overpay" title="Duty gets overpaid... alot" id="causes-title" center>
         The HTS has been revised dozens of times since the start of 2025, and every change has its own exemptions, stacking
         rules and dates. These are the overpayments an audit finds most.
       </SectionIntro>

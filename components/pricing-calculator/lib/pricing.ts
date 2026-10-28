@@ -62,6 +62,28 @@ export const LAUNCH_PRICING = {
 
 export const launchPricingActive = (now = Date.now()) => now < Date.parse(LAUNCH_PRICING.endsAt);
 
+// The value ladder (PRICING.md, DRAFT confirmed 2026-10-27, not charged yet): Tariff Impact Alerts
+// and Tariff Audits, each priced by imports, 15% off annually. Shown on /tariff-alerts; the Tracker's
+// plans and Stripe still use TRACKER_TIERS until the product moves over.
+// Every alerts plan is paid (2026-10-28: no free plan on the page), named plainly by size. emails
+// is how many users / email addresses an alert can go to; Slack & Teams alerts
+// start at Pro (teams).
+export const ALERT_TIERS = [
+  { name: "Starter", maxPairs: 10, price: 9, emails: 1, teams: false },
+  { name: "Growth", maxPairs: 25, price: 19, emails: 3, teams: false },
+  { name: "Pro", maxPairs: 100, price: 39, emails: 6, teams: true },
+  { name: "Scale", maxPairs: 500, price: 79, emails: 20, teams: true },
+] as const;
+// The audit plans mirror the alerts plans (2026-10-28): same names, imports and users, and each
+// includes the alerts plan of the same name
+export const AUDIT_TIERS = [
+  { name: "Starter", maxPairs: 10, price: 49, emails: 1, teams: false },
+  { name: "Growth", maxPairs: 25, price: 79, emails: 3, teams: false },
+  { name: "Pro", maxPairs: 100, price: 149, emails: 6, teams: true },
+  { name: "Scale", maxPairs: 500, price: 299, emails: 20, teams: true },
+] as const;
+export type LadderTier = (typeof ALERT_TIERS)[number] | (typeof AUDIT_TIERS)[number];
+
 export const TRACKER_MAX_LISTED_PAIRS = TRACKER_TIERS[TRACKER_TIERS.length - 1].maxPairs;
 
 export type TrackerTier = (typeof TRACKER_TIERS)[number];

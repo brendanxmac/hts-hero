@@ -1,4 +1,6 @@
-import { callJson } from "../hts-revision-diff/claude"
+import { APIUserAbortError } from "@anthropic-ai/sdk"
+import { callJson as callClaude } from "../hts-revision-diff/claude"
+import { FederalRegisterOutOfTime, runTimeLeft } from "./fr"
 import type { Rates } from "./types"
 
 // The Claude calls behind AD/CVD cases. Most of the work is regex (parse.ts); Claude does what
@@ -14,6 +16,25 @@ export const MODELS = {
   link: "claude-sonnet-5-5",
   history: "claude-opus-5-5",
 } as const
+
+// A call isn't started with less than this left in the run: an Opus or Sonnet answer can take a
+// minute or more, and the SDK's own timeout (10 minutes, retried twice) outlasts the function
+const MIN_CALL_MS = 30_000
+
+// Every call stops at the run's deadline (fr.ts), like the Federal Register requests: out of time,
+// it throws FederalRegisterOutOfTime and the callers leave the work for the next run
+const callJson = async <T>(params: Parameters<typeof callClaude>[0]) => {
+  const left = runTimeLeft()
+  const outOfTime = () => new FederalRegisterOutOfTime(`Out of time for a Claude call (${params.model})`)
+  if (left === Infinity) return callClaude<T>(params)
+  if (left < MIN_CALL_MS) throw outOfTime()
+  try {
+    return await callClaude<T>({ ...params, signal: AbortSignal.timeout(left) })
+  } catch (e) {
+    if (e instanceof APIUserAbortError || (e instanceof Error && e.name === "TimeoutError")) throw outOfTime()
+    throw e
+  }
+}
 
 // Long notices are cut here: the summary and rates are near the top, the scope is read separately
 const SUMMARY_CHARS = 60_000

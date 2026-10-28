@@ -74,10 +74,10 @@ export const RecalcTerminal = ({ example }: { example: AuditExample }) => {
             <span className="text-right font-semibold text-white">{usd(example.owedTotal)}</span>
             <span className="text-right text-lg font-semibold text-emerald-300">+{usd(diff)}</span>
           </div>
-          <p className={`mt-3 text-xs text-emerald-300 ${fade(example.lines.length + 1)}`}>
+          {/* <p className={`mt-3 text-xs text-emerald-300 ${fade(example.lines.length + 1)}`}>
             ✓ Overpaid {usd(diff)}: Section 122 exempts Section 232 articles (9903.03.06). Recoverable by post-summary
             correction or protest.
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

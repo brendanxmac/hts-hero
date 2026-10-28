@@ -1,48 +1,39 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
-import { REVERSE_TRIAL, TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
+import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
-import { DEFINITION } from "../lib/copy";
-import { REQUEST_ANCHOR, SIGN_UP_TO_AUDIT } from "../lib/links";
-import { AuditDashboard } from "./AuditDashboard";
+import { HISTORICAL_AUDIT_HREF, SIGN_UP_TO_AUDIT } from "../lib/links";
+import type { AuditScan } from "@/libs/tariff-audit-example";
+import { EntryScanCard } from "./EntryScanCard";
 
-const PROMISES = [
-  `Free for ${REVERSE_TRIAL.days} days, no card`,
-  "Every line checked at its entry date",
-  "Ready to hand to your broker",
-];
+const PROMISES = ["Every line checked at its entry date", "Keep 100% of what you find", "Ready to hand to your broker"];
 
-// The top of /tariff-audit: the promise and the answer-first definition beside a live audit
-// result. Server-rendered copy, so crawlers and AI assistants read it as is.
-export const AuditHero = () => (
-  <header className={`relative overflow-hidden ${mk.bandTint}`}>
-    <div className={`${mk.container} grid grid-cols-1 gap-14 pb-20 pt-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:pt-24`}>
+// The top of /tariff-audit: the promise and the two ways to buy (ongoing audits, or a historical
+// audit on a call) beside one new entry at a time, scanned and judged. On desktop it fills the screen under the header.
+// Server-rendered copy, so crawlers and AI assistants read it as is.
+export const AuditHero = ({ scans }: { scans: AuditScan[] }) => (
+  <header className={`relative overflow-hidden ${mk.bandTint} lg:flex lg:min-h-[calc(100svh-65px)] lg:items-center`}>
+    <div className={`${mk.container} grid grid-cols-1 gap-14 pb-20 pt-16 lg:grid-cols-[minmax(0,7fr)_minmax(0,6fr)] lg:items-center lg:py-20`}>
       <div className="min-w-0">
-        <h1>
-          <span className={`${mk.eyebrow} block`}>Tariff audit</span>
-          <span className={`${mk.display} mt-4 block`}>
-            Find the duty you overpaid. <span className={mk.accent}>Get it back.</span>
-          </span>
-        </h1>
-        <p className={`${mk.lead} mt-6`}>{DEFINITION}</p>
-        <div className="mt-10 flex flex-wrap gap-4">
-          <Link href={SIGN_UP_TO_AUDIT} className={mk.buttonPrimary}>
-            {TRY_IT_FREE} <ArrowRightIcon className="h-4 w-4" aria-hidden />
+        <h1 className={mk.display}>Stop Overpaying on your US Imports</h1>
+        <p className={`${mk.lead} mt-6`}>Instantly see what you paid versus what you should have paid for every entry, and fix any mistakes.</p>
+        <div className="mt-10 flex flex-col gap-3">
+          <Link href={SIGN_UP_TO_AUDIT} className={`${cta.buttonPrimary} w-full`}>
+            Start Auditing Your Entries <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </Link>
-          <a href={REQUEST_ANCHOR} className={mk.buttonSecondary}>
-            Request an audit
+          <a href={HISTORICAL_AUDIT_HREF} target="_blank" rel="noopener noreferrer" className={`${mk.buttonSecondary} h-14! w-full`}>
+            Book a Historical Audit
           </a>
         </div>
         <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
           {PROMISES.map((p) => (
             <li key={p} className={`${mk.small} flex items-center gap-1.5`}>
-              <CheckIcon className="h-4 w-4 text-primary" aria-hidden /> {p}
+              <CheckIcon className="h-4 w-4 text-success" aria-hidden /> {p}
             </li>
           ))}
         </ul>
-        <p className={`${mk.small} mt-8`}>Trusted by hundreds of customs brokers, freight forwarders and manufacturers.</p>
       </div>
-      <AuditDashboard />
+      {scans.length > 0 && <EntryScanCard scans={scans} />}
     </div>
   </header>
 );

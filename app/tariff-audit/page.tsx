@@ -1,22 +1,22 @@
 import { Metadata } from "next";
 import config from "@/config";
 import { renderSchemaJsonLd } from "@/libs/seo";
-import { getLatestVerifiedRevision, getVerifiedRange } from "@/tariffs/engine-v2/revisions";
-import { getAuditExample } from "@/libs/tariff-audit-example";
+import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
+import { getAuditExample, getAuditScans, type AuditScan } from "@/libs/tariff-audit-example";
 import * as mk from "@/components/ui/marketing/styles";
 import {
   AUDIT_FAQS,
   AuditFaq,
   AuditFlow,
   AuditHero,
+  AuditPricing,
   ClosingCta,
   DEFINITION,
+  KeepAllSection,
   OverpaymentCauses,
   RecalcSection,
-  RefundGroups,
-  RequestAudit,
-  StartPaths,
 } from "@/components/tariff-audit";
+import { AUDIT_TIERS } from "@/components/pricing-calculator/lib/pricing";
 
 // Static, refreshed daily with the tariff data
 export const revalidate = 86400;
@@ -41,8 +41,7 @@ export const metadata: Metadata = {
 };
 
 export default async function TariffAuditPage() {
-  const verifiedFrom = getVerifiedRange().from;
-  const example = await getAuditExample();
+  const [example, scans] = await Promise.all([getAuditExample(), getAuditScans().catch((): AuditScan[] => [])]);
 
   return (
     <main className={`${mk.page} w-full flex-1 shrink-0`}>
@@ -53,7 +52,14 @@ export default async function TariffAuditPage() {
         url: URL,
         description: DEFINITION,
         areaServed: "US",
-        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        offers: {
+          "@type": "AggregateOffer",
+          priceCurrency: "USD",
+          lowPrice: String(AUDIT_TIERS[0].price),
+          highPrice: String(AUDIT_TIERS[AUDIT_TIERS.length - 1].price),
+          offerCount: String(AUDIT_TIERS.length),
+          description: "Ongoing audits are priced per month by the number of imports tracked (one HTS code from one country of origin), each with Tariff Alerts included and a 10-audit money-back guarantee. Historical audits of past entries are quoted. No contingency fee.",
+        },
         provider: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
       })}
       {renderSchemaJsonLd({
@@ -81,13 +87,16 @@ export default async function TariffAuditPage() {
         ],
       })}
 
-      <AuditHero />
+      <AuditHero scans={scans} />
       <OverpaymentCauses />
-      <RecalcSection example={example} />
-      <RefundGroups verifiedFrom={verifiedFrom} />
       <AuditFlow />
-      <StartPaths />
-      <RequestAudit />
+      <RecalcSection scans={scans} />
+      <KeepAllSection />
+      {/* The refund groups (RefundGroups) are off the page for now, 2026-10-28; they may come back in another form */}
+      {/* "One audit can pay for your whole year" (PaybackSection) is inside the pricing now, 2026-10-28 */}
+      <AuditPricing example={example} />
+      {/* The three ways to start (StartPaths) and the free audit request form (RequestAudit) gave way to
+          the two offers in AuditPricing, 2026-10-28: historical audits are booked on a call */}
       <AuditFaq />
       <ClosingCta />
     </main>
