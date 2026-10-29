@@ -41,7 +41,7 @@ export const AlertCard = ({ example }: { example: AlertExample }) => {
   const change = Math.round((imp.afterPct - imp.beforePct) * 10) / 10;
   const up = change > 0;
   const affects = AFFECTS[(loop % alerts.length) % AFFECTS.length];
-  const headline = `${up ? "A new tariff" : "A tariff cut"} affects ${affects} of your imports`;
+  const headline = `${up ? "A new tariff" : "A tariff cut"} affects ${affects} of your products`;
 
   return (
     <figure className="flex flex-col items-center" aria-label="A tariff alert from HTS Hero arriving like a notification">
@@ -93,7 +93,7 @@ export const AlertCard = ({ example }: { example: AlertExample }) => {
             <span className="text-xs text-base-content/50">just now</span>
           </div>
 
-          {/* What happened, to which import */}
+          {/* What happened, to which product */}
           <div className="px-6 pb-6 pt-6">
             <p className="text-xl font-semibold leading-snug text-base-content [font-family:var(--font-tracker-display)]">
               {headline}
@@ -115,11 +115,11 @@ export const AlertCard = ({ example }: { example: AlertExample }) => {
                   {fmt(Math.abs(change))}
                 </span>
               </div>
-              <p className="mt-2 text-xs text-base-content/55">Total duty on this import, before and after</p>
+              <p className="mt-2 text-xs text-base-content/55">Total duty on this product, before and after</p>
             </div>
             {affects > 1 && (
               <p className="mt-3 text-center text-sm font-semibold text-base-content/60">
-                + {affects - 1} more of your imports affected
+                + {affects - 1} more of your products affected
               </p>
             )}
           </div>

@@ -31,9 +31,10 @@ to "was I charged right, and am I overpaying?", which Tariff Audits answers.
 | **Tariff Audits for partners** | Brokers, 3PLs, freight forwarders | Demo, from a published "from" price | Tariff Audits for every US importer client, from one account |
 | **Managed Tariffs** | Importers who want it done for them | Unchanged (see HTS Hero Managed) | We run it for them |
 
-An **import** is one HTS code from one country of origin, as today. Copy translates it for people
-who think in SKUs: "most catalogs have far fewer imports than SKUs: 40 SKUs of the same screw from
-China is 1 import".
+A **product** is one HTS code from one country of origin (internally a "pair" or "import"; customer
+copy says **product** since 2026-10-29: "imports" confused buyers). Copy translates it for people
+who think in SKUs: "most catalogs have far fewer products than SKUs: 40 SKUs of the same screw from
+China is 1 product". Every place a count is sold (cards, FAQs, footnotes) defines it once.
 
 ### What each paid offer includes
 

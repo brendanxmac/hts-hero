@@ -25,8 +25,8 @@ import {
 export const revalidate = 3600;
 
 const URL = `https://${config.domainName}/tariff-alerts`;
-const TITLE = "Tariff Alerts: Know When New Tariffs Affect Your Imports | HTS Hero";
-const DESCRIPTION = `Get alerted when new US tariffs affect your HTS codes, with the duty rate before and after on every import and the official source. Plans from ${formatPrice(ALERT_TIERS[0].price)} a month, as low as ${formatPrice(LOWEST_ALERT_PER_IMPORT)} per import.`;
+const TITLE = "Tariff Alerts: Know When New Tariffs Affect Your Products | HTS Hero";
+const DESCRIPTION = `Get alerted when new US tariffs affect your HTS codes, with the duty rate before and after on every product and the official source. Plans from ${formatPrice(ALERT_TIERS[0].price)} a month, as low as ${formatPrice(LOWEST_ALERT_PER_IMPORT)} per product.`;
 
 // How far ahead the pricing's "take effect in the next N days" looks
 const UPCOMING_DAYS = 60;
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   openGraph: {
-    title: "Get alerts when new tariffs affect your imports",
+    title: "Get alerts when new tariffs affect your products",
     description: DESCRIPTION,
     url: URL,
     siteName: "HTS Hero",
@@ -94,7 +94,7 @@ export default async function TariffAlertsPage() {
           lowPrice: String(ALERT_TIERS[0].price),
           highPrice: String(ALERT_TIERS[ALERT_TIERS.length - 1].price),
           offerCount: String(ALERT_TIERS.length),
-          description: `Plans are priced by the number of imports tracked (one HTS code from one country of origin), as low as ${formatPrice(LOWEST_ALERT_PER_IMPORT)} per import, per month; annual billing ${ANNUAL_DISCOUNT * 100}% off.`,
+          description: `Plans are priced by the number of products tracked (one HTS code from one country of origin), as low as ${formatPrice(LOWEST_ALERT_PER_IMPORT)} per product, per month; annual billing ${ANNUAL_DISCOUNT * 100}% off.`,
         },
         provider: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
       })}

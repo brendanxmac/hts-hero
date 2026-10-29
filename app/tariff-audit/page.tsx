@@ -10,9 +10,11 @@ import {
   AuditFlow,
   AuditHero,
   AuditPricing,
+  PaybackSection,
   ClosingCta,
   DEFINITION,
   KeepAllSection,
+  CompareSection,
   OverpaymentCauses,
   RecalcSection,
 } from "@/components/tariff-audit";
@@ -24,7 +26,7 @@ export const revalidate = 86400;
 const URL = `https://${config.domainName}/tariff-audit`;
 const TITLE = "Tariff Audit: Find Overpaid Import Duty & Refunds | HTS Hero";
 const DESCRIPTION =
-  "Audit past US import entries for overpaid duty, missed exemptions and refundable tariffs like IEEPA. Free for 14 days, or request one. Ready for your broker.";
+  "Audit past US import entries for overpaid duty, missed exemptions and refundable tariffs like IEEPA. Plans from $49 a month, by your number of products. Keep 100% of any refund.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -58,7 +60,7 @@ export default async function TariffAuditPage() {
           lowPrice: String(AUDIT_TIERS[0].price),
           highPrice: String(AUDIT_TIERS[AUDIT_TIERS.length - 1].price),
           offerCount: String(AUDIT_TIERS.length),
-          description: "Ongoing audits are priced per month by the number of imports tracked (one HTS code from one country of origin), each with Tariff Alerts included and a 10-audit money-back guarantee. Historical audits of past entries are quoted. No contingency fee.",
+          description: "Ongoing audits are priced per month by the number of products tracked (one HTS code from one country of origin), each with Tariff Alerts included and a 10-audit money-back guarantee. Historical audits of past entries are quoted. No contingency fee.",
         },
         provider: { "@type": "Organization", name: "HTS Hero", url: `https://${config.domainName}` },
       })}
@@ -88,12 +90,13 @@ export default async function TariffAuditPage() {
       })}
 
       <AuditHero scans={scans} />
-      <OverpaymentCauses />
-      <AuditFlow />
-      <RecalcSection scans={scans} />
+      {/* <OverpaymentCauses /> */}
       <KeepAllSection />
+      <AuditFlow />
+      {/* <CompareSection /> */}
+      <RecalcSection />
+      <PaybackSection />
       {/* The refund groups (RefundGroups) are off the page for now, 2026-10-28; they may come back in another form */}
-      {/* "One audit can pay for your whole year" (PaybackSection) is inside the pricing now, 2026-10-28 */}
       <AuditPricing example={example} />
       {/* The three ways to start (StartPaths) and the free audit request form (RequestAudit) gave way to
           the two offers in AuditPricing, 2026-10-28: historical audits are booked on a call */}

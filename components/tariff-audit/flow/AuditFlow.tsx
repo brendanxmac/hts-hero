@@ -11,8 +11,8 @@ import * as mk from "@/components/ui/marketing/styles";
 // "How the audit works" (RecalcSection). On a phone the picture stacks, with arrows between.
 
 const FLAGS = [
-  { label: "Overpaid", note: "You could get it back", Icon: ArrowUturnLeftIcon, tone: "text-success ring-success/50 shadow-success/15", icon: "bg-success/15 text-success" },
-  { label: "Underpaid", note: "Worth fixing before CBP asks", Icon: ExclamationTriangleIcon, tone: "text-error ring-error/50 shadow-error/15", icon: "bg-error/15 text-error" },
+  { label: "Likely Overpaid", note: "You could get it back", Icon: ArrowUturnLeftIcon, tone: "text-success ring-success/50 shadow-success/15", icon: "bg-success/15 text-success" },
+  { label: "Possibly Underpaid", note: "Worth fixing before CBP asks", Icon: ExclamationTriangleIcon, tone: "text-error ring-error/50 shadow-error/15", icon: "bg-error/15 text-error" },
 ];
 
 // Every item on the sides is h-16 (64px), the flags 48px apart: centers at 32 and 144 of a 176px
@@ -31,9 +31,9 @@ const VISUALS: ReactNode[] = [
   </div>,
   <div key="engine" className="relative w-full">
     {/* The glow behind the engine */}
-    <span className="af-glow pointer-events-none absolute -inset-4 rounded-[40px] bg-primary/10 blur-3xl" aria-hidden />
+    <span className="af-glow pointer-events-none absolute -inset-1.5 rounded-[32px] bg-primary/25 blur-md" aria-hidden />
     {/* A light running round its edge */}
-    <div className="relative overflow-hidden rounded-[28px] p-[2px] shadow-2xl shadow-primary/20">
+    <div className="relative overflow-hidden rounded-[28px] p-[2px]">
       <span
         className="af-spin pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[220%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,transparent_0deg,var(--color-primary)_60deg,transparent_140deg,transparent_360deg)]"
         aria-hidden
@@ -42,7 +42,6 @@ const VISUALS: ReactNode[] = [
       <div className="relative flex flex-col items-center gap-3 rounded-[26px] bg-base-100 px-5 py-8 text-center">
         <Image src={logo} alt="" width={56} height={56} />
         <p className="text-xl font-semibold leading-tight text-base-content [font-family:var(--font-tracker-display)]">HTS Hero Audit Engine</p>
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary">Rates in force on each entry date</p>
       </div>
     </div>
   </div>,
@@ -103,6 +102,7 @@ const Connector = ({ i }: { i: number }) => (
 // page rather than a strip between two sections
 export const AuditFlow = () => (
   <section
+    id="instant-results"
     className={`${mk.bandMuted} relative flex items-center overflow-hidden py-28 sm:py-40 lg:min-h-[calc(100svh-65px)]`}
     aria-labelledby="flow-title"
   >
@@ -119,13 +119,12 @@ export const AuditFlow = () => (
       aria-hidden
       className="pointer-events-none absolute inset-0 bg-[linear-gradient(var(--color-base-300)_1px,transparent_1px),linear-gradient(90deg,var(--color-base-300)_1px,transparent_1px)] bg-size-[40px_40px] opacity-60 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
     />
-    {/* A soft glow behind the picture, and the edges fading into the sections around it */}
-    <div aria-hidden className="pointer-events-none absolute left-1/2 top-[58%] h-[28rem] w-[60rem] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.04] blur-3xl" />
+    {/* The edges fading into the sections around it */}
     <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-base-100/60 to-transparent" />
     <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-black/20 to-transparent" />
     <div className={`${mk.container} relative`}>
-      <SectionIntro eyebrow="" title={<>We check what you <span className={mk.accent}>should have</span> <br />paid on every entry</>} id="flow-title" center>
-        You upload your entries, we check every line and flag possible over or underpayments.
+      <SectionIntro eyebrow="" title={<>See Results <span className="text-primary">Instantly</span> </>} id="flow-title" center>
+        You upload your entries, we check every line and flag issues instantly. No handoffs, no consultants.
       </SectionIntro>
       <Reveal className="mx-auto mt-20 max-w-6xl lg:mt-24">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)_auto_minmax(0,1fr)] md:gap-0">

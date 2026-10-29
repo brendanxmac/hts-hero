@@ -13,7 +13,7 @@ export const HowItWorks = () => (
   <section id="how-it-works" className={`${mk.band} ${mk.bandMuted}`} aria-labelledby="how-title">
     <div className={`${mk.container} flex flex-col gap-14`}>
       <SectionIntro eyebrow="" title="Get Started in 30 Seconds" id="how-title" center>
-        Just upload your imports and you&apos;re good to go!
+        Just upload your products and you&apos;re good to go!
       </SectionIntro>
       <QuickStart />
       <div className="flex flex-col items-center gap-3">

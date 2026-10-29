@@ -169,7 +169,7 @@ const config: ConfigProps = {
   // REQUIRED
   appName: "HTS Hero",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
-  appDescription: "Engineered Trade Compliance",
+  appDescription: "We Make Tariffs Easy",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
   domainName: "htshero.com",
   // The postal address commercial email must show (CAN-SPAM), in every email's footer

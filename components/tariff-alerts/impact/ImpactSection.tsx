@@ -61,8 +61,8 @@ export const ImpactSection = ({ example }: { example: AlertExample | null }) => 
   <section id="impact" className={mk.band} aria-labelledby="impact-title">
     <div className={`${mk.container} grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-20`}>
       <div>
-        <SectionIntro eyebrow="" title="See How New Tariffs Affect Your Imports" id="impact-title">
-          A tariff headline doesn&apos;t always tell you what you&apos;ll pay. We instantly show you how it affects your imports, without tab switching and spreadsheet craziness.
+        <SectionIntro eyebrow="" title="See How New Tariffs Affect Your Products" id="impact-title">
+          A tariff headline doesn&apos;t always tell you what you&apos;ll pay. We instantly show you how it affects your products, without tab switching and spreadsheet craziness.
         </SectionIntro>
         <div className="mt-10">
           <Link href={PRICING_HREF} className={cta.buttonPrimarySm}>

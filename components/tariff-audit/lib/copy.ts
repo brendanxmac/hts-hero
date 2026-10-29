@@ -12,10 +12,13 @@ import {
 // this is what makes trying it safe
 export const AUDIT_GUARANTEE_DAYS = 30
 export const AUDIT_GUARANTEE_AUDITS = 10
-export const AUDIT_GUARANTEE = `${AUDIT_GUARANTEE_AUDITS} Audit Money Back Guarantee`
-export const AUDIT_GUARANTEE_DETAIL = `If you do ${AUDIT_GUARANTEE_AUDITS} audits on your imports within ${AUDIT_GUARANTEE_DAYS} days and are not satisfied with the results, we'll give you a full refund.`
+export const AUDIT_GUARANTEE = `${AUDIT_GUARANTEE_AUDITS}-Audit Money-Back Guarantee`
+export const AUDIT_GUARANTEE_DETAIL = `If you do ${AUDIT_GUARANTEE_AUDITS} audits on your products within ${AUDIT_GUARANTEE_DAYS} days and are not satisfied with the results, we'll give you a full refund.`
 
-const auditTierList = AUDIT_TIERS.map((t) => `Tariff Audits ${t.name}, ${formatPrice(t.price)} a month for up to ${t.maxPairs} imports`).join("; ")
+const auditTierList = AUDIT_TIERS.map(
+  (t) =>
+    `Tariff Audits ${t.name}, ${formatPrice(t.price)} a month for up to ${t.maxPairs} products`,
+).join("; ")
 
 // The one-sentence answer to "what is it?", written so it can be quoted on its own
 export const DEFINITION =
@@ -28,7 +31,7 @@ export const CAUSES = [
     text: "Many Chapter 99 tariffs exempt goods that pay another one. Section 122 skipped Section 232 articles, for example, but it was often charged anyway.",
   },
   {
-    title: "Exemptions and preferences not claimed",
+    title: "Unclaimed exemptions",
     text: "A USMCA or other trade-agreement claim left off an entry, or an exemption that applied on the entry date but wasn't used.",
   },
   {
@@ -36,7 +39,7 @@ export const CAUSES = [
     text: "Retroactive exemptions, technical corrections and court rulings can turn duty you paid correctly at the time into duty you can get back.",
   },
   {
-    title: "Tariffs struck down",
+    title: "Terminated Tariffs",
     text: "IEEPA duties are being refunded with interest, and the Section 122 surcharge is under appeal. Each one depends on the entry's date and status.",
   },
 ]
@@ -93,11 +96,11 @@ export const AUDIT_FAQS = [
   },
   {
     question: "How much does a tariff audit cost?",
-    answer: `Ongoing audits are a flat monthly price by the number of imports you audit: ${auditTierList}. Each plan includes Tariff Alerts for the same imports, annual billing takes ${ANNUAL_DISCOUNT * 100}% off, and every plan comes with our ${AUDIT_GUARANTEE_AUDITS}-audit money-back guarantee. A historical audit of your past entries is a one-time project, quoted after a short call. Neither takes a cut of what you recover.`,
+    answer: `Ongoing audits are a flat monthly price by the number of products you audit (a product is one HTS code from one country of origin): ${auditTierList}. Each plan includes Tariff Alerts for the same products, annual billing takes ${ANNUAL_DISCOUNT * 100}% off, and every plan comes with our ${AUDIT_GUARANTEE_AUDITS}-audit money-back guarantee. A historical audit of your past entries is a one-time project, quoted after a short call. Neither takes a cut of what you recover.`,
   },
   {
     question: "What if Tariff Audits isn't worth it for me?",
-    answer: `Ask for your money back. Every plan comes with our ${AUDIT_GUARANTEE_AUDITS}-audit money-back guarantee: if you do ${AUDIT_GUARANTEE_AUDITS} audits on your imports within ${AUDIT_GUARANTEE_DAYS} days and are not satisfied with the results, we'll give you a full refund. You can also cancel anytime.`,
+    answer: `Ask for your money back. Every plan comes with our ${AUDIT_GUARANTEE_AUDITS}-audit money-back guarantee: if you do ${AUDIT_GUARANTEE_AUDITS} audits on your products within ${AUDIT_GUARANTEE_DAYS} days and are not satisfied with the results, we'll give you a full refund. You can also cancel anytime.`,
   },
   {
     question: "Do you take a percentage of my refund?",

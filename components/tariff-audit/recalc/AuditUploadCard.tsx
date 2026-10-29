@@ -87,11 +87,11 @@ export const AuditUploadCard = ({ scan }: { scan: AuditScan }) => (
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2.5">
-            <span className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-success-content text-sm font-semibold text-success">
-              <PaperAirplaneIcon className="h-4 w-4" aria-hidden /> Send to Your Broker
-            </span>
             <span className="inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm font-semibold ring-1 ring-success-content/50">
               <MagnifyingGlassIcon className="h-4 w-4" aria-hidden /> See Details
+            </span>
+            <span className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-success-content text-sm font-semibold text-success">
+              <PaperAirplaneIcon className="h-4 w-4" aria-hidden /> Send to Your Broker
             </span>
           </div>
         </div>

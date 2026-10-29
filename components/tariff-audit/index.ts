@@ -6,6 +6,7 @@ export { RefundGroups } from "./refunds/RefundGroups";
 export { AuditFlow } from "./flow/AuditFlow";
 export { StartPaths } from "./paths/StartPaths";
 export { KeepAllSection } from "./keep/KeepAllSection";
+export { CompareSection } from "./keep/CompareSection";
 export { PaybackSection } from "./payback/PaybackSection";
 export { AuditPricing } from "./pricing/AuditPricing";
 export { RequestAudit } from "./request/RequestAudit";

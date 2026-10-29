@@ -8,7 +8,7 @@ import { CheckIcon, ClockIcon, CloudArrowUpIcon, TableCellsIcon } from "@heroico
 const LOOP = "7s";
 
 const STEPS = [
-  { n: "1", title: "Upload your imports", text: "A spreadsheet, or paste your HTS codes", you: true },
+  { n: "1", title: "Upload your products", text: "A spreadsheet, or paste your HTS codes", you: true },
   { n: "2", title: "That's it", text: "Alerts switch on automatically", you: false },
 ];
 
@@ -45,14 +45,14 @@ export const QuickStart = () => (
     {/* The window */}
     <figure
       className="overflow-hidden rounded-[28px] bg-base-100 shadow-2xl shadow-base-content/10 ring-1 ring-base-300"
-      aria-label="Upload your imports, and tariff alerts switch on automatically"
+      aria-label="Upload your products, and tariff alerts switch on automatically"
     >
       <div className="relative h-72 p-6">
         {/* 1. Drop your spreadsheet */}
         <div className="qs-a absolute inset-6 flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 text-center">
           <span className="qs-file flex items-center gap-2.5 rounded-xl bg-base-100 px-4 py-3 shadow-xl shadow-base-content/10 ring-1 ring-base-300">
             <TableCellsIcon className="h-6 w-6 text-success" aria-hidden />
-            <span className="text-sm font-semibold text-base-content">my-imports.xlsx</span>
+            <span className="text-sm font-semibold text-base-content">my-products.xlsx</span>
           </span>
           <p className="flex items-center gap-2 text-base font-semibold text-base-content/70">
             <CloudArrowUpIcon className="h-5 w-5 text-primary" aria-hidden /> Drop your spreadsheet, or paste your HTS codes
@@ -63,12 +63,12 @@ export const QuickStart = () => (
         <div className="qs-b absolute inset-6 flex flex-col items-center justify-center gap-4">
           <span className="flex items-center gap-2.5 rounded-xl bg-base-100 px-4 py-3 shadow-xl shadow-base-content/10 ring-1 ring-base-300">
             <TableCellsIcon className="h-6 w-6 text-success" aria-hidden />
-            <span className="text-sm font-semibold text-base-content">my-imports.xlsx</span>
+            <span className="text-sm font-semibold text-base-content">my-products.xlsx</span>
           </span>
           <div className="h-3 w-full max-w-sm overflow-hidden rounded-full bg-base-300">
             <div className="qs-bar h-full rounded-full bg-primary" />
           </div>
-          <p className="text-base font-semibold text-base-content/70">Adding your imports…</p>
+          <p className="text-base font-semibold text-base-content/70">Adding your products…</p>
         </div>
 
         {/* 3. Done: alerts on */}

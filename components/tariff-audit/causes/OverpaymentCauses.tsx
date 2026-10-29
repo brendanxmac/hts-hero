@@ -14,9 +14,9 @@ const LOOK = [
 export const OverpaymentCauses = () => (
   <section id="why-overpay" className={`${mk.band} ${mk.bandMuted}`} aria-labelledby="causes-title">
     <div className={mk.container}>
-      <SectionIntro eyebrow="Why importers overpay" title="Duty gets overpaid... alot" id="causes-title" center>
-        The HTS has been revised dozens of times since the start of 2025, and every change has its own exemptions, stacking
-        rules and dates. These are the overpayments an audit finds most.
+      <SectionIntro eyebrow="Tariff Chaos" title="Why Importers Overpay" id="causes-title" center>
+        US Tariffs have changed dozens of times since 2024. Every change has its own exemptions, stacking
+        rules, and dates. This has led to incorrect duty payments for many importers.
       </SectionIntro>
       <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {CAUSES.map((c, i) => {

@@ -59,10 +59,10 @@ export const EarlyTimeline = ({ example }: { example: AlertExample }) => {
         {/* The rail, from the first alert to the duty */}
         <span className="absolute bottom-2 left-[calc(0.625rem-1px)] top-2 w-0.5 bg-linear-to-b from-primary via-primary/60 to-error" aria-hidden />
         <Stop date={proposed} label="Proposed" dot="bg-primary">
-          <Alert text={`A proposed tariff might affect ${hit} of your imports`} />
+          <Alert text={`A proposed tariff might affect ${hit} of your products`} />
         </Stop>
         <Stop date={published} label={`Published, ${plural(daysBetween(proposed, published), "day")} later`} dot="bg-primary">
-          <Alert text={`A new tariff affects ${hit} of your imports`} />
+          <Alert text={`A new tariff affects ${hit} of your products`} />
         </Stop>
         <Stop date={effective} label="New duty starts on your entries" dot="bg-error" />
       </ol>

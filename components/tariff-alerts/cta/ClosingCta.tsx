@@ -12,7 +12,7 @@ export const ClosingCta = () => (
         Tariff changes are coming. <br /> <span className={cta.accent}>Will you be prepared?</span>
       </h2>
       <p className={`${cta.lead} mt-6 max-w-2xl`}>
-        Add your imports in 30 seconds to activate your tariff alerts.
+        Add your products in 30 seconds to activate your tariff alerts.
       </p>
       <div className="mt-10">
         <Link href={PRICING_HREF} className={cta.buttonPrimary}>

@@ -8,7 +8,7 @@ export const HomeFaq = () => (
   <section id="faq" className={`${mk.band} scroll-mt-6`} aria-labelledby="faq-title">
     <div className={`${mk.container} grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]`}>
       <div className="lg:sticky lg:top-8 lg:self-start">
-        <SectionIntro eyebrow="Questions" title="HTS Hero, answered" id="faq-title" />
+        <SectionIntro eyebrow="Questions" title="HTS Hero FAQ" id="faq-title" />
       </div>
       <div className="flex flex-col gap-3">
         {HOME_FAQS.map(({ question, answer }, i) => (

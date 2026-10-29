@@ -8,7 +8,7 @@ export const ClosingCta = () => (
   <section className={`${cta.band} ${cta.bandPad}`} aria-labelledby="closing-title">
     <div className={`${mk.container} relative flex flex-col items-center text-center`}>
       <h2 id="closing-title" className={cta.title}>
-        One Audit could <br /><span className={cta.accent}>save you thousands</span>
+        Was Your Last Entry Overpaid? <br /><span className={cta.accent}>Find Out in Seconds.</span>
       </h2>
       <p className={`${cta.lead} mt-6 max-w-2xl`}>
         Check your entries now, and protect them going forward.
