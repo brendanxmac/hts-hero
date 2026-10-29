@@ -14,8 +14,8 @@ const initials = (company: string) =>
 export const Testimonials = () => (
   <section className={`${mk.band} ${mk.bandMuted}`} aria-labelledby="testimonials-title">
     <div className={mk.container}>
-      <SectionIntro title={<><span className={mk.accent}>Loved</span> by Trade Pros</>} id="testimonials-title" center>
-        Customs brokers, importers, and logistics teams rely on HTS Hero every day. Here&apos;s what they have to say:
+      <SectionIntro title={<><span className={mk.accent}>Loved</span> by 300+ Trade Pros</>} id="testimonials-title" center>
+        Customs brokers, importers, and logistics teams rely on HTS Hero every day. <br /> Here&apos;s what they have to say:
       </SectionIntro>
       <div className="mt-14 grid gap-6 md:grid-cols-3">
         {testimonials.map((t) => (

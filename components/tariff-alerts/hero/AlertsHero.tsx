@@ -20,7 +20,7 @@ export const AlertsHero = ({ example }: { example: AlertExample | null }) => (
       <div className="min-w-0">
         <h1>
           <span className={`${mk.display} mt-4 block`}>
-            Get Notified When New Tariffs Hit Your Products
+            Get Early Alerts When New Tariffs Hit Your Products
           </span>
         </h1>
         <p className={`${mk.lead} mt-6`}>{DEFINITION}</p>

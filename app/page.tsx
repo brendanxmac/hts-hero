@@ -12,6 +12,7 @@ import {
   HomeFaq,
   OfferCta,
   PricingOverview,
+  NewsSignup,
   ToolShowcase,
   ClassifySection,
   ManagedSection,
@@ -19,7 +20,8 @@ import {
 } from "@/components/home";
 import { Testimonials } from "@/components/classify-landing";
 import { monitorFacts } from "@/components/tariff-monitor";
-import { getAuditExample } from "@/libs/tariff-audit-example";
+import { getAuditScans, type AuditScan } from "@/libs/tariff-audit-example";
+import { getAlertExample } from "@/libs/tariff-alerts-example";
 import { getSavingsExamples } from "@/libs/tariff-savings-example";
 import { getLatestVerifiedRevision } from "@/tariffs/engine-v2/revisions";
 import * as mk from "@/components/ui/marketing/styles";
@@ -52,9 +54,10 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const facts = monitorFacts();
-  const [{ example }, audit, savings] = await Promise.all([
+  const [{ example }, alert, scans, savings] = await Promise.all([
     getDutyCalculatorContent(),
-    getAuditExample(),
+    getAlertExample(),
+    getAuditScans().catch((): AuditScan[] => []),
     getSavingsExamples(),
   ]);
 
@@ -102,17 +105,19 @@ export default async function Home() {
         <main className={`${mk.page} w-full flex-1 shrink-0`}>
           <WelcomeNotice />
           <HeroTicker />
+          <Testimonials />
           <ToolShowcase
             example={example}
-            audit={audit}
+            alert={alert}
+            scans={scans}
             savings={savings}
             facts={facts}
           />
-          {/* <Testimonials /> */}
-          <PricingOverview />
-          <ManagedSection />
+          {/* <PricingOverview /> */}
+          {/* <ManagedSection /> */}
           <ClassifySection />
-          <HomeDirectory />
+          <NewsSignup />
+          {/* <HomeDirectory /> */}
           <HomeFaq />
           <OfferCta />
         </main>

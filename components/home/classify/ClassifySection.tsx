@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, CheckCircleIcon, DocumentTextIcon, ScaleIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
-import { CLASSIFY_PLANS, formatPrice } from "@/components/pricing-calculator/lib/pricing";
 import { PRODUCTS } from "@/components/classify-landing/lib/howItWorks";
-import { display } from "../lib/theme";
 
 // The classification assistant on the homepage: a section of its own that sells it. The promise
-// (audit-ready codes in minutes, backed by the law), what it does, the price, and a real worked
+// (audit-ready codes in minutes, backed by the law), what it does, a free try, and a real worked
 // example from the /classify demo: the product, the candidate headings, the one chosen and the legal
 // notes and CROSS rulings behind it.
 
@@ -20,12 +18,12 @@ const POINTS = [
 const EXAMPLE = PRODUCTS[1];
 
 export const ClassifySection = () => (
-  <section id="classify" className={`${mk.band} scroll-mt-20`} aria-labelledby="classify-title">
+  <section id="classify" className={`${mk.band} ${mk.bandMuted} scroll-mt-20`} aria-labelledby="classify-title">
     <div className={`${mk.container} grid grid-cols-1 items-center gap-14 lg:grid-cols-2`}>
       <div>
         <p className={mk.eyebrow}>Classification assistant</p>
         <h2 id="classify-title" className={`${mk.h2} mt-4`}>
-          Back every classifiaction with <span className={mk.accent}>legal proof</span>
+          Back every classification with <span className={mk.accent}>legal proof</span>
         </h2>
         <p className={`${mk.lead} mt-5`}>
           Describe the product. Get HS candidates, relevant legal notes and CROSS rulings, and decide on your 10 digit code with confidence.
@@ -40,17 +38,11 @@ export const ClassifySection = () => (
             </li>
           ))}
         </ul>
-        <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+        <div className="mt-9">
           <Link href="/classify#try-classify" className={`${mk.buttonPrimary} h-14 px-8 text-lg`}>
-            Classify a product free
+            Try it Free
             <ArrowRightIcon className="h-5 w-5" aria-hidden />
           </Link>
-          <span className="text-base text-base-content/70">
-            Then from <strong className={`${display} text-xl font-semibold text-base-content`}>{formatPrice(CLASSIFY_PLANS.starter.price)}</strong>/mo ·{" "}
-            <Link href="/classify#pricing" className="font-semibold text-primary underline-offset-4 hover:underline">
-              See plans
-            </Link>
-          </span>
         </div>
       </div>
 

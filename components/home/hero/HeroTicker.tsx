@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { PROGRAM } from "@/components/ui/marketing";
 import { DEMO_ALERTS } from "@/components/tariff-monitor/lib/demoAlerts";
@@ -69,14 +68,20 @@ export const HeroTicker = () => (
           HTS Hero audits every import for duty you may have overpaid, alerts you the moment a tariff change hits your products, and
           uncovers possible savings, 24/7.
         </p>
-        <Link
+        <a
           href={OFFER.href}
           className={`${moneyButton} mt-10`}
         >
           {OFFER.cta}
           <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </Link>
-        {/* <p className="mt-4 max-w-md text-sm text-base-content/60">{OFFER.note}</p> */}
+        </a>
+        {/* The free way in, for visitors not ready to buy (NewsSignup, further down) */}
+        <p className="mt-4 text-sm text-base-content/60">
+          Not ready yet?{" "}
+          <a href="#news" className="font-semibold text-primary underline-offset-4 hover:underline">
+            Get the free Weekly Tariff Brief
+          </a>
+        </p>
       </div>
       <div className={followPage}>
         <CommandCenter />

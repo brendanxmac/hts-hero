@@ -24,7 +24,7 @@ const alertsValue = (plan: SalesPlan, billing: Billing) => {
 };
 
 // What a plan includes, after its imports and users. A plan only lists what it has
-const included = (plan: SalesPlan, billing: Billing): string[] => [
+export const auditsIncluded = (plan: SalesPlan, billing: Billing): string[] => [
   "Find overpaid & underpaid duty",
   "Keep 100% of what you recover",
   "Discover additional savings",
@@ -64,7 +64,7 @@ export const AuditPricing = ({ example }: { example: AuditExample | null }) => {
             <DarkBillingSwitch billing={billing} onChange={setBilling} />
           </div>
 
-          <PlanCards product="Tariff Audits" plans={AUDIT_TIERS} billing={billing} features={included} href={SIGN_UP_TO_AUDIT} lead={(p) => `Unlimited audits on ${p.maxPairs} products`} guarantee={AUDIT_GUARANTEE} best={best} products={products} />
+          <PlanCards product="Tariff Audits" plans={AUDIT_TIERS} billing={billing} features={auditsIncluded} href={SIGN_UP_TO_AUDIT} lead={(p) => `Unlimited audits on ${p.maxPairs} products`} guarantee={AUDIT_GUARANTEE} best={best} products={products} />
 
           {/* More than the largest plan, and firms managing importer clients. Each link says which, so
               it's on the booking. The historical-audit row is off for now, 2026-10-28 */}

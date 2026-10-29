@@ -19,7 +19,7 @@ import { GUARANTEE, GUARANTEE_DETAIL } from "../lib/copy";
 export { DarkBillingSwitch };
 
 // What every plan includes, after its products and users (and Slack & Teams from Pro, on the card)
-const included = (): string[] => [
+export const alertsIncluded = (): string[] => [
   "Alerts when new tariffs affect your products",
   "See how each update affects your products",
   "Antidumping and countervailing duty alerts",
@@ -64,7 +64,7 @@ export const AlertsPricing = ({ urgency }: { urgency?: string | null }) => {
             <DarkBillingSwitch billing={billing} onChange={setBilling} />
           </div>
 
-          <PlanCards product="Tariff Alerts" plans={ALERT_TIERS} billing={billing} features={included} href={TRY_FREE_HREF} lead={(p) => `Alerts on up to ${p.maxPairs} products`} best={best} products={products} />
+          <PlanCards product="Tariff Alerts" plans={ALERT_TIERS} billing={billing} features={alertsIncluded} href={TRY_FREE_HREF} lead={(p) => `Alerts on up to ${p.maxPairs} products`} best={best} products={products} />
 
           {/* More than the largest plan, and firms managing importer clients. Each demo link says which,
               so it's on the booking. */}

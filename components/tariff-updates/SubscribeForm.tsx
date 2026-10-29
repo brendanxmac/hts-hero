@@ -1,29 +1,28 @@
 "use client"
 
-import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import { FormEvent, useState } from "react"
 import Link from "next/link"
 import { ArrowRightIcon, CheckCircleIcon, CheckIcon, EnvelopeIcon } from "@heroicons/react/20/solid"
-import { signupHref } from "@/components/tariff-tracker/access/signup"
 import * as ui from "@/components/ui/styles"
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel"
-import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing"
-import { AUTO_AUDITING, SAVINGS_DETECTION } from "@/components/ui/marketing/comingSoon"
+import { ALERT_TIERS, formatPrice } from "@/components/pricing-calculator/lib/pricing"
 import { DEFAULT_NEWS_PREFERENCES, NewsPreferencesFields, type NewsPreferencesValue } from "./NewsPreferencesFields"
 
 // Subscribe to US tariff updates by email, on /tariff-updates and every update page. Weekly digest
 // of new actions by default; "Choose what you get" opens the laws, countries and timing. After
-// subscribing, the next step is offered: alerts on their own imports, in the Tariff Tracker.
+// subscribing, the next step is offered: Tariff Alerts on their own products (/tariff-alerts, paid,
+// no trial).
 // `inline` is the small one inside another box (the duty calculator's Tariff News): the email and
 // a button on one row, the weekly digest of every law and country, and a one-line confirmation.
 
-// What the free Tariff Tracker adds to the news, offered right after subscribing
+// What Tariff Alerts adds to the news, offered right after subscribing
+const ALERTS_HREF = "/tariff-alerts"
+const ALERTS_FROM = formatPrice(ALERT_TIERS[0].price)
 const UPSELL = [
-  "See which of your imports each new tariff update affects",
-  "Get alerted with the rate before and after, by email, Slack or Teams",
-  "Run impact checks to see exactly how any tariff action affects each import",
-  `${SAVINGS_DETECTION.name} and ${AUTO_AUDITING.name.toLowerCase()}, included`,
-  `Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card`,
+  "Know which of your products each new tariff affects",
+  "Get alerted when it's proposed, and again when it's published",
+  "See the rate before and after on each product",
+  `From ${ALERTS_FROM} a month, cancel anytime`,
 ]
 
 // The address they subscribed with, for the sign-up page to fill in (this tab only, never in a URL)
@@ -82,7 +81,6 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
   // Tracker onboards them.
   if (status !== "idle" && status !== "sending") {
     const done = DONE[status]
-    const signup = signupHref("/tariff-tracker")
     if (inline)
       return (
         <div className="flex flex-col gap-3" role="status">
@@ -93,13 +91,12 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
             </span>
           </p>
           <div className="flex flex-col gap-2 rounded-xl border border-primary/20 bg-primary/[0.06] p-3.5">
-            <p className="m-0 text-sm font-semibold text-base-content">Next: see when an update hits your own imports</p>
+            <p className="m-0 text-sm font-semibold text-base-content">Next: know when a tariff hits your own products</p>
             <p className="m-0 text-xs leading-relaxed text-base-content/70">
-              Try the Tariff Tracker free for {REVERSE_TRIAL.days} days, no credit card: get alerted with the rate before and after, and see exactly how each update
-              affects your imports.
+              Tariff Alerts tells you which of your products each new tariff affects, with the rate before and after. From {ALERTS_FROM} a month.
             </p>
-            <Link href={signup} onClick={() => upsellClicked(source)} className={`${ui.button({ variant: "primary", size: "sm" })} self-start`}>
-              {TRY_IT_FREE}
+            <Link href={ALERTS_HREF} onClick={() => upsellClicked(source)} className={`${ui.button({ variant: "primary", size: "sm" })} self-start`}>
+              Get Tariff Alerts
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>
           </div>
@@ -115,7 +112,7 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
           </div>
         </div>
         <div className="flex flex-col gap-3 rounded-2xl border border-primary/20 bg-primary/[0.06] p-5">
-          <p className="m-0 text-base font-semibold text-base-content">Now see exactly when an update hits your imports</p>
+          <p className="m-0 text-base font-semibold text-base-content">Now know exactly when a tariff hits your products</p>
           <ul className="m-0 flex list-none flex-col gap-1.5 p-0 text-sm text-base-content/80">
             {UPSELL.map((line) => (
               <li key={line} className="flex items-start gap-2">
@@ -124,13 +121,10 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
               </li>
             ))}
           </ul>
-          <Link href={signup} onClick={() => upsellClicked(source)} className={`${ui.button({ variant: "primary" })} self-start`}>
-            Create my free account
+          <Link href={ALERTS_HREF} onClick={() => upsellClicked(source)} className={`${ui.button({ variant: "primary" })} self-start`}>
+            Get Tariff Alerts
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
-          <p className="m-0 text-xs text-base-content/60">
-            Free, no credit card. Takes a minute; then add your HTS codes and countries, and your {REVERSE_TRIAL.days}-day trial starts.
-          </p>
         </div>
       </div>
     )

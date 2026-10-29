@@ -16,3 +16,4 @@ export { AUDIT_FAQS, DEFINITION } from "./lib/copy";
 // Visuals reused on the homepage
 export { RecalcTerminal } from "./recalc/RecalcTerminal";
 export { AuditDashboard } from "./hero/AuditDashboard";
+export { EntryScanCard } from "./hero/EntryScanCard";

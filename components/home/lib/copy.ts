@@ -1,21 +1,27 @@
 import {
+  ALERT_TIERS,
   ANNUAL_DISCOUNT,
+  AUDIT_TIERS,
   CLASSIFY_PLANS,
-  LOWEST_PER_IMPORT,
-  REVERSE_TRIAL,
-  TRACKER_TIERS,
   formatPrice,
-  TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing"
+import { GUARANTEE_DAYS } from "@/components/tariff-alerts/lib/copy"
+import { AUDIT_GUARANTEE_AUDITS, AUDIT_GUARANTEE_DAYS } from "@/components/tariff-audit/lib/copy"
 
 // The homepage's fixed copy. The FAQ is shown on the page and in its FAQPage schema, so the two
 // always match. Prices come from the price list (PRICING.md).
 
 // The one-sentence answer to "what is HTS Hero?", written so it can be quoted on its own
 export const DEFINITION =
-  "HTS Hero is US tariff software for importers, customs brokers and freight forwarders: it calculates the full duty on any HTS code and country of origin, checks it for antidumping and countervailing duty (AD/CVD) cases, alerts you when a tariff change hits your products, and audits past entries for duty you can get back."
+  "HTS Hero is US tariff software for importers, customs brokers and freight forwarders: it calculates the full duty on any HTS code and country of origin, checks it for antidumping and countervailing duty (AD/CVD) cases, alerts you when a tariff change hits your products, and audits past entries for duty you may be able to get back."
 
-const trackerFrom = formatPrice(TRACKER_TIERS[0].price)
+// The plans' range, from the smallest plan to the largest (PRICING.md's value ladder)
+const range = (tiers: readonly { name: string; maxPairs: number; price: number }[]) =>
+  tiers.map((t) => `${t.name} ${formatPrice(t.price)} (${t.maxPairs} products)`).join(", ")
+const alertsFrom = formatPrice(ALERT_TIERS[0].price)
+const auditsFrom = formatPrice(AUDIT_TIERS[0].price)
+const largest = ALERT_TIERS[ALERT_TIERS.length - 1].maxPairs
+const teams = ALERT_TIERS.find((t) => t.teams)?.name ?? "Pro"
 
 export const HOME_FAQS = [
   {
@@ -29,16 +35,24 @@ export const HOME_FAQS = [
   },
   {
     question: "How do I get alerts when tariffs change on my products?",
-    answer: `Add your products to the Tariff Tracker as HTS code and country of origin pairs. When a tariff is announced, and again when it reaches the HTS, you get an alert by email, in the app, or in Slack or Microsoft Teams. Every new account gets the whole Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, alerts included, with no credit card. After that, alerts on ${TRIAL_ALLOWANCE.alertImports} of your imports stay free, and the rest come with a paid plan.`,
+    answer: `With Tariff Alerts. Upload your products, each an HTS code and country of origin, and you get an alert when a new tariff affects them: when it's proposed, and again when it's published, with the rate before and after on each product. Alerts come by email, and in Slack or Microsoft Teams on the ${teams} and Scale plans. Plans start at ${alertsFrom} a month for 10 products.`,
   },
   {
     question: "Can HTS Hero find duty I overpaid?",
-    answer:
-      "Yes. Our tariff audit recalculates each of your past entries with the rules in force on its entry date and flags potentially overpaid duty, missed exemptions and refundable tariffs such as IEEPA.",
+    answer: `Yes. Tariff Audits recalculates each of your entries with the rules in force on its entry date and flags duty you may have overpaid, missed exemptions and refundable tariffs such as IEEPA, in seconds. HTS Hero finds and flags; you or your broker file, and you keep 100% of any refund. Plans start at ${auditsFrom} a month and include Tariff Alerts for the same products.`,
   },
   {
     question: "How much does HTS Hero cost?",
-    answer: `The Tariff Calculator is free. A free account adds AD/CVD checks and sourcing intelligence on any import. The Tariff Tracker is free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, with no credit card, then from ${trackerFrom} a month, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import a month on the largest plan. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. Monthly plans, no contract, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
+    answer: `The Tariff Calculator is free. Tariff Alerts is ${range(ALERT_TIERS)} a month. Tariff Audits is ${range(AUDIT_TIERS)} a month, each with Tariff Alerts for the same products included. Over ${largest} products, we price to your catalog. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. No contract, cancel anytime, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
+  },
+  {
+    question: "What counts as a product?",
+    answer:
+      "A product is one HTS code from one country of origin. The same HTS code from two countries is two products; many shipments of the same product count once. Plans are priced by how many products you have.",
+  },
+  {
+    question: "Is there a free trial?",
+    answer: `No. Tariff Alerts and Tariff Audits are paid from the start, and both come with a guarantee instead. Tariff Alerts has a ${GUARANTEE_DAYS}-day money-back guarantee. With Tariff Audits, if you run ${AUDIT_GUARANTEE_AUDITS} audits on your products within ${AUDIT_GUARANTEE_DAYS} days and aren't satisfied with the results, we refund you in full. The Tariff Calculator is free, and you can try the classification assistant free.`,
   },
   {
     question: "Where does HTS Hero's tariff data come from?",
@@ -48,6 +62,6 @@ export const HOME_FAQS = [
   {
     question: "Is HTS Hero a customs broker?",
     answer:
-      "No. HTS Hero is software that calculates, monitors and audits US duty from official sources. We NEVER process entires, corrections, or refunds.",
+      "No. HTS Hero is software that calculates, monitors and audits US duty from official sources. We never file entries, corrections or refund claims; you or your broker do.",
   },
 ]

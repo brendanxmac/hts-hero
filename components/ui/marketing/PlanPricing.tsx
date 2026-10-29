@@ -82,7 +82,7 @@ export const ProductsSlider = ({ plans, products, onChange }: { plans: readonly 
   const label = products > largest ? `${largest}+` : `${products}`;
   return (
     <label className="inline-flex items-center gap-3 rounded-full bg-base-content/10 py-2 pl-4 pr-4 text-sm font-semibold text-base-content/70">
-      <span>Number of Products</span>
+      <span className="whitespace-nowrap">Number of Products</span>
       <input
         type="range"
         min={0}
@@ -91,7 +91,7 @@ export const ProductsSlider = ({ plans, products, onChange }: { plans: readonly 
         value={at}
         onChange={(e) => onChange(toProducts(Number(e.target.value)))}
         aria-valuetext={`${label} products`}
-        className="h-1.5 w-32 cursor-pointer appearance-none rounded-full sm:w-44 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-primary [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:ring-4 [&::-webkit-slider-thumb]:ring-primary/20"
+        className="h-1.5 w-24 cursor-pointer appearance-none rounded-full sm:w-44 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-primary [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:ring-4 [&::-webkit-slider-thumb]:ring-primary/20"
         style={{ background: `linear-gradient(to right, var(--color-primary) ${fill}%, color-mix(in oklab, var(--color-base-content) 20%, transparent) ${fill}%)` }}
       />
       <span className="w-10 text-right text-base font-bold tabular-nums text-base-content">{label}</span>
@@ -100,7 +100,7 @@ export const ProductsSlider = ({ plans, products, onChange }: { plans: readonly 
 };
 
 // One plan's card. On annual, the yearly charge sits quietly under the per-import price
-const PlanCard = ({
+export const PlanCard = ({
   product,
   plan,
   billing,
@@ -111,6 +111,7 @@ const PlanCard = ({
   lead,
   best,
   products,
+  productOnly,
 }: {
   product: string;
   plan: SalesPlan;
@@ -122,9 +123,11 @@ const PlanCard = ({
   lead: string;
   best?: boolean;
   products?: number;
+  // Titled by the product alone, no plan name (the homepage, one card per product)
+  productOnly?: boolean;
 }) => {
   const price = monthlyRate(plan.price, billing);
-  const id = `plan-${plan.maxPairs}`;
+  const id = `plan-${product.toLowerCase().replace(/\s+/g, "-")}-${plan.maxPairs}`;
   const planSpecificFeatures = [lead, plan.emails === 1 ? "1 user / email" : `Up to ${plan.emails} users / emails`]
 
   if (plan.teams) {
@@ -146,8 +149,14 @@ const PlanCard = ({
         </span>
       )}
       <h3 id={id} className="text-base-content [font-family:var(--font-tracker-display)]">
-        <span className="block text-xs font-bold uppercase tracking-wider text-base-content/55">{product} </span>
-        <span className="block text-2xl font-semibold">{plan.name}</span>
+        {productOnly ? (
+          <span className="block text-2xl font-semibold">{product}</span>
+        ) : (
+          <>
+            <span className="block text-xs font-bold uppercase tracking-wider text-base-content/55">{product} </span>
+            <span className="block text-2xl font-semibold">{plan.name}</span>
+          </>
+        )}
       </h3>
 
       <p className="mt-6 flex items-baseline gap-2">
@@ -187,7 +196,7 @@ const PlanCard = ({
           href={href}
           className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-semibold text-primary-content transition-colors hover:bg-primary/90"
         >
-          Get {plan.name} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+          Get {productOnly ? product : plan.name} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
         {/* The page's guarantee, if it has one, tiny under the button */}
         {guarantee && (

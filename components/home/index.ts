@@ -6,6 +6,7 @@ export { ManagedSection } from "./managed/ManagedSection";
 // Not on the homepage now; kept for reuse
 export { LanesBand } from "./tools/LanesBand";
 export { PricingOverview } from "./pricing/PricingOverview";
+export { NewsSignup } from "./news/NewsSignup";
 export { HomeDirectory } from "./directory/HomeDirectory";
 export { HomeFaq } from "./faq/HomeFaq";
 export { OfferCta } from "./cta/OfferCta";

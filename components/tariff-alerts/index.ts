@@ -1,4 +1,6 @@
 export { AlertsHero } from "./hero/AlertsHero";
+// The hero's alert loop, reused on the homepage
+export { AlertCard } from "./hero/AlertCard";
 export { EarlySection } from "./early/EarlySection";
 export { ImpactSection } from "./impact/ImpactSection";
 export { HowItWorks } from "./how/HowItWorks";

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
@@ -14,10 +13,10 @@ export const OfferCta = () => (
         No more tariff overpayments <span className={cta.accent}>or surprises.</span>
       </h2>
       <p className={`${cta.lead} mt-6 max-w-2xl`}>{OFFER.note}</p>
-      <Link href={OFFER.href} className={`${cta.button} mt-10`}>
+      <a href={OFFER.href} className={`${cta.button} mt-10`}>
         {OFFER.cta}
         <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-      </Link>
+      </a>
     </div>
   </section>
 );

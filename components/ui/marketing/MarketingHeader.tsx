@@ -18,10 +18,12 @@ import * as mk from "./styles";
 // sign in (or the account menu and the Tariff Tracker, signed in) on the right.
 // Sticky, with a frosted background.
 
-// Tariff Audit (/tariff-audit) is off the nav for now; the page stays live
+// The products' pages, signed out. /tariff-monitor is off the nav for now (2026-10-29); the page
+// stays live
 const NAV = [
   { href: "/duty-calculator", label: "Tariff Calculator" },
-  { href: "/tariff-monitor", label: "Tariff Tracker" },
+  { href: "/tariff-alerts", label: "Tariff Alerts" },
+  { href: "/tariff-audit", label: "Tariff Audits" },
   { href: "/tariff-updates", label: "Tariff News" },
   { href: "/classify", label: "Classification Assistant" },
 ];
