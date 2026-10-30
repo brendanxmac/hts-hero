@@ -27,18 +27,27 @@ export const TRIAL_ALLOWANCE = {
 } as const
 
 // The button on every Tariff Tracker call to action, everywhere on the site (decided 2026-10-26).
-// The 14 days and the rest of the offer go in the text around it, never on the button.
+// The trial's days and the rest of the offer go in the text around it, never on the button.
 export const TRY_IT_FREE = "Try it free"
 
-// The Tariff Tracker's reverse trial (PRICING.md): every account gets everything the Tracker sells,
-// on up to `imports` imports, for `days` days from the account's first imports, with no card and nothing to start.
-// Accounts made before `freshStartOn` get their `days` from that day instead (set it to the deploy
-// day). After it, the account is on the free plan: TRIAL_ALLOWANCE.alertImports tracked imports.
+// The reverse trial (PRICING.md): every account gets Tariff Alerts and Duty Audits, everything the
+// Tracker sells, on up to `imports` imports (the largest plan), for `days` days from the account's
+// first imports, with no card and nothing to start. After it, the account is on the free plan:
+// TRIAL_ALLOWANCE.alertImports tracked imports.
+// One week from 2026-10-30 (decided then: give the value first, then ask). Trials that started
+// before `shortFrom` keep the `legacyDays` they were promised; set `shortFrom` to the deploy day.
+// Accounts made before `freshStartOn` got their trial from that day instead.
 export const REVERSE_TRIAL = {
-  days: 14,
-  imports: 200,
+  days: 7,
+  imports: 500,
+  legacyDays: 14,
+  shortFrom: "2026-11-01",
   freshStartOn: "2026-10-21",
 } as const
+
+// A trial's length in days, by when it started: a week from REVERSE_TRIAL.shortFrom, two before it
+export const trialLengthDays = (startedMs: number) =>
+  startedMs >= Date.parse(`${REVERSE_TRIAL.shortFrom}T00:00:00Z`) ? REVERSE_TRIAL.days : REVERSE_TRIAL.legacyDays
 
 // Tariff Tracker is priced by the number of imports (HTS code + country of origin pairs) it covers.
 // Before the Tracker MVP (MVP_TRIM.md), with savings and audits included: $19 / $49 / $149 / $249
@@ -64,7 +73,7 @@ export const launchPricingActive = (now = Date.now()) =>
   now < Date.parse(LAUNCH_PRICING.endsAt)
 
 // The value ladder (PRICING.md, DRAFT confirmed 2026-10-27, not charged yet): Tariff Impact Alerts
-// and Tariff Audits, each priced by imports, 15% off annually. Shown on /tariff-alerts; the Tracker's
+// and Duty Audits, each priced by imports, 15% off annually. Shown on /tariff-alerts; the Tracker's
 // plans and Stripe still use TRACKER_TIERS until the product moves over.
 // Every alerts plan is paid (2026-10-28: no free plan on the page), named plainly by size. emails
 // is how many users / email addresses an alert can go to; Slack & Teams alerts

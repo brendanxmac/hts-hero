@@ -22,6 +22,8 @@ const nextConfig = {
       // The old tariff calculator landing page; /duty-calculator replaced it and targets the same
       // searches, so its signals go there
       { source: "/about/tariffs", destination: "/duty-calculator", permanent: true },
+      // The audit sales page was renamed (2026-10-30)
+      { source: "/tariff-audit", destination: "/duty-audits", permanent: true },
       // The old pending tariff announcements page; /tariff-updates follows every tariff action now
       { source: "/tariffs/pending", destination: "/tariff-updates", permanent: true },
       // Blog categories retired in the 2026 blog redesign

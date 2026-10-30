@@ -1,6 +1,7 @@
 import { signupHref } from "@/components/tariff-tracker/access/signup"
+import { entryHref } from "@/libs/signup-onboarding"
 import { sectionUrl } from "@/components/tariff-tracker"
-import type { SalesLink } from "@/components/ui/marketing/SalesHeader"
+import type { SalesCta, SalesLink } from "@/components/ui/marketing/SalesHeader"
 import { bookCallHref } from "@/libs/book-call"
 
 // Where the audit page's calls to action go. A self-audit runs in the Tracker's Entries section,
@@ -15,7 +16,7 @@ export const HISTORICAL_AUDIT_HREF = bookCallHref({
   source: "tariff-audit",
   campaign: "historical-audit",
   context:
-    "Historical audit of past entries, from the Tariff Audits page (htshero.com/tariff-audit)",
+    "Historical audit of past entries, from the Duty Audits page (htshero.com/duty-audits)",
 })
 
 // The page's header: its sections, in page order, and its main button
@@ -26,7 +27,8 @@ export const AUDIT_NAV: SalesLink[] = [
   { href: "#pricing", label: "Pricing" },
   { href: "#faq", label: "FAQ" },
 ]
-export const AUDIT_HEADER_CTA = {
-  href: SIGN_UP_TO_AUDIT,
-  label: "Find Overpaid Duty",
+export const AUDIT_HEADER_CTA: SalesCta = {
+  href: entryHref("audits_page"),
+  label: "Start Free Trial",
+  entry: { page: "duty-audits", from: "audits_page" },
 }

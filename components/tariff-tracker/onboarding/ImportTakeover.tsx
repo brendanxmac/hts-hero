@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { CheckIcon } from "@heroicons/react/20/solid";
@@ -358,7 +359,7 @@ export const ImportTakeover = () => {
                 from: step,
               });
               toast.success(
-                "We'll email you tomorrow with these steps. Your 14-day trial waits until you add your imports.",
+                `We'll email you tomorrow with these steps. Your ${REVERSE_TRIAL.days}-day trial waits until you add your imports.`,
                 { duration: 6000 },
               );
               dismiss();

@@ -611,3 +611,34 @@ export const AuditsVisual = ({ run }: Props) => {
     </MockWindow>
   );
 };
+
+// The welcome step: the Tracker's home at a glance, its three numbers rising in (changes that hit
+// the imports, what they could save, what audits found), then a few imports with what each found
+export const WelcomeVisual = ({ run }: Props) => {
+  const tiles = [
+    { icon: BellAlertIcon, label: "Changes", value: "3", note: "hit your imports", tone: "text-error" },
+    { icon: SparklesIcon, label: "Savings", value: "$94,400", note: "you could save a year", tone: "text-success" },
+    { icon: ScaleIcon, label: "Audits", value: "$4,000", note: "you may have overpaid", tone: "text-warning" },
+  ];
+  return (
+    <MockWindow tab="overview">
+      <MockTitle title="Home" />
+      <div key={run} className="grid grid-cols-3 gap-2">
+        {tiles.map((t, i) => (
+          <div key={t.label} className="tt-ob-rise flex flex-col gap-1 rounded-lg border border-base-300 bg-base-100 p-2.5" style={delay(150 + i * 140)}>
+            <span className="flex items-center gap-1 text-[0.6rem] font-bold uppercase tracking-wider text-base-content/55">
+              <t.icon className={`h-3 w-3 ${t.tone}`} aria-hidden /> {t.label}
+            </span>
+            <span className={`${tt.display} text-lg font-semibold leading-none ${t.tone}`}>{t.value}</span>
+            <span className="text-[0.6rem] text-base-content/55">{t.note}</span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 overflow-hidden rounded-lg border border-base-300 bg-base-100">
+        <Row code="9403.60.80" name="Wooden furniture" flag="🇻🇳" country="VN" rate="25% → 35%" chip={<span className="text-[0.6rem] font-semibold text-error">New tariff +10%</span>} lit wait={650} />
+        <Row code="7318.15.80" name="Steel screws" flag="🇨🇳" country="CN" rate="32.5%" chip={<span className="text-[0.6rem] font-semibold text-success">Could save 7.5%</span>} wait={760} />
+        <Row code="7217.10.90" name="Steel wire" flag="🇨🇳" country="CN" rate="50%" chip={<span className="text-[0.6rem] font-semibold text-warning">May have overpaid $4,000</span>} wait={870} />
+      </div>
+    </MockWindow>
+  );
+};

@@ -1,13 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { Dialog } from "@/components/ui/Dialog";
-import { ArrowLeftIcon, ArrowPathIcon, ArrowRightIcon, CheckIcon, PlayIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import logo from "@/app/logo.svg";
+import { ArrowPathIcon, PlayIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { trackerSans } from "@/components/ui/font";
-import * as tt from "@/components/ui/styles/tracker";
-import * as ui from "@/components/ui/styles";
 import { THEME } from "@/components/ui/theme";
 import { useEscapeToClose } from "@/hooks";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
@@ -15,51 +11,19 @@ import { realItems } from "../../catalog";
 import { useTrackerNav } from "../../shell/TrackerNav";
 import { useTracker } from "../../TrackerContext";
 import { openImportTakeover } from "../takeoverStore";
-import { delay, HowTo } from "../parts";
+import { HowTo } from "../parts";
 import { closeFeatureTour, useFeatureTour } from "./tourStore";
+import { TourShell, TourStep as ShellStepView } from "@/components/product-tour/TourShell";
 import { TOUR_STEPS, TourStep } from "./steps";
 
 // The feature tour: the whole screen, in the import takeover's look (DESIGN_SYSTEM §15), walking
 // through what the Tracker does, one feature a step: what it's for, how to do it in a few short
 // steps, and beside it a small Tracker playing it out. How to add imports is left out once there
 // are some. Each step can carry a video walkthrough (steps.ts TOUR_VIDEOS); until there is one, a
-// placeholder says it's coming. The arrow keys move between steps; Escape closes it.
-
-// The rail across the top: every step, done ones ticked, any of them a click away
-const Rail = ({ steps, at, onGo }: { steps: TourStep[]; at: number; onGo: (i: number) => void }) => (
-  <ol className="m-0 hidden list-none items-center gap-1.5 p-0 lg:flex" aria-label="Tour steps">
-    {steps.map((s, i) => {
-      const done = i < at;
-      const current = i === at;
-      return (
-        <li key={s.id} className="flex items-center gap-1.5">
-          {i > 0 && <span className={`h-px w-5 ${done || current ? "bg-primary/50" : "bg-base-300"}`} aria-hidden />}
-          <button
-            type="button"
-            onClick={() => onGo(i)}
-            disabled={current}
-            aria-current={current ? "step" : undefined}
-            className="group flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2 transition-colors enabled:hover:bg-base-300/60 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-default"
-          >
-            <span
-              className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold transition-colors ${
-                done ? "bg-primary text-primary-content" : current ? "border-2 border-primary text-primary" : "border-2 border-base-300 text-base-content/40"
-              }`}
-              aria-hidden
-            >
-              {done ? <CheckIcon className="h-3.5 w-3.5" /> : i + 1}
-            </span>
-            <span
-              className={`whitespace-nowrap text-sm font-semibold ${current ? "text-base-content" : done ? "text-base-content/70 group-hover:text-base-content" : "text-base-content/50 group-hover:text-base-content"}`}
-            >
-              {s.rail}
-            </span>
-          </button>
-        </li>
-      );
-    })}
-  </ol>
-);
+// placeholder says it's coming. It always opens on the Welcome step, with the step it was opened for
+// right after. The arrow keys move between steps; Escape closes it. The layout is the shared
+// TourShell. New accounts from the sign-up onboarding get the Tracker onboarding instead
+// (TrackerOnboarding); this tour is always a button away (the sidebar's Product Tour).
 
 // A step's video: a placeholder until one is added (steps.ts TOUR_VIDEOS), then a button that plays it
 const VideoSlot = ({ step, onPlay }: { step: TourStep; onPlay: () => void }) =>
@@ -124,8 +88,12 @@ export const FeatureTour = () => {
   const { items } = useTracker();
   const nav = useTrackerNav();
   const hasImports = realItems(items).length > 0;
-  // How to add imports only while there are none (or when it's where the tour was opened)
-  const steps = TOUR_STEPS.filter((s) => s.id !== "imports" || !hasImports || start === "imports");
+  // How to add imports only while there are none (or when it's where the tour was opened). The
+  // welcome always comes first; the step it was opened for (its focus, like Alerts for someone who
+  // came for alerts) comes right after it, then the rest in order
+  const shown = TOUR_STEPS.filter((s) => s.id !== "imports" || !hasImports || start === "imports");
+  const focus = shown.find((s) => s.id === start && s.id !== "welcome");
+  const steps = focus ? [shown[0], focus, ...shown.slice(1).filter((s) => s !== focus)] : shown;
   const [at, setAt] = useState(0);
   // Replay: the demo plays again
   const [run, setRun] = useState(0);
@@ -137,7 +105,8 @@ export const FeatureTour = () => {
   const startingAt = useRef<number | null>(null);
   useEffect(() => {
     if (!open) return;
-    startingAt.current = Math.max(0, steps.findIndex((s) => s.id === start));
+    // Every tour opens on the welcome
+    startingAt.current = 0;
     setAt(startingAt.current);
     trackEvent(MixpanelEvent.TARIFF_TRACKER_TOUR_SHOWN, { from, start });
   }, [open]);
@@ -187,101 +156,36 @@ export const FeatureTour = () => {
   const Visual = step.Visual;
 
   return (
-    <div
-      ref={scroller}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="tt-tour-title"
-      className={`${THEME} hts-tracker ${trackerSans.className} fixed inset-0 z-[75] overflow-y-auto bg-(--tt-ob-ground) text-base-content`}
-    >
-      <div className="mx-auto flex min-h-full w-full max-w-7xl flex-col px-6 pb-10 lg:px-10">
-        <header className="sticky top-0 z-10 -mx-6 flex items-center justify-between gap-6 bg-(--tt-ob-ground) px-6 py-5 lg:-mx-10 lg:px-10">
-          <span className="flex items-center gap-2.5">
-            <span className="flex items-center rounded-full bg-base-content p-1">
-              <Image src={logo} alt="" className="w-6" width={24} height={24} />
-            </span>
-            <span className={`${tt.display} whitespace-nowrap text-[0.95rem] font-semibold`}>Product Tour</span>
-          </span>
-          <Rail steps={steps} at={at} onGo={go} />
-          <button
-            type="button"
-            onClick={() => close("closed")}
-            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-base-content/55 hover:bg-base-300/60 hover:text-base-content"
-          >
-            <XMarkIcon className="h-4 w-4" aria-hidden />
-            Close tour
-          </button>
-        </header>
-
-        {/* The step: keyed, so everything rises in again as it changes */}
-        <div key={step.id} className="grid flex-1 items-center gap-12 py-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-          <div className="flex flex-col gap-7">
-            <div className="flex flex-col gap-3">
-              <span className="tt-ob-rise flex items-center gap-2">
-                <span className={tt.eyebrow("primary")}>
-                  Step {at + 1} of {steps.length} · {step.rail}
-                </span>
-              </span>
-              <h1
-                id="tt-tour-title"
-                tabIndex={-1}
-                className={`${tt.display} tt-ob-rise m-0 text-[2.4rem] font-semibold leading-[1.08] tracking-tight text-base-content outline-hidden`}
-                style={delay(60)}
-              >
-                {step.title}
-              </h1>
-              <p className="tt-ob-rise m-0 text-base leading-relaxed text-base-content/75" style={delay(120)}>
-                {step.lead}
-              </p>
-            </div>
-
-            <HowTo steps={step.how} start={200} />
-
-            <div className="tt-ob-rise flex" style={delay(480)}>
-              <VideoSlot step={step} onPlay={() => setPlaying(step)} />
-            </div>
-
-            <div className="tt-ob-rise flex flex-wrap items-center gap-3" style={delay(540)}>
-              <button type="button" className={`${ui.button({ variant: "primary", size: "lg" })} px-6`} onClick={() => (last ? close("finished") : go(at + 1))} autoFocus>
-                {last ? "Finish tour" : `Next: ${steps[at + 1].rail}`}
-                {!last && <ArrowRightIcon className="h-4 w-4" aria-hidden />}
-              </button>
-              {step.action && (
-                <button type="button" className={ui.button({ variant: "secondary", size: "lg" })} onClick={takeMeThere}>
-                  {step.action}
-                </button>
-              )}
-              {at > 0 && (
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1.5 px-2 text-sm font-semibold text-base-content/60 hover:text-base-content"
-                  onClick={() => go(at - 1)}
-                >
-                  <ArrowLeftIcon className="h-4 w-4" aria-hidden />
-                  Back
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* The demo, playing it out */}
-          <div className="tt-ob-pop relative hidden xl:block" style={delay(150)}>
-            <Visual run={run} />
+    <>
+      <TourShell product="Tariff Tracker" steps={steps} at={at} onGo={go} exitLabel="Close tour" onExit={() => close("closed")} labelledBy="tt-tour-title" scrollerRef={scroller}>
+        <ShellStepView
+          key={step.id}
+          titleId="tt-tour-title"
+          eyebrow={`Step ${at + 1} of ${steps.length} · ${step.rail}`}
+          title={step.title}
+          lead={step.lead}
+          body={<HowTo steps={step.how} start={200} />}
+          extra={<VideoSlot step={step} onPlay={() => setPlaying(step)} />}
+          onBack={at > 0 ? () => go(at - 1) : undefined}
+          next={last ? { label: "Finish tour", onClick: () => close("finished"), arrow: false } : { label: `Next: ${steps[at + 1].rail}`, onClick: () => go(at + 1) }}
+          secondary={step.action ? { label: step.action, onClick: takeMeThere } : undefined}
+          visual={<div className="hidden xl:block"><Visual run={run} /></div>}
+          visualFooter={
             <button
               type="button"
               onClick={() => {
                 setRun((r) => r + 1);
                 trackEvent(MixpanelEvent.TARIFF_TRACKER_TOUR_ACTION, { step: step.id, action: "replay" });
               }}
-              className="absolute -bottom-10 right-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-base-content/55 hover:bg-base-300/60 hover:text-base-content"
+              className="absolute -bottom-10 right-0 hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-base-content/55 hover:bg-base-300/60 hover:text-base-content xl:inline-flex"
             >
               <ArrowPathIcon className="h-3.5 w-3.5" aria-hidden />
               Replay
             </button>
-          </div>
-        </div>
-      </div>
+          }
+        />
+      </TourShell>
       <VideoDialog step={playing} onClose={() => setPlaying(null)} />
-    </div>
+    </>
   );
 };

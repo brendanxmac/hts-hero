@@ -5,7 +5,7 @@ import { Answers } from "../tariffs/engine-v2/types";
 import { findRateElement } from "./hts-duty-summary";
 import { getHtsElementByCode, getHtsElementParentsServer, getHtsElementsServer } from "./hts-server";
 
-// One past entry audited by the engine, for /tariff-audit: the duty as it was commonly filed
+// One past entry audited by the engine, for /duty-audits: the duty as it was commonly filed
 // (Section 122 charged) against the duty owed (the Section 122 exemption for Section 232 articles
 // claimed, since steel wire is all steel). Both sides are real engine output for the entry date.
 

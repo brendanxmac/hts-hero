@@ -2,6 +2,7 @@
 
 import { ArrowDownIcon, ArrowRightIcon, CheckBadgeIcon, CheckCircleIcon, ExclamationTriangleIcon, ShieldExclamationIcon } from "@heroicons/react/20/solid"
 import { useUser } from "@/contexts/UserContext"
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { countryName, depositFor, Disclaimer } from "./AdcvdParts"
@@ -99,7 +100,7 @@ export const AdcvdSummaryCard = ({ code, country, onOpen }: { code: string; coun
         <p className={tt.subtitle}>Antidumping and countervailing duty cases that may cover this import</p>
       </div>
       <button type="button" onClick={onOpen} className={`${ui.link} inline-flex shrink-0 items-center gap-1 text-sm`}>
-        {user && !locked ? "See the full check" : user ? "See which cases" : "See it free for 14 days"}
+        {user && !locked ? "See the full check" : user ? "See which cases" : `See it free for ${REVERSE_TRIAL.days} days`}
         <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
       </button>
     </div>

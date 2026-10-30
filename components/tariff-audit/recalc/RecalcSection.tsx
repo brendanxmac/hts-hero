@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { EntryCta } from "@/components/onboarding/EntryCta";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { SectionIntro } from "@/components/ui/marketing";
 import * as cta from "@/components/ui/marketing/cta";
@@ -23,9 +23,9 @@ export const RecalcSection = () => (
       </div>
 
       <div className="mt-10">
-        <Link href="#pricing" className={cta.buttonPrimarySm}>
+        <EntryCta page="duty-audits" entry="audits_page" section="setup" label="Get Started" className={cta.buttonPrimarySm}>
           Get Started <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </Link>
+        </EntryCta>
       </div>
     </div>
   </section>

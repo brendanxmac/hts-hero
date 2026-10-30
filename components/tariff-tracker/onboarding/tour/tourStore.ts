@@ -7,7 +7,7 @@ import { useSyncExternalStore } from "react";
 // alerts on, since the imports are in). The sidebar's "Product Tour" opens it any time. One copy
 // for the whole Tracker, outside React so any component can open it (like takeoverStore).
 
-export type TourStepId = "imports" | "alerts" | "manage" | "adcvd" | "savings" | "audits";
+export type TourStepId = "welcome" | "imports" | "alerts" | "manage" | "adcvd" | "savings" | "audits";
 
 interface TourState {
   open: boolean;

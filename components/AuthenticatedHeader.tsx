@@ -10,10 +10,11 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
 import { PlayIcon } from "@heroicons/react/16/solid";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { PlayCircleIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import ThemeToggle from "./ThemeToggle";
 import { ToolsDropdown, MobileToolsMenu } from "./ToolsDropdown";
 import { requestOnboardingReplay, useEscapeToClose } from "../hooks";
+import { openClassifyTour } from "./classify-tour/ClassifyTour";
 
 const TOUR_IDS_BY_PATH: Record<string, string> = {
   "/classifications": "classifications",
@@ -110,6 +111,13 @@ export const AuthenticatedHeader = () => {
                 >
                   <QuestionMarkCircleIcon className="w-4 h-4" />
                   Quick Guide
+                </button>
+              )}
+              {/* The Classification Assistant's product tour, any time (ClassifyTour) */}
+              {quickGuideTourId === "classifications" && (
+                <button className="btn btn-sm btn-ghost gap-1.5" onClick={openClassifyTour}>
+                  <PlayCircleIcon className="w-4 h-4" />
+                  Product Tour
                 </button>
               )}
               {tutorial && (
@@ -216,6 +224,18 @@ export const AuthenticatedHeader = () => {
                 >
                   <QuestionMarkCircleIcon className="w-4 h-4" />
                   Quick Guide
+                </button>
+              )}
+              {quickGuideTourId === "classifications" && (
+                <button
+                  className="btn btn-sm btn-ghost gap-1.5 justify-start"
+                  onClick={() => {
+                    openClassifyTour();
+                    setIsOpen(false);
+                  }}
+                >
+                  <PlayCircleIcon className="w-4 h-4" />
+                  Product Tour
                 </button>
               )}
               {tutorial && (

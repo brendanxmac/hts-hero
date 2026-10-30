@@ -54,7 +54,7 @@ export const HookStep = ({ onNext }: { onNext: () => void }) => {
     <div className="grid items-center gap-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
       <div className="flex flex-col gap-8">
         <StepHeading
-          eyebrow="Welcome to your Tariff Tracker"
+          eyebrow="Welcome to Tariff Tracker"
           title={
             <>
               Tariff alerts, savings, and audits are <span className="text-primary">one step away.</span>

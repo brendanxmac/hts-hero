@@ -23,8 +23,8 @@ import { AUDIT_TIERS } from "@/components/pricing-calculator/lib/pricing";
 // Static, refreshed daily with the tariff data
 export const revalidate = 86400;
 
-const URL = `https://${config.domainName}/tariff-audit`;
-const TITLE = "Tariff Audit: Find Overpaid Import Duty & Refunds | HTS Hero";
+const URL = `https://${config.domainName}/duty-audits`;
+const TITLE = "Duty Audits: Find Overpaid Import Duty & Refunds | HTS Hero";
 const DESCRIPTION =
   "Audit past US import entries for overpaid duty, missed exemptions and refundable tariffs like IEEPA. Plans from $49 a month, by your number of products. Keep 100% of any refund.";
 
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: { card: "summary_large_image", title: "Tariff audit by HTS Hero", description: DESCRIPTION },
-  alternates: { canonical: "/tariff-audit" },
+  alternates: { canonical: "/duty-audits" },
 };
 
 export default async function TariffAuditPage() {
@@ -49,7 +49,7 @@ export default async function TariffAuditPage() {
     <main className={`${mk.page} w-full flex-1 shrink-0`}>
       {renderSchemaJsonLd({
         "@type": "Service",
-        name: "HTS Hero tariff audit",
+        name: "HTS Hero Duty Audits",
         serviceType: "Customs duty audit",
         url: URL,
         description: DEFINITION,

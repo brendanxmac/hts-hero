@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { EntryCta } from "@/components/onboarding/EntryCta";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { PRICING_HREF } from "../lib/nav";
 import * as cta from "@/components/ui/marketing/cta";
@@ -7,8 +7,8 @@ import type { AlertExample } from "@/libs/tariff-alerts-example";
 import { DEFINITION, PROMISES } from "../lib/copy";
 import { AlertCard } from "./AlertCard";
 
-// The page's main button label: every button goes to the plans (lib/nav PRICING_HREF)
-export const MAIN_CTA = "Get Tariff Alerts";
+// The page's main button label: every button starts the free trial (sign-up, then the onboarding)
+export const MAIN_CTA = "Start Free Trial";
 
 
 // The top of /tariff-alerts: the promise, the answer-first definition and one button, beside the
@@ -25,9 +25,9 @@ export const AlertsHero = ({ example }: { example: AlertExample | null }) => (
         </h1>
         <p className={`${mk.lead} mt-6`}>{DEFINITION}</p>
         <div className="mt-10">
-          <Link href={PRICING_HREF} className={`${cta.buttonPrimary} w-full`}>
+          <EntryCta page="tariff-alerts" entry="alerts_page" section="hero" label={MAIN_CTA} className={`${cta.buttonPrimary} w-full`}>
             {MAIN_CTA} <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-          </Link>
+          </EntryCta>
         </div>
         <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
           {PROMISES.map((p) => (

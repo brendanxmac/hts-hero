@@ -1,4 +1,4 @@
-import { REVERSE_TRIAL, TRACKER_TIERS, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
+import { REVERSE_TRIAL, TRACKER_TIERS, TRIAL_ALLOWANCE, trialLengthDays } from "@/components/pricing-calculator/lib/pricing";
 import { PricingPlan } from "@/types";
 
 // What a visitor gets in the Tariff Tracker, worked out the same way on the server (which
@@ -92,13 +92,14 @@ export const ANONYMOUS_ACCESS: TrackerAccess = {
 
 const DAY = 24 * 60 * 60 * 1000;
 
-// When an account's trial ends: REVERSE_TRIAL.days after it started (its first real imports, or
+// When an account's trial ends: its length (trialLengthDays: a week, two for older trials) after it started (its first real imports, or
 // the day existing accounts got a fresh trial, whichever is later); null until it starts
 export const trialEndsAt = (startedAt: string | null | undefined) => {
   const started = startedAt ? Date.parse(startedAt) : NaN;
   if (Number.isNaN(started)) return null;
   const fresh = Date.parse(`${REVERSE_TRIAL.freshStartOn}T00:00:00Z`);
-  return new Date(Math.max(started, fresh) + REVERSE_TRIAL.days * DAY).toISOString();
+  const from = Math.max(started, fresh);
+  return new Date(from + trialLengthDays(from) * DAY).toISOString();
 };
 
 // Signed in, on the trial, and it hasn't started: no imports yet, so no countdown

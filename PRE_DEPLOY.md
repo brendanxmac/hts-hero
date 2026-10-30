@@ -42,6 +42,16 @@ still charges the 50% on the 22 removed subheadings.
 
 ### Production database
 
+- [ ] **`supabase/migrations/signup_onboarding.sql` in prod and dev** (the sign-up onboarding's
+      answers, entry point and first touch). Without it, onboarding still runs but saves nothing.
+- [ ] **`supabase/migrations/demo_requests.sql` in prod and dev** (the homepage's Get a Demo form). Without
+      it, requests are still emailed to Brendan but not saved.
+- [ ] **`npm run email:upload-logo` against prod, before deploying** (done in dev 2026-10-30):
+      uploads the email logo (white chip, readable in dark mode) to the `content` bucket. Every
+      email's header points at `content/logo-email.png`, so without it the logo is a broken image.
+- [ ] **Set `REVERSE_TRIAL.shortFrom` to the deploy day** (`components/pricing-calculator/lib/pricing.ts`):
+      trials started from that day are 7 days; earlier ones keep their 14.
+
 - [ ] **`adcvd.sql`'s 2026-10-23 section in prod** (fr_* / ita_* / hts_sources; every line is
       `IF NOT EXISTS` or runs once), **before deploying**: the hourly AD/CVD cron writes those
       columns and fails without them. Also in dev if not done, then `npm run adcvd:golden -- --strict`.

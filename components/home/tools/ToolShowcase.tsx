@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { CalculationTerminal } from "@/components/tariff-monitor";
 import { EntryScanCard } from "@/components/tariff-audit";
@@ -12,11 +11,12 @@ import type { AlertExample } from "@/libs/tariff-alerts-example";
 import type { SavingsExample } from "@/libs/tariff-savings-example";
 import type { MonitorFacts } from "@/components/tariff-monitor/lib/facts";
 import { SavingsFinder } from "../savings/SavingsFinder";
-import { darkBand, followPage, glow, moneyButtonMd } from "../lib/theme";
+import { HomeCta } from "../cta/HomeCta";
+import { darkBand, followPage, glow, moneyButtonMd, primaryButton } from "../lib/theme";
 
 // The four capabilities, one block each, every one with a real visual and its own call to action:
 // calculate (with the lookup, free), alert, discover savings, audit (each "Get Started", to
-// /tariff-alerts and /tariff-audit, savings with the audits), each with its sales page's hero graphic;
+// /tariff-alerts and /duty-audits, savings with the audits), each with its sales page's hero graphic;
 // then classification. The order
 // follows the hero's scan: changes, savings, audits.
 
@@ -49,7 +49,7 @@ export const ToolShowcase = ({
   facts,
 }: {
   example: WorkedExample | null;
-  // The /tariff-alerts and /tariff-audit heroes' examples, so each block shows its page's graphic
+  // The /tariff-alerts and /duty-audits heroes' examples, so each block shows its page's graphic
   alert: AlertExample | null;
   scans: AuditScan[];
   savings: SavingsExample[];
@@ -64,7 +64,7 @@ export const ToolShowcase = ({
         <div>
           <Step verb="Audit" />
           <h2 id="tool-audit-title" className={`${mk.h2} mt-4`}>
-            Find Overpaid Duty <span className={mk.accent}>In Seconds</span>
+            Find overpaid duty <span className={mk.accent}>in seconds</span>
           </h2>
           <p className={`${mk.lead} mt-4`}>
             Every past entry recalculated with the rules in force on its entry
@@ -79,9 +79,9 @@ export const ToolShowcase = ({
             ]}
           /> */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/tariff-audit" className={mk.buttonPrimary}>
+            <HomeCta section="audit" label="Find Overpaid Duty" className={primaryButton}>
               Find Overpaid Duty <ArrowRightIcon className="h-4 w-4" aria-hidden />
-            </Link>
+            </HomeCta>
           </div>
         </div>
         {scans.length > 0 && (
@@ -108,7 +108,7 @@ export const ToolShowcase = ({
         <div className="lg:order-1">
           <Step verb="Alert" />
           <h2 id="tool-alert-title" className={`${mk.h2} mt-4`}>
-            Get Tariff Alerts{" "}
+            Get tariff alerts{" "}
             <span className={mk.accent}>before it costs you.</span>
           </h2>
           <p className={`${mk.lead} mt-4`}>
@@ -126,9 +126,9 @@ export const ToolShowcase = ({
             ]}
           />
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/tariff-alerts" className={mk.buttonPrimary}>
+            <HomeCta section="alerts" label="Get Tariff Alerts" className={primaryButton}>
               Get Tariff Alerts <ArrowRightIcon className="h-4 w-4" aria-hidden />
-            </Link>
+            </HomeCta>
           </div>
         </div>
       </div>
@@ -152,10 +152,10 @@ export const ToolShowcase = ({
             it.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
-            <Link href="/duty-calculator" className={`${mk.buttonPrimary} h-14 px-8 text-lg shadow-lg shadow-base-content/10`}>
+            <HomeCta section="calculator" label="Try Tariff Calculator" className={`${primaryButton} h-14 px-8 text-lg shadow-lg shadow-base-content/10`}>
               Try Tariff Calculator
               <ArrowRightIcon className="h-5 w-5" aria-hidden />
-            </Link>
+            </HomeCta>
             {/* <span className="text-sm text-slate-500 skin:text-base-content/60">Free and unlimited · No sign-up</span> */}
           </div>
         </div>
@@ -200,9 +200,9 @@ export const ToolShowcase = ({
               ]}
             />
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link href="/tariff-audit" className={moneyButtonMd}>
+              <HomeCta section="savings" label="Find Savings" className={moneyButtonMd}>
                 Find Savings <ArrowRightIcon className="h-4 w-4" aria-hidden />
-              </Link>
+              </HomeCta>
             </div>
           </div>
           <Reveal>

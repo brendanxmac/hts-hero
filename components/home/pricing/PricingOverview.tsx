@@ -10,6 +10,7 @@ import {
   ALERT_TIERS,
   ANNUAL_DISCOUNT,
   AUDIT_TIERS,
+  REVERSE_TRIAL,
   Billing,
   CLASSIFY_PLANS,
   formatPrice,
@@ -23,9 +24,9 @@ import { SIGN_UP_TO_AUDIT } from "@/components/tariff-audit/lib/links";
 import { bookCallHref } from "@/libs/book-call";
 
 // Pricing at a glance, in the sales pages' look (PlanPricing): the products slider and the billing
-// switch, then three cards. The Tariff Calculator, free; Tariff Alerts and Tariff Audits, each at the
+// switch, then three cards. The Tariff Calculator, free; Tariff Alerts and Duty Audits, each at the
 // plan that fits the slider's products (the same plans, prices and features as /tariff-alerts and
-// /tariff-audit). Past the largest plan, the cards hold at it and the large-catalog row lights up.
+// /duty-audits). Past the largest plan, the cards hold at it and the large-catalog row lights up.
 // Classification stays as a row under them (Managed has its own section below). Every number comes from PRICING.md.
 
 const CALCULATOR_INCLUDES = [
@@ -112,9 +113,10 @@ export const PricingOverview = () => {
               href={TRY_FREE_HREF}
               lead={`Alerts on up to ${alerts.maxPairs} products`}
               productOnly
+              trialDays={REVERSE_TRIAL.days}
             />
             <PlanCard
-              product="Tariff Audits"
+              product="Duty Audits"
               plan={audits}
               billing={billing}
               features={auditsIncluded(audits, billing)}
@@ -122,6 +124,7 @@ export const PricingOverview = () => {
               lead={`Unlimited audits on ${audits.maxPairs} products`}
               guarantee={AUDIT_GUARANTEE}
               productOnly
+              trialDays={REVERSE_TRIAL.days}
             />
           </div>
 

@@ -6,6 +6,8 @@ import { DEMO_ALERTS } from "@/components/tariff-monitor/lib/demoAlerts";
 import { LANES } from "@/components/tariff-monitor";
 import { CommandCenter } from "../command/CommandCenter";
 import { OFFER } from "../lib/offer";
+import { HomeCta } from "../cta/HomeCta";
+import { DemoRequestButton } from "../demo/DemoRequest";
 import { darkBand, display, followPage, glow, moneyButton } from "../lib/theme";
 
 // The homepage hero: a trading-floor ticker of real 2026 tariff changes runs across the top
@@ -68,20 +70,21 @@ export const HeroTicker = () => (
           HTS Hero audits every import for duty you may have overpaid, alerts you the moment a tariff change hits your products, and
           uncovers possible savings, 24/7.
         </p>
-        <a
-          href={OFFER.href}
-          className={`${moneyButton} mt-10`}
-        >
-          {OFFER.cta}
-          <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </a>
+        {/* The main button, and beside it a quieter one for those who'd rather talk first */}
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <HomeCta section="hero" label={OFFER.cta} className={moneyButton}>
+            {OFFER.cta}
+            <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+          </HomeCta>
+          <DemoRequestButton className="inline-flex h-16 items-center justify-center rounded-full border border-base-content/20 px-8 text-lg font-semibold text-base-content/85 transition-colors hover:border-base-content/40 hover:bg-base-content/5 hover:text-base-content" />
+        </div>
         {/* The free way in, for visitors not ready to buy (NewsSignup, further down) */}
-        <p className="mt-4 text-sm text-base-content/60">
+        {/* <p className="mt-4 text-sm text-base-content/60">
           Not ready yet?{" "}
           <a href="#news" className="font-semibold text-primary underline-offset-4 hover:underline">
             Get the free Weekly Tariff Brief
           </a>
-        </p>
+        </p> */}
       </div>
       <div className={followPage}>
         <CommandCenter />

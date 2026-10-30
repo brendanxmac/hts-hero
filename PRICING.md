@@ -5,7 +5,7 @@ for product code, plan copy, landing pages, comparison pages, blog FAQs, `llms.t
 tools. If code or copy disagrees with this file, this file wins. Change this file first when
 pricing changes.
 
-_Last updated 2026-10-28 (Tariff Alerts, "Pro" dropped: no free plan and no trial; four named plans from $9 for 10 imports; Slack & Teams on Pro and Scale; alert emails 1/3/6/20). Before that, 2026-10-27 (the value ladder, confirmed but not built: see the DRAFT section). Before that, 2026-10-26 (the free plan keeps alerts on 3 tracked imports, forever; every Tariff Tracker button says "Try it free" and opens sign-up, then the Tracker)._
+_Last updated 2026-10-30 (the reverse trial is back, one week: every new account gets Tariff Alerts and Duty Audits free for 7 days on up to 500 imports from its first imports, no card; the sales pages' buttons start it through sign-up and the onboarding; `/tariff-audit` is now `/duty-audits`, and the product Tariff Audits is now **Duty Audits**). Before that, 2026-10-28 (Tariff Alerts, "Pro" dropped: no free plan and no trial; four named plans from $9 for 10 imports; Slack & Teams on Pro and Scale; alert emails 1/3/6/20). Before that, 2026-10-27 (the value ladder, confirmed but not built: see the DRAFT section). Before that, 2026-10-26 (the free plan keeps alerts on 3 tracked imports, forever; every Tariff Tracker button says "Try it free" and opens sign-up, then the Tracker)._
 
 ## DRAFT: the value ladder (confirmed 2026-10-27, NOT built yet)
 
@@ -14,10 +14,10 @@ _Last updated 2026-10-28 (Tariff Alerts, "Pro" dropped: no free plan and no tria
 > ships, this section replaces "The rule" and the Tariff Tracker section below. The `/tariff-audit`
 > page and its lead form stay as they are until that page is overhauled.
 
-**The ladder: Free → Tariff Alerts → Tariff Audits.** Managed sits beside it for done-for-you
+**The ladder: Free → Tariff Alerts → Duty Audits.** Managed sits beside it for done-for-you
 accounts. Each paid offer is the next thing a user wants after the one below it. An HTS or
 `/tariffs` visitor watches one import for free. An alert shows how that import was hit. That leads
-to "was I charged right, and am I overpaying?", which Tariff Audits answers.
+to "was I charged right, and am I overpaying?", which Duty Audits answers.
 
 ### The offers
 
@@ -27,8 +27,8 @@ to "was I charged right, and am I overpaying?", which Tariff Audits answers.
 | **Starter** (Tariff News emails) | Anyone, just an email | Free | An email on every new US tariff action (CBP, Federal Register, USTR, USITC, White House). Never mentioned on the Tariff Alerts page |
 | **Duty Calculator Plus** | Free account | Free | The calculator for signed-in users: the plain-English why, Analysis (duty from every origin), the AD/CVD check, Insights, sourcing intelligence, catalog and export |
 | **Tariff Alerts** | Importers | Tiered by imports | "Get alerted when new tariffs affect your imports, and instantly see how you're affected" |
-| **Tariff Audits** | Importers | Tiered by imports | "Stop overpaying on US imports." Everything in Alerts, plus an audit of every entry and savings detection |
-| **Tariff Audits for partners** | Brokers, 3PLs, freight forwarders | Demo, from a published "from" price | Tariff Audits for every US importer client, from one account |
+| **Duty Audits** | Importers | Tiered by imports | "Stop overpaying on US imports." Everything in Alerts, plus an audit of every entry and savings detection |
+| **Duty Audits for partners** | Brokers, 3PLs, freight forwarders | Demo, from a published "from" price | Duty Audits for every US importer client, from one account |
 | **Managed Tariffs** | Importers who want it done for them | Unchanged (see HTS Hero Managed) | We run it for them |
 
 A **product** is one HTS code from one country of origin (internally a "pair" or "import"; customer
@@ -50,7 +50,7 @@ you're affected"):
 - Everything free: Duty Calculator Plus (Insights and the AD/CVD check included) and Starter (Tariff
   News emails)
 
-**Tariff Audits** ("Stop overpaying on US imports"):
+**Duty Audits** ("Stop overpaying on US imports"):
 - Everything in Tariff Alerts
 - **Entry audit:** check every entry on the tracked imports against the duty in force on its date,
   flagging possible over- and underpayments. Entries are keyed in today; ES-003 and 7501 upload are
@@ -62,8 +62,8 @@ you're affected"):
 - **Keep 100% of what you find.** No contingency fee, unlike recovery firms that typically keep
   15–30%. (Always "could", "may", "up to": never a promised saving.)
 
-**Tariff Audits for partners** (brokers, 3PLs, freight forwarders):
-- One account with a workspace per US importer client, Tariff Audits on each client's imports, and
+**Duty Audits for partners** (brokers, 3PLs, freight forwarders):
+- One account with a workspace per US importer client, Duty Audits on each client's imports, and
   alerts the partner can pass on to the client
 - Sold through a short demo, booked straight away on Calendly (`config.bookCallUrl`). The page
   shows a "from" price so it doesn't feel like a black box
@@ -71,7 +71,7 @@ you're affected"):
 
 ### Prices (confirmed 2026-10-27)
 
-| Imports | Tariff Alerts | Annual (per month) | Tariff Audits | Annual (per month) |
+| Imports | Tariff Alerts | Annual (per month) | Duty Audits | Annual (per month) |
 |---|---|---|---|---|
 | Up to 10 | $9 (Starter) | $7 | $49 (Starter) | $41 |
 | Up to 25 | $19 (Growth) | $16 | $79 (Growth) | $67 |
@@ -79,7 +79,18 @@ you're affected"):
 | Up to 500 | $79 (Scale) | $67 | $299 (Scale) | $254 |
 | 500+ | Quoted | Quoted | Quoted | Quoted |
 
-**Every Tariff Alerts plan is paid, with no free trial (2026-10-28).** The product is now just
+**The one-week reverse trial (2026-10-30), replacing "no trial" below.** Every new account gets
+Tariff Alerts and Duty Audits, everything the Tracker sells, free for **7 days** on all its
+imports (up to 500, the largest plan), with no card, from its first imports. Then a plan to keep it;
+without one, alerts stay on 3 imports (`TRIAL_ALLOWANCE.alertImports`). Trials that started before
+`REVERSE_TRIAL.shortFrom` keep their 14 days. Why: give the value first (imports in, alerts and
+audits working), then ask. Every button on `/tariff-alerts`, `/duty-audits` and the homepage starts
+it: sign-up, then the onboarding, then the Tracker's import flow. The plan cards' buttons say "Start
+Free Trial" ("Free for 7 days · No credit card" under them); the money-back guarantees stay on the
+paid plans. The upgrade at the trial's end still sells the Tracker plans until the new plans are in
+Stripe.
+
+**Every Tariff Alerts plan is paid, with no free trial (2026-10-28; the trial above replaces this).** The product is now just
 **Tariff Alerts** ("Pro" dropped), and each plan is **Tariff Alerts [plan]**: Starter, Growth, Pro,
 Scale (`ALERT_TIERS`). No free plan and no trial on `/tariff-alerts`: the offer is simple and cheap
 enough, and paying up front gives users skin in the game. The page reassures with "From $9 a
@@ -90,7 +101,7 @@ are on Pro and Scale only**; a plan lists only what it has (nothing crossed out)
 accounts to 3 free imports (`REVERSE_TRIAL`, `TRIAL_ALLOWANCE.alertImports`), and the page's
 buttons still open sign-up, not checkout, until the product is changed to match.
 
-**Tariff Audits mirror the alerts plans (2026-10-28).** Tariff Audits Starter, Growth, Pro and
+**Duty Audits mirror the alerts plans (2026-10-28).** Duty Audits Starter, Growth, Pro and
 Scale (`AUDIT_TIERS`): the same imports and users / emails as the alerts plan of the same name, each
 including that alerts plan, Slack & Teams on Pro and Scale. Same cards and logic as
 `/tariff-alerts` (shared `PlanPricing`): no free plan, no trial, cancel anytime, and the **10 Audit
@@ -116,22 +127,22 @@ at anything higher, so:
 - **Everywhere:** never invent a higher "list" or "regular" price to cross out. A real time-limited
   discount later (e.g. a refund-event offer) may strike through the normal price while it runs.
 
-**Partners:** from $299/mo with up to 10 importer clients (Tariff Audits on up to 100 imports
+**Partners:** from $299/mo with up to 10 importer clients (Duty Audits on up to 100 imports
 each), then $25 per client per month. Larger books are quoted on the demo.
 
-**Trial:** the 14-day reverse trial stays. It gives Tariff Audits on up to 200 imports and starts
+**Trial:** the 14-day reverse trial stays. It gives Duty Audits on up to 200 imports and starts
 at the first import. When it ends without a plan, the account drops to free (alerts on 3 imports).
 
 ### Decided 2026-10-27
 
-1. **Savings detection** is in Tariff Audits.
+1. **Savings detection** is in Duty Audits.
 2. **Insights and the AD/CVD check** are in Duty Calculator Plus (free account). **Impact checks**
    are in Alerts: the only thing held back from free users is the answer to "how am I affected by
    new tariffs?"
-3. **The trial** stays: 14 days of Tariff Audits on up to 200 imports, from the first import, then free.
+3. **The trial** stays: 14 days of Duty Audits on up to 200 imports, from the first import, then free.
 4. **Annual billing** is on for both offers, 15% off.
 5. **Launch pricing is retired**; struck-through prices stay, within the rule above.
-6. **Team features:** Slack/Teams alerts are in Tariff Alerts Pro and Scale (100+ imports) (moved from Audits 2026-10-28: they're how alerts arrive). Tariff Audits plans have the same users / emails as the alerts plan of their name (2026-10-28; seats are no longer an Audits-only extra).
+6. **Team features:** Slack/Teams alerts are in Tariff Alerts Pro and Scale (100+ imports) (moved from Audits 2026-10-28: they're how alerts arrive). Duty Audits plans have the same users / emails as the alerts plan of their name (2026-10-28; seats are no longer an Audits-only extra).
 7. **`/tariff-audit`** stays as it is for now; the whole page gets overhauled soon.
 8. **Partner demos** use the existing 30-minute Calendly (`config.bookCallUrl`).
 9. **Copy:** ES-003/7501 upload is "coming soon" until it's live. The Audits headline is "Stop

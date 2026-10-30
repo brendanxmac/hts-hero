@@ -19,6 +19,7 @@ import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { SIGNIN_HOME, SIGNUP_HOME } from "@/libs/tariff-tracker/onboarding";
 import PasswordRequirements from "@/components/PasswordRequirements";
+import { signupHref } from "@/components/tariff-tracker/access/signup";
 
 // Component that uses useSearchParams wrapped in Suspense
 function LoginContent() {
@@ -30,6 +31,10 @@ function LoginContent() {
 
   if (user) {
     redirect(redirectTo);
+  }
+  // Signing up has its own page now (/signup); older sign-up links (?sign-up=true) land there
+  if (isRedirectForSignUp) {
+    redirect(signupHref(searchParams.get("redirect") || SIGNUP_HOME));
   }
 
   const supabase = createSupabaseClient();
@@ -531,7 +536,7 @@ function LoginContent() {
                   </div>
                 )}
 
-                {isSignUp && (password.length > 0 || confirmPassword.length > 0) && (
+                {isSignUp && (
                   <PasswordRequirements
                     password={password}
                     confirmPassword={confirmPassword}
@@ -601,18 +606,25 @@ function LoginContent() {
         {!showForgotPassword && !showOtpForm && !showOtpVerification && (
           <p className="text-center text-sm text-base-content/70">
             {isSignUp ? "Already have an account?" : "New to " + config.appName + "?"}{" "}
-            <button
-              type="button"
-              className={`${ui.link} disabled:opacity-50`}
-              onClick={() => {
-                setIsSignUp(!isSignUp);
-                setIsDisabled(false);
-                setConfirmPassword("");
-              }}
-              disabled={isLoading}
-            >
-              {isSignUp ? "Sign in" : "Create a free account"}
-            </button>
+            {isSignUp ? (
+              <button
+                type="button"
+                className={`${ui.link} disabled:opacity-50`}
+                onClick={() => {
+                  setIsSignUp(false);
+                  setIsDisabled(false);
+                  setConfirmPassword("");
+                }}
+                disabled={isLoading}
+              >
+                Sign in
+              </button>
+            ) : (
+              // Creating an account happens on /signup, headed to the same place
+              <Link href={signupHref(searchParams.get("redirect") || SIGNUP_HOME)} className={ui.link}>
+                Create a free account
+              </Link>
+            )}
           </p>
         )}
       </div>

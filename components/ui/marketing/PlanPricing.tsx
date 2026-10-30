@@ -5,7 +5,7 @@ import { ArrowRightIcon, BuildingOffice2Icon, CheckBadgeIcon, CheckIcon, ShieldC
 import { ANNUAL_DISCOUNT, Billing, formatPrice, monthlyRate, perImportPrice } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "./styles";
 
-// The plan cards the sales pages share (/tariff-alerts, /tariff-audit): a billing switch and a
+// The plan cards the sales pages share (/tariff-alerts, /duty-audits): a billing switch and a
 // products slider, four standard cards side by side with the one that fits the visitor's products
 // highlighted (past the largest plan, the large-catalog demo row is instead), slim demo rows under
 // them and the guarantee under everything. Each page brings its plans and what each includes; the
@@ -112,6 +112,7 @@ export const PlanCard = ({
   best,
   products,
   productOnly,
+  trialDays,
 }: {
   product: string;
   plan: SalesPlan;
@@ -125,6 +126,8 @@ export const PlanCard = ({
   products?: number;
   // Titled by the product alone, no plan name (the homepage, one card per product)
   productOnly?: boolean;
+  // The free trial's days, when there's one: the button starts it, and the line under says so
+  trialDays?: number;
 }) => {
   const price = monthlyRate(plan.price, billing);
   const id = `plan-${product.toLowerCase().replace(/\s+/g, "-")}-${plan.maxPairs}`;
@@ -196,7 +199,7 @@ export const PlanCard = ({
           href={href}
           className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-semibold text-primary-content transition-colors hover:bg-primary/90"
         >
-          Get {productOnly ? product : plan.name} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+          {trialDays ? "Start Free Trial" : `Get ${productOnly ? product : plan.name}`} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
         {/* The page's guarantee, if it has one, tiny under the button */}
         {guarantee && (
@@ -204,7 +207,9 @@ export const PlanCard = ({
             <ShieldCheckIcon className="h-3.5 w-3.5 shrink-0" aria-hidden /> {guarantee}
           </p>
         )}
-        <p className={`${guarantee ? "mt-1" : "mt-2.5"} text-center text-xs text-base-content/60`}>Cancel anytime</p>
+        <p className={`${guarantee ? "mt-1" : "mt-2.5"} text-center text-xs text-base-content/60`}>
+          {trialDays ? `Free for ${trialDays} days · No credit card` : "Cancel anytime"}
+        </p>
       </div>
     </article>
   );
@@ -221,6 +226,7 @@ export const PlanCards = ({
   lead,
   best,
   products,
+  trialDays,
 }: {
   product: string;
   plans: readonly SalesPlan[];
@@ -235,10 +241,12 @@ export const PlanCards = ({
   best?: number | null;
   // The slider's count, for the highlighted plan's badge
   products?: number;
+  // The free trial's days, if the plans start with one
+  trialDays?: number;
 }) => (
   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
     {plans.map((p) => (
-      <PlanCard key={p.maxPairs} product={product} plan={p} billing={billing} features={features(p, billing)} href={href} guarantee={guarantee} note={note?.(p, billing)} lead={lead(p)} best={p.maxPairs === best} products={products} />
+      <PlanCard key={p.maxPairs} product={product} plan={p} billing={billing} features={features(p, billing)} href={href} guarantee={guarantee} note={note?.(p, billing)} lead={lead(p)} best={p.maxPairs === best} products={products} trialDays={trialDays} />
     ))}
   </div>
 );

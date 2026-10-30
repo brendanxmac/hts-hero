@@ -13,7 +13,7 @@ export const SIGNIN_HOME = "/";
 export const signupSourceFor = (redirect: string | null | undefined): SignupSource => {
   const path = (redirect ?? "").split(/[?#]/)[0];
   if (path.startsWith("/duty-calculator") || path.startsWith("/tariffs") || path.startsWith("/hts/")) return "calculator";
-  if (path.startsWith("/tariff-tracker") || path.startsWith("/tariff-monitor") || path.startsWith("/tariff-audit") || path.startsWith("/tariff-updates")) return "tracker";
+  if (path.startsWith("/tariff-tracker") || path.startsWith("/tariff-monitor") || path.startsWith("/duty-audits") || path.startsWith("/tariff-audit") || path.startsWith("/tariff-updates")) return "tracker";
   if (path.startsWith("/classify") || path.startsWith("/classifications") || path.startsWith("/c/")) return "classify";
   return "generic";
 };

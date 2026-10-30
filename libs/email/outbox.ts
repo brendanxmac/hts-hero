@@ -188,8 +188,8 @@ export const sendApproved = async (db: Db, { deadline }: { deadline: number }) =
 }
 
 // Sends one message now (confirmations, receipts, internal notices: they can't wait for review)
-// and records it. `replyTo` overrides support@ (an internal notice replies to the person).
-export const sendTransactional = async (db: Db, message: Omit<OutboxMessage, "channel">, { replyTo }: { replyTo?: string } = {}) => {
+// and records it.
+export const sendTransactional = async (db: Db, message: Omit<OutboxMessage, "channel">) => {
   const row = must<MessageRow>(
     await db
       .from("email_messages")
@@ -209,8 +209,7 @@ export const sendTransactional = async (db: Db, message: Omit<OutboxMessage, "ch
     "Recording a transactional email"
   )
   try {
-    const options = await emailOptions(row, null, "transactional")
-    const { data, error } = await resend().emails.send(replyTo ? { ...options, replyTo } : options)
+    const { data, error } = await resend().emails.send(await emailOptions(row, null, "transactional"))
     if (error) throw new Error(error.message)
     await markSent(db, row.id, data?.id)
   } catch (e) {

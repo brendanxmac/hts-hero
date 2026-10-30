@@ -27,18 +27,18 @@ const inTrial = Date.parse(signedUp) + 3 * DAY
 const afterTrial = Date.parse(signedUp) + 15 * DAY
 
 describe("Tariff Tracker: plans", () => {
-  it("a new account is on the 14-day trial: 200 imports, every check", () => {
+  it("a new account is on the 7-day trial: 500 imports, every check", () => {
     const access = trackerAccessFrom({ usage: usage(9, 30), activePlans: [], trialStartedAt: signedUp, now: inTrial })
     expect(access.kind).toBe("trial")
-    expect(access.pairLimit).toBe(200)
-    expect(access.trialEndsAt).toBe("2027-01-24T15:00:00.000Z")
-    expect(trialDaysLeft(access, inTrial)).toBe(11)
+    expect(access.pairLimit).toBe(500)
+    expect(access.trialEndsAt).toBe("2027-01-17T15:00:00.000Z")
+    expect(trialDaysLeft(access, inTrial)).toBe(4)
     expect(checksLeft(access, "savings")).toBe(Infinity)
     expect(auditUnlocked(access, "never-checked")).toBe(true)
     expect(savingsUnlocked(access, new Set(["7000-MX"])).has("7000-MX")).toBe(true)
   })
 
-  it("after 14 days the account is on the free plan: alerts on 3 of its imports", () => {
+  it("after the trial the account is on the free plan: alerts on 3 of its imports", () => {
     const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [], trialStartedAt: signedUp, now: afterTrial })
     expect(access.kind).toBe("free")
     expect(access.pairLimit).toBe(3)
@@ -60,11 +60,16 @@ describe("Tariff Tracker: plans", () => {
   it("before the first imports the trial hasn't started: full access, no end date", () => {
     const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [], trialStartedAt: null, now: afterTrial })
     expect(access.kind).toBe("trial")
-    expect(access.pairLimit).toBe(200)
+    expect(access.pairLimit).toBe(500)
     expect(access.trialEndsAt).toBe(null)
     expect(trialNotStarted(access)).toBe(true)
     expect(trialDaysLeft(access, afterTrial)).toBe(null)
     expect(trialEndsAt(null)).toBe(null)
+  })
+
+  it("trials started before the week-long trial (REVERSE_TRIAL.shortFrom) keep their 14 days", () => {
+    const before = new Date(Date.parse(`${REVERSE_TRIAL.shortFrom}T00:00:00Z`) - DAY).toISOString()
+    expect(trialEndsAt(before)).toBe(new Date(Date.parse(before) + 14 * DAY).toISOString())
   })
 
   it("trials started before the fresh start get 14 days from it", () => {
@@ -148,19 +153,19 @@ describe("Tariff Tracker: trial emails", () => {
   const none = new Set<string>()
 
   it("nothing mid-trial", () => {
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(5) })).toBe(null)
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(2) })).toBe(null)
   })
 
   it("3 days before, then the last day, then the day after", () => {
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(11.2) })?.key).toBe("trial_ending_3")
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3"]), now: at(12.5) })).toBe(null)
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3"]), now: at(13.2) })?.key).toBe("trial_ending_1")
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3", "trial_ending_1"]), now: at(14.5) })?.key).toBe("trial_ended")
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(20) })).toBe(null)
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(4.2) })?.key).toBe("trial_ending_3")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3"]), now: at(5.5) })).toBe(null)
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3"]), now: at(6.2) })?.key).toBe("trial_ending_1")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3", "trial_ending_1"]), now: at(7.5) })?.key).toBe("trial_ended")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(13) })).toBe(null)
   })
 
   it("a missed 3-day email isn't sent once the last day is due", () => {
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(13.5) })?.key).toBe("trial_ending_1")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(6.5) })?.key).toBe("trial_ending_1")
   })
 
   it("nothing before the trial starts", () => {

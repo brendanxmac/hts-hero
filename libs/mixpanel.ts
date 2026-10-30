@@ -41,6 +41,31 @@ export enum MixpanelEvent {
   /** A classification attempt stopped by a limit (block_reason): the sign-up gate or the pricing modal */
   CLASSIFICATION_BLOCKED = "Classification Blocked",
   SIGN_UP = "Sign Up",
+  /** /signup: a way to sign up was picked (method: google, email_password or email_code; redirect) */
+  SIGN_UP_STARTED = "Sign Up Started",
+  // The sign-up onboarding (/onboarding): opened (with the first touch), each question answered
+  // (step, step_number, answer), the website skipped, and finished. A funnel of these shows where
+  // people stop
+  /** A sign-up button clicked (EntryCta): page (home, tariff-alerts, duty-audits), entry (where the
+   *  sign-up starts), section (where on the page), label, signed_in */
+  SIGNUP_CTA_CLICKED = "Sign Up CTA Clicked",
+  /** The homepage's "Get a Demo": the form opened, and sent (then on to Calendly): company_type, role, products */
+  DEMO_FORM_OPENED = "Demo Form Opened",
+  DEMO_REQUESTED = "Demo Requested",
+  ONBOARDING_STARTED = "Onboarding Started",
+  ONBOARDING_STEP_COMPLETED = "Onboarding Step Completed",
+  ONBOARDING_WEBSITE_SKIPPED = "Onboarding Website Skipped",
+  ONBOARDING_COMPLETED = "Onboarding Completed",
+  /** The Tariff Tracker onboarding after the sign-up onboarding (TrackerOnboarding): shown (focus:
+   *  imports or alerts), each screen, "Add my imports", and skipped */
+  TRACKER_WELCOME_SHOWN = "Tracker Welcome Shown",
+  TRACKER_WELCOME_STEP = "Tracker Welcome Step",
+  TRACKER_WELCOME_ADD_IMPORTS = "Tracker Welcome Add Imports",
+  TRACKER_WELCOME_SKIPPED = "Tracker Welcome Skipped",
+  /** The classification tour after the sign-up onboarding: shown, each step (step, index, of), ended (how: finished or skipped) */
+  CLASSIFY_TOUR_SHOWN = "Classify Tour Shown",
+  CLASSIFY_TOUR_STEP = "Classify Tour Step",
+  CLASSIFY_TOUR_ENDED = "Classify Tour Ended",
   TARIFF_IMPACT_TRIAL_STARTED = "Tariff Impact Trial Started",
   /** The Tracker's 14-day trial began (the account's first real imports), once per account */
   TARIFF_TRACKER_TRIAL_STARTED = "Tariff Tracker Trial Started",

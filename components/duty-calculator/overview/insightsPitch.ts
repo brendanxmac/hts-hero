@@ -20,7 +20,7 @@ export const insightsPitch = (member = false): AccountPitch => ({
     },
     {
       icon: "receipt",
-      title: "Tariff Audits on Every Entry",
+      title: "Duty Audits on Every Entry",
       body: "Have each entry checked against the duty in force on its date, to find duty you may have overpaid or underpaid.",
     },
     {

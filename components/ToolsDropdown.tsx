@@ -26,9 +26,9 @@ export const toolLinks = [
     hoverText: "group-hover:text-primary",
   },
   {
-    href: "/tariff-audit",
+    href: "/duty-audits",
     emoji: "🧾",
-    title: "Tariff Audit",
+    title: "Duty Audits",
     subtitle: "Find overpaid duty and refunds",
     hoverBg: "hover:bg-primary/10",
     iconBg: "bg-primary/20",

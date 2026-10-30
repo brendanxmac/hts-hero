@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface PasswordRequirementsProps {
   password: string;
@@ -21,11 +21,13 @@ export default function PasswordRequirements({
 
   const isPasswordValid = hasMinLength && hasUppercase && hasNumber;
 
+  // Keep the latest callback in a ref so inline callbacks don't re-run the effect every render
+  const onValidationChangeRef = useRef(onValidationChange);
+  onValidationChangeRef.current = onValidationChange;
+
   useEffect(() => {
-    if (onValidationChange) {
-      onValidationChange(isPasswordValid, passwordsMatch);
-    }
-  }, [isPasswordValid, passwordsMatch, onValidationChange]);
+    onValidationChangeRef.current?.(isPasswordValid, passwordsMatch);
+  }, [isPasswordValid, passwordsMatch]);
 
   return (
     <div className="bg-base-200 rounded-lg p-4 space-y-2">

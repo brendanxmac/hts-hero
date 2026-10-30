@@ -5,8 +5,8 @@ import { ClockIcon } from "@heroicons/react/20/solid";
 import { SectionIntro } from "@/components/ui/marketing";
 import { bestPlanFor, DarkBillingSwitch, DemoRow, GuaranteeBox, PlanCards, ProductsSlider } from "@/components/ui/marketing/PlanPricing";
 import * as mk from "@/components/ui/marketing/styles";
-import { ALERT_TIERS, ANNUAL_DISCOUNT, Billing } from "@/components/pricing-calculator/lib/pricing";
-import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
+import { ALERT_TIERS, ANNUAL_DISCOUNT, Billing, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { entryHref } from "@/libs/signup-onboarding";
 import { bookCallHref } from "@/libs/book-call";
 import { GUARANTEE, GUARANTEE_DETAIL } from "../lib/copy";
 
@@ -47,7 +47,7 @@ export const AlertsPricing = ({ urgency }: { urgency?: string | null }) => {
     <section id="pricing" className={`${mk.band} scroll-mt-6`} aria-labelledby="pricing-title">
       <div className="mx-auto w-full max-w-[84rem] px-6 lg:px-8">
         <SectionIntro eyebrow="" title="Less Than $1.00 Per Product" id="pricing-title" center>
-          Pay for the products you track, nothing else. Cancel anytime.
+          Try everything free for {REVERSE_TRIAL.days} days. Then pay only for the products you track.
         </SectionIntro>
 
         {urgency && (
@@ -64,7 +64,7 @@ export const AlertsPricing = ({ urgency }: { urgency?: string | null }) => {
             <DarkBillingSwitch billing={billing} onChange={setBilling} />
           </div>
 
-          <PlanCards product="Tariff Alerts" plans={ALERT_TIERS} billing={billing} features={alertsIncluded} href={TRY_FREE_HREF} lead={(p) => `Alerts on up to ${p.maxPairs} products`} best={best} products={products} />
+          <PlanCards product="Tariff Alerts" plans={ALERT_TIERS} billing={billing} features={alertsIncluded} href={entryHref("alerts_page")} trialDays={REVERSE_TRIAL.days} lead={(p) => `Alerts on up to ${p.maxPairs} products`} best={best} products={products} />
 
           {/* More than the largest plan, and firms managing importer clients. Each demo link says which,
               so it's on the booking. */}

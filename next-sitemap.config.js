@@ -95,7 +95,7 @@ const KEY_PAGES = [
   ["/duty-calculator/changelog", 0.6],
   ["/tariff-alerts", 0.9],
   ["/tariff-monitor", 0.9],
-  ["/tariff-audit", 0.9],
+  ["/duty-audits", 0.9],
   ["/tariff-updates", 0.9],
   ["/tariffs", 0.8],
   ...programHubSlugs().map((slug) => [`/tariffs/${slug}`, 0.8]),

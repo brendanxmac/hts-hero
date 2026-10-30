@@ -23,7 +23,7 @@ import * as mk from "./styles";
 const NAV = [
   { href: "/duty-calculator", label: "Tariff Calculator" },
   { href: "/tariff-alerts", label: "Tariff Alerts" },
-  { href: "/tariff-audit", label: "Tariff Audits" },
+  { href: "/duty-audits", label: "Duty Audits" },
   { href: "/tariff-updates", label: "Tariff News" },
   { href: "/classify", label: "Classification Assistant" },
 ];

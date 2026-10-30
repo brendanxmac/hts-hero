@@ -1,6 +1,5 @@
-import Link from "next/link";
+import { EntryCta } from "@/components/onboarding/EntryCta";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { PRICING_HREF } from "../lib/nav";
 import * as cta from "@/components/ui/marketing/cta";
 import { SectionIntro, Reveal } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
@@ -65,9 +64,9 @@ export const ImpactSection = ({ example }: { example: AlertExample | null }) => 
           A tariff headline doesn&apos;t always tell you what you&apos;ll pay. We instantly show you how it affects your products, without tab switching and spreadsheet craziness.
         </SectionIntro>
         <div className="mt-10">
-          <Link href={PRICING_HREF} className={cta.buttonPrimarySm}>
+          <EntryCta page="tariff-alerts" entry="alerts_page" section="impact" label="Get Started" className={cta.buttonPrimarySm}>
             Get Started <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-          </Link>
+          </EntryCta>
         </div>
       </div>
       {example && (

@@ -1,6 +1,5 @@
-import Link from "next/link";
+import { EntryCta } from "@/components/onboarding/EntryCta";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { PRICING_HREF } from "../lib/nav";
 import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
 import { MAIN_CTA } from "../hero/AlertsHero";
@@ -15,9 +14,9 @@ export const ClosingCta = () => (
         Add your products in 30 seconds to activate your tariff alerts.
       </p>
       <div className="mt-10">
-        <Link href={PRICING_HREF} className={cta.buttonPrimary}>
+        <EntryCta page="tariff-alerts" entry="alerts_page" section="closing" label={MAIN_CTA} className={cta.buttonPrimary}>
           {MAIN_CTA} <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </Link>
+        </EntryCta>
       </div>
     </div>
   </section>

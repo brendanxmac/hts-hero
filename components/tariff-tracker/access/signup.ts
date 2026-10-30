@@ -1,8 +1,7 @@
-import config from "@/config";
-
-// The sign-up page, coming back to `redirect` (a path on this site) once the account exists
-export const signupHref = (redirect: string) =>
-  `${config.auth.loginUrl}?sign-up=true&redirect=${encodeURIComponent(redirect)}`;
+// The sign-up page (/signup, its own route so sign-ups are tracked apart from sign-ins), coming
+// back to `redirect` (a path on this site) once the account exists
+export const SIGNUP_PATH = "/signup";
+export const signupHref = (redirect: string) => `${SIGNUP_PATH}?redirect=${encodeURIComponent(redirect)}`;
 
 // Where a new account from a "Try it free" button starts: the Tracker, on adding its imports
 // (ImportTakeover's ?setup=add), so the first thing they do is the thing the trial is for

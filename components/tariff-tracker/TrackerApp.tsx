@@ -10,6 +10,7 @@ import { SectionPage } from "./shell/SectionPage";
 import { TrackerNav, TrackerNavContext } from "./shell/TrackerNav";
 import { ImportTakeover } from "./onboarding/ImportTakeover";
 import { FeatureTour } from "./onboarding/tour/FeatureTour";
+import { TrackerOnboarding } from "./onboarding/welcome/TrackerOnboarding";
 import { TourTriggers } from "./onboarding/tour/TourTriggers";
 import { TrackerShell } from "./shell/TrackerShell";
 import { TrackerProvider } from "./TrackerContext";
@@ -220,6 +221,8 @@ export const TrackerApp = () => {
                   <ImportTakeover />
                   {/* The feature tour: by itself on the first visit and after the first imports, and from the sidebar */}
                   <FeatureTour />
+                  {/* New accounts from the sign-up onboarding: the Tracker onboarding, into the import flow */}
+                  <TrackerOnboarding />
                   <TourTriggers />
                 </TrackerNavContext.Provider>
               </EntriesProvider>

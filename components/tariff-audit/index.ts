@@ -1,4 +1,4 @@
-// The /tariff-audit landing page
+// The /duty-audits landing page
 export { AuditHero } from "./hero/AuditHero";
 export { RecalcSection } from "./recalc/RecalcSection";
 export { OverpaymentCauses } from "./causes/OverpaymentCauses";

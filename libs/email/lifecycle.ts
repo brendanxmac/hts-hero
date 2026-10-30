@@ -402,7 +402,7 @@ export const pickTrialEmail = ({
   if (daysLeft <= 3) return sent.has("trial_ending_3") || sent.has("trial_ending_1") ? null : { key: "trial_ending_3", daysLeft }
   // Existing accounts with imports, in the first days of their fresh trial
   const existing = Date.parse(createdAt) < fresh && Date.parse(startedAt!) < fresh + DAY
-  if (existing && now.getTime() >= fresh && daysLeft > REVERSE_TRIAL.days - 4 && !sent.has("trial_unlocked")) return { key: "trial_unlocked", daysLeft }
+  if (existing && now.getTime() >= fresh && daysLeft > REVERSE_TRIAL.legacyDays - 4 && !sent.has("trial_unlocked")) return { key: "trial_unlocked", daysLeft }
   return null
 }
 
@@ -410,15 +410,15 @@ export const pickTrialEmail = ({
 export const queueTrialEmails = async (db: Db, now = new Date(), { onlyUserIds }: TestScope = {}) => {
   const today = now.toISOString().slice(0, 10)
   const fresh = Date.parse(`${REVERSE_TRIAL.freshStartOn}T00:00:00Z`)
-  const trialMs = REVERSE_TRIAL.days * DAY
-  // Accounts whose trial ends between 3 days ago and 4 days from now, and, in the first days of
+  // Accounts whose trial ends between 3 days ago and 4 days from now (trials are a week, or two for
+  // those started before REVERSE_TRIAL.shortFrom: the window covers both), and, in the first days of
   // the fresh start, those whose trial started with it (existing accounts with imports)
-  const recentFrom = new Date(now.getTime() - trialMs - 3 * DAY).toISOString()
-  const recentTo = new Date(now.getTime() - trialMs + 4 * DAY).toISOString()
+  const recentFrom = new Date(now.getTime() - REVERSE_TRIAL.legacyDays * DAY - 3 * DAY).toISOString()
+  const recentTo = new Date(now.getTime() - REVERSE_TRIAL.days * DAY + 4 * DAY).toISOString()
   const freshUnlocking = now.getTime() >= fresh && now.getTime() < fresh + 4 * DAY
   const [recent, unlocking] = await Promise.all([
     trialsStartedBetween(db, recentFrom, recentTo),
-    freshUnlocking ? trialsStartedBetween(db, new Date(fresh - trialMs).toISOString(), new Date(fresh + DAY).toISOString()) : Promise.resolve([] as TrialAccount[]),
+    freshUnlocking ? trialsStartedBetween(db, new Date(fresh - REVERSE_TRIAL.legacyDays * DAY).toISOString(), new Date(fresh + DAY).toISOString()) : Promise.resolve([] as TrialAccount[]),
   ])
   const byId = new Map([...recent, ...unlocking].map((a) => [a.id, a]))
   let accounts = [...byId.values()].filter((a) => a.email)

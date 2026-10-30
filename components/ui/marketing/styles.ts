@@ -1,4 +1,4 @@
-// The marketing layer: the look of landing pages (/tariff-monitor, /tariff-audit), from the
+// The marketing layer: the look of landing pages (/tariff-monitor, /duty-audits), from the
 // "Command center" direction: always light, crisp slate and navy with a teal accent, big type, and
 // dark bands for contrast. Pages that opt in with .follow-theme (FollowTheme: /duty-calculator and
 // the country pages) get the Tariff Tracker's look instead through the skin: variants: its theme

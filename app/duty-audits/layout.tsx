@@ -9,7 +9,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   // the page's own header: its sections and its button
   return (
     <FollowTheme>
-      <MarketingLayout header={<SalesHeader product="Tariff Audits" links={AUDIT_NAV} cta={AUDIT_HEADER_CTA} />}>{children}</MarketingLayout>
+      <MarketingLayout header={<SalesHeader product="Duty Audits" links={AUDIT_NAV} cta={AUDIT_HEADER_CTA} />}>{children}</MarketingLayout>
     </FollowTheme>
   );
 }

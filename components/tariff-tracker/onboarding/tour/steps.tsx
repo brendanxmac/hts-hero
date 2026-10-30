@@ -1,7 +1,7 @@
 import { ComponentType, ReactNode } from "react";
 import { SectionSlug } from "../../sections";
 import { TourStepId } from "./tourStore";
-import { AdcvdVisual, AlertsVisual, AuditsVisual, ImportsVisual, ManageVisual, SavingsVisual } from "./visuals";
+import { AdcvdVisual, AlertsVisual, AuditsVisual, ImportsVisual, ManageVisual, SavingsVisual, WelcomeVisual } from "./visuals";
 
 // The feature tour's steps (FeatureTour), in order. Each one: what it's for, how to do it in a few
 // short steps (the Tracker's own labels in bold), where "Take me there" goes, and its demo.
@@ -11,6 +11,7 @@ import { AdcvdVisual, AlertsVisual, AuditsVisual, ImportsVisual, ManageVisual, S
 // embed link (e.g. https://www.youtube.com/embed/VIDEO_ID, https://www.loom.com/embed/VIDEO_ID)
 // or a video file (.mp4, .webm), such as one in public/videos/.
 export const TOUR_VIDEOS: Record<TourStepId, { url: string; length: string } | null> = {
+  welcome: null,
   imports: null,
   alerts: null,
   manage: null,
@@ -39,6 +40,28 @@ const B = ({ children }: { children: ReactNode }) => <strong className="font-sem
 const video = (id: TourStepId) => ({ video: TOUR_VIDEOS[id]?.url ?? null, videoLength: TOUR_VIDEOS[id]?.length });
 
 export const TOUR_STEPS: TourStep[] = [
+  // Always first: what the Tracker is for, before how
+  {
+    id: "welcome",
+    rail: "Welcome",
+    title: "Eliminate Tariff Overpayments and Surprises",
+    lead: "HTS Hero watches every tariff on the products you import, around the clock, so you hear about changes before they cost you and find duty you may have overpaid.",
+    how: [
+      <>
+        <B>Alerts</B> the day a new tariff affects your products, with the rate before and after.
+      </>,
+      <>
+        <B>Audits</B> of your entries, to find duty you may have overpaid. You keep 100% of any refund.
+      </>,
+      <>
+        <B>Savings</B> you may qualify for, like exemptions and trade programs.
+      </>,
+      <>It all runs on your imports: an HTS code and country of origin for each product.</>,
+    ],
+    tab: "overview",
+    ...video("welcome"),
+    Visual: WelcomeVisual,
+  },
   {
     id: "imports",
     rail: "Add Imports",

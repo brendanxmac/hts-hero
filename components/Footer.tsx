@@ -78,8 +78,8 @@ const Footer = () => {
                 <Link href="/tariff-monitor" className="link link-hover">
                   Tariff Tracker
                 </Link>
-                <Link href="/tariff-audit" className="link link-hover">
-                  Tariff Audit
+                <Link href="/duty-audits" className="link link-hover">
+                  Duty Audits
                 </Link>
                 <Link href="/tariff-updates" className="link link-hover">
                   Latest Tariff Updates

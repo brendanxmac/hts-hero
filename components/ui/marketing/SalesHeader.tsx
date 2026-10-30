@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { EntryCta } from "@/components/onboarding/EntryCta";
+import type { EntryPoint } from "@/libs/signup-onboarding";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import logo from "@/app/logo.svg";
 import config from "@/config";
@@ -12,13 +14,16 @@ import { ThemeSwitch } from "@/components/tariff-tracker/shell/ThemeSwitch";
 import ButtonAccount from "@/components/ButtonAccount";
 import * as mk from "./styles";
 
-// The header for pages that sell one offer (/tariff-alerts, /tariff-audit): the offer's name, links
+// The header for pages that sell one offer (/tariff-alerts, /duty-audits): the offer's name, links
 // to the page's own sections (the one in view highlighted) and its main button. Sticky, so the
 // button and the pricing link are always one click away. In the Tracker's look (skin:).
 
 export type SalesLink = { href: `#${string}`; label: string };
 
-export const SalesHeader = ({ product, links, cta }: { product: string; links: SalesLink[]; cta: { href: string; label: string } }) => {
+// The header's button: a link, or (with an entry) the page's tracked sign-up button (EntryCta)
+export type SalesCta = { href: string; label: string; entry?: { page: "tariff-alerts" | "duty-audits"; from: EntryPoint } };
+
+export const SalesHeader = ({ product, links, cta }: { product: string; links: SalesLink[]; cta: SalesCta }) => {
   const { user } = useUser();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string | null>(null);
@@ -72,11 +77,14 @@ export const SalesHeader = ({ product, links, cta }: { product: string; links: S
       Sign in
     </Link>
   );
-  const button = (
-    <Link
-      href={cta.href}
-      className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-primary px-5 text-sm font-semibold text-primary-content transition-colors hover:bg-primary/90"
-    >
+  const buttonClass =
+    "inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-primary px-5 text-sm font-semibold text-primary-content transition-colors hover:bg-primary/90";
+  const button = cta.entry ? (
+    <EntryCta page={cta.entry.page} entry={cta.entry.from} section="header" label={cta.label} className={buttonClass}>
+      {cta.label}
+    </EntryCta>
+  ) : (
+    <Link href={cta.href} className={buttonClass}>
       {cta.label}
     </Link>
   );

@@ -3,6 +3,8 @@ import {
   ANNUAL_DISCOUNT,
   formatPrice,
   perImportPrice,
+  REVERSE_TRIAL,
+  TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing"
 
 // The words /tariff-alerts is built on. The FAQ text is also the page's FAQPage schema, so it's
@@ -29,12 +31,12 @@ const tierList = ALERT_TIERS.map(
 
 const FIRST_TEAMS_PLAN = ALERT_TIERS.find((t) => t.teams)
 
-// The short promises under the main buttons. Every plan is paid, with no trial (2026-10-28): the
-// lowest price does the reassuring
+// The short promises under the main buttons: the week-long reverse trial (2026-10-30), free, then a
+// plan to keep it
 export const PROMISES = [
-  `From ${formatPrice(ALERT_TIERS[0].price)} a month`,
+  `Free for ${REVERSE_TRIAL.days} days`,
+  "No credit card",
   "Set up in 30 seconds",
-  "Cancel anytime",
 ]
 
 const LARGEST_ALERT_PLAN = ALERT_TIERS[ALERT_TIERS.length - 1].maxPairs
@@ -85,7 +87,11 @@ export const ALERTS_FAQS: { question: string; answer: string }[] = [
   },
   {
     question: "How much do tariff alerts cost?",
-    answer: `Plans are priced by how many products you track: ${tierList}. That's as low as ${formatPrice(LOWEST_ALERT_PER_IMPORT)} per product, per month, and annual billing takes ${ANNUAL_DISCOUNT * 100}% off.`,
+    answer: `Every new account starts with ${REVERSE_TRIAL.days} days free, no credit card. After that, plans are priced by how many products you track: ${tierList}. That's as low as ${formatPrice(LOWEST_ALERT_PER_IMPORT)} per product, per month, and annual billing takes ${ANNUAL_DISCOUNT * 100}% off.`,
+  },
+  {
+    question: "Is there a free trial?",
+    answer: `Yes. Every new account gets Tariff Alerts and Duty Audits free for ${REVERSE_TRIAL.days} days, on all its products (up to ${REVERSE_TRIAL.imports}), with no credit card. The ${REVERSE_TRIAL.days} days start when you add your products. When the trial ends, pick a plan to keep everything on; without one, alerts stay on ${TRIAL_ALLOWANCE.alertImports} of your products.`,
   },
   {
     question: `What if I have more than ${LARGEST_ALERT_PLAN} products?`,

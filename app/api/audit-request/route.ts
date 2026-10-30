@@ -5,7 +5,7 @@ import { sendTransactional } from "@/libs/email/outbox";
 
 export const dynamic = "force-dynamic";
 
-// Audit requests from /tariff-audit go to this inbox
+// Audit requests from /duty-audits go to this inbox
 const NOTIFY = "brendan@htshero.com";
 
 // Saves an audit request, then emails the team and confirms to the requester. Saving comes first
@@ -50,16 +50,15 @@ export async function POST(req: NextRequest) {
   ];
 
   try {
-    // A notice to Brendan (replies go to the requester) and a confirmation to the requester
+    // A notice to Brendan (with a button to reply to the requester) and a confirmation to the requester
     await Promise.all([
       sendTransactional(
         db,
         {
           recipient: NOTIFY,
           template: "internal_notice",
-          props: { eyebrow: "New tariff audit request", title: `Tariff audit request: ${r.company}`, rows },
-        },
-        { replyTo: r.email }
+          props: { eyebrow: "New tariff audit request", title: `Tariff audit request: ${r.company}`, rows, replyTo: { name: r.name, email: r.email } },
+        }
       ),
       sendTransactional(db, {
         recipient: r.email,

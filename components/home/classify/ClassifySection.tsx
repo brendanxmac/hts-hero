@@ -1,6 +1,7 @@
-import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, CheckCircleIcon, DocumentTextIcon, ScaleIcon } from "@heroicons/react/20/solid";
 import * as mk from "@/components/ui/marketing/styles";
+import { primaryButton } from "../lib/theme";
+import { HomeCta } from "../cta/HomeCta";
 import { PRODUCTS } from "@/components/classify-landing/lib/howItWorks";
 
 // The classification assistant on the homepage: a section of its own that sells it. The promise
@@ -39,10 +40,10 @@ export const ClassifySection = () => (
           ))}
         </ul>
         <div className="mt-9">
-          <Link href="/classify#try-classify" className={`${mk.buttonPrimary} h-14 px-8 text-lg`}>
+          <HomeCta section="classify" label="Try it Free" className={`${primaryButton} h-14 px-8 text-lg`}>
             Try it Free
             <ArrowRightIcon className="h-5 w-5" aria-hidden />
-          </Link>
+          </HomeCta>
         </div>
       </div>
 

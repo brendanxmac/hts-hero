@@ -75,9 +75,9 @@ export async function proxy(req: NextRequest) {
   const onboardingPreview = process.env.NODE_ENV === "development" && req.nextUrl.searchParams.get("onboardingPreview") === "1"
   if (!user && !onboardingPreview && (pathname === "/tariff-tracker" || pathname.startsWith("/tariff-tracker/"))) {
     const url = req.nextUrl.clone()
-    url.pathname = "/signin"
+    // New here: the sign-up page; had an account here before: the sign-in page
+    url.pathname = knownAccount ? "/signin" : "/signup"
     url.search = ""
-    if (!knownAccount) url.searchParams.set("sign-up", "true")
     url.searchParams.set("redirect", `${pathname}${req.nextUrl.search}`)
     const redirect = NextResponse.redirect(url)
     response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie))

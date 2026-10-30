@@ -38,9 +38,9 @@ export const EmailLayout = ({
     <Preview>{preview}</Preview>
     <Body style={{ margin: 0, backgroundColor: C.ground, fontFamily: FONT_SANS, color: C.text }}>
       <Container style={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: "32px 16px 40px" }}>
-        <Section style={{ padding: "0 8px 20px" }}>
+        <Section style={{ padding: "0 0 16px" }}>
           <Link href={SITE}>
-            <Img src={logoUrl()} alt="HTS Hero" width="142" height="28" style={{ display: "block", height: 28, width: "auto" }} />
+            <Img src={logoUrl()} alt="HTS Hero" width="170" height="48" style={{ display: "block", height: 48, width: 170 }} />
           </Link>
         </Section>
         <Section style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: 24, padding: "36px 36px 32px" }}>

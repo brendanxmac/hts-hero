@@ -10,6 +10,7 @@
     "email:meet-tracker": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/meet-tracker.ts",
     "stripe:check-tracker": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx --env-file=.env.local scripts/stripe/check-tracker-prices.ts",
     "chat:test": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/chat/test-alerts.tsx",
+    "email:upload-logo": "npx tsx scripts/email/upload-logo.ts",
     "email:auth": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/export-auth.tsx",
     "dev": "next dev",
     "dev:https": "next dev --experimental-https",

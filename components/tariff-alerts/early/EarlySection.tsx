@@ -1,6 +1,5 @@
-import Link from "next/link";
+import { EntryCta } from "@/components/onboarding/EntryCta";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { PRICING_HREF } from "../lib/nav";
 import { SectionIntro } from "@/components/ui/marketing";
 import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
@@ -20,9 +19,9 @@ export const EarlySection = ({ example }: { example: AlertExample | null }) => (
       </SectionIntro>
       {example && <EarlyTimeline example={example} />}
       <div className="flex flex-col items-center gap-3">
-        <Link href={PRICING_HREF} className={cta.buttonPrimary}>
+        <EntryCta page="tariff-alerts" entry="alerts_page" section="early" label="Get Tariff Alerts" className={cta.buttonPrimary}>
           Get Tariff Alerts <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </Link>
+        </EntryCta>
         <p className={mk.small}>{PROMISES.join(" · ")}</p>
       </div>
     </div>

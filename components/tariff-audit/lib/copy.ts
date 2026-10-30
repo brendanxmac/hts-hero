@@ -2,14 +2,16 @@ import {
   ANNUAL_DISCOUNT,
   AUDIT_TIERS,
   formatPrice,
+  REVERSE_TRIAL,
+  TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing"
 
 // The audit page's fixed copy. The FAQ is shown on the page and in its FAQPage schema, so the two
 // always match.
 
 // The money-back promise on the plans, under the prices (honored in full on request: FTC 16 CFR
-// 239, so its one condition is stated wherever it's offered). Every plan is paid, with no trial, so
-// this is what makes trying it safe
+// 239, so its one condition is stated wherever it's offered). It backs the plans that follow the
+// week-long free trial
 export const AUDIT_GUARANTEE_DAYS = 30
 export const AUDIT_GUARANTEE_AUDITS = 10
 export const AUDIT_GUARANTEE = `${AUDIT_GUARANTEE_AUDITS}-Audit Money-Back Guarantee`
@@ -17,7 +19,7 @@ export const AUDIT_GUARANTEE_DETAIL = `If you do ${AUDIT_GUARANTEE_AUDITS} audit
 
 const auditTierList = AUDIT_TIERS.map(
   (t) =>
-    `Tariff Audits ${t.name}, ${formatPrice(t.price)} a month for up to ${t.maxPairs} products`,
+    `Duty Audits ${t.name}, ${formatPrice(t.price)} a month for up to ${t.maxPairs} products`,
 ).join("; ")
 
 // The one-sentence answer to "what is it?", written so it can be quoted on its own
@@ -96,10 +98,14 @@ export const AUDIT_FAQS = [
   },
   {
     question: "How much does a tariff audit cost?",
-    answer: `Ongoing audits are a flat monthly price by the number of products you audit (a product is one HTS code from one country of origin): ${auditTierList}. Each plan includes Tariff Alerts for the same products, annual billing takes ${ANNUAL_DISCOUNT * 100}% off, and every plan comes with our ${AUDIT_GUARANTEE_AUDITS}-audit money-back guarantee. A historical audit of your past entries is a one-time project, quoted after a short call. Neither takes a cut of what you recover.`,
+    answer: `Every new account starts with ${REVERSE_TRIAL.days} days free, no credit card. After that, ongoing audits are a flat monthly price by the number of products you audit (a product is one HTS code from one country of origin): ${auditTierList}. Each plan includes Tariff Alerts for the same products, annual billing takes ${ANNUAL_DISCOUNT * 100}% off, and every plan comes with our ${AUDIT_GUARANTEE_AUDITS}-audit money-back guarantee. A historical audit of your past entries is a one-time project, quoted after a short call. Neither takes a cut of what you recover.`,
   },
   {
-    question: "What if Tariff Audits isn't worth it for me?",
+    question: "Is there a free trial?",
+    answer: `Yes. Every new account gets Tariff Alerts and Duty Audits free for ${REVERSE_TRIAL.days} days, on all its products (up to ${REVERSE_TRIAL.imports}), with no credit card. The ${REVERSE_TRIAL.days} days start when you add your products. When the trial ends, pick a plan to keep everything on; without one, alerts stay on ${TRIAL_ALLOWANCE.alertImports} of your products.`,
+  },
+  {
+    question: "What if Duty Audits isn't worth it for me?",
     answer: `Ask for your money back. Every plan comes with our ${AUDIT_GUARANTEE_AUDITS}-audit money-back guarantee: if you do ${AUDIT_GUARANTEE_AUDITS} audits on your products within ${AUDIT_GUARANTEE_DAYS} days and are not satisfied with the results, we'll give you a full refund. You can also cancel anytime.`,
   },
   {

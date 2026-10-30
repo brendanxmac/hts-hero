@@ -274,7 +274,7 @@ export function ProgramHubPage({
               {ended[0].refund.text}
             </SectionHeader>
             <div className="flex flex-wrap items-center gap-3">
-              <Link href="/tariff-audit" className={ui.button({ variant: "primary" })}>
+              <Link href="/duty-audits" className={ui.button({ variant: "primary" })}>
                 Check your past entries
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </Link>

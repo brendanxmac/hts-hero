@@ -37,7 +37,7 @@ export const MonitorPricing = () => (
     <div className={mk.container}>
       <SectionIntro eyebrow="Pricing" title={`Free for ${REVERSE_TRIAL.days} Days. Then Pay as Your Catalog Grows.`} id="pricing-title" center>
         Every new account gets the whole Tariff Tracker free for {REVERSE_TRIAL.days} days, on up to {REVERSE_TRIAL.imports} imports, with
-        no credit card and nothing to start: the 14 days begin when you add your imports. After that, {FREE_FOREVER_SHORT} stay free, forever. To keep alerts
+        no credit card and nothing to start: the {REVERSE_TRIAL.days} days begin when you add your imports. After that, {FREE_FOREVER_SHORT} stay free, forever. To keep alerts
         and impact checks on all your imports, pick a plan for the size of your catalog.
       </SectionIntro>
 

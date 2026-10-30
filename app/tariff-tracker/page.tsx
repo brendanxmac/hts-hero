@@ -1,7 +1,9 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { TrackerApp } from "@/components/tariff-tracker";
+import { WelcomeCover } from "@/components/tariff-tracker/onboarding/tour/WelcomeCover";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { TRACKER_WELCOME_PARAM } from "@/libs/signup-onboarding";
 
 export const metadata: Metadata = {
   title: "Tariff Tracker | HTS Hero",
@@ -12,11 +14,18 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function TariffTrackerPage() {
+export default async function TariffTrackerPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  // Straight from the sign-up onboarding, into the tour: the cover is in the first HTML, so the
+  // Tracker never shows before the tour opens over it (WelcomeCover)
+  const welcome = (await searchParams)[TRACKER_WELCOME_PARAM];
+  const intoTour = welcome === "imports" || welcome === "alerts";
   return (
-    // TrackerApp reads ?tab= (useSearchParams), which needs a Suspense boundary
-    <Suspense fallback={<div className="h-svh bg-base-200" />}>
-      <TrackerApp />
-    </Suspense>
+    <>
+      {intoTour && <WelcomeCover />}
+      {/* TrackerApp reads ?tab= (useSearchParams), which needs a Suspense boundary */}
+      <Suspense fallback={<div className="h-svh bg-base-200" />}>
+        <TrackerApp />
+      </Suspense>
+    </>
   );
 }

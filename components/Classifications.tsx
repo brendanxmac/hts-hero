@@ -44,6 +44,7 @@ import ConversionPricing from "./ConversionPricing";
 import { SignUpGateCTA } from "./SignUpGateCTA";
 import toast from "react-hot-toast";
 import OnboardingTour from "./onboarding/OnboardingTour";
+import { ClassifyTour, classifyTourRequested } from "./classify-tour/ClassifyTour";
 import type { OnboardingStep } from "../hooks";
 import {
   SparklesIcon,
@@ -61,6 +62,8 @@ interface SearchableClassification {
 }
 
 export const Classifications = () => {
+  // Arrived from the sign-up onboarding: the classification tour shows instead of the spotlight one
+  const [fromOnboarding] = useState(classifyTourRequested);
   const router = useRouter();
   const [loadingNewClassification] = useState(false);
   const [loader, setLoader] = useState<Loader>({
@@ -999,10 +1002,12 @@ export const Classifications = () => {
           <SignUpGateCTA />
         </Modal>
       )}
+      {/* From the sign-up onboarding: the classification tour, instead of the spotlight one */}
+      <ClassifyTour />
       <OnboardingTour
         tourId="classifications"
         steps={onboardingSteps}
-        enabled={!isContentLoading}
+        enabled={!isContentLoading && !fromOnboarding}
       />
     </main>
   );

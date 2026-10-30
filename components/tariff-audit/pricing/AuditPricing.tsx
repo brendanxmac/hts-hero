@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ALERT_TIERS, AUDIT_TIERS, ANNUAL_DISCOUNT, Billing, formatPrice, monthlyRate } from "@/components/pricing-calculator/lib/pricing";
+import { ALERT_TIERS, AUDIT_TIERS, ANNUAL_DISCOUNT, Billing, formatPrice, monthlyRate, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { SectionIntro } from "@/components/ui/marketing";
 import { bestPlanFor, DarkBillingSwitch, DemoRow, GuaranteeBox, PlanCards, ProductsSlider, type SalesPlan } from "@/components/ui/marketing/PlanPricing";
 import * as mk from "@/components/ui/marketing/styles";
 import { bookCallHref } from "@/libs/book-call";
 import type { AuditExample } from "@/libs/tariff-audit-example";
 import { AUDIT_GUARANTEE, AUDIT_GUARANTEE_DETAIL } from "../lib/copy";
-import { SIGN_UP_TO_AUDIT } from "../lib/links";
+import { entryHref } from "@/libs/signup-onboarding";
 
-// The Tariff Audits plans (AUDIT_TIERS, PRICING.md's value ladder), the same cards and logic as
+// The Duty Audits plans (AUDIT_TIERS, PRICING.md's value ladder), the same cards and logic as
 // /tariff-alerts (PlanPricing): four side by side, all paid, the one that fits the visitor's products highlighted, named like the alerts
 // plans. Each audits the same imports, for the same users, as the alerts plan of its name, and
 // includes it. Each plan says it can pay for itself with one flagged entry, when the engine's example
@@ -36,12 +36,12 @@ const LARGEST = AUDIT_TIERS[AUDIT_TIERS.length - 1].maxPairs;
 const LARGE_CATALOG_HREF = bookCallHref({
   source: "tariff-audit",
   campaign: "large-catalog",
-  context: `Importer with more than ${LARGEST} products, from the Tariff Audits pricing (htshero.com/tariff-audit)`,
+  context: `Importer with more than ${LARGEST} products, from the Duty Audits pricing (htshero.com/duty-audits)`,
 });
 const PARTNERS_HREF = bookCallHref({
   source: "tariff-audit",
   campaign: "partners",
-  context: "Customs broker, 3PL or freight forwarder managing importer clients, from the Tariff Audits pricing (htshero.com/tariff-audit)",
+  context: "Customs broker, 3PL or freight forwarder managing importer clients, from the Duty Audits pricing (htshero.com/duty-audits)",
 });
 
 export const AuditPricing = ({ example }: { example: AuditExample | null }) => {
@@ -54,7 +54,7 @@ export const AuditPricing = ({ example }: { example: AuditExample | null }) => {
     <section id="pricing" className={mk.band} aria-labelledby="pricing-title">
       <div className="mx-auto w-full max-w-[84rem] px-6 lg:px-8">
         <SectionIntro eyebrow="" title={`Less than $5 Per Product`} id="pricing-title" center>
-          Pay a flat monthly price for all your products, never a cut of anything you get back.
+          Try everything free for {REVERSE_TRIAL.days} days. Then a flat monthly price, never a cut of anything you get back.
         </SectionIntro>
 
         <div className="mt-6">
@@ -64,7 +64,7 @@ export const AuditPricing = ({ example }: { example: AuditExample | null }) => {
             <DarkBillingSwitch billing={billing} onChange={setBilling} />
           </div>
 
-          <PlanCards product="Tariff Audits" plans={AUDIT_TIERS} billing={billing} features={auditsIncluded} href={SIGN_UP_TO_AUDIT} lead={(p) => `Unlimited audits on ${p.maxPairs} products`} guarantee={AUDIT_GUARANTEE} best={best} products={products} />
+          <PlanCards product="Duty Audits" plans={AUDIT_TIERS} billing={billing} features={auditsIncluded} href={entryHref("audits_page")} trialDays={REVERSE_TRIAL.days} lead={(p) => `Unlimited audits on ${p.maxPairs} products`} guarantee={AUDIT_GUARANTEE} best={best} products={products} />
 
           {/* More than the largest plan, and firms managing importer clients. Each link says which, so
               it's on the booking. The historical-audit row is off for now, 2026-10-28 */}

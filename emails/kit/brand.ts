@@ -36,9 +36,11 @@ export const FONT_SANS = "Figtree, 'Segoe UI', Helvetica, Arial, sans-serif"
 
 export const SITE = "https://htshero.com"
 
-// The wordmark, as a PNG (most inboxes don't show SVG). Read when rendering, so scripts that load
-// the environment after importing still get it.
-export const logoUrl = () => `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/logo-text-black.png`
+// The wordmark, as a PNG (most inboxes don't show SVG), on a white rounded chip baked into the
+// image: the black text sits on a transparent ground otherwise and disappears when an inbox darkens
+// the page. Source: emails/assets/logo-email.png, uploaded by `npm run email:upload-logo`. Read
+// when rendering, so scripts that load the environment after importing still get it.
+export const logoUrl = () => `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/logo-email.png`
 
 // "2026-10-14" → "Oct 14, 2026"
 export const formatDay = (iso: string) =>
