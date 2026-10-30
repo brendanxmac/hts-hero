@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { CrossRuling, CrossRulingDetail } from "../../../interfaces/cross-rulings";
 import {
   fetchCrossRulingDetail,
+  CROSS_UNAVAILABLE_MESSAGE,
   fetchCrossRulingsBySearchTerm,
   formatCrossSearchQuery,
   trimHtsTo8Digits,
@@ -99,7 +100,7 @@ export const CrossRulingsTab = ({ latestHtsCode, isComplete }: Props) => {
         setBaselineRulings(data);
       } catch (err) {
         console.error("Error fetching CROSS rulings:", err);
-        setError("Unable to load CROSS rulings. Please try again later.");
+        setError(CROSS_UNAVAILABLE_MESSAGE);
       } finally {
         setLoading(false);
       }
@@ -145,7 +146,7 @@ export const CrossRulingsTab = ({ latestHtsCode, isComplete }: Props) => {
       setCustomSearch({ term, rulings });
     } catch (err) {
       console.error("Error in custom CROSS search:", err);
-      setCustomError("Unable to load CROSS rulings. Please try again later.");
+      setCustomError(CROSS_UNAVAILABLE_MESSAGE);
       setCustomSearch(null);
     } finally {
       setCustomLoading(false);
