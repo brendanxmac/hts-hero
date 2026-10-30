@@ -11,7 +11,7 @@ export const ONBOARDING_PATH = "/onboarding";
 // signup_onboarding.entry_point). The Tracker reads ?welcome= (TourTriggers): "calculator" opens
 // its calculator with no tour or popup; "imports" opens the tour and "alerts" opens it on its
 // Alerts step, both ending in adding imports.
-// /classifications reads ?welcome=tour (ClassifyTour) and ends on a new classification.
+// /classifications reads ?welcome=tour (ClassifyOnboarding) and ends on a new classification.
 // Where a sign-up started (?from=, signup_onboarding.entry_point): a homepage section with a button,
 // or one of the sales pages (/tariff-alerts, /duty-audits)
 export const HOME_SECTIONS = ["hero", "audit", "alerts", "calculator", "savings", "classify", "closing"] as const;
@@ -54,7 +54,7 @@ export const COMPANY_TYPES = [
   { id: "freight_forwarder", label: "Freight Forwarder" },
   { id: "ecommerce", label: "Ecommerce (Shopify, Amazon, etc)" },
   { id: "manufacturing", label: "Manufacturing" },
-  { id: "3pl", label: "3PL" },
+  { id: "3pl", label: "Logistics (3PL)" },
   { id: "other", label: "Other" },
 ] as const;
 

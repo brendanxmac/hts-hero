@@ -177,8 +177,8 @@ export const FixGuide = ({ rows, header, columns, sheet, onEdit, onEditMany, onD
         </h1>
         <p className="tt-ob-rise m-0 text-base text-base-content/75" style={delay(80)}>
           {left
-            ? "Track what's ready now, and fix the rest whenever you like. Or go back and finish them."
-            : `${n(ready)} ${ready === 1 ? "import is" : "imports are"} ready to track.`}
+            ? "Add what's ready now, and fix the rest whenever you like. Or go back and finish them."
+            : `${n(ready)} ${ready === 1 ? "import is" : "imports are"} ready to add.`}
         </p>
         <div className="tt-ob-rise flex w-full flex-col gap-3" style={delay(160)}>
           <button
@@ -188,7 +188,7 @@ export const FixGuide = ({ rows, header, columns, sheet, onEdit, onEditMany, onD
             disabled={!ready}
             autoFocus
           >
-            Track {n(ready)} {ready === 1 ? "import" : "imports"}
+            Add {n(ready)} {ready === 1 ? "import" : "imports"}
             <ArrowRightIcon className="h-5 w-5" aria-hidden />
           </button>
           {left > 0 && (

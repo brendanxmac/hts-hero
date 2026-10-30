@@ -73,7 +73,7 @@ export const TOUR_STEPS: TourStep[] = [
       </>,
       <>Upload a spreadsheet, paste a list, or pick from your recent searches. Any file with an HTS code and a country column works.</>,
       <>
-        Fix any rows we can&apos;t read (we suggest the fix), then click <B>Track my imports</B>.
+        Fix any rows we can&apos;t read (we suggest the fix), then click <B>Add my imports</B>.
       </>,
     ],
     action: "Add my imports",

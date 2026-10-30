@@ -14,7 +14,8 @@ import { AlertScene, AuditScene, ImpactScene, RewardScene, SavingsScene, SetupSc
 // Welcome; what the Tracker does, one thing a screen (alerts and their impact first for someone
 // who came for alerts, else audits and savings first); how setup takes 30 seconds; then the free
 // week they get for adding imports now. "Add my imports" goes straight into the import flow
-// (ImportTakeover's choose step) with nothing in between. In the shared TourShell.
+// (ImportTakeover: its intro, what an import is, then the ways to add them) with nothing in between. In the
+// shared TourShell.
 
 type Focus = "imports" | "alerts";
 
@@ -108,7 +109,7 @@ const PAGES: Record<string, Page> = {
     eyebrow: "Savings",
     title: (
       <>
-        and discover <span className={TONE.success.text}>savings.</span>
+        Discover <span className={TONE.success.text}>savings.</span>
       </>
     ),
     lead: "We constantly check your imports for exemptions, trade programs, and origins you may benefit from.",
@@ -130,11 +131,11 @@ const PAGES: Record<string, Page> = {
   },
   start: {
     id: "start",
-    rail: "Start",
+    rail: "Get Started",
     eyebrow: "One Week Free",
     title: (
       <>
-        Try it for 7 days <span className={TONE.primary.text}>FREE</span>
+        Try it FREE for <span className={TONE.primary.text}>7 days</span>
       </>
     ),
     lead: `Test it out for ${REVERSE_TRIAL.days} days to see if it's a good fit, no strings attached.`,
@@ -145,8 +146,8 @@ const PAGES: Record<string, Page> = {
 
 // Alerts first for someone who came for alerts; audits and savings first for everyone else
 const ORDER: Record<Focus, string[]> = {
-  alerts: ["welcome", "alerts", "impact", "audits", "savings", "setup", "start"],
-  imports: ["welcome", "audits", "savings", "alerts", "impact", "setup", "start"],
+  alerts: ["welcome", "alerts", "impact", "audits", "savings", /* "setup", */ "start"],
+  imports: ["welcome", "audits", "savings", "alerts", "impact", /* "setup", */ "start"],
 };
 
 export const TrackerOnboarding = () => {
@@ -187,7 +188,7 @@ export const TrackerOnboarding = () => {
   // Straight into the import flow: it opens as this closes, so nothing shows in between
   const addImports = () => {
     trackEvent(MixpanelEvent.TRACKER_WELCOME_ADD_IMPORTS, { focus });
-    openImportTakeover("onboarding", "choose");
+    openImportTakeover("onboarding", "hook");
     closeTrackerOnboarding();
   };
 
@@ -202,8 +203,8 @@ export const TrackerOnboarding = () => {
         accent={TONE[page.tone].text}
         scene={page.scene}
         onBack={at > 0 ? () => setAt(at - 1) : undefined}
-        next={last ? { label: "Add my imports", onClick: addImports } : { label: at === 0 ? "Show me" : "Next", onClick: () => setAt(at + 1) }}
-        footnote={last ? "Takes about 30 seconds. No credit card." : undefined}
+        next={last ? { label: "Add your imports", onClick: addImports } : { label: at === 0 ? "Get Started" : "Next", onClick: () => setAt(at + 1) }}
+        footnote={last ? "Takes about 30 seconds. No credit card required." : undefined}
       />
     </TourShell>
   );

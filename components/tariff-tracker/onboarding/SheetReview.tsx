@@ -117,9 +117,9 @@ export const ColumnPicker = ({
                   headerAbove(rows, found.columns.code) >= 0
                   ? headerAbove(rows, found.columns.code)
                   : Math.max(
-                      0,
-                      rows.findIndex((r) => r.some(Boolean)),
-                    )
+                    0,
+                    rows.findIndex((r) => r.some(Boolean)),
+                  )
                 : -1,
             })
           }
@@ -241,11 +241,11 @@ export const SheetReview = ({
   const fresh = (): SheetEdits =>
     finishing
       ? {
-          ...NO_EDITS,
-          included: rows
-            .map((_, i) => i)
-            .filter((i) => i > columns.headerIndex),
-        }
+        ...NO_EDITS,
+        included: rows
+          .map((_, i) => i)
+          .filter((i) => i > columns.headerIndex),
+      }
       : NO_EDITS;
   const [edits, setEdits] = useState<SheetEdits>(fresh);
   const [touched, setTouched] = useState<Set<number>>(new Set());
@@ -324,11 +324,11 @@ export const SheetReview = ({
   // Only a row the sheet shows (not one just deleted)
   const panelRow =
     selected !== null &&
-    shown.includes(selected) &&
-    sheet[selected] &&
-    (sheet[selected].kind !== "ok" || touched.has(selected)) &&
-    sheet[selected].kind !== "header" &&
-    sheet[selected].kind !== "blank"
+      shown.includes(selected) &&
+      sheet[selected] &&
+      (sheet[selected].kind !== "ok" || touched.has(selected)) &&
+      sheet[selected].kind !== "header" &&
+      sheet[selected].kind !== "blank"
       ? sheet[selected]
       : null;
   // The sheet opens on the first row to fix, its panel open (once: closing the panel keeps it closed)
@@ -692,13 +692,13 @@ export const SheetReview = ({
   // What starting says, in the footer and once every row is fixed
   const startLabel = finishing
     ? products.length
-      ? `Track the ${n(products.length)} fixed`
+      ? `Add the ${n(products.length)} fixed`
       : "Done for now"
     : !products.length
-      ? "Track my imports"
+      ? "Add my imports"
       : counts.error > 0
         ? `Start with the ${n(products.length)} ready`
-        : `Track ${n(products.length)} ${products.length === 1 ? "import" : "imports"}`;
+        : `Add ${n(products.length)} ${products.length === 1 ? "import" : "imports"}`;
 
   // Exactly the screen's height (data-fit, read by ImportTakeover): the page never scrolls, the
   // sheet and its panel scroll inside, and the header stays at the top however short the sheet is
@@ -707,7 +707,7 @@ export const SheetReview = ({
       {/* The header: the step; the file, its sheet and columns; then what's kept, and a way to start over */}
       <div className="flex shrink-0 flex-col gap-1.5">
         <span className={tt.eyebrow(finishing ? "warning" : "primary")}>
-          {finishing ? "Imports to finish" : `Step ${ADD_STEP} · Check your sheet`}
+          {finishing ? "Imports to finish" : `Check your sheet`}
         </span>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <button
@@ -899,9 +899,9 @@ export const SheetReview = ({
                   everywhere={
                     panelBulk
                       ? {
-                          count: panelBulk.list.length,
-                          apply: () => applyBulk(panelBulk),
-                        }
+                        count: panelBulk.list.length,
+                        apply: () => applyBulk(panelBulk),
+                      }
                       : undefined
                   }
                   onEdit={(column, value) =>

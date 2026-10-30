@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { ComponentType, Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import { ArrowUpTrayIcon, BellAlertIcon, CheckIcon, EyeIcon, LockClosedIcon, LockOpenIcon, PlusIcon, ScaleIcon, SparklesIcon, TableCellsIcon } from "@heroicons/react/20/solid";
 import logo from "@/app/logo.svg";
@@ -12,7 +12,7 @@ import { delay, prefersReducedMotion, useCountUp } from "../parts";
 // the screen opens. The examples follow the Tracker's rules: rate changes before → after and in %,
 // savings and overpaid duty are what could be or may have been.
 
-const SceneStyles = () => (
+export const SceneStyles = () => (
   <style>{`
     @keyframes sc-orbit { from { transform: rotate(0deg) translateX(var(--r)) rotate(0deg); } to { transform: rotate(360deg) translateX(var(--r)) rotate(-360deg); } }
     .sc-orbit { animation: sc-orbit 18s linear infinite; }
@@ -32,17 +32,19 @@ const SceneStyles = () => (
   `}</style>
 );
 
-const Panel = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+export const Panel = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <div className={`${tt.panel} relative w-full overflow-hidden text-left shadow-[0_30px_80px_-30px_var(--tt-ob-glow)] ${className}`}>{children}</div>
 );
 
-// 1. Welcome: the Tracker at the center, its three jobs orbiting it
-export const WelcomeScene = () => {
-  const jobs = [
-    { icon: BellAlertIcon, label: "Tariff Alerts", tone: "text-error", start: "0s" },
-    { icon: ScaleIcon, label: "Duty Audits", tone: "text-warning", start: "-6s" },
-    { icon: SparklesIcon, label: "Duty Savings", tone: "text-success", start: "-12s" },
-  ];
+// 1. Welcome: the product at the center, its three jobs orbiting it (the Tracker's by default; the
+// Classification onboarding passes its own)
+type OrbitJob = { icon: ComponentType<{ className?: string }>; label: string; tone: string; start: string };
+const TRACKER_JOBS: OrbitJob[] = [
+  { icon: BellAlertIcon, label: "Tariff Alerts", tone: "text-error", start: "0s" },
+  { icon: ScaleIcon, label: "Duty Audits", tone: "text-warning", start: "-6s" },
+  { icon: SparklesIcon, label: "Duty Savings", tone: "text-success", start: "-12s" },
+];
+export const WelcomeScene = ({ jobs = TRACKER_JOBS }: { jobs?: OrbitJob[] }) => {
   return (
     <div className="relative flex h-72 w-72 items-center justify-center max-sm:scale-[0.8]" aria-hidden>
       <SceneStyles />

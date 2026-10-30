@@ -44,7 +44,7 @@ import {
 
 // The import takeover (PRICING.md and the onboarding plan, 2026-10-20): the whole screen, opened when
 // the person asks for it (the empty Home and Imports pages, SetupPanel; the plan card; an email's
-// link), never by itself (2026-10-21). Why it matters (HookStep), what an import is
+// link), never by itself (2026-10-21). Where they are and why it matters (HookStep), what an import is
 // (ExplainStep), the ways in (ChooseStep and AddSteps), help without the list (HandyStep), and the
 // finish (DoneStep), which starts the trial. "Skip setup" leads to a last word (SkipStep); after it the
 // empty Home and Imports pages keep asking. Signed out, the Overview's empty state asks instead.
@@ -334,6 +334,7 @@ export const ImportTakeover = () => {
           <PasteStep
             onAdd={add}
             onBack={() => setTakeoverStep(few ? "handy" : "choose")}
+            onUpload={() => setTakeoverStep("file")}
             few={few}
           />
         );

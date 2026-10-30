@@ -7,42 +7,15 @@ import { TourShell, TourStep } from "@/components/product-tour/TourShell";
 import { PRODUCTS } from "@/components/classify-landing/lib/howItWorks";
 import { delay, HowTo } from "@/components/tariff-tracker/onboarding/parts";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
-import { WelcomeCoverScreen } from "@/components/tariff-tracker/onboarding/tour/WelcomeCover";
-import { TRACKER_WELCOME_PARAM } from "@/libs/signup-onboarding";
+import { NEW_CLASSIFICATION } from "@/components/classify-onboarding/ClassifyOnboarding";
 
-// The Classification Assistant's tour, in the shared TourShell: a welcome, then five steps, each
-// what it's for, how, and a small demo of the real screen (the /classify demo's water bottle). It's
-// also the product's onboarding: an account that signed up from the homepage's classification
-// section lands on it (onboardingNext: /classifications?welcome=tour), and every way out, finishing
-// or skipping, opens a new classification; the dashboard's spotlight tour is marked done so it
-// doesn't follow it. The header's Product Tour opens it any time (openClassifyTour).
+// The Classification Assistant's product tour, in the shared TourShell: a welcome, then five steps,
+// each what it's for, how, and a small demo of the real screen (the /classify demo's water bottle).
+// The header's Product Tour opens it any time (openClassifyTour). New accounts get the product's
+// onboarding instead (ClassifyOnboarding).
 
 const EXAMPLE = PRODUCTS[1];
 const FINAL_CODE = "9617.00.10.00";
-export const NEW_CLASSIFICATION = "/classifications/new";
-// The dashboard's spotlight tour (OnboardingTour tourId "classifications"), stored by useOnboardingTour
-const SPOTLIGHT_DONE_KEY = "onboarding_classifications_completed";
-
-// The screen between the onboarding and the tour, in the page's first HTML (app/classifications),
-// until the tour says it's open (or a fallback lifts it)
-const OPENED_EVENT = "classify-tour-opened";
-export const ClassifyCover = () => {
-  const [show, setShow] = useState(true);
-  useEffect(() => {
-    const hide = () => setShow(false);
-    window.addEventListener(OPENED_EVENT, hide);
-    const timer = setTimeout(hide, 12_000);
-    return () => {
-      window.removeEventListener(OPENED_EVENT, hide);
-      clearTimeout(timer);
-    };
-  }, []);
-  return show ? <WelcomeCoverScreen /> : null;
-};
-
-// Whether this visit came from the sign-up onboarding (read once, in the browser)
-export const classifyTourRequested = () => typeof window !== "undefined" && new URL(window.location.href).searchParams.get(TRACKER_WELCOME_PARAM) === "tour";
-
 const B = ({ children }: { children: ReactNode }) => <strong className="font-semibold text-base-content">{children}</strong>;
 const Card = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
   <div className={`tt-ob-rise rounded-2xl border border-base-300 bg-base-100 p-5 shadow-xl shadow-base-content/5 ${className}`}>{children}</div>
@@ -287,34 +260,13 @@ export const openClassifyTour = () => window.dispatchEvent(new Event(OPEN_EVENT)
 
 export const ClassifyTour = () => {
   const router = useRouter();
-  // null: closed; "onboarding": from the sign-up onboarding (every way out opens a new
-  // classification); "button": opened by hand (closing goes back)
-  const [from, setFrom] = useState<"onboarding" | "button" | null>(null);
+  const [open, setOpen] = useState(false);
   const [at, setAt] = useState(0);
-  const open = from !== null;
 
-  // From the sign-up onboarding, once; the address loses ?welcome= so a reload doesn't repeat it
-  useEffect(() => {
-    if (!classifyTourRequested()) return;
-    try {
-      localStorage.setItem(SPOTLIGHT_DONE_KEY, "true");
-    } catch {
-      // Not critical
-    }
-    const url = new URL(window.location.href);
-    url.searchParams.delete(TRACKER_WELCOME_PARAM);
-    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
-    setAt(0);
-    setFrom("onboarding");
-    window.dispatchEvent(new Event(OPENED_EVENT));
-    trackEvent(MixpanelEvent.CLASSIFY_TOUR_SHOWN, { from: "onboarding" });
-  }, []);
-
-  // From a button, any time
   useEffect(() => {
     const onOpen = () => {
       setAt(0);
-      setFrom("button");
+      setOpen(true);
       trackEvent(MixpanelEvent.CLASSIFY_TOUR_SHOWN, { from: "button" });
     };
     window.addEventListener(OPEN_EVENT, onOpen);
@@ -330,11 +282,11 @@ export const ClassifyTour = () => {
   const last = at === STEPS.length - 1;
   const Visual = step.Visual;
 
-  // From the onboarding, every way out goes to a new classification; by hand, closing goes back
+  // Finishing opens a new classification; closing goes back
   const end = (how: "finished" | "skipped") => {
-    trackEvent(MixpanelEvent.CLASSIFY_TOUR_ENDED, { how, step: step.id, from });
-    if (from === "onboarding" || how === "finished") router.push(NEW_CLASSIFICATION);
-    else setFrom(null);
+    trackEvent(MixpanelEvent.CLASSIFY_TOUR_ENDED, { how, step: step.id, from: "button" });
+    if (how === "finished") router.push(NEW_CLASSIFICATION);
+    else setOpen(false);
   };
 
   return (
@@ -343,7 +295,7 @@ export const ClassifyTour = () => {
       steps={STEPS}
       at={at}
       onGo={(i) => setAt(i)}
-      exitLabel={from === "onboarding" ? "Skip tour" : "Close tour"}
+      exitLabel="Close tour"
       onExit={() => end("skipped")}
       labelledBy="classify-tour-title"
     >
@@ -355,7 +307,7 @@ export const ClassifyTour = () => {
         lead={step.lead}
         body={<HowTo steps={step.how} start={200} />}
         onBack={at > 0 ? () => setAt(at - 1) : undefined}
-        next={last ? { label: from === "onboarding" ? "Classify my first product" : "Classify a product", onClick: () => end("finished") } : { label: `Next: ${STEPS[at + 1].rail}`, onClick: () => setAt(at + 1) }}
+        next={last ? { label: "Classify a product", onClick: () => end("finished") } : { label: `Next: ${STEPS[at + 1].rail}`, onClick: () => setAt(at + 1) }}
         visual={<Visual />}
       />
     </TourShell>

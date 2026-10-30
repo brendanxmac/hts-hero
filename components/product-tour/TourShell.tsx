@@ -20,7 +20,7 @@ export type ShellStep = { id: string; rail: string };
 
 // The chips across the top
 const Rail = ({ steps, at, onGo }: { steps: ShellStep[]; at: number; onGo: (i: number) => void }) => (
-  <ol className="m-0 hidden list-none items-center gap-1.5 p-0 lg:flex" aria-label="Steps">
+  <ol className="m-0 hidden list-none items-center gap-1.5 p-0 xl:flex" aria-label="Steps">
     {steps.map((s, i) => {
       const done = i < at;
       const current = i === at;
@@ -89,7 +89,7 @@ export const TourShell = ({
           <span className={`${tt.display} whitespace-nowrap text-[0.95rem] font-semibold`}>{product}</span>
         </span>
         <Rail steps={steps} at={at} onGo={onGo} />
-        <span className="whitespace-nowrap text-sm font-semibold text-base-content/55 lg:hidden">
+        <span className="whitespace-nowrap text-sm font-semibold text-base-content/55 xl:hidden">
           {at + 1} of {steps.length}
         </span>
         <button

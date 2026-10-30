@@ -8,18 +8,22 @@ import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as tt from "@/components/ui/styles/tracker";
 import { identifyUser, MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { cleanWebsite, COMPANY_TYPES, onboardingNext, readFirstTouch, ROLES, TRACKER_WELCOME_PARAM } from "@/libs/signup-onboarding";
-import { WelcomeCoverScreen } from "@/components/tariff-tracker/onboarding/tour/WelcomeCover";
+import { startWelcomeCover, WelcomeCoverScreen, type WelcomeProduct } from "@/components/tariff-tracker/onboarding/tour/WelcomeCover";
 
 // The sign-up onboarding, full screen like HubSpot's: the logo (not a link) and one question at a
 // time, with nothing else to click and no way back. Picking an answer saves it and moves on; the
-// website can be skipped with a small link. Crisp stays, for help. Saving never blocks them: if a
-// save fails, they still go on.
+// website can be skipped with a small link. Crisp stays, for help. Saving never blocks them: the
+// next question shows at once while the answer saves in the background (in order, one after
+// another), and only leaving waits for the saves to land (with a cap; if a save fails, they still go on).
 
 export type OnboardingStep = "company_type" | "website" | "role";
 const ORDER: OnboardingStep[] = ["company_type", "website", "role"];
 
 const post = (body: Record<string, unknown>) =>
-  fetch("/api/signup-onboarding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).catch((): null => null);
+  fetch("/api/signup-onboarding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch((): null => null);
+
+// The longest leaving waits for the background saves
+const LEAVE_WAIT_MS = 2_500;
 
 const option =
   "flex h-16 w-full items-center justify-center rounded-lg border border-base-content/30 bg-base-100 px-6 text-base font-semibold text-base-content transition-all hover:border-base-content/60 hover:shadow-lg hover:shadow-base-content/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-60";
@@ -37,7 +41,11 @@ export const SignupOnboarding = ({
   preview?: boolean;
 }) => {
   // A development preview (?preview=1) saves and tracks nothing
-  const save = (body: Record<string, unknown>) => (preview ? Promise.resolve(null) : post(body));
+  // Saves queue up behind each other, so they land in the order they were answered
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+  const save = (body: Record<string, unknown>) => {
+    if (!preview) queue.current = queue.current.then(() => post(body));
+  };
   const track: typeof trackEvent = (...args) => (preview ? undefined : trackEvent(...args));
   const [step, setStep] = useState<OnboardingStep>(initialStep);
   const [website, setWebsite] = useState("");
@@ -45,7 +53,7 @@ export const SignupOnboarding = ({
   const [busy, setBusy] = useState(false);
   // Leaving for a tour (the Tracker's or the classification one): its cover shows here first, so
   // the hand-off is one screen
-  const [leaving, setLeaving] = useState(false);
+  const [leaving, setLeaving] = useState<WelcomeProduct | null>(null);
   const started = useRef(false);
 
   // Opened: the row, and where they first came from
@@ -65,8 +73,7 @@ export const SignupOnboarding = ({
   }, [initialStep, entryPoint]);
 
   const answered = async (action: OnboardingStep, value: string, label: string) => {
-    setBusy(true);
-    await save({ action, value });
+    save({ action, value });
     track(MixpanelEvent.ONBOARDING_STEP_COMPLETED, { step: action, step_number: ORDER.indexOf(action) + 1, answer: value, entry_point: entryPoint });
     if (!preview) identifyUser(userId, { [`onboarding_${action}`]: action === "website" ? value : label });
     if (action === "role") {
@@ -75,12 +82,17 @@ export const SignupOnboarding = ({
       // (A preview saves nothing but still goes on, so the whole path can be walked)
       const next = onboardingNext(entryPoint);
       const welcome = new URL(next, window.location.origin).searchParams.get(TRACKER_WELCOME_PARAM);
-      if (welcome === "imports" || welcome === "alerts" || welcome === "tour") setLeaving(true);
-      window.location.href = next;
+      if (welcome === "imports" || welcome === "alerts" || welcome === "tour") {
+        startWelcomeCover();
+        setLeaving(welcome === "tour" ? "Classification Assistant" : "Tariff Tracker");
+      }
+      // Only leaving waits for the answers to save (behind the cover, when there is one)
+      setBusy(true);
+      await Promise.race([queue.current, new Promise((r) => setTimeout(r, LEAVE_WAIT_MS))]);
+      window.location.assign(next);
       return;
     }
     setStep(ORDER[ORDER.indexOf(action) + 1]);
-    setBusy(false);
   };
 
   const submitWebsite = (e: FormEvent) => {
@@ -90,22 +102,20 @@ export const SignupOnboarding = ({
     answered("website", clean, clean);
   };
 
-  const skipWebsite = async () => {
-    setBusy(true);
-    await save({ action: "skip_website" });
+  const skipWebsite = () => {
+    save({ action: "skip_website" });
     track(MixpanelEvent.ONBOARDING_WEBSITE_SKIPPED, { step_number: 2, entry_point: entryPoint });
     setStep("role");
-    setBusy(false);
   };
 
   const question =
     step === "company_type"
-      ? { title: "What does your company do?", lead: "This helps set you up for what you need." }
+      ? { title: "What does your company do?", lead: "This helps us get you the best tools." }
       : step === "website"
-        ? { title: "Company Website", lead: "So we can tailor HTS Hero to your business." }
-        : { title: "What is your role?", lead: "This helps set you up to achieve your goals faster." };
+        ? { title: "Enter Your Company Website", lead: "So we can tailor HTS Hero to your business." }
+        : { title: "What is your role?", lead: "This helps us setup your dashboard." };
 
-  if (leaving) return <WelcomeCoverScreen />;
+  if (leaving) return <WelcomeCoverScreen product={leaving} />;
 
   return (
     <main className={`${THEME} hts-tracker ${trackerSans.className} ${trackerDisplay.variable} fixed inset-0 z-50 overflow-y-auto bg-base-100`}>
@@ -117,6 +127,8 @@ export const SignupOnboarding = ({
       <div className="mx-auto flex min-h-[calc(100svh-6rem)] w-full max-w-xl flex-col items-center justify-center px-6 pb-24">
         {/* Each question fades in */}
         <style>{`@keyframes onb-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } } .onb-in { animation: onb-in .35s ease-out; } @media (prefers-reduced-motion: reduce) { .onb-in { animation: none; } }`}</style>
+        {/* Progress, off for now: one segment a question, filling as they go
+        <Progress at={ORDER.indexOf(step)} of={ORDER.length} /> */}
         <div key={step} className="onb-in flex w-full flex-col items-center">
           <h1 className={`${tt.display} text-center text-3xl font-semibold tracking-tight text-base-content`}>{question.title}</h1>
           <p className="mt-3 text-center text-lg text-base-content/70">{question.lead}</p>
@@ -171,3 +183,20 @@ export const SignupOnboarding = ({
     </main>
   );
 };
+
+// The progress bar above the questions (off for now; see the commented-out <Progress /> above)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const Progress = ({ at, of }: { at: number; of: number }) => (
+  <div className="flex flex-col items-center gap-2.5" role="progressbar" aria-valuemin={1} aria-valuemax={of} aria-valuenow={at + 1} aria-label={`Question ${at + 1} of ${of}`}>
+    <div className="flex gap-1.5">
+      {Array.from({ length: of }, (_, i) => (
+        <span key={i} className="h-1.5 w-14 overflow-hidden rounded-full bg-base-300">
+          <span className={`block h-full rounded-full bg-primary transition-[width] duration-500 ease-out ${i <= at ? "w-full" : "w-0"}`} />
+        </span>
+      ))}
+    </div>
+    <p className="m-0 text-sm font-semibold text-base-content/55">
+      {at === of - 1 ? "Last one!" : `${at + 1} of ${of}`} <span className="font-normal text-base-content/45">· Takes about 30 seconds</span>
+    </p>
+  </div>
+);

@@ -10,6 +10,7 @@ import { arrivalSource } from "../arrival";
 import { useImportTakeover } from "../takeoverStore";
 import { markTourSeen, openFeatureTour, openTourOnce } from "./tourStore";
 import { openTrackerOnboarding } from "../welcome/TrackerOnboarding";
+import { welcomeCoverRemaining } from "./WelcomeCover";
 import { TRACKER_WELCOME_PARAM } from "@/libs/signup-onboarding";
 
 // When the feature tour opens by itself: the first time an account opens the Tracker (signed in,
@@ -19,7 +20,7 @@ import { TRACKER_WELCOME_PARAM } from "@/libs/signup-onboarding";
 // finish opens it (openTourOnce "imports_added"). In development, ?tourPreview=1 opens it for
 // anyone, signed out too. Straight from the sign-up onboarding (?welcome=, libs/signup-onboarding.ts):
 // "imports" (came for savings or audits) and "alerts" open the Tracker onboarding (TrackerOnboarding)
-// at once, ending in the import flow, not the tour;
+// once the welcome cover has been up long enough, ending in the import flow, not the tour;
 // "calculator" opens nothing, ever (the first-visit tour counts as seen).
 export const TourTriggers = (): null => {
   const { user } = useUser();
@@ -38,7 +39,8 @@ export const TourTriggers = (): null => {
     url.searchParams.delete(TRACKER_WELCOME_PARAM);
     window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
     markTourSeen(user.id, "first_visit");
-    if (welcome === "imports" || welcome === "alerts") openTrackerOnboarding(welcome);
+    // Once the welcome has had its moment (WelcomeCover)
+    if (welcome === "imports" || welcome === "alerts") setTimeout(() => openTrackerOnboarding(welcome), welcomeCoverRemaining());
   }, [signedIn, loading, synced, user?.id, takeover.open]);
 
   useEffect(() => {

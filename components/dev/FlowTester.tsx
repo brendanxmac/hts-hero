@@ -20,7 +20,7 @@ const FLOWS: { entry: EntryPoint; button: string; next: string }[] = [
   { entry: "alerts", button: "Home · “Get Tariff Alerts”", next: "Tracker onboarding (alerts first) → add imports" },
   { entry: "calculator", button: "Home · “Try Tariff Calculator”", next: "Tracker calculator, no tour or popups" },
   { entry: "savings", button: "Home · “Find Savings”", next: "Tracker onboarding → add imports" },
-  { entry: "classify", button: "Home · classification “Try it Free”", next: "Classification tour → new classification" },
+  { entry: "classify", button: "Home · classification “Try it Free”", next: "Classification onboarding → new classification" },
   { entry: "closing", button: "Home · closing “Get Started Free”", next: "Tracker onboarding → add imports" },
   { entry: "alerts_page", button: "/tariff-alerts · any button", next: "Tracker onboarding (alerts first) → add imports" },
   { entry: "audits_page", button: "/duty-audits · any button", next: "Tracker onboarding → add imports" },
@@ -32,7 +32,8 @@ const OTHER: { label: string; href: string; note: string }[] = [
   { label: "Sign-in page", href: "/signin", note: "Signed out only" },
   { label: "Get a Demo form", href: "/", note: "The hero's second button (submitting emails Brendan)" },
   { label: "Tracker tour (preview)", href: "/tariff-tracker?tourPreview=1", note: "The product tour, from the sidebar's button" },
-  { label: "Tracker onboarding (preview)", href: "/tariff-tracker?onboardingPreview=1&welcomePreview=imports", note: "The 3 screens; add &welcomePreview=alerts for the alerts version" },
+  { label: "Tracker onboarding (preview)", href: "/tariff-tracker?onboardingPreview=1&welcomePreview=imports", note: "Use &welcomePreview=alerts for the alerts version" },
+  { label: "Classification onboarding (preview)", href: "/classifications?onboardingPreview=1", note: "Every way out opens a new classification" },
   { label: "Classification tour", href: "/classifications", note: "The header's Product Tour button" },
 ];
 

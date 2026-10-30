@@ -66,6 +66,10 @@ export enum MixpanelEvent {
   CLASSIFY_TOUR_SHOWN = "Classify Tour Shown",
   CLASSIFY_TOUR_STEP = "Classify Tour Step",
   CLASSIFY_TOUR_ENDED = "Classify Tour Ended",
+  CLASSIFY_ONBOARDING_SHOWN = "Classify Onboarding Shown",
+  CLASSIFY_ONBOARDING_STEP = "Classify Onboarding Step",
+  CLASSIFY_ONBOARDING_STARTED = "Classify Onboarding Started",
+  CLASSIFY_ONBOARDING_SKIPPED = "Classify Onboarding Skipped",
   TARIFF_IMPACT_TRIAL_STARTED = "Tariff Impact Trial Started",
   /** The Tracker's 14-day trial began (the account's first real imports), once per account */
   TARIFF_TRACKER_TRIAL_STARTED = "Tariff Tracker Trial Started",
