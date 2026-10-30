@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { CROSS_CACHE_TTL_SECONDS, getCachedRulings } from "@/libs/cross-rulings-server";
+import { CROSS_CACHE_TTL_SECONDS, CROSS_SEARCH_ENABLED, getCachedRulings } from "@/libs/cross-rulings-server";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +24,12 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
+    if (!CROSS_SEARCH_ENABLED) {
+      return NextResponse.json(
+        { error: "CROSS search is unavailable" },
+        { status: 503 }
+      );
+    }
     console.error("Error fetching CROSS rulings:", error);
     return NextResponse.json(
       { error: "Internal server error" },

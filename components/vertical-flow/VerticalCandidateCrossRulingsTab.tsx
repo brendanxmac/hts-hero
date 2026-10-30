@@ -5,6 +5,7 @@ import type { CrossRuling, CrossRulingDetail } from "@/interfaces/cross-rulings"
 import type { HtsElement } from "@/interfaces/hts";
 import {
   fetchCrossRulingDetail,
+  CROSS_UNAVAILABLE_MESSAGE,
   fetchCrossRulingsBySearchTerm,
   formatCrossSearchQuery,
   trimHtsTo8Digits,
@@ -148,7 +149,7 @@ export function VerticalCandidateCrossRulingsTab({
       } catch (err) {
         console.error("Error fetching CROSS rulings for candidates:", err);
         if (!cancelled) {
-          setError("Unable to load CROSS rulings. Please try again later.");
+          setError(CROSS_UNAVAILABLE_MESSAGE);
           setTermGroups([]);
         }
       } finally {
@@ -194,7 +195,7 @@ export function VerticalCandidateCrossRulingsTab({
       setCustomSearch({ term, rulings });
     } catch (err) {
       console.error("Error in custom CROSS search:", err);
-      setCustomError("Unable to load CROSS rulings. Please try again later.");
+      setCustomError(CROSS_UNAVAILABLE_MESSAGE);
       setCustomSearch(null);
     } finally {
       setCustomLoading(false);

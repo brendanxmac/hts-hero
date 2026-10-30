@@ -1,5 +1,7 @@
 import type { CrossRuling, CrossRulingDetail } from "../interfaces/cross-rulings";
 
+export const CROSS_UNAVAILABLE_MESSAGE = "CROSS rulings are currently unavailable.";
+
 export async function fetchCrossRulingsBySearchTerm(
   term: string
 ): Promise<CrossRuling[]> {

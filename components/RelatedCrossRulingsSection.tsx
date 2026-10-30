@@ -5,6 +5,7 @@ import { ScaleIcon } from "@heroicons/react/16/solid";
 import type { CrossRuling, CrossRulingDetail } from "../interfaces/cross-rulings";
 import {
   fetchCrossRulingDetail,
+  CROSS_UNAVAILABLE_MESSAGE,
   fetchCrossRulingsBySearchTerm,
   trimHtsTo8Digits,
 } from "../libs/cross-rulings";
@@ -54,7 +55,7 @@ export function RelatedCrossRulingsSection({ htsno, bare = false, initialCount, 
         setRulings(data);
       } catch (err) {
         console.error("Error fetching CROSS rulings:", err);
-        setError("Unable to load CROSS rulings. Please try again later.");
+        setError(CROSS_UNAVAILABLE_MESSAGE);
       } finally {
         setLoading(false);
       }

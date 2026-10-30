@@ -7,7 +7,16 @@ import { parseRulingTariffs } from "./cross-rulings";
 
 export const CROSS_CACHE_TTL_SECONDS = 8 * 60 * 60; // 8 hours
 
+// CBP put reCAPTCHA in front of its search API, so servers get a 403. Until that's sorted out we
+// don't call it: rulings already in the cache are still served, anything else is "unavailable".
+export const CROSS_SEARCH_ENABLED = false;
+
 async function fetchRulingsFromCbp(term: string, signal?: AbortSignal): Promise<CrossRuling[]> {
+  // Throw, never return []: that would replace the cached rulings with an empty list
+  if (!CROSS_SEARCH_ENABLED) {
+    throw new Error("CROSS search is disabled");
+  }
+
   const url = `https://rulings.cbp.gov/api/search?term=${encodeURIComponent(term)}&sortBy=RELEVANCE`;
   const response = await fetch(url, { signal });
 
@@ -24,10 +33,15 @@ async function fetchRulingsFromCbp(term: string, signal?: AbortSignal): Promise<
 }
 
 // The classification rulings for a search term, cached for CROSS_CACHE_TTL_SECONDS
-export const getCachedRulings = (term: string, signal?: AbortSignal) =>
-  unstable_cache(() => fetchRulingsFromCbp(term, signal), [`cross-rulings-search-${term}`], {
+export const getCachedRulings = (term: string, signal?: AbortSignal) => {
+  const fetchRulings = () => fetchRulingsFromCbp(term, signal);
+  // unstable_cache keys on the callback's source. Minified, that can change with any build, and CBP
+  // can't refill the cache right now, so this holds the key the /hts pages' rulings are stored under.
+  fetchRulings.toString = () => "()=>at(a,d)";
+  return unstable_cache(fetchRulings, [`cross-rulings-search-${term}`], {
     revalidate: CROSS_CACHE_TTL_SECONDS,
   })();
+};
 
 // For a page render: the rulings that classify something under the page's code, or null when CBP
 // doesn't answer within `ms` (the page then fetches them in the browser), so a slow CBP never
