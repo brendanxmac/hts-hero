@@ -3,10 +3,10 @@ import { AlertSample, Checklist, Cta, Eyebrow, P, Panel, PlanStrip, Signature, T
 import { siteLink } from "../kit/brand"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
-// The "no imports yet" email the day after an account first opened the Tracker and left it empty
+// The "no imports yet" email the day after an account first opened Duty Guard and left it empty
 // (libs/email/lifecycle.ts tracker_no_imports_1). Value first: the tariff actions of the last 30
 // days, the latest ones in full, and the question only their imports can answer. Then the three
-// ways in from the Tracker's takeover, and what to do without the list (ask the broker). The CTA
+// ways in from Duty Guard's takeover, and what to do without the list (ask the broker). The CTA
 // lands on the takeover's ways in (?setup=add). `reminder`: they asked for it ("Remind me tomorrow").
 //   step 2 (no longer sent, kept for queued messages): what an alert on your imports looks like
 
@@ -33,13 +33,13 @@ export const onboardingSubject = (p: OnboardingEmailProps) =>
 
 const preview = (p: OnboardingEmailProps) =>
   p.step === 1
-    ? "Add your imports and your Tracker shows which ones every change hits. About a minute, three ways to do it."
-    : `${actions(p.actionsThisMonth)}. Your Tracker can tell you which ones hit you, once your imports are in.`
+    ? "Add your imports and your Duty Guard shows which ones every change hits. About a minute, three ways to do it."
+    : `${actions(p.actionsThisMonth)}. Your Duty Guard can tell you which ones hit you, once your imports are in.`
 
 const CAMPAIGN = (step: number) => `onboarding-${step}`
 
-// Opens the Tracker's import takeover on its ways in (ImportTakeover's ?setup=)
-export const ADD_IMPORTS_URL = "/tariff-tracker?setup=add"
+// Opens Duty Guard's import takeover on its ways in (ImportTakeover's ?setup=)
+export const ADD_IMPORTS_URL = "/duty-guard?setup=add"
 
 export default function OnboardingEmail(props: OnboardingEmailProps) {
   const { step, actionsThisMonth, recent, reminder, footer } = props
@@ -47,10 +47,10 @@ export default function OnboardingEmail(props: OnboardingEmailProps) {
   if (step === 1) {
     return (
       <EmailLayout preview={preview(props)} footer={footer}>
-        <Eyebrow tone="up">{reminder ? "Your reminder" : "Tariff Tracker"}</Eyebrow>
+        <Eyebrow tone="up">{reminder ? "Your reminder" : "Duty Guard"}</Eyebrow>
         <Title>{actionsThisMonth > 0 ? `${actionsThisMonth} tariff changes in 30 days. Which hit you?` : "Which tariff changes hit your imports?"}</Title>
         <P>
-          {reminder ? "Here's the reminder you asked for. " : ""}Your Tariff Tracker is set up and watching every US tariff action. It just doesn&apos;t know what you
+          {reminder ? "Here's the reminder you asked for. " : ""}Your Duty Guard is set up and watching every US tariff action. It just doesn&apos;t know what you
           import yet, so it can&apos;t tell you which of these hit you:
         </P>
         {recent.slice(0, 2).map((u) => (
@@ -79,7 +79,7 @@ export default function OnboardingEmail(props: OnboardingEmailProps) {
           </P>
         </Panel>
         <P>
-          Your free {REVERSE_TRIAL.days}-day trial starts when you add them: everything the Tracker does, on up to {REVERSE_TRIAL.imports} imports, no credit card.
+          Your free {REVERSE_TRIAL.days}-day trial starts when you add them: everything Duty Guard does, no credit card required.
         </P>
         <Cta href={siteLink(ADD_IMPORTS_URL, campaign)} variant="next">
           Add my imports &rarr;
@@ -92,10 +92,10 @@ export default function OnboardingEmail(props: OnboardingEmailProps) {
   return (
     <EmailLayout preview={preview(props)} footer={footer}>
       <Eyebrow tone="up">Tariff alerts</Eyebrow>
-      <Title>Your Tracker is still empty</Title>
+      <Title>Your Duty Guard is still empty</Title>
       <P>
         {actionsThisMonth > 0 ? `${actionsThisMonth} US tariff changes in the last 30 days.` : "US tariffs keep changing."} Add your imports and you&apos;ll get an alert
-        like this when one hits. Your free trial covers up to {REVERSE_TRIAL.imports} imports, so bring your whole catalog:
+        like this when one hits. Bring your whole catalog:
       </P>
       <AlertSample
         label="Example alert"

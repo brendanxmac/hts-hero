@@ -4,7 +4,7 @@ import { TourStepId } from "./tourStore";
 import { AdcvdVisual, AlertsVisual, AuditsVisual, ImportsVisual, ManageVisual, SavingsVisual, WelcomeVisual } from "./visuals";
 
 // The feature tour's steps (FeatureTour), in order. Each one: what it's for, how to do it in a few
-// short steps (the Tracker's own labels in bold), where "Take me there" goes, and its demo.
+// short steps (Duty Guard's own labels in bold), where "Take me there" goes, and its demo.
 
 // The video walkthroughs, one per step. Until a step has one, the tour shows a "Video walkthrough ·
 // Coming soon" placeholder. Add a link and its length to switch it on: a YouTube, Loom or Vimeo
@@ -40,7 +40,7 @@ const B = ({ children }: { children: ReactNode }) => <strong className="font-sem
 const video = (id: TourStepId) => ({ video: TOUR_VIDEOS[id]?.url ?? null, videoLength: TOUR_VIDEOS[id]?.length });
 
 export const TOUR_STEPS: TourStep[] = [
-  // Always first: what the Tracker is for, before how
+  // Always first: what Duty Guard is for, before how
   {
     id: "welcome",
     rail: "Welcome",
@@ -66,7 +66,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: "imports",
     rail: "Add Imports",
     title: "Add the products you import",
-    lead: "Everything in the Tracker runs on your imports: an HTS code and a country of origin for each product. It takes about a minute.",
+    lead: "Everything in Duty Guard runs on your imports: an HTS code and a country of origin for each product. It takes about a minute.",
     how: [
       <>
         Open <B>Your Imports</B> and click <B>Set up my imports</B>.

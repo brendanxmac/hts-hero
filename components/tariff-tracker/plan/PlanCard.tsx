@@ -6,8 +6,8 @@ import config from "@/config";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CheckBadgeIcon } from "@heroicons/react/20/solid";
-import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice, REVERSE_TRIAL, TRIAL_ALLOWANCE } from "@/components/pricing-calculator/lib/pricing";
-import { TRACKER_PLANS, trackerPlanFor } from "@/libs/tariff-tracker/plan";
+import { formatPrice, perImportPrice, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { ALERT_PLANS, AUDIT_PLANS, hasAudits, planFitting, trackerPlanFor } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "../access/accessContext";
 import { currentPath, signupHref } from "../access/signup";
 import { useTracker } from "../TrackerContext";
@@ -98,7 +98,6 @@ export const PlanCard = () => {
   const imports = items.length;
   const withAlerts = Math.min(trackedKeys.size, imports);
   const off = imports - withAlerts;
-  const launch = launchPricingActive();
   const trial = trialState(access);
 
   // The admin previewing a plan stage (?trialPreview=): say so, and the way out
@@ -118,10 +117,10 @@ export const PlanCard = () => {
   if (trial.notStarted) {
     return box(
       <>
-        <span className={tt.eyebrow("primary")}>Try It Free</span>
-        <span className={`${tt.display} -mt-1 text-base font-semibold leading-snug text-base-content`}>Add your imports to try the Tracker free</span>
+        <span className={tt.eyebrow("primary")}>Free Trial · {REVERSE_TRIAL.days} Days</span>
+        <span className={`${tt.display} -mt-1 text-base font-semibold leading-snug text-base-content`}>Starts when you add your imports</span>
         <span className="text-sm leading-snug text-base-content/70">
-          Tariff alerts, impact checks and Insights on up to {n(REVERSE_TRIAL.imports)} of your imports.
+          Tariff alerts, impact checks, savings and audits on your products. No credit card required.
         </span>
         <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => openImportTakeover("plan-card")}>
           Add my imports
@@ -154,12 +153,12 @@ export const PlanCard = () => {
         <span className="text-sm leading-snug text-base-content/75">
           {trial.ending ? (
             <>
-              <span className="font-semibold text-warning">When it ends, your imports lose their tariff alerts.</span> Pick a plan to keep them.
+              <span className="font-semibold text-warning">When it ends, your alerts, savings and audits stop.</span> Pick a plan to keep them.
             </>
           ) : imports > 0 ? (
-            `Keep tariff alerts and Insights on all ${n(imports)} imports after your trial.`
+            `Keep alerts, savings and audits on all ${n(imports)} products after your trial.`
           ) : (
-            "Keep tariff alerts and Insights on your imports after your trial."
+            "Keep alerts, savings and audits on your products after your trial."
           )}
         </span>
         <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => openUpgrade("plan")}>
@@ -168,7 +167,7 @@ export const PlanCard = () => {
         {/* The price per import: the easiest way to see what it's worth */}
         {plan && (
           <span className="-mt-1 text-center text-xs text-base-content/60">
-            Just <span className="font-semibold text-success">{formatPrice(perImportPrice(plan))}</span> per import, per month
+            Just <span className="font-semibold text-success">{formatPrice(perImportPrice(plan))}</span> per product, per month
           </span>
         )}
       </>
@@ -180,7 +179,7 @@ export const PlanCard = () => {
     // Every alert slot in use: the next plan up that fits the catalog (or just the next one up)
     const full = trackedKeys.size >= access.pairLimit;
     const room = Math.max(0, access.pairLimit - trackedKeys.size);
-    const bigger = TRACKER_PLANS.filter((p) => p.maxPairs > access.pairLimit);
+    const bigger = (hasAudits(access) ? AUDIT_PLANS : ALERT_PLANS).filter((p) => p.maxPairs > access.pairLimit);
     const next = bigger.find((p) => imports <= p.maxPairs) ?? bigger[0];
     const cancelsAt = shortDate(subscription?.cancelsAt);
     const unpaid = subscription?.status === "past_due" || subscription?.status === "unpaid";
@@ -199,14 +198,14 @@ export const PlanCard = () => {
           )}
         </div>
         <div className="-mt-1 flex flex-col">
-          <span className={`${tt.display} text-lg font-semibold leading-tight text-base-content`}>Tracker {n(access.pairLimit)}</span>
+          <span className={`${tt.display} text-lg font-semibold leading-tight text-base-content`}>{access.paidPlan}</span>
           <span className="text-xs text-base-content/60">
-            Alerts on up to {n(plan?.maxPairs ?? access.pairLimit)} imports{renews ? ` · Renews ${renews}` : ""}
+            Up to {n(plan?.maxPairs ?? access.pairLimit)} products{renews ? ` · Renews ${renews}` : ""}
           </span>
         </div>
         {imports > 0 && (
           <Usage
-            label="Imports with alerts"
+            label="Products with alerts"
             value={withAlerts}
             max={access.pairLimit}
             tone={full ? "bg-warning" : "bg-success"}
@@ -258,7 +257,7 @@ export const PlanCard = () => {
             ) : (
               <a
                 className={ui.button({ variant: "secondary", size: "sm" })}
-                href={`mailto:${config.resend.supportEmail}?subject=Tariff%20Tracker%20for%20many%20imports`}
+                href={`mailto:${config.resend.supportEmail}?subject=Tariff%20Duty Guard%20for%20many%20imports`}
               >
                 Need more? Let&apos;s talk
               </a>
@@ -278,6 +277,11 @@ export const PlanCard = () => {
             </span>
           </span>
         )}
+        {!unpaid && !cancelsAt && (
+          <button type="button" className={TEXT_BUTTON} onClick={() => openUpgrade("plan")}>
+            {hasAudits(access) ? "Change plan" : "Upgrade to Duty Guard Pro"}
+          </button>
+        )}
         <button type="button" className={TEXT_BUTTON} onClick={() => openBillingPortal()}>
           Manage billing
         </button>
@@ -286,7 +290,7 @@ export const PlanCard = () => {
   }
 
   // The free plan: after the trial, or after a paid plan. What the imports lost, and the way back.
-  const coverAll = TRACKER_PLANS.find((p) => imports <= p.maxPairs);
+  const coverAll = planFitting("alerts", imports);
   const pastPlan = access.pastPlan ? trackerPlanFor(access.pastPlan.plan) : null;
   return box(
     <>
@@ -294,7 +298,7 @@ export const PlanCard = () => {
         <span className={tt.eyebrow("neutral")}>Free Plan</span>
         {trial.lapsed && access.pastPlan ? (
           <span className="text-xs text-base-content/60">
-            Your Tracker {pastPlan ? n(pastPlan.maxPairs) : ""} plan ended {shortDate(access.pastPlan.endedAt)}.
+            Your {pastPlan ? pastPlan.plan : "paid"} plan ended {shortDate(access.pastPlan.endedAt)}.
           </span>
         ) : (
           trial.ended && <span className="text-xs text-base-content/60">Your free trial ended {endDate(access)}.</span>
@@ -303,26 +307,25 @@ export const PlanCard = () => {
 
       {imports === 0 ? (
         <>
-          <span className="text-sm leading-snug text-base-content/70">Alerts on {TRIAL_ALLOWANCE.alertImports} of your imports and the Tariff News alerts stay free. The rest come with a Tracker plan.</span>
+          <span className="text-sm leading-snug text-base-content/70">Your catalog and the Tariff News emails stay free. Alerts on your products come with Tariff Alerts.</span>
           <button type="button" className={ui.button({ variant: trial.lapsed ? "primary" : "secondary", size: "sm" })} onClick={() => openUpgrade("plan")}>
             {trial.lapsed ? "Resubscribe" : "See plans"}
           </button>
         </>
       ) : (
         <>
-          <Usage label="Imports with alerts" value={withAlerts} max={imports} tone={withAlerts / imports >= 0.4 ? "bg-warning" : "bg-error"} />
+          <Usage label="Products with alerts" value={withAlerts} max={imports} tone={withAlerts / imports >= 0.4 ? "bg-warning" : "bg-error"} />
           {off > 0 && (
             <span className="text-sm leading-snug text-base-content/75">
               <span className="font-semibold text-error">
-                {n(off)} {off === 1 ? "import has" : "imports have"} no tariff alerts.
+                {n(off)} {off === 1 ? "product has" : "products have"} no tariff alerts.
               </span>{" "}
               A tariff change on one could go unnoticed.
             </span>
           )}
           <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={() => openUpgrade("tracking")}>
-            {trial.lapsed ? "Resubscribe" : coverAll ? `Cover all ${n(imports)} · ${formatPrice(perImportPrice(coverAll))}/import` : "See plans"}
+            {trial.lapsed ? "Resubscribe" : coverAll ? `Cover all ${n(imports)} · ${formatPrice(perImportPrice(coverAll))}/product` : "See plans"}
           </button>
-          {!trial.lapsed && coverAll && launch && <span className="text-center text-xs text-warning">Launch pricing ends {LAUNCH_PRICING.endsLabel}</span>}
         </>
       )}
     </>

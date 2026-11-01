@@ -73,7 +73,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
     const next = productViewOf(asked);
     if (asked === "adcvd") showAdcvd();
     setTab(next);
-    // Each view opens at its top (the Tracker's one scroller is its main)
+    // Each view opens at its top (Duty Guard's one scroller is its main)
     document.querySelector("main")?.scrollTo({ top: 0 });
     trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCT_TAB_OPENED, { tab: next });
   };

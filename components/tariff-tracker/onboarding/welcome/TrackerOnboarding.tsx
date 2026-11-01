@@ -8,10 +8,10 @@ import { TourShell, TourStage } from "@/components/product-tour/TourShell";
 import { openImportTakeover } from "../takeoverStore";
 import { AlertScene, AuditScene, ImpactScene, RewardScene, SavingsScene, SetupScene, WelcomeScene } from "./scenes";
 
-// The Tariff Tracker onboarding: what a new account from the sign-up onboarding sees first
+// Duty Guard onboarding: what a new account from the sign-up onboarding sees first
 // (?welcome=imports or alerts; TourTriggers opens it). Not the product tour (that stays a button
 // away): a short, cinematic sell, one idea per screen (TourStage), each with one animated scene.
-// Welcome; what the Tracker does, one thing a screen (alerts and their impact first for someone
+// Welcome; what Duty Guard does, one thing a screen (alerts and their impact first for someone
 // who came for alerts, else audits and savings first); how setup takes 30 seconds; then the free
 // week they get for adding imports now. "Add my imports" goes straight into the import flow
 // (ImportTakeover: its intro, what an import is, then the ways to add them) with nothing in between. In the
@@ -41,7 +41,7 @@ export const useTrackerOnboarding = () =>
   );
 
 // Each page has one color, shared by its eyebrow and the highlighted words of its title:
-// red for tariffs that hit, green for money back or saved, blue for the Tracker itself
+// red for tariffs that hit, green for money back or saved, blue for Duty Guard itself
 type Tone = "primary" | "error" | "success";
 const TONE: Record<Tone, { text: string }> = {
   primary: { text: "text-primary" },
@@ -54,7 +54,7 @@ const PAGES: Record<string, Page> = {
   welcome: {
     id: "welcome",
     rail: "Welcome",
-    eyebrow: "Welcome to Tariff Tracker",
+    eyebrow: "Welcome to Duty Guard",
     title: (
       <>
         No more overpaying. <br /><span className={TONE.primary.text}>No more surprises.</span>
@@ -73,7 +73,7 @@ const PAGES: Record<string, Page> = {
         Know when tariffs <span className={TONE.error.text}>hit you.</span>
       </>
     ),
-    lead: "You'll recieve a notification any time your imports might be affected.",
+    lead: "You'll receive a notification any time your imports might be affected.",
     tone: "error",
     scene: <AlertScene />,
   },
@@ -140,7 +140,7 @@ const PAGES: Record<string, Page> = {
     ),
     lead: `Test it out for ${REVERSE_TRIAL.days} days to see if it's a good fit, no strings attached.`,
     tone: "primary",
-    scene: <RewardScene imports={REVERSE_TRIAL.imports} />,
+    scene: <RewardScene />,
   },
 };
 
@@ -193,7 +193,7 @@ export const TrackerOnboarding = () => {
   };
 
   return (
-    <TourShell product="Tariff Tracker" steps={pages} at={at} onGo={setAt} exitLabel="Skip for now" onExit={skip} labelledBy="tt-welcome-title">
+    <TourShell product="Duty Guard" steps={pages} at={at} onGo={setAt} exitLabel="Skip for now" onExit={skip} labelledBy="tt-welcome-title">
       <TourStage
         key={page.id}
         titleId="tt-welcome-title"

@@ -1,5 +1,6 @@
 "use client";
 
+import { hasAudits } from "@/libs/tariff-tracker/plan";
 import { useState } from "react";
 import { CheckIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
@@ -22,10 +23,12 @@ const INCLUDES = [
 ];
 
 export const LockedSavings = ({ product }: { product: TrackedProduct }) => {
-  const { paid, savingsLeft, spendCheck, openUpgrade } = useTrackerAccess();
+  const { paid, access, savingsLeft, spendCheck, openUpgrade } = useTrackerAccess();
   const { lockedBest } = useInsights();
   const [busy, setBusy] = useState(false);
-  const found = lockedBest.get(product.key);
+  const audits = hasAudits(access);
+  // Without Duty Guard Pro, nothing about what was found on this import
+  const found = audits ? lockedBest.get(product.key) : 0;
   const free = !paid && savingsLeft > 0;
 
   const check = async () => {
@@ -38,7 +41,7 @@ export const LockedSavings = ({ product }: { product: TrackedProduct }) => {
   return (
     <section className={`${tt.panel} grid gap-8 p-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:p-8`} aria-labelledby="tt-locked-savings">
       <div className="flex flex-col gap-4">
-        <span className={tt.eyebrow("success")}>Savings check</span>
+        <span className={tt.eyebrow("success")}>Savings Check</span>
         <h2 id="tt-locked-savings" className={`${tt.display} m-0 text-2xl font-semibold leading-snug text-base-content`}>
           {found === undefined
             ? "Looking for ways to pay less…"
@@ -58,7 +61,7 @@ export const LockedSavings = ({ product }: { product: TrackedProduct }) => {
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" className={ui.button({ variant: "primary" })} disabled={busy} onClick={check}>
             {!free && <LockClosedIcon className="h-4 w-4" aria-hidden />}
-            {busy ? "Checking…" : free ? "Check savings free" : paid ? "Cover this import" : "See plans"}
+            {busy ? "Checking…" : free ? "Check savings free" : audits ? "Cover this import" : "Upgrade to Duty Guard Pro"}
           </button>
         </div>
       </div>

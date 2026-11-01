@@ -5,7 +5,7 @@ import { C, siteLink } from "../kit/brand"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 import { FREE_FOREVER_SHORT } from "../../components/ui/marketing/comingSoon"
 
-// One time, to accounts from before the Tariff Tracker: what their account includes now, and a
+// One time, to accounts from before Duty Guard: what their account includes now, and a
 // one-click opt-in to the weekly digest (they're not on it unless
 // they click).
 
@@ -15,25 +15,25 @@ export interface MeetTrackerEmailProps {
   footer: EmailFooter
 }
 
-export const meetTrackerSubject = () => "New in your account: Tariff Tracker"
+export const meetTrackerSubject = () => "New in your account: Duty Guard"
 
 const CAMPAIGN = "meet-tracker"
 
 export default function MeetTrackerEmail({ optInUrl, footer }: MeetTrackerEmailProps) {
   return (
     <EmailLayout
-      preview={`Add your imports once and get alerted when a new tariff hits one. Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports.`}
+      preview={`Add your imports once and get alerted when a new tariff hits one. Free for ${REVERSE_TRIAL.days} days.`}
       footer={footer}
     >
       <Eyebrow>New in your account</Eyebrow>
-      <Title>Meet the Tariff Tracker</Title>
+      <Title>Meet Duty Guard</Title>
       <P>US tariffs change every week. Your account now watches your imports for you. Add them once (just HTS codes and countries) to:</P>
       <Checklist items={TRACKER_POINTS} />
       <P>
-        Your account gets the full Tariff Tracker free for {REVERSE_TRIAL.days} days, on up to {REVERSE_TRIAL.imports} imports, with no credit card. The 14 days start when you add your imports.
+        Your account gets the full Duty Guard free for {REVERSE_TRIAL.days} days, with no credit card required. The {REVERSE_TRIAL.days} days start when you add your imports.
         After that, {FREE_FOREVER_SHORT} stay free, forever.
       </P>
-      <Cta href={siteLink("/tariff-tracker?setup=add", CAMPAIGN)} variant="next">
+      <Cta href={siteLink("/duty-guard?setup=add", CAMPAIGN)} variant="next">
         Add my imports
       </Cta>
       <Panel>

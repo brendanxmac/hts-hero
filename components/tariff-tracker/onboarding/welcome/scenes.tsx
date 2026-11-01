@@ -8,8 +8,8 @@ import * as tt from "@/components/ui/styles/tracker";
 import { mono } from "@/components/ui/font";
 import { delay, prefersReducedMotion, useCountUp } from "../parts";
 
-// The Tracker onboarding's scenes (TrackerOnboarding): one moment each, big and simple, played as
-// the screen opens. The examples follow the Tracker's rules: rate changes before → after and in %,
+// Duty Guard onboarding's scenes (TrackerOnboarding): one moment each, big and simple, played as
+// the screen opens. The examples follow Duty Guard's rules: rate changes before → after and in %,
 // savings and overpaid duty are what could be or may have been.
 
 export const SceneStyles = () => (
@@ -36,12 +36,12 @@ export const Panel = ({ children, className = "" }: { children: React.ReactNode;
   <div className={`${tt.panel} relative w-full overflow-hidden text-left shadow-[0_30px_80px_-30px_var(--tt-ob-glow)] ${className}`}>{children}</div>
 );
 
-// 1. Welcome: the product at the center, its three jobs orbiting it (the Tracker's by default; the
+// 1. Welcome: the product at the center, its three jobs orbiting it (Duty Guard's by default; the
 // Classification onboarding passes its own)
 type OrbitJob = { icon: ComponentType<{ className?: string }>; label: string; tone: string; start: string };
 const TRACKER_JOBS: OrbitJob[] = [
   { icon: BellAlertIcon, label: "Tariff Alerts", tone: "text-error", start: "0s" },
-  { icon: ScaleIcon, label: "Duty Audits", tone: "text-warning", start: "-6s" },
+  { icon: ScaleIcon, label: "Duty Audit", tone: "text-warning", start: "-6s" },
   { icon: SparklesIcon, label: "Duty Savings", tone: "text-success", start: "-12s" },
 ];
 export const WelcomeScene = ({ jobs = TRACKER_JOBS }: { jobs?: OrbitJob[] }) => {
@@ -194,7 +194,7 @@ const SetupTake = () => (
       @media (prefers-reduced-motion: reduce) { .sc-drag, .sc-sink, .sc-hot, .sc-gone { animation: none; } .sc-sink, .sc-gone { opacity: 0; } }
     `}</style>
 
-    {/* The drop zone, as it looks in the Tracker */}
+    {/* The drop zone, as it looks in Duty Guard */}
     <div className="sc-hot relative flex h-80 w-full flex-col items-center justify-end rounded-3xl border-2 border-dashed bg-(--tt-ob-ground) pb-7">
       {/* Their spreadsheet, dragged in by the cursor, then sinking into the zone */}
       <div className="absolute inset-x-0 top-6 flex justify-center">
@@ -283,7 +283,7 @@ const AlertsToggle = () => (
   </span>
 );
 
-// The digits of a number nobody knows yet, flickering: what the Tracker may find in their imports
+// The digits of a number nobody knows yet, flickering: what Duty Guard may find in their imports
 const useScramble = (pattern: string, wait: number) => {
   const [text, setText] = useState(pattern.replace(/#/g, "0"));
   useEffect(() => {
@@ -305,11 +305,11 @@ const useScramble = (pattern: string, wait: number) => {
   return text;
 };
 
-// 7. Start: their own Tracker, a moment before it's theirs. The window opens on "Your Tariff
-// Tracker", alerts switch on, and the refunds and savings it may find are already flickering
+// 7. Start: their own Duty Guard, a moment before it's theirs. The window opens on "Your Tariff
+// Duty Guard", alerts switch on, and the refunds and savings it may find are already flickering
 // behind frosted glass, while a scan sweeps over products waiting to be filled in. One line says
 // what unlocks it: their imports. Then what it costs today: nothing.
-export const RewardScene = ({ imports }: { imports: number }) => {
+export const RewardScene = () => {
   const refund = useScramble("$##,###", 900);
   const saving = useScramble("2#%", 1000);
   const stats = [
@@ -331,13 +331,13 @@ export const RewardScene = ({ imports }: { imports: number }) => {
       `}</style>
 
       <Panel className="p-0">
-        {/* The window: their Tracker, the free week in the corner */}
+        {/* The window: their Duty Guard, the free week in the corner */}
         <div className="flex items-center justify-between border-b border-base-300 px-5 py-3">
           <span className="flex items-center gap-2.5">
             <span className="flex items-center rounded-full bg-base-content p-0.5">
               <Image src={logo} alt="" width={16} height={16} />
             </span>
-            <span className={`${tt.display} text-sm font-semibold`}>Your Tariff Tracker</span>
+            <span className={`${tt.display} text-sm font-semibold`}>Your Duty Guard</span>
           </span>
           <span className="sc-pop rounded-full bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary" style={delay(400)}>
             Free for 7 days
@@ -377,7 +377,7 @@ export const RewardScene = ({ imports }: { imports: number }) => {
       </Panel>
 
       {/* <p className="sc-up m-0 mt-5 text-sm text-base-content/65" style={delay(1500)}>
-        <b className="text-base-content">$0 today</b> · Everything unlocked on up to {imports} products
+        <b className="text-base-content">$0 today</b> · Everything unlocked
       </p> */}
     </div>
   );

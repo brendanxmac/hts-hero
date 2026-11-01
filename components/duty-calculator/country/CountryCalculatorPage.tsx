@@ -22,7 +22,7 @@ import type { ImportFacts } from "@/libs/country-pages/importStats";
 import { COUNTRY_PRODUCTS } from "@/libs/country-pages/countryProducts";
 
 // /duty-calculator/[country]: the heading and the calculator with the country chosen in one band,
-// in the Tariff Tracker's look as on /duty-calculator, then what that country's goods pay and why.
+// in Duty Guard's look as on /duty-calculator, then what that country's goods pay and why.
 // Everything below the calculator is server-rendered for search engines. Sections below the
 // calculator alternate plain and soft bands. Follows light and dark with the site.
 export function CountryCalculatorPage({
@@ -156,8 +156,8 @@ export function CountryCalculatorPage({
         </div>
       </section>
 
-      {/* The page-level call to action: watch this country's products in the Tariff Tracker */}
-      <section className={mk.band} aria-label="Tariff Tracker">
+      {/* The page-level call to action: watch this country's products in Duty Guard */}
+      <section className={mk.band} aria-label="Duty Guard">
         <div className={mk.container}>
           <div className="hts-tracker-on-dark relative flex flex-col items-center overflow-hidden rounded-3xl bg-tt-side px-6 py-16 text-center sm:px-12">
             <div
@@ -165,7 +165,7 @@ export function CountryCalculatorPage({
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_50%_0%,color-mix(in_oklab,var(--color-primary)_25%,transparent),transparent)]"
             />
             <div className="relative flex flex-col items-center">
-              <p className={tt.eyebrow("primary")}>Tariff Tracker</p>
+              <p className={tt.eyebrow("primary")}>Duty Guard</p>
               <p className={`${tt.display} mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-base-content sm:text-5xl sm:leading-none`}>
                 No overpayments or surprises on goods from <span className="text-primary">{name}</span>.
               </p>
@@ -178,8 +178,8 @@ export function CountryCalculatorPage({
                   {OFFER.cta}
                   <ArrowRightIcon className="h-5 w-5" aria-hidden />
                 </Link>
-                <Link href="/tariff-monitor" className="font-semibold text-primary underline-offset-4 hover:underline">
-                  How the Tariff Tracker works
+                <Link href="/tariff-alerts" className="font-semibold text-primary underline-offset-4 hover:underline">
+                  How Tariff Alerts work
                 </Link>
               </div>
               <p className="mt-6 max-w-xl text-sm text-base-content/60">{OFFER.note}</p>

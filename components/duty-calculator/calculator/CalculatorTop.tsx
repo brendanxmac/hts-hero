@@ -56,7 +56,7 @@ export const ImportInputs = ({ f }: { f: TariffFinder }) => (
   </div>
 );
 
-// pageTitle: in the Tracker, this card is the Calculator page's header, so it carries the page's
+// pageTitle: in Duty Guard, this card is the Calculator page's header, so it carries the page's
 // title and line in place of "Entry details"
 export const EntryDetails = ({ f, description, pageTitle }: { f: TariffFinder; description: string; pageTitle?: { title: string; summary: string } }) => {
   const { result } = f;

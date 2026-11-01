@@ -26,7 +26,7 @@ import { BROKER_MESSAGE, BROKER_SUBJECT } from "./HandyStep";
 import { TakeoverStep } from "./takeoverStore";
 
 // "Where do I find my HTS codes and countries of origin?": a guide to every place importers keep
-// them, most likely first, with what to look for in each and how to get it into the Tracker. The
+// them, most likely first, with what to look for in each and how to get it into Duty Guard. The
 // country of origin is always as declared on their entries: we point to where it's written, and
 // never decide it for them.
 
@@ -126,7 +126,7 @@ export const FindGuide = ({ open, onClose, onPick }: { open: boolean; onClose: (
     <Dialog open={open} onClose={onClose} className="relative z-[80]">
       <div className="fixed inset-0 bg-black/50" aria-hidden />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        {/* It portals out of the Tracker, so it carries the Tracker's look itself (DESIGN_SYSTEM §15) */}
+        {/* It portals out of Duty Guard, so it carries Duty Guard's look itself (DESIGN_SYSTEM §15) */}
         <Dialog.Panel
           className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden shadow-2xl`}
         >

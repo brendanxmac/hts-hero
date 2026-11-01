@@ -20,9 +20,9 @@ const PRODUCTS = [
   },
   {
     Icon: BellAlertIcon,
-    title: "Tariff Tracker",
+    title: "Duty Guard",
     note: `Alerts the day a tariff change hits your imports. ${REVERSE_TRIAL.days} days free from your first imports`,
-    href: "/tariff-tracker",
+    href: "/duty-guard",
     cta: "Add my imports",
   },
   {

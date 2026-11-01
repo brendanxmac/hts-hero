@@ -1,4 +1,4 @@
-confirm: Your HTS Hero code: {{ .Token }}
+confirm: Confirm your HTS Hero email
 magic_link: Your HTS Hero sign-in code
 reset: Reset your HTS Hero password
 email_change: Confirm your new email for HTS Hero

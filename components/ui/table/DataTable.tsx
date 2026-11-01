@@ -17,7 +17,7 @@ import * as s from "./styles";
 // heading. A row can open something (onRowClick); a modified click on a link inside it still
 // opens a tab. Past `virtualizeFrom` rows only the rows in view are drawn (TanStack Virtual), so a
 // catalog of thousands scrolls smoothly; the scroller is the nearest scrolling parent. A `toolbar`
-// (search, filters, a count) sits in the card above the headers. Inside the Tracker (`tracker:`,
+// (search, filters, a count) sits in the card above the headers. Inside Duty Guard (`tracker:`,
 // DESIGN_SYSTEM §15) the card is a round panel and the headers sit on its soft fill, so they
 // stand apart from the ground.
 

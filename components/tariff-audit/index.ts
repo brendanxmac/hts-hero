@@ -1,4 +1,4 @@
-// The /duty-audits landing page
+// The /duty-audit landing page
 export { AuditHero } from "./hero/AuditHero";
 export { RecalcSection } from "./recalc/RecalcSection";
 export { OverpaymentCauses } from "./causes/OverpaymentCauses";

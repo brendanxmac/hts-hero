@@ -10,7 +10,7 @@ import {
 // into the sign-up onboarding (/onboarding), like every button on the page (EntryCta). The Tariff Calculator keeps its own button
 export const OFFER = {
   cta: "Get Started Free",
-  note: `Try Tariff Alerts and Duty Audits free for ${REVERSE_TRIAL.days} days, no credit card. Then from ${formatPrice(ALERT_TIERS[0].price)}/mo. Set up in 30 seconds. The Tariff Calculator stays free.`,
+  note: `Try Duty Guard free for ${REVERSE_TRIAL.days} days, no credit card required. Then from ${formatPrice(ALERT_TIERS[0].price)}/mo. Set up in 30 seconds. The Tariff Calculator stays free.`,
   // Also the country calculator pages' button (no homepage section)
   href: signupHref(ONBOARDING_PATH),
 }

@@ -13,8 +13,8 @@ export async function GET(req: Request) {
     data: { user },
   } = await createClient().auth.getUser();
   const origin = new URL(req.url).origin;
-  if (!user) return NextResponse.redirect(`${origin}/signin?redirect=${encodeURIComponent("/tariff-tracker?tab=alerts")}`);
-  if (!process.env.SLACK_CLIENT_ID) return NextResponse.redirect(`${origin}/tariff-tracker?tab=alerts&slack=error`);
+  if (!user) return NextResponse.redirect(`${origin}/signin?redirect=${encodeURIComponent("/duty-guard?tab=alerts")}`);
+  if (!process.env.SLACK_CLIENT_ID) return NextResponse.redirect(`${origin}/duty-guard?tab=alerts&slack=error`);
 
   // Proves the callback is the answer to this request, from this browser
   const state = randomBytes(24).toString("hex");

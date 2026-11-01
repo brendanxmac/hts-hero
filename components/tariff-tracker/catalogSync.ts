@@ -12,11 +12,11 @@ import { CatalogSnapshot, getCatalog, hasUnsavedChanges, markCatalogSaved, repla
 // - a catalog built on this device before signing up (no owner yet) is merged into the
 //   account's, so nothing made before the account is lost;
 // - a catalog this device already holds for the account is only a cache: the account's wins,
-//   unless the device has changes the account doesn't have yet (made outside the Tracker, or
+//   unless the device has changes the account doesn't have yet (made outside Duty Guard, or
 //   not saved before the page closed): then the device's is the newer copy, and it's saved;
 // - another account's catalog on this device is replaced.
 // After that, every change is saved a moment after it's made, and any save still waiting when the
-// Tracker closes is sent then.
+// Duty Guard closes is sent then.
 // Signed out, a catalog that belongs to an account is cleared from the device.
 
 const OWNER_KEY = "hts-hero-tariff-tracker-owner";
@@ -165,7 +165,7 @@ export const useCatalogSync = (userId: string | null | undefined) => {
       timer = setTimeout(save, SAVE_DELAY);
     });
 
-    // A save still waiting goes now: leaving the page, or the Tracker closing
+    // A save still waiting goes now: leaving the page, or Duty Guard closing
     const flush = () => {
       if (timer === undefined) return;
       clearTimeout(timer);
@@ -185,9 +185,9 @@ export const useCatalogSync = (userId: string | null | undefined) => {
   }, [userId]);
 };
 
-// Adds imports to a signed-in account's saved catalog straight away, from outside the Tracker (the
+// Adds imports to a signed-in account's saved catalog straight away, from outside Duty Guard (the
 // calculator's "Stop Overpaying", which keeps the visitor on the calculator): the account's copy
-// plus these, so alerts start on them without waiting for the next Tracker visit. Adjustments the
+// plus these, so alerts start on them without waiting for the next Duty Guard visit. Adjustments the
 // account already has for an import win, as in merge. Best effort: the device keeps them too, and
 // the next sync saves them if this fails.
 export const addToAccountCatalog = async (userId: string, products: NewProduct[]) => {

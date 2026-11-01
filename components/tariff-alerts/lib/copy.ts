@@ -4,7 +4,6 @@ import {
   formatPrice,
   perImportPrice,
   REVERSE_TRIAL,
-  TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing"
 
 // The words /tariff-alerts is built on. The FAQ text is also the page's FAQPage schema, so it's
@@ -18,7 +17,7 @@ export const DEFINITION =
 // The money-back promise on the plans (honored in full on request: FTC 16 CFR 239)
 export const GUARANTEE_DAYS = 30
 export const GUARANTEE = `${GUARANTEE_DAYS}-day money-back guarantee`
-export const GUARANTEE_DETAIL = `If Tariff Alerts isn't worth it, email us within ${GUARANTEE_DAYS} days of your first payment and we'll refund it in full.`
+export const GUARANTEE_DETAIL = `If Duty Guard Essentials isn't worth it, email us within ${GUARANTEE_DAYS} days of your first payment and we'll refund it in full.`
 
 export const LOWEST_ALERT_PER_IMPORT = Math.min(
   ...ALERT_TIERS.map(perImportPrice),
@@ -26,7 +25,7 @@ export const LOWEST_ALERT_PER_IMPORT = Math.min(
 
 const tierList = ALERT_TIERS.map(
   (t) =>
-    `Tariff Alerts ${t.name}, ${formatPrice(t.price)} a month for up to ${t.maxPairs} products`,
+    `Duty Guard Essentials, ${t.name}, ${formatPrice(t.price)} a month for up to ${t.maxPairs} products`,
 ).join("; ")
 
 const FIRST_TEAMS_PLAN = ALERT_TIERS.find((t) => t.teams)
@@ -35,7 +34,7 @@ const FIRST_TEAMS_PLAN = ALERT_TIERS.find((t) => t.teams)
 // plan to keep it
 export const PROMISES = [
   `Free for ${REVERSE_TRIAL.days} days`,
-  "No credit card",
+  "No credit card required",
   "Set up in 30 seconds",
 ]
 
@@ -87,11 +86,11 @@ export const ALERTS_FAQS: { question: string; answer: string }[] = [
   },
   {
     question: "How much do tariff alerts cost?",
-    answer: `Every new account starts with ${REVERSE_TRIAL.days} days free, no credit card. After that, plans are priced by how many products you track: ${tierList}. That's as low as ${formatPrice(LOWEST_ALERT_PER_IMPORT)} per product, per month, and annual billing takes ${ANNUAL_DISCOUNT * 100}% off.`,
+    answer: `Every new account starts with ${REVERSE_TRIAL.days} days free, no credit card required. After that, plans are priced by how many products you track: ${tierList}. That's as low as ${formatPrice(LOWEST_ALERT_PER_IMPORT)} per product, per month, and annual billing takes ${ANNUAL_DISCOUNT * 100}% off.`,
   },
   {
     question: "Is there a free trial?",
-    answer: `Yes. Every new account gets Tariff Alerts and Duty Audits free for ${REVERSE_TRIAL.days} days, on all its products (up to ${REVERSE_TRIAL.imports}), with no credit card. The ${REVERSE_TRIAL.days} days start when you add your products. When the trial ends, pick a plan to keep everything on; without one, alerts stay on ${TRIAL_ALLOWANCE.alertImports} of your products.`,
+    answer: `Yes. Every new account gets Duty Guard free for ${REVERSE_TRIAL.days} days, with no credit card required. The ${REVERSE_TRIAL.days} days start when you add your products. When the trial ends, pick a plan to keep everything on; without one, your whole catalog stays free, and alerts and audits stop.`,
   },
   {
     question: `What if I have more than ${LARGEST_ALERT_PLAN} products?`,
@@ -108,12 +107,12 @@ export const ALERTS_FAQS: { question: string; answer: string }[] = [
   },
   {
     question: "Where do alerts arrive?",
-    answer: `By email and in the Tariff Tracker. On Tariff Alerts ${FIRST_TEAMS_PLAN?.name ?? "Pro"} and up, in Slack or Microsoft Teams too, if you connect them.`,
+    answer: `By email and in Duty Guard. On plans for ${FIRST_TEAMS_PLAN?.maxPairs ?? 100} or more products, in Slack or Microsoft Teams too, if you connect them.`,
   },
   {
     question: "Can I share an alert with my customs broker?",
     answer:
-      "Yes. Every alert opens the impact in the Tariff Tracker: the action, its source and every affected product with its rate before and after. Share it with your broker or your team.",
+      "Yes. Every alert opens the impact in Duty Guard: the action, its source and every affected product with its rate before and after. Share it with your broker or your team.",
   },
   {
     question:

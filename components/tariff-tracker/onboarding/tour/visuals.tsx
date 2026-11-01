@@ -19,10 +19,10 @@ import { mono } from "@/components/ui/font";
 import { delay } from "../parts";
 import { Cursor, MockTitle, MockWindow, useBeats } from "./mock";
 
-// Each tour step's demo: the Tracker, small, doing what the step explains, a cursor doing the
-// clicking. The labels are the Tracker's own (Your Imports, Alert Settings, the AD/CVD Check…);
+// Each tour step's demo: Duty Guard, small, doing what the step explains, a cursor doing the
+// clicking. The labels are Duty Guard's own (Your Imports, Alert Settings, the AD/CVD Check…);
 // products, codes and rates are examples. Rate changes are before → after and in %, savings are
-// what an import could or may save, AD/CVD rates depend on the exporter: as in the Tracker.
+// what an import could or may save, AD/CVD rates depend on the exporter: as in Duty Guard.
 
 type Props = { run: number };
 
@@ -79,9 +79,8 @@ const Table = ({ children }: { children: ReactNode }) => (
 
 const Button = ({ children, pressed = false, tone = "primary" }: { children: ReactNode; pressed?: boolean; tone?: "primary" | "secondary" }) => (
   <span
-    className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[0.6rem] font-semibold transition-transform duration-150 ${
-      tone === "primary" ? "bg-primary text-primary-content" : "border border-base-300 bg-base-100 text-base-content"
-    } ${pressed ? "scale-95" : ""}`}
+    className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[0.6rem] font-semibold transition-transform duration-150 ${tone === "primary" ? "bg-primary text-primary-content" : "border border-base-300 bg-base-100 text-base-content"
+      } ${pressed ? "scale-95" : ""}`}
   >
     {children}
   </span>
@@ -123,7 +122,7 @@ export const ImportsVisual = ({ run }: Props) => {
       <MockTitle title="Your Imports" />
       {b < 2 && (
         <div className="flex h-[19rem] flex-col items-center justify-center gap-2 rounded-lg border border-base-300 bg-base-100 text-center">
-          <span className={tt.chip("primary")}>Tariff Tracker</span>
+          <span className={tt.chip("primary")}>Duty Guard</span>
           <span className={`${tt.display} max-w-[16rem] text-sm font-semibold leading-snug text-base-content`}>Tariff Alerts, Savings, &amp; Audits on Autopilot</span>
           <span className="max-w-[15rem] text-[0.6rem] text-base-content/60">Add your HTS codes and countries of origin once.</span>
           <span className="mt-2">
@@ -144,9 +143,8 @@ export const ImportsVisual = ({ run }: Props) => {
             ].map((o, i) => (
               <div
                 key={o.t}
-                className={`tt-ob-rise flex flex-col gap-1 rounded-lg border bg-base-100 p-2.5 transition-all duration-300 ${
-                  i === 1 && b >= 3 ? "border-primary shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-primary)_18%,transparent)]" : "border-base-300"
-                }`}
+                className={`tt-ob-rise flex flex-col gap-1 rounded-lg border bg-base-100 p-2.5 transition-all duration-300 ${i === 1 && b >= 3 ? "border-primary shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-primary)_18%,transparent)]" : "border-base-300"
+                  }`}
                 style={delay(i * 80)}
               >
                 <span className="flex h-9 items-center justify-center rounded-md bg-tt-soft text-base-content/40">
@@ -458,7 +456,7 @@ export const AdcvdVisual = ({ run }: Props) => {
           <span className="flex items-start gap-1.5 rounded-md bg-warning/10 px-2 py-1.5 text-[0.58rem] text-base-content/80">
             <ExclamationTriangleIcon className="mt-px h-3 w-3 shrink-0 text-warning" />
             <span>
-              AD/CVD duties may apply to this import and aren&apos;t in this estimate. <span className="font-semibold text-primary">Check the cases</span>
+              AD/CVD cases may increase duty by over 100%. <span className="font-semibold text-primary">Check the cases</span>
             </span>
           </span>
           {checking && (
@@ -612,7 +610,7 @@ export const AuditsVisual = ({ run }: Props) => {
   );
 };
 
-// The welcome step: the Tracker's home at a glance, its three numbers rising in (changes that hit
+// The welcome step: Duty Guard's home at a glance, its three numbers rising in (changes that hit
 // the imports, what they could save, what audits found), then a few imports with what each found
 export const WelcomeVisual = ({ run }: Props) => {
   const tiles = [

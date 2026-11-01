@@ -4,7 +4,7 @@ import { Cta, Signature } from "../kit/parts"
 import { C, siteLink } from "../kit/brand"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
-// A note from Brendan to an account that opened the Tracker and hasn't added its imports, plain
+// A note from Brendan to an account that opened Duty Guard and hasn't added its imports, plain
 // like a personal email (libs/email/lifecycle.ts):
 //   help  3 days after the first visit: "can I give you a hand?", answering why they skipped
 //         (tracker_onboarding.skip_reason) when they said, and offering to set it up from a
@@ -52,28 +52,28 @@ const ReasonLine = ({ reason, note }: { reason?: string | null; note?: string | 
     case "looking":
       return (
         <Para>
-          You said you were looking around first, which makes total sense. The Tracker only really comes alive with your own imports, though: that&apos;s when you see
+          You said you were looking around first, which makes total sense. Duty Guard only really comes alive with your own imports, though: that&apos;s when you see
           your real duty on each one and start getting alerts when a change hits.
         </Para>
       )
     case "pricing":
       return (
         <Para>
-          You wanted to know what it costs first, fair enough. The {REVERSE_TRIAL.days}-day trial is free with no card, so you can see it working on your own imports
+          You wanted to know what it costs first, fair enough. The {REVERSE_TRIAL.days}-day trial is free, no credit card required, so you can see it working on your own imports
           before deciding anything, and if you reply with roughly how many products you import, I&apos;ll tell you which plan fits.
         </Para>
       )
     case "data_privacy":
       return (
         <Para>
-          You mentioned you weren&apos;t comfortable sharing your import data. All the Tracker needs is HTS codes and countries of origin: no prices, suppliers or
+          You mentioned you weren&apos;t comfortable sharing your import data. All Duty Guard needs is HTS codes and countries of origin: no prices, suppliers or
           customers, and only your account can see them. Happy to answer anything else about it.
         </Para>
       )
     case "few_imports":
       return (
         <Para>
-          You mentioned you only import a few products. That&apos;s plenty: the Tracker watches each one and tells you the day a tariff change hits it, and with only a
+          You mentioned you only import a few products. That&apos;s plenty: Duty Guard watches each one and tells you the day a tariff change hits it, and with only a
           few, setup takes a minute.
         </Para>
       )
@@ -94,17 +94,17 @@ export default function FounderNoteEmail({ variant = "last", skipReason, skipNot
   const campaign = CAMPAIGN(variant)
   return (
     <EmailLayout
-      preview={variant === "help" ? "Reply with your spreadsheet and I'll add your imports for you." : "Send me your list and I'll set up your Tracker myself."}
+      preview={variant === "help" ? "Reply with your spreadsheet and I'll add your imports for you." : "Send me your list and I'll set up your Duty Guard myself."}
       footer={footer}
     >
       <Para>Hi, it&apos;s Brendan, the founder of HTS Hero.</Para>
       {variant === "help" ? (
         <Para>
-          I saw you opened the Tariff Tracker a few days ago but haven&apos;t added your imports yet, so I wanted to check in personally and see if I can help.
+          I saw you opened Duty Guard a few days ago but haven&apos;t added your imports yet, so I wanted to personally check in to see if you needed a hand.
         </Para>
       ) : (
         <Para>
-          Your Tariff Tracker is still waiting on your imports, and I don&apos;t want you to miss out on it. So here&apos;s an offer: let me do the setup for you.
+          Your Duty Guard is still waiting on your imports, and I don&apos;t want you to miss out on it. So here&apos;s an offer: let me do the setup for you.
         </Para>
       )}
       <ReasonLine reason={skipReason} note={skipNote} />
@@ -116,14 +116,14 @@ export default function FounderNoteEmail({ variant = "last", skipReason, skipNot
         Once they&apos;re in, we work out the duty on each one, look for savings you may qualify for, and alert you the moment a new tariff affects any of them.
       </Para>
       <Para>Or, if you&apos;d rather do it yourself, it takes about a minute:</Para>
-      <Cta href={siteLink("/tariff-tracker?setup=add", campaign)} variant="next">
+      <Cta href={siteLink("/duty-guard?setup=add", campaign)} variant="next">
         Add my imports
       </Cta>
       {variant === "last" && (
         <Para>
           <strong>Rather not deal with tariffs at all?</strong> With HTS Hero Managed, our team watches your whole catalog, flags every change that hits you, walks you
           through the impact and audits your entries.{" "}
-          <Link href={siteLink("/tariff-tracker?tab=expert-help", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
+          <Link href={siteLink("/duty-guard?tab=expert-help", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
             See how Managed works
           </Link>
           , or reply with a time that suits you and we&apos;ll talk it through.

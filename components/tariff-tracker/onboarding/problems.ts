@@ -50,7 +50,7 @@ const PROBLEMS: Problem[] = [
     kind: "us",
     test: (e) => /can't be the United States/.test(e.message),
     title: (c, w) => `${plural(c, w)} with the United States as the origin`,
-    fix: () => "The Tracker follows goods imported into the US, so the origin is another country.",
+    fix: () => "Duty Guard follows goods imported into the US, so the origin is another country.",
   },
 ];
 const OTHER: Problem = { kind: "other", test: () => true, title: (c, w) => `other ${plural(c, w)}`, fix: (errors) => errors[0]?.message ?? "" };

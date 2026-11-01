@@ -1,7 +1,7 @@
 # Import onboarding test files
 
-For trying the Tracker's import takeover by hand (step 3, "Upload a spreadsheet"). In development,
-`/tariff-tracker?onboardingPreview=1` opens the takeover on any account, signed out too.
+For trying Duty Guard's import takeover by hand (step 3, "Upload a spreadsheet"). In development,
+`/duty-guard?onboardingPreview=1` opens the takeover on any account, signed out too.
 Codes checked against HTS revision 2026-21.
 
 ## clean-imports.csv

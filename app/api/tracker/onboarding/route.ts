@@ -5,7 +5,7 @@ import { isSkipReason, signupSourceFor } from "@/libs/tariff-tracker/onboarding"
 export const dynamic = "force-dynamic";
 
 // The signed-in account's import onboarding (tracker_onboarding), written here only:
-//   {action: "visit"}                    the Tracker opened: the first time is kept (the no-imports
+//   {action: "visit"}                    Duty Guard opened: the first time is kept (the no-imports
 //                                        emails count from it)
 //   {action: "skip", reason?, note?}     "Skip for now" on the import takeover, and why if they said
 //   {action: "signup", redirect}         a sign-up by typed code (no auth callback): its source,
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (e) {
-    console.error("Saving Tracker onboarding:", e);
+    console.error("Saving Duty Guard onboarding:", e);
     return NextResponse.json({ error: "Couldn't save" }, { status: 500 });
   }
 }

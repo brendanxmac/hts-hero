@@ -1,4 +1,4 @@
-// The Tariff Tracker's layer (DESIGN_SYSTEM.md §15): simple, colorful, soft and round. Used
+// Duty Guard's layer (DESIGN_SYSTEM.md §15): simple, colorful, soft and round. Used
 // inside .hts-tracker, whose palette sets the colors these name. Import on its own:
 //   import * as tt from "@/components/ui/styles/tracker";
 import { trackerDisplay } from "../font";
@@ -6,7 +6,7 @@ import { trackerDisplay } from "../font";
 type Tone = "primary" | "success" | "error" | "warning" | "neutral";
 
 // A panel on the ground: the one card (ui.card's look here: 20px corners, a 1px border, the
-// Tracker's shadow), without clipping, so a dropdown inside can reach past it
+// Duty Guard's shadow), without clipping, so a dropdown inside can reach past it
 export const panel = "tt-card rounded-lg border border-base-300 bg-base-100 shadow-[var(--tt-shadow)]";
 
 // A side rail's box (beside a page's main column): an outline on the ground, no fill or shadow,

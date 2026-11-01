@@ -29,7 +29,7 @@ export type { ExplorerSurface };
 // The HTS explorer: the whole schedule as one outline that opens in place (sections, chapters,
 // headings, codes), with whatever is selected shown in full in a panel beside it, and a search
 // that lists matches in the outline's place. Nothing jumps: opening and selecting rows leaves the
-// list where it is. In the Tariff Tracker's look (DESIGN_SYSTEM.md §15) wherever it's shown: the
+// list where it is. In Duty Guard's look (DESIGN_SYSTEM.md §15) wherever it's shown: the
 // /explore page, and in a dialog over the calculator (where "Calculate duty" puts a code in its input bar)
 // or a classification.
 

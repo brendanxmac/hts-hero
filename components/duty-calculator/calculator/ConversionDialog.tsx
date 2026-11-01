@@ -39,9 +39,9 @@ import { thisPageWith } from "../landing/redirect";
 // The calculator's two sign-up pitches, as a dialog for signed-out visitors:
 // - "account": everything a free account adds (PRICING.md), led by what they reached for (an
 //   explanation of this import, a past date) when the host says
-// - "trial": what the Tariff Tracker's 14-day reverse trial adds (REVERSE_TRIAL: every new account
-//   gets it, no card; then alerts on TRIAL_ALLOWANCE.alertImports of their own imports, Tariff
-//   News alerts, sourcing insights and AD/CVD checks free), led by the feature
+// - "trial": what Duty Guard's reverse trial adds (REVERSE_TRIAL: every new account
+//   gets it, no card; then their catalog, Tariff News alerts, sourcing insights and AD/CVD
+//   checks stay free), led by the feature
 //   they reached for (tracking, the qualification check, refunds, sourcing); "See everything else" steps over to the account view
 // Each view's button runs the host's own action (where sign-up should come back to).
 // useConversion opens it from anywhere, sending signed-in users the right way instead.
@@ -49,7 +49,7 @@ import { thisPageWith } from "../landing/redirect";
 export type AccountBenefit = "why" | "legal" | "ruled-out" | "history" | "analysis" | "adcvd" | "alerts" | "impacts" | "savings" | "audits";
 
 // What every free account gets (the AccountCta's "For every import" is analysis and alerts).
-// Savings and audits are off for the Tracker MVP (features.ts), so their lines drop out
+// Savings and audits are off for Duty Guard MVP (features.ts), so their lines drop out
 export const ACCOUNT_BENEFITS: { id: AccountBenefit; text: string }[] = ([
   { id: "why", text: "The plain-english 'why' behind every tariff on every import" },
   { id: "legal", text: "The legal text behind every tariff and exemption, with the notes it cites" },
@@ -59,7 +59,7 @@ export const ACCOUNT_BENEFITS: { id: AccountBenefit; text: string }[] = ([
   { id: "adcvd", text: "AD/CVD checks on any import: the antidumping and countervailing duty cases that may cover it, their rates and the suppliers they name" },
   {
     id: "alerts",
-    text: `The Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, with an alert when a tariff change hits one (before → after); then Tariff News alerts on every new US tariff action, free forever`,
+    text: `Duty Guard free for ${REVERSE_TRIAL.days} days, with an alert when a tariff change hits one (before → after); then Tariff News alerts on every new US tariff action, free forever`,
   },
   { id: "impacts", text: "Impact checks: see exactly how any tariff action affects each import you track" },
   { id: "savings", text: "What you could save on every import: trade programs, exemptions and cheaper origins" },
@@ -74,13 +74,13 @@ const BENEFIT_POINTS: Record<AccountBenefit, SellingPoint> = {
   history: { icon: "clock", title: "Any date's duty", body: "Line by line, for any entry date, past or scheduled." },
   analysis: { icon: "globe", title: "Advanced sourcing intelligence", body: "Your duty from every country of origin, as insights, a globe, a table and a chart." },
   adcvd: { icon: "shield", title: "AD/CVD checks", body: "See if any import may fall under an antidumping or countervailing duty case, and its rates." },
-  alerts: { icon: "bell", title: "Alerts the moment rates change", body: `The full Tracker free for ${REVERSE_TRIAL.days} days, on up to ${REVERSE_TRIAL.imports} imports.` },
+  alerts: { icon: "bell", title: "Alerts the moment rates change", body: `The full Duty Guard free for ${REVERSE_TRIAL.days} days.` },
   impacts: { icon: "bolt", title: "How each tariff action hits you", body: "See exactly which of your imports it touches." },
   savings: { icon: "money", title: "Ways to pay less", body: "Trade programs, exemptions and cheaper origins." },
   audits: { icon: "receipt", title: "Find what you overpaid", body: "Past entries checked against what you owed." },
 };
 
-// What the account itself gives, free: the Tracker's alerts, impact checks, savings and audits are
+// What the account itself gives, free: Duty Guard's alerts, impact checks, savings and audits are
 // the paid offer (the trial view), so the account view never leads with them or lists them
 const PAID_BENEFITS: AccountBenefit[] = ["alerts", "impacts", "savings", "audits"];
 const FREE_BENEFITS = ACCOUNT_BENEFITS.filter((b) => !PAID_BENEFITS.includes(b.id));
@@ -139,7 +139,7 @@ export type AccountPitch = {
   hideNote?: boolean;
   // The last chip under the button, in place of "100% free" (a pitch for the trial's features)
   perk?: string;
-  // For a signed-in account (the button gets them started in the Tracker): no sign-up chips, and no
+  // For a signed-in account (the button gets them started in Duty Guard): no sign-up chips, and no
   // list of what a free account includes
   member?: boolean;
   cta: string;
@@ -155,17 +155,17 @@ export type TrialPitch = {
 const DEFAULT_ACCOUNT: AccountPitch = { title: "Understand every import, free", cta: "Create my free account" };
 const DEFAULT_TRIAL: TrialPitch = {
   title: "Know the moment a tariff change hits this import",
-  subtitle: `Try the Tariff Tracker free for ${REVERSE_TRIAL.days} days: everything, on up to ${REVERSE_TRIAL.imports} imports. Get an alert the moment a tariff change hits one, and see exactly how any tariff action affects each.`,
+  subtitle: `Try Duty Guard free for ${REVERSE_TRIAL.days} days. Get an alert the moment a tariff change hits one, and see exactly how any tariff action affects each.`,
 };
 
-// What every new account's 14-day trial includes, for the trial view's list (PRICING.md)
+// What every new account's trial includes, for the trial view's list (PRICING.md)
 const TRIAL_INCLUDES = [
-  `Track up to ${REVERSE_TRIAL.imports} imports, with every tariff on each one`,
+  "Alerts and audits on your products, with every tariff on each one",
   "An alert when a tariff change hits one of them: the rate before and after, AD/CVD alerts included",
   `${SAVINGS_DETECTION.name}: ${SAVINGS_DETECTION.text.charAt(0).toLowerCase()}${SAVINGS_DETECTION.text.slice(1)}`,
   `${AUTO_AUDITING.name}: ${AUTO_AUDITING.text.charAt(0).toLowerCase()}${AUTO_AUDITING.text.slice(1)}`,
   "Impact checks, Insights, Tariff News, rate history, and every tariff exported to CSV or Excel",
-  `After ${REVERSE_TRIAL.days} days, ${FREE_FOREVER_SHORT} stay free, forever`,
+  `After ${REVERSE_TRIAL.days} days, ${FREE_FOREVER_SHORT} stay free, forever. No credit card required unless you pick a plan`,
 ];
 
 // The free account's pitch, built to convert: the headline (this import's own when the host has
@@ -193,7 +193,7 @@ const AccountView = ({
         {fromTrial && (
           <button type="button" onClick={onBack} className="inline-flex items-center gap-1 self-start text-xs font-medium text-base-content/60 hover:text-base-content">
             <ArrowLeftIcon className="h-3.5 w-3.5" aria-hidden />
-            Back to the Tariff Tracker
+            Back to Duty Guard
           </button>
         )}
         <p className={`${tt.eyebrow("primary")} pr-8`}>{account.eyebrow ?? "Create Free Account"}</p>
@@ -244,7 +244,7 @@ const AccountView = ({
           </span>
           <span className="inline-flex items-center gap-1">
             <CreditCardIcon className="h-3.5 w-3.5 text-success" aria-hidden />
-            No credit card
+            No credit card required
           </span>
           <span className="inline-flex items-center gap-1">
             <CheckIcon className="h-3.5 w-3.5 text-success" aria-hidden />
@@ -331,7 +331,7 @@ export const ConversionDialog = ({
           {view === "trial" ? (
             <div className="flex flex-col gap-5">
               <div className="pr-8">
-                <p className={tt.eyebrow("success")}>{trial.eyebrow ?? `Tariff Tracker · Free for ${REVERSE_TRIAL.days} days`}</p>
+                <p className={tt.eyebrow("success")}>{trial.eyebrow ?? `Duty Guard · Free for ${REVERSE_TRIAL.days} days`}</p>
                 <Dialog.Title className={`${tt.display} mt-2 text-2xl font-semibold leading-tight text-base-content`}>{trial.title}</Dialog.Title>
                 <p className={`${tt.subtitle} mt-2`}>{trial.subtitle}</p>
               </div>
@@ -351,7 +351,7 @@ export const ConversionDialog = ({
                   {TRY_IT_FREE}
                 </button>
                 <p className="text-center text-xs text-base-content/60">
-                  No credit card, nothing to cancel. A free account takes less than 30 seconds.
+                  No credit card required, nothing to cancel. A free account takes less than 30 seconds.
                 </p>
               </div>
               <button
@@ -378,9 +378,9 @@ export const ConversionDialog = ({
 };
 
 // Opens the pitches from any button on the calculator. Signed out, the dialog; signed in, the
-// account (and with it the trial) is already there, so the feature's Tracker tab opens, where its
+// account (and with it the trial) is already there, so the feature's Duty Guard tab opens, where its
 // checks are spent. Sign-up from the trial view comes back with `trial=<feature>`, which the
-// Tracker welcomes.
+// Duty Guard welcomes.
 export const useConversion = (page: string) => {
   const { user } = useUser();
   const access = useOptionalTrackerAccess();
@@ -391,11 +391,13 @@ export const useConversion = (page: string) => {
     account?: AccountPitch;
     trial?: TrialPitch;
     feature: PremiumFeature;
+    // Where sign-up comes back to, when not this page as it is
+    redirect?: () => string;
   }>({ open: false, view: "account", feature: "tracking" });
 
-  const openAccount = (account: AccountPitch, source: string) => {
+  const openAccount = (account: AccountPitch, source: string, redirect?: () => string) => {
     trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature: source, reason: "account", page });
-    setState({ open: true, view: "account", account, feature: "tracking" });
+    setState({ open: true, view: "account", account, feature: "tracking", redirect });
   };
   const openTrial = (feature: PremiumFeature, trial: TrialPitch) => {
     trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature, reason: access?.access.kind ?? (user ? "signed-in" : "anonymous"), page });
@@ -411,7 +413,7 @@ export const useConversion = (page: string) => {
       account={state.account}
       trial={state.trial}
       onClose={() => setState((s) => ({ ...s, open: false }))}
-      onCreateAccount={() => (window.location.href = signupHref(currentPath()))}
+      onCreateAccount={() => (window.location.href = signupHref((state.redirect ?? currentPath)()))}
       onStartTrial={() => (window.location.href = signupHref(thisPageWith({ trial: state.feature })))}
       page={page}
     />

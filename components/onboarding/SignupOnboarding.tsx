@@ -32,12 +32,15 @@ export const SignupOnboarding = ({
   userId,
   initialStep,
   entryPoint,
+  next: landing,
   preview = false,
 }: {
   userId: string;
   initialStep: OnboardingStep;
   // The homepage section whose button they came from, if any
   entryPoint: string | null;
+  // Where to land after it, when the button that sent them knows
+  next?: string | null;
   preview?: boolean;
 }) => {
   // A development preview (?preview=1) saves and tracks nothing
@@ -51,7 +54,7 @@ export const SignupOnboarding = ({
   const [website, setWebsite] = useState("");
   const [websiteError, setWebsiteError] = useState(false);
   const [busy, setBusy] = useState(false);
-  // Leaving for a tour (the Tracker's or the classification one): its cover shows here first, so
+  // Leaving for a tour (Duty Guard's or the classification one): its cover shows here first, so
   // the hand-off is one screen
   const [leaving, setLeaving] = useState<WelcomeProduct | null>(null);
   const started = useRef(false);
@@ -80,11 +83,11 @@ export const SignupOnboarding = ({
       track(MixpanelEvent.ONBOARDING_COMPLETED, { role: value, entry_point: entryPoint });
       // On to what they came for (onboardingNext)
       // (A preview saves nothing but still goes on, so the whole path can be walked)
-      const next = onboardingNext(entryPoint);
+      const next = landing ?? onboardingNext(entryPoint);
       const welcome = new URL(next, window.location.origin).searchParams.get(TRACKER_WELCOME_PARAM);
       if (welcome === "imports" || welcome === "alerts" || welcome === "tour") {
         startWelcomeCover();
-        setLeaving(welcome === "tour" ? "Classification Assistant" : "Tariff Tracker");
+        setLeaving(welcome === "tour" ? "Classification Assistant" : "Duty Guard");
       }
       // Only leaving waits for the answers to save (behind the cover, when there is one)
       setBusy(true);

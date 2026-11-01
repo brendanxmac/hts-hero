@@ -15,15 +15,15 @@ import { entryHref, onboardingNext, ONBOARDING_PATH, type EntryPoint } from "@/l
 // follows them. Runs in dev save to the dev database and send events to the dev Mixpanel.
 
 const FLOWS: { entry: EntryPoint; button: string; next: string }[] = [
-  { entry: "hero", button: "Home · hero “Get Started Free”", next: "Tracker onboarding → add imports" },
-  { entry: "audit", button: "Home · “Find Overpaid Duty”", next: "Tracker onboarding → add imports" },
-  { entry: "alerts", button: "Home · “Get Tariff Alerts”", next: "Tracker onboarding (alerts first) → add imports" },
-  { entry: "calculator", button: "Home · “Try Tariff Calculator”", next: "Tracker calculator, no tour or popups" },
-  { entry: "savings", button: "Home · “Find Savings”", next: "Tracker onboarding → add imports" },
+  { entry: "hero", button: "Home · hero “Get Started Free”", next: "Duty Guard onboarding → add imports" },
+  { entry: "audit", button: "Home · “Find Overpaid Duty”", next: "Duty Guard onboarding → add imports" },
+  { entry: "alerts", button: "Home · “Get Tariff Alerts”", next: "Duty Guard onboarding (alerts first) → add imports" },
+  { entry: "calculator", button: "Home · “Try Tariff Calculator”", next: "Duty Guard calculator, no tour or popups" },
+  { entry: "savings", button: "Home · “Find Savings”", next: "Duty Guard onboarding → add imports" },
   { entry: "classify", button: "Home · classification “Try it Free”", next: "Classification onboarding → new classification" },
-  { entry: "closing", button: "Home · closing “Get Started Free”", next: "Tracker onboarding → add imports" },
-  { entry: "alerts_page", button: "/tariff-alerts · any button", next: "Tracker onboarding (alerts first) → add imports" },
-  { entry: "audits_page", button: "/duty-audits · any button", next: "Tracker onboarding → add imports" },
+  { entry: "closing", button: "Home · closing “Get Started Free”", next: "Duty Guard onboarding → add imports" },
+  { entry: "alerts_page", button: "/tariff-alerts · any button", next: "Duty Guard onboarding (alerts first) → add imports" },
+  { entry: "audits_page", button: "/duty-audit · any button", next: "Duty Guard onboarding → add imports" },
 ];
 
 const OTHER: { label: string; href: string; note: string }[] = [
@@ -31,8 +31,8 @@ const OTHER: { label: string; href: string; note: string }[] = [
   { label: "Old sign-up link", href: "/signin?sign-up=true&redirect=%2Fclassifications", note: "Should land on /signup, keeping the redirect" },
   { label: "Sign-in page", href: "/signin", note: "Signed out only" },
   { label: "Get a Demo form", href: "/", note: "The hero's second button (submitting emails Brendan)" },
-  { label: "Tracker tour (preview)", href: "/tariff-tracker?tourPreview=1", note: "The product tour, from the sidebar's button" },
-  { label: "Tracker onboarding (preview)", href: "/tariff-tracker?onboardingPreview=1&welcomePreview=imports", note: "Use &welcomePreview=alerts for the alerts version" },
+  { label: "Duty Guard tour (preview)", href: "/duty-guard?tourPreview=1", note: "The product tour, from the sidebar's button" },
+  { label: "Duty Guard onboarding (preview)", href: "/duty-guard?onboardingPreview=1&welcomePreview=imports", note: "Use &welcomePreview=alerts for the alerts version" },
   { label: "Classification onboarding (preview)", href: "/classifications?onboardingPreview=1", note: "Every way out opens a new classification" },
   { label: "Classification tour", href: "/classifications", note: "The header's Product Tour button" },
 ];
@@ -151,14 +151,14 @@ export const FlowTester = () => {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <section className="flex flex-col gap-3 rounded-2xl bg-base-100 p-5 ring-1 ring-base-300">
             <h2 className="text-lg font-semibold">Trial stages</h2>
-            <p className="text-sm text-base-content/70">The Tracker as your account would look at each stage of the trial. Nothing about your account changes.</p>
+            <p className="text-sm text-base-content/70">Duty Guard as your account would look at each stage of the trial. Nothing about your account changes.</p>
             <div className="flex flex-wrap gap-2">
               {TRIAL_PREVIEWS.map((stage) => (
-                <a key={stage} className={quiet} href={`/tariff-tracker?trialPreview=${stage}`}>
+                <a key={stage} className={quiet} href={`/duty-guard?trialPreview=${stage}`}>
                   {stage}
                 </a>
               ))}
-              <a className={quiet} href="/tariff-tracker?trialPreview=off">
+              <a className={quiet} href="/duty-guard?trialPreview=off">
                 off
               </a>
             </div>
@@ -199,7 +199,7 @@ export const FlowTester = () => {
               </button>
             </div>
             <p className="text-xs text-base-content/50">
-              The signed-out path (sign-up, confirmation email, first Tracker visit) needs a real new account: sign up as yourname+test1@yourdomain.com
+              The signed-out path (sign-up, confirmation email, first Duty Guard visit) needs a real new account: sign up as yourname+test1@yourdomain.com
               in a private window; the emails reach your normal inbox.
             </p>
           </section>

@@ -1,5 +1,8 @@
 "use client";
 
+import { DutyAuditsUpsell } from "../access/DutyAuditsUpsell";
+import { useTrackerAccess } from "../access/accessContext";
+import { hasAudits } from "@/libs/tariff-tracker/plan";
 import * as ui from "@/components/ui/styles";
 import { TableStandIn } from "@/components/ui/stand-ins";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
@@ -23,6 +26,16 @@ import { useAuditRows } from "./useAuditRows";
 
 const AuditReport = () => {
   const { rows, totals, loading } = useAuditRows();
+  const { access, signedIn } = useTrackerAccess();
+  if (signedIn && !hasAudits(access))
+    return (
+      <DutyAuditsUpsell
+        feature="entries"
+        title={rows.length ? `${rows.length.toLocaleString("en-US")} ${rows.length === 1 ? "Entry" : "Entries"} Ready to Audit` : "Check What You Paid on Past Entries"}
+        body="Duty Guard Pro checks every entry against the duty in force on its date, flagging possible over and underpayments."
+        points={["Unlimited audits on the products your plan covers", "A findings report for your team or broker", "Keep 100% of what you find"]}
+      />
+    );
   return (
     <div className="flex flex-col gap-4">
       <FreeChecksNotice kind="audits" />

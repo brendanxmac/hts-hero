@@ -1,3 +1,4 @@
+import { sendWelcome } from "@/libs/email/welcome";
 import { NextResponse } from "next/server";
 import { createAdminClient, createClient } from "@/app/api/supabase/server";
 import { cleanWebsite, isCompanyType, isEntryPoint, isRole } from "@/libs/signup-onboarding";
@@ -33,6 +34,11 @@ export async function POST(req: Request) {
           { onConflict: "user_id", ignoreDuplicates: true },
         );
       if (error) throw error;
+      // The welcome email, now we know what they came for (the first start's entry point wins)
+      if (user.email) {
+        const { data } = await db.from("signup_onboarding").select("entry_point").eq("user_id", user.id).maybeSingle();
+        await sendWelcome(db, { userId: user.id, email: user.email, entry: data?.entry_point ?? null }).catch((e) => console.error("Failed to send the welcome email:", e));
+      }
       return NextResponse.json({ ok: true });
     } else if (body?.action === "company_type" && isCompanyType(body.value)) {
       result = await update({ company_type: body.value });

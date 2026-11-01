@@ -23,7 +23,7 @@ export const RecalcSection = () => (
       </div>
 
       <div className="mt-10">
-        <EntryCta page="duty-audits" entry="audits_page" section="setup" label="Get Started" className={cta.buttonPrimarySm}>
+        <EntryCta page="duty-audit" entry="audits_page" section="setup" label="Get Started" className={cta.buttonPrimarySm}>
           Get Started <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </EntryCta>
       </div>

@@ -4,9 +4,9 @@ import { useSyncExternalStore } from "react";
 
 // Whether the import takeover is open, and at which step: opened from the empty Home and Imports
 // pages (SetupPanel), the plan card, the imports-to-finish banner, or a link that asks for it
-// (ImportTakeover); never by itself. An ask starts at the beginning unless it names a step. One copy for the whole Tracker, outside React so any component can open it.
+// (ImportTakeover); never by itself. An ask starts at the beginning unless it names a step. One copy for the whole Duty Guard, outside React so any component can open it.
 
-// "finish": the rows left to fix from an earlier sheet (toFinish.ts), opened from the Tracker
+// "finish": the rows left to fix from an earlier sheet (toFinish.ts), opened from Duty Guard
 export type TakeoverStep = "hook" | "explain" | "choose" | "recent" | "paste" | "file" | "handy" | "done" | "finish";
 
 interface TakeoverState {

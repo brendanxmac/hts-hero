@@ -22,7 +22,7 @@ export const useAdcvdAnswers = (code: string, country: string) => {
   return { of: (f: AdcvdFlag): AdcvdAnswer => answers[caseKey(f)] ?? {}, set }
 }
 
-// ── The answers elsewhere in the Tracker ──
+// ── The answers elsewhere in Duty Guard ──
 // A case the user ruled out ("No, that's not my product") no longer flags the import anywhere; one
 // they said is theirs is marked as applying, with the deposit for the company they picked.
 

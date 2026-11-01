@@ -4,7 +4,7 @@ import { createContext, useContext } from "react";
 import { CheckKind, TrackerAccess } from "@/libs/tariff-tracker/plan";
 import { PremiumFeature } from "./features";
 
-// The visitor's Tariff Tracker plan, and the ways up from it, for every part of the Tracker
+// The visitor's Duty Guard plan, and the ways up from it, for every part of Duty Guard
 export interface TrackerAccessValue {
   // Still finding out (signed in, plan not loaded yet)
   loading: boolean;
@@ -37,5 +37,5 @@ export const useTrackerAccess = () => {
   return value;
 };
 
-// The same, or null outside the Tracker (the free calculator's pages have no provider)
+// The same, or null outside Duty Guard (the free calculator's pages have no provider)
 export const useOptionalTrackerAccess = () => useContext(TrackerAccessContext);

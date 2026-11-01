@@ -1,6 +1,6 @@
 import { columnAssignments } from "@/tariffs/engine-v2/data/columns"
 
-// Compliance flags for the Tracker's Sourcing tab: things that can stop or slow goods from a
+// Compliance flags for Duty Guard's Sourcing tab: things that can stop or slow goods from a
 // country, from US government sources (public domain), each with where it comes from. We find,
 // flag and explain; whether goods may enter is Customs' call, and a broker's or counsel's to advise
 // on. A country or sector flag says nothing about a particular supplier.

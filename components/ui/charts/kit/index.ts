@@ -1,4 +1,4 @@
-// The shared chart kit (proposal, Oct 2026): the parts every chart in the Tracker and the
+// The shared chart kit (proposal, Oct 2026): the parts every chart in Duty Guard and the
 // calculator is made of, so they all scale, label, hover and color the same way. Nothing uses it
 // yet; charts move onto it one at a time. Maps keep their own code (d3-geo) and aren't part of it.
 //

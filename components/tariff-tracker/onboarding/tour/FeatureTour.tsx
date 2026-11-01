@@ -17,12 +17,12 @@ import { TourShell, TourStep as ShellStepView } from "@/components/product-tour/
 import { TOUR_STEPS, TourStep } from "./steps";
 
 // The feature tour: the whole screen, in the import takeover's look (DESIGN_SYSTEM §15), walking
-// through what the Tracker does, one feature a step: what it's for, how to do it in a few short
-// steps, and beside it a small Tracker playing it out. How to add imports is left out once there
+// through what Duty Guard does, one feature a step: what it's for, how to do it in a few short
+// steps, and beside it a small Duty Guard playing it out. How to add imports is left out once there
 // are some. Each step can carry a video walkthrough (steps.ts TOUR_VIDEOS); until there is one, a
 // placeholder says it's coming. It always opens on the Welcome step, with the step it was opened for
 // right after. The arrow keys move between steps; Escape closes it. The layout is the shared
-// TourShell. New accounts from the sign-up onboarding get the Tracker onboarding instead
+// TourShell. New accounts from the sign-up onboarding get Duty Guard onboarding instead
 // (TrackerOnboarding); this tour is always a button away (the sidebar's Product Tour).
 
 // A step's video: a placeholder until one is added (steps.ts TOUR_VIDEOS), then a button that plays it
@@ -157,7 +157,7 @@ export const FeatureTour = () => {
 
   return (
     <>
-      <TourShell product="Tariff Tracker" steps={steps} at={at} onGo={go} exitLabel="Close tour" onExit={() => close("closed")} labelledBy="tt-tour-title" scrollerRef={scroller}>
+      <TourShell product="Duty Guard" steps={steps} at={at} onGo={go} exitLabel="Close tour" onExit={() => close("closed")} labelledBy="tt-tour-title" scrollerRef={scroller}>
         <ShellStepView
           key={step.id}
           titleId="tt-tour-title"

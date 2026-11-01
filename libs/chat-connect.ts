@@ -20,7 +20,7 @@ export const connectionMessage = (kind: "welcome" | "test", { origin, where, cha
       : "Tip: set this channel's notifications to All activity so you hear each alert.",
   ],
   actions: [
-    { label: "Open my alerts", url: `${origin}/tariff-tracker?tab=alerts` },
+    { label: "Open my alerts", url: `${origin}/duty-guard?tab=alerts` },
     { label: "See recent tariff news", url: `${origin}/tariff-updates` },
   ],
 });

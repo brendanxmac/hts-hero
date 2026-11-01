@@ -5,7 +5,6 @@ import {
   CLASSIFY_PLANS,
   formatPrice,
   REVERSE_TRIAL,
-  TRIAL_ALLOWANCE,
 } from "@/components/pricing-calculator/lib/pricing"
 import { GUARANTEE_DAYS } from "@/components/tariff-alerts/lib/copy"
 import { AUDIT_GUARANTEE_AUDITS, AUDIT_GUARANTEE_DAYS } from "@/components/tariff-audit/lib/copy"
@@ -37,15 +36,15 @@ export const HOME_FAQS = [
   },
   {
     question: "How do I get alerts when tariffs change on my products?",
-    answer: `With Tariff Alerts. Upload your products, each an HTS code and country of origin, and you get an alert when a new tariff affects them: when it's proposed, and again when it's published, with the rate before and after on each product. Alerts come by email, and in Slack or Microsoft Teams on the ${teams} and Scale plans. Every new account gets it free for ${REVERSE_TRIAL.days} days, then plans start at ${alertsFrom} a month for 10 products.`,
+    answer: `With Duty Guard Essentials. Upload your products, each an HTS code and country of origin, and you get an alert when a new tariff affects them: when it's proposed, and again when it's published, with the rate before and after on each product. Alerts come by email, and in Slack or Microsoft Teams on the ${teams} and Scale plans. Every new account gets it free for ${REVERSE_TRIAL.days} days, then plans start at ${alertsFrom} a month for 10 products.`,
   },
   {
     question: "Can HTS Hero find duty I overpaid?",
-    answer: `Yes. Duty Audits recalculates each of your entries with the rules in force on its entry date and flags duty you may have overpaid, missed exemptions and refundable tariffs such as IEEPA, in seconds. HTS Hero finds and flags; you or your broker file, and you keep 100% of any refund. It's free for ${REVERSE_TRIAL.days} days with a new account, then plans start at ${auditsFrom} a month and include Tariff Alerts for the same products.`,
+    answer: `Yes. Duty Guard Pro recalculates each of your entries with the rules in force on its entry date and flags duty you may have overpaid, missed exemptions and refundable tariffs such as IEEPA, in seconds. HTS Hero finds and flags; you or your broker file, and you keep 100% of any refund. It's free for ${REVERSE_TRIAL.days} days with a new account, then plans start at ${auditsFrom} a month and include Duty Guard Essentials for the same products.`,
   },
   {
     question: "How much does HTS Hero cost?",
-    answer: `The Tariff Calculator is free, and every new account gets Tariff Alerts and Duty Audits free for ${REVERSE_TRIAL.days} days. After that, Tariff Alerts is ${range(ALERT_TIERS)} a month. Duty Audits is ${range(AUDIT_TIERS)} a month, each with Tariff Alerts for the same products included. Over ${largest} products, we price to your catalog. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. No contract, cancel anytime, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
+    answer: `The Tariff Calculator is free, and every new account gets Duty Guard free for ${REVERSE_TRIAL.days} days. After that, Duty Guard Essentials is ${range(ALERT_TIERS)} a month. Duty Guard Pro is ${range(AUDIT_TIERS)} a month, each with Duty Guard Essentials for the same products included. Over ${largest} products, we price to your catalog. The classification assistant starts at ${formatPrice(CLASSIFY_PLANS.starter.price)} a month. No contract, cancel anytime, and ${ANNUAL_DISCOUNT * 100}% off with annual billing.`,
   },
   {
     question: "What counts as a product?",
@@ -54,7 +53,7 @@ export const HOME_FAQS = [
   },
   {
     question: "Is there a free trial?",
-    answer: `Yes. Every new account gets Tariff Alerts and Duty Audits free for ${REVERSE_TRIAL.days} days, on all its products (up to ${REVERSE_TRIAL.imports}), with no credit card. The ${REVERSE_TRIAL.days} days start when you add your products. When the trial ends, pick a plan to keep everything on; without one, alerts stay on ${TRIAL_ALLOWANCE.alertImports} of your products. Paid plans also come with a guarantee: ${GUARANTEE_DAYS} days money-back on Tariff Alerts, and on Duty Audits a full refund if you run ${AUDIT_GUARANTEE_AUDITS} audits within ${AUDIT_GUARANTEE_DAYS} days and aren't satisfied. The Tariff Calculator is always free, and you can try the classification assistant free.`,
+    answer: `Yes. Every new account gets Duty Guard free for ${REVERSE_TRIAL.days} days, with no credit card required. The ${REVERSE_TRIAL.days} days start when you add your products. When the trial ends, pick a plan to keep everything on; without one, your whole catalog stays free, and alerts and audits stop. Paid plans also come with a guarantee: ${GUARANTEE_DAYS} days money-back on Duty Guard Essentials, and on Duty Guard Pro a full refund if you run ${AUDIT_GUARANTEE_AUDITS} audits within ${AUDIT_GUARANTEE_DAYS} days and aren't satisfied. The Tariff Calculator is always free, and you can try the classification assistant free.`,
   },
   {
     question: "Where does HTS Hero's tariff data come from?",

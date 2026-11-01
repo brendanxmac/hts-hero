@@ -15,7 +15,7 @@ import { CatalogChange, catalogChanges, ProductHistory, productHistory } from ".
 import { originRates } from "../product/analysis/analysis";
 import { bestSavings, OriginCost, originCosts, productSavings, Saving } from "./savings";
 
-// What the Tracker works out across the catalog: every product's rate history and every way to
+// What Duty Guard works out across the catalog: every product's rate history and every way to
 // save on it. Shared by the Overview, Rate history, Savings and the teasers on locked features,
 // and worked out once in the background, a few milliseconds at a time, so the app never stalls.
 // Each product's results are kept until its inputs change.

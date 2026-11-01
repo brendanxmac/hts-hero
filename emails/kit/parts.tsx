@@ -1,9 +1,9 @@
 import React, { ReactNode } from "react"
 import { Button, Column, Heading, Hr, Link, Row, Section, Text } from "@react-email/components"
-import { LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, TRIAL_ALLOWANCE, formatPrice } from "../../components/pricing-calculator/lib/pricing"
-import { C, FONT_DISPLAY, formatDay, SITE, TONES, Tone } from "./brand"
+import { ALERT_TIERS, AUDIT_TIERS, REVERSE_TRIAL, formatPrice } from "../../components/pricing-calculator/lib/pricing"
+import { C, FONT_DISPLAY, formatDay, M, SITE, TONES, Tone } from "./brand"
 
-// The pieces every email is made of, in the Tracker's look: a small bold eyebrow in a role color,
+// The pieces every email is made of, in Duty Guard's look: a small bold eyebrow in a role color,
 // a Sora headline, plain body text, one pill button, chips, and for tariff news the stage track
 // the social posts use. Tables and inline styles only, so Outlook draws them too.
 
@@ -45,7 +45,7 @@ type ButtonVariant = "primary" | "next" | "money"
 const BUTTON_COLORS: Record<ButtonVariant, string> = { primary: C.navy, next: C.cobalt, money: C.green }
 
 // One per email: the next step, full width with room below it. Primary is the text color as a
-// fill; next (cobalt) and money (green) as in the Tracker.
+// fill; next (cobalt) and money (green) as in Duty Guard.
 export const Cta = ({ href, children, variant = "primary" }: { href: string; children: ReactNode; variant?: ButtonVariant }) => (
   <Section style={{ margin: "12px 0 26px" }}>
     <Button
@@ -91,7 +91,7 @@ export const Divider = () => <Hr style={{ border: "none", borderTop: `1px solid 
 
 // A soft panel inside the card: facts, a quote, a list
 export const Panel = ({ children }: { children: ReactNode }) => (
-  <Section style={{ backgroundColor: C.soft, borderRadius: 18, padding: "18px 20px", margin: "6px 0 18px" }}>{children}</Section>
+  <Section className={M.box} style={{ backgroundColor: C.soft, borderRadius: 18, padding: "18px 20px", margin: "6px 0 18px" }}>{children}</Section>
 )
 
 // Label / value rows, e.g. "Effective · Sep 3, 2026"
@@ -99,12 +99,12 @@ export const Facts = ({ rows }: { rows: { label: string; value: ReactNode }[] })
   <Panel>
     {rows.map((r) => (
       <Row key={r.label} style={{ marginBottom: 6 }}>
-        <Column style={{ width: 110, verticalAlign: "top" }}>
+        <Column className={M.stack} style={{ width: 110, verticalAlign: "top" }}>
           <Text style={{ margin: 0, fontSize: 11, lineHeight: "20px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>
             {r.label}
           </Text>
         </Column>
-        <Column style={{ verticalAlign: "top" }}>
+        <Column className={M.stack} style={{ verticalAlign: "top" }}>
           <Text style={{ margin: 0, fontSize: 14, lineHeight: "20px", color: C.text }}>{r.value}</Text>
         </Column>
       </Row>
@@ -203,15 +203,13 @@ export const Checklist = ({ items }: { items: ReactNode[] }) => (
   </Section>
 )
 
-// What the Tariff Tracker does, as a checklist (the welcome and meet-the-Tracker emails)
+// What Duty Guard does, as a checklist (the welcome and meet-the-Duty Guard emails)
 export const TRACKER_POINTS: ReactNode[] = [
-  "Track the duty rate on every import",
-  "Get alerted when a new tariff hits one, with the rate before and after",
-  "AD/CVD alerts when an import may fall under a case",
-  "See exactly how any tariff action affects each import, with Insights across your catalog",
-  "Find savings you may qualify for, on every import",
-  "Audit past entries for possible overpaid duty",
-  "Export every tariff on every import to CSV or Excel",
+  "Duty rate tracking on every import",
+  "Alerts when a new tariff affects you, with the before and after",
+  "AD/CVD alerts when an import may be affected",
+  "Potential savings you may qualify for on every import",
+  "Audits of past entries to discover overpaid duty",
 ]
 
 // Signed by the founder: every email is from a person, and replies reach him
@@ -224,17 +222,13 @@ export const Signature = ({ line = "Founder, HTS Hero" }: { line?: string }) => 
 )
 
 // The way up, always in view but never the ask: what the free account already does, and where
-// the plans are. Value first, then the door. Worded to hold whether the reader is in the 14-day
-// trial (REVERSE_TRIAL) or past it, since emails don't know which.
+// the plans are. Value first, then the door. Worded to hold whether the reader is in the trial
+// (REVERSE_TRIAL) or past it, since emails don't know which.
 export const PlanStrip = ({ campaign, signedUp = true }: { campaign: string; signedUp?: boolean }) => (
   <Section style={{ marginTop: 24, borderTop: `1px solid ${C.border}`, paddingTop: 18 }}>
     <Text style={{ margin: 0, fontSize: 13, lineHeight: "20px", color: C.muted }}>
-      {signedUp ? "Your free account" : "A free HTS Hero account"}{" "}
-      gives you tariff alerts on {TRIAL_ALLOWANCE.alertImports} of your imports, Tariff News alerts on every new US tariff action, the duty on every import you add, its rate history and sourcing insights, free forever, AD/CVD checks on any
-      import, plus the full Tariff Tracker (AD/CVD alerts, automatic savings
-      detection and automatic auditing included) free for {REVERSE_TRIAL.days} days from {signedUp ? "your" : "its"} first imports, on up to {REVERSE_TRIAL.imports}{" "}
-      imports, no credit card.{" "}
-      Plans with alerts on all your imports start at {formatPrice(TRACKER_TIERS[0].price)}/mo, as low as {formatPrice(LOWEST_PER_IMPORT)} per import.{" "}
+      {signedUp ? "Your free account" : "A free HTS Hero account"} tracks every product you import, with its current duty, rate history and sourcing insights, plus Tariff News
+      alerts and AD/CVD checks. Duty Guard is free for {REVERSE_TRIAL.days} days from {signedUp ? "your" : "its"} first products, no credit card required. Then Duty Guard Essentials from {formatPrice(ALERT_TIERS[0].price)}/mo and Duty Guard Pro from {formatPrice(AUDIT_TIERS[0].price)}/mo.{" "}
       <Link href={`${SITE}/pricing-calculator?utm_source=email&utm_medium=email&utm_campaign=${campaign}`} style={{ color: C.cobalt, fontWeight: 600 }}>
         See plans
       </Link>
@@ -248,8 +242,8 @@ export const Stats = ({ items }: { items: { label: string; value: string; note?:
   <Section style={{ margin: "6px 0 18px" }}>
     <Row>
       {items.map((s, i) => (
-        <Column key={s.label} style={{ width: `${100 / items.length}%`, verticalAlign: "top", paddingLeft: i ? 8 : 0 }}>
-          <Section style={{ backgroundColor: C.soft, borderRadius: 16, padding: "14px 14px 12px" }}>
+        <Column key={s.label} className={i ? M.stackGap : M.stack} style={{ width: `${100 / items.length}%`, verticalAlign: "top", paddingLeft: i ? 8 : 0 }}>
+          <Section className={M.box} style={{ backgroundColor: C.soft, borderRadius: 16, padding: "14px 14px 12px" }}>
             <Text style={{ margin: 0, fontSize: 11, lineHeight: "15px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>
               {s.label}
             </Text>
@@ -285,7 +279,7 @@ export const AlertSample = ({ label, updateTitle, code, country, description, be
   const confirmed = beforePct !== null && afterPct !== null
   const tone = Number(afterPct) > Number(beforePct) ? TONES.up.fg : TONES.down.fg
   return (
-    <Section style={{ border: `1px solid ${C.border}`, borderLeft: `4px solid ${TONES.up.fg}`, borderRadius: 14, padding: "14px 16px", margin: "6px 0 18px" }}>
+    <Section className={M.box} style={{ border: `1px solid ${C.border}`, borderLeft: `4px solid ${TONES.up.fg}`, borderRadius: 14, padding: "14px 16px", margin: "6px 0 18px" }}>
       <Text style={{ margin: "0 0 6px", fontSize: 11, lineHeight: "15px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted }}>
         {label}
       </Text>

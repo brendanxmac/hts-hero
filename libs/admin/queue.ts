@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { NEWS_ALERTS_FROM } from "../email/news-producer"
 import { STALE_HOURS as ADCVD_STALE_HOURS } from "../adcvd/health"
+import { AUDIT_PLANS } from "../tariff-tracker/plan"
 import { SOURCES, type SourceId } from "../tariff-sources/types"
 
 // What needs the admin, from every admin tool, ranked: the /admin home and the 7 a.m. Bangkok
@@ -326,6 +327,54 @@ const studioItems = async (db: Db): Promise<QueueItem[]> => {
   ]
 }
 
+const GUARANTEE_DAYS = 30
+const GUARANTEE_AUDITS = 10
+
+// The 10 Audit Money Back Guarantee (PRICING.md): each Duty Guard Pro account inside its first 30 days
+// after purchase, with the audits it's run since then, most first. Trial audits don't count.
+// Refunds are manual, so this is what to check a request against.
+const guaranteeItems = async (db: Db, now: Date): Promise<QueueItem[]> => {
+  const dayMs = 86_400_000
+  const { data: purchases, error } = await db
+    .from("purchases")
+    .select("user_id, created_at")
+    .in("product_name", AUDIT_PLANS.map((p) => p.plan))
+    .order("created_at", { ascending: true })
+  if (error) throw error
+  const first = new Map<string, string>()
+  for (const p of (purchases ?? []) as { user_id: string; created_at: string }[]) if (!first.has(p.user_id)) first.set(p.user_id, p.created_at)
+  const open = Array.from(first).filter(([, at]) => now.getTime() - Date.parse(at) < GUARANTEE_DAYS * dayMs)
+  if (!open.length) return []
+  const ids = open.map(([id]) => id)
+  const [{ data: checks, error: checksError }, { data: users, error: usersError }] = await Promise.all([
+    db.from("tracker_checks").select("user_id, created_at").eq("kind", "audit").in("user_id", ids),
+    db.from("users").select("id, email").in("id", ids),
+  ])
+  if (checksError || usersError) throw checksError ?? usersError
+  const accounts = open
+    .map(([id, at]) => ({
+      email: ((users ?? []) as { id: string; email: string }[]).find((u) => u.id === id)?.email ?? id,
+      audits: ((checks ?? []) as { user_id: string; created_at: string }[]).filter((c) => c.user_id === id && c.created_at >= at).length,
+      ends: new Date(Date.parse(at) + GUARANTEE_DAYS * dayMs).toISOString(),
+    }))
+    .sort((a, b) => b.audits - a.audits)
+  const qualified = accounts.filter((a) => a.audits >= GUARANTEE_AUDITS).length
+  return [
+    {
+      id: "audit-guarantee",
+      group: "whenever",
+      tone: qualified ? "warning" : "neutral",
+      area: "outbox",
+      title: `${plural(accounts.length, "Duty Guard Pro account")} in the guarantee window`,
+      detail: `${qualified} reached ${GUARANTEE_AUDITS} audits and can ask for a refund. Refunds are done by hand in Stripe.`,
+      action: "Open Stripe",
+      href: "https://dashboard.stripe.com/subscriptions",
+      count: accounts.length,
+      entries: accounts.slice(0, SHOWN).map((a) => ({ label: a.email, href: "https://dashboard.stripe.com/subscriptions", meta: `${plural(a.audits, "audit")} · until ${day(a.ends)}` })),
+    },
+  ]
+}
+
 const GROUP_ORDER: QueueGroup[] = ["blocking", "health", "whenever"]
 
 // Each tool's part is loaded on its own: one failing shows as a health item, not a broken page
@@ -337,6 +386,7 @@ export const loadAdminQueue = async (db: Db, now = new Date()): Promise<AdminQue
     ["Tariff sources", "updates", sourceItems(db, now)],
     ["AD/CVD", "adcvd", adcvdItems(db, now)],
     ["Content Studio", "studio", studioItems(db)],
+    ["Audit guarantee", "outbox", guaranteeItems(db, now)],
   ]
   const settled = await Promise.allSettled(parts.map(([, , p]) => p))
   const items = settled.flatMap((r, i): QueueItem[] =>

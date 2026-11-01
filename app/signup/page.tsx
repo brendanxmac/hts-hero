@@ -160,7 +160,9 @@ function SignUpContent() {
         </Link>
 
         <h1 className={`${tt.display} mt-8 text-center text-3xl font-semibold tracking-tight text-base-content`}>Create your account</h1>
-        <p className="mt-2 text-center text-lg font-medium text-base-content/70">100% free. No credit card needed.</p>
+        <p className="mt-2 text-center text-lg font-medium text-base-content/70">
+          {searchParams.get("for") === "adcvd" ? "100% free, no credit card required. You come right back to the AD/CVD check for this import." : "100% free. No credit card required."}
+        </p>
 
         <div className="mt-8 flex w-full flex-col gap-4">
           {step === "start" && (
@@ -230,7 +232,7 @@ function SignUpContent() {
             <form className="flex flex-col gap-4" onSubmit={verifyCode}>
               {back}
               <p className="text-sm text-base-content/70">
-                Enter the code we sent to <span className="font-semibold text-base-content">{email.trim()}</span>
+                Click the button in the email we sent to <span className="font-semibold text-base-content">{email.trim()}</span>, or enter its code here.
               </p>
               <label className="sr-only" htmlFor="signup-code">One-time code</label>
               <input id="signup-code" required inputMode="numeric" pattern="[0-9]*" maxLength={6} placeholder="123456" className={`${field} text-center text-2xl tracking-[0.4em] tabular-nums`} value={code} onChange={(e) => setCode(e.target.value)} data-1p-ignore />

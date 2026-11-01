@@ -241,7 +241,7 @@ export const ChartDialog = ({
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/40" aria-hidden />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        {/* It portals out of the Tracker, so it carries the Tracker's look itself (DESIGN_SYSTEM §15) */}
+        {/* It portals out of Duty Guard, so it carries Duty Guard's look itself (DESIGN_SYSTEM §15) */}
         <Dialog.Panel className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden shadow-2xl`}>
           {/* The title and its controls stay on one row: the title gives way (wraps) first */}
           <div className="flex flex-nowrap items-start justify-between gap-4 px-6 pb-4 pt-6">

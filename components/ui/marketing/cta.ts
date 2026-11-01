@@ -1,4 +1,4 @@
-// Call-to-action bands on pages in the Tariff Tracker's look (DESIGN_SYSTEM.md §15): bold and
+// Call-to-action bands on pages in Duty Guard's look (DESIGN_SYSTEM.md §15): bold and
 // eye-catching, and inverted from the page, so they're dark in light mode and light in dark mode
 // (.hts-tracker-inverse, in the theme plugin). Theme classes inside follow the inversion.
 

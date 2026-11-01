@@ -428,7 +428,7 @@ export const SheetReview = ({
   const products = review.products;
 
   // Tracking the rows that read: the ones still to fix are kept (toFinish.ts) with what was wrong
-  // and the product's description, so they can be finished later from the Tracker
+  // and the product's description, so they can be finished later from Duty Guard
   const start = (ready: NewProduct[]) => {
     const left = sheet
       .filter((r) => r.kind === "error")

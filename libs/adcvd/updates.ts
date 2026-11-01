@@ -5,7 +5,7 @@ import type { CaseRow, EventRow, EventType } from "./types"
 
 // Significant AD/CVD events (types.ts SIGNIFICANT_EVENTS) as /tariff-updates entries: one per
 // proceeding (an investigation, a five-year review, a circumvention inquiry, scope rulings) on one
-// product, with every notice that moved it along. Kind and authority "ad_cvd": the Tracker's news
+// product, with every notice that moved it along. Kind and authority "ad_cvd": Duty Guard's news
 // shows them, but they never send alerts or news emails unless a reader picks AD/CVD.
 
 type Db = SupabaseClient

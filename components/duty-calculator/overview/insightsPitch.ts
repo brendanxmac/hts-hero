@@ -1,12 +1,12 @@
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing"
 import type { AccountPitch } from "../calculator/ConversionDialog"
 
-// "Get Tariff Alerts, Audits, & Savings" in the calculator: the pitch for what the Tariff Tracker
-// does with an account (its 14-day trial, REVERSE_TRIAL). One promise for the headline, then the
+// "Get Tariff Alerts, Audits, & Savings" in the calculator: the pitch for what Duty Guard
+// does with an account (its trial, REVERSE_TRIAL). One promise for the headline, then the
 // three things it sells: tariff alerts (the early heads-up and each import's rate change), tariff
 // audits of every entry, and the savings finder (quick wins and sourcing changes). Savings are
 // always "could" / "may". No amber urgency line: the points are the pitch.
-// member: signed in, so the button gets them started: their imports into the Tracker (a line under
+// member: signed in, so the button gets them started: their imports into Duty Guard (a line under
 // the title says so)
 export const insightsPitch = (member = false): AccountPitch => ({
   eyebrow: "US Tariff Intelligence",
@@ -20,7 +20,7 @@ export const insightsPitch = (member = false): AccountPitch => ({
     },
     {
       icon: "receipt",
-      title: "Duty Audits on Every Entry",
+      title: "Duty Audit on Every Entry",
       body: "Have each entry checked against the duty in force on its date, to find duty you may have overpaid or underpaid.",
     },
     {

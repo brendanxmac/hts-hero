@@ -1,4 +1,3 @@
-import { formatPrice, LOWEST_PER_IMPORT } from "../../components/pricing-calculator/lib/pricing"
 import { Link, Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Cta, Eyebrow, P, Title, UpdateSummary, updateUrl } from "../kit/parts"
@@ -7,7 +6,7 @@ import { AUTHORITIES } from "../../libs/tariff-updates/types"
 
 // A personal tariff alert, short: the update and how many of the account's imports it affects, sent
 // after the admin approved the update's impact check. The imports and their rates are in the
-// Tracker, one click away. Imports outside the plan's alert slots are counted (the upgrade). A
+// Duty Guard, one click away. Imports outside the plan's alert slots are counted (the upgrade). A
 // later approval sends only what's new or changed, and says which imports it no longer affects.
 
 export interface AlertedImport {
@@ -44,8 +43,15 @@ const imports = (n: number) => `${n} of your imports`
 // description decides whether goods are covered, and the importer's broker checks it)
 const isAdcvd = (u: UpdateSummary) => u.authorityLabel === AUTHORITIES.ad_cvd
 
+const products = (n: number) => `${n.toLocaleString("en-US")} of your products`
+
+// A free account: no alert slots, so every affected import is past them. It hears that an action
+// hit its products and how many, with no impact check, rates or details (PRICING.md)
+const teaser = (p: Pick<ImpactAlertEmailProps, "imports" | "beyond" | "paid">) => !p.paid && !p.imports.length && p.beyond > 0
+
 export const impactAlertSubject = (p: ImpactAlertEmailProps) => {
   const n = p.imports.length + p.beyond
+  if (teaser(p)) return `A new tariff action hit ${products(n)}`
   if (isAdcvd(p.update)) return `AD/CVD heads-up: ${imports(n)} may be covered by an antidumping or countervailing duty case`
   if (!n && p.removed.length) return `Good news: a tariff update no longer affects ${imports(p.removed.length)}`
   // Only confirmations of an earlier "may apply" alert
@@ -78,9 +84,9 @@ const NotCovered = ({ beyond, limit, paid, campaign }: { beyond: number; limit?:
       ? `${beyond} affected ${beyond === 1 ? "import isn't" : "imports aren't"} covered: your plan alerts on ${limit ? `${limit} imports` : "fewer imports than you track"}.`
       : limit
         ? `${beyond} affected ${beyond === 1 ? "import isn't" : "imports aren't"} covered: free accounts get alerts on ${limit} imports, and these stay unalerted until you upgrade.`
-        : `Alerts on your own imports, with the rate before and after on each, come with a Tariff Tracker plan, from ${formatPrice(LOWEST_PER_IMPORT)} per import a month.`}{" "}
-    <Link href={siteLink("/tariff-tracker?upgrade=alerts", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
-      {paid ? "Cover all my imports" : "Upgrade to cover them"}
+        : "See which imports are hit, with the rate before and after on each, with Duty Guard Essentials."}{" "}
+    <Link href={siteLink("/duty-guard?upgrade=alerts", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
+      {paid ? "Cover all my imports" : "See how I'm affected"}
     </Link>
   </Text>
 )
@@ -88,6 +94,22 @@ const NotCovered = ({ beyond, limit, paid, campaign }: { beyond: number; limit?:
 export default function ImpactAlertEmail(props: ImpactAlertEmailProps) {
   const { update, imports: alerted, removed, beyond, limit, paid, footer } = props
   const campaign = "impact-alert"
+  if (teaser(props))
+    return (
+      <EmailLayout preview="See which products it hit and the rate before and after, with Duty Guard Essentials." footer={footer}>
+        <Eyebrow tone="up">Tariff heads-up</Eyebrow>
+        <Title size={26}>A New Tariff Action Hit {products(beyond)}</Title>
+        <P>
+          Your Duty Guard matched a new {update.authorityLabel} action to {products(beyond)}. Duty Guard Essentials shows which ones, the rate before and after, and the official source.
+        </P>
+        <Cta href={siteLink("/duty-guard?upgrade=alerts", campaign)}>See how I&apos;m affected</Cta>
+        <P muted small>
+          <Link href={siteLink("/duty-guard?tab=alerts", campaign)} style={{ color: C.muted }}>
+            Alert settings
+          </Link>
+        </P>
+      </EmailLayout>
+    )
   return (
     <EmailLayout preview={impactAlertSubject(props).slice(0, 160)} footer={footer}>
       <Eyebrow tone="up">{isAdcvd(update) ? "AD/CVD heads-up" : "Tariff alert"}</Eyebrow>
@@ -104,7 +126,7 @@ export default function ImpactAlertEmail(props: ImpactAlertEmailProps) {
 
       {removed.length > 0 && alerted.length + beyond > 0 && <P small>No longer affected: {removed.map((r) => `${r.code} from ${r.country}`).join("; ")}.</P>}
 
-      <Cta href={siteLink(`/tariff-tracker?tab=impact&update=${encodeURIComponent(update.slug)}`, campaign)} variant="next">
+      <Cta href={siteLink(`/duty-guard?tab=impact&update=${encodeURIComponent(update.slug)}`, campaign)} variant="next">
         See the impact on my imports
       </Cta>
 
@@ -115,7 +137,7 @@ export default function ImpactAlertEmail(props: ImpactAlertEmailProps) {
           Read the update
         </Link>
         {" · "}
-        <Link href={siteLink("/tariff-tracker?tab=alerts", campaign)} style={{ color: C.muted }}>
+        <Link href={siteLink("/duty-guard?tab=alerts", campaign)} style={{ color: C.muted }}>
           Alert settings
         </Link>
       </P>
@@ -145,7 +167,7 @@ ImpactAlertEmail.PreviewProps = {
   limit: 10,
   paid: false,
   footer: {
-    reason: "You're getting this because alerts are on for your imports in the HTS Hero Tariff Tracker.",
+    reason: "You're getting this because alerts are on for your imports in the HTS Hero Duty Guard.",
     manageUrl: "https://htshero.com/tariff-updates/subscription?token=example",
     unsubscribeUrl: "https://htshero.com/api/email/unsubscribe?token=example",
   },

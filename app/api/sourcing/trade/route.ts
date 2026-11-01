@@ -3,7 +3,7 @@ import stats from "@/libs/country-pages/import-stats.json"
 import { emptyTotals, LEVEL_DIGITS, TradeCountry, TradeData, TradeLevel, TradeTotals } from "@/libs/sourcing/trade"
 
 // What the US imported of one HTS code, by country, straight from the Census Bureau's
-// international trade API: GET ?code=8471300100&level=HS10|HS8|HS6. For the Tracker's Sourcing tab
+// international trade API: GET ?code=8471300100&level=HS10|HS8|HS6. For Duty Guard's Sourcing tab
 // (libs/sourcing/trade.ts). Every month of the last three years at the level asked for (the code,
 // every code under its 8 digits, its 6-digit subheading): value, freight and insurance, by vessel
 // and air, quantity; where it entered in the last full year for the largest suppliers; and which

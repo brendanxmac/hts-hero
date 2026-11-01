@@ -18,16 +18,16 @@ import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
-import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { formatPrice, perImportPrice, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
-import { TRACKER_PLANS, TrackerAccess, trialDaysLeft, trialNotStarted } from "@/libs/tariff-tracker/plan";
+import { planFitting, TrackerAccess, trialDaysLeft, trialNotStarted } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "../access/accessContext";
 import { UpgradeStats, useUpgradeStats } from "../access/upgradeStats";
 import { useTracker } from "../TrackerContext";
 
-// The 14-day reverse trial (PRICING.md): everything, on up to REVERSE_TRIAL.imports imports, then
-// the free plan (alerts on TRIAL_ALLOWANCE.alertImports of the user's imports). As it ends, and once it has, the Tracker
-// shows what the account loses (alerts, AD/CVD alerts included, and impact checks on all but TRIAL_ALLOWANCE.alertImports of its imports,
+// The 7-day reverse trial (PRICING.md): everything, on up to REVERSE_TRIAL.imports products, then
+// the free plan (its whole catalog, no alerts). As it ends, and once it has, Duty Guard
+// shows what the account loses (alerts, AD/CVD alerts included, impact checks,
 // Insights, auditing and savings detection), next to what stays free (the
 // AD/CVD check itself is free with any account, so only its alerts and updates are lost). Loss
 // sells harder than gain: the plan card counts down, a banner and this dialog say what goes.
@@ -41,7 +41,7 @@ export const trialState = (access: TrackerAccess, now = Date.now()) => {
   const daysLeft = trialDaysLeft(access, now);
   return {
     onTrial: access.kind === "trial",
-    // Signed in with no imports yet: the 14 days start with the first ones
+    // Signed in with no imports yet: the trial starts with the first ones
     notStarted: trialNotStarted(access),
     daysLeft,
     ending: access.kind === "trial" && daysLeft !== null && daysLeft <= TRIAL_ENDING_DAYS,
@@ -64,8 +64,8 @@ export const endsIn = (access: Pick<TrackerAccess, "trialEndsAt">, now = new Dat
 export const endDate = (access: TrackerAccess) =>
   access.trialEndsAt ? new Date(access.trialEndsAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : null;
 
-// The plan that would keep everything on the catalog
-export const keepPlan = (imports: number) => TRACKER_PLANS.find((p) => imports <= p.maxPairs) ?? null;
+// The plan that would keep everything on the catalog: alerts, savings and audits
+export const keepPlan = (imports: number) => planFitting("audits", imports);
 
 // What the free plan takes away (the trial emails list the same five, TrialEmail.tsx), plus
 // Insights, which locks in the app.
@@ -104,7 +104,7 @@ export const trialLosses = (stats: UpgradeStats | null) => {
 export const FREE_FOREVER = [
   "Tariff News alerts on every new US tariff action",
   "Sourcing intelligence: insights, the globe, table and chart",
-  "Your whole catalog, rate history and exports",
+  "Your whole catalog, unlimited, with rate history and exports",
   "The Tariff Calculator, unlimited",
 ];
 
@@ -160,14 +160,13 @@ export const TrialDialog = () => {
     const timer = setTimeout(() => {
       markSeen(key);
       setOpen(true);
-      // Opened by the Tracker, not the user (trigger), so "Keep everything" counted after it isn't a second ask
+      // Opened by Duty Guard, not the user (trigger), so "Keep everything" counted after it isn't a second ask
       trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature: "plan", from: ended ? "trial-ended" : "trial-ending", plan: access.kind, daysLeft, trigger: "auto" });
     }, 1500);
     return () => clearTimeout(timer);
   }, [loading, catalogLoading, signedIn, ending, ended, items.length, key, access.preview]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const plan = keepPlan(imports);
-  const launch = launchPricingActive();
   const close = () => setOpen(false);
   const keep = () => {
     close();
@@ -227,9 +226,8 @@ export const TrialDialog = () => {
               </button>
               {plan && (
                 <span className="text-center text-xs text-base-content/60">
-                  Just <span className="font-semibold text-success">{formatPrice(perImportPrice(plan))}</span> per import, per month. Tracker {n(plan.maxPairs)}: up to{" "}
-                  {n(plan.maxPairs)} imports, with auditing and savings detection included
-                  {launch ? `. Launch price, locked in for good if you subscribe by ${LAUNCH_PRICING.endsDay}; prices go up after that` : ""}.
+                  Just <span className="font-semibold text-success">{formatPrice(perImportPrice(plan))}</span> per product, per month. {plan.plan}: up to {n(plan.maxPairs)} products, with alerts,
+                  auditing and savings detection included.
                 </span>
               )}
               <button type="button" className="text-sm font-semibold text-base-content/60 hover:text-base-content" onClick={close}>

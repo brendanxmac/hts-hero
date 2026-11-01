@@ -3,7 +3,7 @@ import * as ui from "./styles";
 
 // The top of a page section: a kicker, the section's <h2> and an optional lead paragraph.
 // Every section on a page starts with one, so sections read the same everywhere. Inside the
-// Tariff Tracker's look (.hts-tracker) the title is in Sora and the kicker is the Tracker's eyebrow.
+// Duty Guard's look (.hts-tracker) the title is in Sora and the kicker is Duty Guard's eyebrow.
 export function SectionHeader({
   kicker,
   title,

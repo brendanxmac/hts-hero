@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 
   // URL to redirect to after sign in process completes
   // Use the redirectTo parameter if provided, otherwise the home page
-  // Only paths on this site ("/tariff-tracker"), never another host ("//evil.com")
+  // Only paths on this site ("/duty-guard"), never another host ("//evil.com")
   const path = redirectTo ? decodeURIComponent(redirectTo) : "";
   const safe = path.startsWith("/") && !path.startsWith("//") && !path.startsWith("/\\") ? path : SIGNIN_HOME;
   const finalRedirectUrl = requestUrl.origin + safe;

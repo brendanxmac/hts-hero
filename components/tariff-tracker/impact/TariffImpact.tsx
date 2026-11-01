@@ -202,7 +202,7 @@ const UntrackedHits = ({ count }: { count: number }) => {
         {signedIn
           ? access.pairLimit > 0
             ? `Your plan tracks ${access.pairLimit.toLocaleString("en-US")} imports. Track more to see how it hits each one.`
-            : "Impact checks on your own imports come with a Tracker plan. Pick one to see how it hits each import."
+            : "Impact checks on your own products come with Duty Guard Essentials. Pick a plan to see how it hits each one."
           : "Create a free account to track your imports and see how it hits each one."}
       </p>
       <button

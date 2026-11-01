@@ -22,8 +22,12 @@ const nextConfig = {
       // The old tariff calculator landing page; /duty-calculator replaced it and targets the same
       // searches, so its signals go there
       { source: "/about/tariffs", destination: "/duty-calculator", permanent: true },
-      // The audit sales page was renamed (2026-10-30)
-      { source: "/tariff-audit", destination: "/duty-audits", permanent: true },
+      // Tariff Tracker was rebranded Duty Guard (2026-11-01)
+      { source: "/tariff-tracker", destination: "/duty-guard", permanent: true },
+      // The audit sales page was renamed (2026-11-01)
+      { source: "/tariff-audit", destination: "/duty-audit", permanent: true },
+      // Duty Guard's old landing page; /tariff-alerts sells the same thing now (2026-10-31)
+      { source: "/tariff-monitor", destination: "/tariff-alerts", permanent: true },
       // The old pending tariff announcements page; /tariff-updates follows every tariff action now
       { source: "/tariffs/pending", destination: "/tariff-updates", permanent: true },
       // Blog categories retired in the 2026 blog redesign
@@ -31,11 +35,11 @@ const nextConfig = {
       { source: "/blog/category/tutorial", destination: "/blog", permanent: true },
       // The Social Studio was renamed the Content Studio
       { source: "/social-studio", destination: "/content-studio", permanent: true },
-      // The Tariff Watcher tab on the calculator is now the Tariff Tracker
+      // The Tariff Watcher tab on the calculator is now Duty Guard
       {
         source: "/duty-calculator",
         has: [{ type: "query", key: "tool", value: "watcher" }],
-        destination: "/tariff-tracker",
+        destination: "/duty-guard",
         permanent: true,
       },
     ];
@@ -44,7 +48,7 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/hts/[code]": ["./public/data/us-imports/**"],
     "/api/mcp": ["./public/data/us-imports/**"],
-    // Tracker snapshots work out origin savings from the same Census files
+    // Duty Guard snapshots work out origin savings from the same Census files
     "/api/cron/tracker-snapshots": ["./public/data/us-imports/**"],
     "/api/cron/tariff-updates": ["./public/data/us-imports/**"],
     "/api/tariff-updates/[id]": ["./public/data/us-imports/**"],

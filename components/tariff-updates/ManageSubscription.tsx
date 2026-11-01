@@ -9,8 +9,8 @@ import * as tt from "@/components/ui/styles/tracker"
 import { NewsPreferencesFields, type NewsPreferencesValue } from "./NewsPreferencesFields"
 
 // One subscriber's choices, changed from an email link: how often, how much, which laws and
-// countries, or off. Under them, the next step: alerts on their own imports in the Tracker (or
-// their Tracker, for account holders).
+// countries, or off. Under them, the next step: alerts on their own imports in Duty Guard (or
+// their Duty Guard, for account holders).
 
 export function ManageSubscription({
   token,
@@ -86,7 +86,7 @@ export function ManageSubscription({
             <input type="checkbox" className="checkbox checkbox-primary checkbox-sm mt-0.5" checked={lifecycle} onChange={(e) => setLifecycle(e.target.checked)} />
             <span className="flex flex-col gap-0.5">
               <span className="text-sm font-semibold text-base-content">Tips for getting the most from your account</span>
-              <span className="text-xs text-base-content/60">A few emails while you set up your Tariff Tracker, and the occasional note on what&apos;s new.</span>
+              <span className="text-xs text-base-content/60">A few emails while you set up your Duty Guard, and the occasional note on what&apos;s new.</span>
             </span>
           </label>
         )}
@@ -106,9 +106,9 @@ export function ManageSubscription({
         {hasAccount ? (
           <>
             <h2 className={tt.title}>See what each update means for your imports</h2>
-            <p className="text-sm text-base-content/70">Your Tariff Tracker shows the duty on every import you add, what changed on it, and where you could pay less.</p>
-            <Link href="/tariff-tracker" className={`${ui.button({ variant: "secondary" })} self-start`}>
-              Open my Tracker
+            <p className="text-sm text-base-content/70">Your Duty Guard shows the duty on every import you add, what changed on it, and where you could pay less.</p>
+            <Link href="/duty-guard" className={`${ui.button({ variant: "secondary" })} self-start`}>
+              Open my Duty Guard
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>
           </>
@@ -116,10 +116,10 @@ export function ManageSubscription({
           <>
             <h2 className={tt.title}>Know when a tariff hits your own imports</h2>
             <p className="text-sm text-base-content/70">
-              Add your HTS codes and countries to the free Tariff Tracker. You&apos;ll see every duty on each import today, and we&apos;ll alert you
+              Add your HTS codes and countries to the free Duty Guard. You&apos;ll see every duty on each import today, and we&apos;ll alert you
               every time an update affects one of them.
             </p>
-            <Link href="/tariff-tracker?tab=catalog&add=paste" className={`${ui.button({ variant: "secondary" })} self-start`}>
+            <Link href="/duty-guard?tab=catalog&add=paste" className={`${ui.button({ variant: "secondary" })} self-start`}>
               Add my imports, free
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>

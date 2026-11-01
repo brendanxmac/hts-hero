@@ -91,7 +91,7 @@ export async function POST(req: Request) {
         htsno: element.htsno,
         productName: htsProductName(element, parents),
         country: country.name,
-        path: `/tariff-tracker?tab=catalog&product=${encodeURIComponent(productKey)}`,
+        path: `/duty-guard?tab=catalog&product=${encodeURIComponent(productKey)}`,
         dutyPct: pct(estimate.totalDuty),
         asOf: formatSummaryDate(today),
         last: dated(last),

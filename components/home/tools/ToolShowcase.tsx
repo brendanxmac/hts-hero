@@ -16,7 +16,7 @@ import { darkBand, followPage, glow, moneyButtonMd, primaryButton } from "../lib
 
 // The four capabilities, one block each, every one with a real visual and its own call to action:
 // calculate (with the lookup, free), alert, discover savings, audit (each "Get Started", to
-// /tariff-alerts and /duty-audits, savings with the audits), each with its sales page's hero graphic;
+// /tariff-alerts and /duty-audit, savings with the audits), each with its sales page's hero graphic;
 // then classification. The order
 // follows the hero's scan: changes, savings, audits.
 
@@ -49,7 +49,7 @@ export const ToolShowcase = ({
   facts,
 }: {
   example: WorkedExample | null;
-  // The /tariff-alerts and /duty-audits heroes' examples, so each block shows its page's graphic
+  // The /tariff-alerts and /duty-audit heroes' examples, so each block shows its page's graphic
   alert: AlertExample | null;
   scans: AuditScan[];
   savings: SavingsExample[];

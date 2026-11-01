@@ -1,8 +1,8 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { PricingPlan } from "@/types";
-import { PastPlan, TRACKER_PLANS, TrackerAccess, trackerAccessFrom, TrackerUsage } from "./plan";
+import { OWNED_PLAN_NAMES, PastPlan, TrackerAccess, trackerAccessFrom, TrackerUsage } from "./plan";
 
-// A signed-in account's Tariff Tracker access, read with the service role (server only)
+// A signed-in account's Duty Guard access, read with the service role (server only)
 
 // Same grace as the other plans: renewals can land a day or two after a period ends
 export const RENEWAL_GRACE_DAYS = 2;
@@ -28,25 +28,19 @@ const readActivePlans = async (admin: SupabaseClient, userId: string): Promise<P
     .from("purchases")
     .select("product_name")
     .eq("user_id", userId)
-    .in(
-      "product_name",
-      TRACKER_PLANS.map((p) => p.plan)
-    )
+    .in("product_name", OWNED_PLAN_NAMES)
     .gte("expires_at", since);
   if (error) throw error;
   return (data ?? []).map((row: { product_name: PricingPlan }) => row.product_name);
 };
 
-// The account's last Tracker plan, when none is active any more: which, and when it ended
+// The account's last Duty Guard plan, when none is active any more: which, and when it ended
 const readPastPlan = async (admin: SupabaseClient, userId: string): Promise<PastPlan | null> => {
   const { data, error } = await admin
     .from("purchases")
     .select("product_name, expires_at")
     .eq("user_id", userId)
-    .in(
-      "product_name",
-      TRACKER_PLANS.map((p) => p.plan)
-    )
+    .in("product_name", OWNED_PLAN_NAMES)
     .order("expires_at", { ascending: false })
     .limit(1);
   if (error) throw error;

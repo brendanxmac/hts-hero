@@ -14,14 +14,15 @@ import { ThemeSwitch } from "@/components/tariff-tracker/shell/ThemeSwitch";
 import ButtonAccount from "@/components/ButtonAccount";
 import * as mk from "./styles";
 
-// The header for pages that sell one offer (/tariff-alerts, /duty-audits): the offer's name, links
+// The header for sales pages (/tariff-alerts, /duty-audit, /pricing-calculator): the offer's name, links
 // to the page's own sections (the one in view highlighted) and its main button. Sticky, so the
-// button and the pricing link are always one click away. In the Tracker's look (skin:).
+// button and the pricing link are always one click away. In Duty Guard's look (skin:).
 
-export type SalesLink = { href: `#${string}`; label: string };
+// wide: only in the row of links from xl up, where it fits; always in the small-screen menu
+export type SalesLink = { href: `#${string}`; label: string; wide?: boolean };
 
 // The header's button: a link, or (with an entry) the page's tracked sign-up button (EntryCta)
-export type SalesCta = { href: string; label: string; entry?: { page: "tariff-alerts" | "duty-audits"; from: EntryPoint } };
+export type SalesCta = { href: string; label: string; entry?: { page: "tariff-alerts" | "duty-audit" | "pricing"; from: EntryPoint } };
 
 export const SalesHeader = ({ product, links, cta }: { product: string; links: SalesLink[]; cta: SalesCta }) => {
   const { user } = useUser();
@@ -109,7 +110,7 @@ export const SalesHeader = ({ product, links, cta }: { product: string; links: S
             <a
               key={l.href}
               href={l.href}
-              className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+              className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${l.wide ? "hidden xl:block" : ""} ${
                 active === l.href.slice(1) ? "bg-primary/10 text-primary" : "text-base-content/70 hover:bg-tt-soft hover:text-base-content"
               }`}
             >

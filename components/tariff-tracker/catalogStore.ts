@@ -22,7 +22,7 @@ import {
 } from "./catalog";
 
 // The saved catalog, its products and their adjustments, for every page that uses it: the
-// Tariff Tracker, and the calculator's "Add to catalog" on /duty-calculator. One copy in memory,
+// Duty Guard, and the calculator's "Add to catalog" on /duty-calculator. One copy in memory,
 // kept in browser storage; components re-render when it changes, including from another tab.
 // Signed in, the account's copy is the saved one (catalogSync.ts) and this is its cache.
 

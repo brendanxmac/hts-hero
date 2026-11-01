@@ -63,7 +63,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "Is this US tariff calculator free?",
         answer:
-          "Yes. The HTS Hero duty and tariff calculator is free to use with no sign-up. You get the full line-by-line breakdown: the base rate, every Chapter 99 tariff and exemption, trade preferences and customs fees. Duty Over Time is free too. A free account adds the plain-English why behind every result (why each tariff applies and why others don't, with the legal text), Analysis (the duty from every country of origin), and an AD/CVD check on every import: the antidumping and countervailing duty cases and new petitions that may cover it, with their deposit rates and the companies named.",
+          "Yes. The HTS Hero duty and tariff calculator is free to use with no sign-up. You get the full line-by-line breakdown: the base rate, every Chapter 99 tariff and exemption, trade preferences and customs fees. A free account adds Duty Over Time, Compare, the tariff news on each import, the plain-English why behind every result (why each tariff applies and why others don't, with the legal text), Analysis (the duty from every country of origin), and an AD/CVD check on every import: the antidumping and countervailing duty cases and new petitions that may cover it, with their deposit rates and the companies named.",
       },
       {
         question: "Can I save or share a calculation?",
@@ -198,7 +198,7 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "Can I see how a product's duty changed over time?",
         answer:
-          "Yes. Duty Over Time charts the duty on your product across every HTS revision, with each change and the heading that caused it, so you can see when a tariff started, ended or changed rate. It's free, with no account needed.",
+          "Yes. Duty Over Time charts the duty on your product across every HTS revision, with each change and the heading that caused it, so you can see when a tariff started, ended or changed rate. It's free with an account.",
       },
     ],
   },
@@ -214,12 +214,12 @@ export const dutyCalculatorFaqSections = (revisionTitle: string): FaqSection[] =
       {
         question: "Can I track tariff changes across my product catalog?",
         answer:
-          "Yes, with Tariff Tracker. Load your HTS codes and countries of origin, by paste or CSV, and see the current duty on every product, which products a tariff change hits and by how much, with alerts when a new revision affects you, AD/CVD alerts included.",
+          "Yes, with Duty Guard. Load your HTS codes and countries of origin, by paste or CSV, and see the current duty on every product, which products a tariff change hits and by how much, with alerts when a new revision affects you, AD/CVD alerts included.",
       },
       {
         question: "How much does HTS Hero cost?",
         answer:
-          "The duty calculator is free. Paid plans, including Tariff Tracker for product catalogs and Classify for HTS classification, are monthly with published prices and no contract, and annual billing takes 15% off. See the pricing page for current prices.",
+          "The duty calculator is free. Paid plans, including Duty Guard for product catalogs and Classify for HTS classification, are monthly with published prices and no contract, and annual billing takes 15% off. See the pricing page for current prices.",
       },
       {
         question: "Is this legal or customs advice?",

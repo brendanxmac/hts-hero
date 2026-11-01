@@ -9,8 +9,8 @@ import { THEME } from "@/components/ui/theme";
 
 // Before tracking a sheet's ready rows without the rest (SheetReview): one nudge to fix them first,
 // since each is an import that goes unwatched, and the way on for anyone who'd rather not. The rows
-// left wait in the Tracker (toFinish.ts) either way. Over the takeover, so above its layer; portals
-// out of the Tracker, so it carries the Tracker's look itself (DESIGN_SYSTEM §15).
+// left wait in Duty Guard (toFinish.ts) either way. Over the takeover, so above its layer; portals
+// out of Duty Guard, so it carries Duty Guard's look itself (DESIGN_SYSTEM §15).
 
 const n = (count: number) => count.toLocaleString("en-US");
 
@@ -65,7 +65,7 @@ export const LeaveRowsDialog = ({
             </button>
           </div>
           <p className="m-0 text-center text-xs text-base-content/60">
-            {one ? "It waits" : "They wait"} in the Tracker under &ldquo;{n(left)} {one ? "Import" : "Imports"} to Finish&rdquo;.
+            {one ? "It waits" : "They wait"} in Duty Guard under &ldquo;{n(left)} {one ? "Import" : "Imports"} to Finish&rdquo;.
           </p>
         </Dialog.Panel>
       </div>

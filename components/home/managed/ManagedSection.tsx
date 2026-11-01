@@ -17,7 +17,7 @@ import { darkBand, display, glow } from "../lib/theme";
 // importer's imports, audits their entries and briefs them and their broker. HTS Hero isn't a
 // licensed customs broker: it never decides codes or files anything; the broker files. A dark
 // band of its own so it stands apart from the self-serve tools: the promise, what the team takes
-// on, an example of the shared channel, the starting price and the intro call. The full page is the Tracker's Expert Help.
+// on, an example of the shared channel, the starting price and the intro call. The full page is Duty Guard's Expert Help.
 
 const TAKES_ON = [
   { Icon: ChatBubbleLeftRightIcon, title: "A shared Slack channel", body: "Message the people watching your tariffs. Same-day answers, not a ticket queue." },
@@ -108,7 +108,7 @@ export const ManagedSection = () => {
         </ul>
 
         <p className="mt-10 text-center">
-          <Link href="/tariff-tracker?tab=expert-help" className="font-semibold text-primary underline-offset-4 hover:underline">
+          <Link href="/duty-guard?tab=expert-help" className="font-semibold text-primary underline-offset-4 hover:underline">
             See everything HTS Hero Managed includes
           </Link>
         </p>

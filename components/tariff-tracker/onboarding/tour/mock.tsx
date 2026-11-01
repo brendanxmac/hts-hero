@@ -5,7 +5,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { SECTIONS, SectionSlug } from "../../sections";
 import { prefersReducedMotion } from "../parts";
 
-// The pieces each tour step's demo is drawn with: a small Tracker window (its real sidebar, the
+// The pieces each tour step's demo is drawn with: a small Duty Guard window (its real sidebar, the
 // open tab lit), a cursor that glides to what it clicks, and a timeline that plays the demo in
 // beats. Every demo plays once as the step opens, then holds on its last frame; Replay plays it
 // again. With reduced motion it starts on the last frame.
@@ -26,7 +26,7 @@ export const useBeats = (at: number[], run: number) => {
   return beat;
 };
 
-// The sidebar's tabs, as the Tracker shows them
+// The sidebar's tabs, as Duty Guard shows them
 const TABS = SECTIONS.filter((s) => !s.hidden && s.group === "workspace");
 
 export const MockWindow = ({ tab, children, cursor }: { tab: SectionSlug; children: ReactNode; cursor?: ReactNode }) => (
@@ -36,12 +36,12 @@ export const MockWindow = ({ tab, children, cursor }: { tab: SectionSlug; childr
       <span className="h-2.5 w-2.5 rounded-full bg-error/50" />
       <span className="h-2.5 w-2.5 rounded-full bg-warning/50" />
       <span className="h-2.5 w-2.5 rounded-full bg-success/50" />
-      <span className="mx-auto rounded-md bg-base-100 px-3 py-0.5 text-[0.65rem] text-base-content/50">htshero.com/tariff-tracker</span>
+      <span className="mx-auto rounded-md bg-base-100 px-3 py-0.5 text-[0.65rem] text-base-content/50">htshero.com/duty-guard</span>
     </div>
     <div className="flex min-h-0 flex-1">
-      {/* The sidebar: dark in both modes, as in the Tracker */}
+      {/* The sidebar: dark in both modes, as in Duty Guard */}
       <div className="hts-tracker-on-dark flex w-36 shrink-0 flex-col gap-0.5 bg-tt-side p-2 text-base-content">
-        <span className={`${tt.display} px-2 pb-2 pt-1 text-[0.7rem] font-semibold`}>Tariff Tracker</span>
+        <span className={`${tt.display} px-2 pb-2 pt-1 text-[0.7rem] font-semibold`}>Duty Guard</span>
         {TABS.map((s) => (
           <span
             key={s.slug}

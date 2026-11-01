@@ -2,7 +2,7 @@ import { EuropeanUnionCountries } from "../../constants/countries"
 import type { Authority, Kind } from "./types"
 
 // Which of a user's imports a tariff update may affect, from what the update names: HTS codes
-// (any length, or whole chapters) and countries. Plain code, run in the Tracker for its badges and
+// (any length, or whole chapters) and countries. Plain code, run in Duty Guard for its badges and
 // on the server for alerts. Three levels:
 //   confirmed  the duty engine shows the update's Chapter 99 heading applying to the import (server
 //              only: libs/tariff-updates/impacts.ts), with the duty before and after

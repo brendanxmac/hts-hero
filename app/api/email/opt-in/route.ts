@@ -4,7 +4,7 @@ import { appUrl, subscriberByToken } from "@/libs/email/subscribers"
 
 export const dynamic = "force-dynamic"
 
-// "Yes, send me the digest" in the Meet the Tariff Tracker email: one click turns the weekly
+// "Yes, send me the digest" in the Meet Duty Guard email: one click turns the weekly
 // digest on (the click is the consent), then shows the subscription page to fine-tune it
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token") ?? ""

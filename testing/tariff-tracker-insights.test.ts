@@ -50,7 +50,7 @@ const histories = new Map<string, ProductHistory>([
 
 const input: InsightsInput = { products: [A, B, C], histories, sections: [], trackedKeys: new Set([A.key]), today: TODAY }
 
-describe("Tariff Tracker insights: sums", () => {
+describe("Duty Guard insights: sums", () => {
   it("sizes the catalog", () => {
     expect([catalogScale(1), catalogScale(4), catalogScale(5), catalogScale(49), catalogScale(50)]).toEqual(["few", "few", "some", "some", "many"])
   })

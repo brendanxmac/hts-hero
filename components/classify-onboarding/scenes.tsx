@@ -9,7 +9,7 @@ import { delay, prefersReducedMotion } from "@/components/tariff-tracker/onboard
 import { Panel, SceneStyles, WelcomeScene } from "@/components/tariff-tracker/onboarding/welcome/scenes";
 
 // The Classification onboarding's scenes (ClassifyOnboarding): one moment each, played as the screen
-// opens, all on one real example (the /classify demo's water bottle), in the Tracker onboarding's
+// opens, all on one real example (the /classify demo's water bottle), in Duty Guard onboarding's
 // scene style.
 
 const EXAMPLE = PRODUCTS[1];

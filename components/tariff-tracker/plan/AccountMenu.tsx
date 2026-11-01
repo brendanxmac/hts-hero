@@ -28,7 +28,7 @@ export const AccountMenu = () => {
       // The page to come back to is read when clicked: it's the browser's address, which the server
       // doesn't know, so it can't be in the server-rendered link
       <Link
-        href={`${config.auth.loginUrl}?redirect=${encodeURIComponent("/tariff-tracker")}`}
+        href={`${config.auth.loginUrl}?redirect=${encodeURIComponent("/duty-guard")}`}
         onClick={(e) => {
           e.preventDefault();
           router.push(`${config.auth.loginUrl}?redirect=${encodeURIComponent(currentPath())}`);

@@ -1,41 +1,52 @@
 import { Metadata } from "next";
 import config from "@/config";
 import { renderSchemaJsonLd } from "@/libs/seo";
+import { getAlertExample } from "@/libs/tariff-alerts-example";
+import { getPublishedUpdates, type PublicUpdate } from "@/libs/tariff-updates/public";
+import { addDays } from "@/tariffs/engine-v2/history";
+import { todayIsoDate } from "@/tariffs/engine-v2/dates";
 import * as mk from "@/components/ui/marketing/styles";
+import { ALERT_TIERS, AUDIT_TIERS, formatPrice, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { ManagedSection } from "@/components/home/managed/ManagedSection";
 import {
-  ClosingCta,
+  ClassificationSection,
+  CompareTable,
+  FreeBand,
+  LOWEST_PER_PRODUCT,
+  NumbersBand,
+  PlansSection,
+  PriceCalculator,
   PRICING_FAQS,
-  PricingCalculator,
   PricingFaq,
-  PricingHero,
-  parseEstimateParams,
-} from "@/components/pricing-calculator";
-import { FREE_FOREVER_SHORT } from "@/components/ui/marketing/comingSoon";
-import { CLASSIFY_PLANS, LOWEST_PER_IMPORT, REVERSE_TRIAL, TRACKER_TIERS, formatPrice } from "@/components/pricing-calculator/lib/pricing";
+  SalesHero,
+  TrialSection,
+} from "@/components/pricing-calculator/sales";
+
+// Static, refreshed hourly so the counts stay current
+export const revalidate = 3600;
+
+const URL = `https://${config.domainName}/pricing-calculator`;
+const DESCRIPTION = `HTS Hero pricing. The Duty Calculator is free with no account, and tracking your products is free with one. Try Duty Guard free for ${REVERSE_TRIAL.days} days, no credit card required. Then Duty Guard Essentials from ${formatPrice(ALERT_TIERS[0].price)} and Duty Guard Pro from ${formatPrice(AUDIT_TIERS[0].price)} a month, as low as ${formatPrice(LOWEST_PER_PRODUCT)} per product.`;
 
 export const metadata: Metadata = {
-  title: "Pricing — Tariff Calculator, Tariff Tracker & Classify | HTS Hero",
-  description: `HTS Hero pricing. The Tariff Calculator is free and unlimited with no account. Try the Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card, then ${FREE_FOREVER_SHORT} stay free, forever. Automatic savings detection and auditing included. Paid plans from ${formatPrice(TRACKER_TIERS[0].price)}/mo, as low as ${formatPrice(LOWEST_PER_IMPORT)} per import. Classify from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo.`,
-  openGraph: {
-    title: "HTS Hero Pricing",
-    description: `The Tariff Calculator is free. Try the Tariff Tracker free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, build your plan, and see your price before you sign up.`,
-    url: `https://${config.domainName}/pricing-calculator`,
-    siteName: "HTS Hero",
-    type: "website",
-  },
-  alternates: {
-    canonical: "/pricing-calculator",
-  },
+  title: "Pricing: Free Duty Calculator, Duty Guard | HTS Hero",
+  description: DESCRIPTION,
+  openGraph: { title: "HTS Hero Pricing", description: DESCRIPTION, url: URL, siteName: "HTS Hero", type: "website" },
+  alternates: { canonical: "/pricing-calculator" },
 };
 
-// The estimate's options come from the URL, so a shared quote opens exactly as it was sent
-export default async function PricingCalculatorPage(
-  props: {
-    searchParams: Promise<Record<string, string | string[] | undefined>>;
-  }
-) {
-  const searchParams = await props.searchParams;
-  // In the Tracker's look (the layout's FollowTheme), following light and dark
+const RECENT_DAYS = 30;
+const UPCOMING_DAYS = 60;
+
+export default async function PricingPage() {
+  const [example, published] = await Promise.all([getAlertExample().catch((): null => null), getPublishedUpdates().catch((): PublicUpdate[] => [])]);
+  const today = todayIsoDate();
+  const until = addDays(today, UPCOMING_DAYS);
+  const since = addDays(today, -RECENT_DAYS);
+  const upcoming = published.filter((u) => u.effective_on && u.effective_on > today && u.effective_on <= until).length;
+  const recent = published.filter((u) => u.first_seen_at.slice(0, 10) >= since).length;
+
+  // In Duty Guard's look (the layout's FollowTheme), following light and dark
   return (
     <main className={`${mk.page} flex w-full flex-1 flex-col`}>
       {renderSchemaJsonLd({
@@ -47,13 +58,16 @@ export default async function PricingCalculatorPage(
         })),
       })}
 
-      <PricingHero />
-
-      {/* Plans and the estimator share the billing toggle */}
-      <PricingCalculator initial={parseEstimateParams(searchParams)} />
-
+      <SalesHero />
+      {/* <NumbersBand recent={recent} upcoming={upcoming} recentDays={RECENT_DAYS} upcomingDays={UPCOMING_DAYS} example={example} /> */}
+      <PriceCalculator />
+      <FreeBand />
+      <PlansSection />
+      <TrialSection />
+      <CompareTable />
       <PricingFaq />
-      <ClosingCta />
+      <ClassificationSection />
+      <ManagedSection />
     </main>
   );
 }

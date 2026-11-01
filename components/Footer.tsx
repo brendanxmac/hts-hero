@@ -75,11 +75,11 @@ const Footer = () => {
                 <Link href="/duty-calculator" className="link link-hover">
                   US Tariff Calculator
                 </Link>
-                <Link href="/tariff-monitor" className="link link-hover">
-                  Tariff Tracker
+                <Link href="/tariff-alerts" className="link link-hover">
+                  Tariff Alerts
                 </Link>
-                <Link href="/duty-audits" className="link link-hover">
-                  Duty Audits
+                <Link href="/duty-audit" className="link link-hover">
+                  Duty Audit
                 </Link>
                 <Link href="/tariff-updates" className="link link-hover">
                   Latest Tariff Updates

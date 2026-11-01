@@ -20,7 +20,7 @@ import { CodeCheck } from "./CodeCheck";
 // /tariffs/[slug]: one tariff program, from the engine's data. The answer first (what it is, how
 // many headings and codes, the rates, the latest change), then every Chapter 99 heading in force,
 // every HTS code covered, exemptions, the change log, ended headings,
-// questions and sources. In the Tariff Tracker's look, like the /hts pages.
+// questions and sources. In Duty Guard's look, like the /hts pages.
 
 // Up to this many code-and-heading pairs, each listed code shows its product name; past it the codes
 // are bare links, to keep the page light
@@ -178,7 +178,7 @@ export function ProgramHubPage({
           </div>
           <div className="flex min-w-0 flex-col gap-4">
             <div className={`${tt.panel} flex flex-col gap-3 p-5`}>
-              <span className={tt.eyebrow("primary")}>Tariff Tracker</span>
+              <span className={tt.eyebrow("primary")}>Duty Guard</span>
               <p className="m-0 text-sm text-base-content/80">
                 No surprises: get alerted when a change to the {hub.short} hits one of your imports, and catch duty you may have overpaid.
               </p>
@@ -274,7 +274,7 @@ export function ProgramHubPage({
               {ended[0].refund.text}
             </SectionHeader>
             <div className="flex flex-wrap items-center gap-3">
-              <Link href="/duty-audits" className={ui.button({ variant: "primary" })}>
+              <Link href="/duty-audit" className={ui.button({ variant: "primary" })}>
                 Check your past entries
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </Link>

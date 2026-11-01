@@ -3,19 +3,16 @@ import { Billing } from "@/components/pricing-calculator/lib/pricing";
 import { PricingPlan } from "@/types";
 import { isTrackerPlan, TRACKER_PLANS, TrackerPlan } from "./plan";
 
-// Stripe prices for the Tariff Tracker plans. Server only.
+// Stripe prices for the Duty Guard plans. Server only.
 //
-// Each tier is one Stripe product ("Tariff Tracker · 10 imports"); each version of its price is a
-// price under it. The current price carries the lookup key tracker_<10|30|100|500>_<monthly|annual>,
-// and every price carries metadata.plan (the PricingPlan, e.g. "Tariff Tracker 10") and
-// metadata.billing. To change a price: create the new one under the same product with the same
-// lookup key and "transfer lookup key" on, then archive the old one. Checkout picks the new price
-// up by its lookup key, and subscribers still on an old price keep mapping to their plan by its
-// metadata. No env vars to change. Add the new price to the "Tariff Tracker" billing portal
-// configuration too (metadata.app = tracker, libs/stripe.ts), so customers can switch to it.
-//
-// STRIPE_TARIFF_TRACKER_<10|30|100|500>_<MONTHLY|ANNUAL>_PRICE_ID still works as an override
-// (comma-separated: the first is used for checkout, every one maps to the plan).
+// Each plan is one Stripe product ("Duty Guard Pro 100"); each version of its price is a price under
+// it. The current price carries the lookup key <alerts|audits>_<10|25|100|500>_<monthly|annual>, and
+// every price carries metadata.plan (the PricingPlan), metadata.billing and metadata.version. To
+// change a price: create the new one under the same product with the same lookup key and "transfer
+// lookup key" on, then archive the old one. Checkout picks the new price up by its lookup key, and
+// subscribers still on an old price keep mapping to their plan by its metadata, as do the old
+// Duty Guard prices. Add the new price to the billing portal configuration too (metadata.app =
+// tracker, libs/stripe.ts): npm run stripe:setup-offers sets all of this up.
 
 const stripe = () =>
   new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -23,21 +20,13 @@ const stripe = () =>
     typescript: true,
   });
 
-const size = (plan: TrackerPlan["plan"]) => plan.split(" ").pop();
-
-const envIds = (plan: TrackerPlan["plan"], billing: Billing) =>
-  (process.env[`STRIPE_TARIFF_TRACKER_${size(plan)}_${billing.toUpperCase()}_PRICE_ID`] ?? "")
-    .split(",")
-    .map((id) => id.trim())
-    .filter(Boolean);
-
-export const trackerLookupKey = (plan: TrackerPlan["plan"], billing: Billing) => `tracker_${size(plan)}_${billing}`;
+export const trackerLookupKey = (plan: TrackerPlan, billing: Billing) => `${plan.offer}_${plan.maxPairs}_${billing}`;
 
 // The price a new checkout uses
 export const trackerPriceId = async (plan: TrackerPlan["plan"], billing: Billing): Promise<string | undefined> => {
-  const [override] = envIds(plan, billing);
-  if (override) return override;
-  const { data } = await stripe().prices.list({ lookup_keys: [trackerLookupKey(plan, billing)], active: true, limit: 1 });
+  const tier = TRACKER_PLANS.find((p) => p.plan === plan);
+  if (!tier) return undefined;
+  const { data } = await stripe().prices.list({ lookup_keys: [trackerLookupKey(tier, billing)], active: true, limit: 1 });
   return data[0]?.id;
 };
 
@@ -46,11 +35,6 @@ const known = new Map<string, { plan: PricingPlan; billing: Billing } | null>();
 
 export const trackerPlanForPriceId = async (priceId: string): Promise<{ plan: PricingPlan; billing: Billing } | null> => {
   if (!priceId) return null;
-  for (const { plan } of TRACKER_PLANS) {
-    for (const billing of ["monthly", "annual"] as const) {
-      if (envIds(plan, billing).includes(priceId)) return { plan, billing };
-    }
-  }
   if (known.has(priceId)) return known.get(priceId)!;
   let found: { plan: PricingPlan; billing: Billing } | null = null;
   try {

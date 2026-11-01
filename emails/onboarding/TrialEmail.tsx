@@ -2,33 +2,32 @@ import { Column, Row, Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Checklist, Cta, Eyebrow, P, Signature, Title } from "../kit/parts"
 import { C, siteLink } from "../kit/brand"
-import { REVERSE_TRIAL, TRIAL_ALLOWANCE } from "../../components/pricing-calculator/lib/pricing"
+import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
-// The 14-day reverse trial's emails (PRICING.md), from Brendan:
-//   unlocked  existing accounts, once, when their fresh 14 days start: everything is on
+// The reverse trial's emails (PRICING.md), from Brendan:
+//   unlocked  existing accounts, once, when their fresh trial starts: everything is on
 //   ending    3 days and 1 day before it ends: what the account is about to lose, in its numbers
 //   ended     the day after: what it lost, and how to get it back
-// Loss first (TRIAL_LOSSES: alerts, impact checks and AD/CVD alerts on all their imports, and
-// auditing and savings detection), then the plan that keeps everything
-// at its launch price while that lasts, then what stays free. No numbers on the loss.
+//   winback   about 7 and 14 days after: the tariff actions since, and the way back
+// Loss first (TRIAL_LOSSES), then the plan that keeps everything, then what stays free.
 
 export interface TrialEmailProps {
-  variant: "unlocked" | "ending" | "ended"
+  variant: "unlocked" | "ending" | "ended" | "winback"
   // Days left (ending only)
   daysLeft?: number
   // "Oct 26"
   endsOn: string
-  // Imports in the Tracker, and those that lose alerts on the free plan (all but
-  // TRIAL_ALLOWANCE.alertImports since 2026-10-26; all of them from 2026-10-18)
+  // Products in Duty Guard: all of them lose alerts on the free plan
   imports: number
+  // Older queued messages carry it; not read any more
   losing?: number
+  // New US tariff actions in the last 30 days (winback)
+  actionsThisMonth?: number
   // Rate changes that hit the imports in the last 12 months, and how many imports they hit
   changes12m?: number
   productsHit12m?: number
   // The plan that keeps everything for this catalog, and its price
-  plan?: { imports: number; price: number } | null
-  // "Nov 13" while launch pricing lasts
-  launchEndsDay?: string | null
+  plan?: { name?: string; imports: number; price: number } | null
   footer: EmailFooter
 }
 
@@ -36,21 +35,20 @@ const count = (n: number, one: string, many = `${one}s`) => `${n.toLocaleString(
 
 const when = (daysLeft?: number) => (!daysLeft || daysLeft <= 1 ? "tomorrow" : `in ${daysLeft} days`)
 
-// The imports that lose their alerts on the free plan, which keeps them on TRIAL_ALLOWANCE.alertImports
-const losingCount = (p: Pick<TrialEmailProps, "losing" | "imports">) =>
-  p.losing ?? Math.max(0, p.imports - TRIAL_ALLOWANCE.alertImports)
-
-// "12 of your imports lose…", or what goes when every import keeps its alerts
-const whatGoes = (p: Pick<TrialEmailProps, "losing" | "imports">, ended: boolean) => {
-  const losing = losingCount(p)
-  if (!losing) return ended ? "auditing and savings detection are off" : "auditing and savings detection stop"
-  return `${count(losing, "of your imports", "of your imports")} ${ended ? "just lost" : losing === 1 ? "loses" : "lose"} tariff alerts`
+// "12 of your products lose…"
+const whatGoes = (p: Pick<TrialEmailProps, "imports">, ended: boolean) => {
+  if (!p.imports) return ended ? "alerts, savings and audits are off" : "alerts, savings and audits stop"
+  return `${count(p.imports, "of your products", "of your products")} ${ended ? "just lost" : p.imports === 1 ? "loses" : "lose"} tariff alerts`
 }
 
 export const trialSubject = (p: TrialEmailProps) =>
   p.variant === "unlocked"
-    ? `Everything in your Tariff Tracker is unlocked for ${REVERSE_TRIAL.days} days`
-    : p.variant === "ending"
+    ? `Everything in your Duty Guard is unlocked for ${REVERSE_TRIAL.days} days`
+    : p.variant === "winback"
+      ? p.actionsThisMonth
+        ? `${p.actionsThisMonth} tariff actions since your trial. Are your products covered?`
+        : "Your products have no tariff alerts on them"
+      : p.variant === "ending"
       ? `Your free trial ends ${when(p.daysLeft)}: ${whatGoes(p, false)}`
       : `Your free trial ended: ${whatGoes(p, true)}`
 
@@ -84,40 +82,40 @@ interface Loss {
 // What the free plan doesn't have (PRICING.md): the same five lines in every trial email
 export const TRIAL_LOSSES: Loss[] = [
   {
-    title: "Tariff alerts on all your imports",
-    body: "The day a new tariff hits one of your imports, with the rate before and after. Without them, a change could go unnoticed until it's on your customs bill.",
+    title: "Tariff alerts on all your products",
+    body: "The day a new tariff hits one of your products, with the rate before and after. Without them, a change could go unnoticed until it's on your customs bill.",
   },
-  { title: "Tariff impact checks on all your imports", body: "Exactly how each new tariff action hits each of your imports." },
+  { title: "Tariff impact checks on all your products", body: "Exactly how each new tariff action hits each of your products." },
   {
-    title: "AD/CVD alerts and updates on all your imports",
-    body: "A heads-up when an antidumping or countervailing duty case or new petition may cover one of your imports, or its rates change. Checking an import for cases stays free.",
+    title: "AD/CVD alerts and updates on all your products",
+    body: "A heads-up when an antidumping or countervailing duty case or new petition may cover one of your products, or its rates change. Checking a product for cases stays free.",
   },
   {
-    title: "Automatic auditing on your imports",
+    title: "Automatic auditing on your products",
     body: "Every entry checked against the duty in force on its date, flagging possible over and underpayments.",
   },
-  { title: "Automatic savings detection on all your imports", body: "Trade programs, exemptions and lower-duty origins your imports may qualify for." },
+  { title: "Automatic savings detection on all your products", body: "Trade programs, exemptions and lower-duty origins your products may qualify for." },
 ]
 
 const FREE_FOREVER =
-  `Tariff alerts on ${TRIAL_ALLOWANCE.alertImports} of your imports, Tariff News alerts on every new US tariff action, sourcing insights and AD/CVD checks on any import, your whole catalog with its rate history and exports, and the Tariff Calculator.`
+  "Your whole catalog with its rate history and exports, Tariff News alerts on every new US tariff action, sourcing insights and AD/CVD checks on any product, and the Tariff Calculator."
 
 export default function TrialEmail(p: TrialEmailProps) {
-  const { variant, imports, changes12m = 0, productsHit12m = 0, plan, launchEndsDay, footer } = p
-  const ended = variant === "ended"
+  const { variant, imports, changes12m = 0, productsHit12m = 0, plan, footer } = p
+  const ended = variant === "ended" || variant === "winback"
   const keep = plan ? `${ended ? "Get it all back" : "Keep everything"} · $${plan.price}/mo` : ended ? "Get it all back" : "Keep everything"
 
   if (variant === "unlocked") {
     return (
       <EmailLayout
-        preview={`For the next ${REVERSE_TRIAL.days} days you get everything in the Tariff Tracker, on up to ${REVERSE_TRIAL.imports} imports. No card needed.`}
+        preview={`For the next ${REVERSE_TRIAL.days} days you get everything in Duty Guard. No credit card required.`}
         footer={footer}
       >
         <Eyebrow>Free for {REVERSE_TRIAL.days} days</Eyebrow>
-        <Title>Everything in your Tariff Tracker is unlocked</Title>
+        <Title>Everything in your Duty Guard is unlocked</Title>
         <P>
-          Starting today, your account gets the full Tariff Tracker for {REVERSE_TRIAL.days} days, on up to {REVERSE_TRIAL.imports} imports. Nothing to start and no card
-          needed. It ends on {p.endsOn}.
+          Starting today, your account gets the full Duty Guard for {REVERSE_TRIAL.days} days. Nothing to start and no credit card required
+          required. It ends on {p.endsOn}.
         </P>
         <Checklist
           items={[
@@ -139,8 +137,8 @@ export default function TrialEmail(p: TrialEmailProps) {
             </>,
           ]}
         />
-        <Cta href={siteLink(imports > 0 ? "/tariff-tracker" : "/tariff-tracker?tab=catalog", CAMPAIGN)} variant="next">
-          {imports > 0 ? `Open my Tracker (${count(imports, "import")})` : "Add my imports"}
+        <Cta href={siteLink(imports > 0 ? "/duty-guard" : "/duty-guard?tab=catalog", CAMPAIGN)} variant="next">
+          {imports > 0 ? `Open my Duty Guard (${count(imports, "import")})` : "Add my imports"}
         </Cta>
         <P muted small>
           After {p.endsOn}, your account keeps {FREE_FOREVER.charAt(0).toLowerCase() + FREE_FOREVER.slice(1)}
@@ -150,12 +148,32 @@ export default function TrialEmail(p: TrialEmailProps) {
     )
   }
 
+  if (variant === "winback") {
+    return (
+      <EmailLayout preview="Your catalog is still here. Alerts on it are one click away." footer={footer}>
+        <Eyebrow tone="heads-up">Since your trial ended</Eyebrow>
+        <Title>{p.actionsThisMonth ? `${p.actionsThisMonth} New US Tariff Actions in 30 Days` : "Tariffs Keep Moving"}</Title>
+        <P>
+          Your catalog of {count(imports, "product")} is still here, free. What&apos;s off is the part that watches it: if a new tariff hits one of your products, you&apos;d get a
+          heads-up, but not which product, the rate before and after, or what you may have overpaid.
+        </P>
+        {changes12m > 0 && (
+          <P small>
+            For a sense of what&apos;s at stake: {count(changes12m, "tariff change")} hit {count(productsHit12m, "of your products", "of your products")} in the last 12 months.
+          </P>
+        )}
+        <Cta href={siteLink("/duty-guard?upgrade=plan", CAMPAIGN)}>{keep}</Cta>
+        <Signature />
+      </EmailLayout>
+    )
+  }
+
   return (
     <EmailLayout
       preview={
         ended
-          ? `Tariff alerts, AD/CVD alerts and impact checks are off on all but ${TRIAL_ALLOWANCE.alertImports} of your imports. Here's how to get them back.`
-          : `On ${p.endsOn}, tariff alerts, AD/CVD alerts and impact checks stop on all but ${TRIAL_ALLOWANCE.alertImports} of your imports. Here's what changes.`
+          ? "Tariff alerts, impact checks, savings and audits are off on your products. Here's how to get them back."
+          : `On ${p.endsOn}, tariff alerts, impact checks, savings and audits stop on your products. Here's what changes.`
       }
       footer={footer}
     >
@@ -165,34 +183,32 @@ export default function TrialEmail(p: TrialEmailProps) {
       <P>
         Howdy! This is Brendan, founder of HTS Hero.{" "}
         {ended
-          ? "I hope you had a chance to see how Tariff Tracker helps you avoid tariff surprises and overpayments on all your imports. I wanted to let you know what's changed now that your free trial is over."
-          : "I hope you've had a chance to see how Tariff Tracker helps you avoid tariff surprises and overpayments on all your imports. I wanted to give you a heads-up before your free trial wraps up."}
+          ? "I hope you had a chance to see how HTS Hero helps you avoid tariff surprises and overpayments on all your products. I wanted to let you know what's changed now that your free trial is over."
+          : "I hope you've had a chance to see how HTS Hero helps you avoid tariff surprises and overpayments on all your products. I wanted to give you a heads-up before your free trial wraps up."}
       </P>
       <P>
         {ended
-          ? `Your ${REVERSE_TRIAL.days}-day trial ended on ${p.endsOn}, and your account moved to the free plan. Here's what that turned off:`
-          : `On ${p.endsOn}, your account moves to the free plan. Here's what that turns off:`}
+          ? `Your trial ended on ${p.endsOn}. Your whole catalog stays free, but here's what that turned off:`
+          : `On ${p.endsOn}, your catalog stays free, but here's what turns off:`}
       </P>
       <Losses items={TRIAL_LOSSES} />
       {imports > 0 && changes12m > 0 && (
         <P small>
-          For a sense of what&apos;s at stake: {count(changes12m, "tariff change")} hit {count(productsHit12m, "of your imports", "of your imports")} in the last 12
+          For a sense of what&apos;s at stake: {count(changes12m, "tariff change")} hit {count(productsHit12m, "of your products", "of your products")} in the last 12
           months.
         </P>
       )}
       {imports === 0 && (
-        <P small>You haven&apos;t added any imports yet. Paste your HTS codes and countries and the Tracker shows every tariff on each one, in about a minute.</P>
+        <P small>You haven&apos;t added any products yet. Paste your HTS codes and countries and Duty Guard shows every tariff on each one, in about a minute.</P>
       )}
 
-      <Cta href={siteLink(imports === 0 ? "/tariff-tracker?tab=catalog" : "/tariff-tracker?upgrade=plan", CAMPAIGN)} variant={imports === 0 ? "next" : "primary"}>
-        {imports === 0 ? "Add my imports" : keep}
+      <Cta href={siteLink(imports === 0 ? "/duty-guard?tab=catalog" : "/duty-guard?upgrade=plan", CAMPAIGN)} variant={imports === 0 ? "next" : "primary"}>
+        {imports === 0 ? "Add my products" : keep}
       </Cta>
       {imports > 0 && plan && (
         <P muted small>
-          That&apos;s just <strong style={{ color: C.green }}>${(Math.round((plan.price / plan.imports) * 100) / 100).toFixed(2)} per import</strong>, per month. Tracker{" "}
-          {plan.imports.toLocaleString("en-US")} covers up to {plan.imports.toLocaleString("en-US")} imports, with auditing and savings detection included.
-          {launchEndsDay ? ` It's a launch price: subscribe by ${launchEndsDay} and it's yours for as long as you stay subscribed. Prices go up after that.` : ""} Cancel
-          anytime.
+          That&apos;s just <strong style={{ color: C.green }}>${(Math.round((plan.price / plan.imports) * 100) / 100).toFixed(2)} per product</strong>, per month. {plan.name ?? "Duty Guard Pro"} covers up to {plan.imports.toLocaleString("en-US")} products, with alerts, audits and savings
+          detection included. Cancel anytime.
         </P>
       )}
 
@@ -208,8 +224,7 @@ TrialEmail.PreviewProps = {
   imports: 48,
   changes12m: 17,
   productsHit12m: 21,
-  plan: { imports: 100, price: 89 },
-  launchEndsDay: "Nov 13",
+  plan: { name: "Duty Guard Pro 100", imports: 100, price: 149 },
   footer: {
     reason: "You're getting this because you have an HTS Hero account.",
     manageUrl: "https://htshero.com/tariff-updates/subscription?token=example",

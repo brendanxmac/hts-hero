@@ -11,7 +11,7 @@ const signedInUser = async () => {
   return user?.email ? { userId: user.id, email: user.email } : null
 }
 
-// The signed-in user's tariff news choices, for the Tracker's Alerts section
+// The signed-in user's tariff news choices, for Duty Guard's Alerts section
 export async function GET() {
   const user = await signedInUser()
   if (!user) return NextResponse.json({ error: "Sign in first" }, { status: 401 })

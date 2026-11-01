@@ -4,7 +4,7 @@ import { sectionUrl } from "@/components/tariff-tracker"
 import type { SalesCta, SalesLink } from "@/components/ui/marketing/SalesHeader"
 import { bookCallHref } from "@/libs/book-call"
 
-// Where the audit page's calls to action go. A self-audit runs in the Tracker's Entries section,
+// Where the audit page's calls to action go. A self-audit runs in Duty Guard's Entries section,
 // free during the account's 14-day trial, then on a paid plan (PRICING.md); signing up
 // lands there.
 export const SELF_AUDIT_URL = sectionUrl("entries")
@@ -16,7 +16,7 @@ export const HISTORICAL_AUDIT_HREF = bookCallHref({
   source: "tariff-audit",
   campaign: "historical-audit",
   context:
-    "Historical audit of past entries, from the Duty Audits page (htshero.com/duty-audits)",
+    "Historical audit of past entries, from the Duty Audit page (htshero.com/duty-audit)",
 })
 
 // The page's header: its sections, in page order, and its main button
@@ -30,5 +30,5 @@ export const AUDIT_NAV: SalesLink[] = [
 export const AUDIT_HEADER_CTA: SalesCta = {
   href: entryHref("audits_page"),
   label: "Start Free Trial",
-  entry: { page: "duty-audits", from: "audits_page" },
+  entry: { page: "duty-audit", from: "audits_page" },
 }

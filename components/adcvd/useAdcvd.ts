@@ -5,10 +5,10 @@ import { useUser } from "@/contexts/UserContext"
 import type { AdcvdLookup, AdcvdSummary } from "@/libs/adcvd/match"
 
 // The AD/CVD cases that may cover one import (/api/adcvd/match), fetched once per code and
-// country. The cases take the Tariff Tracker's trial or a paid plan ("locked" on the free plan);
+// country. The cases take Duty Guard's trial or a paid plan ("locked" on the free plan);
 // anyone gets the summary (whether any may, not which). A failed lookup is "error", never an empty
 // answer: "none found" is only said when we checked.
-type Kind = "full" | "summary"
+type Kind = "full" | "summary" | "preview"
 // Bumped when the lookup's shape changes, so a browser's cached copy (an hour) isn't used
 const SHAPE = 2
 const cache = new Map<string, Promise<unknown>>()
@@ -17,7 +17,7 @@ const LOCKED = "locked" as const
 const lookup = <T,>(kind: Kind, code: string, country: string): Promise<T> => {
   const key = `${kind}-${code}-${country}`
   if (!cache.has(key)) {
-    const p = fetch(`/api/adcvd/match?code=${encodeURIComponent(code)}&country=${encodeURIComponent(country)}${kind === "summary" ? "&summary=1" : ""}&v=${SHAPE}`).then((r) => {
+    const p = fetch(`/api/adcvd/match?code=${encodeURIComponent(code)}&country=${encodeURIComponent(country)}${kind === "summary" ? "&summary=1" : kind === "preview" ? "&preview=1" : ""}&v=${SHAPE}`).then((r) => {
       // The free plan: the cases take a plan
       if (r.status === 402) return LOCKED as T
       if (!r.ok) throw new Error(`AD/CVD lookup failed (${r.status})`)
@@ -58,6 +58,10 @@ export const useAdcvdLookup = (code: string | null | undefined, country: string 
 
 export const useAdcvdSummary = (code: string | null | undefined, country: string | null | undefined, enabled = true) =>
   useLookup<AdcvdSummary>("summary", code, country, enabled)
+
+// Signed out: the trimmed lookup drawn behind the blur on the AD/CVD Cases tab
+export const useAdcvdPreview = (code: string | null | undefined, country: string | null | undefined, enabled: boolean) =>
+  useLookup<AdcvdLookup>("preview", code, country, enabled)
 
 // The lookup when it's in, null otherwise (loading, failed or signed out)
 export const useAdcvd = (code: string | null | undefined, country: string | null | undefined) => {

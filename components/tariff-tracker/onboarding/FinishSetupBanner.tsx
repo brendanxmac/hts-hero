@@ -9,7 +9,7 @@ import { useTracker } from "../TrackerContext";
 import { openImportTakeover, useImportTakeover } from "./takeoverStore";
 import { useToFinish } from "./toFinish";
 
-// Over every Tracker page once some imports are tracked but a sheet left rows to fix (toFinish.ts):
+// Over every Duty Guard page once some imports are tracked but a sheet left rows to fix (toFinish.ts):
 // how many, and the way back to them in the same grid and fix panel. With none of their imports yet,
 // the empty Home and Imports pages ask instead (SetupPanel), so there's no banner for that.
 export const FinishSetupBanner = () => {

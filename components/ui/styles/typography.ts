@@ -13,7 +13,7 @@ export const sectionTitle = "text-2xl sm:text-3xl font-semibold tracking-tight t
 // A subsection's <h3> in long-form writing (blog posts, guides)
 export const subsectionTitle = "text-xl font-semibold tracking-tight text-base-content";
 
-// A card or panel's <h3>. In the Tracker's look, the same as tt.title (Sora, a step bigger)
+// A card or panel's <h3>. In Duty Guard's look, the same as tt.title (Sora, a step bigger)
 export const cardTitle =
   "text-base font-semibold text-base-content tracker:text-lg tracker:[font-family:var(--font-tracker-display)]";
 
@@ -39,7 +39,7 @@ export const bodySm = "text-sm leading-snug text-base-content/70";
 export const caption = "text-xs text-base-content/60";
 
 // Big numbers. Add them to a value with nothing else that sets size or weight.
-// Sora in the Tracker's look, like tt.metric
+// Sora in Duty Guard's look, like tt.metric
 const METRIC = "font-semibold tracking-tight leading-none tabular-nums text-base-content tracker:[font-family:var(--font-tracker-display)]";
 export const metric = {
   // The one headline result on a screen

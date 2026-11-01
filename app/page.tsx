@@ -62,7 +62,7 @@ export default async function Home() {
   ]);
 
   return (
-    // The Tariff Tracker's look, following the site's light/dark setting (DESIGN_SYSTEM.md §15)
+    // Duty Guard's look, following the site's light/dark setting (DESIGN_SYSTEM.md §15)
     <FollowTheme>
       <MarketingLayout>
         {renderSchemaJsonLd({

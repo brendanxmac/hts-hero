@@ -6,10 +6,13 @@ import { useUser } from "@/contexts/UserContext";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { currentPath, signupHref } from "./signup";
 
-// A view that needs a free account (Duty over time, Analysis, and in the Tracker Rate history and
+// A view that needs a free account (Duty over time, Analysis, and in Duty Guard Rate history and
 // Sourcing: see PRICING.md). Signed-in visitors get it; everyone else gets its stand-in and a
-// sign-up that brings them back to it. Works anywhere, inside the Tracker or not.
+// sign-up that brings them back to it. Works anywhere, inside Duty Guard or not.
 export type AccountFeature = "analysis" | "duty-over-time" | "alerts" | "history" | "insights" | "overview" | "sourcing" | "savings" | "entries" | "adcvd" | "news";
+
+// Under the button on the calculator's locked tabs: what it costs them, nothing
+export const QUICK_ACCOUNT = "Takes 10 seconds. No credit card required.";
 
 export const AccountGate = ({
   feature,
@@ -22,6 +25,8 @@ export const AccountGate = ({
   redirect,
   minHeight,
   framed,
+  cta = "Create a free account",
+  note = "Less than 30 seconds. No credit card required.",
   children,
 }: {
   feature: AccountFeature;
@@ -34,6 +39,9 @@ export const AccountGate = ({
   redirect?: () => string;
   minHeight?: string;
   framed?: boolean;
+  // The button, and the line under it
+  cta?: string;
+  note?: string;
   children: ReactNode;
 }) => {
   const { user, isLoading } = useUser();
@@ -50,13 +58,13 @@ export const AccountGate = ({
       framed={framed}
       onShown={isLoading ? undefined : onShown}
       cta={{
-        label: "Create a free account",
+        label: cta,
         onClick: () => {
           trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature, reason: "account", page });
           window.location.href = signupHref(redirect ? redirect() : currentPath());
         },
       }}
-      note="Less than 30 seconds. No credit card."
+      note={note}
     />
   );
 };

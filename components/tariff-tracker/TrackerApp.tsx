@@ -22,7 +22,7 @@ import { EntriesProvider } from "./entries/EntriesContext";
 import { OpportunitiesProvider } from "./opportunities/OpportunitiesContext";
 import { rememberSection } from "./overview/seenSections";
 
-// The Tariff Tracker: one page, with a tab per section. A tab's code loads the first time it's
+// Duty Guard: one page, with a tab per section. A tab's code loads the first time it's
 // opened; after that it stays mounted (hidden while another tab is open), so switching back is
 // instant and keeps its state. The open tab is in the address (?tab=), so it can be linked to
 // and the back button moves between tabs.
@@ -49,7 +49,7 @@ const TrackerCalculator = dynamic(
 );
 
 
-const BASE_TITLE = "Tariff Tracker | HTS Hero";
+const BASE_TITLE = "Duty Guard | HTS Hero";
 
 export const TrackerApp = () => {
   const searchParams = useSearchParams();
@@ -101,9 +101,9 @@ export const TrackerApp = () => {
   // Bumped to start the calculator over from the address, for a calculator link opened in place
   const [calculatorRun, setCalculatorRun] = useState(0);
 
-  // Whether the user has moved around the Tracker since the page loaded: then an import's Back
+  // Whether the user has moved around Duty Guard since the page loaded: then an import's Back
   // returns to wherever they came from (scroll and filters intact). Landing straight on an import
-  // (a shared link, an alert email) has nowhere to go back to in the Tracker, so Back opens Your
+  // (a shared link, an alert email) has nowhere to go back to in Duty Guard, so Back opens Your
   // Imports instead.
   const wandered = useRef(false);
   const firstView = useRef(`${tab}:${product ?? ""}`);
@@ -111,7 +111,7 @@ export const TrackerApp = () => {
     if (`${tab}:${product ?? ""}` !== firstView.current) wandered.current = true;
   }, [tab, product]);
 
-  // Each view's scroll position (the Tracker's one scroller is its <main>), kept as the user
+  // Each view's scroll position (Duty Guard's one scroller is its <main>), kept as the user
   // scrolls. Going back or forward (the browser's buttons, or an import's Back) returns to where
   // that view was; a new view opens at the top.
   const scrolls = useRef(new Map<string, number>());
@@ -221,7 +221,7 @@ export const TrackerApp = () => {
                   <ImportTakeover />
                   {/* The feature tour: by itself on the first visit and after the first imports, and from the sidebar */}
                   <FeatureTour />
-                  {/* New accounts from the sign-up onboarding: the Tracker onboarding, into the import flow */}
+                  {/* New accounts from the sign-up onboarding: Duty Guard onboarding, into the import flow */}
                   <TrackerOnboarding />
                   <TourTriggers />
                 </TrackerNavContext.Provider>

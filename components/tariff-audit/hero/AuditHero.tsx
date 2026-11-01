@@ -7,7 +7,7 @@ import { HISTORICAL_AUDIT_HREF } from "../lib/links";
 import type { AuditScan } from "@/libs/tariff-audit-example";
 import { EntryScanCard } from "./EntryScanCard";
 
-// The top of /duty-audits: the promise and the two ways to buy (ongoing audits, or a historical
+// The top of /duty-audit: the promise and the two ways to buy (ongoing audits, or a historical
 // audit on a call) beside one new entry at a time, scanned and judged. On desktop it fills the screen under the header.
 // Server-rendered copy, so crawlers and AI assistants read it as is.
 export const AuditHero = ({ scans }: { scans: AuditScan[] }) => (
@@ -17,7 +17,7 @@ export const AuditHero = ({ scans }: { scans: AuditScan[] }) => (
         <h1 className={mk.display}>Find Overpaid Duty, <span className="text-primary">in Seconds</span></h1>
         <p className={`${mk.lead} mt-6`}>Instantly see what you should have paid for every entry, and keep every dollar that gets refunded.</p>
         <div className="mt-10 flex flex-col gap-3">
-          <EntryCta page="duty-audits" entry="audits_page" section="hero" label="Check your Imports" className={`${cta.buttonPrimary} w-full`}>
+          <EntryCta page="duty-audit" entry="audits_page" section="hero" label="Check your Imports" className={`${cta.buttonPrimary} w-full`}>
             Check your Imports <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </EntryCta>
           {/* <a href={HISTORICAL_AUDIT_HREF} target="_blank" rel="noopener noreferrer" className={`${mk.buttonSecondary} h-14! w-full`}>
@@ -26,7 +26,7 @@ export const AuditHero = ({ scans }: { scans: AuditScan[] }) => (
         </div>
         {/* The week-long free trial, under the button */}
         <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
-          {[`Free for ${REVERSE_TRIAL.days} days`, "No credit card", "Set up in 30 seconds"].map((p) => (
+          {[`Free for ${REVERSE_TRIAL.days} days`, "No credit card required", "Set up in 30 seconds"].map((p) => (
             <li key={p} className={`${mk.small} flex items-center gap-1.5`}>
               <CheckIcon className="h-4 w-4 text-success" aria-hidden /> {p}
             </li>

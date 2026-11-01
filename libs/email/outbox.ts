@@ -110,7 +110,7 @@ const emailOptions = async (m: MessageRow, note: string | null, batchKind: strin
   return {
     from: config.resend.fromAdmin,
     to: m.recipient,
-    replyTo: config.resend.supportEmail,
+    replyTo: config.resend.replyTo,
     subject,
     html,
     text,

@@ -1,9 +1,9 @@
-// The homepage in the Tariff Tracker's look (DESIGN_SYSTEM.md §15). The page follows the site's
+// The homepage in Duty Guard's look (DESIGN_SYSTEM.md §15). The page follows the site's
 // light/dark setting (FollowTheme in app/page.tsx); these are its fixed parts.
 
-// A band that stays dark in both modes (the hero, savings, the closing offer): the Tracker's
+// A band that stays dark in both modes (the hero, savings, the closing offer): Duty Guard's
 // dark palette, as on its sidebar, so theme classes inside read light on dark. Its ground is the
-// darkest Tracker tone, so it stays apart from the page in dark mode too
+// darkest Duty Guard tone, so it stays apart from the page in dark mode too
 export const darkBand = "hts-tracker-on-dark bg-base-200 text-base-content";
 
 // A product view inside a dark band that follows the page's light/dark setting again

@@ -1,4 +1,4 @@
-// The HTS Hero social post brand: the Tariff Tracker's look (DESIGN_SYSTEM.md §15) at poster
+// The HTS Hero social post brand: Duty Guard's look (DESIGN_SYSTEM.md §15) at poster
 // scale. Posts render outside the app (Remotion's own browser, or the studio's preview player),
 // without the theme's CSS variables, so the palette's values are written out here.
 

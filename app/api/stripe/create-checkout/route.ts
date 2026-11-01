@@ -5,13 +5,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { PricingPlan } from "../../../../types";
 import { fetchUser, UserProfile } from "../../../../libs/supabase/user";
 import { Billing } from "@/components/pricing-calculator/lib/pricing";
-import { isTrackerPlan } from "@/libs/tariff-tracker/plan";
+import { isSellablePlan, isTrackerPlan } from "@/libs/tariff-tracker/plan";
 import { trackerPriceId } from "@/libs/tariff-tracker/prices";
-import { TRACKER_ANNUAL_ENABLED } from "@/libs/tariff-tracker/features";
 
 interface CreateCheckoutDto {
   itemId: PricingPlan;
-  // Tariff Tracker plans are billed monthly or annually
+  // Duty Guard plans are billed monthly or annually
   billing?: Billing;
   successEndpoint: string;
   cancelUrl: string;
@@ -43,8 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     const getPriceId = async (itemId: PricingPlan) => {
-      // Tracker plans are monthly only for now (libs/tariff-tracker/features.ts)
-      if (isTrackerPlan(itemId)) return trackerPriceId(itemId, TRACKER_ANNUAL_ENABLED ? billing : "monthly");
+      if (isSellablePlan(itemId)) return trackerPriceId(itemId, billing);
       switch (itemId) {
         case PricingPlan.CLASSIFY_STARTER:
           return process.env.STRIPE_CLASSIFY_STARTER_PRICE_ID;
@@ -60,25 +58,30 @@ export async function POST(req: NextRequest) {
     };
 
     const getMode = (itemId: PricingPlan): StripePaymentMode => {
+      if (isSellablePlan(itemId)) return StripePaymentMode.SUBSCRIPTION;
       switch (itemId) {
         case PricingPlan.CLASSIFY_STARTER:
         case PricingPlan.CLASSIFY_PRO:
         case PricingPlan.TARIFF_IMPACT_STANDARD:
         case PricingPlan.TARIFF_IMPACT_PRO:
-        case PricingPlan.TARIFF_TRACKER_10:
-        case PricingPlan.TARIFF_TRACKER_30:
-        case PricingPlan.TARIFF_TRACKER_100:
-        case PricingPlan.TARIFF_TRACKER_500:
           return StripePaymentMode.SUBSCRIPTION;
       }
     };
 
-    // A second Tracker subscription would bill twice: a plan changes in the billing portal
-    if (isTrackerPlan(itemId) && user && (await readTrackerAccess(createAdminClient(), user.id)).kind === "paid") {
-      return NextResponse.json({ error: "You already have a Tariff Tracker plan. Change it in Billing." }, { status: 409 });
+    // Plans are bought signed in, from Duty Guard (PRICING.md, decided 2026-10-31)
+    if (isTrackerPlan(itemId) && !user) {
+      return NextResponse.json({ error: "Sign in to choose a plan." }, { status: 401 });
     }
 
-    const successUrl = `${process.env.BASE_URL}${successEndpoint ? successEndpoint : "/"}`;
+    // A second subscription would bill twice: a plan changes in the billing portal
+    if (isTrackerPlan(itemId) && (await readTrackerAccess(createAdminClient(), user.id)).kind === "paid") {
+      return NextResponse.json({ error: "You already have a plan. Change it in Billing." }, { status: 409 });
+    }
+
+    // Back in Duty Guard with the plan named, for the "you're on X" confirmation
+    const successUrl = isTrackerPlan(itemId)
+      ? `${process.env.BASE_URL}/duty-guard?checkout=success&purchased=${encodeURIComponent(itemId)}`
+      : `${process.env.BASE_URL}${successEndpoint ? successEndpoint : "/"}`;
     const priceId = await getPriceId(itemId);
     const mode = getMode(itemId);
 

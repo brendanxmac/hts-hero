@@ -9,7 +9,7 @@ import { createBatch, type OutboxMessage } from "../email/outbox"
 import { accountSubscriber, subscriberFooter } from "../email/subscribers"
 import { reachedStages, UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "../email/tariff-news"
 import { readTrackerAccess } from "../tariff-tracker/access"
-import { hasFullAccess } from "../tariff-tracker/plan"
+import { hasAlerts } from "../tariff-tracker/plan"
 import { coveredKeys, trackedProducts } from "../tariff-tracker/snapshot"
 import { refreshImpacts } from "./impacts"
 import { STAGE_ORDER } from "./types"
@@ -25,7 +25,7 @@ import { STAGE_ORDER } from "./types"
 // confirmed or changed amount, and which imports it no longer affects (tariff_impact_alerts).
 //
 // Not who: accounts that turned alerts off or don't want this kind of update (alertPrefs.ts), and
-// imports added after the update was first approved (the Tracker shows them the update instead).
+// imports added after the update was first approved (Duty Guard shows them the update instead).
 // Only updates with official activity from launch on (NEWS_ALERTS_FROM) can be approved.
 
 type Db = SupabaseClient
@@ -57,7 +57,7 @@ export interface PlannedAlert {
   // How many imports the plan alerts on
   limit: number
   // Rows to record once sent
-  channels: { email: string | null; slack: string | null; teams: string | null }
+  channels: { emails: string[]; slack: string | null; teams: string | null }
   record: { product_key: string; level: "confirmed" | "likely" | "removed"; before_pct: number | null; after_pct: number | null; delta_usd: number | null; covered: boolean }[]
   paid: boolean
 }
@@ -115,7 +115,7 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
     const [{ data: c, error: catalogError }, { data: u, error: userError }, { data: a, error: settingsError }] = await Promise.all([
       db.from("tracker_catalogs").select("user_id, items, adjustments").in("user_id", ids),
       db.from("users").select("id, email").in("id", ids),
-      db.from("tracker_alert_settings").select("user_id, email_enabled, email, slack_webhook, teams_webhook, alert_kinds").in("user_id", ids),
+      db.from("tracker_alert_settings").select("user_id, email_enabled, email, extra_emails, slack_webhook, teams_webhook, alert_kinds").in("user_id", ids),
     ])
     if (catalogError || userError || settingsError) throw new Error(`Loading accounts: ${(catalogError ?? userError ?? settingsError)!.message}`)
     catalogs.push(...(c ?? []))
@@ -155,14 +155,19 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
     plans.push({
       userId,
       email: emails.get(userId) ?? null,
-      // Where it goes: the account's alert settings, else its account email
+      // Where it goes: the account's alert settings, else its account email, up to the plan's alert
+      // emails. Slack and Teams only on the plans that have them
       channels: {
-        email: prefs?.email_enabled === false ? null : prefs?.email || emails.get(userId) || null,
-        slack: prefs?.slack_webhook ?? null,
-        teams: prefs?.teams_webhook ?? null,
+        emails:
+          prefs?.email_enabled === false
+            ? []
+            : Array.from(new Set([prefs?.email || emails.get(userId), ...(prefs?.extra_emails ?? [])].filter((e): e is string => !!e))).slice(0, access.entitlements.alertEmails),
+        slack: access.entitlements.chat ? prefs?.slack_webhook ?? null : null,
+        teams: access.entitlements.chat ? prefs?.teams_webhook ?? null : null,
       },
-      // On a plan or the 14-day trial: the note on imports past it talks about its size, not the free limit
-      paid: hasFullAccess(access),
+      // On a plan or the trial: the note on imports past it talks about its size. A free account
+      // has no alert slots, so every affected import lands in `beyond`: the no-details teaser
+      paid: hasAlerts(access),
       imports: inSlots
         .sort((a, b) => Number(b.delta_usd ?? -1) - Number(a.delta_usd ?? -1))
         .map((r) => ({
@@ -214,12 +219,12 @@ const sendPlans = async (db: Db, u: UpdateRowForEmail, plans: PlannedAlert[], { 
       limit: plan.limit,
       paid: plan.paid,
       footer: subscriber
-        ? subscriberFooter(subscriber, "You're getting this because alerts are on for your imports in the HTS Hero Tariff Tracker.")
-        : { reason: "You're getting this because alerts are on for your imports in the HTS Hero Tariff Tracker." },
+        ? subscriberFooter(subscriber, "You're getting this because alerts are on for your imports in the HTS Hero Duty Guard.")
+        : { reason: "You're getting this because alerts are on for your imports in the HTS Hero Duty Guard." },
     }
     const base = { userId: plan.userId, subscriberId: subscriber?.id ?? null, template: "impact_alert", props: props as unknown as Record<string, unknown> }
     // A global unsubscribe stops the email; Slack and Teams were set up on purpose and still go
-    if (channels.email && !subscriber?.unsubscribed_at) messages.push({ ...base, channel: "email", recipient: channels.email })
+    if (!subscriber?.unsubscribed_at) messages.push(...channels.emails.map((recipient) => ({ ...base, channel: "email" as const, recipient })))
     if (channels.slack) messages.push({ ...base, channel: "slack", recipient: channels.slack })
     if (channels.teams) messages.push({ ...base, channel: "teams", recipient: channels.teams })
   }

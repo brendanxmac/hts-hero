@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 
 // The rows left to fix when a sheet's ready rows were tracked without them (SheetReview's "Start
 // with the N ready"): kept on this device, per account, so the footer's "can be added any time" is
-// true. The banner over the Tracker (FinishSetupBanner) counts them and reopens them in the same grid and fix panel
+// true. The banner over Duty Guard (FinishSetupBanner) counts them and reopens them in the same grid and fix panel
 // (ImportTakeover's "finish" step); a row leaves the list once it's tracked or deleted. Only the
 // code, the country, what was wrong and the product's own description are kept.
 

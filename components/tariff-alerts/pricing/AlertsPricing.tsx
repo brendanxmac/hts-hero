@@ -10,7 +10,7 @@ import { entryHref } from "@/libs/signup-onboarding";
 import { bookCallHref } from "@/libs/book-call";
 import { GUARANTEE, GUARANTEE_DETAIL } from "../lib/copy";
 
-// The Tariff Alerts plans (ALERT_TIERS, PRICING.md's value ladder), as the shared plan cards
+// The Duty Guard Essentials plans (ALERT_TIERS, PRICING.md's value ladder), as the shared plan cards
 // (PlanPricing): four side by side, all paid, the one that fits the visitor's products highlighted. Each lists its imports and users
 // first; Slack & Teams from Pro. More than the largest plan, and firms managing importer clients,
 // lead to a demo under them; the guarantee sits under everything. The urgency is real: counted from
@@ -30,12 +30,12 @@ const LARGEST = ALERT_TIERS[ALERT_TIERS.length - 1].maxPairs;
 const LARGE_CATALOG_HREF = bookCallHref({
   source: "tariff-alerts",
   campaign: "large-catalog",
-  context: `Importer with more than ${LARGEST} products, from the Tariff Alerts pricing (htshero.com/tariff-alerts)`,
+  context: `Importer with more than ${LARGEST} products, from the Duty Guard Essentials pricing (htshero.com/tariff-alerts)`,
 });
 const PARTNERS_HREF = bookCallHref({
   source: "tariff-alerts",
   campaign: "partners",
-  context: "Customs broker, 3PL or freight forwarder managing importer clients, from the Tariff Alerts pricing (htshero.com/tariff-alerts)",
+  context: "Customs broker, 3PL or freight forwarder managing importer clients, from the Duty Guard Essentials pricing (htshero.com/tariff-alerts)",
 });
 
 export const AlertsPricing = ({ urgency }: { urgency?: string | null }) => {
@@ -64,7 +64,7 @@ export const AlertsPricing = ({ urgency }: { urgency?: string | null }) => {
             <DarkBillingSwitch billing={billing} onChange={setBilling} />
           </div>
 
-          <PlanCards product="Tariff Alerts" plans={ALERT_TIERS} billing={billing} features={alertsIncluded} href={entryHref("alerts_page")} trialDays={REVERSE_TRIAL.days} lead={(p) => `Alerts on up to ${p.maxPairs} products`} best={best} products={products} />
+          <PlanCards product="Duty Guard Essentials" plans={ALERT_TIERS} billing={billing} features={alertsIncluded} href={entryHref("alerts_page")} trialDays={REVERSE_TRIAL.days} lead={(p) => `Alerts on up to ${p.maxPairs} products`} best={best} products={products} />
 
           {/* More than the largest plan, and firms managing importer clients. Each demo link says which,
               so it's on the booking. */}

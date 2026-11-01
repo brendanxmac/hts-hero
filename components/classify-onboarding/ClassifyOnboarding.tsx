@@ -12,7 +12,7 @@ import { CandidatesScene, ClassifyWelcomeScene, DescribeScene, DigitsScene, Free
 
 // The Classification Assistant's onboarding: what an account from the homepage's classification
 // section sees first (onboardingNext: /classifications?welcome=tour). Not the product tour (that
-// stays in the header, ClassifyTour): a short, cinematic sell in the Tracker onboarding's style, one
+// stays in the header, ClassifyTour): a short, cinematic sell in Duty Guard onboarding's style, one
 // idea per screen (TourStage), each with one animated scene. Welcome; describe it; the likely
 // headings with the law behind them; their pick, their call; down to ten digits; the audit-ready
 // report; then the free classifications they start with. Every way out, finishing or skipping, opens
@@ -215,7 +215,7 @@ export const ClassifyOnboarding = () => {
         scene={page.scene}
         onBack={at > 0 ? () => setAt(at - 1) : undefined}
         next={last ? { label: "Classify my first product", onClick: () => end("finished") } : { label: at === 0 ? "See how" : "Next", onClick: () => setAt(at + 1) }}
-        footnote={last ? "Takes a few minutes. No credit card." : undefined}
+        footnote={last ? "Takes a few minutes. No credit card required." : undefined}
       />
     </TourShell>
   );

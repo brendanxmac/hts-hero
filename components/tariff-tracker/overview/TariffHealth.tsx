@@ -15,7 +15,7 @@ import { useTracker } from "../TrackerContext";
 import { REVIEW_DAYS, useActionReviews } from "../impact/reviews";
 
 // Tariff Health (DESIGN_SYSTEM.md §15 "Home"): one score for how well the user's imports are looked
-// after, from the three things the Tracker does for them. Alerts: the share of imports with alerts
+// after, from the three things Duty Guard does for them. Alerts: the share of imports with alerts
 // on (and somewhere for them to go). Savings: the share whose ways to pay less are all secured or
 // ruled out. Audits: the share with an entry audited. The score is the average of them (impact
 // checks join once alerts are on). A ring for the score, then a bar for each.

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
-// What the plans dialog can say about the user's own imports. The dialog sits above the Tracker's
-// data (in TrackerAccessProvider), so the Tracker publishes these from inside it (UpgradeStatsBridge).
+// What the plans dialog can say about the user's own imports. The dialog sits above Duty Guard's
+// data (in TrackerAccessProvider), so Duty Guard publishes these from inside it (UpgradeStatsBridge).
 
 export interface UpgradeStats {
   imports: number;

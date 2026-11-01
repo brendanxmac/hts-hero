@@ -87,8 +87,8 @@ const shape = {
   "--noise": "0",
 };
 
-// The Tariff Tracker's own palette (DESIGN_SYSTEM.md §15): simple and colorful, applied inside
-// "hts-tracker" on the same variables, so every themed component in the Tracker follows it.
+// Duty Guard's own palette (DESIGN_SYSTEM.md §15): simple and colorful, applied inside
+// "hts-tracker" on the same variables, so every themed component in Duty Guard follows it.
 // Cobalt is the user's data and the next step, green is money, red an increase, amber a
 // heads-up or a lock, sky a second series, slate base duty. The sidebar is dark in both modes.
 const tracker = {
@@ -142,7 +142,7 @@ const tracker = {
     error: "#ff8a7c",
     "error-content": "#0e1220",
   },
-  // Plain CSS variables for the Tracker's other surfaces, its shadow and chart marks
+  // Plain CSS variables for Duty Guard's other surfaces, its shadow and chart marks
   extra: {
     light: {
       "--tt-soft": "#f2f4f9",
@@ -186,7 +186,7 @@ const tracker = {
       "--tt-ob-tile-edge": "transparent",
     },
   },
-  // Product chart parts in the Tracker: base duty a clear gray, then each program in a hue far
+  // Product chart parts in Duty Guard: base duty a clear gray, then each program in a hue far
   // from the last (blue, orange, yellow, teal), then fees sage. A data palette of its own: none of
   // them is a state color (cobalt the brand, red an increase, green money), so a Section 232 bar
   // never reads as "something went up". Neighbours also differ in lightness, so they stay apart

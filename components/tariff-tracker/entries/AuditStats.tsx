@@ -1,3 +1,4 @@
+import { hasAudits } from "@/libs/tariff-tracker/plan";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { useTrackerAccess } from "../access/accessContext";
 import { StatStrip } from "@/components/ui/StatStrip";
@@ -15,13 +16,13 @@ export const AuditStats = ({ totals }: { totals: AuditTotals }) => {
         { label: "Possible underpayments", value: money(totals.underpaid), note: "Worth correcting before Customs does", tone: totals.underpaid > 0 ? "error" : undefined },
         {
           label: "Audit checks left",
-          value: access.kind === "paid" || access.kind === "trial" ? "Unlimited" : "0",
+          value: hasAudits(access) ? "Unlimited" : "0",
           note:
-            access.kind === "paid" || access.kind === "trial"
+            hasAudits(access)
               ? "With your plan"
               : access.kind === "anonymous"
                 ? `Free for ${REVERSE_TRIAL.days} days with an account`
-                : "They come with a Tracker plan",
+                : "They come with Duty Guard Pro",
         },
       ]}
     />

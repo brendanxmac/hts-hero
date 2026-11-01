@@ -1,7 +1,7 @@
-// The marketing layer: the look of landing pages (/tariff-monitor, /duty-audits), from the
+// The marketing layer: the look of landing pages (/tariff-alerts, /duty-audit), from the
 // "Command center" direction: always light, crisp slate and navy with a teal accent, big type, and
 // dark bands for contrast. Pages that opt in with .follow-theme (FollowTheme: /duty-calculator and
-// the country pages) get the Tariff Tracker's look instead through the skin: variants: its theme
+// the country pages) get Duty Guard's look instead through the skin: variants: its theme
 // tokens and fonts, following the site's light/dark setting. Analytical pages use the main design system (components/ui/styles)
 // instead. See DESIGN_SYSTEM.md §14.
 
@@ -15,7 +15,7 @@ export const band = "py-20 sm:py-28"
 export const bandTint =
   "bg-linear-to-b from-teal-50/70 to-white skin:bg-none skin:bg-base-100"
 export const bandMuted = "bg-slate-50 skin:bg-tt-soft"
-// .mk-dark: on pages in the Tracker's look, the theme plugin gives it the dark palette in both modes
+// .mk-dark: on pages in Duty Guard's look, the theme plugin gives it the dark palette in both modes
 export const bandDark =
   "mk-dark bg-slate-950 text-white skin:bg-base-200 skin:text-base-content"
 

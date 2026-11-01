@@ -4,7 +4,7 @@ import { siteLink } from "../kit/brand"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
 // After a tariff audit request: what happens next, what to have ready, and how to start finding
-// overpayments today on their own, with the Tracker's audit checks.
+// overpayments today on their own, with Duty Guard's audit checks.
 
 export interface AuditRequestReceivedEmailProps {
   name: string
@@ -38,7 +38,7 @@ export default function AuditRequestReceivedEmail({ name, company, footer }: Aud
         Want a head start? Check past entries yourself: enter what you paid and we&apos;ll compare it with the duty in force on that date.{" "}
         It&apos;s free for {REVERSE_TRIAL.days} days with a new account.
       </P>
-      <Cta href={siteLink("/tariff-tracker?tab=entries", CAMPAIGN)} variant="next">
+      <Cta href={siteLink("/duty-guard?tab=entries", CAMPAIGN)} variant="next">
         Check my past entries
       </Cta>
       <Signature />

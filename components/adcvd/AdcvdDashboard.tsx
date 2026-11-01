@@ -121,7 +121,7 @@ export default function AdcvdDashboard({
           </p>
           <p>
             Process months newest first. Each month&apos;s AI steps pause once it has cost the budget below; reading and linking keep going. New notices are
-            read every hour by the cron. Imports are flagged from these cases on the calculator and the Tracker.
+            read every hour by the cron. Imports are flagged from these cases on the calculator and Duty Guard.
           </p>
         </Help>
         <Tabs<Tab>

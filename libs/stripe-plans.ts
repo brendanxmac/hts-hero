@@ -6,7 +6,7 @@ import { trackerPlanForPriceId } from "@/libs/tariff-tracker/prices";
 // Which plan a Stripe price is for, and how long a payment for it lasts, for the Stripe webhook
 // (app/api/webhook/stripe/route.ts). Kept out of the route so it can be tested.
 
-// priceId: Tariff Tracker plans can be annual, which last a year
+// priceId: Duty Guard plans can be annual, which last a year
 export const getPlanExpirationDate = async (plan: PricingPlan, priceId?: string) => {
   const tracker = priceId && isTrackerPlan(plan) ? await trackerPlanForPriceId(priceId) : null;
   if (tracker) return getIsoDateInFuture(tracker.billing === "annual" ? 366 : 31);
@@ -19,8 +19,8 @@ export const getPlanExpirationDate = async (plan: PricingPlan, priceId?: string)
   }
 };
 
-// Tracker prices map by their Stripe metadata (libs/tariff-tracker/prices.ts), so every version of
-// a Tracker price keeps working after a price change
+// Duty Guard prices map by their Stripe metadata (libs/tariff-tracker/prices.ts), so every version of
+// a Duty Guard price keeps working after a price change
 export const getPlanFromPriceId = async (priceId: string): Promise<PricingPlan | null> => {
   if (!priceId) return null;
   switch (priceId) {
@@ -34,6 +34,6 @@ export const getPlanFromPriceId = async (priceId: string): Promise<PricingPlan |
     case process.env.STRIPE_CLASSIFY_PRO_PRICE_ID_OLD:
       return PricingPlan.CLASSIFY_PRO;
   }
-  // Anything else may be a Tracker price, any version (read from Stripe)
+  // Anything else may be a Duty Guard price, any version (read from Stripe)
   return (await trackerPlanForPriceId(priceId))?.plan ?? null;
 };

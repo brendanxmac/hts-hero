@@ -5,7 +5,7 @@ import { readTrackerSubscription } from "@/libs/tariff-tracker/subscription";
 
 export const dynamic = "force-dynamic";
 
-// The signed-in customer's Tariff Tracker subscription in Stripe (renewal, cancellation, a failed
+// The signed-in customer's Duty Guard subscription in Stripe (renewal, cancellation, a failed
 // payment), for the plan card; null without one. Asked only on a paid plan.
 export async function GET() {
   try {
@@ -17,7 +17,7 @@ export async function GET() {
     if (!profile?.stripe_customer_id) return NextResponse.json(null);
     return NextResponse.json(await readTrackerSubscription(profile.stripe_customer_id));
   } catch (e) {
-    console.error("Error reading the Tariff Tracker subscription:", e);
+    console.error("Error reading Duty Guard subscription:", e);
     return NextResponse.json({ error: "Couldn't load your subscription" }, { status: 500 });
   }
 }

@@ -11,7 +11,7 @@ export interface AdcvdMark {
   applies: boolean
 }
 
-// Which of a catalog's imports may be covered by AD/CVD cases, for the Tracker's chips: the live
+// Which of a catalog's imports may be covered by AD/CVD cases, for Duty Guard's chips: the live
 // cases of the catalog's countries (/api/adcvd/index), matched in the browser. Key "code-country"
 // → its mark (history isn't chipped; cases the user ruled out don't count).
 export const useCatalogAdcvd = (items: { key: string; code: string; country: string }[]) => {

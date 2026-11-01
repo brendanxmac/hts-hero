@@ -1,6 +1,6 @@
 import type { Kind } from "@/libs/tariff-updates/types";
 
-// A tariff action's color in the Tracker (DESIGN_SYSTEM.md §15, color is meaning): red a new or
+// A tariff action's color in Duty Guard (DESIGN_SYSTEM.md §15, color is meaning): red a new or
 // higher tariff, green one lifted, amber a heads-up, cobalt the rest
 export type NewsTone = "error" | "success" | "warning" | "primary";
 

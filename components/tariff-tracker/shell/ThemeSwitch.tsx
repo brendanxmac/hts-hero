@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { MoonIcon, SunIcon } from "@heroicons/react/20/solid";
 
-// Light or dark for the whole site: in the Tracker's sidebar, and in the site header on pages in
-// the Tracker's look (skin:). One setting: <html data-theme>, remembered as "theme".
-// className: the button's look, where it sits somewhere other than the Tracker's sidebar
+// Light or dark for the whole site: in Duty Guard's sidebar, and in the site header on pages in
+// Duty Guard's look (skin:). One setting: <html data-theme>, remembered as "theme".
+// className: the button's look, where it sits somewhere other than Duty Guard's sidebar
 export const ThemeSwitch = ({ className }: { className?: string } = {}) => {
   const [dark, setDark] = useState(false);
   useEffect(() => {

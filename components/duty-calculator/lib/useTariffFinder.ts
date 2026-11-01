@@ -69,7 +69,7 @@ const positiveNumber = (raw: string | null, fallback: number) => {
 
 const isTariffLevel = (element: HtsElement) => htsCodeDigitsOnly(element.htsno).length >= 8;
 
-// Inputs to start from instead of the address, e.g. a Tariff Tracker product and its adjustments
+// Inputs to start from instead of the address, e.g. a Duty Guard product and its adjustments
 export interface FinderStart {
   element: HtsElement;
   country: Country;
@@ -82,7 +82,7 @@ export interface FinderStart {
 }
 
 // Where the calculator is, on every event it sends: its own page (and the country pages), the
-// Tracker's Calculator tab, or a classification's Duty tab
+// Duty Guard's Calculator tab, or a classification's Duty tab
 export type CalculatorSurface = "calculator" | "tracker" | "classification";
 
 // How the result on screen came about, for analytics: the user picked it ("user"), a link opened
@@ -247,7 +247,7 @@ export const useTariffFinder = ({
     const linkedFrom = codeParam ? takeCalculatorHandoff(codeParam) : null;
     landing.current = { arrival, linkedFrom };
     landingCodeHandled.current = !codeParam;
-    // The calculator's own pages only: in the Tracker or a classification it's a tab, not a visit
+    // The calculator's own pages only: in Duty Guard or a classification it's a tab, not a visit
     if (surface !== "calculator") return;
     track(MixpanelEvent.DUTY_CALCULATOR_PAGE_LOADED, {
       path: window.location.pathname,
@@ -401,7 +401,8 @@ export const useTariffFinder = ({
 
   // Show the comparison when a country is first added (including from a shared link, so this
   // starts at 0). Removing them all stays in Compare, which then offers to add one.
-  const previousCompareCount = useRef(0);
+  // A link that names another tab (back from sign-up, on History) stays on it.
+  const previousCompareCount = useRef(["history", "news", "adcvd"].includes(searchParams.get("view") ?? "") ? compareCountries.length : 0);
   useEffect(() => {
     const count = compareCountries.length;
     if (previousCompareCount.current === 0 && count > 0) setView("compare");
@@ -436,7 +437,7 @@ export const useTariffFinder = ({
     }
     // Anything after this (a new country, the next code) is the user's doing
     resultTrigger.current = "user";
-    // Remembered for the Tracker's "start from your recent lookups" (not a catalog product's own view)
+    // Remembered for Duty Guard's "start from your recent lookups" (not a catalog product's own view)
     if (trackAnalytics && customsValue > 0) {
       recordLookup({
         code: htsCodeDigitsOnly(selectedElement.htsno),

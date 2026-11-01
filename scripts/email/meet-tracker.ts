@@ -1,4 +1,4 @@
-// Queues the one-time "Meet the Tariff Tracker" email for every account from before onboarding
+// Queues the one-time "Meet Duty Guard" email for every account from before onboarding
 // emails started (libs/email/lifecycle.ts ONBOARDING_FROM) that hasn't had it, as one batch in
 // /email-outbox, sent with the next outbox run (every 5 minutes) without review.
 //

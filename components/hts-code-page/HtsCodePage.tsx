@@ -43,7 +43,7 @@ import { HeadingDetails, HeadingFacts, headingFaqs } from "@/components/tariff-p
 import type { CodeInfo } from "@/libs/tariff-programs/codeLinks";
 
 // The /hts/[code] page: what an HTS code covers, what it pays and where it sits in the
-// schedule. Server-rendered for search engines, in the Tariff Tracker's look (DESIGN_SYSTEM.md
+// schedule. Server-rendered for search engines, in Duty Guard's look (DESIGN_SYSTEM.md
 // §15, following light and dark): round panels on the soft ground, Sora headings, pill buttons.
 // The hero and base rates, duties by country, related codes, then notes, rulings and questions.
 // The header, footer and classification band come from the HTS pages' frame (app/hts/layout.tsx).
@@ -218,7 +218,7 @@ export function HtsCodePage({
 
         {dutyHistory && <DutyHistory htsno={element.htsno} history={dutyHistory} />}
 
-        {/* Alerts when a tariff action hits this code, in the Tariff Tracker */}
+        {/* Alerts when a tariff action hits this code, in Duty Guard */}
         {element.htsno && !element.htsno.startsWith("99") && (
           <TrackerCtaFeature
             htsno={element.htsno}

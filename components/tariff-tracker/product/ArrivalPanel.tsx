@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRightIcon, BellAlertIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useUser } from "@/contexts/UserContext";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
+import { useTrackerAccess } from "../access/accessContext";
 import { formatDate, formatPct } from "@/components/duty-calculator/lib/format";
 import type { TariffFinder } from "@/components/duty-calculator/lib/useTariffFinder";
 import * as ui from "@/components/ui/styles";
@@ -26,6 +28,9 @@ const pctOf = (amount: number, value: number) => (value > 0 ? Math.round((amount
 
 export const ArrivalPanel = ({ row, f, onExplore }: { row: TrackedProduct; f: TariffFinder; onExplore: () => void }) => {
   const { user } = useUser();
+  const { access, openUpgrade } = useTrackerAccess();
+  // Past the trial with no plan: it's saved and watched for a teaser, not alerted in full
+  const alertsOn = access.kind !== "free";
   const [open, setOpen] = useState(false);
   const source = useRef(arrivalSource());
 
@@ -99,14 +104,21 @@ export const ArrivalPanel = ({ row, f, onExplore }: { row: TrackedProduct; f: Ta
         <div className="flex flex-col gap-1.5 pr-10">
           <span className={`${tt.eyebrow("primary")} flex items-center gap-1.5`}>
             <BellAlertIcon className="h-3.5 w-3.5" aria-hidden />
-            Alerts on
+            {alertsOn ? "Alerts On" : "Saved"}
           </span>
           <h2 id="arrival-title" className={`${tt.display} m-0 text-2xl font-semibold leading-tight text-base-content`}>
-            You&apos;re watching {row.entry.element.htsno} from {row.entry.country.name}
+            You&apos;re tracking {row.entry.element.htsno} from {row.entry.country.name}
           </h2>
           <p className="m-0 text-base text-base-content/80">
-            We&apos;ll email {user?.email ? <strong className="font-semibold text-base-content">{user.email}</strong> : "you"} the day a tariff change
-            hits it, with the rate before and after.
+            {alertsOn ? (
+              <>
+                We&apos;ll email {user?.email ? <strong className="font-semibold text-base-content">{user.email}</strong> : "you"} the day a tariff change hits it, with
+                the rate before and after.
+                {access.kind === "trial" && ` Full alerts are free for ${REVERSE_TRIAL.days} days, along with audits and savings.`}
+              </>
+            ) : (
+              <>It&apos;s saved to your Duty Guard, free. Full alerts, with the rate before and after, come with Duty Guard Essentials.</>
+            )}
           </p>
         </div>
 
@@ -121,17 +133,31 @@ export const ArrivalPanel = ({ row, f, onExplore }: { row: TrackedProduct; f: Ta
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            className={ui.button({ variant: "primary" })}
-            onClick={() => {
-              close("add_imports");
-              openImportTakeover("arrival", "choose");
-            }}
-          >
-            Add Your Other Imports
-            <ArrowRightIcon className="h-4 w-4" aria-hidden />
-          </button>
+          {alertsOn ? (
+            <button
+              type="button"
+              className={ui.button({ variant: "primary" })}
+              onClick={() => {
+                close("add_imports");
+                openImportTakeover("arrival", "choose");
+              }}
+            >
+              Add Your Other Products
+              <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={ui.button({ variant: "primary" })}
+              onClick={() => {
+                close("upgrade");
+                openUpgrade("alerts");
+              }}
+            >
+              Get Tariff Alerts
+              <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            </button>
+          )}
           <button
             type="button"
             className={ui.button({ variant: "ghost" })}
@@ -140,7 +166,7 @@ export const ArrivalPanel = ({ row, f, onExplore }: { row: TrackedProduct; f: Ta
               onExplore();
             }}
           >
-            Explore the Tracker
+            Explore Duty Guard
           </button>
         </div>
       </div>

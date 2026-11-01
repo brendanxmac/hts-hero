@@ -9,7 +9,7 @@ import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { DONE_STEP, prefersReducedMotion, delay, useCountUp } from "./parts";
 import { useTracker } from "../TrackerContext";
 
-// The imports are in: the Tracker works through them in front of the user (a checklist that ticks
+// The imports are in: Duty Guard works through them in front of the user (a checklist that ticks
 // off in turn), the trial's 14 days start, and the first real numbers show before they've even
 // opened the dashboard: the average duty on what they just added, and the highest.
 
@@ -69,7 +69,7 @@ export const DoneStep = ({ keys, trialEndsAt, onOpen }: { keys: string[]; trialE
           You&apos;re tracking {count.toLocaleString("en-US")} {count === 1 ? "import" : "imports"}.
         </h1>
         <p className="tt-ob-rise m-0 text-base text-base-content/75" style={delay(120)}>
-          Your {REVERSE_TRIAL.days}-day free trial has started: everything the Tracker does, until <strong className="text-base-content">{ends}</strong>.
+          Your {REVERSE_TRIAL.days}-day free trial has started: everything Duty Guard does, until <strong className="text-base-content">{ends}</strong>.
         </p>
       </div>
 

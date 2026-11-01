@@ -14,8 +14,9 @@ import {
 } from "../../../../libs/supabase/user";
 import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
 import { getPlanExpirationDate, getPlanFromPriceId } from "@/libs/stripe-plans";
-import { isTrackerPlan, TRACKER_PLANS } from "@/libs/tariff-tracker/plan";
-import { RENEWAL_GRACE_DAYS } from "@/libs/tariff-tracker/access";
+import { isTrackerPlan, OWNED_PLAN_NAMES, trackerPlanFor } from "@/libs/tariff-tracker/plan";
+import { readTrackerAccess, RENEWAL_GRACE_DAYS } from "@/libs/tariff-tracker/access";
+import { trackerPlanForPriceId } from "@/libs/tariff-tracker/prices";
 import { MixpanelEvent } from "@/libs/mixpanel";
 import { trackEventServerAsync } from "@/libs/mixpanel-server";
 
@@ -24,6 +25,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   typescript: true,
 });
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+// Just past the renewal grace (libs/tariff-tracker/access.ts), so access ends now, not in 2 days
+const replacedPurchaseEnd = () => new Date(Date.now() - (RENEWAL_GRACE_DAYS * 24 + 1) * 60 * 60 * 1000).toISOString();
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -116,6 +120,9 @@ export async function POST(req: NextRequest) {
           );
         }
 
+        // Read before the purchase lands: was this bought during the trial, or after it?
+        const tracker = isTrackerPlan(plan) ? await readTrackerAccess(supabase, user.id) : null;
+
         const purchase = await createPurchase(
           {
             user_id: (checkoutSession.client_reference_id as string) || user.id,
@@ -141,6 +148,11 @@ export async function POST(req: NextRequest) {
           $insert_id: `purchase-${stripeObject.id}`,
           plan,
           is_tracker_plan: isTrackerPlan(plan),
+          ...(tracker && {
+            offer: (trackerPlanFor(plan) as { offer?: string })?.offer ?? "legacy",
+            billing: (await trackerPlanForPriceId(priceId))?.billing ?? null,
+            during_trial: tracker.kind === "trial",
+          }),
           mode: stripeObject.mode,
           amount_usd: (stripeObject.amount_total ?? 0) / 100,
           currency: stripeObject.currency,
@@ -223,10 +235,13 @@ export async function POST(req: NextRequest) {
         // and with the check above for !previousItem we ensure this only triggers
         // on upgrades, allowing the stripe subscription schedules and invoice.paid to handle
         // the downgrades at the end of the billing cycle
+        const priceChanged = updatedPlan.id !== previousPlan.id;
+        const trackerChange = priceChanged && isTrackerPlan((await getPlanFromPriceId(updatedPlan.id)) ?? "");
         if (
-          updatedPlanProduct &&
-          previousPlanProduct &&
-          updatedPlanProduct !== previousPlanProduct
+          trackerChange ||
+          (updatedPlanProduct &&
+            previousPlanProduct &&
+            updatedPlanProduct !== previousPlanProduct)
         ) {
           console.log(
             `Customer Subscription Updated from ${previousPlanProduct} to ${updatedPlanProduct}`
@@ -237,7 +252,9 @@ export async function POST(req: NextRequest) {
           )) as Stripe.Customer;
 
           const customerEmail = customer.email;
-          let userProfile = await fetchUserByEmail(customerEmail);
+          let userProfile =
+            (await fetchUserByStripeCustomerId(customer.id)) ??
+            (await fetchUserByEmail(customerEmail));
 
           if (!userProfile) {
             const { error } = await supabase.auth.admin.createUser({
@@ -278,16 +295,33 @@ export async function POST(req: NextRequest) {
             previousPlanEnd
           ).toISOString();
 
+          // Duty Guard plans run to the new period's end: monthly to annual changes it
+          const newPeriodEnd = event.data.object.items.data[0].current_period_end;
           const purchase = await createPurchase(
             {
               user_id: userProfile.id,
               customer_id: customer.id,
               price_id: updatedPlan.id,
               product_name: plan,
-              expires_at: previousPlanEndDateIsoString,
+              expires_at:
+                isTrackerPlan(plan) && newPeriodEnd
+                  ? new Date(newPeriodEnd * 1000).toISOString()
+                  : previousPlanEndDateIsoString,
             },
             "customer.subscription.updated"
           );
+
+          // The plan it replaces stops counting now: a Duty Guard Pro plan would otherwise outrank a
+          // larger alerts plan until its period ran out
+          if (isTrackerPlan(plan)) {
+            const { error } = await supabase
+              .from("purchases")
+              .update({ expires_at: replacedPurchaseEnd() })
+              .eq("customer_id", customer.id)
+              .in("product_name", OWNED_PLAN_NAMES.filter((name) => name !== plan))
+              .gt("expires_at", new Date().toISOString());
+            if (error) throw error;
+          }
 
           // Set customer_id in user profile if it doesn't exist
           if (!userProfile.stripe_customer_id) {
@@ -321,21 +355,20 @@ export async function POST(req: NextRequest) {
         console.log("Stripe Customer Subscription Deleted");
         // The subscription ended: at the end of a cancelled period, cancelled immediately, or after
         // the last failed payment retry. ❌ Revoke access now: its purchases stop at this moment
-        // instead of running to their expires_at. For a Tariff Tracker plan, every Tracker purchase
+        // instead of running to their expires_at. For a Duty Guard plan, every Duty Guard purchase
         // of the customer ends (an upgrade leaves the old tier's purchase running to its period end).
         const subscription = stripeEvent.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
         const plans = (
           await Promise.all(subscription.items.data.map((item) => getPlanFromPriceId(item.price.id)))
         ).filter((plan): plan is PricingPlan => !!plan);
-        const ended = Array.from(new Set(plans.flatMap((plan) => (isTrackerPlan(plan) ? TRACKER_PLANS.map((p) => p.plan) : [plan]))));
+        const ended = Array.from(new Set(plans.flatMap((plan) => (isTrackerPlan(plan) ? OWNED_PLAN_NAMES : [plan]))));
         if (!ended.length) {
           console.log(`Subscription ${subscription.id} ended, but none of its prices is a plan`);
           break;
         }
         const now = new Date().toISOString();
-        // Just past the renewal grace (libs/tariff-tracker/access.ts), so access ends now, not in 2 days
-        const endedAt = new Date(Date.now() - (RENEWAL_GRACE_DAYS * 24 + 1) * 60 * 60 * 1000).toISOString();
+        const endedAt = replacedPurchaseEnd();
         const { data, error } = await supabase
           .from("purchases")
           .update({ expires_at: endedAt })

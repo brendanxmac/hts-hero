@@ -9,6 +9,8 @@ import {
   canSpendCheck,
   CheckKind,
   checksLeft,
+  freeCheck,
+  hasAudits,
   hasChecked,
   isPaid,
   NO_USAGE,
@@ -25,7 +27,7 @@ import { UpgradeDialog } from "./UpgradeDialog";
 
 // Loads the visitor's plan (from /api/tracker/access, which decides), spends the usage-based
 // trial's checks (through /api/tracker/checks, which enforces them) and owns the way up: the
-// plans dialog. Around the whole Tracker.
+// plans dialog. Around the whole Duty Guard.
 
 // Signed in, plan unknown (the request failed): the free plan, without a trial date (so nothing
 // says the trial ended); the server decides what's actually covered
@@ -62,7 +64,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     load()
       .then((next) => !cancelled && setAccess(next))
       .catch((e) => {
-        console.error("Error loading Tariff Tracker access:", e);
+        console.error("Error loading Duty Guard access:", e);
         // Spending a check asks the server
         if (!cancelled) setAccess(FALLBACK_ACCESS);
       })
@@ -72,7 +74,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     };
   }, [userId, userLoading, load]);
 
-  // On every event after this: the account's Tracker plan, to split any report by plan. And the
+  // On every event after this: the account's Duty Guard plan, to split any report by plan. And the
   // trial's start, counted once when the access shows it began in the last hour (the database
   // starts it with the first real imports, wherever they were added)
   useEffect(() => {
@@ -98,11 +100,14 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     url.searchParams.delete("checkout");
     url.searchParams.delete("plan");
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
-    toast.success(changed ? "Your Tariff Tracker plan is updated." : "Thanks! Your Tariff Tracker plan is active.");
+    const purchased = url.searchParams.get("purchased");
+    url.searchParams.delete("purchased");
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
+    toast.success(changed ? "Your plan is updated." : purchased ? `Thanks! You're on ${purchased}.` : "Thanks! Your plan is active.");
     const refresh = () => {
       load()
         .then(setAccess)
-        .catch((e: unknown) => console.error("Error refreshing Tariff Tracker access:", e));
+        .catch((e: unknown) => console.error("Error refreshing Duty Guard access:", e));
     };
     const retry = setTimeout(refresh, 4000);
     refresh();
@@ -114,7 +119,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     if (!userId) return;
     load()
       .then(setAccess)
-      .catch((e: unknown) => console.error("Error refreshing Tariff Tracker access:", e));
+      .catch((e: unknown) => console.error("Error refreshing Duty Guard access:", e));
   }, [userId, load]);
 
   const value: TrackerAccessValue = useMemo(() => {
@@ -130,7 +135,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
         toSignup();
         return false;
       }
-      if (isPaid(access) || hasChecked(access, kind, ref)) return true;
+      if (freeCheck(access, kind, ref)) return true;
       if (!canSpendCheck(access, kind, ref)) {
         trackEvent(MixpanelEvent.TARIFF_TRACKER_ALLOWANCE_USED_UP, { kind, feature });
         openUpgrade(feature);
@@ -178,7 +183,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     };
   }, [access, loading, userLoading, userId, user?.email, refreshAccess]);
 
-  // Back from the calculator's sign-up for a Tracker feature (`trial=<feature>`): the trial is
+  // Back from the calculator's sign-up for a Duty Guard feature (`trial=<feature>`): the trial is
   // already on, so say what it includes. `upgrade=<feature>` opens the plans for that feature,
   // unless the plan has it already.
   useEffect(() => {
@@ -193,14 +198,15 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     if (trial && !value.paid) {
       toast.success(
         trialNotStarted(value.access)
-          ? `Your ${REVERSE_TRIAL.days}-day free trial is ready. It starts when you add your imports to the Tariff Tracker.`
+          ? `Your ${REVERSE_TRIAL.days}-day free trial is ready. It starts when you add your imports to Duty Guard.`
           : value.access.kind === "trial"
-          ? `Your ${REVERSE_TRIAL.days}-day free trial is on: everything in the Tariff Tracker, on up to ${REVERSE_TRIAL.imports} imports.`
+          ? `Your ${REVERSE_TRIAL.days}-day free trial is on: everything in Duty Guard.`
           : "Your free plan is on: Tariff News alerts, sourcing insights and your whole catalog.",
         { duration: 6000 }
       );
     }
-    if (upgrade && !value.paid) value.openUpgrade(upgrade in PREMIUM_FEATURES ? (upgrade as PremiumFeature) : "plan");
+    // A Duty Guard Pro plan has it all; an alerts plan can still move up (the upsell emails land here)
+    if (upgrade && !(value.paid && hasAudits(value.access))) value.openUpgrade(upgrade in PREMIUM_FEATURES ? (upgrade as PremiumFeature) : "plan");
   }, [value]);
 
   return (

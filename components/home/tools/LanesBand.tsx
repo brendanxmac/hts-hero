@@ -30,7 +30,7 @@ export const LanesBand = ({ facts }: { facts: MonitorFacts }) => (
               The HTS changed {facts.revisionsThisYear} times in {facts.year};
               you&apos;ll know about each one.
             </p>
-            <Link href="/tariff-monitor" className={`${mk.buttonOnDark} mt-6`}>
+            <Link href="/tariff-alerts" className={`${mk.buttonOnDark} mt-6`}>
               Watch your lanes{" "}
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
             </Link>

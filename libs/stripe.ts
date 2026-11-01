@@ -96,7 +96,7 @@ export const createCheckout = async ({
 
 // This is used to create Customer Portal sessions, so users can manage their subscriptions (payment methods, cancel, etc..)
 // The billing portal's settings for one product line: the active configuration whose
-// metadata.app matches (the Tariff Tracker's lists only its own tiers to switch between). Without
+// metadata.app matches (Duty Guard's lists only its own tiers to switch between). Without
 // one, Stripe's default configuration is used.
 const portalConfigurations = new Map<string, string | null>();
 

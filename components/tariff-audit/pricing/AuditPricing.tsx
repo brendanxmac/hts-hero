@@ -10,7 +10,7 @@ import type { AuditExample } from "@/libs/tariff-audit-example";
 import { AUDIT_GUARANTEE, AUDIT_GUARANTEE_DETAIL } from "../lib/copy";
 import { entryHref } from "@/libs/signup-onboarding";
 
-// The Duty Audits plans (AUDIT_TIERS, PRICING.md's value ladder), the same cards and logic as
+// The Duty Guard Pro plans (AUDIT_TIERS, PRICING.md's value ladder), the same cards and logic as
 // /tariff-alerts (PlanPricing): four side by side, all paid, the one that fits the visitor's products highlighted, named like the alerts
 // plans. Each audits the same imports, for the same users, as the alerts plan of its name, and
 // includes it. Each plan says it can pay for itself with one flagged entry, when the engine's example
@@ -28,6 +28,7 @@ export const auditsIncluded = (plan: SalesPlan, billing: Billing): string[] => [
   "Find overpaid & underpaid duty",
   "Keep 100% of what you recover",
   "Discover additional savings",
+  "Find lower-duty sourcing options",
   `Get New Tariff Alerts`,
 ];
 
@@ -36,12 +37,12 @@ const LARGEST = AUDIT_TIERS[AUDIT_TIERS.length - 1].maxPairs;
 const LARGE_CATALOG_HREF = bookCallHref({
   source: "tariff-audit",
   campaign: "large-catalog",
-  context: `Importer with more than ${LARGEST} products, from the Duty Audits pricing (htshero.com/duty-audits)`,
+  context: `Importer with more than ${LARGEST} products, from the Duty Audit pricing (htshero.com/duty-audit)`,
 });
 const PARTNERS_HREF = bookCallHref({
   source: "tariff-audit",
   campaign: "partners",
-  context: "Customs broker, 3PL or freight forwarder managing importer clients, from the Duty Audits pricing (htshero.com/duty-audits)",
+  context: "Customs broker, 3PL or freight forwarder managing importer clients, from the Duty Audit pricing (htshero.com/duty-audit)",
 });
 
 export const AuditPricing = ({ example }: { example: AuditExample | null }) => {
@@ -64,7 +65,7 @@ export const AuditPricing = ({ example }: { example: AuditExample | null }) => {
             <DarkBillingSwitch billing={billing} onChange={setBilling} />
           </div>
 
-          <PlanCards product="Duty Audits" plans={AUDIT_TIERS} billing={billing} features={auditsIncluded} href={entryHref("audits_page")} trialDays={REVERSE_TRIAL.days} lead={(p) => `Unlimited audits on ${p.maxPairs} products`} guarantee={AUDIT_GUARANTEE} best={best} products={products} />
+          <PlanCards product="Duty Guard Pro" plans={AUDIT_TIERS} billing={billing} features={auditsIncluded} href={entryHref("audits_page")} trialDays={REVERSE_TRIAL.days} lead={(p) => `Unlimited audits on ${p.maxPairs} products`} guarantee={AUDIT_GUARANTEE} best={best} products={products} />
 
           {/* More than the largest plan, and firms managing importer clients. Each link says which, so
               it's on the booking. The historical-audit row is off for now, 2026-10-28 */}

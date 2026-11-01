@@ -17,7 +17,7 @@ export interface TariffNewsEmailProps {
   shown?: number[]
   // What's new since the last alert about this update ("Published in the Federal Register")
   step?: string | null
-  // The reader has an account: the next step is their Tracker, not signing up
+  // The reader has an account: the next step is their Duty Guard, not signing up
   signedIn?: boolean
   // A line written in the outbox before approving
   note?: string | null
@@ -33,20 +33,20 @@ const newsPreview = (u: UpdateSummary) =>
     .join(". ")
     .slice(0, 150)
 
-// After the news, the way to the reader's own imports: their Tracker, or a free one
+// After the news, the way to the reader's own imports: their Duty Guard, or a free one
 export const TrackerLine = ({ signedIn, campaign }: { signedIn?: boolean; campaign: string }) =>
   signedIn ? (
     <P muted small>
       Does it hit your imports?{" "}
-      <Link href={siteLink("/tariff-tracker?tab=news", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
-        Check in your Tariff Tracker
+      <Link href={siteLink("/duty-guard?tab=news", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
+        Check in your Duty Guard
       </Link>
     </P>
   ) : (
     <P muted small>
       Want an alert when a change like this hits your own imports?{" "}
-      <Link href={siteLink("/tariff-tracker?setup=add", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
-        Try the Tariff Tracker free for {REVERSE_TRIAL.days} days.
+      <Link href={siteLink("/duty-guard?setup=add", campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
+        Try Duty Guard free for {REVERSE_TRIAL.days} days.
       </Link>
     </P>
   )

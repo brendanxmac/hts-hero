@@ -1,5 +1,5 @@
 // An arrival from one of the one-click ways in: the HTS pages' "Get Alerts" box (watch) or the
-// calculator's "Stop Overpaying for This Import" (track). Their links to the import in the Tracker
+// calculator's "Stop Overpaying for This Import" (track). Their links to the import in Duty Guard
 // carry `from=`, through sign-up and back, so its first visit can be a quiet one: the arrival panel
 // on the import (ArrivalPanel), no tour opening by itself (TourTriggers) and the sidebar folded
 // (TrackerShell), without saving any of that for later visits.
@@ -8,7 +8,7 @@ export type ArrivalSource = "watch" | "track";
 
 const PARAM = "from";
 
-// The import's address in the Tracker, marked as an arrival
+// The import's address in Duty Guard, marked as an arrival
 export const withArrival = (url: string, source: ArrivalSource) => `${url}${url.includes("?") ? "&" : "?"}${PARAM}=${source}`;
 
 // Read once, on the first call in the browser, so it holds for the whole visit after the panel
@@ -25,7 +25,7 @@ export const arrivalSource = (): ArrivalSource | null => {
   return source;
 };
 
-// "Explore the Tracker" on the arrival panel: the sidebar, folded for the arrival, opens
+// "Explore Duty Guard" on the arrival panel: the sidebar, folded for the arrival, opens
 export const EXPAND_SIDEBAR_EVENT = "hts-hero:expand-sidebar";
 
 // Takes the marker out of the address, so a reload or a shared link isn't an arrival again

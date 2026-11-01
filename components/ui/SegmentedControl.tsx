@@ -4,7 +4,7 @@
 // content (Compact / Detailed, % / $, Chart / Table). The selected option is raised onto the
 // surface; the others sit on the inset track. To switch what a whole panel or page shows, use
 // TabBar instead. Radii are
-// fixed (not rounded-lg/md), so themes that remap those (the Tracker's) keep track and option
+// fixed (not rounded-lg/md), so themes that remap those (Duty Guard's) keep track and option
 // matching: a slightly rounded track around slightly rounded options.
 export function SegmentedControl<T extends string>({
   label,

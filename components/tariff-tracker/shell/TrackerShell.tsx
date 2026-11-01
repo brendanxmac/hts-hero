@@ -21,7 +21,7 @@ import { NavMeta, useNavMeta } from "./useNavMeta";
 import { useTrackerNav } from "./TrackerNav";
 import { useHomeWaitsForImports } from "./useNoImportsYet";
 
-// The Tariff Tracker as an app (DESIGN_SYSTEM.md §15): a floating sidebar, dark in both modes,
+// Duty Guard as an app (DESIGN_SYSTEM.md §15): a floating sidebar, dark in both modes,
 // beside the open section. Each tab's dot and count say what's waiting there (free checks left,
 // on the trial); paid-only tabs carry a lock until a plan unlocks them, and still open onto what
 // they'd show.
@@ -158,7 +158,7 @@ const useLockPageScroll = () => {
 
 // The sidebar folds down to its icons, for more room; remembered on this device. An arrival from
 // Get Alerts or Stop Overpaying (arrival.ts) starts folded, without saving it, so the import they
-// asked for is what they see; "Explore the Tracker" on its panel opens it
+// asked for is what they see; "Explore Duty Guard" on its panel opens it
 const COLLAPSED_KEY = "hts-hero-tariff-tracker-sidebar-collapsed";
 
 export const TrackerShell = ({ children }: { children: ReactNode }) => {
@@ -207,7 +207,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
           </Link>
           {!collapsed && (
             <div className="flex min-w-0 flex-1 flex-col">
-              <span className={`${tt.display} truncate text-[0.95rem] font-semibold`}>Tariff Tracker</span>
+              <span className={`${tt.display} truncate text-[0.95rem] font-semibold`}>Duty Guard</span>
               <span className="truncate text-xs text-base-content/60">{config.appName}</span>
             </div>
           )}
@@ -221,7 +221,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
             {collapsed ? <ChevronDoubleRightIcon className="h-4 w-4" aria-hidden /> : <ChevronDoubleLeftIcon className="h-4 w-4" aria-hidden />}
           </button>
         </div>
-        <nav role="tablist" aria-orientation="vertical" aria-label="Tariff Tracker" className="relative flex flex-1 flex-col gap-4 overflow-y-auto">
+        <nav role="tablist" aria-orientation="vertical" aria-label="Duty Guard" className="relative flex flex-1 flex-col gap-4 overflow-y-auto">
           {GROUPS.map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
               {collapsed ? (
@@ -254,7 +254,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
       </aside>
 
       {/* Phones and tablets; the sidebar's tabs carry the ids the panels point to */}
-      <nav role="tablist" aria-label="Tariff Tracker" className="flex shrink-0 gap-1 overflow-x-auto border-b border-base-300 bg-base-100 px-2 py-2 lg:hidden">
+      <nav role="tablist" aria-label="Duty Guard" className="flex shrink-0 gap-1 overflow-x-auto border-b border-base-300 bg-base-100 px-2 py-2 lg:hidden">
         {shown.map((section) => (
           <TopTab key={section.slug} section={section} />
         ))}

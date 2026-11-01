@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, LinkIcon, ListBulletIcon } from "@heroicons/react/20/solid";
+import { CheckIcon, LinkIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import { TariffFinder } from "../lib/useTariffFinder";
 
@@ -26,7 +26,7 @@ export const ViewInHtsButton = ({ f }: { f: TariffFinder }) =>
       className={ui.button({ variant: "secondary", size: "sm" })}
       onClick={() => f.selectedElement && f.openExplorerAt(f.selectedElement, "results_heading_path")}
     >
-      <ListBulletIcon className="w-4 h-4" />
-      View in HTS
+      <MagnifyingGlassIcon className="w-4 h-4" />
+      View HTS Code
     </button>
   );

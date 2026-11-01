@@ -9,11 +9,11 @@ export const SIGNUP_HOME = "/?welcome=1";
 export const SIGNIN_HOME = "/";
 
 // The sign-up's source, from where it was headed after the auth callback. Calculator CTAs come back
-// to the calculator, Tracker asks to the Tracker; anything else is a generic sign-up.
+// to the calculator, Duty Guard asks to Duty Guard; anything else is a generic sign-up.
 export const signupSourceFor = (redirect: string | null | undefined): SignupSource => {
   const path = (redirect ?? "").split(/[?#]/)[0];
   if (path.startsWith("/duty-calculator") || path.startsWith("/tariffs") || path.startsWith("/hts/")) return "calculator";
-  if (path.startsWith("/tariff-tracker") || path.startsWith("/tariff-monitor") || path.startsWith("/duty-audits") || path.startsWith("/tariff-audit") || path.startsWith("/tariff-updates")) return "tracker";
+  if (path.startsWith("/duty-guard") || path.startsWith("/tariff-monitor") || path.startsWith("/tariff-alerts") || path.startsWith("/duty-audit") || path.startsWith("/tariff-audit") || path.startsWith("/tariff-updates")) return "tracker";
   if (path.startsWith("/classify") || path.startsWith("/classifications") || path.startsWith("/c/")) return "classify";
   return "generic";
 };

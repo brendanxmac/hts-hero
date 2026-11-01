@@ -1,5 +1,6 @@
 "use client";
 
+import { hasAudits } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "../access/accessContext";
 import { useInsights } from "../insights/InsightsContext";
 import { wholeDollars } from "../insights/teasers";
@@ -22,7 +23,7 @@ export interface NavMeta {
 export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
   const { items } = useTracker();
   const insights = useInsights();
-  const { signedIn, paid, savingsLeft, auditsLeft } = useTrackerAccess();
+  const { signedIn, access } = useTrackerAccess();
   // Tariff actions first seen since the news tab was last opened (the last week, before it ever was)
   const updates = useTariffUpdates("recent");
   const [seenAt, setSeenAt] = useState<string | null>(null);
@@ -48,8 +49,10 @@ export const useNavMeta = (): Partial<Record<SectionSlug, NavMeta>> => {
   else meta.catalog = { text: "Start here", tone: "primary" };
   // On the trial, what's still free; once the checks are spent (or on a plan), what they found
   const found = insights.totals.anyUsd + insights.beyond.anyUsd;
-  if (signedIn && !paid && savingsLeft > 0) meta.savings = { text: `${savingsLeft} free`, tone: "primary" };
-  else if (insights.savingsReady && found > 0) meta.savings = { text: `up to ${wholeDollars(found)}`, tone: "success" };
-  if (signedIn && !paid) meta.entries = auditsLeft > 0 ? { text: `${auditsLeft} free`, tone: "primary" } : { text: "Used", tone: "neutral" };
+  // Without Duty Guard Pro: how many products could save, nothing about what
+  if (signedIn && !hasAudits(access)) {
+    const products = insights.beyond.productsWithSavings;
+    if (products > 0) meta.savings = { text: `${products.toLocaleString("en-US")} found`, tone: "primary" };
+  } else if (insights.savingsReady && found > 0) meta.savings = { text: `up to ${wholeDollars(found)}`, tone: "success" };
   return meta;
 };

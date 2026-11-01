@@ -17,10 +17,12 @@ import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { SKIP_REASONS, SkipReason } from "@/libs/tariff-tracker/onboarding";
 import { delay } from "./parts";
 
-// "Skip setup": not a door out but a last word. What the Tracker can't do without their imports and
+// "Skip setup": not a door out but a last word. What Duty Guard can't do without their imports and
 // that the trial is waiting on them, a way to talk to us in the support chat, then the two choices
-// side by side. Skipping opens a popup asking why, optionally (it tells us what's in the way;
-// "something else" takes a note).
+// side by side. Skipping can open a popup asking why, optionally (it tells us what's in the way;
+// "something else" takes a note). That popup is off for now: flip ASK_WHY_ON_SKIP to bring it back.
+
+const ASK_WHY_ON_SKIP = false;
 
 const WITHOUT = [
   "Alert you the day a tariff change hits one of your products",
@@ -59,14 +61,14 @@ export const SkipStep = ({
           className={`${tt.display} tt-ob-rise m-0 text-[2rem] font-semibold leading-tight tracking-tight text-base-content outline-hidden`}
           style={delay(60)}
         >
-          Everything in the Tracker runs on your imports.
+          Everything in Duty Guard runs on your imports.
         </h1>
         <p
           className="tt-ob-rise m-0 text-base leading-relaxed text-base-content/75"
           style={delay(120)}
         >
           Without them there&apos;s nothing to watch. Until you add some, the
-          Tracker can&apos;t:
+          Duty Guard can&apos;t:
         </p>
       </div>
 
@@ -111,7 +113,7 @@ export const SkipStep = ({
         <button
           type="button"
           className={`${ui.button({ variant: "secondary", size: "lg" })} w-full justify-center`}
-          onClick={() => setAsking(true)}
+          onClick={() => (ASK_WHY_ON_SKIP ? setAsking(true) : onSkip(null, ""))}
         >
           Skip setup
         </button>
@@ -126,7 +128,7 @@ export const SkipStep = ({
   );
 };
 
-// Opens Crisp over the Tracker (it can be hidden on some routes, config.crisp)
+// Opens Crisp over Duty Guard (it can be hidden on some routes, config.crisp)
 const openSupportChat = () => {
   if (config.crisp?.id) {
     Crisp.chat.show();
@@ -159,7 +161,7 @@ const SupportBox = () => (
 );
 
 // Why they're skipping, if they'd like to say (never required). Above the
-// takeover (z-[70]), so it sits at z-[80] and carries the Tracker's look itself.
+// takeover (z-[70]), so it sits at z-[80] and carries Duty Guard's look itself.
 const SkipReasonDialog = ({
   open,
   onClose,

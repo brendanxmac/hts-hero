@@ -1,5 +1,5 @@
 import { sectionUrl, TRACKER_PATH } from "@/components/tariff-tracker/sections";
-import { signupHref } from "@/components/tariff-tracker/access/signup";
+import { signupHref, TRACKER_START } from "@/components/tariff-tracker/access/signup";
 
 // The sign-up onboarding (/onboarding): three questions right after signing up from the homepage,
 // saved to signup_onboarding (supabase/migrations/signup_onboarding.sql) for founder follow-up,
@@ -8,20 +8,25 @@ import { signupHref } from "@/components/tariff-tracker/access/signup";
 export const ONBOARDING_PATH = "/onboarding";
 
 // Where a finished onboarding goes, by the homepage section they started from (?from=, kept as
-// signup_onboarding.entry_point). The Tracker reads ?welcome= (TourTriggers): "calculator" opens
+// signup_onboarding.entry_point). Duty Guard reads ?welcome= (TourTriggers): "calculator" opens
 // its calculator with no tour or popup; "imports" opens the tour and "alerts" opens it on its
 // Alerts step, both ending in adding imports.
 // /classifications reads ?welcome=tour (ClassifyOnboarding) and ends on a new classification.
 // Where a sign-up started (?from=, signup_onboarding.entry_point): a homepage section with a button,
-// or one of the sales pages (/tariff-alerts, /duty-audits)
+// or one of the sales pages (/tariff-alerts, /duty-audit)
 export const HOME_SECTIONS = ["hero", "audit", "alerts", "calculator", "savings", "classify", "closing"] as const;
-export const ENTRY_POINTS = [...HOME_SECTIONS, "alerts_page", "audits_page"] as const;
+export const ENTRY_POINTS = [...HOME_SECTIONS, "alerts_page", "audits_page", "pricing_page", "calculator_recent", "calculator_track", "calculator_unlock", "hts_page", "country_hub"] as const;
 export type HomeSection = (typeof HOME_SECTIONS)[number];
 export type EntryPoint = (typeof ENTRY_POINTS)[number];
 export const isEntryPoint = (v: unknown): v is EntryPoint => ENTRY_POINTS.includes(v as EntryPoint);
 
-// Every sign-up button: sign up, then the onboarding, remembering where it started (?from=)
-export const entryHref = (entry: EntryPoint) => signupHref(`${ONBOARDING_PATH}?from=${entry}`);
+// Every sign-up button: sign up, then the onboarding, remembering where it started (?from=). `next`
+// is where to land after it, for a button that already knows (the import it just saved)
+export const entryHref = (entry: EntryPoint, next?: string) =>
+  signupHref(`${ONBOARDING_PATH}?from=${entry}${next ? `&next=${encodeURIComponent(next)}` : ""}`);
+
+// A `next` that's safe to send someone to: a path on this site
+export const safeNext = (next: unknown) => (typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? next : null);
 
 // Signed in, the same button opens the product itself instead of signing up again
 export const ENTRY_SIGNED_IN_HREF: Record<EntryPoint, string> = {
@@ -34,6 +39,12 @@ export const ENTRY_SIGNED_IN_HREF: Record<EntryPoint, string> = {
   closing: TRACKER_PATH,
   alerts_page: sectionUrl("changes"),
   audits_page: sectionUrl("entries"),
+  pricing_page: TRACKER_PATH,
+  calculator_recent: sectionUrl("catalog"),
+  calculator_track: sectionUrl("catalog"),
+  calculator_unlock: "/duty-calculator",
+  hts_page: sectionUrl("catalog"),
+  country_hub: TRACKER_START,
 };
 
 export const TRACKER_WELCOME_PARAM = "welcome";
@@ -41,11 +52,13 @@ export const CLASSIFY_WELCOME = "/classifications?welcome=tour";
 const withParam = (url: string, value: string) => `${url}${url.includes("?") ? "&" : "?"}${TRACKER_WELCOME_PARAM}=${value}`;
 export const onboardingNext = (entryPoint: string | null | undefined): string => {
   if (entryPoint === "calculator") return withParam(sectionUrl("calculator"), "calculator");
+  // Their searches are already saved: straight to the list, nothing to add
+  if (entryPoint === "calculator_recent") return sectionUrl("catalog");
   if (entryPoint === "classify") return CLASSIFY_WELCOME;
   // Alerts: the tour opens on Alerts, then into adding imports
   if (entryPoint === "alerts" || entryPoint === "alerts_page") return withParam(TRACKER_PATH, "alerts");
   // Savings and audits, and everything else (the hero, the closing button): the tour, into adding
-  // imports, since everything in the Tracker runs on them
+  // imports, since everything in Duty Guard runs on them
   return withParam(TRACKER_PATH, "imports");
 };
 

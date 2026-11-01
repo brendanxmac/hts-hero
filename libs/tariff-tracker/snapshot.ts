@@ -14,7 +14,7 @@ import { historyRange } from "../../components/tariff-tracker/product/analysis/h
 import { trackProduct, type TrackedProduct } from "../../components/tariff-tracker/report"
 import { originRates } from "../../components/tariff-tracker/product/analysis/analysis"
 
-// An account's Tracker numbers, worked out on the server with the same code the Tracker runs in
+// An account's Duty Guard numbers, worked out on the server with the same code Duty Guard runs in
 // the browser (TrackerContext, InsightsContext): every import's duty on today's rates with its
 // remembered adjustments, the rate changes that hit them in the last 12 months, and potential
 // savings, unlocked (checked, or covered by a paid plan) and locked (the teaser), leaving out
@@ -89,7 +89,7 @@ export const coveredKeys = (items: CatalogItem[], products: TrackedProduct[], li
 
 export const computeSnapshot = async (db: Db, userId: string, htsElements: HtsElement[]): Promise<TrackerSnapshot | null> => {
   const { data: catalog } = await db.from("tracker_catalogs").select("items, adjustments, updated_at").eq("user_id", userId).maybeSingle()
-  // Stored the way the Tracker saves it (catalogSync.ts), read the way it reads it
+  // Stored the way Duty Guard saves it (catalogSync.ts), read the way it reads it
   // The user's own imports: the example list isn't counted (onboarding emails quote these)
   const items = catalog ? realItems(readCatalog(JSON.stringify(catalog.items)) ?? []) : []
   const adjustments = catalog ? readAdjustments(JSON.stringify(catalog.adjustments)) : {}
@@ -199,7 +199,7 @@ export const refreshSnapshots = async (db: Db, htsElements: HtsElement[], { dead
       done++
     } catch (e) {
       failed++
-      console.error(`Tracker snapshot for ${c.user_id}:`, e instanceof Error ? e.message : e)
+      console.error(`Duty Guard snapshot for ${c.user_id}:`, e instanceof Error ? e.message : e)
     }
   }
   return { done, failed, remaining: todo.length - done - failed }

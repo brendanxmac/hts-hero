@@ -1,5 +1,5 @@
 // The products someone looked up in the calculator, newest first, kept on this device. The
-// Tariff Tracker offers them as a head start for a new catalog ("start from your recent lookups").
+// Duty Guard offers them as a head start for a new catalog ("start from your recent lookups").
 // Signing up keeps them: they're read from the same device afterward.
 
 export interface RecentLookup {

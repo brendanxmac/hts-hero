@@ -1,5 +1,5 @@
 // What the US imported of one HTS code, by country, from the Census Bureau's international trade
-// API (/api/sourcing/trade), for the Tracker's Sourcing tab. Plain types and helpers, shared by the
+// API (/api/sourcing/trade), for Duty Guard's Sourcing tab. Plain types and helpers, shared by the
 // route and the page.
 //
 // Census terms (https://www.census.gov/data/developers/about/terms-of-service.html): show its

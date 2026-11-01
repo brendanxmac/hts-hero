@@ -18,7 +18,7 @@ export const useNoImportsYet = () => {
   return !loading && !accessLoading && (!signedIn || synced) && items.length === 0;
 };
 
-// Home asked for (the Tracker's default tab) with no imports yet: Your Imports, in its place
+// Home asked for (Duty Guard's default tab) with no imports yet: Your Imports, in its place
 export const useHomeWaitsForImports = () => {
   const empty = useNoImportsYet();
   const { tab } = useTrackerNav();

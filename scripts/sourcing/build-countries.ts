@@ -1,5 +1,5 @@
 // Builds libs/sourcing/governance.json: each country's World Bank governance scores and its
-// logistics score, for the Tracker's Sourcing tab ("can I rely on sourcing there?").
+// logistics score, for Duty Guard's Sourcing tab ("can I rely on sourcing there?").
 //
 // Sources, both from the World Bank's API and licensed CC BY 4.0 (credited wherever shown):
 // - Worldwide Governance Indicators: scores 0–100 (higher is better) for rule of law, control of

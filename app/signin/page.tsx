@@ -231,7 +231,7 @@ function LoginContent() {
           toast.error(error.message);
         } else {
           toast.success(
-            "Email sent! Check your inbox for a message from HTS Hero (including spam). If this is your first time signing in, you will need to confirm your email first.",
+            "Email sent! Check your inbox for your code from HTS Hero (including spam).",
             {
               duration: 30000,
             }

@@ -4,8 +4,8 @@ import { siteLink } from "../kit/brand"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
 // A day after sign-up, to an account that came for the calculator (or classification) and hasn't
-// opened the Tariff Tracker (libs/email/lifecycle.ts tracker_intro). The calculator answers one
-// import at a time, today; the Tracker watches all of them, every day. What an alert looks like,
+// opened Duty Guard (libs/email/lifecycle.ts tracker_intro). The calculator answers one
+// import at a time, today; Duty Guard watches all of them, every day. What an alert looks like,
 // then the way in: the takeover, which offers their calculator searches first.
 
 export interface TrackerIntroEmailProps {
@@ -18,30 +18,28 @@ const CAMPAIGN = "tracker-intro"
 
 export default function TrackerIntroEmail({ footer }: TrackerIntroEmailProps) {
   return (
-    <EmailLayout preview={`The duty calculator answers one import at a time. The Tariff Tracker watches all of them, free for ${REVERSE_TRIAL.days} days.`} footer={footer}>
+    <EmailLayout preview={`The duty calculator answers one import at a time. Duty Guard watches all of them, free for ${REVERSE_TRIAL.days} days.`} footer={footer}>
       <Eyebrow>Included in your account</Eyebrow>
-      <Title>Your calculator searches, watched every day</Title>
+      <Title>We monitor your imports 24/7</Title>
       <P>
-        The duty calculator tells you what an import costs today. The Tariff Tracker keeps checking every one of your imports and tells you the day a new tariff hits
-        one, like this:
+        The duty calculator tells you what an import costs today. Duty Guard monitors every one of your imports and gives you:
       </P>
-      <AlertSample
-        label="Example alert"
-        updateTitle="Section 232: more steel derivative products added"
+      {/* <AlertSample
+        label="Tariff Alert"
+        updateTitle="A new tariff affects 1 of your imports"
         code="7326.90.86.88"
         country="Germany"
         description="Other articles of iron or steel"
         beforePct={12.9}
-        afterPct={52.9}
-      />
-      <P>Add your imports once (just HTS codes and countries of origin) and you&apos;ll:</P>
+        afterPct={32.9}
+      /> */}
+      {/* <P>Add your imports to unlock:</P> */}
       <Checklist items={TRACKER_POINTS} />
       <P>
-        Already looked some up in the calculator? They&apos;re waiting for you: start from your recent searches in one click. Your free {REVERSE_TRIAL.days}-day trial
-        starts when you add them, on up to {REVERSE_TRIAL.imports} imports, no credit card.
+        Try it free, no credit card required.
       </P>
-      <Cta href={siteLink("/tariff-tracker?setup=add", CAMPAIGN)} variant="next">
-        Track my imports &rarr;
+      <Cta href={siteLink("/duty-guard?setup=add", CAMPAIGN)} variant="next">
+        Add your imports &rarr;
       </Cta>
       <Signature />
       <PlanStrip campaign={CAMPAIGN} />

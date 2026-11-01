@@ -13,9 +13,9 @@ import { ThemeSwitch } from "@/components/tariff-tracker/shell/ThemeSwitch";
 import ButtonAccount from "@/components/ButtonAccount";
 import * as mk from "./styles";
 
-// The site header for landing pages: light, or in the Tracker's look with a light/dark toggle on
+// The site header for landing pages: light, or in Duty Guard's look with a light/dark toggle on
 // pages that opt in (skin:). The tariff products first (the tools themselves when signed in),
-// sign in (or the account menu and the Tariff Tracker, signed in) on the right.
+// sign in (or the account menu and Duty Guard, signed in) on the right.
 // Sticky, with a frosted background.
 
 // The products' pages, signed out. /tariff-monitor is off the nav for now (2026-10-29); the page
@@ -23,7 +23,7 @@ import * as mk from "./styles";
 const NAV = [
   { href: "/duty-calculator", label: "Tariff Calculator" },
   { href: "/tariff-alerts", label: "Tariff Alerts" },
-  { href: "/duty-audits", label: "Duty Audits" },
+  { href: "/duty-audit", label: "Duty Audit" },
   { href: "/tariff-updates", label: "Tariff News" },
   { href: "/classify", label: "Classification Assistant" },
 ];
@@ -31,7 +31,7 @@ const NAV = [
 // Signed in, the products open the tools themselves rather than their marketing pages
 const SIGNED_IN_NAV = [
   { href: "/duty-calculator", label: "Tariff Calculator" },
-  { href: "/tariff-tracker", label: "Tariff Tracker" },
+  { href: "/duty-guard", label: "Duty Guard" },
   { href: "/tariff-updates", label: "Tariff News" },
   { href: "/classifications", label: "Classification Assistant" },
 ];
@@ -43,7 +43,7 @@ export const MarketingHeader = () => {
   useEscapeToClose(open, () => setOpen(false));
   const nav = user ? SIGNED_IN_NAV : NAV;
 
-  // Only on pages in the Tracker's look; the rest of the marketing layer is always light
+  // Only on pages in Duty Guard's look; the rest of the marketing layer is always light
   const themeSwitch = (
     <span className="hidden skin:inline-flex">
       <ThemeSwitch className="flex h-10 w-10 items-center justify-center rounded-full border border-base-300 text-base-content/70 transition-colors hover:bg-tt-soft hover:text-base-content focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40" />
@@ -52,7 +52,7 @@ export const MarketingHeader = () => {
 
   const actions = user ? (
     // The account menu: settings, billing and signing out, as on the app's other pages. No
-    // Tracker button: the nav's "Tariff Tracker" opens it (2026-10-26)
+    // Duty Guard button: the nav's "Duty Guard" opens it (2026-10-26)
     <ButtonAccount />
   ) : (
     // The "Try it free" button is off the header for now

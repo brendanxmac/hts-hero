@@ -76,9 +76,9 @@ export function SubscribeForm({ source, compact = false, inline = false }: { sou
     }
   }
 
-  // Subscribed: the confirmation, then straight on to the Tariff Tracker, which matches every update
+  // Subscribed: the confirmation, then straight on to Duty Guard, which matches every update
   // to their own imports. The account is created first (the address carried over), then the
-  // Tracker onboards them.
+  // Duty Guard onboards them.
   if (status !== "idle" && status !== "sending") {
     const done = DONE[status]
     if (inline)

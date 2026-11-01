@@ -1,3 +1,4 @@
+import { readTrackerAccess } from "../tariff-tracker/access"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { UpdateSummary } from "../../emails/kit/parts"
 import { STAGE_ORDER, STAGES, type Stage } from "../tariff-updates/types"
@@ -65,11 +66,19 @@ const activeSubscribers = async (db: Db, frequency: "instant" | "weekly") => {
   return (data ?? []) as Subscriber[]
 }
 
-// Account holders' Slack and Teams webhooks, and whether they want email
+// Account holders' Slack and Teams webhooks, and whether they want email. Webhooks count only on
+// the plans with Slack and Teams, so one connected during the trial pauses after it
 const channelSettings = async (db: Db, userIds: string[]) => {
   if (!userIds.length) return new Map<string, { email_enabled: boolean; slack_webhook: string | null; teams_webhook: string | null }>()
   const { data } = await db.from("tracker_alert_settings").select("user_id, email_enabled, slack_webhook, teams_webhook").in("user_id", userIds)
-  return new Map((data ?? []).map((r) => [r.user_id as string, r]))
+  const rows = await Promise.all(
+    (data ?? []).map(async (r) => {
+      if (!r.slack_webhook && !r.teams_webhook) return r
+      const { entitlements } = await readTrackerAccess(db, r.user_id as string)
+      return entitlements.chat ? r : { ...r, slack_webhook: null, teams_webhook: null }
+    })
+  )
+  return new Map(rows.map((r) => [r.user_id as string, r]))
 }
 
 // The messages for one subscriber: email unless an account turned it off, plus its webhooks

@@ -5,7 +5,7 @@ import { sendTransactional } from "@/libs/email/outbox";
 
 export const dynamic = "force-dynamic";
 
-// Audit requests from /duty-audits go to this inbox
+// Audit requests from /duty-audit go to this inbox
 const NOTIFY = "brendan@htshero.com";
 
 // Saves an audit request, then emails the team and confirms to the requester. Saving comes first

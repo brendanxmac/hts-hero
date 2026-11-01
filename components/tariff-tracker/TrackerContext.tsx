@@ -18,7 +18,7 @@ import { FilterContext, FilterState } from "./filters";
 import { CatalogEntry, findCountry } from "./parse";
 import { TrackedProduct, trackProduct } from "./report";
 
-// Everything the Tariff Tracker's sections share: the HTS data, the product catalog, each
+// Everything Duty Guard's sections share: the HTS data, the product catalog, each
 // product's adjustments, the catalog's filters and the date rates are worked out for. Provided
 // around every tab, so it carries over as the user moves between them.
 
@@ -247,7 +247,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   );
   const room = Math.max(0, access.pairLimit - trackedKeys.size);
   const moreToTrack = Math.min(room, candidates.length);
-  // track: false when the Tracker fills it on its own (imports added, an upgrade), not on request
+  // track: false when Duty Guard fills it on its own (imports added, an upgrade), not on request
   const fill = (keys: string[], track = true) => {
     if (!keys.length) return 0;
     const on = Object.fromEntries(keys.map((k) => [k, true]));

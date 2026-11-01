@@ -10,7 +10,7 @@ export interface TariffDigestEmailProps {
   // "Oct 8 – Oct 14, 2026"
   period: string
   updates: UpdateSummary[]
-  // The reader has an account: the next step is their Tracker, not signing up
+  // The reader has an account: the next step is their Duty Guard, not signing up
   signedIn?: boolean
   note?: string | null
   footer: EmailFooter

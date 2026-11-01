@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 const STICKY_GAP = 16;
 
 // The header that stays on screen above the content, when there is one: a header marked
-// data-sticky-header that's showing (a Tracker import's, inside a tab that may be hidden), else the
+// data-sticky-header that's showing (a Duty Guard import's, inside a tab that may be hidden), else the
 // site's own when it's sticky or fixed. What's under it is hidden, so columns stop (and scrolling
 // lands) below it.
 export const stickyHeaderHeight = () => {

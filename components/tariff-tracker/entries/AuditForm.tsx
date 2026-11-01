@@ -30,7 +30,7 @@ export const AuditForm = ({ fixedProduct }: { fixedProduct?: TrackedProduct }) =
   const { products: catalog } = useTracker();
   const { addAndCheck } = useEntries();
   const products = fixedProduct ? [fixedProduct] : catalog;
-  const { paid, auditsLeft, openUpgrade } = useTrackerAccess();
+  const { auditsLeft, openUpgrade } = useTrackerAccess();
   const range = useMemo(() => historyRange(), []);
   const today = todayIso();
   const [draft, setDraft] = useState<Draft>({
@@ -48,7 +48,7 @@ export const AuditForm = ({ fixedProduct }: { fixedProduct?: TrackedProduct }) =
     setDraft((d) => ({ ...d, ...patch }));
     setProblem(null);
   };
-  const outOfChecks = !paid && auditsLeft === 0;
+  const outOfChecks = auditsLeft === 0;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -124,7 +124,7 @@ export const AuditForm = ({ fixedProduct }: { fixedProduct?: TrackedProduct }) =
             "Checked with the product's own answers and trade program from your imports. Duty paid is on the entry summary, without MPF or HMF."}
         </p>
         <button type="submit" className={`${ui.button({ variant: "primary" })} shrink-0`} disabled={busy || !products.length}>
-          {busy ? "Checking…" : outOfChecks ? "See plans" : paid ? "Check this entry" : "Check this entry · 1 free check"}
+          {busy ? "Checking…" : outOfChecks ? "Upgrade to Duty Guard Pro" : "Check this entry"}
         </button>
       </div>
     </form>

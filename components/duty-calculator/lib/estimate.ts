@@ -109,7 +109,7 @@ export const parseAnswers = (raw: string | null): Answers => {
   return answers;
 };
 
-// The public calculator; the Tariff Tracker has its own copy
+// The public calculator; Duty Guard has its own copy
 export const CALCULATOR_PATH = "/duty-calculator";
 
 // A link that opens the Tariff Calculator with these inputs

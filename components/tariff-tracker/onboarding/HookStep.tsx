@@ -6,7 +6,7 @@ import * as ui from "@/components/ui/styles";
 import { delay } from "./parts";
 
 // The first screen of the import flow: a short hand-off that says where they are (adding their
-// imports) and why it matters, now that the Tracker onboarding has done the welcoming. One scene:
+// imports) and why it matters, now that Duty Guard onboarding has done the welcoming. One scene:
 // their imports on the left, and what they switch on lighting up one by one on the right. Then on
 // to what an import is (ExplainStep).
 
@@ -34,7 +34,7 @@ const UNLOCKS = [
   { Icon: ScaleIcon, title: "Live Duty Rates", text: "Every tariff on each import", tone: "var(--color-primary)", text_: "text-primary" },
   { Icon: BellAlertIcon, title: "Tariff Alerts", text: "Know the moment a rate changes", tone: "var(--color-error)", text_: "text-error" },
   { Icon: CurrencyDollarIcon, title: "Savings", text: "Programs you may qualify for", tone: "var(--color-success)", text_: "text-success" },
-  { Icon: DocumentMagnifyingGlassIcon, title: "Duty Audits", text: "Duty you may have overpaid", tone: "var(--color-success)", text_: "text-success" },
+  { Icon: DocumentMagnifyingGlassIcon, title: "Duty Audit", text: "Duty you may have overpaid", tone: "var(--color-success)", text_: "text-success" },
 ];
 
 const LIGHT_AT = 1150;
@@ -99,7 +99,7 @@ export const HookStep = ({ onNext }: { onNext: () => void }) => (
         Let&apos;s add <span className="text-primary">your imports.</span>
       </h1>
       <p className="tt-ob-rise m-0 max-w-xl text-lg leading-relaxed text-base-content/70" style={delay(120)}>
-        It&apos;s the one step that switches everything on. Once they&apos;re in, the Tracker gets to work on them right away.
+        It&apos;s the one step that switches everything on. Once they&apos;re in, Duty Guard gets to work on them right away.
       </p>
     </div>
 

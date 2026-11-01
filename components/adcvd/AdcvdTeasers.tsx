@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowDownIcon, ArrowRightIcon, CheckBadgeIcon, CheckCircleIcon, ExclamationTriangleIcon, ShieldExclamationIcon } from "@heroicons/react/20/solid"
+import { ArrowRightIcon, CheckBadgeIcon, CheckCircleIcon, ExclamationTriangleIcon, ShieldExclamationIcon } from "@heroicons/react/20/solid"
 import { useUser } from "@/contexts/UserContext"
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing"
 import * as ui from "@/components/ui/styles"
@@ -31,58 +31,55 @@ export const useAdcvdFlagged = (code: string, country: string) => {
   return null
 }
 
-export const AdcvdDutyTeaser = ({ code, country, onOpen }: { code: string; country: string; onOpen: () => void }) => {
+// The notice under the Duty tab's totals, beside the alert: loud, with the button at its right
+const DutyNotice = ({ title, detail, cta, onOpen }: { title: string; detail?: string; cta: string; onOpen: () => void }) => (
+  <div>
+    <button
+      type="button"
+      onClick={onOpen}
+      className="group flex h-full w-full flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-warning/50 px-3.5 py-3 text-left lg:flex-nowrap transition-colors hover:bg-base-content/5"
+    >
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warning text-warning-content" aria-hidden>
+        <ExclamationTriangleIcon className="h-4.5 w-4.5" />
+      </span>
+      <span className="min-w-0 flex-1 leading-snug text-base-content">
+        <b className="block text-sm">{title}</b>
+        {detail && <span className="block text-xs text-base-content/70">{detail}</span>}
+      </span>
+      <span className="ml-auto inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-warning px-3.5 py-2 text-sm font-semibold text-warning-content transition-transform group-hover:translate-x-0.5">
+        {cta}
+        <ArrowRightIcon className="h-4 w-4" aria-hidden />
+      </span>
+    </button>
+  </div>
+)
+
+export const AdcvdDutyTeaser = ({ code, country, onOpen, onSignUp }: { code: string; country: string; onOpen: () => void; onSignUp: () => void }) => {
   const { user, isLoading } = useUser()
   const locked = useAdcvdLookup(code, country) === "locked"
   const flagged = useAdcvdFlagged(code, country)
   if (isLoading) return null
   // Signed out: that AD/CVD may apply, never whether we found any, in amber so it isn't missed. The
-  // host's onOpen offers the free account
+  // words say a free account is what's next, and the button opens its pitch (back to the check after)
   if (!user)
     return (
-      <div className={`${ui.cardSection} border-t border-base-300 py-3!`}>
-        <button
-          type="button"
-          onClick={onOpen}
-          className="group flex w-full items-center gap-2.5 rounded-xl bg-warning/10 px-3.5 py-2 text-left text-sm text-base-content transition-colors hover:bg-warning/15"
-        >
-          <ExclamationTriangleIcon className="h-4 w-4 shrink-0 text-warning" aria-hidden />
-          <span className="min-w-0 flex-1">
-            <b>AD/CVD duties may apply to this import</b>
-            <span className="text-base-content/70"> and aren&apos;t in this estimate.</span>
-          </span>
-          <span className="shrink-0 font-medium text-primary group-hover:underline">See if they apply</span>
-        </button>
-      </div>
+      <DutyNotice
+        onOpen={onSignUp}
+        title="AD/CVD cases may increase duty by over 100%"
+        detail="Check this import with a free account."
+        cta="Check AD/CVD"
+      />
     )
   // Still checking
   if (flagged === null) return null
   if (!flagged)
     return (
-      <div className={`${ui.cardSection} flex items-center gap-2 border-t border-base-300 py-3! text-sm text-base-content/70`}>
+      <div className="flex items-center gap-2 rounded-xl border border-base-300 px-4 py-3 text-sm text-base-content/70">
         <CheckCircleIcon className="h-4 w-4 shrink-0 text-success" aria-hidden />
         No antidumping or countervailing duty case found for this import.
       </div>
     )
-  return (
-    <div className={`${ui.cardSection} border-t border-base-300 py-3!`}>
-      <button
-        type="button"
-        onClick={onOpen}
-        className="group flex w-full items-center gap-2.5 rounded-xl bg-warning/10 px-3.5 py-2 text-left text-sm text-base-content transition-colors hover:bg-warning/15"
-      >
-        <ExclamationTriangleIcon className="h-4 w-4 shrink-0 text-warning" aria-hidden />
-        <span className="min-w-0 flex-1">
-          <b>AD/CVD duties may apply to this import</b>
-          <span className="text-base-content/70"> and aren&apos;t in this estimate.</span>
-        </span>
-        <span className="inline-flex shrink-0 items-center gap-1 font-medium text-primary group-hover:underline">
-          {locked ? "See which cases" : "Check the cases"}
-          <ArrowDownIcon className="h-3.5 w-3.5" aria-hidden />
-        </span>
-      </button>
-    </div>
-  )
+  return <DutyNotice onOpen={onOpen} title="AD/CVD cases may increase duty by over 100%" cta={locked ? "See which cases" : "Check the cases"} />
 }
 
 // The Overview's AD/CVD card: found or not, in big type, and the way to the tab

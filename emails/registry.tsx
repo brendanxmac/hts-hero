@@ -15,6 +15,9 @@ import MeetTrackerEmail, { meetTrackerSubject, type MeetTrackerEmailProps } from
 import TrackerIntroEmail, { trackerIntroSubject, type TrackerIntroEmailProps } from "./onboarding/TrackerIntroEmail"
 import ProductTourEmail, { productTourSubject, type ProductTourEmailProps } from "./onboarding/ProductTourEmail"
 import TrialEmail, { trialSubject, type TrialEmailProps } from "./onboarding/TrialEmail"
+import TrialEducationEmail, { trialEducationSubject, type TrialEducationEmailProps } from "./onboarding/TrialEducationEmail"
+import AuditsUpsellEmail, { auditsUpsellSubject, type AuditsUpsellEmailProps } from "./onboarding/AuditsUpsellEmail"
+import ClassifyOnboardingEmail, { classifyOnboardingSubject, type ClassifyOnboardingEmailProps } from "./onboarding/ClassifyOnboardingEmail"
 import WatchingEmail, { watchingSubject, type WatchingEmailProps } from "./onboarding/WatchingEmail"
 import ImpactAlertEmail, { impactAlertSubject, type ImpactAlertEmailProps } from "./tariff-updates/ImpactAlertEmail"
 import TariffDigestEmail, { tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
@@ -102,7 +105,7 @@ export const TEMPLATES = {
           ...(p.beyond ? [`It may also affect ${p.beyond} more of your imports outside your alerts.`] : []),
         ],
         actions: [
-          { label: "See the impact on my imports", url: `${SITE}/tariff-tracker?tab=impact&update=${encodeURIComponent(p.update.slug)}&utm_source=chat&utm_medium=chat&utm_campaign=impact-alert` },
+          { label: "See the impact on my imports", url: `${SITE}/duty-guard?tab=impact&update=${encodeURIComponent(p.update.slug)}&utm_source=chat&utm_medium=chat&utm_campaign=impact-alert` },
           { label: "Read the update", url: updateUrl(p.update.slug, "impact-alert-chat") },
         ],
       }
@@ -122,6 +125,9 @@ export const TEMPLATES = {
   tracker_intro: template<TrackerIntroEmailProps>({ subject: trackerIntroSubject, email: (p) => <TrackerIntroEmail {...p} /> }),
   product_tour: template<ProductTourEmailProps>({ subject: productTourSubject, email: (p) => <ProductTourEmail {...p} /> }),
   trial: template<TrialEmailProps>({ subject: trialSubject, email: (p) => <TrialEmail {...p} /> }),
+  trial_education: template<TrialEducationEmailProps>({ subject: trialEducationSubject, email: (p) => <TrialEducationEmail {...p} /> }),
+  audits_upsell: template<AuditsUpsellEmailProps>({ subject: auditsUpsellSubject, email: (p) => <AuditsUpsellEmail {...p} /> }),
+  classify_onboarding: template<ClassifyOnboardingEmailProps>({ subject: classifyOnboardingSubject, email: (p) => <ClassifyOnboardingEmail {...p} /> }),
   internal_notice: template<InternalNoticeEmailProps>({ subject: internalNoticeSubject, email: (p) => <InternalNoticeEmail {...p} /> }),
   admin_digest: template<AdminDigestEmailProps>({ subject: adminDigestSubject, email: (p) => <AdminDigestEmail {...p} /> }),
 }

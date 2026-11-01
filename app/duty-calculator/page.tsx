@@ -6,12 +6,12 @@ import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
 import { THEME } from "../../components/ui/theme";
 import * as mk from "@/components/ui/marketing/styles";
-import { Hero } from "@/components/duty-calculator/hero";
+import { Hero, TariffNewsBand } from "@/components/duty-calculator/hero";
 import { getLatestUpdates, type PublicUpdate } from "@/libs/tariff-updates/public";
 import { getDutyCalculatorContent } from "@/libs/duty-calculator-content";
 import { TariffGuide } from "@/components/duty-calculator/guide";
 import { dutyCalculatorFaqs } from "@/components/duty-calculator/guide/faqs";
-import { TariffPricing } from "@/components/pricing-calculator";
+import { PricingOverview } from "@/components/home/pricing/PricingOverview";
 
 export const metadata: Metadata = {
   // The year and "Tariff Calculator" up front, as in the titles ranking for "tariff calculator",
@@ -116,16 +116,18 @@ export default async function DutyCalculatorPage() {
           }
         >
           <div id="calculator" className="scroll-mt-16">
-            <TariffFinderPage>
-              <Hero latestNews={latestNews} revisionTitle={content.revisionTitle} />
+            <TariffFinderPage fullScreen>
+              <Hero revisionTitle={content.revisionTitle} />
             </TariffFinderPage>
           </div>
         </Suspense>
       </BreadcrumbsProvider>
 
-      {/* The method, sources, rates, then pricing (the free calculator and the Tariff Tracker),
+      <TariffNewsBand updates={latestNews} />
+
+      {/* The method, sources, rates, then pricing (the free calculator and Duty Guard),
           the FAQ and the country pages — server-rendered for crawlers */}
-      <TariffGuide content={content} faqs={faqs} beforeFaq={<TariffPricing />} />
+      <TariffGuide content={content} faqs={faqs} beforeFaq={<PricingOverview />} />
 
       {/* Interactive Classification CTA */}
       {/* <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-12">

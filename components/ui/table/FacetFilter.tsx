@@ -42,7 +42,7 @@ export const FacetFilter = <T,>({ column }: { column: TableColumn<T, unknown> })
 
   return (
     <Popover className="relative">
-      {/* Inside the Tracker: an outline pill, cobalt-tinted while it filters */}
+      {/* Inside Duty Guard: an outline pill, cobalt-tinted while it filters */}
       <Popover.Button
         className={`${ui.button({ size: "sm" })} tracker:h-9 tracker:rounded-full tracker:border-base-300 tracker:px-3.5 tracker:font-semibold tracker:shadow-none hover:tracker:bg-tt-soft ${
           picked.length ? "border-primary/40 text-primary tracker:border-primary/30 tracker:bg-primary/10 tracker:hover:bg-primary/15" : ""

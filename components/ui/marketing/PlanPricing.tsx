@@ -5,7 +5,7 @@ import { ArrowRightIcon, BuildingOffice2Icon, CheckBadgeIcon, CheckIcon, ShieldC
 import { ANNUAL_DISCOUNT, Billing, formatPrice, monthlyRate, perImportPrice } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "./styles";
 
-// The plan cards the sales pages share (/tariff-alerts, /duty-audits): a billing switch and a
+// The plan cards the sales pages share (/tariff-alerts, /duty-audit): a billing switch and a
 // products slider, four standard cards side by side with the one that fits the visitor's products
 // highlighted (past the largest plan, the large-catalog demo row is instead), slim demo rows under
 // them and the guarantee under everything. Each page brings its plans and what each includes; the
@@ -113,12 +113,15 @@ export const PlanCard = ({
   products,
   productOnly,
   trialDays,
+  onChoose,
+  cta,
+  busy,
 }: {
   product: string;
   plan: SalesPlan;
   billing: Billing;
   features: string[];
-  href: string;
+  href?: string;
   guarantee?: string;
   note?: string | null;
   lead: string;
@@ -128,10 +131,14 @@ export const PlanCard = ({
   productOnly?: boolean;
   // The free trial's days, when there's one: the button starts it, and the line under says so
   trialDays?: number;
+  // In Duty Guard's plans dialog: the button picks the plan here instead of following a link
+  onChoose?: () => void;
+  cta?: string;
+  busy?: boolean;
 }) => {
   const price = monthlyRate(plan.price, billing);
   const id = `plan-${product.toLowerCase().replace(/\s+/g, "-")}-${plan.maxPairs}`;
-  const planSpecificFeatures = [lead, plan.emails === 1 ? "1 user / email" : `Up to ${plan.emails} users / emails`]
+  const planSpecificFeatures = [lead, plan.emails === 1 ? "1 alert email" : `Up to ${plan.emails} alert emails`]
 
   if (plan.teams) {
     planSpecificFeatures.push('Slack & Microsoft Teams Integration')
@@ -195,12 +202,23 @@ export const PlanCard = ({
       </ul>
 
       <div className="mt-auto pt-8">
-        <Link
-          href={href}
-          className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-semibold text-primary-content transition-colors hover:bg-primary/90"
-        >
-          {trialDays ? "Start Free Trial" : `Get ${productOnly ? product : plan.name}`} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </Link>
+        {onChoose ? (
+          <button
+            type="button"
+            onClick={onChoose}
+            disabled={busy}
+            className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-semibold text-primary-content transition-colors hover:bg-primary/90 disabled:opacity-60"
+          >
+            {cta}
+          </button>
+        ) : (
+          <Link
+            href={href ?? "/"}
+            className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-semibold text-primary-content transition-colors hover:bg-primary/90"
+          >
+            {trialDays ? "Start Free Trial" : `Get ${product}`} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+          </Link>
+        )}
         {/* The page's guarantee, if it has one, tiny under the button */}
         {guarantee && (
           <p className="mt-2.5 flex items-center justify-center gap-1 text-xs font-semibold text-success">
@@ -208,7 +226,7 @@ export const PlanCard = ({
           </p>
         )}
         <p className={`${guarantee ? "mt-1" : "mt-2.5"} text-center text-xs text-base-content/60`}>
-          {trialDays ? `Free for ${trialDays} days · No credit card` : "Cancel anytime"}
+          {trialDays ? `Free for ${trialDays} days · No credit card required` : "Cancel anytime"}
         </p>
       </div>
     </article>
@@ -227,12 +245,15 @@ export const PlanCards = ({
   best,
   products,
   trialDays,
+  onChoose,
+  cta,
+  busy,
 }: {
   product: string;
   plans: readonly SalesPlan[];
   billing: Billing;
   features: (plan: SalesPlan, billing: Billing) => string[];
-  href: string;
+  href?: string;
   guarantee?: string;
   note?: (plan: SalesPlan, billing: Billing) => string | null;
   // The card's bold first line: what the plan covers, by its number of products
@@ -243,10 +264,14 @@ export const PlanCards = ({
   products?: number;
   // The free trial's days, if the plans start with one
   trialDays?: number;
+  // In Duty Guard's plans dialog: the buttons pick a plan instead of following `href`
+  onChoose?: (plan: SalesPlan) => void;
+  cta?: (plan: SalesPlan) => string;
+  busy?: boolean;
 }) => (
   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
     {plans.map((p) => (
-      <PlanCard key={p.maxPairs} product={product} plan={p} billing={billing} features={features(p, billing)} href={href} guarantee={guarantee} note={note?.(p, billing)} lead={lead(p)} best={p.maxPairs === best} products={products} trialDays={trialDays} />
+      <PlanCard key={p.maxPairs} product={product} plan={p} billing={billing} features={features(p, billing)} href={href} guarantee={guarantee} note={note?.(p, billing)} lead={lead(p)} best={p.maxPairs === best} products={products} trialDays={trialDays} onChoose={onChoose && (() => onChoose(p))} cta={cta?.(p)} busy={busy} />
     ))}
   </div>
 );

@@ -10,7 +10,7 @@ import * as ui from "@/components/ui/styles";
 import { THEME } from "@/components/ui/theme";
 import { delay } from "@/components/tariff-tracker/onboarding/parts";
 
-// The one look every product tour and product onboarding shares (the Tariff Tracker's tour and
+// The one look every product tour and product onboarding shares (Duty Guard's tour and
 // onboarding, the Classification Assistant's tour): the whole screen, the product's name top left,
 // a numbered chip for every step across the top (done ones ticked, any a click away), the way out
 // top right; then each step with its words on the left (Back on the left, Next on the right) and
@@ -178,7 +178,7 @@ export const TourStep = ({
   </div>
 );
 
-// One idea per screen, centered and cinematic (the Tracker onboarding): a small eyebrow, a big
+// One idea per screen, centered and cinematic (Duty Guard onboarding): a small eyebrow, a big
 // headline, one line under it, then a single animated scene, and Back / Next under that. The eyebrow
 // takes the step's color (accent). Keyed by the caller, so it all plays again as it changes.
 export const TourStage = ({

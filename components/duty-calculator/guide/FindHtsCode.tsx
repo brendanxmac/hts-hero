@@ -4,7 +4,7 @@ import * as mk from "@/components/ui/marketing/styles";
 import * as tt from "@/components/ui/styles/tracker";
 
 // The call to action: every rate depends on the code, so send people to find theirs. A dark band
-// in the Tariff Tracker's dark palette (hts-tracker-on-dark: navy, indigo), for contrast between
+// in Duty Guard's dark palette (hts-tracker-on-dark: navy, indigo), for contrast between
 // the light sections around it, in light mode and dark.
 export const FindHtsCode = () => (
   <section

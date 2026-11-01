@@ -9,11 +9,11 @@ import { THEME } from "@/components/ui/theme";
 import { useFeatureTour } from "./tourStore";
 import { useTrackerOnboarding } from "../welcome/TrackerOnboarding";
 
-// The screen between the sign-up onboarding's last answer and what follows it (the Tracker
+// The screen between the sign-up onboarding's last answer and what follows it (Duty Guard
 // onboarding, or the Classification Assistant's): "Welcome to HTS Hero" and the product's name on the tours' ground,
 // the logo popping in with rings rippling out, full screen. The onboarding shows it as it leaves; the
-// Tracker page renders it from the server's first byte (when ?welcome= asks for the tour) and keeps
-// it up until the tour opens over it, so the Tracker itself never shows in between. It stays up at
+// Duty Guard page renders it from the server's first byte (when ?welcome= asks for the tour) and keeps
+// it up until the tour opens over it, so Duty Guard itself never shows in between. It stays up at
 // least MIN_SHOWN_MS in all, counted from when the onboarding first showed it (welcomeCoverRemaining),
 // so the welcome lands before the next screen. On the next page it carries on where the onboarding's
 // left off (sync): no second pop-in, the rings mid-ripple, so the two read as one screen. A fallback
@@ -50,7 +50,7 @@ export const welcomeCoverRemaining = () => {
 const SYNC_SCRIPT = `(function(){try{var s=Number(sessionStorage.getItem(${JSON.stringify(STARTED_KEY)}));var e=Date.now()-s;if(!s||e<0||e>15000)return;var el=document.currentScript.parentElement;el.setAttribute("data-continued","");el.style.setProperty("--wc-shift",-e+"ms")}catch(_){}})()`;
 
 // The product they're being taken to, named under the welcome
-export type WelcomeProduct = "Tariff Tracker" | "Classification Assistant";
+export type WelcomeProduct = "Duty Guard" | "Classification Assistant";
 
 // sync: rendered on the server as the next page's first HTML (see SYNC_SCRIPT)
 export const WelcomeCoverScreen = ({ product, sync = false }: { product: WelcomeProduct; sync?: boolean }) => (
@@ -102,7 +102,7 @@ export const WelcomeCoverScreen = ({ product, sync = false }: { product: Welcome
   </div>
 );
 
-// On the Tracker page: up until the tour opens (or the fallback)
+// On Duty Guard page: up until the tour opens (or the fallback)
 export const WelcomeCover = () => {
   const { open: tourOpen } = useFeatureTour();
   const { open: onboardingOpen } = useTrackerOnboarding();
@@ -115,5 +115,5 @@ export const WelcomeCover = () => {
     const timer = setTimeout(() => setShow(false), FALLBACK_MS);
     return () => clearTimeout(timer);
   }, []);
-  return show ? <WelcomeCoverScreen product="Tariff Tracker" sync /> : null;
+  return show ? <WelcomeCoverScreen product="Duty Guard" sync /> : null;
 };

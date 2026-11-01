@@ -13,7 +13,7 @@ import {
   Squares2X2Icon,
 } from "@heroicons/react/20/solid"
 
-// The Tariff Tracker's sections, in sidebar order: tabs on the one /tariff-tracker page, picked
+// Duty Guard's sections, in sidebar order: tabs on the one /duty-guard page, picked
 // with ?tab=. Sections that aren't built yet show what's planned. Every built section is open to an account; the paid-only sections need a plan
 // (PRICING.md). Expert help sells the managed service, sold apart from the plans.
 
@@ -53,7 +53,7 @@ export interface TrackerSection {
   hidden?: boolean
 }
 
-export const TRACKER_PATH = "/tariff-tracker"
+export const TRACKER_PATH = "/duty-guard"
 
 // The tab with no ?tab=
 export const DEFAULT_SECTION: SectionSlug = "overview"

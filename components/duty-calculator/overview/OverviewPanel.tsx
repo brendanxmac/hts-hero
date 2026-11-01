@@ -9,7 +9,7 @@ import { DetailsLink, Headline, Moved, OverviewTab, PartHeader, PayLess, pct, Ra
 import { Overview } from "./useOverview";
 
 // The Overview tab: everything about this tariff at a high level, on one page, before the detail
-// tabs. On /duty-calculator, and as the first tab of an import's page in the Tracker. On top, side
+// tabs. On /duty-calculator, and as the first tab of an import's page in Duty Guard. On top, side
 // by side: the rate, big, with its story in plain English, and where the rate comes from (each
 // tariff with why it applies). Under it, whether any AD/CVD case may cover it (to the AD/CVD tab),
 // then could you pay less, full width with its two halves side

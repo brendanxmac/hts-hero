@@ -1,5 +1,5 @@
 // Buttons, and links that look like buttons. Three kinds, the same everywhere: primary (the brand
-// fill; one per screen), secondary (outlined) and ghost. In the Tracker's look (the Tracker, the
+// fill; one per screen), secondary (outlined) and ghost. In Duty Guard's look (Duty Guard, the
 // calculator, /hts) they're pills with no shadow; tt.button is this same button. A function rather than a component, so the
 // same look applies to <button>, <Link> and <a>:
 //   <Link href="/classify" className={button({ variant: "primary", size: "lg" })}>

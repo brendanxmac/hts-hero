@@ -7,7 +7,7 @@ export const mono = IBM_Plex_Mono({
   display: "swap",
 });
 
-// The Tariff Tracker (DESIGN_SYSTEM.md §15): Figtree for everything, Sora for headlines and big numbers
+// Duty Guard (DESIGN_SYSTEM.md §15): Figtree for everything, Sora for headlines and big numbers
 export const trackerSans = Figtree({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -19,6 +19,6 @@ export const trackerDisplay = Sora({
   weight: ["500", "600", "700"],
   display: "swap",
   // Set on <html> (app/layout.tsx), so a `tracker:` class anywhere can name it: card titles and
-  // big numbers in the Tracker's look, and the marketing headings (skin:, components/ui/marketing)
+  // big numbers in Duty Guard's look, and the marketing headings (skin:, components/ui/marketing)
   variable: "--font-tracker-display",
 });
