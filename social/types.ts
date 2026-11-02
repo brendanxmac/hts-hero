@@ -173,6 +173,73 @@ export interface OddRateProps extends PostBase {
   footnote?: string
 }
 
+// A Duty Guard launch teaser: a hook, the punch line, one product card on its own, then the reveal
+export interface LaunchTeaserProps {
+  theme: Theme
+  accent?: LaunchColor
+  showVisual?: boolean // off: the card's beat is cut, and the video with it
+  visual: LaunchFeature // the product card, on its own beat after the punch
+  hook: string
+  punch: string
+  name: string // "Duty Guard"
+  tagline: string
+  date: string // "Coming soon", "Launching Nov 10"
+}
+
+export type LaunchFeature = "audit" | "savings" | "alerts"
+
+// The accent a launch post is drawn in (cobalt is HTS Hero's own)
+export type LaunchColor = "cobalt" | "green" | "red" | "amber" | "sky" | "violet"
+
+// A launch teaser drawn as a declassified memo: its lines typed out one sentence at a time,
+// then the subject's name and the date
+export interface LaunchMemoProps {
+  theme: Theme
+  accent?: LaunchColor
+  to: string
+  subject: string // closes the video: "HTS Hero: Built for Trade Pros" puts what follows the colon big (no colon: the last words)
+  line1: string
+  line2: string
+  line3: string
+  stamp?: string // no longer shown (the memo is declassified); kept so older posts still load
+  date: string
+}
+
+// A launch teaser in big type on a full-color ground: three setups, each slammed shut by one
+// word, a blurred glimpse of the product, then the name
+export interface LaunchSlamProps {
+  theme: Theme
+  accent?: LaunchColor
+  showVisual?: boolean // the blurred glimpse of the product
+  line1: string
+  word1: string
+  line2: string
+  word2: string
+  line3: string
+  word3: string
+  glimpse: string // over the blurred product
+  name: string
+  date: string
+}
+
+// The Duty Guard launch video: an opener, the three features in `order`, then the call to action
+export interface LaunchVideoProps {
+  theme: Theme
+  accent?: LaunchColor
+  showVisual?: boolean // off: each feature as words alone
+  opener: string
+  openerSub: string
+  order: LaunchFeature[]
+  auditTitle: string
+  auditLine: string
+  savingsTitle: string
+  savingsLine: string
+  alertsTitle: string
+  alertsLine: string
+  cta: string
+  ctaSub: string
+}
+
 export type TemplateId =
   | "RateTimeline"
   | "BigNumber"
@@ -186,6 +253,10 @@ export type TemplateId =
   | "Quiz"
   | "News"
   | "OddRate"
+  | "LaunchTeaser"
+  | "LaunchVideo"
+  | "LaunchMemo"
+  | "LaunchSlam"
 
 export interface TemplatePropsMap {
   RateTimeline: RateTimelineProps
@@ -200,6 +271,10 @@ export interface TemplatePropsMap {
   Quiz: QuizProps
   News: NewsProps
   OddRate: OddRateProps
+  LaunchTeaser: LaunchTeaserProps
+  LaunchVideo: LaunchVideoProps
+  LaunchMemo: LaunchMemoProps
+  LaunchSlam: LaunchSlamProps
 }
 
 // Where a claim in a post can be checked: an official document or dataset, or the HTS Hero

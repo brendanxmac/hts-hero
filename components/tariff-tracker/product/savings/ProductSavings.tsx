@@ -1,220 +1,184 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import { useState } from "react";
+import { createPortal } from "react-dom";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { CENSUS_NOTICE } from "../../../duty-calculator/lib/census";
+import { UsImports } from "../../../duty-calculator/lib/usImportsData";
+import { formatRate } from "../../formatRate";
 import { useInsights } from "../../insights/InsightsContext";
-import { useOpportunities } from "../../opportunities/OpportunitiesContext";
-import { Measure } from "../../opportunities/measure";
-import { REVIEW_LABELS } from "../../opportunities/review";
-import { optionId, productOptions } from "../../opportunities/options";
-import { OpportunityStatus } from "../../opportunities/statuses";
-import { RuleOutAll } from "../../opportunities/RuleOutAll";
+import { ReviewState } from "../../opportunities/review";
 import { TrackedProduct } from "../../report";
-import { useTracker } from "../../TrackerContext";
 import { FreeChecksNotice } from "../../access/FreeChecksNotice";
 import { LockedSavings } from "./LockedSavings";
-import { exemptionName, ListItem, OptionList } from "./OptionList";
-import { keyIsElsewhere, OptionReview } from "./OptionReview";
+import { rateWith, SavingCard, SecuredRow } from "./SavingCard";
+import { ReviewStart, SavingsReview } from "./SavingsReview";
+import { KIND_ORDER, ListItem, undecided, useSavingsItems } from "./useSavingsItems";
 
-// A product's Savings tab: once its savings are unlocked (a savings check, or a plan: PRICING.md),
-// every way to pay less on it: the options down one side (under the %/$ switch), and the open one
-// beside them, one question each to answer No or Yes, then secure (OptionReview). Amounts
-// show as percentages of the value first, or in dollars. Under the quick wins, and under sourcing it
-// elsewhere, the way to rule that group out. Origins come from Census first (the catalog's
-// figures, loaded with the insights). Securing one applies it to the catalog and keeps the record
-// (opportunities/).
+// A product's Savings tab, by where its savings review stands (review.ts). Not started (not checked
+// yet, or checked with nothing answered): what the review covers and the way in. Under way or
+// done, only what's left to do: one line on where the review stands and the way back in, a card
+// for each saving being pursued with its next move (SavingCard), the secured ones as rows, and one
+// line for everything ruled out or not answered. The questions themselves are answered in the
+// review (SavingsReview), the whole screen, one at a time, like the entry audit. Amounts show as
+// percentages of the value.
 
-// A key in the keyboard hint
-const KEY = "rounded border border-base-300 bg-base-100 px-1.5 font-sans text-[11px] font-semibold leading-4 text-base-content/70";
+const status = (i: ListItem) => i.opportunity?.status;
+const pursued = (i: ListItem) => status(i) === "researching" || status(i) === "in_progress";
 
-// An option's short name, as the rail shows it
-const itemName = ({ option, opportunity }: ListItem) =>
-  option?.kind === "origin" ? option.setup.country.name : option?.kind === "exemption" ? exemptionName(option) : (option?.title ?? opportunity?.title ?? "");
+// Where the review stands, and the way back in
+const ReviewLine = ({ product, state, items, onOpen }: { product: TrackedProduct; state: ReviewState; items: ListItem[]; onOpen: (open: ReviewStart) => void }) => {
+  const reviewable = items.filter((i) => i.option);
+  const left = reviewable.filter(undecided);
+  const secured = items.filter((i) => status(i) === "secured");
+  const best = Math.max(0, ...items.filter(pursued).map((i) => rateWith(product, i).off));
+  const done = state === "reviewed";
+  const firstLeft = left[0];
+  const firstKind = KIND_ORDER.find((k) => reviewable.some((i) => i.option!.kind === k));
 
-const SavingsExplorer = ({ product }: { product: TrackedProduct }) => {
-  const insights = useInsights();
-  const { itemFor } = useTracker();
-  const { opportunities, setStatus } = useOpportunities();
-  const imports = insights.importsFor(product.entry.element.htsno);
-  // The Savings tab speaks in rates only: what comes off the rate, never dollars
-  const measure: Measure = "pct";
-  const shipmentsPerYear = itemFor(product.key)?.shipmentsPerYear ?? 1;
-  const costs = insights.origins.get(product.key);
-
-  // Once the code's Census figures are in (null when it has none)
-  const options = useMemo(() => (imports === undefined ? [] : productOptions(product, costs, imports)), [product, costs, imports]);
-  const mine = useMemo(() => opportunities.filter((o) => o.productKey === product.key), [opportunities, product.key]);
-  // The options, each with its tracked opportunity, then tracked ones whose option is gone
-  const items: ListItem[] = useMemo(() => {
-    const byId = new Map(mine.map((o) => [optionId(o.kind, o.optionRef), o]));
-    const live = options.map((option) => ({ id: option.id, option, opportunity: byId.get(option.id) }));
-    const ids = new Set(options.map((o) => o.id));
-    const past = mine.filter((o) => !ids.has(optionId(o.kind, o.optionRef))).map((o) => ({ id: optionId(o.kind, o.optionRef), opportunity: o }));
-    return [...live, ...past];
-  }, [options, mine]);
-
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  // Picking one far down the list brings its review into view
-  const detail = useRef<HTMLDivElement>(null);
-  const select = (id: string) => {
-    setSelectedId(id);
-    if ((detail.current?.getBoundingClientRect().top ?? 0) < 0) detail.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-  // Still to review: an option nobody has accepted or rejected yet
-  const undecided = (i: ListItem) => !!i.option && (!i.opportunity || i.opportunity.status === "found");
-  // The items in the list's order: trade programs, exemptions, other origins, then tracked earlier
-  const listed = useMemo(() => {
-    const order = (i: ListItem) => (i.option ? ["program", "exemption", "origin"].indexOf(i.option.kind) : 3);
-    return [...items].sort((a, b) => order(a) - order(b));
-  }, [items]);
-  // Opens on the first option still to review, or the first one
-  useEffect(() => {
-    if (!selectedId && listed.length) setSelectedId((listed.find(undecided) ?? listed[0]).id);
-  }, [listed, selectedId]);
-  const selected = items.find((i) => i.id === selectedId);
-  // After a Yes or a No, on to the next option still to review (the list wraps round); with none
-  // left, the one just answered stays open
-  const next = () => {
-    const at = listed.findIndex((i) => i.id === selectedId);
-    const after = [...listed.slice(at + 1), ...listed.slice(0, at)].find(undecided);
-    if (after) select(after.id);
-  };
-  // Up and down arrows step through the list (not while typing, or in a dialog)
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.key !== "ArrowDown" && e.key !== "ArrowUp") || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
-      if (keyIsElsewhere(e)) return;
-      const at = listed.findIndex((i) => i.id === selectedId);
-      const to = listed[at + (e.key === "ArrowDown" ? 1 : -1)];
-      if (!to) return;
-      e.preventDefault();
-      select(to.id);
-      document.getElementById(`savings-option-${to.id}`)?.scrollIntoView({ block: "nearest" });
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
-  // The latest items, for an Undo pressed after they've changed
-  const latest = useRef(items);
-  useEffect(() => {
-    latest.current = items;
-  }, [items]);
-  const undo = async (id: string) => {
-    const opportunity = latest.current.find((i) => i.id === id)?.opportunity;
-    if (opportunity && (await setStatus(opportunity, "found", null))) select(id);
-    else toast.error("Couldn't undo this. Please try again.");
-  };
-  const answered = (to: OpportunityStatus) => {
-    const item = selected;
-    next();
-    if (!item) return;
-    toast(
-      (t) => (
-        <span className="flex items-center gap-3 text-sm">
-          <span>
-            {to === "researching" ? "Pursuing" : "Ruled out"}: <span className="font-semibold">{itemName(item)}</span>
-          </span>
-          <button
-            type="button"
-            className={ui.link}
-            onClick={() => {
-              toast.dismiss(t.id);
-              undo(item.id);
-            }}
-          >
-            Undo
-          </button>
+  return (
+    <section className={`${tt.panel} flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4`} aria-label="Savings review">
+      <div className="flex min-w-0 flex-wrap items-center gap-3">
+        <span className={tt.chip(done ? "success" : "warning")}>
+          {done ? "Review complete" : `In progress · ${reviewable.length - left.length} of ${reviewable.length} answered`}
         </span>
-      ),
-      { id: "savings-decided", duration: 6000 }
-    );
-  };
-  const review = insights.review.get(product.key) ?? "to_review";
-  const toReview = items.filter(undecided).length;
-  const reviewable = items.filter((i) => i.option).length;
-  const decided = reviewable - toReview;
+        <span className="text-sm text-base-content">
+          {best > 0.005 ? (
+            <>
+              Pursuing up to <span className="font-semibold text-success">−{formatRate(best)}</span> off the duty rate
+            </>
+          ) : secured.length ? (
+            "Your savings on this import are secured"
+          ) : done ? (
+            "Nothing to pursue right now. We'll keep checking as tariffs change."
+          ) : (
+            "Pick up where you left off"
+          )}
+        </span>
+      </div>
+      <div className="flex items-center gap-4">
+        {done ? (
+          <>
+            <button type="button" className={`${ui.link} text-sm font-semibold`} onClick={() => onOpen({ step: "summary" })}>
+              See Summary
+            </button>
+            {firstKind && (
+              <button type="button" className={`${ui.link} text-sm font-semibold`} onClick={() => onOpen({ step: firstKind, at: 0 })}>
+                Change Answers
+              </button>
+            )}
+          </>
+        ) : (
+          <>
+            <button type="button" className={`${ui.link} text-sm font-semibold`} onClick={() => onOpen({ step: "summary" })}>
+              Summary So Far
+            </button>
+            <button
+              type="button"
+              className={ui.button({ variant: "primary", size: "sm" })}
+              onClick={() => onOpen(firstLeft ? { step: firstLeft.option!.kind, id: firstLeft.id } : { step: "summary" })}
+            >
+              Continue Savings Review
+              <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            </button>
+          </>
+        )}
+      </div>
+    </section>
+  );
+};
+
+// Under way or done: what's left to do
+const YourSavings = ({
+  product,
+  state,
+  items,
+  imports,
+  onOpen,
+}: {
+  product: TrackedProduct;
+  state: ReviewState;
+  items: ListItem[];
+  imports: UsImports | null;
+  onOpen: (open: ReviewStart) => void;
+}) => {
+  const byOff = (a: ListItem, b: ListItem) => rateWith(product, b).off - rateWith(product, a).off;
+  const pursuing = items.filter(pursued).sort(byOff);
+  const secured = items.filter((i) => status(i) === "secured");
+  const ruledOut = items.filter((i) => status(i) === "not_eligible").length;
+  const left = items.filter(undecided);
+
+  return (
+    <>
+      <ReviewLine product={product} state={state} items={items} onOpen={onOpen} />
+      {pursuing.length > 0 && (
+        <section className="flex flex-col gap-3" aria-labelledby="tt-pursuing">
+          <h2 id="tt-pursuing" className={`${tt.sectionTitle} px-1`}>
+            Savings You&apos;re Pursuing
+          </h2>
+          {pursuing.map((i) => (
+            <SavingCard key={i.id} product={product} item={i} imports={imports} />
+          ))}
+        </section>
+      )}
+      {secured.length > 0 && (
+        <section className="flex flex-col gap-3" aria-labelledby="tt-secured">
+          <h2 id="tt-secured" className={`${tt.sectionTitle} px-1`}>
+            Secured
+          </h2>
+          <ul className={`${tt.panel} m-0 flex list-none flex-col divide-y divide-base-300 p-0`}>
+            {secured.map((i) => (
+              <SecuredRow key={i.id} product={product} item={i} />
+            ))}
+          </ul>
+        </section>
+      )}
+      {(ruledOut > 0 || left.length > 0) && (
+        <div className="flex flex-wrap items-center justify-between gap-3 px-1 text-sm">
+          <span className="text-base-content/60">
+            {[ruledOut > 0 && `${ruledOut} ruled out`, left.length > 0 && `${left.length} not answered`].filter(Boolean).join(" · ")}
+          </span>
+          {left.length > 0 && (
+            <button type="button" className={`${ui.link} inline-flex items-center gap-1 font-semibold`} onClick={() => onOpen({ step: left[0].option!.kind, id: left[0].id })}>
+              Review Them
+              <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            </button>
+          )}
+        </div>
+      )}
+    </>
+  );
+};
+
+export const ProductSavings = ({ product }: { product: TrackedProduct }) => {
+  const insights = useInsights();
+  const { items, imports, loading } = useSavingsItems(product);
+  const checked = insights.unlocked.has(product.key);
+  const state: ReviewState = !checked ? "unchecked" : (insights.review.get(product.key) ?? "to_review");
+  const [open, setOpen] = useState<ReviewStart | null>(null);
+  const started = state === "in_progress" || state === "reviewed";
+  const hasOptions = items.some((i) => i.option);
 
   return (
     <div className="flex flex-col gap-4">
-      {imports === undefined ? (
-        <div className={`${ui.skeleton} h-72 w-full`} aria-busy="true" />
-      ) : items.length === 0 ? (
+      <FreeChecksNotice kind="savings" />
+      {checked && loading ? (
+        <div className={`${ui.skeleton} h-40 w-full`} aria-busy="true" />
+      ) : checked && items.length === 0 ? (
         <div className={`${ui.card} p-6`}>
           <p className={ui.bodySm}>
             No trade program, exemption or cheaper country of origin would lower the duty on this import today. We&apos;ll keep checking as tariffs change.
           </p>
         </div>
+      ) : started || (checked && !hasOptions) ? (
+        <YourSavings product={product} state={state} items={items} imports={imports ?? null} onOpen={setOpen} />
       ) : (
-        // One box: the options down a soft rail on the left, the one picked on the right
-        <section className={`${tt.panel} grid xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]`} aria-label="Possible savings options">
-          <div className="flex flex-col gap-5 border-b border-base-300 p-3 pb-5 xl:border-b-0 xl:border-r">
-            <div className="flex flex-col gap-3 px-3 pt-3">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className={`${tt.title} m-0 whitespace-nowrap`}>Possible Savings Options</h2>
-              </div>
-              {/* How far the review has got */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between gap-2 text-xs">
-                  <span className={tt.chip(REVIEW_LABELS[review].tone)}>{REVIEW_LABELS[review].label}</span>
-                  <span className="tabular-nums text-base-content/60">{toReview > 0 ? `${decided} of ${reviewable} decided` : "All decided"}</span>
-                </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-base-300" aria-hidden>
-                  {/* Runtime width (DESIGN_SYSTEM §10) */}
-                  <div className="h-full rounded-full bg-success transition-[width]" style={{ width: `${reviewable ? (decided / reviewable) * 100 : 100}%` }} />
-                </div>
-                {/* The keyboard way through */}
-                <p className="m-0 hidden items-center gap-1.5 text-xs text-base-content/60 sm:flex">
-                  <kbd className={KEY}>↑</kbd>
-                  <kbd className={KEY}>↓</kbd>
-                  to move
-                  <span aria-hidden>·</span>
-                  <kbd className={KEY}>Y</kbd>
-                  <kbd className={KEY}>N</kbd>
-                  to answer
-                </p>
-              </div>
-            </div>
-            <OptionList
-              items={listed}
-              selectedId={selectedId}
-              imports={imports}
-              customsValue={product.customsValue}
-              measure={measure}
-              onSelect={select}
-              afterQuickWins={<RuleOutAll scope="quick" product={product} items={items} />}
-              afterSourcing={<RuleOutAll scope="sourcing" product={product} items={items} />}
-            />
-          </div>
-          <div ref={detail} className="min-w-0 scroll-mt-4 p-6 lg:p-7">
-            {selected && (
-              <OptionReview
-                key={selected.id}
-                product={product}
-                option={selected.option}
-                opportunity={selected.opportunity}
-                imports={imports}
-                shipmentsPerYear={shipmentsPerYear}
-                measure={measure}
-                onDecided={answered}
-              />
-            )}
-          </div>
-        </section>
+        <LockedSavings product={product} checked={checked} items={items} onStart={() => setOpen({ step: "intro" })} />
       )}
-      {imports && <p className={ui.caption}>Import figures: U.S. Census Bureau. {CENSUS_NOTICE}</p>}
-    </div>
-  );
-};
-
-export const ProductSavings = ({ product }: { product: TrackedProduct }) => {
-  const { unlocked } = useInsights();
-  return (
-    <div className="flex flex-col gap-4">
-      <FreeChecksNotice kind="savings" />
-      {unlocked.has(product.key) ? <SavingsExplorer product={product} /> : <LockedSavings product={product} />}
+      {checked && imports && <p className={ui.caption}>Import figures: U.S. Census Bureau. {CENSUS_NOTICE}</p>}
+      {open && createPortal(<SavingsReview product={product} start={open} onClose={() => setOpen(null)} />, document.body)}
     </div>
   );
 };

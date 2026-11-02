@@ -11,13 +11,13 @@ import { cleanWebsite, COMPANY_TYPES, onboardingNext, readFirstTouch, ROLES, TRA
 import { startWelcomeCover, WelcomeCoverScreen, type WelcomeProduct } from "@/components/tariff-tracker/onboarding/tour/WelcomeCover";
 
 // The sign-up onboarding, full screen like HubSpot's: the logo (not a link) and one question at a
-// time, with nothing else to click and no way back. Picking an answer saves it and moves on; the
+// time (what the company does, their role, then the website), with nothing else to click and no way back. Picking an answer saves it and moves on; the
 // website can be skipped with a small link. Crisp stays, for help. Saving never blocks them: the
 // next question shows at once while the answer saves in the background (in order, one after
 // another), and only leaving waits for the saves to land (with a cap; if a save fails, they still go on).
 
 export type OnboardingStep = "company_type" | "website" | "role";
-const ORDER: OnboardingStep[] = ["company_type", "website", "role"];
+const ORDER: OnboardingStep[] = ["company_type", "role", "website"];
 
 const post = (body: Record<string, unknown>) =>
   fetch("/api/signup-onboarding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch((): null => null);
@@ -58,6 +58,8 @@ export const SignupOnboarding = ({
   // the hand-off is one screen
   const [leaving, setLeaving] = useState<WelcomeProduct | null>(null);
   const started = useRef(false);
+  // Their role, for the completed event (unknown when they resumed past it)
+  const role = useRef<string | undefined>(undefined);
 
   // Opened: the row, and where they first came from
   useEffect(() => {
@@ -79,23 +81,26 @@ export const SignupOnboarding = ({
     save({ action, value });
     track(MixpanelEvent.ONBOARDING_STEP_COMPLETED, { step: action, step_number: ORDER.indexOf(action) + 1, answer: value, entry_point: entryPoint });
     if (!preview) identifyUser(userId, { [`onboarding_${action}`]: action === "website" ? value : label });
-    if (action === "role") {
-      track(MixpanelEvent.ONBOARDING_COMPLETED, { role: value, entry_point: entryPoint });
-      // On to what they came for (onboardingNext)
-      // (A preview saves nothing but still goes on, so the whole path can be walked)
-      const next = landing ?? onboardingNext(entryPoint);
-      const welcome = new URL(next, window.location.origin).searchParams.get(TRACKER_WELCOME_PARAM);
-      if (welcome === "imports" || welcome === "alerts" || welcome === "tour") {
-        startWelcomeCover();
-        setLeaving(welcome === "tour" ? "Classification Assistant" : "Duty Guard");
-      }
-      // Only leaving waits for the answers to save (behind the cover, when there is one)
-      setBusy(true);
-      await Promise.race([queue.current, new Promise((r) => setTimeout(r, LEAVE_WAIT_MS))]);
-      window.location.assign(next);
-      return;
-    }
+    if (action === "role") role.current = value;
+    if (action === "website") return finish();
     setStep(ORDER[ORDER.indexOf(action) + 1]);
+  };
+
+  // The website (answered or skipped) is the last question
+  const finish = async () => {
+    track(MixpanelEvent.ONBOARDING_COMPLETED, { role: role.current, entry_point: entryPoint });
+    // On to what they came for (onboardingNext)
+    // (A preview saves nothing but still goes on, so the whole path can be walked)
+    const next = landing ?? onboardingNext(entryPoint);
+    const welcome = new URL(next, window.location.origin).searchParams.get(TRACKER_WELCOME_PARAM);
+    if (welcome === "imports" || welcome === "alerts" || welcome === "tour") {
+      startWelcomeCover();
+      setLeaving(welcome === "tour" ? "Classification Assistant" : "Duty Guard");
+    }
+    // Only leaving waits for the answers to save (behind the cover, when there is one)
+    setBusy(true);
+    await Promise.race([queue.current, new Promise((r) => setTimeout(r, LEAVE_WAIT_MS))]);
+    window.location.assign(next);
   };
 
   const submitWebsite = (e: FormEvent) => {
@@ -107,16 +112,16 @@ export const SignupOnboarding = ({
 
   const skipWebsite = () => {
     save({ action: "skip_website" });
-    track(MixpanelEvent.ONBOARDING_WEBSITE_SKIPPED, { step_number: 2, entry_point: entryPoint });
-    setStep("role");
+    track(MixpanelEvent.ONBOARDING_WEBSITE_SKIPPED, { step_number: ORDER.indexOf("website") + 1, entry_point: entryPoint });
+    finish();
   };
 
   const question =
     step === "company_type"
-      ? { title: "What does your company do?", lead: "This helps us get you the best tools." }
-      : step === "website"
-        ? { title: "Enter Your Company Website", lead: "So we can tailor HTS Hero to your business." }
-        : { title: "What is your role?", lead: "This helps us setup your dashboard." };
+      ? { title: "What does your company do?", lead: "This helps us get you the right tools." }
+      : step === "role"
+        ? { title: "What is your role?", lead: "This helps us setup your dashboard." }
+        : { title: "Enter Your Company Website", lead: "So we can tailor HTS Hero to your business." };
 
   if (leaving) return <WelcomeCoverScreen product={leaving} />;
 

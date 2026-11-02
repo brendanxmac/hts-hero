@@ -54,6 +54,11 @@ still charges the 50% on the 22 removed subheadings.
   it, impact alerts fail to load their settings.
 - [ ] **`supabase/migrations/signup_onboarding.sql` in prod and dev** (the sign-up onboarding's
       answers, entry point and first touch). Without it, onboarding still runs but saves nothing.
+- [ ] **`supabase/migrations/tracker_entry_adjustments.sql` in prod and dev** (each audited entry
+      keeps its own trade program, answers and AD/CVD cases, set in the entry audit's Adjustments and
+      AD/CVD steps). Without it, entries fail to load and the entry audit can't save.
+- [ ] **`supabase/migrations/audit_reports.sql` in prod and dev** (the entry audit's "This looks
+      wrong" and AD/CVD case reports, /audit-reports). Without it, reports fail to send.
 - [ ] **`supabase/migrations/demo_requests.sql` in prod and dev** (the homepage's Get a Demo form). Without
       it, requests are still emailed to Brendan but not saved.
 - [ ] **`npm run email:upload-logo` against prod, before deploying** (done in dev 2026-10-30):

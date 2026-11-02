@@ -14,8 +14,9 @@ import { ENTRY_COLUMNS, EntryRow, fromEntryRow, NewEntry, TrackerEntry } from ".
 interface EntriesValue {
   entries: TrackerEntry[];
   loading: boolean;
-  // Saves the entry, then checks it; resolves to the saved entry, or null if it couldn't be saved
-  addAndCheck: (entry: NewEntry) => Promise<TrackerEntry | null>;
+  // Saves the entry, then checks it; resolves to the saved entry and whether the check went
+  // through, or null if it couldn't be saved
+  addAndCheck: (entry: NewEntry) => Promise<{ entry: TrackerEntry; checked: boolean } | null>;
   // Checks an entry saved earlier (one that wasn't checked when the allowance ran out)
   check: (entry: TrackerEntry) => Promise<boolean>;
   remove: (id: string) => Promise<boolean>;
@@ -85,17 +86,20 @@ export const EntriesProvider = ({ children }: { children: ReactNode }) => {
           customs_value: entry.customsValue,
           quantity: entry.quantity,
           duty_paid: entry.dutyPaid,
+          claimed_preference: entry.claimedPreference,
+          answers: entry.answers,
+          adcvd: entry.adcvd,
         })
         .select(ENTRY_COLUMNS)
         .single<EntryRow>();
       if (error || !data) {
-        console.error("Error saving entry:", error);
+        console.error("Error saving entry:", error?.message ?? error);
         return null;
       }
       const saved = fromEntryRow(data);
       setEntries((prev) => [saved, ...prev].sort(byDateDesc));
-      await check(saved);
-      return saved;
+      const checked = await check(saved);
+      return { entry: saved, checked };
     },
     [userId, check]
   );

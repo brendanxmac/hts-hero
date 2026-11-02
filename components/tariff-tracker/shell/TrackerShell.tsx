@@ -199,7 +199,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
     // a scrolled section would otherwise be placed against the page and stretch it past the app
     <div className={`${THEME} hts-tracker ${trackerSans.className} relative flex h-svh flex-col overflow-hidden bg-base-200 lg:flex-row lg:gap-4 lg:p-4`}>
       <aside
-        className={`hts-tracker-on-dark relative hidden shrink-0 flex-col gap-5 rounded-lg bg-tt-side text-base-content transition-[width] lg:flex ${collapsed ? "w-18 px-2 py-4" : "w-64 p-4"}`}
+        className={`hts-tracker-on-dark relative hidden shrink-0 flex-col gap-5 rounded-lg bg-tt-side text-base-content transition-[width] lg:flex ${collapsed ? "w-18 px-2 py-4" : "w-64 p-4 2xl:w-72"}`}
       >
         <div className={`flex items-center gap-2.5 pt-1 ${collapsed ? "flex-col" : "px-2"}`}>
           <Link href="/" className="flex shrink-0 items-center rounded-full bg-base-content p-1" aria-label={`${config.appName} home`}>

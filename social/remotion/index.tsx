@@ -1,7 +1,7 @@
 import { Composition, registerRoot } from "remotion"
 import { Format, FORMATS, FPS } from "../brand"
 import { COMPONENTS } from "../components"
-import { compositionId, TEMPLATE_IDS, TEMPLATES } from "../registry"
+import { compositionId, postFrames, TEMPLATE_IDS, TEMPLATES } from "../registry"
 import { SAMPLES } from "../samples"
 
 // Remotion's entry point: every template in every format, for Remotion Studio
@@ -21,6 +21,8 @@ const Root = () => (
           width={FORMATS[format].width}
           height={FORMATS[format].height}
           defaultProps={SAMPLES[id]}
+          // A post's length follows its props (a teaser without its visual is shorter)
+          calculateMetadata={({ props }) => ({ durationInFrames: postFrames(id, props as never) })}
         />
       ))
     )}

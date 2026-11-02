@@ -8,6 +8,7 @@ import { DEFAULT_SECTION, MOVED_TABS, productUrl, SECTIONS, SectionSlug, section
 import { PlannedSection } from "./shell/PlannedSection";
 import { SectionPage } from "./shell/SectionPage";
 import { TrackerNav, TrackerNavContext } from "./shell/TrackerNav";
+import { EntryCheckHost } from "./entries/check/EntryCheckHost";
 import { ImportTakeover } from "./onboarding/ImportTakeover";
 import { FeatureTour } from "./onboarding/tour/FeatureTour";
 import { TrackerOnboarding } from "./onboarding/welcome/TrackerOnboarding";
@@ -210,7 +211,7 @@ export const TrackerApp = () => {
                           hidden={!active}
                           className="tt-enter"
                         >
-                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "changes", "calculator", "sourcing"].includes(section.slug)}>
+                          <SectionPage section={section} showHeader={!["overview", "catalog", "expert-help", "changes", "calculator", "sourcing", "entries"].includes(section.slug)}>
                             {panel ? panel(active) : <PlannedSection section={section} />}
                           </SectionPage>
                         </div>
@@ -219,6 +220,8 @@ export const TrackerApp = () => {
                   </TrackerShell>
                   {/* Over everything, until the account has imports of its own */}
                   <ImportTakeover />
+                  {/* The entry audit, opened from any "Audit an Entry" */}
+                  <EntryCheckHost />
                   {/* The feature tour: by itself on the first visit and after the first imports, and from the sidebar */}
                   <FeatureTour />
                   {/* New accounts from the sign-up onboarding: Duty Guard onboarding, into the import flow */}

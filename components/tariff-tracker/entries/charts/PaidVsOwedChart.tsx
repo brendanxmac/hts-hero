@@ -23,7 +23,7 @@ export const PaidVsOwedChart = ({ rows }: { rows: AuditRow[] }) => {
   if (!audited.length) return null;
 
   const ids = audited.map((r) => r.entry.id);
-  const max = niceMax(Math.max(...audited.flatMap((r) => [r.entry.dutyPaid, r.audit!.owed]), 1));
+  const max = niceMax(Math.max(...audited.flatMap((r) => [r.audit!.paid, r.audit!.owed]), 1));
 
   return (
     <section className={`${ui.card} flex flex-col gap-4 p-5`} aria-labelledby="tt-paid-owed">
@@ -55,9 +55,9 @@ export const PaidVsOwedChart = ({ rows }: { rows: AuditRow[] }) => {
           const step = innerWidth / audited.length;
           const y = linearScale([0, max], [innerHeight, 0]);
           return (
-            <Tooltip x={step * hover.index + step / 2} y={y(Math.max(r.entry.dutyPaid, r.audit!.owed))}>
+            <Tooltip x={step * hover.index + step / 2} y={y(Math.max(r.audit!.paid, r.audit!.owed))}>
               <p className="m-0 mb-1 font-semibold text-base-content">{formatDate(r.entry.entryDate)}</p>
-              <TooltipRow color={PAID} label="Paid" value={money(r.entry.dutyPaid)} />
+              <TooltipRow color={PAID} label="Paid" value={money(r.audit!.paid)} />
               <TooltipRow color={OWED} label="Owed" value={money(r.audit!.owed)} />
               <p className="m-0 mt-1 text-base-content/70">{VERDICTS[r.audit!.verdict].label}</p>
             </Tooltip>
@@ -74,7 +74,7 @@ export const PaidVsOwedChart = ({ rows }: { rows: AuditRow[] }) => {
               <GroupedBars
                 categories={ids}
                 series={[
-                  { key: "paid", color: PAID, values: Object.fromEntries(audited.map((r) => [r.entry.id, r.entry.dutyPaid])) },
+                  { key: "paid", color: PAID, values: Object.fromEntries(audited.map((r) => [r.entry.id, r.audit!.paid])) },
                   { key: "owed", color: OWED, values: Object.fromEntries(audited.map((r) => [r.entry.id, r.audit!.owed])) },
                 ]}
                 y={y}

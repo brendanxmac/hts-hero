@@ -9,9 +9,9 @@ export const dynamic = "force-dynamic";
 //   {action: "start", firstTouch?, entryPoint?}  /onboarding opened: the row, where they first came
 //                                        from, and the homepage section whose button they clicked
 //   {action: "company_type", value}      COMPANY_TYPES id
-//   {action: "website", value}           the company website as typed
-//   {action: "skip_website"}
-//   {action: "role", value}              ROLES id; finishes the onboarding
+//   {action: "role", value}              ROLES id
+//   {action: "website", value}           the company website as typed; finishes the onboarding
+//   {action: "skip_website"}             finishes the onboarding
 export async function POST(req: Request) {
   const {
     data: { user },
@@ -43,11 +43,11 @@ export async function POST(req: Request) {
     } else if (body?.action === "company_type" && isCompanyType(body.value)) {
       result = await update({ company_type: body.value });
     } else if (body?.action === "website" && typeof body.value === "string" && cleanWebsite(body.value)) {
-      result = await update({ company_website: cleanWebsite(body.value), website_skipped: false });
+      result = await update({ company_website: cleanWebsite(body.value), website_skipped: false, completed_at: now });
     } else if (body?.action === "skip_website") {
-      result = await update({ company_website: null, website_skipped: true });
+      result = await update({ company_website: null, website_skipped: true, completed_at: now });
     } else if (body?.action === "role" && isRole(body.value)) {
-      result = await update({ role: body.value, completed_at: now });
+      result = await update({ role: body.value });
     } else {
       return NextResponse.json({ error: "Unknown action" }, { status: 400 });
     }

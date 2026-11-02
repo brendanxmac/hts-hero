@@ -3,7 +3,7 @@
 import { renderMediaOnWeb, renderStillOnWeb } from "@remotion/web-renderer"
 import { Format, FORMATS, FPS } from "@/social/brand"
 import { COMPONENTS } from "@/social/components"
-import { compositionId, TEMPLATES } from "@/social/registry"
+import { compositionId, postFrames } from "@/social/registry"
 import type { Post } from "@/social/types"
 
 // Renders a post to a PNG or MP4 in the browser (Remotion's web renderer: WebCodecs, no server),
@@ -15,7 +15,7 @@ const composition = (post: Post, format: Format) => ({
   width: FORMATS[format].width,
   height: FORMATS[format].height,
   fps: FPS,
-  durationInFrames: TEMPLATES[post.template].seconds * FPS,
+  durationInFrames: postFrames(post.template, post.props),
 })
 
 export const renderPostInBrowser = async ({

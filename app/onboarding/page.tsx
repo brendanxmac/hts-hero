@@ -40,13 +40,13 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   // No table yet (before the migration) reads as a fresh start
   const { data } = await createAdminClient()
     .from("signup_onboarding")
-    .select("company_type, company_website, website_skipped, entry_point, completed_at")
+    .select("company_type, role, entry_point, completed_at")
     .eq("user_id", user.id)
     .maybeSingle();
   // The section they started from: this visit's ?from=, else the one saved on their first start
   const from = entryPoint ?? (isEntryPoint(data?.entry_point) ? data.entry_point : null);
   if (data?.completed_at) redirect(next ?? onboardingNext(from));
 
-  const step: OnboardingStep = !data?.company_type ? "company_type" : !data.company_website && !data.website_skipped ? "website" : "role";
+  const step: OnboardingStep = !data?.company_type ? "company_type" : !data.role ? "role" : "website";
   return <SignupOnboarding userId={user.id} initialStep={step} entryPoint={from} next={next} />;
 }

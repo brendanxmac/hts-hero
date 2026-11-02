@@ -3,10 +3,10 @@
 import { Player } from "@remotion/player"
 import { ReactNode, useState } from "react"
 import toast from "react-hot-toast"
-import { Format, FORMATS, FPS } from "@/social/brand"
+import { accentColor, Format, FORMATS, FPS, LAUNCH_COLORS, Theme } from "@/social/brand"
 import type { Captions } from "@/social/captions"
 import { COMPONENTS } from "@/social/components"
-import { TEMPLATES } from "@/social/registry"
+import { postFrames, TEMPLATES } from "@/social/registry"
 import type { Post, SourceLink, TemplateId } from "@/social/types"
 import { btn, Field, inputCls, Panel, Spinner } from "../hts-revision-diff/ui"
 import { renderPostInBrowser } from "./renderInBrowser"
@@ -68,6 +68,42 @@ const EDITABLE: Record<TemplateId, { key: string; label: string }[]> = {
     { key: "headline", label: "Headline" },
     { key: "product", label: "Product" },
     { key: "footnote", label: "Footnote" },
+  ],
+  LaunchTeaser: [
+    { key: "hook", label: "Hook" },
+    { key: "punch", label: "Punch line" },
+    { key: "tagline", label: "Tagline" },
+    { key: "date", label: "Date" },
+  ],
+  LaunchMemo: [
+    { key: "to", label: "To" },
+    { key: "subject", label: "Subject (closes the video; after a colon goes big)" },
+    { key: "line1", label: "Line 1 (each sentence types out on its own)" },
+    { key: "line2", label: "Line 2" },
+    { key: "line3", label: "Line 3" },
+    { key: "date", label: "Date" },
+  ],
+  LaunchSlam: [
+    { key: "line1", label: "Line 1" },
+    { key: "word1", label: "Slam word 1" },
+    { key: "line2", label: "Line 2" },
+    { key: "word2", label: "Slam word 2" },
+    { key: "line3", label: "Line 3" },
+    { key: "word3", label: "Slam word 3" },
+    { key: "glimpse", label: "Over the blurred glimpse" },
+    { key: "date", label: "Date" },
+  ],
+  LaunchVideo: [
+    { key: "opener", label: "Opener" },
+    { key: "openerSub", label: "Under the opener" },
+    { key: "auditTitle", label: "Audit title" },
+    { key: "auditLine", label: "Audit line" },
+    { key: "savingsTitle", label: "Savings title" },
+    { key: "savingsLine", label: "Savings line" },
+    { key: "alertsTitle", label: "Alerts title" },
+    { key: "alertsLine", label: "Alerts line" },
+    { key: "cta", label: "Call to action" },
+    { key: "ctaSub", label: "Under the call to action" },
   ],
 }
 
@@ -150,6 +186,7 @@ export default function PostCard({
   badge,
   actions,
   about,
+  verify = true,
 }: {
   post: Post
   format: Format
@@ -161,6 +198,8 @@ export default function PostCard({
   badge?: ReactNode
   actions?: ReactNode
   about?: ReactNode
+  // Posts with no figures to check (the launch videos) skip the checklist
+  verify?: boolean
 }) {
   const [rendering, setRendering] = useState<string | null>(null)
   const [progress, setProgress] = useState<number | null>(null)
@@ -205,7 +244,7 @@ export default function PostCard({
             key={`${post.key}-${format}`}
             component={COMPONENTS[post.template]}
             inputProps={post.props}
-            durationInFrames={TEMPLATES[post.template].seconds * FPS}
+            durationInFrames={postFrames(post.template, post.props)}
             fps={FPS}
             compositionWidth={width}
             compositionHeight={height}
@@ -218,6 +257,43 @@ export default function PostCard({
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           {about}
+          {("accent" in props || "showVisual" in props) && (
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              {"accent" in props && (
+                // Not a Field: a <label> would pass its clicks to the first swatch
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-xs font-medium text-base-content/70 tracker:text-sm tracker:font-semibold tracker:text-base-content">Color</span>
+                  <div className="flex gap-1.5">
+                    {LAUNCH_COLORS.map((c) => {
+                      const on = (props.accent ?? "cobalt") === c.value
+                      return (
+                        <button
+                          key={c.value}
+                          title={c.label}
+                          aria-label={c.label}
+                          aria-pressed={on}
+                          onClick={() => onProps({ ...post.props, accent: c.value } as Post["props"])}
+                          className={`h-7 w-7 rounded-full border-2 transition ${on ? "border-base-content ring-2 ring-base-content/20" : "border-transparent hover:scale-110"}`}
+                          style={{ background: accentColor((props.theme as Theme) ?? "dark", c.value) }}
+                        />
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+              {"showVisual" in props && (
+                <label className="flex cursor-pointer items-center gap-2 self-end pb-1 text-sm">
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-sm"
+                    checked={props.showVisual !== false}
+                    onChange={(e) => onProps({ ...post.props, showVisual: e.target.checked } as Post["props"])}
+                  />
+                  Show the product visual
+                </label>
+              )}
+            </div>
+          )}
           {EDITABLE[post.template]
             .filter((f) => f.key in props)
             .map((f) => (
@@ -229,7 +305,7 @@ export default function PostCard({
                 />
               </Field>
             ))}
-          <VerifyList key={post.key} sources={sources ?? post.sources ?? []} />
+          {verify && <VerifyList key={post.key} sources={sources ?? post.sources ?? []} />}
           <div className="grid grid-cols-2 gap-3">
             <CopyBox label="LinkedIn" text={captions.linkedin} onChange={onCaptions && ((linkedin) => onCaptions({ ...captions, linkedin }))} />
             <CopyBox label="X" text={captions.x} onChange={onCaptions && ((x) => onCaptions({ ...captions, x }))} />

@@ -1,4 +1,5 @@
-import type { TemplatePropsMap } from "./types"
+import { LAUNCH_POSTS } from "./launch"
+import type { LaunchMemoProps, LaunchSlamProps, LaunchTeaserProps, LaunchVideoProps, TemplatePropsMap } from "./types"
 
 // Placeholder props, so every composition opens in Remotion Studio (npm run social:studio).
 // Real posts get their props from libs/social-studio/build.ts.
@@ -167,4 +168,8 @@ export const SAMPLES: TemplatePropsMap = {
     ],
     footnote: "HTS Hero asks for what the rate needs, then works out the duty.",
   },
+  LaunchTeaser: LAUNCH_POSTS[0].props as LaunchTeaserProps,
+  LaunchVideo: LAUNCH_POSTS.find((p) => p.template === "LaunchVideo")!.props as LaunchVideoProps,
+  LaunchMemo: LAUNCH_POSTS.find((p) => p.template === "LaunchMemo")!.props as LaunchMemoProps,
+  LaunchSlam: LAUNCH_POSTS.find((p) => p.template === "LaunchSlam")!.props as LaunchSlamProps,
 }

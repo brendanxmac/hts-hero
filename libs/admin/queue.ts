@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import { NEWS_ALERTS_FROM } from "../email/news-producer"
 import { STALE_HOURS as ADCVD_STALE_HOURS } from "../adcvd/health"
 import { AUDIT_PLANS } from "../tariff-tracker/plan"
+import { AUDIT_REPORT_KINDS, type AuditReportKind } from "./audit-reports"
 import { SOURCES, type SourceId } from "../tariff-sources/types"
 
 // What needs the admin, from every admin tool, ranked: the /admin home and the 7 a.m. Bangkok
@@ -17,7 +18,7 @@ type Db = SupabaseClient
 export type QueueGroup = "blocking" | "health" | "whenever"
 export type QueueTone = "error" | "warning" | "primary" | "neutral"
 // Which tool an item is dealt with in: the admin sidebar's counts
-export type AdminArea = "updates" | "outbox" | "adcvd" | "studio"
+export type AdminArea = "updates" | "outbox" | "adcvd" | "studio" | "reports"
 
 export interface QueueEntry {
   label: string
@@ -327,6 +328,34 @@ const studioItems = async (db: Db): Promise<QueueItem[]> => {
   ]
 }
 
+// What users sent from Duty Guard's entry audit: an audit that looks wrong waits on an answer
+const auditReportItems = async (db: Db): Promise<QueueItem[]> => {
+  const rows = must<{ id: string; kind: AuditReportKind; case_number: string | null; hts_code: string | null; country: string | null; user_email: string | null; created_at: string }[]>(
+    await db.from("audit_reports").select("id, kind, case_number, hts_code, country, user_email, created_at").eq("status", "open").order("created_at", { ascending: false }).limit(200),
+    "Loading audit reports"
+  )
+  if (!rows.length) return []
+  const wrong = rows.filter((r) => r.kind === "looks_wrong").length
+  return [
+    {
+      id: "audit-reports",
+      group: "blocking",
+      tone: wrong ? "error" : "warning",
+      area: "reports",
+      title: `${plural(rows.length, "audit report")} from users`,
+      detail: wrong ? `${plural(wrong, "audit")} flagged "This looks wrong": the user waits on a reply.` : "AD/CVD cases to add to the case list or link to an import.",
+      action: "Review reports",
+      href: "/audit-reports",
+      count: rows.length,
+      entries: rows.slice(0, SHOWN).map((r) => ({
+        label: `${AUDIT_REPORT_KINDS[r.kind].short}: ${r.case_number ?? (r.hts_code ? `${r.hts_code} · ${r.country}` : "entry audit")}`,
+        href: "/audit-reports",
+        meta: `${r.user_email ?? "user"} · ${day(r.created_at)}`,
+      })),
+    },
+  ]
+}
+
 const GUARANTEE_DAYS = 30
 const GUARANTEE_AUDITS = 10
 
@@ -387,6 +416,7 @@ export const loadAdminQueue = async (db: Db, now = new Date()): Promise<AdminQue
     ["AD/CVD", "adcvd", adcvdItems(db, now)],
     ["Content Studio", "studio", studioItems(db)],
     ["Audit guarantee", "outbox", guaranteeItems(db, now)],
+    ["Audit reports", "reports", auditReportItems(db)],
   ]
   const settled = await Promise.allSettled(parts.map(([, , p]) => p))
   const items = settled.flatMap((r, i): QueueItem[] =>
@@ -407,7 +437,7 @@ export const loadAdminQueue = async (db: Db, now = new Date()): Promise<AdminQue
         ]
   )
   items.sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group))
-  const counts: Record<AdminArea, number> = { updates: 0, outbox: 0, adcvd: 0, studio: 0 }
+  const counts: Record<AdminArea, number> = { updates: 0, outbox: 0, adcvd: 0, studio: 0, reports: 0 }
   for (const item of items) if (item.group !== "whenever") counts[item.area] += item.count
   return { generatedAt: now.toISOString(), items, counts }
 }

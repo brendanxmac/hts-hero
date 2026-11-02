@@ -44,7 +44,7 @@ export const useAuditRows = (productKey?: string) => {
     const totals: AuditTotals = {
       logged: rows.length,
       audited: audited.length,
-      paid: audited.reduce((sum, r) => sum + r.entry.dutyPaid, 0),
+      paid: audited.reduce((sum, r) => sum + r.audit!.paid, 0),
       owed: audited.reduce((sum, r) => sum + r.audit!.owed, 0),
       overpaid: audited.reduce((sum, r) => sum + Math.max(0, r.audit!.difference), 0),
       underpaid: audited.reduce((sum, r) => sum + Math.max(0, -r.audit!.difference), 0),

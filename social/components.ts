@@ -2,6 +2,10 @@ import type { ComponentType } from "react"
 import { BigNumber } from "./templates/BigNumber"
 import { CountrySnapshot } from "./templates/CountrySnapshot"
 import { HeadToHead } from "./templates/HeadToHead"
+import { LaunchMemo } from "./templates/launch/LaunchMemo"
+import { LaunchSlam } from "./templates/launch/LaunchSlam"
+import { LaunchTeaser } from "./templates/launch/LaunchTeaser"
+import { LaunchVideo } from "./templates/launch/LaunchVideo"
 import { Quiz } from "./templates/Quiz"
 import { News } from "./templates/News"
 import { OddRate } from "./templates/OddRate"
@@ -26,4 +30,8 @@ export const COMPONENTS: Record<TemplateId, ComponentType<any>> = {
   Quiz,
   News,
   OddRate,
+  LaunchTeaser,
+  LaunchVideo,
+  LaunchMemo,
+  LaunchSlam,
 }

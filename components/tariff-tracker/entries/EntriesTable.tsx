@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { LockClosedIcon, TrashIcon } from "@heroicons/react/20/solid";
 import type { TableColumnDef } from "@/components/ui/table/features";
 import toast from "react-hot-toast";
@@ -10,14 +10,16 @@ import * as tt from "@/components/ui/styles/tracker";
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table";
 import { formatDate, formatMoney } from "../../duty-calculator/lib/format";
 import { formatRate } from "../formatRate";
+import { openEntryReview } from "./check/entryCheckStore";
+import { DeleteAuditDialog } from "./DeleteAuditDialog";
 import { useEntries } from "./EntriesContext";
 import { AuditRow } from "./useAuditRows";
 import { AuditVerdict } from "./entries";
 
 // The logged entries, newest first: when, what (unless it's one product's), the value, what was
 // paid and owed, and the verdict, on the shared table (sorting by any figure; a longer list gets a
-// search and a filter by result). An entry saved without a check (the allowance ran out) can be
-// checked from its row.
+// search and a filter by result). An audited entry's row opens its Review again; one saved without
+// a check (the allowance ran out) can be checked from its row.
 
 export const VERDICTS: Record<AuditVerdict, { label: string; tone: "success" | "error" | "neutral" }> = {
   overpaid: { label: "Possible overpayment", tone: "success" },
@@ -93,14 +95,15 @@ const columnsFor = ({
   },
   {
     id: "paid",
-    accessorFn: (r) => r.entry.dutyPaid,
+    // Duty, and AD/CVD deposits when the entry has them
+    accessorFn: (r) => r.audit?.paid ?? r.entry.dutyPaid + (r.entry.adcvd?.paid ?? 0),
     header: "Paid",
     sortDescFirst: true,
     meta: { align: "right" },
-    cell: ({ row: { original: { entry } } }) => (
+    cell: ({ row: { original: { entry }, }, getValue }) => (
       <span className="flex flex-col items-end">
-        {money(entry.dutyPaid)}
-        <span className="text-xs text-base-content/60">{formatRate((entry.dutyPaid / entry.customsValue) * 100)}</span>
+        {money(getValue())}
+        <span className="text-xs text-base-content/60">{formatRate((getValue() / entry.customsValue) * 100)}</span>
       </span>
     ),
   },
@@ -165,7 +168,7 @@ const columnsFor = ({
     cell: ({ row: { original: row } }) => (
       <button type="button" className={ui.button({ variant: "ghost", size: "sm", icon: true })} onClick={() => onRemove(row)}>
         <TrashIcon className="h-4 w-4" aria-hidden />
-        <span className="sr-only">Remove this entry</span>
+        <span className="sr-only">Delete this audit</span>
       </button>
     ),
   },
@@ -176,14 +179,16 @@ const TOOLBAR_FROM = 6;
 
 export const EntriesTable = ({ rows, showProduct = true }: { rows: AuditRow[]; showProduct?: boolean }) => {
   const { check, remove } = useEntries();
+  // The row whose delete is being confirmed
+  const [deleting, setDeleting] = useState<AuditRow | null>(null);
   const columns = useMemo(
     () =>
       columnsFor({
         showProduct,
         onUnlock: (row) => check(row.entry),
-        onRemove: (row) => remove(row.entry.id).then((ok) => !ok && toast.error("Couldn't remove this entry.")),
+        onRemove: setDeleting,
       }),
-    [showProduct, check, remove]
+    [showProduct, check]
   );
   const table = useDataTable<AuditRow>({
     data: rows,
@@ -193,20 +198,34 @@ export const EntriesTable = ({ rows, showProduct = true }: { rows: AuditRow[]; s
     initialSorting: [{ id: "entry", desc: true }],
   });
   return (
-    <DataTable
-      table={table}
-      label="Logged entries"
-      toolbar={
-        rows.length >= TOOLBAR_FROM ? (
-          <TableToolbar
-            table={table}
-            placeholder={showProduct ? "Search entry number, code or product" : undefined}
-            facets={["result"]}
-            noun={["entry", "entries"]}
-          />
-        ) : undefined
-      }
-      empty={<p className="text-sm text-base-content/70">No entries match.</p>}
-    />
+    <>
+      <DataTable
+        table={table}
+        label="Logged entries"
+        // An audited entry opens its Review again
+        onRowClick={(row) => row.audit && row.product && openEntryReview(row.entry.id)}
+        toolbar={
+          rows.length >= TOOLBAR_FROM ? (
+            <TableToolbar
+              table={table}
+              placeholder={showProduct ? "Search entry number, code or product" : undefined}
+              facets={["result"]}
+              noun={["entry", "entries"]}
+            />
+          ) : undefined
+        }
+        empty={<p className="text-sm text-base-content/70">No entries match.</p>}
+      />
+      <DeleteAuditDialog
+        row={deleting}
+        onClose={() => setDeleting(null)}
+        onConfirm={async (row) => {
+          const ok = await remove(row.entry.id);
+          if (ok) toast.success("Audit deleted.");
+          else toast.error("Couldn't delete this audit. Please try again.");
+          return ok;
+        }}
+      />
+    </>
   );
 };
