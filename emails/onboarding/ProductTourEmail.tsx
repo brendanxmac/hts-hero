@@ -20,17 +20,17 @@ export interface ProductTourEmailProps {
 }
 
 const SUBJECTS = {
-  1: "See the duty cost for any US import",
-  2: "Know when new tariffs hit your imports",
-  3: "Classification you can defend",
+  1: "Nail your US Import Costs",
+  2: "Did a new tariff just hit your imports?",
+  3: "Classifications you can defend",
 } as const
 
 export const productTourSubject = (p: ProductTourEmailProps) => SUBJECTS[p.step]
 
 const PREVIEWS = {
-  1: "Every tariff stacked up on any HTS code and country, in seconds. Unlimited with your account.",
-  2: `Add your imports once and get alerted when a change hits one. Free for ${REVERSE_TRIAL.days} days, starting when you add them.`,
-  3: `Describe a product and get a defensible HTS classification. ${NUM_FREE_CLASSIFICATIONS} classifications free.`,
+  1: "See every tariff & fee stacked up on any HTS code from any country. Free & Unlimited",
+  2: `Get alerted when tariff changes affect your imports.`,
+  3: `Get a mountain of evidence for every classification`,
 } as const
 
 export default function ProductTourEmail({ step, latest, footer }: ProductTourEmailProps) {
@@ -58,8 +58,8 @@ export default function ProductTourEmail({ step, latest, footer }: ProductTourEm
       {step === 2 && (
         <>
           <Eyebrow tone="up">Duty Guard</Eyebrow>
-          <Title>Know the day a new tariff hits your imports</Title>
-          <P>Add the products you import once and Duty Guard watches every one of them, 24/7. You&apos;ll get alerts like this:</P>
+          <Title>Get notified when new tariff hits your imports</Title>
+          <P>Just upload your imports and Duty Guard will watch them, 24/7 any notify you when you&apos;re affected. You&apos;ll get alerts like this:</P>
           <AlertSample
             label="Tariff Alert"
             updateTitle="A new tariff affects 1 of your imports"
@@ -82,7 +82,7 @@ export default function ProductTourEmail({ step, latest, footer }: ProductTourEm
       {step === 3 && (
         <>
           <Eyebrow>Classification Assistant</Eyebrow>
-          <Title>Legal Evidence for Every HTS Classification</Title>
+          <Title>Get Supporting Evidence to Back Up Every HTS Classification</Title>
           <P>Want to make sure a product is classified correctly? Just enter a product description and our assistant will find:</P>
           <Checklist
             items={[

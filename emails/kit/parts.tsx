@@ -205,12 +205,19 @@ export const Checklist = ({ items }: { items: ReactNode[] }) => (
 
 // What Duty Guard does, as a checklist (the welcome and meet-the-Duty Guard emails)
 export const TRACKER_POINTS: ReactNode[] = [
+  "Overpayment detection on every entry",
+  "Savings detection your imports may qualify for",
+  "Alerts when new tariffs affect you with the new rate included",
+  "AD/CVD alerts when your imports may be affected",
   "Duty rate tracking on every import",
-  "Alerts when a new tariff affects you, with the before and after",
-  "AD/CVD alerts when an import may be affected",
-  "Potential savings you may qualify for on every import",
-  "Audits of past entries to discover overpaid duty",
 ]
+
+// Under the button: a reply reaches Brendan, whatever it's about
+export const ReplyNote = () => (
+  <P small>
+    <strong>Have a question or need help?</strong> Reply directly to this email and you&apos;ll reach me.
+  </P>
+)
 
 // Signed by the founder: every email is from a person, and replies reach him
 export const Signature = ({ line = "Founder, HTS Hero" }: { line?: string }) => (
@@ -228,7 +235,7 @@ export const PlanStrip = ({ campaign, signedUp = true }: { campaign: string; sig
   <Section style={{ marginTop: 24, borderTop: `1px solid ${C.border}`, paddingTop: 18 }}>
     <Text style={{ margin: 0, fontSize: 13, lineHeight: "20px", color: C.muted }}>
       {signedUp ? "Your free account" : "A free HTS Hero account"} tracks every product you import, with its current duty, rate history and sourcing insights, plus Tariff News
-      alerts and AD/CVD checks. Duty Guard is free for {REVERSE_TRIAL.days} days from {signedUp ? "your" : "its"} first products, no credit card required. Then Duty Guard Essentials from {formatPrice(ALERT_TIERS[0].price)}/mo and Duty Guard Pro from {formatPrice(AUDIT_TIERS[0].price)}/mo.{" "}
+      alerts and AD/CVD checks. Duty Guard is free for {REVERSE_TRIAL.days} days with plans as low as {formatPrice(ALERT_TIERS[0].price)}/mo thereafter.{" "}
       <Link href={`${SITE}/pricing-calculator?utm_source=email&utm_medium=email&utm_campaign=${campaign}`} style={{ color: C.cobalt, fontWeight: 600 }}>
         See plans
       </Link>

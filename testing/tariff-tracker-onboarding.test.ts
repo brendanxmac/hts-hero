@@ -56,18 +56,18 @@ describe("Duty Guard onboarding: emails", () => {
     first_visit_at: null,
     skipped_at: null,
     skip_reason: null,
-    skip_note: null,
     ...patch,
   })
   const pick = (days: number, onboarding: OnboardingRow | null | undefined, sent = none, imports = 0) =>
     pickEmail({ account, imports, sent, now: at(days), scoped: false, onboarding })?.key ?? null
 
-  it("opened Duty Guard and left it empty: day 1, then the founder's note on day 3, then day 10", () => {
+  it("opened Duty Guard and left it empty: days 1, 3 and 7", () => {
     const visited = row({ first_visit_at: created, signup_source: "generic" })
     expect(pick(0.5, visited)).toBe(null)
     expect(pick(1.2, visited)).toBe("tracker_no_imports_1")
     expect(pick(3.2, visited, new Set(["tracker_no_imports_1"]))).toBe("tracker_no_imports_2")
-    expect(pick(10.2, visited, new Set(["tracker_no_imports_1", "tracker_no_imports_2"]))).toBe("tracker_no_imports_3")
+    expect(pick(6.2, visited, new Set(["tracker_no_imports_1", "tracker_no_imports_2"]))).toBe(null)
+    expect(pick(7.2, visited, new Set(["tracker_no_imports_1", "tracker_no_imports_2"]))).toBe("tracker_no_imports_3")
     expect(pick(16, visited)).toBe(null)
   })
 
@@ -85,11 +85,12 @@ describe("Duty Guard onboarding: emails", () => {
     expect(pick(6.2, row({ signup_source: "generic" }), new Set(["product_tour_1", "product_tour_2"]))).toBe("product_tour_3")
   })
 
-  it("a reminder they asked for comes the next morning", () => {
+  it("a reminder they asked for comes the next morning, as the next email they haven't had", () => {
     const remind = row({ first_visit_at: created, skip_reason: "remind_me", skipped_at: at(4).toISOString() })
     const sent = new Set(["tracker_no_imports_1", "tracker_no_imports_2"])
     expect(pick(4.3, remind, sent)).toBe(null)
-    expect(pick(4.8, remind, sent)).toBe(`reminder_${at(4).toISOString().slice(0, 10)}`)
+    expect(pick(4.8, remind, sent)).toBe("tracker_no_imports_3")
+    expect(pick(4.8, remind, new Set([...sent, "tracker_no_imports_3"]))).toBe(`reminder_${at(4).toISOString().slice(0, 10)}`)
   })
 
   it("nothing once they have imports of their own", () => {

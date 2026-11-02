@@ -1,6 +1,6 @@
 import { Link, Section, Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { Checklist, Cta, Eyebrow, P, Signature, Title } from "../kit/parts"
+import { Checklist, Cta, Eyebrow, P, ReplyNote, Signature, Title } from "../kit/parts"
 import { C, FONT_DISPLAY, M, siteLink } from "../kit/brand"
 import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 
@@ -65,6 +65,7 @@ export default function TrackerFindingsEmail({ imports, footer }: TrackerFinding
         </Text>
       </Section>
 
+      <ReplyNote />
       <Signature />
     </EmailLayout>
   )

@@ -12,34 +12,25 @@ export interface TrackerIntroEmailProps {
   footer: EmailFooter
 }
 
-export const trackerIntroSubject = () => "Stop checking your tariffs by hand"
+export const trackerIntroSubject = () => "Overpaying on your imports?"
 
 const CAMPAIGN = "tracker-intro"
 
 export default function TrackerIntroEmail({ footer }: TrackerIntroEmailProps) {
   return (
     <EmailLayout preview={`The duty calculator answers one import at a time. Duty Guard watches all of them, free for ${REVERSE_TRIAL.days} days.`} footer={footer}>
-      <Eyebrow>Included in your account</Eyebrow>
-      <Title>We monitor your imports 24/7</Title>
+      <Eyebrow>What is Duty Guard?</Eyebrow>
+      <Title>Stop Overpaying on US Imports</Title>
       <P>
-        The duty calculator tells you what an import costs today. Duty Guard monitors every one of your imports and gives you:
+        Our Tariff Calculator tells you what an import costs today, but what happens when rates change?
       </P>
-      {/* <AlertSample
-        label="Tariff Alert"
-        updateTitle="A new tariff affects 1 of your imports"
-        code="7326.90.86.88"
-        country="Germany"
-        description="Other articles of iron or steel"
-        beforePct={12.9}
-        afterPct={32.9}
-      /> */}
-      {/* <P>Add your imports to unlock:</P> */}
+      <P><strong>Duty Guard solves this problem</strong> by giving you:</P>
       <Checklist items={TRACKER_POINTS} />
       <P>
         Try it free, no credit card required.
       </P>
       <Cta href={siteLink("/duty-guard?setup=add", CAMPAIGN)} variant="next">
-        Add your imports &rarr;
+        See if You&apos;re Overpaying &rarr;
       </Cta>
       <Signature />
       <PlanStrip campaign={CAMPAIGN} />

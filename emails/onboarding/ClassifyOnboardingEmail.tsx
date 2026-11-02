@@ -15,27 +15,28 @@ export interface ClassifyOnboardingEmailProps {
 
 const STEPS = {
   1: {
-    subject: "Classify your first product",
-    title: "Classify Your First Product",
-    body: "Describe a product in plain English. You'll get the candidate HS codes with the legal notes and CROSS rulings that back each one.",
-    points: ["Start from a product description", "Compare the candidates side by side", "See why the others were ruled out"],
-    cta: "Classify a product",
+    subject: "Smarter, Faster HTS Classification",
+    title: "Smarter, Faster HTS Classification",
+    body: "Describe any product and get candidate HS codes with legal notes and CROSS rulings that back each one in seconds.",
+    points: ["Type a product description", "Get candidates with supporting evidence", "Save the report for your records"],
+    cta: "Try it free",
     href: "/classifications/new",
   },
   2: {
-    subject: "The report your files need",
-    title: "Turn a Classification Into a Report",
-    body: "A code is only as good as the reasoning behind it. Every classification can become a report with the headings considered, the notes applied and the rulings cited.",
-    points: ["Download it for your records", "Share it with your broker or team", "Keep the reasoning if CBP ever asks"],
-    cta: "See my classifications",
+    subject: "Defend Your Classifications",
+    title: "Defense Reports for Your Classifications",
+    body: "With HTS Hero every classification gets a full report with the headings considered, the notes applied, and the rulings cited.",
+    points: ["Defends your choices", "Documents your reasoning", "Easy to share with your team or clients"],
+    cta: "Try it free",
     href: "/classifications",
   },
   3: {
-    subject: "Your free classifications",
-    title: "Keep Your Classifications Moving",
-    body: `Your first ${NUM_FREE_CLASSIFICATIONS} classifications are free. When you need more, plans start with 10 a month, and Pro audits your existing codes too.`,
-    points: ["Starter: 10 classifications a month", "Pro: up to 100, plus audits of existing codes", "Refunded in full if 10 classifications in 30 days don't satisfy you"],
-    cta: "See the plans",
+    subject: "Got that feeling?",
+    title: "Ever been unsure about a classification?",
+    body: `We all make mistakes, but price of misclassification can really sting. HTS Hero helps you avoid mistakes by finding evidence for every candidate and checking your blind spots.`,
+    points: [],
+    // points: ["Starter: 10 classifications a month", "Pro: up to 100, plus audits of existing codes", "Refunded in full if 10 classifications in 30 days don't satisfy you"],
+    cta: "Classify with Confidence",
     href: "/classify#pricing",
   },
 } as const
@@ -48,7 +49,7 @@ export default function ClassifyOnboardingEmail({ step, footer }: ClassifyOnboar
   const s = STEPS[step]
   return (
     <EmailLayout preview={s.body.slice(0, 140)} footer={footer}>
-      <Eyebrow>Classification</Eyebrow>
+      <Eyebrow>Classification Assistant</Eyebrow>
       <Title>{s.title}</Title>
       <P>{s.body}</P>
       <Checklist items={[...s.points]} />

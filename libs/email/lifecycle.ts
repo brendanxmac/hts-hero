@@ -5,7 +5,7 @@ import { PricingPlan } from "../../types"
 import { ALERT_PLANS, AUDIT_PLANS, OWNED_PLAN_NAMES, planFitting, trialEndsAt, trialLengthFrom } from "../tariff-tracker/plan"
 import { RENEWAL_GRACE_DAYS } from "../tariff-tracker/access"
 import { createBatch, type OutboxMessage } from "./outbox"
-import { appUrl, ensureAccountSubscriber, SUBSCRIBER_COLUMNS, subscriberFooter, type Subscriber } from "./subscribers"
+import { ensureAccountSubscriber, SUBSCRIBER_COLUMNS, subscriberFooter, type Subscriber } from "./subscribers"
 import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./tariff-news"
 
 // Onboarding (lifecycle) emails. Once a day the job works out, per account, the one email its
@@ -21,11 +21,11 @@ import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./t
 // each sequence stopping once one is added. Which one follows what the account came for and did
 // (tracker_onboarding, the import onboarding plan of 2026-10-20):
 //   Opened Duty Guard, left it empty, counted from the first visit:
-//     tracker_no_imports_1  day 1   this month's tariff actions, the three ways in, ask your broker
-//     tracker_no_imports_2  day 3   a personal note from Brendan: can I give you a hand? (answers
-//                                   their skip reason; reply with a spreadsheet and he sets it up)
-//     tracker_no_imports_3  day 10  the same help first, then HTS Hero Managed
-//     reminder_<day>        the day after "Remind me tomorrow" in the takeover, whenever pressed
+//     tracker_no_imports_1  day 1   detect possible overpayments
+//     tracker_no_imports_2  day 3   get alerts when tariffs change on their imports
+//     tracker_no_imports_3  day 7   discover possible savings
+//     Reminders: the day after "Remind me tomorrow" in the takeover, whenever pressed, the next of
+//     these they haven't had (reminder_<day> if they've had them all)
 //   Never opened Duty Guard, counted from sign-up:
 //     tracker_intro         day 1   signed up for the calculator (or classification): meet Duty Guard
 //     product_tour_1/2/3    day 1/3/6  a generic sign-up (home page, header): the calculator, the
@@ -36,8 +36,6 @@ import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./t
 // Imports added (first seen by the snapshot job from ONBOARDING_FROM on):
 //   first_look    the morning after, once   well done: the best rate, alerts on new tariffs and
 //                                           easy audits, then HTS Hero Managed (tracker_findings)
-// Accounts from before ONBOARDING_FROM get the one-time meet_tracker email instead (queued by
-// `npm run email:meet-tracker`), with a one-click opt-in to the weekly digest.
 //
 // The reverse trial (queueTrialEmails, run after the onboarding batch so first_look wins the day):
 //   trial_unlocked  accounts from before REVERSE_TRIAL.freshStartOn, once, as their fresh trial starts
@@ -48,7 +46,7 @@ import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./t
 //   trial_winback_7/14  7 and 14 days after it ended
 // Paying accounts get none of these.
 //
-// Duty Guard Essentials subscribers (queueAuditsUpsell): audits_upsell_1/2, 14 and 30 days in.
+// Duty Guard Essentials subscribers (queueAuditsUpsell): audits_upsell_1/2, 10 and 20 days in.
 
 type Db = SupabaseClient
 
@@ -64,7 +62,7 @@ interface Step {
   was?: string[]
 }
 const TRACKER_STEPS: Step[] = [
-  { key: "tracker_no_imports_3", day: 10 },
+  { key: "tracker_no_imports_3", day: 7 },
   { key: "tracker_no_imports_2", day: 3, was: ["no_imports_3"] },
   { key: "tracker_no_imports_1", day: 1, was: ["no_imports_1"] },
 ]
@@ -107,9 +105,8 @@ export interface OnboardingRow {
   first_visit_at: string | null
   skipped_at: string | null
   skip_reason: string | null
-  skip_note: string | null
 }
-const ONBOARDING_COLUMNS = "user_id, signup_source, first_visit_at, skipped_at, skip_reason, skip_note"
+const ONBOARDING_COLUMNS = "user_id, signup_source, first_visit_at, skipped_at, skip_reason"
 
 // The latest published tariff actions (not HTS revisions), and how many there were in 30 days
 export const recentActions = async (db: Db, limit: number) => {
@@ -210,7 +207,8 @@ export const pickEmail = ({
   // They asked to be reminded: the next morning (from 12 hours on, within 2 days)
   if (onboarding?.skip_reason === "remind_me" && onboarding.skipped_at) {
     const since = now.getTime() - new Date(onboarding.skipped_at).getTime()
-    const key = `reminder_${onboarding.skipped_at.slice(0, 10)}`
+    const next = [...TRACKER_STEPS].reverse().find((s) => latestStep([s], s.day, sent))
+    const key = next?.key ?? `reminder_${onboarding.skipped_at.slice(0, 10)}`
     if (since >= DAY / 2 && since < 2 * DAY && !sent.has(key)) return { key, kind: "reminder" }
   }
 
@@ -279,7 +277,7 @@ export const queueDailyOnboarding = async (db: Db, now = new Date(), { onlyUserI
     if (paces(r.email_key)) lastSent.set(r.user_id, Math.max(lastSent.get(r.user_id) ?? 0, new Date(r.queued_at).getTime()))
   }
 
-  const { recent, thisMonth } = await recentActions(db, 3)
+  const { recent } = await recentActions(db, 1)
   const picks: { account: Account; key: string; message: OutboxMessage }[] = []
   for (const account of accounts) {
     const subscriber = subscribers.get(account.id)
@@ -291,23 +289,16 @@ export const queueDailyOnboarding = async (db: Db, now = new Date(), { onlyUserI
     if (now.getTime() - (lastSent.get(account.id) ?? 0) < waitBefore(pick.kind)) continue
     const footer = subscriberFooter(subscriber, ACCOUNT_REASON)
     const base = { channel: "email" as const, recipient: account.email, userId: account.id, subscriberId: subscriber.id }
-    const skip = { skipReason: onboarding?.skip_reason ?? null, skipNote: onboarding?.skip_note ?? null }
     const message: OutboxMessage =
       pick.kind === "first_look"
         ? { ...base, template: "tracker_findings", props: { imports: snapshot!.products, footer } }
-        : pick.key === "tracker_no_imports_2" || pick.key === "tracker_no_imports_3"
-          ? { ...base, template: "founder_note", props: { variant: pick.key === "tracker_no_imports_2" ? "help" : "last", ...skip, footer } }
-          : pick.kind === "classify"
-            ? { ...base, template: "classify_onboarding", props: { step: Number(pick.key.slice(-1)), footer } }
-            : pick.kind === "intro"
+        : pick.kind === "classify"
+          ? { ...base, template: "classify_onboarding", props: { step: Number(pick.key.slice(-1)), footer } }
+          : pick.kind === "intro"
             ? { ...base, template: "tracker_intro", props: { footer } }
             : pick.kind === "tour"
               ? { ...base, template: "product_tour", props: { step: Number(pick.key.slice(-1)), latest: recent[0] ?? null, footer } }
-              : {
-                  ...base,
-                  template: "onboarding",
-                  props: { step: 1, actionsThisMonth: thisMonth, recent: recent.slice(0, 2), reminder: pick.kind === "reminder" || onboarding?.skip_reason === "remind_me", footer },
-                }
+              : { ...base, template: "onboarding", props: { step: Number(pick.key.slice(-1)) || 3, reminder: pick.kind === "reminder", footer } }
     picks.push({ account, key: pick.key, message })
   }
   if (!picks.length) return { queued: 0 }
@@ -325,74 +316,16 @@ export const queueDailyOnboarding = async (db: Db, now = new Date(), { onlyUserI
   return { queued: picks.length }
 }
 
-// The one-time Meet Duty Guard email to every account from before ONBOARDING_FROM that
-// hasn't had it, as one outbox batch. Returns how many were queued.
-export const queueMeetTracker = async (db: Db, { limit = 2000, onlyUserIds }: { limit?: number } & TestScope = {}) => {
-  let query = db.from("users").select("id, email, created_at").lt("created_at", ONBOARDING_FROM).limit(limit)
-  if (onlyUserIds) query = query.in("id", onlyUserIds)
-  const { data: accountRows, error } = await query
-  if (error) throw new Error(`Loading accounts: ${error.message}`)
-  const accounts = ((accountRows ?? []) as Account[]).filter((a) => a.email)
-  const { data: done } = await db.from("lifecycle_emails").select("user_id").eq("email_key", "meet_tracker")
-  const already = new Set((done ?? []).map((r) => r.user_id))
-  const todo = accounts.filter((a) => !already.has(a.id))
-  if (!todo.length) return { queued: 0 }
-  const subscribers = await subscribersFor(db, todo)
-  const { recent } = await recentActions(db, 2)
-  const picks = todo.flatMap((account) => {
-    const s = subscribers.get(account.id)
-    return reachable(s) ? [{ account, s }] : []
-  })
-  if (!picks.length) return { queued: 0 }
-  const batchId = await createBatch(db, {
-    kind: "lifecycle",
-    title: `Meet Duty Guard · ${picks.length} existing account${picks.length === 1 ? "" : "s"}`,
-    ref: { email_key: "meet_tracker" },
-    dedupeKey: `meet_tracker:${new Date().toISOString().slice(0, 10)}`,
-    autoSend: true,
-    messages: picks.map(({ account, s }) => ({
-      channel: "email" as const,
-      recipient: account.email,
-      userId: account.id,
-      subscriberId: s.id,
-      template: "meet_tracker",
-      props: {
-        optInUrl: appUrl(`/api/email/opt-in?token=${s.token}`),
-        recent,
-        footer: subscriberFooter(s, "You're getting this one-time update because you have an HTS Hero account."),
-      } as Record<string, unknown>,
-    })),
-  })
-  if (!batchId) return { queued: 0 }
-  await db.from("lifecycle_emails").insert(picks.map(({ account }) => ({ user_id: account.id, email_key: "meet_tracker", batch_id: batchId })))
-  return { queued: picks.length }
-}
-
-
 // ---------- The reverse trial ----------
 
 const TRIAL_PAGE = 1000
-
-// Every account made in [from, to), a page at a time (selects stop at 1,000 rows)
-const accountsBetween = async (db: Db, from: string | null, to: string): Promise<Account[]> => {
-  const out: Account[] = []
-  for (let page = 0; ; page++) {
-    let query = db.from("users").select("id, email, created_at").lt("created_at", to).order("created_at").range(page * TRIAL_PAGE, (page + 1) * TRIAL_PAGE - 1)
-    if (from) query = query.gte("created_at", from)
-    const { data, error } = await query
-    if (error) throw new Error(`Loading accounts: ${error.message}`)
-    out.push(...((data ?? []) as Account[]))
-    if (!data || data.length < TRIAL_PAGE) return out
-  }
-}
 
 const chunks = <T,>(list: T[], size = 200) => Array.from({ length: Math.ceil(list.length / size) }, (_, i) => list.slice(i * size, (i + 1) * size))
 
 // An account on the trial: when it started (its first real imports, tracker_onboarding)
 type TrialAccount = Account & { trial_started_at: string }
 
-// Accounts whose trial started in [from, to), a page at a time. Until the tracker_onboarding
-// migration is applied, trials started at sign-up.
+// Accounts whose trial started in [from, to), a page at a time
 const trialsStartedBetween = async (db: Db, from: string, to: string): Promise<TrialAccount[]> => {
   const started: { user_id: string; trial_started_at: string }[] = []
   for (let page = 0; ; page++) {
@@ -403,7 +336,7 @@ const trialsStartedBetween = async (db: Db, from: string, to: string): Promise<T
       .lt("trial_started_at", to)
       .order("trial_started_at")
       .range(page * TRIAL_PAGE, (page + 1) * TRIAL_PAGE - 1)
-    if (error) return (await accountsBetween(db, from, to)).map((a) => ({ ...a, trial_started_at: a.created_at }))
+    if (error) throw new Error(`Loading trials: ${error.message}`)
     started.push(...((data ?? []) as typeof started))
     if (!data || data.length < TRIAL_PAGE) break
   }
@@ -499,6 +432,8 @@ export const queueTrialEmails = async (db: Db, now = new Date(), { onlyUserIds }
 
   const due = accounts.flatMap((account) => {
     if (paid.has(account.id)) return []
+    // Trials start at the first imports: an account that has since removed them all hears no more
+    if (!(imports.get(account.id) ?? snapshots.get(account.id)?.products)) return []
     // One email a day at most
     if (now.getTime() - (lastSent.get(account.id) ?? 0) < 20 * 60 * 60 * 1000) return []
     const pick = pickTrialEmail({ startedAt: account.trial_started_at, createdAt: account.created_at, sent: sentKeys.get(account.id) ?? new Set(), now })
@@ -561,8 +496,8 @@ export const queueTrialEmails = async (db: Db, now = new Date(), { onlyUserIds }
 // ---------- Duty Guard Pro upsell, for Duty Guard Essentials subscribers ----------
 
 const UPSELL_DAYS = [
-  { key: "audits_upsell_2", step: 2, day: 30 },
-  { key: "audits_upsell_1", step: 1, day: 14 },
+  { key: "audits_upsell_2", step: 2, day: 20 },
+  { key: "audits_upsell_1", step: 1, day: 10 },
 ]
 
 // The step an alerts subscriber is due: the latest reached and not sent, days after the first purchase
@@ -635,4 +570,65 @@ export const queueAuditsUpsell = async (db: Db, now = new Date(), { onlyUserIds 
   if (!batchId) return { queued: 0 }
   await db.from("lifecycle_emails").insert(picks.map((p) => ({ user_id: p.account.id, email_key: p.key, batch_id: batchId })))
   return { queued: picks.length }
+}
+
+// ---------- The Duty Guard launch, once, to every existing account ----------
+
+const LAUNCH_KEY = "duty_guard_launch"
+
+// Every account with an email that hasn't had the launch email and hasn't opted out of these
+// emails, as one batch held for review in /email-outbox. dryRun counts them and writes nothing.
+export const queueDutyGuardLaunch = async (db: Db, { dryRun = false, onlyUserIds }: { dryRun?: boolean } & TestScope = {}) => {
+  const accounts: Account[] = []
+  for (let page = 0; ; page++) {
+    let query = db.from("users").select("id, email, created_at").order("created_at").range(page * TRIAL_PAGE, (page + 1) * TRIAL_PAGE - 1)
+    if (onlyUserIds) query = query.in("id", onlyUserIds)
+    const { data, error } = await query
+    if (error) throw new Error(`Loading accounts: ${error.message}`)
+    accounts.push(...((data ?? []) as Account[]).filter((a) => a.email))
+    if (!data || data.length < TRIAL_PAGE) break
+  }
+
+  // Not twice, and never to an address that unsubscribed or turned these emails off
+  const done = new Set<string>()
+  const optedOut = new Set<string>()
+  for (const part of chunks(accounts.map((a) => a.id))) {
+    const [{ data: sent }, { data: subs }] = await Promise.all([
+      db.from("lifecycle_emails").select("user_id").eq("email_key", LAUNCH_KEY).in("user_id", part),
+      db.from("email_subscribers").select(SUBSCRIBER_COLUMNS).in("user_id", part),
+    ])
+    for (const r of sent ?? []) done.add(r.user_id)
+    for (const s of (subs ?? []) as Subscriber[]) if (!s.lifecycle || s.unsubscribed_at) optedOut.add(s.user_id!)
+  }
+  const todo = accounts.filter((a) => !done.has(a.id) && !optedOut.has(a.id))
+  const counts = { accounts: accounts.length, alreadySent: done.size, optedOut: optedOut.size }
+  if (dryRun || !todo.length) return { queued: 0, wouldQueue: todo.length, ...counts }
+
+  const picks: { account: Account; message: OutboxMessage }[] = []
+  for (const part of chunks(todo)) {
+    const subscribers = await subscribersFor(db, part)
+    for (const account of part) {
+      const s = subscribers.get(account.id)
+      if (!reachable(s)) continue
+      picks.push({
+        account,
+        message: { channel: "email", recipient: account.email, userId: account.id, subscriberId: s.id, template: LAUNCH_KEY, props: { footer: subscriberFooter(s, ACCOUNT_REASON) } },
+      })
+    }
+  }
+  if (!picks.length) return { queued: 0, wouldQueue: 0, ...counts }
+  const batchId = await createBatch(db, {
+    kind: "lifecycle",
+    title: `Duty Guard launch · ${picks.length} account${picks.length === 1 ? "" : "s"}`,
+    ref: { email_key: LAUNCH_KEY },
+    dedupeKey: `${LAUNCH_KEY}:${new Date().toISOString().slice(0, 10)}`,
+    // Every account at once: reviewed and approved in /email-outbox first
+    autoSend: false,
+    messages: picks.map((p) => p.message),
+  })
+  if (!batchId) return { queued: 0, wouldQueue: picks.length, ...counts }
+  for (const part of chunks(picks, 500)) {
+    await db.from("lifecycle_emails").insert(part.map((p) => ({ user_id: p.account.id, email_key: LAUNCH_KEY, batch_id: batchId })))
+  }
+  return { queued: picks.length, wouldQueue: picks.length, ...counts }
 }

@@ -274,8 +274,7 @@ and the scope reader fail on the missing column.
       Stripe checkout and refund.
 - [ ] **The "everything is unlocked" email** (`trial_unlocked`): only for an existing account whose
       browser catalog syncs on `freshStartOn` itself (its trial starting that day), so expect few or
-      none. If a batch appears, it's held for review in /email-outbox. It replaces the older "Meet
-      Duty Guard" email; don't also run `npm run email:meet-tracker`.
+      none. If a batch appears, it's held for review in /email-outbox.
 - [ ] **Trial emails from then on** send themselves daily: 3 days before the trial ends, its last
       day, and the day after (`libs/email/lifecycle.ts`). Each trial ends 14 days after that account's
       first real imports, so they arrive a few at a time, not as one batch.

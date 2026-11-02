@@ -1,5 +1,6 @@
 import { ReactElement } from "react"
 import { render } from "@react-email/render"
+import DutyGuardLaunchEmail, { dutyGuardLaunchSubject, type DutyGuardLaunchEmailProps } from "./announcements/DutyGuardLaunchEmail"
 import WelcomeEmail, { welcomeSubject, type WelcomeEmailProps } from "./account/WelcomeEmail"
 import PurchaseConfirmationEmail, { purchaseConfirmationSubject, type PurchaseConfirmationEmailProps } from "./account/PurchaseConfirmationEmail"
 import PlaybookEmail, { playbookSubject, type PlaybookEmailProps } from "./leads/PlaybookEmail"
@@ -9,9 +10,7 @@ import AdminDigestEmail, { adminDigestSubject, type AdminDigestEmailProps } from
 import NewsConfirmEmail, { newsConfirmSubject, type NewsConfirmEmailProps } from "./tariff-updates/NewsConfirmEmail"
 import NewsManageLinkEmail, { newsManageLinkSubject, type NewsManageLinkEmailProps } from "./tariff-updates/NewsManageLinkEmail"
 import OnboardingEmail, { onboardingSubject, type OnboardingEmailProps } from "./onboarding/OnboardingEmail"
-import FounderNoteEmail, { founderNoteSubject, type FounderNoteEmailProps } from "./onboarding/FounderNoteEmail"
 import TrackerFindingsEmail, { trackerFindingsSubject, type TrackerFindingsEmailProps } from "./onboarding/TrackerFindingsEmail"
-import MeetTrackerEmail, { meetTrackerSubject, type MeetTrackerEmailProps } from "./onboarding/MeetTrackerEmail"
 import TrackerIntroEmail, { trackerIntroSubject, type TrackerIntroEmailProps } from "./onboarding/TrackerIntroEmail"
 import ProductTourEmail, { productTourSubject, type ProductTourEmailProps } from "./onboarding/ProductTourEmail"
 import TrialEmail, { trialSubject, type TrialEmailProps } from "./onboarding/TrialEmail"
@@ -111,6 +110,7 @@ export const TEMPLATES = {
       }
     },
   }),
+  duty_guard_launch: template<DutyGuardLaunchEmailProps>({ subject: dutyGuardLaunchSubject, email: (p) => <DutyGuardLaunchEmail {...p} /> }),
   welcome: template<WelcomeEmailProps>({ subject: welcomeSubject, email: (p) => <WelcomeEmail {...p} /> }),
   watching: template<WatchingEmailProps>({ subject: watchingSubject, email: (p) => <WatchingEmail {...p} /> }),
   purchase_confirmation: template<PurchaseConfirmationEmailProps>({ subject: purchaseConfirmationSubject, email: (p) => <PurchaseConfirmationEmail {...p} /> }),
@@ -119,9 +119,9 @@ export const TEMPLATES = {
   news_confirm: template<NewsConfirmEmailProps>({ subject: newsConfirmSubject, email: (p) => <NewsConfirmEmail {...p} /> }),
   news_manage_link: template<NewsManageLinkEmailProps>({ subject: newsManageLinkSubject, email: (p) => <NewsManageLinkEmail {...p} /> }),
   onboarding: template<OnboardingEmailProps>({ subject: onboardingSubject, email: (p) => <OnboardingEmail {...p} /> }),
-  founder_note: template<FounderNoteEmailProps>({ subject: founderNoteSubject, email: (p) => <FounderNoteEmail {...p} /> }),
+  // Retired: keeps its past messages opening in the outbox
+  founder_note: template<OnboardingEmailProps>({ subject: (p) => onboardingSubject({ ...p, step: 2 }), email: (p) => <OnboardingEmail {...p} step={2} /> }),
   tracker_findings: template<TrackerFindingsEmailProps>({ subject: trackerFindingsSubject, email: (p) => <TrackerFindingsEmail {...p} /> }),
-  meet_tracker: template<MeetTrackerEmailProps>({ subject: meetTrackerSubject, email: (p) => <MeetTrackerEmail {...p} /> }),
   tracker_intro: template<TrackerIntroEmailProps>({ subject: trackerIntroSubject, email: (p) => <TrackerIntroEmail {...p} /> }),
   product_tour: template<ProductTourEmailProps>({ subject: productTourSubject, email: (p) => <ProductTourEmail {...p} /> }),
   trial: template<TrialEmailProps>({ subject: trialSubject, email: (p) => <TrialEmail {...p} /> }),

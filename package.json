@@ -7,7 +7,7 @@
   },
   "scripts": {
     "email": "node --env-file=.env.local node_modules/.bin/email dev",
-    "email:meet-tracker": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/meet-tracker.ts",
+    "email:duty-guard-launch": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/duty-guard-launch.ts",
     "stripe:check-tracker": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx --env-file=.env.local scripts/stripe/check-tracker-prices.ts",
     "stripe:setup-offers": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx --env-file=.env.local scripts/stripe/setup-offers.ts",
     "chat:test": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/chat/test-alerts.tsx",

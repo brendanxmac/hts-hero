@@ -283,10 +283,10 @@ describe("Pricing page calculator", () => {
 describe("Duty Guard Pro upsell emails", () => {
   const bought = "2027-01-01T00:00:00Z"
   const at = (days: number) => new Date(Date.parse(bought) + days * DAY)
-  it("two weeks in, then a month in, each once", () => {
-    expect(pickUpsell(bought, new Set(), at(10))).toBe(null)
-    expect(pickUpsell(bought, new Set(), at(15))?.key).toBe("audits_upsell_1")
-    expect(pickUpsell(bought, new Set(["audits_upsell_1"]), at(20))).toBe(null)
-    expect(pickUpsell(bought, new Set(["audits_upsell_1"]), at(31))?.key).toBe("audits_upsell_2")
+  it("10 days in, then 20 days in, each once", () => {
+    expect(pickUpsell(bought, new Set(), at(9))).toBe(null)
+    expect(pickUpsell(bought, new Set(), at(10))?.key).toBe("audits_upsell_1")
+    expect(pickUpsell(bought, new Set(["audits_upsell_1"]), at(19))).toBe(null)
+    expect(pickUpsell(bought, new Set(["audits_upsell_1"]), at(20))?.key).toBe("audits_upsell_2")
   })
 })

@@ -66,15 +66,15 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
       <Cta href={siteLink(tracker ? "/duty-guard" : "/classifications", CAMPAIGN)} variant="next">
         {tracker ? "Open Duty Guard" : "Start a classification"}
       </Cta>
-      {tracker && p.offer && (
+      {/* {tracker && p.offer && (
         <P small>
           {p.offer === "alerts"
             ? "Your 30-day money-back guarantee: if Duty Guard Essentials isn't worth it, just reply within 30 days of your first payment and I'll refund it in full."
             : "Your 10 Audit Money Back Guarantee: if you do 10 audits within 30 days and aren't satisfied with the results, just reply and I'll refund you in full."}
         </P>
-      )}
+      )} */}
       <P muted small>
-        Sign in with this email address to use your plan. Manage billing any time from your account&apos;s settings.
+        Sign in with this email address to use your plan. Manage your subscription by clicking your profile icon, then "Billing".
       </P>
       <Signature />
     </EmailLayout>

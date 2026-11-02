@@ -359,7 +359,7 @@ export const ImportTakeover = () => {
                 from: step,
               });
               toast.success(
-                `We'll email you tomorrow with these steps. Your ${REVERSE_TRIAL.days}-day trial waits until you add your imports.`,
+                `We'll email you a reminder tomorrow. Your ${REVERSE_TRIAL.days}-day trial waits until you add your imports.`,
                 { duration: 6000 },
               );
               dismiss();

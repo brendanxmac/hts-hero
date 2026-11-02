@@ -107,7 +107,7 @@ every price reads `TRACKER_TIERS`.
 ### Emails (`emails/`)
 
 - `kit/parts.tsx`: `PlanStrip` → "tracks N imports: an alert when a tariff change hits one, and impact checks on each"; new `TRACKER_POINTS` checklist (track every rate, alerts before → after, impact checks, export).
-- `account/WelcomeEmail.tsx`, `onboarding/MeetTrackerEmail.tsx`: checklist → `TRACKER_POINTS`.
+- `account/WelcomeEmail.tsx`: checklist → `TRACKER_POINTS`.
 - `onboarding/OnboardingEmail.tsx`: last two items → impact checks, export.
 - `onboarding/FounderNoteEmail.tsx`: savings / overpaid-duty paragraph → alerts and impact checks.
 - `onboarding/TrackerFindingsEmail.tsx`: preview "easy audits" → "impact checks"; item 1 "lower-duty options" → "Always know your rate"; item 3 "Audit every entry" → "See the impact of any tariff action". (Its Managed lines still mention audits and savings: Managed is done by hand.)

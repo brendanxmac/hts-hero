@@ -127,7 +127,7 @@ export default function ImpactAlertEmail(props: ImpactAlertEmailProps) {
       {removed.length > 0 && alerted.length + beyond > 0 && <P small>No longer affected: {removed.map((r) => `${r.code} from ${r.country}`).join("; ")}.</P>}
 
       <Cta href={siteLink(`/duty-guard?tab=impact&update=${encodeURIComponent(update.slug)}`, campaign)} variant="next">
-        See the impact on my imports
+        Check my imports
       </Cta>
 
       {beyond > 0 && <NotCovered beyond={beyond} limit={limit} paid={paid} campaign={campaign} />}

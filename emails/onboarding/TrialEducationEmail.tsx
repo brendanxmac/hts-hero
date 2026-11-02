@@ -1,5 +1,5 @@
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { Checklist, Cta, Eyebrow, P, Signature, Title } from "../kit/parts"
+import { Checklist, Cta, Eyebrow, P, ReplyNote, Signature, Title } from "../kit/parts"
 import { siteLink } from "../kit/brand"
 
 // Three during the trial (libs/email/lifecycle.ts): each teaches one thing on the account's own
@@ -71,6 +71,7 @@ export default function TrialEducationEmail({ lesson, imports, changes12m = 0, p
       <P muted small>
         {daysLeft} {daysLeft === 1 ? "day" : "days"} left in your free trial.
       </P>
+      <ReplyNote />
       <Signature />
     </EmailLayout>
   )
