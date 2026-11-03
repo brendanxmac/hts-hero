@@ -391,19 +391,21 @@ export const useConversion = (page: string) => {
     account?: AccountPitch;
     trial?: TrialPitch;
     feature: PremiumFeature;
+    // What opened it (the locked feature or button), for the events
+    source: string;
     // Where sign-up comes back to, when not this page as it is
     redirect?: () => string;
-  }>({ open: false, view: "account", feature: "tracking" });
+  }>({ open: false, view: "account", feature: "tracking", source: "tracking" });
 
   const openAccount = (account: AccountPitch, source: string, redirect?: () => string) => {
     trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature: source, reason: "account", page });
-    setState({ open: true, view: "account", account, feature: "tracking", redirect });
+    setState({ open: true, view: "account", account, feature: "tracking", source, redirect });
   };
   const openTrial = (feature: PremiumFeature, trial: TrialPitch) => {
     trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature, reason: access?.access.kind ?? (user ? "signed-in" : "anonymous"), page });
     if (access?.signedIn && nav) nav.openTab(featureTab(feature));
     else if (user) window.location.href = sectionUrl(featureTab(feature));
-    else setState({ open: true, view: "trial", trial, feature });
+    else setState({ open: true, view: "trial", trial, feature, source: feature });
   };
 
   const dialog: ReactNode = (
@@ -412,9 +414,19 @@ export const useConversion = (page: string) => {
       view={state.view}
       account={state.account}
       trial={state.trial}
-      onClose={() => setState((s) => ({ ...s, open: false }))}
-      onCreateAccount={() => (window.location.href = signupHref((state.redirect ?? currentPath)()))}
-      onStartTrial={() => (window.location.href = signupHref(thisPageWith({ trial: state.feature })))}
+      onClose={() => {
+        trackEvent(MixpanelEvent.CONVERSION_DIALOG_DISMISSED, { feature: state.source, view: state.view, page });
+        setState((s) => ({ ...s, open: false }));
+      }}
+      // The dialog's sign-up buttons, in the same event as every other sign-up button (EntryCta)
+      onCreateAccount={() => {
+        trackEvent(MixpanelEvent.SIGNUP_CTA_CLICKED, { page, entry: `calculator_${state.source}`, section: "conversion_dialog", label: "account", signed_in: false });
+        window.location.href = signupHref((state.redirect ?? currentPath)());
+      }}
+      onStartTrial={() => {
+        trackEvent(MixpanelEvent.SIGNUP_CTA_CLICKED, { page, entry: `calculator_${state.source}`, section: "conversion_dialog", label: "trial", signed_in: false });
+        window.location.href = signupHref(thisPageWith({ trial: state.feature }));
+      }}
       page={page}
     />
   );

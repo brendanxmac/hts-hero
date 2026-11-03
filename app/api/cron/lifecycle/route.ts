@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { queueAuditsUpsell, queueDailyOnboarding, queueTrialEmails } from "@/libs/email/lifecycle"
+import { sendTrialEvents } from "@/libs/tariff-tracker/trialEvents"
 import { createAdminClient } from "../../supabase/server"
 
 export const dynamic = "force-dynamic"
@@ -17,5 +18,7 @@ export async function GET(req: NextRequest) {
   const onboarding = await queueDailyOnboarding(db)
   const trial = await queueTrialEmails(db)
   const upsell = await queueAuditsUpsell(db)
-  return NextResponse.json({ trial, onboarding, upsell })
+  // Trial Started / Trial Ended in Mixpanel (they have no browser moment to send from)
+  const trialEvents = await sendTrialEvents(db).catch((e: Error) => ({ error: e.message }))
+  return NextResponse.json({ trial, onboarding, upsell, trialEvents })
 }

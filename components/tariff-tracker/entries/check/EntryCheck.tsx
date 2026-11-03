@@ -15,6 +15,7 @@ import { AdcvdStep } from "./AdcvdStep";
 import { CheckStep, useDraftCheck } from "./CheckStep";
 import { focusStep } from "./focus";
 import { sendAuditReport } from "./reports";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { detailsProblems, EntryDraft, entryDraft, paidProblem } from "./draft";
 import { EntryPart, EntryPartStep, MethodStep, PaidStep } from "./Steps";
 
@@ -173,8 +174,18 @@ export const EntryCheck = ({
   const finish = async (save: () => Promise<Saved | null>) => {
     setPlayed(false);
     setChecking(true);
+    const editing = Boolean(draft.editingId);
     const s = await save();
     if (s) {
+      trackEvent(MixpanelEvent.TARIFF_TRACKER_ENTRY_AUDIT_COMPLETED, {
+        verdict: s.audit.verdict,
+        difference_usd: Math.round(s.audit.difference),
+        rate_paid_pct: s.audit.ratePaidPct,
+        rate_owed_pct: s.audit.rateOwedPct,
+        adcvd_cases: s.entry.adcvd?.cases.length ?? 0,
+        adcvd_covered: s.entry.adcvd?.cases.filter((c) => c.answer === "yes").length ?? 0,
+        edited: editing,
+      });
       setSaved(s);
       setLeft(null);
       onReset();
@@ -182,6 +193,11 @@ export const EntryCheck = ({
     setChecking(false);
   };
   const showChecking = checking || (saved !== null && !played);
+  // Closing the audit: from its results, or part way (where they stopped)
+  const close = () => {
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_ENTRY_AUDIT_CLOSED, { step: saved ? "results" : step, finished: Boolean(saved) });
+    onClose();
+  };
   // The Results stepped back from, to return to unchanged
   const [left, setLeft] = useState<Saved | null>(null);
   // From the Results, any step opens again with the saved entry in it, to look over or change
@@ -231,7 +247,7 @@ export const EntryCheck = ({
       return (
         <AuditResults
           {...saved}
-          onClose={onClose}
+          onClose={close}
           onAnother={() => {
             setSaved(null);
             setStep(parts[0]);
@@ -284,7 +300,7 @@ export const EntryCheck = ({
       label="Entry Audit"
       context={about ? `${about.entry.element.htsno} · ${about.entry.country.flag} ${about.entry.country.name}` : undefined}
       back="Back to Audits"
-      onClose={onClose}
+      onClose={close}
       scroller={scroller}
       progress={{ at: RAIL.findIndex((r) => r.steps.includes(saved || checking ? "review" : step)) + 1, of: RAIL.length }}
       rail={

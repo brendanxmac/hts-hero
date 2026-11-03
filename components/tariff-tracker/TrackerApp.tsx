@@ -22,6 +22,7 @@ import { AlertSettingsProvider } from "./alerts/AlertSettingsContext";
 import { EntriesProvider } from "./entries/EntriesContext";
 import { OpportunitiesProvider } from "./opportunities/OpportunitiesContext";
 import { rememberSection } from "./overview/seenSections";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 
 // Duty Guard: one page, with a tab per section. A tab's code loads the first time it's
 // opened; after that it stays mounted (hidden while another tab is open), so switching back is
@@ -78,6 +79,16 @@ export const TrackerApp = () => {
     setVisited((prev) => (prev.includes(tab) ? prev : [...prev, tab]));
     rememberSection(tab);
   }, [tab]);
+
+  // Each section (and view inside it) shown: switching sections only changes ?tab=, which the
+  // automatic page view doesn't see. An import opened is Product Opened instead
+  const view = searchParams.get("view");
+  const shown = useRef(false);
+  useEffect(() => {
+    if (product) return;
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_SECTION_VIEWED, { section: tab, view, trigger: shown.current ? "user" : "load" });
+    shown.current = true;
+  }, [tab, view, product]);
 
   useEffect(() => {
     const section = sectionBySlug(tab);

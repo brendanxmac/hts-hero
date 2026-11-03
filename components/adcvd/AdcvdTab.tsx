@@ -276,6 +276,20 @@ export const AdcvdTab = ({
   const tracker = useOptionalTrackerAccess()
   // Signed out: the real check, behind the blur
   const preview = lookupOf(useAdcvdPreview(code, country, !isLoading && !user))
+  // The full check shown (signed in, on a plan or the trial): once per code and country
+  const checked = user ? lookupOf(state) : null
+  const checkedKey = checked ? `${code}-${country}` : null
+  useEffect(() => {
+    if (!checked) return
+    trackEvent(MixpanelEvent.ADCVD_CHECK_VIEWED, {
+      hts_code: code,
+      country_code: country,
+      cases: checked.flags.filter((f) => f.level !== "history").length,
+      petitions: checked.petitions.length,
+      page,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkedKey])
 
   if (isLoading) return <Loading />
   const teaser = !summary
@@ -405,6 +419,7 @@ export const AdcvdResults = ({
         // Stay on the case being answered: moving on is the user's call ("Next case")
         setPicked(open)
         set(current, patch)
+        if (patch.answer) trackEvent(MixpanelEvent.ADCVD_CASE_ANSWERED, { answer: patch.answer, hts_code: code, country_code: country, cases: live.length })
       }}
       next={nextIndex !== undefined ? { label: caseLabel(live, nextIndex), onGo: () => openCase(nextIndex) } : undefined}
       details={<CaseDetails f={current} code={code} country={country} />}

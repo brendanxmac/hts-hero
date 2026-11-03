@@ -71,12 +71,25 @@ export enum MixpanelEvent {
   CLASSIFY_ONBOARDING_STARTED = "Classify Onboarding Started",
   CLASSIFY_ONBOARDING_SKIPPED = "Classify Onboarding Skipped",
   TARIFF_IMPACT_TRIAL_STARTED = "Tariff Impact Trial Started",
-  /** The Tracker's 14-day trial began (the account's first real imports), once per account */
+  /** Server (daily cron, libs/tariff-tracker/trialEvents.ts): the Duty Guard trial began (the
+   *  account's first real imports), at the time it began, once per account */
   TARIFF_TRACKER_TRIAL_STARTED = "Tariff Tracker Trial Started",
+  /** Server (daily cron): the trial ran out (converted: on a paid plan by then) */
+  TARIFF_TRACKER_TRIAL_ENDED = "Tariff Tracker Trial Ended",
   /** Server (Stripe webhook): a checkout paid, any plan (plan, is_tracker_plan, amount_usd) */
   PURCHASE_COMPLETED = "Purchase Completed",
   /** Server (Stripe webhook): a subscription ended for good (cancelled, or payments failed) */
   SUBSCRIPTION_ENDED = "Subscription Ended",
+  /** Server (Stripe webhook): a renewal paid (plan, amount_usd) */
+  SUBSCRIPTION_RENEWED = "Subscription Renewed",
+  /** Server (Stripe webhook): a plan changed in the billing portal (plan, from_plan, billing, amount_usd) */
+  PLAN_CHANGED = "Plan Changed",
+  /** Server (Stripe webhook): a payment failed (Stripe retries; Subscription Ended if they all fail) */
+  PAYMENT_FAILED = "Payment Failed",
+  /** Server (Stripe webhook): a checkout opened and left until it expired */
+  CHECKOUT_ABANDONED = "Checkout Abandoned",
+  /** An explicit sign-out */
+  SIGNED_OUT = "Signed Out",
   /** Public read-only link enabled or disabled */
   CLASSIFICATION_PUBLIC_SHARE_TOGGLED = "Classification Public Share Toggled",
   CLASSIFICATION_PUBLIC_LINK_COPIED = "Classification Public Link Copied",
@@ -115,6 +128,14 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_PREFERENCE_CLAIMED = "Duty Calculator Trade Preference Claimed",
   DUTY_CALCULATOR_EXAMPLE_SELECTED = "Duty Calculator Example Selected",
   DUTY_CALCULATOR_COMPARE_CHANGED = "Duty Calculator Compare Countries Changed",
+  /** A results tab opened by the user (tab: duty, history, adcvd, news, compare; source) */
+  DUTY_CALCULATOR_TAB_OPENED = "Duty Calculator Tab Opened",
+  /** The calculator's sign-up dialog closed without signing up (feature, view) */
+  CONVERSION_DIALOG_DISMISSED = "Conversion Dialog Dismissed",
+  /** The full AD/CVD check shown, signed in (cases, petitions), once per code and country */
+  ADCVD_CHECK_VIEWED = "ADCVD Check Viewed",
+  /** An AD/CVD case answered: does it cover the goods (answer: yes, no, unsure) */
+  ADCVD_CASE_ANSWERED = "ADCVD Case Answered",
   /** Duty estimate embedded in the explorer, a classification or an HTS code page, opened in the calculator */
   DUTY_ESTIMATE_OPENED_IN_CALCULATOR = "Duty Estimate Opened in Calculator",
   /** A call to action on the tariffs-by-country hub: cta (calculator | tracker | csv) and where on the page */
@@ -140,11 +161,32 @@ export enum MixpanelEvent {
   TARIFF_TRACKER_CHECK_SPENT = "Tariff Tracker Check Spent",
   TARIFF_TRACKER_ALLOWANCE_USED_UP = "Tariff Tracker Allowance Used Up",
   TARIFF_TRACKER_ENTRY_AUDITED = "Tariff Tracker Entry Audited",
+  /** "Audit an Entry" clicked (resuming, from, audits_left) */
+  TARIFF_TRACKER_ENTRY_AUDIT_STARTED = "Tariff Tracker Entry Audit Started",
+  /** An audit's result shown (verdict, difference_usd, rates, AD/CVD cases, edited) */
+  TARIFF_TRACKER_ENTRY_AUDIT_COMPLETED = "Tariff Tracker Entry Audit Completed",
+  /** The audit closed (step: where they stopped, or results; finished) */
+  TARIFF_TRACKER_ENTRY_AUDIT_CLOSED = "Tariff Tracker Entry Audit Closed",
+  /** An import's Savings Review opened, and reaching its summary */
+  TARIFF_TRACKER_SAVINGS_REVIEW_OPENED = "Tariff Tracker Savings Review Opened",
+  TARIFF_TRACKER_SAVINGS_REVIEW_COMPLETED = "Tariff Tracker Savings Review Completed",
+  /** A Duty Guard section (and view) shown: section, view, trigger (load or user) */
+  TARIFF_TRACKER_SECTION_VIEWED = "Tariff Tracker Section Viewed",
   /** A savings opportunity tracked, or moved to a new status (product Savings tab) */
   TARIFF_TRACKER_OPPORTUNITY_CHANGED = "Tariff Tracker Opportunity Changed",
   TARIFF_TRACKER_SAVING_APPLIED = "Tariff Tracker Saving Applied",
   TARIFF_TRACKER_PRODUCT_TAB_OPENED = "Tariff Tracker Product Tab Opened",
+  /** The plans dialog on screen (feature, trigger: user, link or trial_dialog) */
   TARIFF_TRACKER_UPGRADE_OPENED = "Tariff Tracker Upgrade Opened",
+  /** The plans dialog closed without going to checkout */
+  TARIFF_TRACKER_UPGRADE_DISMISSED = "Tariff Tracker Upgrade Dismissed",
+  /** At the product limit: the limit dialog shown (its "See plans" is Upgrade Opened) */
+  TARIFF_TRACKER_LIMIT_DIALOG_SHOWN = "Tariff Tracker Limit Dialog Shown",
+  /** The trial ending / ended dialog Duty Guard opens by itself, and closed without upgrading */
+  TARIFF_TRACKER_TRIAL_DIALOG_SHOWN = "Tariff Tracker Trial Dialog Shown",
+  TARIFF_TRACKER_TRIAL_DIALOG_DISMISSED = "Tariff Tracker Trial Dialog Dismissed",
+  /** Stripe's billing portal opened (manage billing, or a plan change) */
+  TARIFF_TRACKER_BILLING_PORTAL_OPENED = "Tariff Tracker Billing Portal Opened",
   TARIFF_TRACKER_CHECKOUT_STARTED = "Tariff Tracker Checkout Started",
   TARIFF_TRACKER_CATALOG_SYNCED = "Tariff Tracker Catalog Synced",
   TARIFF_TRACKER_ALERTS_SAVED = "Tariff Tracker Alerts Saved",
@@ -215,6 +257,21 @@ export const identifyUser = (
     if (userProperties) {
       mixpanel.people.set(userProperties)
     }
+  }
+}
+
+// Profile properties kept from the first time they're set (first touch, first plan)
+export const setUserPropertiesOnce = (properties: Record<string, unknown>) => {
+  if (ENABLED) {
+    mixpanel.people.set_once(properties)
+  }
+}
+
+// Profile properties that change (the Duty Guard plan), so funnels and cohorts can use them
+// alongside server events
+export const setUserProperties = (properties: Record<string, unknown>) => {
+  if (ENABLED) {
+    mixpanel.people.set(properties)
   }
 }
 

@@ -1,8 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { Menu } from "@headlessui/react";
-import { EllipsisHorizontalIcon, ExclamationTriangleIcon, PlusIcon, TrashIcon } from "@heroicons/react/20/solid";
+import { ExclamationTriangleIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { DateNotice } from "../duty-calculator/notices/DateNotice";
 import * as ui from "@/components/ui/styles";
@@ -30,7 +29,7 @@ export const TariffReport = ({
   onAdd: () => void;
   onOpen: (row: TrackedProduct) => void;
 }) => {
-  const { entryDate, setEntryDate, clearFilters, missing, items, removeProducts, clearCatalog } = useTracker();
+  const { entryDate, setEntryDate, missing, removeProducts } = useTracker();
 
   return (
     <section className="flex flex-col gap-5" aria-label="Your imports">
@@ -65,32 +64,6 @@ export const TariffReport = ({
                       });
                     }}
                   />
-                  <Menu as="div" className="relative">
-                    <Menu.Button className={ui.button({ variant: "secondary", icon: true })}>
-                      <EllipsisHorizontalIcon className="h-4 w-4" aria-hidden />
-                      <span className="sr-only">More import actions</span>
-                    </Menu.Button>
-                    <Menu.Items className={`${ui.popover} absolute right-0 z-30 mt-2 w-56 rounded-2xl p-2 focus:outline-hidden`}>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            type="button"
-                            className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm text-error ${active ? "bg-tt-soft" : ""}`}
-                            onClick={() => {
-                              const count = items.length.toLocaleString("en-US");
-                              if (window.confirm(`Remove all ${count} imports? Their adjustments are kept.`)) {
-                                clearCatalog();
-                                clearFilters();
-                              }
-                            }}
-                          >
-                            <TrashIcon className="h-4 w-4" aria-hidden />
-                            Remove all imports
-                          </button>
-                        )}
-                      </Menu.Item>
-                    </Menu.Items>
-                  </Menu>
                   <button type="button" className={ui.button({ variant: "primary" })} onClick={onAdd}>
                     <PlusIcon className="h-4 w-4" aria-hidden />
                     Add imports

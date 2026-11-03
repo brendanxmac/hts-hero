@@ -180,15 +180,94 @@ The quick estimate on `/hts/[code]` and in the explorer sends `surface` as `hts_
 
 Data before this date has the old behaviour. Compare trends from 2026-10-24 on.
 
+## Changed on 2026-11-03: Duty Guard and the funnel
+
+The north star is paying Duty Guard accounts and their revenue. The leading indicators are
+calculator sign-ups and trials started. The "Business Pulse" board (id 11606224) shows them in its
+five cards:
+
+| Card | Events |
+|---|---|
+| North Star: last 7 days vs the week before | Results Viewed (unique), Sign Up, Trial Started, Section Viewed (unique), Purchase Completed (tracker plans; count and sum of `amount_usd`) |
+| Revenue & billing, weekly | Checkout Started, Purchase Completed, Subscription Renewed, Plan Changed, Checkout Abandoned, Payment Failed, Subscription Ended, Trial Ended |
+| Daily top of funnel | anonymous page views, Results Viewed, HTS Code Page Viewed, Locked Feature CTA Clicked, Sign Up CTA Clicked, Sign Up Started, Sign Up |
+| Duty Guard engagement per week | Section Viewed, Products Added (sum `added`), Product Opened, Entry Audit Completed, Savings Review Completed, ADCVD Check Viewed, Alerts Saved, Results Viewed with `surface` = tracker |
+| Calculator to paid funnel (30 days) | Results Viewed → Sign Up → Trial Started → Checkout Started → Purchase Completed |
+
+The funnel has only steps every buyer passes through. Sign Up CTA Clicked is optional (some people
+go straight to /signup), and Products Added lands at the same moment as Trial Started.
+
+### New events
+
+- **Attribution**
+  - On the first identify, the person's profile gets `first_landing_path`,
+    `first_referring_domain`, `first_utm_*` and `first_seen_at`, set once. Server events (Sign Up,
+    Purchase Completed) can then be broken down by source.
+  - `Sign Up` has `method` (the auth provider: google, email).
+  - The profile also gets `tracker_plan`, `is_paying` and `paid_plan`.
+- **Trial Started** and **Trial Ended** are sent by the server, from the daily lifecycle cron
+  (`libs/tariff-tracker/trialEvents.ts`).
+  - Each is dated to when it happened, with an `$insert_id`, so they arrive by the next morning.
+  - Properties: `trial_days`; on Trial Ended, `converted` and `paid_plan`.
+  - The browser no longer sends Trial Started. It used to miss anyone who wasn't in Duty Guard
+    within an hour of their first imports.
+- **Stripe webhook**
+  - **Plan Changed**: `plan`, `from_plan`, `billing`, `amount_usd`, `from_amount_usd`.
+  - **Subscription Renewed**: `amount_usd`.
+  - **Payment Failed**.
+  - **Checkout Abandoned**: the checkout session expired.
+- **Duty Guard**
+  - **Tariff Tracker Section Viewed** is sent for each section and view shown. Properties:
+    `section`, `view`, and `trigger` (`load` or `user`). Switching sections only changes `?tab=`,
+    so the automatic page view never saw it.
+  - **Entry Audit Started**: `resuming`, `from`, `audits_left`.
+  - **Entry Audit Completed**: `verdict`, `difference_usd`, `rate_paid_pct`, `rate_owed_pct`,
+    `adcvd_cases`, `adcvd_covered`, `edited`.
+  - **Entry Audit Closed**: `step` (where they stopped, or `results`) and `finished`.
+  - **Savings Review Opened** and **Savings Review Completed**. These count reviews on every plan;
+    Check Spent only counts free checks.
+  - **Upgrade Dismissed**: the plans dialog closed without checkout.
+  - **Checkout Started** now also has `max_pairs`, `price_usd` (the tier's monthly list price),
+    `recommended` and `plan_kind`.
+  - **Billing Portal Opened**.
+- **Upgrade dialogs**
+  - **Upgrade Opened** now only means the plans dialog is on screen. Its `trigger` is `user`,
+    `link` (a `?upgrade=` email link) or `trial_dialog`.
+  - **Limit Dialog Shown** replaces Upgrade Opened with `feature` = limit.
+  - **Trial Dialog Shown** and **Trial Dialog Dismissed** replace Upgrade Opened with
+    `trigger` = auto.
+- **Calculator**
+  - **Duty Calculator Tab Opened**: `tab` (duty, history, adcvd, news, compare), `from_tab`,
+    `source`. Before, only Compare was counted.
+  - **Conversion Dialog Dismissed**.
+  - The dialog's sign-up buttons now send **Sign Up CTA Clicked** with `section` =
+    conversion_dialog and `entry` = calculator_&lt;feature&gt;.
+  - **ADCVD Check Viewed**: `cases`, `petitions`; once per code and country, signed in.
+  - **ADCVD Case Answered**: `answer`.
+- **Signed Out**.
+
+### Still not tracked (lower value, or needs a decision)
+
+- **Plan cards** on /tariff-alerts, /duty-audit and the home pricing overview are plain links. The
+  plan picked is lost until sign-up.
+- **Country page Duty Guard CTA** isn't an EntryCta, so it has no `entry`.
+- **Links into the calculator** from /hts pages and the explorer arrive as `arrival: internal`, and
+  their placement isn't known.
+- **"Track this import"** (History, News, Compare) doesn't say which tab it was clicked in.
+- **Locked "why" lines and premium teasers** in the calculator don't send Locked Feature Viewed.
+- **Home cards, Insights drill-downs, Tariff News preferences, Expert Help "Book a call", and the
+  Sourcing charts and CSV** send nothing.
+- **Sign-up failures** and "email sent" on /signup send nothing.
+- **Double counts**
+  - An example click sends both Example Selected and HTS Code Selected.
+  - The calculator's Track and HTS-page Watch buttons send Products Added together with Sign Up
+    CTA Clicked.
+
 ## Known gaps, not fixed yet
 
 - MCP tool calls use a hashed anonymous id and aren't linked to web accounts.
 - Imports added from the signed-out calculator or the monitor page are counted before sign-up,
   even if the visitor never finishes signing up.
-- The Tracker's trial dialog can open behind the import takeover or tour. The limit dialog's
-  "See plans" counts a second Upgrade Opened.
+- The Tracker's trial dialog can open behind the import takeover or tour.
 - `Onboarding Shown` can fire while the feature tour covers the takeover on a first visit.
-- Locked "why" lines and premium teasers in the calculator don't send Locked Feature Viewed.
-- Links from `/hts` pages to the calculator (base rates, duty by country, import sources) send no
-  click event. The calculator sees them as `arrival: internal`.
 - `Let's Talk` clicks send the user's email and name as event properties.
