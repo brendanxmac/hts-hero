@@ -93,13 +93,13 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
   const best = imports > 0 ? bestPlanFor(plans, imports) : null;
   // Closed without buying (busy: on the way to Stripe)
   const dismiss = () => {
-    if (!busy) trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_DISMISSED, { feature, offer, billing, change: changing, plan_kind: access.kind });
+    if (!busy) trackEvent(MixpanelEvent.DUTY_GUARD_UPGRADE_DISMISSED, { feature, offer, billing, change: changing, plan_kind: access.kind });
     onClose();
   };
 
   const buy = async (plan: TrackerPlan) => {
     setBusy(plan.plan);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_CHECKOUT_STARTED, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_CHECKOUT_STARTED, {
       plan: plan.plan,
       offer: plan.offer,
       billing,

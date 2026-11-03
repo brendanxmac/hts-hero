@@ -524,8 +524,8 @@ export const SavingsReview = ({ product, start, onClose }: { product: TrackedPro
     if (!name || reported.current.has(name)) return;
     reported.current.add(name);
     const options = items.filter((i) => i.option).length;
-    if (name === "opened") trackEvent(MixpanelEvent.TARIFF_TRACKER_SAVINGS_REVIEW_OPENED, { options, kinds, step });
-    else trackEvent(MixpanelEvent.TARIFF_TRACKER_SAVINGS_REVIEW_COMPLETED, { options, open: items.filter((i) => i.option && (i.opportunity?.status ?? "found") === "found").length });
+    if (name === "opened") trackEvent(MixpanelEvent.DUTY_GUARD_SAVINGS_REVIEW_OPENED, { options, kinds, step });
+    else trackEvent(MixpanelEvent.DUTY_GUARD_SAVINGS_REVIEW_COMPLETED, { options, open: items.filter((i) => i.option && (i.opportunity?.status ?? "found") === "found").length });
   }, [loading, step, items, kinds]);
   const scroller = useRef<HTMLDivElement>(null);
   // Answers given here, ahead of their saves: the review moves on at once and goes by these

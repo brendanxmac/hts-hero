@@ -177,7 +177,7 @@ export const EntryCheck = ({
     const editing = Boolean(draft.editingId);
     const s = await save();
     if (s) {
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_ENTRY_AUDIT_COMPLETED, {
+      trackEvent(MixpanelEvent.DUTY_GUARD_ENTRY_AUDIT_COMPLETED, {
         verdict: s.audit.verdict,
         difference_usd: Math.round(s.audit.difference),
         rate_paid_pct: s.audit.ratePaidPct,
@@ -195,7 +195,7 @@ export const EntryCheck = ({
   const showChecking = checking || (saved !== null && !played);
   // Closing the audit: from its results, or part way (where they stopped)
   const close = () => {
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ENTRY_AUDIT_CLOSED, { step: saved ? "results" : step, finished: Boolean(saved) });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ENTRY_AUDIT_CLOSED, { step: saved ? "results" : step, finished: Boolean(saved) });
     onClose();
   };
   // The Results stepped back from, to return to unchanged

@@ -121,8 +121,8 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     // (its "See plans" opens the plans)
     const openUpgrade = (feature: PremiumFeature, trigger: UpgradeTrigger = "user") => {
       setDialog({ feature, open: true });
-      if (feature === "limit") trackEvent(MixpanelEvent.TARIFF_TRACKER_LIMIT_DIALOG_SHOWN, { plan: access.kind, pair_limit: access.pairLimit });
-      else trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature, plan: access.kind, trigger });
+      if (feature === "limit") trackEvent(MixpanelEvent.DUTY_GUARD_LIMIT_DIALOG_SHOWN, { plan: access.kind, pair_limit: access.pairLimit });
+      else trackEvent(MixpanelEvent.DUTY_GUARD_UPGRADE_OPENED, { feature, plan: access.kind, trigger });
     };
     const toSignup = () => (window.location.href = signupHref(currentPath()));
 
@@ -133,7 +133,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
       }
       if (freeCheck(access, kind, ref)) return true;
       if (!canSpendCheck(access, kind, ref)) {
-        trackEvent(MixpanelEvent.TARIFF_TRACKER_ALLOWANCE_USED_UP, { kind, feature });
+        trackEvent(MixpanelEvent.DUTY_GUARD_ALLOWANCE_USED_UP, { kind, feature });
         openUpgrade(feature);
         return false;
       }
@@ -151,7 +151,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
           return false;
         }
         setAccess(body);
-        trackEvent(MixpanelEvent.TARIFF_TRACKER_CHECK_SPENT, { kind, feature, left: checksLeft(body, kind) });
+        trackEvent(MixpanelEvent.DUTY_GUARD_CHECK_SPENT, { kind, feature, left: checksLeft(body, kind) });
         return true;
       } catch {
         toast.error("Couldn't run that check. Please try again.");
@@ -214,7 +214,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
         access={access}
         onSeePlans={() => {
           setDialog({ feature: "tracking", open: true });
-          trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature: "tracking", from: "limit", plan: access.kind, trigger: "user" });
+          trackEvent(MixpanelEvent.DUTY_GUARD_UPGRADE_OPENED, { feature: "tracking", from: "limit", plan: access.kind, trigger: "user" });
         }}
         onClose={closeDialog}
       />

@@ -203,7 +203,7 @@ export const FixEditor = ({
           className="flex items-center gap-2 self-start rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/10"
           onClick={() => {
             onFixMany(Object.fromEntries(b.rows.map((e) => [e.line, { ...fixOf(e), country: b.to!.name }])));
-            trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, { help: "fix_country_bulk", rows: b.rows.length });
+            trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, { help: "fix_country_bulk", rows: b.rows.length });
           }}
         >
           <SparklesIcon className="h-3.5 w-3.5" aria-hidden />

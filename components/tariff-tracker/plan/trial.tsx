@@ -161,7 +161,7 @@ export const TrialDialog = () => {
       markSeen(key);
       setOpen(true);
       // Opened by Duty Guard, not the user: "Keep everything" then opens the plans (Upgrade Opened)
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_TRIAL_DIALOG_SHOWN, { from: ended ? "trial-ended" : "trial-ending", plan: access.kind, daysLeft });
+      trackEvent(MixpanelEvent.DUTY_GUARD_TRIAL_DIALOG_SHOWN, { from: ended ? "trial-ended" : "trial-ending", plan: access.kind, daysLeft });
     }, 1500);
     return () => clearTimeout(timer);
   }, [loading, catalogLoading, signedIn, ending, ended, items.length, key, access.preview]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -169,7 +169,7 @@ export const TrialDialog = () => {
   const plan = keepPlan(imports);
   const close = () => setOpen(false);
   const dismiss = () => {
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_TRIAL_DIALOG_DISMISSED, { from: ended ? "trial-ended" : "trial-ending", plan: access.kind });
+    trackEvent(MixpanelEvent.DUTY_GUARD_TRIAL_DIALOG_DISMISSED, { from: ended ? "trial-ended" : "trial-ending", plan: access.kind });
     close();
   };
   const keep = () => {

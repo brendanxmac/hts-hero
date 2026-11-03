@@ -34,7 +34,7 @@ export const sendTrialEvents = async (db: SupabaseClient, now = new Date()) => {
     const days = trialLengthDays(startMs);
     const endMs = startMs + days * DAY;
     if (startMs >= recent) {
-      await trackEventServerAsync(MixpanelEvent.TARIFF_TRACKER_TRIAL_STARTED, row.user_id, {
+      await trackEventServerAsync(MixpanelEvent.DUTY_GUARD_TRIAL_STARTED, row.user_id, {
         $insert_id: `trial-started-${row.user_id}`,
         time: new Date(startMs),
         trial_days: days,
@@ -45,7 +45,7 @@ export const sendTrialEvents = async (db: SupabaseClient, now = new Date()) => {
     if (endMs >= recent && endMs <= now.getTime()) {
       // Converted: on a paid Duty Guard plan when the trial ran out (or since)
       const access = await readTrackerAccess(db, row.user_id).catch((): null => null);
-      await trackEventServerAsync(MixpanelEvent.TARIFF_TRACKER_TRIAL_ENDED, row.user_id, {
+      await trackEventServerAsync(MixpanelEvent.DUTY_GUARD_TRIAL_ENDED, row.user_id, {
         $insert_id: `trial-ended-${row.user_id}`,
         time: new Date(endMs),
         trial_days: days,

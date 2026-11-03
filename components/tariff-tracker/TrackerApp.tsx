@@ -86,7 +86,7 @@ export const TrackerApp = () => {
   const shown = useRef(false);
   useEffect(() => {
     if (product) return;
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_SECTION_VIEWED, { section: tab, view, trigger: shown.current ? "user" : "load" });
+    trackEvent(MixpanelEvent.DUTY_GUARD_SECTION_VIEWED, { section: tab, view, trigger: shown.current ? "user" : "load" });
     shown.current = true;
   }, [tab, view, product]);
 

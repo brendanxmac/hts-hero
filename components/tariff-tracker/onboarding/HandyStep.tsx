@@ -71,7 +71,7 @@ export const HandyStep = ({ onBack, onFew, onRemind }: { onBack: () => void; onF
     } catch {
       // Clipboard blocked: the message is on screen to copy by hand
     }
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, {
       help: "broker_copy",
     });
   };
@@ -123,7 +123,7 @@ export const HandyStep = ({ onBack, onFew, onRemind }: { onBack: () => void; onF
               href={mailto}
               className={ui.button({ variant: "secondary", size: "sm" })}
               onClick={() =>
-                trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, {
+                trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, {
                   help: "broker_email",
                 })
               }

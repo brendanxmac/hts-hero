@@ -16,7 +16,7 @@ export const openBillingPortal = async (changePlan?: TrackerPlan["plan"] | true,
     body: JSON.stringify({ returnUrl: window.location.href, app: "tracker", changePlan, billing }),
   });
   const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
-  trackEvent(MixpanelEvent.TARIFF_TRACKER_BILLING_PORTAL_OPENED, { change_plan: changePlan ?? null, billing: billing ?? null, ok: Boolean(body.url) });
+  trackEvent(MixpanelEvent.DUTY_GUARD_BILLING_PORTAL_OPENED, { change_plan: changePlan ?? null, billing: billing ?? null, ok: Boolean(body.url) });
   if (body.url) window.location.href = body.url;
   else toast.error(body.error ?? "Billing isn't available right now.");
   return Boolean(body.url);

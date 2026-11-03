@@ -57,7 +57,7 @@ export const TariffReport = ({
                     onExport={(format) => {
                       const shown = table.getRowModel().rows.map((row) => row.original);
                       downloadReport(shown, entryDate, format);
-                      trackEvent(MixpanelEvent.TARIFF_TRACKER_EXPORTED, {
+                      trackEvent(MixpanelEvent.DUTY_GUARD_EXPORTED, {
                         products: shown.length,
                         filtered: shown.length < rows.length,
                         format,

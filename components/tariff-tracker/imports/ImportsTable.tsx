@@ -127,7 +127,7 @@ export const ImportsTable = ({
     replaceFilters(
       Object.fromEntries(next.map((f) => [f.id, f.value as string[]])),
     );
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_FILTERED, { filters: next.length });
+    trackEvent(MixpanelEvent.DUTY_GUARD_FILTERED, { filters: next.length });
   };
 
   // Comfortable or compact rows, remembered on this device

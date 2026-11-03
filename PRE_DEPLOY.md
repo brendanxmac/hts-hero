@@ -1,3 +1,13 @@
+> **After `cleanup/imports-menu-analytics` deploys (Mixpanel, 2026-11-03):** the "Tariff Tracker …"
+> and "Tracker Welcome …" events are now sent as "Duty Guard …" and "Duty Guard Welcome …"
+> (`libs/mixpanel.ts`). Once each new name has arrived in prod, do two things:
+> 1. In Lexicon, merge each old event into its new name (Find-Duplicate-Groups / Merge-Group), so
+>    reports read one history.
+> 2. Repoint the Business Pulse board (11606224) to the new names.
+>
+> The old events already show "Duty Guard …" display names. Until the board is switched, its Duty
+> Guard numbers read zero, so do this the day of the deploy.
+
 > **Duty Guard rebrand (2026-11-01), before release:** re-run `npm run stripe:setup-offers` in the sandbox
 > and then live, because plan ids changed (now "Duty Guard Essentials 10", "Duty Guard Pro 100" and so
 > on). Archive the sandbox's 8 old products ("Tariff Alerts Starter" and friends). Rename the billing

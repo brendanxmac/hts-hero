@@ -108,7 +108,7 @@ export const FeatureTour = () => {
     // Every tour opens on the welcome
     startingAt.current = 0;
     setAt(startingAt.current);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_TOUR_SHOWN, { from, start });
+    trackEvent(MixpanelEvent.DUTY_GUARD_TOUR_SHOWN, { from, start });
   }, [open]);
 
   const step = steps[Math.min(at, steps.length - 1)];
@@ -121,12 +121,12 @@ export const FeatureTour = () => {
     startingAt.current = null;
     scroller.current?.scrollTo({ top: 0 });
     const timer = setTimeout(() => document.getElementById("tt-tour-title")?.focus({ preventScroll: true }), 50);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_TOUR_STEP, { step: step.id, index: at + 1, of: steps.length });
+    trackEvent(MixpanelEvent.DUTY_GUARD_TOUR_STEP, { step: step.id, index: at + 1, of: steps.length });
     return () => clearTimeout(timer);
   }, [open, step?.id]);
 
   const close = (how: "closed" | "finished") => {
-    trackEvent(how === "finished" ? MixpanelEvent.TARIFF_TRACKER_TOUR_COMPLETED : MixpanelEvent.TARIFF_TRACKER_TOUR_CLOSED, { step: step?.id, from });
+    trackEvent(how === "finished" ? MixpanelEvent.DUTY_GUARD_TOUR_COMPLETED : MixpanelEvent.DUTY_GUARD_TOUR_CLOSED, { step: step?.id, from });
     closeFeatureTour();
   };
   const go = (i: number) => setAt(Math.max(0, Math.min(steps.length - 1, i)));
@@ -148,7 +148,7 @@ export const FeatureTour = () => {
 
   // "Take me there": the tour closes onto the step's page (adding imports opens its own flow)
   const takeMeThere = () => {
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_TOUR_ACTION, { step: step.id, action: "take_me_there" });
+    trackEvent(MixpanelEvent.DUTY_GUARD_TOUR_ACTION, { step: step.id, action: "take_me_there" });
     closeFeatureTour();
     if (step.id === "imports") openImportTakeover("tour", "choose");
     else nav.openTab(step.tab);
@@ -175,7 +175,7 @@ export const FeatureTour = () => {
               type="button"
               onClick={() => {
                 setRun((r) => r + 1);
-                trackEvent(MixpanelEvent.TARIFF_TRACKER_TOUR_ACTION, { step: step.id, action: "replay" });
+                trackEvent(MixpanelEvent.DUTY_GUARD_TOUR_ACTION, { step: step.id, action: "replay" });
               }}
               className="absolute -bottom-10 right-0 hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-base-content/55 hover:bg-base-300/60 hover:text-base-content xl:inline-flex"
             >

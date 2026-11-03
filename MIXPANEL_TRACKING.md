@@ -34,21 +34,21 @@ reload, a sync, an automatic pick) either isn't tracked or says so in a `trigger
 | Classifications attempted | `Classification Started` | Total | breakdown `is_anonymous`, `entry_mode` |
 | Classifications completed | `Classification Completed` | Total | — (once per `classification_id`) |
 | Attempts blocked by limits | `Classification Blocked` | Total | breakdown `block_reason` |
-| Imports added to the Tracker | `Tariff Tracker Products Added` | **Sum of `added`** | `source` ≠ `savings` |
-| People adding imports | `Tariff Tracker Products Added` | Unique users | `added` > 0 |
-| Trials started | `Tariff Tracker Trial Started` | Total | — |
+| Imports added to the Tracker | `Duty Guard Products Added` | **Sum of `added`** | `source` ≠ `savings` |
+| People adding imports | `Duty Guard Products Added` | Unique users | `added` > 0 |
+| Trials started | `Duty Guard Trial Started` | Total | — |
 | Paid checkouts / revenue | `Purchase Completed` | Total; Sum of `amount_usd` | `is_tracker_plan` = true; breakdown `plan` |
 | Churn | `Subscription Ended` | Total | breakdown `reason` |
-| Savings and audit checks | `Tariff Tracker Check Spent`, `Tariff Tracker Entry Audited` | Total | breakdown `kind` |
+| Savings and audit checks | `Duty Guard Check Spent`, `Duty Guard Entry Audited` | Total | breakdown `kind` |
 | AI client usage (MCP) | `MCP Tool Called` | Total | breakdown `client`, `tool` |
 | Upgrade intent | `Locked Feature Viewed` → `Locked Feature CTA Clicked` | Funnel | breakdown `feature` |
 
 Funnel report, 30-day window: `$mp_web_page_view` → `Duty Calculator Results Viewed` (trigger ≠
-restore) → `Sign Up` → `Tariff Tracker Products Added` (added > 0) → `Tariff Tracker Trial Started`
+restore) → `Sign Up` → `Duty Guard Products Added` (added > 0) → `Duty Guard Trial Started`
 → `Purchase Completed`.
 
 Retention report: `Sign Up` → coming back to any of `Duty Calculator Results Viewed`,
-`Tariff Tracker Product Opened` or `Classification Started`.
+`Duty Guard Product Opened` or `Classification Started`.
 
 ## Key events
 
@@ -106,9 +106,9 @@ The quick estimate on `/hts/[code]` and in the explorer sends `surface` as `hts_
 - **Classification Share Opened**: the Share button. Sharing itself is **Public Share Toggled**
   and **Link Copied**.
 
-### Tariff Tracker
+### Duty Guard
 
-- **Tariff Tracker Products Added**: the one count of imports added, from every path:
+- **Duty Guard Products Added**: the one count of imports added, from every path:
   - the Add dialog
   - the onboarding takeover
   - the calculator's Track button (`source` = `calculator`; signed in, it saves in place)
@@ -118,22 +118,22 @@ The quick estimate on `/hts/[code]` and in the explorer sends `surface` as `hts_
   - an origin moved by a saving (`source` = `savings`, not a new import)
 
   Sum `added`, which excludes duplicates. Events with `added` = 0 are attempts that added nothing.
-- **Tariff Tracker Trial Started**: once per account, when the trial began (its first real
+- **Duty Guard Trial Started**: once per account, when the trial began (its first real
   imports, wherever they came from).
-- **Tariff Tracker Upgrade Opened**: `trigger` is `user` or `auto` (the trial-ending dialog the
+- **Duty Guard Upgrade Opened**: `trigger` is `user` or `auto` (the trial-ending dialog the
   Tracker opens itself).
 - **Locked Feature Viewed**: only once the lock box is on screen. It isn't sent when a gate mounts
   below the fold or in a hidden tab.
-- **Tariff Tracker Catalog Synced**: only when imports made on this device before signing in went
+- **Duty Guard Catalog Synced**: only when imports made on this device before signing in went
   into the account, not on every load.
-- **Tariff Tracker Coverage Changed**: the user picking imports for alerts, not the automatic
+- **Duty Guard Coverage Changed**: the user picking imports for alerts, not the automatic
   fill.
 - **HTS Code Watch Submitted**: the Get Alerts box on an /hts page, before the visitor goes on to
   sign-up (or straight to the import when signed in).
-- **Tariff Tracker Arrival Panel**: the panel on an import's first visit from Get Alerts or the
+- **Duty Guard Arrival Panel**: the panel on an import's first visit from Get Alerts or the
   calculator's Track button. `action` is `shown`, `add_imports`, `explore` or `dismissed`; `source`
   is `watch` or `track`. Showing it also sends the "You're watching" email, once per import.
-- **Tariff Tracker Onboarding Completed**: `imports` is how many were new to the catalog;
+- **Duty Guard Onboarding Completed**: `imports` is how many were new to the catalog;
   `submitted` is the rows given.
 
 ### Revenue (server, Stripe webhook)
@@ -172,7 +172,7 @@ The quick estimate on `/hts/[code]` and in the explorer sends `surface` as `hts_
 - **New:**
   - `Classification Blocked`
   - `HTS Code Page Viewed`
-  - `Tariff Tracker Trial Started`
+  - `Duty Guard Trial Started`
   - `Purchase Completed`
   - `Subscription Ended`
   - The `surface` and `trigger` properties
@@ -181,6 +181,11 @@ The quick estimate on `/hts/[code]` and in the explorer sends `surface` as `hts_
 Data before this date has the old behaviour. Compare trends from 2026-10-24 on.
 
 ## Changed on 2026-11-03: Duty Guard and the funnel
+
+**Renamed:** every "Tariff Tracker X" event is now "Duty Guard X", and "Tracker Welcome X" is
+"Duty Guard Welcome X". The old names keep their history and already show "Duty Guard …" display
+names. After the deploy they get merged into the new ones in Lexicon (PRE_DEPLOY.md). "Tariff
+Monitor Product Checked" and "Tariff Monitor Track Clicked" never fired, so they were removed.
 
 The north star is paying Duty Guard accounts and their revenue. The leading indicators are
 calculator sign-ups and trials started. The "Business Pulse" board (id 11606224) shows them in its
@@ -217,7 +222,7 @@ go straight to /signup), and Products Added lands at the same moment as Trial St
   - **Payment Failed**.
   - **Checkout Abandoned**: the checkout session expired.
 - **Duty Guard**
-  - **Tariff Tracker Section Viewed** is sent for each section and view shown. Properties:
+  - **Duty Guard Section Viewed** is sent for each section and view shown. Properties:
     `section`, `view`, and `trigger` (`load` or `user`). Switching sections only changes `?tab=`,
     so the automatic page view never saw it.
   - **Entry Audit Started**: `resuming`, `from`, `audits_left`.

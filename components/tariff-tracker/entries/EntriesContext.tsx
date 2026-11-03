@@ -81,7 +81,7 @@ export const EntriesProvider = ({ children }: { children: ReactNode }) => {
   const check = useCallback(
     async (entry: TrackerEntry) => {
       const ok = await spendCheck("audit", entry.id, "entries");
-      if (ok) trackEvent(MixpanelEvent.TARIFF_TRACKER_ENTRY_AUDITED, { plan: access.kind });
+      if (ok) trackEvent(MixpanelEvent.DUTY_GUARD_ENTRY_AUDITED, { plan: access.kind });
       return ok;
     },
     [spendCheck, access.kind]

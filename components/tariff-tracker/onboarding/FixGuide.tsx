@@ -138,7 +138,7 @@ export const FixGuide = ({ rows, header, columns, sheet, onEdit, onEditMany, onD
     if (!card) return;
     if (card.kind === "row") onEdit(card.row, columns.code, htsno);
     else onEditMany(columns.code, card.rows, htsno);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, { help: "guide_code", rows: cardRows(card).length });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, { help: "guide_code", rows: cardRows(card).length });
     // A row with another problem stays to be finished
     if (card.kind !== "row" || findCountry(sample?.country ?? "")) advanceSoon();
   };
@@ -328,7 +328,7 @@ export const FixGuide = ({ rows, header, columns, sheet, onEdit, onEditMany, onD
               index={0}
               onPick={() => {
                 onEditMany(columns.country, card.rows, country.name);
-                trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, { help: "guide_country_group", rows: card.rows.length });
+                trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, { help: "guide_country_group", rows: card.rows.length });
                 advanceSoon();
               }}
             >

@@ -411,7 +411,7 @@ export const SheetReview = ({
       },
     }));
     setTouched((prev) => new Set([...prev, ...b.list]));
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, {
       help: "sheet_country_bulk",
       rows: b.list.length,
     });
@@ -444,7 +444,7 @@ export const SheetReview = ({
     if (finishing) replaceToFinish(user?.id, left);
     else keepToFinish(user?.id, left);
     if (left.length)
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+      trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
         step: finishing ? "finish_saved" : "sheet_rows_kept",
         rows: left.length,
         imports: ready.length,
@@ -456,7 +456,7 @@ export const SheetReview = ({
   const askStart = () => {
     if (finishing || counts.error === 0) return start(products);
     setConfirming(true);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
       step: "sheet_leave_rows_asked",
       rows: counts.error,
       imports: products.length,
@@ -472,14 +472,14 @@ export const SheetReview = ({
         setConfirming(false);
         setStage("sheet");
         setSelected(issues[0] ?? null);
-        trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+        trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
           step: "sheet_leave_rows_fix",
           rows: counts.error,
         });
       }}
       onStart={() => {
         setConfirming(false);
-        trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+        trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
           step: "sheet_leave_rows_start",
           rows: counts.error,
         });
@@ -498,7 +498,7 @@ export const SheetReview = ({
   useEffect(() => {
     if (stage !== "summary" || !clean || autoAdded.current) return;
     autoAdded.current = true;
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
       step: "sheet_clean",
       imports: products.length,
     });
@@ -608,7 +608,7 @@ export const SheetReview = ({
             className={`${ui.button({ variant: "primary", size: "lg" })} h-14 w-full text-lg`}
             onClick={() => {
               setStage("sheet");
-              trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+              trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
                 step: "sheet_review",
                 rows: counts.error,
               });
@@ -626,7 +626,7 @@ export const SheetReview = ({
               className={`${ui.link} text-xs`}
               onClick={() => {
                 setStage("guide");
-                trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+                trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
                   step: "sheet_guide",
                   rows: counts.error,
                 });

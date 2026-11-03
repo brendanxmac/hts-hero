@@ -34,7 +34,7 @@ export const AiTidy = () => {
     } catch {
       // Clipboard blocked: the prompt is on screen to copy by hand
     }
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, { help: "ai_prompt_copy" });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, { help: "ai_prompt_copy" });
   };
 
   return (
@@ -44,7 +44,7 @@ export const AiTidy = () => {
         aria-expanded={open}
         onClick={() => {
           setOpen(!open);
-          if (!open) trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, { help: "ai_prompt_open" });
+          if (!open) trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, { help: "ai_prompt_open" });
         }}
         className="flex w-full items-center gap-3 px-4 py-3.5 text-left"
       >

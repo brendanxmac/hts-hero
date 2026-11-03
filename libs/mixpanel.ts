@@ -56,12 +56,12 @@ export enum MixpanelEvent {
   ONBOARDING_STEP_COMPLETED = "Onboarding Step Completed",
   ONBOARDING_WEBSITE_SKIPPED = "Onboarding Website Skipped",
   ONBOARDING_COMPLETED = "Onboarding Completed",
-  /** The Tariff Tracker onboarding after the sign-up onboarding (TrackerOnboarding): shown (focus:
+  /** The Duty Guard onboarding after the sign-up onboarding (TrackerOnboarding): shown (focus:
    *  imports or alerts), each screen, "Add my imports", and skipped */
-  TRACKER_WELCOME_SHOWN = "Tracker Welcome Shown",
-  TRACKER_WELCOME_STEP = "Tracker Welcome Step",
-  TRACKER_WELCOME_ADD_IMPORTS = "Tracker Welcome Add Imports",
-  TRACKER_WELCOME_SKIPPED = "Tracker Welcome Skipped",
+  DUTY_GUARD_WELCOME_SHOWN = "Duty Guard Welcome Shown",
+  DUTY_GUARD_WELCOME_STEP = "Duty Guard Welcome Step",
+  DUTY_GUARD_WELCOME_ADD_IMPORTS = "Duty Guard Welcome Add Imports",
+  DUTY_GUARD_WELCOME_SKIPPED = "Duty Guard Welcome Skipped",
   /** The classification tour after the sign-up onboarding: shown, each step (step, index, of), ended (how: finished or skipped) */
   CLASSIFY_TOUR_SHOWN = "Classify Tour Shown",
   CLASSIFY_TOUR_STEP = "Classify Tour Step",
@@ -73,9 +73,9 @@ export enum MixpanelEvent {
   TARIFF_IMPACT_TRIAL_STARTED = "Tariff Impact Trial Started",
   /** Server (daily cron, libs/tariff-tracker/trialEvents.ts): the Duty Guard trial began (the
    *  account's first real imports), at the time it began, once per account */
-  TARIFF_TRACKER_TRIAL_STARTED = "Tariff Tracker Trial Started",
+  DUTY_GUARD_TRIAL_STARTED = "Duty Guard Trial Started",
   /** Server (daily cron): the trial ran out (converted: on a paid plan by then) */
-  TARIFF_TRACKER_TRIAL_ENDED = "Tariff Tracker Trial Ended",
+  DUTY_GUARD_TRIAL_ENDED = "Duty Guard Trial Ended",
   /** Server (Stripe webhook): a checkout paid, any plan (plan, is_tracker_plan, amount_usd) */
   PURCHASE_COMPLETED = "Purchase Completed",
   /** Server (Stripe webhook): a subscription ended for good (cancelled, or payments failed) */
@@ -140,78 +140,76 @@ export enum MixpanelEvent {
   DUTY_ESTIMATE_OPENED_IN_CALCULATOR = "Duty Estimate Opened in Calculator",
   /** A call to action on the tariffs-by-country hub: cta (calculator | tracker | csv) and where on the page */
   COUNTRIES_HUB_CTA_CLICKED = "Countries Hub CTA Clicked",
-  /** Tariff Tracker (/tariff-tracker). Was the Tariff Watcher tab, as "Tariff Watcher …" events */
-  TARIFF_TRACKER_PRODUCTS_ADDED = "Tariff Tracker Products Added",
-  TARIFF_MONITOR_PRODUCT_CHECKED = "Tariff Monitor Product Checked",
-  TARIFF_MONITOR_TRACK_CLICKED = "Tariff Monitor Track Clicked",
+  /** Duty Guard (/duty-guard). Named "Tariff Tracker …" until 2026-11-03: merge the old names into these in Lexicon */
+  DUTY_GUARD_PRODUCTS_ADDED = "Duty Guard Products Added",
   TARIFF_AUDIT_REQUESTED = "Tariff Audit Requested",
-  TARIFF_TRACKER_PRODUCTS_REMOVED = "Tariff Tracker Products Removed",
-  TARIFF_TRACKER_CSV_TEMPLATE_DOWNLOADED = "Tariff Tracker CSV Template Downloaded",
-  TARIFF_TRACKER_DATE_SET = "Tariff Tracker Date Set",
-  TARIFF_TRACKER_PRODUCT_ADJUSTED = "Tariff Tracker Product Adjusted",
-  TARIFF_TRACKER_ADJUSTMENTS_RESET = "Tariff Tracker Adjustments Reset",
-  TARIFF_TRACKER_FILTERED = "Tariff Tracker Filtered",
-  TARIFF_TRACKER_EXPORTED = "Tariff Tracker Exported",
-  TARIFF_TRACKER_PRODUCT_OPENED = "Tariff Tracker Product Opened",
+  DUTY_GUARD_PRODUCTS_REMOVED = "Duty Guard Products Removed",
+  DUTY_GUARD_CSV_TEMPLATE_DOWNLOADED = "Duty Guard CSV Template Downloaded",
+  DUTY_GUARD_DATE_SET = "Duty Guard Date Set",
+  DUTY_GUARD_PRODUCT_ADJUSTED = "Duty Guard Product Adjusted",
+  DUTY_GUARD_ADJUSTMENTS_RESET = "Duty Guard Adjustments Reset",
+  DUTY_GUARD_FILTERED = "Duty Guard Filtered",
+  DUTY_GUARD_EXPORTED = "Duty Guard Exported",
+  DUTY_GUARD_PRODUCT_OPENED = "Duty Guard Product Opened",
   /** Funnel (PRICING.md): a locked feature shown, and its call to action clicked */
   LOCKED_FEATURE_VIEWED = "Locked Feature Viewed",
   LOCKED_FEATURE_CTA_CLICKED = "Locked Feature CTA Clicked",
-  TARIFF_TRACKER_COVERAGE_CHANGED = "Tariff Tracker Coverage Changed",
+  DUTY_GUARD_COVERAGE_CHANGED = "Duty Guard Coverage Changed",
   /** A trial allowance spent (a savings or audit check), and one that ran out */
-  TARIFF_TRACKER_CHECK_SPENT = "Tariff Tracker Check Spent",
-  TARIFF_TRACKER_ALLOWANCE_USED_UP = "Tariff Tracker Allowance Used Up",
-  TARIFF_TRACKER_ENTRY_AUDITED = "Tariff Tracker Entry Audited",
+  DUTY_GUARD_CHECK_SPENT = "Duty Guard Check Spent",
+  DUTY_GUARD_ALLOWANCE_USED_UP = "Duty Guard Allowance Used Up",
+  DUTY_GUARD_ENTRY_AUDITED = "Duty Guard Entry Audited",
   /** "Audit an Entry" clicked (resuming, from, audits_left) */
-  TARIFF_TRACKER_ENTRY_AUDIT_STARTED = "Tariff Tracker Entry Audit Started",
+  DUTY_GUARD_ENTRY_AUDIT_STARTED = "Duty Guard Entry Audit Started",
   /** An audit's result shown (verdict, difference_usd, rates, AD/CVD cases, edited) */
-  TARIFF_TRACKER_ENTRY_AUDIT_COMPLETED = "Tariff Tracker Entry Audit Completed",
+  DUTY_GUARD_ENTRY_AUDIT_COMPLETED = "Duty Guard Entry Audit Completed",
   /** The audit closed (step: where they stopped, or results; finished) */
-  TARIFF_TRACKER_ENTRY_AUDIT_CLOSED = "Tariff Tracker Entry Audit Closed",
+  DUTY_GUARD_ENTRY_AUDIT_CLOSED = "Duty Guard Entry Audit Closed",
   /** An import's Savings Review opened, and reaching its summary */
-  TARIFF_TRACKER_SAVINGS_REVIEW_OPENED = "Tariff Tracker Savings Review Opened",
-  TARIFF_TRACKER_SAVINGS_REVIEW_COMPLETED = "Tariff Tracker Savings Review Completed",
+  DUTY_GUARD_SAVINGS_REVIEW_OPENED = "Duty Guard Savings Review Opened",
+  DUTY_GUARD_SAVINGS_REVIEW_COMPLETED = "Duty Guard Savings Review Completed",
   /** A Duty Guard section (and view) shown: section, view, trigger (load or user) */
-  TARIFF_TRACKER_SECTION_VIEWED = "Tariff Tracker Section Viewed",
+  DUTY_GUARD_SECTION_VIEWED = "Duty Guard Section Viewed",
   /** A savings opportunity tracked, or moved to a new status (product Savings tab) */
-  TARIFF_TRACKER_OPPORTUNITY_CHANGED = "Tariff Tracker Opportunity Changed",
-  TARIFF_TRACKER_SAVING_APPLIED = "Tariff Tracker Saving Applied",
-  TARIFF_TRACKER_PRODUCT_TAB_OPENED = "Tariff Tracker Product Tab Opened",
+  DUTY_GUARD_OPPORTUNITY_CHANGED = "Duty Guard Opportunity Changed",
+  DUTY_GUARD_SAVING_APPLIED = "Duty Guard Saving Applied",
+  DUTY_GUARD_PRODUCT_TAB_OPENED = "Duty Guard Product Tab Opened",
   /** The plans dialog on screen (feature, trigger: user, link or trial_dialog) */
-  TARIFF_TRACKER_UPGRADE_OPENED = "Tariff Tracker Upgrade Opened",
+  DUTY_GUARD_UPGRADE_OPENED = "Duty Guard Upgrade Opened",
   /** The plans dialog closed without going to checkout */
-  TARIFF_TRACKER_UPGRADE_DISMISSED = "Tariff Tracker Upgrade Dismissed",
+  DUTY_GUARD_UPGRADE_DISMISSED = "Duty Guard Upgrade Dismissed",
   /** At the product limit: the limit dialog shown (its "See plans" is Upgrade Opened) */
-  TARIFF_TRACKER_LIMIT_DIALOG_SHOWN = "Tariff Tracker Limit Dialog Shown",
+  DUTY_GUARD_LIMIT_DIALOG_SHOWN = "Duty Guard Limit Dialog Shown",
   /** The trial ending / ended dialog Duty Guard opens by itself, and closed without upgrading */
-  TARIFF_TRACKER_TRIAL_DIALOG_SHOWN = "Tariff Tracker Trial Dialog Shown",
-  TARIFF_TRACKER_TRIAL_DIALOG_DISMISSED = "Tariff Tracker Trial Dialog Dismissed",
+  DUTY_GUARD_TRIAL_DIALOG_SHOWN = "Duty Guard Trial Dialog Shown",
+  DUTY_GUARD_TRIAL_DIALOG_DISMISSED = "Duty Guard Trial Dialog Dismissed",
   /** Stripe's billing portal opened (manage billing, or a plan change) */
-  TARIFF_TRACKER_BILLING_PORTAL_OPENED = "Tariff Tracker Billing Portal Opened",
-  TARIFF_TRACKER_CHECKOUT_STARTED = "Tariff Tracker Checkout Started",
-  TARIFF_TRACKER_CATALOG_SYNCED = "Tariff Tracker Catalog Synced",
-  TARIFF_TRACKER_ALERTS_SAVED = "Tariff Tracker Alerts Saved",
+  DUTY_GUARD_BILLING_PORTAL_OPENED = "Duty Guard Billing Portal Opened",
+  DUTY_GUARD_CHECKOUT_STARTED = "Duty Guard Checkout Started",
+  DUTY_GUARD_CATALOG_SYNCED = "Duty Guard Catalog Synced",
+  DUTY_GUARD_ALERTS_SAVED = "Duty Guard Alerts Saved",
   /** "Add to Slack" in the Alerts tab: clicked, back from Slack connected, disconnected */
-  TARIFF_TRACKER_SLACK_CONNECT_STARTED = "Tariff Tracker Slack Connect Started",
-  TARIFF_TRACKER_SLACK_CONNECTED = "Tariff Tracker Slack Connected",
-  TARIFF_TRACKER_SLACK_DISCONNECTED = "Tariff Tracker Slack Disconnected",
+  DUTY_GUARD_SLACK_CONNECT_STARTED = "Duty Guard Slack Connect Started",
+  DUTY_GUARD_SLACK_CONNECTED = "Duty Guard Slack Connected",
+  DUTY_GUARD_SLACK_DISCONNECTED = "Duty Guard Slack Disconnected",
   /** The Teams box in the Alerts tab: steps opened, disconnected */
-  TARIFF_TRACKER_TEAMS_STEPS_OPENED = "Tariff Tracker Teams Steps Opened",
-  TARIFF_TRACKER_TEAMS_DISCONNECTED = "Tariff Tracker Teams Disconnected",
+  DUTY_GUARD_TEAMS_STEPS_OPENED = "Duty Guard Teams Steps Opened",
+  DUTY_GUARD_TEAMS_DISCONNECTED = "Duty Guard Teams Disconnected",
   /** "Send Test" for a Slack or Teams channel in the Alerts tab */
-  TARIFF_TRACKER_ALERT_TEST_SENT = "Tariff Tracker Alert Test Sent",
-  TARIFF_TRACKER_LOOKUPS_ADDED = "Tariff Tracker Lookups Added",
+  DUTY_GUARD_ALERT_TEST_SENT = "Duty Guard Alert Test Sent",
+  DUTY_GUARD_LOOKUPS_ADDED = "Duty Guard Lookups Added",
   // The first-run import takeover (components/tariff-tracker/onboarding): shown, each step seen,
   // imports added through it, skipped (and why), and the "don't have it handy" help used
-  TARIFF_TRACKER_ONBOARDING_SHOWN = "Tariff Tracker Onboarding Shown",
-  TARIFF_TRACKER_ONBOARDING_STEP = "Tariff Tracker Onboarding Step",
-  TARIFF_TRACKER_ONBOARDING_COMPLETED = "Tariff Tracker Onboarding Completed",
-  TARIFF_TRACKER_ONBOARDING_SKIPPED = "Tariff Tracker Onboarding Skipped",
-  TARIFF_TRACKER_ONBOARDING_HELP_USED = "Tariff Tracker Onboarding Help Used",
-  TARIFF_TRACKER_TOUR_SHOWN = "Tariff Tracker Tour Shown",
-  TARIFF_TRACKER_TOUR_STEP = "Tariff Tracker Tour Step",
-  TARIFF_TRACKER_TOUR_COMPLETED = "Tariff Tracker Tour Completed",
-  TARIFF_TRACKER_TOUR_CLOSED = "Tariff Tracker Tour Closed",
-  TARIFF_TRACKER_TOUR_ACTION = "Tariff Tracker Tour Action",
+  DUTY_GUARD_ONBOARDING_SHOWN = "Duty Guard Onboarding Shown",
+  DUTY_GUARD_ONBOARDING_STEP = "Duty Guard Onboarding Step",
+  DUTY_GUARD_ONBOARDING_COMPLETED = "Duty Guard Onboarding Completed",
+  DUTY_GUARD_ONBOARDING_SKIPPED = "Duty Guard Onboarding Skipped",
+  DUTY_GUARD_ONBOARDING_HELP_USED = "Duty Guard Onboarding Help Used",
+  DUTY_GUARD_TOUR_SHOWN = "Duty Guard Tour Shown",
+  DUTY_GUARD_TOUR_STEP = "Duty Guard Tour Step",
+  DUTY_GUARD_TOUR_COMPLETED = "Duty Guard Tour Completed",
+  DUTY_GUARD_TOUR_CLOSED = "Duty Guard Tour Closed",
+  DUTY_GUARD_TOUR_ACTION = "Duty Guard Tour Action",
   /** User copied the shareable Tariff Calculator link */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** A tool call to the MCP server (Claude, ChatGPT and other AI clients) */
@@ -221,7 +219,7 @@ export enum MixpanelEvent {
   /** "Watch this code" submitted on an /hts/[code] page (hts_code, country_code, signed_in, digest) */
   HTS_CODE_WATCH_SUBMITTED = "HTS Code Watch Submitted",
   /** The arrival panel on an import's first visit from Get Alerts / Stop Overpaying: action shown, add_imports, explore or dismissed; source watch or track */
-  TARIFF_TRACKER_ARRIVAL_PANEL = "Tariff Tracker Arrival Panel",
+  DUTY_GUARD_ARRIVAL_PANEL = "Duty Guard Arrival Panel",
   /** HTS Explorer (/explore and embedded Explore) */
   EXPLORER_COMPLETED_CODE_SEARCH = "Explorer Completed a Code Search",
   EXPLORER_CLEARED_SEARCH = "Explorer Cleared Search",
@@ -232,7 +230,7 @@ export enum MixpanelEvent {
   EXPLORER_NAVIGATED_TO_LEVEL = "Explorer Navigated to Level",
   // Subscribed to tariff news on /tariff-updates (source: the page it was on)
   TARIFF_UPDATES_SUBSCRIBED = "Tariff Updates Subscribed",
-  // After subscribing: "Create my free account" for the Tariff Tracker
+  // After subscribing: "Create my free account" for Duty Guard
   TARIFF_UPDATES_TRACKER_UPSELL_CLICKED = "Tariff Updates Tracker Upsell Clicked",
   // A code checked in the /tariffs pages' "Is your code on a list?" box (program: the page's slug, or "all")
   TARIFF_PROGRAM_CODE_CHECKED = "Tariff Program Code Checked",

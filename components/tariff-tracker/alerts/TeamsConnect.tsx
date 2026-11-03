@@ -35,7 +35,7 @@ export const TeamsConnect = ({ webhook, onWebhookChange, onConnect, saving }: { 
     const data = (await response?.json().catch((): null => null)) as { ok?: boolean; error?: string } | null;
     setBusy(null);
     setStatus(data?.ok ? { tone: "success", text: "Sent. Check your Teams channel; it can take a few seconds." } : { tone: "error", text: data?.error ?? "Couldn't send the test. Please try again." });
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ALERT_TEST_SENT, { channel: "teams", ok: Boolean(data?.ok) });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ALERT_TEST_SENT, { channel: "teams", ok: Boolean(data?.ok) });
   };
 
   const disconnect = async () => {
@@ -94,7 +94,7 @@ export const TeamsConnect = ({ webhook, onWebhookChange, onConnect, saving }: { 
           <details className="group" open={!connected}>
             <summary
               className={`${ui.link} cursor-pointer text-xs`}
-              onClick={(e) => !(e.currentTarget.parentElement as HTMLDetailsElement).open && trackEvent(MixpanelEvent.TARIFF_TRACKER_TEAMS_STEPS_OPENED)}
+              onClick={(e) => !(e.currentTarget.parentElement as HTMLDetailsElement).open && trackEvent(MixpanelEvent.DUTY_GUARD_TEAMS_STEPS_OPENED)}
             >How to get the URL (about a minute)</summary>
             <ol className="mt-2 flex list-decimal flex-col gap-1.5 pl-4 text-xs leading-snug text-base-content/70">
               {STEPS.map((step, i) => (

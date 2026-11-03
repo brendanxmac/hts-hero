@@ -22,7 +22,7 @@ export const AuditEntryButton = ({ fixedProduct, size = "md" }: { fixedProduct?:
   const resuming = !!draft.entryDate && products.some((p) => p.key === draft.productKey);
   const start = () => {
     if (outOfChecks) return openUpgrade("entries");
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ENTRY_AUDIT_STARTED, { resuming, from: fixedProduct ? "product" : "audits", audits_left: auditsLeft });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ENTRY_AUDIT_STARTED, { resuming, from: fixedProduct ? "product" : "audits", audits_left: auditsLeft });
     openEntryCheck(fixedProduct?.key ?? null, resuming ? draft.productKey : (products[0]?.key ?? ""));
   };
 
