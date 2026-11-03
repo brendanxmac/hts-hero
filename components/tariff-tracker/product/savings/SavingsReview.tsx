@@ -1,17 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import toast from "react-hot-toast";
 import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, CheckIcon, ChevronDownIcon, GlobeAmericasIcon, ReceiptPercentIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import logo from "@/app/logo.svg";
-import { mono, trackerSans } from "@/components/ui/font";
+import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { THEME } from "@/components/ui/theme";
-import { useEscapeToClose } from "@/hooks";
 import { formatRate } from "../../formatRate";
 import { SavingKind } from "../../insights/savings";
+import { FlowPage } from "../../shell/FlowPage";
 import { delay, HowTo, prefersReducedMotion, StepHeading } from "../../onboarding/parts";
 import { useOpportunities } from "../../opportunities/OpportunitiesContext";
 import { OpportunityStatus } from "../../opportunities/statuses";
@@ -19,7 +16,8 @@ import { TrackedProduct } from "../../report";
 import { Ask, Compare } from "./OptionReview";
 import { itemName, KIND_ORDER, ListItem, undecided, useSavingsItems } from "./useSavingsItems";
 
-// The savings review, the whole screen, one question at a time (2026-11-02), like the entry audit:
+// The savings review, one question at a time (2026-11-02), like the entry audit, in Duty Guard's
+// content area beside the sidebar (FlowPage, 2026-11-03):
 // the import and what the review covers, then each trade program, each exemption and (longer term,
 // and only if they want to look) each other country, put as one question about the goods to answer
 // No or Yes. Each question sits at the top of the screen, and an answer moves straight on to the
@@ -114,7 +112,7 @@ const Intro = ({ product, items, onStart, onClose }: { product: TrackedProduct; 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
       <StepHeading
-        eyebrow={started ? `Savings Review · ${left} still to answer` : "Savings Review"}
+        eyebrow={`Savings Review ${left > 0 ? `· ${left} still to answer` : ``}`}
         title={started ? "Pick up where you left off." : "Find every way to pay less on this import."}
         lead="One question at a time about your goods, each with the rule it turns on. Answer Yes to pursue it, No to rule it out. At the end you get a summary of what you could save and what to do next."
       />
@@ -618,8 +616,6 @@ export const SavingsReview = ({ product, start, onClose }: { product: TrackedPro
     return () => clearTimeout(timer);
   }, [step, index, gate]);
 
-  useEscapeToClose(true, onClose);
-
   const body = (() => {
     if (loading) return <div className={`${ui.skeleton} mx-auto h-72 w-full max-w-4xl`} aria-busy="true" />;
     if (step === "intro") return <Intro product={product} items={items} onStart={() => after("intro")} onClose={onClose} />;
@@ -671,51 +667,32 @@ export const SavingsReview = ({ product, start, onClose }: { product: TrackedPro
   })();
 
   return (
-    <div
-      ref={scroller}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="tt-onboarding-title"
-      data-own-keys
-      className={`${THEME} hts-tracker ${trackerSans.className} fixed inset-0 z-[70] overflow-y-auto bg-(--tt-ob-ground) text-base-content`}
+    <FlowPage
+      label="Savings Review"
+      context={`${product.entry.element.htsno} · ${product.entry.country.flag} ${product.entry.country.name}`}
+      back="Back to Savings"
+      onClose={onClose}
+      scroller={scroller}
+      progress={items.some((i) => i.option) ? { at: steps.indexOf(step) + 1, of: steps.length } : undefined}
+      rail={
+        items.some((i) => i.option) ? (
+          <Rail
+            steps={steps}
+            step={step}
+            done={(s) => (s === "intro" ? true : s === "summary" ? false : !group(s).some(open))}
+            onGo={go}
+          />
+        ) : undefined
+      }
     >
-      <div className="mx-auto flex min-h-full w-full max-w-7xl flex-col px-6 pb-16 lg:px-10">
-        <header className="sticky top-0 z-20 -mx-6 flex items-center justify-between gap-6 bg-(--tt-ob-ground) px-6 py-5 lg:-mx-10 lg:px-10">
-          <span className="flex items-center gap-2.5">
-            <span className="flex items-center rounded-full bg-base-content p-1">
-              <Image src={logo} alt="" className="w-6" width={24} height={24} />
-            </span>
-            <span className={`${tt.display} whitespace-nowrap text-[0.95rem] font-semibold`}>
-              Duty Guard <span className="font-medium text-base-content/50">· Savings Review</span>
-            </span>
-          </span>
-          {items.some((i) => i.option) && (
-            <Rail
-              steps={steps}
-              step={step}
-              done={(s) => (s === "intro" ? true : s === "summary" ? false : !group(s).some(open))}
-              onGo={go}
-            />
-          )}
-          <span className="flex min-w-32 justify-end">
-            <button
-              type="button"
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-base-content/55 hover:bg-base-300/60 hover:text-base-content"
-              onClick={onClose}
-            >
-              Close
-            </button>
-          </span>
-        </header>
-        {/* Questions and the summary sit at the top, so moving between them never shifts the
-            page; the intro is centred */}
-        <div
-          key={`${step}-${step === "origin" && gate ? "gate" : ""}`}
-          className={`flex flex-1 flex-col py-8 ${step === "intro" || loading ? "justify-center" : "justify-start pt-6"}`}
-        >
-          {body}
-        </div>
+      {/* Questions and the summary sit at the top, so moving between them never shifts the
+          page; the intro is centred */}
+      <div
+        key={`${step}-${step === "origin" && gate ? "gate" : ""}`}
+        className={`flex flex-1 flex-col ${step === "intro" || loading ? "justify-center" : "justify-start"}`}
+      >
+        {body}
       </div>
-    </div>
+    </FlowPage>
   );
 };

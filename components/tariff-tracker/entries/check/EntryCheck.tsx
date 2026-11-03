@@ -1,15 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import toast from "react-hot-toast";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import logo from "@/app/logo.svg";
-import { trackerSans } from "@/components/ui/font";
-import * as tt from "@/components/ui/styles/tracker";
-import { THEME } from "@/components/ui/theme";
-import { useEscapeToClose } from "@/hooks";
 import { todayIso } from "../../../duty-calculator/lib/format";
+import { FlowPage } from "../../shell/FlowPage";
 import { historyRange } from "../../product/analysis/history";
 import { TrackedProduct } from "../../report";
 import { CalculationResult } from "../../../../tariffs/engine-v2/types";
@@ -20,10 +15,11 @@ import { AdcvdStep } from "./AdcvdStep";
 import { CheckStep, useDraftCheck } from "./CheckStep";
 import { focusStep } from "./focus";
 import { sendAuditReport } from "./reports";
-import { detailsProblems, EntryDraft, paidProblem } from "./draft";
+import { detailsProblems, EntryDraft, entryDraft, paidProblem } from "./draft";
 import { EntryPart, EntryPartStep, MethodStep, PaidStep } from "./Steps";
 
-// The entry audit, the whole screen, one step at a time (2026-11-02): how the entry comes in (typed
+// The entry audit, one step at a time (2026-11-02), in the content area beside the sidebar
+// (FlowPage, 2026-11-03): how the entry comes in (typed
 // in; the 7501 and ES-003 upload is coming soon), the entry (its import when there's a choice, date,
 // number and value, each a step of its own), what was paid, Adjustments (what applied to it, with
 // what was paid against what it should have paid beside), then AD/CVD. Finish plays "Auditing your
@@ -40,8 +36,8 @@ const RAIL: { id: CheckStepId; label: string; steps: CheckStepId[] }[] = [
   { id: "paid", label: "Duty Paid", steps: ["paid"] },
   { id: "check", label: "Adjustments", steps: ["check"] },
   { id: "adcvd", label: "AD/CVD", steps: ["adcvd"] },
-  // Once it's saved: the steps before are done and can't be gone back to
-  { id: "review", label: "Review", steps: ["review"] },
+  // Once it's saved: the steps before open again with the saved entry, and Finish saves over it
+  { id: "review", label: "Results", steps: ["review"] },
 ];
 
 const Rail = ({ step, reachable, onGo }: { step: CheckStepId; reachable: (id: CheckStepId) => boolean; onGo: (id: CheckStepId) => void }) => {
@@ -104,10 +100,10 @@ const AdcvdWithFinish = ({
   onBack: () => void;
   onFinish: (save: () => Promise<Saved | null>) => void;
 }) => {
-  const { addAndCheck } = useEntries();
+  const { addAndCheck, update } = useEntries();
   const { facts, result, audit, adcvd } = useDraftCheck(product, draft);
   const save = async (): Promise<Saved | null> => {
-    const saved = await addAndCheck({
+    const entry = {
       htsCode: product.key.split("-")[0],
       country: product.entry.country.code,
       entryDate: facts.entryDate,
@@ -118,7 +114,14 @@ const AdcvdWithFinish = ({
       claimedPreference: result.availablePreferences.some((p) => p.symbol === facts.claimedPreference) ? facts.claimedPreference : null,
       answers: facts.answers,
       adcvd,
-    });
+    };
+    // A saved entry stepped back into: saved over, its check already spent
+    if (draft.editingId) {
+      const updated = await update(draft.editingId, entry);
+      if (!updated) toast.error("Couldn't save your changes. Please try again.");
+      return updated && { entry: updated, product, audit, result };
+    }
+    const saved = await addAndCheck(entry);
     if (!saved) {
       toast.error("Couldn't save this entry. Please try again.");
       return null;
@@ -173,11 +176,28 @@ export const EntryCheck = ({
     const s = await save();
     if (s) {
       setSaved(s);
+      setLeft(null);
       onReset();
     }
     setChecking(false);
   };
   const showChecking = checking || (saved !== null && !played);
+  // The Results stepped back from, to return to unchanged
+  const [left, setLeft] = useState<Saved | null>(null);
+  // From the Results, any step opens again with the saved entry in it, to look over or change
+  const stepBack = (id: CheckStepId) => {
+    if (!saved) return;
+    setDraft(entryDraft(saved.entry));
+    setLeft(saved);
+    setSaved(null);
+    setStep(id === "date" && !fixed ? "import" : id);
+  };
+  const backToResults = () => {
+    if (!left) return;
+    onReset();
+    setSaved(left);
+    setLeft(null);
+  };
   const scroller = useRef<HTMLDivElement>(null);
   const range = useMemo(() => historyRange(), []);
   const today = todayIso();
@@ -204,8 +224,6 @@ export const EntryCheck = ({
     const timer = setTimeout(() => focusStep(scroller.current), 50);
     return () => clearTimeout(timer);
   }, [step, saved, showChecking]);
-
-  useEscapeToClose(true, onClose);
 
   const body = (() => {
     if (showChecking) return <Checking date={draft.entryDate || saved?.entry.entryDate || today} onDone={() => setPlayed(true)} />;
@@ -260,40 +278,27 @@ export const EntryCheck = ({
     }
   })();
 
+  const about = saved?.product ?? product;
   return (
-    <div
-      ref={scroller}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="tt-onboarding-title"
-      className={`${THEME} hts-tracker ${trackerSans.className} fixed inset-0 z-[70] overflow-y-auto bg-(--tt-ob-ground) text-base-content`}
+    <FlowPage
+      label="Entry Audit"
+      context={about ? `${about.entry.element.htsno} · ${about.entry.country.flag} ${about.entry.country.name}` : undefined}
+      back="Back to Audits"
+      onClose={onClose}
+      scroller={scroller}
+      progress={{ at: RAIL.findIndex((r) => r.steps.includes(saved || checking ? "review" : step)) + 1, of: RAIL.length }}
+      rail={
+        <Rail
+          step={saved || checking ? "review" : step}
+          reachable={(id) => !checking && (saved ? id !== "review" : id === "review" ? left !== null : reachable(id))}
+          onGo={(id) => (saved ? stepBack(id) : id === "review" ? backToResults() : go(id))}
+        />
+      }
     >
-      <div className="mx-auto flex min-h-full w-full max-w-7xl flex-col px-6 pb-16 lg:px-10">
-        <header className="sticky top-0 z-10 -mx-6 flex items-center justify-between gap-6 bg-(--tt-ob-ground) px-6 py-5 lg:-mx-10 lg:px-10">
-          <span className="flex items-center gap-2.5">
-            <span className="flex items-center rounded-full bg-base-content p-1">
-              <Image src={logo} alt="" className="w-6" width={24} height={24} />
-            </span>
-            <span className={`${tt.display} whitespace-nowrap text-[0.95rem] font-semibold`}>
-              Duty Guard <span className="font-medium text-base-content/50">· Entry Audit</span>
-            </span>
-          </span>
-          <Rail step={saved || checking ? "review" : step} reachable={(id) => !saved && !checking && id !== "review" && reachable(id)} onGo={go} />
-          <span className="flex min-w-32 justify-end">
-            <button
-              type="button"
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-base-content/55 hover:bg-base-300/60 hover:text-base-content"
-              onClick={onClose}
-            >
-              Close
-            </button>
-          </span>
-        </header>
-        {/* Steps sit at the top, so a step growing or shrinking never moves what's above it */}
-        <div key={showChecking ? "checking" : saved ? "results" : step} className="flex flex-1 flex-col py-8">
-          {body}
-        </div>
+      {/* Steps sit at the top, so a step growing or shrinking never moves what's above it */}
+      <div key={showChecking ? "checking" : saved ? "results" : step} className="flex flex-1 flex-col">
+        {body}
       </div>
-    </div>
+    </FlowPage>
   );
 };

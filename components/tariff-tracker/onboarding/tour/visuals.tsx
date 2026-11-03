@@ -40,6 +40,7 @@ const Row = ({
   chip,
   lit = false,
   wait = 0,
+  cursor,
 }: {
   code: string;
   name: string;
@@ -49,8 +50,11 @@ const Row = ({
   chip?: ReactNode;
   lit?: boolean;
   wait?: number;
+  // What the demo's cursor aims at (Cursor's `to`)
+  cursor?: string;
 }) => (
   <div
+    data-cursor={cursor}
     className={`tt-ob-rise grid ${COLS} items-center gap-2 border-b border-base-300 px-2.5 py-1.5 text-[0.65rem] transition-colors duration-300 last:border-b-0 ${lit ? "bg-primary/10" : ""}`}
     style={delay(wait)}
   >
@@ -77,8 +81,9 @@ const Table = ({ children }: { children: ReactNode }) => (
   </div>
 );
 
-const Button = ({ children, pressed = false, tone = "primary" }: { children: ReactNode; pressed?: boolean; tone?: "primary" | "secondary" }) => (
+const Button = ({ children, pressed = false, tone = "primary", cursor }: { children: ReactNode; pressed?: boolean; tone?: "primary" | "secondary"; cursor?: string }) => (
   <span
+    data-cursor={cursor}
     className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[0.6rem] font-semibold transition-transform duration-150 ${tone === "primary" ? "bg-primary text-primary-content" : "border border-base-300 bg-base-100 text-base-content"
       } ${pressed ? "scale-95" : ""}`}
   >
@@ -86,9 +91,10 @@ const Button = ({ children, pressed = false, tone = "primary" }: { children: Rea
   </span>
 );
 
-const Check = ({ on, label, flash = false }: { on: boolean; label: string; flash?: boolean }) => (
+const Check = ({ on, label, flash = false, cursor }: { on: boolean; label: string; flash?: boolean; cursor?: string }) => (
   <span className={`flex items-center gap-1.5 rounded px-1 text-[0.6rem] transition-colors duration-300 ${flash ? "bg-primary/10" : ""}`}>
     <span
+      data-cursor={cursor}
       className={`flex h-3 w-3 shrink-0 items-center justify-center rounded-[3px] border transition-colors duration-300 ${on ? "border-primary bg-primary text-primary-content" : "border-base-300 bg-base-100"}`}
     >
       {on && <CheckIcon className="h-2.5 w-2.5" />}
@@ -108,31 +114,31 @@ const IMPORTS = [
 export const ImportsVisual = ({ run }: Props) => {
   const b = useBeats([700, 1400, 2200, 2800, 3500, 4400, 5700], run);
   const cursor = [
-    { x: 62, y: 80 },
-    { x: 61, y: 66 },
-    { x: 61, y: 66, click: true },
-    { x: 61, y: 47 },
-    { x: 61, y: 47, click: true },
-    { x: 75, y: 85 },
-    { x: 75, y: 85 },
-    { x: 75, y: 85, hidden: true },
+    { x: 62, y: 85 },
+    { to: "setup" },
+    { to: "setup", click: true },
+    { to: "upload" },
+    { to: "upload", click: true },
+    { x: 75, y: 88 },
+    {},
+    { hidden: true },
   ][b];
   return (
     <MockWindow tab="catalog" cursor={<Cursor {...cursor} />}>
       <MockTitle title="Your Imports" />
-      {b < 2 && (
+      {b <= 2 && (
         <div className="flex h-[19rem] flex-col items-center justify-center gap-2 rounded-lg border border-base-300 bg-base-100 text-center">
           <span className={tt.chip("primary")}>Duty Guard</span>
           <span className={`${tt.display} max-w-[16rem] text-sm font-semibold leading-snug text-base-content`}>Tariff Alerts, Savings, &amp; Audits on Autopilot</span>
           <span className="max-w-[15rem] text-[0.6rem] text-base-content/60">Add your HTS codes and countries of origin once.</span>
           <span className="mt-2">
-            <Button pressed={b === 2}>
+            <Button pressed={b === 2} cursor="setup">
               Set up my imports
             </Button>
           </span>
         </div>
       )}
-      {b >= 2 && b < 5 && (
+      {b >= 3 && b < 5 && (
         <div className="flex flex-col gap-2 pt-6">
           <span className={`${tt.display} tt-ob-rise text-xs font-semibold text-base-content`}>Choose a way to add your imports</span>
           <div className="grid grid-cols-3 gap-2">
@@ -143,7 +149,8 @@ export const ImportsVisual = ({ run }: Props) => {
             ].map((o, i) => (
               <div
                 key={o.t}
-                className={`tt-ob-rise flex flex-col gap-1 rounded-lg border bg-base-100 p-2.5 transition-all duration-300 ${i === 1 && b >= 3 ? "border-primary shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-primary)_18%,transparent)]" : "border-base-300"
+                data-cursor={i === 1 ? "upload" : undefined}
+                className={`tt-ob-rise flex flex-col gap-1 rounded-lg border bg-base-100 p-2.5 transition-all duration-300 ${i === 1 && b >= 4 ? "border-primary shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-primary)_18%,transparent)]" : "border-base-300"
                   }`}
                 style={delay(i * 80)}
               >
@@ -189,23 +196,23 @@ export const ImportsVisual = ({ run }: Props) => {
 const KINDS = ["New tariff", "Rate change", "Coverage change", "Exclusion or exemption", "Tariff ended", "AD/CVD cases"];
 
 export const AlertsVisual = ({ run }: Props) => {
-  const b = useBeats([700, 1300, 2100, 2700, 3400, 4000, 4700, 5300, 6100], run);
+  const b = useBeats([700, 1300, 2100, 2700, 3400, 4000, 4700, 5500, 6300], run);
   const cursor = [
-    { x: 55, y: 80 },
-    { x: 75, y: 16 },
-    { x: 75, y: 16, click: true },
-    { x: 62, y: 46 },
-    { x: 62, y: 46, click: true },
-    { x: 68, y: 79 },
-    { x: 68, y: 79, click: true },
-    { x: 41, y: 92 },
-    { x: 41, y: 92, click: true },
-    { x: 41, y: 92, hidden: true },
+    { x: 55, y: 85 },
+    { to: "settings" },
+    { to: "settings", click: true },
+    { to: "slack" },
+    { to: "slack", click: true },
+    { to: "adcvd" },
+    { to: "adcvd", click: true },
+    { to: "save" },
+    { to: "save", click: true },
+    { hidden: true },
   ][b];
   const settings = b >= 2;
-  const slack = b >= 4;
+  const slack = b >= 5;
   const adcvd = b >= 6;
-  const saved = b >= 8;
+  const saved = b >= 9;
   return (
     <MockWindow tab="changes" cursor={<Cursor {...cursor} />}>
       <MockTitle
@@ -215,6 +222,7 @@ export const AlertsVisual = ({ run }: Props) => {
             {["Actions", "Rate History", "Alert Settings"].map((v) => (
               <span
                 key={v}
+                data-cursor={v === "Alert Settings" ? "settings" : undefined}
                 className={`rounded-full px-2 py-0.5 transition-colors duration-300 ${(v === "Alert Settings") === settings ? "bg-base-content text-base-100" : "text-base-content/60"}`}
               >
                 {v}
@@ -250,7 +258,7 @@ export const AlertsVisual = ({ run }: Props) => {
               {slack ? (
                 <span className="tt-ob-pop text-[0.55rem] font-semibold text-success">Connected · #imports</span>
               ) : (
-                <Button pressed={b === 4} tone="secondary">
+                <Button pressed={b === 4} tone="secondary" cursor="slack">
                   Add to Slack
                 </Button>
               )}
@@ -263,11 +271,11 @@ export const AlertsVisual = ({ run }: Props) => {
           <span className="pt-1 text-[0.6rem] font-semibold text-base-content">Which Updates That Affect Your Imports Should Alert You</span>
           <div className="grid grid-cols-2 gap-x-2 gap-y-1">
             {KINDS.map((k) => (
-              <Check key={k} label={k} on={k !== "AD/CVD cases" || adcvd} flash={k === "AD/CVD cases" && b === 6} />
+              <Check key={k} label={k} on={k !== "AD/CVD cases" || adcvd} flash={k === "AD/CVD cases" && b === 6} cursor={k === "AD/CVD cases" ? "adcvd" : undefined} />
             ))}
           </div>
           <span className="self-start pt-1">
-            <Button pressed={b === 8}>{saved ? "Saved" : "Save alert settings"}</Button>
+            <Button pressed={b === 8} cursor="save">{saved ? "Saved" : "Save alert settings"}</Button>
           </span>
         </div>
       )}
@@ -305,15 +313,15 @@ export const ManageVisual = ({ run }: Props) => {
   const typed = "pump".slice(0, Math.max(0, Math.min(4, b - 1)));
   const filtered = b >= 2 ? CATALOG.filter((r) => r.name.toLowerCase().includes(typed)) : CATALOG;
   const cursor = [
-    { x: 55, y: 80 },
-    { x: 40, y: 24 },
-    { x: 40, y: 24 },
-    { x: 40, y: 24 },
-    { x: 40, y: 24 },
-    { x: 45, y: 40 },
-    { x: 45, y: 40, click: true },
-    { x: 88, y: 70 },
-    { x: 88, y: 70, hidden: true },
+    { x: 55, y: 85 },
+    { to: "search" },
+    {},
+    {},
+    {},
+    { to: "row" },
+    { to: "row", click: true },
+    { to: "alerts-on" },
+    { hidden: true },
   ][b];
   const open = b >= 6;
   return (
@@ -332,6 +340,7 @@ export const ManageVisual = ({ run }: Props) => {
       />
       <div className="mb-2 flex items-center gap-1.5">
         <span
+          data-cursor="search"
           className={`flex flex-1 items-center gap-1.5 rounded-md border bg-base-100 px-2 py-1 text-[0.6rem] transition-colors ${b >= 1 && b < 5 ? "border-primary" : "border-base-300"}`}
         >
           <MagnifyingGlassIcon className="h-3 w-3 shrink-0 text-base-content/40" />
@@ -346,7 +355,7 @@ export const ManageVisual = ({ run }: Props) => {
       </div>
       <Table>
         {filtered.map((r, i) => (
-          <Row key={r.code} {...r} lit={open && i === 0} />
+          <Row key={r.code} {...r} lit={open && i === 0} cursor={i === 0 ? "row" : undefined} />
         ))}
       </Table>
 
@@ -357,8 +366,8 @@ export const ManageVisual = ({ run }: Props) => {
             <Code>8413.91.90.15</Code>
             <span className="text-[0.6rem] text-base-content/60">Pump parts · From 🇧🇷 Brazil</span>
           </span>
-          <span className="flex gap-0.5 border-b border-base-300 text-[0.55rem]">
-            {["Overview", "Duty", "Compare", "Changes", "Savings", "Audits"].map((t) => (
+          <span className="flex gap-0.5 overflow-hidden whitespace-nowrap border-b border-base-300 text-[0.55rem]">
+            {["Overview", "Duty", "History", "Compare", "AD/CVD Cases", "News", "Savings", "Audits"].map((t) => (
               <span key={t} className={`px-1.5 pb-1 font-semibold ${t === "Duty" ? "border-b-2 border-primary text-primary" : "text-base-content/50"}`}>
                 {t}
               </span>
@@ -385,7 +394,9 @@ export const ManageVisual = ({ run }: Props) => {
           {b >= 7 && (
             <span className="tt-ob-rise mt-auto flex items-center justify-between rounded-md bg-tt-soft px-2 py-1.5 text-[0.55rem]">
               <span className="text-base-content/70">Alerts on for this import</span>
-              <span className={tt.chip("success")}>On</span>
+              <span data-cursor="alerts-on" className={tt.chip("success")}>
+                On
+              </span>
             </span>
           )}
         </div>
@@ -396,16 +407,18 @@ export const ManageVisual = ({ run }: Props) => {
 
 // ── 4. Check for AD/CVD ──────────────────────────────────────────────────────────────────────────
 export const AdcvdVisual = ({ run }: Props) => {
-  const b = useBeats([800, 1700, 2300, 3200, 3900, 4600, 5300], run);
+  const b = useBeats([800, 1700, 2300, 3200, 3900, 4600, 5400, 6100, 6800], run);
   const cursor = [
-    { x: 55, y: 85 },
-    { x: 55, y: 85 },
-    { x: 40, y: 50 },
-    { x: 40, y: 50, click: true },
-    { x: 66, y: 46 },
-    { x: 66, y: 46, click: true },
-    { x: 70, y: 76 },
-    { x: 70, y: 76, hidden: true },
+    { x: 55, y: 88 },
+    {},
+    { to: "flagged" },
+    { to: "flagged", click: true },
+    { to: "check-cases" },
+    { to: "check-cases", click: true },
+    { to: "yes" },
+    { to: "yes", click: true },
+    {},
+    { hidden: true },
   ][b];
   const flagged = b >= 1;
   const opened = b >= 3;
@@ -424,6 +437,7 @@ export const AdcvdVisual = ({ run }: Props) => {
           country="China"
           rate="80.0%"
           lit={opened}
+          cursor="flagged"
           chip={
             flagged && (
               <span className="relative mt-0.5 inline-flex">
@@ -438,25 +452,27 @@ export const AdcvdVisual = ({ run }: Props) => {
         ))}
       </Table>
 
-      {/* The import's Duty tab: the warning, then the AD/CVD Check */}
+      {/* The import's AD/CVD Cases tab, marked: the warning, then the AD/CVD Check */}
       {opened && (
         <div className="tt-ob-from-right absolute inset-y-3 right-3 flex w-[60%] flex-col gap-2 rounded-lg border border-base-300 bg-base-100 p-3 shadow-[0_18px_40px_-16px_rgb(0_0_0/0.3)]">
           <span className="flex items-center gap-1.5">
             <Code>7604.29.10.00</Code>
             <span className="rounded-full bg-warning/15 px-1.5 py-px text-[0.5rem] font-bold text-warning">AD/CVD</span>
           </span>
-          <span className="flex gap-0.5 border-b border-base-300 text-[0.55rem]">
-            {["Overview", "Duty", "Compare", "Changes"].map((t) => (
-              <span key={t} className={`px-1.5 pb-1 font-semibold ${t === "Duty" ? "border-b-2 border-primary text-primary" : "text-base-content/50"}`}>
+          <span className="flex gap-0.5 overflow-hidden whitespace-nowrap border-b border-base-300 text-[0.55rem]">
+            {["Overview", "Duty", "History", "Compare", "AD/CVD Cases", "News"].map((t) => (
+              <span key={t} className={`inline-flex items-center px-1.5 pb-1 font-semibold ${t === "AD/CVD Cases" ? "border-b-2 border-warning text-warning" : "text-base-content/50"}`}>
+                {t === "AD/CVD Cases" && <ExclamationTriangleIcon className="mr-0.5 h-2.5 w-2.5" />}
                 {t}
-                {t === "Duty" && <span className="ml-1 rounded-full bg-warning/15 px-1 text-[0.5rem] text-warning">AD/CVD may apply</span>}
               </span>
             ))}
           </span>
           <span className="flex items-start gap-1.5 rounded-md bg-warning/10 px-2 py-1.5 text-[0.58rem] text-base-content/80">
             <ExclamationTriangleIcon className="mt-px h-3 w-3 shrink-0 text-warning" />
             <span>
-              AD/CVD cases may increase duty by over 100%. <span className="font-semibold text-primary">Check the cases</span>
+              AD/CVD cases may increase duty by over 100%. <span data-cursor="check-cases" className="inline-block whitespace-nowrap font-semibold text-primary">
+                Check the cases
+              </span>
             </span>
           </span>
           {checking && (
@@ -466,11 +482,13 @@ export const AdcvdVisual = ({ run }: Props) => {
               </span>
               <span className="text-[0.62rem] font-semibold text-base-content">Is your product aluminum extrusions?</span>
               <span className="flex gap-1">
-                <Button pressed={b === 6}>Yes, it is</Button>
+                <Button pressed={b === 7} cursor="yes">
+                  Yes, it is
+                </Button>
                 <Button tone="secondary">No</Button>
                 <Button tone="secondary">Not sure</Button>
               </span>
-              {b >= 7 && (
+              {b >= 8 && (
                 <span className="tt-ob-rise flex flex-col gap-1 pt-1">
                   <span className="text-[0.58rem] font-semibold text-base-content">Who made and exported it?</span>
                   <span className="flex items-center gap-1 rounded border border-base-300 px-1.5 py-1 text-[0.55rem] text-base-content/40">
@@ -488,47 +506,118 @@ export const AdcvdVisual = ({ run }: Props) => {
   );
 };
 
+// A flow's step rail, small, as the savings review and the entry audit draw theirs: ticked, current, to come
+const MockRail = ({ steps, at }: { steps: string[]; at: number }) => (
+  <span className="mb-3 flex items-center gap-1 overflow-hidden whitespace-nowrap text-[0.5rem] font-semibold">
+    {steps.map((s, i) => (
+      <span key={s} className="flex items-center gap-1">
+        {i > 0 && <span className={`h-px w-2 ${i <= at ? "bg-primary/50" : "bg-base-300"}`} />}
+        <span
+          className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full text-[0.45rem] transition-colors duration-300 ${
+            i < at ? "bg-primary text-primary-content" : i === at ? "border border-primary text-primary" : "border border-base-300 text-base-content/40"
+          }`}
+        >
+          {i < at ? <CheckIcon className="h-2 w-2" /> : i + 1}
+        </span>
+        <span className={i === at ? "text-base-content" : i < at ? "text-base-content/70" : "text-base-content/45"}>{s}</span>
+      </span>
+    ))}
+  </span>
+);
+
 // ── 5. Check for savings ───────────────────────────────────────────────────────────────────────
-const SAVINGS = [
-  { name: "Centrifugal pumps", flag: "🇲🇽", what: "Trade program: may qualify for USMCA", from: "25.0%", to: "0.0%" },
-  { name: "Hand valves", flag: "🇻🇳", what: "Cheaper country of origin worth checking", from: "24.0%", to: "10.0%" },
-  { name: "Engine parts", flag: "🇦🇷", what: "Exclusion worth checking", from: "12.5%", to: "2.5%" },
+// An import's Savings Review: one question at a time, No or Yes, then the summary
+const QUESTIONS = [
+  { kind: "Trade Programs", tone: "text-primary", q: "Do the pumps meet the USMCA rule of origin for heading 8413?", from: "25.0%", to: "0.0%" },
+  { kind: "Exemptions", tone: "text-warning", q: "Are the pumps for use in civil aircraft?", from: "25.0%", to: "22.5%" },
 ];
 
 export const SavingsVisual = ({ run }: Props) => {
-  const b = useBeats([700, 1500, 2200, 2900, 3800], run);
+  const b = useBeats([600, 1300, 2000, 2700, 3500, 4300, 5100, 5800], run);
+  const cursor = [
+    { to: "start" },
+    { to: "start", click: true },
+    { to: "yes" },
+    { to: "yes", click: true },
+    { to: "no" },
+    { to: "no", click: true },
+    { hidden: true },
+    { hidden: true },
+    { hidden: true },
+  ][b];
+  const reviewing = b >= 2;
+  const question = b >= 6 ? null : b >= 4 ? QUESTIONS[1] : QUESTIONS[0];
+  const summary = b >= 6;
   return (
-    <MockWindow tab="savings">
-      <MockTitle title="Savings" />
-      <div className="relative mb-2.5 overflow-hidden rounded-lg border border-base-300 bg-base-100 p-3">
-        <span className="flex items-center gap-1.5 text-[0.65rem] font-semibold text-base-content">
-          <SparklesIcon className="h-3.5 w-3.5 text-primary" />
-          {b >= 4 ? "3 ways your imports could pay less" : "Checking every import…"}
-        </span>
-        {b < 4 && <span key={run} className="tt-ob-fill absolute bottom-0 left-0 h-0.5 w-full bg-primary" style={{ animationDuration: "2800ms" }} />}
-      </div>
-      <div className="flex flex-col gap-2">
-        {SAVINGS.map(
-          (s, i) =>
-            b > i && (
-              <div key={s.name} className="tt-ob-from-right flex items-center gap-3 rounded-lg border border-base-300 bg-base-100 px-3 py-2">
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-[0.65rem] font-semibold text-base-content">
-                    {s.flag} {s.name}
-                  </span>
-                  <span className="text-[0.6rem] text-success">{s.what}</span>
+    <MockWindow tab="savings" cursor={<Cursor {...cursor} />}>
+      {!reviewing && (
+        <>
+          <MockTitle title="Centrifugal pumps" />
+          <span className="mb-2 flex gap-0.5 overflow-hidden whitespace-nowrap border-b border-base-300 text-[0.55rem]">
+            {["Overview", "Duty", "History", "Savings", "Audits"].map((t) => (
+              <span key={t} className={`px-1.5 pb-1 font-semibold ${t === "Savings" ? "border-b-2 border-primary text-primary" : "text-base-content/50"}`}>
+                {t}
+              </span>
+            ))}
+          </span>
+          <div className="tt-ob-rise flex items-center gap-3 rounded-lg border border-base-300 bg-base-100 p-3">
+            <SparklesIcon className="h-4 w-4 shrink-0 text-primary" />
+            <span className="flex min-w-0 flex-1 flex-col">
+              <span className="text-[0.65rem] font-semibold text-base-content">Find every way to pay less on this import.</span>
+              <span className="text-[0.55rem] text-base-content/60">One question at a time, Yes or No, with the rule each one turns on</span>
+            </span>
+            <Button pressed={b === 1} cursor="start">
+              Start Savings Review
+            </Button>
+          </div>
+        </>
+      )}
+      {reviewing && (
+        <div className="flex h-full flex-col">
+          <MockRail steps={["Your Import", "Trade Programs", "Exemptions", "Other Countries", "Summary"]} at={summary ? 4 : b >= 4 ? 2 : 1} />
+          {question && (
+            <div key={question.kind} className="tt-ob-from-right flex flex-1 flex-col gap-2">
+              <span className={`text-[0.55rem] font-bold uppercase tracking-wider ${question.tone}`}>{question.kind}</span>
+              <span className={`${tt.display} text-sm font-semibold leading-snug text-base-content`}>&ldquo;{question.q}&rdquo;</span>
+              <span className="flex items-center gap-2 rounded-lg border border-base-300 bg-base-100 px-3 py-2 text-[0.6rem]">
+                <span className="text-base-content/60">If you qualify</span>
+                <span className="ml-auto tabular-nums text-base-content/60">
+                  {question.from} → <span className="font-semibold text-success">{question.to}</span>
                 </span>
-                <span className="text-right text-[0.6rem] tabular-nums text-base-content/60">
-                  {s.from} → <span className="font-semibold text-success">{s.to}</span>
+              </span>
+              <span className="mt-auto grid grid-cols-2 gap-2">
+                <span
+                  data-cursor="no"
+                  className={`flex items-center justify-center rounded-md border border-base-300 bg-base-100 px-2 py-1.5 text-[0.6rem] font-semibold text-base-content transition-transform ${b === 5 ? "scale-95" : ""}`}>
+                  No
                 </span>
-              </div>
-            ),
-        )}
-      </div>
-      {b >= 5 && (
-        <div className="tt-ob-pop mt-3 flex items-center justify-between rounded-lg bg-success/10 px-3 py-2 text-[0.65rem]">
-          <span className="font-semibold text-base-content">Ranked by what could save the most</span>
-          <span className="text-[0.6rem] text-base-content/60">with what each one takes</span>
+                <span
+                  data-cursor="yes"
+                  className={`flex items-center justify-center rounded-md bg-success px-2 py-1.5 text-[0.6rem] font-semibold text-success-content transition-transform ${b === 3 ? "scale-95" : ""}`}>
+                  Yes, pursue it
+                </span>
+              </span>
+            </div>
+          )}
+          {summary && (
+            <div className="tt-ob-rise flex flex-col gap-2">
+              <span className="text-[0.55rem] font-bold uppercase tracking-wider text-success">Review complete</span>
+              <span className={`${tt.display} text-sm font-semibold text-base-content`}>Could save up to 25% of the value</span>
+              <span className="flex items-center gap-2 rounded-lg border border-base-300 bg-base-100 px-3 py-2 text-[0.6rem]">
+                <span className="text-base-content/60">Duty rate today</span>
+                <span className="ml-auto tabular-nums text-base-content/60">
+                  25.0% → <span className="font-semibold text-success">0.0%</span> if you qualify
+                </span>
+              </span>
+              {b >= 7 && (
+                <div className="tt-ob-pop flex flex-col gap-1 rounded-lg bg-success/10 px-3 py-2 text-[0.6rem] text-base-content">
+                  <span className="font-semibold">Next: confirm your goods qualify</span>
+                  <span className="text-base-content/60">Talk it through with your broker, then mark it secured to apply it to your import.</span>
+                </div>
+              )}
+              {b >= 8 && <span className="tt-ob-rise text-[0.55rem] text-base-content/50">1 ruled out · 0 left to answer</span>}
+            </div>
+          )}
         </div>
       )}
     </MockWindow>
@@ -536,74 +625,111 @@ export const SavingsVisual = ({ run }: Props) => {
 };
 
 // ── 6. Audit your entries ──────────────────────────────────────────────────────────────────────
-const ENTRIES = [
-  { id: "ABC-1234567-8", date: "Mar 4", paid: "25.0%", due: "25.0%", verdict: "ok" as const },
-  { id: "ABC-1234612-0", date: "Apr 18", paid: "35.0%", due: "10.0%", verdict: "over" as const },
-  { id: "ABC-1234701-5", date: "May 2", paid: "7.5%", due: "7.5%", verdict: "ok" as const },
-  { id: "ABC-1234799-3", date: "Jun 9", paid: "2.5%", due: "27.5%", verdict: "under" as const },
+// Audit an Entry: the entry typed in, a step at a time, then the Results side by side
+const FIELDS = [
+  { label: "Entry Number", value: "ABC-1234612-0" },
+  { label: "Entry Date", value: "Apr 18, 2026" },
+  { label: "Entered Value", value: "$40,000" },
+  { label: "Duty Paid", value: "$14,000" },
 ];
 
 export const AuditsVisual = ({ run }: Props) => {
-  const b = useBeats([700, 1300, 1900, 2500, 3100, 3900], run);
-  const ECOLS = "grid-cols-[minmax(0,1.3fr)_auto_auto_minmax(0,1.3fr)]";
+  const b = useBeats([600, 1200, 1800, 2400, 3000, 3600, 4300, 5000, 5900, 6700], run);
+  const cursor = [
+    { to: "audit" },
+    { to: "audit", click: true },
+    { hidden: true },
+    { hidden: true },
+    { hidden: true },
+    { hidden: true },
+    { to: "finish" },
+    { to: "finish", click: true },
+    { hidden: true },
+    { hidden: true },
+    { hidden: true },
+  ][b];
+  const auditing = b >= 2;
+  const filled = Math.min(FIELDS.length, Math.max(0, b - 2));
+  const checking = b === 8;
+  const results = b >= 9;
   return (
-    <MockWindow tab="entries">
-      <MockTitle title="Audits" action={<span className={tt.chip("warning")}>Beta</span>} />
-      <div className="mb-2 flex items-center gap-2 rounded-lg border border-success/30 bg-success/5 px-3 py-2">
-        <ClipboardDocumentListIcon className="h-3.5 w-3.5 text-success" />
-        <span className="flex-1 text-[0.62rem] font-semibold text-base-content">entry-summaries-q2.pdf</span>
-        <span className="text-[0.55rem] text-base-content/55">4 entries read</span>
-      </div>
-      <div className="overflow-hidden rounded-lg border border-base-300 bg-base-100">
-        <div className={`grid ${ECOLS} gap-2 border-b border-base-300 bg-tt-soft px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider text-base-content/50`}>
-          <span>Entry</span>
-          <span>Paid</span>
-          <span>Rate that day</span>
-          <span className="text-right">Check</span>
-        </div>
-        {ENTRIES.map((e, i) => {
-          const checked = b > i + 1;
-          const checking = b === i + 1;
-          return (
-            <div
-              key={e.id}
-              className={`grid ${ECOLS} items-center gap-2 border-b border-base-300 px-2.5 py-2 text-[0.6rem] transition-colors duration-300 last:border-b-0 ${checking ? "bg-primary/10" : ""}`}
-            >
-              <span className="flex min-w-0 flex-col">
-                <Code>{e.id}</Code>
-                <span className="text-base-content/55">{e.date}</span>
-              </span>
-              <span className="tabular-nums text-base-content">{e.paid}</span>
-              <span className="tabular-nums text-base-content/70">{checked ? e.due : "…"}</span>
-              <span className="flex justify-end">
-                {checking && <span className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />}
-                {checked && e.verdict === "ok" && (
-                  <span className="tt-ob-pop flex items-center gap-1 font-semibold text-success">
-                    <CheckIcon className="h-3 w-3" />
-                    Matches
+    <MockWindow tab="entries" cursor={<Cursor {...cursor} />}>
+      {!auditing && (
+        <>
+          <MockTitle title="Audits" action={<Button pressed={b === 1} cursor="audit">
+                Audit an Entry
+              </Button>} />
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-base-300 bg-base-100 px-4 py-6 text-center">
+            <ClipboardDocumentListIcon className="h-6 w-6 text-primary" />
+            <span className="text-[0.7rem] font-semibold text-base-content">Check What You Paid on a Past Entry</span>
+            <span className="text-[0.6rem] text-base-content/60">We check it against the duty in force on its entry date.</span>
+          </div>
+        </>
+      )}
+      {auditing && !results && (
+        <div className="flex h-full flex-col">
+          <MockRail steps={["Upload Method", "Entry Details", "Duty Paid", "Adjustments", "AD/CVD", "Results"]} at={filled >= 4 ? 2 : 1} />
+          <span className={`${tt.display} mb-2 text-sm font-semibold text-base-content`}>Entry Audit For: 8413.70.20 · 🇨🇳 China</span>
+          <div className="flex flex-col gap-1.5">
+            {FIELDS.map(
+              (f, i) =>
+                filled > i && (
+                  <span key={f.label} className="tt-ob-rise flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-3 py-1.5 text-[0.6rem]">
+                    <span className="text-base-content/60">{f.label}</span>
+                    <span className="font-semibold tabular-nums text-base-content">{f.value}</span>
                   </span>
-                )}
-                {checked && e.verdict === "over" && <span className="tt-ob-pop rounded-full bg-success/15 px-1.5 py-0.5 font-semibold text-success">May have overpaid</span>}
-                {checked && e.verdict === "under" && <span className="tt-ob-pop rounded-full bg-warning/15 px-1.5 py-0.5 font-semibold text-warning">May have underpaid</span>}
+                ),
+            )}
+          </div>
+          <span className="mt-auto flex justify-end">
+            {checking ? (
+              <span className="flex items-center gap-1.5 text-[0.6rem] font-semibold text-primary">
+                <span className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                Auditing your entry…
+              </span>
+            ) : (
+              <Button pressed={b === 7} cursor="finish">
+                Finish
+              </Button>
+            )}
+          </span>
+        </div>
+      )}
+      {results && (
+        <div className="flex h-full flex-col">
+          <MockRail steps={["Upload Method", "Entry Details", "Duty Paid", "Adjustments", "AD/CVD", "Results"]} at={5} />
+          <span className="tt-ob-rise text-center text-[0.65rem] text-base-content">
+            On this entry, <span className="font-extrabold text-success">you may have overpaid up to $10,000</span>
+          </span>
+          <div className="tt-ob-pop mt-3 grid grid-cols-3 items-center gap-2 text-center">
+            <span className="flex flex-col rounded-lg border border-base-300 bg-base-100 py-2">
+              <span className="text-[0.5rem] font-bold uppercase tracking-wider text-base-content/55">You Paid</span>
+              <span className={`${tt.display} text-sm font-semibold tabular-nums text-base-content`}>$14,000</span>
+              <span className="text-[0.55rem] text-base-content/55">35.0%</span>
+            </span>
+            <span className="flex flex-col rounded-lg bg-success/10 py-2">
+              <span className={`${tt.display} text-sm font-semibold tabular-nums text-success`}>+$10,000</span>
+              <span className="text-[0.55rem] text-base-content/55">over</span>
+            </span>
+            <span className="flex flex-col rounded-lg border border-primary/30 bg-base-100 py-2">
+              <span className="text-[0.5rem] font-bold uppercase tracking-wider text-primary">We Calculated</span>
+              <span className={`${tt.display} text-sm font-semibold tabular-nums text-base-content`}>$4,000</span>
+              <span className="text-[0.55rem] text-base-content/55">10.0%</span>
+            </span>
+          </div>
+          {b >= 10 && (
+            <div className="tt-ob-rise mt-3 flex flex-col gap-1 rounded-lg border border-base-300 bg-base-100 px-3 py-2 text-[0.6rem]">
+              <span className="font-semibold text-base-content">How We Calculated It</span>
+              <span className="flex justify-between text-base-content/70">
+                <span>Base duty · 8413.70.20</span>
+                <span className="tabular-nums">0.0% × $40,000</span>
+              </span>
+              <span className="flex justify-between text-base-content/70">
+                <span>Section 301 · 9903.88.03</span>
+                <span className="tabular-nums">10.0% × $40,000</span>
               </span>
             </div>
-          );
-        })}
-      </div>
-      {b >= 6 && (
-        <div className="tt-ob-pop mt-3 grid grid-cols-2 gap-2">
-          <div className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-[0.6rem] text-base-content">
-            <CheckCircleIcon className="h-4 w-4 shrink-0 text-success" />
-            <span>
-              <strong>1 entry</strong> may be worth a refund
-            </span>
-          </div>
-          <div className="flex items-center gap-2 rounded-lg bg-warning/10 px-3 py-2 text-[0.6rem] text-base-content">
-            <ExclamationTriangleIcon className="h-4 w-4 shrink-0 text-warning" />
-            <span>
-              <strong>1 entry</strong> to fix before Customs finds it
-            </span>
-          </div>
+          )}
         </div>
       )}
     </MockWindow>

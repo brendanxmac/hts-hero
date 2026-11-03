@@ -42,7 +42,7 @@ export const REVERSE_TRIAL = {
   days: 7,
   imports: 500,
   legacyDays: 14,
-  shortFrom: "2026-11-01",
+  shortFrom: "2026-11-03",
   freshStartOn: "2026-10-21",
 } as const
 

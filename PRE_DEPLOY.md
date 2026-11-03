@@ -68,7 +68,7 @@ still charges the 50% on the 22 removed subheadings.
       templates carry the logo URL too: rerun `npm run email:auth` and repaste them in Supabase,
       subjects included (`SUBJECTS.txt`): confirm leads with the button with the code as backup,
       and sign-in is code only (2026-11-01). Test a password sign-up and a code sign-up in dev first.
-- [ ] **Set `REVERSE_TRIAL.shortFrom` to the deploy day** (`components/pricing-calculator/lib/pricing.ts`):
+- [x] **Set `REVERSE_TRIAL.shortFrom` to the deploy day** (2026-11-03) (`components/pricing-calculator/lib/pricing.ts`):
       trials started from that day are 7 days; earlier ones keep their 14.
 
 - [ ] **`adcvd.sql`'s 2026-10-23 section in prod** (fr_* / ita_* / hts_sources; every line is
@@ -230,7 +230,7 @@ and the scope reader fail on the missing column.
 
 ## 4. Services and settings
 
-- [ ] **Stripe, live mode.** Follow section 1 of `OFFERS_ROLLOUT.md`: check live for active Tariff
+- [x] **Stripe, live mode** (done 2026-11-03: 16 Duty Guard prices and portal added; nothing archived, Classify unchanged). Follow section 1 of `OFFERS_ROLLOUT.md`: check live for active Tariff
       Duty Guard subscriptions, run `npm run stripe:setup-offers -- --live --archive-old` with the live
       key, check it with `npm run stripe:check-tracker`, and add the live webhook events.
 - [ ] **Resend on Pro ($20/mo: 50,000 emails, no daily limit) before deploying.** The free plan

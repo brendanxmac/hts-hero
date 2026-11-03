@@ -1,7 +1,7 @@
 import { Answers } from "../../../../tariffs/engine-v2/types";
 import { formatDate } from "../../../duty-calculator/lib/format";
 import { TrackedProduct } from "../../report";
-import { EntryAdcvdCase, EntryFacts } from "../entries";
+import { EntryAdcvdCase, EntryFacts, entryProductKey, TrackerEntry } from "../entries";
 
 // The entry being audited, as it's typed in, step by step (EntryCheck). Kept by the button that
 // opened it, so closing midway and coming back picks up where they left off.
@@ -20,7 +20,24 @@ export interface EntryDraft {
   // Null until the AD/CVD step's lookup is in: then the cases our matching found (with the import's
   // own answers about them), and any the user adds
   adcvdCases: EntryAdcvdCase[] | null;
+  // A saved entry being changed (stepped back into from its Results): Finish saves over it
+  editingId?: string;
 }
+
+// A saved entry, back as a draft to step through and change. Entries before AD/CVD was folded into
+// the duty paid kept its deposits apart: they're added back in, as What You Paid asks.
+export const entryDraft = (entry: TrackerEntry): EntryDraft => ({
+  productKey: entryProductKey(entry),
+  entryDate: entry.entryDate,
+  entryNumber: entry.entryNumber ?? "",
+  customsValue: String(entry.customsValue),
+  quantity: entry.quantity === null ? "" : String(entry.quantity),
+  dutyPaid: String(Math.round((entry.dutyPaid + (entry.adcvd?.paid ?? 0)) * 100) / 100),
+  claimedPreference: entry.claimedPreference,
+  answers: entry.answers ?? {},
+  adcvdCases: entry.adcvd?.cases ?? [],
+  editingId: entry.id,
+});
 
 export const emptyDraft = (productKey: string): EntryDraft => ({
   productKey,

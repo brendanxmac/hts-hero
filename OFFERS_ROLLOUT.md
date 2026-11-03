@@ -65,26 +65,26 @@ All decided by the user on 2026-10-31.
 Sandbox done 2026-10-31 (`npm run stripe:setup-offers`, then `npm run stripe:check-tracker`). The
 items below stay open until they're done in live too, with `--live` and the live key.
 
-- [ ] **8 products, 16 prices (sandbox done, live to do):**
+- [x] **8 products, 16 prices (sandbox redone after the rename and live done 2026-11-03):**
   - The products: Tariff Alerts Starter / Growth / Pro / Scale, and Duty Audits Starter / Growth /
     Pro / Scale.
   - Each has a monthly and an annual price.
   - Lookup keys like `alerts_<10|25|100|500>_<monthly|annual>` and `audits_…`.
   - Metadata: `plan`, `billing`, `version`.
-- [ ] **Billing portal configuration (sandbox done, live to do):**
+- [x] **Billing portal configuration (sandbox done; live `bpc_1UXZCkGk1gnudBErKy5bwhkj` created 2026-11-03, the default config untouched):**
   - Switch tier within an offer, and switch between Alerts and Duty Audits.
   - Upgrades invoice now; downgrades and cancellations take effect at period end.
   - List all 8 products.
-- [ ] **Archive the old Duty Guard prices (sandbox done, live to do).** Keep their mapping as the safety net (see 0).
-- [ ] **Check live Stripe for active Duty Guard subscriptions** before archiving. The local key
+- [x] **Archive the old Duty Guard prices (sandbox done).** Live: decided 2026-11-03 to keep them active, just in case (no open subscriptions; checkout uses the new lookup keys). `stripe:check-tracker` shows ✗ on that line in live, as expected. Keep their mapping as the safety net (see 0).
+- [x] **Check live Stripe for active Duty Guard subscriptions** (2026-11-03: none on the 4 `tracker_*` prices). The local key
       is sandbox only, and Mixpanel's empty `Purchase Completed` is weak proof. Anyone found is
       grandfathered.
 - [x] **Update `npm run stripe:check-tracker`** to check the new set (products, prices, lookup keys,
       metadata, portal).
-- [ ] **Live webhook events:** `checkout.session.completed`, `checkout.session.expired`,
+- [x] **Live webhook events** (checked 2026-11-03, all enabled on htshero.com/api/webhook/stripe): `checkout.session.completed`, `checkout.session.expired`,
       `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`,
       `invoice.payment_failed`.
-- [ ] **Live Classify prices match the site** ($39 / $89; the sandbox has $29 / $80). Carried over
+- [ ] **Live Classify prices match the site** (decided 2026-11-03: keep live Classify prices as they are for now) ($39 / $89; the sandbox has $29 / $80). Carried over
       from PRE_DEPLOY.md.
 
 ## 2. Plans in the code
@@ -103,7 +103,7 @@ items below stay open until they're done in live too, with `--live` and the live
 - [x] **Free accounts drop to 0 alert products:** `TRIAL_ALLOWANCE.alertImports = 0`, the teaser
       email in `libs/tariff-updates/alerts.ts` (no impact check, numbers or details), and impact
       checks reduced to a count. Old-plan subscribers keep full access.
-- [ ] **The trial grants Duty Audits on 500 products for 7 days.** Set `REVERSE_TRIAL.shortFrom` to the
+- [x] **The trial grants Duty Audits on 500 products for 7 days.** `REVERSE_TRIAL.shortFrom` is 2026-11-03 (trials from that day get 7; earlier ones keep 14). Was: set `REVERSE_TRIAL.shortFrom` to the
       deploy day (now `2026-11-01`).
 - [x] **Remove launch pricing everywhere:** off and annual billing on (`launchPricingActive` is always
       false, `TRACKER_ANNUAL_ENABLED` is true). `LAUNCH_PRICING`, the countdown and `nextPrices` come

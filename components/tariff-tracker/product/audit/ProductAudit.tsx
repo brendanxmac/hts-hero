@@ -37,7 +37,7 @@ export const ProductAudit = ({ product }: { product: TrackedProduct }) => {
         <>
           {/* The tab's actions, on the right as in the Entry Audit page's header */}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className={`${tt.subtitle} m-0`}>Each entry checked against the duty in force on its entry date.</p>
+            <p className={`${tt.subtitle} m-0`}>Check every entry against the duty in force on its entry date.</p>
             <div className="flex flex-wrap items-center gap-2">
               <Upload7501Button />
               <AuditEntryButton fixedProduct={product} />

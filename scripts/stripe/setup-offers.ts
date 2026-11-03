@@ -53,6 +53,8 @@ const main = async () => {
           unit_amount: amount,
           recurring: { interval },
           lookup_key: lookupKey,
+          // An archived price can still hold the key (e.g. from before the Duty Guard rename)
+          transfer_lookup_key: true,
           metadata: { plan, billing, version: PRICE_VERSION },
         });
         console.log(`  + ${lookupKey}: ${price.id}`);
@@ -78,7 +80,7 @@ const main = async () => {
   const { data: portals } = await stripe.billingPortal.configurations.list({ active: true, limit: 100 });
   const portal = portals.find((c) => c.metadata?.app === PORTAL_APP);
   if (portal) {
-    await stripe.billingPortal.configurations.update(portal.id, { features });
+    await stripe.billingPortal.configurations.update(portal.id, { name: "Duty Guard", features });
     console.log(`\n~ Billing portal ${portal.id} updated`);
   } else {
     const created = await stripe.billingPortal.configurations.create({

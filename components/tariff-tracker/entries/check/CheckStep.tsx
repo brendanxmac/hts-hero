@@ -223,13 +223,13 @@ export const CheckStep = ({
       <div className="flex flex-col gap-8">
         <StepHeading
           eyebrow="Step 4 · Adjustments"
-          title="Any Exemptions or Trade Programs Applied?"
+          title="Exemptions & Trade Programs "
           lead={
             nothingToSet ? (
               <>Nothing on {formatDate(facts.entryDate)} changes this import&apos;s duty: no trade program to claim, no exemption to confirm. The check is ready.</>
             ) : (
               <>
-                Change any that were different when this entry was filed on {formatDate(facts.entryDate)}: a program can go unclaimed, or an exemption differ,
+                Check off any that were claimed when this entry was filed on {formatDate(facts.entryDate)}: a program can go unclaimed, or an exemption differ,
                 from one entry to the next.
               </>
             )

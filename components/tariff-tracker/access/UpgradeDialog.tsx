@@ -126,14 +126,14 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
       <div className="fixed inset-0 bg-black/50" aria-hidden />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel
-          className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} relative flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden shadow-2xl`}
+          className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} relative flex max-h-[94vh] w-full max-w-[100rem] flex-col overflow-hidden shadow-2xl`}
         >
           <button type="button" onClick={onClose} className="absolute right-3 top-4 z-10 rounded-full p-1.5 text-base-content/60 hover:bg-tt-soft hover:text-base-content">
             <XMarkIcon className="h-5 w-5" aria-hidden />
             <span className="sr-only">Close</span>
           </button>
 
-          <div className="flex flex-col gap-6 overflow-y-auto px-6 py-7 sm:px-8">
+          <div className="flex flex-col gap-6 overflow-y-auto px-6 py-7 sm:px-10">
             <div className="flex flex-col items-center gap-1.5 text-center">
               <Dialog.Title className={`${tt.display} m-0 px-8 text-2xl font-semibold leading-tight text-base-content sm:text-[1.75rem]`}>
                 {changing ? "Change Your Plan" : offer === "alerts" ? "Know When New Tariffs Hit Your Products" : "Stop Overpaying on US Imports"}

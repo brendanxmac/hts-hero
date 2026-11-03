@@ -79,14 +79,13 @@ import { useStickyColumn } from "./useStickyColumn";
 // - AD/CVD Cases: the AD/CVD check, antidumping and countervailing duties that may cover it (a free
 //   account; a line under the Duty tab's totals says whether a case may apply, and leads here)
 // - News: every tariff action that may touch it (a free account; the tab counts them)
-// An import's page in Duty Guard keeps AD/CVD on Duty, and History and News together as Changes,
-// with the refund check
+// An import's page in Duty Guard has the same tabs, held by its own header
 
-type ResultsView = "overview" | "duty" | "history" | "compare" | "adcvd" | "news" | "changes";
-export type ResultsTab = ResultsView;
+type ResultsView = "overview" | "duty" | "history" | "compare" | "adcvd" | "news";
+// Changes (History and News together) is gone; older links and hosts asking for it get History
+export type ResultsTab = ResultsView | "changes";
 
-// The tab a host's menu has for it
-const hostViewOf = (tab: ResultsTab): ResultsView => (tab === "history" || tab === "news" ? "changes" : tab === "adcvd" ? "duty" : tab);
+const viewOf = (tab: ResultsTab): ResultsView => (tab === "changes" ? "history" : tab);
 
 // Before the AD/CVD notice's sign-up. Never says whether a case was found
 const ADCVD_PITCH: AccountPitch = {
@@ -101,17 +100,6 @@ const ADCVD_PITCH: AccountPitch = {
 };
 
 const LOCAL_VIEWS = ["changes", "history", "adcvd", "news"] as const;
-
-// Scroll to the AD/CVD check on the Duty tab, once it's there (the tab may still be coming in)
-export const showAdcvd = () => {
-  let tries = 0;
-  const go = () => {
-    const el = document.getElementById("adcvd-check");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    else if (tries++ < 20) window.setTimeout(go, 100);
-  };
-  window.setTimeout(go, 60);
-};
 
 // The calculator's own tabs. The Overview is an import's page's first tab in Duty Guard only:
 // here Duty comes first and fast
@@ -164,22 +152,18 @@ export const CalculatorWorkspace = ({
   const [localTab, setLocalTab] = useState<Exclude<ResultsView, "compare">>(() => {
     const view = LOCAL_VIEWS.find((v) => v === searchParams.get("view"));
     // Older links to Changes open on its first part
-    return view === "changes" ? "history" : (view ?? "duty");
+    return view ? (viewOf(view) as Exclude<ResultsView, "compare">) : "duty";
   });
   const ownTab: ResultsView = f.view === "compare" ? "compare" : localTab;
-  const tab: ResultsView = hostTab ? hostViewOf(hostTab) : ownTab;
+  const tab: ResultsView = hostTab ? viewOf(hostTab) : ownTab;
   useEffect(() => {
     if (searchParams.get("view") === "analysis") f.changeView("compare", true);
-    if (hostTab && searchParams.get("view") === "adcvd") showAdcvd();
     // Once, on arrival
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const changeTab = (asked: ResultsTab) => {
-    if (onTabChange) {
-      if (asked === "adcvd") showAdcvd();
-      return onTabChange(hostViewOf(asked));
-    }
-    const next = asked === "changes" ? "history" : asked;
+    if (onTabChange) return onTabChange(viewOf(asked));
+    const next = viewOf(asked);
     if (next !== "compare") setLocalTab(next);
     // The address says Compare only while it's open
     f.changeView(next === "compare" ? "compare" : "detailed");
@@ -643,21 +627,10 @@ export const CalculatorWorkspace = ({
                     </aside>
                   )}
                 </CardRow>
-                {/* An import's page in Duty Guard: AD/CVD, the rest of the duty, its check's own modules
-                    (each says what it found). The anchor the line under the totals scrolls to: on the
-                    ground, taking no room */}
-                {hostTab && !signedOut && (
-                  <>
-                    <div data-plain id="adcvd-check" className="-mb-module scroll-mt-4">
-                      <span className="sr-only">AD/CVD check</span>
-                    </div>
-                    <AdcvdTab code={selectedElement.htsno} country={country.code} page={page} customsValue={f.customsValue} dutyUsd={result.totalDuty} />
-                  </>
-                )}
               </>
             )}
 
-            {(tab === "history" || tab === "changes") && (
+            {tab === "history" && (
               // The history and every change in it, with a free account. On /duty-calculator, alerts
               // on this import in the heading; in Duty Guard, the refund check in the heading
               <AccountGate
@@ -680,7 +653,7 @@ export const CalculatorWorkspace = ({
               <AdcvdTab code={selectedElement.htsno} country={country.code} page={page} customsValue={f.customsValue} dutyUsd={result.totalDuty} redirect={unlockRedirect("adcvd")} />
             )}
 
-            {(tab === "news" || tab === "changes") && (
+            {tab === "news" && (
               <NewsTab
                 code={selectedElement.htsno}
                 country={country.code}

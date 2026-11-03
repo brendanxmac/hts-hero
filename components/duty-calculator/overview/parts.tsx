@@ -328,7 +328,7 @@ export const RateSources = ({ o, colors, canSee, onLocked }: { o: Overview; colo
           <li key={c.code} className="grid grid-cols-[0.75rem_4.5rem_minmax(0,1fr)] items-baseline gap-x-3 border-t border-base-300 py-3 first:border-t-0 first:pt-0">
             {/* Part color (DESIGN_SYSTEM §10) */}
             <span className="h-3 w-3 self-center rounded-xs" style={{ background: colors[c.slice] }} aria-hidden />
-            <span className={`${tt.display} text-xl font-semibold tabular-nums text-base-content`}>{pct(c.pct)}</span>
+            <span className={`${tt.display} self-center text-xl font-semibold tabular-nums text-base-content`}>{pct(c.pct)}</span>
             <span className="min-w-0">
               <span className="block font-semibold text-base-content">{c.name}</span>
               {canSee && <span className="block text-sm text-base-content/70">{c.why}</span>}

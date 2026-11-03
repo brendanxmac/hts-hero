@@ -19,6 +19,7 @@ import { openFeatureTour } from "../onboarding/tour/tourStore";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { NavMeta, useNavMeta } from "./useNavMeta";
 import { useTrackerNav } from "./TrackerNav";
+import { FLOW_SLOT_ID } from "./FlowPage";
 import { useHomeWaitsForImports } from "./useNoImportsYet";
 
 // Duty Guard as an app (DESIGN_SYSTEM.md §15): a floating sidebar, dark in both modes,
@@ -269,14 +270,19 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
 
       {/* The one scroller: positioned, so what's absolutely positioned inside scrolls (and is
           clipped) with it */}
-      <main className="relative min-h-0 min-w-0 flex-1 overflow-y-auto">
-        <div className="px-4 pt-4 empty:hidden sm:px-6 lg:px-2 lg:pt-0">
-          <FinishSetupBanner />
-          <PlanBanner />
-          <TrialDialog />
-        </div>
-        {children}
-      </main>
+      <div className="relative flex min-h-0 min-w-0 flex-1">
+        <main className="relative min-h-0 min-w-0 flex-1 overflow-y-auto">
+          <div className="px-4 pt-4 empty:hidden sm:px-6 lg:px-2 lg:pt-0">
+            <FinishSetupBanner />
+            <PlanBanner />
+            <TrialDialog />
+          </div>
+          {children}
+        </main>
+        {/* A flow open over the content, beside the sidebar (FlowPage: the entry audit, the
+            savings review); empty, it isn't there */}
+        <div id={FLOW_SLOT_ID} className="absolute inset-0 z-30 empty:hidden" />
+      </div>
     </div>
   );
 };

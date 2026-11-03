@@ -8,8 +8,6 @@ import * as tt from "@/components/ui/styles/tracker";
 import { TabBar } from "@/components/ui/TabBar";
 import { TrackedProduct } from "../report";
 import { ProductTab, ProductView } from "../sections";
-import { useInsights } from "../insights/InsightsContext";
-import { formatRate } from "../formatRate";
 import { AlertsToggle } from "./AlertsToggle";
 import { AdcvdChip } from "@/components/adcvd/AdcvdChip";
 import { useAdcvdFlagged } from "@/components/adcvd/AdcvdTeasers";
@@ -20,15 +18,8 @@ import { useNewsCount } from "@/components/duty-calculator/news/NewsTab";
 // reset, remove) along the top, then what it is (flag, HTS code, country of origin, description)
 // with, on the calculator's views, the fields that can change (value, date, mode) beside it, then
 // its views as one row of tabs along the bottom edge, each with what's waiting on it. It scrolls away with the page, so it
-// never takes up room while reading a view. Duty, Compare and History are the calculator's own
-// tabs, so the calculator shows none of its own here.
-
-// What a savings check found on it, or would find: the most one option takes off a shipment
-const useBestSaving = (key: string) => {
-  const insights = useInsights();
-  if (insights.unlocked.has(key)) return Math.max(0, ...(insights.savings.get(key) ?? []).map((s) => s.usd));
-  return insights.lockedBest.get(key) ?? 0;
-};
+// never takes up room while reading a view. Duty, History, Compare, AD/CVD Cases and News are the
+// calculator's own tabs, so the calculator shows none of its own here.
 
 export const ProductHeader = ({
   row,
@@ -38,6 +29,7 @@ export const ProductHeader = ({
   onRemove,
   onReset,
   inputs,
+  inputsHidden = false,
   actions,
   historyChanges = 0,
 }: {
@@ -50,23 +42,27 @@ export const ProductHeader = ({
   onReset?: () => void;
   // The fields that can change (value, date, mode), beside what it is, on the calculator's views
   inputs?: ReactNode;
+  // Off the calculator's views (Savings, Audits): the fields stay, unseen, so the header keeps its height
+  inputsHidden?: boolean;
   // Before alerts and remove (Share)
   actions?: ReactNode;
-  // How many times its rates changed, on the History tab
+  // How many times its rates changed, counted on the History tab
   historyChanges?: number;
 }) => {
   const { entry } = row;
-  const saving = useBestSaving(row.key);
   const adcvd = useAdcvdFlagged(entry.element.htsno, entry.country.code);
   const news = useNewsCount(entry.element.htsno, entry.country.code);
-  // Each view, with what's waiting on it: AD/CVD on Duty (it's duty too), the changes and news on
-  // Changes, savings found (always "up to", as a rate); Audits marked Beta
-  const tabs: { id: ProductView; label: string; count?: number; badge?: string; badgeTone?: "success" | "warning" | "neutral" }[] = [
+  // The calculator's tabs, with what's waiting on each as it shows them there (the changes on
+  // History, a warning on AD/CVD Cases when a case may apply, the news on News), then Savings and
+  // Audits, both marked Beta
+  const tabs: { id: ProductView; label: string; count?: number; badge?: string; badgeTone?: "success" | "warning" | "neutral"; warn?: boolean }[] = [
     { id: "overview", label: "Overview" },
-    { id: "duty", label: "Duty", badge: adcvd ? "AD/CVD may apply" : undefined, badgeTone: "warning" },
+    { id: "duty", label: "Duty" },
+    { id: "history", label: "History", count: historyChanges || undefined },
     { id: "compare", label: "Compare" },
-    { id: "changes", label: "Changes", count: historyChanges + (news ?? 0) || undefined },
-    { id: "savings", label: "Savings", badge: saving > 0.005 ? `Up to −${formatRate((saving / row.customsValue) * 100)}` : undefined, badgeTone: "success" },
+    { id: "adcvd", label: "AD/CVD Cases", warn: !!adcvd },
+    { id: "news", label: "News", count: news || undefined },
+    { id: "savings", label: "Savings", badge: "Beta", badgeTone: "warning" },
     { id: "audit", label: "Audits", badge: "Beta", badgeTone: "warning" },
   ];
   return (
@@ -110,7 +106,11 @@ export const ProductHeader = ({
               </p>
             </div>
           </div>
-          {inputs && <div className="w-full lg:w-auto lg:min-w-120 lg:max-w-160 lg:flex-1">{inputs}</div>}
+          {inputs && (
+            <div className={`w-full lg:w-auto lg:min-w-120 lg:max-w-160 lg:flex-1 ${inputsHidden ? "invisible" : ""}`} aria-hidden={inputsHidden || undefined} inert={inputsHidden || undefined}>
+              {inputs}
+            </div>
+          )}
         </div>
       </div>
       {/* Its views, as pills at the foot of the header card */}

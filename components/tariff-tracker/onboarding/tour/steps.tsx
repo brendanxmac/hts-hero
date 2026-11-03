@@ -45,7 +45,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: "welcome",
     rail: "Welcome",
     title: "Eliminate Tariff Overpayments and Surprises",
-    lead: "HTS Hero watches every tariff on the products you import, around the clock, so you hear about changes before they cost you and find duty you may have overpaid.",
+    lead: "Duty Guard watches every tariff on the products you import, around the clock, so you hear about changes before they cost you and find duty you may have overpaid.",
     how: [
       <>
         <B>Alerts</B> the day a new tariff affects your products, with the rate before and after.
@@ -111,7 +111,7 @@ export const TOUR_STEPS: TourStep[] = [
     how: [
       <>Search by code, product or country, or filter by origin, tariff or alerts.</>,
       <>
-        Click an import to open it. <B>Duty</B> shows every tariff that adds up to its rate; <B>Changes</B> shows what moved and when.
+        Click an import to open it. <B>Duty</B> shows every tariff that adds up to its rate; <B>History</B> shows what moved and when.
       </>,
       <>
         Select rows to turn alerts on or off or remove them, and use <B>Export</B> for Excel or CSV.
@@ -132,7 +132,7 @@ export const TOUR_STEPS: TourStep[] = [
         Look for the amber <B>AD/CVD</B> chip on an import in Your Imports.
       </>,
       <>
-        Open the import. Its <B>Duty</B> tab says <B>AD/CVD may apply</B>; click <B>Check the cases</B>.
+        Open the import. Its <B>AD/CVD Cases</B> tab is marked when a case may apply; open it, or click <B>Check the cases</B> on <B>Duty</B>.
       </>,
       <>
         Answer the <B>AD/CVD Check</B>: whether it&apos;s the product the case covers, and who made and exported it. The rate depends on the exporter.
@@ -150,13 +150,21 @@ export const TOUR_STEPS: TourStep[] = [
     id: "savings",
     rail: "Savings",
     title: "Find ways to pay less duty",
-    lead: "We check every import for duty you may not need to pay, and rank what could save the most.",
+    lead: "We check every import for duty you may not need to pay. A short review on each one tells you which savings you may qualify for.",
     how: [
-      <>Nothing to set up: it runs on the imports you&apos;ve already added.</>,
       <>
-        Open <B>Savings</B> to see trade programs you may qualify for, exclusions worth checking and cheaper countries of origin.
+        Open <B>Savings</B> to see which imports could pay less, then open one. Or open any import and go to its <B>Savings</B> tab.
       </>,
-      <>Each finding says what it would take, ready to talk through with your broker.</>,
+      <>
+        Click <B>Start Savings Review</B>. It asks one question at a time about your goods, with the rule each one turns on: answer <B>No</B> or{" "}
+        <B>Yes, pursue it</B>.
+      </>,
+      <>
+        It covers <B>Trade Programs</B> and <B>Exemptions</B> (same supplier, same country), then <B>Other Countries</B> if you want to look further.
+      </>,
+      <>
+        The <B>Summary</B> shows what you could save and the next step for each. Once your broker confirms it, <B>Mark secured</B> to apply the lower rate to your import.
+      </>,
     ],
     action: "Open Savings",
     tab: "savings",
@@ -167,13 +175,20 @@ export const TOUR_STEPS: TourStep[] = [
     id: "audits",
     rail: "Audits",
     title: "Check every entry against the rate that applied",
-    lead: "Upload your entry summaries, and we'll compare the duty you paid with the rates in force that day.",
+    lead: "Enter a past entry, and we'll compare the duty you paid with the duty in force on its entry date.",
     how: [
       <>
-        Open <B>Audits</B> and upload your entry summaries (7501s).
+        Open <B>Audits</B> and click <B>Audit an Entry</B>, or use the <B>Audits</B> tab on any import.
       </>,
-      <>We check every line against the rates in force on its entry date, exclusions included.</>,
-      <>You get a clear report: entries that may have overpaid, and any underpayments to fix, ready for your broker.</>,
+      <>
+        Type in the entry from your entry summary: its date, number and value, then the <B>Duty Paid</B>. Reading a 7501 upload is coming soon.
+      </>,
+      <>
+        Check the <B>Adjustments</B> (what applied to it, like a trade program) and the <B>AD/CVD</B> step, then click <B>Finish</B>.
+      </>,
+      <>
+        The <B>Results</B> put <B>You Paid</B> beside <B>We Calculated</B>, with every charge and its rate. Past audits stay on the list; open one to see its results again.
+      </>,
     ],
     action: "Open Audits",
     tab: "entries",

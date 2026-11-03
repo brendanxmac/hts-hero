@@ -11,7 +11,7 @@ import { formatDate } from "../../duty-calculator/lib/format";
 import { money, VERDICTS } from "./EntriesTable";
 import { AuditRow } from "./useAuditRows";
 
-// Before an audited entry is deleted (EntriesTable's trash button): which one, as it reads in the
+// Before an audited entry is deleted ("Delete this audit" in its results): which one, as it reads in the
 // table (when, what, paid and owed, the result), so the right one goes, and that it can't be undone.
 // Portals out of Duty Guard, so it carries Duty Guard's look itself (DESIGN_SYSTEM §15).
 

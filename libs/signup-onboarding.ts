@@ -97,6 +97,7 @@ export const onboardingNext = (
 export const COMPANY_TYPES = [
   { id: "customs_broker", label: "Customs Brokerage" },
   { id: "freight_forwarder", label: "Freight Forwarder" },
+  { id: "logistics", label: "Logistics" },
   { id: "ecommerce", label: "Ecommerce" },
   { id: "manufacturing", label: "Manufacturing" },
   { id: "other", label: "Other" },

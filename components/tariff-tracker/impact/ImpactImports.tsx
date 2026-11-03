@@ -195,7 +195,7 @@ const whyOf = (impact: ImportImpact, product: TrackedProduct, scope: UpdateScope
 
 // One import: everything about what the action does to it in the row itself (why it's here, its
 // tariffs before and after, each duty line the action adds, ends or moves, and the change). The row
-// opens the import, on the tab where this action shows: Changes for a confirmed change, AD/CVD for a
+// opens the import, on the tab where this action shows: History for a confirmed change, AD/CVD for a
 // case, Duty for the rest (an answer to give, or a rate still to come).
 const Row = ({ r, colors, maxPct, today, adcvd }: { r: RowData; colors: Record<string, string>; maxPct: number; today: string; adcvd: boolean }) => {
   const { openProduct } = useTrackerNav();
@@ -203,7 +203,7 @@ const Row = ({ r, colors, maxPct, today, adcvd }: { r: RowData; colors: Record<s
   const confirmed = impact.level === "confirmed";
   const future = confirmed && !!impact.date && impact.date > today;
   const delta = rateChange(impact);
-  const tab: ProductTab = adcvd ? "adcvd" : confirmed && impact.reason !== "ban" ? "changes" : "duty";
+  const tab: ProductTab = adcvd ? "adcvd" : confirmed && impact.reason !== "ban" ? "history" : "duty";
   return (
     <li className="border-t border-base-300 first:border-t-0">
       <a

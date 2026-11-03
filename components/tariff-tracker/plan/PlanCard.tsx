@@ -5,7 +5,6 @@ import Link from "next/link";
 import config from "@/config";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { CheckBadgeIcon } from "@heroicons/react/20/solid";
 import { formatPrice, perImportPrice, REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { ALERT_PLANS, AUDIT_PLANS, hasAudits, planFitting, trackerPlanFor } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "../access/accessContext";
@@ -19,7 +18,7 @@ import { openImportTakeover } from "../onboarding/takeoverStore";
 // - signed out: save the imports with a free account
 // - signed in, no imports yet: add them to try it free (the trial isn't mentioned until it runs)
 // - on the trial: the days left, as a ring that drains, and the plan that keeps everything
-// - paid: the plan and how full it is; full, the way to a bigger one (Stripe's billing portal);
+// - paid: the plan and when it renews; full, the way to a bigger one;
 //   cancelled or a payment failed, what happens and the way to fix it
 // - a plan or trial that ended: what the imports lost, and the way back
 
@@ -178,7 +177,6 @@ export const PlanCard = () => {
     const plan = trackerPlanFor(access.paidPlan!);
     // Every alert slot in use: the next plan up that fits the catalog (or just the next one up)
     const full = trackedKeys.size >= access.pairLimit;
-    const room = Math.max(0, access.pairLimit - trackedKeys.size);
     const bigger = (hasAudits(access) ? AUDIT_PLANS : ALERT_PLANS).filter((p) => p.maxPairs > access.pairLimit);
     const next = bigger.find((p) => imports <= p.maxPairs) ?? bigger[0];
     const cancelsAt = shortDate(subscription?.cancelsAt);
@@ -203,16 +201,6 @@ export const PlanCard = () => {
             Up to {n(plan?.maxPairs ?? access.pairLimit)} products{renews ? ` · Renews ${renews}` : ""}
           </span>
         </div>
-        {imports > 0 && (
-          <Usage
-            label="Products with alerts"
-            value={withAlerts}
-            max={access.pairLimit}
-            tone={full ? "bg-warning" : "bg-success"}
-            valueTone={full ? "text-warning" : "text-base-content"}
-          />
-        )}
-
         {unpaid ? (
           // Stripe is retrying a failed payment; the plan ends if none goes through
           <>
@@ -263,28 +251,20 @@ export const PlanCard = () => {
               </a>
             )}
           </>
-        ) : off > 0 && moreToTrack > 0 ? (
-          // Room on the plan for imports without alerts
-          <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={trackMore}>
-            Turn on alerts for {n(moreToTrack)} more
-          </button>
         ) : (
-          <span className="flex items-start gap-2 text-sm leading-snug text-base-content">
-            <CheckBadgeIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
-            <span>
-              <span className="font-semibold">{off === 0 ? `All ${n(imports)} imports covered.` : "Alerts are on where you want them."}</span>{" "}
-              <span className="text-base-content/70">Room for {n(room)} more.</span>
-            </span>
-          </span>
+          off > 0 &&
+          moreToTrack > 0 && (
+            // Room on the plan for imports without alerts
+            <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={trackMore}>
+              Turn on alerts for {n(moreToTrack)} more
+            </button>
+          )
         )}
         {!unpaid && !cancelsAt && (
           <button type="button" className={TEXT_BUTTON} onClick={() => openUpgrade("plan")}>
             {hasAudits(access) ? "Change plan" : "Upgrade to Duty Guard Pro"}
           </button>
         )}
-        <button type="button" className={TEXT_BUTTON} onClick={() => openBillingPortal()}>
-          Manage billing
-        </button>
       </>
     );
   }

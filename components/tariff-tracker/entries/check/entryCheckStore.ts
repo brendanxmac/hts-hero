@@ -35,8 +35,10 @@ export const openEntryCheck = (fixedKey: string | null, productKey: string) =>
     draft: state.draft.productKey === productKey || (!fixedKey && state.draft.productKey && state.fixedKey === null) ? state.draft : emptyDraft(productKey),
   });
 // Opens a saved entry's Review; the draft in progress is kept for the next "Audit an Entry"
-export const openEntryReview = (entryId: string) => update({ open: true, reviewId: entryId });
-export const closeEntryCheck = () => update({ open: false, reviewId: null });
+export const openEntryReview = (entryId: string) => update({ open: true, fixedKey: null, reviewId: entryId });
+// Closing while changing a saved entry drops the changes, so the next audit starts fresh
+export const closeEntryCheck = () =>
+  update({ open: false, reviewId: null, draft: state.draft.editingId ? emptyDraft(state.draft.productKey) : state.draft });
 export const setEntryDraft = (draft: EntryDraft) => update({ draft });
 export const resetEntryDraft = () => update({ draft: emptyDraft(state.draft.productKey) });
 
