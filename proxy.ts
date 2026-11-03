@@ -39,6 +39,13 @@ export async function proxy(req: NextRequest) {
     }
   }
 
+  // Public pages that are built once and cached never read the visitor's session on the server,
+  // and the browser's Supabase client refreshes its own token, so they skip the refresh (a
+  // Supabase round trip on every page view, prefetch and crawler hit, which ran up the Vercel bill)
+  if (isPublicStaticPath(pathname)) {
+    return NextResponse.next()
+  }
+
   const IS_TEST_ENV = process.env.APP_ENV === "test"
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
@@ -96,6 +103,24 @@ export async function proxy(req: NextRequest) {
   return response
 }
 
+// The SEO pages: HTS codes, chapters and sections, the blog, comparisons, tariff program hubs and
+// the calculator's country pages. Crons authenticate with their own secret
+function isPublicStaticPath(pathname: string): boolean {
+  if (pathname.startsWith("/tariffs/impact-checker")) return false
+  return (
+    pathname.startsWith("/hts/") ||
+    pathname.startsWith("/chapter/") ||
+    pathname.startsWith("/section/") ||
+    pathname === "/blog" ||
+    pathname.startsWith("/blog/") ||
+    pathname.startsWith("/compare/") ||
+    pathname === "/tariffs" ||
+    pathname.startsWith("/tariffs/") ||
+    pathname.startsWith("/duty-calculator/") ||
+    pathname.startsWith("/api/cron/")
+  )
+}
+
 export const config = {
   matcher: [
     /*
@@ -103,9 +128,10 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - video files (mp4, webm, mov)
+     * - images, videos, feeds, sitemaps, robots.txt, llms.txt, CSVs and the web manifest
+     * - social share images (opengraph-image)
      * Feel free to modify this pattern to include more paths.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|mov)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*opengraph-image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|xml|txt|csv|webmanifest|mp4|webm|mov)$).*)",
   ],
 }

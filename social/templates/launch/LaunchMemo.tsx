@@ -92,7 +92,7 @@ const Memo = ({ theme, to, subject, line1, line2, line3, date }: LaunchMemoProps
       style={{
         position: "absolute",
         inset: 0,
-        background: `radial-gradient(${1000 * u}px ${900 * u}px at 50% 40%, ${theme === "dark" ? "#1A1C24" : "#DADDE6"}, ${p.ground} 100%)`,
+        background: p.ground,
         display: "flex",
         flexDirection: "column",
         padding: `${pad + safeTop}px ${pad}px ${pad * 0.7 + safeBottom}px`,

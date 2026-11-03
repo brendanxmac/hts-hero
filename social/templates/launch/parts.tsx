@@ -34,8 +34,7 @@ export const LaunchFrame = ({ theme, pill, foot, children }: { theme: Theme; pil
       style={{
         position: "absolute",
         inset: 0,
-        // A soft cobalt glow from the top, sized in design units so it reads the same in every format
-        background: `radial-gradient(${1100 * u}px ${700 * u}px at 50% 0%, ${alpha(p.cobalt, theme === "dark" ? 0.2 : 0.1)}, ${p.ground} 100%)`,
+        background: p.ground,
         color: p.text,
         fontFamily: sans,
         display: "flex",
