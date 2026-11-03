@@ -160,14 +160,14 @@ export const TrackerOnboarding = () => {
   useEffect(() => {
     if (!open) return;
     setAt(0);
-    trackEvent(MixpanelEvent.TRACKER_WELCOME_SHOWN, { focus });
+    trackEvent(MixpanelEvent.DUTY_GUARD_WELCOME_SHOWN, { focus });
   }, [open]);
   useEffect(() => {
-    if (open) trackEvent(MixpanelEvent.TRACKER_WELCOME_STEP, { step: page.id, index: at + 1, of: pages.length, focus });
+    if (open) trackEvent(MixpanelEvent.DUTY_GUARD_WELCOME_STEP, { step: page.id, index: at + 1, of: pages.length, focus });
   }, [open, at]);
 
   const skip = () => {
-    trackEvent(MixpanelEvent.TRACKER_WELCOME_SKIPPED, { step: page.id, focus });
+    trackEvent(MixpanelEvent.DUTY_GUARD_WELCOME_SKIPPED, { step: page.id, focus });
     closeTrackerOnboarding();
   };
   useEscapeToClose(open, skip);
@@ -187,7 +187,7 @@ export const TrackerOnboarding = () => {
 
   // Straight into the import flow: it opens as this closes, so nothing shows in between
   const addImports = () => {
-    trackEvent(MixpanelEvent.TRACKER_WELCOME_ADD_IMPORTS, { focus });
+    trackEvent(MixpanelEvent.DUTY_GUARD_WELCOME_ADD_IMPORTS, { focus });
     openImportTakeover("onboarding", "hook");
     closeTrackerOnboarding();
   };

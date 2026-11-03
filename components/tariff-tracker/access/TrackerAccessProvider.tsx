@@ -3,7 +3,7 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useUser } from "@/contexts/UserContext";
-import { MixpanelEvent, registerMixpanelSuperProperties, trackEvent, trackEventOnce } from "@/libs/mixpanel";
+import { MixpanelEvent, registerMixpanelSuperProperties, setUserProperties, trackEvent } from "@/libs/mixpanel";
 import {
   ANONYMOUS_ACCESS,
   canSpendCheck,
@@ -19,7 +19,7 @@ import {
   trialNotStarted,
 } from "@/libs/tariff-tracker/plan";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
-import { TrackerAccessContext, TrackerAccessValue } from "./accessContext";
+import { TrackerAccessContext, TrackerAccessValue, UpgradeTrigger } from "./accessContext";
 import { PREMIUM_FEATURES, PremiumFeature } from "./features";
 import { currentPath, signupHref } from "./signup";
 import { LimitDialog } from "./LimitDialog";
@@ -74,19 +74,12 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
     };
   }, [userId, userLoading, load]);
 
-  // On every event after this: the account's Duty Guard plan, to split any report by plan. And the
-  // trial's start, counted once when the access shows it began in the last hour (the database
-  // starts it with the first real imports, wherever they were added)
+  // On every event after this, and on the profile: the account's Duty Guard plan, to split any
+  // report by plan. Trial Started and Trial Ended are sent by the server (libs/tariff-tracker/trialEvents.ts)
   useEffect(() => {
     if (!userId || loading || access.preview) return;
     registerMixpanelSuperProperties({ tracker_plan: access.kind, is_paying: isPaid(access) });
-    if (!access.trialEndsAt) return;
-    const started = new Date(access.trialEndsAt).getTime() - REVERSE_TRIAL.days * 24 * 60 * 60 * 1000;
-    if (Date.now() - started < 60 * 60 * 1000) {
-      trackEventOnce(`tracker-trial-started:${userId}`, MixpanelEvent.TARIFF_TRACKER_TRIAL_STARTED, {
-        trial_ends_at: access.trialEndsAt,
-      });
-    }
+    setUserProperties({ tracker_plan: access.kind, is_paying: isPaid(access), paid_plan: access.paidPlan ?? null });
   }, [userId, loading, access]);
 
   // Back from Stripe checkout (or a plan change): the webhook may land a moment after the redirect, so look twice
@@ -124,9 +117,12 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
 
   const value: TrackerAccessValue = useMemo(() => {
     const signedIn = Boolean(userId);
-    const openUpgrade = (feature: PremiumFeature) => {
+    // Upgrade Opened is the plans dialog on screen; at the limit, the limit dialog comes first
+    // (its "See plans" opens the plans)
+    const openUpgrade = (feature: PremiumFeature, trigger: UpgradeTrigger = "user") => {
       setDialog({ feature, open: true });
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature, plan: access.kind, trigger: "user" });
+      if (feature === "limit") trackEvent(MixpanelEvent.DUTY_GUARD_LIMIT_DIALOG_SHOWN, { plan: access.kind, pair_limit: access.pairLimit });
+      else trackEvent(MixpanelEvent.DUTY_GUARD_UPGRADE_OPENED, { feature, plan: access.kind, trigger });
     };
     const toSignup = () => (window.location.href = signupHref(currentPath()));
 
@@ -137,7 +133,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
       }
       if (freeCheck(access, kind, ref)) return true;
       if (!canSpendCheck(access, kind, ref)) {
-        trackEvent(MixpanelEvent.TARIFF_TRACKER_ALLOWANCE_USED_UP, { kind, feature });
+        trackEvent(MixpanelEvent.DUTY_GUARD_ALLOWANCE_USED_UP, { kind, feature });
         openUpgrade(feature);
         return false;
       }
@@ -155,7 +151,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
           return false;
         }
         setAccess(body);
-        trackEvent(MixpanelEvent.TARIFF_TRACKER_CHECK_SPENT, { kind, feature, left: checksLeft(body, kind) });
+        trackEvent(MixpanelEvent.DUTY_GUARD_CHECK_SPENT, { kind, feature, left: checksLeft(body, kind) });
         return true;
       } catch {
         toast.error("Couldn't run that check. Please try again.");
@@ -206,7 +202,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
       );
     }
     // A Duty Guard Pro plan has it all; an alerts plan can still move up (the upsell emails land here)
-    if (upgrade && !(value.paid && hasAudits(value.access))) value.openUpgrade(upgrade in PREMIUM_FEATURES ? (upgrade as PremiumFeature) : "plan");
+    if (upgrade && !(value.paid && hasAudits(value.access))) value.openUpgrade(upgrade in PREMIUM_FEATURES ? (upgrade as PremiumFeature) : "plan", "link");
   }, [value]);
 
   return (
@@ -218,7 +214,7 @@ export const TrackerAccessProvider = ({ children }: { children: ReactNode }) => 
         access={access}
         onSeePlans={() => {
           setDialog({ feature: "tracking", open: true });
-          trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature: "tracking", from: "limit", plan: access.kind });
+          trackEvent(MixpanelEvent.DUTY_GUARD_UPGRADE_OPENED, { feature: "tracking", from: "limit", plan: access.kind, trigger: "user" });
         }}
         onClose={closeDialog}
       />

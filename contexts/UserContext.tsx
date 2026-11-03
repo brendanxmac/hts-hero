@@ -5,9 +5,13 @@ import { User } from "@supabase/supabase-js";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import {
   identifyUser,
+  MixpanelEvent,
   registerMixpanelSuperProperties,
   resetUser,
+  setUserPropertiesOnce,
+  trackEvent,
 } from "@/libs/mixpanel";
+import { readFirstTouch } from "@/libs/signup-onboarding";
 
 interface UserContextType {
   user: User | null;
@@ -57,6 +61,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           created_at: user.created_at,
         });
         registerMixpanelSuperProperties({ is_anonymous: false });
+        // Where this person first came from, on their profile: so the server's Sign Up and
+        // Purchase Completed can be broken down by source (only the first value is kept)
+        const touch = readFirstTouch();
+        if (touch)
+          setUserPropertiesOnce({
+            first_landing_path: touch.landing_path,
+            first_referring_domain: touch.referring_domain,
+            first_utm_source: touch.utm_source,
+            first_utm_medium: touch.utm_medium,
+            first_utm_campaign: touch.utm_campaign,
+            first_utm_term: touch.utm_term,
+            first_utm_content: touch.utm_content,
+            first_seen_at: touch.at,
+          });
       } else {
         registerMixpanelSuperProperties({ is_anonymous: true });
       }
@@ -72,6 +90,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      trackEvent(MixpanelEvent.SIGNED_OUT);
       setUser(null);
       setError(null);
 

@@ -14,6 +14,7 @@ import { useOpportunities } from "../../opportunities/OpportunitiesContext";
 import { OpportunityStatus } from "../../opportunities/statuses";
 import { TrackedProduct } from "../../report";
 import { Ask, Compare } from "./OptionReview";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { itemName, KIND_ORDER, ListItem, undecided, useSavingsItems } from "./useSavingsItems";
 
 // The savings review, one question at a time (2026-11-02), like the entry audit, in Duty Guard's
@@ -515,6 +516,17 @@ export const SavingsReview = ({ product, start, onClose }: { product: TrackedPro
   );
   // Other countries open on the question of whether to look at all, unless opened on one of them
   const [gate, setGate] = useState(!start?.id && start?.at === undefined);
+  // The review opened, and reaching its summary (once each per opening)
+  const reported = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (loading) return;
+    const name = step === "summary" ? "summary" : reported.current.size === 0 ? "opened" : null;
+    if (!name || reported.current.has(name)) return;
+    reported.current.add(name);
+    const options = items.filter((i) => i.option).length;
+    if (name === "opened") trackEvent(MixpanelEvent.DUTY_GUARD_SAVINGS_REVIEW_OPENED, { options, kinds, step });
+    else trackEvent(MixpanelEvent.DUTY_GUARD_SAVINGS_REVIEW_COMPLETED, { options, open: items.filter((i) => i.option && (i.opportunity?.status ?? "found") === "found").length });
+  }, [loading, step, items, kinds]);
   const scroller = useRef<HTMLDivElement>(null);
   // Answers given here, ahead of their saves: the review moves on at once and goes by these
   const [answers, setAnswers] = useState<Map<string, OpportunityStatus>>(() => new Map());

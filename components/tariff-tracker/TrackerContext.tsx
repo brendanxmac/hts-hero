@@ -115,36 +115,36 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
       const timerKey = `${key}:${field}`;
       clearTimeout(adjustTimers.current[timerKey]);
       adjustTimers.current[timerKey] = setTimeout(
-        () => trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCT_ADJUSTED, { field }),
+        () => trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCT_ADJUSTED, { field }),
         1000
       );
     });
   };
   const resetAdjustments = (key: string) => {
     store.resetProductAdjustments(key);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ADJUSTMENTS_RESET);
+    trackEvent(MixpanelEvent.DUTY_GUARD_ADJUSTMENTS_RESET);
   };
 
   const addProducts = (incoming: NewProduct[], source: AddSource) => {
     // The example list is marked, so it never counts as the user's imports (realItems)
     const { added, duplicates, withAdjustments } = store.addToCatalog(source === "example" ? incoming.map((p) => ({ ...p, example: true as const })) : incoming);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, { added, duplicates, source, with_adjustments: withAdjustments });
+    trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates, source, with_adjustments: withAdjustments });
     return { added, duplicates };
   };
 
   const removeProducts = (keys: string[]) => {
     store.removeFromCatalog(keys);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_REMOVED, { removed: keys.length });
+    trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_REMOVED, { removed: keys.length });
   };
   const clearCatalog = () => {
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_REMOVED, { removed: items.length, cleared: true });
+    trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_REMOVED, { removed: items.length, cleared: true });
     store.clearCatalog();
   };
 
   const [filters, setFilters] = useState<FilterState>({});
   const setFilter = (id: string, values: string[]) => {
     setFilters((prev) => ({ ...prev, [id]: values }));
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_FILTERED, { filter: id, values: values.length });
+    trackEvent(MixpanelEvent.DUTY_GUARD_FILTERED, { filter: id, values: values.length });
   };
   const clearFilters = () => setFilters({});
   const replaceFilters = (next: FilterState) => setFilters(Object.fromEntries(Object.entries(next).filter(([, v]) => v?.length)));
@@ -155,10 +155,10 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   const setEntryDate = (date: string, source?: string) => {
     setEntryDateState(date);
     clearTimeout(dateTimer.current);
-    if (source) trackEvent(MixpanelEvent.TARIFF_TRACKER_DATE_SET, { entry_date: date, source });
+    if (source) trackEvent(MixpanelEvent.DUTY_GUARD_DATE_SET, { entry_date: date, source });
     else {
       dateTimer.current = setTimeout(
-        () => trackEvent(MixpanelEvent.TARIFF_TRACKER_DATE_SET, { entry_date: date }),
+        () => trackEvent(MixpanelEvent.DUTY_GUARD_DATE_SET, { entry_date: date }),
         1000
       );
     }
@@ -232,7 +232,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
     // The first choice keeps what was picked automatically, with this one changed
     if (!chosen) store.setProductsCovered({ ...Object.fromEntries(Array.from(trackedKeys, (k) => [k, true])), [key]: covered });
     else store.setProductCovered(key, covered);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_COVERAGE_CHANGED, { covered, picked: trackedKeys.size + (covered ? 1 : -1), limit: access.pairLimit });
+    trackEvent(MixpanelEvent.DUTY_GUARD_COVERAGE_CHANGED, { covered, picked: trackedKeys.size + (covered ? 1 : -1), limit: access.pairLimit });
     return true;
   };
   const trackedProducts = useMemo(() => products.filter((p) => trackedKeys.has(p.key)), [products, trackedKeys]);
@@ -253,7 +253,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
     const on = Object.fromEntries(keys.map((k) => [k, true]));
     // The first choice keeps what was picked automatically
     store.setProductsCovered(chosen ? on : { ...Object.fromEntries(Array.from(trackedKeys, (k) => [k, true])), ...on });
-    if (track) trackEvent(MixpanelEvent.TARIFF_TRACKER_COVERAGE_CHANGED, { covered: true, added: keys.length, picked: trackedKeys.size + keys.length, limit: access.pairLimit });
+    if (track) trackEvent(MixpanelEvent.DUTY_GUARD_COVERAGE_CHANGED, { covered: true, added: keys.length, picked: trackedKeys.size + keys.length, limit: access.pairLimit });
     return keys.length;
   };
   // Also a click handler, so it takes no arguments

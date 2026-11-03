@@ -111,12 +111,12 @@ export const FindGuide = ({ open, onClose, onPick }: { open: boolean; onClose: (
     } catch {
       // Clipboard blocked: the message is on screen to copy by hand
     }
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, { help: "guide_broker_copy" });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, { help: "guide_broker_copy" });
   };
   const go = (step: TakeoverStep) => {
     onClose();
     onPick(step);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, { help: `guide_${step}` });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, { help: `guide_${step}` });
   };
   const mailto = `mailto:?subject=${encodeURIComponent(BROKER_SUBJECT)}&body=${encodeURIComponent(BROKER_MESSAGE)}`;
   const support = `mailto:${config.resend.supportEmail}?subject=${encodeURIComponent("Help adding my imports")}`;
@@ -190,7 +190,7 @@ export const FindGuide = ({ open, onClose, onPick }: { open: boolean; onClose: (
                 <a
                   href={mailto}
                   className={ui.button({ variant: "secondary", size: "sm" })}
-                  onClick={() => trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, { help: "guide_broker_email" })}
+                  onClick={() => trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, { help: "guide_broker_email" })}
                 >
                   <EnvelopeIcon className="h-4 w-4" aria-hidden />
                   Open in my email

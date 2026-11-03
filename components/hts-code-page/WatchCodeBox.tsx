@@ -27,7 +27,7 @@ export function WatchCodeBox({ htsno, country = "CN" }: { htsno: string; country
     setSaving(true);
     const product = { code: htsCodeDigitsOnly(htsno), country };
     const { added } = addToCatalog([product]);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "hts-watch", hts_code: htsno });
+    trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "hts-watch", hts_code: htsno });
     trackEvent(MixpanelEvent.HTS_CODE_WATCH_SUBMITTED, { hts_code: htsno, country_code: country, signed_in: !!user });
     const landing = withArrival(productUrl(itemKey(product)), "watch");
     if (!user) trackEvent(MixpanelEvent.SIGNUP_CTA_CLICKED, { page: "hts", entry: "hts_page", section: "watch", label: "Track This Code", signed_in: false });

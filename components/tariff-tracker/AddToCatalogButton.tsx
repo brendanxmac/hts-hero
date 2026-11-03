@@ -73,7 +73,7 @@ export const AddToCatalogButton = ({
       title="Save this product to your imports in Duty Guard"
       onClick={() => {
         const { added, withAdjustments } = addToCatalog([product]);
-        trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, {
+        trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, {
           added,
           duplicates: 1 - added,
           source,

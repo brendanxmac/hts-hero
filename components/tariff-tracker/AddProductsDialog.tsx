@@ -112,7 +112,7 @@ const CsvInput = ({
             className={`${ui.link} inline-flex items-center gap-1 text-xs`}
             onClick={() => {
               downloadCsvTemplate();
-              trackEvent(MixpanelEvent.TARIFF_TRACKER_CSV_TEMPLATE_DOWNLOADED, { from: "dialog" });
+              trackEvent(MixpanelEvent.DUTY_GUARD_CSV_TEMPLATE_DOWNLOADED, { from: "dialog" });
             }}
           >
             <ArrowDownTrayIcon className="h-3.5 w-3.5" aria-hidden />

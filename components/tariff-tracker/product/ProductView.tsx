@@ -78,7 +78,7 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
     // Each view opens at its top (Duty Guard's one scroller is its main)
     document.querySelector("main")?.scrollTo({ top: 0 });
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCT_TAB_OPENED, { tab: next });
+    trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCT_TAB_OPENED, { tab: next });
   };
   const f = useTariffFinder({
     path: TRACKER_PATH,
@@ -207,7 +207,7 @@ export const ProductView = ({ productKey }: { productKey: string }) => {
 
   // Counted once per product opened
   useEffect(() => {
-    if (row) trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCT_OPENED, { adjusted: isAdjusted(row.adjustments) });
+    if (row) trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCT_OPENED, { adjusted: isAdjusted(row.adjustments) });
     // Once per product
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productKey, Boolean(row)]);

@@ -47,7 +47,7 @@ export const ArrivalPanel = ({ row, f, onExplore }: { row: TrackedProduct; f: Ta
     }
     if (seen) return;
     setOpen(true);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ARRIVAL_PANEL, { action: "shown", source: source.current });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ARRIVAL_PANEL, { action: "shown", source: source.current });
     void fetch("/api/tracker/watching", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -72,7 +72,7 @@ export const ArrivalPanel = ({ row, f, onExplore }: { row: TrackedProduct; f: Ta
 
   const close = (action: string) => {
     setOpen(false);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ARRIVAL_PANEL, { action, source: source.current });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ARRIVAL_PANEL, { action, source: source.current });
   };
 
   const facts = [

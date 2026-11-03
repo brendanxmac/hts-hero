@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import type { Billing } from "@/components/pricing-calculator/lib/pricing";
 import { TrackerPlan } from "@/libs/tariff-tracker/plan";
 import type { TrackerSubscription } from "@/libs/tariff-tracker/subscription";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 
 // Duty Guard's Stripe billing portal (it switches between Duty Guard plans only). `changePlan` opens
 // it on a plan change: Stripe's confirm page for that plan, or its plan picker for `true`.
@@ -15,6 +16,7 @@ export const openBillingPortal = async (changePlan?: TrackerPlan["plan"] | true,
     body: JSON.stringify({ returnUrl: window.location.href, app: "tracker", changePlan, billing }),
   });
   const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+  trackEvent(MixpanelEvent.DUTY_GUARD_BILLING_PORTAL_OPENED, { change_plan: changePlan ?? null, billing: billing ?? null, ok: Boolean(body.url) });
   if (body.url) window.location.href = body.url;
   else toast.error(body.error ?? "Billing isn't available right now.");
   return Boolean(body.url);

@@ -217,7 +217,7 @@ export const ImportTakeover = () => {
           ? "file"
           : "choose";
     openImportTakeover("link", first);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_SHOWN, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_SHOWN, {
       from: "link",
       asked,
     });
@@ -226,7 +226,7 @@ export const ImportTakeover = () => {
   // Opened from an ask (the empty pages, the plan card, the imports-to-finish banner)
   useEffect(() => {
     if (open && from !== "link")
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_SHOWN, { from });
+      trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_SHOWN, { from });
   }, [open, from]);
 
   // Each step starts at the top, with its title focused for screen readers
@@ -240,7 +240,7 @@ export const ImportTakeover = () => {
           ?.focus({ preventScroll: true }),
       50,
     );
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, { step });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, { step });
     return () => clearTimeout(timer);
   }, [open, step]);
 
@@ -257,7 +257,7 @@ export const ImportTakeover = () => {
     leftAt.current = scroller.current?.scrollTop ?? 0;
     setSkipping(true);
     scroller.current?.scrollTo({ top: 0 });
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
       step: "skip",
       from: step,
     });
@@ -287,7 +287,7 @@ export const ImportTakeover = () => {
     setAddedKeys(products.map(itemKey));
     setTakeoverStep("done");
     // imports: how many were new to the catalog (not the rows submitted, which can repeat ones it has)
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_COMPLETED, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_COMPLETED, {
       method,
       imports: added,
       submitted: products.length,
@@ -301,7 +301,7 @@ export const ImportTakeover = () => {
 
   const skip = (reason: SkipReason | null, note: string) => {
     void save({ action: "skip", reason, note });
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_SKIPPED, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_SKIPPED, {
       reason,
       from: step,
     });
@@ -348,13 +348,13 @@ export const ImportTakeover = () => {
             onFew={() => {
               setFew(true);
               setTakeoverStep("paste");
-              trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, {
+              trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, {
                 help: "few",
               });
             }}
             onRemind={() => {
               void save({ action: "skip", reason: "remind_me" });
-              trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_SKIPPED, {
+              trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_SKIPPED, {
                 reason: "remind_me",
                 from: step,
               });
@@ -374,7 +374,7 @@ export const ImportTakeover = () => {
               closeImportTakeover();
               if (!products.length) return;
               const { added } = addProducts(products, "csv");
-              trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+              trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
                 step: "finish_tracked",
                 imports: added,
                 submitted: products.length,

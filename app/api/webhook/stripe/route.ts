@@ -182,6 +182,17 @@ export async function POST(req: NextRequest) {
           .object as Stripe.Checkout.Session;
         const session = await findCheckoutSession(stripeObject.id);
 
+        // An abandoned checkout, for the account that opened it
+        if (stripeObject.client_reference_id) {
+          const plan = session?.line_items?.data[0]?.price?.id ? await getPlanFromPriceId(session.line_items.data[0].price.id) : null;
+          await trackEventServerAsync(MixpanelEvent.CHECKOUT_ABANDONED, stripeObject.client_reference_id, {
+            $insert_id: `checkout-expired-${stripeObject.id}`,
+            plan: plan ?? null,
+            is_tracker_plan: plan ? isTrackerPlan(plan) : null,
+            amount_usd: (stripeObject.amount_total ?? 0) / 100,
+          });
+        }
+
         if (session) {
           console.log("Session:", session.id);
           console.log("User:", session.client_reference_id);
@@ -332,6 +343,19 @@ export async function POST(req: NextRequest) {
 
           console.log("Purchase created:", purchase.id);
 
+          // A plan change (up, down, or monthly ↔ annual) through the billing portal
+          await trackEventServerAsync(MixpanelEvent.PLAN_CHANGED, userProfile.id, {
+            $insert_id: `plan-changed-${event.id}`,
+            plan,
+            from_plan: (await getPlanFromPriceId(previousPlan.id)) ?? null,
+            is_tracker_plan: isTrackerPlan(plan),
+            billing: updatedPlan.interval === "year" ? "annual" : "monthly",
+            from_billing: previousPlan.interval === "year" ? "annual" : "monthly",
+            // Per billing interval, USD
+            amount_usd: (updatedPlan.amount ?? 0) / 100,
+            from_amount_usd: (previousPlan.amount ?? 0) / 100,
+          });
+
           // TODO: Send subscription update email to user
 
           // try {
@@ -449,6 +473,15 @@ export async function POST(req: NextRequest) {
           "invoice.paid"
         );
 
+        // A renewal: revenue after the first checkout (Purchase Completed)
+        await trackEventServerAsync(MixpanelEvent.SUBSCRIPTION_RENEWED, user.id, {
+          $insert_id: `renewed-${stripeInvoice.id}`,
+          plan,
+          is_tracker_plan: isTrackerPlan(plan),
+          amount_usd: (stripeInvoice.amount_paid ?? 0) / 100,
+          currency: stripeInvoice.currency,
+        });
+
         break;
       }
 
@@ -460,6 +493,15 @@ export async function POST(req: NextRequest) {
           "Stripe Invoice Payment Failed for customer:",
           stripeInvoice.customer
         );
+
+        const failedUser = stripeInvoice.customer ? await fetchUserByStripeCustomerId(stripeInvoice.customer as string) : null;
+        if (failedUser)
+          await trackEventServerAsync(MixpanelEvent.PAYMENT_FAILED, failedUser.id, {
+            $insert_id: `payment-failed-${stripeInvoice.id}`,
+            amount_usd: (stripeInvoice.amount_due ?? 0) / 100,
+            attempt: stripeInvoice.attempt_count ?? null,
+            billing_reason: stripeInvoice.billing_reason ?? null,
+          });
 
         // A payment failed (for instance the customer does not have a valid payment method)
         // ❌ Revoke access to the product

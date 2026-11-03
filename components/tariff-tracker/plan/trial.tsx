@@ -160,27 +160,31 @@ export const TrialDialog = () => {
     const timer = setTimeout(() => {
       markSeen(key);
       setOpen(true);
-      // Opened by Duty Guard, not the user (trigger), so "Keep everything" counted after it isn't a second ask
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_UPGRADE_OPENED, { feature: "plan", from: ended ? "trial-ended" : "trial-ending", plan: access.kind, daysLeft, trigger: "auto" });
+      // Opened by Duty Guard, not the user: "Keep everything" then opens the plans (Upgrade Opened)
+      trackEvent(MixpanelEvent.DUTY_GUARD_TRIAL_DIALOG_SHOWN, { from: ended ? "trial-ended" : "trial-ending", plan: access.kind, daysLeft });
     }, 1500);
     return () => clearTimeout(timer);
   }, [loading, catalogLoading, signedIn, ending, ended, items.length, key, access.preview]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const plan = keepPlan(imports);
   const close = () => setOpen(false);
+  const dismiss = () => {
+    trackEvent(MixpanelEvent.DUTY_GUARD_TRIAL_DIALOG_DISMISSED, { from: ended ? "trial-ended" : "trial-ending", plan: access.kind });
+    close();
+  };
   const keep = () => {
     close();
-    openUpgrade("plan");
+    openUpgrade("plan", "trial_dialog");
   };
 
   return (
-    <Dialog open={open} onClose={close} className="relative z-50">
+    <Dialog open={open} onClose={dismiss} className="relative z-50">
       <div className="fixed inset-0 bg-black/50" aria-hidden />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel
           className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} relative flex max-h-[92vh] w-full max-w-xl flex-col overflow-y-auto p-6 shadow-2xl sm:p-7`}
         >
-          <button type="button" onClick={close} className="absolute right-4 top-4 rounded-full p-1.5 text-base-content/50 hover:bg-tt-soft hover:text-base-content">
+          <button type="button" onClick={dismiss} className="absolute right-4 top-4 rounded-full p-1.5 text-base-content/50 hover:bg-tt-soft hover:text-base-content">
             <XMarkIcon className="h-5 w-5" aria-hidden />
             <span className="sr-only">Close</span>
           </button>
@@ -230,7 +234,7 @@ export const TrialDialog = () => {
                   auditing and savings detection included.
                 </span>
               )}
-              <button type="button" className="text-sm font-semibold text-base-content/60 hover:text-base-content" onClick={close}>
+              <button type="button" className="text-sm font-semibold text-base-content/60 hover:text-base-content" onClick={dismiss}>
                 {ended ? "Continue on the free plan" : "Remind me later"}
               </button>
             </div>

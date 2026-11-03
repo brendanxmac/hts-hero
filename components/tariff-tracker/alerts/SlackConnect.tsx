@@ -40,7 +40,7 @@ export const SlackConnect = ({ webhook, onWebhookChange }: { webhook: string; on
     const outcome = url.searchParams.get("slack");
     if (!outcome) return;
     setStatus(RETURN_MESSAGES[outcome] ?? null);
-    if (outcome === "connected") trackEvent(MixpanelEvent.TARIFF_TRACKER_SLACK_CONNECTED);
+    if (outcome === "connected") trackEvent(MixpanelEvent.DUTY_GUARD_SLACK_CONNECTED);
     url.searchParams.delete("slack");
     window.history.replaceState(window.history.state, "", url.toString());
   }, []);
@@ -52,7 +52,7 @@ export const SlackConnect = ({ webhook, onWebhookChange }: { webhook: string; on
     const data = (await response?.json().catch((): null => null)) as { ok?: boolean; error?: string } | null;
     setBusy(null);
     setStatus(data?.ok ? { tone: "success", text: `Sent. Check ${settings.slackChannel || "your Slack channel"}.` } : { tone: "error", text: data?.error ?? "Couldn't send the test. Please try again." });
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ALERT_TEST_SENT, { channel: "slack", ok: Boolean(data?.ok) });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ALERT_TEST_SENT, { channel: "slack", ok: Boolean(data?.ok) });
   };
 
   const disconnect = async () => {
@@ -63,7 +63,7 @@ export const SlackConnect = ({ webhook, onWebhookChange }: { webhook: string; on
   };
 
   const install = (
-    <a href="/api/slack/install" className={ui.button({ variant: connected ? "ghost" : "secondary", size: "sm" })} onClick={() => trackEvent(MixpanelEvent.TARIFF_TRACKER_SLACK_CONNECT_STARTED, { change: connected })}>
+    <a href="/api/slack/install" className={ui.button({ variant: connected ? "ghost" : "secondary", size: "sm" })} onClick={() => trackEvent(MixpanelEvent.DUTY_GUARD_SLACK_CONNECT_STARTED, { change: connected })}>
       {connected ? "Change channel" : (
         <>
           <SlackMark className="h-4 w-4" />

@@ -99,8 +99,15 @@ export async function POST(req: NextRequest) {
 
       // Awaited, so the serverless function isn't frozen before Mixpanel has it. The $insert_id
       // makes a retried webhook count once
+      // How they signed up (google, email). Where they came from is on their profile, set from the
+      // browser at the first identify (first_* and Mixpanel's $initial_referrer)
+      const method = await supabase.auth.admin
+        .getUserById(user.id)
+        .then(({ data }): string | null => data?.user?.app_metadata?.provider ?? null)
+        .catch((): null => null);
       await trackEventServerAsync(MixpanelEvent.SIGN_UP, user.id, {
         $insert_id: `sign-up-${user.id}`,
+        method,
       });
     } catch (e) {
       console.error("Failed to identify user in Mixpanel:", e);

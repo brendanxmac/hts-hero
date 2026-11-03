@@ -121,14 +121,14 @@ export const RowFixPanel = ({
   // A picked suggestion that leaves the row reading: a beat to see it, then the next issue
   const pickCode = (htsno: string) => {
     onEdit(columns.code, htsno);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, {
       help: "panel_code",
     });
     if (!countryBad) setTimeout(onNext, ADVANCE_MS);
   };
   const pickCountry = (name: string) => {
     onEdit(columns.country, name);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, {
       help: "panel_country",
     });
     if (!codeBad) setTimeout(onNext, ADVANCE_MS);

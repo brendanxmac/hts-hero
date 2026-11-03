@@ -6,6 +6,7 @@ import { useTrackerAccess } from "../../access/accessContext";
 import { TrackedProduct } from "../../report";
 import { useTracker } from "../../TrackerContext";
 import { openEntryCheck, useEntryCheck } from "./entryCheckStore";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 
 // "Audit an Entry": opens the step-by-step entry audit (EntryCheck). The audits' main action, in
 // the Entry Audit page's header and above a product's Audit tab (size "md"), or the big button of
@@ -21,6 +22,7 @@ export const AuditEntryButton = ({ fixedProduct, size = "md" }: { fixedProduct?:
   const resuming = !!draft.entryDate && products.some((p) => p.key === draft.productKey);
   const start = () => {
     if (outOfChecks) return openUpgrade("entries");
+    trackEvent(MixpanelEvent.DUTY_GUARD_ENTRY_AUDIT_STARTED, { resuming, from: fixedProduct ? "product" : "audits", audits_left: auditsLeft });
     openEntryCheck(fixedProduct?.key ?? null, resuming ? draft.productKey : (products[0]?.key ?? ""));
   };
 

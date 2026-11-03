@@ -133,7 +133,7 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
         return "Couldn't save your alert settings. Please try again.";
       }
       setSaved({ ...next, slackWebhook, slackChannel, slackTeam });
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_ALERTS_SAVED, {
+      trackEvent(MixpanelEvent.DUTY_GUARD_ALERTS_SAVED, {
         email: next.emailEnabled,
         slack: Boolean(next.slackWebhook),
         teams: Boolean(next.teamsWebhook),
@@ -156,7 +156,7 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
       return "Couldn't disconnect Slack. Please try again.";
     }
     setSaved({ ...saved, slackWebhook: "", slackChannel: "", slackTeam: "" });
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_SLACK_DISCONNECTED);
+    trackEvent(MixpanelEvent.DUTY_GUARD_SLACK_DISCONNECTED);
     return null;
   }, [userId, saved]);
 
@@ -171,7 +171,7 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
       return "Couldn't disconnect Teams. Please try again.";
     }
     setSaved({ ...saved, teamsWebhook: "" });
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_TEAMS_DISCONNECTED);
+    trackEvent(MixpanelEvent.DUTY_GUARD_TEAMS_DISCONNECTED);
     return null;
   }, [userId, saved]);
 

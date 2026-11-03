@@ -173,7 +173,7 @@ export const ChooseStep = ({
           type="button"
           onClick={() => {
             setGuide(true);
-            trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_HELP_USED, {
+            trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_HELP_USED, {
               help: "guide_open",
             });
           }}

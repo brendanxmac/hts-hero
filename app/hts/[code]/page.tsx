@@ -35,7 +35,10 @@ interface HtsCodePageProps {
   params: Promise<{ code: string }>;
 }
 
-export const revalidate = 432000; // 5 days
+// 14 days: every deploy rebuilds the pages anyway, and each rebuild is billed as ISR writes. The HTS
+// text comes from the latest revision in Supabase, so a revision added without a deploy shows
+// within 14 days
+export const revalidate = 1209600;
 
 export async function generateStaticParams(): Promise<{ code: string }[]> {
   return [];

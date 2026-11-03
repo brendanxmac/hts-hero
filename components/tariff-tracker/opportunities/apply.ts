@@ -24,7 +24,7 @@ export const useApplyOption = () => {
 
   return (option: SavingOption, product: TrackedProduct): AppliedChange => {
     const before = setupOf(product);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_SAVING_APPLIED, { kind: option.kind });
+    trackEvent(MixpanelEvent.DUTY_GUARD_SAVING_APPLIED, { kind: option.kind });
 
     if (option.kind === "origin") {
       const code = product.key.split("-")[0];

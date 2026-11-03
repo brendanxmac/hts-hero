@@ -89,9 +89,29 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
   // One line about their own products, when there's something to say
   const atStake = usedUp ?? (untracked > 0 ? `${formatCount(untracked)} of your products ${untracked === 1 ? "has" : "have"} tariff alerts off right now.` : null);
 
+  const plans: readonly TrackerPlan[] = offer === "alerts" ? ALERT_PLANS : AUDIT_PLANS;
+  const best = imports > 0 ? bestPlanFor(plans, imports) : null;
+  // Closed without buying (busy: on the way to Stripe)
+  const dismiss = () => {
+    if (!busy) trackEvent(MixpanelEvent.DUTY_GUARD_UPGRADE_DISMISSED, { feature, offer, billing, change: changing, plan_kind: access.kind });
+    onClose();
+  };
+
   const buy = async (plan: TrackerPlan) => {
     setBusy(plan.plan);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_CHECKOUT_STARTED, { plan: plan.plan, offer: plan.offer, billing, feature, catalog: items.length, change: changing });
+    trackEvent(MixpanelEvent.DUTY_GUARD_CHECKOUT_STARTED, {
+      plan: plan.plan,
+      offer: plan.offer,
+      billing,
+      feature,
+      max_pairs: plan.maxPairs,
+      // The tier's monthly list price
+      price_usd: plan.price,
+      recommended: best === plan.maxPairs,
+      catalog: items.length,
+      change: changing,
+      plan_kind: access.kind,
+    });
     if (changing) {
       if (!(await openBillingPortal(plan.plan, billing))) setBusy(null);
       return;
@@ -104,7 +124,6 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
     }
   };
 
-  const plans: readonly TrackerPlan[] = offer === "alerts" ? ALERT_PLANS : AUDIT_PLANS;
   const isCurrent = (plan: TrackerPlan) => access.paidPlan === plan.plan && (!subscription || subscription.billing === billing);
   const cta = (tier: SalesPlan) => {
     const plan = plans.find((p) => p.maxPairs === tier.maxPairs)!;
@@ -117,18 +136,17 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
     const plan = plans.find((p) => p.maxPairs === tier.maxPairs)!;
     if (!isCurrent(plan)) void buy(plan);
   };
-  const best = imports > 0 ? bestPlanFor(plans, imports) : null;
   const over = imports > TRACKER_MAX_LISTED_PAIRS;
 
   // A dialog portals out of Duty Guard, so it carries Duty Guard's look itself (DESIGN_SYSTEM §15)
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-50">
+    <Dialog open={open} onClose={dismiss} className="relative z-50">
       <div className="fixed inset-0 bg-black/50" aria-hidden />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel
           className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} relative flex max-h-[94vh] w-full max-w-[100rem] flex-col overflow-hidden shadow-2xl`}
         >
-          <button type="button" onClick={onClose} className="absolute right-3 top-4 z-10 rounded-full p-1.5 text-base-content/60 hover:bg-tt-soft hover:text-base-content">
+          <button type="button" onClick={dismiss} className="absolute right-3 top-4 z-10 rounded-full p-1.5 text-base-content/60 hover:bg-tt-soft hover:text-base-content">
             <XMarkIcon className="h-5 w-5" aria-hidden />
             <span className="sr-only">Close</span>
           </button>

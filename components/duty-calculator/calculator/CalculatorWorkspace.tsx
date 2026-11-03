@@ -25,6 +25,7 @@ import { formatPct } from "../lib/format";
 import { AccountGate, QUICK_ACCOUNT } from "@/components/tariff-tracker/access/AccountGate";
 import { ONBOARDING_PATH } from "@/libs/signup-onboarding";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { whatClaimingDoes, whatItWouldDo } from "../lib/explain";
 import { plainReasons } from "../lib/plainReason";
 import { sortBySpecificity } from "../lib/questions";
@@ -161,9 +162,12 @@ export const CalculatorWorkspace = ({
     // Once, on arrival
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const changeTab = (asked: ResultsTab) => {
+  const changeTab = (asked: ResultsTab, source: "tabs" | "adcvd_teaser" = "tabs") => {
     if (onTabChange) return onTabChange(viewOf(asked));
     const next = viewOf(asked);
+    // The results' tabs (Duty, History, AD/CVD, News, Compare), by the user
+    if (next !== tab)
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_TAB_OPENED, { tab: next, from_tab: tab, source, hts_code: f.selectedElement ? htsCodeDigitsOnly(f.selectedElement.htsno) : null, country_code: f.country?.code ?? null });
     if (next !== "compare") setLocalTab(next);
     // The address says Compare only while it's open
     f.changeView(next === "compare" ? "compare" : "detailed");
@@ -520,7 +524,7 @@ export const CalculatorWorkspace = ({
                     <AdcvdDutyTeaser
                       code={selectedElement.htsno}
                       country={country.code}
-                      onOpen={() => changeTab("adcvd")}
+                      onOpen={() => changeTab("adcvd", "adcvd_teaser")}
                       onSignUp={() => conversion.openAccount(ADCVD_PITCH, "adcvd-notice", unlockRedirect("adcvd"))}
                     />
                   </div>

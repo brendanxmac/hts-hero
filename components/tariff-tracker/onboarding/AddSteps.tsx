@@ -159,7 +159,7 @@ export const RecentStep = ({ onAdd, onBack }: { onAdd: OnAdd; onBack: () => void
           picked.map((l) => ({ code: l.code, country: l.country })),
           "recent",
         );
-        trackEvent(MixpanelEvent.TARIFF_TRACKER_LOOKUPS_ADDED, {
+        trackEvent(MixpanelEvent.DUTY_GUARD_LOOKUPS_ADDED, {
           added: picked.length,
           offered: lookups.length,
           from: "onboarding",
@@ -369,7 +369,7 @@ export const PasteStep = ({
   const [source, setSource] = useState<PasteSource | null>(few ? "other" : null);
   const pickSource = (next: PasteSource) => {
     setSource(next);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, { step: "paste_source", source: next });
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, { step: "paste_source", source: next });
   };
 
   // Pasting into an empty box (or over all of it): a table goes to the sheet review
@@ -382,7 +382,7 @@ export const PasteStep = ({
     setTable([{ name: PASTED, rows: found.rows }]);
     setColumns(found.columns ?? { headerIndex: 0, columns: {} });
     setPicking(!found.columns);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+    trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
       step: "paste_read",
       rows: found.rows.length,
       detected: Boolean(found.columns),
@@ -429,7 +429,7 @@ export const PasteStep = ({
             <>
               <UploadInstead
                 onUpload={() => {
-                  trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, { step: "paste_to_upload" });
+                  trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, { step: "paste_to_upload" });
                   onUpload();
                 }}
               />
@@ -565,7 +565,7 @@ export const FileStep = ({ onAdd, onBack }: { onAdd: OnAdd; onBack: () => void }
       setSheet(at);
       setColumns(found ?? { headerIndex: 0, columns: {} });
       setPicking(!found);
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, {
+      trackEvent(MixpanelEvent.DUTY_GUARD_ONBOARDING_STEP, {
         step: "file_read",
         kind: /\.xlsx$/i.test(f.name) ? "xlsx" : "csv",
         sheets: tables.length,
@@ -625,7 +625,7 @@ export const FileStep = ({ onAdd, onBack }: { onAdd: OnAdd; onBack: () => void }
               className={`${ui.link} inline-flex items-center gap-1.5 text-sm`}
               onClick={() => {
                 downloadImportTemplate();
-                trackEvent(MixpanelEvent.TARIFF_TRACKER_CSV_TEMPLATE_DOWNLOADED, {
+                trackEvent(MixpanelEvent.DUTY_GUARD_CSV_TEMPLATE_DOWNLOADED, {
                   from: "onboarding",
                 });
               }}

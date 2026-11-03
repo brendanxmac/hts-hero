@@ -88,7 +88,7 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
   });
   const save = () => {
     const { added } = addToCatalog([productWithAdjustments()]);
-    trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "calculator", hts_code: f.selectedElement?.htsno });
+    trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "calculator", hts_code: f.selectedElement?.htsno });
   };
   const url = productUrl(itemKey(product));
   const start = (tab?: ProductTab, account?: AccountPitch) => {

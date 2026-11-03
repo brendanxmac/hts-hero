@@ -206,7 +206,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
       const saved = fromRow(data);
       setOpportunities((prev) => [...prev.filter((o) => o.id !== saved.id), saved]);
       await logEvent(saved.id, null, status, note);
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_OPPORTUNITY_CHANGED, { kind: option.kind, status, usd: Math.round(option.usd) });
+      trackEvent(MixpanelEvent.DUTY_GUARD_OPPORTUNITY_CHANGED, { kind: option.kind, status, usd: Math.round(option.usd) });
       return saved;
     },
     [userId, logEvent]
@@ -228,7 +228,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
       const saved = fromRow(data);
       setOpportunities((prev) => prev.map((o) => (o.id === saved.id ? saved : o)));
       await logEvent(saved.id, opportunity.status, status, note, applied);
-      trackEvent(MixpanelEvent.TARIFF_TRACKER_OPPORTUNITY_CHANGED, { kind: saved.kind, status, usd: Math.round(saved.usdPerShipment) });
+      trackEvent(MixpanelEvent.DUTY_GUARD_OPPORTUNITY_CHANGED, { kind: saved.kind, status, usd: Math.round(saved.usdPerShipment) });
       return true;
     },
     [logEvent]

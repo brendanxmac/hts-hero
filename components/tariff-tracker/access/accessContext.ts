@@ -20,7 +20,8 @@ export interface TrackerAccessValue {
   // with none left it opens the plans instead, and signed out it goes to sign up
   spendCheck: (kind: CheckKind, ref: string, feature: PremiumFeature) => Promise<boolean>;
   // The plans, for an allowance that's used up or a plan that's too small
-  openUpgrade: (feature: PremiumFeature) => void;
+  // trigger: a click (user), a link into Duty Guard (link), or the trial dialog's button (trial_dialog)
+  openUpgrade: (feature: PremiumFeature, trigger?: UpgradeTrigger) => void;
   // The right next step for a locked feature: sign up, or pick a plan
   unlock: (feature: PremiumFeature) => void;
   // What that step is called on a button
@@ -39,3 +40,5 @@ export const useTrackerAccess = () => {
 
 // The same, or null outside Duty Guard (the free calculator's pages have no provider)
 export const useOptionalTrackerAccess = () => useContext(TrackerAccessContext);
+
+export type UpgradeTrigger = "user" | "link" | "trial_dialog";
