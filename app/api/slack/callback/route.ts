@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const back = (outcome: "connected" | "cancelled" | "error") => {
-    const response = NextResponse.redirect(`${url.origin}/tariff-tracker?tab=alerts&slack=${outcome}`);
+    const response = NextResponse.redirect(`${url.origin}/duty-guard?tab=alerts&slack=${outcome}`);
     response.cookies.delete({ name: SLACK_STATE_COOKIE, path: "/api/slack" });
     return response;
   };

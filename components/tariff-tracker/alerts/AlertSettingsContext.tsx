@@ -14,6 +14,8 @@ import { alertKinds, alertsOn } from "./alertPrefs";
 export interface AlertSettings {
   emailEnabled: boolean;
   email: string;
+  // Other addresses alerts go to, up to the plan's alert emails
+  extraEmails: string[];
   slackWebhook: string;
   // The channel and workspace "Add to Slack" connected (empty for a pasted webhook)
   slackChannel: string;
@@ -41,7 +43,7 @@ export const useAlertSettings = () => {
   return value;
 };
 
-const EMPTY: AlertSettings = { emailEnabled: true, email: "", slackWebhook: "", slackChannel: "", slackTeam: "", teamsWebhook: "", kinds: alertKinds(null) };
+const EMPTY: AlertSettings = { emailEnabled: true, email: "", extraEmails: [], slackWebhook: "", slackChannel: "", slackTeam: "", teamsWebhook: "", kinds: alertKinds(null) };
 
 export const SLACK_PREFIX = "https://hooks.slack.com/";
 
@@ -51,6 +53,7 @@ export const settingsOn = (s: AlertSettings) => alertsOn({ email_enabled: s.emai
 // A message to show, or null when the settings can be saved
 export const validateAlertSettings = (s: AlertSettings) => {
   if (s.emailEnabled && !/^\S+@\S+\.\S+$/.test(s.email)) return "Enter an email address for alerts.";
+  if (s.extraEmails.some((e) => e.trim() && !/^\S+@\S+\.\S+$/.test(e.trim()))) return "Check the email addresses for alerts.";
   if (s.slackWebhook && !s.slackWebhook.startsWith(SLACK_PREFIX)) return `A Slack webhook starts with ${SLACK_PREFIX}`;
   if (s.teamsWebhook && !s.teamsWebhook.startsWith("https://")) return "A Teams webhook starts with https://";
   if (/\.webhook\.office\.com\//.test(s.teamsWebhook)) return "That's an Office 365 connector URL, which Microsoft is retiring. Create a Workflows webhook instead (steps above).";
@@ -74,9 +77,9 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
     setLoading(true);
     createSupabaseClient()
       .from("tracker_alert_settings")
-      .select("email_enabled, email, slack_webhook, slack_channel, slack_team, teams_webhook, alert_kinds")
+      .select("email_enabled, email, extra_emails, slack_webhook, slack_channel, slack_team, teams_webhook, alert_kinds")
       .eq("user_id", userId)
-      .maybeSingle<{ email_enabled: boolean; email: string | null; slack_webhook: string | null; slack_channel: string | null; slack_team: string | null; teams_webhook: string | null; alert_kinds: string[] | null }>()
+      .maybeSingle<{ email_enabled: boolean; email: string | null; extra_emails: string[] | null; slack_webhook: string | null; slack_channel: string | null; slack_team: string | null; teams_webhook: string | null; alert_kinds: string[] | null }>()
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) console.error("Error loading alert settings:", error);
@@ -85,6 +88,7 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
             ? {
                 emailEnabled: data.email_enabled,
                 email: data.email ?? "",
+                extraEmails: data.extra_emails ?? [],
                 slackWebhook: data.slack_webhook ?? "",
                 slackChannel: data.slack_channel ?? "",
                 slackTeam: data.slack_team ?? "",
@@ -116,6 +120,7 @@ export const AlertSettingsProvider = ({ children }: { children: ReactNode }) => 
           user_id: userId,
           email_enabled: next.emailEnabled,
           email: next.email.trim() || null,
+          extra_emails: next.extraEmails.map((e) => e.trim()).filter(Boolean),
           slack_webhook: slackWebhook || null,
           slack_channel: slackChannel || null,
           slack_team: slackTeam || null,

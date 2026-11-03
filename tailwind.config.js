@@ -11,7 +11,7 @@ module.exports = {
       screens: {
         xs: "475px",
       },
-      // The Tariff Tracker's extra surfaces and marks (palette.tracker.extra), set inside .hts-tracker
+      // Duty Guard's extra surfaces and marks (palette.tracker.extra), set inside .hts-tracker
       colors: {
         "tt-soft": "var(--tt-soft)",
         "tt-soft-high": "var(--tt-soft-high)",
@@ -84,11 +84,11 @@ module.exports = {
         '[data-theme="dark"] &.follow-theme',
         "@media (prefers-color-scheme: dark) { :root:not([data-theme]) .follow-theme & }",
       ]);
-      // skin: the Tariff Tracker's look (its theme tokens, which follow light and dark) on the
+      // skin: Duty Guard's look (its theme tokens, which follow light and dark) on the
       // same opted-in pages, in place of the marketing layer's slate and teal
       addVariant("skin", [".follow-theme &", "&.follow-theme"]);
-      // tracker: a shared component in the Tariff Tracker's look (DESIGN_SYSTEM.md §15) when it
-      // sits inside .hts-tracker (the Tracker, and public pages in its look such as /hts)
+      // tracker: a shared component in Duty Guard's look (DESIGN_SYSTEM.md §15) when it
+      // sits inside .hts-tracker (Duty Guard, and public pages in its look such as /hts)
       addVariant("tracker", [".hts-tracker &", "&.hts-tracker"]);
     }),
   ],

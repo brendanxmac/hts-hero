@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic"
 export const fetchCache = "force-no-store"
 
 // Every live (or recently ended) AD/CVD case's country and scope codes, for matching a whole
-// catalog in the browser (the Tracker's chips): GET ?countries=CN,VN. Cached for an hour.
+// catalog in the browser (Duty Guard's chips): GET ?countries=CN,VN. Cached for an hour.
 
 // The dates too, for the Sourcing tab's charts (when an order began)
 const COLUMNS = "case_number, kind, country, product, status, initiated_on, order_on, ended_on, third_countries, hts_main, hts_also, hts_excluded, hts_outdated, hts_successors"

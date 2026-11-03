@@ -2,7 +2,7 @@ import { AllRules } from "@/tariffs/engine-v2/data";
 import { CHART_COLORS, FEES_COLOR } from "@/components/ui/theme";
 import type { Program } from "@/tariffs/engine-v2/types";
 
-// One color per part of a duty, the same on every chart and screen (the calculator, the Tracker,
+// One color per part of a duty, the same on every chart and screen (the calculator, Duty Guard,
 // the HTS code pages): base duty first, each tariff program by what kind of tariff it is, fees
 // last. The palette has four program colors for some thirty programs, so each program has a
 // fixed slot by its role, and the programs that apply to one import together (China's Section

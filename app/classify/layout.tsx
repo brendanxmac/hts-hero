@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 };
 
 export default function ClassifyLayout({ children }: { children: ReactNode }) {
-  // The Tariff Tracker's look, following the site's light/dark setting (DESIGN_SYSTEM.md §15)
+  // Duty Guard's look, following the site's light/dark setting (DESIGN_SYSTEM.md §15)
   return (
     <FollowTheme>
       <MarketingLayout>{children}</MarketingLayout>

@@ -69,7 +69,7 @@ describe("excludes base duty: country page examples", () => {
   })
 })
 
-describe("excludes base duty: Tariff Tracker", () => {
+describe("excludes base duty: Duty Guard", () => {
   const product = (general: string) =>
     quietly(() =>
       trackProduct(

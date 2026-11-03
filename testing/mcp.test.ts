@@ -64,9 +64,9 @@ describe("MCP server: links back to HTS Hero", () => {
     expect(url.searchParams.get("utm_medium")).toBe("mcp")
   })
 
-  it("opens the Tariff Tracker's calculator on its Analysis", () => {
+  it("opens Duty Guard's calculator on its Analysis", () => {
     const url = new URL(analysisUrl(calc, ctx))
-    expect(url.pathname).toBe("/tariff-tracker")
+    expect(url.pathname).toBe("/duty-guard")
     expect(url.searchParams.get("tab")).toBe("calculator")
     expect(url.searchParams.get("view")).toBe("analysis")
   })

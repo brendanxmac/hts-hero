@@ -32,7 +32,7 @@ export default function Home() {
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-base-content mb-4">
-              Pending Tariffs Tracker
+              Pending Tariffs Duty Guard
             </h1>
             <p className="text-base lg:text-lg lg:leading-7 text-base-content/70 max-w-3xl leading-relaxed">
               Stay informed about upcoming tariff announcements and their

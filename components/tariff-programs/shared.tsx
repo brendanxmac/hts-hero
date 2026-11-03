@@ -4,7 +4,7 @@ import type { OfficialSource } from "@/libs/official-sources";
 import { mono } from "@/components/ui/font";
 import * as tt from "@/components/ui/styles/tracker";
 
-// Pieces the Chapter 99 pages and the /tariffs program pages share, in the Tariff Tracker's look
+// Pieces the Chapter 99 pages and the /tariffs program pages share, in Duty Guard's look
 
 const chip = `${mono.className} inline-block rounded-md bg-tt-soft px-1.5 py-0.5 text-xs font-medium text-base-content/80`;
 

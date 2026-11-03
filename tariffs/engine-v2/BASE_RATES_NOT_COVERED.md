@@ -167,5 +167,5 @@ The duty is worked out, with a note the calculator shows alongside it. **185 rat
 - **Rounding.** Amounts in cents read by the original patterns are rounded to 4 decimal places of a dollar, so "3.6606¢/kg" is charged as 3.66¢. The newer patterns keep them in full. Changing the old ones changes existing results.
 - **One quantity.** A rate with two per-unit parts ("4.4¢/liter + 31.4¢/pf. liter") or a per-unit rate in a unit other than the line's first ("$1.70/m3" on a line reported in m2 first, 4409.10.90) uses the single quantity entered.
 - **"25¢/jewel"** without "over 7" is charged per article (the quantity), not per jewel.
-- **Per thousand** ("$6/1000") divides by 1,000 only when the caller passes the line's unit (the calculator, embed, Tracker report, MCP and classification dashboard do). Other callers charge it as written.
+- **Per thousand** ("$6/1000") divides by 1,000 only when the caller passes the line's unit (the calculator, embed, Duty Guard report, MCP and classification dashboard do). Other callers charge it as written.
 - **Code lookups** ("Calculated once the user answers" and Chapter 98/99 lines) need the HTS; callers that don't pass it leave those rates not calculated.

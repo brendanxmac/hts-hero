@@ -1,6 +1,6 @@
 import { KINDS, type Kind } from "../../../libs/tariff-updates/types";
 
-// Alert preferences, shared by the Tracker (where they're set) and the server (where alerts are
+// Alert preferences, shared by Duty Guard (where they're set) and the server (where alerts are
 // sent: libs/tariff-updates/alerts.ts, libs/email/lifecycle.ts).
 //
 // Alerts are on from the moment an account adds an import: with no saved settings they go to the
@@ -13,6 +13,8 @@ import { KINDS, type Kind } from "../../../libs/tariff-updates/types";
 export interface AlertSettingsRow {
   email_enabled: boolean;
   email: string | null;
+  // Other addresses alerts go to, up to the plan's alert emails
+  extra_emails?: string[] | null;
   slack_webhook: string | null;
   teams_webhook: string | null;
   alert_kinds?: string[] | null;

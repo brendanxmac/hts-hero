@@ -13,7 +13,7 @@ import { productUrl } from "./sections";
 import type { AddSource } from "./TrackerContext";
 
 // "Add to catalog" for the calculator's results: one click saves the product on screen (its code
-// and origin) to the Tariff Tracker catalog, with what's been set for it (value, quantity,
+// and origin) to Duty Guard catalog, with what's been set for it (value, quantity,
 // transport, trade program, conditions answered) as its adjustments. Once it's in the catalog,
 // the button opens it there.
 
@@ -52,7 +52,7 @@ export const AddToCatalogButton = ({
       <a
         href={productUrl(key)}
         className={`${ui.button({ size: "sm" })} text-success`}
-        title="Open it in the Tariff Tracker"
+        title="Open it in Duty Guard"
         onClick={(e: MouseEvent<HTMLAnchorElement>) => {
           // "Product Opened" is counted by the product view it opens
           if (!onOpen || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
@@ -70,7 +70,7 @@ export const AddToCatalogButton = ({
     <button
       type="button"
       className={ui.button({ size: "sm" })}
-      title="Save this product to your imports in the Tariff Tracker"
+      title="Save this product to your imports in Duty Guard"
       onClick={() => {
         const { added, withAdjustments } = addToCatalog([product]);
         trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, {

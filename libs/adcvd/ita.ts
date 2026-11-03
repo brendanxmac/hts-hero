@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { checkCases } from "./checks"
 import { checkScopeCodes } from "./claude"
+import { FederalRegisterOutOfTime } from "./fr"
 import { htsCodes, scopeOf } from "./parse"
 import type { CaseRow } from "./types"
 import type { Budget } from "./usage"
@@ -114,6 +115,8 @@ export const refreshItaPages = async (
       if (saveError) throw new Error(saveError.message)
       read.push(c.case_number)
     } catch (e) {
+      // Out of time: this case and the rest are read by the next run
+      if (e instanceof FederalRegisterOutOfTime) break
       errors.push(`${c.case_number}: ${e instanceof Error ? e.message : String(e)}`)
     }
   }

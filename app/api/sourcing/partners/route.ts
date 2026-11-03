@@ -5,7 +5,7 @@ import { bilateralUrl } from "@/libs/sourcing/storage"
 import type { Bilateral, CrossSources, YearlyByCountry } from "@/libs/sourcing/trade"
 
 // Other sources on who supplies a product, to set beside the US Census figures for one code
-// (the Tracker's Sourcing tab): GET ?code=2903441010. All at the code's 6-digit group, the finest
+// (Duty Guard's Sourcing tab): GET ?code=2903441010. All at the code's 6-digit group, the finest
 // level they come at, so each compares like with like:
 // - Every country's exports to the US and its other main destinations, each year, from the Harvard
 //   Growth Lab's Atlas of Economic Complexity (its country-to-country bulk data, CC0, kept in

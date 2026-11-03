@@ -28,7 +28,7 @@ export function StackedBar({
   parts: StackedBarPart[];
   formatValue: (amount: number) => string;
   size?: "xs" | "sm" | "md";
-  // rounded: slightly rounded ends (the calculator); pill: fully round (the Tracker)
+  // rounded: slightly rounded ends (the calculator); pill: fully round (Duty Guard)
   shape?: "rounded-sm" | "pill";
   // How much of the track the bar fills, from 0 to 1 (bars on a shared scale)
   fill?: number;

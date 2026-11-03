@@ -26,7 +26,7 @@ Research date: 2026-10-06. Items marked **[U]** could not be confirmed from a pr
 | Microsoft 365 Copilot / Copilot Studio | MCP connectors GA (Apr 2026); M365 Copilot renders MCP Apps. | Enterprise trade teams, but admins must enable it. | Org-controlled | Low (same server) | Later, for enterprise deals |
 | Gemini, Perplexity, Mistral | Accept custom MCP URLs. Third-party directories are curated, with no open submission **[U]**. | Low unless invited | — | — | Watch |
 | **Google Sheets add-on / Excel add-in** | Custom functions like `=HTSHERO_DUTY(...)`. Sheets needs only non-restricted scopes, so no CASA audit. AppSource certification takes ~1–2 weeks. | Brokers and procurement live in spreadsheets. Weak store discovery, but **high intent to pay** for bulk work. | Yes. Billing is ours. | Medium. Needs the public API. | **#3.** Strongest *paid* bridge. |
-| **Shopify App Store** | Embedded app required. **Must bill through Shopify** (0% share up to $1M lifetime, then 15%). Review takes 8–10 business days, often 30+. Sidekick extensions opened Jun 17, but no cross-sells inside Sidekick. | Many SMB importers. Variants already store HS code and country of origin, so catalog exposure works without classification. Shopify's own duties tools cover the **checkout / outbound** side, not importer margin. Competitors (DutyCalc, TariffShield, SkuWatch, Duty Diligence) have **0 reviews**. | Only through Shopify Billing. Linking out to a separate web app for core features is discouraged. | High | **#4**, once Tracker accounts and catalogs live server-side. Ship it as "Tariff exposure scan", its own product. |
+| **Shopify App Store** | Embedded app required. **Must bill through Shopify** (0% share up to $1M lifetime, then 15%). Review takes 8–10 business days, often 30+. Sidekick extensions opened Jun 17, but no cross-sells inside Sidekick. | Many SMB importers. Variants already store HS code and country of origin, so catalog exposure works without classification. Shopify's own duties tools cover the **checkout / outbound** side, not importer margin. Competitors (DutyCalc, TariffShield, SkuWatch, Duty Diligence) have **0 reviews**. | Only through Shopify Billing. Linking out to a separate web app for core features is discouraged. | High | **#4**, once Duty Guard accounts and catalogs live server-side. Ship it as "Tariff exposure scan", its own product. |
 | Chrome extension (Alibaba, Amazon overlay) | Allowed with narrow host permissions and disclosure. | Sourcing stage. Crowded (Tariff Lens, AliTariffs…). **Needs HTS codes inferred from product titles, i.e. classification.** | Yes | Low–medium | Defer. Depends on classification. |
 | Zapier / n8n / Make | Zapier listing needs 10 templates and 50 active users. n8n requires verified nodes published from GitHub Actions. | Retention for API customers, not top-of-funnel | Yes | Medium | After the public API exists |
 | Amazon SP-API Appstore | The SP-API fee was cancelled May 12. Security review still applies. Unclear whether the seller's HTS code is exposed **[U]**. | Good fit, poor channel | — | High | Skip |
@@ -44,12 +44,12 @@ Research date: 2026-10-06. Items marked **[U]** could not be confirmed from a pr
 
 ## Part 2 — Funnel strategy
 
-**The rule:** the conversion we aim for *inside* an AI client is a **free HTS Hero account with a tracked product**, never a purchase. The selling happens later in channels we own: email alerts, the Tariff Tracker web app, and catalog-size limits. This works on ChatGPT, where we can't upsell, and on Claude, where we probably can. We maintain one policy, not per-platform branches.
+**The rule:** the conversion we aim for *inside* an AI client is a **free HTS Hero account with a tracked product**, never a purchase. The selling happens later in channels we own: email alerts, Duty Guard web app, and catalog-size limits. This works on ChatGPT, where we can't upsell, and on Claude, where we probably can. We maintain one policy, not per-platform branches.
 
 Why this fits the product:
-- Tracker pricing is per **HTS×country pair** (`TRACKER_TIERS`). The `track_product` tool directly fills the unit we charge for.
+- Duty Guard pricing is per **HTS×country pair** (`TRACKER_TIERS`). The `track_product` tool directly fills the unit we charge for.
 - **Change alerts** are the natural reason to sign in: "Tell me when this changes" can't be answered from memory and needs an email.
-- Once a catalog exists, plan limits come up naturally in the web app and in email. When limits exist, the AI client only ever says something like "you're tracking 10 of 10 products on your plan. Manage at htshero.com/tariff-tracker" (an informational link, allowed on ChatGPT).
+- Once a catalog exists, plan limits come up naturally in the web app and in email. When limits exist, the AI client only ever says something like "you're tracking 10 of 10 products on your plan. Manage at htshero.com/duty-guard" (an informational link, allowed on ChatGPT).
 
 ### Access: capabilities first, no limits yet
 
@@ -71,7 +71,7 @@ The only throttling is abuse protection: a rate limit per IP and per OAuth clien
 
 Every result includes `links` that the model or widget can show. They are informational and deep, never to pricing:
 - `full_breakdown_url`: `/duty-calculator?code=&country=&value=&units=&date=&mode=&pref=&answers=` (format from `calculatorUrl`, `components/duty-calculator/lib/estimate.ts:83`)
-- `analysis_url`: `/tariff-tracker?product=<digits>-<ISO2>`. **Gap:** the product view's Duty/Analysis/Entries sub-tab is React state only (`ProductView.tsx:55`). Add a `&view=analysis` param so links can land on Analysis.
+- `analysis_url`: `/duty-guard?product=<digits>-<ISO2>`. **Gap:** the product view's Duty/Analysis/Entries sub-tab is React state only (`ProductView.tsx:55`). Add a `&view=analysis` param so links can land on Analysis.
 - `hts_page_url`: `/hts/<dotted code>`. Also helps SEO.
 - All links carry `utm_source=<client>&utm_medium=mcp&utm_campaign=<tool>` so Mixpanel can attribute signups.
 
@@ -104,7 +104,7 @@ HTS Hero already runs on Supabase Auth. Turning on its OAuth server makes Supaba
   - `identifyUserServer(sub)` in Mixpanel, which gives one identity across the web app, Claude and ChatGPT
   - the `purchases` table, and later plan checks
   - RLS on a `tracked_products` table
-  - the Tracker reading the same catalog
+  - Duty Guard reading the same catalog
 
 Why this fits:
 - **Same login.** Users sign in with their existing HTS Hero login (email, Google, whatever is enabled today). There's no second user database to keep in sync.
@@ -177,11 +177,11 @@ Output:
 - A ranked list: `[{ country, effective_rate_pct, duty_usd, best_trade_program?, rate_with_program_pct?, tier }]`
 - `cheapest`, `most_expensive`, `links.analysis_url`
 
-It reuses `originRates()` and `rateTiers()` from the Tracker's Analysis tab (`components/tariff-tracker/product/analysis/analysis.ts`).
+It reuses `originRates()` and `rateTiers()` from Duty Guard's Analysis tab (`components/tariff-tracker/product/analysis/analysis.ts`).
 
 Census import figures (added Oct 2026): each origin carries `us_imports` (`value_usd`, `share_pct`, `change_pct`), how much of the product the US imported from it last year. `proven_cheaper_origins` lists the largest suppliers that pay less than `country_of_origin`, and `only_us_suppliers: true` ranks only countries that already ship it. Ties on a rate break toward the larger supplier. `us_imports.notice` is the attribution Census's terms require wherever the figures are shown, and the widget prints it.
 
-UI: a ranked bar chart. Its link action goes to the Tracker product Analysis view, where the globe and flag swarm live. Those make a strong "see more in the app" moment.
+UI: a ranked bar chart. Its link action goes to Duty Guard product Analysis view, where the globe and flag swarm live. Those make a strong "see more in the app" moment.
 
 #### 3. `get_duty_history` — public, read-only
 > Use this when the user asks how the tariff on a product has changed over time, what it was on a past entry date, or how much a specific tariff measure added during a period.
@@ -190,7 +190,7 @@ Input: `{ hts_code, country_of_origin, from?, to?, customs_value_usd?, answers? 
 
 Output: segments `[{ from, to, rules_revision, rates_revision, effective_rate_pct, changed_layers: [{ code, change: "added"|"removed"|"rate_changed", before_pct, after_pct }] }]`, plus `coverage: { verified_from, verified_to }`.
 
-It wraps `calculateHistory` (`tariffs/engine-v2/history.ts:101`) and the Tracker's `originHistory` / `changeEvents`.
+It wraps `calculateHistory` (`tariffs/engine-v2/history.ts:101`) and Duty Guard's `originHistory` / `changeEvents`.
 
 **This tool grows with the backfill.** Today it covers Apr 2026 onward. Once revisions back to 2025 are verified, it answers "how much IEEPA / Section 122 did I pay on this entry?", which feeds the IEEPA refund demand (~$166B collected, CAPE phase 3 opened today). A dedicated `estimate_tariff_refund` tool could follow later.
 
@@ -219,9 +219,9 @@ Input: `{ hts_code, country_of_origin, customs_value_usd?, quantity?, transport_
 
 Output: `{ tracked: true, product_key: "8471300100-CN", current_effective_rate_pct, alerts: "email", catalog: { used, limit: null }, links.analysis_url }`.
 
-How it fits the Tracker:
-- It writes the same shape the Tracker uses: a `CatalogItem` plus `Adjustments` keyed by `productKey`, in `components/tariff-tracker/adjustments.ts`.
-- So a product added from Claude shows up in the Tracker with its value, mode and answers already filled in.
+How it fits Duty Guard:
+- It writes the same shape Duty Guard uses: a `CatalogItem` plus `Adjustments` keyed by `productKey`, in `components/tariff-tracker/adjustments.ts`.
+- So a product added from Claude shows up in Duty Guard with its value, mode and answers already filled in.
 - When limits come later: return `isError` with neutral text ("Your HTS Hero plan tracks up to N products…", plus an informational link). This is allowed on both platforms.
 
 #### 7. `list_tracked_products` — signed in, read-only
@@ -274,17 +274,17 @@ A smaller edge case: on the day USITC publishes a new revision, Supabase may hav
 ## Part 5 — Building on in-flight work
 
 **Base branch.**
-- The MCP server builds on the **Tariff Tracker**: the WIP commit `3b7bb7a` on `feature/pricing-calculator`. It is local only and not pushed.
+- The MCP server builds on the **Duty Guard**: the WIP commit `3b7bb7a` on `feature/pricing-calculator`. It is local only and not pushed.
 - That commit and `feature/blog-and-compare` (the SEO work) both branch from `09c1c40`.
 - Plan: cut `feature/mcp-server` from the latest tracker commit and merge `feature/blog-and-compare` into it, or rebase once those land on master.
 - Do it in its own worktree so it doesn't disturb the SEO and backfill sessions, which share the `hts-hero-docs` worktree.
 
-**Tracker (Tariff Tracker vision).** The MCP server is a second front end for the Tracker:
+**Duty Guard (Duty Guard vision).** The MCP server is a second front end for Duty Guard:
 - Duty, comparison and history tools reuse its analysis libs.
 - `track_product` writes its catalog.
-- Every link lands inside `/tariff-tracker`.
+- Every link lands inside `/duty-guard`.
 
-Needed in the Tracker:
+Needed in Duty Guard:
 - Move the catalog from localStorage to a server-side Supabase store. Keep localStorage as an offline/anonymous cache and merge it on sign-in. This is already planned ("accounts/Supabase later").
 - Add a `?view=analysis|duty|history` param on product links (today it's React state only, `ProductView.tsx:55`).
 - Build the **Alerts** section. Today it's a "Soon" placeholder; MCP tracking makes it the core retention loop.
@@ -313,7 +313,7 @@ Needed in the Tracker:
 | Gap | Why | Where |
 |---|---|---|
 | **Server-side duty service** | One function: code + inputs → result + links. It chains `getHtsElementByCode` → `findTariffElement` → `buildEstimateInput` → `calculate`. `calculatorUrl` uses `window`, so it needs a server-side URL builder. | new `libs/duty/` |
-| **Tracker libs shared with the server** | `originRates`, `rateTiers`, `originHistory`, `changeEvents` and the catalog/adjustments types are plain TS. Make sure none of them import client-only code. | `components/tariff-tracker/**` → shared lib |
+| **Duty Guard libs shared with the server** | `originRates`, `rateTiers`, `originHistory`, `changeEvents` and the catalog/adjustments types are plain TS. Make sure none of them import client-only code. | `components/tariff-tracker/**` → shared lib |
 | **Server-side catalog** | A `tracked_products` table (user_id, product_key, adjustments, alerts, created_at) with RLS. `catalogStore` syncs with it on sign-in. | Supabase + `catalogStore.ts` |
 | **Alert pipeline** | When a newly verified revision changes a tracked product's duty, email the user. The cron and Resend already exist. | `app/api/cron`, `emails/` |
 | **OAuth** | Enable the Supabase OAuth 2.1 server and DCR. Add a consent page at `/oauth/consent`, protected-resource metadata, and a JWT check in `/api/mcp`. Add a DCR-cleanup cron. | Supabase dashboard, `app/oauth/`, `app/.well-known/` |
@@ -340,13 +340,13 @@ Needed in the Tracker:
 
 **Reused, not copied.**
 - From the calculator: `buildEstimateInput`, `findTariffElement`, `calculatorUrl` (which now takes an `origin`), `questionImpacts` and `preferenceImpacts`.
-- From the Tracker: `originRates`, `rateKey` and `rateOf`.
+- From Duty Guard: `originRates`, `rateKey` and `rateOf`.
 - From the `/hts` pages: `getHtsDutySummary` and `htsProductName`.
 
 **Small enabling changes.**
 - `getHtsElementParents` moved to `libs/hts-parents.ts` so server code doesn't import `libs/hts.tsx`, which pulls in OpenAI and UI imports. `libs/hts.tsx` re-exports it.
 - `originRates` takes a narrower input type.
-- The Tracker calculator now honors `?view=analysis`.
+- Duty Guard calculator now honors `?view=analysis`.
 - Middleware skips `/api/mcp`.
 - The `MCP Tool Called` Mixpanel event is recorded with client, tool, status and duration. Anonymous callers are identified by a hashed IP plus user agent.
 

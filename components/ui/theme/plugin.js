@@ -18,7 +18,7 @@ const chartVars = (mode) => ({
 
 const themeVars = (mode) => ({ ...colorVars(palette[mode]), ...chartVars(mode), colorScheme: mode });
 
-// The Tariff Tracker's palette (palette.tracker), on the same variables
+// Duty Guard's palette (palette.tracker), on the same variables
 const trackerVars = (mode) => ({
   ...colorVars(palette.tracker[mode]),
   ...Object.fromEntries(palette.tracker.chart[mode].map((color, i) => [`--chart-${i + 1}`, color])),
@@ -38,7 +38,7 @@ module.exports = plugin(({ addBase }) => {
     '[data-theme="dark"] .hts-theme': themeVars("dark"),
     "@media (prefers-color-scheme: dark)": {
       ":root:not([data-theme]) .hts-theme": themeVars("dark"),
-      // The Tracker's dark palette, more specific so it wins over the line above
+      // Duty Guard's dark palette, more specific so it wins over the line above
       ":root:not([data-theme]) .hts-theme.hts-tracker": trackerVars("dark"),
       // A call-to-action band inverts to light (rule below, by the OS setting)
       ":root:not([data-theme]) .hts-tracker .hts-tracker-inverse": trackerVars("light"),
@@ -57,23 +57,23 @@ module.exports = plugin(({ addBase }) => {
       ...themeVars("dark"),
       backgroundColor: "transparent",
     },
-    // The Tariff Tracker (DESIGN_SYSTEM.md §15): its palette, and softer, rounder panels. Placed
-    // after the rules above and more specific, so it wins inside the Tracker in both modes.
+    // Duty Guard (DESIGN_SYSTEM.md §15): its palette, and softer, rounder panels. Placed
+    // after the rules above and more specific, so it wins inside Duty Guard in both modes.
     ":root .hts-theme.hts-tracker": trackerVars("light"),
     '[data-theme="dark"] .hts-theme.hts-tracker': trackerVars("dark"),
-    // Inside a page held light (THEME_LIGHT, e.g. the country pages), the Tracker look stays light
+    // Inside a page held light (THEME_LIGHT, e.g. the country pages), Duty Guard look stays light
     // too. As specific as the dark rules above and after them, so it wins.
     ":root .hts-theme-light .hts-theme.hts-tracker, [data-theme] .hts-theme-light .hts-theme.hts-tracker": trackerVars("light"),
     // A page that follows the site's light/dark setting (.follow-theme): anything inside it held
     // light (the footer, themed blocks in marketing sections) follows too
     '[data-theme="dark"] .follow-theme .hts-theme.hts-theme-light, [data-theme="dark"] .follow-theme.hts-theme.hts-theme-light': themeVars("dark"),
-    // (Cards round to 20px in the Tracker's look: app/globals.css, so it wins over rounded-lg)
+    // (Cards round to 20px in Duty Guard's look: app/globals.css, so it wins over rounded-lg)
     // Inside a card, a fill made with base-200 (a table head, a footer, a hover) takes the
     // container tone instead of the ground's, so it never reads as a hole through the card
     ".hts-tracker .tt-card, .hts-tracker.tt-card": { "--color-base-200": "var(--tt-soft)" },
     // The sidebar is dark in both modes: everything inside it takes the dark palette
     ".hts-tracker .hts-tracker-on-dark, [data-theme] .hts-tracker .hts-tracker-on-dark": trackerVars("dark"),
-    // Landing pages in the Tracker's look: their dark bands (mk.bandDark marks them .mk-dark) take
+    // Landing pages in Duty Guard's look: their dark bands (mk.bandDark marks them .mk-dark) take
     // the dark palette in both modes, so theme classes inside read light on dark
     ".follow-theme .mk-dark, [data-theme] .follow-theme .mk-dark": trackerVars("dark"),
     // A call-to-action band, inverted from the page: dark in light mode, light in dark mode

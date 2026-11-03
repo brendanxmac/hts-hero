@@ -42,7 +42,7 @@ const OFFER = [
   {
     Icon: UserGroupIcon,
     title: "Onboarded to Your Team",
-    body: "We learn your products, suppliers, broker and how you buy, then load every import you bring in and every past entry into the Tracker.",
+    body: "We learn your products, suppliers, broker and how you buy, then load every import you bring in and every past entry into Duty Guard.",
   },
   {
     Icon: ChatBubbleLeftRightIcon,
@@ -108,7 +108,7 @@ const INCLUDED = [
   "Savings options flagged for you and your broker",
   "Every entry, entry summary and delivery report audited",
   "Tariff changes briefed as they happen",
-  "The Tariff Tracker on every import we watch",
+  "Duty Guard on every import we watch",
 ];
 
 const TIER_NOTES = [

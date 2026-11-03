@@ -5,12 +5,12 @@ import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 import { NUM_FREE_CLASSIFICATIONS } from "../../constants/classification"
 
 // To an account that signed up from a generic link (the home page, the header) and hasn't opened
-// the Tariff Tracker (libs/email/lifecycle.ts product_tour_1/2/3): one product per email, each with
+// Duty Guard (libs/email/lifecycle.ts product_tour_1/2/3): one product per email, each with
 // what it does for them and what's free.
 //   1 (day 1)  the duty calculator: free and unlimited, with the latest tariff action as the hook
-//   2 (day 3)  the Tariff Tracker: alerts on their imports, free for 14 days from their first ones
+//   2 (day 3)  Duty Guard: alerts on their imports, free for a week from their first ones
 //   3 (day 6)  the classification assistant: the right HTS code, free to try
-// Opening the Tracker ends the tour: its own onboarding emails take over.
+// Opening Duty Guard ends the tour: its own onboarding emails take over.
 
 export interface ProductTourEmailProps {
   step: 1 | 2 | 3
@@ -20,17 +20,17 @@ export interface ProductTourEmailProps {
 }
 
 const SUBJECTS = {
-  1: "The duty on any import, free and unlimited",
-  2: "Know the day a new tariff hits your imports",
-  3: "The right HTS code, with the reasoning to back it",
+  1: "Nail your US Import Costs",
+  2: "Did a new tariff just hit your imports?",
+  3: "Classifications you can defend",
 } as const
 
 export const productTourSubject = (p: ProductTourEmailProps) => SUBJECTS[p.step]
 
 const PREVIEWS = {
-  1: "Every tariff stacked up on any HTS code and country, in seconds. Unlimited with your account.",
-  2: `Add your imports once and get alerted when a change hits one. Free for ${REVERSE_TRIAL.days} days, starting when you add them.`,
-  3: `Describe a product and get a defensible HTS classification. ${NUM_FREE_CLASSIFICATIONS} classifications free.`,
+  1: "See every tariff & fee stacked up on any HTS code from any country. Free & Unlimited",
+  2: `Get alerted when tariff changes affect your imports.`,
+  3: `Get a mountain of evidence for every classification`,
 } as const
 
 export default function ProductTourEmail({ step, latest, footer }: ProductTourEmailProps) {
@@ -40,22 +40,16 @@ export default function ProductTourEmail({ step, latest, footer }: ProductTourEm
       {step === 1 && (
         <>
           <Eyebrow>Duty Calculator</Eyebrow>
-          <Title>The duty on any import, in seconds</Title>
-          <P>Put in an HTS code and a country of origin and the calculator stacks up every tariff that applies today, line by line:</P>
+          <Title>Calculate the duty on any import, in seconds</Title>
+          <P>Enter in an HTS code and a country of origin and the calculator finds every tariff that applies today, line by line:</P>
           <Checklist
             items={[
-              "The base rate plus Section 232, Section 301, reciprocal and every other tariff on top",
-              "Duty over time, so you see what changed and when, unlocked with your account",
-              "Analysis of where else you could source it, and for how much less duty",
-              "Free and unlimited, as often as you like",
+              "See the base rate, every additional tariff, and any additional fees",
+              "Track duty over time, so you see what changed and when",
+              "Analysis of where else you could source it, and what it would cost",
+              "Free and unlimited",
             ]}
           />
-          {latest && (
-            <>
-              <P>Tariffs keep moving. The latest change:</P>
-              <UpdateBlock update={latest} campaign={campaign} compact />
-            </>
-          )}
           <Cta href={siteLink("/duty-calculator", campaign)} variant="next">
             Calculate a duty &rarr;
           </Cta>
@@ -63,24 +57,24 @@ export default function ProductTourEmail({ step, latest, footer }: ProductTourEm
       )}
       {step === 2 && (
         <>
-          <Eyebrow tone="up">Tariff Tracker</Eyebrow>
-          <Title>Know the day a new tariff hits your imports</Title>
-          <P>Add the products you import once, as HTS codes and countries of origin, and the Tracker watches every one of them, every day:</P>
+          <Eyebrow tone="up">Duty Guard</Eyebrow>
+          <Title>Get notified when new tariff hits your imports</Title>
+          <P>Just upload your imports and Duty Guard will watch them, 24/7 any notify you when you&apos;re affected. You&apos;ll get alerts like this:</P>
           <AlertSample
-            label="Example alert"
-            updateTitle="Section 232: more steel derivative products added"
+            label="Tariff Alert"
+            updateTitle="A new tariff affects 1 of your imports"
             code="7326.90.86.88"
             country="Germany"
             description="Other articles of iron or steel"
             beforePct={12.9}
-            afterPct={52.9}
+            afterPct={32.9}
           />
-          <Checklist items={TRACKER_POINTS} />
+          {/* <Checklist items={TRACKER_POINTS} /> */}
           <P>
-            It&apos;s free for {REVERSE_TRIAL.days} days on up to {REVERSE_TRIAL.imports} imports, no credit card, and the 14 days only start when you add your imports.
-            Paste a list or drop in a spreadsheet: about a minute.
+            Try it free, no credit card required.
+            Just upload your imports in 30 seconds to get started.
           </P>
-          <Cta href={siteLink("/tariff-tracker", campaign)} variant="next">
+          <Cta href={siteLink("/duty-guard", campaign)} variant="next">
             Add my imports &rarr;
           </Cta>
         </>
@@ -88,18 +82,17 @@ export default function ProductTourEmail({ step, latest, footer }: ProductTourEm
       {step === 3 && (
         <>
           <Eyebrow>Classification Assistant</Eyebrow>
-          <Title>The right HTS code, with the reasoning to back it</Title>
-          <P>Not sure a product is classified right? Describe it and the assistant works through the HTS the way a customs expert would:</P>
+          <Title>Get Supporting Evidence to Back Up Every HTS Classification</Title>
+          <P>Want to make sure a product is classified correctly? Just enter a product description and our assistant will find:</P>
           <Checklist
             items={[
-              "A classification you can defend, with the reasoning at every step",
-              "Checked against CBP rulings (CROSS) for similar products",
-              "Reasoning you can keep on file, ready for an audit",
-              `${NUM_FREE_CLASSIFICATIONS} classifications free to try it`,
+              "HS candidates in seconds",
+              "Legal notes that back up each option",
+              "CROSS rulings for similar products",
             ]}
           />
           <Cta href={siteLink("/classify#try-classify", campaign)} variant="next">
-            Classify a product &rarr;
+            Try it free &rarr;
           </Cta>
         </>
       )}

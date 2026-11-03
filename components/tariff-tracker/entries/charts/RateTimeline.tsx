@@ -81,7 +81,7 @@ export const RateTimeline = ({ history, rows, to }: { history: ProductHistory; r
                   {formatDate(r.entry.entryDate)}
                   {r.entry.entryNumber ? ` · ${r.entry.entryNumber}` : ""}
                 </p>
-                <TooltipRow color={DOT[a.verdict]} label="Paid" value={`${formatRate(a.ratePaidPct)} · ${money(r.entry.dutyPaid)}`} />
+                <TooltipRow color={DOT[a.verdict]} label="Paid" value={`${formatRate(a.ratePaidPct)} · ${money(a.paid)}`} />
                 <TooltipRow color={PRIMARY_MARK} label="Owed" value={`${formatRate(a.rateOwedPct)} · ${money(a.owed)}`} />
                 <p className="m-0 mt-1 text-base-content/70">
                   {VERDICTS[a.verdict].label}

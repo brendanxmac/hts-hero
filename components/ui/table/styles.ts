@@ -2,7 +2,7 @@ import * as ui from "@/components/ui/styles";
 
 // The look every table shares (DESIGN_SYSTEM.md "Data table"), used by DataTable and Table so the
 // two can't drift: small-caps headers on the soft background, ruled rows lit on hover, the first
-// and last cells padded to the card's edge. Inside the Tracker (`tracker:`, §15) headers sit on
+// and last cells padded to the card's edge. Inside Duty Guard (`tracker:`, §15) headers sit on
 // its soft fill and rows are roomier.
 
 export const ALIGN = { left: "text-left", right: "text-right", center: "text-center" } as const;
@@ -13,7 +13,7 @@ export const table = "w-full border-separate border-spacing-0 text-sm tabular-nu
 // Each cell's sides: the first and last line up with the card's padding
 export const pad = "px-4 first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6";
 
-// In the Tracker's look the head sits on the card's own surface over the strong rule (2px: the
+// In Duty Guard's look the head sits on the card's own surface over the strong rule (2px: the
 // structure changes there), not on a gray band
 export const headCell = `${ui.label} whitespace-nowrap bg-base-200 py-2.5 tracker:border-b-2 tracker:border-tt-rule tracker:bg-base-100 tracker:py-3 tracker:font-bold tracker:text-base-content/70`;
 
@@ -36,7 +36,7 @@ export const staticCell = `${bodyCell} ${pad} ${flushPad} group-data-dense/t:py-
 export const rowHover = "transition-colors hover:bg-base-200/60 hover:tracker:bg-tt-soft";
 export const rowSelected = "bg-primary/5";
 
-// The card around a table (ui.card: 20px in the Tracker's look); clipped, so a static table's
+// The card around a table (ui.card: 20px in Duty Guard's look); clipped, so a static table's
 // corners are clean
 export const frame = ui.card;
 // For DataTable: free to overflow, so the header row can stick and menus can drop out of it

@@ -1,4 +1,4 @@
-// The email brand: the Tariff Tracker's light palette and type (DESIGN_SYSTEM.md §15), the same
+// The email brand: Duty Guard's light palette and type (DESIGN_SYSTEM.md §15), the same
 // values the social posts use (social/brand.ts). Emails can't read CSS variables or load the
 // app's fonts everywhere, so colors are written out and fonts fall back to system faces.
 
@@ -36,14 +36,33 @@ export const FONT_SANS = "Figtree, 'Segoe UI', Helvetica, Arial, sans-serif"
 
 export const SITE = "https://htshero.com"
 
-// The wordmark, as a PNG (most inboxes don't show SVG). Read when rendering, so scripts that load
-// the environment after importing still get it.
-export const logoUrl = () => `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/logo-text-black.png`
+// The wordmark, as a PNG (most inboxes don't show SVG), on a white rounded chip baked into the
+// image: the black text sits on a transparent ground otherwise and disappears when an inbox darkens
+// the page. The chip is tight so the mark lines up with the text in the card. Source:
+// emails/assets/logo-email-card.png, uploaded by `npm run email:upload-logo`. Read when rendering,
+// so scripts that load the environment after importing still get it.
+export const logoUrl = () => `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/logo-email-card.png`
 
 // "2026-10-14" → "Oct 14, 2026"
 export const formatDay = (iso: string) =>
   new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })
 
+// Hooks for the phone rules in EmailLayout. Desktop stays in the inline styles; on a phone each
+// layer of box gives its padding back to the text, and side-by-side columns stack.
+export const M = {
+  page: "m-page",
+  card: "m-card",
+  // A box inside the card, and one whose bottom space comes from what's in it
+  box: "m-box",
+  boxOpen: "m-box-open",
+  // A column that goes full width under the one before it, and one with a gap above it too
+  stack: "m-stack",
+  stackGap: "m-stack-gap",
+} as const
+
 // A link to the site, tagged so analytics can tell which email brought the visit
-export const siteLink = (path: string, campaign: string) =>
-  `${SITE}${path}${path.includes("?") ? "&" : "?"}utm_source=email&utm_medium=email&utm_campaign=${campaign}`
+export const siteLink = (path: string, campaign: string) => {
+  // The tracking goes before any #section, or the browser reads it as part of the section
+  const [page, hash] = path.split("#")
+  return `${SITE}${page}${page.includes("?") ? "&" : "?"}utm_source=email&utm_medium=email&utm_campaign=${campaign}${hash ? `#${hash}` : ""}`
+}

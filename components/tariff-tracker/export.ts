@@ -2,7 +2,7 @@ import { Authority } from "../../tariffs/engine-v2/types";
 import { adjustmentSummary } from "./adjustments";
 import { programAuthority, UNITS, VALUE, TrackedProduct } from "./report";
 
-// The Tariff Tracker report as a spreadsheet: one row per product (HTS code + country of
+// Duty Guard report as a spreadsheet: one row per product (HTS code + country of
 // origin), with a rate column and a column listing the tariffs (Chapter 99 headings) for
 // each type of tariff that appears.
 // The same sheet is written as CSV or as an Excel workbook.
@@ -253,7 +253,7 @@ const CONTENT_TYPES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 export const toXlsx = (sheet: Sheet, asOf: string): Uint8Array => {
   const about: [string, string][] = [
     ["Tariff report", ""],
-    ["Prepared with", "HTS Hero Tariff Tracker"],
+    ["Prepared with", "HTS Hero Duty Guard"],
     ["Rates as of", asOf],
     ["Products", String(sheet.rows.length)],
     [

@@ -1,5 +1,7 @@
 "use client";
 
+import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
+
 // The views of one thing (an answer's Duty · AD/CVD · Compare…, an import's tabs), as a row of
 // pills in its header card: the open one tinted in the brand color, the rest plain with a soft
 // hover. Pills, not an underline, because the header is a card of its own with the views' modules
@@ -15,7 +17,8 @@ export function TabBar<T extends string>({
   label: string;
   // count: a number in a small pill after the label (how many there are to see); badge: a short
   // word or figure after it ("AD/CVD may apply" in amber, "Up to $3,750" in green, "Soon" in gray)
-  options: readonly { id: T; label: string; title?: string; count?: number; badge?: string; badgeTone?: "warning" | "success" | "neutral" }[];
+  // warn: amber with a warning icon, for a tab that needs a look
+  options: readonly { id: T; label: string; title?: string; count?: number; badge?: string; badgeTone?: "warning" | "success" | "neutral"; warn?: boolean }[];
   value: T;
   onChange: (value: T) => void;
 }) {
@@ -32,9 +35,14 @@ export function TabBar<T extends string>({
             title={option.title}
             onClick={() => onChange(option.id)}
             className={`inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${
-              active ? "bg-primary/10 font-semibold text-primary" : "text-base-content/70 hover:bg-tt-soft hover:text-base-content"
+              option.warn
+                ? `text-warning ${active ? "bg-warning/15 font-semibold" : "hover:bg-warning/10"}`
+                : active
+                  ? "bg-primary/10 font-semibold text-primary"
+                  : "text-base-content/70 hover:bg-tt-soft hover:text-base-content"
             }`}
           >
+            {option.warn && <ExclamationTriangleIcon className="mr-1.5 h-4 w-4" aria-hidden />}
             {option.label}
             {option.count !== undefined && (
               <span

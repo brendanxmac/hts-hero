@@ -49,7 +49,7 @@ export const QuestionsPanel = ({
   notes?: Record<string, ReactNode>;
   // On each row that could save money: find out whether the goods qualify
   qualifyLink?: ReactNode;
-  // Above the sections, once for the whole panel (the Tracker's "See what you qualify for")
+  // Above the sections, once for the whole panel (Duty Guard's "See what you qualify for")
   notice?: ReactNode;
   // Signed out: no legal text on the rows (it takes a free account)
   hideLegal?: boolean;

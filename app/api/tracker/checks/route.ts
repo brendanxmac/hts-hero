@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient, createClient } from "@/app/api/supabase/server";
 import { readTrackerAccess } from "@/libs/tariff-tracker/access";
-import { canSpendCheck, CheckKind, hasChecked, isPaid } from "@/libs/tariff-tracker/plan";
+import { canSpendCheck, CheckKind, freeCheck } from "@/libs/tariff-tracker/plan";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +11,8 @@ const REF = /^[A-Za-z0-9-]{1,80}$/;
 
 // Spends one check from the usage-based trial (PRICING.md): a savings check on one import, or an
 // audit check on one entry. Checking the same one again is free. Written with the service role,
-// so the browser can't hand itself more than the allowance. Paid plans don't spend checks:
-// their savings follow the plan's coverage and their audits are unlimited.
+// so the browser can't hand itself more than the allowance. Duty Guard Pro plans' savings follow the
+// plan's coverage; their audits are unlimited but still recorded, for the 10 Audit guarantee.
 export async function POST(req: NextRequest) {
   try {
     const {
@@ -29,10 +29,10 @@ export async function POST(req: NextRequest) {
 
     const admin = createAdminClient();
     const access = await readTrackerAccess(admin, user.id);
-    if (isPaid(access) || hasChecked(access, kind as CheckKind, ref)) return NextResponse.json(access);
+    if (freeCheck(access, kind as CheckKind, ref)) return NextResponse.json(access);
     if (!canSpendCheck(access, kind as CheckKind, ref)) {
       return NextResponse.json(
-        { error: kind === "savings" ? "Savings checks come with a Tracker plan." : "Audit checks come with a Tracker plan.", access },
+        { error: kind === "savings" ? "Savings checks come with Duty Guard Pro." : "Audit checks come with Duty Guard Pro.", access },
         { status: 402 }
       );
     }
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(await readTrackerAccess(admin, user.id));
   } catch (e) {
-    console.error("Error spending a Tariff Tracker check:", e);
+    console.error("Error spending a Duty Guard check:", e);
     return NextResponse.json({ error: "Couldn't run that check. Please try again." }, { status: 500 });
   }
 }

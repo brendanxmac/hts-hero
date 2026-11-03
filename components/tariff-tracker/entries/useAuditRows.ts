@@ -26,7 +26,17 @@ export interface AuditTotals {
   owed: number;
   overpaid: number;
   underpaid: number;
+  // Duty and AD/CVD paid on the entries logged in the past 12 months, checked or not
+  paidYear: number;
+  loggedYear: number;
 }
+
+// The entry date a year ago today, as an ISO date
+const yearAgo = () => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - 1);
+  return d.toISOString().slice(0, 10);
+};
 
 export const useAuditRows = (productKey?: string) => {
   const { entries, loading } = useEntries();
@@ -41,13 +51,17 @@ export const useAuditRows = (productKey?: string) => {
         return { entry, product, audit: product && auditUnlocked(access, entry.id) ? auditEntry(entry, product) : null };
       });
     const audited = rows.filter((r) => r.audit);
+    const since = yearAgo();
+    const year = rows.filter((r) => r.entry.entryDate >= since);
     const totals: AuditTotals = {
       logged: rows.length,
       audited: audited.length,
-      paid: audited.reduce((sum, r) => sum + r.entry.dutyPaid, 0),
+      paid: audited.reduce((sum, r) => sum + r.audit!.paid, 0),
       owed: audited.reduce((sum, r) => sum + r.audit!.owed, 0),
       overpaid: audited.reduce((sum, r) => sum + Math.max(0, r.audit!.difference), 0),
       underpaid: audited.reduce((sum, r) => sum + Math.max(0, -r.audit!.difference), 0),
+      paidYear: year.reduce((sum, r) => sum + r.entry.dutyPaid + (r.entry.adcvd?.paid ?? 0), 0),
+      loggedYear: year.length,
     };
     return { rows, totals, loading };
   }, [entries, products, access, productKey, loading]);

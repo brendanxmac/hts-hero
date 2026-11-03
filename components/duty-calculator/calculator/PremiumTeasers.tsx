@@ -8,16 +8,16 @@ import { ArrowLink } from "./ArrowLink";
 import { useConversion } from "./ConversionDialog";
 
 // The calculator's way up, in three steps per tab: what anyone sees, what a free account adds,
-// and what the Tariff Tracker adds (its usage-based trial comes with every account; signed in, each
-// step opens its Tracker tab). Each locked step opens its pitch
+// and what Duty Guard adds (its usage-based trial comes with every account; signed in, each
+// step opens its Duty Guard tab). Each locked step opens its pitch
 // (useConversion).
 // - Duty: the adjustments and what each would change, for anyone; which ones the goods qualify
-//   for (Tracker), from "See which ones apply" across from Possible Adjustments' title (a button
-//   atop it, in the Tracker) and a link on each row that could save
+//   for (Duty Guard), from "See which ones apply" across from Possible Adjustments' title (a button
+//   atop it, in Duty Guard) and a link on each row that could save
 // - Duty Over Time: the history (free) / any past date in full (account) / past entries checked
-//   for refunds in bulk (Tracker), the last from a button in the card's heading
+//   for refunds in bulk (Duty Guard), the last from a button in the card's heading
 // - Compare: up to 4 origins side by side (free) / every origin ranked (account) / cheaper origins across the
-//   catalog (Tracker)
+//   catalog (Duty Guard)
 
 type Conversion = ReturnType<typeof useConversion>;
 
@@ -28,7 +28,7 @@ export const QUALIFY_TRIAL = {
 };
 
 // What each adjustment would change is free for everyone (on each row of Possible Adjustments);
-// working out which ones the goods qualify for is the Tracker's savings check. In the Tracker,
+// working out which ones the goods qualify for is Duty Guard's savings check. In Duty Guard,
 // across from Possible Adjustments' title: the way to this import's savings (the host says where)
 export const CheckSavingsLink = ({ onClick }: { onClick: () => void }) => <ArrowLink onClick={onClick}>Check Possible Savings</ArrowLink>;
 
@@ -72,7 +72,7 @@ export const RefundsButton = ({ conversion, history, customsValue: _customsValue
         onClick={() =>
           conversion.openTrial("refunds", {
             title: "Find out if you overpaid, or underpaid, on past entries",
-            subtitle: `${over > 0.005 && peak ? `The duty on this import is ${changeText.charAt(0).toLowerCase()}${changeText.slice(1)}. ` : ""} Check every past entry against the duty in force on its date across your entire product catalog with our Tariff Tracker.`,
+            subtitle: `${over > 0.005 && peak ? `The duty on this import is ${changeText.charAt(0).toLowerCase()}${changeText.slice(1)}. ` : ""} Check every past entry against the duty in force on its date across your entire product catalog with our Duty Guard.`,
           })
         }
       >

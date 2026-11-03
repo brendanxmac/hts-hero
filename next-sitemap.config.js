@@ -93,8 +93,9 @@ const KEY_PAGES = [
   ...COUNTRY_PAGES.map((c) => [`/duty-calculator/${c.slug}`, 0.9]),
   ["/duty-calculator/faq", 0.7],
   ["/duty-calculator/changelog", 0.6],
+  ["/tariff-alerts", 0.9],
   ["/tariff-monitor", 0.9],
-  ["/tariff-audit", 0.9],
+  ["/duty-audit", 0.9],
   ["/tariff-updates", 0.9],
   ["/tariffs", 0.8],
   ...programHubSlugs().map((slug) => [`/tariffs/${slug}`, 0.8]),
@@ -126,7 +127,7 @@ module.exports = {
     policies: [
       // Calculator links with inputs (?code=, ?country=…) all canonicalize to the calculator page;
       // keep crawlers on the page itself, not tens of thousands of parameter variants
-      { userAgent: "*", allow: "/", disallow: ["/duty-calculator?", "/duty-calculator/*?", "/tariff-tracker?"] },
+      { userAgent: "*", allow: "/", disallow: ["/duty-calculator?", "/duty-calculator/*?", "/duty-guard?"] },
     ],
   },
   sitemapSize: 5000,
@@ -140,8 +141,8 @@ module.exports = {
     "/coverage-checker*",
     // Account pages: nothing for search engines here
     "/signin",
-    // The Tariff Tracker app is noindexed; /tariff-monitor is its page
-    "/tariff-tracker",
+    // Duty Guard app is noindexed; /tariff-monitor is its page
+    "/duty-guard",
     // Local previews without sign-in (never committed or deployed)
     "/zz-*",
     "/sign-out",

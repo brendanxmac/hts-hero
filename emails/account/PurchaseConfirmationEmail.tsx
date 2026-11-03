@@ -14,8 +14,10 @@ export interface PurchaseConfirmationEmailProps {
   orderId: string
   purchasedOn: string
   product: "tracker" | "classify"
-  // Tariff Tracker plans: how many imports it covers
+  // Duty Guard plans: how many products it covers
   importsCovered?: number | null
+  // The plan's offer: what it covers, and its guarantee
+  offer?: "alerts" | "audits" | null
   footer: EmailFooter
 }
 
@@ -32,7 +34,7 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
       <P>
         Thank you for choosing HTS Hero!{" "}
         {tracker
-          ? `Alerts, savings and audits now cover ${p.importsCovered ? `up to ${p.importsCovered} imports` : "your imports"}.`
+          ? `${p.offer === "alerts" ? "Tariff alerts and impact checks" : "Alerts, savings and audits"} now cover ${p.importsCovered ? `up to ${p.importsCovered} products` : "your products"}.`
           : "Your classification plan is active."}
       </P>
       <Facts
@@ -48,9 +50,11 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
         items={
           tracker
             ? [
-              "Add the rest of your imports, so every one is covered",
-              "Choose where alerts go (email, Slack or Microsoft Teams), so the right people hear the day a tariff change hits your imports",
-              "Check for savings on your imports: trade programs, exemptions and lower-duty origins you may qualify for",
+              "Add the rest of your products, so every one is covered",
+              "Choose where alerts go, so the right people hear the day a tariff change hits your products",
+              p.offer === "alerts"
+                ? "Open Tariff Changes and see how the latest actions hit your products"
+                : "Check for savings on your products: trade programs, exemptions and lower-duty origins you may qualify for",
             ]
             : [
               "Start a classification from a product description",
@@ -59,11 +63,18 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
             ]
         }
       />
-      <Cta href={siteLink(tracker ? "/tariff-tracker" : "/classifications", CAMPAIGN)} variant="next">
-        {tracker ? "Open the Tariff Tracker" : "Start a classification"}
+      <Cta href={siteLink(tracker ? "/duty-guard" : "/classifications", CAMPAIGN)} variant="next">
+        {tracker ? "Open Duty Guard" : "Start a classification"}
       </Cta>
+      {/* {tracker && p.offer && (
+        <P small>
+          {p.offer === "alerts"
+            ? "Your 30-day money-back guarantee: if Duty Guard Essentials isn't worth it, just reply within 30 days of your first payment and I'll refund it in full."
+            : "Your 10 Audit Money Back Guarantee: if you do 10 audits within 30 days and aren't satisfied with the results, just reply and I'll refund you in full."}
+        </P>
+      )} */}
       <P muted small>
-        Sign in with this email address to use your plan. Manage billing any time from your account&apos;s settings.
+        Sign in with this email address to use your plan. Manage your subscription by clicking your profile icon, then "Billing".
       </P>
       <Signature />
     </EmailLayout>
@@ -71,12 +82,13 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
 }
 
 PurchaseConfirmationEmail.PreviewProps = {
-  planName: "Tariff Tracker 30",
+  planName: "Duty Guard Pro 25",
   billing: "Annual",
   term: "Renews Oct 15, 2027",
   orderId: "a1b2c3d4",
   purchasedOn: "Oct 15, 2026",
   product: "tracker",
-  importsCovered: 30,
+  importsCovered: 25,
+  offer: "audits",
   footer: { reason: "You're getting this receipt because you bought an HTS Hero plan with this email." },
 } satisfies PurchaseConfirmationEmailProps

@@ -10,8 +10,8 @@ import { ColumnFiltersState, Updater } from "@tanstack/react-table";
 import type { DataTableInstance, TableRow } from "@/components/ui/table/features";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
-import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice } from "@/components/pricing-calculator/lib/pricing";
-import { TRACKER_PLANS } from "@/libs/tariff-tracker/plan";
+import { formatPrice, perImportPrice } from "@/components/pricing-calculator/lib/pricing";
+import { ALERT_PLANS } from "@/libs/tariff-tracker/plan";
 import { todayIso } from "../../duty-calculator/lib/format";
 import {
   DataTable,
@@ -35,7 +35,7 @@ import type { Density } from "@/components/ui/table";
 // description or country; filter by origin, HTS chapter, tariff, savings and alerts, each with
 // counts; sort by product, origin or rate (list order until a heading is clicked); pick rows to
 // turn alerts on or off or remove them together. Past a few hundred imports only the rows in view
-// are drawn. The filters live in the Tracker (TrackerContext), so they stay set between tabs.
+// are drawn. The filters live in Duty Guard (TrackerContext), so they stay set between tabs.
 // `header` and `summary` get the table, for what's shown above it from the same rows (export
 // covers what's showing; the summary sums it up). The search, filters and bulk actions sit in the
 // table's panel, over the rows they act on.
@@ -76,9 +76,8 @@ export const ImportsTable = ({
     const yearAgo = `${Number(today.slice(0, 4)) - 1}${today.slice(4)}`;
     return changes.filter((c) => c.date >= yearAgo && c.date <= today && !trackedKeys.has(c.product.key)).length;
   }, [changes, trackedKeys]);
-  const coverAllPlan = TRACKER_PLANS.find((p) => items.length <= p.maxPairs && p.maxPairs > access.pairLimit);
+  const coverAllPlan = ALERT_PLANS.find((p) => items.length <= p.maxPairs && p.maxPairs > access.pairLimit);
   const coverAll = coverAllPlan ? { perImport: perImportPrice(coverAllPlan) } : null;
-  const launch = launchPricingActive();
 
   // Imports an AD/CVD case may cover, chipped under their code
   const adcvdItems = useMemo(() => rows.map((r) => ({ key: r.key, code: r.entry.element.htsno, country: r.entry.country.code })), [rows]);
@@ -114,7 +113,7 @@ export const ImportsTable = ({
     ],
   );
 
-  // The Tracker's filters, as the table's column filters (and back)
+  // Duty Guard's filters, as the table's column filters (and back)
   const columnFilters = useMemo<ColumnFiltersState>(
     () =>
       Object.entries(filters)
@@ -261,8 +260,7 @@ export const ImportsTable = ({
               </p>
               <p className="m-0 text-sm text-base-content/70">
                 Next time, you&apos;ll find out from your customs bill.
-                {coverAll ? ` Cover all ${n(items.length)} for ${formatPrice(coverAll.perImport)} per import a month` : ""}
-                {coverAll && launch ? `, at launch pricing until ${LAUNCH_PRICING.endsLabel}.` : coverAll ? "." : ""}
+                {coverAll ? ` Cover all ${n(items.length)} for ${formatPrice(coverAll.perImport)} per product a month.` : ""}
               </p>
             </div>
             <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={() => openUpgrade("tracking")}>

@@ -9,7 +9,7 @@ import { addDays, HistorySegment } from "@/tariffs/engine-v2/history";
 import { formatMoney, formatPct } from "../lib/format";
 import { shortDate } from "../rate-history/format";
 
-// Under Recent Changes' list on /duty-calculator: the Tracker's refund check (audit checks), sold by
+// Under Recent Changes' list on /duty-calculator: Duty Guard's refund check (audit checks), sold by
 // showing it work. An entry owes the duty in force on its entry date, and entries filed just
 // after a rate change often still pay the old rate. So the card audits a few example entries of
 // this import, built from its real changes: each filed a few days after a change at the rate
@@ -87,7 +87,7 @@ export const RefundCheckCard = ({
       {/* The pitch */}
       <div className="flex min-w-0 flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <span className={tt.eyebrow("success")}>Refund check · Tariff Tracker</span>
+          <span className={tt.eyebrow("success")}>Refund check · Duty Guard</span>
           <h4 id="refund-check-title" className={`${tt.display} text-3xl font-semibold leading-tight tracking-tight text-base-content`}>
             Paid the old rate after a change?
           </h4>

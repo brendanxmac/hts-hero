@@ -6,13 +6,13 @@ import { ReactNode, useEffect, useRef } from "react"
 // Building blocks for the admin tools. Color is reserved for meaning: green = added/approved/done,
 // red = removed/failed, amber = needs attention, blue = in progress. Everything else is neutral.
 // Inside the admin frame (components/admin/AdminFrame, .hts-tracker) the `tracker:` classes give
-// them the Tracker's look (DESIGN_SYSTEM.md §15): round cards on the ground, Sora titles and
+// them Duty Guard's look (DESIGN_SYSTEM.md §15): round cards on the ground, Sora titles and
 // numbers, pill buttons and tabs, cobalt for the one main action. The revision checker keeps the
 // old shell, so it looks as it did.
 
-// Sora, for titles and big numbers, in the Tracker's look
+// Sora, for titles and big numbers, in Duty Guard's look
 const SORA = "tracker:[font-family:var(--font-tracker-display)]"
-// A card on the ground, in the Tracker's look
+// A card on the ground, in Duty Guard's look
 const CARD = "tt-card tracker:rounded-lg tracker:border-base-300 tracker:shadow-[var(--tt-shadow)]"
 
 export type Tone = "neutral" | "info" | "success" | "warning" | "error"
@@ -49,7 +49,7 @@ const CALLOUT_ICON: Record<Tone, string> = {
   error: "text-error",
 }
 
-// Shared button looks (daisyUI btn sizes, neutral styling; in the Tracker's look, pills with the
+// Shared button looks (daisyUI btn sizes, neutral styling; in Duty Guard's look, pills with the
 // one main action in cobalt)
 const PRIMARY_TT = "tracker:rounded-full tracker:bg-primary tracker:text-primary-content tracker:hover:bg-primary/90 tracker:shadow-none"
 const SECONDARY_TT = "tracker:rounded-full tracker:border-base-300 tracker:shadow-none tracker:hover:border-base-content/25 tracker:hover:bg-tt-soft"
@@ -62,7 +62,7 @@ export const btn = {
   xsGhost: "btn btn-xs btn-ghost h-7 min-h-7 px-2 font-medium tracker:rounded-full tracker:h-8 tracker:min-h-8 tracker:px-3 tracker:hover:bg-tt-soft",
 }
 
-// A table inside a Panel (daisyUI's table): in the Tracker's look, the head over a 2px rule, roomier
+// A table inside a Panel (daisyUI's table): in Duty Guard's look, the head over a 2px rule, roomier
 // hairline rows, and the first and last columns lined up with the card's padding
 export const tableCls =
   "table table-sm tracker:[&_thead_tr]:border-b-2 tracker:[&_thead_tr]:border-tt-rule tracker:[&_th]:py-3 tracker:[&_th]:text-xs tracker:[&_th]:font-semibold tracker:[&_th]:text-base-content/60 tracker:[&_td]:py-3 tracker:[&_tbody_tr]:border-base-300 tracker:[&_tr>*:first-child]:pl-6 tracker:[&_tr>*:last-child]:pr-6"
@@ -139,7 +139,7 @@ export const PageHeader = ({
   actions?: ReactNode
   children?: ReactNode
 }) => (
-  // In the Tracker's look, the page's header card: title, its one line, its actions, then its views
+  // In Duty Guard's look, the page's header card: title, its one line, its actions, then its views
   // (Tabs) at the card's foot (DESIGN_SYSTEM.md §15 "Page frame")
   <header className={`flex flex-col gap-3 tracker:gap-4 tracker:border tracker:bg-base-100 tracker:px-6 tracker:pb-4 tracker:pt-6 ${CARD}`}>
     {crumbs && <Crumbs items={crumbs} />}

@@ -145,7 +145,7 @@ export const CountryCard = ({
   diff?: number;
   // What leads: the rate (Side by Side: %s first, dollars under them) or the dollars
   show?: "pct" | "usd";
-  // Rates only: no dollar figures, fees or landed cost (the Tracker's Savings tab)
+  // Rates only: no dollar figures, fees or landed cost (Duty Guard's Savings tab)
   noDollars?: boolean;
   // US imports from it (Census), as the last row; left out when there are no figures
   supply?: Supply | null;

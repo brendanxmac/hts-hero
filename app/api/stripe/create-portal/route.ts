@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { createClient } from "@/app/api/supabase/server";
 import { createCustomerPortal } from "@/libs/stripe";
 import { fetchUser } from "../../../../libs/supabase/user";
-import { isTrackerPlan } from "@/libs/tariff-tracker/plan";
+import { isSellablePlan } from "@/libs/tariff-tracker/plan";
 import { trackerPlanChangeFlow } from "@/libs/tariff-tracker/subscription";
 
 export async function POST(req: NextRequest) {
@@ -42,13 +42,13 @@ export async function POST(req: NextRequest) {
     }
 
     const tracker = body.app === "tracker";
-    // A Tracker plan change (`changePlan`: true, or the plan to move to): opens on Stripe's confirm
+    // A Duty Guard plan change (`changePlan`: true, or the plan to move to): opens on Stripe's confirm
     // page for that plan, or its plan picker, and comes back with ?plan=changed
-    const changeTo = typeof body.changePlan === "string" && isTrackerPlan(body.changePlan) ? body.changePlan : null;
+    const changeTo = typeof body.changePlan === "string" && isSellablePlan(body.changePlan) ? body.changePlan : null;
     const flows =
       tracker && body.changePlan
-        ? await trackerPlanChangeFlow(userProfile.stripe_customer_id, changeTo, withParam(body.returnUrl, "plan", "changed")).catch((e): Stripe.BillingPortal.SessionCreateParams.FlowData[] => {
-            console.error("Couldn't read the Tracker subscription:", e);
+        ? await trackerPlanChangeFlow(userProfile.stripe_customer_id, changeTo, withParam(body.returnUrl, "plan", "changed"), body.billing === "annual" || body.billing === "monthly" ? body.billing : undefined).catch((e): Stripe.BillingPortal.SessionCreateParams.FlowData[] => {
+            console.error("Couldn't read Duty Guard subscription:", e);
             return [];
           })
         : [];
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     const stripePortalUrl = await createCustomerPortal({
       customerId: userProfile.stripe_customer_id,
       returnUrl: body.returnUrl,
-      // "tracker": the Tariff Tracker's billing portal (switching between its tiers only)
+      // "tracker": Duty Guard's billing portal (switching between its tiers only)
       app: tracker ? "tracker" : undefined,
       flows,
     });

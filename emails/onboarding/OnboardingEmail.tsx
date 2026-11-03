@@ -1,136 +1,86 @@
+import { Text } from "@react-email/components"
 import { EmailFooter, EmailLayout } from "../kit/Layout"
-import { AlertSample, Checklist, Cta, Eyebrow, P, Panel, PlanStrip, Signature, Title, UpdateBlock, UpdateSummary } from "../kit/parts"
-import { siteLink } from "../kit/brand"
-import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
+import { Checklist, Cta, Eyebrow, P, Panel, PlanStrip, Signature, Title } from "../kit/parts"
+import { C, siteLink } from "../kit/brand"
 
-// The "no imports yet" email the day after an account first opened the Tracker and left it empty
-// (libs/email/lifecycle.ts tracker_no_imports_1). Value first: the tariff actions of the last 30
-// days, the latest ones in full, and the question only their imports can answer. Then the three
-// ways in from the Tracker's takeover, and what to do without the list (ask the broker). The CTA
-// lands on the takeover's ways in (?setup=add). `reminder`: they asked for it ("Remind me tomorrow").
-//   step 2 (no longer sent, kept for queued messages): what an alert on your imports looks like
+// The "no imports yet" emails, for an account that opened Duty Guard and left it empty
+// (libs/email/lifecycle.ts tracker_no_imports_1/2/3, days 1, 3 and 7 from the first visit). Each is
+// one reason to add their imports, then the button, then a reply reaches Brendan if they're stuck.
+// `reminder`: they asked for it ("Remind me tomorrow"), and this is the next one they hadn't had.
+
+export type OnboardingStep = 1 | 2 | 3
 
 export interface OnboardingEmailProps {
-  step: 1 | 2
-  // Tariff actions in the last 30 days, and the latest ones
-  actionsThisMonth: number
-  recent: UpdateSummary[]
+  step: OnboardingStep
   // They pressed "Remind me tomorrow" in the takeover
   reminder?: boolean
   footer: EmailFooter
 }
 
-const actions = (n: number) => (n > 0 ? `${n} US tariff changes in the last 30 days` : "US tariffs change every week")
+const STEPS: Record<OnboardingStep, { campaign: string; subject: string; eyebrow: string; title: string; body: string; points: string[]; cta: string }> = {
+  1: {
+    campaign: "overpayments",
+    subject: "Are you overpaying on your imports?",
+    eyebrow: "Duty Guard · Overpayments",
+    title: "Are You Overpaying on Your Imports?",
+    body: "Improper tariff stacking, unclaimed exemptions and rules that change after entry can all mean you paid more duty than you had to. Add your imports and Duty Guard can check for it.",
+    points: ["Add your imports", "Audit a past entry against the duty in force on its date", "See possible overpayments to review with your team or broker"],
+    cta: "Check your Imports",
+  },
+  2: {
+    campaign: "alerts",
+    subject: "Know when tariffs affect your imports",
+    eyebrow: "Duty Guard · Alerts",
+    title: "Know When New Tariffs Affect Your Imports",
+    body: "Tariffs change constantly, and finding out late means a surprise on the customs bill. Add your imports to Duty Guard checks every new US tariff action against them.",
+    points: ["Alerts the moment a change hits your imports", "The rate before and after, with the official source", "A heads up when a new tariffs are proposed (so you can plan)"],
+    cta: "Add your Imports",
+  },
+  3: {
+    campaign: "savings",
+    subject: "Discover possible savings on your imports",
+    eyebrow: "Duty Guard · Savings",
+    title: "Discover Possible Savings on All Your Imports",
+    body: "Many importers don't know they're overpaying on duty. Duty Guard analyzes all your imports in seconds and checks for every way you could save.",
+    points: ["Trade programs your imports may qualify for", "Exemptions that could lower your duty", "Lower-duty countries of origin"],
+    cta: "Check your Imports",
+  },
+}
 
-export const onboardingSubject = (p: OnboardingEmailProps) =>
-  p.step === 2
-    ? "Which new tariffs hit your imports?"
-    : p.reminder
-      ? "Your reminder: add your imports"
-      : p.actionsThisMonth > 0
-        ? `${p.actionsThisMonth} tariff changes this month. Do any hit your imports?`
-        : "Do this week's tariff changes hit your imports?"
+export const onboardingSubject = (p: OnboardingEmailProps) => (p.reminder ? "Your reminder: add your imports" : STEPS[p.step].subject)
 
-const preview = (p: OnboardingEmailProps) =>
-  p.step === 1
-    ? "Add your imports and your Tracker shows which ones every change hits. About a minute, three ways to do it."
-    : `${actions(p.actionsThisMonth)}. Your Tracker can tell you which ones hit you, once your imports are in.`
+// Opens Duty Guard's import takeover on its ways in (ImportTakeover's ?setup=)
+export const ADD_IMPORTS_URL = "/duty-guard?setup=add"
 
-const CAMPAIGN = (step: number) => `onboarding-${step}`
-
-// Opens the Tracker's import takeover on its ways in (ImportTakeover's ?setup=)
-export const ADD_IMPORTS_URL = "/tariff-tracker?setup=add"
-
-export default function OnboardingEmail(props: OnboardingEmailProps) {
-  const { step, actionsThisMonth, recent, reminder, footer } = props
-  const campaign = CAMPAIGN(step)
-  if (step === 1) {
-    return (
-      <EmailLayout preview={preview(props)} footer={footer}>
-        <Eyebrow tone="up">{reminder ? "Your reminder" : "Tariff Tracker"}</Eyebrow>
-        <Title>{actionsThisMonth > 0 ? `${actionsThisMonth} tariff changes in 30 days. Which hit you?` : "Which tariff changes hit your imports?"}</Title>
-        <P>
-          {reminder ? "Here's the reminder you asked for. " : ""}Your Tariff Tracker is set up and watching every US tariff action. It just doesn&apos;t know what you
-          import yet, so it can&apos;t tell you which of these hit you:
-        </P>
-        {recent.slice(0, 2).map((u) => (
-          <UpdateBlock key={u.slug} update={u} campaign={campaign} compact />
-        ))}
-        <P>
-          <strong>Add your imports in about a minute</strong>, any of three ways:
-        </P>
-        <Checklist
-          items={[
-            <>
-              <strong>Paste a list.</strong> Copy the HTS code and country of origin columns from any spreadsheet.
-            </>,
-            <>
-              <strong>Upload a spreadsheet.</strong> Excel or CSV, as it is. We find the right columns.
-            </>,
-            <>
-              <strong>Start from your searches.</strong> The imports you looked up in the duty calculator, in one click.
-            </>,
-          ]}
-        />
-        <Panel>
-          <P small>
-            <strong>No list to hand?</strong> Your customs broker has every entry you&apos;ve filed. Ask them for the HTS codes and countries of origin on your entries from
-            the last 12 months, and drop their spreadsheet straight in.
-          </P>
-        </Panel>
-        <P>
-          Your free {REVERSE_TRIAL.days}-day trial starts when you add them: everything the Tracker does, on up to {REVERSE_TRIAL.imports} imports, no credit card.
-        </P>
-        <Cta href={siteLink(ADD_IMPORTS_URL, campaign)} variant="next">
-          Add my imports &rarr;
-        </Cta>
-        <Signature />
-        <PlanStrip campaign={campaign} />
-      </EmailLayout>
-    )
-  }
+export default function OnboardingEmail({ step, reminder, footer }: OnboardingEmailProps) {
+  const s = STEPS[step]
+  const campaign = `onboarding-${s.campaign}`
   return (
-    <EmailLayout preview={preview(props)} footer={footer}>
-      <Eyebrow tone="up">Tariff alerts</Eyebrow>
-      <Title>Your Tracker is still empty</Title>
+    <EmailLayout preview={s.body.slice(0, 140)} footer={footer}>
+      <Eyebrow>{reminder ? "Your reminder" : s.eyebrow}</Eyebrow>
+      <Title>{s.title}</Title>
       <P>
-        {actionsThisMonth > 0 ? `${actionsThisMonth} US tariff changes in the last 30 days.` : "US tariffs keep changing."} Add your imports and you&apos;ll get an alert
-        like this when one hits. Your free trial covers up to {REVERSE_TRIAL.imports} imports, so bring your whole catalog:
+        {reminder ? "Here's the reminder you asked for. " : ""}
+        {s.body}
       </P>
-      <AlertSample
-        label="Example alert"
-        updateTitle="Section 232: more steel derivative products added"
-        code="7326.90.86.88"
-        country="Germany"
-        description="Other articles of iron or steel"
-        beforePct={12.9}
-        afterPct={52.9}
-      />
+      <Checklist items={s.points} />
       <Cta href={siteLink(ADD_IMPORTS_URL, campaign)} variant="next">
-        Add my imports
+        {s.cta}
       </Cta>
+      <Panel>
+        <Text style={{ margin: 0, fontSize: 14, lineHeight: "21px", color: C.text }}>
+          <strong>Having trouble adding your imports?</strong> Reply directly to this email and I&apos;ll personally give you a hand.
+        </Text>
+      </Panel>
       <Signature />
       <PlanStrip campaign={campaign} />
     </EmailLayout>
   )
 }
 
-const SAMPLE: UpdateSummary = {
-  slug: "commerce-defines-u-s-content",
-  title: 'Commerce defines "U.S. content" for USMCA metal goods under Proclamation 11032',
-  summary: "A Bureau of Industry and Security notice tells CBP how to assess U.S. content for metal goods entered under USMCA.",
-  authorityLabel: "Section 232",
-  stageLabel: "Published",
-  effectiveOn: null,
-  countriesLabel: "Canada, Mexico",
-  tone: "brand",
-}
-
 OnboardingEmail.PreviewProps = {
   step: 1,
   reminder: false,
-  actionsThisMonth: 14,
-  recent: [SAMPLE],
   footer: {
     reason: "You're getting this because you have an HTS Hero account.",
     manageUrl: "https://htshero.com/tariff-updates/subscription?token=example",

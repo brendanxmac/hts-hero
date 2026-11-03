@@ -22,7 +22,7 @@ const opp = (productKey: string, status: Opportunity["status"], usd: number): Op
   updatedAt: "2026-10-13T00:00:00Z",
 })
 
-describe("Tariff Tracker: savings tallies", () => {
+describe("Duty Guard: savings tallies", () => {
   it("secured savings add up, per shipment and per year", () => {
     const t = tallyOpportunities([opp("A", "secured", 100), opp("B", "secured", 50)], (k) => (k === "A" ? 12 : 1))
     expect(t.secured.count).toBe(2)
@@ -49,7 +49,7 @@ describe("Tariff Tracker: savings tallies", () => {
   })
 })
 
-describe("Tariff Tracker: origin supply (Census)", () => {
+describe("Duty Guard: origin supply (Census)", () => {
   const imports = { year: 2025, prior: 2024, level: 10 as const, totalValue: 5_000_000, byCountry: new Map([["VN", { value: 5_000_000, prior: 4_000_000 }], ["MX", { value: 0, prior: 10 }]]) }
 
   it("a country the US imported the product from is proven", () => {
@@ -66,7 +66,7 @@ describe("Tariff Tracker: origin supply (Census)", () => {
   })
 })
 
-describe("Tariff Tracker: savings review", () => {
+describe("Duty Guard: savings review", () => {
   const savings = [
     { kind: "program" as const, ref: "S" },
     { kind: "exemption" as const, ref: "confirm:donation" },

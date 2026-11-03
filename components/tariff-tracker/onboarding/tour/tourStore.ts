@@ -3,11 +3,11 @@
 import { useSyncExternalStore } from "react";
 
 // Whether the feature tour (FeatureTour) is open, and at which step. It opens by itself once: on
-// the first Tracker visit, and again once right after the first imports are added (from the
+// the first Duty Guard visit, and again once right after the first imports are added (from the
 // alerts on, since the imports are in). The sidebar's "Product Tour" opens it any time. One copy
-// for the whole Tracker, outside React so any component can open it (like takeoverStore).
+// for the whole Duty Guard, outside React so any component can open it (like takeoverStore).
 
-export type TourStepId = "imports" | "alerts" | "manage" | "adcvd" | "savings" | "audits";
+export type TourStepId = "welcome" | "imports" | "alerts" | "manage" | "adcvd" | "savings" | "audits";
 
 interface TourState {
   open: boolean;
@@ -40,9 +40,9 @@ export const useFeatureTour = () =>
     () => CLOSED,
   );
 
-// Seen on this device, per account: the first-visit tour, and the one after the first imports
+// Seen on this device, per account: an account's first visit to Duty Guard
 const SEEN_KEY = "hts-hero-tariff-tracker-tour-seen";
-export type TourMoment = "first_visit" | "imports_added";
+export type TourMoment = "first_visit";
 const key = (userId: string, moment: TourMoment) => `${SEEN_KEY}:${userId}:${moment}`;
 export const tourSeen = (userId: string, moment: TourMoment) => {
   try {
@@ -58,13 +58,4 @@ export const markTourSeen = (userId: string, moment: TourMoment) => {
   } catch {
     // Not critical
   }
-};
-
-// Opens it by itself, once per account on this device, at that moment
-export const openTourOnce = (userId: string, moment: TourMoment, start: TourStepId) => {
-  if (tourSeen(userId, moment)) return;
-  markTourSeen(userId, moment);
-  // After the imports, the first-visit tour has nothing left to show
-  if (moment === "imports_added") markTourSeen(userId, "first_visit");
-  openFeatureTour(moment, start);
 };

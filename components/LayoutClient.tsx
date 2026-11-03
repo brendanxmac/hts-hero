@@ -7,6 +7,7 @@ import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 import config from "@/config";
+import { recordFirstTouch } from "@/libs/signup-onboarding";
 import { ExploreModalProvider } from "../contexts/ExploreModalContext";
 import { useUser } from "../contexts/UserContext";
 
@@ -51,6 +52,9 @@ const CrispChat = (): null => {
 // 3. Tooltip: Show tooltips if any JSX elements has these 2 attributes: data-tooltip-id="tooltip" data-tooltip-content=""
 // 4. CrispChat: Set Crisp customer chat support (see above)
 const ClientLayout = ({ children }: { children: ReactNode }) => {
+  // Where this browser first came from, kept once (the sign-up onboarding saves it)
+  useEffect(() => recordFirstTouch(), []);
+
   return (
     <>
       {/* Show a progress bar at the top when navigating between pages */}

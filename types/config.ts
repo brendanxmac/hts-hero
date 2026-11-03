@@ -74,11 +74,19 @@ export enum PricingPlan {
   TARIFF_IMPACT_STARTER = "Tariff Impact Starter",
   TARIFF_IMPACT_STANDARD = "Tariff Impact Standard",
   TARIFF_IMPACT_PRO = "Tariff Impact Pro",
-  // Tariff Tracker, by the number of imports (pairs) it covers (see PRICING.md)
+  // Duty Guard, by the number of imports (pairs) it covers (see PRICING.md)
   TARIFF_TRACKER_10 = "Tariff Tracker 10",
   TARIFF_TRACKER_30 = "Tariff Tracker 30",
   TARIFF_TRACKER_100 = "Tariff Tracker 100",
   TARIFF_TRACKER_500 = "Tariff Tracker 500",
+  DUTY_GUARD_ESSENTIALS_10 = "Duty Guard Essentials 10",
+  DUTY_GUARD_ESSENTIALS_25 = "Duty Guard Essentials 25",
+  DUTY_GUARD_ESSENTIALS_100 = "Duty Guard Essentials 100",
+  DUTY_GUARD_ESSENTIALS_500 = "Duty Guard Essentials 500",
+  DUTY_GUARD_PRO_10 = "Duty Guard Pro 10",
+  DUTY_GUARD_PRO_25 = "Duty Guard Pro 25",
+  DUTY_GUARD_PRO_100 = "Duty Guard Pro 100",
+  DUTY_GUARD_PRO_500 = "Duty Guard Pro 500",
 }
 
 export interface PricingFeatureI {
@@ -131,6 +139,7 @@ export interface ConfigProps {
     fromNoReply: string;
     fromAdmin: string;
     supportEmail?: string;
+    replyTo: string;
   };
   colors: {
     theme: Theme;

@@ -9,7 +9,7 @@ import type { MatchLevel } from "./match"
 
 // Which of each account's imports each recent tariff update may affect (tariff_update_impacts),
 // on the server, for alerts and the onboarding emails. What each level means, and how it's worked
-// out, is in impactOf.ts (the Tracker's Tariff impact tab uses the same code).
+// out, is in impactOf.ts (Duty Guard's Tariff impact tab uses the same code).
 
 type Db = SupabaseClient
 

@@ -2,14 +2,14 @@ import { describe, it, expect } from "./test-runner"
 import { mergeItems, realItems } from "../components/tariff-tracker/catalog"
 import { cellText, columnLetter, detectColumns } from "../components/tariff-tracker/spreadsheet"
 import { signupSourceFor } from "../libs/tariff-tracker/onboarding"
-import { pickEmail, type OnboardingRow } from "../libs/email/lifecycle"
+import { pickEmail, waitBefore, type OnboardingRow } from "../libs/email/lifecycle"
 import { problemGroups } from "../components/tariff-tracker/onboarding/problems"
 import { parseTable } from "../components/tariff-tracker/csv"
 
 // The import onboarding (2026-10-20): the example list never counts as the user's imports, where
 // a sign-up came from, which email each kind of account gets, and reading real-world spreadsheets
 
-describe("Tariff Tracker onboarding: example imports", () => {
+describe("Duty Guard onboarding: example imports", () => {
   it("example items aren't the user's imports", () => {
     const { items } = mergeItems([], [{ code: "8413919015", country: "BR", example: true }, { code: "8409999190", country: "AR" }])
     expect(items.length).toBe(2)
@@ -33,10 +33,10 @@ describe("Tariff Tracker onboarding: example imports", () => {
   })
 })
 
-describe("Tariff Tracker onboarding: sign-up source", () => {
+describe("Duty Guard onboarding: sign-up source", () => {
   it("follows where the sign-up was headed", () => {
     expect(signupSourceFor("/duty-calculator?code=8413")).toBe("calculator")
-    expect(signupSourceFor("/tariff-tracker?product=8413-BR")).toBe("tracker")
+    expect(signupSourceFor("/duty-guard?product=8413-BR")).toBe("tracker")
     expect(signupSourceFor("/tariff-monitor")).toBe("tracker")
     expect(signupSourceFor("/classify#try-classify")).toBe("classify")
     expect(signupSourceFor("/?welcome=1")).toBe("generic")
@@ -44,7 +44,7 @@ describe("Tariff Tracker onboarding: sign-up source", () => {
   })
 })
 
-describe("Tariff Tracker onboarding: emails", () => {
+describe("Duty Guard onboarding: emails", () => {
   const DAY = 86_400_000
   const created = "2026-11-01T15:00:00Z"
   const account = { id: "u1", email: "a@example.com", created_at: created }
@@ -56,18 +56,18 @@ describe("Tariff Tracker onboarding: emails", () => {
     first_visit_at: null,
     skipped_at: null,
     skip_reason: null,
-    skip_note: null,
     ...patch,
   })
   const pick = (days: number, onboarding: OnboardingRow | null | undefined, sent = none, imports = 0) =>
     pickEmail({ account, imports, sent, now: at(days), scoped: false, onboarding })?.key ?? null
 
-  it("opened the Tracker and left it empty: day 1, then the founder's note on day 3, then day 10", () => {
+  it("opened Duty Guard and left it empty: days 1, 3 and 7", () => {
     const visited = row({ first_visit_at: created, signup_source: "generic" })
     expect(pick(0.5, visited)).toBe(null)
     expect(pick(1.2, visited)).toBe("tracker_no_imports_1")
     expect(pick(3.2, visited, new Set(["tracker_no_imports_1"]))).toBe("tracker_no_imports_2")
-    expect(pick(10.2, visited, new Set(["tracker_no_imports_1", "tracker_no_imports_2"]))).toBe("tracker_no_imports_3")
+    expect(pick(6.2, visited, new Set(["tracker_no_imports_1", "tracker_no_imports_2"]))).toBe(null)
+    expect(pick(7.2, visited, new Set(["tracker_no_imports_1", "tracker_no_imports_2"]))).toBe("tracker_no_imports_3")
     expect(pick(16, visited)).toBe(null)
   })
 
@@ -77,7 +77,7 @@ describe("Tariff Tracker onboarding: emails", () => {
     expect(pick(6.2, late)).toBe("tracker_no_imports_1")
   })
 
-  it("never opened it: a calculator sign-up meets the Tracker; a generic one gets the tour", () => {
+  it("never opened it: a calculator sign-up meets Duty Guard; a generic one gets the tour", () => {
     expect(pick(1.2, row({ signup_source: "calculator" }))).toBe("tracker_intro")
     expect(pick(3.2, row({ signup_source: "calculator" }), new Set(["tracker_intro"]))).toBe(null)
     expect(pick(1.2, row({ signup_source: "generic" }))).toBe("product_tour_1")
@@ -85,11 +85,12 @@ describe("Tariff Tracker onboarding: emails", () => {
     expect(pick(6.2, row({ signup_source: "generic" }), new Set(["product_tour_1", "product_tour_2"]))).toBe("product_tour_3")
   })
 
-  it("a reminder they asked for comes the next morning", () => {
+  it("a reminder they asked for comes the next morning, as the next email they haven't had", () => {
     const remind = row({ first_visit_at: created, skip_reason: "remind_me", skipped_at: at(4).toISOString() })
     const sent = new Set(["tracker_no_imports_1", "tracker_no_imports_2"])
     expect(pick(4.3, remind, sent)).toBe(null)
-    expect(pick(4.8, remind, sent)).toBe(`reminder_${at(4).toISOString().slice(0, 10)}`)
+    expect(pick(4.8, remind, sent)).toBe("tracker_no_imports_3")
+    expect(pick(4.8, remind, new Set([...sent, "tracker_no_imports_3"]))).toBe(`reminder_${at(4).toISOString().slice(0, 10)}`)
   })
 
   it("nothing once they have imports of their own", () => {
@@ -102,12 +103,12 @@ describe("Tariff Tracker onboarding: emails", () => {
     expect(pick(3.2, visited, new Set(["no_imports_1", "no_imports_3"]))).toBe(null)
   })
 
-  it("without the onboarding table, the Tracker sequence counts from sign-up", () => {
+  it("without the onboarding table, Duty Guard sequence counts from sign-up", () => {
     expect(pick(1.2, null)).toBe("tracker_no_imports_1")
   })
 })
 
-describe("Tariff Tracker onboarding: spreadsheets", () => {
+describe("Duty Guard onboarding: spreadsheets", () => {
   const find = (digits: string) => (digits.length === 8 || digits.length === 10 ? digits : undefined)
 
   it("finds a known header under a title row", () => {
@@ -151,7 +152,7 @@ describe("Tariff Tracker onboarding: spreadsheets", () => {
   })
 })
 
-describe("Tariff Tracker onboarding: upload problems", () => {
+describe("Duty Guard onboarding: upload problems", () => {
   const find = (digits: string) => (digits === "8413919015" ? digits : undefined)
   it("groups unreadable rows by cause, most common first", () => {
     const rows = [
@@ -175,7 +176,7 @@ describe("Tariff Tracker onboarding: upload problems", () => {
 
 import { applyFixes, codeSuggestions, countrySuggestion } from "../components/tariff-tracker/onboarding/fixes"
 
-describe("Tariff Tracker onboarding: fixing rows in place", () => {
+describe("Duty Guard onboarding: fixing rows in place", () => {
   const known = new Set(["6109100012", "6109100027", "0102210010", "8413919015"])
   const find = (digits: string) => (known.has(digits) ? digits : undefined)
 
@@ -221,7 +222,7 @@ describe("Tariff Tracker onboarding: fixing rows in place", () => {
 import { NO_EDITS, readSheet } from "../components/tariff-tracker/onboarding/sheet"
 import { headerAbove } from "../components/tariff-tracker/spreadsheet"
 
-describe("Tariff Tracker onboarding: reading a sheet", () => {
+describe("Duty Guard onboarding: reading a sheet", () => {
   const find = (digits: string) => (["8413919015", "6109100012"].includes(digits) ? digits : undefined)
   const rows = [
     ["Acme parts list, Oct 2026"],
@@ -253,7 +254,7 @@ describe("Tariff Tracker onboarding: reading a sheet", () => {
 
 import { matchedDigits } from "../components/tariff-tracker/onboarding/fixes"
 
-describe("Tariff Tracker onboarding: matching digits in suggestions", () => {
+describe("Duty Guard onboarding: matching digits in suggestions", () => {
   it("lights the digits a suggestion shares with what was written", () => {
     expect([...matchedDigits("6109.10", "6109100012")].join(",")).toBe("0,1,2,3,4,5")
     expect([...matchedDigits("102210010", "0102210010")].length).toBe(9)
@@ -265,7 +266,7 @@ describe("Tariff Tracker onboarding: matching digits in suggestions", () => {
 
 import { cardDone, describingColumn, fixCards } from "../components/tariff-tracker/onboarding/guide"
 
-describe("Tariff Tracker onboarding: the guided fix", () => {
+describe("Duty Guard onboarding: the guided fix", () => {
   const known = ["8413919015", "6109100012", "8409999190"]
   const find = (digits: string) => (known.includes(digits) ? digits : undefined)
   const codeOk = (d: string) => known.includes(d)
@@ -299,7 +300,7 @@ describe("Tariff Tracker onboarding: the guided fix", () => {
   })
 })
 
-describe("Tariff Tracker onboarding: codes with one right answer", () => {
+describe("Duty Guard onboarding: codes with one right answer", () => {
   const known = ["0102210010", "6109100012"]
   const find = (digits: string) => (known.includes(digits) ? digits : undefined)
   const codeOk = (d: string) => known.includes(d)
@@ -315,5 +316,20 @@ describe("Tariff Tracker onboarding: codes with one right answer", () => {
   it("says a zero-padded HS code is one", () => {
     const sheet = readSheet([["HTS", "COO"], ["6109.10.00.00", "CN"]], 0, { code: 0, country: 1 }, NO_EDITS, find)
     expect(sheet[1].reason).toBe("6109.10.00.00 isn't a real HTS code")
+  })
+})
+
+// How long an email waits after the last one (libs/email/lifecycle.ts waitBefore)
+describe("Email pacing", () => {
+  const DAY = 86_400_000
+  it("lets first_look and a reminder go the morning after another email, but not the same day", () => {
+    for (const kind of ["first_look", "reminder"]) {
+      expect(waitBefore(kind) < DAY).toBe(true)
+      expect(waitBefore(kind) > 0.5 * DAY).toBe(true)
+    }
+  })
+  it("holds the rest two mornings, without missing by the seconds between runs", () => {
+    expect(waitBefore("tracker") < 2 * DAY).toBe(true)
+    expect(waitBefore("tracker") > 1.5 * DAY).toBe(true)
   })
 })

@@ -12,7 +12,7 @@ import { ExploreModal } from "./ExploreModal";
 import { Example, useTariffFinder } from "../lib/useTariffFinder";
 
 // The Tariff Calculator on /duty-calculator, and on each country page with that country chosen:
-// the calculator band (CalculatorWorkspace, as in the Tariff Tracker), in the Tracker's look
+// the calculator band (CalculatorWorkspace, as in Duty Guard), in Duty Guard's look
 // (DESIGN_SYSTEM.md §15). It follows light and
 // dark with the site, unless the host page is held light (the country pages, for now).
 // examples: the "Try an import" products (a country page's own)
@@ -20,15 +20,18 @@ export const TariffFinderPage = ({
   defaultCountry,
   path,
   examples,
+  fullScreen = false,
   children,
 }: {
   defaultCountry?: string;
   path?: string;
   examples?: Example[];
+  // At least a full screen tall, so what's below stays off screen before there's a result
+  fullScreen?: boolean;
   // Above the calculator, in the same band: the page's heading (server-rendered by the host)
   children?: ReactNode;
 } = {}) => (
-  <div className={`${THEME} hts-tracker ${trackerSans.className} w-full pb-16 pt-2`}>
+  <div className={`${THEME} hts-tracker ${trackerSans.className} w-full bg-(--tt-ob-ground) pb-16 pt-2 ${fullScreen ? "min-h-svh" : ""}`}>
     {children}
     {/* The calculator reads the URL, so it renders on the client; its own Suspense boundary keeps
         the heading above in the server HTML (the page's h1, for crawlers) */}

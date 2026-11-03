@@ -9,6 +9,7 @@ import {
   BellAlertIcon,
   CodeBracketSquareIcon,
   EnvelopeIcon,
+  FlagIcon,
   InboxStackIcon,
   NewspaperIcon,
   ScaleIcon,
@@ -20,7 +21,7 @@ import * as tt from "@/components/ui/styles/tracker"
 import { ThemeSwitch } from "@/components/tariff-tracker/shell/ThemeSwitch"
 import type { AdminArea, AdminQueue } from "@/libs/admin/queue"
 
-// The admin tools' sidebar, the Tracker's (DESIGN_SYSTEM.md §15 "Sidebar"): floating, dark in
+// The admin tools' sidebar, Duty Guard's (DESIGN_SYSTEM.md §15 "Sidebar"): floating, dark in
 // both modes, Needs You first, then each tool with a small pill for what waits there (amber, from
 // libs/admin/queue.ts). The local-only checkers sit apart, under Local. On narrow screens it becomes
 // a row of pills across the top.
@@ -42,6 +43,7 @@ const TOOLS: Tool[] = [
   { href: "/tariff-sources", label: "Tariff Updates", Icon: NewspaperIcon, area: "updates" },
   { href: "/email-outbox", label: "Outbox", Icon: EnvelopeIcon, area: "outbox" },
   { href: "/adcvd", label: "AD/CVD Cases", Icon: ScaleIcon, area: "adcvd" },
+  { href: "/audit-reports", label: "Audit Reports", Icon: FlagIcon, area: "reports" },
   { href: "/content-studio", label: "Content Studio", Icon: SparklesIcon, area: "studio" },
   { href: "/coverage-checker", label: "Coverage Checker", Icon: Squares2X2Icon, local: true },
   { href: "/revision-checker", label: "Revision Checker", Icon: CodeBracketSquareIcon, local: true, external: true },
@@ -116,7 +118,7 @@ export default function AdminSidebar({ localTools }: { localTools: boolean }) {
             </div>
           )}
           <div className="mt-auto flex flex-col gap-1">
-            <NavItem tool={{ href: "/tariff-tracker", label: "Tariff Tracker", Icon: InboxStackIcon }} active={false} count={0} />
+            <NavItem tool={{ href: "/duty-guard", label: "Duty Guard", Icon: InboxStackIcon }} active={false} count={0} />
           </div>
         </nav>
         <div className="flex items-center justify-between gap-2 px-1">

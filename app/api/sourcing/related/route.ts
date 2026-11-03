@@ -3,7 +3,7 @@ import stats from "@/libs/country-pages/import-stats.json"
 import type { RelatedCode } from "@/libs/sourcing/trade"
 
 // US imports of the other codes a product's AD/CVD cases cover (R-125's orders name its blends
-// under 3827.xx too), for the Tracker's Sourcing tab: GET ?codes=382763,3827640000 (6 to 10
+// under 3827.xx too), for Duty Guard's Sourcing tab: GET ?codes=382763,3827640000 (6 to 10
 // digits, at most 8). Each code's last 12 months, all countries and the largest suppliers, from
 // the Census Bureau's international trade API. Cached for a day.
 

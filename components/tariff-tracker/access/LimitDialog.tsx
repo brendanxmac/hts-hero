@@ -6,26 +6,28 @@ import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
-import { formatPrice, LAUNCH_PRICING, launchPricingActive, perImportPrice } from "@/components/pricing-calculator/lib/pricing";
-import { TRACKER_PLANS, TrackerAccess } from "@/libs/tariff-tracker/plan";
+import { formatPrice, perImportPrice, TRACKER_MAX_LISTED_PAIRS } from "@/components/pricing-calculator/lib/pricing";
+import { ALERT_PLANS, AUDIT_PLANS, hasAudits, TrackerAccess } from "@/libs/tariff-tracker/plan";
 import { useCatalog } from "../catalogStore";
 import { BENEFITS } from "./UpgradeDialog";
 import { useUpgradeStats } from "./upgradeStats";
 
 // Before the plans: turning alerts on for one more import than the plan allows. Says the limit is
 // reached and what it's costing (imports nobody is watching), then sells the plan that would cover
-// all of them by what it costs per import, and leads to the plans. Portals out of the Tracker, so
-// it carries the Tracker's look itself (DESIGN_SYSTEM §15).
+// all of them by what it costs per import, and leads to the plans. Portals out of Duty Guard, so
+// it carries Duty Guard's look itself (DESIGN_SYSTEM §15).
 export const LimitDialog = ({ open, access, onSeePlans, onClose }: { open: boolean; access: TrackerAccess; onSeePlans: () => void; onClose: () => void }) => {
   const { items } = useCatalog();
   const stats = useUpgradeStats();
   const n = (count: number) => count.toLocaleString("en-US");
   const imports = stats?.imports ?? items.length;
   const off = Math.max(0, imports - (stats?.tracked ?? access.pairLimit));
-  // The plan that would cover every import, and what that comes to per import
-  const fits = TRACKER_PLANS.find((p) => imports <= p.maxPairs && p.maxPairs > access.pairLimit);
+  // The next plan up in their offer that covers every product, or simply the next one up; a free
+  // account or a trial starts from Duty Guard Essentials. What that comes to per product
+  const paidAudits = access.kind === "paid" && hasAudits(access);
+  const larger = (paidAudits ? AUDIT_PLANS : ALERT_PLANS).filter((p) => p.maxPairs > access.pairLimit);
+  const fits = larger.find((p) => imports <= p.maxPairs) ?? larger[0];
   const perImport = fits ? perImportPrice(fits) : null;
-  const launch = launchPricingActive();
   const paid = access.kind === "paid";
 
   return (
@@ -51,18 +53,18 @@ export const LimitDialog = ({ open, access, onSeePlans, onClose }: { open: boole
                   ? `All ${n(access.pairLimit)} alert slots on your plan are in use`
                   : access.kind === "trial"
                     ? `You've used all ${n(access.pairLimit)} alert slots in your free trial`
-                    : "Alerts on your imports come with a Tracker plan"}
+                    : "Alerts on your products come with Duty Guard Essentials"}
               </Dialog.Title>
               <p className="m-0 text-sm leading-relaxed text-base-content/70">
                 {off > 0 ? (
                   <>
                     <span className="font-semibold text-error">
-                      {n(off)} of your {n(imports)} imports {off === 1 ? "has" : "have"} alerts off
+                      {n(off)} of your {n(imports)} products {off === 1 ? "has" : "have"} alerts off
                     </span>
                     , so if a new tariff hits {off === 1 ? "it" : "one of them"}, you won&apos;t hear about it until it shows up on your customs bill.
                   </>
                 ) : (
-                  "To turn alerts on for another import, upgrade or turn alerts off for one you're watching."
+                  "To turn alerts on for another product, upgrade or turn alerts off for one you're watching."
                 )}
               </p>
             </div>
@@ -70,22 +72,18 @@ export const LimitDialog = ({ open, access, onSeePlans, onClose }: { open: boole
             {/* The plan that covers everything, by what it costs per import */}
             {fits && perImport !== null ? (
               <div className="flex flex-col gap-2 rounded-xl border border-primary/30 bg-primary/[0.05] p-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className={tt.eyebrow("primary")}>Get alerts on all {n(imports)} imports</span>
-                  {launch && <span className={tt.chip("success")}>Launch price · ends {LAUNCH_PRICING.endsDay}</span>}
-                </div>
+                <span className={tt.eyebrow("primary")}>Get Alerts on Up to {n(fits.maxPairs)} Products</span>
                 <p className="m-0 flex flex-wrap items-baseline gap-x-2">
                   <span className={tt.metric}>{formatPrice(perImport)}</span>
-                  <span className="text-sm text-base-content/70">per import, per month</span>
+                  <span className="text-sm text-base-content/70">per product, per month</span>
                 </p>
                 <span className="text-sm text-base-content/70">
-                  Tracker {n(fits.maxPairs)}: {formatPrice(fits.price)}/mo for up to {n(fits.maxPairs)} imports
-                  {launch ? ", locked in for as long as you stay subscribed" : ""}.
+                  {fits.plan}: {formatPrice(fits.price)}/mo for up to {n(fits.maxPairs)} products.
                 </span>
               </div>
             ) : (
               <div className={`${tt.tile} p-4 text-sm text-base-content/70`}>
-                More than {n(TRACKER_PLANS[TRACKER_PLANS.length - 1].maxPairs)} imports? We&apos;ll build a plan around your catalog.
+                More than {n(TRACKER_MAX_LISTED_PAIRS)} products? We&apos;ll build a plan around your catalog.
               </div>
             )}
 
@@ -102,11 +100,11 @@ export const LimitDialog = ({ open, access, onSeePlans, onClose }: { open: boole
 
             <div className="flex flex-col gap-2">
               <button type="button" className={`${ui.button({ variant: "primary" })} w-full`} onClick={onSeePlans}>
-                {fits ? `Get alerts on all ${n(imports)} imports` : "See plans"}
+                {fits ? `Upgrade to ${fits.name}` : "See plans"}
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </button>
               <button type="button" className="text-sm font-semibold text-base-content/60 hover:text-base-content" onClick={onClose}>
-                {access.pairLimit > 0 ? "Not now, I'll turn alerts off for another import" : "Not now"}
+                {access.pairLimit > 0 ? "Not now, I'll turn alerts off for another product" : "Not now"}
               </button>
             </div>
             <p className="m-0 text-center text-xs text-base-content/60">Cancel anytime. No contract. Your catalog stays free.</p>

@@ -169,7 +169,7 @@ const config: ConfigProps = {
   // REQUIRED
   appName: "HTS Hero",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
-  appDescription: "Engineered Trade Compliance",
+  appDescription: "We Make Tariffs Easy",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
   domainName: "htshero.com",
   // The postal address commercial email must show (CAN-SPAM), in every email's footer
@@ -205,6 +205,8 @@ const config: ConfigProps = {
     fromAdmin: `HTS Hero <brendan@notify.htshero.com>`,
     // Email shown to customer if need support. Leave empty if not needed => if empty, set up Crisp above, otherwise you won't be able to offer customer support."
     supportEmail: "support@htshero.com",
+    // Where replies to our emails go. Every email is from Brendan and says a reply reaches him
+    replyTo: "brendan@htshero.com",
   },
   colors: {
     // REQUIRED — The DaisyUI theme to use (added to the main layout.js). Leave blank for default (light & dark mode). If you any other theme than light/dark, you need to add it in config.tailwind.js in daisyui.themes.
@@ -218,7 +220,7 @@ const config: ConfigProps = {
     // REQUIRED — the path to log in users. It's use to protect private routes (like /dashboard). It's used in apiClient (/libs/api.js) upon 401 errors from our API
     loginUrl: "/signin",
     // REQUIRED — the path you want to redirect users after successfull login (i.e. /dashboard, /private). This is normally a private page for users to manage their accounts. It's used in apiClient (/libs/api.js) upon 401 errors from our API & in ButtonSignin.js
-    callbackUrl: "/tariff-tracker",
+    callbackUrl: "/duty-guard",
   },
 } as ConfigProps
 

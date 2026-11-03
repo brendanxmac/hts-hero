@@ -5,7 +5,7 @@ import { SectionIntro } from "@/components/ui/marketing";
 import * as mk from "@/components/ui/marketing/styles";
 import { REQUEST_ANCHOR, SELF_AUDIT_URL, SIGN_UP_TO_AUDIT } from "../lib/links";
 
-// Auditing it yourself in the Tracker is the featured way to start
+// Auditing it yourself in Duty Guard is the featured way to start
 const PATHS: {
   title: string;
   text: string;
@@ -16,7 +16,7 @@ const PATHS: {
 }[] = [
     {
       title: "Audit it yourself",
-      text: `Run the audit in the Tariff Tracker: free for ${REVERSE_TRIAL.days} days with a new account, no credit card. Results appear as soon as your entries are checked, and stay in your account.`,
+      text: `Run the audit in Duty Guard: free for ${REVERSE_TRIAL.days} days with a new account, no credit card required. Results appear as soon as your entries are checked, and stay in your account.`,
       cta: TRY_IT_FREE,
       href: SIGN_UP_TO_AUDIT,
       Icon: UserCircleIcon,

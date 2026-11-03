@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { Countries } from "@/constants/countries";
 import * as mk from "@/components/ui/marketing/styles";
+import { primaryButton } from "../lib/theme";
 import { Select } from "@/components/ui/Select";
 
 // The hero's way into the free calculator: an HTS code and a country of origin open the full
@@ -57,7 +58,7 @@ export const QuickLookup = () => {
             menuClassName="w-64"
           />
         </label>
-        <button type="submit" className={`${mk.buttonPrimary} shrink-0`}>
+        <button type="submit" className={`${primaryButton} shrink-0`}>
           Calculate duty <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </button>
       </form>

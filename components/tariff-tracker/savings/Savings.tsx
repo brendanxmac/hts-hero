@@ -1,5 +1,7 @@
 "use client";
 
+import { DutyAuditsUpsell } from "../access/DutyAuditsUpsell";
+import { hasAudits } from "@/libs/tariff-tracker/plan";
 import { useMemo, useState } from "react";
 import { mono } from "@/components/ui/font";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
@@ -129,10 +131,24 @@ const ToCheck = () => {
   );
 };
 
+// Without Duty Guard Pro: how many products could save, and the upgrade
+const SavingsUpsell = () => {
+  const { beyond } = useInsights();
+  const found = beyond.productsWithSavings;
+  return (
+    <DutyAuditsUpsell
+      feature="savings"
+      title={found > 0 ? `Potential Savings Found on ${found.toLocaleString("en-US")} of Your Products` : "See Where You Could Pay Less Duty"}
+      body={beyond.ready ? "Duty Guard Pro shows what each one may qualify for, and what it takes to claim it." : "Looking for savings on your products…"}
+      points={["Trade programs and exemptions your products may qualify for", "Lower-duty countries of origin", "The qualification check and the proof needed"]}
+    />
+  );
+};
+
 const SavingsReport = () => {
   const insights = useInsights();
   const nav = useTrackerNav();
-  const { paid } = useTrackerAccess();
+  const { paid, access, signedIn } = useTrackerAccess();
   const [show, setShow] = useState<Show>("all");
   const byKey = useMemo(() => new Map(insights.products.map((p) => [p.key, p])), [insights.products]);
   const rows = useMemo(
@@ -150,6 +166,8 @@ const SavingsReport = () => {
   );
   const { anyUsd, keepSupplierUsd, productsWithSavings, exemptionsToCheck } = insights.totals;
   const checked = insights.unlocked.size;
+
+  if (signedIn && !hasAudits(access)) return <SavingsUpsell />;
 
   return (
     <div className="flex flex-col gap-4">

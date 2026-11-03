@@ -1,14 +1,13 @@
 import config from "@/config";
 import { DEFINITION } from "@/components/home/lib/copy";
 import {
+  ALERT_TIERS,
+  AUDIT_TIERS,
   CLASSIFY_PLANS,
   LOWEST_PER_IMPORT,
   REVERSE_TRIAL,
-  TRACKER_TIERS,
   formatPrice,
-  perImportPrice,
 } from "@/components/pricing-calculator/lib/pricing";
-import { FREE_FOREVER_SHORT, SAVINGS_AUDITS_INCLUDED } from "@/components/ui/marketing/comingSoon";
 import { CATEGORIES } from "@/libs/blog/catalog";
 import { getPostsInCategory } from "@/libs/blog/posts";
 import { COMPARE_PAGES, comparePageTitle } from "@/libs/compare/pages";
@@ -43,15 +42,15 @@ export function GET() {
 
 ## Tools
 
-- [US Tariff Calculator](${SITE}/duty-calculator): every duty on an import, line by line, with exemptions and rates by country. Free and unlimited, no account, including duty over time. A free account adds the plain-English why behind every result (why each tariff applies and why others don't), sourcing intelligence (the duty from every country of origin) and the AD/CVD check: for any HTS code and country of origin, the live antidumping and countervailing duty cases and new petitions that may cover the import, with the deposit rates Commerce set (all-others and company-specific) and the companies named. AD/CVD duties are shown separately and aren't added to the duty estimate; whether a case applies depends on the scope's written description, which the importer or their customs broker decides. Without an account, the calculator only says that an AD/CVD case may apply
-- [Tariff Tracker](${SITE}/tariff-monitor): track every tariff on your imports by HTS code and country of origin, with alerts by email, in-app, Slack or Microsoft Teams when a tariff change hits one (rate before and after), AD/CVD alerts and updates, impact checks that show exactly how any tariff action affects each import, Insights across the catalog, Tariff News, rate history, and exports of every tariff to CSV or Excel. Every new account gets a ${REVERSE_TRIAL.days}-day free trial of everything on up to ${REVERSE_TRIAL.imports} imports, with no credit card; after it, ${FREE_FOREVER_SHORT} stay free, forever, the AD/CVD check on any import stays free with any account, and alerts on the account's own imports (AD/CVD alerts included) need a paid plan. ${SAVINGS_AUDITS_INCLUDED} Savings detection checks every import for trade programs, exemptions and lower-duty origins it may qualify for; automatic auditing checks every entry against the duty in force on its date and flags possible over- and underpayments.
-- [Tariff audit](${SITE}/tariff-audit): how US import duty on past entries is recalculated at each entry date, and where IEEPA, Section 122 and other refunds stand
+- [US Tariff Calculator](${SITE}/duty-calculator): every duty on an import, line by line, with exemptions and rates by country. Free and unlimited, no account. A free account adds duty over time, comparing countries side by side, the tariff news on each import, the plain-English why behind every result (why each tariff applies and why others don't), sourcing intelligence (the duty from every country of origin) and the AD/CVD check: for any HTS code and country of origin, the live antidumping and countervailing duty cases and new petitions that may cover the import, with the deposit rates Commerce set (all-others and company-specific) and the companies named. AD/CVD duties are shown separately and aren't added to the duty estimate; whether a case applies depends on the scope's written description, which the importer or their customs broker decides. Without an account, the calculator only says that an AD/CVD case may apply
+- [Tariff Alerts](${SITE}/tariff-alerts): alerts by email, and in Slack or Microsoft Teams on plans for 100 or more products, when a new US tariff hits your products (one HTS code from one country of origin), with the rate before and after and the official source, AD/CVD alerts and updates, and impact checks that show how any tariff action affects each product. From ${formatPrice(ALERT_TIERS[0].price)}/mo for up to ${ALERT_TIERS[0].maxPairs} products. Every new account gets a ${REVERSE_TRIAL.days}-day free trial of Duty Guard, with no credit card required. Tracking any number of products, with their current duty, rate history and exports, stays free; alerts need a paid plan
+- [Duty Guard Pro](${SITE}/duty-audit): everything in Duty Guard Essentials, plus every entry checked against the duty in force on its date, flagging possible over and underpayments, and savings detection for trade programs, exemptions and lower-duty origins a product may qualify for. From ${formatPrice(AUDIT_TIERS[0].price)}/mo for up to ${AUDIT_TIERS[0].maxPairs} products. HTS Hero finds and flags; the importer's licensed broker decides and files. Also how US import duty on past entries is recalculated at each entry date, and where IEEPA, Section 122 and other refunds stand
 - [Latest US tariff updates](${SITE}/tariff-updates): every new US tariff action from the White House, Federal Register, CBP and USTR, summarized in plain English with its official sources and the stage it has reached, checked every hour
 - [Duty calculator FAQ](${SITE}/duty-calculator/faq): how US import duty is calculated, the 2026 tariff programs, fees and what's included
 - [HTS Explorer](${SITE}/explore): browse and search the full Harmonized Tariff Schedule
 - [HTS code pages](${SITE}/hts/6109.10.00): duty rates by country for each HTS code, and the AD/CVD cases whose scope lists the code
 - [Classification assistant](${SITE}/classify): AI-assisted HTS classification that finds candidate headings, checks them against the legal notes and CROSS rulings, and produces audit-ready classification reports. From ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo
-- [Pricing](${SITE}/pricing-calculator): the Tariff Calculator is free, and a free account adds the plain-English why, sourcing intelligence and the AD/CVD check on any import; the Tariff Tracker is free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports (no credit card), then from ${formatPrice(TRACKER_TIERS[0].price)}/mo for up to ${TRACKER_TIERS[0].maxPairs} imports, billed monthly; per import per month that's ${TRACKER_TIERS.map((t) => `${formatPrice(perImportPrice(t))} (up to ${t.maxPairs})`).join(", ")}, as low as ${formatPrice(LOWEST_PER_IMPORT)} (${FREE_FOREVER_SHORT} stay free, forever); classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo
+- [Pricing](${SITE}/pricing-calculator): the Duty Calculator is free with no account; a free account adds unlimited product tracking, the plain-English why, sourcing intelligence and the AD/CVD check on any product. Duty Guard Essentials is ${ALERT_TIERS.map((t) => `${formatPrice(t.price)} for up to ${t.maxPairs}`).join(", ")} products a month, as low as ${formatPrice(LOWEST_PER_IMPORT)} per product. Duty Guard Pro is ${AUDIT_TIERS.map((t) => `${formatPrice(t.price)} for up to ${t.maxPairs}`).join(", ")} products a month. Annual billing is 15% off, and both are free for ${REVERSE_TRIAL.days} days with no credit card required. Classification from ${formatPrice(CLASSIFY_PLANS.starter.price)}/mo
 
 ${guides.join("\n")}
 ## US tariff programs

@@ -4,7 +4,7 @@ import { PricingPlan } from "@/types";
 import { ClassifyFaq, ClassifyHero, ClassifyPlans, ClosingCta, Examples, HowItWorks, Testimonials, VideoBand } from "@/components/classify-landing";
 import * as mk from "@/components/ui/marketing/styles";
 
-// The classification assistant's landing page, in the Tariff Tracker's look (the layout's
+// The classification assistant's landing page, in Duty Guard's look (the layout's
 // FollowTheme): light and muted bands alternate, with the video on a dark one.
 export default function ClassifyPage() {
   return (

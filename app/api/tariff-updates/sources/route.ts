@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getPublishedUpdate } from "@/libs/tariff-updates/public"
 
 // One published tariff update's official sources, oldest first: the stage each moved it to, its
-// date, title and link. The same public facts its /tariff-updates page shows, for the Tracker's
+// date, title and link. The same public facts its /tariff-updates page shows, for Duty Guard's
 // timeline of where an action stands.
 export async function GET(req: NextRequest) {
   const slug = req.nextUrl.searchParams.get("slug")

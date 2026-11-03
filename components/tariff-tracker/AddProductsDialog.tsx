@@ -293,7 +293,7 @@ export const AddProductsDialog = ({
     <Dialog open={open} onClose={close} className="relative z-50">
       <div className="fixed inset-0 bg-black/40" aria-hidden />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        {/* It portals out of the Tracker, so it carries the Tracker's look itself (DESIGN_SYSTEM §15) */}
+        {/* It portals out of Duty Guard, so it carries Duty Guard's look itself (DESIGN_SYSTEM §15) */}
         <Dialog.Panel className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} flex max-h-[88vh] w-full max-w-3xl flex-col overflow-hidden shadow-2xl`}>
           <div className="flex items-start justify-between gap-4 px-6 pb-4 pt-6">
             <div className="flex flex-col gap-1">

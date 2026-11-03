@@ -8,8 +8,8 @@ import { DutyCalculation } from "./duty";
 
 export const SITE_URL = process.env.MCP_PUBLIC_SITE_URL || `https://${config.domainName}`;
 
-// The Tariff Tracker's address; its sections module pulls in icons, so it isn't imported here
-const TRACKER_PATH = "/tariff-tracker";
+// Duty Guard's address; its sections module pulls in icons, so it isn't imported here
+const TRACKER_PATH = "/duty-guard";
 
 export interface LinkContext {
   client: string; // "claude", "chatgpt", "cursor", "other"
@@ -44,7 +44,7 @@ const calculatorParams = (calc: DutyCalculation) => ({
 export const fullBreakdownUrl = (calc: DutyCalculation, ctx: LinkContext) =>
   calculatorUrl({ ...calculatorParams(calc), extra: utm(ctx) });
 
-// The Tariff Tracker's calculator, opened on its Analysis: the duty from every origin, the globe,
+// Duty Guard's calculator, opened on its Analysis: the duty from every origin, the globe,
 // the time-lapse
 export const analysisUrl = (calc: DutyCalculation, ctx: LinkContext) =>
   calculatorUrl({

@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Not Found" }, { status: 404 });
     }
 
-    // Every account gets the weekly tariff digest (choices in the Tracker's Alerts section, or
+    // Every account gets the weekly tariff digest (choices in Duty Guard's Alerts section, or
     // any email's manage link)
     if (user.email) {
       try {
@@ -87,29 +87,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // The welcome email, with the latest tariff action so the first email already teaches
-    // something. Sent at once: it answers the sign-up (libs/email/outbox.ts)
-    try {
-      const { data: latest } = await supabase
-        .from("tariff_updates")
-        .select(UPDATE_EMAIL_COLUMNS)
-        .eq("status", "published")
-        .neq("kind", "hts_revision")
-        .order("last_activity_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      await sendTransactional(supabase, {
-        recipient: user.email,
-        userId: user.id,
-        template: "welcome",
-        props: {
-          latestUpdate: latest ? updateSummary(latest as UpdateRowForEmail) : null,
-          footer: { reason: "You're getting this because you created an HTS Hero account with this email." },
-        },
-      });
-    } catch (e) {
-      console.error("Failed to send the welcome email:", e);
-    }
+    // The welcome email leads with what they came for, so it waits for the sign-up onboarding to
+    // say (libs/email/welcome.ts)
 
     try {
       identifyUserServer(user.id, {

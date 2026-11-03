@@ -4,7 +4,7 @@ import { THEME } from "@/components/ui/theme"
 import { isRevisionToolEnabled } from "@/libs/hts-revision-diff/constants"
 import AdminSidebar from "./AdminSidebar"
 
-// Every admin tool but the revision checker, in the Tracker's look (DESIGN_SYSTEM.md §15): the
+// Every admin tool but the revision checker, in Duty Guard's look (DESIGN_SYSTEM.md §15): the
 // floating dark sidebar beside the open tool on the soft ground, following light and dark. The
 // tools' building blocks (components/hts-revision-diff/ui.tsx) take the look through `tracker:`.
 // Buttons keep sentence case here (the site capitalizes .btn globally).

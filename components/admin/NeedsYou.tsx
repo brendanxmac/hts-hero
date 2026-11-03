@@ -9,7 +9,7 @@ import * as tt from "@/components/ui/styles/tracker"
 import type { AdminQueue, QueueGroup, QueueItem, QueueTone } from "@/libs/admin/queue"
 import { PageHeader, Spinner, btn } from "../hts-revision-diff/ui"
 
-// /admin: what needs the admin across every tool (libs/admin/queue.ts), like the Tracker's Home
+// /admin: what needs the admin across every tool (libs/admin/queue.ts), like Duty Guard's Home
 // (DESIGN_SYSTEM.md §15 principle 1). What holds things up first, then what's broken, then what
 // can wait; each item one line on what it is, one on what waiting costs, the first few things it's
 // about, and one button that opens the fix. A rail says how the system runs on its own.

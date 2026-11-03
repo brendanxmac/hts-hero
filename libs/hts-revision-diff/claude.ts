@@ -49,6 +49,8 @@ export const callJson = async <T>(params: {
   effort: "low" | "medium" | "high"
   // CLAUDE_MODEL unless given
   model?: string
+  // Aborts the call, retries included (a run's deadline)
+  signal?: AbortSignal
 }): Promise<{ data: T; model: string; usage: ClaudeUsage }> => {
   const anthropic = client()
   const model = params.model ?? CLAUDE_MODEL
@@ -83,7 +85,7 @@ export const callJson = async <T>(params: {
         ...(withFallback
           ? { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const }
           : {}),
-      })
+      }, params.signal ? { signal: params.signal } : undefined)
       .finalMessage()
 
   let message: BetaMessage

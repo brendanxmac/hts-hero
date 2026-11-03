@@ -38,8 +38,11 @@ export const StatStrip = ({
   columns,
   label,
   className = "",
+  action,
 }: {
   stats: StatItem[];
+  // A last cell that's an action (a button filling it), the same size as the stats
+  action?: ReactNode;
   framed?: boolean;
   lead?: boolean;
   // The grid's columns, in place of the default (a short leading number can take less room)
@@ -51,7 +54,7 @@ export const StatStrip = ({
   <dl
     aria-label={label}
     className={`m-0 grid gap-px bg-base-300 ${
-      columns ?? (lead && stats.length === 4 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr]" : (COLUMNS[stats.length] ?? "grid-cols-1 sm:grid-cols-3"))
+      columns ?? (lead && stats.length === 4 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.45fr_1fr_1fr_1fr]" : (COLUMNS[stats.length + (action ? 1 : 0)] ?? "grid-cols-1 sm:grid-cols-3"))
     } ${framed ? `${ui.card} !bg-base-300` : ""} ${className}`}
   >
     {stats.map((s, i) => {
@@ -76,5 +79,6 @@ export const StatStrip = ({
         </div>
       );
     })}
+    {action && <div className="flex min-w-0">{action}</div>}
   </dl>
 );

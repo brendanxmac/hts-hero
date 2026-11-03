@@ -19,9 +19,10 @@ import { openFeatureTour } from "../onboarding/tour/tourStore";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { NavMeta, useNavMeta } from "./useNavMeta";
 import { useTrackerNav } from "./TrackerNav";
+import { FLOW_SLOT_ID } from "./FlowPage";
 import { useHomeWaitsForImports } from "./useNoImportsYet";
 
-// The Tariff Tracker as an app (DESIGN_SYSTEM.md §15): a floating sidebar, dark in both modes,
+// Duty Guard as an app (DESIGN_SYSTEM.md §15): a floating sidebar, dark in both modes,
 // beside the open section. Each tab's dot and count say what's waiting there (free checks left,
 // on the trial); paid-only tabs carry a lock until a plan unlocks them, and still open onto what
 // they'd show.
@@ -158,7 +159,7 @@ const useLockPageScroll = () => {
 
 // The sidebar folds down to its icons, for more room; remembered on this device. An arrival from
 // Get Alerts or Stop Overpaying (arrival.ts) starts folded, without saving it, so the import they
-// asked for is what they see; "Explore the Tracker" on its panel opens it
+// asked for is what they see; "Explore Duty Guard" on its panel opens it
 const COLLAPSED_KEY = "hts-hero-tariff-tracker-sidebar-collapsed";
 
 export const TrackerShell = ({ children }: { children: ReactNode }) => {
@@ -199,7 +200,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
     // a scrolled section would otherwise be placed against the page and stretch it past the app
     <div className={`${THEME} hts-tracker ${trackerSans.className} relative flex h-svh flex-col overflow-hidden bg-base-200 lg:flex-row lg:gap-4 lg:p-4`}>
       <aside
-        className={`hts-tracker-on-dark relative hidden shrink-0 flex-col gap-5 rounded-lg bg-tt-side text-base-content transition-[width] lg:flex ${collapsed ? "w-18 px-2 py-4" : "w-64 p-4"}`}
+        className={`hts-tracker-on-dark relative hidden shrink-0 flex-col gap-5 rounded-lg bg-tt-side text-base-content transition-[width] lg:flex ${collapsed ? "w-18 px-2 py-4" : "w-64 p-4 2xl:w-72"}`}
       >
         <div className={`flex items-center gap-2.5 pt-1 ${collapsed ? "flex-col" : "px-2"}`}>
           <Link href="/" className="flex shrink-0 items-center rounded-full bg-base-content p-1" aria-label={`${config.appName} home`}>
@@ -207,7 +208,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
           </Link>
           {!collapsed && (
             <div className="flex min-w-0 flex-1 flex-col">
-              <span className={`${tt.display} truncate text-[0.95rem] font-semibold`}>Tariff Tracker</span>
+              <span className={`${tt.display} truncate text-[0.95rem] font-semibold`}>Duty Guard</span>
               <span className="truncate text-xs text-base-content/60">{config.appName}</span>
             </div>
           )}
@@ -221,7 +222,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
             {collapsed ? <ChevronDoubleRightIcon className="h-4 w-4" aria-hidden /> : <ChevronDoubleLeftIcon className="h-4 w-4" aria-hidden />}
           </button>
         </div>
-        <nav role="tablist" aria-orientation="vertical" aria-label="Tariff Tracker" className="relative flex flex-1 flex-col gap-4 overflow-y-auto">
+        <nav role="tablist" aria-orientation="vertical" aria-label="Duty Guard" className="relative flex flex-1 flex-col gap-4 overflow-y-auto">
           {GROUPS.map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
               {collapsed ? (
@@ -254,7 +255,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
       </aside>
 
       {/* Phones and tablets; the sidebar's tabs carry the ids the panels point to */}
-      <nav role="tablist" aria-label="Tariff Tracker" className="flex shrink-0 gap-1 overflow-x-auto border-b border-base-300 bg-base-100 px-2 py-2 lg:hidden">
+      <nav role="tablist" aria-label="Duty Guard" className="flex shrink-0 gap-1 overflow-x-auto border-b border-base-300 bg-base-100 px-2 py-2 lg:hidden">
         {shown.map((section) => (
           <TopTab key={section.slug} section={section} />
         ))}
@@ -269,14 +270,19 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
 
       {/* The one scroller: positioned, so what's absolutely positioned inside scrolls (and is
           clipped) with it */}
-      <main className="relative min-h-0 min-w-0 flex-1 overflow-y-auto">
-        <div className="px-4 pt-4 empty:hidden sm:px-6 lg:px-2 lg:pt-0">
-          <FinishSetupBanner />
-          <PlanBanner />
-          <TrialDialog />
-        </div>
-        {children}
-      </main>
+      <div className="relative flex min-h-0 min-w-0 flex-1">
+        <main className="relative min-h-0 min-w-0 flex-1 overflow-y-auto">
+          <div className="px-4 pt-4 empty:hidden sm:px-6 lg:px-2 lg:pt-0">
+            <FinishSetupBanner />
+            <PlanBanner />
+            <TrialDialog />
+          </div>
+          {children}
+        </main>
+        {/* A flow open over the content, beside the sidebar (FlowPage: the entry audit, the
+            savings review); empty, it isn't there */}
+        <div id={FLOW_SLOT_ID} className="absolute inset-0 z-30 empty:hidden" />
+      </div>
     </div>
   );
 };

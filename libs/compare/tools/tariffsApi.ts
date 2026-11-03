@@ -59,7 +59,7 @@ export const TARIFFS_API: Tool = {
       },
       {
         title: "Starting price",
-        body: "TariffsAPI's Starter plan is $99 a month. HTS Hero's Tariff Calculator is free, and Tariff Tracker for catalogs starts lower too. Both companies publish their prices.",
+        body: "TariffsAPI's Starter plan is $99 a month. HTS Hero's Tariff Calculator is free, and Duty Guard for catalogs starts lower too. Both companies publish their prices.",
       },
     ],
     faqs: [

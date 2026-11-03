@@ -1,12 +1,19 @@
-import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup"
-import { REVERSE_TRIAL, TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing"
-import { FREE_FOREVER_LINE } from "@/components/ui/marketing/comingSoon"
+import { signupHref } from "@/components/tariff-tracker/access/signup"
+import { ONBOARDING_PATH } from "@/libs/signup-onboarding"
+import {
+  ALERT_TIERS,
+  formatPrice,
+  REVERSE_TRIAL,
+} from "@/components/pricing-calculator/lib/pricing"
 
-// The one offer every hero leads with: the Tracker's 14-day reverse trial (REVERSE_TRIAL), then what
-// stays free forever (alerts on TRIAL_ALLOWANCE.alertImports of the account's imports, Tariff News
-// alerts, sourcing insights), with the free calculator behind it
+// The one offer the hero and closing buttons lead with: a free account (/signup), then straight
+// into the sign-up onboarding (/onboarding), like every button on the page (EntryCta). The Tariff Calculator keeps its own button
 export const OFFER = {
-  cta: TRY_IT_FREE,
-  note: `Everything the Tariff Tracker does, on up to ${REVERSE_TRIAL.imports} imports, free for ${REVERSE_TRIAL.days} days. No credit card. ${FREE_FOREVER_LINE}`,
-  href: TRY_FREE_HREF,
+  cta: "Get Started Free",
+  note: `Try Duty Guard free for ${REVERSE_TRIAL.days} days, no credit card required. Then from ${formatPrice(ALERT_TIERS[0].price)}/mo. Set up in 30 seconds. The Tariff Calculator stays free.`,
+  // Also the country calculator pages' button (no homepage section)
+  href: signupHref(ONBOARDING_PATH),
 }
+
+// The homepage's buttons: where they start (libs/signup-onboarding.ts)
+export { HOME_SECTIONS, type HomeSection } from "@/libs/signup-onboarding"

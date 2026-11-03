@@ -18,6 +18,9 @@ const date = (iso: string) =>
 
 const CTA = "Look up any HTS code's tariff from any country, free: htshero.com"
 const TAGS = "#tariffs #imports #trade #customs"
+const LAUNCH_TAGS = "#DutyGuard #tariffs #imports #customs"
+// The memo teaser speaks to customs brokers and freight forwarders
+const TRADE_PRO_TAGS = "#customsbrokers #freightforwarding #tariffs #customs"
 
 const linkedin = (hook: string, lines: string[], close?: string) =>
   [hook, "", ...lines.map((l) => `→ ${l}`), "", ...(close ? [close, ""] : []), CTA, "", TAGS].join("\n")
@@ -160,6 +163,37 @@ export const captionsFor = <T extends TemplateId>(template: T, props: TemplatePr
           [working, p.footnote].filter(Boolean).join(" ")
         ),
         x: x(`${p.headline}.`, `HTS ${p.htsCode}: "${p.rate}"`),
+      }
+    }
+    case "LaunchTeaser": {
+      const p = props as TemplatePropsMap["LaunchTeaser"]
+      return {
+        linkedin: [p.hook, "", p.punch, "", `${p.name}: ${p.tagline}`, "", `${p.date}. Follow along at htshero.com`, "", LAUNCH_TAGS].join("\n"),
+        x: `${p.hook} ${p.punch}\n\n${p.name}: ${p.date.toLowerCase()}.\n\nhtshero.com`,
+      }
+    }
+    case "LaunchMemo": {
+      const p = props as TemplatePropsMap["LaunchMemo"]
+      // Older copy may still carry [brackets]; nothing is hidden any more
+      const hide = (line: string) => line.replace(/[[\]]/g, "")
+      return {
+        linkedin: [`To: ${p.to}`, `Re: ${hide(p.subject)}`, "", hide(p.line1), "", hide(p.line2), "", hide(p.line3), "", `${p.date}. Follow along at htshero.com`, "", TRADE_PRO_TAGS].join("\n"),
+        x: `${hide(p.line1)}\n\n${p.date}.\n\nhtshero.com`,
+      }
+    }
+    case "LaunchSlam": {
+      const p = props as TemplatePropsMap["LaunchSlam"]
+      return {
+        linkedin: [`${p.line1} ${p.word1}`, `${p.line2} ${p.word2}`, `${p.line3} ${p.word3}`, "", `${p.name}. ${p.date}.`, "", "Follow along at htshero.com", "", LAUNCH_TAGS].join("\n"),
+        x: `${p.line1} ${p.word1}\n${p.line2} ${p.word2}\n${p.line3} ${p.word3}\n\n${p.name}. ${p.date}.\n\nhtshero.com`,
+      }
+    }
+    case "LaunchVideo": {
+      const p = props as TemplatePropsMap["LaunchVideo"]
+      const lines = { audit: `${p.auditTitle}: ${p.auditLine}`, savings: `${p.savingsTitle}: ${p.savingsLine}`, alerts: `${p.alertsTitle}: ${p.alertsLine}` }
+      return {
+        linkedin: [p.opener, p.openerSub, "", ...p.order.map((f) => `→ ${lines[f]}`), "", `${p.cta}. ${p.ctaSub}`, "", LAUNCH_TAGS].join("\n"),
+        x: `${p.opener} ${p.openerSub}\n\n${p.cta}: htshero.com`,
       }
     }
   }

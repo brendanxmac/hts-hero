@@ -24,6 +24,7 @@ export const sendPurchaseConfirmationEmail = async (recipient: string, purchase:
       purchasedOn: formatDay(purchase.created_at),
       product: tracker ? "tracker" : "classify",
       importsCovered: tracker?.maxPairs ?? null,
+      offer: tracker && "offer" in tracker ? tracker.offer : null,
       footer: { reason: "You're getting this receipt because you bought an HTS Hero plan with this email." },
     },
   })

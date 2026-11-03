@@ -1,21 +1,32 @@
+import { EntryCta } from "@/components/onboarding/EntryCta";
+import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { SectionIntro } from "@/components/ui/marketing";
+import * as cta from "@/components/ui/marketing/cta";
 import * as mk from "@/components/ui/marketing/styles";
-import type { AuditExample } from "@/libs/tariff-audit-example";
-import { RecalcTerminal } from "./RecalcTerminal";
+import { SetupCard } from "./SetupCard";
 
-// The audit, shown on one real entry: paid against owed, line by line, on a dark band
-export const RecalcSection = ({ example }: { example: AuditExample | null }) => {
-  if (!example) return null;
-  return (
-    <section className={`${mk.band} ${mk.bandDark} relative overflow-hidden`} aria-labelledby="recalc-title">
-      <div className={`${mk.container} relative grid grid-cols-1 gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center`}>
-        <SectionIntro eyebrow="How the audit works" title={<>Paid vs. owed, <span className={mk.accentDark}>line by line.</span></>} id="recalc-title" dark>
-          Each entry line is recalculated with the rules in force on its entry date. Here, $40,000 of steel wire from China
-          paid the 10% Section 122 duty, though Section 232 articles were exempt from it. Both sides are calculated by the
-          HTS Hero tariff engine.
-        </SectionIntro>
-        <RecalcTerminal example={example} />
+// "Get Set Up in 30 Seconds": how quick it is to start, in one centered picture (SetupCard: a
+// spreadsheet of entries drops in, is added, and the audit is one click away), then the same thing
+// in two steps and a button to the plans, like /tariff-alerts' "Get Started in 30 Seconds". On a
+// dark band.
+
+
+export const RecalcSection = () => (
+  <section id="how-it-works" className={`${mk.band} ${mk.bandDark} relative overflow-hidden`} aria-labelledby="recalc-title">
+    <div className={`${mk.container} relative flex flex-col items-center`}>
+      <SectionIntro eyebrow="" title={<>Get Started in <span className={mk.accentDark}>30 Seconds</span></>} id="recalc-title" dark center>
+        Upload your products and you&apos;re ready to go. No onboarding, no consultants and no handoffs.
+      </SectionIntro>
+
+      <div className="mt-14 w-full max-w-xl">
+        <SetupCard />
       </div>
-    </section>
-  );
-};
+
+      <div className="mt-10">
+        <EntryCta page="duty-audit" entry="audits_page" section="setup" label="Get Started" className={cta.buttonPrimarySm}>
+          Get Started <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+        </EntryCta>
+      </div>
+    </div>
+  </section>
+);

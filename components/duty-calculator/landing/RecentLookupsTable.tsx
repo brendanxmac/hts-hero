@@ -1,22 +1,30 @@
 "use client";
 
-import { useMemo } from "react";
-import { ArrowRightIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { useMemo, useState } from "react";
+import { ChevronRightIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { Countries } from "@/constants/countries";
 import { useHts } from "@/contexts/HtsContext";
+import { useUser } from "@/contexts/UserContext";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { clearRecentLookups, RecentLookup } from "@/libs/recent-lookups";
 import { addToCatalog } from "@/components/tariff-tracker/catalogStore";
+import { addToAccountCatalog } from "@/components/tariff-tracker/catalogSync";
 import { trackProduct } from "@/components/tariff-tracker/report";
-import { TRACKER_PATH } from "@/components/tariff-tracker/sections";
+import { entryHref } from "@/libs/signup-onboarding";
+import { sectionUrl } from "@/components/tariff-tracker/sections";
 import { formatPct, todayIso } from "../lib/format";
 import { TariffFinder } from "../lib/useTariffFinder";
+import { ConversionDialog } from "../calculator/ConversionDialog";
+import { alertPitch } from "./TrackImportButton";
 
 // Recent searches: the imports looked up on this device, each at today's rate (on a $10,000
-// shipment). A click anywhere on a row opens it again; one link tracks them all.
+// shipment). A click anywhere on a row opens it again; one button tracks them all: signed in, right
+// away; signed out, the pitch first, whose button saves them on this device, and sign-up brings them
+// into the new account, which starts the trial.
 const ago = (iso: string) => {
   const days = Math.floor((Date.now() - Date.parse(iso)) / 86400000);
   return days < 1 ? "today" : days === 1 ? "yesterday" : days < 7 ? `${days} days ago` : days < 14 ? "last week" : `${Math.floor(days / 7)} weeks ago`;
@@ -24,6 +32,8 @@ const ago = (iso: string) => {
 
 export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder; lookups: RecentLookup[]; onCleared: () => void }) => {
   const { htsElements } = useHts();
+  const { user } = useUser();
+  const [pitching, setPitching] = useState(false);
   const today = todayIso();
   const rows = useMemo(
     () =>
@@ -42,13 +52,28 @@ export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder;
     f.changeCountries([row.country]);
     f.selectElement(row.element, "recent_lookup");
   };
-  const trackAll = () => {
-    const { added, duplicates } = addToCatalog(rows.map((r) => ({ code: r.lookup.code, country: r.lookup.country })));
+  const trackAll = async () => {
+    const products = rows.map((r) => ({ code: r.lookup.code, country: r.lookup.country }));
+    const { added, duplicates } = addToCatalog(products);
     // "Products Added" is the one count of imports added, wherever they come from
     trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCTS_ADDED, { added, duplicates, source: "recent_lookups" });
     trackEvent(MixpanelEvent.TARIFF_TRACKER_LOOKUPS_ADDED, { added, offered: rows.length, from: "calculator" });
-    window.location.href = `${TRACKER_PATH}?tab=catalog`;
+    trackEvent(MixpanelEvent.SIGNUP_CTA_CLICKED, { page: "calculator", entry: "calculator_recent", section: "recent_searches", label: "Track All Your Recent Searches", signed_in: !!user });
+    if (!user) {
+      window.location.href = entryHref("calculator_recent");
+      return;
+    }
+    // Into the account too, so they're there before Duty Guard's first sync
+    await addToAccountCatalog(user.id, products).catch((e) => console.error("Saving the searches to the account:", e));
+    window.location.href = sectionUrl("catalog");
   };
+
+  const ask = () => {
+    if (user) return trackAll();
+    setPitching(true);
+    trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature: "recent-searches", reason: "account", page: "calculator" });
+  };
+  const many = rows.length > 1;
 
   return (
     <section aria-labelledby="dc-recent" className={`${tt.panel} overflow-hidden`}>
@@ -67,9 +92,9 @@ export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder;
           >
             Clear
           </button>
-          <button type="button" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline" onClick={trackAll}>
-            Track all {rows.length} free
-            <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+          <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={ask}>
+            <PlusIcon className="h-4 w-4" aria-hidden />
+            Get alerts when any of these change
           </button>
         </div>
       </div>
@@ -93,6 +118,17 @@ export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder;
           </li>
         ))}
       </ul>
+      <ConversionDialog
+        open={pitching}
+        view="account"
+        account={alertPitch(
+          many ? `Get alerted when any of these ${rows.length} imports change` : "Get alerted when this import changes",
+          many ? "each of them" : "this import",
+        )}
+        onClose={() => setPitching(false)}
+        onCreateAccount={trackAll}
+        page="calculator"
+      />
     </section>
   );
 };

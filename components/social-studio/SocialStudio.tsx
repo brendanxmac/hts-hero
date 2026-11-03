@@ -5,6 +5,7 @@ import toast from "react-hot-toast"
 import { Format, FORMATS, Theme } from "@/social/brand"
 import { captionsFor } from "@/social/captions"
 import type { Post } from "@/social/types"
+import { LAUNCH_POSTS } from "@/social/launch"
 import type { Idea } from "@/libs/social-studio/ideas"
 import type { OddColumn, OddRate } from "@/libs/social-studio/unusual"
 import { btn, Callout, CopyCommand, EmptyState, Field, Help, inputCls, PageHeader, Panel, Pill, Segmented, Spinner, Tabs } from "../hts-revision-diff/ui"
@@ -15,9 +16,16 @@ import PostCard from "./PostCard"
 // Makes branded posts from the tariff engine, Census data and the /tariff-updates feed. Ideas:
 // what the daily miners and Claude found worth posting. News: a post for any tariff update.
 // Product, Country, Facts and Odd rates: make posts by hand. Every number is computed; you edit the words,
-// then download PNGs or MP4s (rendered in the browser).
+// then download PNGs or MP4s (rendered in the browser). Duty Guard Launch: the launch teasers and
+// videos (social/launch.ts), edited and kept in this browser.
 
-type Tab = "ideas" | "news" | "product" | "country" | "facts" | "odd"
+type Tab = "ideas" | "news" | "product" | "country" | "facts" | "odd" | "launch"
+
+// Launch edits in this browser: per post, only the fields changed from the draft
+const LAUNCH_STORE = "content-studio:launch:v2"
+// The first store, which kept every field; read once for its looks, then removed
+const OLD_LAUNCH_STORE = "content-studio:launch"
+const LOOKS = ["theme", "accent", "showVisual"]
 
 // One odd rate and every line that has it
 interface OddGroup {
@@ -125,6 +133,35 @@ export default function SocialStudio() {
   const [oddAll, setOddAll] = useState(false)
   const [oddQuery, setOddQuery] = useState("")
   const [oddPicked, setOddPicked] = useState<string | null>(null)
+  const [launch, setLaunch] = useState<Post[]>(LAUNCH_POSTS)
+
+  // Launch edits live in this browser: read once, saved on every change. Only the fields that
+  // differ from the drafts in social/launch.ts are kept, so a rewritten draft still shows wherever
+  // it wasn't edited here.
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(LAUNCH_STORE) ?? "null") as Record<string, Partial<Post["props"]>> | null
+      // The first store kept every field, old copy included: carry over only the looks picked
+      const old = saved ? null : (JSON.parse(localStorage.getItem(OLD_LAUNCH_STORE) ?? "null") as Record<string, Record<string, unknown>> | null)
+      const edits = saved ?? (old && Object.fromEntries(Object.entries(old).map(([key, props]) => [key, Object.fromEntries(LOOKS.filter((k) => k in props).map((k) => [k, props[k]]))])))
+      if (edits) setLaunch(LAUNCH_POSTS.map((p) => (edits[p.key] ? ({ ...p, props: { ...p.props, ...edits[p.key] } } as Post) : p)))
+      if (old) localStorage.removeItem(OLD_LAUNCH_STORE)
+    } catch {
+      // No storage (private window): the drafts as written
+    }
+  }, [])
+  const editLaunch = (next: Post[]) => {
+    setLaunch(next)
+    try {
+      const changed = (p: Post) => {
+        const draft = (LAUNCH_POSTS.find((d) => d.key === p.key)?.props ?? {}) as Record<string, unknown>
+        return Object.fromEntries(Object.entries(p.props).filter(([k, v]) => JSON.stringify(v) !== JSON.stringify(draft[k])))
+      }
+      localStorage.setItem(LAUNCH_STORE, JSON.stringify(Object.fromEntries(next.map((p) => [p.key, changed(p)]))))
+    } catch {
+      // Not saved, still edited on the page
+    }
+  }
 
   const loadIdeas = useCallback(async () => {
     setIdeasError(null)
@@ -238,6 +275,7 @@ export default function SocialStudio() {
     setTheme(next)
     setBuilt((b) => b && { ...b, posts: b.posts.map((p) => withTheme(p, next)) })
     setIdeas((list) => list && list.map((idea) => ({ ...idea, props: { ...idea.props, theme: next } as Idea["props"] })))
+    editLaunch(launch.map((p) => withTheme(p, next)))
   }
 
   const oddGroups = groupOddRates(oddRates ?? [])
@@ -300,6 +338,7 @@ export default function SocialStudio() {
             { value: "country", label: "Country" },
             { value: "facts", label: "Facts" },
             { value: "odd", label: "Odd Rates" },
+            { value: "launch", label: "Duty Guard Launch" },
           ]}
         />
       </PageHeader>
@@ -597,7 +636,45 @@ export default function SocialStudio() {
         </Panel>
       )}
 
-      {tab !== "ideas" && tab !== "news" && built && (
+      {tab === "launch" && (
+        <>
+          <Panel
+            title="Duty Guard Launch"
+            actions={
+              <div className="flex items-center gap-2">
+                <Cost />
+                <button className={btn.secondary} onClick={() => editLaunch(LAUNCH_POSTS.map((p) => withTheme(p, theme)))}>
+                  Reset all
+                </button>
+              </div>
+            }
+            bodyClassName="flex flex-col gap-3 px-6 py-4 text-sm text-base-content/70"
+          >
+            <p>
+              Five teasers for the run-up and two videos for launch day. Pick a color for each, turn its product visual off when the words hit harder alone, edit the words, check each format, then download the MP4 (or the PNG of the last frame).
+              Your edits are kept in this browser.
+            </p>
+          </Panel>
+          {viewBar}
+          {launch.map((post, i) => (
+            <PostCard
+              key={post.key}
+              post={post}
+              format={format}
+              verify={false}
+              captions={captionsFor(post.template, post.props)}
+              onProps={(props) => editLaunch(launch.map((p, j) => (j === i ? ({ ...p, props } as Post) : p)))}
+              actions={
+                <button className={btn.xsGhost} onClick={() => editLaunch(launch.map((p, j) => (j === i ? withTheme(LAUNCH_POSTS[i], theme) : p)))}>
+                  Reset
+                </button>
+              }
+            />
+          ))}
+        </>
+      )}
+
+      {tab !== "ideas" && tab !== "news" && tab !== "launch" && built && (
         <>
           {viewBar}
           <div className="text-sm font-medium text-base-content/60">

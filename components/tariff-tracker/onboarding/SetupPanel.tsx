@@ -25,7 +25,7 @@ import { openImportTakeover } from "./takeoverStore";
 import { openFeatureTour } from "./tour/tourStore";
 import { delay } from "./parts";
 
-// The Tracker with none of the user's imports yet (the Home and Imports pages): the whole page is
+// Duty Guard with none of the user's imports yet (the Home and Imports pages): the whole page is
 // the pitch for adding them. What it does for them, the tariff actions landing right now (why it
 // matters today), every feature, and one ask, made twice: "Set up my imports", which always opens
 // the import takeover at its start, so everyone goes through the same setup flow. No example
@@ -53,7 +53,7 @@ const FEATURES: { Icon: Icon; title: string; body: string; tone: string }[] = [
   },
 ];
 
-const PROMISES = ["Takes about a minute", `Free for ${REVERSE_TRIAL.days} days`, "No credit card"];
+const PROMISES = ["Takes about a minute", `Free for ${REVERSE_TRIAL.days} days`, "No credit card required"];
 const ACTIONS = 3;
 
 const Cta = ({ from, where }: { from: string; where: string }) => (
@@ -134,7 +134,7 @@ const LatestActions = () => {
 };
 
 // What the tour shows, as things that would already be happening with their imports in: each
-// card one feature, locked until there are imports. Examples, in the Tracker's own terms (rates
+// card one feature, locked until there are imports. Examples, in Duty Guard's own terms (rates
 // before → after in %, savings as "may qualify").
 const TEASERS: { Icon: Icon; tone: string; label: string; title: string; detail: string }[] = [
   { Icon: BellAlertIcon, tone: "bg-error/15 text-error", label: "Tariff alert", title: "A rate change hits 3 of your imports", detail: "Steel brackets, China: 52.9% → 77.9%" },
@@ -192,7 +192,7 @@ const TourTeaser = ({ from }: { from: string }) => (
     </div>
 
     {/* What's waiting: each card a feature, locked until the imports are in */}
-    <ul className="relative m-0 grid list-none gap-2.5 p-0 sm:grid-cols-2" aria-label="What the Tracker does with your imports">
+    <ul className="relative m-0 grid list-none gap-2.5 p-0 sm:grid-cols-2" aria-label="What Duty Guard does with your imports">
       {TEASERS.map((t, i) => (
         <li
           key={t.label}
@@ -233,7 +233,7 @@ export const SetupPage = ({ from }: { from: string }) => (
         aria-hidden
       />
       <div className="relative flex flex-col gap-4">
-        <span className={`${tt.chip("primary")} self-start`}>Tariff Tracker</span>
+        <span className={`${tt.chip("primary")} self-start`}>Duty Guard</span>
         <h1
           id="tt-setup-title"
           className={`${tt.display} m-0 max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-base-content lg:text-[3rem]`}
@@ -268,7 +268,7 @@ export const SetupPage = ({ from }: { from: string }) => (
       <div className="flex flex-col gap-2 px-1">
         <span className={tt.eyebrow("primary")}>What you get</span>
         <h2 id="tt-setup-features" className={`${tt.display} m-0 text-3xl font-semibold tracking-tight text-base-content`}>
-          Everything the Tracker Watches for You
+          Everything Duty Guard Watches for You
         </h2>
       </div>
       <ul className="m-0 grid list-none gap-4 p-0 md:grid-cols-2 xl:grid-cols-3">

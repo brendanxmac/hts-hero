@@ -6,9 +6,9 @@ import { REVISION_DIFF_ADMIN_EMAIL } from "@/libs/hts-revision-diff/constants";
 
 export const dynamic = "force-dynamic";
 
-// The signed-in visitor's Tariff Tracker plan: free, trial or paid, and how many products it tracks.
-// ?trialPreview=start|trial|ending|ended|paid|lapsed shows the admin (or anyone in local
-// development) a plan stage on their own account; only what the Tracker shows changes, never what alerts cover.
+// The signed-in visitor's Duty Guard plan: free, trial or paid, and how many products it tracks.
+// ?trialPreview=start|trial|ending|ended|paid|alerts|lapsed shows the admin (or anyone in local
+// development) a plan stage on their own account; only what Duty Guard shows changes, never what alerts cover.
 export async function GET(req: Request) {
   try {
     const {
@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     if (stage && TRIAL_PREVIEWS.includes(stage) && mayPreview) return NextResponse.json(previewAccess(access, stage));
     return NextResponse.json(access);
   } catch (e) {
-    console.error("Error reading Tariff Tracker access:", e);
+    console.error("Error reading Duty Guard access:", e);
     return NextResponse.json({ error: "Couldn't load your plan" }, { status: 500 });
   }
 }

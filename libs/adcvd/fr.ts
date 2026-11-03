@@ -29,6 +29,8 @@ export class FederalRegisterOutOfTime extends FederalRegisterUnavailable {}
 // The deadline of the run these requests belong to (runMonth, runNew). Without it, a throttled
 // request's backoff (up to ~10 minutes) outlasts the function and Vercel kills the run.
 const runDeadline = new AsyncLocalStorage<number>()
+// Milliseconds left before the current run's deadline (Infinity outside a run)
+export const runTimeLeft = () => (runDeadline.getStore() ?? Infinity) - Date.now()
 
 // ---------- Blocks ----------
 

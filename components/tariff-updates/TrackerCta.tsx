@@ -7,13 +7,13 @@ import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { LOWEST_PER_IMPORT, REVERSE_TRIAL, formatPrice } from "@/components/pricing-calculator/lib/pricing"
 
-// The Tariff Tracker's offer beside tariff news: the updates, matched to the reader's own imports.
-// Free for 14 days (REVERSE_TRIAL), then Tariff News alerts free forever, so the ask is an account, and
+// Duty Guard's offer beside tariff news: the updates, matched to the reader's own imports.
+// Free for a week (REVERSE_TRIAL), then Tariff News alerts free forever, so the ask is an account, and
 // it opens straight on adding imports. A card on an HTS code page (named for the code, with what an
 // alert looks like), inverted from the page so it stands out. The /tariff-updates pages have
 // TariffAlertsBanner above the header instead.
 
-const HREF = "/tariff-tracker?tab=catalog&add=paste"
+const HREF = "/duty-guard?tab=catalog&add=paste"
 
 const POINTS = [
   "Every entry audited for duty you may have overpaid",
@@ -45,7 +45,7 @@ export function TrackerCtaFeature({ htsno, today }: { htsno: string; today?: { p
           Know the moment a tariff update hits <span className={`${mono.className} text-primary`}>{htsno}</span>
         </h2>
         <p className="m-0 text-base leading-relaxed text-base-content/70">
-          Add it, with your country of origin, to the Tariff Tracker, free for {REVERSE_TRIAL.days} days. It flags duty you may have overpaid on your entries,
+          Add it, with your country of origin, to Duty Guard, free for {REVERSE_TRIAL.days} days. It flags duty you may have overpaid on your entries,
           and when a new tariff action affects it, you hear about it first, with exactly what changes.
         </p>
         <ul className="m-0 flex list-none flex-col gap-2 p-0">
@@ -62,7 +62,7 @@ export function TrackerCtaFeature({ htsno, today }: { htsno: string; today?: { p
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </Link>
           <span className="text-xs text-base-content/60">
-            No credit card · Plans as low as {formatPrice(LOWEST_PER_IMPORT)} per import, per month · Tariff News alerts free, forever
+            No credit card required · Plans as low as {formatPrice(LOWEST_PER_IMPORT)} per product, per month · Tariff News alerts free, forever
           </span>
         </div>
       </div>

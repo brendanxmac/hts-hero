@@ -1,4 +1,4 @@
-import type { CaseKind, Rates } from "./types"
+import type { CaseKind, CaseRow, Rates } from "./types"
 
 // How AD/CVD cases are written for people: dotted HTS codes, rates as percentages, the law's name.
 
@@ -34,3 +34,12 @@ export const ratesBasis = (r: Rates) => BASIS[r.basis]
 
 // "Oct 8, 2026"
 export const shortDate = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })
+
+// "a570137", "A 570-137" → "A-570-137"; null when it isn't a case number
+export const caseNumberOf = (q: string) => {
+  const m = q.toUpperCase().replace(/\s+/g, "").match(/^([AC])-?(\d{3})-?(\d{3})$/)
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : null
+}
+
+// A case found by /api/adcvd/search (the entry audit's "add a case")
+export type CaseSearchRow = Pick<CaseRow, "case_number" | "kind" | "country" | "product" | "status" | "rates" | "order_on" | "initiated_on" | "ended_on">

@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { BreadcrumbsProvider } from "@/contexts/BreadcrumbsContext";
 import { Countries } from "@/constants/countries";
-import { CalculatorWorkspace, showAdcvd } from "@/components/duty-calculator/calculator/CalculatorWorkspace";
+import { CalculatorWorkspace } from "@/components/duty-calculator/calculator/CalculatorWorkspace";
 import { ImportInputs } from "@/components/duty-calculator/calculator/CalculatorTop";
 import { Disclaimer } from "@/components/duty-calculator/calculator/Disclaimer";
 import { ShareButtons } from "@/components/duty-calculator/calculator/ShareButtons";
@@ -25,9 +25,8 @@ import { EXPAND_SIDEBAR_EVENT } from "../onboarding/arrival";
 import { ProductSavings } from "./savings/ProductSavings";
 
 // One import, opened from its row: a small header (what it is, and its one row of tabs), then
-// - Overview (where it opens), Duty (with its AD/CVD check), Compare, Changes (its history and
-//   news): the calculator's own tabs, for this product (its code and origin fixed), held by the
-//   header's tabs.
+// - Overview (where it opens), then Duty, History, Compare, AD/CVD Cases and News: the
+//   calculator's own tabs, for this product (its code and origin fixed), held by the header's tabs.
 //   Everything set here is saved as the product's adjustments, so the catalog row shows it on
 //   the way back.
 // - Savings: every way to pay less on it, guided, once its savings are unlocked
@@ -67,13 +66,17 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
   // Opened again on another tab (from Savings or Entry audit) while already open
   useEffect(() => {
     if (isProductTab(asked)) setTab(productViewOf(asked));
-    if (asked === "adcvd") showAdcvd();
   }, [asked]);
   const openTab = (asked: ProductTab) => {
     const next = productViewOf(asked);
-    if (asked === "adcvd") showAdcvd();
     setTab(next);
-    // Each view opens at its top (the Tracker's one scroller is its main)
+    // Kept in the address, so the product opening again (a reload, coming back from the entry
+    // audit) lands on the same tab rather than Overview
+    const url = new URL(window.location.href);
+    if (next === "overview") url.searchParams.delete("ptab");
+    else url.searchParams.set("ptab", next);
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}`);
+    // Each view opens at its top (Duty Guard's one scroller is its main)
     document.querySelector("main")?.scrollTo({ top: 0 });
     trackEvent(MixpanelEvent.TARIFF_TRACKER_PRODUCT_TAB_OPENED, { tab: next });
   };
@@ -142,14 +145,15 @@ const Workspace = ({ row, start, onReset }: { row: TrackedProduct; start: Finder
         actions={
           f.result ? <ShareButtons f={f} /> : undefined
         }
-        inputs={calculatorTab ? <ImportInputs f={f} /> : undefined}
+        inputs={<ImportInputs f={f} />}
+        inputsHidden={!calculatorTab}
         historyChanges={f.history.filter((x) => x.changes.length > 0).length}
       />
       <MovingNotice row={row} movingTo={itemFor(row.key)?.movingTo} hasNew={(key) => products.some((p) => p.key === key)} />
       {/* The first visit from Get Alerts or Stop Overpaying: what they asked for, done */}
       <ArrivalPanel row={row} f={f} onExplore={() => window.dispatchEvent(new Event(EXPAND_SIDEBAR_EVENT))} />
 
-      {/* The calculator, on the menu's Duty, Compare or History (and every country under Compare).
+      {/* The calculator, on every tab but Savings and Audits (and every country under Compare).
           Kept mounted, so it keeps its state while another view is open. A class, not the
           hidden attribute: `flex` would override that and keep it showing */}
       <div className={calculatorTab ? "flex flex-col gap-4" : "hidden"}>

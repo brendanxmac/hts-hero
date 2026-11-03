@@ -3,7 +3,11 @@ import {
   auditUnlocked,
   canSpendCheck,
   checksLeft,
+  freeCheck,
+  isSellablePlan,
+  isTrackerPlan,
   NO_USAGE,
+  planFitting,
   savingsUnlocked,
   trackerAccessFrom,
   trialDaysLeft,
@@ -11,10 +15,10 @@ import {
   previewAccess,
   trialNotStarted,
 } from "../libs/tariff-tracker/plan"
-import { REVERSE_TRIAL, trackerTierFor } from "../components/pricing-calculator/lib/pricing"
+import { priceQuote, REVERSE_TRIAL } from "../components/pricing-calculator/lib/pricing"
 import { PricingPlan } from "../types"
 
-// The Tariff Tracker's plan rules (PRICING.md): a 14-day reverse trial (everything, 200 imports)
+// Duty Guard's plan rules (PRICING.md): a 14-day reverse trial (everything, 200 imports)
 // from the first real imports, then the free plan (no alerts on its own imports; Tariff News alerts only); paid by tier
 const usage = (savings: number, audits: number) => ({
   savingsChecked: Array.from({ length: savings }, (_, i) => `610${i}-CN`),
@@ -26,22 +30,24 @@ const signedUp = "2027-01-10T15:00:00Z"
 const inTrial = Date.parse(signedUp) + 3 * DAY
 const afterTrial = Date.parse(signedUp) + 15 * DAY
 
-describe("Tariff Tracker: plans", () => {
-  it("a new account is on the 14-day trial: 200 imports, every check", () => {
+describe("Duty Guard: plans", () => {
+  it("a new account is on the 7-day trial: 500 imports, every check", () => {
     const access = trackerAccessFrom({ usage: usage(9, 30), activePlans: [], trialStartedAt: signedUp, now: inTrial })
     expect(access.kind).toBe("trial")
-    expect(access.pairLimit).toBe(200)
-    expect(access.trialEndsAt).toBe("2027-01-24T15:00:00.000Z")
-    expect(trialDaysLeft(access, inTrial)).toBe(11)
+    expect(access.pairLimit).toBe(500)
+    expect(access.trialEndsAt).toBe("2027-01-17T15:00:00.000Z")
+    expect(trialDaysLeft(access, inTrial)).toBe(4)
     expect(checksLeft(access, "savings")).toBe(Infinity)
     expect(auditUnlocked(access, "never-checked")).toBe(true)
     expect(savingsUnlocked(access, new Set(["7000-MX"])).has("7000-MX")).toBe(true)
   })
 
-  it("after 14 days the account is on the free plan: alerts on 3 of its imports", () => {
+  it("after the trial the account is on the free plan: no alerts on its imports", () => {
     const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [], trialStartedAt: signedUp, now: afterTrial })
     expect(access.kind).toBe("free")
-    expect(access.pairLimit).toBe(3)
+    expect(access.pairLimit).toBe(0)
+    expect(access.entitlements.audits).toBe(false)
+    expect(access.entitlements.chat).toBe(false)
     expect(trialDaysLeft(access, afterTrial)! < 0).toBe(true)
   })
 
@@ -53,18 +59,23 @@ describe("Tariff Tracker: plans", () => {
     expect(trialDaysLeft(previewAccess(paid, "ending", now), now)).toBe(2)
     const ended = previewAccess(paid, "ended", now)
     expect(ended.kind).toBe("free")
-    expect(ended.pairLimit).toBe(3)
+    expect(ended.pairLimit).toBe(0)
     expect(ended.preview).toBe("ended")
   })
 
   it("before the first imports the trial hasn't started: full access, no end date", () => {
     const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [], trialStartedAt: null, now: afterTrial })
     expect(access.kind).toBe("trial")
-    expect(access.pairLimit).toBe(200)
+    expect(access.pairLimit).toBe(500)
     expect(access.trialEndsAt).toBe(null)
     expect(trialNotStarted(access)).toBe(true)
     expect(trialDaysLeft(access, afterTrial)).toBe(null)
     expect(trialEndsAt(null)).toBe(null)
+  })
+
+  it("trials started before the week-long trial (REVERSE_TRIAL.shortFrom) keep their 14 days", () => {
+    const before = new Date(Date.parse(`${REVERSE_TRIAL.shortFrom}T00:00:00Z`) - DAY).toISOString()
+    expect(trialEndsAt(before)).toBe(new Date(Date.parse(before) + 14 * DAY).toISOString())
   })
 
   it("trials started before the fresh start get 14 days from it", () => {
@@ -98,25 +109,17 @@ describe("Tariff Tracker: plans", () => {
     expect(unlocked.has("6100-CN")).toBe(true)
   })
 
-  it("classification plans don't unlock the Tracker", () => {
+  it("classification plans don't unlock Duty Guard", () => {
     const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [PricingPlan.CLASSIFY_PRO], trialStartedAt: signedUp, now: afterTrial })
     expect(access.kind).toBe("free")
   })
 
-  it("tiers: $12 to 10, $29 to 30, $89 to 100, $149 to 500, then quoted", () => {
-    expect(trackerTierFor(3)?.price).toBe(12)
-    expect(trackerTierFor(10)?.price).toBe(12)
-    expect(trackerTierFor(11)?.price).toBe(29)
-    expect(trackerTierFor(100)?.price).toBe(89)
-    expect(trackerTierFor(500)?.price).toBe(149)
-    expect(trackerTierFor(501)).toBe(null)
-  })
 })
 
 // Which imports are tracked (snapshot.ts coveredKeys, the same rule as TrackerContext's trackedKeys)
 import { coveredKeys } from "../libs/tariff-tracker/snapshot"
 
-describe("Tariff Tracker: tracked imports", () => {
+describe("Duty Guard: tracked imports", () => {
   const item = (code: string, covered?: boolean) => ({ code, country: "CN", ...(covered === undefined ? {} : { covered }) }) as any
   const product = (code: string, duty: number) => ({ key: `${code}-CN`, result: { totalDuty: duty } }) as any
   const products = [product("1", 10), product("2", 50), product("3", 30), product("4", 40)]
@@ -139,28 +142,48 @@ describe("Tariff Tracker: tracked imports", () => {
 
 // The trial's emails (libs/email/lifecycle.ts pickTrialEmail): 3 days before, the last day, the
 // day after; existing accounts get "unlocked" as their fresh trial starts
-import { pickTrialEmail } from "../libs/email/lifecycle"
+import { pickTrialEmail, pickUpsell } from "../libs/email/lifecycle"
 
-describe("Tariff Tracker: trial emails", () => {
+describe("Duty Guard: trial emails", () => {
   const created = "2027-01-02T15:00:00Z"
   const started = "2027-01-10T15:00:00Z"
   const at = (days: number) => new Date(Date.parse(started) + days * DAY)
   const none = new Set<string>()
 
-  it("nothing mid-trial", () => {
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(5) })).toBe(null)
+  it("nothing on the first days of the trial", () => {
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(1.5) })).toBe(null)
+  })
+
+  it("the lessons: alerts on day 2, savings on day 3, audits on day 5", () => {
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(2.2) })?.key).toBe("trial_lesson_alerts")
+    const alerts = new Set(["trial_lesson_alerts"])
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: alerts, now: at(3.2) })?.key).toBe("trial_lesson_savings")
+    const both = new Set(["trial_lesson_alerts", "trial_lesson_savings", "trial_ending_3"])
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: both, now: at(5.2) })?.key).toBe("trial_lesson_audits")
+  })
+
+  it("a 14-day trial from before shortFrom gets no lessons", () => {
+    const old = "2026-10-25T15:00:00Z"
+    expect(pickTrialEmail({ startedAt: old, createdAt: old, sent: none, now: new Date(Date.parse(old) + 2.2 * DAY) })).toBe(null)
+  })
+
+  it("win-backs 7 and 14 days after it ended", () => {
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(14.2) })?.key).toBe("trial_winback_7")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_winback_7"]), now: at(14.2) })).toBe(null)
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(21.2) })?.key).toBe("trial_winback_14")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(30) })).toBe(null)
   })
 
   it("3 days before, then the last day, then the day after", () => {
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(11.2) })?.key).toBe("trial_ending_3")
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3"]), now: at(12.5) })).toBe(null)
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3"]), now: at(13.2) })?.key).toBe("trial_ending_1")
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3", "trial_ending_1"]), now: at(14.5) })?.key).toBe("trial_ended")
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(20) })).toBe(null)
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(4.2) })?.key).toBe("trial_ending_3")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3", "trial_lesson_audits"]), now: at(5.5) })).toBe(null)
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3"]), now: at(6.2) })?.key).toBe("trial_ending_1")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: new Set(["trial_ending_3", "trial_ending_1"]), now: at(7.5) })?.key).toBe("trial_ended")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(13) })).toBe(null)
   })
 
   it("a missed 3-day email isn't sent once the last day is due", () => {
-    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(13.5) })?.key).toBe("trial_ending_1")
+    expect(pickTrialEmail({ startedAt: started, createdAt: created, sent: none, now: at(6.5) })?.key).toBe("trial_ending_1")
   })
 
   it("nothing before the trial starts", () => {
@@ -175,5 +198,95 @@ describe("Tariff Tracker: trial emails", () => {
     // New accounts don't, nor old ones whose first imports come later
     expect(pickTrialEmail({ startedAt: new Date(fresh + DAY).toISOString(), createdAt: new Date(fresh + DAY).toISOString(), sent: none, now: new Date(fresh + 1.5 * DAY) })).toBe(null)
     expect(pickTrialEmail({ startedAt: new Date(fresh + 2 * DAY).toISOString(), createdAt: "2025-05-01T00:00:00Z", sent: none, now: new Date(fresh + 2.5 * DAY) })).toBe(null)
+  })
+})
+
+describe("Duty Guard: Duty Guard plans", () => {
+  const on = (...activePlans: PricingPlan[]) => trackerAccessFrom({ usage: NO_USAGE, activePlans, trialStartedAt: signedUp, now: afterTrial })
+
+  it("an alerts plan covers its products, without Savings or Audits", () => {
+    const access = on(PricingPlan.DUTY_GUARD_ESSENTIALS_25)
+    expect(access.kind).toBe("paid")
+    expect(access.pairLimit).toBe(25)
+    expect(access.entitlements).toEqual({ audits: false, chat: false, alertEmails: 3 })
+    expect(canSpendCheck(access, "audit", "entry-1")).toBe(false)
+    expect(auditUnlocked(access, "entry-1")).toBe(false)
+    expect(savingsUnlocked(access, new Set(["7000-MX"])).has("7000-MX")).toBe(false)
+  })
+
+  it("Slack and Teams start at Pro", () => {
+    expect(on(PricingPlan.DUTY_GUARD_ESSENTIALS_100).entitlements.chat).toBe(true)
+    expect(on(PricingPlan.DUTY_GUARD_PRO_25).entitlements.chat).toBe(false)
+    expect(on(PricingPlan.DUTY_GUARD_PRO_500).entitlements).toEqual({ audits: true, chat: true, alertEmails: 20 })
+  })
+
+  it("a Duty Guard Pro plan unlocks Savings and Audits and records audits, not savings", () => {
+    const access = on(PricingPlan.DUTY_GUARD_PRO_10)
+    expect(canSpendCheck(access, "audit", "entry-1")).toBe(true)
+    expect(auditUnlocked(access, "entry-1")).toBe(true)
+    expect(freeCheck(access, "audit", "entry-1")).toBe(false)
+    expect(freeCheck(access, "savings", "7000-MX")).toBe(true)
+  })
+
+  it("holding two plans, Duty Guard Pro wins, then the most products", () => {
+    expect(on(PricingPlan.DUTY_GUARD_ESSENTIALS_500, PricingPlan.DUTY_GUARD_PRO_10).paidPlan).toBe(PricingPlan.DUTY_GUARD_PRO_10)
+    expect(on(PricingPlan.DUTY_GUARD_ESSENTIALS_25, PricingPlan.DUTY_GUARD_ESSENTIALS_100).paidPlan).toBe(PricingPlan.DUTY_GUARD_ESSENTIALS_100)
+  })
+
+  it("an old Duty Guard plan keeps its products and everything else", () => {
+    const access = on(PricingPlan.TARIFF_TRACKER_30)
+    expect(access.pairLimit).toBe(30)
+    expect(access.entitlements.audits).toBe(true)
+    expect(isTrackerPlan(PricingPlan.TARIFF_TRACKER_30)).toBe(true)
+    expect(isSellablePlan(PricingPlan.TARIFF_TRACKER_30)).toBe(false)
+  })
+
+  it("the trial has everything", () => {
+    const access = trackerAccessFrom({ usage: NO_USAGE, activePlans: [], trialStartedAt: signedUp, now: inTrial })
+    expect(access.entitlements).toEqual({ audits: true, chat: true, alertEmails: 20 })
+  })
+
+  it("the plan that fits a product count, per offer", () => {
+    expect(planFitting("alerts", 11)?.plan).toBe(PricingPlan.DUTY_GUARD_ESSENTIALS_25)
+    expect(planFitting("audits", 500)?.plan).toBe(PricingPlan.DUTY_GUARD_PRO_500)
+    expect(planFitting("audits", 501)).toBe(null)
+  })
+})
+
+describe("Pricing page calculator", () => {
+  it("adds a tariff plan and a classification plan, monthly", () => {
+    const q = priceQuote({ offer: "audits", products: 25, classify: "pro", seats: 1 }, "monthly")
+    expect(q.lines.map((l) => l.label)).toEqual(["Duty Guard Pro 25", "Classify Pro"])
+    expect(q.monthly).toBe(79 + 89)
+  })
+
+  it("annual takes 15% off the tariff plan, rounded down; classification stays monthly", () => {
+    const q = priceQuote({ offer: "alerts", products: 100, classify: "starter", seats: 1 }, "annual")
+    expect(q.monthly).toBe(33 + 39)
+    expect(q.annualSavings).toBe((39 - 33) * 12)
+  })
+
+  it("licenses are per person, monthly", () => {
+    const q = priceQuote({ offer: "none", products: 1, classify: "licenses", seats: 3 }, "annual")
+    expect(q.monthly).toBe(60 * 3)
+    expect(q.annualSavings).toBe(0)
+  })
+
+  it("past the largest plan the tariff line is a quote, and free is $0", () => {
+    const q = priceQuote({ offer: "alerts", products: 501, classify: "none", seats: 1 }, "monthly")
+    expect(q.hasQuote).toBe(true)
+    expect(q.monthly).toBe(0)
+    expect(priceQuote({ offer: "none", products: 1, classify: "none", seats: 1 }, "monthly").lines.length).toBe(0)
+  })
+})
+
+describe("Duty Guard Pro upsell emails", () => {
+  const bought = "2027-01-01T00:00:00Z"
+  const at = (days: number) => new Date(Date.parse(bought) + days * DAY)
+  it("10 days in, then 20 days in, each once", () => {
+    expect(pickUpsell(bought, new Set(), at(9))).toBe(null)
+    expect(pickUpsell(bought, new Set(), at(10))?.key).toBe("audits_upsell_1")
+    expect(pickUpsell(bought, new Set(["audits_upsell_1"]), at(19))).toBe(null)
+    expect(pickUpsell(bought, new Set(["audits_upsell_1"]), at(20))?.key).toBe("audits_upsell_2")
   })
 })

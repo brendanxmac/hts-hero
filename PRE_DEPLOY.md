@@ -1,3 +1,11 @@
+> **Duty Guard rebrand (2026-11-01), before release:** re-run `npm run stripe:setup-offers` in the sandbox
+> and then live, because plan ids changed (now "Duty Guard Essentials 10", "Duty Guard Pro 100" and so
+> on). Archive the sandbox's 8 old products ("Tariff Alerts Starter" and friends). Rename the billing
+> portal configuration, and regenerate `supabase/email-templates` if any mention the old name.
+
+> **The new offers (Tariff Alerts, Duty Audits, the 7-day trial) have their own checklist:
+> `OFFERS_ROLLOUT.md`.** Its Stripe section replaces the old "four Duty Guard products" item below.
+
 # Next deploy: `release/2026-10-10` → `master` (23 commits, Oct 22–25)
 
 Everything on the branch since PR #295 (`b00364b4`, the Oct 21 launch): base-rate parser and
@@ -32,7 +40,7 @@ still charges the 50% on the 22 removed subheadings.
   - [ ] A classification's Duty & Tariffs tab: the full calculator, no grey band.
   - [ ] /tariff-updates/<a scoped update>: What it covers, every code shown, PDF links.
   - [ ] /admin (Needs You) and /duty-calculator/changelog.
-  - [ ] The Tracker sidebar: no Sourcing.
+  - [ ] Duty Guard sidebar: no Sourcing.
   - [ ] /hts/9401.61.60 and /hts/7318.15.80: Duty History section, "last changed" line and FAQ.
         A chapter 84 page (8471.30.01) has none of them.
 - [ ] **Duty History SEO test baseline** (`DUTY_HISTORY_CHAPTERS` in `libs/hts-duty-history.ts`:
@@ -42,12 +50,36 @@ still charges the 50% on the 22 removed subheadings.
 
 ### Production database
 
+- [ ] **`supabase/migrations/tracker_alert_emails.sql` in prod and dev** (several alert emails per plan). Without
+  it, impact alerts fail to load their settings.
+- [ ] **`supabase/migrations/signup_onboarding.sql` in prod and dev** (the sign-up onboarding's
+      answers, entry point and first touch). Without it, onboarding still runs but saves nothing.
+- [ ] **`supabase/migrations/tracker_entry_adjustments.sql` in prod and dev** (each audited entry
+      keeps its own trade program, answers and AD/CVD cases, set in the entry audit's Adjustments and
+      AD/CVD steps). Without it, entries fail to load and the entry audit can't save.
+- [ ] **`supabase/migrations/audit_reports.sql` in prod and dev** (the entry audit's "This looks
+      wrong" and AD/CVD case reports, /audit-reports). Without it, reports fail to send.
+- [ ] **`supabase/migrations/demo_requests.sql` in prod and dev** (the homepage's Get a Demo form). Without
+      it, requests are still emailed to Brendan but not saved.
+- [ ] **`npm run email:upload-logo` against prod, before deploying** (done in dev 2026-10-30):
+      uploads the email logos (white chip, readable in dark mode) to the `content` bucket. Every
+      email's card points at `content/logo-email-card.png` (added 2026-10-31, in dev; rerun in prod
+      even if the older logo is already there), so without it the logo is a broken image. The auth
+      templates carry the logo URL too: rerun `npm run email:auth` and repaste them in Supabase,
+      subjects included (`SUBJECTS.txt`): confirm leads with the button with the code as backup,
+      and sign-in is code only (2026-11-01). Test a password sign-up and a code sign-up in dev first.
+- [x] **Set `REVERSE_TRIAL.shortFrom` to the deploy day** (2026-11-03) (`components/pricing-calculator/lib/pricing.ts`):
+      trials started from that day are 7 days; earlier ones keep their 14.
+
 - [ ] **`adcvd.sql`'s 2026-10-23 section in prod** (fr_* / ita_* / hts_sources; every line is
       `IF NOT EXISTS` or runs once), **before deploying**: the hourly AD/CVD cron writes those
       columns and fails without them. Also in dev if not done, then `npm run adcvd:golden -- --strict`.
 - [ ] **`adcvd.sql`'s 2026-10-26 line in prod and dev** (`adcvd_settings.fr_blocked`): lets each
       AD/CVD run remember a Federal Register block for the next. Without it the cron still runs,
       but logs "Loading blocks" / "Saving blocks" warnings and finds each block afresh.
+- [ ] **`email_outbox.sql`'s 2026-10-27 line in prod and dev** (`email_batches.subject`),
+      **before deploying**: the outbox sender selects it, so sending fails without it. Lets the
+      admin change a batch's subject in /email-outbox.
 - [ ] **Decide on the AD/CVD phantom cases** (step 2 of the launch list): `npm run adcvd:phantoms`
       against prod, check, `-- --apply`. That item then says to copy dev to prod, but step 3 says
       never to run `adcvd:copy-to-prod` again after launch. Settle which before running either.
@@ -73,15 +105,15 @@ still charges the 50% on the 22 removed subheadings.
 - [ ] Save a changelog entry; /duty-calculator/changelog shows it (static, rebuilt on save).
 - [ ] Share cards: preview htshero.com, /duty-calculator and /classify in LinkedIn's Post
       Inspector and an X post.
-- [ ] Mixpanel (project 3768432): Sign Up, Purchase Completed and Tariff Tracker Trial Started
+- [ ] Mixpanel (project 3768432): Sign Up, Purchase Completed and Duty Guard Trial Started
       come through on the first real ones; the Business Pulse board fills in.
 
 ---
 
-# Deploying the PLG / Tariff Tracker release
+# Deploying the PLG / Duty Guard release
 
 The release on `release/2026-10-10` (194 commits since `master`, Oct 8 to Oct 20, plus the uncommitted import onboarding from Oct 20): the free Tariff
-Calculator rework, the Tariff Tracker with alerts, impact checks, Insights, rate history and
+Calculator rework, Duty Guard with alerts, impact checks, Insights, rate history and
 Tariff News, AD/CVD flags, the tariff sources and updates pipeline, the email outbox and lifecycle
 emails, the 14-day reverse trial, launch pricing, the Content Studio, and a framework upgrade
 (Next 14 → 16, React 18 → 19, Tailwind 3 → 4, ESLint 9, TypeScript 6). Work through the steps in
@@ -104,7 +136,7 @@ order; tick items as they land, and add new ones as they come up.
 - [ ] **A Vercel preview deploy of the branch first.** Push `release/2026-10-10` and open its
       preview URL: the framework upgrade is the riskiest part of the release, and a preview shows
       build or runtime breakage before `master` does. Click through the home page, a blog post (MDX
-      3), /duty-calculator and the Tracker there.
+      3), /duty-calculator and Duty Guard there.
 - [x] **Commit everything except** `.vscode/` and every `app/zz-*` folder (`app/zz-tracker/`,
       `app/zz-adcvd/`: local previews without sign-in). They must never be committed or deployed.
 - [x] **Set the trial's fresh start to the deploy day**: `REVERSE_TRIAL.freshStartOn` in
@@ -113,18 +145,18 @@ order; tick items as they land, and add new ones as they come up.
 - [ ] **Confirm the launch-pricing deadline**: `LAUNCH_PRICING` (now Fri, Nov 13, 2026). Savings
       detection and auditing are live (2026-10-22) and sold as included.
 - [ ] **`tracker_onboarding.sql` is the last migration** (step 2; added 2026-10-20). It adds
-      `tracker_onboarding` (sign-up source, first Tracker visit, skip reason, trial start) and the
+      `tracker_onboarding` (sign-up source, first Duty Guard visit, skip reason, trial start) and the
       trigger on `tracker_catalogs` that starts the 14-day trial at the first real (non-example)
       import. Its backfill finds nothing on prod: `master` keeps imports only in the browser, so no
       account has stored imports yet. An existing user's browser catalog is saved to their account the
-      first time they open the new Tracker, and that starts their trial then.
+      first time they open the new Duty Guard, and that starts their trial then.
 - [x] **Regenerate the auth emails** (their copy changed for the trial): `npm run email:auth`.
 - [x] **Run the checks**: `npm run tests`, `npx tsc --noEmit -p .`, and a production build
       (`npm run build`).
 - [ ] **Test signed in, in dev** (needs a real account):
   - [ ] A new account from a generic link lands on `/` with the welcome strip; from a calculator
-        CTA it stays on the calculator (no redirect to the Tracker any more).
-  - [ ] First Tracker visit with no imports: the empty Home and Imports pages sell the Tracker and
+        CTA it stays on the calculator (no redirect to Duty Guard any more).
+  - [ ] First Duty Guard visit with no imports: the empty Home and Imports pages sell Duty Guard and
         ask; nothing opens by itself (2026-10-21). Their "Add imports" opens the import takeover:
         walk each way in (recent searches, paste, Excel/CSV with odd headers), "I don't have my list
         handy", and Skip (asks why). An email's `?setup=add` link opens it straight to the ways in.
@@ -137,7 +169,7 @@ order; tick items as they land, and add new ones as they come up.
   - [ ] After the trial (`trial_started_at` 15+ days back, or `?trialPreview=ended`): free plan, no alerts
         on any import (Tariff News alerts still on), "Insights Was Part of Your Free Trial", the ended
         banner and dialog, "Get it all back" opens the plans.
-  - [ ] Checkout of a Tracker plan in the Stripe sandbox, then the plan card and coverage.
+  - [ ] Checkout of a Duty Guard plan in the Stripe sandbox, then the plan card and coverage.
   - [ ] The AD/CVD tab on a flagged import (e.g. 7317.00.55.02 from Vietnam) and on a clean one.
   - [ ] The product page: Overview, Duty, AD/CVD, Compare, History, News.
 
@@ -198,17 +230,9 @@ and the scope reader fail on the missing column.
 
 ## 4. Services and settings
 
-- [ ] **Stripe, live mode.** Create the four products ("Tariff Tracker · 10 imports" … "· 500
-      imports") with a monthly price each ($12 / $29 / $89 / $149), lookup keys
-      `tracker_<10|30|100|500>_monthly` and metadata `plan` = "Tariff Tracker <10|30|100|500>",
-      `billing` = monthly, `version` = 2026-10-mvp. Checkout finds the price by its lookup key and
-      the webhook maps any price by its metadata (`libs/tariff-tracker/prices.ts`), so no Tracker
-      price env vars are needed. No Stripe trial: the 14 days are the app's own, with no card.
-      **Billing portal:** a configuration named "Tariff Tracker" with metadata `app` = `tracker`,
-      subscription updates on (price; upgrades `always_invoice`, downgrades at period end) listing
-      the four Tracker products, and cancel at period end. Check it all with
-      `npm run stripe:check-tracker` using the live key. Also confirm the live Classify prices match
-      the site ($39 / $89; the sandbox has $29 / $80).
+- [x] **Stripe, live mode** (done 2026-11-03: 16 Duty Guard prices and portal added; nothing archived, Classify unchanged). Follow section 1 of `OFFERS_ROLLOUT.md`: check live for active Tariff
+      Duty Guard subscriptions, run `npm run stripe:setup-offers -- --live --archive-old` with the live
+      key, check it with `npm run stripe:check-tracker`, and add the live webhook events.
 - [ ] **Resend on Pro ($20/mo: 50,000 emails, no daily limit) before deploying.** The free plan
       stops at 100 emails a day, and the outbox doesn't retry a failed send: the trial-unlocked batch,
       welcome and onboarding emails and Tariff News would be lost past the 100th. If Supabase Auth
@@ -222,7 +246,7 @@ and the scope reader fail on the missing column.
       links), `RESEND_API_KEY`. Add `DATALAB_API_KEY` too: unused until `TARIFF_SCOPE_READER=datalab`
       switches prod's scope reader to datalab (an env change needs a redeploy to take effect).
       Leave out `HTS_REVISION_TOOL_ENABLED` (the revision checker is local-only). No new Stripe env
-      vars: Tracker prices are found by lookup key; check the live webhook endpoint sends
+      vars: Duty Guard prices are found by lookup key; check the live webhook endpoint sends
       `checkout.session.completed`, `checkout.session.expired`, `customer.subscription.updated`,
       `customer.subscription.deleted`, `invoice.paid` and `invoice.payment_failed`.
 - [ ] **Slack app (HTS Hero):** Redirect URLs include `https://htshero.com/api/slack/callback`,
@@ -244,19 +268,18 @@ and the scope reader fail on the missing column.
       emails), tracker-snapshots.
 - [ ] **If prod breaks:** Vercel → Deployments → the last `master` deploy → Instant Rollback. The
       new tables don't bother the old code, but `tracker_trials` is gone, so fix forward on
-      anything Tracker-related rather than rolling back for long.
+      anything Duty Guard-related rather than rolling back for long.
 
 ## 6. After deploying
 
 - [ ] **Smoke test prod:** the home page, /duty-calculator (a lookup signed out, the AD/CVD flag),
       /tariff-monitor, /pricing-calculator, /tariff-updates, sign up with a new account (a generic
-      sign-up lands on `/`; the welcome email arrives within a minute; the Tracker's empty pages
+      sign-up lands on `/`; the welcome email arrives within a minute; Duty Guard's empty pages
       ask for imports and nothing opens by itself; the trial starts at the first real import), one
       Stripe checkout and refund.
 - [ ] **The "everything is unlocked" email** (`trial_unlocked`): only for an existing account whose
       browser catalog syncs on `freshStartOn` itself (its trial starting that day), so expect few or
-      none. If a batch appears, it's held for review in /email-outbox. It replaces the older "Meet
-      the Tariff Tracker" email; don't also run `npm run email:meet-tracker`.
+      none. If a batch appears, it's held for review in /email-outbox.
 - [ ] **Trial emails from then on** send themselves daily: 3 days before the trial ends, its last
       day, and the day after (`libs/email/lifecycle.ts`). Each trial ends 14 days after that account's
       first real imports, so they arrive a few at a time, not as one batch.
@@ -320,7 +343,7 @@ emails). These need you:
       and the Stripe prices when savings and audits ship, or move the date.
 - [ ] **Once a year:** refresh the Census import data (below).
 
-**To see the trial screens yourself:** open the Tracker signed in as brendan@htshero.com (or any
+**To see the trial screens yourself:** open Duty Guard signed in as brendan@htshero.com (or any
 account in local dev) with `?trialPreview=trial`, `?trialPreview=ending` or `?trialPreview=ended`.
 It changes only what you see (not what your alerts cover), stays on while you move around, and
 `?trialPreview=off` (or the "Previewing · Stop" link on the plan card) ends it.
@@ -359,8 +382,8 @@ It changes only what you see (not what your alerts cover), stays on while you mo
       Census publishes a new year and commit the files. Keep the Census notice next to the figures.
 - [ ] **Track this Import email** on the calculator: if the form still shows "Coming soon" and does
       nothing, wire it to alerts or hide it.
-- [ ] **`view=history` in the Tracker calculator.** The Duty Over Time teaser signs people up back
-      to `view=history`; the Tracker should open on the duty history for it.
+- [ ] **`view=history` in Duty Guard calculator.** The Duty Over Time teaser signs people up back
+      to `view=history`; Duty Guard should open on the duty history for it.
 
 ## Consider
 

@@ -9,7 +9,7 @@ import { Select } from "@/components/ui/Select"
 import { AUTHORITIES } from "@/libs/tariff-updates/types"
 
 // What a subscriber gets: how often, how much of each action, and which laws and countries (none
-// picked means all). Shared by the subscribe form, the manage page and the Tracker's Alerts.
+// picked means all). Shared by the subscribe form, the manage page and Duty Guard's Alerts.
 
 export interface NewsPreferencesValue {
   frequency: "instant" | "weekly" | "off"

@@ -19,15 +19,22 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
   return NextResponse.json({ batch: batch.data, messages: messages.data ?? [] })
 }
 
-// The note at the top of every message in the batch
+// { note?, subject? }: the note at the top of every message in the batch, and the subject of
+// every email in it (empty: back to each template's own)
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const { db, denied } = await requireAdmin()
   if (denied) return denied
-  const { note } = await req.json()
+  const body = await req.json()
+  const clean = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : null)
+  const change = {
+    ...("note" in body ? { note: clean(body.note) } : {}),
+    ...("subject" in body ? { subject: clean(body.subject)?.slice(0, 200) ?? null } : {}),
+  }
+  if (!Object.keys(change).length) return NextResponse.json({ error: "Nothing to change" }, { status: 400 })
   const { error } = await db
     .from("email_batches")
-    .update({ note: typeof note === "string" && note.trim() ? note.trim() : null })
+    .update(change)
     .eq("id", params.id)
     .eq("status", "pending")
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

@@ -5,7 +5,7 @@ import { parseCatalog } from "../components/tariff-tracker/parse"
 const KNOWN = ["8413919015", "8409999190", "84833080", "7326908688"]
 const find = (digits: string) => (KNOWN.includes(digits) ? digits : undefined)
 
-describe("Tariff Tracker: reading the list", () => {
+describe("Duty Guard: reading the list", () => {
   it("reads code,country lines", () => {
     const { entries, errors } = parseCatalog("8413919015,BR\n8409999190,AR", find)
     expect(errors.length).toBe(0)
@@ -77,7 +77,7 @@ const product = (htsno: string, general: string, country: string, adjustments: A
     adjustments
   )
 
-describe("Tariff Tracker: exporting the report", () => {
+describe("Duty Guard: exporting the report", () => {
   const steel = product("7326.90.86.88", "2.9%", "CN")
   const watch = product("9103.10.40", "24¢ each + 4.5% on the case + 3.5% on the battery", "CL")
   const sheet = buildTariffSheet([steel, watch], "2026-04-10")
@@ -128,7 +128,7 @@ describe("Tariff Tracker: exporting the report", () => {
   })
 })
 
-describe("Tariff Tracker: product adjustments", () => {
+describe("Duty Guard: product adjustments", () => {
   const PER_UNIT = "24¢ each + 4.5% on the case + 3.5% on the battery"
 
   it("works rates out for the product's own shipment", () => {
@@ -171,7 +171,7 @@ describe("Tariff Tracker: product adjustments", () => {
   })
 })
 
-describe("Tariff Tracker: filtering your imports", () => {
+describe("Duty Guard: filtering your imports", () => {
   const steelCN = product("7326.90.86.88", "2.9%", "CN")
   const steelVN = product("7326.90.86.88", "2.9%", "VN")
   const watchCN = product("9103.10.40", "24¢ each", "CN")
@@ -234,7 +234,7 @@ import { itemsFromText, mergeItems, readCatalog, writeCatalog } from "../compone
 import { parseCsv, splitRow } from "../components/tariff-tracker/csv"
 import { generateProducts } from "../components/tariff-tracker/generate"
 
-describe("Tariff Tracker: the stored catalog", () => {
+describe("Duty Guard: the stored catalog", () => {
   it("adds products once, counting the ones already there or repeated", () => {
     const { items, added, duplicates } = mergeItems(
       [{ code: "8413919015", country: "BR" }],
@@ -263,7 +263,7 @@ describe("Tariff Tracker: the stored catalog", () => {
   })
 })
 
-describe("Tariff Tracker: CSV uploads", () => {
+describe("Duty Guard: CSV uploads", () => {
   it("splits rows, keeping quoted commas and quotes", () => {
     expect(splitRow('8413919015,"Acme, ""Inc.""",BR', ",")).toEqual(["8413919015", 'Acme, "Inc."', "BR"])
   })
@@ -294,7 +294,7 @@ describe("Tariff Tracker: CSV uploads", () => {
   })
 })
 
-describe("Tariff Tracker: generated products", () => {
+describe("Duty Guard: generated products", () => {
   const elements = ["0101.21.00.10", "0101.21.00.20", "8413.91.90.15", "8413.91.90"].map((code) => htsLine(code, "Free", "x"))
   let seed = 1
   const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
@@ -317,7 +317,7 @@ describe("Tariff Tracker: generated products", () => {
 
 import * as catalogStore from "../components/tariff-tracker/catalogStore"
 
-describe("Tariff Tracker: the shared catalog", () => {
+describe("Duty Guard: the shared catalog", () => {
   const BR = "8413919015-BR"
 
   it("adds a product once, with the adjustments it brings", () => {
@@ -371,7 +371,7 @@ import {
   visibleOrigins,
 } from "../components/tariff-tracker/product/analysis/analysis"
 
-describe("Tariff Tracker: product analysis", () => {
+describe("Duty Guard: product analysis", () => {
   const steel = product("7326.90.86.88", "2.9%", "CN", { customsValue: 20000 })
   const rates = originRates(steel)
 
@@ -430,7 +430,7 @@ describe("Tariff Tracker: product analysis", () => {
   })
 })
 
-describe("Tariff Tracker: choosing countries to analyze", () => {
+describe("Duty Guard: choosing countries to analyze", () => {
   const rates = originRates(product("7326.90.86.88", "2.9%", "CN"))
 
   it("shows every origin with no choice, and only the chosen ones (plus yours) with one", () => {
@@ -469,7 +469,7 @@ import {
   volatility,
 } from "../components/tariff-tracker/product/analysis/history"
 
-describe("Tariff Tracker: rate history across origins", () => {
+describe("Duty Guard: rate history across origins", () => {
   const steel = product("7326.90.86.88", "2.9%", "CN")
   const rates = originRates(steel)
   const range = historyRange()
@@ -520,7 +520,7 @@ import { coverageOf, usConfidence } from "../components/tariff-tracker/sourcing/
 import { emptyTotals, type TradeData } from "../libs/sourcing/trade"
 import type { UsImports } from "../components/duty-calculator/lib/usImportsData"
 
-describe("Tariff Tracker: proven suppliers and sourcing", () => {
+describe("Duty Guard: proven suppliers and sourcing", () => {
   const steel = product("7326.90.86.88", "2.9%", "CN")
   const rates = originRates(steel)
   const rateFor = (code: string) => rates.find((r) => r.country.code === code)!
@@ -618,7 +618,7 @@ describe("Tariff Tracker: proven suppliers and sourcing", () => {
 
 import { resolveCatalog } from "../components/tariff-tracker/catalogSync"
 
-describe("Tariff Tracker: syncing the catalog with the account", () => {
+describe("Duty Guard: syncing the catalog with the account", () => {
   const item = (code: string) => ({ code, country: "CN" }) as never
   const snap = (...codes: string[]) => ({ items: codes.map(item), adjustments: {} })
   const account = snap("1111111111")

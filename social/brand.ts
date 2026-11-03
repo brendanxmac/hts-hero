@@ -1,4 +1,6 @@
-// The HTS Hero social post brand: the Tariff Tracker's look (DESIGN_SYSTEM.md §15) at poster
+import type { LaunchColor } from "./types"
+
+// The HTS Hero social post brand: Duty Guard's look (DESIGN_SYSTEM.md §15) at poster
 // scale. Posts render outside the app (Remotion's own browser, or the studio's preview player),
 // without the theme's CSS variables, so the palette's values are written out here.
 
@@ -49,6 +51,19 @@ export const PALETTES: Record<Theme, Palette> = {
     slate: "#3A4154",
   },
 }
+
+// The accents a launch post can pick (social/launch.ts): cobalt is HTS Hero's own, violet is only
+// for these posts
+export const LAUNCH_COLORS: { value: LaunchColor; label: string }[] = [
+  { value: "cobalt", label: "Cobalt" },
+  { value: "violet", label: "Violet" },
+  { value: "sky", label: "Sky" },
+  { value: "green", label: "Green" },
+  { value: "amber", label: "Amber" },
+  { value: "red", label: "Red" },
+]
+const VIOLET = { dark: "#B9A2FF", light: "#6A45D6" }
+export const accentColor = (theme: Theme, color: LaunchColor = "cobalt") => (color === "violet" ? VIOLET[theme] : PALETTES[theme][color])
 
 // Where a post goes decides its shape
 export type Format = "portrait" | "landscape" | "story"

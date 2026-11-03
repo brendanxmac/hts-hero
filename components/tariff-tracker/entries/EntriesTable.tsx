@@ -1,23 +1,23 @@
 "use client";
 
 import { useMemo } from "react";
-import { LockClosedIcon, TrashIcon } from "@heroicons/react/20/solid";
+import { ChevronRightIcon, LockClosedIcon } from "@heroicons/react/20/solid";
 import type { TableColumnDef } from "@/components/ui/table/features";
-import toast from "react-hot-toast";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { DataTable, TableToolbar, useDataTable } from "@/components/ui/table";
 import { formatDate, formatMoney } from "../../duty-calculator/lib/format";
 import { formatRate } from "../formatRate";
+import { openEntryReview } from "./check/entryCheckStore";
 import { useEntries } from "./EntriesContext";
 import { AuditRow } from "./useAuditRows";
 import { AuditVerdict } from "./entries";
 
 // The logged entries, newest first: when, what (unless it's one product's), the value, what was
 // paid and owed, and the verdict, on the shared table (sorting by any figure; a longer list gets a
-// search and a filter by result). An entry saved without a check (the allowance ran out) can be
-// checked from its row.
+// search and a filter by result). An audited entry's row opens its Results again (where it can be
+// deleted); one saved without a check (the allowance ran out) can be checked from its row.
 
 export const VERDICTS: Record<AuditVerdict, { label: string; tone: "success" | "error" | "neutral" }> = {
   overpaid: { label: "Possible overpayment", tone: "success" },
@@ -41,11 +41,9 @@ const resultOf = (row: AuditRow): Result => row.audit?.verdict ?? "unchecked";
 
 const columnsFor = ({
   showProduct,
-  onRemove,
   onUnlock,
 }: {
   showProduct: boolean;
-  onRemove: (row: AuditRow) => void;
   onUnlock: (row: AuditRow) => void;
 }): TableColumnDef<AuditRow, any>[] => [
   {
@@ -93,14 +91,15 @@ const columnsFor = ({
   },
   {
     id: "paid",
-    accessorFn: (r) => r.entry.dutyPaid,
+    // Duty, and AD/CVD deposits when the entry has them
+    accessorFn: (r) => r.audit?.paid ?? r.entry.dutyPaid + (r.entry.adcvd?.paid ?? 0),
     header: "Paid",
     sortDescFirst: true,
     meta: { align: "right" },
-    cell: ({ row: { original: { entry } } }) => (
+    cell: ({ row: { original: { entry }, }, getValue }) => (
       <span className="flex flex-col items-end">
-        {money(entry.dutyPaid)}
-        <span className="text-xs text-base-content/60">{formatRate((entry.dutyPaid / entry.customsValue) * 100)}</span>
+        {money(getValue())}
+        <span className="text-xs text-base-content/60">{formatRate((getValue() / entry.customsValue) * 100)}</span>
       </span>
     ),
   },
@@ -158,16 +157,13 @@ const columnsFor = ({
     },
   },
   {
-    id: "remove",
-    header: () => <span className="sr-only">Remove</span>,
+    id: "open",
+    header: () => <span className="sr-only">Open</span>,
     enableSorting: false,
     meta: { align: "right", width: "w-12" },
-    cell: ({ row: { original: row } }) => (
-      <button type="button" className={ui.button({ variant: "ghost", size: "sm", icon: true })} onClick={() => onRemove(row)}>
-        <TrashIcon className="h-4 w-4" aria-hidden />
-        <span className="sr-only">Remove this entry</span>
-      </button>
-    ),
+    // The row opens its Results; the arrow says so
+    cell: ({ row: { original: row } }) =>
+      row.audit && row.product ? <ChevronRightIcon className="ml-auto h-5 w-5 text-base-content/40" aria-hidden /> : null,
   },
 ];
 
@@ -175,15 +171,14 @@ const columnsFor = ({
 const TOOLBAR_FROM = 6;
 
 export const EntriesTable = ({ rows, showProduct = true }: { rows: AuditRow[]; showProduct?: boolean }) => {
-  const { check, remove } = useEntries();
+  const { check } = useEntries();
   const columns = useMemo(
     () =>
       columnsFor({
         showProduct,
         onUnlock: (row) => check(row.entry),
-        onRemove: (row) => remove(row.entry.id).then((ok) => !ok && toast.error("Couldn't remove this entry.")),
       }),
-    [showProduct, check, remove]
+    [showProduct, check]
   );
   const table = useDataTable<AuditRow>({
     data: rows,
@@ -193,20 +188,30 @@ export const EntriesTable = ({ rows, showProduct = true }: { rows: AuditRow[]; s
     initialSorting: [{ id: "entry", desc: true }],
   });
   return (
-    <DataTable
-      table={table}
-      label="Logged entries"
-      toolbar={
-        rows.length >= TOOLBAR_FROM ? (
-          <TableToolbar
-            table={table}
-            placeholder={showProduct ? "Search entry number, code or product" : undefined}
-            facets={["result"]}
-            noun={["entry", "entries"]}
-          />
-        ) : undefined
-      }
-      empty={<p className="text-sm text-base-content/70">No entries match.</p>}
-    />
+    <section className="flex flex-col gap-3" aria-labelledby="tt-past-audits">
+      <div className="flex flex-col gap-0.5">
+        <h2 id="tt-past-audits" className={`${tt.title} m-0`}>
+          Your Entry Audits
+        </h2>
+        <p className={`${tt.subtitle} m-0`}>Every entry you&apos;ve logged, newest first. Open one to see its results.</p>
+      </div>
+      <DataTable
+        table={table}
+        label="Logged entries"
+        // An audited entry opens its Review again
+        onRowClick={(row) => row.audit && row.product && openEntryReview(row.entry.id)}
+        toolbar={
+          rows.length >= TOOLBAR_FROM ? (
+            <TableToolbar
+              table={table}
+              placeholder={showProduct ? "Search entry number, code or product" : undefined}
+              facets={["result"]}
+              noun={["entry", "entries"]}
+            />
+          ) : undefined
+        }
+        empty={<p className="text-sm text-base-content/70">No entries match.</p>}
+      />
+    </section>
   );
 };

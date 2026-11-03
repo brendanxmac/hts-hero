@@ -67,7 +67,7 @@ export function AnonymousConversionBanner({
               </span>
             </Link>
             <span className="text-[10px] text-base-content/40">
-              Takes 10 seconds · No credit card
+              Takes 10 seconds · No credit card required
             </span>
           </div>
         </div>

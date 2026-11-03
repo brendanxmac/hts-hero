@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { ArrowPathIcon, CheckBadgeIcon, ScaleIcon } from "@heroicons/react/20/solid"
-import { AccountGate } from "@/components/tariff-tracker/access/AccountGate"
+import { AccountGate, QUICK_ACCOUNT } from "@/components/tariff-tracker/access/AccountGate"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { ratesBasis, ratesText, shortDate } from "@/libs/adcvd/format"
@@ -13,13 +13,13 @@ import { CaseWalkthrough, Fold, SourceLinks } from "./AdcvdDecision"
 import { CaseNav, caseLabel, CasesHeader } from "./CaseNav"
 import { CardRow, CardSections } from "@/components/ui/Card"
 import { useAdcvdAnswers } from "./useAdcvdAnswers"
-import { useAdcvdLookup, useAdcvdSummary, lookupOf } from "./useAdcvd"
+import { useAdcvdLookup, useAdcvdPreview, useAdcvdSummary, lookupOf } from "./useAdcvd"
 import { useUser } from "@/contexts/UserContext"
 import { LockedPreview } from "@/components/ui/LockedPreview"
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel"
 import { useOptionalTrackerAccess } from "@/components/tariff-tracker/access/accessContext"
 
-// The calculator's AD/CVD tab (and an import's page in the Tracker), decision first: whether any
+// The calculator's AD/CVD tab (and an import's page in Duty Guard), decision first: whether any
 // antidumping or countervailing duty case may cover this import (celebrated when none does), then
 // for each case does it affect you, what you would pay, and what to do next (CaseDecision), with
 // the case in full (why we flagged it, where it stands, every company's rate, its notices) folded
@@ -258,10 +258,13 @@ export const AdcvdTab = ({
   page,
   customsValue,
   dutyUsd,
+  redirect,
 }: {
   code: string
   country: string
   page: string
+  // Where sign-up returns to; this page by default
+  redirect?: () => string
   // The shipment's value and its regular duty, to put the deposit in dollars
   customsValue?: number
   dutyUsd?: number
@@ -271,6 +274,8 @@ export const AdcvdTab = ({
   // On the free plan: only whether any case may apply (signed out, not even that: the gate teases)
   const summary = lookupOf(useAdcvdSummary(code, country, state === "locked"))
   const tracker = useOptionalTrackerAccess()
+  // Signed out: the real check, behind the blur
+  const preview = lookupOf(useAdcvdPreview(code, country, !isLoading && !user))
 
   if (isLoading) return <Loading />
   const teaser = !summary
@@ -296,22 +301,28 @@ export const AdcvdTab = ({
           onClick: () => {
             trackEvent(MixpanelEvent.LOCKED_FEATURE_CTA_CLICKED, { feature: "adcvd", reason: "plan", page })
             if (tracker) tracker.openUpgrade("plan")
-            else window.location.href = "/tariff-tracker?upgrade=plan"
+            else window.location.href = "/duty-guard?upgrade=plan"
           },
         }}
-        note="AD/CVD checks are part of the Tariff Tracker's free trial and every plan."
+        note="AD/CVD checks are part of Duty Guard's free trial and every plan."
       />
     )
   }
   if (!user) {
+    // Cases found: the real check, blurred. None: the stand-in (the "good news" under a blur would
+    // answer the question)
+    const live = preview?.flags.filter((f) => f.level !== "history").length ?? 0
+    const petitions = preview?.petitions.length ?? 0
     return (
       <AccountGate
         feature="adcvd"
         page={page}
-        title="See the AD/CVD Check For This Import"
-        teaser={teaser}
-        points={LOCKED_POINTS}
-        preview={<StandIn />}
+        title="AD/CVD Cases Could Increase Duty by 100%"
+        teaser="Create a free account to check for cases on this import."
+        cta="Create Free Account"
+        note={QUICK_ACCOUNT}
+        redirect={redirect}
+        preview={live || petitions ? <AdcvdResults data={preview!} code={code} country={country} customsValue={customsValue} dutyUsd={dutyUsd} /> : <StandIn />}
         minHeight="min-h-104"
         framed={false}
       >

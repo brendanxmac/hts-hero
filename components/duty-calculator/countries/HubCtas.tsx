@@ -1,16 +1,16 @@
 "use client";
 
 import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
+import { EntryCta } from "@/components/onboarding/EntryCta";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import * as mk from "@/components/ui/marketing/styles";
 
 // The hub's two next steps: check one product in the calculator (the main one), or put a whole
-// product list in the Tariff Tracker. Clicks are tracked by placement, to see which offer works.
+// product list in Duty Guard. Clicks are tracked by placement, to see which offer works.
 
 export const CALCULATOR_HREF = "/duty-calculator";
-export const TRACKER_HREF = "/tariff-tracker?add=paste";
 
 const track = (cta: "calculator" | "tracker" | "csv", placement: string) =>
   trackEvent(MixpanelEvent.COUNTRIES_HUB_CTA_CLICKED, { cta, placement });
@@ -23,9 +23,9 @@ export function HubButtons({ placement }: { placement: string }) {
         Check your product&rsquo;s duty
         <ArrowRightIcon className="h-4 w-4" aria-hidden />
       </Link>
-      <Link href={TRACKER_HREF} onClick={() => track("tracker", placement)} className={mk.buttonSecondary}>
-        Track all your products
-      </Link>
+      <EntryCta page="countries" entry="country_hub" section={placement} label="Track All Your Products" className={mk.buttonSecondary} onClick={() => track("tracker", placement)}>
+        Track All Your Products
+      </EntryCta>
     </div>
   );
 }
@@ -54,17 +54,17 @@ export function HubCtaCards({ placement }: { placement: string }) {
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(28rem_16rem_at_90%_0%,rgba(45,212,191,0.22),transparent)]"
         />
-        <span className={`${mk.eyebrowDark} relative`}>Your whole catalog · No sign-up</span>
+        <span className={`${mk.eyebrowDark} relative`}>Your whole catalog · Free</span>
         <h2 className="relative text-3xl font-bold tracking-tight text-white">Track every product you import</h2>
         <p className="relative text-base leading-relaxed text-slate-300">
-          Paste your HTS codes and countries once. The Tariff Tracker works out today&rsquo;s duty for each product,
+          Paste your HTS codes and countries once. Duty Guard works out today&rsquo;s duty for each product,
           shows which tariffs drive it, and compares every product across countries of origin.
         </p>
         <div className="relative mt-auto pt-4">
-          <Link href={TRACKER_HREF} onClick={() => track("tracker", placement)} className={mk.buttonOnDark}>
+          <EntryCta page="countries" entry="country_hub" section={placement} label={TRY_IT_FREE} className={mk.buttonOnDark} onClick={() => track("tracker", placement)}>
             {TRY_IT_FREE}
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
-          </Link>
+          </EntryCta>
         </div>
       </div>
     </div>

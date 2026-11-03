@@ -1,5 +1,6 @@
 import { ReactElement } from "react"
 import { render } from "@react-email/render"
+import DutyGuardLaunchEmail, { dutyGuardLaunchSubject, type DutyGuardLaunchEmailProps } from "./announcements/DutyGuardLaunchEmail"
 import WelcomeEmail, { welcomeSubject, type WelcomeEmailProps } from "./account/WelcomeEmail"
 import PurchaseConfirmationEmail, { purchaseConfirmationSubject, type PurchaseConfirmationEmailProps } from "./account/PurchaseConfirmationEmail"
 import PlaybookEmail, { playbookSubject, type PlaybookEmailProps } from "./leads/PlaybookEmail"
@@ -9,12 +10,13 @@ import AdminDigestEmail, { adminDigestSubject, type AdminDigestEmailProps } from
 import NewsConfirmEmail, { newsConfirmSubject, type NewsConfirmEmailProps } from "./tariff-updates/NewsConfirmEmail"
 import NewsManageLinkEmail, { newsManageLinkSubject, type NewsManageLinkEmailProps } from "./tariff-updates/NewsManageLinkEmail"
 import OnboardingEmail, { onboardingSubject, type OnboardingEmailProps } from "./onboarding/OnboardingEmail"
-import FounderNoteEmail, { founderNoteSubject, type FounderNoteEmailProps } from "./onboarding/FounderNoteEmail"
 import TrackerFindingsEmail, { trackerFindingsSubject, type TrackerFindingsEmailProps } from "./onboarding/TrackerFindingsEmail"
-import MeetTrackerEmail, { meetTrackerSubject, type MeetTrackerEmailProps } from "./onboarding/MeetTrackerEmail"
 import TrackerIntroEmail, { trackerIntroSubject, type TrackerIntroEmailProps } from "./onboarding/TrackerIntroEmail"
 import ProductTourEmail, { productTourSubject, type ProductTourEmailProps } from "./onboarding/ProductTourEmail"
 import TrialEmail, { trialSubject, type TrialEmailProps } from "./onboarding/TrialEmail"
+import TrialEducationEmail, { trialEducationSubject, type TrialEducationEmailProps } from "./onboarding/TrialEducationEmail"
+import AuditsUpsellEmail, { auditsUpsellSubject, type AuditsUpsellEmailProps } from "./onboarding/AuditsUpsellEmail"
+import ClassifyOnboardingEmail, { classifyOnboardingSubject, type ClassifyOnboardingEmailProps } from "./onboarding/ClassifyOnboardingEmail"
 import WatchingEmail, { watchingSubject, type WatchingEmailProps } from "./onboarding/WatchingEmail"
 import ImpactAlertEmail, { impactAlertSubject, type ImpactAlertEmailProps } from "./tariff-updates/ImpactAlertEmail"
 import TariffDigestEmail, { tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
@@ -102,12 +104,13 @@ export const TEMPLATES = {
           ...(p.beyond ? [`It may also affect ${p.beyond} more of your imports outside your alerts.`] : []),
         ],
         actions: [
-          { label: "See the impact on my imports", url: `${SITE}/tariff-tracker?tab=impact&update=${encodeURIComponent(p.update.slug)}&utm_source=chat&utm_medium=chat&utm_campaign=impact-alert` },
+          { label: "See the impact on my imports", url: `${SITE}/duty-guard?tab=impact&update=${encodeURIComponent(p.update.slug)}&utm_source=chat&utm_medium=chat&utm_campaign=impact-alert` },
           { label: "Read the update", url: updateUrl(p.update.slug, "impact-alert-chat") },
         ],
       }
     },
   }),
+  duty_guard_launch: template<DutyGuardLaunchEmailProps>({ subject: dutyGuardLaunchSubject, email: (p) => <DutyGuardLaunchEmail {...p} /> }),
   welcome: template<WelcomeEmailProps>({ subject: welcomeSubject, email: (p) => <WelcomeEmail {...p} /> }),
   watching: template<WatchingEmailProps>({ subject: watchingSubject, email: (p) => <WatchingEmail {...p} /> }),
   purchase_confirmation: template<PurchaseConfirmationEmailProps>({ subject: purchaseConfirmationSubject, email: (p) => <PurchaseConfirmationEmail {...p} /> }),
@@ -116,12 +119,15 @@ export const TEMPLATES = {
   news_confirm: template<NewsConfirmEmailProps>({ subject: newsConfirmSubject, email: (p) => <NewsConfirmEmail {...p} /> }),
   news_manage_link: template<NewsManageLinkEmailProps>({ subject: newsManageLinkSubject, email: (p) => <NewsManageLinkEmail {...p} /> }),
   onboarding: template<OnboardingEmailProps>({ subject: onboardingSubject, email: (p) => <OnboardingEmail {...p} /> }),
-  founder_note: template<FounderNoteEmailProps>({ subject: founderNoteSubject, email: (p) => <FounderNoteEmail {...p} /> }),
+  // Retired: keeps its past messages opening in the outbox
+  founder_note: template<OnboardingEmailProps>({ subject: (p) => onboardingSubject({ ...p, step: 2 }), email: (p) => <OnboardingEmail {...p} step={2} /> }),
   tracker_findings: template<TrackerFindingsEmailProps>({ subject: trackerFindingsSubject, email: (p) => <TrackerFindingsEmail {...p} /> }),
-  meet_tracker: template<MeetTrackerEmailProps>({ subject: meetTrackerSubject, email: (p) => <MeetTrackerEmail {...p} /> }),
   tracker_intro: template<TrackerIntroEmailProps>({ subject: trackerIntroSubject, email: (p) => <TrackerIntroEmail {...p} /> }),
   product_tour: template<ProductTourEmailProps>({ subject: productTourSubject, email: (p) => <ProductTourEmail {...p} /> }),
   trial: template<TrialEmailProps>({ subject: trialSubject, email: (p) => <TrialEmail {...p} /> }),
+  trial_education: template<TrialEducationEmailProps>({ subject: trialEducationSubject, email: (p) => <TrialEducationEmail {...p} /> }),
+  audits_upsell: template<AuditsUpsellEmailProps>({ subject: auditsUpsellSubject, email: (p) => <AuditsUpsellEmail {...p} /> }),
+  classify_onboarding: template<ClassifyOnboardingEmailProps>({ subject: classifyOnboardingSubject, email: (p) => <ClassifyOnboardingEmail {...p} /> }),
   internal_notice: template<InternalNoticeEmailProps>({ subject: internalNoticeSubject, email: (p) => <InternalNoticeEmail {...p} /> }),
   admin_digest: template<AdminDigestEmailProps>({ subject: adminDigestSubject, email: (p) => <AdminDigestEmail {...p} /> }),
 }
@@ -130,16 +136,17 @@ export type TemplateName = keyof typeof TEMPLATES
 
 export const isTemplate = (name: string): name is TemplateName => name in TEMPLATES
 
-// The batch's note is added at render time, so editing it in the outbox changes every message
+// The batch's note and subject are added at render time, so editing them in the outbox changes
+// every message
 const withNote = (props: Record<string, unknown>, note: string | null | undefined) => (note ? { ...props, note } : props)
 
-export const renderEmail = async (name: string, props: Record<string, unknown>, note?: string | null) => {
+export const renderEmail = async (name: string, props: Record<string, unknown>, note?: string | null, subject?: string | null) => {
   if (!isTemplate(name)) throw new Error(`No email template named ${name}`)
   const t = TEMPLATES[name] as unknown as Template<Record<string, unknown>>
   const p = withNote(props, note)
   const element = t.email(p)
   const [html, text] = await Promise.all([render(element), render(element, { plainText: true })])
-  return { subject: t.subject(p), html, text }
+  return { subject: subject?.trim() || t.subject(p), html, text }
 }
 
 export const subjectOf = (name: string, props: Record<string, unknown>) => {

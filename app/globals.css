@@ -247,6 +247,15 @@ layer(base);
     opacity: 0;
   }
 }
+@keyframes tt-ob-fade {
+  from {
+    opacity: 0;
+  }
+}
+/* One question giving way to the next in the savings review: a quick fade, nothing moves */
+.tt-ob-fade {
+  animation: tt-ob-fade 180ms ease-out both;
+}
 .tt-ob-rise {
   animation: tt-ob-rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--tt-delay, 0ms) both;
 }
@@ -286,7 +295,8 @@ layer(base);
   .tt-ob-from-right,
   .tt-ob-pop,
   .tt-ob-fill,
-  .tt-ob-ping {
+  .tt-ob-ping,
+  .tt-ob-fade {
     animation: none;
   }
   .tt-ob-draw {

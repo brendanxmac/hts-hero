@@ -5,7 +5,7 @@ import type { TableColumnDef } from "@/components/ui/table/features";
 import { FacetMeta } from "@/components/ui/table";
 import { Countries } from "../../constants/countries";
 
-// Column pieces the Tracker's tables share (components/ui/table)
+// Column pieces Duty Guard's tables share (components/ui/table)
 
 // A filter by country, values being country codes: shown with the flag and name
 export const countryFacet = (label = "Country of origin"): FacetMeta => ({

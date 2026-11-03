@@ -6,7 +6,7 @@ import { renderChat, renderEmail, slackPayload, teamsPayload } from "@/emails/re
 
 export const dynamic = "force-dynamic"
 
-// A message exactly as it will go out, with the batch's current note: the email's subject and
+// A message exactly as it will go out, with the batch's current note and subject: the email's subject and
 // HTML, or the Slack / Teams payload
 export async function GET(_req: NextRequest, props0: { params: Promise<{ id: string }> }) {
   const params = await props0.params;
@@ -14,10 +14,10 @@ export async function GET(_req: NextRequest, props0: { params: Promise<{ id: str
   if (denied) return denied
   const { data: m, error } = await db.from("email_messages").select("channel, recipient, template, props, batch_id").eq("id", params.id).single()
   if (error || !m) return NextResponse.json({ error: error?.message ?? "Not found" }, { status: 404 })
-  const { data: batch } = m.batch_id ? await db.from("email_batches").select("note").eq("id", m.batch_id).single() : { data: null }
+  const { data: batch } = m.batch_id ? await db.from("email_batches").select("note, subject").eq("id", m.batch_id).single() : { data: null }
   try {
     if (m.channel === "email") {
-      const { subject, html, text } = await renderEmail(m.template, m.props, batch?.note)
+      const { subject, html, text } = await renderEmail(m.template, m.props, batch?.note, batch?.subject)
       return NextResponse.json({ channel: m.channel, recipient: m.recipient, subject, html, text })
     }
     const chat = renderChat(m.template, m.props, batch?.note)

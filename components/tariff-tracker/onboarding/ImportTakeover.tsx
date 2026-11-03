@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { CheckIcon } from "@heroicons/react/20/solid";
@@ -32,7 +33,6 @@ import { HandyStep } from "./HandyStep";
 import { HookStep } from "./HookStep";
 import { SHOW_EXPLAINER } from "./parts";
 import { SkipStep } from "./SkipStep";
-import { openTourOnce } from "./tour/tourStore";
 import {
   closeImportTakeover,
   openImportTakeover,
@@ -43,12 +43,12 @@ import {
 
 // The import takeover (PRICING.md and the onboarding plan, 2026-10-20): the whole screen, opened when
 // the person asks for it (the empty Home and Imports pages, SetupPanel; the plan card; an email's
-// link), never by itself (2026-10-21). Why it matters (HookStep), what an import is
+// link), never by itself (2026-10-21). Where they are and why it matters (HookStep), what an import is
 // (ExplainStep), the ways in (ChooseStep and AddSteps), help without the list (HandyStep), and the
 // finish (DoneStep), which starts the trial. "Skip setup" leads to a last word (SkipStep); after it the
 // empty Home and Imports pages keep asking. Signed out, the Overview's empty state asks instead.
 
-// The first Tracker visit, recorded once per tab (the no-imports emails count from it)
+// The first Duty Guard visit, recorded once per tab (the no-imports emails count from it)
 const VISIT_KEY = "tt-tracker-visit-recorded";
 
 const store = (kind: "session" | "local") => {
@@ -167,7 +167,7 @@ export const ImportTakeover = () => {
   const [skipping, setSkipping] = useState(false);
   const leftAt = useRef(0);
 
-  // The Tracker opened, signed in: the first time is kept (the no-imports emails count from it)
+  // Duty Guard opened, signed in: the first time is kept (the no-imports emails count from it)
   useEffect(() => {
     if (!signedIn || accessLoading || store("session")?.getItem(VISIT_KEY))
       return;
@@ -189,7 +189,7 @@ export const ImportTakeover = () => {
   }, []);
 
   // Opens only when asked for (decided 2026-10-21: opening by itself on a first visit was abrupt;
-  // the empty Home and Imports pages sell the Tracker and ask, SetupPanel). A link can ask for it
+  // the empty Home and Imports pages sell Duty Guard and ask, SetupPanel). A link can ask for it
   // too, once the account's catalog is known: an email's "Add my imports" or a "Track your
   // products" link (?setup=add, ?add=paste), straight to the ways in or the one named. ?add= asks
   // only while the account has none of its own imports; ?setup= (the calculator's "Get Tariff
@@ -333,6 +333,7 @@ export const ImportTakeover = () => {
           <PasteStep
             onAdd={add}
             onBack={() => setTakeoverStep(few ? "handy" : "choose")}
+            onUpload={() => setTakeoverStep("file")}
             few={few}
           />
         );
@@ -358,7 +359,7 @@ export const ImportTakeover = () => {
                 from: step,
               });
               toast.success(
-                "We'll email you tomorrow with these steps. Your 14-day trial waits until you add your imports.",
+                `We'll email you a reminder tomorrow. Your ${REVERSE_TRIAL.days}-day trial waits until you add your imports.`,
                 { duration: 6000 },
               );
               dismiss();
@@ -397,8 +398,6 @@ export const ImportTakeover = () => {
             onOpen={() => {
               closeImportTakeover();
               nav.openTab("overview");
-              // The tour, once, from the alerts on: the imports are in
-              if (user?.id) openTourOnce(user.id, "imports_added", "alerts");
             }}
           />
         );
@@ -430,7 +429,7 @@ export const ImportTakeover = () => {
             <span
               className={`${tt.display} whitespace-nowrap text-[0.95rem] font-semibold`}
             >
-              Tariff Tracker
+              Duty Guard
             </span>
           </button>
           {step !== "finish" && (

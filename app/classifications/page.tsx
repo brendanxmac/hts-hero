@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import config from "@/config";
 import { ClassificationsPageContent } from "../../components/ClassificationsPageContent";
+import { ClassifyCover } from "@/components/classify-onboarding/ClassifyOnboarding";
+import { TRACKER_WELCOME_PARAM } from "@/libs/signup-onboarding";
 
 export const metadata: Metadata = {
   title:
@@ -40,9 +42,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ClassificationsListPage() {
+export default async function ClassificationsListPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  // Straight from the sign-up onboarding, into the classification onboarding: the cover is in the
+  // first HTML, so the dashboard never shows before it opens over it (ClassifyCover)
+  const intoTour = (await searchParams)[TRACKER_WELCOME_PARAM] === "tour";
   return (
     <main className="w-full bg-base-300">
+      {intoTour && <ClassifyCover />}
       <ClassificationsPageContent />
     </main>
   );

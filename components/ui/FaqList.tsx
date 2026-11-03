@@ -3,7 +3,7 @@ import * as ui from "./styles";
 
 // A page's questions as one panel of disclosures, divided by rules. Keep the text identical
 // to the page's FAQPage schema: search engines require the schema to match what's visible.
-// Inside the Tariff Tracker's look (.hts-tracker) it's a round panel with roomier rows.
+// Inside Duty Guard's look (.hts-tracker) it's a round panel with roomier rows.
 export function FaqList({
   faqs,
   openFirst = false,

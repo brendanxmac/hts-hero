@@ -4,7 +4,7 @@ import { PricingPlan } from "@/types";
 import { TrackerPlan } from "./plan";
 import { trackerPlanForPriceId, trackerPriceId } from "./prices";
 
-// The customer's Tariff Tracker subscription in Stripe, and the billing portal's ways to change it.
+// The customer's Duty Guard subscription in Stripe, and the billing portal's ways to change it.
 // Server only.
 
 const stripe = () =>
@@ -25,7 +25,7 @@ export interface TrackerSubscription {
   cancelsAt: string | null;
 }
 
-// The customer's live Tracker subscription (with its one item), or null
+// The customer's live Duty Guard subscription (with its one item), or null
 const findSubscription = async (customerId: string) => {
   const { data } = await stripe().subscriptions.list({ customer: customerId, status: "all", limit: 20 });
   for (const sub of data) {
@@ -53,20 +53,21 @@ export const readTrackerSubscription = async (customerId: string): Promise<Track
   };
 };
 
-// The billing portal opened on a plan change: straight to Stripe's confirm page for `to` (on the
-// same billing interval), else to its plan picker. Null when there's no subscription to change
+// The billing portal opened on a plan change: straight to Stripe's confirm page for `to` (billed
+// `billing`, else as now), else to its plan picker. Null when there's no subscription to change
 // (or it's cancelled, which the portal can't update): the caller opens the portal's home instead.
 export const trackerPlanChangeFlow = async (
   customerId: string,
   to: TrackerPlan["plan"] | null,
-  returnUrl: string
+  returnUrl: string,
+  billing?: Billing
 ): Promise<Stripe.BillingPortal.SessionCreateParams.FlowData[]> => {
   const found = await findSubscription(customerId);
   if (!found || found.sub.cancel_at_period_end || found.sub.cancel_at) return [];
   const after_completion = { type: "redirect" as const, redirect: { return_url: returnUrl } };
   const picker = { type: "subscription_update" as const, subscription_update: { subscription: found.sub.id }, after_completion };
-  const price = to && to !== found.plan ? await trackerPriceId(to, found.billing) : undefined;
-  if (!price) return [picker];
+  const price = to ? await trackerPriceId(to, billing ?? found.billing) : undefined;
+  if (!price || price === found.item.price.id) return [picker];
   return [
     {
       type: "subscription_update_confirm",

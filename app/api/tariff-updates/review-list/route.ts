@@ -4,7 +4,7 @@ import { impactAlertable } from "@/libs/tariff-updates/alerts"
 
 export const dynamic = "force-dynamic"
 
-// For the admin's Tariff impact tab in the Tracker: the updates still waiting for review (or
+// For the admin's Tariff impact tab in Duty Guard: the updates still waiting for review (or
 // hidden), which users don't see, and where each update's impact check stands, so impacts can be
 // checked on the admin's own catalog before approving an alert. Everyone else gets a 404.
 const COLUMNS =

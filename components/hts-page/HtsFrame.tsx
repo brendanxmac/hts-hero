@@ -5,9 +5,9 @@ import { FollowTheme } from "@/components/ui/marketing/FollowTheme";
 import { TrackerBanner } from "@/components/ui/marketing/TrackerBanner";
 
 // The frame of the HTS reference pages (/hts/[code], /explore, /section, /chapter): the Tariff
-// Tracker banner, the marketing header and footer, all in the Tracker's look following the site's
+// Duty Guard banner, the marketing header and footer, all in Duty Guard's look following the site's
 // light/dark setting (DESIGN_SYSTEM.md §15), with the classification band above the footer. The
-// code pages leave the band off: their calls to action are the Tracker, the calculator and the
+// code pages leave the band off: their calls to action are Duty Guard, the calculator and the
 // tariff alerts, nothing else (2026-10-26)
 export const HtsFrame = ({ children, classifyBand = true }: { children: ReactNode; classifyBand?: boolean }) => (
   <FollowTheme>

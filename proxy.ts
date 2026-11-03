@@ -62,22 +62,22 @@ export async function proxy(req: NextRequest) {
 
   const { response, user } = await updateSession(req)
 
-  // Remember that this browser has had an account, so a signed-out visit to the Tracker later
+  // Remember that this browser has had an account, so a signed-out visit to Duty Guard later
   // opens the sign-in form for them and the sign-up form for everyone new
   const knownAccount = !!req.cookies.get(KNOWN_ACCOUNT_COOKIE)
   if (user && !knownAccount) {
     response.cookies.set(KNOWN_ACCOUNT_COOKIE, "1", { path: "/", maxAge: 60 * 60 * 24 * 400, sameSite: "lax" })
   }
 
-  // The Tariff Tracker is for signed-in accounts only: anyone else signs up (or, with an account
+  // Duty Guard is for signed-in accounts only: anyone else signs up (or, with an account
   // here before, signs in) first and comes back to the same page, tab and inputs. In development,
   // ?onboardingPreview=1 opens it signed out to check the import takeover (ImportTakeover)
   const onboardingPreview = process.env.NODE_ENV === "development" && req.nextUrl.searchParams.get("onboardingPreview") === "1"
-  if (!user && !onboardingPreview && (pathname === "/tariff-tracker" || pathname.startsWith("/tariff-tracker/"))) {
+  if (!user && !onboardingPreview && (pathname === "/duty-guard" || pathname.startsWith("/duty-guard/"))) {
     const url = req.nextUrl.clone()
-    url.pathname = "/signin"
+    // New here: the sign-up page; had an account here before: the sign-in page
+    url.pathname = knownAccount ? "/signin" : "/signup"
     url.search = ""
-    if (!knownAccount) url.searchParams.set("sign-up", "true")
     url.searchParams.set("redirect", `${pathname}${req.nextUrl.search}`)
     const redirect = NextResponse.redirect(url)
     response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie))
@@ -86,7 +86,7 @@ export async function proxy(req: NextRequest) {
 
   // Signed-in visitors stay on the calculator (decided 2026-10-20): someone who signed up for more
   // calculator features keeps using it, and its CTAs and the onboarding emails invite them into
-  // the Tracker. (It used to send them to the Tracker's Calculator tab.)
+  // Duty Guard. (It used to send them to Duty Guard's Calculator tab.)
 
   // Ensure the x-pathname header is preserved in the response
   if (response instanceof NextResponse) {

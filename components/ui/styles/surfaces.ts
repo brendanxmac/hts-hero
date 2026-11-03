@@ -4,8 +4,8 @@
 // of panel: never a tinted one (see "Tints" in DESIGN_SYSTEM.md). It clips its contents to
 // its rounded corners, so a header, table or stat grid with its own background can never
 // paint square corners over the card's border.
-// In the Tracker's look (the Tracker, the calculator, /hts) it's the same card as tt.panel: 20px
-// corners and the Tracker's two-layer shadow; tt-card makes base-200 fills inside it the
+// In Duty Guard's look (Duty Guard, the calculator, /hts) it's the same card as tt.panel: 20px
+// corners and Duty Guard's two-layer shadow; tt-card makes base-200 fills inside it the
 // container tone (the theme plugin).
 export const card = "tt-card overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-xs tracker:shadow-[var(--tt-shadow)]";
 
@@ -58,6 +58,6 @@ export const popover = "rounded-lg border border-base-300 bg-base-100 p-1.5 shad
 export const tooltip = "pointer-events-none rounded-md border border-base-300 bg-base-100 text-base-content shadow-lg";
 
 // A loading placeholder: give it the size of what it stands in for
-// A placeholder shape while something loads; in the Tracker's look, the container-high tone (it
+// A placeholder shape while something loads; in Duty Guard's look, the container-high tone (it
 // reads on a card and on the ground alike)
 export const skeleton = "animate-pulse rounded-md bg-base-300/70 tracker:bg-tt-soft-high";

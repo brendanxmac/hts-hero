@@ -6,7 +6,7 @@ import { SOCIAL_IMAGE_SIZE } from "@/libs/blog/socialImage";
 // The share card for a main marketing page: just its headline, as large as the card allows, so it
 // stays readable on the small previews messaging apps show. The last line is in navy.
 // ImageResponse renders without the theme's CSS variables, so the light palette's values are
-// written out here (from components/ui/theme/palette.js), and the Tracker's fonts are loaded from
+// written out here (from components/ui/theme/palette.js), and Duty Guard's fonts are loaded from
 // assets/fonts: Sora for the headline, Figtree for the rest.
 const NAVY = "#1b3a8c";
 const INK = "#0f172a";

@@ -14,10 +14,13 @@ import { ENTRY_COLUMNS, EntryRow, fromEntryRow, NewEntry, TrackerEntry } from ".
 interface EntriesValue {
   entries: TrackerEntry[];
   loading: boolean;
-  // Saves the entry, then checks it; resolves to the saved entry, or null if it couldn't be saved
-  addAndCheck: (entry: NewEntry) => Promise<TrackerEntry | null>;
+  // Saves the entry, then checks it; resolves to the saved entry and whether the check went
+  // through, or null if it couldn't be saved
+  addAndCheck: (entry: NewEntry) => Promise<{ entry: TrackerEntry; checked: boolean } | null>;
   // Checks an entry saved earlier (one that wasn't checked when the allowance ran out)
   check: (entry: TrackerEntry) => Promise<boolean>;
+  // Saves changes to an entry; resolves to it, or null if it couldn't be saved
+  update: (id: string, entry: NewEntry) => Promise<TrackerEntry | null>;
   remove: (id: string) => Promise<boolean>;
 }
 
@@ -29,7 +32,20 @@ export const useEntries = () => {
   return value;
 };
 
-const byDateDesc = (a: TrackerEntry, b: TrackerEntry) => b.entryDate.localeCompare(a.entryDate);
+const toEntryRow = (entry: NewEntry) => ({
+  hts_code: entry.htsCode,
+  country: entry.country,
+  entry_date: entry.entryDate,
+  entry_number: entry.entryNumber,
+  customs_value: entry.customsValue,
+  quantity: entry.quantity,
+  duty_paid: entry.dutyPaid,
+  claimed_preference: entry.claimedPreference,
+  answers: entry.answers,
+  adcvd: entry.adcvd,
+});
+
+const byDateDesc =(a: TrackerEntry, b: TrackerEntry) => b.entryDate.localeCompare(a.entryDate);
 
 export const EntriesProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
@@ -76,29 +92,38 @@ export const EntriesProvider = ({ children }: { children: ReactNode }) => {
       if (!userId) return null;
       const { data, error } = await createSupabaseClient()
         .from("tracker_entries")
-        .insert({
-          user_id: userId,
-          hts_code: entry.htsCode,
-          country: entry.country,
-          entry_date: entry.entryDate,
-          entry_number: entry.entryNumber,
-          customs_value: entry.customsValue,
-          quantity: entry.quantity,
-          duty_paid: entry.dutyPaid,
-        })
+        .insert({ user_id: userId, ...toEntryRow(entry) })
         .select(ENTRY_COLUMNS)
         .single<EntryRow>();
       if (error || !data) {
-        console.error("Error saving entry:", error);
+        console.error("Error saving entry:", error?.message ?? error);
         return null;
       }
       const saved = fromEntryRow(data);
       setEntries((prev) => [saved, ...prev].sort(byDateDesc));
-      await check(saved);
-      return saved;
+      const checked = await check(saved);
+      return { entry: saved, checked };
     },
     [userId, check]
   );
+
+  // Saves changes to an entry already checked: its audit is worked out again from it, so no
+  // further check is spent
+  const update = useCallback(async (id: string, entry: NewEntry) => {
+    const { data, error } = await createSupabaseClient()
+      .from("tracker_entries")
+      .update(toEntryRow(entry))
+      .eq("id", id)
+      .select(ENTRY_COLUMNS)
+      .single<EntryRow>();
+    if (error || !data) {
+      console.error("Error updating entry:", error?.message ?? error);
+      return null;
+    }
+    const saved = fromEntryRow(data);
+    setEntries((prev) => prev.map((e) => (e.id === id ? saved : e)).sort(byDateDesc));
+    return saved;
+  }, []);
 
   const remove = useCallback(async (id: string) => {
     const { error } = await createSupabaseClient().from("tracker_entries").delete().eq("id", id);
@@ -110,6 +135,6 @@ export const EntriesProvider = ({ children }: { children: ReactNode }) => {
     return true;
   }, []);
 
-  const value = useMemo(() => ({ entries, loading, addAndCheck, check, remove }), [entries, loading, addAndCheck, check, remove]);
+  const value = useMemo(() => ({ entries, loading, addAndCheck, check, update, remove }), [entries, loading, addAndCheck, check, update, remove]);
   return <EntriesContext.Provider value={value}>{children}</EntriesContext.Provider>;
 };

@@ -8,10 +8,9 @@ import { mono } from "@/components/ui/font";
 // number that counts up, a step's heading, and the mini spreadsheet the instructions draw on.
 
 // When a piece rises into place (globals.css .tt-ob-*): its delay, as a CSS variable
-// "What's an import" (ExplainStep) is out of the flow for now, to get to the imports sooner: the
-// welcome goes straight to adding them. Its code stays, and "Not sure what an import is" (skip)
-// still opens it. Back in the flow: set this to true (the rail and the step numbers follow).
-export const SHOW_EXPLAINER = false;
+// "What's an import" (ExplainStep) comes right before the ways to add them (back in the flow
+// 2026-10-30, as a short scene); false takes it out again (the rail and the step numbers follow).
+export const SHOW_EXPLAINER = true;
 export const ADD_STEP = SHOW_EXPLAINER ? 3 : 2;
 export const DONE_STEP = ADD_STEP + 1;
 
@@ -52,14 +51,16 @@ export const StepHeading = ({
   lead,
   tone = "primary",
   size = "lg",
+  center = false,
 }: {
   eyebrow: string;
   title: ReactNode;
   lead?: ReactNode;
   tone?: "primary" | "success" | "warning";
   size?: "lg" | "md";
+  center?: boolean;
 }) => (
-  <div className="flex flex-col gap-3">
+  <div className={`flex flex-col gap-3 ${center ? "items-center text-center" : ""}`}>
     <span className={`${tt.eyebrow(tone)} tt-ob-rise`}>{eyebrow}</span>
     <h1
       id="tt-onboarding-title"

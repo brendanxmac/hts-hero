@@ -17,7 +17,7 @@ export interface WatchingEmailProps {
   productName: string
   // "China"
   country: string
-  // The import's page in the Tracker (a path)
+  // The import's page in Duty Guard (a path)
   path: string
   // Total duty today (base plus tariffs), % of value
   dutyPct: number
@@ -33,17 +33,17 @@ export interface WatchingEmailProps {
 const CAMPAIGN = "watching"
 const pct = (n: number) => `${Math.round(n * 100) / 100}%`
 
-export const watchingSubject = (p: WatchingEmailProps) => `You're watching ${p.htsno} from ${p.country}`
+export const watchingSubject = (p: WatchingEmailProps) => `Tariff alerts activated for ${p.htsno} from ${p.country}`
 
 export default function WatchingEmail(p: WatchingEmailProps) {
   return (
     <EmailLayout preview={`${p.htsno} from ${p.country} pays ${pct(p.dutyPct)} today. We'll email you the day that changes.`} footer={p.footer}>
       <Eyebrow>Alerts on</Eyebrow>
       <Title>
-        You&apos;re watching {p.htsno} from {p.country}
+        Tariff Alerts Activated for {p.htsno} from {p.country}
       </Title>
       <P>
-        {p.productName}. We&apos;ll email you the day a tariff change hits it, with the rate before and after and the official source.
+        We&apos;ll email you any time a tariff change hits it, with the rate before and after and the official source.
       </P>
       <Facts
         rows={[
@@ -58,10 +58,10 @@ export default function WatchingEmail(p: WatchingEmailProps) {
           },
         ]}
       />
-      <Cta href={siteLink(p.path, CAMPAIGN)}>See this import</Cta>
+      <Cta href={siteLink(p.path, CAMPAIGN)}>View this import</Cta>
       <Text style={{ margin: "14px 0 0", fontSize: 15, lineHeight: "22px", color: C.text }}>
         Import more than one product?{" "}
-        <Link href={siteLink("/tariff-tracker?setup=add", CAMPAIGN)} style={{ color: C.cobalt, fontWeight: 600 }}>
+        <Link href={siteLink("/duty-guard?setup=add", CAMPAIGN)} style={{ color: C.cobalt, fontWeight: 600 }}>
           Add the rest of your imports
         </Link>{" "}
         and we&apos;ll watch them too.
@@ -71,3 +71,21 @@ export default function WatchingEmail(p: WatchingEmailProps) {
     </EmailLayout>
   )
 }
+
+WatchingEmail.PreviewProps = {
+  productKey: "73181580-CN",
+  htsno: "7318.15.80",
+  productName: "Screws and bolts",
+  country: "China",
+  path: "/duty-guard?tab=catalog&product=73181580-CN",
+  dutyPct: 35.5,
+  asOf: "Oct 26, 2026",
+  last: { date: "Oct 1, 2026", beforePct: 45.5, afterPct: 35.5 },
+  next: null,
+  since: "Nov 17, 2025",
+  footer: {
+    reason: "You're getting this because you have an HTS Hero account.",
+    manageUrl: "https://htshero.com/tariff-updates/subscription?token=example",
+    unsubscribeUrl: "https://htshero.com/api/email/unsubscribe?token=example",
+  },
+} satisfies WatchingEmailProps

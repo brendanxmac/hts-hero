@@ -1,1 +1,0 @@
-export { TariffPricing } from "./TariffPricing";

@@ -1,7 +1,7 @@
 import { LIVE_STATUSES, type CaseKind, type CaseRow, type CaseStatus, type EventRow, type EventType, type Rates } from "./types"
 
 // Whether an import (HTS code + country of origin) may be covered by AD/CVD cases. Plain code,
-// shared by the server (the lookup route) and the client (the Tracker's chips). Levels:
+// shared by the server (the lookup route) and the client (Duty Guard's chips). Levels:
 //   likely    the case's country is the import's and the scope lists the import's code, or a
 //             heading above it, as what the covered goods are classified under; the case is live
 //   possible  the code is on the "may also enter under" list, shares a six-digit subheading with
@@ -116,7 +116,7 @@ export interface FlagCompany {
 
 export interface FlagCase {
   case_number: string
-  // Each producer's latest rate, and producers excluded from the order (Tracker only)
+  // Each producer's latest rate, and producers excluded from the order (Duty Guard only)
   companies?: FlagCompany[]
   kind: CaseKind
   status: CaseStatus

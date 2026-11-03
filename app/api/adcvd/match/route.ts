@@ -9,7 +9,9 @@ export const fetchCache = "force-no-store"
 
 // The AD/CVD cases that may cover one import: GET ?code=3203008000&country=IN. The cases are free
 // with any account, on every plan (PRICING.md); signed out it's a 401. With &summary=1, anyone gets
-// only whether any may (AdcvdSummary), cached for an hour.
+// only whether any may (AdcvdSummary), cached for an hour. With &preview=1, anyone gets what's drawn
+// behind the blur on the calculator's AD/CVD Cases tab: the cases, without the company rates, and only
+// the latest notices.
 
 // Who may see the cases: the service role (scripts, local previews), or any account
 const viewer = async (req: NextRequest): Promise<"full" | "signed-out"> => {
@@ -30,11 +32,12 @@ export async function GET(req: NextRequest) {
   const country = (req.nextUrl.searchParams.get("country") ?? "").toUpperCase()
   if (code.length < 6 || !/^[A-Z]{2}$/.test(country)) return NextResponse.json({ error: "code (6-10 digits) and country (2 letters) are required" }, { status: 400 })
   const summaryOnly = req.nextUrl.searchParams.get("summary") === "1"
+  const preview = req.nextUrl.searchParams.get("preview") === "1"
   const db = createAdminClient()
   const today = new Date()
   // Who's asking, read alongside the first query (it's three reads of its own)
   const [who, { data: candidates, error }] = await Promise.all([
-    summaryOnly ? Promise.resolve(null) : viewer(req),
+    summaryOnly || preview ? Promise.resolve(null) : viewer(req),
     db.from("adcvd_cases").select(MATCH_COLUMNS).or(`country.eq.${country},third_countries.cs.{${country}}`),
   ])
   if (who === "signed-out") return NextResponse.json({ error: "Sign in to see AD/CVD cases" }, { status: 401 })
@@ -131,6 +134,10 @@ export async function GET(req: NextRequest) {
   const live = flags.filter((f) => f.level !== "history")
   const summary: AdcvdSummary = { code, country, checked_at: body.checked_at, cases: live.flatMap((f) => f.cases).length, likely: live.some((f) => f.level === "likely"), petitions: petitions.length }
   if (summaryOnly) return NextResponse.json(summary, { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" } })
+  if (preview) {
+    const trimmed: AdcvdLookup = { ...body, flags: flags.map((f) => ({ ...f, events: f.events.slice(0, 3), cases: f.cases.map((c): FlagCase => ({ ...c, companies: [] })) })) }
+    return NextResponse.json(trimmed, { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" } })
+  }
   // Per user, so never from a shared cache
   return NextResponse.json(body, { headers: { "Cache-Control": "private, max-age=3600" } })
 }

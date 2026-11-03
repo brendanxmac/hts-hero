@@ -2,21 +2,42 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { Dialog } from "@/components/ui/Dialog";
-import { CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/20/solid";
+import { CheckCircleIcon, ExclamationTriangleIcon, LockClosedIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
 import type { Kind } from "@/libs/tariff-updates/types";
 import { ALERT_KIND_OPTIONS, DEFAULT_ALERT_KINDS } from "./alertPrefs";
+import { useTrackerAccess } from "../access/accessContext";
 import { AlertSettings, settingsOn, useAlertSettings } from "./AlertSettingsContext";
 import { SlackConnect } from "./SlackConnect";
 import { TeamsConnect } from "./TeamsConnect";
+
+// Slack or Teams on a plan without them (plans for 100 or more products have them): locked, and a channel connected
+// during the trial stays saved, paused, ready for an upgrade
+const LockedChannel = ({ name, connected, onUnlock }: { name: string; connected: boolean; onUnlock: () => void }) => (
+  <div className={`${tt.tile} flex flex-col gap-3 p-4`}>
+    <span className="flex items-center justify-between gap-2 text-sm font-semibold text-base-content">
+      <span className="flex items-center gap-2">
+        <LockClosedIcon className="h-4 w-4 text-base-content/50" aria-hidden />
+        {name}
+      </span>
+      <span className={tt.chip("neutral")}>Available on Pro</span>
+    </span>
+    <p className={ui.caption}>{connected ? `Your ${name} channel is saved and paused. It starts again on a plan for 100 or more products.` : `Get alerts in ${name} on a Pro or Scale plan.`}</p>
+    <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={onUnlock}>
+      See plans
+    </button>
+  </div>
+);
 
 // Where tariff alerts go (email, a Slack channel, a Microsoft Teams channel) and which kinds of
 // tariff update set one off. Alerts are on from the start; turning every channel off asks first.
 export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
   const { settings, save, on, loading } = useAlertSettings();
+  const { access, openUpgrade } = useTrackerAccess();
+  const { alertEmails, chat } = access.entitlements;
   const [draft, setDraft] = useState<AlertSettings>(settings);
   const [state, setState] = useState<{ saving: boolean; message: string | null; saved: boolean }>({ saving: false, message: null, saved: false });
   const [confirmOff, setConfirmOff] = useState(false);
@@ -76,9 +97,53 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
             onChange={(e) => set({ email: e.target.value })}
             placeholder="you@company.com"
           />
+          {draft.extraEmails.map((email, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input
+                type="email"
+                aria-label={`Alert email ${i + 2}`}
+                className={ui.input}
+                value={email}
+                disabled={!draft.emailEnabled}
+                onChange={(e) => set({ extraEmails: draft.extraEmails.map((x, j) => (j === i ? e.target.value : x)) })}
+                placeholder="teammate@company.com"
+              />
+              <button
+                type="button"
+                className="rounded-full p-1.5 text-base-content/50 hover:bg-tt-soft hover:text-base-content"
+                aria-label={`Remove ${email || "this email"}`}
+                onClick={() => set({ extraEmails: draft.extraEmails.filter((_, j) => j !== i) })}
+              >
+                <XMarkIcon className="h-4 w-4" aria-hidden />
+              </button>
+            </div>
+          ))}
+          {draft.extraEmails.length + 1 < alertEmails ? (
+            <button type="button" className={`${ui.button({ variant: "ghost", size: "sm" })} self-start`} disabled={!draft.emailEnabled} onClick={() => set({ extraEmails: [...draft.extraEmails, ""] })}>
+              Add another email
+            </button>
+          ) : (
+            alertEmails < 20 && (
+              <p className={ui.caption}>
+                Your plan sends alerts to {alertEmails === 1 ? "1 email" : `${alertEmails} emails`}.{" "}
+                <button type="button" className="font-semibold text-primary hover:underline" onClick={() => openUpgrade("alerts")}>
+                  Add more
+                </button>
+              </p>
+            )
+          )}
         </div>
-        <SlackConnect webhook={draft.slackWebhook} onWebhookChange={(slackWebhook) => set({ slackWebhook })} />
-        <TeamsConnect webhook={draft.teamsWebhook} onWebhookChange={(teamsWebhook) => set({ teamsWebhook })} onConnect={commit} saving={state.saving} />
+        {chat ? (
+          <>
+            <SlackConnect webhook={draft.slackWebhook} onWebhookChange={(slackWebhook) => set({ slackWebhook })} />
+            <TeamsConnect webhook={draft.teamsWebhook} onWebhookChange={(teamsWebhook) => set({ teamsWebhook })} onConnect={commit} saving={state.saving} />
+          </>
+        ) : (
+          <>
+            <LockedChannel name="Slack" connected={!!draft.slackWebhook} onUnlock={() => openUpgrade("alerts")} />
+            <LockedChannel name="Teams" connected={!!draft.teamsWebhook} onUnlock={() => openUpgrade("alerts")} />
+          </>
+        )}
       </div>
 
       <fieldset className="flex flex-col gap-3" disabled={!draftOn}>
@@ -121,7 +186,7 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
       <Dialog open={confirmOff} onClose={() => setConfirmOff(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/40" aria-hidden />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          {/* It portals out of the Tracker, so it carries the Tracker's look itself (DESIGN_SYSTEM §15) */}
+          {/* It portals out of Duty Guard, so it carries Duty Guard's look itself (DESIGN_SYSTEM §15) */}
           <Dialog.Panel className={`${THEME} hts-tracker ${trackerSans.className} ${tt.panel} flex w-full max-w-md flex-col gap-5 p-6 shadow-2xl`}>
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-warning/10 text-warning" aria-hidden>
@@ -131,7 +196,7 @@ export const AlertSettingsPanel = ({ onSaved }: { onSaved?: () => void }) => {
                 <Dialog.Title className={`${tt.title} m-0`}>Turn Off Tariff Alerts?</Dialog.Title>
                 <p className={ui.bodySm}>
                   With no email, Slack or Teams, you won&apos;t hear when a new tariff, rate change or exemption hits one of your imports. You&apos;d only find out from
-                  your next customs bill, or by checking the Tracker yourself.
+                  your next customs bill, or by checking Duty Guard yourself.
                 </p>
               </div>
             </div>

@@ -8,7 +8,7 @@ import { useUpgradeStats } from "../access/upgradeStats";
 import { useTracker } from "../TrackerContext";
 import { endsIn, trialState } from "./trial";
 
-// One line across the top of the app when the plan needs attention: the 14-day trial ending or
+// One line across the top of the app when the plan needs attention: the trial ending or
 // ended (what goes, in their numbers), or the free checks all used
 
 const n = (count: number) => count.toLocaleString("en-US");
@@ -36,13 +36,13 @@ export const PlanBanner = () => {
         <p className={`${ui.bodySm} flex-1`}>
           {trial.ended ? (
             <>
-              <span className="font-semibold text-base-content">Your free trial has ended.</span> Your {n(imports)} imports have no tariff alerts, AD/CVD alerts or
-              impact checks, and Insights is locked.
+              <span className="font-semibold text-base-content">Your free trial has ended.</span> Your {n(imports)} products have no tariff alerts, AD/CVD alerts or
+              impact checks, and savings, audits and Insights are locked.
             </>
           ) : (
             <>
               <span className="font-semibold text-base-content">Your free trial ends {endsIn(access)}.</span>{" "}
-              Your imports will lose their tariff alerts, AD/CVD alerts and impact checks, and Insights will lock.
+              Your products will lose their tariff alerts, AD/CVD alerts and impact checks, and savings, audits and Insights will lock.
             </>
           )}
         </p>
@@ -63,8 +63,8 @@ export const PlanBanner = () => {
       <div role="status" className={`${ui.notice("error")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
         <ClockIcon className="h-5 w-5 shrink-0 text-error" aria-hidden />
         <p className={`${ui.bodySm} flex-1`}>
-          <span className="font-semibold text-base-content">Your Tariff Tracker plan has ended.</span> Your {n(imports)} imports have no tariff alerts, AD/CVD alerts or
-          impact checks, and Insights is locked.
+          <span className="font-semibold text-base-content">Your plan has ended.</span> Your {n(imports)} products have no tariff alerts, AD/CVD alerts or
+          impact checks, and savings, audits and Insights are locked.
         </p>
         <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={() => openUpgrade("plan")}>
           Resubscribe
@@ -77,14 +77,14 @@ export const PlanBanner = () => {
     );
   }
 
-  // Both checks used up on the free plan: the one nudge to a plan
+  // The free plan: the one nudge to a plan
   if (access.kind === "free" && savingsLeft === 0 && auditsLeft === 0) {
     return (
       <div role="status" className={`${ui.notice("warning")} flex flex-col gap-3 sm:flex-row sm:items-center`}>
         <SparklesIcon className="h-5 w-5 shrink-0 text-warning" aria-hidden />
         <p className={`${ui.bodySm} flex-1`}>
-          <span className="font-semibold text-base-content">You&apos;ve used your free savings and audit checks.</span> Pick a plan to check savings and audit entries on
-          every import it covers.
+          <span className="font-semibold text-base-content">Your catalog is free. Alerts, savings and audits come with a plan.</span> Pick one to turn them on for your
+          products.
         </p>
         <button type="button" className={`${ui.button({ variant: "primary", size: "sm" })} shrink-0`} onClick={() => openUpgrade("plan")}>
           See plans

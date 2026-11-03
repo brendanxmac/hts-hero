@@ -6,10 +6,12 @@
     "node": "22.x"
   },
   "scripts": {
-    "email": "email dev",
-    "email:meet-tracker": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/meet-tracker.ts",
+    "email": "node --env-file=.env.local node_modules/.bin/email dev",
+    "email:duty-guard-launch": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/duty-guard-launch.ts",
     "stripe:check-tracker": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx --env-file=.env.local scripts/stripe/check-tracker-prices.ts",
+    "stripe:setup-offers": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx --env-file=.env.local scripts/stripe/setup-offers.ts",
     "chat:test": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/chat/test-alerts.tsx",
+    "email:upload-logo": "npx tsx scripts/email/upload-logo.ts",
     "email:auth": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/export-auth.tsx",
     "dev": "next dev",
     "dev:https": "next dev --experimental-https",
@@ -123,6 +125,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "@react-email/preview-server": "^5.2.10",
+    "@react-email/ui": "^6.11.3",
     "@remotion/cli": "4.0.536",
     "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/typography": "^0.5.20",

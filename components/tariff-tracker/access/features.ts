@@ -1,6 +1,6 @@
 import { SectionSlug } from "../sections"
 
-// What each premium part of the Tracker is, for the plans dialog: what the user was looking at
+// What each premium part of Duty Guard is, for the plans dialog: what the user was looking at
 // when they ran out of free checks (or asked to see plans), so the dialog talks about that
 
 export type PremiumFeature =
@@ -65,7 +65,7 @@ export const PREMIUM_FEATURES: Record<
     benefit: "Get alerts and impact checks on every one of your imports, not just the first few",
   },
   plan: {
-    name: "Tariff Tracker",
+    name: "Duty Guard",
     benefit: "Alerts and impact checks on every import you track",
   },
   qualify: {
@@ -92,7 +92,7 @@ export const PREMIUM_INCLUDES = [
   "Export every tariff on every import to CSV or Excel, or share reports with your team or broker",
 ]
 
-// The Tracker tab where each feature lives, for the calculator's upsells: every account can use
+// Duty Guard tab where each feature lives, for the calculator's upsells: every account can use
 // them there (with the trial's checks)
 export const featureTab = (feature: PremiumFeature): SectionSlug => {
   switch (feature) {

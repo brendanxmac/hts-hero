@@ -6,7 +6,7 @@ import * as mk from "./styles";
 
 // The call to action for the classification assistant, as a bold band: on the homepage, after
 // the tariff tools, and on the HTS reference pages above the footer. Only on pages in the
-// Tracker's look: a bold band, inverted from the page.
+// Duty Guard's look: a bold band, inverted from the page.
 export const ClassifyCta = () => (
   <section className={`${cta.band} ${cta.bandPadSm}`} aria-labelledby="tool-classify-title">
     <div className={`${mk.container} relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-center`}>

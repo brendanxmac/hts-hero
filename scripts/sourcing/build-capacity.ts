@@ -1,5 +1,5 @@
 // Builds public/data/sourcing/capacity/: which countries export each HS6 product to the whole
-// world, how much, and whether they specialize in it, for the Tracker's Sourcing tab ("can they
+// world, how much, and whether they specialize in it, for Duty Guard's Sourcing tab ("can they
 // actually make it?"). One file per HS chapter, fetched only when the tab needs that chapter.
 //
 // Source: Harvard Growth Lab, Atlas of Economic Complexity, International Trade Data (HS 2022),

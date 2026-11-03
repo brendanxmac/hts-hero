@@ -7,7 +7,7 @@ import type { TrackedProduct } from "../../components/tariff-tracker/report"
 import { matchImport, scopeOf, type MatchableUpdate, type MatchLevel } from "./match"
 
 // What one tariff update does to each of an account's imports. Shared by the server (which stores
-// the levels for alerts: impacts.ts) and the Tracker's Tariff impact tab (which shows the detail),
+// the levels for alerts: impacts.ts) and Duty Guard's Tariff impact tab (which shows the detail),
 // so what an alert says and what the tab shows are worked out the same way.
 //
 // Confirmed comes from the duty engine: when the update names a Chapter 99 heading the engine

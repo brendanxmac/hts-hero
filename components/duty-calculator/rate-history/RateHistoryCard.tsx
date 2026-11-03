@@ -33,7 +33,7 @@ export const RateHistoryCard = ({
   highlight?: string | null;
   onHighlight?: (label: string | null) => void;
   // In the heading, across from the title and its % / $ switch (the calculator's alerts; the
-  // Tracker's refund check)
+  // Duty Guard's refund check)
   headerAction?: ReactNode;
   // Opening a past date (from the chart or the list); by default it becomes the entry date
   onPickDate?: (date: string, source: string) => void;

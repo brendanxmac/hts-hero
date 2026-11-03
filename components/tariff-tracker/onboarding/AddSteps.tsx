@@ -7,6 +7,7 @@ import {
   ArrowRightIcon,
   ArrowUpTrayIcon,
   CheckIcon,
+  ClipboardDocumentListIcon,
   DocumentIcon,
   ExclamationTriangleIcon,
   ShieldCheckIcon,
@@ -56,8 +57,9 @@ const useSideBySideHeight = () => {
   return { left, right, height };
 };
 
-// The page: back to the other ways, the instructions, the input, and the button that adds them.
-// `children` can take the instructions column's height, to match an input to it.
+// The page: back to the other ways, the instructions, the input, and the button that adds them
+// (none where the input moves on by itself, like a dropped spreadsheet). `children` can take the
+// instructions column's height, to match an input to it.
 const AddLayout = ({
   eyebrow,
   title,
@@ -74,8 +76,8 @@ const AddLayout = ({
   lead: string;
   instructions: ReactNode;
   children: ReactNode | ((sideHeight: number | null) => ReactNode);
-  count: number;
-  onAdd: () => void;
+  count?: number;
+  onAdd?: () => void;
   onBack: () => void;
   footnote?: ReactNode;
 }) => {
@@ -97,13 +99,15 @@ const AddLayout = ({
         </div>
         <div ref={side.right} className="tt-ob-rise flex flex-col gap-4" style={delay(120)}>
           {typeof children === "function" ? children(side.height) : children}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-base-300 pt-4">
-            <span className="text-sm text-base-content/60">{footnote}</span>
-            <button type="button" className={`${ui.button({ variant: "primary", size: "lg" })} px-7`} disabled={count === 0} onClick={onAdd}>
-              {count === 0 ? "Track my imports" : `Track ${n(count)} ${count === 1 ? "import" : "imports"}`}
-              <ArrowRightIcon className="h-4 w-4" aria-hidden />
-            </button>
-          </div>
+          {onAdd && (
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-base-300 pt-4">
+              <span className="text-sm text-base-content/60">{footnote}</span>
+              <button type="button" className={`${ui.button({ variant: "primary", size: "lg" })} px-7`} disabled={!count} onClick={onAdd}>
+                {!count ? "Add my imports" : `Add ${n(count)} ${count === 1 ? "import" : "imports"}`}
+                <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -137,14 +141,14 @@ export const RecentStep = ({ onAdd, onBack }: { onAdd: OnAdd; onBack: () => void
 
   return (
     <AddLayout
-      eyebrow={`Step ${ADD_STEP} · Your recent searches`}
-      title="Start with what you've already looked up."
+      eyebrow={`Your recent searches`}
+      title="Here's your recent searches"
       lead="These are the imports you checked in the duty calculator on this device. Keep the ones you actually import; you can add the rest of your list right after."
       instructions={
         <HowTo
           steps={[
-            "Untick anything you don't import.",
-            "Track them. Each gets today's duty and alerts on every change.",
+            "Untick anything you don't want to track.",
+            `Click "Add ${picked.length} Imports"`,
             "Add the rest of your list whenever it suits you.",
           ]}
         />
@@ -271,7 +275,83 @@ const pastedTable = (text: string): { rows: string[][]; columns: DetectedColumns
 
 const PASTED = "Your pasted list";
 
-export const PasteStep = ({ onAdd, onBack, few = false }: { onAdd: OnAdd; onBack: () => void; few?: boolean }) => {
+// Where a pasted list comes from, asked first: the copy-two-columns steps only help someone with a
+// spreadsheet; anyone else gets how to type them in
+type PasteSource = "sheet" | "other";
+
+// The box: the one place to act on this page, so it stands out (a primary border and glow)
+const pasteBox = ui.textarea
+  .replace("rounded-md border border-base-content/20", "rounded-xl border-2 border-primary/50")
+  .replace("hover:border-base-content/30", "hover:border-primary/70")
+  .replace("focus:ring-2 focus:ring-primary/20", "focus:ring-4 focus:ring-primary/15");
+
+// For anyone with a spreadsheet: uploading the file beats copying columns out of it
+const UploadInstead = ({ onUpload }: { onUpload: () => void }) => (
+  <div className="tt-ob-rise flex flex-col gap-4 rounded-2xl border-2 border-primary/40 bg-primary/5 p-5" style={delay(0)}>
+    <div className="flex items-start gap-3">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-content" aria-hidden>
+        <ArrowUpTrayIcon className="h-[1.125rem] w-[1.125rem]" />
+      </span>
+      <span className="flex flex-col gap-1">
+        <span className="text-base font-semibold text-base-content">Easier: upload the file instead</span>
+        <span className="text-sm leading-relaxed text-base-content/75">
+          No copying. We read the whole sheet and find the HTS code and country columns ourselves.
+        </span>
+      </span>
+    </div>
+    <ul className="m-0 flex list-none flex-col gap-1.5 p-0 pl-12 text-sm text-base-content/70">
+      <li>
+        <strong className="text-base-content">Excel:</strong> it&apos;s already a file. Just drop it in.
+      </li>
+      <li>
+        <strong className="text-base-content">Google Sheets:</strong> File → Download → Microsoft Excel (.xlsx)
+      </li>
+    </ul>
+    <button type="button" className={`${ui.button({ variant: "primary" })} ml-12 self-start`} onClick={onUpload}>
+      Upload my spreadsheet
+      <ArrowRightIcon className="h-4 w-4" aria-hidden />
+    </button>
+  </div>
+);
+
+const SourceQuestion = ({ source, onSource }: { source: PasteSource | null; onSource: (s: PasteSource) => void }) => (
+  <div className="tt-ob-rise flex flex-col gap-3" style={delay(160)}>
+    <span className="text-sm font-semibold text-base-content">Are your imports in a spreadsheet?</span>
+    <div className="flex gap-2" role="radiogroup" aria-label="Are your imports in a spreadsheet?">
+      {(
+        [
+          ["sheet", "Yes"],
+          ["other", "No"],
+        ] as const
+      ).map(([id, label]) => (
+        <button
+          key={id}
+          type="button"
+          role="radio"
+          aria-checked={source === id}
+          onClick={() => onSource(id)}
+          className={`h-10 min-w-24 rounded-full border-2 px-5 text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 ${source === id ? "border-primary bg-primary/10 text-primary" : "border-base-300 text-base-content/80 hover:border-base-content/40 hover:text-base-content"
+            }`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+export const PasteStep = ({
+  onAdd,
+  onBack,
+  onUpload,
+  few = false,
+}: {
+  onAdd: OnAdd;
+  onBack: () => void;
+  // To the spreadsheet upload instead (UploadInstead)
+  onUpload: () => void;
+  few?: boolean;
+}) => {
   const { findElement } = useTracker();
   const [text, setText] = useState("");
   const [table, setTable] = useState<SheetTable[]>([]);
@@ -285,6 +365,12 @@ export const PasteStep = ({ onAdd, onBack, few = false }: { onAdd: OnAdd; onBack
   useEffect(() => setMac(isMac()), []);
   const mod = mac ? "⌘" : "Ctrl";
   const other = mac ? { key: "Ctrl", on: "Windows" } : { key: "⌘", on: "a Mac" };
+  // Starting with the few they know (from HandyStep) means no spreadsheet: no need to ask
+  const [source, setSource] = useState<PasteSource | null>(few ? "other" : null);
+  const pickSource = (next: PasteSource) => {
+    setSource(next);
+    trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, { step: "paste_source", source: next });
+  };
 
   // Pasting into an empty box (or over all of it): a table goes to the sheet review
   const onPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -329,8 +415,8 @@ export const PasteStep = ({ onAdd, onBack, few = false }: { onAdd: OnAdd; onBack
 
   return (
     <AddLayout
-      eyebrow={`Step ${ADD_STEP} · Paste a list`}
-      title={few ? "Start with the ones you know." : "Copy two columns, paste them here."}
+      eyebrow={`Paste a list`}
+      title={few ? "Start with the ones you know." : "Add your list of imports"}
       lead={
         few
           ? "Type or paste the imports you know off the top of your head, one per line. A few is plenty to start: add the rest when you have your list."
@@ -338,23 +424,54 @@ export const PasteStep = ({ onAdd, onBack, few = false }: { onAdd: OnAdd; onBack
       }
       instructions={
         <div className="flex flex-col gap-6">
-          <HowTo
-            steps={[
-              "Open the spreadsheet with your products in it.",
-              <>
-                Select the <strong className="text-base-content">HTS code</strong> and <strong className="text-base-content">country of origin</strong> columns.
-                Not side by side? Hold <Key>{mod}</Key> to pick both (<Key>{other.key}</Key> on {other.on}).
-              </>,
-              <>
-                Copy with <Key>{mod}</Key> <Key>C</Key>, click the box and paste with <Key>{mod}</Key> <Key>V</Key>.{" "}
-                <span className="text-base-content/60">
-                  On {other.on}: <Key>{other.key}</Key> <Key>C</Key> and <Key>{other.key}</Key> <Key>V</Key>.
-                </span>
-              </>,
-            ]}
-          />
-          <SheetIllustration caption="Only the two highlighted columns matter. Headers and other columns are fine." wait={420} />
-          {!few && <AiTidy />}
+          {!few && <SourceQuestion source={source} onSource={pickSource} />}
+          {source === "sheet" && (
+            <>
+              <UploadInstead
+                onUpload={() => {
+                  trackEvent(MixpanelEvent.TARIFF_TRACKER_ONBOARDING_STEP, { step: "paste_to_upload" });
+                  onUpload();
+                }}
+              />
+              <span className="tt-ob-rise text-sm font-semibold text-base-content" style={delay(80)}>
+                Or copy and paste:
+              </span>
+              <HowTo
+                start={120}
+                steps={[
+                  "Open the spreadsheet with your products in it.",
+                  <>
+                    Select the <strong className="text-base-content">HTS code</strong> and <strong className="text-base-content">country of origin</strong> columns.
+                    Not side by side? Hold <Key>{mod}</Key> to pick both (<Key>{other.key}</Key> on {other.on}).
+                  </>,
+                  <>
+                    Copy with <Key>{mod}</Key> <Key>C</Key>, click the box and paste with <Key>{mod}</Key> <Key>V</Key>.{" "}
+                    <span className="text-base-content/60">
+                      On {other.on}: <Key>{other.key}</Key> <Key>C</Key> and <Key>{other.key}</Key> <Key>V</Key>.
+                    </span>
+                  </>,
+                ]}
+              />
+              <SheetIllustration caption="Only the two highlighted columns matter. Headers and other columns are fine." wait={240} />
+              <AiTidy />
+            </>
+          )}
+          {source === "other" && (
+            <>
+              <HowTo
+                start={few ? 180 : 0}
+                steps={[
+                  "Put each import on its own line.",
+                  <>
+                    The <strong className="text-base-content">HTS code</strong> first, then the <strong className="text-base-content">country of origin</strong>:{" "}
+                    <span className={`${mono.className} whitespace-nowrap font-semibold text-base-content`}>6109.10.00.12 China</span>
+                  </>,
+                  "Codes need 8 or 10 digits. Countries can be a name or a two-letter code (CN).",
+                ]}
+              />
+              {!few && <AiTidy />}
+            </>
+          )}
         </div>
       }
       count={review.products.length}
@@ -363,12 +480,16 @@ export const PasteStep = ({ onAdd, onBack, few = false }: { onAdd: OnAdd; onBack
       footnote="Codes: 8 or 10 digits. Countries: name or two-letter code."
     >
       <>
-        <label htmlFor="tt-ob-paste" className="sr-only">
-          Your imports, one per line: HTS code and country of origin
+        <label htmlFor="tt-ob-paste" className="flex items-center gap-2.5 text-base font-semibold text-base-content">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-content" aria-hidden>
+            <ClipboardDocumentListIcon className="h-4 w-4" />
+          </span>
+          Paste or type your imports here
+          <span className="sr-only">: HTS code and country of origin, one per line</span>
         </label>
         <textarea
           id="tt-ob-paste"
-          className={`${ui.textarea} ${mono.className} h-52 resize-y py-3.5 text-sm leading-relaxed`}
+          className={`${pasteBox} ${mono.className} h-72 resize-y px-4 py-4 text-sm leading-relaxed shadow-[0_18px_44px_-22px_var(--tt-ob-glow)]`}
           spellCheck={false}
           autoComplete="off"
           autoFocus
@@ -492,7 +613,7 @@ export const FileStep = ({ onAdd, onBack }: { onAdd: OnAdd; onBack: () => void }
 
   return (
     <AddLayout
-      eyebrow={`Step ${ADD_STEP} · Upload a spreadsheet`}
+      eyebrow={`Upload a spreadsheet`}
       title="Drop in your spreadsheet"
       lead="Your product list, a parts master, an invoice export or your broker's entry report. We find the HTS code and country of origin columns and throw everything else away."
       instructions={
@@ -515,10 +636,7 @@ export const FileStep = ({ onAdd, onBack }: { onAdd: OnAdd; onBack: () => void }
           </div>
         </div>
       }
-      count={0}
-      onAdd={() => undefined}
       onBack={onBack}
-      footnote={reading ? "Reading your file…" : undefined}
     >
       {(sideHeight) => (
         <>

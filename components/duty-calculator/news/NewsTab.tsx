@@ -3,7 +3,7 @@
 import { ReactNode, useMemo, useState } from "react";
 import { ArrowTopRightOnSquareIcon, CheckBadgeIcon } from "@heroicons/react/20/solid";
 import { useUser } from "@/contexts/UserContext";
-import { AccountGate } from "@/components/tariff-tracker/access/AccountGate";
+import { AccountGate, QUICK_ACCOUNT } from "@/components/tariff-tracker/access/AccountGate";
 import { useTariffUpdates, type TrackerUpdate } from "@/components/tariff-tracker/overview/useTariffUpdates";
 import { NEWS_DOTS, newsToneOf } from "@/components/tariff-tracker/news/tone";
 import { authorityLabel, kindLabel, STAGE_LABELS } from "@/components/tariff-updates/labels";
@@ -15,11 +15,11 @@ import { Countries } from "@/constants/countries";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { matchCatalog } from "@/libs/tariff-updates/match";
 
-// The calculator's News tab (and an import's page in the Tracker): every published tariff update
+// The calculator's News tab (and an import's page in Duty Guard): every published tariff update
 // (/tariff-updates) that may touch this import, the ones naming its product first, then the ones
 // naming only its country; and, from the AD/CVD lookup, the notices on cases that may cover it.
 // Newest first, each with what kind of action it is, where it stands and a link to the full
-// update. A free account: signed out, a stand-in behind the sign-up, with how many there are.
+// update. A free account: signed out, the real news blurred behind the sign-up, with how many there are.
 
 type Filter = "all" | "product" | "country";
 
@@ -111,13 +111,7 @@ const StandIn = () => (
   </div>
 );
 
-const LOCKED_POINTS = [
-  "Every tariff action that names this product or its country",
-  "AD/CVD notices on cases that may cover it",
-  "Where each action stands, with the full update a click away",
-];
-
-export const NewsTab = ({ code, country, page, action }: { code: string; country: string; page: string; action?: ReactNode }) => {
+export const NewsTab = ({ code, country, page, action, redirect }: { code: string; country: string; page: string; action?: ReactNode; redirect?: () => string }) => {
   const { user, isLoading } = useUser();
   const updates = useMatchedUpdates(code, country);
   const adcvd = lookupOf(useAdcvdLookup(code, country));
@@ -164,14 +158,22 @@ export const NewsTab = ({ code, country, page, action }: { code: string; country
       <AccountGate
         feature="news"
         page={page}
-        title="See the News About This Import, Free"
-        teaser={
-          items.length
-            ? `${items.length} tariff ${items.length === 1 ? "update" : "updates"} may touch this import${product.length ? `, ${product.length} naming this product` : ""}.`
-            : "Know the moment tariff news touches this import."
+        redirect={redirect}
+        title="Recent News May Affect This Imports Landed Cost"
+        teaser="Create a free account to see the latest news."
+        cta="Create free account"
+        note={QUICK_ACCOUNT}
+        preview={
+          items.length ? (
+            <ul className="m-0 list-none p-6">
+              {items.slice(0, 8).map((item) => (
+                <Row key={item.key} item={item} />
+              ))}
+            </ul>
+          ) : (
+            <StandIn />
+          )
         }
-        points={LOCKED_POINTS}
-        preview={<StandIn />}
         minHeight="min-h-96"
         framed={false}
       >

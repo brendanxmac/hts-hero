@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import type { Billing } from "@/components/pricing-calculator/lib/pricing";
 import { TrackerPlan } from "@/libs/tariff-tracker/plan";
 import type { TrackerSubscription } from "@/libs/tariff-tracker/subscription";
 
-// The Tracker's Stripe billing portal (it switches between Tracker plans only). `changePlan` opens
+// Duty Guard's Stripe billing portal (it switches between Duty Guard plans only). `changePlan` opens
 // it on a plan change: Stripe's confirm page for that plan, or its plan picker for `true`.
-export const openBillingPortal = async (changePlan?: TrackerPlan["plan"] | true) => {
+export const openBillingPortal = async (changePlan?: TrackerPlan["plan"] | true, billing?: Billing) => {
   const res = await fetch("/api/stripe/create-portal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ returnUrl: window.location.href, app: "tracker", changePlan }),
+    body: JSON.stringify({ returnUrl: window.location.href, app: "tracker", changePlan, billing }),
   });
   const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
   if (body.url) window.location.href = body.url;

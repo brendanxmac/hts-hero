@@ -40,14 +40,14 @@ export const CTA_CONTENT: Record<
     href: "/duty-calculator",
   },
   tracker: {
-    kicker: "Tariff Tracker",
+    kicker: "Duty Guard",
     title: "Eliminate tariff overpayments and surprises",
     body: "Add your HTS codes and countries once. HTS Hero audits your entries for duty you may have overpaid, checks every new tariff action against your imports and tells you exactly how each one is affected.",
     points: [
       "Every entry audited for duty you may have overpaid",
       "Alerts when a tariff change hits your imports",
       "Before and after rates for each import, and the change in %",
-      `Free for ${REVERSE_TRIAL.days} days on up to ${REVERSE_TRIAL.imports} imports, no credit card`,
+      `Free for ${REVERSE_TRIAL.days} days, no credit card required`,
     ],
     button: TRY_IT_FREE,
     href: TRACKER_HREF,

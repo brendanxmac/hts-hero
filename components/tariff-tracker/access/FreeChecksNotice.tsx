@@ -3,7 +3,7 @@
 import { SparklesIcon } from "@heroicons/react/20/solid";
 import * as ui from "@/components/ui/styles";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
-import { hasFullAccess } from "@/libs/tariff-tracker/plan";
+import { hasAudits } from "@/libs/tariff-tracker/plan";
 import { useTrackerAccess } from "./accessContext";
 
 // Savings and audit checks come with the 14-day trial and the paid plans, not the free plan
@@ -25,7 +25,7 @@ const COPY = {
 
 export const FreeChecksNotice = ({ kind }: { kind: keyof typeof COPY }) => {
   const { access, signedIn, openUpgrade, unlockLabel } = useTrackerAccess();
-  if (hasFullAccess(access)) return null;
+  if (hasAudits(access)) return null;
   const copy = COPY[kind];
   const feature = kind === "savings" ? "savings" : "entries";
   if (!signedIn)

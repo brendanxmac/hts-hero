@@ -10,8 +10,8 @@ import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "./styles";
 
 // The promo bar above the marketing header on the HTS reference pages (/hts, /explore, /section,
-// /chapter): the Tariff Tracker, for people looking up codes they import. Signed in, it opens
-// the Tracker instead. Dark in both modes, like the Tracker's sidebar. The X hides it on this page
+// /chapter): Duty Guard, for people looking up codes they import. Signed in, it opens
+// Duty Guard instead. Dark in both modes, like Duty Guard's sidebar. The X hides it on this page
 // only: it's back on the next page and on every reload.
 export const TrackerBanner = () => {
   const { user } = useUser();
@@ -32,10 +32,10 @@ export const TrackerBanner = () => {
           </span>
         </p>
         <Link
-          href={user ? "/tariff-tracker" : TRY_FREE_HREF}
+          href={user ? "/duty-guard" : TRY_FREE_HREF}
           className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-success px-5 text-sm font-semibold text-success-content transition-colors hover:bg-success/90"
         >
-          {user ? "Open the Tariff Tracker" : TRY_IT_FREE}
+          {user ? "Open Duty Guard" : TRY_IT_FREE}
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
         </Link>
       </div>
@@ -62,7 +62,7 @@ export const TariffAlertsBanner = () => (
         No tariff surprises: get alerted the moment an update affects your imports, and catch duty you may have overpaid
       </p>
       <Link
-        href="/tariff-tracker?tab=catalog&add=paste"
+        href="/duty-guard?tab=catalog&add=paste"
         className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-success px-3.5 text-xs font-semibold text-success-content transition-colors hover:bg-success/90"
       >
         {TRY_IT_FREE}

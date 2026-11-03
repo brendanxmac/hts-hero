@@ -5,7 +5,7 @@ import { Transition } from "@headlessui/react";
 import { Dialog } from "@/components/ui/Dialog";
 import { THEME } from "@/components/ui/theme";
 
-// The explorer floating over a page: a big round panel on a dimmed backdrop, in the Tracker's
+// The explorer floating over a page: a big round panel on a dimmed backdrop, in Duty Guard's
 // look whatever the page under it. Escape or a click outside closes it.
 export const ExplorerDialog = ({
   open,
