@@ -204,13 +204,12 @@ export const newsPost = (u: UpdateRow, theme: Theme, words: NewsWords = {}, offi
   }
 }
 
-// The dedupe key a news post is saved under: one post per update and moment
+// A news post's key: one post per update and moment
 export const newsKey = (u: UpdateRow) => `news:${u.slug}:${newsPhase(u)}`
 
-// A news post as a saved idea, for the News tab (the daily ideas build their own)
+// A news post as an idea, for the News tab (Find ideas builds its own)
 export const newsIdea = (u: UpdateRow, post: Post<"News">): Idea => ({
-  run_on: todayIso(),
-  // Made by hand, outside the daily run's order (a rerun of the day's ideas leaves it alone)
+  // Made by hand, outside a Find ideas run's order
   position: -1,
   kind: "news",
   template: "News",
@@ -221,7 +220,6 @@ export const newsIdea = (u: UpdateRow, post: Post<"News">): Idea => ({
   props: post.props,
   sources: post.sources,
   captions: captionsFor("News", post.props),
-  status: "new",
   model: null,
 })
 

@@ -9,20 +9,15 @@ import { Candidate, mineCandidates } from "./miners"
 import { newsFacts, newsPhase, newsPost, newsScore, officialSources, recentUpdates, UpdateRow } from "./news"
 import { numbersCheck } from "./numbers"
 
-// The daily ideas: mine candidates, keep the best few of each kind that haven't run lately, and
-// have Claude pick a varied set and write each one's headline and captions. Claude only words
-// the post; any number it writes that isn't in the candidate's facts sends that text back to
-// the code's own draft.
+// Post ideas, found only when asked (the studio's "Find ideas" button or npm run social:ideas)
+// and never stored: mine candidates, keep the best few of each kind, and have Claude pick a
+// varied set and write each one's headline and captions. Claude only words the post; any number
+// it writes that isn't in the candidate's facts sends that text back to the code's own draft.
 
-export const IDEAS_TABLE = "social_ideas"
 const MODEL = "claude-sonnet-5-5"
 const PER_KIND = 6
-// Don't bring back a story that ran (or was offered) in the last 30 days
-const DEDUPE_DAYS = 30
 
 export interface Idea {
-  id?: string
-  run_on: string
   position: number
   kind: string
   template: TemplateId
@@ -34,7 +29,6 @@ export interface Idea {
   // Where every figure in the post can be checked
   sources: SourceLink[]
   captions: Captions
-  status: "new" | "used" | "skipped"
   model: string | null
 }
 
@@ -119,34 +113,14 @@ interface Pick {
   rate_note: string
 }
 
-// The best few of each kind, not run lately, with a boost for products in this week's tariff news
-export const shortlist = (candidates: Candidate[], recentKeys: Set<string>, newsCodes: string[]) => {
+// The best few of each kind, with a boost for products in this week's tariff news
+export const shortlist = (candidates: Candidate[], newsCodes: string[]) => {
   const inNews = (c: Candidate) => !!c.htsCode && newsCodes.some((code) => c.htsCode!.replace(/\./g, "").startsWith(code.replace(/\./g, "")))
   const byKind = new Map<string, Candidate[]>()
   candidates
-    .filter((c) => !recentKeys.has(c.dedupeKey))
     .map((c) => (inNews(c) ? { ...c, score: c.score * 2, facts: `${c.facts}\n(This product is in this week's tariff news.)` } : c))
     .forEach((c) => byKind.set(c.kind, [...(byKind.get(c.kind) ?? []), c]))
   return Array.from(byKind.values()).flatMap((list) => list.sort((a, b) => b.score - a.score).slice(0, PER_KIND))
-}
-
-// Saves one idea, replacing an unused one for the same story; returns it with its id
-// Inserts ideas; before supabase/migrations/social_ideas_sources.sql is applied, without their
-// sources (with a warning) rather than not at all
-const insertIdeas = async (db: SupabaseClient, ideas: Idea[], warnings: string[]) => {
-  const first = await db.from(IDEAS_TABLE).insert(ideas).select("id, position")
-  if (!first.error || !/sources/.test(first.error.message)) return first
-  warnings.push("Sources weren't saved: apply supabase/migrations/social_ideas_sources.sql.")
-  return db.from(IDEAS_TABLE).insert(ideas.map(({ sources, ...idea }) => idea)).select("id, position")
-}
-
-export const saveIdea = async (db: SupabaseClient, idea: Idea): Promise<{ idea: Idea; error: string | null; warnings: string[] }> => {
-  const warnings: string[] = []
-  await db.from(IDEAS_TABLE).delete().eq("dedupe_key", idea.dedupe_key).eq("status", "new")
-  const { data: rows, error } = await insertIdeas(db, [idea], warnings)
-  const data = rows?.[0]
-  if (error || !data) return { idea, error: `Couldn't save (${error?.message}). Has supabase/migrations/social_ideas.sql been applied?`, warnings }
-  return { idea: { ...idea, id: (data as { id: string }).id }, error: null, warnings }
 }
 
 export interface RunResult {
@@ -157,31 +131,19 @@ export interface RunResult {
   warnings: string[]
 }
 
-export const runDailyIdeas = async ({
+export const findIdeas = async ({
   db,
   count = 8,
   theme = "dark",
-  save = true,
   log = () => {},
 }: {
   db: SupabaseClient
   count?: number
   theme?: Theme
-  save?: boolean
   log?: (line: string) => void
 }): Promise<RunResult> => {
   const warnings: string[] = []
   const runOn = todayIso()
-
-  const since = new Date(Date.now() - DEDUPE_DAYS * 86400e3).toISOString().slice(0, 10)
-  // Earlier days' stories, and posts already made by hand today
-  const recent = await db.from(IDEAS_TABLE).select("dedupe_key, run_on, position").gte("run_on", since)
-  if (recent.error) warnings.push(`Couldn't read recent ideas (${recent.error.message}); nothing is deduplicated.`)
-  const recentKeys = new Set(
-    ((recent.data ?? []) as { dedupe_key: string; run_on: string; position: number }[])
-      .filter((r) => r.run_on < runOn || r.position < 0)
-      .map((r) => r.dedupe_key)
-  )
 
   // This week's tariff news, from the /tariff-updates feed: posts of its own, and a boost for
   // products it names
@@ -203,7 +165,7 @@ export const runDailyIdeas = async ({
     const post = newsPost(u, theme, {}, official.get(u.id))
     candidates.push({ id: `news:${post.key}`, kind: "news", dedupeKey: `news:${u.slug}:${newsPhase(u)}`, score, facts: `${post.title}\n${newsFacts(u)}`, post, update: u })
   }
-  const short = shortlist(candidates, recentKeys, newsCodes)
+  const short = shortlist(candidates, newsCodes)
   log(`shortlist: ${short.length}`)
 
   const user = [
@@ -252,7 +214,6 @@ export const runDailyIdeas = async ({
     if (pick.linkedin && captions.linkedin !== pick.linkedin) warnings.push(`${c.id}: LinkedIn caption had a number not in the facts; used the drafted one.`)
     if (pick.x && captions.x !== pick.x) warnings.push(`${c.id}: X caption had a number not in the facts; used the drafted one.`)
     ideas.push({
-      run_on: runOn,
       position: ideas.length,
       kind: c.kind,
       template: c.post.template,
@@ -263,18 +224,9 @@ export const runDailyIdeas = async ({
       props: props as unknown as Post["props"],
       sources: base.sources,
       captions,
-      status: "new",
       model: usage?.model ?? null,
     })
   })
 
-  if (save && ideas.length) {
-    // A rerun replaces the day's ideas that haven't been used or skipped
-    // (posts made by hand from the News tab have position -1 and stay)
-    await db.from(IDEAS_TABLE).delete().eq("run_on", runOn).eq("status", "new").gte("position", 0)
-    const { data, error } = await insertIdeas(db, ideas, warnings)
-    if (error) warnings.push(`Couldn't save ideas (${error.message}). Has supabase/migrations/social_ideas.sql been applied?`)
-    else data?.forEach((row: { id: string; position: number }) => (ideas[row.position].id = row.id))
-  }
   return { ideas, candidates: candidates.length, shortlisted: short.length, usage, warnings }
 }
