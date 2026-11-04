@@ -59,3 +59,6 @@ certificates
 
 # AD/CVD accuracy review sheets (scripts/adcvd/review-sample.ts): working files with a broker's answers
 /adcvd-review/
+
+# Rendered social posts (npx remotion still/render …)
+social/out/

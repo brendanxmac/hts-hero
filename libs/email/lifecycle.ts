@@ -90,7 +90,7 @@ export const waitBefore = (kind: string) => (kind === "reminder" || kind === "fi
 // outside this sequence, and counting it would push the day-1 emails back to day 2 or 3.
 const paces = (emailKey: string) => emailKey !== "welcome"
 
-const ACCOUNT_REASON = "You're getting this because you have an HTS Hero account."
+export const ACCOUNT_REASON = "You're getting this because you have an HTS Hero account."
 
 interface Account {
   id: string
@@ -118,14 +118,16 @@ export const recentActions = async (db: Db, limit: number) => {
   return { recent: ((data ?? []) as UpdateRowForEmail[]).map(updateSummary), thisMonth: count ?? 0 }
 }
 
-const subscribersFor = async (db: Db, accounts: Account[]) => {
+export const subscribersFor = async (db: Db, accounts: Account[]) => {
   const rows = new Map<string, Subscriber>()
   if (!accounts.length) return rows
   const { data } = await db.from("email_subscribers").select(SUBSCRIBER_COLUMNS).in("user_id", accounts.map((a) => a.id))
   for (const s of (data ?? []) as Subscriber[]) rows.set(s.user_id!, s)
-  // Accounts without a row yet (before subscriptions existed) get one: lifecycle on, no news
-  for (const a of accounts.filter((a) => !rows.has(a.id) && a.email)) {
-    await ensureAccountSubscriber(db, { userId: a.id, email: a.email, newsFrequency: "off" })
+  // Accounts without a row yet (before subscriptions existed) get one: lifecycle on, no news. Ten at
+  // a time, so hundreds of them (a marketing send to every user) take seconds, not minutes.
+  const rowless = accounts.filter((a) => !rows.has(a.id) && a.email)
+  for (let i = 0; i < rowless.length; i += 10) {
+    await Promise.all(rowless.slice(i, i + 10).map((a) => ensureAccountSubscriber(db, { userId: a.id, email: a.email, newsFrequency: "off" })))
   }
   const missing = accounts.filter((a) => !rows.has(a.id)).map((a) => a.id)
   if (missing.length) {
@@ -135,7 +137,7 @@ const subscribersFor = async (db: Db, accounts: Account[]) => {
   return rows
 }
 
-const reachable = (s: Subscriber | undefined): s is Subscriber => !!s && s.lifecycle && !s.unsubscribed_at
+export const reachable = (s: Subscriber | undefined): s is Subscriber => !!s && s.lifecycle && !s.unsubscribed_at
 
 // Only for tests: limit to these accounts and ignore the start date
 export interface TestScope {

@@ -1,6 +1,6 @@
 import { ReactElement } from "react"
 import { render } from "@react-email/render"
-import DutyGuardLaunchEmail, { dutyGuardLaunchSubject, type DutyGuardLaunchEmailProps } from "./announcements/DutyGuardLaunchEmail"
+import DutyGuardLaunchEmail, { dutyGuardLaunchSubject, type DutyGuardLaunchEmailProps } from "./marketing/duty-guard/DutyGuardLaunchEmail"
 import WelcomeEmail, { welcomeSubject, type WelcomeEmailProps } from "./account/WelcomeEmail"
 import PurchaseConfirmationEmail, { purchaseConfirmationSubject, type PurchaseConfirmationEmailProps } from "./account/PurchaseConfirmationEmail"
 import PlaybookEmail, { playbookSubject, type PlaybookEmailProps } from "./leads/PlaybookEmail"
@@ -8,6 +8,8 @@ import AuditRequestReceivedEmail, { auditRequestReceivedSubject, type AuditReque
 import InternalNoticeEmail, { internalNoticeSubject, type InternalNoticeEmailProps } from "./internal/InternalNoticeEmail"
 import AdminDigestEmail, { adminDigestSubject, type AdminDigestEmailProps } from "./internal/AdminDigestEmail"
 import NewsConfirmEmail, { newsConfirmSubject, type NewsConfirmEmailProps } from "./tariff-updates/NewsConfirmEmail"
+import DigestAlertsEmail, { digestAlertsSubject, type DigestAlertsEmailProps } from "./tariff-updates/DigestAlertsEmail"
+import NewsWelcomeEmail, { newsWelcomeSubject, type NewsWelcomeEmailProps } from "./tariff-updates/NewsWelcomeEmail"
 import NewsManageLinkEmail, { newsManageLinkSubject, type NewsManageLinkEmailProps } from "./tariff-updates/NewsManageLinkEmail"
 import OnboardingEmail, { onboardingSubject, type OnboardingEmailProps } from "./onboarding/OnboardingEmail"
 import TrackerFindingsEmail, { trackerFindingsSubject, type TrackerFindingsEmailProps } from "./onboarding/TrackerFindingsEmail"
@@ -22,6 +24,8 @@ import ImpactAlertEmail, { impactAlertSubject, type ImpactAlertEmailProps } from
 import TariffDigestEmail, { DIGEST_NEWS_PATH, tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
 import TariffNewsEmail, { tariffNewsSubject, type TariffNewsEmailProps } from "./tariff-updates/TariffNewsEmail"
 import { updateUrl } from "./kit/parts"
+import { MARKETING_PREFIX, type MarketingEmailProps } from "./kit/marketing"
+import { MARKETING_EMAILS } from "./marketing/manifest.generated"
 import { SITE } from "./kit/brand"
 import { AUTHORITIES } from "../libs/tariff-updates/types"
 import { chatDate, rateChange, type ChatMessage } from "./chat"
@@ -121,6 +125,9 @@ export const TEMPLATES = {
   playbook: template<PlaybookEmailProps>({ subject: playbookSubject, email: (p) => <PlaybookEmail {...p} /> }),
   audit_request_received: template<AuditRequestReceivedEmailProps>({ subject: auditRequestReceivedSubject, email: (p) => <AuditRequestReceivedEmail {...p} /> }),
   news_confirm: template<NewsConfirmEmailProps>({ subject: newsConfirmSubject, email: (p) => <NewsConfirmEmail {...p} /> }),
+  digest_alerts: template<DigestAlertsEmailProps>({ subject: digestAlertsSubject, email: (p) => <DigestAlertsEmail {...p} /> }),
+  news_welcome: template<NewsWelcomeEmailProps>({ subject: newsWelcomeSubject, email: (p) => <NewsWelcomeEmail {...p} /> }),
+  // Retired 2026-11-04 (an address already subscribed gets news_welcome): keeps past messages opening
   news_manage_link: template<NewsManageLinkEmailProps>({ subject: newsManageLinkSubject, email: (p) => <NewsManageLinkEmail {...p} /> }),
   onboarding: template<OnboardingEmailProps>({ subject: onboardingSubject, email: (p) => <OnboardingEmail {...p} /> }),
   // Retired: keeps its past messages opening in the outbox
@@ -140,27 +147,41 @@ export type TemplateName = keyof typeof TEMPLATES
 
 export const isTemplate = (name: string): name is TemplateName => name in TEMPLATES
 
+// A marketing email (emails/marketing/, "marketing:<campaign>/<File>") as a template: the subject
+// comes from the message (typed in the Content Studio), else the file's own
+const marketingTemplate = (name: string): Template<Record<string, unknown>> | null => {
+  if (!name.startsWith(MARKETING_PREFIX)) return null
+  const mod = MARKETING_EMAILS[name.slice(MARKETING_PREFIX.length)]
+  if (!mod) return null
+  const Email = mod.default
+  return {
+    subject: (p) => (typeof p.subject === "string" && p.subject.trim()) || mod.subject || "A note from HTS Hero",
+    email: (p) => <Email {...(p as unknown as MarketingEmailProps)} preview={(typeof p.preview === "string" && p.preview) || mod.preview || ""} />,
+  }
+}
+
+const templateFor = (name: string) => {
+  const t = isTemplate(name) ? (TEMPLATES[name] as unknown as Template<Record<string, unknown>>) : marketingTemplate(name)
+  if (!t) throw new Error(`No email template named ${name}`)
+  return t
+}
+
 // The batch's note and subject are added at render time, so editing them in the outbox changes
 // every message
 const withNote = (props: Record<string, unknown>, note: string | null | undefined) => (note ? { ...props, note } : props)
 
 export const renderEmail = async (name: string, props: Record<string, unknown>, note?: string | null, subject?: string | null) => {
-  if (!isTemplate(name)) throw new Error(`No email template named ${name}`)
-  const t = TEMPLATES[name] as unknown as Template<Record<string, unknown>>
+  const t = templateFor(name)
   const p = withNote(props, note)
   const element = t.email(p)
   const [html, text] = await Promise.all([render(element), render(element, { plainText: true })])
   return { subject: subject?.trim() || t.subject(p), html, text }
 }
 
-export const subjectOf = (name: string, props: Record<string, unknown>) => {
-  if (!isTemplate(name)) throw new Error(`No email template named ${name}`)
-  return (TEMPLATES[name] as unknown as Template<Record<string, unknown>>).subject(props)
-}
+export const subjectOf = (name: string, props: Record<string, unknown>) => templateFor(name).subject(props)
 
 export const renderChat = (name: string, props: Record<string, unknown>, note?: string | null): ChatMessage => {
-  if (!isTemplate(name)) throw new Error(`No template named ${name}`)
-  const chat = (TEMPLATES[name] as unknown as Template<Record<string, unknown>>).chat
+  const chat = templateFor(name).chat
   if (!chat) throw new Error(`${name} only goes by email`)
   return chat(withNote(props, note))
 }

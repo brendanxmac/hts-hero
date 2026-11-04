@@ -97,6 +97,7 @@ const KEY_PAGES = [
   ["/tariff-monitor", 0.9],
   ["/duty-audit", 0.9],
   ["/tariff-updates", 0.9],
+  ["/tariff-digest", 0.8],
   ["/tariffs", 0.8],
   ...programHubSlugs().map((slug) => [`/tariffs/${slug}`, 0.8]),
   ["/classify", 0.8],
@@ -152,6 +153,7 @@ module.exports = {
     "/blog/feed.xml",
     "/tariff-updates/feed.xml",
     "/tariff-updates/subscription",
+    "/tariff-digest/welcome",
     "/llms.txt",
     // Retired or stale: the Tariff Impact Checker (being sunset; its tool stays up for existing
     // users), the old tariff coverage and pending-announcement pages, and /about/tariffs, which

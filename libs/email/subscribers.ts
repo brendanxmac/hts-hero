@@ -4,12 +4,15 @@ import { Countries } from "../../constants/countries"
 import type { EmailFooter } from "../../emails/kit/Layout"
 import { AUTHORITIES } from "../tariff-updates/types"
 import { sendTransactional } from "./outbox"
+import { UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./tariff-news"
+import type { UpdateSummary } from "../../emails/kit/parts"
 
 // Email subscribers (email_subscribers): tariff news subscriptions for anyone, and every
 // account's email choices. A row's token is the key in its manage and unsubscribe links.
-// Visitors confirm by email before anything else is sent (double opt-in); an address that's
-// already getting the news gets a link to change its choices instead, so nobody can change another
-// person's subscription by typing their address. An account's address with the news off (accounts
+// Visitors confirm by email before anything else is sent (double opt-in), and get the welcome
+// (news_welcome) the moment they do. An address that's already getting the news gets no email and
+// nothing changes (the form says they're all set), so nobody can change another person's
+// subscription by typing their address. An account's address with the news off (accounts
 // from before subscriptions) confirms like a visitor, with the choices carried in the link.
 
 type Db = SupabaseClient
@@ -103,7 +106,46 @@ const byEmail = async (db: Db, email: string) => {
 const THROTTLE_MS = 10 * 60 * 1000
 const throttled = (s: Subscriber) => !!s.confirm_sent_at && Date.now() - new Date(s.confirm_sent_at).getTime() < THROTTLE_MS
 
-export type SubscribeResult = "confirm_sent" | "manage_link_sent" | "throttled"
+export type SubscribeResult = "confirm_sent" | "already_subscribed" | "throttled"
+
+// The weekly digest goes out Mondays (the tariff-digest cron, 13:00 UTC, then its review): the
+// Monday a subscriber confirming now gets first, as "2026-11-09"
+export const nextDigestDay = (now = new Date()) => {
+  const day = now.getUTCDay()
+  const ahead = day === 1 && now.getUTCHours() < 13 ? 0 : (8 - day) % 7 || 7
+  return new Date(now.getTime() + ahead * 86_400_000).toISOString().slice(0, 10)
+}
+
+// The latest few published tariff actions, so the welcome has something worth reading on day one
+const WELCOME_UPDATES = 3
+const latestActions = async (db: Db) => {
+  const { data } = await db
+    .from("tariff_updates")
+    .select(UPDATE_EMAIL_COLUMNS)
+    .eq("status", "published")
+    .neq("kind", "hts_revision")
+    .order("last_activity_at", { ascending: false })
+    .limit(WELCOME_UPDATES)
+  return ((data ?? []) as UpdateRowForEmail[]).map(updateSummary)
+}
+
+// The welcome, the moment they confirm
+const sendWelcome = async (db: Db, s: Subscriber, frequency: NewsFrequency) => {
+  const weekly = frequency !== "instant"
+  await sendTransactional(db, {
+    recipient: s.email,
+    subscriberId: s.id,
+    userId: s.user_id,
+    template: "news_welcome",
+    props: {
+      frequency: weekly ? "weekly" : "instant",
+      firstDigestOn: weekly ? nextDigestDay() : null,
+      recent: await latestActions(db).catch((): UpdateSummary[] => []),
+      manageUrl: manageUrl(s.token),
+      footer: subscriberFooter(s, "You're getting this because you subscribed to US tariff updates from HTS Hero."),
+    },
+  })
+}
 
 export const subscribe = async (db: Db, { email, prefs, source }: { email: string; prefs: NewsPreferences; source: string }): Promise<SubscribeResult> => {
   const address = email.trim().toLowerCase()
@@ -111,20 +153,11 @@ export const subscribe = async (db: Db, { email, prefs, source }: { email: strin
   const confirmed = !!s?.confirmed_at && !s.unsubscribed_at
   const active = confirmed && s!.news_frequency !== "off"
 
-  if (s && throttled(s)) return "throttled"
+  // Already subscribed (or an account): nothing to send and nothing changes; the form just shows
+  // that they're all set
+  if (s && active) return "already_subscribed"
 
-  if (s && active) {
-    // Already subscribed (or an account): send a link to change the choices, change nothing here
-    await db.from("email_subscribers").update({ confirm_sent_at: new Date().toISOString() }).eq("id", s.id)
-    await sendTransactional(db, {
-      recipient: s.email,
-      subscriberId: s.id,
-      userId: s.user_id,
-      template: "news_manage_link",
-      props: { manageUrl: manageUrl(s.token), footer: { reason: "You're getting this because someone asked to change the tariff updates sent to this address." } },
-    })
-    return "manage_link_sent"
-  }
+  if (s && throttled(s)) return "throttled"
 
   if (s && confirmed) {
     // An account with the news off: nothing changes until they confirm from their inbox
@@ -159,10 +192,13 @@ export const subscribe = async (db: Db, { email, prefs, source }: { email: strin
   return "confirm_sent"
 }
 
-// The confirmation link; `prefs` are the choices carried in it (an account turning the news on)
+// The confirmation link; `prefs` are the choices carried in it (an account turning the news on).
+// Turning the news on sends the welcome; clicking the link again doesn't.
 export const confirmSubscriber = async (db: Db, token: string, prefs?: NewsPreferences) => {
   const s = await subscriberByToken(db, token)
   if (!s) return null
+  const wasOn = !!s.confirmed_at && !s.unsubscribed_at && s.news_frequency !== "off"
+  const frequency = prefs?.frequency ?? s.news_frequency
   await db
     .from("email_subscribers")
     .update({
@@ -172,6 +208,10 @@ export const confirmSubscriber = async (db: Db, token: string, prefs?: NewsPrefe
       updated_at: new Date().toISOString(),
     })
     .eq("id", s.id)
+  if (!wasOn && frequency !== "off") {
+    // The subscription is on either way; a failed welcome is logged, not shown to them
+    await sendWelcome(db, s, frequency).catch((e) => console.error("Sending the tariff news welcome:", e))
+  }
   return s
 }
 

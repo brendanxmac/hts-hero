@@ -188,6 +188,30 @@ export const captionsFor = <T extends TemplateId>(template: T, props: TemplatePr
         x: `${p.line1} ${p.word1}\n${p.line2} ${p.word2}\n${p.line3} ${p.word3}\n\n${p.name}. ${p.date}.\n\nhtshero.com`,
       }
     }
+    case "DigestPromo": {
+      const p = props as TemplatePropsMap["DigestPromo"]
+      return {
+        linkedin: [
+          "US tariffs aren't changing by the year anymore. They're changing by the week.",
+          "",
+          "Section 232. Section 301. IEEPA. AD/CVD. Keeping up has become a job of its own.",
+          "",
+          `So we built ${p.eyebrow.replace(/^The /, "the ")}: one free email every Monday with every new US tariff action.`,
+          "",
+          "→ What changed, in plain English",
+          "→ The goods, HTS codes and countries it covers",
+          "→ When it takes effect, and how far it has got",
+          "→ A link to the official document behind it",
+          "",
+          `${p.cta}: ${p.url}`,
+          "",
+          "Know an importer, broker or trade team who should be in the loop? Tag them below.",
+          "",
+          "#tariffs #imports #customs #trade #supplychain",
+        ].join("\n"),
+        x: `${p.line1} ${p.line2}\n\nThe Weekly Tariff Digest: every new US tariff action, in plain English, free.\n\n${p.url}`,
+      }
+    }
     case "LaunchVideo": {
       const p = props as TemplatePropsMap["LaunchVideo"]
       const lines = { audit: `${p.auditTitle}: ${p.auditLine}`, savings: `${p.savingsTitle}: ${p.savingsLine}`, alerts: `${p.alertsTitle}: ${p.alertsLine}` }

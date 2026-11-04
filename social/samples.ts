@@ -1,3 +1,4 @@
+import { DIGEST_PROMO } from "./digestPromo"
 import { LAUNCH_POSTS } from "./launch"
 import type { LaunchMemoProps, LaunchSlamProps, LaunchTeaserProps, LaunchVideoProps, TemplatePropsMap } from "./types"
 
@@ -172,4 +173,5 @@ export const SAMPLES: TemplatePropsMap = {
   LaunchVideo: LAUNCH_POSTS.find((p) => p.template === "LaunchVideo")!.props as LaunchVideoProps,
   LaunchMemo: LAUNCH_POSTS.find((p) => p.template === "LaunchMemo")!.props as LaunchMemoProps,
   LaunchSlam: LAUNCH_POSTS.find((p) => p.template === "LaunchSlam")!.props as LaunchSlamProps,
+  DigestPromo: DIGEST_PROMO,
 }

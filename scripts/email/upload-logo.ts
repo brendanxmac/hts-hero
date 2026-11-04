@@ -1,6 +1,7 @@
-// Uploads the email wordmark (emails/assets/logo-email-card.png: the logo on a white rounded chip,
-// so it stays readable when an inbox darkens the page) to the public "content" bucket, where
-// emails/kit/brand.ts's logoUrl points. Uses the Supabase project in .env.local; run it once per
+// Uploads the email images to the public "content" bucket, where emails/kit/brand.ts points: the
+// wordmark (emails/assets/logo-email-card.png: the logo on a white rounded chip, so it stays
+// readable when an inbox darkens the page) and the Duty Guard launch hero (duty-guard-hero.png,
+// from `npm run email:render-hero`). Uses the Supabase project in .env.local; run it once per
 // project (dev, then production): `npm run email:upload-logo`
 import { existsSync, readFileSync } from "fs"
 import { createClient } from "@supabase/supabase-js"
@@ -14,7 +15,7 @@ if (!url || !key) {
 }
 
 // logo-email.png is the old one on the grey page: emails already sent still load it, so it stays
-const LOGOS = ["logo-email-card.png", "logo-email.png"]
+const LOGOS = ["logo-email-card.png", "logo-email.png", "duty-guard-hero.png"]
 
 const main = async () => {
   const db = createClient(url, key, { auth: { persistSession: false } })

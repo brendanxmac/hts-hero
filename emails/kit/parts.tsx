@@ -212,6 +212,64 @@ export const TRACKER_POINTS: ReactNode[] = [
   "Duty rate tracking on every import",
 ]
 
+// The value points as stacked tiles, for when the list is the pitch and must not be skimmed past:
+// a solid colored mark chip (the same role colors as the hero image), a bold Sora title, and one muted
+// line under it. Marks are plain text characters, not emoji, so every inbox draws them the same.
+export interface Feature {
+  title: string
+  detail: ReactNode
+  mark: string
+  tone: Tone
+}
+
+export const FeatureList = ({ items }: { items: Feature[] }) => (
+  <Section style={{ margin: "6px 0 20px" }}>
+    {items.map((f, i) => (
+      <Section
+        key={f.title}
+        className={M.box}
+        style={{ backgroundColor: C.soft, border: `1px solid ${C.border}`, borderRadius: 16, padding: "14px 16px", marginTop: i ? 8 : 0 }}
+      >
+        <Row>
+          <Column style={{ width: 52, verticalAlign: "top" }}>
+            <Text
+              style={{
+                margin: 0,
+                width: 38,
+                height: 38,
+                borderRadius: 11,
+                // Solid, so each point catches the eye; neutral goes navy rather than grey on grey
+                backgroundColor: f.tone === "neutral" ? C.navy : TONES[f.tone].fg,
+                color: C.surface,
+                fontFamily: FONT_DISPLAY,
+                fontSize: 18,
+                lineHeight: "38px",
+                fontWeight: 700,
+                textAlign: "center",
+              }}
+            >
+              {f.mark}
+            </Text>
+          </Column>
+          <Column style={{ verticalAlign: "top" }}>
+            <Text style={{ margin: 0, fontFamily: FONT_DISPLAY, fontSize: 16, lineHeight: "22px", fontWeight: 600, color: C.text }}>{f.title}</Text>
+            <Text style={{ margin: "2px 0 0", fontSize: 14, lineHeight: "20px", color: C.muted }}>{f.detail}</Text>
+          </Column>
+        </Row>
+      </Section>
+    ))}
+  </Section>
+)
+
+// What Duty Guard does, as feature tiles (the launch email). Same points as TRACKER_POINTS.
+export const TRACKER_FEATURES: Feature[] = [
+  { title: "Entry Payment Audits", detail: "Every entry checked for duty over or underpaid duty.", mark: "✓", tone: "heads-up" },
+  { title: "Savings Detection", detail: "Trade programs and exemptions your imports may qualify for.", mark: "%", tone: "down" },
+  { title: "Tariff Alerts", detail: "Know when a new tariff hits your imports, with the new rate included.", mark: "!", tone: "up" },
+  { title: "AD/CVD Alerts", detail: "A heads-up when antidumping or countervailing duties may apply.", mark: "§", tone: "brand" },
+  { title: "Duty Rate Tracking", detail: "The current duty rate on every import, always up to date.", mark: "↗", tone: "neutral" },
+]
+
 // Under the button: a reply reaches Brendan, whatever it's about
 export const ReplyNote = () => (
   <P small>
@@ -309,3 +367,21 @@ export const AlertSample = ({ label, updateTitle, code, country, description, be
     </Section>
   )
 }
+
+// A dark band at the top of a moment that deserves one (the digest's confirmation and welcome):
+// a bold eyebrow, a big white Sora headline, and an optional line under it, on the brand's navy.
+// A solid color (no gradients or images), so every inbox draws it, Outlook included.
+export const DarkHero = ({ eyebrow, title, children }: { eyebrow: string; title: ReactNode; children?: ReactNode }) => (
+  <Section className={M.box} style={{ backgroundColor: C.navy, borderRadius: 20, padding: "34px 30px 30px", margin: "0 0 26px" }}>
+    <Text style={{ margin: "0 0 14px", fontSize: 12, lineHeight: "16px", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8EA2FF" }}>
+      {eyebrow}
+    </Text>
+    <Heading as="h1" style={{ margin: 0, fontFamily: FONT_DISPLAY, fontSize: 32, lineHeight: "38px", fontWeight: 600, letterSpacing: "-0.02em", color: "#FFFFFF" }}>
+      {title}
+    </Heading>
+    {children && <Text style={{ margin: "14px 0 0", fontSize: 16, lineHeight: "24px", color: "#B8BECC" }}>{children}</Text>}
+  </Section>
+)
+
+// A dimmer second line inside a DarkHero title
+export const HeroMuted = ({ children }: { children: ReactNode }) => <span style={{ color: "#7D8496" }}>{children}</span>

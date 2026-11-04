@@ -56,6 +56,7 @@ const HEADLINE_KEY: Record<TemplateId, string> = {
   LaunchVideo: "opener",
   LaunchMemo: "subject",
   LaunchSlam: "line1",
+  DigestPromo: "line1",
 }
 
 const SYSTEM = `You are the social media editor for HTS Hero, a US tariff and import duty tool. Each day you pick posts from candidates that code found in HTS Hero's tariff engine and US Census import data, and write their words. The posts go out as branded images and short videos on LinkedIn and X to importers, customs brokers, sourcing managers and trade watchers.

@@ -12,14 +12,16 @@ import { btn, Callout, CopyCommand, EmptyState, Field, Help, inputCls, PageHeade
 import { Select } from "@/components/ui/Select"
 import IdeaCard from "./IdeaCard"
 import PostCard from "./PostCard"
+import MarketingEmails from "./MarketingEmails"
 
 // Makes branded posts from the tariff engine, Census data and the /tariff-updates feed. Ideas:
 // what the daily miners and Claude found worth posting. News: a post for any tariff update.
 // Product, Country, Facts and Odd rates: make posts by hand. Every number is computed; you edit the words,
 // then download PNGs or MP4s (rendered in the browser). Duty Guard Launch: the launch teasers and
-// videos (social/launch.ts), edited and kept in this browser.
+// videos (social/launch.ts), edited and kept in this browser. Marketing Emails: pick an email from
+// emails/marketing/, write its subject and preview, and send it (MarketingEmails.tsx).
 
-type Tab = "ideas" | "news" | "product" | "country" | "facts" | "odd" | "launch"
+type Tab = "ideas" | "news" | "product" | "country" | "facts" | "odd" | "launch" | "emails"
 
 // Launch edits in this browser: per post, only the fields changed from the draft
 const LAUNCH_STORE = "content-studio:launch:v2"
@@ -339,6 +341,7 @@ export default function SocialStudio() {
             { value: "facts", label: "Facts" },
             { value: "odd", label: "Odd Rates" },
             { value: "launch", label: "Duty Guard Launch" },
+            { value: "emails", label: "Marketing Emails" },
           ]}
         />
       </PageHeader>
@@ -674,7 +677,9 @@ export default function SocialStudio() {
         </>
       )}
 
-      {tab !== "ideas" && tab !== "news" && tab !== "launch" && built && (
+      {tab === "emails" && <MarketingEmails />}
+
+      {tab !== "ideas" && tab !== "news" && tab !== "launch" && tab !== "emails" && built && (
         <>
           {viewBar}
           <div className="text-sm font-medium text-base-content/60">

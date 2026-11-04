@@ -23,6 +23,7 @@ export const TEMPLATES: Record<TemplateId, { label: string; seconds: number; abo
   LaunchTeaser: { label: "Launch teaser", seconds: teaserSeconds(), about: "Duty Guard coming soon: a hook, the punch, a product visual, the reveal" },
   LaunchVideo: { label: "Launch video", seconds: 24.5, about: "Duty Guard is live: the opener, its three features, the call to action" },
   LaunchMemo: { label: "Launch memo", seconds: 17, about: "Duty Guard coming soon: a declassified memo, typed out one sentence at a time" },
+  DigestPromo: { label: "Weekly Tariff Digest", seconds: 9, about: "Promotes /tariff-digest: the promise, the digest email arriving with real updates, where to subscribe" },
   LaunchSlam: { label: "Launch slam", seconds: slamSeconds(), about: "Duty Guard coming soon: three lines slammed shut in big type, a blurred glimpse, the name" },
 }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { queueAuditsUpsell, queueDailyOnboarding, queueTrialEmails } from "@/libs/email/lifecycle"
+import { queueDigestFollowups } from "@/libs/email/digest-followup"
 import { sendTrialEvents } from "@/libs/tariff-tracker/trialEvents"
 import { createAdminClient } from "../../supabase/server"
 
@@ -18,7 +19,9 @@ export async function GET(req: NextRequest) {
   const onboarding = await queueDailyOnboarding(db)
   const trial = await queueTrialEmails(db)
   const upsell = await queueAuditsUpsell(db)
+  // Tuesdays: digest subscribers without an account, after their first digest: Tariff Alerts on their imports
+  const digestFollowup = await queueDigestFollowups(db).catch((e: Error) => ({ error: e.message }))
   // Trial Started / Trial Ended in Mixpanel (they have no browser moment to send from)
   const trialEvents = await sendTrialEvents(db).catch((e: Error) => ({ error: e.message }))
-  return NextResponse.json({ trial, onboarding, upsell, trialEvents })
+  return NextResponse.json({ trial, onboarding, upsell, digestFollowup, trialEvents })
 }
