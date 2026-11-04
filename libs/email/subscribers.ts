@@ -189,6 +189,15 @@ export const unsubscribe = async (db: Db, token: string) => {
   return s
 }
 
+// An address that marked our email as spam or hard-bounced (Resend's webhook): nothing more goes
+// to it, like an unsubscribe. Returns whether a row was stopped.
+export const stopAddress = async (db: Db, email: string) => {
+  const s = await byEmail(db, email)
+  if (!s || s.unsubscribed_at) return false
+  await db.from("email_subscribers").update({ unsubscribed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq("id", s.id)
+  return true
+}
+
 // An account's row: confirmed (they signed up with the address), on the weekly digest unless told
 // otherwise (accounts from before subscriptions start with news off and are offered an opt-in).
 // An address that already subscribed keeps its choices and is linked to the account.
