@@ -69,6 +69,13 @@ const EDITABLE: Record<TemplateId, { key: string; label: string }[]> = {
     { key: "product", label: "Product" },
     { key: "footnote", label: "Footnote" },
   ],
+  DigestPromo: [
+    { key: "eyebrow", label: "Eyebrow" },
+    { key: "line1", label: "Line 1" },
+    { key: "line2", label: "Line 2" },
+    { key: "cta", label: "Button" },
+    { key: "url", label: "Link" },
+  ],
   LaunchTeaser: [
     { key: "hook", label: "Hook" },
     { key: "punch", label: "Punch line" },

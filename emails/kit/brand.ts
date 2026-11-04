@@ -43,6 +43,10 @@ export const SITE = "https://htshero.com"
 // so scripts that load the environment after importing still get it.
 export const logoUrl = () => `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/logo-email-card.png`
 
+// The Duty Guard launch hero (emails/assets/duty-guard-hero.html, rendered by `npm run
+// email:render-hero`, uploaded with the logo). 1120×784, shown at half size.
+export const dutyGuardHeroUrl = () => `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/duty-guard-hero.png`
+
 // "2026-10-14" → "Oct 14, 2026"
 export const formatDay = (iso: string) =>
   new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })

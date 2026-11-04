@@ -36,6 +36,8 @@ export const ENTRY_POINTS = [
   "calculator_unlock",
   "hts_page",
   "country_hub",
+  // /tariff-digest/welcome: right after subscribing to the weekly digest
+  "digest_welcome",
 ] as const
 export type HomeSection = (typeof HOME_SECTIONS)[number]
 export type EntryPoint = (typeof ENTRY_POINTS)[number]
@@ -72,6 +74,7 @@ export const ENTRY_SIGNED_IN_HREF: Record<EntryPoint, string> = {
   calculator_unlock: "/duty-calculator",
   hts_page: sectionUrl("catalog"),
   country_hub: TRACKER_START,
+  digest_welcome: sectionUrl("changes"),
 }
 
 export const TRACKER_WELCOME_PARAM = "welcome"
@@ -87,7 +90,7 @@ export const onboardingNext = (
   if (entryPoint === "calculator_recent") return sectionUrl("catalog")
   if (entryPoint === "classify") return CLASSIFY_WELCOME
   // Alerts: the tour opens on Alerts, then into adding imports
-  if (entryPoint === "alerts" || entryPoint === "alerts_page")
+  if (entryPoint === "alerts" || entryPoint === "alerts_page" || entryPoint === "digest_welcome")
     return withParam(TRACKER_PATH, "alerts")
   // Savings and audits, and everything else (the hero, the closing button): the tour, into adding
   // imports, since everything in Duty Guard runs on them

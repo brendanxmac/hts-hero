@@ -30,11 +30,11 @@ export const SIGNUP_EMAIL_KEY = "hts-hero-signup-email"
 
 const upsellClicked = (source: string) => trackEvent(MixpanelEvent.TARIFF_UPDATES_TRACKER_UPSELL_CLICKED, { source })
 
-type Status = "idle" | "sending" | "confirm_sent" | "manage_link_sent" | "throttled"
+type Status = "idle" | "sending" | "confirm_sent" | "already_subscribed" | "throttled"
 
-const DONE: Record<"confirm_sent" | "manage_link_sent" | "throttled", { title: string; body: string }> = {
+const DONE: Record<"confirm_sent" | "already_subscribed" | "throttled", { title: string; body: string }> = {
   confirm_sent: { title: "Check your inbox", body: "Click the link we just sent to confirm. Nothing is sent until you do." },
-  manage_link_sent: { title: "You're already subscribed", body: "We've emailed you a link to change what you get." },
+  already_subscribed: { title: "You're already subscribed", body: "This address already gets US tariff updates. You're all set." },
   throttled: { title: "Check your inbox", body: "We sent you an email a few minutes ago. Use the link in it." },
 }
 

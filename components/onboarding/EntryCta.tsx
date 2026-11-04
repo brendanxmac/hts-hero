@@ -19,7 +19,7 @@ export const EntryCta = ({
   children,
   onClick,
 }: {
-  page: "home" | "tariff-alerts" | "duty-audit" | "pricing" | "countries";
+  page: "home" | "tariff-alerts" | "duty-audit" | "pricing" | "countries" | "tariff-digest";
   entry: EntryPoint;
   section: string;
   label: string;

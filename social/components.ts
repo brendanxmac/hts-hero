@@ -1,5 +1,6 @@
 import type { ComponentType } from "react"
 import { BigNumber } from "./templates/BigNumber"
+import { DigestPromo } from "./templates/DigestPromo"
 import { CountrySnapshot } from "./templates/CountrySnapshot"
 import { HeadToHead } from "./templates/HeadToHead"
 import { LaunchMemo } from "./templates/launch/LaunchMemo"
@@ -34,4 +35,5 @@ export const COMPONENTS: Record<TemplateId, ComponentType<any>> = {
   LaunchVideo,
   LaunchMemo,
   LaunchSlam,
+  DigestPromo,
 }

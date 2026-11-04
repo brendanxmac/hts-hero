@@ -23,6 +23,7 @@ const FLOWS: { entry: EntryPoint; button: string; next: string }[] = [
   { entry: "classify", button: "Home · classification “Try it Free”", next: "Classification onboarding → new classification" },
   { entry: "closing", button: "Home · closing “Get Started Free”", next: "Duty Guard onboarding → add imports" },
   { entry: "alerts_page", button: "/tariff-alerts · any button", next: "Duty Guard onboarding (alerts first) → add imports" },
+  { entry: "digest_welcome", button: "/tariff-digest/welcome · any button", next: "Duty Guard onboarding (alerts first) → add imports" },
   { entry: "audits_page", button: "/duty-audit · any button", next: "Duty Guard onboarding → add imports" },
 ];
 

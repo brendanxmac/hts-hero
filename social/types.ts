@@ -223,6 +223,33 @@ export interface LaunchSlamProps {
 }
 
 // The Duty Guard launch video: an opener, the three features in `order`, then the call to action
+// The Weekly Tariff Digest's promo (/tariff-digest): the promise in big type, then the digest
+// email itself arriving, drawn with the email's own React Email parts (emails/kit/parts.tsx) and
+// real updates from /tariff-updates, then where to subscribe
+export interface DigestPromoProps {
+  theme: Theme
+  eyebrow: string // "The Weekly Tariff Digest"
+  line1: string // "Every US tariff change."
+  line2: string // "One email. Every Monday."
+  cta: string // "Subscribe free"
+  url: string // "htshero.com/tariff-digest"
+  emailSubject: string // the inbox line: the digest's real subject
+  emailHeading: string
+  updates: DigestPromoUpdate[] // 3 or 4, real, newest first
+}
+
+// One update as the digest email shows it (emails/kit/parts.tsx UpdateSummary)
+export interface DigestPromoUpdate {
+  slug: string
+  title: string
+  summary: string
+  authorityLabel: string
+  stageLabel: string
+  effectiveOn: string | null
+  countriesLabel: string | null
+  tone: Tone
+}
+
 export interface LaunchVideoProps {
   theme: Theme
   accent?: LaunchColor
@@ -257,6 +284,7 @@ export type TemplateId =
   | "LaunchVideo"
   | "LaunchMemo"
   | "LaunchSlam"
+  | "DigestPromo"
 
 export interface TemplatePropsMap {
   RateTimeline: RateTimelineProps
@@ -275,6 +303,7 @@ export interface TemplatePropsMap {
   LaunchVideo: LaunchVideoProps
   LaunchMemo: LaunchMemoProps
   LaunchSlam: LaunchSlamProps
+  DigestPromo: DigestPromoProps
 }
 
 // Where a claim in a post can be checked: an official document or dataset, or the HTS Hero

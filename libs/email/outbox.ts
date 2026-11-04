@@ -135,7 +135,7 @@ const unsubscribeUrlOf = (props: Record<string, unknown>) => {
 
 // Batch kinds sent from the updates domain (config.resend.fromUpdates). Everything else (impact
 // alerts on someone's imports, confirmations, welcome, receipts) stays on the notify domain.
-const UPDATES_KINDS = new Set(["lifecycle", "tariff_news", "tariff_digest"])
+const UPDATES_KINDS = new Set(["lifecycle", "tariff_news", "tariff_digest", "marketing"])
 
 const emailOptions = async (m: MessageRow, note: string | null, batchKind: string, batchSubject?: string | null): Promise<CreateEmailOptions> => {
   const { subject, html, text } = await renderEmail(m.template, m.props, note, batchSubject)
@@ -148,7 +148,8 @@ const emailOptions = async (m: MessageRow, note: string | null, batchKind: strin
     html,
     text,
     tags: [
-      { name: "template", value: m.template },
+      // Resend tags take letters, numbers, _ and - only ("marketing:launch/Email" has more)
+      { name: "template", value: m.template.replace(/[^a-zA-Z0-9_-]/g, "_") },
       { name: "kind", value: batchKind.replace(/[^a-zA-Z0-9_-]/g, "_") },
     ],
     ...(unsubscribe ? { headers: { "List-Unsubscribe": `<${unsubscribe}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" } } : {}),
@@ -184,7 +185,19 @@ const sendChunk = async (options: CreateEmailOptions[], idempotencyKey: string) 
   }
 }
 
-// Sends approved batches' pending messages until `deadline`; batches with nothing left become sent
+// Pending messages loaded per round; a batch of any size is worked through round by round
+const PAGE = 1000
+
+// Takes these messages for this sender: pending → sending, returning only the ones it got. The cron
+// and an approval (or a studio send) can run at once; whichever claims a message sends it, so
+// nobody gets it twice.
+const claim = async (db: Db, ids: string[]) => {
+  const rows = must<{ id: string }[]>(await db.from("email_messages").update({ status: "sending" }).in("id", ids).eq("status", "pending").select("id"), "Claiming messages")
+  return new Set(rows.map((r) => r.id))
+}
+
+// Sends approved batches' pending messages until `deadline`; batches with nothing left become sent.
+// Big batches finish across calls: whatever is still pending at the deadline waits for the next.
 export const sendApproved = async (db: Db, { deadline }: { deadline: number }) => {
   const batches = must<{ id: string; kind: string; note: string | null; subject: string | null }[]>(
     await db.from("email_batches").select("id, kind, note, subject").in("status", ["approved", "sending"]).order("approved_at"),
@@ -195,36 +208,42 @@ export const sendApproved = async (db: Db, { deadline }: { deadline: number }) =
   for (const batch of batches) {
     if (Date.now() > deadline) break
     await db.from("email_batches").update({ status: "sending" }).eq("id", batch.id)
-    const messages = must<MessageRow[]>(
-      await db.from("email_messages").select("id, batch_id, channel, recipient, template, props").eq("batch_id", batch.id).eq("status", "pending").limit(1000),
-      "Loading messages to send"
-    )
-    // Email in chunks through Resend's batch endpoint; Slack and Teams one by one
-    const emails = messages.filter((m) => m.channel === "email")
-    for (let i = 0; i < emails.length && Date.now() < deadline; i += EMAIL_CHUNK) {
-      const chunk = emails.slice(i, i + EMAIL_CHUNK)
-      await db.from("email_messages").update({ status: "sending" }).in("id", chunk.map((m) => m.id))
-      try {
-        const options = await Promise.all(chunk.map((m) => emailOptions(m, batch.note, batch.kind, batch.subject)))
-        const data = await sendChunk(options, `outbox:${batch.id}:${chunk[0].id}:${chunk.length}`)
-        await Promise.all(chunk.map((m, j) => markSent(db, m.id, data?.data?.[j]?.id, options[j].subject)))
-        sent += chunk.length
-      } catch (e) {
-        await Promise.all(chunk.map((m) => markFailed(db, m.id, e)))
-        failed += chunk.length
+    while (Date.now() < deadline) {
+      const messages = must<MessageRow[]>(
+        await db.from("email_messages").select("id, batch_id, channel, recipient, template, props").eq("batch_id", batch.id).eq("status", "pending").order("id").limit(PAGE),
+        "Loading messages to send"
+      )
+      if (!messages.length) break
+      // Email in chunks through Resend's batch endpoint; Slack and Teams one by one
+      const emails = messages.filter((m) => m.channel === "email")
+      for (let i = 0; i < emails.length && Date.now() < deadline; i += EMAIL_CHUNK) {
+        const mine = await claim(db, emails.slice(i, i + EMAIL_CHUNK).map((m) => m.id))
+        const chunk = emails.slice(i, i + EMAIL_CHUNK).filter((m) => mine.has(m.id))
+        if (!chunk.length) continue
+        try {
+          const options = await Promise.all(chunk.map((m) => emailOptions(m, batch.note, batch.kind, batch.subject)))
+          const data = await sendChunk(options, `outbox:${batch.id}:${chunk[0].id}:${chunk.length}`)
+          await Promise.all(chunk.map((m, j) => markSent(db, m.id, data?.data?.[j]?.id, options[j].subject)))
+          sent += chunk.length
+        } catch (e) {
+          await Promise.all(chunk.map((m) => markFailed(db, m.id, e)))
+          failed += chunk.length
+        }
       }
-    }
-    for (const m of messages.filter((m) => m.channel !== "email")) {
-      if (Date.now() > deadline) break
-      try {
-        const chat = renderChat(m.template, m.props, batch.note)
-        await postJson(m.recipient, m.channel === "slack" ? slackPayload(chat) : teamsPayload(chat))
-        await markSent(db, m.id)
-        sent++
-      } catch (e) {
-        await markFailed(db, m.id, e)
-        failed++
+      for (const m of messages.filter((m) => m.channel !== "email")) {
+        if (Date.now() > deadline) break
+        if (!(await claim(db, [m.id])).size) continue
+        try {
+          const chat = renderChat(m.template, m.props, batch.note)
+          await postJson(m.recipient, m.channel === "slack" ? slackPayload(chat) : teamsPayload(chat))
+          await markSent(db, m.id)
+          sent++
+        } catch (e) {
+          await markFailed(db, m.id, e)
+          failed++
+        }
       }
+      if (messages.length < PAGE) break
     }
     const { count } = await db.from("email_messages").select("id", { count: "exact", head: true }).eq("batch_id", batch.id).in("status", ["pending", "sending"])
     if (!count) await db.from("email_batches").update({ status: "sent", finished_at: new Date().toISOString() }).eq("id", batch.id)

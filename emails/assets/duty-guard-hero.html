@@ -1,0 +1,399 @@
+<!doctype html>
+<!-- Source for emails/assets/duty-guard-hero.png, the Duty Guard launch email's hero image. A still,
+     simpler cousin of the homepage CommandCenter: the dark hero band with its glow, and one catalog
+     card showing what each layer (alerts, savings, audits) found. Rates only, no dollars (emails
+     show % changes); savings are "may qualify". Render: `npm run email:render-hero` -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --navy: #0b0f1c;
+        --text: #0e1220;
+        --muted: #5d6475;
+        --faint: #8a90a0;
+        --border: #e3e6ee;
+        --soft: #f5f6fa;
+        --cobalt: #2f49d1;
+        --cobalt-soft: #e9ecfb;
+        --green: #138a5b;
+        --green-soft: #e3f3ec;
+        --red: #c2412d;
+        --red-soft: #f8e9e6;
+        --amber: #a86a0c;
+        --amber-soft: #f7eedd;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 560px;
+        height: 392px;
+        background: transparent;
+      }
+      body {
+        font-family: Figtree, Helvetica, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .stage {
+        position: relative;
+        width: 560px;
+        height: 392px;
+        border-radius: 22px;
+        overflow: hidden;
+        background:
+          radial-gradient(
+            ellipse 60% 55% at 50% 50%,
+            rgba(76, 104, 255, 0.55),
+            rgba(76, 104, 255, 0) 72%
+          ),
+          radial-gradient(
+            ellipse 90% 30% at 50% 0%,
+            rgba(140, 160, 255, 0.22),
+            rgba(140, 160, 255, 0) 70%
+          ),
+          radial-gradient(
+            ellipse 50% 45% at 96% 100%,
+            rgba(19, 160, 100, 0.38),
+            rgba(19, 138, 91, 0) 70%
+          ),
+          radial-gradient(
+            ellipse 45% 40% at 4% 100%,
+            rgba(214, 75, 50, 0.34),
+            rgba(194, 65, 45, 0) 70%
+          ),
+          linear-gradient(180deg, #131a3a 0%, var(--navy) 100%);
+      }
+      /* A faint grid fading out at the edges: the "trading floor" behind the card */
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+        background-size: 28px 28px;
+        background-position: -1px -1px;
+        -webkit-mask-image: radial-gradient(
+          ellipse 85% 80% at 50% 50%,
+          #000 30%,
+          transparent 85%
+        );
+      }
+      .card {
+        position: absolute;
+        left: 48px;
+        right: 48px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #fff;
+        border-radius: 18px;
+        padding: 16px 16px 10px;
+        box-shadow:
+          0 40px 70px -24px rgba(0, 0, 0, 0.75),
+          0 0 0 1px rgba(255, 255, 255, 0.14),
+          0 0 0 6px rgba(255, 255, 255, 0.05),
+          0 0 110px rgba(90, 120, 255, 0.45);
+      }
+      .head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2px 12px;
+      }
+      .head p {
+        font:
+          600 13px/1 Sora,
+          sans-serif;
+        color: var(--text);
+        letter-spacing: -0.01em;
+      }
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font:
+          700 10.5px/1 Figtree,
+          sans-serif;
+        color: var(--cobalt);
+        letter-spacing: 0.02em;
+      }
+      .live i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--cobalt);
+        box-shadow: 0 0 0 3px var(--cobalt-soft);
+      }
+
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .tile {
+        border-radius: 12px;
+        padding: 10px 11px 10px;
+      }
+      .tile .top {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font:
+          700 10px/1 Figtree,
+          sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .tile svg {
+        width: 14px;
+        height: 14px;
+      }
+      .tile b {
+        display: block;
+        font:
+          700 25px/1 Sora,
+          sans-serif;
+        letter-spacing: -0.03em;
+        margin-top: 9px;
+        color: var(--text);
+      }
+      .tile span.sub {
+        display: block;
+        font:
+          500 10.5px/1.2 Figtree,
+          sans-serif;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .t-alert {
+        background: var(--red-soft);
+      }
+      .t-alert .top {
+        color: var(--red);
+      }
+      .t-save {
+        background: var(--green-soft);
+      }
+      .t-save .top {
+        color: var(--green);
+      }
+      .t-audit {
+        background: var(--amber-soft);
+      }
+      .t-audit .top {
+        color: var(--amber);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }
+      td {
+        padding: 8px 2px;
+        border-top: 1px solid var(--border);
+        vertical-align: middle;
+      }
+      tr:first-child td {
+        border-top: 0;
+      }
+      .name {
+        font:
+          600 12px/1.15 Figtree,
+          sans-serif;
+        color: var(--text);
+      }
+      .code {
+        font:
+          500 10px/1.2 ui-monospace,
+          Menlo,
+          monospace;
+        color: var(--faint);
+        margin-top: 2px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 8px;
+        padding: 5px 8px;
+        white-space: nowrap;
+      }
+      .pill .k {
+        font:
+          700 9.5px/1 Figtree,
+          sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .pill .v {
+        font:
+          700 11.5px/1 Figtree,
+          sans-serif;
+        font-variant-numeric: tabular-nums;
+        color: var(--text);
+      }
+      .pill .v s {
+        text-decoration: none;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .p-alert {
+        background: var(--red-soft);
+      }
+      .p-alert .k {
+        color: var(--red);
+      }
+      .p-save {
+        background: var(--green-soft);
+      }
+      .p-save .k {
+        color: var(--green);
+      }
+      .p-audit {
+        background: var(--amber-soft);
+      }
+      .p-audit .k {
+        color: var(--amber);
+      }
+      td.r {
+        text-align: right;
+      }
+      .delta {
+        font:
+          800 12px/1 Figtree,
+          sans-serif;
+        font-variant-numeric: tabular-nums;
+      }
+      .up {
+        color: var(--red);
+      }
+      .down {
+        color: var(--green);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="grid"></div>
+      <div class="card">
+        <div class="head">
+          <p>Your Imports</p>
+          <span class="live"><i></i>Watching 24/7</span>
+        </div>
+
+        <div class="tiles">
+          <div class="tile t-alert">
+            <div class="top">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
+                />
+              </svg>
+              Alerts
+            </div>
+            <b>3</b>
+            <span class="sub">tariff changes hit you</span>
+          </div>
+          <div class="tile t-save">
+            <div class="top">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                />
+              </svg>
+              Savings
+            </div>
+            <b>4</b>
+            <span class="sub">programs may apply</span>
+          </div>
+          <div class="tile t-audit">
+            <div class="top">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"
+                />
+              </svg>
+              Audits
+            </div>
+            <b>2</b>
+            <span class="sub">entries may be overpaid</span>
+          </div>
+        </div>
+
+        <table>
+          <tr>
+            <td>
+              <div class="name">Drones, 2–7 kg</div>
+              <div class="code">8806.22 · China</div>
+            </td>
+            <td class="r">
+              <span class="pill p-alert"
+                ><span class="k">Section 232</span
+                ><span class="v"><s>0%</s> → 25%</span></span
+              >
+            </td>
+            <td class="r" style="width: 46px">
+              <span class="delta up">+25%</span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="name">Aluminum extrusions</div>
+              <div class="code">7604.29 · Canada</div>
+            </td>
+            <td class="r">
+              <span class="pill p-save"
+                ><span class="k">USMCA · May qualify</span
+                ><span class="v"><s>25%</s> → 0%</span></span
+              >
+            </td>
+            <td class="r"><span class="delta down">−25%</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="name">Steel wire</div>
+              <div class="code">7217.10 · China</div>
+            </td>
+            <td class="r">
+              <span class="pill p-audit"
+                ><span class="k">Possible overpayment</span
+                ><span class="v"><s>75%</s> → 50%</span></span
+              >
+            </td>
+            <td class="r"><span class="delta down">−25%</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
