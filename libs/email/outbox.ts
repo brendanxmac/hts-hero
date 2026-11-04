@@ -88,6 +88,35 @@ export const createBatch = async (db: Db, batch: NewBatch): Promise<string | nul
   return created.id
 }
 
+// A waiting batch's messages made again (the digest after the admin picks its updates): each
+// recipient's message takes the new content and keeps its status (one taken out stays out); new
+// recipients come in; pending ones no longer in it go (taken-out ones stay, so they stay out)
+export const replaceMessages = async (db: Db, batchId: string, messages: OutboxMessage[]) => {
+  const keyOf = (m: { channel: string; recipient: string }) => `${m.channel}|${m.recipient}`
+  const keep = new Set(messages.map(keyOf))
+  const existing = must<{ id: string; channel: string; recipient: string; status: string }[]>(
+    await db.from("email_messages").select("id, channel, recipient, status").eq("batch_id", batchId).limit(10_000),
+    "Loading the batch's messages"
+  )
+  const gone = existing.filter((m) => !keep.has(keyOf(m)) && m.status === "pending").map((m) => m.id)
+  for (let i = 0; i < gone.length; i += 200) {
+    must(await db.from("email_messages").delete().in("id", gone.slice(i, i + 200)), "Removing messages")
+  }
+  const rows = messages.map((m) => ({
+    batch_id: batchId,
+    channel: m.channel,
+    recipient: m.recipient,
+    user_id: m.userId ?? null,
+    subscriber_id: m.subscriberId ?? null,
+    template: m.template,
+    props: m.props,
+    subject: subjectOf(m.template, m.props),
+  }))
+  for (let i = 0; i < rows.length; i += 500) {
+    must(await db.from("email_messages").upsert(rows.slice(i, i + 500), { onConflict: "batch_id,channel,recipient" }), "Updating messages")
+  }
+}
+
 interface MessageRow {
   id: string
   batch_id: string | null

@@ -2,7 +2,7 @@ import { readTrackerAccess } from "../tariff-tracker/access"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { UpdateSummary } from "../../emails/kit/parts"
 import { STAGE_ORDER, STAGES, type Stage } from "../tariff-updates/types"
-import { createBatch, type OutboxMessage } from "./outbox"
+import { createBatch, replaceMessages, type OutboxMessage } from "./outbox"
 import { SUBSCRIBER_COLUMNS, subscriberFooter, type Subscriber } from "./subscribers"
 import { newsEmailProps, UPDATE_EMAIL_COLUMNS, updateSummary, type UpdateRowForEmail } from "./tariff-news"
 
@@ -97,15 +97,17 @@ const messagesFor = (
   ]
 }
 
-const loadUpdatesWithEvents = async (db: Db, since: string) => {
-  const { data: updates, error } = await db
-    .from("tariff_updates")
-    .select(`${UPDATE_EMAIL_COLUMNS}, last_activity_at`)
-    .eq("status", "published")
-    .eq("needs_review", false)
-    .gte("last_activity_at", since)
+// Updates with activity since `since`, plus (the digest) ones taking effect between two days
+const loadUpdatesWithEvents = async (db: Db, since: string, effective?: { from: string; to: string }) => {
+  const query = () => db.from("tariff_updates").select(`${UPDATE_EMAIL_COLUMNS}, last_activity_at`).eq("status", "published").eq("needs_review", false)
+  const [recent, taking] = await Promise.all([
+    query().gte("last_activity_at", since),
+    effective ? query().gte("effective_on", effective.from).lt("effective_on", effective.to) : Promise.resolve({ data: [], error: null }),
+  ])
+  const error = recent.error ?? taking.error
   if (error) throw new Error(`Loading updates: ${error.message}`)
-  const rows = (updates ?? []) as UpdateRow[]
+  const byId = new Map(([...(recent.data ?? []), ...(taking.data ?? [])] as UpdateRow[]).map((u) => [u.id, u]))
+  const rows = Array.from(byId.values())
   if (!rows.length) return []
   const { data: sources } = await db
     .from("tariff_source_items")
@@ -194,11 +196,47 @@ const periodLabel = (from: Date, to: Date) => {
   return `${day(from)} – ${day(to)}, ${to.getUTCFullYear()}`
 }
 
-// The weekly digest: the week (Monday to Sunday, UTC) before `until`, one batch for every weekly
-// subscriber with at least one matching update. Run late in the week, it still makes last week's
-// digest (and the dedupe key stops a second one). Events from the week before that the last digest
-// didn't have (cleared after review, or found late) come along too, so none fall between weeks.
-export const produceWeeklyDigest = async (db: Db, until = new Date(), { ignoreStartDate = false }: { ignoreStartDate?: boolean } = {}) => {
+// The admin's picks for a digest, kept in its batch's ref: updates added by hand (they go to every
+// reader whose laws and countries they match, whatever the reader's steps) and taken out (from all)
+export interface DigestPicks {
+  include: string[]
+  exclude: string[]
+}
+
+// An update the digest could carry, for the outbox's picker
+export interface DigestCandidate {
+  id: string
+  slug: string
+  title: string
+  authority: string
+  countries: string[]
+  effectiveOn: string | null
+  lastActivityAt: string
+  // Why it's in without a pick: its steps this week, its effective date. Empty: only by hand
+  reasons: string[]
+  picked: boolean
+  // Readers it goes to as picked, and readers whose laws and countries it matches
+  recipients: number
+  matching: number
+}
+
+interface DigestRef {
+  from: string
+  until: string
+  events?: string[]
+  ignoreStartDate?: boolean
+  include?: string[]
+  exclude?: string[]
+}
+
+const shortDay = (iso: string) => new Date(`${iso.slice(0, 10)}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })
+
+// A week's digest: the week (Monday to Sunday, UTC) before `until`. An update is in for a reader
+// when it matches their laws and countries and either took a step that week that they follow
+// (every step, or just new actions) or takes effect that week; the admin's picks override that.
+// Events from the week before that the last digest didn't have (cleared after review, or found
+// late) come along too, so none fall between weeks.
+const planDigest = async (db: Db, until: Date, { ignoreStartDate = false, picks }: { ignoreStartDate?: boolean; picks?: DigestPicks }) => {
   const midnight = Date.UTC(until.getUTCFullYear(), until.getUTCMonth(), until.getUTCDate())
   const end = new Date(midnight - ((until.getUTCDay() + 6) % 7) * 86_400_000)
   const start = new Date(end.getTime() - 7 * 86_400_000)
@@ -213,33 +251,125 @@ export const produceWeeklyDigest = async (db: Db, until = new Date(), { ignoreSt
   const had = previous ? (previous.ref as { events?: string[] }).events : []
   const missedLastWeek = (key: string) => !!had && !had.includes(key)
 
-  const [updates, subscribers] = await Promise.all([loadUpdatesWithEvents(db, carryFrom), activeSubscribers(db, "weekly")])
+  const effectiveFrom = from.slice(0, 10)
+  const effectiveTo = end.toISOString().slice(0, 10)
+  const [updates, subscribers] = await Promise.all([
+    loadUpdatesWithEvents(db, carryFrom, { from: effectiveFrom, to: effectiveTo }),
+    activeSubscribers(db, "weekly"),
+  ])
   const inDigest = (u: UpdateRow, e: UpdateEvent) =>
     e.at < end.toISOString() && (e.at >= from || (e.at >= carryFrom && missedLastWeek(`${u.id}:${e.stage}`)))
-  const settings = await channelSettings(db, subscribers.flatMap((s) => (s.user_id ? [s.user_id] : [])))
-  const period = periodLabel(start, new Date(end.getTime() - 86_400_000))
+  const takesEffect = (u: UpdateRow) => !!u.effective_on && u.effective_on >= effectiveFrom && u.effective_on < effectiveTo
+  const include = new Set(picks?.include ?? [])
+  const exclude = new Set(picks?.exclude ?? [])
+  const goesTo = (s: Subscriber, { update, events }: (typeof updates)[number]) =>
+    !exclude.has(update.id) &&
+    matchesPreferences(update, s) &&
+    (include.has(update.id) || takesEffect(update) || events.some((e) => inDigest(update, e) && (s.news_scope === "all_steps" || e.isAction)))
 
-  const messages = subscribers.flatMap((s) => {
-    const picked: UpdateSummary[] = updates
-      .filter(({ update, events }) => matchesPreferences(update, s) && events.some((e) => inDigest(update, e) && (s.news_scope === "all_steps" || e.isAction)))
-      .sort((a, b) => b.update.last_activity_at.localeCompare(a.update.last_activity_at))
-      .map(({ update }) => updateSummary(update))
-    if (!picked.length) return []
-    return messagesFor(s, settings, "tariff_digest", {
-      period,
-      updates: picked,
-      signedIn: !!s.user_id,
-      footer: subscriberFooter(s, "You're getting this because you get the weekly US tariff digest from HTS Hero."),
+  const candidates: DigestCandidate[] = updates
+    .map((x) => {
+      const reasons = [
+        ...x.events.filter((e) => inDigest(x.update, e)).map((e) => `${stageName(e.stage)} ${shortDay(e.at)}${e.at < from ? " (missed last week)" : ""}`),
+        ...(takesEffect(x.update) ? [`Takes effect ${shortDay(x.update.effective_on!)}`] : []),
+      ]
+      const recipients = subscribers.filter((s) => goesTo(s, x)).length
+      return {
+        id: x.update.id,
+        slug: x.update.slug,
+        title: x.update.title,
+        authority: x.update.authority,
+        countries: x.update.countries,
+        effectiveOn: x.update.effective_on,
+        lastActivityAt: x.update.last_activity_at,
+        reasons,
+        picked: !exclude.has(x.update.id) && (include.has(x.update.id) || reasons.length > 0),
+        recipients,
+        matching: subscribers.filter((s) => matchesPreferences(x.update, s)).length,
+      }
     })
-  })
+    .sort((a, b) => b.lastActivityAt.localeCompare(a.lastActivityAt))
+
+  return {
+    start,
+    end,
+    ref: {
+      from,
+      until: end.toISOString(),
+      // Every event this week had, picked or not, for next week's to leave out
+      events: updates.flatMap(({ update, events }) => events.filter((e) => inDigest(update, e)).map((e) => `${update.id}:${e.stage}`)),
+      ignoreStartDate,
+      include: Array.from(include),
+      exclude: Array.from(exclude),
+    } satisfies DigestRef,
+    candidates,
+    messages: async () => {
+      const settings = await channelSettings(db, subscribers.flatMap((s) => (s.user_id ? [s.user_id] : [])))
+      const period = periodLabel(start, new Date(end.getTime() - 86_400_000))
+      return {
+        period,
+        messages: subscribers.flatMap((s) => {
+          const picked: UpdateSummary[] = updates
+            .filter((x) => goesTo(s, x))
+            .sort((a, b) => b.update.last_activity_at.localeCompare(a.update.last_activity_at))
+            .map(({ update }) => updateSummary(update))
+          if (!picked.length) return []
+          return messagesFor(s, settings, "tariff_digest", {
+            period,
+            updates: picked,
+            signedIn: !!s.user_id,
+            footer: subscriberFooter(s, "You're getting this because you get the weekly US tariff digest from HTS Hero."),
+          })
+        }),
+      }
+    },
+  }
+}
+
+// The weekly digest for the week before `until`, as one batch for review in the outbox, with a
+// message for every weekly subscriber who has at least one update in it. Run late in the week, it
+// still makes last week's digest (and the dedupe key stops a second one).
+export const produceWeeklyDigest = async (db: Db, until = new Date(), { ignoreStartDate = false }: { ignoreStartDate?: boolean } = {}) => {
+  const plan = await planDigest(db, until, { ignoreStartDate })
+  const { period, messages } = await plan.messages()
   if (!messages.length) return { batches: 0 }
   const id = await createBatch(db, {
     kind: "tariff_digest",
     title: `Weekly tariff digest · ${period}`,
-    // Every event this digest had, for next week's to leave out
-    ref: { from, until: end.toISOString(), events: updates.flatMap(({ update, events }) => events.filter((e) => inDigest(update, e)).map((e) => `${update.id}:${e.stage}`)) },
-    dedupeKey: `tariff_digest:${start.toISOString().slice(0, 10)}`,
+    ref: plan.ref,
+    dedupeKey: `tariff_digest:${plan.start.toISOString().slice(0, 10)}`,
     messages,
   })
   return { batches: id ? 1 : 0 }
+}
+
+const loadDigestBatch = async (db: Db, batchId: string) => {
+  const { data, error } = await db.from("email_batches").select("id, kind, status, ref").eq("id", batchId).single()
+  if (error || !data) throw new Error(`Loading the digest: ${error?.message ?? "not found"}`)
+  if (data.kind !== "tariff_digest") throw new Error("This batch isn't a weekly digest")
+  return data as { id: string; kind: string; status: string; ref: DigestRef }
+}
+
+// The updates a digest batch could carry, and which it does, for the outbox's picker. A waiting
+// one made before picks (and taking-effect updates) existed is made again first, so its messages
+// match what the picker shows
+export const digestCandidates = async (db: Db, batchId: string) => {
+  const batch = await loadDigestBatch(db, batchId)
+  if (batch.status === "pending" && !batch.ref.include) return { ...(await repickDigest(db, batchId, { include: [], exclude: [] })), rebuilt: true }
+  const picks = { include: batch.ref.include ?? [], exclude: batch.ref.exclude ?? [] }
+  const plan = await planDigest(db, new Date(batch.ref.until), { ignoreStartDate: batch.ref.ignoreStartDate, picks })
+  return { candidates: plan.candidates, picks, rebuilt: false }
+}
+
+// The admin's picks for a waiting digest: saved on the batch and every reader's message made
+// again (new readers in, readers left with nothing out; ones the admin took out stay out)
+export const repickDigest = async (db: Db, batchId: string, picks: DigestPicks) => {
+  const batch = await loadDigestBatch(db, batchId)
+  if (batch.status !== "pending") throw new Error("This digest isn't waiting any more")
+  const plan = await planDigest(db, new Date(batch.ref.until), { ignoreStartDate: batch.ref.ignoreStartDate, picks })
+  const { messages } = await plan.messages()
+  await replaceMessages(db, batchId, messages)
+  const { error } = await db.from("email_batches").update({ ref: { ...batch.ref, include: plan.ref.include, exclude: plan.ref.exclude } }).eq("id", batchId)
+  if (error) throw new Error(`Saving the picks: ${error.message}`)
+  return { candidates: plan.candidates, picks: { include: plan.ref.include, exclude: plan.ref.exclude } }
 }
