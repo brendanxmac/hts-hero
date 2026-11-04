@@ -115,13 +115,5 @@ AdminDigestEmail.PreviewProps = {
       action: "Check and approve",
       href: "/tariff-sources?update=3",
     },
-    {
-      group: "whenever",
-      tone: "primary",
-      title: "8 post ideas from Oct 23",
-      detail: "Ready-made posts from the tariff data. Use one or skip them.",
-      action: "Open Content Studio",
-      href: "/content-studio",
-    },
   ],
 } satisfies AdminDigestEmailProps

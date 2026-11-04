@@ -1,14 +1,14 @@
-// Finds today's social post ideas, the same as the daily cron, and prints them.
+// Finds social post ideas, the same as the studio's "Find ideas" button, and prints them.
+// Nothing is stored.
 //
 //   npm run social:ideas
-//   npm run social:ideas -- --dry-run   # don't save to social_ideas
 //   npm run social:ideas -- --count 12
 //
 // Needs NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and ANTHROPIC_API_KEY (.env.local).
 
 import { existsSync } from "fs"
 import { createClient } from "@supabase/supabase-js"
-import { runDailyIdeas } from "../../libs/social-studio/ideas"
+import { findIdeas } from "../../libs/social-studio/ideas"
 
 const args = process.argv.slice(2)
 const countArg = args.indexOf("--count")
@@ -19,10 +19,9 @@ const main = async () => {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !key) throw new Error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set (.env.local).")
   const started = Date.now()
-  const result = await runDailyIdeas({
+  const result = await findIdeas({
     db: createClient(url, key),
     count: countArg >= 0 ? Number(args[countArg + 1]) : 8,
-    save: !args.includes("--dry-run"),
     log: (line) => console.log(`  ${line}`),
   })
   console.log(`\n${result.ideas.length} ideas from ${result.shortlisted} shortlisted of ${result.candidates} candidates, in ${Math.round((Date.now() - started) / 1000)}s`)

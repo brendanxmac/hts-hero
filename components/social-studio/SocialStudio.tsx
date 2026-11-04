@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Format, FORMATS, Theme } from "@/social/brand"
 import { captionsFor } from "@/social/captions"
@@ -15,7 +15,8 @@ import PostCard from "./PostCard"
 import MarketingEmails from "./MarketingEmails"
 
 // Makes branded posts from the tariff engine, Census data and the /tariff-updates feed. Ideas:
-// what the daily miners and Claude found worth posting. News: a post for any tariff update.
+// what the miners and Claude find worth posting, only when you click Find ideas, and never
+// stored (they last until the page is closed). News: a post for any tariff update.
 // Product, Country, Facts and Odd rates: make posts by hand. Every number is computed; you edit the words,
 // then download PNGs or MP4s (rendered in the browser). Duty Guard Launch: the launch teasers and
 // videos (social/launch.ts), edited and kept in this browser. Marketing Emails: pick an email from
@@ -59,7 +60,7 @@ interface NewsRow {
   last_activity_at: string
   phase: "announced" | "in-effect"
   score: number | null
-  idea: Idea | null // the post saved for it, if any
+  idea?: Idea // the post made for it on this page, if any
 }
 
 interface Built {
@@ -83,8 +84,6 @@ const FACTS: { kind: string; label: string }[] = [
   { kind: "biggest-suppliers", label: "Biggest US suppliers" },
   { kind: "top-products", label: "Most-imported products" },
 ]
-
-const STATUS_TONE = { new: "info", used: "success", skipped: "neutral" } as const
 
 // What an action costs: Claude calls are billed to the Anthropic API key (ANTHROPIC_API_KEY);
 // everything else runs on HTS Hero's own data and in the browser, for free
@@ -110,7 +109,6 @@ export default function SocialStudio() {
 
   // Ideas
   const [ideas, setIdeas] = useState<Idea[] | null>(null)
-  const [ideasError, setIdeasError] = useState<string | null>(null)
   const [finding, setFinding] = useState(false)
   const [runNotes, setRunNotes] = useState<string[]>([])
 
@@ -128,7 +126,6 @@ export default function SocialStudio() {
   const [loading, setLoading] = useState(false)
   const [news, setNews] = useState<NewsRow[] | null>(null)
   const [newsSlug, setNewsSlug] = useState<string | null>(null)
-  const [newsWarning, setNewsWarning] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [oddRates, setOddRates] = useState<OddRate[] | null>(null)
   const [oddColumn, setOddColumn] = useState<OddColumn | "all">("general")
@@ -165,23 +162,6 @@ export default function SocialStudio() {
     }
   }
 
-  const loadIdeas = useCallback(async () => {
-    setIdeasError(null)
-    try {
-      const res = await fetch("/api/social-studio/ideas", { cache: "no-store" })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? res.statusText)
-      setIdeas(data.ideas)
-    } catch (e) {
-      setIdeasError((e as Error).message)
-      setIdeas((current) => current ?? [])
-    }
-  }, [])
-
-  useEffect(() => {
-    loadIdeas()
-  }, [loadIdeas])
-
   useEffect(() => {
     if (tab !== "news" || news) return
     fetch("/api/social-studio/news", { cache: "no-store" })
@@ -189,7 +169,6 @@ export default function SocialStudio() {
       .then((d) => {
         if (!d.updates) return setError(d.error)
         setNews(d.updates)
-        setNewsWarning(d.warning)
       })
       .catch((e) => setError(e.message))
   }, [tab, news])
@@ -213,9 +192,7 @@ export default function SocialStudio() {
         `${data.ideas.length} ideas from ${data.shortlisted} shortlisted of ${data.candidates} candidates${data.usage ? ` · this run cost ${money(data.usage.cost_usd)} in Claude usage` : ""}`,
         ...data.warnings,
       ])
-      // Saved ideas come back from the table; unsaved ones (no table yet) are shown as they are
-      if (data.ideas.every((i: Idea) => i.id)) await loadIdeas()
-      else setIdeas(data.ideas)
+      setIdeas(data.ideas.map((idea: Idea) => ({ ...idea, props: { ...idea.props, theme } as Idea["props"] })))
     } catch (e) {
       toast.error((e as Error).message)
     } finally {
@@ -223,9 +200,7 @@ export default function SocialStudio() {
     }
   }
 
-  const setIdea = (i: number, patch: Partial<Idea>) => setIdeas((list) => list && list.map((x, j) => (j === i ? { ...x, ...patch } : x)))
-
-
+  const setIdea = (i: number, idea: Idea) => setIdeas((list) => list && list.map((x, j) => (j === i ? idea : x)))
 
   const build = async (body: Record<string, unknown>) => {
     setLoading(true)
@@ -242,7 +217,7 @@ export default function SocialStudio() {
     }
   }
 
-  // A post for one tariff update, saved as an idea (making it again replaces an unused one)
+  // A post for one tariff update, kept on this page (making it again replaces it)
   const makeNews = async (slug: string) => {
     setNewsSlug(slug)
     setLoading(true)
@@ -252,7 +227,7 @@ export default function SocialStudio() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? res.statusText)
       setNewsIdea(slug, data.idea)
-      if (data.costUsd !== null) toast.success(`Post saved · Claude ${money(data.costUsd)}`)
+      if (data.costUsd !== null) toast.success(`Post made · Claude ${money(data.costUsd)}`)
       data.notes.forEach((n: string) => toast(n))
     } catch (e) {
       setError((e as Error).message)
@@ -277,6 +252,7 @@ export default function SocialStudio() {
     setTheme(next)
     setBuilt((b) => b && { ...b, posts: b.posts.map((p) => withTheme(p, next)) })
     setIdeas((list) => list && list.map((idea) => ({ ...idea, props: { ...idea.props, theme: next } as Idea["props"] })))
+    setNews((rows) => rows && rows.map((r) => (r.idea ? { ...r, idea: { ...r.idea, props: { ...r.idea.props, theme: next } as Idea["props"] } } : r)))
     editLaunch(launch.map((p) => withTheme(p, next)))
   }
 
@@ -289,8 +265,6 @@ export default function SocialStudio() {
       (!oddQ || `${g.rate.rate} ${g.rate.product} ${g.rate.why} ${g.codes.join(" ")}`.toLowerCase().includes(oddQ))
   )
   const oddNotCalculated = oddGroups.filter((g) => !g.rate.calculable).length
-
-  const days = Array.from(new Set((ideas ?? []).map((i) => i.run_on)))
 
   const viewBar = (
     <div className="flex flex-wrap items-center gap-3">
@@ -314,13 +288,13 @@ export default function SocialStudio() {
       >
         <Help label="What costs money">
           <p>
-            <Cost claude="about 5–7¢" /> Daily ideas, automatically every morning (about $2 a month), and each <b>Find ideas now</b>
+            <Cost claude="about 5–7¢" /> Each <b>Find ideas</b> (only when you click it)
           </p>
           <p>
             <Cost claude="under 1¢" /> <b>Make post</b> or <b>Remake</b> on the News tab
           </p>
           <p>
-            <Cost /> Everything else: the Product, Country, Facts and Odd Rates tabs, previews, editing, saving, Mark used / Skip, and PNG and MP4 downloads
+            <Cost /> Everything else: the Product, Country, Facts and Odd Rates tabs, previews, editing, and PNG and MP4 downloads
             (rendered in your browser)
           </p>
           <p className="text-xs">Claude calls are billed to the Anthropic API key (ANTHROPIC_API_KEY), not a Claude subscription.</p>
@@ -330,11 +304,9 @@ export default function SocialStudio() {
           onChange={(t) => {
             setTab(t)
             setError(null)
-            // Picks up posts saved from the News tab
-            if (t === "ideas") loadIdeas()
           }}
           tabs={[
-            { value: "ideas", label: "Ideas", count: ideas?.filter((i) => i.status === "new").length },
+            { value: "ideas", label: "Ideas", count: ideas?.length },
             { value: "news", label: "News" },
             { value: "product", label: "Product" },
             { value: "country", label: "Country" },
@@ -349,26 +321,26 @@ export default function SocialStudio() {
       {tab === "ideas" && (
         <>
           <Panel
-            title="Daily Ideas"
+            title="Ideas"
             actions={
               <div className="flex items-center gap-2">
                 <Cost claude="about 5–7¢" />
-                <button className={btn.secondary} disabled={finding} onClick={findIdeas}>
-                  {finding && <Spinner />} {finding ? "Finding ideas…" : "Find ideas now"}
+                <button className={btn.primary} disabled={finding} onClick={findIdeas}>
+                  {finding && <Spinner />} {finding ? "Finding ideas…" : ideas ? "Find new ideas" : "Find ideas"}
                 </button>
               </div>
             }
             bodyClassName="flex flex-col gap-3 px-6 py-4 text-sm text-base-content/70"
           >
             <p>
-              8 new ideas every morning: sourcing gaps, rate swings, trade shifts and fun facts from the 150 most-imported products and the biggest suppliers.
-              Mark the one you post as used and skip the rest.
+              8 ideas each time you click: sourcing gaps, rate swings, trade shifts and fun facts from the 150 most-imported products and the biggest
+              suppliers. They aren&apos;t saved: download what you want before you leave the page.
             </p>
             <Help label="How ideas are found">
               <p>
-                Every morning the miners scan the 150 most-imported products and the biggest suppliers for sourcing gaps, rate swings, trade shifts and fun
-                facts. Claude picks 8 varied ideas and writes their words; any number it writes that isn&apos;t in the data falls back to the drafted text.
-                Stories offered in the last 30 days aren&apos;t repeated.
+                The miners scan the 150 most-imported products and the biggest suppliers for sourcing gaps, rate swings, trade shifts and fun facts, plus
+                this week&apos;s tariff news. Claude picks 8 varied ideas and writes their words; any number it writes that isn&apos;t in the data falls
+                back to the drafted text.
               </p>
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 Same run from the terminal: <CopyCommand command="npm run social:ideas" />
@@ -379,27 +351,11 @@ export default function SocialStudio() {
                 {n}
               </Callout>
             ))}
-            {ideasError && (
-              <Callout tone="warning" title="Ideas can't be saved or listed yet">
-                {ideasError} Paste <code>supabase/migrations/social_ideas.sql</code> into the Supabase SQL editor. Until then, &quot;Find ideas now&quot; still shows
-                today&apos;s ideas without saving them.
-              </Callout>
-            )}
           </Panel>
           {ideas && ideas.length > 0 && viewBar}
-          {ideas === null && <Spinner />}
-          {ideas?.length === 0 && !ideasError && <EmptyState title="No ideas yet">They arrive every morning, or find some now.</EmptyState>}
-          {days.map((day) => (
-            <div key={day} className="flex flex-col gap-4">
-              <h2 className="text-sm font-semibold text-base-content/60 tracker:pt-2 tracker:text-lg tracker:text-base-content tracker:[font-family:var(--font-tracker-display)]">
-                {new Date(`${day}T00:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-              </h2>
-              {ideas!.map((idea, i) =>
-                idea.run_on !== day ? null : (
-                  <IdeaCard key={idea.id ?? `${idea.dedupe_key}-${i}`} idea={idea} format={format} onChange={(next) => setIdea(i, next)} />
-                )
-              )}
-            </div>
+          {!ideas && !finding && <EmptyState title="No ideas yet">Click Find ideas to get some.</EmptyState>}
+          {ideas?.map((idea, i) => (
+            <IdeaCard key={`${idea.dedupe_key}-${i}`} idea={idea} format={format} onChange={(next) => setIdea(i, next)} />
           ))}
         </>
       )}
@@ -425,11 +381,6 @@ export default function SocialStudio() {
               <Callout tone="error">{error}</Callout>
             </div>
           )}
-          {newsWarning && (
-            <div className="p-4">
-              <Callout tone="warning">{newsWarning}</Callout>
-            </div>
-          )}
           {news?.map((u) => (
             <div key={u.slug} className={`flex items-center gap-4 px-4 py-2.5 text-sm tracker:px-6 tracker:py-3 ${newsSlug === u.slug ? "bg-base-content/[0.04] tracker:bg-tt-soft-high" : ""}`}>
               <span className="w-20 shrink-0 text-xs text-base-content/45">
@@ -446,9 +397,7 @@ export default function SocialStudio() {
               {u.score !== null && !u.idea && <Pill tone="warning">Idea-worthy</Pill>}
               {u.idea ? (
                 <>
-                  <Pill tone={u.idea.status === "used" ? "success" : u.idea.status === "skipped" ? "neutral" : "info"}>
-                    {u.idea.status === "used" ? "Posted" : u.idea.status === "skipped" ? "Skipped" : "Post saved"}
-                  </Pill>
+                  <Pill tone="info">Post made</Pill>
                   <button className={btn.xsSecondary} onClick={() => setNewsSlug(newsSlug === u.slug ? null : u.slug)}>
                     {newsSlug === u.slug ? "Close" : "Open post"}
                   </button>
@@ -471,7 +420,7 @@ export default function SocialStudio() {
         return open?.idea ? (
           <>
             {viewBar}
-            <IdeaCard key={open.idea.id ?? open.slug} idea={open.idea} format={format} onChange={(next) => setNewsIdea(open.slug, next)} />
+            <IdeaCard key={open.slug} idea={open.idea} format={format} onChange={(next) => setNewsIdea(open.slug, next)} />
           </>
         ) : null
       })()}

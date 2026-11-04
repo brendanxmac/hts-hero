@@ -3,7 +3,6 @@ import { requireSocialStudio } from "@/libs/social-studio/access"
 import { errorResponse } from "@/libs/hts-revision-diff/route-helpers"
 import { DutyInputError } from "@/libs/mcp/duty"
 import { buildCountryPosts, buildFactPosts, buildOddRatePosts, buildOddRatesRoundup, buildProductPosts, FACT_KINDS, FactKind } from "@/libs/social-studio/build"
-import { saveIdea } from "@/libs/social-studio/ideas"
 import { newsIdea, newsPost, officialSources, UPDATE_COLUMNS, UpdateRow, writeNewsWords } from "@/libs/social-studio/news"
 
 export const dynamic = "force-dynamic"
@@ -30,12 +29,9 @@ export async function POST(req: NextRequest) {
       } catch (e) {
         notes.push(`Claude couldn't write the headline (${(e as Error).message}); the update's title is used.`)
       }
-      // Saved as an idea, so it lasts, shows in the News table and in Ideas
+      // Shown as an idea on the News tab; not stored
       const post = newsPost(update, theme, words, await officialSources(db, update))
-      const saved = await saveIdea(db, newsIdea(update, post))
-      if (saved.error) notes.push(saved.error)
-      notes.push(...saved.warnings)
-      return NextResponse.json({ title: update.title, posts: [post], notes, idea: saved.idea, costUsd })
+      return NextResponse.json({ title: update.title, posts: [post], notes, idea: newsIdea(update, post), costUsd })
     }
     if (body.mode === "odd-rate") {
       return NextResponse.json(await buildOddRatePosts({ htsCode: String(body.htsCode ?? ""), column: body.column === "other" ? "other" : "general", theme }))

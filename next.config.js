@@ -52,9 +52,8 @@ const nextConfig = {
     "/api/cron/tracker-snapshots": ["./public/data/us-imports/**"],
     "/api/cron/tariff-updates": ["./public/data/us-imports/**"],
     "/api/tariff-updates/[id]": ["./public/data/us-imports/**"],
-    // The Content Studio's posts and daily ideas read them too
+    // The Content Studio's posts and ideas read them too
     "/api/social-studio/**": ["./public/data/us-imports/**"],
-    "/api/cron/social-ideas": ["./public/data/us-imports/**"],
   },
   // Keep the optional native canvas package out of the bundles (PDF libraries reach for it)
   turbopack: {

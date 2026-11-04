@@ -10,7 +10,7 @@ import { SOURCES, type SourceId } from "../tariff-sources/types"
 // - "blocking": nothing moves until the admin acts (updates in review hold back their news email
 //   and alerts; impact checks hold back import alerts; digests and trial emails wait in the outbox)
 // - "health": something broke (a source failing, a cron stopped, emails failing to send)
-// - "whenever": worth doing, but nothing waits on it (old updates in review, today's post ideas)
+// - "whenever": worth doing, but nothing waits on it (old updates in review)
 // An item leaves once it's dealt with; an empty list means nothing needs the admin.
 
 type Db = SupabaseClient
@@ -306,28 +306,6 @@ const adcvdItems = async (db: Db, now: Date): Promise<QueueItem[]> => {
   return items
 }
 
-// The latest day's post ideas still unused
-const studioItems = async (db: Db): Promise<QueueItem[]> => {
-  const latest = await db.from("social_ideas").select("run_on").order("run_on", { ascending: false }).limit(1).maybeSingle()
-  const runOn = (latest.data as { run_on: string } | null)?.run_on
-  if (!runOn) return []
-  const { count } = await db.from("social_ideas").select("id", { count: "exact", head: true }).eq("run_on", runOn).eq("status", "new")
-  if (!count) return []
-  return [
-    {
-      id: "studio-ideas",
-      group: "whenever",
-      tone: "primary",
-      area: "studio",
-      title: `${plural(count, "post idea")} from ${day(`${runOn}T12:00:00Z`)}`,
-      detail: "Ready-made posts from the tariff data. Use one or skip them.",
-      action: "Open Content Studio",
-      href: "/content-studio",
-      count,
-    },
-  ]
-}
-
 // What users sent from Duty Guard's entry audit: an audit that looks wrong waits on an answer
 const auditReportItems = async (db: Db): Promise<QueueItem[]> => {
   const rows = must<{ id: string; kind: AuditReportKind; case_number: string | null; hts_code: string | null; country: string | null; user_email: string | null; created_at: string }[]>(
@@ -414,7 +392,6 @@ export const loadAdminQueue = async (db: Db, now = new Date()): Promise<AdminQue
     ["Outbox", "outbox", outboxItems(db, now)],
     ["Tariff sources", "updates", sourceItems(db, now)],
     ["AD/CVD", "adcvd", adcvdItems(db, now)],
-    ["Content Studio", "studio", studioItems(db)],
     ["Audit guarantee", "outbox", guaranteeItems(db, now)],
     ["Audit reports", "reports", auditReportItems(db)],
   ]

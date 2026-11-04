@@ -9,6 +9,8 @@
 -- "Find ideas now", or `npm run social:ideas`.
 --
 -- Apply by pasting into the SQL editor. Service role only.
+--
+-- RETIRED: ideas are no longer stored; social_ideas_drop.sql drops this table.
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS social_ideas (
