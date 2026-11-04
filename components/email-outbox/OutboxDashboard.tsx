@@ -6,12 +6,13 @@ import toast from "react-hot-toast"
 import { formatTime } from "../hts-revision-diff/shared"
 import { Callout, EmptyState, PageHeader, Panel, Pill, Spinner, Tabs, btn, type Tone } from "../hts-revision-diff/ui"
 import { Select } from "@/components/ui/Select"
+import DigestPicker from "./DigestPicker"
 
 // The outbox: every batch of email, Slack and Teams messages. Batches that wait for the admin (the
 // weekly digest, the "trial unlocked" email) lead; the rest sent on their own and are here as the
 // record. Pick a batch, step through each recipient's message exactly as it will arrive (← →),
-// take recipients out, add a note at the top, change the subject, send yourself a test, then
-// approve (it sends at once) or skip. ?batch=<id> and ?view= open a batch or a view from a link.
+// take recipients out, add a note at the top, change the subject, pick a digest's updates, send
+// yourself a test, then approve (it sends at once) or skip. ?batch=<id> and ?view= open a batch or a view from a link.
 
 interface Batch {
   id: string
@@ -391,6 +392,17 @@ export default function OutboxDashboard({ updates }: { updates: { id: string; ti
                       + Add a note at the top of every message
                     </button>
                   ))}
+                {open.kind === "tariff_digest" && (
+                  <DigestPicker
+                    key={open.id}
+                    batchId={open.id}
+                    editable={pending}
+                    onChange={async () => {
+                      await loadBatches()
+                      await loadBatch(open.id)
+                    }}
+                  />
+                )}
               </div>
             </Panel>
 

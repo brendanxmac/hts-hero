@@ -48,7 +48,10 @@ export default function ImpactCheck({ updateId, version }: { updateId: string; v
 
   const approve = async () => {
     if (!impact) return
-    if (!window.confirm(`Approve this impact check and alert ${impact.pending} account${impact.pending === 1 ? "" : "s"} now?`)) return
+    const ask = impact.pending
+      ? `Approve this impact check and alert ${impact.pending} account${impact.pending === 1 ? "" : "s"} now?`
+      : "Approve this impact check? No one gets an alert about it now."
+    if (!window.confirm(ask)) return
     setBusy(true)
     try {
       const r = await adminCall<{ alerted: { accounts: number; messages: number }; sent: { sent: number; failed: number } | null }>(`/api/tariff-updates/${updateId}`, "POST", { action: "approve-impact" })
@@ -75,12 +78,23 @@ export default function ImpactCheck({ updateId, version }: { updateId: string; v
           <Pill tone="warning">Not approved yet</Pill>
         )}
         {impact?.eligible && (
-          <button type="button" className={`${btn.xsPrimary} ml-auto`} disabled={busy || !impact.pending} onClick={approve}>
+          // Never approved, it can be with no one to alert: it still holds a place in the admin queue
+          <button type="button" className={`${btn.xsPrimary} ml-auto`} disabled={busy || (!impact.pending && !!impact.approvedAt)} onClick={approve}>
             {busy && <Spinner />}
-            {impact.pending ? `Approve and alert ${impact.pending} account${impact.pending === 1 ? "" : "s"}` : "Nothing new to alert"}
+            {impact.pending
+              ? `Approve and alert ${impact.pending} account${impact.pending === 1 ? "" : "s"}`
+              : impact.approvedAt
+                ? "Nothing new to alert"
+                : "Approve (no one to alert)"}
           </button>
         )}
       </div>
+      {impact?.eligible && !impact.pending && !impact.approvedAt && impact.alertable > 0 && (
+        <p className="text-base-content/60">
+          None of the {impact.alertable} affected account{impact.alertable === 1 ? "" : "s"} would get an alert: they haven&apos;t turned on alerts for this kind of
+          update (AD/CVD alerts are off until an account picks them), or turned alerts off. Approving clears it from the queue.
+        </p>
+      )}
       {!impact ? (
         <span className="text-base-content/50">Loading…</span>
       ) : !impact.products.length ? (

@@ -20,7 +20,10 @@ export default function DutyGuardLaunchEmail({ footer }: DutyGuardLaunchEmailPro
       <Eyebrow>New in HTS Hero</Eyebrow>
       <Title>Meet Duty Guard</Title>
       <P>
-        For nearly 2 years we&apos;ve been helping US importers and trade pros nail their duty calculations. Now we&apos;re expanding on that by letting them audit every
+        For nearly 2 years we&apos;ve been helping US importers and trade pros nail their duty calculations & classifications.
+      </P>
+      <P>
+        Now we&apos;re expanding on that by letting them audit every
         single entry, discover potential savings, and get alerted anytime their imports (or their clients&apos;) are affected by new tariff changes.
       </P>
       <Checklist items={TRACKER_POINTS} />
