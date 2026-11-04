@@ -18,7 +18,7 @@ import type { CaseListRow, UsageRow } from "./types"
 type Tab = "cases" | "problems" | "months" | "costs"
 const TABS: Tab[] = ["cases", "problems", "months", "costs"]
 
-// The backfill reaches back to here (PRE_DEPLOY.md: the full tariff sources backfill)
+// The full tariff sources backfill reaches back to here
 const FIRST_MONTH = "2025-01"
 // The estimate in the AD/CVD report, for the whole backfill
 const ESTIMATE = "$30–60"

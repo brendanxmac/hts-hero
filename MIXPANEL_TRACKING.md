@@ -184,7 +184,7 @@ Data before this date has the old behaviour. Compare trends from 2026-10-24 on.
 
 **Renamed:** every "Tariff Tracker X" event is now "Duty Guard X", and "Tracker Welcome X" is
 "Duty Guard Welcome X". The old names keep their history and already show "Duty Guard …" display
-names. After the deploy they get merged into the new ones in Lexicon (PRE_DEPLOY.md). "Tariff
+names. After the deploy they get merged into the new ones in Lexicon (Find-Duplicate-Groups / Merge-Group) and the Business Pulse board (11606224) is repointed to them. "Tariff
 Monitor Product Checked" and "Tariff Monitor Track Clicked" never fired, so they were removed.
 
 The north star is paying Duty Guard accounts and their revenue. The leading indicators are
