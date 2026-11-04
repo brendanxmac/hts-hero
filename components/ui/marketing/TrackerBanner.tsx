@@ -53,21 +53,32 @@ export const TrackerBanner = () => {
 
 // The same bar on the tariff updates pages: alerts when an update affects the reader's imports.
 // Above the header, so it doesn't compete with the page's own email sign-up. It opens straight on
-// adding imports.
-export const TariffAlertsBanner = () => (
-  <div className="hts-tracker-on-dark bg-neutral text-neutral-content scheme-dark">
-    <div className={`${mk.container} flex flex-col items-center justify-center gap-2 py-2.5 sm:flex-row sm:justify-between sm:gap-6`}>
-      <p className="flex items-center gap-2 text-center text-sm font-semibold sm:text-left">
-        <BellAlertIcon className="hidden h-4 w-4 shrink-0 text-success sm:block" aria-hidden />
-        No tariff surprises: get alerted the moment an update affects your imports, and catch duty you may have overpaid
-      </p>
-      <Link
-        href="/duty-guard?tab=catalog&add=paste"
-        className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-success px-3.5 text-xs font-semibold text-success-content transition-colors hover:bg-success/90"
-      >
-        {TRY_IT_FREE}
-        <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
-      </Link>
+// adding imports. Signed in (a shared link, a forwarded email), it opens the reader's own Tariff
+// Updates instead: the update itself, or their news. Signed out (and to search engines) it's as before.
+export const TariffAlertsBanner = () => {
+  const { user } = useUser();
+  const pathname = usePathname();
+  const slug = pathname.match(/^\/tariff-updates\/([^/]+)$/)?.[1];
+  const own = slug && slug !== "subscription" ? `/duty-guard?tab=changes&update=${encodeURIComponent(slug)}` : "/duty-guard?tab=changes&list=all";
+  return (
+    <div className="hts-tracker-on-dark bg-neutral text-neutral-content scheme-dark">
+      <div className={`${mk.container} flex flex-col items-center justify-center gap-2 py-2.5 sm:flex-row sm:justify-between sm:gap-6`}>
+        <p className="flex items-center gap-2 text-center text-sm font-semibold sm:text-left">
+          <BellAlertIcon className="hidden h-4 w-4 shrink-0 text-success sm:block" aria-hidden />
+          {user
+            ? slug
+              ? "See what this update does to your imports, in your Duty Guard"
+              : "See the tariff news you follow, and what it does to your imports, in your Duty Guard"
+            : "No tariff surprises: get alerted the moment an update affects your imports, and catch duty you may have overpaid"}
+        </p>
+        <Link
+          href={user ? own : "/duty-guard?tab=catalog&add=paste"}
+          className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-success px-3.5 text-xs font-semibold text-success-content transition-colors hover:bg-success/90"
+        >
+          {user ? (slug ? "Open in your News" : "Open your News") : TRY_IT_FREE}
+          <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+        </Link>
+      </div>
     </div>
-  </div>
-);
+  );
+};

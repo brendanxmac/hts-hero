@@ -1,0 +1,155 @@
+# SEO + AEO for the duty audit cluster (A) and the tariff alerts cluster (B), sized for Feb–Mar 2027
+
+_Researched 2026-11-03. Method: web search (Claude WebSearch, US results), page fetches, seodata.dev (Google Ads API US monthly averages; it rate-limited (HTTP 429) after a few lookups, so many terms are unknown), the repo's own GSC exports (`seo-data/`, 3 months to 2026-10-23), and the two prior reports named in the brief. I could not run Google Trends, Ahrefs/Semrush, ChatGPT, Perplexity or Gemini directly, and I did not get a live Google SERP with AI Overview. The "who gets cited" findings come from web-search results, which are a proxy for what AI engines retrieve and not the same thing. Volumes not listed below are gaps._
+
+## 1. Search volume and trend per term; IEEPA refund status; upcoming spike events
+
+### Takeaway
+Cluster A is small and fragmented: "tariff refund" gets 480/mo and "duty drawback" 1,900/mo, while "tariff audit", "customs audit", "PSC" and "ieepa refund" are untracked, which probably means low volume. Cluster B's exact terms are near zero: "tariff alerts", "tariff monitoring" and "tariff updates" are all untracked, though "tariff tracker" has 1,900/mo. The real volume sits in news-intent terms: "tariff news" at 301k/mo, "new tariffs" 12.1k, "us tariff news" 8.1k and "tariff chart" 9.9k. IEEPA refunds are mostly in progress through CBP's CAPE system. What remains is litigation and deadlines for finally liquidated entries, and the next hard dates people will search around (Feb–Apr 2027 for §1581(i)) fall inside the target window.
+
+### Cited Findings
+**Volumes (US, monthly, Google Ads API via seodata.dev)**
+- "tariff tracker": 1,900/mo, $6.84 CPC, competition 0.05 (updated 2026-09-07). Related terms: tariff chart 9,900 ($3.44); tariffs revenue 2,900; us tariffs by country 2,400 ($4.21); tariff price tracker 210; us tariff tracker 140; tariff revenue tracker 70; tariff price increase tracker 40 — [seodata.dev: tariff tracker](https://www.seodata.dev/keyword/tariff-tracker)
+- "tariff news": 301,000/mo, $6.30 CPC, competition 0.01 (updated 2026-10-11). Related terms: tariff 1.22M; china tariffs on us 49,500; us tariffs 40,500; us tariff 40,500; **new tariffs 12,100 ($5.57)**; **us tariff news 8,100 ($5.81)**; new tariffs news 720; tariff headlines 170; tariff news this week 50 ($10.27); tariff news update today 30 — [seodata.dev: tariff news](https://www.seodata.dev/keyword/tariff-news)
+- seodata.dev returned **404 (not in its set)** for: tariff alerts, tariff alert, tariff monitoring, tariff updates, tariff update, section 232 tariffs, section 232, duty refund, customs duty refund, ieepa tariff refund (fetched 2026-11-03). The prior report reads a 404 as "low or untracked", not zero — [audit-acquisition-plan-2026-10.md, §4 sources note](../../reports/audit-acquisition-plan-2026-10.md)
+- From the prior report (seodata.dev): tariff refund 480/mo ($9.52); cbp tariffs 880 ($25.72); tariff reimbursement 30; tariff refunds 20; section 301 tariff refund 20; duty drawback 1,900 ($34.40); drawback 9,900 ($13.80); tariff calculator 4.4k ($8). Untracked: tariff audit, customs audit, post summary correction, ieepa refund — [audit-acquisition-plan-2026-10.md](../../reports/audit-acquisition-plan-2026-10.md); [HTS Hero growth strategy.md](../../reports/HTS%20Hero%20growth%20strategy.md)
+- Our own GSC (3 months to 2026-10-23, top-1,000 query export): "tariff monitoring" had **6 impressions, 0 clicks, average position 3.17**. No query containing alert/refund/audit/overpaid/drawback/IEEPA refund appears in the export, and none of /duty-audits, /tariff-alerts, /tariff-updates or /duty-guard is in the Pages export — `seo-data/htshero.com-Performance-on-Search-2026-10-23/Queries.csv`, `Pages.csv` (local)
+- I found no public keyword-volume figure for "tariff refund" or "tariff alerts" outside seodata.dev. One consumer-site note says the SCOTUS ruling creates "a second wave of consumer search demand", but that is the author's assumption, not data — [bullwinkle research note](https://bullwinkle.js.org/HustleIdeas/research/2026-04-09-1600/)
+
+**IEEPA status as of early Nov 2026**
+- On 2026-02-20, SCOTUS ruled 6-3 in *Learning Resources v. Trump* that IEEPA does not authorize tariffs. It did not address remedy — [Holland & Knight](https://www.hklaw.com/en/insights/publications/2026/02/supreme-court-strikes-down-ieepa-tariffs); [Wipfli](https://www.wipfli.com/insights/articles/supreme-court-ieepa-tariff-ruling-released)
+- CBP's CAPE system opened 2026-04-20 (Phase I) — [CBP CSMS #68340863](https://content.govdelivery.com/accounts/USDHSCBP/bulletins/412cc7f)
+- Phase I covers unliquidated and non-finally liquidated entries; >$106B had been sent to Treasury by the Sept 11 alert. Phase II launched June 29 for recon-flagged entries. Phase III (finally liquidated entries, **only for importers with CIT suits**) was "temporarily delayed" as of Aug 25. About $1.7B was stalled because importers had not registered for ACH. CBP was not processing CAPE claims on entries with open protests — [NatLawReview / Barnes & Thornburg, 2026-09-11](https://natlawreview.com/article/ieepa-tariff-refunds-critical-developments-phase-iii-delays-and-action-steps)
+- Later alerts: Phase III set for 2026-10-06, then "open" for CIT plaintiffs whose entries are covered by reliquidation orders and who gave CBP IOR numbers by July 30. About $136.6B in potential/certified refunds had been accepted and about $126B sent to Treasury by Oct 2. About **$11.4B sits in finally liquidated entries that CBP won't refund without a court order naming the importer** — [Cherry Bekaert: Phase III open](https://www.cbh.com/insights/alerts/ieepa-tariff-refund-update-cape-phase-iii-open/); [Cherry Bekaert: Phase III set for Oct 6](https://www.cbh.com/insights/alerts/ieepa-tariff-refund-update-cape-phase-iii-set-for-october-6/); [tariffstool.com refund tracker](https://www.tariffstool.com/tariff-refund-tracker) (sources disagree on the exact go-live date)
+- DOJ appealed the CIT universal-refund order to the Federal Circuit in June 2026. The opening brief was due Aug 3 and the response in September. **I found no oral-argument date or decision.** Class-certification arguments: *V.O.S. Selections* on Aug 6, *Freestyle World* on Aug 19. Final resolution "may not occur before the end of 2026" — [Holland & Knight, June 2026](https://www.hklaw.com/en/insights/publications/2026/06/ieepa-tariff-refund-update-government-appeals); [Thompson Hine](https://www.thompsonhinesmartrade.com/2026/06/trump-administration-appeals-cits-ieepa-tariff-refund-order/); [Troutman](https://www.troutman.com/insights/to-sue-or-not-to-sue-that-is-the-question-for-ieepa-tariff-refunds/)
+- The **§1581(i) two-year residual-jurisdiction deadline runs from the date of entry**, so the earliest deadlines are "as early as February 2027". Example: an entry of 2025-04-05 is due 2027-04-05 — [NatLawReview](https://natlawreview.com/article/ieepa-tariff-refunds-critical-developments-phase-iii-delays-and-action-steps)
+
+**Upcoming events likely to spike searches (Nov 2026–Mar 2027)**
+- 178 remaining Section 301 China exclusions expire **2026-11-10** — [Thomson Reuters](https://tax.thomsonreuters.com/blog/section-301-exclusions-expiration/)
+- US–China truce extended to **2027-01-10**. Section 301 port-fee suspension proposed through 2027-01-09. Section 232 polysilicon/solar 15% from **2026-12-04**. Upholstered furniture/cabinet increases on **2027-01-01**. Entry Type 13 postal e-filing **2027-01-20**. Drones 232 escalation **2027-02-09**. The Section 301 "excess capacity" investigation (16 economies) has a determination window into **March 2027** — [search synthesis of Dimerco](https://dimerco.com/us-tariff-update-2026/), [tariffos deadlines](https://tariffos.com/en/deadlines/), [ICPA 301 tracker](https://www.icpainc.org/section-301-tracker/) (secondary trackers; dates need checking against the FR/CSMS)
+- Section 232 metals: temporary rates from 2026-06-08 through 2027-12-31 — [Holland & Knight, June 2026](https://www.hklaw.com/en/insights/publications/2026/06/annexed-opportunity-proclamation-provides); [GHY](https://www.ghy.com/trade-compliance/us-adjusts-section-232-tariffs-on-aluminum-steel-and-copper-full-customs-value-now-applies/)
+- Section 301 forced-labor tariff (10%/12.5% by origin) took effect 2026-07-24 — [Dimerco](https://dimerco.com/us-tariff-update-2026/)
+
+### Inferences
+- Cluster A's head terms add up to perhaps 1–3k US searches/mo across all variants, plus drawback, which mostly fits a different product. Ranking #1 for "tariff refund" (480/mo) would bring roughly 100–150 clicks/mo before any AI Overview takes its share [E]. Search traffic alone will not get to 5k MRR, so cluster A SEO has to be paired with long-tail "problem" pages and AEO citations.
+- Cluster B: nobody searches for "tariff alerts" as a product. Alerts are sold off the back of **news and status intent** ("new tariffs" 12.1k, "us tariff news" 8.1k, "tariff tracker" 1.9k, plus program-specific and dated terms). A news feed that captures email is the realistic play. The "tariff news" head term (301k) is owned by news publishers and is not winnable.
+- The refund story is shifting from "how do I get my IEEPA refund" (CAPE, already well covered by CBP, law firms and Big 4) to **"am I stuck, and what deadline am I up against"**: finally liquidated entries, protests, §1581(i), Federal Circuit and class-cert outcomes. A Federal Circuit ruling or class-cert ruling, plus the Feb–Apr 2027 §1581(i) deadlines, are the most likely refund-search spikes in the target window [E]. Neither ruling date is known.
+- Because HTS Hero's verified rates begin 2025-11-17 (per the prior report), IEEPA deadline content can educate and capture emails, but the audit can only check entries after mid-Nov 2025 until the backfill is done.
+
+### Gaps
+- No Google Trends curves pulled (no access from this environment). The user should check Trends for "tariff refund", "ieepa refund", "tariff tracker" and "new tariffs" (US, 12 months) to confirm the Feb–May 2026 spike and the current baseline.
+- Volumes for about 18 cluster terms were blocked by the seodata.dev rate limit: ieepa refund, customs audit, post summary correction, tariff overpayment, tariff refund calculator, section 122, tariffs today, tariff news today, cape refund, tariff refund status and others. A Keyword Planner pull (free with a Google Ads account) is the cheapest fix, and the prior report already recommends it.
+- Federal Circuit argument or decision dates, and whether *V.O.S.* class cert was granted after Sept 2026: not found.
+
+## 2. Who ranks and gets cited now (cluster A), and with what offers
+
+### Takeaway
+The audit/refund space is crowded with **free-assessment + contingency** vendors (BorderAudit, Tarifflo, Declaro/Stackknack, USATariff, AYA Law), funded platforms (Flexport, KlearNow, Gaia, Caspian), and Big 4/law firms that own IEEPA explainer content. **GingerControl's blog shows up in almost every query** in both clusters. It is the clearest example of the content-led, long-tail, comparison-post model that is winning retrieval.
+
+### Cited Findings
+- Contingency or free models: **BorderAudit** "completely free for importers… success-only" — [G2 BorderAudit pricing](https://www.g2.com/products/borderaudit/pricing). **Tarifflo** offers a complimentary sample audit with no charge until refunds arrive — [HuntScreens: Tarifflo](https://huntscreens.com/products/tarifflo-inc). **Declaro (Stackknack)** offers a free duty audit with a 4-year lookback; the importer keeps 80% — [Stackknack tools](https://stackknack.com/declaro/tools). **USATariff** offers a free eligibility assessment on contingency — [USATariff press release](https://www.wboc.com/online_features/press_releases/usa-tariff-explains-how-to-file-for-tariff-refund-as-importers-recover-overpaid-duties/article_e6a4ba58-64c5-5f61-aa7f-9419f98e5de0.html). **AYA Law** works on pure contingency with a free evaluation — [AYA Law](https://ayarlaw.com/tariff-refund-attorney)
+- Funded platforms: **Flexport** launched tech to automate tariff refunds (2026-02-26) and offers a free "Audit Your Customs Broker" tool plus a Refund Calculator — [AAP/Cision](https://www.aap.com.au/aapreleases/cision20260226ae94219); [Flexport customs suite](https://www.flexport.com/technology/customs-suite/index.md). **KlearNow** publishes a case study: "post-entry audit finds $1.7M in duty overcharges hidden by tariff stacking" — [KlearNow](https://klearnow.ai/case-studies/post-entry-audit-finds-1-7m-in-duty-overcharges-hidden-by-tariff-stacking/). **KPMG** runs "data-driven tariff recovery services" and a PSC-filing PDF — [KPMG](https://kpmg.com/us/en/capabilities-services/tax-services/international-tax-trade-and-transfer-pricing/trade-customs/data-driven-tariff-recovery-services.html)
+- On 2026-10-30, `htshero.com/tariff-audit` was **#3 organic** for "tariff audit software find overpaid duty", alongside KlearNow, Caspian, GingerControl, Gaia, Tarifflo and Allied CHB. Caspian, Tarifflo and Gaia all pull from ACE or ES-003 — [audit-acquisition-plan-2026-10.md](../../reports/audit-acquisition-plan-2026-10.md)
+- "How do I know if I overpaid tariffs" retrieves KlearNow's case study, Foley, V&E, Beancount's small-business CAPE guide (translated into many languages) and USATariff press releases. The answer framing is: confirm IOR → pull ACE data incl. 9903.01/.02 lines → check stacking errors (e.g., EU top-up applied as a stack) → PSC/protest/CAPE path → ACH registered → debt offsets — [V&E](https://www.velaw.com/insights/what-importers-should-know-if-us-tariffs-are-overturned); [Beancount guide](https://beancount.io/sk/blog/2026/08/06/tariff-refunds-importer-of-record-cape-portal-small-business-guide); [Foley](https://www.foley.com/?p=118329)
+- "PSC vs protest vs drawback" retrieves **GingerControl** ("How to Recover Overpaid Import Duties: PSC, Protest, 1520(d), or Drawback"), Aprio, Gaia, USA Customs Clearance ("PSC vs protest vs prior disclosure"), Peacock Tariff Consulting and CBP rulings mirrors (open-gov.usebase.io, tarifflens.ai) — [GingerControl](https://gingercontrol.com/blog/recover-overpaid-import-duties); [Aprio](https://www.aprio.com/customs-duty-refunds-explained-ins-article-tax/); [Gaia](https://gaiadynamics.ai/blog/what-every-importer-should-know-about-the-tariff-refund-process-in-2025); [USA Customs Clearance](https://usacustomsclearance.com/process/psc-vs-protest-vs-prior-disclosure/)
+- GingerControl also ranks "Tariff Audit Software vs Duty Drawback: Which Recovers More in 2026?" and "What Is Tariff Management Software?" — [GingerControl](https://gingercontrol.com/blog/tariff-audit-software-vs-duty-drawback); [GingerControl](https://gingercontrol.com/blog/tariff-management-software)
+- IEEPA refund explainers are dominated by law and accounting firms: A&O Shearman, Norton Rose, Holland & Knight, Hogan Lovells, BBH, Troutman, Baker Tilly, BDO, Thompson Hine, Cherry Bekaert, Great Lakes Customs Law — [example set](https://www.bakertilly.com/insights/ieepa-refunds); [BDO](https://www.bdo.com/insights/tax/update-on-cbp-ieepa-refund-progress-and-new-orders-from-the-us-court-of-international-trade); [Great Lakes Customs Law](https://greatlakescustomslaw.com/ieepa-tariff-refunds/)
+- Data and tracker pages also show up: tariffstool.com "IEEPA Tariff Refund Tracker 2026: Pool, Claims & Payouts (Data)"; Cato's refund progress blog; Law360 running totals — [tariffstool](https://www.tariffstool.com/tariff-refund-tracker); [Cato](https://www.cato.org/blog/ieepa-refunds-update-good-progress-still-ways-go)
+- A "5–15% of duties include overpayments" figure circulates, but it comes from a refund vendor's press release — [USATariff PR](https://norfolkdailynews.com/online_features/press_releases/usa-tariff-explains-how-to-file-for-tariff-refund-as-importers-recover-overpaid-duties/article_cdbc684a-1e3a-5821-bf2f-534af3f7d90f.html)
+
+### Inferences
+- HTS Hero can't beat law firms on IEEPA authority. It can win on **specific, data-backed problem pages** ("Section 122 charged on a Section 232 article", "EU 15% cap stacked instead of topped up") and on **neutral, factual comparisons** (PSC vs protest vs 1520(d) vs drawback, with deadline math), the format GingerControl is using to get cited.
+- The pricing wedge against contingency firms ("keep 100% of what you find; your broker files") holds up, because the market's default is a 20%+ cut [E, from the 80/20 split above]. Copy has to stay at "could / may qualify".
+- Free sample audits are table stakes. With no upload, HTS Hero has no matching hook (the prior report's #1 move).
+
+### Gaps
+- Caspian's and Gaia's current offer and pricing pages were not re-fetched; I relied on the prior report.
+- Domain authority figures (Ahrefs DR) for competitors: not available.
+- Live Google AI Overview content for these queries: not observed directly.
+
+## 3. Cluster B: does "tariff alerts" have volume, who ranks, what sells alerts
+
+### Takeaway
+There is no measurable volume for "tariff alerts" or "tariff monitoring": seodata shows 404s and our own GSC has 6 impressions in 3 months. Even so, the results page is already full of small SaaS players (GingerControl Compliance Radar, HTS Watch at $29, ImportSignal, TariffDesk, Tandom, CodeHTS at $99, Pagecrawl). Demand that can sell alerts sits in "tariff tracker" (1.9k), "new tariffs" (12.1k), "us tariff news" (8.1k), "us tariffs by country" (2.4k), "tariff chart" (9.9k) and dated or program-specific queries. A dated news feed plus "watch your codes" email capture is the realistic route.
+
+### Cited Findings
+- Alert products that rank: **GingerControl Compliance Radar** (5 sources: CSMS, FR, proclamations, CROSS, USTR; beta, invite) plus blog posts "Get Tariff Alerts for Only Your HTS Codes", "Tariff Alerts by HTS Code" and "Trade Policy Alert Services Compared 2026"; **HTS Watch (tariffsapi.com)** $29/mo, free tier limited to 3 codes; **ImportSignal** (29k HTS codes nightly); **TariffDesk** (white-label broker alerts); **Tandom** CSMS rate-change alerts/API; **Pagecrawl** free Section 232/Ch.99 page monitor; Camtom alerts — [GingerControl comparison](https://gingercontrol.com/blog/trade-policy-alert-services-compared-2026); [GingerControl Radar](https://gingercontrol.com/products/compliance-radar); [HTS Watch](https://tariffsapi.com/hts-watch); [ImportSignal](https://parse.gl/brands/importsignal-com); [TariffDesk](https://trustmrr.com/startup/tariff-desk); [Tandom](https://tandom.ai/resources/csms-rate-change-alerts-tandom-monitoring-api); [Pagecrawl](https://pagecrawl.io/tools/section-232-tariff-hts-2026-change-monitoring.html)
+- "Best tariff tracking software" retrieves Capterra listings (CodeHTS $99/mo with monthly change alerts; MyCustomsInfo; TariffTel; TariffPilot; TarifasPro), ustariffrates.com "Best tariff tracker" (403 to my fetch), Gaia's "Trade compliance software in 2026: evaluating vendors" (lists Gaia, Descartes, E2open, KYG Trade), Camtom's self-ranking, and a checkthat.ai AI-answer page citing Descartes. **HTS Hero did not appear** — [Capterra CodeHTS](https://www.capterra.com/p/10041906/CodeHTS/); [Gaia](https://gaiadynamics.ai/blog/trade-compliance-software-in-2026-evaluating-vendors-for-tariff-management); [ustariffrates best](https://ustariffrates.com/best/best-tariff-tracker-tools); [checkthat.ai](https://checkthat.ai/ai-answers/1da9124d-bcac-47b7-a47b-5b4551d0d2f4)
+- Free "tracker/news" pages that rank for tracker and update terms: Zonos "US Import Tariff Tracker", ustariffrates.com/tariff-tracker, OIA Global "2026 Tariff Updates", Dimerco "US Tariff Update 2026", tariffos.com deadlines page, AirliftUSA Section 232 page, Flavorcloud trade & tariff hub — [Zonos](https://zonos.com/docs/guides/us-tariff-changes); [ustariffrates tracker](https://ustariffrates.com/tariff-tracker); [OIA](https://www.oiaglobal.com/tariff-updates/); [tariffos](https://tariffos.com/en/deadlines/); [Flavorcloud](https://flavorcloud.com/trade-and-tariff)
+- The free official alternative is GovDelivery subscriptions (CBP CSMS, USITC email notification) — [USITC](https://usitc.gov/node/57566)
+
+### Inferences
+- **Cluster B as a keyword target is a vanity goal.** Being #1 for "tariff alerts" would bring perhaps tens of visits a month [E]. The pages to build rank for "tariff tracker" (1.9k, low competition 0.05), "us tariff tracker" (140), "upcoming tariff deadlines" (volume unknown; tariffos ranks), program pages ("section 232 tariffs" untracked but heavily published), and country pages ("us tariffs by country" 2.4k). Each one captures "watch these codes" emails, with paid Essentials alerts as the upsell.
+- The most-cited format in this space is **dated, structured, source-linked tables** (deadline lists, rate-by-program tables, refund totals trackers). Freshness signals ("updated Nov 3, 2026" plus a CSMS/FR link per row) are what the tracker pages have in common [E, pattern across Zonos/tariffos/tariffstool].
+- Comparison posts written by vendors (GingerControl, Gaia, Camtom) are being retrieved for "best X software" queries. HTS Hero needs its own honest comparison page and listings on Capterra/G2, since those listings show up directly in results.
+
+### Gaps
+- No volume for "upcoming tariff deadlines", "section 232 update", "tariff news today" or country-specific "X tariffs news" (rate-limited).
+- Newsletter benchmarks (subscriber-to-paid conversion for trade newsletters): not found.
+- Flexport tariff alerts and Descartes alert pages were not checked individually.
+
+## 4. What AI engines cite for the core prompts
+
+### Takeaway
+I could not query ChatGPT, Perplexity or Gemini directly. Web retrieval for these prompts favours law and accounting firm explainers (IEEPA), vendor blogs with question-shaped titles (GingerControl, Gaia, KlearNow), Capterra listings and self-published "best of" pages, and dated tracker pages. HTS Hero does not appear in any of the retrieved sets for the three prompts tested.
+
+### Cited Findings
+- "How do I know if I overpaid tariffs": KlearNow case study, Foley, V&E, Beancount guide, USATariff PRs — [KlearNow](https://klearnow.ai/case-studies/post-entry-audit-finds-1-7m-in-duty-overcharges-hidden-by-tariff-stacking/); [V&E](https://www.velaw.com/insights/what-importers-should-know-if-us-tariffs-are-overturned)
+- "How to get tariff refund" / IEEPA refund: Cherry Bekaert, Baker Tilly, BDO, Thompson Hine, Great Lakes Customs Law, Cato, tariffstool tracker, CBP CSMS — [Cherry Bekaert](https://www.cbh.com/insights/alerts/ieepa-tariff-refund-update-cape-phase-iii-open/); [Great Lakes Customs Law](https://greatlakescustomslaw.com/ieepa-tariff-refunds/)
+- "Best tariff tracking software": Capterra, ustariffrates "best", Gaia vendor evaluation, Camtom, checkthat.ai — [ustariffrates](https://ustariffrates.com/best/best-tariff-tracker-tools); [Gaia](https://gaiadynamics.ai/blog/trade-compliance-software-in-2026-evaluating-vendors-for-tariff-management)
+- An AI-answer aggregator (checkthat.ai) is publishing cached AI answers that name Descartes for tariff tracking — [checkthat.ai](https://checkthat.ai/ai-answers/1da9124d-bcac-47b7-a47b-5b4551d0d2f4)
+- The prior report set a 90-day target of being cited by at least one AI engine on 2 of 5 audit prompts — [audit-acquisition-plan-2026-10.md](../../reports/audit-acquisition-plan-2026-10.md)
+
+### Inferences
+- The fastest AEO levers are pages whose **title is the question** and whose first paragraph is a direct, citable answer, plus inclusion in third-party lists (Capterra/G2 listings, "best tariff tracker" roundups, comparison posts). Retrievers lean heavily on lists for "best software" prompts.
+- The GSC "Search Generative AI Features" export exists in `seo-data/` (Pages/Chart, no Queries file). It is worth checking monthly to see which pages already appear in AI features.
+
+### Gaps
+- No direct ChatGPT/Perplexity/Gemini/AI Overview runs. The user (or a later session with browser access) should run the 5–8 prompts monthly and log the citations, so the results can be tracked over time.
+
+## 5. Lead-magnet formats and concrete activities to win (sized for Feb–Mar 2027)
+
+### Takeaway
+The proven hooks in this space are a **free check on the importer's own data** (ES-003/ACE upload → summary), **refund/duty calculators**, and **"audit your broker"** tools (Flexport). Deadline calculators (PSC/liquidation/protest/§1581(i)) are unproven but fit the Feb–Apr 2027 deadline wave. For alerts, the hook is "watch your codes" on every news, tracker and program page.
+
+### Cited Findings
+- Flexport: free "Audit Your Customs Broker" tool plus a Refund Calculator — [Flexport](https://www.flexport.com/technology/customs-suite/index.md)
+- Competitors take ACE/ES-003 data (Caspian, Tarifflo, Gaia, every IEEPA calculator); HTS Hero's upload is "coming soon" — [audit-acquisition-plan-2026-10.md](../../reports/audit-acquisition-plan-2026-10.md)
+- Free sample/eligibility audits are standard (BorderAudit, Tarifflo, Declaro, USATariff, AYA Law) — sources in §2
+- Remedy windows that a deadline tool would encode: PSC before liquidation (~314 days from entry; liquidation "often about 300 days"); protest 180 days after liquidation (19 U.S.C. 1514 / 19 CFR 174.12(e)); 1520(d) post-importation preference claim within 1 year of importation; drawback within 5 years; §1581(i) 2 years from entry — [GingerControl](https://gingercontrol.com/blog/recover-overpaid-import-duties); [USA Customs Clearance](https://usacustomsclearance.com/process/psc-vs-protest-vs-prior-disclosure/); [NatLawReview](https://natlawreview.com/article/ieepa-tariff-refunds-critical-developments-phase-iii-delays-and-action-steps)
+- ACH registration was the blocker on about $1.7B of refunds, which makes it a simple checklist item — [NatLawReview](https://natlawreview.com/article/ieepa-tariff-refunds-critical-developments-phase-iii-delays-and-action-steps)
+- Licensing: HTS Hero may identify discrepancies. PSC, drawback and CAPE preparation are customs business. Never take broker per-entry fees — [Customs brokerage limits for refunds.md](../../reports/Customs%20brokerage%20limits%20for%20refunds.md)
+
+### Inferences — activity plan [E unless noted]
+
+**Cluster A (audit/refund): one-off projects, in order, Nov–Jan**
+1. **ES-003 upload → free instant summary** ("N lines may be overpaid, up to $X"). This is the only lead magnet that matches the competition, and the prior report already ranks it #1.
+2. **Remedy & deadline calculator** (`/duty-audits/deadlines`): enter the entry date (and liquidation date if known) and get the PSC, protest, 1520(d), drawback and §1581(i) windows, each linked to the statute/CFR, with "your broker files" CTAs. Publish by mid-Dec, ahead of the Feb 2027 §1581(i) wave. Volume unproven; worth it because the deadlines are real and cited content is thin.
+3. **"PSC vs protest vs 1520(d) vs drawback vs CAPE"** comparison page with a decision table. GingerControl owns this format today, so match its depth and add a CAPE/§1581(i) row plus a deadline widget.
+4. **IEEPA refund status tracker** page: phases, totals, court docket items, dated changelog, every row sourced. Update it on each CSMS/court event. This format gets retrieved (tariffstool, Cato). Frame it as "what's open to whom", never as advice.
+5. **Problem pages HTS Hero can uniquely evidence** (from the prior report): Section 122 charged on 232 articles, EU/Japan/Korea cap stacking, old rate paid after a change, missed USMCA/1520(d). Each gets a worked example from our engine and an anonymised **sample audit report**.
+6. **Listings**: Capterra, G2, GetApp for Duty Guard (audit + alerts). These listings show up directly in "best X software" results.
+7. **Honest comparison pages**: "HTS Hero vs contingency refund firms (keep 100%)", "vs GingerControl", "vs Gaia", in line with the blog/compare plan in memory.
+
+**Cluster A: weekly (about 3–4 h/wk)**
+- Update the IEEPA status tracker and deadline page within 24h of each CSMS message, CAPE phase change or Federal Circuit/CIT ruling, with the date stamp updated.
+- One long-tail Q&A page per week, titled as the question with a 40–60 word direct answer up top (e.g., "Can I still get an IEEPA refund on a finally liquidated entry?", "What is the protest deadline after liquidation?").
+- Pitch one data point a week to trade press or Qwoted/HARO-style requests (JOC, Supply Chain Dive, FreightWaves, Sourcing Journal), drawn from the engine (e.g., how often 122 stacked on 232 codes).
+- Run the 5 AEO prompts in ChatGPT, Perplexity, Gemini and Google AI Mode once a month and log the citations.
+
+**Cluster B (alerts): one-off projects**
+1. **"/tariff-tracker" style hub** targeting "tariff tracker" (1.9k, competition 0.05) and "us tariff tracker": live table of active actions by program and country, effective dates, source links, and a "Watch your HTS codes" capture on every row. Use or extend /tariff-updates, keep the existing URLs, and stay additive per the never-hurt-SEO rule.
+2. **Upcoming tariff deadlines page** (tariffos ranks with this): 11-10 (301 exclusions), 12-04 (polysilicon 232), 01-01 (furniture), 01-09/10 (port fees / China truce), 01-20 (Type 13 mail), 02-09 (drones), Mar 2027 (301 excess capacity), plus the refund deadlines. Every date verified against the FR/CSMS before publishing.
+3. **Program pages** (Section 232 by product, Section 301, Section 122 history) and **country pages** targeting "us tariffs by country" (2.4k): dated tables with a watch-codes CTA.
+4. **Weekly email digest** ("This week's US tariff changes: what hit which HTS codes"). Free with an account, and it is the Essentials upsell surface. This puts the news intent ("new tariffs" 12.1k, "us tariff news" 8.1k) to work without competing against Reuters for the head term.
+5. **"Tariff alert services compared"** page answering GingerControl's version, with an honest feature/price table (HTS Watch $29, CodeHTS $99, Radar beta, Essentials $9).
+
+**Cluster B: daily/weekly**
+- Daily (15–30 min, ideally automated): publish each CSMS/FR tariff action to /tariff-updates within hours, with affected HTS codes and a "does this hit my imports?" CTA. Freshness is the only edge over the free trackers.
+- Weekly: send the digest. Refresh the deadlines page. Post the week's changes as a dated social/LinkedIn post linking to the update page (the Social Studio plan).
+
+**Feb–Mar 2027 sizing [E]:** Realistic outcomes are top 3 for long-tail audit and deadline pages, page 1 for "tariff tracker", and AI citations on 2–3 of 8 tracked prompts. #1 for "tariff refund" is a stretch against law and Big 4 firms. #1 for "tariff alerts" is achievable but worth little traffic. The revenue lever is email capture off news, tracker and deadline pages, converting into the Essentials/Pro trial.
+
+### Gaps
+- No conversion data for deadline calculators or refund estimators in this niche. The format is chosen on fit, not proof.
+- Newsletter-to-paid conversion benchmarks for B2B trade newsletters: not found.

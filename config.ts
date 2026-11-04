@@ -203,6 +203,9 @@ const config: ConfigProps = {
     fromNoReply: `HTS Hero <noreply@notify.htshero.com>`,
     // REQUIRED — Email 'From' field to be used when sending other emails, like abandoned carts, updates etc..
     fromAdmin: `HTS Hero <brendan@notify.htshero.com>`,
+    // Marketing and newsletter email (onboarding, announcements, tariff news and digests): its own
+    // domain, with click tracking, so complaints there never touch sign-in links and alerts
+    fromUpdates: `HTS Hero <brendan@updates.htshero.com>`,
     // Email shown to customer if need support. Leave empty if not needed => if empty, set up Crisp above, otherwise you won't be able to offer customer support."
     supportEmail: "support@htshero.com",
     // Where replies to our emails go. Every email is from Brendan and says a reply reaches him

@@ -9,7 +9,8 @@ import { Select } from "@/components/ui/Select"
 import { AUTHORITIES } from "@/libs/tariff-updates/types"
 
 // What a subscriber gets: how often, how much of each action, and which laws and countries (none
-// picked means all). Shared by the subscribe form, the manage page and Duty Guard's Alerts.
+// picked means all). Shared by the subscribe form, the manage page and Duty Guard's Alerts; the
+// laws and countries alone (NewsTopicsFields) also filter Duty Guard's Tariff Updates list.
 
 export interface NewsPreferencesValue {
   frequency: "instant" | "weekly" | "off"
@@ -63,11 +64,7 @@ export function NewsPreferencesFields({
   onChange: (v: NewsPreferencesValue) => void
   allowOff?: boolean
 }) {
-  const [countryPick, setCountryPick] = useState("")
-  const countries = useMemo(() => [...Countries].sort((a, b) => a.name.localeCompare(b.name)), [])
   const set = (patch: Partial<NewsPreferencesValue>) => onChange({ ...value, ...patch })
-  const toggleLaw = (law: string) =>
-    set({ authorities: value.authorities.includes(law) ? value.authorities.filter((a) => a !== law) : [...value.authorities, law] })
 
   return (
     <div className="flex flex-col gap-5">
@@ -92,58 +89,76 @@ export function NewsPreferencesFields({
               { value: "all_steps", label: "Every step", hint: "Also each Federal Register filing, CBP guidance and HTS revision" },
             ]}
           />
-          <fieldset className="flex flex-col gap-2">
-            <legend className={`${tt.eyebrow()} mb-2`}>Laws {value.authorities.length ? "" : "(all)"}</legend>
-            <div className="flex flex-wrap gap-2">
-              {LAWS.map((law) => {
-                const on = value.authorities.includes(law)
-                return (
-                  <button
-                    key={law}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() => toggleLaw(law)}
-                    className={`${ui.button({ variant: on ? "primary" : "secondary", size: "sm" })} ${on ? "" : "font-medium"}`}
-                  >
-                    {AUTHORITIES[law]}
-                  </button>
-                )
-              })}
-            </div>
-          </fieldset>
-          <fieldset className="flex flex-col gap-2">
-            <legend className={`${tt.eyebrow()} mb-2`}>Countries {value.countries.length ? "" : "(all)"}</legend>
-            <div className="flex flex-wrap items-center gap-2">
-              {value.countries.map((code) => {
-                const c = countries.find((x) => x.code === code)
-                return (
-                  <span key={code} className={`${tt.chip("primary")} gap-1`}>
-                    {c ? `${c.flag} ${c.name}` : code}
-                    <button type="button" aria-label={`Remove ${c?.name ?? code}`} onClick={() => set({ countries: value.countries.filter((x) => x !== code) })}>
-                      <XMarkIcon className="h-3.5 w-3.5" aria-hidden />
-                    </button>
-                  </span>
-                )
-              })}
-              <Select
-                label="Add a country"
-                value={countryPick}
-                onChange={(code) => {
-                  setCountryPick("")
-                  if (code && !value.countries.includes(code)) set({ countries: [...value.countries, code] })
-                }}
-                options={countries.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}` }))}
-                placeholder="Add a country…"
-                size="sm"
-                variant="pill"
-                buttonClassName="text-xs!"
-                menuClassName="w-64"
-              />
-            </div>
-            <p className="text-xs text-base-content/60">Actions that apply to every country always come through.</p>
-          </fieldset>
+          <NewsTopicsFields value={value} onChange={(t) => set(t)} />
         </>
       )}
     </div>
+  )
+}
+
+export type NewsTopics = Pick<NewsPreferencesValue, "authorities" | "countries">
+
+// The laws and countries someone follows (none picked: all). Also Duty Guard's Tariff Updates
+// list's filter, so the list shows what the news emails send.
+export function NewsTopicsFields({ value, onChange }: { value: NewsTopics; onChange: (v: NewsTopics) => void }) {
+  const [countryPick, setCountryPick] = useState("")
+  const countries = useMemo(() => [...Countries].sort((a, b) => a.name.localeCompare(b.name)), [])
+  const set = (patch: Partial<NewsTopics>) => onChange({ authorities: value.authorities, countries: value.countries, ...patch })
+  const toggleLaw = (law: string) =>
+    set({ authorities: value.authorities.includes(law) ? value.authorities.filter((a) => a !== law) : [...value.authorities, law] })
+
+  return (
+    <>
+      <fieldset className="flex flex-col gap-2">
+        <legend className={`${tt.eyebrow()} mb-2`}>Laws {value.authorities.length ? "" : "(all)"}</legend>
+        <div className="flex flex-wrap gap-2">
+          {LAWS.map((law) => {
+            const on = value.authorities.includes(law)
+            return (
+              <button
+                key={law}
+                type="button"
+                aria-pressed={on}
+                onClick={() => toggleLaw(law)}
+                className={`${ui.button({ variant: on ? "primary" : "secondary", size: "sm" })} ${on ? "" : "font-medium"}`}
+              >
+                {AUTHORITIES[law]}
+              </button>
+            )
+          })}
+        </div>
+      </fieldset>
+      <fieldset className="flex flex-col gap-2">
+        <legend className={`${tt.eyebrow()} mb-2`}>Countries {value.countries.length ? "" : "(all)"}</legend>
+        <div className="flex flex-wrap items-center gap-2">
+          {value.countries.map((code) => {
+            const c = countries.find((x) => x.code === code)
+            return (
+              <span key={code} className={`${tt.chip("primary")} gap-1`}>
+                {c ? `${c.flag} ${c.name}` : code}
+                <button type="button" aria-label={`Remove ${c?.name ?? code}`} onClick={() => set({ countries: value.countries.filter((x) => x !== code) })}>
+                  <XMarkIcon className="h-3.5 w-3.5" aria-hidden />
+                </button>
+              </span>
+            )
+          })}
+          <Select
+            label="Add a country"
+            value={countryPick}
+            onChange={(code) => {
+              setCountryPick("")
+              if (code && !value.countries.includes(code)) set({ countries: [...value.countries, code] })
+            }}
+            options={countries.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}` }))}
+            placeholder="Add a country…"
+            size="sm"
+            variant="pill"
+            buttonClassName="text-xs!"
+            menuClassName="w-64"
+          />
+        </div>
+        <p className="text-xs text-base-content/60">Actions that apply to every country always come through.</p>
+      </fieldset>
+    </>
   )
 }

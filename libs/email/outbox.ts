@@ -44,7 +44,7 @@ const must = <T>(result: { data: T | null; error: { message: string } | null }, 
 }
 
 let resendClient: Resend | null = null
-const resend = () => {
+export const resend = () => {
   if (!process.env.RESEND_API_KEY) throw new Error("RESEND_API_KEY is not set")
   return (resendClient ??= new Resend(process.env.RESEND_API_KEY))
 }
@@ -133,11 +133,15 @@ const unsubscribeUrlOf = (props: Record<string, unknown>) => {
   return footer?.unsubscribeUrl
 }
 
+// Batch kinds sent from the updates domain (config.resend.fromUpdates). Everything else (impact
+// alerts on someone's imports, confirmations, welcome, receipts) stays on the notify domain.
+const UPDATES_KINDS = new Set(["lifecycle", "tariff_news", "tariff_digest"])
+
 const emailOptions = async (m: MessageRow, note: string | null, batchKind: string, batchSubject?: string | null): Promise<CreateEmailOptions> => {
   const { subject, html, text } = await renderEmail(m.template, m.props, note, batchSubject)
   const unsubscribe = unsubscribeUrlOf(m.props)
   return {
-    from: config.resend.fromAdmin,
+    from: UPDATES_KINDS.has(batchKind) ? config.resend.fromUpdates : config.resend.fromAdmin,
     to: m.recipient,
     replyTo: config.resend.replyTo,
     subject,
@@ -167,6 +171,19 @@ const markFailed = (db: Db, id: string, error: unknown) =>
 
 const EMAIL_CHUNK = 100
 
+const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// One chunk through Resend's batch endpoint, waiting out its per-second rate limit (a few tries)
+// rather than failing 100 messages. The idempotency key keeps a retry from sending the chunk twice.
+const sendChunk = async (options: CreateEmailOptions[], idempotencyKey: string) => {
+  for (let attempt = 1; ; attempt++) {
+    const { data, error } = await resend().batch.send(options, { idempotencyKey })
+    if (!error) return data
+    if (error.name !== "rate_limit_exceeded" || attempt >= 4) throw new Error(error.message)
+    await pause(1000 * attempt)
+  }
+}
+
 // Sends approved batches' pending messages until `deadline`; batches with nothing left become sent
 export const sendApproved = async (db: Db, { deadline }: { deadline: number }) => {
   const batches = must<{ id: string; kind: string; note: string | null; subject: string | null }[]>(
@@ -189,8 +206,7 @@ export const sendApproved = async (db: Db, { deadline }: { deadline: number }) =
       await db.from("email_messages").update({ status: "sending" }).in("id", chunk.map((m) => m.id))
       try {
         const options = await Promise.all(chunk.map((m) => emailOptions(m, batch.note, batch.kind, batch.subject)))
-        const { data, error } = await resend().batch.send(options)
-        if (error) throw new Error(error.message)
+        const data = await sendChunk(options, `outbox:${batch.id}:${chunk[0].id}:${chunk.length}`)
         await Promise.all(chunk.map((m, j) => markSent(db, m.id, data?.data?.[j]?.id, options[j].subject)))
         sent += chunk.length
       } catch (e) {

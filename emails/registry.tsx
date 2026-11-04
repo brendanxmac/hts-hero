@@ -19,7 +19,7 @@ import AuditsUpsellEmail, { auditsUpsellSubject, type AuditsUpsellEmailProps } f
 import ClassifyOnboardingEmail, { classifyOnboardingSubject, type ClassifyOnboardingEmailProps } from "./onboarding/ClassifyOnboardingEmail"
 import WatchingEmail, { watchingSubject, type WatchingEmailProps } from "./onboarding/WatchingEmail"
 import ImpactAlertEmail, { impactAlertSubject, type ImpactAlertEmailProps } from "./tariff-updates/ImpactAlertEmail"
-import TariffDigestEmail, { tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
+import TariffDigestEmail, { DIGEST_NEWS_PATH, tariffDigestSubject, type TariffDigestEmailProps } from "./tariff-updates/TariffDigestEmail"
 import TariffNewsEmail, { tariffNewsSubject, type TariffNewsEmailProps } from "./tariff-updates/TariffNewsEmail"
 import { updateUrl } from "./kit/parts"
 import { SITE } from "./kit/brand"
@@ -72,7 +72,11 @@ export const TEMPLATES = {
         detail: [u.authorityLabel, u.stageLabel, u.effectiveOn ? `effective ${chatDate(u.effectiveOn)}` : null, u.countriesLabel].filter(Boolean).join(" · "),
       })),
       notes: p.updates.length > 8 ? [`…and ${p.updates.length - 8} more this week`] : undefined,
-      actions: [{ label: "See every tariff update", url: `${SITE}/tariff-updates?utm_source=chat&utm_medium=chat&utm_campaign=tariff-digest` }],
+      actions: [
+        p.signedIn
+          ? { label: "See all your tariff news", url: `${SITE}${DIGEST_NEWS_PATH}&utm_source=chat&utm_medium=chat&utm_campaign=tariff-digest` }
+          : { label: "See every tariff update", url: `${SITE}/tariff-updates?utm_source=chat&utm_medium=chat&utm_campaign=tariff-digest` },
+      ],
     }),
   }),
   impact_alert: template<ImpactAlertEmailProps>({

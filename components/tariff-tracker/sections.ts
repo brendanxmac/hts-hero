@@ -96,10 +96,10 @@ export const SECTIONS: TrackerSection[] = [
   }),
   section({
     slug: "changes",
-    label: "Tariff Changes",
+    label: "Tariff Updates",
     Icon: BoltIcon,
-    title: "Tariff Changes",
-    summary: "Every US tariff action, what it does to your imports, and your alerts.",
+    title: "Tariff Updates",
+    summary: "The US tariff news you follow, what it does to your imports, and your alerts.",
     ready: true,
     group: "workspace",
     paidOnly: false,
@@ -251,7 +251,7 @@ export const sectionBySlug = (slug: string | null) =>
   SECTIONS.find((s) => s.slug === slug)
 
 // Sections folded into another one (the sidebar is organized by what people come to do): Tariff
-// News, Tariff Impacts, Rate History and the alert settings are views of Tariff Changes, and
+// News, Tariff Impacts, Rate History and the alert settings are views of Tariff Updates, and
 // Insights a view of Your Imports. Their old addresses (in sent emails, Slack, bookmarks) open
 // them there.
 export const MOVED_TABS: Partial<Record<SectionSlug, { tab: SectionSlug; view?: string }>> = {

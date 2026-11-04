@@ -88,7 +88,7 @@ export const TOUR_STEPS: TourStep[] = [
     lead: "Alerts are on for every import you add. Choose where they go, and which kinds of changes they cover.",
     how: [
       <>
-        Open <B>Tariff Changes</B> and choose <B>Alert Settings</B>.
+        Open <B>Tariff Updates</B> and choose <B>Alert Settings</B>.
       </>,
       <>
         Under <B>Where Alerts Go</B>, keep email, and connect <B>Slack</B> or <B>Microsoft Teams</B> if your team lives there.
