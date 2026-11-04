@@ -23,7 +23,7 @@ const LESSONS: Record<TrialLesson, { subject: string; eyebrow: string; title: st
     eyebrow: "Your trial · Alerts",
     title: "See How Any Tariff Hits Your Products",
     body: "Every new US tariff action is checked against your products. When one applies, the alert names the products, the rate before and after, and the official source.",
-    points: ["Open Tariff Changes and pick any action", "See each product it hits, before → after", "Choose where alerts go: email now, and Slack or Teams on plans for 100 or more products"],
+    points: ["Open Tariff Updates and pick any action", "See each product it hits, before → after", "Choose where alerts go: email now, and Slack or Teams on plans for 100 or more products"],
     cta: "See my tariff changes",
     href: "/duty-guard?tab=changes",
   },

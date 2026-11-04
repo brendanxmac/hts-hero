@@ -14,26 +14,28 @@ import { rememberSection } from "../overview/seenSections";
 import { sectionBySlug, TRACKER_PATH } from "../sections";
 import { SectionHeader } from "../shell/SectionPage";
 
-// Tariff Changes: everything about tariffs moving, in one place (it was four pages: Tariff News,
-// Tariff Impacts, Rate History and Alerts). Three views of it, as pills under the header:
-// - Actions: every US tariff action, those that hit the user's imports first, and the open
-//   one with what it does to each import (?update=slug: where alert emails land)
+// Tariff Updates (was Tariff Changes; ?tab=changes): everything about tariffs moving, in one place
+// (it was four pages: Tariff News, Tariff Impacts, Rate History and Alerts). Three views of it, as
+// pills under the header:
+// - News: US tariff actions for the laws and countries the user follows (their news settings),
+//   those that hit their imports first, and the open one with what it does to each import
+//   (?update=slug: where alert emails land; ?list=all: where the weekly digest's "see all" lands)
 // - Rate History: how the rates on the user's imports have moved, and why
 // - Alert Settings: where alerts go and which changes send one
 // The header says whether alerts are on, and opens their settings.
 
-type View = "actions" | "history" | "alerts";
+type View = "news" | "history" | "alerts";
 
 const VIEWS: { id: View; label: string }[] = [
-  { id: "actions", label: "Actions" },
+  { id: "news", label: "News" },
   { id: "history", label: "Rate History" },
   { id: "alerts", label: "Alert Settings" },
 ];
 
-const viewOf = (v: string | null): View => (v === "history" || v === "alerts" ? v : "actions");
+const viewOf = (v: string | null): View => (v === "history" || v === "alerts" ? v : "news");
 
 // The sections these views used to be, for the Home's setup steps (seenSections)
-const WAS = { actions: "impact", history: "history", alerts: "alerts" } as const;
+const WAS = { news: "impact", history: "history", alerts: "alerts" } as const;
 
 const AlertsStatus = ({ onOpen }: { onOpen: () => void }) => {
   const { signedIn } = useTrackerAccess();
@@ -55,7 +57,7 @@ export const TariffChanges = () => {
 
   const open = (next: View) => {
     if (next === view) return;
-    window.history.pushState(null, "", `${TRACKER_PATH}?tab=changes${next === "actions" ? "" : `&view=${next}`}`);
+    window.history.pushState(null, "", `${TRACKER_PATH}?tab=changes${next === "news" ? "" : `&view=${next}`}`);
   };
 
   return (
@@ -63,10 +65,10 @@ export const TariffChanges = () => {
       <SectionHeader
         section={sectionBySlug("changes")!}
         actions={view !== "alerts" && <AlertsStatus onOpen={() => open("alerts")} />}
-        tabs={<TabBar label="Tariff Changes" options={VIEWS} value={view} onChange={open} />}
+        tabs={<TabBar label="Tariff Updates" options={VIEWS} value={view} onChange={open} />}
       />
       <div key={view} className="tt-enter flex flex-col gap-group">
-        {view === "actions" && <TariffImpact />}
+        {view === "news" && <TariffImpact />}
         {view === "history" && <RateHistory />}
         {view === "alerts" && <Alerts />}
       </div>

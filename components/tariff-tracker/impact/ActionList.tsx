@@ -1,19 +1,28 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
+import { AdjustmentsHorizontalIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
+import { NewsTopicsFields, type NewsPreferencesValue, type NewsTopics } from "@/components/tariff-updates/NewsPreferencesFields";
+import { matchesNews } from "@/libs/tariff-updates/newsMatch";
 import { Countries } from "@/constants/countries";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { AUTHORITIES } from "@/libs/tariff-updates/types";
 import { NEWS_DOTS, newsToneOf } from "../news/tone";
 import type { ImportMatch } from "../news/useImportMatches";
 import type { TrackerUpdate } from "../overview/useTariffUpdates";
+import { useTrackerAccess } from "../access/accessContext";
 import { day } from "./format";
 
-// The tariff actions to pick from, down the left of Tariff Changes' Actions (DESIGN_SYSTEM §15): which
-// ones (Needs Review, Affect You, Upcoming, All; each explained under the filters), a search, then the
-// actions by month, newest first. Each is its title and one quiet line (law, date, and what it
+// The tariff actions to pick from, down the left of Tariff Updates' News (DESIGN_SYSTEM §15): which
+// ones (Needs Review, Affect You, Upcoming, All; each explained under the filters), a search, the
+// laws and countries followed, then the actions by month, newest first. All and Upcoming show the
+// news the user follows: their news settings to start with (what their news emails send), which
+// they can change to browse, save as their settings, or drop for all news. Needs Review and Affect
+// You are about their own imports, so they never hide any. Each is its title and one quiet line (law, date, and what it
 // does to the user's imports in the color of it); the open one is marked with a cobalt bar. The
 // list scrolls on its own beside the page and keeps the open action in view.
 
@@ -26,8 +35,98 @@ const FILTERS: { id: Filter; label: string; hint: string }[] = [
   { id: "review", label: "Needs Review", hint: "Recent actions that may affect your imports with alerts on, and you haven't reviewed yet." },
   { id: "mine", label: "Affect You", hint: "Every action that affects or may affect your imports: to review, reviewed, and past ones." },
   { id: "upcoming", label: "Upcoming", hint: "Actions still to take effect, the soonest first." },
-  { id: "all", label: "All", hint: "Every US tariff action, newest first. Search by product, code, country or law." },
+  { id: "all", label: "All", hint: "Every US tariff action for the laws and countries you follow, newest first. Search by product, code, country or law." },
 ];
+
+const LAW_NAMES = AUTHORITIES as Record<string, string>;
+
+// "Section 232, Section 301 · China, Mexico"; none picked: all (AD/CVD only when picked)
+const topicsLabel = (t: NewsTopics) =>
+  `${t.authorities.length ? t.authorities.map((a) => LAW_NAMES[a] ?? a).join(", ") : "All laws but AD/CVD"} · ${
+    t.countries.length ? t.countries.map((c) => COUNTRY_NAMES.get(c) ?? c).join(", ") : "all countries"
+  }`;
+
+const sameTopics = (a: NewsTopics, b: NewsTopics) =>
+  [...a.authorities].sort().join() === [...b.authorities].sort().join() && [...a.countries].sort().join() === [...b.countries].sort().join();
+
+// The laws and countries the list follows: the user's news settings to start with, null for all
+// news (signed out, or dropped)
+const useFollowed = () => {
+  const { signedIn } = useTrackerAccess();
+  const [saved, setSaved] = useState<NewsPreferencesValue | null>(null);
+  const [topics, setTopics] = useState<NewsTopics | null>(null);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    if (!signedIn) return;
+    fetch("/api/tracker/news")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((p: NewsPreferencesValue | null) => {
+        if (!p) return;
+        setSaved(p);
+        setTopics({ authorities: p.authorities, countries: p.countries });
+      })
+      .catch(() => {});
+  }, [signedIn]);
+  const save = async () => {
+    if (!saved || !topics) return;
+    setSaving(true);
+    try {
+      const next = { ...saved, ...topics };
+      const response = await fetch("/api/tracker/news", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(next) });
+      if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error ?? "Couldn't save");
+      setSaved(next);
+      toast.success("Saved: your news emails follow these too");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't save");
+    } finally {
+      setSaving(false);
+    }
+  };
+  return { saved, topics, setTopics, save, saving, differs: !!saved && !!topics && !sameTopics(saved, topics) };
+};
+
+// What the list follows, in a line, and the way to change it
+const Followed = ({ followed }: { followed: ReturnType<typeof useFollowed> }) => {
+  const { saved, topics, setTopics, save, saving, differs } = followed;
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl bg-tt-soft px-3.5 py-2.5">
+      <div className="flex items-start gap-2">
+        <span className="min-w-0 flex-1 text-xs text-base-content/70">
+          <span className="font-semibold text-base-content">{topics ? (differs ? "Showing: " : "Your news: ") : "Showing: "}</span>
+          {topics ? topicsLabel(topics) : "every law and country"}
+        </span>
+        <button type="button" className={`${ui.link} inline-flex shrink-0 items-center gap-1 text-xs font-semibold`} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+          <AdjustmentsHorizontalIcon className="h-3.5 w-3.5" aria-hidden />
+          {open ? "Done" : "Change"}
+        </button>
+      </div>
+      {open && (
+        <div className="flex flex-col gap-4 border-t border-base-300 pt-3">
+          <NewsTopicsFields value={topics ?? { authorities: [], countries: [] }} onChange={setTopics} />
+          <div className="flex flex-wrap gap-2">
+            {differs && (
+              <button type="button" className={ui.button({ variant: "primary", size: "sm" })} disabled={saving} onClick={save}>
+                {saving ? "Saving…" : "Save as my news settings"}
+              </button>
+            )}
+            {saved && (differs || !topics) && (
+              <button type="button" className={ui.button({ variant: "secondary", size: "sm" })} onClick={() => setTopics({ authorities: saved.authorities, countries: saved.countries })}>
+                Back to my settings
+              </button>
+            )}
+            {topics && (
+              <button type="button" className={ui.button({ variant: "ghost", size: "sm" })} onClick={() => setTopics(null)}>
+                Show all news
+              </button>
+            )}
+          </div>
+          {differs && <p className={`${tt.caption} m-0`}>Saving changes which tariff news your emails send too.</p>}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const monthOf = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
 
@@ -68,10 +167,14 @@ export const ActionList = ({
   const mine = updates.filter(hits).length;
   // Counts where they're the user's own (Needs Review, Affect You); they'd crowd the tabs elsewhere
   const counts: Record<Filter, number | undefined> = { review: toReview.size, mine, upcoming: undefined, all: undefined };
+  // ?list=all (the weekly digest's "see all"): open on All
+  const fromLink = useSearchParams().get("list") === "all";
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const followed = useFollowed();
+  const { topics } = followed;
   // Open on the actions that hit the catalog, once that's known, unless the user picked a filter
-  const [chose, setChose] = useState(false);
+  const [chose, setChose] = useState(fromLink);
   useEffect(() => {
     if (!chose && toReview.size) setFilter("review");
     else if (!chose && mine) setFilter("mine");
@@ -87,6 +190,7 @@ export const ActionList = ({
       if (filter === "mine" && !hits(u)) continue;
       if (filter === "review" && !toReview.has(u.slug)) continue;
       if (filter === "upcoming" && !upcoming(u)) continue;
+      if ((filter === "all" || filter === "upcoming") && topics && !matchesNews(u, topics)) continue;
       const countries = u.countries.map((c) => COUNTRY_NAMES.get(c) ?? c).join(" ");
       const text = `${u.title} ${u.summary} ${u.products ?? ""} ${u.hts_codes.join(" ")} ${countries} ${AUTHORITIES[u.authority] ?? ""}`.toLowerCase();
       if (!words.every((w) => text.includes(w))) continue;
@@ -96,7 +200,7 @@ export const ActionList = ({
     }
     return groups;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updates, filter, query, matches, today, toReview]);
+  }, [updates, filter, query, matches, today, toReview, topics]);
 
   // Keep the open action in view (opened from a link, or the list filtered around it)
   const listRef = useRef<HTMLDivElement>(null);
@@ -113,7 +217,7 @@ export const ActionList = ({
     <aside className={`${tt.panel} flex flex-col overflow-hidden xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)]`} aria-label="Tariff actions">
       <div className="flex flex-col gap-3 border-b border-base-300 px-4 pb-4 pt-5">
         <div className="flex items-baseline justify-between px-1">
-          <h2 className={tt.title}>Tariff Actions</h2>
+          <h2 className={tt.title}>Tariff News</h2>
           <span className="text-sm tabular-nums text-base-content/60">{updates.length}</span>
         </div>
         {/* Which actions, and what the open one means */}
@@ -131,6 +235,7 @@ export const ActionList = ({
           />
           <p className={`${tt.caption} m-0 px-1`}>{FILTERS.find((f) => f.id === filter)!.hint}</p>
         </div>
+        {(filter === "all" || filter === "upcoming") && <Followed followed={followed} />}
         <label className="relative">
           <span className="sr-only">Search tariff actions</span>
           <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/50" aria-hidden />
@@ -192,7 +297,7 @@ export const ActionList = ({
         ))}
         {!months.length && (
           <p className="px-5 py-8 text-sm text-base-content/60">
-            {filter === "review" ? "Every impact check is reviewed." : filter === "mine" ? "No recent action hits your imports." : filter === "upcoming" ? "Nothing announced is still to take effect." : "No actions match."}
+            {filter === "review" ? "Every impact check is reviewed." : filter === "mine" ? "No recent action hits your imports." : filter === "upcoming" ? "Nothing announced is still to take effect." : topics ? "No news for what you follow matches." : "No actions match."}
           </p>
         )}
       </div>

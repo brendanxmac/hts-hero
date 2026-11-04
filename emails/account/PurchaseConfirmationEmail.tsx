@@ -53,7 +53,7 @@ export default function PurchaseConfirmationEmail(p: PurchaseConfirmationEmailPr
               "Add the rest of your products, so every one is covered",
               "Choose where alerts go, so the right people hear the day a tariff change hits your products",
               p.offer === "alerts"
-                ? "Open Tariff Changes and see how the latest actions hit your products"
+                ? "Open Tariff Updates and see how the latest actions hit your products"
                 : "Check for savings on your products: trade programs, exemptions and lower-duty origins you may qualify for",
             ]
             : [

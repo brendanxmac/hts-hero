@@ -1,6 +1,6 @@
 import { EmailFooter, EmailLayout } from "../kit/Layout"
 import { Cta, Divider, Eyebrow, P, Panel, Title, UpdateBlock, UpdateSummary } from "../kit/parts"
-import { SITE } from "../kit/brand"
+import { SITE, siteLink } from "../kit/brand"
 import { TrackerLine } from "./TariffNewsEmail"
 
 // The weekly tariff digest, on Mondays: every update from the week before that matches the
@@ -15,6 +15,9 @@ export interface TariffDigestEmailProps {
   note?: string | null
   footer: EmailFooter
 }
+
+// Where an account holder's "see all" lands: Tariff Updates' News on All, filtered to what they follow
+export const DIGEST_NEWS_PATH = "/duty-guard?tab=changes&list=all"
 
 // Short and the same every week; the admin can change it per batch in the outbox
 export const tariffDigestSubject = (_p: TariffDigestEmailProps) => "Your Weekly Tariff Brief"
@@ -38,7 +41,10 @@ export default function TariffDigestEmail({ period, updates, signedIn, note, foo
         </div>
       ))}
       <Divider />
-      <Cta href={`${SITE}/tariff-updates?utm_source=email&utm_medium=email&utm_campaign=tariff-digest`}>See every tariff update</Cta>
+      {/* Account holders: the news they follow, in their Duty Guard; everyone else: the public page */}
+      <Cta href={signedIn ? siteLink(DIGEST_NEWS_PATH, "tariff-digest") : `${SITE}/tariff-updates?utm_source=email&utm_medium=email&utm_campaign=tariff-digest`}>
+        {signedIn ? "See all your tariff news" : "See every tariff update"}
+      </Cta>
       <TrackerLine signedIn={signedIn} campaign="tariff-digest" />
     </EmailLayout>
   )

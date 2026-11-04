@@ -1,6 +1,7 @@
 import { readTrackerAccess } from "../tariff-tracker/access"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { UpdateSummary } from "../../emails/kit/parts"
+import { matchesNews } from "../tariff-updates/newsMatch"
 import { STAGE_ORDER, STAGES, type Stage } from "../tariff-updates/types"
 import { createBatch, replaceMessages, type OutboxMessage } from "./outbox"
 import { SUBSCRIBER_COLUMNS, subscriberFooter, type Subscriber } from "./subscribers"
@@ -48,12 +49,9 @@ const eventsOf = (sources: { stage: Stage | null; published_at: string }[]): Upd
   return events.map((e, i) => ({ ...e, isAction: i === 0 || e === firstLaw }))
 }
 
-// An update matches a subscriber's laws and countries (empty: all). An all-countries update
-// matches every country; one naming no country only matches subscribers with no country filter.
-// AD/CVD news (many notices a week) goes only to readers who picked it.
+// An update matches a subscriber's laws and countries (matchesNews)
 export const matchesPreferences = (u: Pick<UpdateRowForEmail, "authority" | "countries">, s: Pick<Subscriber, "news_authorities" | "news_countries">) =>
-  (u.authority === "ad_cvd" ? s.news_authorities.includes("ad_cvd") : !s.news_authorities.length || s.news_authorities.includes(u.authority)) &&
-  (!s.news_countries.length || u.countries.includes("ALL") || u.countries.some((c) => s.news_countries.includes(c)))
+  matchesNews(u, { authorities: s.news_authorities, countries: s.news_countries })
 
 const activeSubscribers = async (db: Db, frequency: "instant" | "weekly") => {
   const { data, error } = await db

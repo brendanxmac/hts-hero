@@ -216,10 +216,10 @@ export const AlertsVisual = ({ run }: Props) => {
   return (
     <MockWindow tab="changes" cursor={<Cursor {...cursor} />}>
       <MockTitle
-        title="Tariff Changes"
+        title="Tariff Updates"
         action={
           <span className="flex gap-1 rounded-full bg-base-100 p-0.5 text-[0.55rem] font-semibold">
-            {["Actions", "Rate History", "Alert Settings"].map((v) => (
+            {["News", "Rate History", "Alert Settings"].map((v) => (
               <span
                 key={v}
                 data-cursor={v === "Alert Settings" ? "settings" : undefined}
