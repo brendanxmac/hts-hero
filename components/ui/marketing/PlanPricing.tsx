@@ -147,7 +147,7 @@ export const PlanCard = ({
   return (
     <article
       className={`relative flex flex-col rounded-3xl p-7 transition-all duration-300 ${best
-          ? "hts-tracker-inverse bg-base-100 shadow-2xl shadow-black/30"
+          ? "bg-[color-mix(in_oklab,var(--color-success)_10%,var(--color-base-100))] shadow-2xl shadow-success/20 ring-2 ring-success"
           : `bg-tt-soft shadow-xl shadow-base-content/5 ring-1 ring-base-content/15 hover:-translate-y-1 hover:shadow-2xl hover:ring-primary/50`
         }`}
       aria-labelledby={id}

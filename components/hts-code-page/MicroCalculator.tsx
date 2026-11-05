@@ -199,10 +199,10 @@ export const MicroCalculator = ({
                 rel="nofollow"
                 className={ui.button({ variant: "primary" })}
               >
-                Open Tariff Calculator
+                See All Tariff Details
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </Link>
-              <span className={`${ui.caption} text-center`}>Free · No sign-up</span>
+              {/* <span className={`${ui.caption} text-center`}>Free · No sign-up</span> */}
             </>
           )}
         </div>

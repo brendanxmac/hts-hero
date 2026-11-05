@@ -42,6 +42,8 @@ import { lacksProductDescriptionForAnalysis } from "../../libs/classification-fr
 import { classNames } from "../../utilities/style";
 import { VerticalCandidateLegalNotesTab } from "./VerticalCandidateLegalNotesTab";
 import { VerticalCandidateCrossRulingsTab } from "./VerticalCandidateCrossRulingsTab";
+import { CrossEvidenceList } from "../cross-rulings/CrossEvidenceList";
+import { useCrossEvidence } from "../cross-rulings/useCrossEvidence";
 import { TextSelectionPopover } from "../TextSelectionPopover";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 
@@ -110,6 +112,7 @@ export const VerticalClassificationStep = ({
     useState<ResearchPanelTab>("research");
 
   const defenseTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const { removeEvidence, updateNote: updateEvidenceNote } = useCrossEvidence("classify_step");
 
   const resizeDefenseTextarea = useCallback(() => {
     const textarea = defenseTextareaRef.current;
@@ -816,6 +819,7 @@ export const VerticalClassificationStep = ({
               candidates={currentLevel?.candidates ?? []}
               articleDescription={articleDescription}
               onAddToNotes={appendToNotes}
+              canEdit={!readOnly && !isDisabled}
             />
           </div>
           {/* Always mounted to preserve cursor position across tab switches */}
@@ -854,6 +858,35 @@ export const VerticalClassificationStep = ({
                   if (!readOnly) flushAndSave();
                 }}
               />
+              <div className="mt-2 flex flex-col gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h4 className="text-sm font-bold">
+                    CROSS Evidence
+                    {(classification.crossEvidence?.length ?? 0) > 0 &&
+                      ` (${classification.crossEvidence!.length})`}
+                  </h4>
+                  {!readOnly && !isDisabled && (
+                    <button
+                      type="button"
+                      className="text-xs font-semibold text-primary hover:underline"
+                      onClick={() => selectResearchPanelTab("crossRulings")}
+                    >
+                      Add a ruling
+                    </button>
+                  )}
+                </div>
+                <CrossEvidenceList
+                  evidence={classification.crossEvidence ?? []}
+                  canEdit={!readOnly && !isDisabled}
+                  compact
+                  onRemove={removeEvidence}
+                  onNoteChange={updateEvidenceNote}
+                  onNoteBlur={() => {
+                    if (!readOnly) flushAndSave();
+                  }}
+                  emptyText="No rulings saved yet. Look one up in the CROSS Rulings tab and choose Add as Evidence."
+                />
+              </div>
             </div>
           </div>
         </div>

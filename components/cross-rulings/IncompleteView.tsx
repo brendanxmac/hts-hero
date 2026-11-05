@@ -7,10 +7,10 @@ export const IncompleteView = () => (
         CROSS Ruling Validation
       </h1>
       <p className="text-sm text-base-content/50 mt-1">
-        See which CROSS rulings are relevant to this classification, and have
-        our system analyze them for you.
+        Find CBP rulings for similar products on CROSS, then save the ones
+        that back this classification as evidence.
       </p>
     </div>
-    <EmptyState description="CROSS ruling validation will be available once the classification is complete. Finish classifying your item to search for relevant rulings." />
+    <EmptyState description="CROSS ruling validation will be available once the classification is complete. Finish classifying your item to look up rulings and save them as evidence." />
   </div>
 );

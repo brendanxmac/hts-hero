@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { Countries } from "@/constants/countries"
 import * as tt from "@/components/ui/styles/tracker"
 import type { CodeCase } from "@/libs/adcvd/public"
@@ -14,7 +15,8 @@ const countryList = (codes: string[]) => {
   return names.length <= 3 ? names.join(", ") : `${names.slice(0, 3).join(", ")} and ${names.length - 3} more`
 }
 
-export function CodeCases({ cases, htsno }: { cases: CodeCase[]; htsno: string }) {
+// `cta`: a link under the list (on /hts: all the cases, in Duty Guard)
+export function CodeCases({ cases, htsno, cta }: { cases: CodeCase[]; htsno: string; cta?: ReactNode }) {
   if (!cases.length) return null
   return (
     <section aria-labelledby="code-adcvd" className={`${tt.panel} flex flex-col gap-4 p-6`}>
@@ -44,6 +46,7 @@ export function CodeCases({ cases, htsno }: { cases: CodeCase[]; htsno: string }
         ))}
       </ul>
       {cases.length > MAX && <p className="text-xs text-base-content/60">And {cases.length - MAX} more. With a free account, the duty calculator flags the ones for your country of origin.</p>}
+      {cta}
     </section>
   )
 }

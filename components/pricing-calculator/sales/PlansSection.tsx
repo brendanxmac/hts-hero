@@ -12,7 +12,7 @@ import { ALERT_TIERS, ANNUAL_DISCOUNT, Billing, REVERSE_TRIAL } from "../lib/pri
 
 export const PlansSection = () => {
   const [billing, setBilling] = useState<Billing>("annual");
-  const [products, setProducts] = useState(25);
+  const [products, setProducts] = useState(10);
 
   return (
     <section id="plans" className={`${mk.band} ${mk.bandMuted} scroll-mt-16`} aria-labelledby="plans-title">

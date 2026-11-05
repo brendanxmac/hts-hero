@@ -106,6 +106,12 @@ export enum MixpanelEvent {
   CLASSIFICATION_TAB_SELECTED = "Classification Tab Selected",
   /** Research / Legal Notes / CROSS Rulings panel on a classification step */
   CLASSIFICATION_STEP_TAB_SWITCH = "Classification Step Tab Switch",
+  /** A "Search CROSS" link opened CBP's CROSS search in a new tab (surface: hts / explore / classification / classify_step) */
+  CROSS_SEARCH_OPENED = "CROSS Search Opened",
+  /** A ruling number looked up (result: found / not_found / invalid / error) */
+  CROSS_RULING_LOOKED_UP = "CROSS Ruling Looked Up",
+  CROSS_EVIDENCE_ADDED = "CROSS Evidence Added",
+  CROSS_EVIDENCE_REMOVED = "CROSS Evidence Removed",
   /** Duty / tariff calculator (TariffFinderPage) */
   /** Once per visit to /duty-calculator: how it began (arrival, link_source) and what the link carried */
   DUTY_CALCULATOR_PAGE_LOADED = "Duty Calculator Page Loaded",

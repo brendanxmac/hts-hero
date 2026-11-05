@@ -8,6 +8,7 @@ import {
   ChatBubbleLeftRightIcon,
   HomeIcon,
   LightBulbIcon,
+  MagnifyingGlassIcon,
   NewspaperIcon,
   ReceiptPercentIcon,
   Squares2X2Icon,
@@ -20,6 +21,7 @@ import {
 export type SectionSlug =
   | "overview"
   | "calculator"
+  | "search"
   | "changes"
   | "catalog"
   | "history"
@@ -89,6 +91,17 @@ export const SECTIONS: TrackerSection[] = [
     Icon: CalculatorIcon,
     title: "Calculator",
     summary: "Every duty on one shipment of any product, from any country.",
+    ready: true,
+    group: "workspace",
+    paidOnly: false,
+    planned: [],
+  }),
+  section({
+    slug: "search",
+    label: "Search HTS Codes",
+    Icon: MagnifyingGlassIcon,
+    title: "Search HTS Codes",
+    summary: "Search the Harmonized Tariff Schedule by code or description, and open any code for its rates and notes.",
     ready: true,
     group: "workspace",
     paidOnly: false,

@@ -45,10 +45,12 @@ export const isEntryPoint = (v: unknown): v is EntryPoint =>
   ENTRY_POINTS.includes(v as EntryPoint)
 
 // Every sign-up button: sign up, then the onboarding, remembering where it started (?from=). `next`
-// is where to land after it, for a button that already knows (the import it just saved)
-export const entryHref = (entry: EntryPoint, next?: string) =>
+// is where to land after it, for a button that already knows (the import it just saved); `reason`
+// is what they reached for, when the sign-up page should say so
+export const entryHref = (entry: EntryPoint, next?: string, reason?: "adcvd") =>
   signupHref(
     `${ONBOARDING_PATH}?from=${entry}${next ? `&next=${encodeURIComponent(next)}` : ""}`,
+    reason,
   )
 
 // A `next` that's safe to send someone to: a path on this site

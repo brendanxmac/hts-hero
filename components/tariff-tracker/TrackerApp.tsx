@@ -44,6 +44,7 @@ const Savings = dynamic(() => import("./savings/Savings").then((m) => m.Savings)
 const EntryAudit = dynamic(() => import("./entries/EntryAudit").then((m) => m.EntryAudit), { loading: PanelSkeleton });
 const Sourcing = dynamic(() => import("./sourcing/Sourcing").then((m) => m.Sourcing), { loading: PanelSkeleton });
 const TariffChanges = dynamic(() => import("./changes/TariffChanges").then((m) => m.TariffChanges), { loading: PanelSkeleton });
+const SearchHts = dynamic(() => import("./search/SearchHts").then((m) => m.SearchHts), { loading: PanelSkeleton });
 const ExpertHelp = dynamic(() => import("./expert-help/ExpertHelp").then((m) => m.ExpertHelp), { loading: PanelSkeleton });
 const TrackerCalculator = dynamic(
   () => import("./calculator/TrackerCalculator").then((m) => m.TrackerCalculator),
@@ -105,6 +106,7 @@ export const TrackerApp = () => {
     changes: () => <TariffChanges />,
     entries: () => <EntryAudit />,
     "expert-help": () => <ExpertHelp />,
+    search: () => <SearchHts />,
   };
   const panels = Object.fromEntries(
     Object.entries(built).filter(([slug]) => sectionBySlug(slug)?.ready)

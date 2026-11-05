@@ -38,10 +38,10 @@ export function WatchCodeBox({ htsno, country = "CN" }: { htsno: string; country
     <section aria-labelledby="watch-code" className={`${tt.panel} flex flex-col justify-center gap-4 p-6 ring-1 ring-primary/25 lg:p-7`}>
       <div className="flex flex-col gap-1.5">
         <h2 id="watch-code" className={`${tt.title} text-base leading-snug`}>
-          Track <span className="inline font-bold text-primary">{htsno}</span> Free
+          Track Tariff Changes on <span className="inline font-bold text-primary">{htsno}</span>, Free
         </h2>
         <p className="m-0 text-sm leading-relaxed text-base-content/70">
-          Save it to your Duty Guard, and get tariff alerts and audits on it free for {REVERSE_TRIAL.days} days.
+          Save it to Duty Guard and watch its duty rate, free forever. Add tariff alerts and audits free for {REVERSE_TRIAL.days} days, no credit card required.
         </p>
       </div>
 

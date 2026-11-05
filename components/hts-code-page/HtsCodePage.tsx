@@ -25,6 +25,7 @@ import { LegalNotes } from "./LegalNotes";
 import { MicroCalculator } from "./MicroCalculator";
 import { todayIsoDate } from "@/tariffs/engine-v2/dates";
 import { WatchCodeBox } from "./WatchCodeBox";
+import { AdcvdCasesCta } from "./AdcvdCasesCta";
 import type { CodeRateChanges } from "@/libs/hts-rate-changes";
 import { OnThisPage } from "./OnThisPage";
 import { RelatedCodes } from "./RelatedCodes";
@@ -76,6 +77,11 @@ export interface HtsCodePageProps {
   dutyHistory?: CodeDutyHistory | null;
 }
 
+// The country for the AD/CVD cases' import in Duty Guard: the estimate's, when a listed case covers
+// it, else the first country a case names, so its AD/CVD Cases tab has something on it
+const casesCountry = (cases: CodeCase[], country: string) =>
+  cases.some((c) => c.countries.includes(country)) ? country : (cases[0]?.countries[0] ?? country);
+
 // "China" for "CN": the estimate's country, in the example alert
 const countryName = (code: string) => Countries.find((c) => c.code === code)?.name ?? code;
 
@@ -121,7 +127,7 @@ export function HtsCodePage({
     { id: "us-imports", label: "Top Origins", show: !!imports },
     { id: "related-codes", label: "Related Codes", show: hasRelated },
     { id: "notes", label: "Relevant Notes", show: !!(sectionChapter && element.chapter) },
-    { id: "rulings", label: "Related CROSS Rulings", show: !!element.htsno && !heading },
+    { id: "rulings", label: "Search CROSS Rulings", show: !!element.htsno && !heading },
     { id: "faq", label: "FAQ", show: true },
     { id: "sources", label: "Sources", show: !!element.htsno },
   ].filter((s) => s.show);
@@ -142,19 +148,19 @@ export function HtsCodePage({
                   facts, a tinted band under the lead, grow to fill it */}
               <div className={`${tt.panel} ${heading ? "flex flex-1 flex-col overflow-hidden" : "p-6 lg:p-7"}`}>
                 <div className={heading ? "p-6 lg:p-7" : ""}>
-                <CodeHero
-                  element={element}
-                  productName={productName}
-                  summary={summary}
-                  parents={parents}
-                  sectionChapter={sectionChapter}
-                  subCodeCount={children.length}
-                  lead={heading?.answer}
-                  alternateFormats
-                  answer={answer}
-                  updatedOn={heading ? todayIsoDate() : undefined}
-                  rateChanges={estimate && rateChanges ? { country: countryName(estimate.country), changes: rateChanges } : null}
-                />
+                  <CodeHero
+                    element={element}
+                    productName={productName}
+                    summary={summary}
+                    parents={parents}
+                    sectionChapter={sectionChapter}
+                    subCodeCount={children.length}
+                    lead={heading?.answer}
+                    alternateFormats
+                    answer={answer}
+                    updatedOn={heading ? todayIsoDate() : undefined}
+                    rateChanges={estimate && rateChanges ? { country: countryName(estimate.country), changes: rateChanges } : null}
+                  />
                 </div>
                 {heading && (
                   <div className="flex flex-1 flex-col border-t border-base-300 bg-tt-soft">
@@ -199,7 +205,11 @@ export function HtsCodePage({
               {offerCalculator && <CalculatorPrompt htsno={element.htsno} />}
               {summary && <DutyPreview summary={summary} />}
               <CodeUpdates updates={tariffUpdates} htsno={element.htsno} />
-              <CodeCases cases={adcvdCases} htsno={element.htsno} />
+              <CodeCases
+                cases={adcvdCases}
+                htsno={element.htsno}
+                cta={estimate && <AdcvdCasesCta htsno={element.htsno} country={casesCountry(adcvdCases, estimate.country)} />}
+              />
               {/* With a duty to watch, the Watch box is the sign-up */}
               {!estimate && !heading && <NewsAlertsBox source="hts-code-page" />}
             </div>
@@ -214,9 +224,10 @@ export function HtsCodePage({
       <div className={`${mk.container} flex flex-col gap-6 pt-2 pb-16 sm:pb-20`}>
         {heading && <HeadingDetails profile={heading.profile} codeInfo={heading.codeInfo} />}
 
-        {summary && <DutyByCountry htsno={element.htsno} productName={productName} summary={summary} linkCodes />}
-
         {dutyHistory && <DutyHistory htsno={element.htsno} history={dutyHistory} />}
+
+        {imports && <ImportSources htsno={element.htsno} productName={productName} imports={imports} duty={importDuty ?? null} />}
+        {summary && <DutyByCountry htsno={element.htsno} productName={productName} summary={summary} linkCodes />}
 
         {/* Alerts when a tariff action hits this code, in Duty Guard */}
         {element.htsno && !element.htsno.startsWith("99") && (
@@ -226,27 +237,26 @@ export function HtsCodePage({
           />
         )}
 
-        {imports && <ImportSources htsno={element.htsno} productName={productName} imports={imports} duty={importDuty ?? null} />}
 
         {hasRelated && <RelatedCodes element={element} subCodes={children} siblings={siblings} />}
 
-          {sectionChapter && element.chapter && (
-            <LegalNotes sectionChapter={sectionChapter} htsno={element.htsno} chapter={element.chapter} />
-          )}
+        {sectionChapter && element.chapter && (
+          <LegalNotes sectionChapter={sectionChapter} htsno={element.htsno} chapter={element.chapter} />
+        )}
 
-          {element.htsno && !heading && <RelatedRulings htsno={element.htsno} />}
+        {element.htsno && !heading && <RelatedRulings htsno={element.htsno} />}
 
-          <HtsFaq htsno={element.htsno} faqs={faqs} />
+        <HtsFaq htsno={element.htsno} faqs={faqs} />
 
-          {element.htsno && (
-            <Sources
-              htsno={element.htsno}
-              chapter={element.chapter}
-              sectionNumber={sectionChapter?.sectionNumber}
-              summaries={[summary, importDuty]}
-              hasImports={!!imports}
-            />
-          )}
+        {element.htsno && (
+          <Sources
+            htsno={element.htsno}
+            chapter={element.chapter}
+            sectionNumber={sectionChapter?.sectionNumber}
+            summaries={[summary, importDuty]}
+            hasImports={!!imports}
+          />
+        )}
       </div>
     </div>
   );

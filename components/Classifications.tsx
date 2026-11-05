@@ -478,7 +478,7 @@ export const Classifications = () => {
           targetSelector: "#onboarding-new-classification",
           title: "Start a New Classification",
           description:
-            "Click here to begin a new classification. You'll describe your product & we'll analyze it to find the best candidates with legal note, GRI, and CROSS ruling evidence.",
+            "Click here to begin a new classification. You'll describe your product & we'll analyze it to find the best candidates with legal note and GRI evidence, and you can add CROSS rulings that back them.",
           placement: "bottom" as const,
           icon: <RocketLaunchIcon className="h-5 w-5 text-primary" />,
         },

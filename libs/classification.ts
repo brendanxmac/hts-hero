@@ -517,6 +517,84 @@ export const generateClassificationReport = async (
     }
   }
 
+  // === SUPPORTING CROSS RULINGS (the rulings saved as evidence) ===
+  const evidence = classification.crossEvidence ?? [];
+  if (evidence.length > 0) {
+    const textWidth = contentWidth - clssifierBoxPadding * 2;
+    const ensureSpace = (needed: number) => {
+      if (yPosition + needed > pageHeight - footerMargin) {
+        doc.addPage();
+        yPosition = margin;
+      }
+    };
+
+    ensureSpace(60);
+    setTypography({ size: 14, weight: "bold" });
+    setTextColor([30, 58, 138]); // Dark blue, as the basis section
+    doc.text("SUPPORTING CROSS RULINGS", margin, yPosition + 4);
+    yPosition += 22;
+
+    evidence.forEach((item) => {
+      const label = item.collection
+        ? `${item.collection.toUpperCase()} ${item.rulingNumber}`
+        : item.rulingNumber;
+      const dated = item.rulingDate
+        ? new Date(item.rulingDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+        : null;
+      const heading = [label, dated, item.revoked ? "REVOKED" : null].filter(Boolean).join("  ·  ");
+
+      setTypography({ size: 10, weight: "normal" });
+      const subjectLines: string[] = doc.splitTextToSize(sanitizeTextForPdf(item.subject), textWidth);
+      const tariffLines: string[] = item.tariffs.length
+        ? doc.splitTextToSize(`Tariffs: ${item.tariffs.join(", ")}`, textWidth)
+        : [];
+      const noteLines: string[] = item.note?.trim()
+        ? doc.splitTextToSize(sanitizeTextForPdf(item.note.trim()), textWidth)
+        : [];
+      const urlLine = `https://rulings.cbp.gov/ruling/${item.rulingNumber}`;
+
+      // Each ruling in one piece where it fits; a long note carries on onto the next page
+      const blockHeight =
+        16 + (subjectLines.length + tariffLines.length + noteLines.length + 1) * lineHeight + (noteLines.length ? 6 : 0) + 14;
+      ensureSpace(Math.min(blockHeight, pageHeight - margin - footerMargin));
+
+      setTypography({ size: 11, weight: "bold" });
+      setTextColor(item.revoked ? [185, 28, 28] : [30, 41, 59]);
+      doc.text(sanitizeTextForPdf(heading), margin + clssifierBoxPadding, yPosition);
+      yPosition += 14;
+
+      const writeLines = (lines: string[], color: number[], weight = "normal") => {
+        setTypography({ size: 10, weight });
+        setTextColor(color);
+        lines.forEach((line) => {
+          ensureSpace(lineHeight);
+          doc.text(line, margin + clssifierBoxPadding, yPosition);
+          yPosition += lineHeight;
+        });
+      };
+
+      writeLines(subjectLines, [51, 65, 85]);
+      writeLines(tariffLines, [100, 116, 139]);
+      if (noteLines.length) {
+        yPosition += 6;
+        writeLines(noteLines, [30, 41, 59]);
+      }
+      writeLines([urlLine], [37, 99, 235]);
+      yPosition += 14;
+    });
+
+    // CBP asks to be credited as the source; and a ruling binds only on its own facts
+    setTypography(fonts.caption);
+    setTextColor(colors.secondary);
+    const creditLines: string[] = doc.splitTextToSize(
+      "Source: U.S. Customs and Border Protection, CROSS (rulings.cbp.gov). A ruling applies to the facts it describes.",
+      contentWidth,
+    );
+    ensureSpace(creditLines.length * 10 + 4);
+    doc.text(creditLines, margin, yPosition);
+    yPosition += creditLines.length * 10 + 10;
+  }
+
   // Classification breakdown on new page
   doc.addPage();
   yPosition = margin;

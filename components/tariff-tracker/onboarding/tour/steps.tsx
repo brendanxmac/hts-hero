@@ -1,7 +1,7 @@
 import { ComponentType, ReactNode } from "react";
 import { SectionSlug } from "../../sections";
 import { TourStepId } from "./tourStore";
-import { AdcvdVisual, AlertsVisual, AuditsVisual, ImportsVisual, ManageVisual, SavingsVisual, WelcomeVisual } from "./visuals";
+import { AdcvdVisual, AlertsVisual, AuditsVisual, ImportsVisual, ManageVisual, SavingsVisual, SearchVisual, WelcomeVisual } from "./visuals";
 
 // The feature tour's steps (FeatureTour), in order. Each one: what it's for, how to do it in a few
 // short steps (Duty Guard's own labels in bold), where "Take me there" goes, and its demo.
@@ -18,6 +18,7 @@ export const TOUR_VIDEOS: Record<TourStepId, { url: string; length: string } | n
   adcvd: null,
   savings: null,
   audits: null,
+  search: null,
 };
 
 export interface TourStep {
@@ -194,5 +195,24 @@ export const TOUR_STEPS: TourStep[] = [
     tab: "entries",
     ...video("audits"),
     Visual: AuditsVisual,
+  },
+  {
+    id: "search",
+    rail: "Search HTS",
+    title: "Look up any HTS code",
+    lead: "Search the whole Harmonized Tariff Schedule without leaving Duty Guard, by code or by what the product is.",
+    how: [
+      <>
+        Open <B>Search HTS Codes</B> and type a code or a few words about the product.
+      </>,
+      <>Pick a line to see its rates, its notes and the headings above it.</>,
+      <>
+        Or browse the schedule by section and chapter, and switch to <B>Notes</B> for the legal notes.
+      </>,
+    ],
+    action: "Open Search HTS Codes",
+    tab: "search",
+    ...video("search"),
+    Visual: SearchVisual,
   },
 ];
