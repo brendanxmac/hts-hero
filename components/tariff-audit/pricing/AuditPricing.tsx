@@ -47,7 +47,7 @@ const PARTNERS_HREF = bookCallHref({
 
 export const AuditPricing = ({ example }: { example: AuditExample | null }) => {
   const [billing, setBilling] = useState<Billing>("annual");
-  const [products, setProducts] = useState(25);
+  const [products, setProducts] = useState(10);
   const best = bestPlanFor(AUDIT_TIERS, products);
   // "Pays for itself" only where it's true of the example: one flagged entry covers the plan's year
 

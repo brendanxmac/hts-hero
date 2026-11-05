@@ -128,7 +128,7 @@ export const PricingCards = ({ billing, products, entry = "hero" }: { billing: B
 
 export const PricingOverview = () => {
   const [billing, setBilling] = useState<Billing>("annual");
-  const [products, setProducts] = useState(25);
+  const [products, setProducts] = useState(10);
   return (
     <section id="pricing" className={`${mk.band} ${mk.bandMuted} scroll-mt-20`} aria-labelledby="home-pricing-title">
       <div className="mx-auto w-full max-w-6xl px-6 lg:px-8">

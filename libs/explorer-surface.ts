@@ -2,7 +2,9 @@ export type ExplorerSurface =
   | "explore_page"
   | "duty_calculator_modal"
   | "classification_modal"
-  | "keyboard_shortcut";
+  | "keyboard_shortcut"
+  // Duty Guard's Search HTS Codes tab
+  | "duty_guard";
 
 export function resolveExplorerSurface(
   explicit: ExplorerSurface | undefined,

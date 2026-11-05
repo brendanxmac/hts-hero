@@ -1,26 +1,27 @@
-import { RelatedCrossRulingsSection } from "@/components/RelatedCrossRulingsSection";
 import { mono } from "@/components/ui/font";
+import { CrossSearchLink } from "@/components/cross-rulings/CrossSearchLink";
 import { CardSection } from "./CardSection";
 import { trimHtsTo8Digits } from "@/libs/cross-rulings";
-import { rulingsForPage } from "@/libs/cross-rulings-server";
 
-// CBP's CROSS rulings related to this line, fetched on the server so they're in the page's HTML
-// (in the browser instead when CBP is slow to answer)
-export async function RelatedRulings({ htsno }: { htsno: string }) {
-  const initialRulings = htsno.replace(/\D/g, "").length >= 4 ? await rulingsForPage(trimHtsTo8Digits(htsno)) : null;
+// CBP's CROSS rulings for this line: a search on CBP's own site, in a new tab. CBP put its search
+// behind reCAPTCHA, so we don't search CROSS ourselves.
+export function RelatedRulings({ htsno }: { htsno: string }) {
+  const term = trimHtsTo8Digits(htsno);
   return (
     <CardSection
       id="rulings"
       kicker="CBP rulings"
-      title={`Related CROSS Rulings for HTS ${htsno}`}
+      title={`Search CROSS Rulings for HTS ${htsno}`}
       padded
       lead={<>
-        CBP classification rulings related to{" "}
-        <span className={`${mono.className} font-medium text-base-content`}>{htsno}</span>.
-        Open a ruling to read how Customs classified a similar product.
+        See how Customs classified similar products. CBP&apos;s CROSS database holds the classification
+        rulings that cite <span className={`${mono.className} font-medium text-base-content`}>{term}</span>.
       </>}
     >
-      <RelatedCrossRulingsSection htsno={htsno} bare initialCount={6} initialRulings={initialRulings} />
+      <div className="flex flex-col items-start gap-2">
+        <CrossSearchLink term={term} surface="hts" variant="primary" size="md" />
+        <p className="text-xs text-base-content/60">Opens rulings.cbp.gov in a new tab.</p>
+      </div>
     </CardSection>
   );
 }

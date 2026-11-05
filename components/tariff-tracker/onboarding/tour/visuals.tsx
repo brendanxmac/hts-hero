@@ -766,3 +766,70 @@ export const WelcomeVisual = ({ run }: Props) => {
     </MockWindow>
   );
 };
+
+// ── Search HTS Codes ─────────────────────────────────────────────────────────────────────────────
+// The explorer, as /explore draws it: a search, the matching lines, and the one picked shown in
+// full beside them
+const RESULTS = [
+  { code: "8482.10.50", name: "Ball bearings: Other, radial" },
+  { code: "8482.10.10", name: "Ball bearings: Radial, outside diameter 30 mm or less" },
+  { code: "8482.99.15", name: "Parts: Balls for ball bearings" },
+];
+const QUERY = "ball bearings";
+
+export const SearchVisual = ({ run }: Props) => {
+  const b = useBeats([700, 1400, 2100, 2900, 3600, 4400], run);
+  const cursor = [{ x: 60, y: 85 }, { to: "search" }, { to: "search", click: true }, {}, { to: "result" }, { to: "result", click: true }, { hidden: true }][b];
+  const typed = b >= 3 ? QUERY : b >= 2 ? QUERY.slice(0, 5) : "";
+  const results = b >= 3;
+  const picked = b >= 5;
+  return (
+    <MockWindow tab="search" cursor={<Cursor {...cursor} />}>
+      <MockTitle title="Search HTS Codes" />
+      <span
+        data-cursor="search"
+        className={`mb-2 flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-[0.62rem] transition-colors duration-300 ${b >= 2 ? "border-primary bg-base-100 text-base-content" : "border-base-300 bg-base-100 text-base-content/40"}`}
+      >
+        <MagnifyingGlassIcon className="h-3 w-3 shrink-0" />
+        {typed || "Search by code or description"}
+      </span>
+      <div className="flex gap-2">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-base-300 bg-base-100">
+          {results ? (
+            RESULTS.map((r, i) => (
+              <span
+                key={r.code}
+                data-cursor={i === 0 ? "result" : undefined}
+                className={`tt-ob-rise flex flex-col border-b border-base-300 px-2.5 py-1.5 text-[0.6rem] transition-colors duration-300 last:border-b-0 ${picked && i === 0 ? "bg-primary/10" : ""}`}
+                style={delay(i * 80)}
+              >
+                <Code>{r.code}</Code>
+                <span className="truncate text-base-content/60">{r.name}</span>
+              </span>
+            ))
+          ) : (
+            ["Section XVI · Machinery", "Section XV · Base metals", "Section XI · Textiles"].map((s) => (
+              <span key={s} className="border-b border-base-300 px-2.5 py-1.5 text-[0.6rem] text-base-content/60 last:border-b-0">
+                {s}
+              </span>
+            ))
+          )}
+        </div>
+        {picked && (
+          <div className="tt-ob-from-right flex w-[46%] flex-col gap-1.5 rounded-lg border border-base-300 bg-base-100 p-2.5">
+            <Code>8482.10.50</Code>
+            <span className="text-[0.58rem] text-base-content/60">Ball bearings: Other, radial</span>
+            <span className="flex items-center justify-between border-t border-base-300 pt-1.5 text-[0.58rem]">
+              <span className="text-base-content/60">General rate</span>
+              <span className={`${tt.display} font-semibold tabular-nums text-base-content`}>9.0%</span>
+            </span>
+            <span className="flex items-center justify-between text-[0.58rem]">
+              <span className="text-base-content/60">Notes</span>
+              <span className="font-semibold text-primary">Chapter 84</span>
+            </span>
+          </div>
+        )}
+      </div>
+    </MockWindow>
+  );
+};

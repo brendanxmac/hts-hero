@@ -1,3 +1,5 @@
+import type { CrossEvidence } from "./cross-rulings";
+
 export interface CandidateQualificationResponse {
   analysis: string;
   unqualifiedCandidates: number[];
@@ -241,6 +243,8 @@ export interface ClassificationI {
   levels: ClassificationProgression[];
   isComplete: boolean;
   notes?: string;
+  /** CBP rulings the user saved as evidence for this classification */
+  crossEvidence?: CrossEvidence[];
 }
 
 export interface ClassificationProgression {

@@ -89,7 +89,7 @@ const PAGES: Page[] = [
         Get candidates <br /> <span className={TONE.primary}>and proof.</span>
       </>
     ),
-    lead: "Get a list of HS candidates with the section and chapter notes and CROSS rulings that back them.",
+    lead: "Get a list of HS candidates with the section and chapter notes behind them, and save the CROSS rulings that back your code.",
     tone: "primary",
     scene: <CandidatesScene />,
   },

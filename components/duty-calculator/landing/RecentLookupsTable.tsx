@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronRightIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, ChevronRightIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { mono } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
@@ -93,8 +93,8 @@ export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder;
             Clear
           </button>
           <button type="button" className={ui.button({ variant: "primary", size: "sm" })} onClick={ask}>
-            <PlusIcon className="h-4 w-4" aria-hidden />
-            Get alerts when any of these change
+            Get tariff change alerts
+            <ArrowRightIcon className="h-4 w-4" aria-hidden />
           </button>
         </div>
       </div>

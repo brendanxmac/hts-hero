@@ -132,7 +132,7 @@ export const AnonymousClassificationResult = ({
                 icon: ScaleIcon,
                 title: "CROSS Rulings",
                 description:
-                  "Unlock CBP CROSS rulings that further validate and support your classification",
+                  "Search CBP's CROSS rulings and save the ones that back your classification",
                 iconBg: "bg-warning/15",
                 iconBorder: "border-warning/20",
                 iconColor: "text-warning",
@@ -318,7 +318,7 @@ export const AnonymousClassificationResult = ({
         icon={<DocumentTextIcon className="w-5 h-5" />}
         iconBgClass="bg-primary/20"
         iconTextClass="text-primary"
-        title="Related CROSS Rulings"
+        title="CROSS Ruling Evidence"
       >
         <div className="space-y-2">
           <div className="h-4 w-full rounded-sm bg-base-content/10" />

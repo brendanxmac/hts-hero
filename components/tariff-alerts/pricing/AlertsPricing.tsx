@@ -40,7 +40,7 @@ const PARTNERS_HREF = bookCallHref({
 
 export const AlertsPricing = ({ urgency }: { urgency?: string | null }) => {
   const [billing, setBilling] = useState<Billing>("annual");
-  const [products, setProducts] = useState(25);
+  const [products, setProducts] = useState(10);
   const best = bestPlanFor(ALERT_TIERS, products);
 
   return (

@@ -25,3 +25,21 @@ export interface CrossRulingDetail extends CrossRuling {
   text: string
   url: string
 }
+
+/**
+ * A CBP ruling a user saved on a classification as evidence for it. The ruling's details are kept
+ * as they were when it was added, so the list (and the report) still shows without asking CBP.
+ */
+export interface CrossEvidence {
+  rulingNumber: string
+  /** "ny" or "hq" */
+  collection: string | null
+  subject: string
+  rulingDate: string | null
+  tariffs: string[]
+  /** Revoked or modified away when it was added */
+  revoked: boolean
+  /** Why it supports the classification, in the user's words */
+  note: string
+  addedAt: string
+}

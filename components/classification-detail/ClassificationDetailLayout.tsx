@@ -389,7 +389,7 @@ export const ClassificationDetailLayout = ({
         type: "modal" as const,
         title: "Your Classification Workspace",
         description:
-          "This is where you classify products. We'll automatically discover relevant HS sections, chapters, and headings -- as well as any relevant legal notes or CROSS rulings.",
+          "This is where you classify products. We'll automatically discover relevant HS sections, chapters, and headings, and the legal notes that apply. You can search CROSS and save the rulings that back your code.",
         icon: <SparklesIcon className="h-5 w-5 text-primary" />,
       },
       {
@@ -453,7 +453,7 @@ export const ClassificationDetailLayout = ({
         targetSelector: "#onboarding-detail-research-tabs",
         title: "Research, Legal Notes, CROSS Rulings, & Evidence for your Classification",
         description:
-          "Quickly see AI research, Legal Notes, and CROSS rulings that may affect your classification. Then use all that evdience to create a strong defense for your classification",
+          "Quickly see AI research and Legal Notes, search CROSS for rulings, and save the ones that fit as evidence. Then use all that evidence to build a strong defense for your classification.",
         placement: "bottom" as const,
       },
     ],
@@ -610,6 +610,7 @@ export const ClassificationDetailLayout = ({
           <CrossRulingsTab
             latestHtsCode={latestHtsCode}
             isComplete={classification?.isComplete ?? false}
+            canEdit={canUpdateDetails}
           />
         );
       case "duty-tariffs":

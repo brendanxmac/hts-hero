@@ -32,6 +32,7 @@ import {
   TagIcon,
   CheckCircleIcon,
   GlobeAltIcon,
+  ScaleIcon,
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolid } from "@heroicons/react/16/solid";
 import { CountrySelection } from "../../CountrySelection";
@@ -40,6 +41,8 @@ import { PublicShareSection, TeamShareSection } from "../ShareSections";
 import { TariffDashboardSection } from "../TariffDashboardSection";
 import { useIsReadOnly } from "../../../contexts/ReadOnlyContext";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
+import { CrossEvidenceList } from "../../cross-rulings/CrossEvidenceList";
+import { useCrossEvidence } from "../../cross-rulings/useCrossEvidence";
 
 interface Props {
   classification: ClassificationI;
@@ -90,6 +93,7 @@ export const OverviewTab = ({
     flushAndSave,
   } = useClassification();
   const { refreshClassifications } = useClassifications();
+  const { removeEvidence, updateNote: updateEvidenceNote } = useCrossEvidence("classification");
 
   const liveClassification = ctxClassification || classification;
 
@@ -436,6 +440,35 @@ export const OverviewTab = ({
               if (!readOnly) flushAndSave();
             }}
           />
+        </div>
+      </DashboardCard>
+
+      {/* Rulings saved as evidence (CROSS Ruling Validation tab) */}
+      <DashboardCard>
+        <DashboardCardHeader
+          title={`CROSS Evidence${(liveClassification.crossEvidence?.length ?? 0) > 0 ? ` (${liveClassification.crossEvidence!.length})` : ""}`}
+          icon={<ScaleIcon className="w-4 h-4" />}
+        />
+        <div className="p-5 flex flex-col gap-3">
+          <CrossEvidenceList
+            evidence={liveClassification.crossEvidence ?? []}
+            canEdit={canUpdateDetails}
+            onRemove={removeEvidence}
+            onNoteChange={updateEvidenceNote}
+            onNoteBlur={() => {
+              if (!readOnly) flushAndSave();
+            }}
+            emptyText="No rulings saved as evidence yet."
+          />
+          {canUpdateDetails && onNavigateToTab && (
+            <button
+              type="button"
+              className="btn btn-sm btn-outline self-start"
+              onClick={() => onNavigateToTab("cross-rulings")}
+            >
+              Add Rulings in CROSS Ruling Validation
+            </button>
+          )}
         </div>
       </DashboardCard>
 

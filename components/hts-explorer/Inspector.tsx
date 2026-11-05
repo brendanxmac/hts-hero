@@ -28,7 +28,8 @@ import { NoteI, notes, NoteType } from "@/public/notes/notes";
 import { estimateSurface, markCalculatorHandoff } from "@/components/duty-calculator/lib/analytics";
 import { todayIso } from "@/components/duty-calculator/lib/format";
 import { MicroCalculator } from "@/components/hts-code-page/MicroCalculator";
-import { RelatedCrossRulingsSection } from "@/components/RelatedCrossRulingsSection";
+import { CrossSearchLink } from "@/components/cross-rulings/CrossSearchLink";
+import { trimHtsTo8Digits } from "@/libs/cross-rulings";
 import { UsitcHtsDocumentLink } from "@/components/UsitcHtsDocumentLink";
 import { copyToClipboard } from "@/utilities/data";
 import { mono } from "@/components/ui/font";
@@ -269,19 +270,20 @@ const LineDetail = ({ element }: { element: HtsElement }) => {
       {sectionChapter && <CodePath element={element} sectionChapter={sectionChapter} />}
       {sectionChapter && chapter && <CodeNotes sectionChapter={sectionChapter} chapter={Number(chapter)} />}
 
-      {htsno && (
+      {htsno && htsno.replace(/\D/g, "").length >= 4 && (
         <section aria-labelledby="explorer-rulings" className={`${tt.panel} overflow-hidden`}>
           <div className="border-b border-base-300 px-6 py-4">
             <h4 id="explorer-rulings" className={tt.title}>
-              Related CROSS rulings
+              Search CROSS Rulings
             </h4>
             <p className="mt-0.5 text-xs text-base-content/60">
-              How CBP classified similar products under{" "}
-              <span className={`${mono.className} font-semibold text-base-content`}>{htsno}</span>. Open one to read the ruling.
+              See how Customs classified similar products. CBP&apos;s CROSS database holds the rulings that cite{" "}
+              <span className={`${mono.className} font-semibold text-base-content`}>{trimHtsTo8Digits(htsno)}</span>.
             </p>
           </div>
-          <div className="p-5">
-            <RelatedCrossRulingsSection htsno={htsno} bare initialCount={4} />
+          <div className="flex flex-col items-start gap-2 p-5">
+            <CrossSearchLink term={trimHtsTo8Digits(htsno)} surface="explore" />
+            <p className="text-xs text-base-content/60">Opens rulings.cbp.gov in a new tab.</p>
           </div>
         </section>
       )}
