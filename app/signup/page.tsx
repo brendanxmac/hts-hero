@@ -18,6 +18,7 @@ import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import PasswordRequirements from "@/components/PasswordRequirements";
+import { authErrorMessage, useCaptcha } from "@/components/auth/useCaptcha";
 
 // The sign-up page, on its own route so sign-ups can be told apart from sign-ins (page views,
 // Sign Up Started). Laid out like HubSpot's: the logo, "100% free", Google above email, the
@@ -41,6 +42,7 @@ function SignUpContent() {
   if (user) redirect(redirectTo);
 
   const supabase = createSupabaseClient();
+  const captcha = useCaptcha();
   const [step, setStep] = useState<Step>("start");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -85,13 +87,15 @@ function SignUpContent() {
     setLoading(true);
     started("email_password", redirectTo);
     try {
-      const { error } = await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: callbackUrl() } });
-      if (error) toast.error(error.message);
+      const captchaToken = await captcha.getToken();
+      const { error } = await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: callbackUrl(), captchaToken } });
+      if (error) toast.error(authErrorMessage(error.message));
       else setSent(true);
     } catch (error) {
       console.error(error);
       toast.error("An error occurred. Please try again.");
     } finally {
+      captcha.reset();
       setLoading(false);
     }
   };
@@ -100,8 +104,9 @@ function SignUpContent() {
     setLoading(true);
     started("email_code", redirectTo);
     try {
-      const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: callbackUrl() } });
-      if (error) toast.error(error.message);
+      const captchaToken = await captcha.getToken();
+      const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: callbackUrl(), captchaToken } });
+      if (error) toast.error(authErrorMessage(error.message));
       else {
         toast.success("Code sent. Check your inbox, including spam.");
         setStep("code");
@@ -110,6 +115,7 @@ function SignUpContent() {
       console.error(error);
       toast.error("An error occurred. Please try again.");
     } finally {
+      captcha.reset();
       setLoading(false);
     }
   };
@@ -244,6 +250,8 @@ function SignUpContent() {
               </button>
             </form>
           )}
+          {/* Turnstile: invisible unless Cloudflare needs a click */}
+          {captcha.widget}
         </div>
 
         <p className="mt-8 text-center text-sm leading-relaxed text-base-content/70">
