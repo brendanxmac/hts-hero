@@ -19,6 +19,7 @@ import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { SIGNIN_HOME, SIGNUP_HOME } from "@/libs/tariff-tracker/onboarding";
 import PasswordRequirements from "@/components/PasswordRequirements";
+import { authErrorMessage, useCaptcha } from "@/components/auth/useCaptcha";
 import { signupHref } from "@/components/tariff-tracker/access/signup";
 
 // Component that uses useSearchParams wrapped in Suspense
@@ -38,6 +39,7 @@ function LoginContent() {
   }
 
   const supabase = createSupabaseClient();
+  const captcha = useCaptcha();
   const [email, setEmail] = useState<string>("");
   // Signing up right after subscribing to tariff news: the address they just gave (DigestForm)
   useEffect(() => {
@@ -78,12 +80,14 @@ function LoginContent() {
     setIsLoading(true);
 
     try {
+      const captchaToken = await captcha.getToken();
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + "/reset-password",
+        captchaToken,
       });
 
       if (error) {
-        toast.error(error.message);
+        toast.error(authErrorMessage(error.message));
       } else {
         toast.success("Check your email for a password reset link!");
         setIsDisabled(true);
@@ -92,6 +96,7 @@ function LoginContent() {
       console.error(error);
       toast.error("An error occurred. Please try again.");
     } finally {
+      captcha.reset();
       setIsLoading(false);
     }
   };
@@ -165,11 +170,12 @@ function LoginContent() {
           password,
           options: {
             emailRedirectTo: signUpRedirect,
+            captchaToken: await captcha.getToken(),
           },
         });
 
         if (error) {
-          toast.error(error.message);
+          toast.error(authErrorMessage(error.message));
         } else {
           toast.success("Check your email to confirm your account!");
           setIsDisabled(true);
@@ -178,10 +184,11 @@ function LoginContent() {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
+          options: { captchaToken: await captcha.getToken() },
         });
 
         if (error) {
-          toast.error(error.message);
+          toast.error(authErrorMessage(error.message));
         } else {
           toast.success("Successfully signed in!");
           window.location.href = redirectTo;
@@ -191,6 +198,7 @@ function LoginContent() {
       console.error(error);
       toast.error("An error occurred. Please try again.");
     } finally {
+      captcha.reset();
       setIsLoading(false);
     }
   };
@@ -224,11 +232,11 @@ function LoginContent() {
         // The emailed link signs them in and comes back to the same place the code does
         const { error } = await supabase.auth.signInWithOtp({
           email,
-          options: { emailRedirectTo: redirectURL },
+          options: { emailRedirectTo: redirectURL, captchaToken: await captcha.getToken() },
         });
 
         if (error) {
-          toast.error(error.message);
+          toast.error(authErrorMessage(error.message));
         } else {
           toast.success(
             "Email sent! Check your inbox for your code from HTS Hero (including spam).",
@@ -243,6 +251,7 @@ function LoginContent() {
     } catch (error) {
       console.log(error);
     } finally {
+      captcha.reset();
       setIsLoading(false);
     }
   };
@@ -602,6 +611,9 @@ function LoginContent() {
             </>
           )}
         </section>
+
+        {/* Turnstile: invisible unless Cloudflare needs a click */}
+        {captcha.widget}
 
         {!showForgotPassword && !showOtpForm && !showOtpVerification && (
           <p className="text-center text-sm text-base-content/70">
