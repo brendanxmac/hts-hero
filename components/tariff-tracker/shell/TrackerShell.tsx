@@ -21,6 +21,9 @@ import { NavMeta, useNavMeta } from "./useNavMeta";
 import { useTrackerNav } from "./TrackerNav";
 import { FLOW_SLOT_ID } from "./FlowPage";
 import { useHomeWaitsForImports } from "./useNoImportsYet";
+import { ListSwitcher } from "../lists/ListSwitcher";
+import { ListsDialogHost } from "../lists/ListsDialog";
+import { switchList } from "../lists/actions";
 
 // Duty Guard as an app (DESIGN_SYSTEM.md §15): a floating sidebar, dark in both modes,
 // beside the open section. Each tab's dot and count say what's waiting there (free checks left,
@@ -188,6 +191,17 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
       }
       return !was;
     });
+  // A link to one list (?list=, from an alert or the "are you affected" check) shows it; the
+  // account's lists may still be loading, and the list shows as soon as it's here
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const list = params.get("list");
+    if (!list) return;
+    switchList(list, "link");
+    params.delete("list");
+    const query = params.toString();
+    window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+  }, []);
   const { paid, loading } = useTrackerAccess();
   const meta = useNavMeta();
   // No imports yet: no Home (the setup page is on Your Imports), and a visit to it lands there
@@ -222,6 +236,8 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
             {collapsed ? <ChevronDoubleRightIcon className="h-4 w-4" aria-hidden /> : <ChevronDoubleLeftIcon className="h-4 w-4" aria-hidden />}
           </button>
         </div>
+        {/* The list every tab shows (one per client, say) */}
+        <ListSwitcher look={collapsed ? "collapsed" : "sidebar"} source="sidebar" />
         <nav role="tablist" aria-orientation="vertical" aria-label="Duty Guard" className="relative flex flex-1 flex-col gap-4 overflow-y-auto">
           {GROUPS.map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
@@ -283,6 +299,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
             savings review); empty, it isn't there */}
         <div id={FLOW_SLOT_ID} className="absolute inset-0 z-30 empty:hidden" />
       </div>
+      <ListsDialogHost />
     </div>
   );
 };

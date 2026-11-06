@@ -17,7 +17,12 @@ import type { UpdateSummary } from "../../emails/kit/parts"
 
 type Db = SupabaseClient
 
-export type NewsFrequency = "instant" | "weekly" | "off"
+export type NewsFrequency = "instant" | "weekly" | "both" | "off"
+
+// Who gets which: the weekly digest goes to weekly and both, each action as it happens to instant
+// and both
+export const getsWeekly = (f: NewsFrequency) => f === "weekly" || f === "both"
+export const getsInstant = (f: NewsFrequency) => f === "instant" || f === "both"
 export type NewsScope = "actions" | "all_steps"
 
 export interface NewsPreferences {
@@ -76,7 +81,7 @@ const COUNTRY_CODES = new Set(Countries.map((c) => c.code))
 export const parsePreferences = (body: Record<string, unknown>): NewsPreferences => {
   const list = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [])
   return {
-    frequency: body.frequency === "instant" || body.frequency === "off" ? body.frequency : "weekly",
+    frequency: body.frequency === "instant" || body.frequency === "both" || body.frequency === "off" ? body.frequency : "weekly",
     scope: body.scope === "all_steps" ? "all_steps" : "actions",
     authorities: list(body.authorities).filter((a) => a in AUTHORITIES),
     countries: list(body.countries).map((c) => c.toUpperCase()).filter((c) => COUNTRY_CODES.has(c)),
@@ -131,14 +136,14 @@ const latestActions = async (db: Db) => {
 
 // The welcome, the moment they confirm
 const sendWelcome = async (db: Db, s: Subscriber, frequency: NewsFrequency) => {
-  const weekly = frequency !== "instant"
+  const weekly = getsWeekly(frequency)
   await sendTransactional(db, {
     recipient: s.email,
     subscriberId: s.id,
     userId: s.user_id,
     template: "news_welcome",
     props: {
-      frequency: weekly ? "weekly" : "instant",
+      frequency: frequency === "both" ? "both" : weekly ? "weekly" : "instant",
       firstDigestOn: weekly ? nextDigestDay() : null,
       recent: await latestActions(db).catch((): UpdateSummary[] => []),
       manageUrl: manageUrl(s.token),
@@ -153,9 +158,25 @@ export const subscribe = async (db: Db, { email, prefs, source }: { email: strin
   const confirmed = !!s?.confirmed_at && !s.unsubscribed_at
   const active = confirmed && s!.news_frequency !== "off"
 
-  // Already subscribed (or an account): nothing to send and nothing changes; the form just shows
-  // that they're all set
-  if (s && active) return "already_subscribed"
+  // Already subscribed (or an account): nothing changes from the form (anyone can type an address),
+  // but the address's own inbox gets its manage link, so the owner can switch weekly, as it
+  // happens or both in one click. At most one per address per 10 minutes.
+  if (s && active) {
+    if (!throttled(s)) {
+      await db.from("email_subscribers").update({ confirm_sent_at: new Date().toISOString() }).eq("id", s.id)
+      await sendTransactional(db, {
+        recipient: s.email,
+        subscriberId: s.id,
+        userId: s.user_id,
+        template: "news_manage_link",
+        props: {
+          manageUrl: manageUrl(s.token),
+          footer: { reason: "You're getting this because someone asked to change the tariff updates sent to this address." },
+        },
+      }).catch((e) => console.error("Sending the tariff news manage link:", e))
+    }
+    return "already_subscribed"
+  }
 
   if (s && throttled(s)) return "throttled"
 

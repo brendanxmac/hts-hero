@@ -123,7 +123,7 @@ export const officialSources = async (db: SupabaseClient, u: UpdateRow): Promise
 // Every claim on a news post: the documents for what changed and when, the update page that
 // gathers them, the schedule for the codes named, and Census for the imports at stake
 const newsSources = (u: UpdateRow, official: OfficialSource[], countries: string[], imports: { value: number; year: number } | null): SourceLink[] => {
-  const codes = Array.from(new Set(u.hts_codes.map((c) => c.replace(/\D/g, "")).filter((d) => [2, 4, 6, 8, 10].includes(d.length) && !d.startsWith("99"))))
+  const codes = namedCodes(u)
   return dedupe([
     ...official.map((o) => ({
       claim: "What changes, for whom, from when",
@@ -151,6 +151,7 @@ const newsSources = (u: UpdateRow, official: OfficialSource[], countries: string
 // What Claude may write on top of the update's fields
 export interface NewsWords {
   headline?: string
+  dek?: string
   rate_before?: string
   rate_after?: string
   rate_note?: string
@@ -168,6 +169,18 @@ export const newsFacts = (u: UpdateRow) =>
 
 const shortTitle = (title: string) => (title.length <= 90 ? title : `${title.slice(0, 89).replace(/\s+\S*$/, "")}…`)
 
+// The summary's opening, for under the headline when Claude hasn't written one: its first
+// sentence, or as many words as fit
+const shortDek = (summary: string) => {
+  const text = summary.replace(/\s+/g, " ").trim()
+  const first = text.match(/^.+?[.!?](?=\s|$)/)?.[0] ?? text
+  return first.length <= 170 ? first : `${first.slice(0, 169).replace(/\s+\S*$/, "")}…`
+}
+
+// The HTS codes an action names, Chapter 99 left out (those are the tariff's own provisions)
+export const namedCodes = (u: UpdateRow) =>
+  Array.from(new Set(u.hts_codes.map((c) => c.replace(/\D/g, "")).filter((d) => [2, 4, 6, 8, 10].includes(d.length) && !d.startsWith("99"))))
+
 export const newsPost = (u: UpdateRow, theme: Theme, words: NewsWords = {}, official: OfficialSource[] = []): Post<"News"> => {
   const facts = newsFacts(u)
   // Claude's words only if every number in them is in the update
@@ -180,6 +193,7 @@ export const newsPost = (u: UpdateRow, theme: Theme, words: NewsWords = {}, offi
     asOf: todayIso(),
     source: "Official notices · HTS Hero tariff updates",
     headline: ok(words.headline) ?? shortTitle(u.title),
+    dek: (words.dek && words.dek.length <= 180 ? ok(words.dek) : undefined) ?? shortDek(u.summary),
     authority: AUTHORITIES[u.authority],
     kindLabel: KINDS[u.kind],
     tone: TONE[u.kind],
@@ -192,6 +206,7 @@ export const newsPost = (u: UpdateRow, theme: Theme, words: NewsWords = {}, offi
     effectiveOn: u.effective_on ?? undefined,
     stage: Math.max(STAGE_ORDER.indexOf(u.stage), 0),
     imports: imports && imports.value > 0 ? imports : undefined,
+    htsCount: namedCodes(u).length || undefined,
     slug: u.slug,
   }
   const phase = newsPhase(u)
@@ -225,7 +240,8 @@ export const newsIdea = (u: UpdateRow, post: Post<"News">): Idea => ({
 
 const WORDS_SYSTEM = `You write the words on a branded social post about one US tariff action, for importers on LinkedIn and X. You get the action's record from HTS Hero's tariff updates feed.
 
-- headline: the hook, at most 80 characters, plain and specific: what changes and for whom. No hype, no questions, no emoji.
+- headline: the hook, at most 70 characters, plain and specific: what changes and for whom. It's set huge, so keep it tight. No hype, no questions, no emoji.
+- dek: one or two plain sentences under the headline, at most 160 characters: what the action does, to which goods, from which countries, and from when. Informative, not salesy.
 - rate_before / rate_after: the headline rate change as short rates exactly as the summary writes them ("25%", "50%"). rate_after alone when it's a new tariff (rate_before empty). Both empty when the action has no single headline rate, or when the summary lists many different rates.
 - rate_note: what the rate applies to, at most 50 characters ("on steel from Canada"). Empty when the rates are empty.
 Use only numbers that appear in the record. Never compute or round numbers. Write rates with "%"; never write "pts", "points" or "percentage points".`
@@ -233,9 +249,10 @@ Use only numbers that appear in the record. Never compute or round numbers. Writ
 const WORDS_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["headline", "rate_before", "rate_after", "rate_note"],
+  required: ["headline", "dek", "rate_before", "rate_after", "rate_note"],
   properties: {
     headline: { type: "string" },
+    dek: { type: "string" },
     rate_before: { type: "string" },
     rate_after: { type: "string" },
     rate_note: { type: "string" },

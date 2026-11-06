@@ -13,9 +13,10 @@ import { useTrackerNav } from "./TrackerNav";
 export const useNoImportsYet = () => {
   const { user } = useUser();
   const { signedIn, loading: accessLoading } = useTrackerAccess();
-  const { loading, items } = useTracker();
+  // Across every list: an empty list of a few isn't "no imports yet"
+  const { loading, allItems } = useTracker();
   const synced = useCatalogSynced(user?.id);
-  return !loading && !accessLoading && (!signedIn || synced) && items.length === 0;
+  return !loading && !accessLoading && (!signedIn || synced) && allItems.length === 0;
 };
 
 // Home asked for (Duty Guard's default tab) with no imports yet: Your Imports, in its place

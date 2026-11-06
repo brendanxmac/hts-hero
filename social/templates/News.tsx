@@ -1,140 +1,291 @@
-import { Palette, toneColor } from "../brand"
-import { display } from "../fonts"
-import { alpha, Chip, Enter, Frame, Headline, longDate, useLayout, useProgress, usd } from "../kit"
-import type { NewsProps } from "../types"
+import { Palette, toneColor } from "../brand";
+import { display } from "../fonts";
+import {
+  alpha,
+  Enter,
+  Frame,
+  longDate,
+  useLayout,
+  usd,
+} from "../kit";
+import type { NewsProps } from "../types";
 
-// A tariff action from the /tariff-updates feed. The rate change is the hook when there is one;
-// the stage track along the bottom (announced → … → in the HTS) is the signature: where the
-// action is between a headline and the duty an importer actually pays.
+// A tariff action from the /tariff-updates feed, read like a wire alert: where it stands and the
+// law behind it, a huge headline, one plain summary, then a row of facts on who it hits (rate,
+// countries, HTS codes, date, imports at stake). Just the update, set big enough to read at a
+// glance in a feed; the link to the update's page is in the caption.
 
-const STAGES = ["Announced", "Signed", "Filed", "Published", "CBP guidance", "In the HTS"]
-
-const StageTrack = ({ stage, p, u, color }: { stage: number; p: Palette; u: number; color: string }) => {
-  const t = useProgress(1.2, 1.4, "even")
-  const reached = stage * t
-  return (
-    <div style={{ position: "relative", padding: `${10 * u}px 0 0` }}>
-      <div style={{ position: "absolute", top: 10 * u + 13 * u, left: `${100 / 12}%`, right: `${100 / 12}%`, height: 6 * u, background: p.border, borderRadius: 999 }}>
-        <div style={{ height: "100%", width: `${(reached / (STAGES.length - 1)) * 100}%`, background: color, borderRadius: 999 }} />
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${STAGES.length}, 1fr)` }}>
-        {STAGES.map((label, i) => {
-          const done = i <= reached + 0.001
-          const current = i === stage && t === 1
-          return (
-            <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 * u, position: "relative" }}>
-              <div
-                style={{
-                  width: (current ? 44 : 32) * u,
-                  height: (current ? 44 : 32) * u,
-                  marginTop: (current ? -6 : 0) * u,
-                  marginBottom: (current ? -6 : 0) * u,
-                  borderRadius: 999,
-                  background: done ? color : p.surface,
-                  border: `${(current ? 8 : 4) * u}px solid ${current ? alpha(color, 0.45) : done ? color : p.border}`,
-                }}
-              />
-              <span style={{ fontSize: 18 * u, fontWeight: current ? 700 : 500, color: done ? p.text : p.muted, textAlign: "center", lineHeight: 1.15 }}>{label}</span>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
+interface Stat {
+  label: string;
+  value: string;
+  sub?: string;
+  color?: string;
 }
 
-const Fact = ({ label, children, p, u }: { label: string; children: React.ReactNode; p: Palette; u: number }) => (
-  <div style={{ display: "flex", gap: 20 * u, alignItems: "baseline" }}>
-    <span style={{ width: 130 * u, flexShrink: 0, fontSize: 20 * u, fontWeight: 700, letterSpacing: 1.5 * u, textTransform: "uppercase", color: p.muted }}>{label}</span>
-    <span style={{ fontSize: 30 * u, fontWeight: 500, lineHeight: 1.3 }}>{children}</span>
-  </div>
-)
+const StatTile = ({
+  s,
+  p,
+  u,
+  wide,
+  at,
+}: {
+  s: Stat;
+  p: Palette;
+  u: number;
+  wide: boolean;
+  at: number;
+}) => (
+  <Enter at={at} style={{ minWidth: 0 }}>
+    <div
+      style={{
+        borderTop: `${4 * u}px solid ${s.color ?? p.text}`,
+        paddingTop: (wide ? 14 : 22) * u,
+        display: "flex",
+        flexDirection: "column",
+        gap: (wide ? 4 : 8) * u,
+      }}
+    >
+      <span
+        style={{
+          fontSize: (wide ? 20 : 26) * u,
+          fontWeight: 700,
+          letterSpacing: 1.5 * u,
+          textTransform: "uppercase",
+          color: p.muted,
+        }}
+      >
+        {s.label}
+      </span>
+      <span
+        style={{
+          fontFamily: display,
+          fontWeight: 700,
+          fontSize: (wide ? 56 : s.value.length > 11 ? 64 : 84) * u,
+          lineHeight: 1.02,
+          letterSpacing: -2.5 * u,
+          color: s.color ?? p.text,
+          overflowWrap: "anywhere",
+        }}
+      >
+        {s.value}
+      </span>
+      {s.sub && (
+        <span
+          style={{
+            fontSize: (wide ? 22 : 30) * u,
+            fontWeight: 500,
+            color: p.muted,
+            lineHeight: 1.25,
+          }}
+        >
+          {s.sub}
+        </span>
+      )}
+    </div>
+  </Enter>
+);
+
+// Sized for a headline set as the poster's main line
+const headlineSize = (text: string, wide: boolean) => {
+  const max = wide ? 76 : 124;
+  return text.length > 70
+    ? max * 0.72
+    : text.length > 50
+      ? max * 0.8
+      : text.length > 32
+        ? max * 0.9
+        : max;
+};
 
 export const News = (props: NewsProps) => {
-  const { theme, headline, authority, kindLabel, tone, rateBefore, rateAfter, rateNote, countries, products, effectiveOn, stage, imports } = props
-  const { p, u, wide, tall } = useLayout(theme)
-  const color = toneColor(p, tone)
-  const rate = useProgress(0.5, 0.8)
-  const hasRate = !!rateAfter
-  const stakeHero = !hasRate && !!imports && imports.value > 0
-  const shownCountries = countries.slice(0, 6)
+  const {
+    theme,
+    headline,
+    dek,
+    authority,
+    kindLabel,
+    tone,
+    rateBefore,
+    rateAfter,
+    rateNote,
+    countries,
+    products,
+    effectiveOn,
+    stage,
+    imports,
+    htsCount,
+    asOf,
+  } = props;
+  const { p, u, wide } = useLayout(theme);
+  const color = toneColor(p, tone);
+  const inEffect = stage >= 4 || (!!effectiveOn && effectiveOn <= asOf);
+  const status = inEffect ? "Now in effect" : "Announced";
+
+  const flags = countries
+    .slice(0, 8)
+    .map((c) => c.flag)
+    .join(" ");
+  const stats: Stat[] = [];
+  if (rateAfter)
+    stats.push({
+      label: "Tariff rate",
+      value: `${rateBefore ? `${rateBefore} → ` : ""}${rateAfter}`,
+      sub: rateNote || undefined,
+      color,
+    });
+  stats.push(
+    countries.length === 0
+      ? { label: "Countries", value: "All", sub: "Imports from every country" }
+      : countries.length === 1
+        ? { label: "Country", value: countries[0].name, sub: countries[0].flag }
+        : {
+            label: "Countries",
+            value: String(countries.length),
+            sub: `${flags}${countries.length > 8 ? ` +${countries.length - 8}` : ""}`,
+          },
+  );
+  if (htsCount)
+    stats.push({
+      label: "HTS codes",
+      value: String(htsCount),
+      sub: "named in the action",
+    });
+  if (effectiveOn)
+    stats.push({
+      label: inEffect ? "In effect since" : "Takes effect",
+      value: longDate(effectiveOn).replace(/, \d{4}$/, ""),
+      sub: effectiveOn.slice(0, 4),
+    });
+  if (imports && imports.value > 0)
+    stats.push({
+      label: "Imports at stake",
+      value: usd(imports.value),
+      sub: `US imports, ${imports.year}`,
+      color: p.cobalt,
+    });
+  // Products go in the tiles only when short enough to set big
+  if (stats.length < 4 && products && products.length <= 22)
+    stats.push({ label: "Products", value: products, sub: undefined });
+  const shown = stats.slice(0, 4);
+  const columns = wide ? Math.min(shown.length, 4) : 2;
+
   return (
-    <Frame theme={theme} kind="Tariff news" kindTone={tone} source={props.source} asOf={props.asOf}>
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: (wide ? 18 : 30) * u, justifyContent: tall ? "center" : undefined, minHeight: 0 }}>
-        <Enter>
-          <div style={{ display: "flex", gap: 12 * u, marginBottom: 18 * u, flexWrap: "wrap" }}>
-            <Chip tone={tone} p={p} size={22 * u} solid>
-              {authority}
-            </Chip>
-            <Chip tone="neutral" p={p} size={22 * u}>
-              {kindLabel}
-            </Chip>
-          </div>
-          <Headline text={headline} u={u} max={wide ? 46 : 62} color={p.text} />
-        </Enter>
-
-        {hasRate && (
-          <div style={{ display: "flex", alignItems: "center", gap: 24 * u, opacity: rate, transform: `scale(${0.9 + rate * 0.1})`, transformOrigin: "left center" }}>
-            {rateBefore && (
-              <>
-                <span style={{ fontFamily: display, fontWeight: 700, fontSize: (wide ? 84 : 120) * u, color: p.muted, letterSpacing: -4 * u, textDecoration: "line-through", textDecorationThickness: 6 * u }}>
-                  {rateBefore}
-                </span>
-                <span style={{ fontFamily: display, fontWeight: 700, fontSize: (wide ? 64 : 90) * u, color: p.muted }}>→</span>
-              </>
-            )}
-            <span style={{ fontFamily: display, fontWeight: 700, fontSize: (wide ? 104 : 150) * u, color, letterSpacing: -5 * u, lineHeight: 1 }}>{rateAfter}</span>
-          </div>
-        )}
-        {hasRate && rateNote && (
-          <Enter at={0.8}>
-            <div style={{ fontSize: 28 * u, color: p.muted, marginTop: -12 * u }}>{rateNote}</div>
+    <Frame
+      theme={theme}
+      kind="Tariff news"
+      kindTone={tone}
+      source={props.source}
+      asOf={props.asOf}
+    >
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: (wide ? 20 : 34) * u,
+          minHeight: 0,
+        }}
+      >
+        {/* The update, centered in the frame when there are few facts */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: (wide ? 24 : 44) * u,
+          }}
+        >
+          <Enter>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16 * u,
+                flexWrap: "wrap",
+                fontSize: (wide ? 22 : 30) * u,
+                fontWeight: 700,
+                letterSpacing: 2 * u,
+                textTransform: "uppercase",
+              }}
+            >
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 10 * u,
+                  color,
+                }}
+              >
+                <span
+                  style={{
+                    width: 18 * u,
+                    height: 18 * u,
+                    borderRadius: 999,
+                    background: color,
+                    boxShadow: `0 0 0 ${6 * u}px ${alpha(color, 0.2)}`,
+                  }}
+                />
+                {status}
+              </span>
+              <span style={{ color: p.border }}>|</span>
+              <span style={{ color: p.muted }}>
+                {authority} · {kindLabel}
+              </span>
+            </div>
           </Enter>
-        )}
-        {/* No single rate: the money at stake is the hook, else the date it starts */}
-        {!hasRate && (stakeHero || effectiveOn) && (
-          <div style={{ opacity: rate, transform: `scale(${0.9 + rate * 0.1})`, transformOrigin: "left center" }}>
-            <div style={{ fontFamily: display, fontWeight: 700, fontSize: (wide ? 96 : 140) * u, color: stakeHero ? p.cobalt : color, letterSpacing: -5 * u, lineHeight: 1 }}>
-              {stakeHero ? usd(imports!.value) : longDate(effectiveOn!).replace(/, \d{4}$/, "")}
-            </div>
-            <div style={{ fontSize: 28 * u, color: p.muted, marginTop: 10 * u }}>
-              {stakeHero ? `of US imports in ${imports!.year} under the HTS codes named` : `takes effect, ${effectiveOn!.slice(0, 4)}`}
-            </div>
-          </div>
-        )}
 
-        <Enter at={0.7} style={{ display: "flex", flexDirection: "column", gap: (wide ? 8 : 14) * u }}>
-          <Fact label="Who" p={p} u={u}>
-            {shownCountries.length ? (
-              <>
-                {shownCountries.map((c) => `${c.flag} ${c.name}`).join("  ")}
-                {countries.length > shownCountries.length ? ` +${countries.length - shownCountries.length} more` : ""}
-              </>
-            ) : (
-              "🌐 Imports from all countries"
+          <Enter at={0.15}>
+            <div
+              style={{
+                fontFamily: display,
+                fontWeight: 700,
+                fontSize: headlineSize(headline, wide) * u,
+                lineHeight: 1.02,
+                letterSpacing: -3.5 * u,
+                color: p.text,
+              }}
+            >
+              {headline}
+            </div>
+            {dek && (
+              <div
+                style={{
+                  marginTop: (wide ? 16 : 30) * u,
+                  fontSize: (wide ? 28 : 40) * u,
+                  lineHeight: 1.3,
+                  color: alpha(p.text, 0.78),
+                  fontWeight: 500,
+                  maxWidth: wide ? "92%" : undefined,
+                }}
+              >
+                {dek}
+              </div>
             )}
-          </Fact>
-          {products && (
-            <Fact label="What" p={p} u={u}>
-              {products}
-            </Fact>
-          )}
-          {effectiveOn && (
-            <Fact label="When" p={p} u={u}>
-              {longDate(effectiveOn)}
-            </Fact>
-          )}
-          {imports && imports.value > 0 && !stakeHero && (
-            <Fact label="At stake" p={p} u={u}>
-              <b style={{ color: p.cobalt }}>{usd(imports.value)}</b> of US imports in {imports.year} under the codes named
-            </Fact>
-          )}
-        </Enter>
+          </Enter>
 
-        <div style={{ marginTop: "auto" }}>
-          <StageTrack stage={stage} p={p} u={u} color={color} />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+              columnGap: (wide ? 28 : 40) * u,
+              rowGap: (wide ? 18 : 36) * u,
+            }}
+          >
+            {shown.map((s, i) => (
+              <StatTile
+                key={s.label}
+                s={s}
+                p={p}
+                u={u}
+                wide={wide}
+                at={0.5 + i * 0.12}
+              />
+            ))}
+          </div>
         </div>
+
       </div>
     </Frame>
-  )
-}
+  );
+};

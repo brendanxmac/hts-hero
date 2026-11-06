@@ -17,5 +17,5 @@ export async function GET(req: NextRequest) {
   const s = await confirmSubscriber(createAdminClient(), token, prefs)
   if (!s) return NextResponse.redirect(appUrl("/tariff-updates?subscription=invalid"))
   const frequency = prefs?.frequency ?? s.news_frequency
-  return NextResponse.redirect(appUrl(`/tariff-digest/welcome?s=confirmed${frequency === "instant" ? "&f=instant" : ""}`))
+  return NextResponse.redirect(appUrl(`/tariff-digest/welcome?s=confirmed${frequency === "instant" || frequency === "both" ? `&f=${frequency}` : ""}`))
 }

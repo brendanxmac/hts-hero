@@ -12,6 +12,7 @@ import { ImportsTable } from "./imports/ImportsTable";
 import { TrackedProduct } from "./report";
 import { sectionBySlug } from "./sections";
 import { SectionHeader } from "./shell/SectionPage";
+import { ListSwitcher } from "./lists/ListSwitcher";
 import { useTracker } from "./TrackerContext";
 
 // The report on the user's imports: the section's header with its actions (the date, export,
@@ -43,6 +44,7 @@ export const TariffReport = ({
               tabs={tabs}
               actions={
                 <>
+                  <ListSwitcher look="header" source="imports" />
                   <label className="flex h-9 items-center gap-2 rounded-full border border-base-300 bg-base-100 pl-3.5 pr-2 text-xs font-semibold text-base-content/70">
                     Rates as of
                     <input

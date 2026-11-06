@@ -12,7 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { SIGNUP_HOME } from "@/libs/tariff-tracker/onboarding";
-import { SIGNUP_EMAIL_KEY } from "@/components/tariff-updates/SubscribeForm";
+import { SIGNUP_EMAIL_KEY } from "@/components/tariff-digest/DigestForm";
 import { THEME } from "@/components/ui/theme";
 import { trackerDisplay, trackerSans } from "@/components/ui/font";
 import * as ui from "@/components/ui/styles";
@@ -51,7 +51,7 @@ function SignUpContent() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
-  // Signing up right after subscribing to tariff news: the address they just gave (SubscribeForm)
+  // Signing up right after subscribing to tariff news: the address they just gave (DigestForm)
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem(SIGNUP_EMAIL_KEY);

@@ -13,7 +13,7 @@ export const DigestHeader = () => (
         <Image src={logo} alt="" width={28} height={28} priority />
         <span className="text-lg font-bold tracking-tight [font-family:var(--font-tracker-display)]">{config.appName}</span>
       </Link>
-      <span className="hidden text-sm text-base-content/50 sm:block">Free · Every Monday</span>
+      <span className="hidden text-sm text-base-content/50 sm:block">Free · Weekly or As It Happens</span>
     </div>
   </div>
 )

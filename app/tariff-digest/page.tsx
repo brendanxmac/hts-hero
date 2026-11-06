@@ -9,14 +9,17 @@ import { CountUp } from "@/components/ui/marketing/CountUp"
 import { Reveal } from "@/components/ui/marketing/Reveal"
 import { DigestForm } from "@/components/tariff-digest/DigestForm"
 import { InboxPreview } from "@/components/tariff-digest/InboxPreview"
+import { AlertStack } from "@/components/tariff-digest/AlertStack"
 import { UpdateReel } from "@/components/tariff-digest/UpdateReel"
 import { display, shortDay, toItems, varied } from "@/components/tariff-digest/parts"
 
-// The Weekly Tariff Digest's sign-up page, made to do one thing: get an email address. Dark and
-// quiet, big type, and the real thing on show: the hero's reel and the inbox preview are the
-// latest published tariff actions, the numbers count the real feed. Every form is the same weekly
-// digest of every law and country; the Tuesday after their first digest, subscribers get the
-// Tariff Alerts offer by email (libs/email/digest-followup.ts).
+// The Tariff Digest's sign-up page, made to do one thing: get an email address. Dark and quiet,
+// big type, and the real thing on show: the hero's reel, the inbox preview and the alert stack are
+// the latest published tariff actions, the numbers count the real feed. Every form picks weekly,
+// as it happens, or both (DigestForm), for every law and country; the manage link in every email
+// changes it. Every other email sign-up on the site is a button that opens this page
+// (components/tariff-digest/DigestButton). The Tuesday after their first digest, subscribers get
+// the Tariff Alerts offer by email (libs/email/digest-followup.ts).
 
 // Static, refreshed hourly so the reel, the preview and the numbers stay current
 export const revalidate = 3600
@@ -30,13 +33,13 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  openGraph: { title: "The Weekly Tariff Digest", description: DESCRIPTION, url: URL, siteName: "HTS Hero", type: "website" },
-  twitter: { card: "summary_large_image", title: "The Weekly Tariff Digest by HTS Hero", description: DESCRIPTION },
+  openGraph: { title: "Your Weekly Tariff Digest", description: DESCRIPTION, url: URL, siteName: "HTS Hero", type: "website" },
+  twitter: { card: "summary_large_image", title: "Your Weekly Tariff Digest by HTS Hero", description: DESCRIPTION },
   alternates: { canonical: PATH },
 }
 
 // Where every number and update comes from, officially
-const SOURCES = "the White House, USTR, the Federal Register, CBP and the USITC"
+const SOURCES = "The White House, USTR, Federal Register, CBP, and USITC"
 const SOURCE_COUNT = 6
 
 const INSIDE = [
@@ -45,6 +48,15 @@ const INSIDE = [
   { n: "03", title: "When it lands", body: "How far it has got, from announced to in the HTS, and the day it takes effect." },
   { n: "04", title: "Where it came from", body: "A link to the official document behind it, every time." },
 ]
+
+// The "as it happens" emails: what makes them different from the digest
+const AS_IT_HAPPENS = [
+  { n: "01", title: "The hour it's announced", body: "An email the day a new tariff action is announced, not the Monday after." },
+  { n: "02", title: "Again when it's final", body: "A second email when it's signed or published in the Federal Register." },
+  { n: "03", title: "AD/CVD included", body: "New antidumping and countervailing duty notices from Commerce, as they're filed." },
+  { n: "04", title: "Only what you follow", body: "Get just the updates you care about, or keep them all. Change it any time." },
+]
+const ALERT_COUNT = 3
 
 const REEL_SIZE = 12
 const PREVIEW_SIZE = 4
@@ -68,6 +80,8 @@ export default async function TariffDigestPage() {
   const news = published.filter((u) => u.kind !== "hts_revision")
   const reel = toItems(varied(news, REEL_SIZE))
   const preview = previewOf(news, today)
+  // The newest few, with an AD/CVD notice among them when there's one
+  const alerts = varied(news, ALERT_COUNT).map((u) => ({ item: toItems([u])[0], day: shortDay(u.last_activity_at.slice(0, 10)) }))
   const since = (iso: string) => news.filter((u) => u.first_seen_at.slice(0, 10) >= iso).length
   const recent = since(addDays(today, -RECENT_DAYS))
   const thisYear = since(`${today.slice(0, 4)}-01-01`)
@@ -101,19 +115,19 @@ export default async function TariffDigestPage() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60 motion-reduce:hidden" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
-              The Weekly Tariff Digest
+              Your Personalized Tariff News
             </p>
             <h1 className={`${display} m-0 mt-8 text-5xl font-semibold leading-[1.04] tracking-tight text-balance sm:text-6xl xl:text-[4.25rem]`}>
               <span className="dg-rise block" style={{ ["--dg-delay" as string]: "120ms" }}>
                 Every US tariff change.
               </span>
               <span className="dg-rise block text-base-content/45" style={{ ["--dg-delay" as string]: "260ms" }}>
-                One email. Every Monday.
+                Every Monday. Or As It Happens.
               </span>
             </h1>
             <p className="dg-rise m-0 mt-8 max-w-2xl text-lg leading-relaxed text-base-content/70 sm:text-xl" style={{ ["--dg-delay" as string]: "420ms" }}>
-              New tariffs, rate changes, exclusions and deadlines from the week before. All in plain English, and with the official
-              document behind each one.
+              New tariffs, rate changes, exclusions, AD/CVD cases and deadlines, the day they&apos;re out or in Monday&apos;s recap. All in
+              plain English, and with the official document behind each one.
             </p>
             <div className="dg-rise mt-10 max-w-2xl" style={{ ["--dg-delay" as string]: "560ms" }}>
               <DigestForm source="tariff-digest-hero" autoFocus />
@@ -133,7 +147,7 @@ export default async function TariffDigestPage() {
         <section className="border-t border-base-content/10">
           <div className="mx-auto grid w-full max-w-(--breakpoint-xl) grid-cols-1 gap-16 px-6 py-28 lg:grid-cols-2 lg:items-center lg:gap-24 lg:px-8 lg:py-36">
             <div className="min-w-0">
-              <p className="m-0 text-xs font-bold uppercase tracking-[0.2em] text-primary">Inside every issue</p>
+              <p className="m-0 text-xs font-bold uppercase tracking-[0.2em] text-primary">Weekly Digest</p>
               <h2 className={`${display} m-0 mt-6 text-4xl font-semibold leading-[1.08] tracking-tight text-balance sm:text-5xl`}>
                 Five minutes on Monday.
                 <span className="block text-base-content/45">Nothing missed all week.</span>
@@ -153,6 +167,38 @@ export default async function TariffDigestPage() {
             <Reveal className="min-w-0">
               <InboxPreview items={toItems(preview.items)} heading={preview.heading} period={preview.period} />
             </Reveal>
+          </div>
+        </section>
+      )}
+
+      {/* Act two and a half: the emails that don't wait for Monday */}
+      {alerts.length > 0 && (
+        <section className="border-t border-base-content/10">
+          <div className="mx-auto grid w-full max-w-(--breakpoint-xl) grid-cols-1 gap-16 px-6 py-28 lg:grid-cols-2 lg:items-center lg:gap-24 lg:px-8 lg:py-36">
+            <Reveal className="order-last min-w-0 lg:order-first">
+              <AlertStack alerts={alerts} />
+            </Reveal>
+            <div className="min-w-0">
+              <p className="m-0 text-xs font-bold uppercase tracking-[0.2em] text-primary">As it happens</p>
+              <h2 className={`${display} m-0 mt-6 text-4xl font-semibold leading-[1.08] tracking-tight text-balance sm:text-5xl`}>
+                Can&apos;t wait for Monday?
+                <span className="block text-base-content/45">Hear about it first.</span>
+              </h2>
+              <ol className="m-0 mt-12 flex list-none flex-col gap-8 p-0">
+                {AS_IT_HAPPENS.map((p) => (
+                  <li key={p.n} className="flex gap-6">
+                    <span className={`${display} w-8 shrink-0 pt-0.5 text-sm font-semibold tabular-nums text-primary`}>{p.n}</span>
+                    <div>
+                      <p className={`${display} m-0 text-lg font-semibold`}>{p.title}</p>
+                      <p className="m-0 mt-1 text-base leading-relaxed text-base-content/60">{p.body}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <p className="m-0 mt-12 text-sm leading-relaxed text-base-content/45">
+                Pick &ldquo;Live Updates&rdquo; or &ldquo;Both&rdquo; when you sign up. Every email has a link to change it.
+              </p>
+            </div>
           </div>
         </section>
       )}

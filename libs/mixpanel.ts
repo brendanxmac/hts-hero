@@ -49,6 +49,18 @@ export enum MixpanelEvent {
   /** A sign-up button clicked (EntryCta): page (home, tariff-alerts, duty-audits), entry (where the
    *  sign-up starts), section (where on the page), label, signed_in */
   SIGNUP_CTA_CLICKED = "Sign Up CTA Clicked",
+  /** A plan card's button on a pricing page ("Start Free Trial"): page, entry, product, plan_products,
+   *  price_usd (per month at that billing), billing, highlighted (the slider's pick), signed_in.
+   *  The plan the visitor picked, before sign-up (Sign Up CTA Clicked counts the same click by page) */
+  PLAN_CTA_CLICKED = "Plan CTA Clicked",
+  /** A "Book a Demo" row under the plan cards (page, topic: large_catalog or partners) */
+  BOOK_DEMO_CLICKED = "Book a Demo Clicked",
+  /** A link to the /tariff-alerts sales page (source: header_nav, tools_menu, footer, home_lanes,
+   *  classify_closing, country_page), signed_in */
+  TARIFF_ALERTS_LINK_CLICKED = "Tariff Alerts Link Clicked",
+  /** A blog post's tool CTA, other than Duty Guard's (that one is Sign Up CTA Clicked, page blog):
+   *  kind (calculator, history, classify), section (cta_panel or cta_rail), label, signed_in */
+  BLOG_CTA_CLICKED = "Blog CTA Clicked",
   /** The homepage's "Get a Demo": the form opened, and sent (then on to Calendly): company_type, role, products */
   DEMO_FORM_OPENED = "Demo Form Opened",
   DEMO_REQUESTED = "Demo Requested",
@@ -150,6 +162,11 @@ export enum MixpanelEvent {
   DUTY_GUARD_PRODUCTS_ADDED = "Duty Guard Products Added",
   TARIFF_AUDIT_REQUESTED = "Tariff Audit Requested",
   DUTY_GUARD_PRODUCTS_REMOVED = "Duty Guard Products Removed",
+  // Import lists (one per client, for brokers): made, renamed, deleted, or switched to
+  DUTY_GUARD_LIST_CREATED = "Duty Guard List Created",
+  DUTY_GUARD_LIST_RENAMED = "Duty Guard List Renamed",
+  DUTY_GUARD_LIST_DELETED = "Duty Guard List Deleted",
+  DUTY_GUARD_LIST_SWITCHED = "Duty Guard List Switched",
   DUTY_GUARD_CSV_TEMPLATE_DOWNLOADED = "Duty Guard CSV Template Downloaded",
   DUTY_GUARD_DATE_SET = "Duty Guard Date Set",
   DUTY_GUARD_PRODUCT_ADJUSTED = "Duty Guard Product Adjusted",
@@ -236,10 +253,15 @@ export enum MixpanelEvent {
   EXPLORER_NAVIGATED_TO_LEVEL = "Explorer Navigated to Level",
   // Subscribed to tariff news on /tariff-updates (source: the page it was on)
   TARIFF_UPDATES_SUBSCRIBED = "Tariff Updates Subscribed",
+  // A "Get tariff updates" button anywhere on the site, opening /tariff-digest (source: where it was)
+  TARIFF_DIGEST_CTA_CLICKED = "Tariff Digest CTA Clicked",
   // After subscribing: "Create my free account" for Duty Guard
   TARIFF_UPDATES_TRACKER_UPSELL_CLICKED = "Tariff Updates Tracker Upsell Clicked",
   // A code checked in the /tariffs pages' "Is your code on a list?" box (program: the page's slug, or "all")
   TARIFF_PROGRAM_CODE_CHECKED = "Tariff Program Code Checked",
+  // "Check if you or your clients are affected" on a tariff update's page, signed in (result:
+  // affected, not_affected, no_imports or error; signed-out clicks are SIGNUP_CTA_CLICKED)
+  TARIFF_UPDATE_AFFECTED_CHECKED = "Tariff Update Affected Checked",
 }
 
 // Browser-side tracking functions

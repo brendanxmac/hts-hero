@@ -72,7 +72,7 @@ Rules for every word you write:
 - product: the product's name as a reader would say it, at most 40 characters ("Pickup trucks", "Lithium-ion batteries"), from the facts' description. Keep any size or spec numbers exactly as the facts write them, or leave them out. Empty for posts about a country or a list.
 - why: one sentence for the HTS Hero team on why this post is worth making today.
 - rate_before / rate_after / rate_note: news only. The headline rate change exactly as the summary writes it ("25%", "50%"), rate_after alone for a new tariff, and what it applies to in at most 50 characters ("on steel from Canada"). All empty when there's no single headline rate, and for every other kind.
-- For news, end the LinkedIn caption with "Follow every tariff action: htshero.com/tariff-updates" instead of the lookup line, and the X post with htshero.com/tariff-updates.`
+- For news, leave linkedin and x empty: HTS Hero drafts them from the update itself, with the link to its page.`
 
 const SCHEMA = {
   type: "object",
@@ -207,12 +207,15 @@ export const findIdeas = async ({
     } else if (pick.headline && numbersCheck(pick.headline, c.facts)) props[key] = pick.headline
     else if (pick.headline) warnings.push(`${c.id}: Claude's headline had a number not in the facts; kept the drafted one.`)
     const drafted = captionsFor(c.post.template, props as unknown as Post["props"])
-    const captions = {
-      linkedin: pick.linkedin && numbersCheck(pick.linkedin, c.facts) ? pick.linkedin : drafted.linkedin,
-      x: pick.x && numbersCheck(pick.x, c.facts) ? pick.x : drafted.x,
-    }
-    if (pick.linkedin && captions.linkedin !== pick.linkedin) warnings.push(`${c.id}: LinkedIn caption had a number not in the facts; used the drafted one.`)
-    if (pick.x && captions.x !== pick.x) warnings.push(`${c.id}: X caption had a number not in the facts; used the drafted one.`)
+    // News captions are always the drafted ones, which carry the link to the update's page
+    const captions = c.update
+      ? drafted
+      : {
+          linkedin: pick.linkedin && numbersCheck(pick.linkedin, c.facts) ? pick.linkedin : drafted.linkedin,
+          x: pick.x && numbersCheck(pick.x, c.facts) ? pick.x : drafted.x,
+        }
+    if (!c.update && pick.linkedin && captions.linkedin !== pick.linkedin) warnings.push(`${c.id}: LinkedIn caption had a number not in the facts; used the drafted one.`)
+    if (!c.update && pick.x && captions.x !== pick.x) warnings.push(`${c.id}: X caption had a number not in the facts; used the drafted one.`)
     ideas.push({
       position: ideas.length,
       kind: c.kind,

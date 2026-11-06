@@ -5,7 +5,7 @@ import { trackerDisplay, trackerSans } from "@/components/ui/font"
 import * as mk from "@/components/ui/marketing/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { ManageSubscription } from "@/components/tariff-updates/ManageSubscription"
-import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm"
+import { DigestButton } from "@/components/tariff-digest/DigestButton"
 import { subscriberByToken } from "@/libs/email/subscribers"
 import { createAdminClient } from "../../api/supabase/server"
 
@@ -53,8 +53,8 @@ export default async function SubscriptionPage(
         ) : (
           <section className={`${tt.panel} flex flex-col gap-4 p-7`}>
             <h1 className={`${tt.display} text-2xl font-semibold text-base-content`}>This link isn&apos;t valid any more</h1>
-            <p className="text-sm text-base-content/70">Subscribe again below, and we&apos;ll email you a fresh link to confirm.</p>
-            <SubscribeForm source="subscription-page" />
+            <p className="text-sm text-base-content/70">Subscribe again, and we&apos;ll email you a fresh link to confirm.</p>
+            <DigestButton source="subscription-page" label="Subscribe Again" className="self-start" />
           </section>
         )}
       </div>

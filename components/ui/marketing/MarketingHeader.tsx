@@ -12,6 +12,12 @@ import { useUser } from "@/contexts/UserContext";
 import { ThemeSwitch } from "@/components/tariff-tracker/shell/ThemeSwitch";
 import ButtonAccount from "@/components/ButtonAccount";
 import * as mk from "./styles";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+
+// A click on the header's link to the Tariff Alerts sales page
+const trackNav = (href: string, menu: "desktop" | "mobile") => {
+  if (href === "/tariff-alerts") trackEvent(MixpanelEvent.TARIFF_ALERTS_LINK_CLICKED, { source: "header_nav", menu, signed_in: false });
+};
 
 // The site header for landing pages: light, or in Duty Guard's look with a light/dark toggle on
 // pages that opt in (skin:). The tariff products first (the tools themselves when signed in),
@@ -73,6 +79,7 @@ export const MarketingHeader = () => {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => trackNav(item.href, "desktop")}
               // Six items fit at 1024px with tighter padding below xl
               className={`whitespace-nowrap rounded-lg px-2 py-2 text-sm font-semibold transition-colors xl:px-3 ${
                 pathname === item.href ? "bg-teal-50 skin:bg-primary/10 skin:bg-primary/10 text-teal-800 skin:text-primary skin:text-primary" : "text-slate-600 skin:text-base-content/70 hover:bg-slate-50 hover:skin:bg-tt-soft hover:text-slate-900 skin:hover:text-base-content"
@@ -100,7 +107,10 @@ export const MarketingHeader = () => {
         <nav aria-label="Main" className="border-t border-slate-200 skin:border-base-300 bg-white skin:bg-base-100 lg:hidden">
           <div className={`${mk.container} flex flex-col gap-1 py-4`}>
             {nav.map((item) => (
-              <Link key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 font-semibold text-slate-700 skin:text-base-content/80 hover:bg-slate-50 hover:skin:bg-tt-soft" onClick={() => setOpen(false)}>
+              <Link key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 font-semibold text-slate-700 skin:text-base-content/80 hover:bg-slate-50 hover:skin:bg-tt-soft" onClick={() => {
+                trackNav(item.href, "mobile");
+                setOpen(false);
+              }}>
                 {item.label}
               </Link>
             ))}

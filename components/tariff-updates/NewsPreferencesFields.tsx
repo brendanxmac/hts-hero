@@ -13,7 +13,7 @@ import { AUTHORITIES } from "@/libs/tariff-updates/types"
 // laws and countries alone (NewsTopicsFields) also filter Duty Guard's Tariff Updates list.
 
 export interface NewsPreferencesValue {
-  frequency: "instant" | "weekly" | "off"
+  frequency: "instant" | "weekly" | "both" | "off"
   scope: "actions" | "all_steps"
   authorities: string[]
   countries: string[]
@@ -75,6 +75,7 @@ export function NewsPreferencesFields({
         options={[
           { value: "weekly", label: "Weekly digest", hint: "One email every Monday with the week's actions" },
           { value: "instant", label: "As it happens", hint: "An email for each new action, the day it's out" },
+          { value: "both", label: "Both", hint: "Each action as it happens, plus Monday's recap" },
           ...(allowOff ? [{ value: "off" as const, label: "Off", hint: "No tariff news emails" }] : []),
         ]}
       />

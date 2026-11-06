@@ -25,7 +25,7 @@ export const TourTriggers = (): null => {
   const { user } = useUser();
   const { signedIn, loading } = useTrackerAccess();
   const synced = useCatalogSynced(user?.id);
-  const { items } = useTracker();
+  const { allItems: items } = useTracker();
   const takeover = useImportTakeover();
   const hasImports = realItems(items).length > 0;
 

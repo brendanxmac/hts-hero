@@ -25,6 +25,7 @@ import {
   RecentStep,
   useRecentToAdd,
 } from "./AddSteps";
+import { ListTargetContext, useListTarget } from "../lists/ListPicker";
 import { ChooseStep } from "./ChooseStep";
 import { DoneStep } from "./DoneStep";
 import { ExplainStep } from "./ExplainStep";
@@ -152,7 +153,9 @@ export const ImportTakeover = () => {
     access,
     refreshAccess,
   } = useTrackerAccess();
-  const { items, addProducts } = useTracker();
+  const { allItems: items, addProducts } = useTracker();
+  // The list the imports go to (ListPicker on each add page)
+  const listTarget = useListTarget();
   const nav = useTrackerNav();
   const synced = useCatalogSynced(user?.id);
   const { open, step, from } = useImportTakeover();
@@ -283,7 +286,8 @@ export const ImportTakeover = () => {
   const add = (products: NewProduct[], method: AddMethod) => {
     if (!products.length) return;
     const firstImports = realCount === 0;
-    const { added } = addProducts(products, SOURCES[method]);
+    const { added } = addProducts(products, SOURCES[method], listTarget.target);
+    listTarget.reset();
     setAddedKeys(products.map(itemKey));
     setTakeoverStep("done");
     // imports: how many were new to the catalog (not the rows submitted, which can repeat ones it has)
@@ -405,6 +409,7 @@ export const ImportTakeover = () => {
   })();
 
   return (
+    <ListTargetContext.Provider value={{ target: listTarget.target, setTarget: listTarget.setTarget }}>
     <div
       ref={scroller}
       role="dialog"
@@ -472,5 +477,6 @@ export const ImportTakeover = () => {
         </div>
       </div>
     </div>
+    </ListTargetContext.Provider>
   );
 };

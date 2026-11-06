@@ -1,5 +1,6 @@
 import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
-import Link from "next/link"
+import { TrackedLink } from "@/components/ui/TrackedLink";
+import { MixpanelEvent } from "@/libs/mixpanel";
 import { ArrowRightIcon, BellAlertIcon, CheckIcon } from "@heroicons/react/20/solid"
 import { formatPct } from "@/components/duty-calculator/lib/format"
 import { mono } from "@/components/ui/font"
@@ -11,7 +12,7 @@ import { LOWEST_PER_IMPORT, REVERSE_TRIAL, formatPrice } from "@/components/pric
 // Free for a week (REVERSE_TRIAL), then Tariff News alerts free forever, so the ask is an account, and
 // it opens straight on adding imports. A card on an HTS code page (named for the code, with what an
 // alert looks like), inverted from the page so it stands out. The /tariff-updates pages have
-// TariffAlertsBanner above the header instead.
+// TrackerBanner above the header instead.
 
 const HREF = "/duty-guard?tab=catalog&add=paste"
 
@@ -57,10 +58,10 @@ export function TrackerCtaFeature({ htsno, today }: { htsno: string; today?: { p
           ))}
         </ul>
         <div className="flex flex-wrap items-center gap-3 pt-1">
-          <Link href={HREF} className={ui.button({ variant: "primary" })}>
+          <TrackedLink href={HREF} event={MixpanelEvent.SIGNUP_CTA_CLICKED} properties={{ page: "hts", hts_code: htsno, section: "tracker_card", label: TRY_IT_FREE }} className={ui.button({ variant: "primary" })}>
             {TRY_IT_FREE}
             <ArrowRightIcon className="h-4 w-4" aria-hidden />
-          </Link>
+          </TrackedLink>
           <span className="text-xs text-base-content/60">
             No credit card required · Plans as low as {formatPrice(LOWEST_PER_IMPORT)} per product, per month · Tariff News alerts free, forever
           </span>

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { TrackedLink } from "@/components/ui/TrackedLink";
+import { MixpanelEvent } from "@/libs/mixpanel";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import type { CtaKind } from "@/libs/blog/types";
 import * as ui from "@/components/ui/styles";
@@ -16,10 +18,10 @@ export function CtaPanel({ kind, secondary }: { kind: CtaKind; secondary?: { hre
           <p className={ui.sectionTitle}>{cta.title}</p>
           <p className={`${ui.body} max-w-prose`}>{cta.body}</p>
           <div className="mt-2 flex flex-wrap gap-3">
-            <Link href={cta.href} className={ui.button({ variant: "primary", size: "lg" })}>
+            <TrackedLink href={cta.href} event={kind === "tracker" ? MixpanelEvent.SIGNUP_CTA_CLICKED : MixpanelEvent.BLOG_CTA_CLICKED} properties={{ page: "blog", section: `cta_panel`, kind, label: cta.button }} className={ui.button({ variant: "primary", size: "lg" })}>
               {cta.button}
               <ArrowRightIcon className="h-4 w-4" aria-hidden />
-            </Link>
+            </TrackedLink>
             {secondary && (
               <Link href={secondary.href} className={ui.button({ size: "lg" })}>
                 {secondary.label}

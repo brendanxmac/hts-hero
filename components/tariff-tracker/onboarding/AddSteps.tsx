@@ -24,6 +24,7 @@ import { parseCatalog } from "../parse";
 import { DetectedColumns, detectColumns, pickSheet, readSpreadsheet, SheetTable } from "../spreadsheet";
 import { useTracker } from "../TrackerContext";
 import { ADD_STEP, delay, HowTo, Key, SheetIllustration, StepHeading } from "./parts";
+import { ListPicker, targetReady, useListTargetContext } from "../lists/ListPicker";
 import { Fixing, ReviewPanel, useReview } from "./ReviewPanel";
 import { applyFixes, Fix, Fixes } from "./fixes";
 import { SheetReview } from "./SheetReview";
@@ -82,6 +83,8 @@ const AddLayout = ({
   footnote?: ReactNode;
 }) => {
   const side = useSideBySideHeight();
+  // The list they go to, when the flow asks (ImportTakeover)
+  const lists = useListTargetContext();
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
       <button
@@ -99,10 +102,11 @@ const AddLayout = ({
         </div>
         <div ref={side.right} className="tt-ob-rise flex flex-col gap-4" style={delay(120)}>
           {typeof children === "function" ? children(side.height) : children}
+          {onAdd && lists && <ListPicker value={lists.target} onChange={lists.setTarget} />}
           {onAdd && (
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-base-300 pt-4">
               <span className="text-sm text-base-content/60">{footnote}</span>
-              <button type="button" className={`${ui.button({ variant: "primary", size: "lg" })} px-7`} disabled={!count} onClick={onAdd}>
+              <button type="button" className={`${ui.button({ variant: "primary", size: "lg" })} px-7`} disabled={!count || (lists ? !targetReady(lists.target) : false)} onClick={onAdd}>
                 {!count ? "Add my imports" : `Add ${n(count)} ${count === 1 ? "import" : "imports"}`}
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
               </button>

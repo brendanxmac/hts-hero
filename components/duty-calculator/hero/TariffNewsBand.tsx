@@ -5,11 +5,11 @@ import { AUTHORITIES } from "@/libs/tariff-updates/types";
 import * as mk from "@/components/ui/marketing/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { NEWS_DOTS, newsToneOf } from "@/components/tariff-tracker/news/tone";
-import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm";
+import { DigestButton } from "@/components/tariff-digest/DigestButton";
 
 // Between the calculator and the guide on /duty-calculator: the newest US tariff actions from
 // /tariff-updates, each opening its update (color is meaning: red a new or higher tariff, green one
-// lifted, amber a heads-up), and the email sign-up, right here. Server-rendered, so crawlers see the links.
+// lifted, amber a heads-up), and a button to the email sign-up (/tariff-digest, in a new tab). Server-rendered, so crawlers see the links.
 
 const day = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
@@ -49,14 +49,14 @@ export const TariffNewsBand = ({ updates }: { updates: PublicUpdate[] }) => {
           </li>
         ))}
       </ul>
-      <div className={`${tt.panel} mt-3 grid grid-cols-1 items-center gap-x-8 gap-y-3 p-4 lg:grid-cols-2`}>
+      <div className={`${tt.panel} mt-3 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 p-4`}>
         <p className="m-0 flex items-center gap-3 text-base font-semibold text-base-content">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden>
             <BellAlertIcon className="h-4.5 w-4.5" />
           </span>
           Get tariff news by email, free
         </p>
-        <SubscribeForm source="duty-calculator" inline />
+        <DigestButton source="duty-calculator" size="sm" />
       </div>
     </section>
   );

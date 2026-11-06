@@ -3,9 +3,8 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
-import { readAdjustments, writeAdjustments } from "./adjustments";
-import { itemKey, mergeItems, NewProduct, readCatalog, writeCatalog } from "./catalog";
-import { CatalogSnapshot, getCatalog, hasUnsavedChanges, markCatalogSaved, replaceCatalog, subscribeCatalog } from "./catalogStore";
+import { DEFAULT_LIST_ID, DEFAULT_LIST_NAME, ImportList, itemKey, mergeItems, newListId, NewProduct, readLists, StoredLists, writeLists } from "./catalog";
+import { getCatalogState, getImportLists, hasUnsavedChanges, ListTarget, markCatalogSaved, replaceCatalog, setActiveList, subscribeCatalog } from "./catalogStore";
 
 // Saves a signed-in user's catalog to their account (tracker_catalogs), so it follows them
 // across devices. On sign-in:
@@ -39,23 +38,34 @@ const writeOwner = (owner: string | null) => {
   }
 };
 
-// Stored in the same versioned shapes as on the device
-const toRow = (snapshot: CatalogSnapshot) => ({
-  items: JSON.parse(writeCatalog(snapshot.items)),
-  adjustments: JSON.parse(writeAdjustments(snapshot.adjustments)),
-});
+// Stored in the same versioned shapes as on the device (catalog.ts writeLists): `items` holds every
+// import once plus the lists, so whatever reads `items` (billing, the trial trigger, alerts) counts
+// each import once
+const toRow = (catalog: StoredLists) => {
+  const written = writeLists(catalog);
+  return { items: JSON.parse(written.items), adjustments: JSON.parse(written.adjustments) };
+};
 
-const fromRow = (row: { items: unknown; adjustments: unknown }): CatalogSnapshot => ({
-  items: readCatalog(JSON.stringify(row.items)) ?? [],
-  adjustments: readAdjustments(JSON.stringify(row.adjustments)),
-});
+const fromRow = (row: { items: unknown; adjustments: unknown }): StoredLists =>
+  readLists(JSON.stringify(row.items), JSON.stringify(row.adjustments)) ?? { lists: [], covered: {} };
 
-// The account's catalog first, then anything made on this device that it doesn't have.
-// Adjustments the account already has for a product win.
-const merge = (account: CatalogSnapshot, device: CatalogSnapshot): CatalogSnapshot => ({
-  items: mergeItems(account.items, device.items).items,
-  adjustments: { ...device.adjustments, ...account.adjustments },
-});
+const importCount = (catalog: StoredLists) => catalog.lists.reduce((n, l) => n + l.items.length, 0);
+
+// The account's lists first, then anything made on this device that they don't have: a list the
+// account also has (by id) gets the device's imports added, others are added whole. Adjustments
+// and picks the account already has for an import win.
+const merge = (account: StoredLists, device: StoredLists): StoredLists => {
+  const lists = account.lists.map((l) => ({ ...l }));
+  for (const d of device.lists) {
+    if (!d.items.length) continue;
+    const into = lists.find((l) => l.id === d.id);
+    if (into) {
+      into.items = mergeItems(into.items, d.items).items;
+      into.adjustments = { ...d.adjustments, ...into.adjustments };
+    } else lists.push(d);
+  }
+  return { lists, covered: { ...device.covered, ...account.covered } };
+};
 
 // What the device should hold once the account's copy is in, and whether to save it to the account
 export const resolveCatalog = ({
@@ -66,16 +76,16 @@ export const resolveCatalog = ({
   unsaved,
 }: {
   // The account's saved copy, or null when it has none yet
-  account: CatalogSnapshot | null;
-  device: CatalogSnapshot;
+  account: StoredLists | null;
+  device: StoredLists;
   // Whose catalog the device holds: null for one made signed out
   owner: string | null;
   userId: string;
   // The device has changes the account doesn't
   unsaved: boolean;
-}): { next: CatalogSnapshot; push: boolean } => {
+}): { next: StoredLists; push: boolean } => {
   if (!account) return { next: device, push: true };
-  if (owner === null) return { next: merge(account, device), push: device.items.length > 0 };
+  if (owner === null) return { next: merge(account, device), push: importCount(device) > 0 };
   if (owner === userId && unsaved) return { next: device, push: true };
   return { next: account, push: false };
 };
@@ -103,7 +113,7 @@ export const useCatalogSync = (userId: string | null | undefined) => {
     if (userId === undefined) return;
     if (userId === null) {
       if (readOwner()) {
-        replaceCatalog({ items: [], adjustments: {} });
+        replaceCatalog({ lists: [{ id: DEFAULT_LIST_ID, name: DEFAULT_LIST_NAME, items: [], adjustments: {} }], covered: {} });
         writeOwner(null);
       }
       return;
@@ -116,14 +126,14 @@ export const useCatalogSync = (userId: string | null | undefined) => {
 
     const save = async () => {
       timer = undefined;
-      const saving = getCatalog();
+      const saving = getCatalogState();
       const { error } = await supabase
         .from("tracker_catalogs")
         .upsert({ user_id: userId, ...toRow(saving), updated_at: new Date().toISOString() });
       // Kept as unsaved, so the next sync tries again
       if (error) console.error("Error saving the catalog to the account:", error);
       // Unless it changed again while saving (that change's own save follows)
-      else if (getCatalog() === saving) markCatalogSaved();
+      else if (getCatalogState().lists === saving.lists && getCatalogState().covered === saving.covered) markCatalogSaved();
     };
 
     (async () => {
@@ -138,11 +148,11 @@ export const useCatalogSync = (userId: string | null | undefined) => {
         console.error("Error loading the account's catalog:", error);
         return;
       }
-      const device = getCatalog();
+      const device = getCatalogState();
       const owner = readOwner();
       const account = data ? fromRow(data) : null;
       const { next, push } = resolveCatalog({ account, device, owner, userId, unsaved: hasUnsavedChanges() });
-      if (next !== device) replaceCatalog(next);
+      if (next.lists !== device.lists || next.covered !== device.covered) replaceCatalog(next);
       writeOwner(userId);
       loaded = true;
       markSynced(userId);
@@ -150,10 +160,10 @@ export const useCatalogSync = (userId: string | null | undefined) => {
       else markCatalogSaved();
       // Only when this device's imports actually went into the account (made before signing in),
       // not on every load
-      if (owner === null && device.items.length > 0 && push) {
+      if (owner === null && importCount(device) > 0 && push) {
         trackEvent(MixpanelEvent.DUTY_GUARD_CATALOG_SYNCED, {
-          products: next.items.length,
-          from_device: device.items.length,
+          products: importCount(next),
+          from_device: importCount(device),
           account_had_catalog: Boolean(account),
         });
       }
@@ -187,10 +197,11 @@ export const useCatalogSync = (userId: string | null | undefined) => {
 
 // Adds imports to a signed-in account's saved catalog straight away, from outside Duty Guard (the
 // calculator's "Stop Overpaying", which keeps the visitor on the calculator): the account's copy
-// plus these, so alerts start on them without waiting for the next Duty Guard visit. Adjustments the
-// account already has for an import win, as in merge. Best effort: the device keeps them too, and
-// the next sync saves them if this fails.
-export const addToAccountCatalog = async (userId: string, products: NewProduct[]) => {
+// plus these, in the list they picked (by id, or a new one by name; the list shown on this device
+// when neither), so alerts start on them without waiting for the next Duty Guard visit. Adjustments
+// the account already has for an import win, as in merge. Best effort: the device keeps them too
+// (addToCatalog, called first, with the same target), and the next sync saves them if this fails.
+export const addToAccountCatalog = async (userId: string, products: NewProduct[], target: ListTarget = {}) => {
   const supabase = createSupabaseClient();
   const { data, error } = await supabase
     .from("tracker_catalogs")
@@ -198,16 +209,30 @@ export const addToAccountCatalog = async (userId: string, products: NewProduct[]
     .eq("user_id", userId)
     .maybeSingle<{ items: unknown; adjustments: unknown }>();
   if (error) throw error;
-  const account = data ? fromRow(data) : { items: [], adjustments: {} };
+  const account = data ? fromRow(data) : { lists: [], covered: {} };
   const now = new Date().toISOString();
   const incoming = products.map(({ adjustments: _adjustments, ...item }) => ({ ...item, addedAt: now }));
   const adjustments = Object.fromEntries(products.filter((p) => p.adjustments).map((p) => [itemKey(p), p.adjustments!]));
-  const next: CatalogSnapshot = {
-    items: mergeItems(account.items, incoming).items,
-    adjustments: { ...adjustments, ...account.adjustments },
-  };
+  // The device's list of that id or name (addToCatalog made it), so both copies agree
+  const deviceLists = getImportLists();
+  const name = target.newListName?.trim();
+  const deviceList = target.listId
+    ? deviceLists.lists.find((l) => l.id === target.listId)
+    : name
+      ? deviceLists.lists.find((l) => l.name.toLowerCase() === name.toLowerCase())
+      : deviceLists.lists.find((l) => l.id === deviceLists.activeId);
+  const id = deviceList?.id ?? target.listId ?? (name ? newListId() : DEFAULT_LIST_ID);
+  const lists: ImportList[] = account.lists.length ? account.lists.map((l) => ({ ...l })) : [];
+  let list = lists.find((l) => l.id === id) ?? (name ? lists.find((l) => l.name.toLowerCase() === name.toLowerCase()) : undefined);
+  if (!list) {
+    list = { id, name: deviceList?.name ?? name ?? DEFAULT_LIST_NAME, createdAt: now, items: [], adjustments: {} };
+    lists.push(list);
+  }
+  list.items = mergeItems(list.items, incoming).items;
+  list.adjustments = { ...adjustments, ...list.adjustments };
   const { error: saveError } = await supabase
     .from("tracker_catalogs")
-    .upsert({ user_id: userId, ...toRow(next), updated_at: now });
+    .upsert({ user_id: userId, ...toRow({ lists, covered: account.covered }), updated_at: now });
   if (saveError) throw saveError;
+  setActiveList(list.id);
 };

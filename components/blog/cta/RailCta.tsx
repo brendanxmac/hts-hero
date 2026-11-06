@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { TrackedLink } from "@/components/ui/TrackedLink";
+import { MixpanelEvent } from "@/libs/mixpanel";
 import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import type { CtaKind } from "@/libs/blog/types";
 import * as ui from "@/components/ui/styles";
@@ -22,10 +23,10 @@ export function RailCta({ kind }: { kind: CtaKind }) {
         </ul>
       </div>
       <div className={ui.cardFooter}>
-        <Link href={cta.href} className={`${ui.button({ variant: "primary" })} w-full`}>
+        <TrackedLink href={cta.href} event={kind === "tracker" ? MixpanelEvent.SIGNUP_CTA_CLICKED : MixpanelEvent.BLOG_CTA_CLICKED} properties={{ page: "blog", section: `cta_rail`, kind, label: cta.button }} className={`${ui.button({ variant: "primary" })} w-full`}>
           {cta.button}
           <ArrowRightIcon className="h-4 w-4" aria-hidden />
-        </Link>
+        </TrackedLink>
       </div>
     </aside>
   );

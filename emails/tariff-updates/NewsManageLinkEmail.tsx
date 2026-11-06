@@ -16,7 +16,10 @@ export default function NewsManageLinkEmail({ manageUrl, footer }: NewsManageLin
     <EmailLayout preview="You're already subscribed. Change what you get here." footer={footer}>
       <Eyebrow>You&apos;re already subscribed</Eyebrow>
       <Title>Change your tariff updates</Title>
-      <P>This address already gets US tariff updates from HTS Hero. Choose how often, and which laws and countries, here:</P>
+      <P>
+        This address already gets US tariff updates from HTS Hero. Choose the weekly digest, each change as it happens, or both, and which
+        laws and countries you follow, here:
+      </P>
       <Cta href={manageUrl}>Change my updates</Cta>
     </EmailLayout>
   )

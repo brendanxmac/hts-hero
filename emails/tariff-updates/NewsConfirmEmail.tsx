@@ -7,12 +7,12 @@ import { Checklist, Cta, DarkHero, HeroMuted, P } from "../kit/parts"
 
 export interface NewsConfirmEmailProps {
   confirmUrl: string
-  frequency: "instant" | "weekly" | "off"
+  frequency: "instant" | "weekly" | "both" | "off"
   footer: EmailFooter
 }
 
 export const newsConfirmSubject = ({ frequency }: NewsConfirmEmailProps) =>
-  frequency === "instant" ? "One click to start your US tariff updates" : "One click to start your Weekly Tariff Digest"
+  frequency === "instant" || frequency === "both" ? "One click to start your US tariff updates" : "One click to start your Weekly Tariff Digest"
 
 const WHAT = [
   "Every new US tariff action, in plain English",
@@ -23,25 +23,34 @@ const WHAT = [
 
 export default function NewsConfirmEmail({ confirmUrl, frequency, footer }: NewsConfirmEmailProps) {
   const instant = frequency === "instant"
+  const both = frequency === "both"
   return (
     <EmailLayout
-      preview={instant ? "Confirm and you'll get each new US tariff action as it happens." : "Confirm and your first Weekly Tariff Digest arrives Monday."}
+      preview={
+        both
+          ? "Confirm and you'll get each new US tariff action as it happens, plus the digest every Monday."
+          : instant
+            ? "Confirm and you'll get each new US tariff action as it happens."
+            : "Confirm and your first Weekly Tariff Digest arrives Monday."
+      }
       footer={footer}
     >
       <DarkHero
-        eyebrow={instant ? "US tariff updates" : "The Weekly Tariff Digest"}
+        eyebrow={instant || both ? "US tariff updates" : "The Weekly Tariff Digest"}
         title={
           <>
             One click and you&apos;re in.
             <br />
-            <HeroMuted>{instant ? "Every change, as it happens." : "Every change, every Monday."}</HeroMuted>
+            <HeroMuted>{both ? "As it happens, and every Monday." : instant ? "Every change, as it happens." : "Every change, every Monday."}</HeroMuted>
           </>
         }
       >
         Good call. US tariffs now change by the week, and you&apos;re about to stop chasing them.
       </DarkHero>
       <P>
-        {instant
+        {both
+          ? "Confirm your address and each new US tariff action comes straight to your inbox as it happens, with the week's recap every Monday:"
+          : instant
           ? "Confirm your address and each new US tariff action comes straight to your inbox, as it happens:"
           : "Confirm your address and every Monday you'll get one email with every new US tariff action from the week before:"}
       </P>

@@ -20,6 +20,16 @@ export interface AlertedImport {
   deltaUsd: number | null
   // Was "likely" in an earlier alert, now confirmed
   nowConfirmed?: boolean
+  // The import lists it's in, for an account with more than one (a brokerage's clients)
+  lists?: string[]
+}
+
+// An account with several import lists: how many affected imports each has. The link opens
+// Duty Guard on that list (?list=).
+export interface AffectedList {
+  id: string
+  name: string
+  count: number
 }
 
 export interface ImpactAlertEmailProps {
@@ -34,6 +44,8 @@ export interface ImpactAlertEmailProps {
   // How many imports the plan alerts on (missing on alerts queued before it was sent)
   limit?: number
   paid: boolean
+  // Only for accounts with more than one list
+  lists?: AffectedList[]
   footer: EmailFooter
 }
 
@@ -124,9 +136,24 @@ export default function ImpactAlertEmail(props: ImpactAlertEmailProps) {
         </P>
       )}
 
+      {props.lists && props.lists.length > 0 && (
+        <P small>
+          <strong>By list:</strong>{" "}
+          {props.lists.map((l, i) => (
+            <span key={l.id}>
+              {i > 0 && " · "}
+              <Link href={siteLink(`/duty-guard?tab=impact&update=${encodeURIComponent(update.slug)}&list=${encodeURIComponent(l.id)}`, campaign)} style={{ color: C.cobalt, fontWeight: 600 }}>
+                {l.name}
+              </Link>{" "}
+              ({l.count})
+            </span>
+          ))}
+        </P>
+      )}
+
       {removed.length > 0 && alerted.length + beyond > 0 && <P small>No longer affected: {removed.map((r) => `${r.code} from ${r.country}`).join("; ")}.</P>}
 
-      <Cta href={siteLink(`/duty-guard?tab=impact&update=${encodeURIComponent(update.slug)}`, campaign)} variant="next">
+      <Cta href={siteLink(`/duty-guard?tab=impact&update=${encodeURIComponent(update.slug)}${props.lists?.length === 1 ? `&list=${encodeURIComponent(props.lists[0].id)}` : ""}`, campaign)} variant="next">
         Check my imports
       </Cta>
 
@@ -160,7 +187,7 @@ ImpactAlertEmail.PreviewProps = {
   current: 3,
   imports: [
     { key: "8413919015-BR", code: "8413.91.90.15", country: "Brazil", description: "Parts of pumps", level: "confirmed", beforePct: 10, afterPct: 35, deltaUsd: 2500 },
-    { key: "4016931020-BR", code: "4016.93.10.20", country: "Brazil", description: "Oil seals", level: "likely", beforePct: null, afterPct: null, deltaUsd: null },
+    { key: "4016931020-BR", code: "4016.93.10.20", country: "Brazil", description: "Oil seals", level: "likely", beforePct: null, afterPct: null, deltaUsd: null, lists: ["Acme Imports"] },
   ],
   removed: [],
   beyond: 3,

@@ -322,9 +322,8 @@ describe("Duty Guard: the shared catalog", () => {
 
   it("adds a product once, with the adjustments it brings", () => {
     catalogStore.clearCatalog()
-    expect(
-      catalogStore.addToCatalog([{ code: "8413919015", country: "BR", adjustments: { customsValue: 25000, transportMode: "ocean" } }])
-    ).toEqual({ added: 1, duplicates: 0, withAdjustments: 1 })
+    const { added, duplicates, withAdjustments } = catalogStore.addToCatalog([{ code: "8413919015", country: "BR", adjustments: { customsValue: 25000, transportMode: "ocean" } }])
+    expect({ added, duplicates, withAdjustments }).toEqual({ added: 1, duplicates: 0, withAdjustments: 1 })
     // Defaults aren't stored
     expect(catalogStore.getCatalog().adjustments[BR]).toEqual({ customsValue: 25000 })
     expect(catalogStore.addToCatalog([{ code: "8413919015", country: "BR" }]).added).toBe(0)
@@ -620,7 +619,7 @@ import { resolveCatalog } from "../components/tariff-tracker/catalogSync"
 
 describe("Duty Guard: syncing the catalog with the account", () => {
   const item = (code: string) => ({ code, country: "CN" }) as never
-  const snap = (...codes: string[]) => ({ items: codes.map(item), adjustments: {} })
+  const snap = (...codes: string[]) => ({ lists: [{ id: "default", name: "My Imports", items: codes.map(item), adjustments: {} }], covered: {} })
   const account = snap("1111111111")
   const device = snap("1111111111", "2222222222")
 
@@ -645,5 +644,62 @@ describe("Duty Guard: syncing the catalog with the account", () => {
     const r = resolveCatalog({ account: null, device, owner: "u1", userId: "u1", unsaved: false })
     expect(r.next).toBe(device)
     expect(r.push).toBe(true)
+  })
+})
+
+// ── Lists of imports ──
+
+import { readLists, writeLists, unionItems, listNamesByKey } from "../components/tariff-tracker/catalog"
+
+describe("Duty Guard: lists of imports", () => {
+  it("reads a catalog from before lists as one list, My Imports", () => {
+    const raw = JSON.stringify({ version: 1, items: [{ code: "1111111111", country: "CN", covered: true }] })
+    const adj = JSON.stringify({ version: 1, products: { "1111111111-CN": { quantity: 3 } } })
+    const read = readLists(raw, adj)!
+    expect(read.lists.length).toBe(1)
+    expect(read.lists[0].name).toBe("My Imports")
+    expect(read.lists[0].adjustments["1111111111-CN"]).toEqual({ quantity: 3 })
+    expect(read.covered).toEqual({ "1111111111-CN": true })
+  })
+
+  it("stores every import once at the top, for billing and alerts, and reads the lists back", () => {
+    const lists = [
+      { id: "a", name: "Client A", items: [{ code: "1111111111", country: "CN" }], adjustments: { "1111111111-CN": { quantity: 1 } } },
+      { id: "b", name: "Client B", items: [{ code: "1111111111", country: "CN" }, { code: "2222222222", country: "VN" }], adjustments: { "1111111111-CN": { quantity: 9 } } },
+    ]
+    const written = writeLists({ lists, covered: { "2222222222-VN": false } })
+    const top = JSON.parse(written.items).items
+    expect(top.length).toBe(2)
+    expect(top[1].covered).toBe(false)
+    const back = readLists(written.items, written.adjustments)!
+    expect(back.lists.map((l) => l.name)).toEqual(["Client A", "Client B"])
+    // Each list keeps its own adjustments
+    expect(back.lists[1].adjustments["1111111111-CN"]).toEqual({ quantity: 9 })
+    expect(unionItems(back.lists, back.covered).length).toBe(2)
+    expect(listNamesByKey(back.lists).get("1111111111-CN")).toEqual(["Client A", "Client B"])
+  })
+
+  it("adds to a new list by name, shows it, and counts a shared import once", () => {
+    catalogStore.clearCatalog()
+    catalogStore.addToCatalog([{ code: "8413919015", country: "BR" }])
+    const r = catalogStore.addToCatalog([{ code: "8413919015", country: "BR" }, { code: "8409999190", country: "AR" }], { newListName: "Client B" })
+    expect(r.added).toBe(2)
+    expect(r.listName).toBe("Client B")
+    expect(catalogStore.getImportLists().activeId).toBe(r.listId)
+    expect(catalogStore.getCatalog().items.length).toBe(2)
+    const st = catalogStore.getCatalogState()
+    expect(unionItems(st.lists, st.covered).length).toBe(2)
+    // The same name again goes to that list
+    expect(catalogStore.addToCatalog([{ code: "84833080", country: "AT" }], { newListName: "client b" }).listId).toBe(r.listId)
+  })
+
+  it("deletes a list with the imports only it had", () => {
+    const { activeId } = catalogStore.getImportLists()
+    catalogStore.setProductCovered("8409999190-AR", true)
+    catalogStore.deleteList(activeId)
+    const st = catalogStore.getCatalogState()
+    expect(st.lists.length).toBe(1)
+    expect(unionItems(st.lists, st.covered).map((i) => i.code)).toEqual(["8413919015"])
+    expect("8409999190-AR" in st.covered).toBe(false)
   })
 })

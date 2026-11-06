@@ -8,6 +8,7 @@ import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import { entryHref } from "@/libs/signup-onboarding";
 import { itemKey } from "@/components/tariff-tracker/catalog";
 import { addToCatalog } from "@/components/tariff-tracker/catalogStore";
+import { chooseList } from "@/components/tariff-tracker/lists/chooseList";
 import { productUrl } from "@/components/tariff-tracker/sections";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
@@ -23,10 +24,13 @@ export function WatchCodeBox({ htsno, country = "CN" }: { htsno: string; country
   const { user } = useUser();
   const [saving, setSaving] = useState(false);
 
-  const watch = () => {
+  const watch = async () => {
+    // Signed in with several lists, which one (chooseList asks)
+    const target = user ? await chooseList() : {};
+    if (!target) return;
     setSaving(true);
     const product = { code: htsCodeDigitsOnly(htsno), country };
-    const { added } = addToCatalog([product]);
+    const { added } = addToCatalog([product], target);
     trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "hts-watch", hts_code: htsno });
     trackEvent(MixpanelEvent.HTS_CODE_WATCH_SUBMITTED, { hts_code: htsno, country_code: country, signed_in: !!user });
     const landing = withArrival(productUrl(itemKey(product)), "watch");
@@ -41,7 +45,7 @@ export function WatchCodeBox({ htsno, country = "CN" }: { htsno: string; country
           Track Tariff Changes on <span className="inline font-bold text-primary">{htsno}</span>, Free
         </h2>
         <p className="m-0 text-sm leading-relaxed text-base-content/70">
-          Save it to Duty Guard and watch its duty rate, free forever. Add tariff alerts and audits free for {REVERSE_TRIAL.days} days, no credit card required.
+          Save it to Duty Guard and watch its duty rate, free. Add tariff alerts and audits free for {REVERSE_TRIAL.days} days, no credit card required.
         </p>
       </div>
 

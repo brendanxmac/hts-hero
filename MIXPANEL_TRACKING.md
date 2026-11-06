@@ -268,6 +268,29 @@ go straight to /signup), and Products Added lands at the same moment as Trial St
   - The calculator's Track and HTS-page Watch buttons send Products Added together with Sign Up
     CTA Clicked.
 
+## Changed on 2026-11-06: Tariff Alerts CTAs
+
+New events:
+- **Plan CTA Clicked**: a plan card's "Start Free Trial" on `/tariff-alerts`, `/pricing-calculator`
+  (and `/duty-audit`). Properties: page, entry, product, plan_products, price_usd (per month at that
+  billing), billing, highlighted, signed_in. The plan someone picked before signing up.
+- **Book a Demo Clicked**: the demo rows under the plan cards. Properties: page, topic (the row's
+  title: large catalog or broker/3PL), label.
+- **Tariff Alerts Link Clicked**: a link to the `/tariff-alerts` sales page. Properties: source
+  (header_nav, tools_menu, footer, home_lanes, classify_closing, country_page), menu, country, signed_in.
+- **Blog CTA Clicked**: a blog post's non-Duty Guard tool CTA. Properties: kind (calculator, history,
+  classify), section (cta_panel, cta_rail), label, signed_in.
+
+**Sign Up CTA Clicked** now also fires from buttons that skipped it before:
+- plan cards (section `plan_card`, with plan_products and billing)
+- the blog's Duty Guard CTA (page `blog`, section `cta_panel` / `cta_rail`)
+- the `/tariffs` band and hub sidebar (page `tariff-programs`)
+- the HTS page Duty Guard card (page `hts`, hts_code)
+- the classify closing CTA (page `classify`)
+- the country calculator pages (page `country-calculator`, country)
+
+Expect Sign Up CTA Clicked counts to rise from 2026-11-06. That's new coverage, not new demand.
+
 ## Known gaps, not fixed yet
 
 - MCP tool calls use a hashed anonymous id and aren't linked to web accounts.

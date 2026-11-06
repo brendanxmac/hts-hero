@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { TrackedLink } from "@/components/ui/TrackedLink";
+import { MixpanelEvent } from "@/libs/mixpanel";
 import Image from "next/image";
 import config from "@/config";
 import { CENSUS_NOTICE } from "@/components/duty-calculator/lib/census";
@@ -75,9 +77,9 @@ const Footer = () => {
                 <Link href="/duty-calculator" className="link link-hover">
                   US Tariff Calculator
                 </Link>
-                <Link href="/tariff-alerts" className="link link-hover">
+                <TrackedLink href="/tariff-alerts" event={MixpanelEvent.TARIFF_ALERTS_LINK_CLICKED} properties={{ source: "footer" }} className="link link-hover">
                   Tariff Alerts
-                </Link>
+                </TrackedLink>
                 <Link href="/duty-audit" className="link link-hover">
                   Duty Audit
                 </Link>

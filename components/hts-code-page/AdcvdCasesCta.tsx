@@ -5,6 +5,8 @@ import { useUser } from "@/contexts/UserContext";
 import { entryHref } from "@/libs/signup-onboarding";
 import { itemKey } from "@/components/tariff-tracker/catalog";
 import { addToCatalog } from "@/components/tariff-tracker/catalogStore";
+import { chooseList } from "@/components/tariff-tracker/lists/chooseList";
+import type { MouseEvent } from "react";
 import { productUrl } from "@/components/tariff-tracker/sections";
 import { htsCodeDigitsOnly } from "@/libs/hts-code";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
@@ -21,10 +23,19 @@ export function AdcvdCasesCta({ htsno, country }: { htsno: string; country: stri
   const product = { code: htsCodeDigitsOnly(htsno), country };
   const landing = productUrl(itemKey(product), "adcvd");
 
-  const open = () => {
-    const { added } = addToCatalog([product]);
+  const open = async (e: MouseEvent<HTMLAnchorElement>) => {
+    // Signed in with several lists, which one (chooseList asks), then on to it
+    let target = {};
+    if (user) {
+      e.preventDefault();
+      const picked = await chooseList();
+      if (!picked) return;
+      target = picked;
+    }
+    const { added } = addToCatalog([product], target);
     trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "hts-adcvd", hts_code: htsno });
     trackEvent(MixpanelEvent.SIGNUP_CTA_CLICKED, { page: "hts", entry: "hts_page", section: "adcvd_cases", label: LABEL, signed_in: !!user });
+    if (user) window.location.href = landing;
   };
 
   return (

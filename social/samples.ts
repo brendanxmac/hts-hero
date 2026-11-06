@@ -140,6 +140,7 @@ export const SAMPLES: TemplatePropsMap = {
     ...base,
     source: "Federal Register · CBP",
     headline: "Sample: tariffs on a product rise",
+    dek: "A sample action raising the duty on sample products from China and Vietnam.",
     authority: "Section 232",
     kindLabel: "Rate change",
     tone: "up",
@@ -151,6 +152,7 @@ export const SAMPLES: TemplatePropsMap = {
     effectiveOn: "2026-11-01",
     stage: 3,
     imports: { value: 4_200_000_000, year: 2025 },
+    htsCount: 48,
     slug: "sample",
   },
   OddRate: {

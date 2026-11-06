@@ -1,9 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { HtsElement } from "../../interfaces/hts"
-import type { AlertedImport, ImpactAlertEmailProps } from "../../emails/tariff-updates/ImpactAlertEmail"
+import type { AffectedList, AlertedImport, ImpactAlertEmailProps } from "../../emails/tariff-updates/ImpactAlertEmail"
 import { readAdjustments } from "../../components/tariff-tracker/adjustments"
 import { alertKinds, alertsOn, type AlertSettingsRow } from "../../components/tariff-tracker/alerts/alertPrefs"
-import { readCatalog, realItems } from "../../components/tariff-tracker/catalog"
+import { listNamesByKey, readCatalog, readLists, realItems } from "../../components/tariff-tracker/catalog"
 import { NEWS_ALERTS_FROM } from "../email/news-producer"
 import { createBatch, type OutboxMessage } from "../email/outbox"
 import { accountSubscriber, subscriberFooter } from "../email/subscribers"
@@ -54,6 +54,8 @@ export interface PlannedAlert {
   imports: AlertedImport[]
   removed: { key: string; code: string; country: string; description: string }[]
   beyond: string[]
+  // Accounts with several import lists: each list's affected imports (empty otherwise)
+  lists: AffectedList[]
   // How many imports the plan alerts on
   limit: number
   // Rows to record once sent
@@ -135,6 +137,10 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
     const byKey = new Map(products.map((p) => [p.key, p]))
     const access = await readTrackerAccess(db, userId)
     const covered = coveredKeys(items, products, access.pairLimit)
+    // Several import lists (a brokerage's clients): which lists each affected import is in
+    const stored = catalog ? readLists(JSON.stringify(catalog.items), JSON.stringify(catalog.adjustments)) : null
+    const userLists = stored && stored.lists.length > 1 ? stored.lists : []
+    const listNames = listNamesByKey(userLists)
     const before = priorByUser.get(userId) ?? new Map<string, AlertRow>()
     // Imports added after the update was first approved aren't alerted about it
     const addedAt = new Map(items.map((i) => [`${i.code}-${i.country}`, i.addedAt]))
@@ -178,7 +184,12 @@ export const planImpactAlerts = async (db: Db, updateId: string, htsElements: Ht
           afterPct: r.after_pct,
           deltaUsd: r.delta_usd,
           nowConfirmed: before.get(r.product_key)?.level === "likely" && r.level === "confirmed",
+          ...(listNames.has(r.product_key) && { lists: listNames.get(r.product_key) }),
         })),
+      // Each list's affected imports (in the alerts or past them), for accounts with several
+      lists: userLists
+        .map((l) => ({ id: l.id, name: l.name, count: new Set(l.items.map((i) => `${i.code}-${i.country}`).filter((k) => fresh.some((r) => r.product_key === k))).size }))
+        .filter((l) => l.count > 0),
       // Told about it before and still imported: say it no longer applies
       removed: removed.filter((r) => r.covered && byKey.has(r.product_key)).map((r) => ({ key: r.product_key, ...facts(r.product_key) })),
       beyond: outside.map((r) => r.product_key),
@@ -218,6 +229,7 @@ const sendPlans = async (db: Db, u: UpdateRowForEmail, plans: PlannedAlert[], { 
       beyond: plan.beyond.length,
       limit: plan.limit,
       paid: plan.paid,
+      ...(plan.lists.length && { lists: plan.lists }),
       footer: subscriber
         ? subscriberFooter(subscriber, "You're getting this because alerts are on for your imports in the HTS Hero Duty Guard.")
         : { reason: "You're getting this because alerts are on for your imports in the HTS Hero Duty Guard." },
@@ -293,7 +305,10 @@ export const sendConfirmations = async (db: Db, htsElements: HtsElement[], { dea
       const record = p.record.filter((r) => r.level === "confirmed" && wasLikely.has(`${updateId}|${p.userId}|${r.product_key}`))
       if (!record.length) return []
       const keys = new Set(record.map((r) => r.product_key))
-      const plan: PlannedAlert = { ...p, imports: p.imports.filter((i) => keys.has(i.key)), removed: [], beyond: [], record }
+      const imports = p.imports.filter((i) => keys.has(i.key))
+      // Each list's count, of these confirmations only
+      const lists = p.lists.map((l) => ({ ...l, count: imports.filter((i) => i.lists?.includes(l.name)).length })).filter((l) => l.count > 0)
+      const plan: PlannedAlert = { ...p, imports, lists, removed: [], beyond: [], record }
       return [plan]
     })
     if (!plans.length) continue

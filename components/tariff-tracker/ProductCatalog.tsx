@@ -17,6 +17,10 @@ import { ExposureMap } from "./overview/ExposureMap";
 import { OriginDistribution } from "./overview/OriginDistribution";
 import { TariffReport } from "./TariffReport";
 import { useTracker } from "./TrackerContext";
+import { ListSwitcher } from "./lists/ListSwitcher";
+import { useImportLists } from "./catalogStore";
+import { PlusIcon, QueueListIcon } from "@heroicons/react/20/solid";
+import * as tt from "@/components/ui/styles/tracker";
 
 // The Catalog tab: every product the user imports with its duty rate today. Before there are
 // any, an empty state explains how to add them; after, the report has an Add products button.
@@ -25,6 +29,8 @@ import { useTracker } from "./TrackerContext";
 export const ProductCatalog = () => {
   const t = useTracker();
   const nav = useTrackerNav();
+  const lists = useImportLists();
+  const listName = lists.lists.find((l) => l.id === lists.activeId)?.name ?? "This list";
   const [dialog, setDialog] = useState<{ open: boolean; method: AddMethod }>({
     open: false,
     method: "paste",
@@ -86,11 +92,36 @@ export const ProductCatalog = () => {
                 <div key={i} className={`${ui.skeleton} h-14 w-full`} />
               ))}
             </div>
+          ) : t.items.length === 0 && t.allItems.length > 0 ? (
+            // A list of its own with nothing in it yet (a new client's): add to it here
+            <div className="tt-enter flex flex-col gap-group">
+              <SectionHeader section={sectionBySlug("catalog")!} summary={`${listName} has no imports yet.`} actions={<ListSwitcher look="header" source="imports" />} />
+              <div className={`${tt.panel} flex flex-col items-center gap-4 px-6 py-14 text-center`}>
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden>
+                  <QueueListIcon className="h-6 w-6" />
+                </span>
+                <div className="flex max-w-md flex-col gap-1.5">
+                  <h2 className={`${tt.title} m-0`}>Add Imports to {listName}</h2>
+                  <p className="m-0 text-sm leading-relaxed text-base-content/70">
+                    Paste HTS codes with their countries, or upload a spreadsheet. Every tab in Duty Guard shows this list while it&apos;s selected, and alerts cover all your lists.
+                  </p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  <button type="button" className={ui.button({ variant: "primary" })} onClick={() => openDialog("paste")}>
+                    <PlusIcon className="h-4 w-4" aria-hidden />
+                    Paste Imports
+                  </button>
+                  <button type="button" className={ui.button()} onClick={() => openDialog("csv")}>
+                    Upload a File
+                  </button>
+                </div>
+              </div>
+            </div>
           ) : t.items.length === 0 ? (
             <SetupPage from="imports" />
           ) : view === "insights" ? (
             <div className="tt-enter flex flex-col gap-group">
-              <SectionHeader section={sectionBySlug("catalog")!} tabs={views} />
+              <SectionHeader section={sectionBySlug("catalog")!} tabs={views} actions={<ListSwitcher look="header" source="imports" />} />
               {/* Free for everyone: where the duty on each import comes from, and where they come from */}
               <div className="grid gap-module xl:grid-cols-12">
                 <div className="flex flex-col *:flex-1 xl:col-span-8">

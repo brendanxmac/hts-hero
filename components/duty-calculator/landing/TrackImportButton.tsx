@@ -14,6 +14,8 @@ import { tourSeen } from "@/components/tariff-tracker/onboarding/tour/tourStore"
 import { itemKey } from "@/components/tariff-tracker/catalog";
 import { addToCatalog } from "@/components/tariff-tracker/catalogStore";
 import { addToAccountCatalog } from "@/components/tariff-tracker/catalogSync";
+import { chooseList } from "@/components/tariff-tracker/lists/chooseList";
+import type { ListTarget } from "@/components/tariff-tracker/catalogStore";
 import { ProductTab, productUrl } from "@/components/tariff-tracker/sections";
 import { AccountPitch, ConversionDialog } from "../calculator/ConversionDialog";
 import { TariffFinder } from "../lib/useTariffFinder";
@@ -86,21 +88,24 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
       ...(Object.keys(f.answers).length ? { answers: f.answers } : {}),
     },
   });
-  const save = () => {
-    const { added } = addToCatalog([productWithAdjustments()]);
+  // Into the list picked (signed in with several lists: chooseList asks), else the one shown
+  const save = (target?: ListTarget) => {
+    const { added } = addToCatalog([productWithAdjustments()], target);
     trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "calculator", hts_code: f.selectedElement?.htsno });
   };
   const url = productUrl(itemKey(product));
-  const start = (tab?: ProductTab, account?: AccountPitch) => {
+  const start = async (tab?: ProductTab, account?: AccountPitch) => {
     setLandOn(tab);
     setPitch(account ?? null);
     setForAlerts(false);
     // Signed in: saved right here, with a way to it; the calculator stays their
     // tool and Duty Guard is where saved imports live
     if (user) {
-      save();
+      const target = await chooseList();
+      if (!target) return;
+      save(target);
       // Into the account too, so it's there without a Duty Guard visit
-      addToAccountCatalog(user.id, [productWithAdjustments()]).catch((e) => console.error("Saving the import to the account:", e));
+      addToAccountCatalog(user.id, [productWithAdjustments()], target).catch((e) => console.error("Saving the import to the account:", e));
       toast.success(
         (t) => (
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -124,7 +129,9 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
   // The calculator's main button, one click: this import in Duty Guard. Signed out, sign-up and the
   // onboarding on the way; either way it ends on the import, where the next ask is the rest of them
   const goToAlerts = async () => {
-    save();
+    const target = user ? await chooseList() : {};
+    if (!target) return;
+    save(target);
     trackEvent(MixpanelEvent.SIGNUP_CTA_CLICKED, { page: "calculator", entry: "calculator_track", section: "main_button", label: "Alert Me if This Rate Changes", signed_in: !!user });
     // A first time in Duty Guard opens the onboarding, the alerts variant, over the import; the panel
     // on the import (ArrivalPanel) follows
@@ -134,7 +141,7 @@ export const useTrackImport = (f: TariffFinder, source = "track-import") => {
       window.location.href = entryHref("calculator_track", welcome);
       return;
     }
-    await addToAccountCatalog(user.id, [productWithAdjustments()]).catch((e) => console.error("Saving the import to the account:", e));
+    await addToAccountCatalog(user.id, [productWithAdjustments()], target).catch((e) => console.error("Saving the import to the account:", e));
     window.location.href = tourSeen(user.id, "first_visit") ? arrive : welcome;
   };
   // Signed out, the pitch comes first, and its button does the rest

@@ -38,6 +38,8 @@ export const ENTRY_POINTS = [
   "country_hub",
   // /tariff-digest/welcome: right after subscribing to the weekly digest
   "digest_welcome",
+  // /tariff-updates: the alerts banner, and "See if you or your clients are affected" on an update
+  "update_page",
 ] as const
 export type HomeSection = (typeof HOME_SECTIONS)[number]
 export type EntryPoint = (typeof ENTRY_POINTS)[number]
@@ -77,6 +79,7 @@ export const ENTRY_SIGNED_IN_HREF: Record<EntryPoint, string> = {
   hts_page: sectionUrl("catalog"),
   country_hub: TRACKER_START,
   digest_welcome: sectionUrl("changes"),
+  update_page: sectionUrl("changes"),
 }
 
 export const TRACKER_WELCOME_PARAM = "welcome"

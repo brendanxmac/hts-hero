@@ -34,6 +34,7 @@ export default async function DigestWelcomePage({ searchParams }: { searchParams
   const { s, f } = await searchParams
   const status: Status = s === "already_subscribed" ? s : "confirmed"
   const instant = f === "instant"
+  const both = f === "both"
   const example = await getAlertExample().catch((): AlertExample | null => null)
   const monday = `Monday, ${shortDay(nextDigestDay())}`
   const already = status === "already_subscribed"
@@ -50,10 +51,12 @@ export default async function DigestWelcomePage({ searchParams }: { searchParams
             {already ? "You're all set." : "You're subscribed!"}
           </h1>
           <p className="dg-rise m-0 mt-5 text-xl leading-relaxed text-base-content/70" style={{ ["--dg-delay" as string]: "240ms" }}>
-            {instant
+            {both
+              ? `Each new US tariff action comes to your inbox the moment it moves, and the digest every Monday.`
+              : instant
               ? "Each new US tariff action comes to your inbox the moment it moves."
               : already
-                ? `You're already on the list. Your next Weekly Tariff Digest arrives ${monday}.`
+                ? "You're already on the list. We've emailed you a link to switch between weekly, as it happens, or both."
                 : `Your first Weekly Tariff Digest arrives ${monday}.`}
           </p>
           {/* {!already && (

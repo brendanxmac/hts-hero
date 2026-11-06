@@ -1,10 +1,10 @@
 import { CheckIcon, NewspaperIcon } from "@heroicons/react/20/solid";
-import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm";
+import { DigestButton } from "@/components/tariff-digest/DigestButton";
 import * as mk from "@/components/ui/marketing/styles";
 
 // The free way in for visitors not ready to buy, before the FAQ: the Weekly Tariff Brief
-// (the Tariff News digest, /tariff-updates), by email. After subscribing, the form offers Tariff
-// Alerts on their own products.
+// (the Tariff News digest), by email: the button opens /tariff-digest in a new tab, where they pick
+// weekly, as it happens, or both.
 
 const POINTS = [
   "Every new US tariff action, in plain English",
@@ -33,7 +33,10 @@ export const NewsSignup = () => (
             ))}
           </ul>
         </div>
-        <SubscribeForm source="home" />
+        <div className="flex flex-col items-start gap-3 lg:items-center">
+          <DigestButton source="home" size="lg" />
+          <p className="m-0 text-sm text-base-content/60">Free. Opens in a new tab.</p>
+        </div>
       </div>
     </div>
   </section>
