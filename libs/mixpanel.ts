@@ -49,6 +49,18 @@ export enum MixpanelEvent {
   /** A sign-up button clicked (EntryCta): page (home, tariff-alerts, duty-audits), entry (where the
    *  sign-up starts), section (where on the page), label, signed_in */
   SIGNUP_CTA_CLICKED = "Sign Up CTA Clicked",
+  /** A plan card's button on a pricing page ("Start Free Trial"): page, entry, product, plan_products,
+   *  price_usd (per month at that billing), billing, highlighted (the slider's pick), signed_in.
+   *  The plan the visitor picked, before sign-up (Sign Up CTA Clicked counts the same click by page) */
+  PLAN_CTA_CLICKED = "Plan CTA Clicked",
+  /** A "Book a Demo" row under the plan cards (page, topic: large_catalog or partners) */
+  BOOK_DEMO_CLICKED = "Book a Demo Clicked",
+  /** A link to the /tariff-alerts sales page (source: header_nav, tools_menu, footer, home_lanes,
+   *  classify_closing, country_page), signed_in */
+  TARIFF_ALERTS_LINK_CLICKED = "Tariff Alerts Link Clicked",
+  /** A blog post's tool CTA, other than Duty Guard's (that one is Sign Up CTA Clicked, page blog):
+   *  kind (calculator, history, classify), section (cta_panel or cta_rail), label, signed_in */
+  BLOG_CTA_CLICKED = "Blog CTA Clicked",
   /** The homepage's "Get a Demo": the form opened, and sent (then on to Calendly): company_type, role, products */
   DEMO_FORM_OPENED = "Demo Form Opened",
   DEMO_REQUESTED = "Demo Requested",

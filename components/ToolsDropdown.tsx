@@ -4,6 +4,12 @@ import { useState, useEffect } from "react";
 import { useEscapeToClose } from "@/hooks";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+
+// A click on the menu's Tariff Alerts item (the sales page)
+const trackTool = (href: string, menu: "desktop" | "mobile") => {
+  if (href === "/tariff-alerts") trackEvent(MixpanelEvent.TARIFF_ALERTS_LINK_CLICKED, { source: "tools_menu", menu });
+};
 
 // Tariff tools first: they're the focus. Classification follows the HTS Explorer.
 export const toolLinks = [
@@ -119,7 +125,10 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
                   <Link
                     key={tool.href}
                     href={tool.href}
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      trackTool(tool.href, "desktop");
+                      setIsOpen(false);
+                    }}
                     className={`flex items-center gap-3 p-3 rounded-xl ${tool.hoverBg} transition-colors group ${isSelected ? selectedBg : ""
                       }`}
                   >
@@ -172,7 +181,10 @@ export const MobileToolsMenu = ({ onLinkClick }: MobileToolsMenuProps) => {
             <Link
               key={tool.href}
               href={tool.href}
-              onClick={onLinkClick}
+              onClick={() => {
+                trackTool(tool.href, "mobile");
+                onLinkClick?.();
+              }}
               className={`flex items-center gap-3 p-2 rounded-xl ${tool.hoverBg} transition-colors ${isSelected ? selectedBg : ""
                 }`}
             >

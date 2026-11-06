@@ -1,9 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRightIcon, BuildingOffice2Icon, CheckBadgeIcon, CheckIcon, ShieldCheckIcon } from "@heroicons/react/20/solid";
 import { ANNUAL_DISCOUNT, Billing, formatPrice, monthlyRate, perImportPrice } from "@/components/pricing-calculator/lib/pricing";
 import * as mk from "./styles";
+import { useUser } from "@/contexts/UserContext";
+import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+
+// The page a pricing click came from ("tariff-alerts", "pricing-calculator", "home"), and the
+// sign-up's entry point the link carries (?from=, inside the sign-up's ?redirect=)
+const pageOf = (pathname: string | null) => (pathname && pathname !== "/" ? pathname.split("/")[1] : "home");
+const entryOf = (href: string) => {
+  try {
+    // /signup?redirect=/onboarding?from=<entry> (entryHref)
+    const url = new URL(href, "https://htshero.com");
+    const redirect = url.searchParams.get("redirect");
+    return url.searchParams.get("from") ?? (redirect ? new URL(redirect, "https://htshero.com").searchParams.get("from") : null);
+  } catch {
+    return null;
+  }
+};
 
 // The plan cards the sales pages share (/tariff-alerts, /duty-audit): a billing switch and a
 // products slider, four standard cards side by side with the one that fits the visitor's products
@@ -136,7 +153,17 @@ export const PlanCard = ({
   cta?: string;
   busy?: boolean;
 }) => {
+  const pathname = usePathname();
+  const { user } = useUser();
   const price = monthlyRate(plan.price, billing);
+  // The plan picked on a sales page, then the sign-up (the same click as a Sign Up CTA, for the funnel)
+  const trackChoice = () => {
+    const page = pageOf(pathname);
+    const entry = href ? entryOf(href) : null;
+    const label = trialDays ? "Start Free Trial" : `Get ${product}`;
+    trackEvent(MixpanelEvent.PLAN_CTA_CLICKED, { page, entry, product, plan_products: plan.maxPairs, price_usd: price, billing, highlighted: !!best, signed_in: !!user });
+    trackEvent(MixpanelEvent.SIGNUP_CTA_CLICKED, { page, entry, section: "plan_card", label, plan_products: plan.maxPairs, billing, signed_in: !!user });
+  };
   const id = `plan-${product.toLowerCase().replace(/\s+/g, "-")}-${plan.maxPairs}`;
   const planSpecificFeatures = [lead, plan.emails === 1 ? "1 alert email" : `Up to ${plan.emails} alert emails`]
 
@@ -214,6 +241,7 @@ export const PlanCard = ({
         ) : (
           <Link
             href={href ?? "/"}
+            onClick={trackChoice}
             className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-semibold text-primary-content transition-colors hover:bg-primary/90"
           >
             {trialDays ? "Start Free Trial" : `Get ${product}`} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
@@ -277,7 +305,9 @@ export const PlanCards = ({
 );
 
 // A slim row under the cards that leads to a call
-export const DemoRow = ({ title, text, href, label = "Book a Demo", best }: { title: string; text: string; href: string; label?: string; best?: boolean }) => (
+export const DemoRow = ({ title, text, href, label = "Book a Demo", best }: { title: string; text: string; href: string; label?: string; best?: boolean }) => {
+  const pathname = usePathname();
+  return (
   <div className={`flex flex-col items-start gap-4 rounded-3xl bg-tt-soft p-5 transition-shadow sm:flex-row sm:items-center sm:justify-between sm:p-6 ${best ? "shadow-2xl shadow-success/20 ring-2 ring-success" : "ring-1 ring-base-content/15"}`}>
     <div className="flex items-start gap-3.5">
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -288,11 +318,18 @@ export const DemoRow = ({ title, text, href, label = "Book a Demo", best }: { ti
         <p className="mt-0.5 text-sm text-base-content/70">{text}</p>
       </div>
     </div>
-    <a href={href} target="_blank" rel="noopener noreferrer" className={`${mk.buttonSecondary} shrink-0`}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => trackEvent(MixpanelEvent.BOOK_DEMO_CLICKED, { page: pageOf(pathname), topic: title, label })}
+      className={`${mk.buttonSecondary} shrink-0`}
+    >
       {label}
     </a>
   </div>
-);
+  );
+};
 
 // The guarantee, under everything
 export const GuaranteeBox = ({ title, text }: { title: string; text: string }) => (

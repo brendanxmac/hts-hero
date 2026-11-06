@@ -1,6 +1,8 @@
 import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
 import { TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import Link from "next/link";
+import { TrackedLink } from "@/components/ui/TrackedLink";
+import { MixpanelEvent } from "@/libs/mixpanel";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { longDate, sinceLabel, type HeadingProfile } from "@/libs/tariff-programs/heading";
 import { hubPath, PROGRAM_HUBS } from "@/libs/tariff-programs/hubs";
@@ -182,10 +184,10 @@ export function ProgramHubPage({
               <p className="m-0 text-sm text-base-content/80">
                 No surprises: get alerted when a change to the {hub.short} hits one of your imports, and catch duty you may have overpaid.
               </p>
-              <Link href={TRY_FREE_HREF} className={ui.button({ variant: "primary" })}>
+              <TrackedLink href={TRY_FREE_HREF} event={MixpanelEvent.SIGNUP_CTA_CLICKED} properties={{ page: "tariff-programs", program: hub.slug, section: "sidebar", label: TRY_IT_FREE }} className={ui.button({ variant: "primary" })}>
                 {TRY_IT_FREE}
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
-              </Link>
+              </TrackedLink>
             </div>
             <NewsAlertsBox source="tariff-program-page" />
           </div>

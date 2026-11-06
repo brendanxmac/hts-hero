@@ -1,5 +1,6 @@
 import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
-import Link from "next/link";
+import { TrackedLink } from "@/components/ui/TrackedLink";
+import { MixpanelEvent } from "@/libs/mixpanel";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { REVERSE_TRIAL, TRY_IT_FREE } from "@/components/pricing-calculator/lib/pricing";
 import * as cta from "@/components/ui/marketing/cta";
@@ -20,12 +21,12 @@ export const ClosingCta = () => (
         already worked out. Try it free for {REVERSE_TRIAL.days} days, no credit card required. {FREE_FOREVER_LINE}
       </p>
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <Link href={TRY_FREE_HREF} className={cta.button}>
+        <TrackedLink href={TRY_FREE_HREF} event={MixpanelEvent.SIGNUP_CTA_CLICKED} properties={{ page: "classify", section: "closing", label: TRY_IT_FREE }} className={cta.button}>
           {TRY_IT_FREE} <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </Link>
-        <Link href="/tariff-alerts" className={cta.secondary}>
+        </TrackedLink>
+        <TrackedLink href="/tariff-alerts" event={MixpanelEvent.TARIFF_ALERTS_LINK_CLICKED} properties={{ source: "classify_closing" }} className={cta.secondary}>
           How Tariff Alerts work
-        </Link>
+        </TrackedLink>
       </div>
     </div>
   </section>

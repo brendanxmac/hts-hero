@@ -1,5 +1,6 @@
 import { TRY_FREE_HREF } from "@/components/tariff-tracker/access/signup";
-import Link from "next/link";
+import { TrackedLink } from "@/components/ui/TrackedLink";
+import { MixpanelEvent } from "@/libs/mixpanel";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { REVERSE_TRIAL } from "@/components/pricing-calculator/lib/pricing";
 import * as cta from "./cta";
@@ -23,9 +24,9 @@ export const TrackerCta = () => (
           </strong>
         </p>
       </div>
-      <Link href={TRY_FREE_HREF} className={`${cta.buttonSm} shrink-0`}>
+      <TrackedLink href={TRY_FREE_HREF} event={MixpanelEvent.SIGNUP_CTA_CLICKED} properties={{ page: "tariff-programs", section: "tracker_band", label: "Try it free" }} className={`${cta.buttonSm} shrink-0`}>
         Try it free <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-      </Link>
+      </TrackedLink>
     </div>
   </section>
 );

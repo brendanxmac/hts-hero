@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { TrackedLink } from "@/components/ui/TrackedLink";
+import { MixpanelEvent } from "@/libs/mixpanel";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import type { CountryPage } from "@/libs/country-pages/countries";
 import type { CountryTariffs, ExampleDuty } from "@/libs/country-pages/countryTariffs";
@@ -174,13 +176,13 @@ export function CountryCalculatorPage({
                 against your products and tells you what changed.
               </p>
               <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
-                <Link href={OFFER.href} className={`${ui.button({ variant: "primary" })} h-12 px-7 text-base`}>
+                <TrackedLink href={OFFER.href} event={MixpanelEvent.SIGNUP_CTA_CLICKED} properties={{ page: "country-calculator", country: country.slug, section: "closing", label: OFFER.cta }} className={`${ui.button({ variant: "primary" })} h-12 px-7 text-base`}>
                   {OFFER.cta}
                   <ArrowRightIcon className="h-5 w-5" aria-hidden />
-                </Link>
-                <Link href="/tariff-alerts" className="font-semibold text-primary underline-offset-4 hover:underline">
+                </TrackedLink>
+                <TrackedLink href="/tariff-alerts" event={MixpanelEvent.TARIFF_ALERTS_LINK_CLICKED} properties={{ source: "country_page", country: country.slug }} className="font-semibold text-primary underline-offset-4 hover:underline">
                   How Tariff Alerts work
-                </Link>
+                </TrackedLink>
               </div>
               <p className="mt-6 max-w-xl text-sm text-base-content/60">{OFFER.note}</p>
             </div>
