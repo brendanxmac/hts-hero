@@ -52,6 +52,7 @@ who want it done for them. Classification is sold separately and is a secondary 
 
 **An Import** is one HTS code from one country of origin. Always say "import", not "products", when
 talking about what's counted. 40 SKUs of the same screw from China is 1 import.
+An import in more than one of a user's import lists (one per client) counts once.
 
 ### Tariff Calculator (free)
 - Unlimited lookups, no account needed

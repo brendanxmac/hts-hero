@@ -8,7 +8,7 @@ import { trackerSans } from "@/components/ui/font";
 import { THEME } from "@/components/ui/theme";
 import { formatPrice, perImportPrice, TRACKER_MAX_LISTED_PAIRS } from "@/components/pricing-calculator/lib/pricing";
 import { ALERT_PLANS, AUDIT_PLANS, hasAudits, TrackerAccess } from "@/libs/tariff-tracker/plan";
-import { useCatalog } from "../catalogStore";
+import { useAllImports } from "../catalogStore";
 import { BENEFITS } from "./UpgradeDialog";
 import { useUpgradeStats } from "./upgradeStats";
 
@@ -17,7 +17,8 @@ import { useUpgradeStats } from "./upgradeStats";
 // all of them by what it costs per import, and leads to the plans. Portals out of Duty Guard, so
 // it carries Duty Guard's look itself (DESIGN_SYSTEM §15).
 export const LimitDialog = ({ open, access, onSeePlans, onClose }: { open: boolean; access: TrackerAccess; onSeePlans: () => void; onClose: () => void }) => {
-  const { items } = useCatalog();
+  // Every list: the plan counts each import once
+  const { items } = useAllImports();
   const stats = useUpgradeStats();
   const n = (count: number) => count.toLocaleString("en-US");
   const imports = stats?.imports ?? items.length;

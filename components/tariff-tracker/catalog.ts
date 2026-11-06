@@ -1,5 +1,5 @@
 import { htsCodeDigitsOnly } from "../../libs/hts-code";
-import { Adjustments } from "./adjustments";
+import { Adjustments, readAdjustments, writeAdjustments } from "./adjustments";
 import { parseCatalog } from "./parse";
 
 // The catalog as it's stored: one item per product, an HTS code and a country of origin. Items
@@ -72,8 +72,118 @@ export const LEGACY_TEXT_KEYS = ["hts-hero-tariff-tracker-catalog", "hts-hero-ta
 
 interface StoredCatalog {
   version: 1;
+  // Every import across the lists, each code and country once (with its `covered` pick): what
+  // billing, the trial trigger, alerts and impact checks read
   items: CatalogItem[];
+  // The named lists (a brokerage's clients), each with its own copy of its imports and their
+  // adjustments. Absent: one list, "My Imports", is `items` with the stored adjustments.
+  lists?: StoredList[];
 }
+
+// ── Lists ──
+// A user keeps several named lists of imports; Duty Guard shows one at a time. Each list has its
+// own copy of an import and its adjustments (two clients can bring in the same code from different
+// makers), but an import counts once for the plan, however many lists it's in (PRICING.md: one HTS
+// code from one country). Ids are stable, so a later share link can point at one.
+
+export interface ImportList {
+  id: string;
+  name: string;
+  createdAt?: string;
+  items: CatalogItem[];
+  adjustments: Record<string, Adjustments>;
+}
+
+type StoredList = ImportList;
+
+export const DEFAULT_LIST_ID = "default";
+export const DEFAULT_LIST_NAME = "My Imports";
+
+export const newListId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `list-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+// What a list's items keep: the plan's picks are kept once, on the account's imports (`covered`)
+const listItem = ({ covered: _covered, ...item }: CatalogItem): CatalogItem => item;
+
+// Every list's imports, each code and country once (the first list's copy), with the picks
+export const unionItems = (lists: ImportList[], covered: Record<string, boolean>): CatalogItem[] => {
+  const byKey = new Map<string, CatalogItem>();
+  for (const list of lists)
+    for (const item of list.items) {
+      const key = itemKey(item);
+      const was = byKey.get(key);
+      if (!was) byKey.set(key, { ...listItem(item), ...(covered[key] !== undefined && { covered: covered[key] }) });
+      // One of the user's own in any list makes it theirs; the earliest addition counts
+      else {
+        const next = { ...was };
+        if (was.example && !item.example) delete next.example;
+        if (item.addedAt && (!was.addedAt || item.addedAt < was.addedAt)) next.addedAt = item.addedAt;
+        byKey.set(key, next);
+      }
+    }
+  return [...byKey.values()];
+};
+
+// Each import's adjustments from the first list that has any
+export const unionAdjustments = (lists: ImportList[]): Record<string, Adjustments> => {
+  const out: Record<string, Adjustments> = {};
+  for (const list of lists) for (const [key, adj] of Object.entries(list.adjustments)) if (!(key in out)) out[key] = adj;
+  return out;
+};
+
+// The names of the lists each import is in
+export const listNamesByKey = (lists: Pick<ImportList, "name" | "items">[]) => {
+  const out = new Map<string, string[]>();
+  for (const list of lists)
+    for (const item of list.items) {
+      const names = out.get(itemKey(item)) ?? [];
+      if (!names.includes(list.name)) names.push(list.name);
+      out.set(itemKey(item), names);
+    }
+  return out;
+};
+
+const isList = (x: unknown): x is StoredList =>
+  typeof x === "object" && x !== null && typeof (x as StoredList).id === "string" && typeof (x as StoredList).name === "string" && Array.isArray((x as StoredList).items);
+
+export interface StoredLists {
+  lists: ImportList[];
+  // The plan's picks (code-country → tracked or not), across every list
+  covered: Record<string, boolean>;
+}
+
+// The lists as stored (on the device or the account's row): the catalog's text and the
+// adjustments' text. A catalog from before lists is one list, "My Imports".
+export const readLists = (rawItems: string | null, rawAdjustments: string | null): StoredLists | null => {
+  if (!rawItems) return null;
+  let stored: StoredCatalog;
+  try {
+    stored = JSON.parse(rawItems) as StoredCatalog;
+  } catch {
+    return null;
+  }
+  if (stored?.version !== 1 || !Array.isArray(stored.items)) return null;
+  const all = stored.items.filter(isItem);
+  const covered = Object.fromEntries(all.filter((i) => typeof i.covered === "boolean").map((i) => [itemKey(i), i.covered as boolean]));
+  const lists: ImportList[] =
+    Array.isArray(stored.lists) && stored.lists.some(isList)
+      ? stored.lists.filter(isList).map((l) => ({
+          id: l.id,
+          name: l.name,
+          ...(l.createdAt && { createdAt: l.createdAt }),
+          items: l.items.filter(isItem).map(listItem),
+          adjustments: l.adjustments && typeof l.adjustments === "object" ? l.adjustments : {},
+        }))
+      : [{ id: DEFAULT_LIST_ID, name: DEFAULT_LIST_NAME, items: all.map(listItem), adjustments: readAdjustments(rawAdjustments) }];
+  return { lists, covered };
+};
+
+// The lists as stored: the catalog (every import once, plus the lists) and the adjustments (each
+// import's from its first list, for anything that reads one set)
+export const writeLists = ({ lists, covered }: StoredLists) => ({
+  items: JSON.stringify({ version: 1, items: unionItems(lists, covered), lists } satisfies StoredCatalog),
+  adjustments: writeAdjustments(unionAdjustments(lists)),
+});
 
 const isItem = (x: unknown): x is CatalogItem =>
   typeof x === "object" &&

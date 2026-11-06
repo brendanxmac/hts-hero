@@ -13,6 +13,7 @@ import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { clearRecentLookups, RecentLookup } from "@/libs/recent-lookups";
 import { addToCatalog } from "@/components/tariff-tracker/catalogStore";
 import { addToAccountCatalog } from "@/components/tariff-tracker/catalogSync";
+import { chooseList } from "@/components/tariff-tracker/lists/chooseList";
 import { trackProduct } from "@/components/tariff-tracker/report";
 import { entryHref } from "@/libs/signup-onboarding";
 import { sectionUrl } from "@/components/tariff-tracker/sections";
@@ -54,7 +55,10 @@ export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder;
   };
   const trackAll = async () => {
     const products = rows.map((r) => ({ code: r.lookup.code, country: r.lookup.country }));
-    const { added, duplicates } = addToCatalog(products);
+    // Signed in with several lists, which one (chooseList asks)
+    const target = user ? await chooseList(products.length === 1 ? "this import" : `these ${products.length} imports`) : {};
+    if (!target) return;
+    const { added, duplicates } = addToCatalog(products, target);
     // "Products Added" is the one count of imports added, wherever they come from
     trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates, source: "recent_lookups" });
     trackEvent(MixpanelEvent.DUTY_GUARD_LOOKUPS_ADDED, { added, offered: rows.length, from: "calculator" });
@@ -64,7 +68,7 @@ export const RecentLookupsTable = ({ f, lookups, onCleared }: { f: TariffFinder;
       return;
     }
     // Into the account too, so they're there before Duty Guard's first sync
-    await addToAccountCatalog(user.id, products).catch((e) => console.error("Saving the searches to the account:", e));
+    await addToAccountCatalog(user.id, products, target).catch((e) => console.error("Saving the searches to the account:", e));
     window.location.href = sectionUrl("catalog");
   };
 

@@ -12,7 +12,7 @@ import * as mk from "@/components/ui/marketing/styles"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { UpdatesList } from "@/components/tariff-updates/UpdatesList"
-import { SubscribeForm } from "@/components/tariff-updates/SubscribeForm"
+import { DigestButton } from "@/components/tariff-digest/DigestButton"
 import { formatDay } from "@/components/tariff-updates/labels"
 import { SOURCE_LIST, UPDATES_DEFINITION, UPDATES_FAQS } from "@/components/tariff-updates/content"
 
@@ -78,8 +78,8 @@ export default async function TariffUpdatesPage() {
         <div className="flex flex-col gap-6">
           <header className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
             <div className="flex max-w-3xl flex-col gap-4">
-              <span className={tt.eyebrow("primary")}>US tariff updates</span>
-              <h1 className={`${tt.display} text-4xl font-semibold leading-tight text-base-content sm:text-5xl sm:leading-none`}>Latest US Tariff Updates</h1>
+              <span className={tt.eyebrow("primary")}>US Tariff Updates</span>
+              <h1 className={`${tt.display} text-4xl font-semibold leading-tight text-base-content sm:text-5xl sm:leading-none`}>Latest US Tariff News</h1>
               <p className="text-base leading-relaxed text-base-content/70">{UPDATES_DEFINITION}</p>
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-base-content/60">
                 <span>
@@ -104,10 +104,10 @@ export default async function TariffUpdatesPage() {
             </div>
             <section aria-labelledby="subscribe" className={`${tt.panel} flex flex-col gap-3 p-6`}>
               <h2 id="subscribe" className={`${tt.title} m-0`}>
-                Get Every New Update by Email
+                The Tariff News You Care About, Delivered to Your Inbox
               </h2>
               <p className="m-0 text-sm leading-relaxed text-base-content/70">A plain english summary with the official documents, as it happens or weekly. Free.</p>
-              <SubscribeForm source="tariff-updates" compact />
+              <DigestButton source="tariff-updates" className="self-start" />
             </section>
           </header>
 

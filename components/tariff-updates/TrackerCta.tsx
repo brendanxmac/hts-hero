@@ -11,7 +11,7 @@ import { LOWEST_PER_IMPORT, REVERSE_TRIAL, formatPrice } from "@/components/pric
 // Free for a week (REVERSE_TRIAL), then Tariff News alerts free forever, so the ask is an account, and
 // it opens straight on adding imports. A card on an HTS code page (named for the code, with what an
 // alert looks like), inverted from the page so it stands out. The /tariff-updates pages have
-// TariffAlertsBanner above the header instead.
+// TrackerBanner above the header instead.
 
 const HREF = "/duty-guard?tab=catalog&add=paste"
 

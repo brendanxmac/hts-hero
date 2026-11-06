@@ -59,6 +59,7 @@ const EDITABLE: Record<TemplateId, { key: string; label: string }[]> = {
   ],
   News: [
     { key: "headline", label: "Headline" },
+    { key: "dek", label: "Summary" },
     { key: "rateBefore", label: "Rate before" },
     { key: "rateAfter", label: "Rate after" },
     { key: "rateNote", label: "Rate applies to" },

@@ -10,7 +10,8 @@ import { trackerDisplay, trackerSans } from "@/components/ui/font"
 // and tap Confirm (double opt-in: nothing is sent until they do), with the address they typed, a
 // button straight to their webmail when we can tell which it is, and where else to look. Confirming
 // lands them on /tariff-digest/welcome and sends the welcome email (libs/email/subscribers.ts).
-// An address already on the list: they're all set, and Continue goes to the welcome page. The
+// An address already on the list: nothing changes, their inbox gets the manage link to switch
+// weekly / as it happens / both, and Continue goes to the welcome page. The
 // dialog portals out of the page, so it carries the page's theme classes itself, and stays dark.
 
 export type SignupStatus = "confirm_sent" | "already_subscribed" | "throttled"
@@ -59,12 +60,15 @@ const quietButton =
 export function ConfirmPrompt({
   status,
   email,
+  frequency = "weekly",
   onClose,
   onContinue,
   onChangeEmail,
 }: {
   status: SignupStatus
   email: string
+  // What they picked, for what starts once they confirm
+  frequency?: "weekly" | "instant" | "both"
   // Closed without anything else to do (a new address: they go to their inbox)
   onClose: () => void
   // Already subscribed: on to the welcome page
@@ -112,7 +116,8 @@ export function ConfirmPrompt({
                       You&apos;re already subscribed.
                     </Dialog.Title>
                     <Dialog.Description className="dg-rise m-0 mt-4 text-base leading-relaxed text-base-content/70" style={{ ["--dg-delay" as string]: "220ms" }}>
-                      <span className="font-semibold text-base-content">{email}</span> already gets the Weekly Tariff Digest. You&apos;re all set: nothing more to do.
+                      <span className="font-semibold text-base-content">{email}</span> already gets our tariff updates. Want them weekly, as they happen, or
+                      both? We&apos;ve emailed you a link to change it in one click.
                     </Dialog.Description>
                     <button type="button" onClick={onContinue} className={`${primaryButton} dg-rise mt-9`} style={{ ["--dg-delay" as string]: "320ms" }}>
                       Continue
@@ -130,8 +135,12 @@ export function ConfirmPrompt({
                     </Dialog.Title>
                     <Dialog.Description className="dg-rise m-0 mt-4 text-base leading-relaxed text-base-content/70" style={{ ["--dg-delay" as string]: "260ms" }}>
                       {status === "throttled" ? "We sent a confirmation link to " : "We just sent a confirmation link to "}
-                      <span className="font-semibold text-base-content">{email}</span>. Tap <span className="font-semibold text-base-content">Confirm</span> in it and
-                      your Weekly Tariff Digest starts Monday.
+                      <span className="font-semibold text-base-content">{email}</span>. Tap <span className="font-semibold text-base-content">Confirm</span> in it and{" "}
+                      {frequency === "weekly"
+                        ? "your Weekly Tariff Digest starts Monday."
+                        : frequency === "instant"
+                          ? "the next tariff change comes to you the day it's out."
+                          : "the next tariff change comes to you the day it's out, plus the digest every Monday."}
                     </Dialog.Description>
 
                     <div className="dg-rise mt-9 flex flex-col gap-2.5" style={{ ["--dg-delay" as string]: "360ms" }}>

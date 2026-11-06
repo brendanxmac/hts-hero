@@ -135,6 +135,7 @@ export interface QuizProps extends PostBase {
 // it has got from announcement to the HTS
 export interface NewsProps extends PostBase {
   headline: string
+  dek?: string // one or two plain sentences under the headline: what changes, for whom
   authority: string // "Section 232"
   kindLabel: string // "Rate change"
   tone: Tone // up: tariffs rise, down: they fall or end
@@ -146,6 +147,7 @@ export interface NewsProps extends PostBase {
   effectiveOn?: string // "YYYY-MM-DD"
   stage: number // 0 announced … 5 in the HTS
   imports?: { value: number; year: number } // US imports under the codes named, Census
+  htsCount?: number // HTS codes the action names (Chapter 99 left out)
   slug: string
 }
 

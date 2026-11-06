@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ListPicker, targetReady, useListTarget } from "./lists/ListPicker";
+import { keysInTarget } from "./catalogStore";
 import { Dialog } from "@/components/ui/Dialog";
 import { ArrowDownTrayIcon, ArrowUpTrayIcon, SparklesIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useHts } from "../../contexts/HtsContext";
@@ -245,6 +247,8 @@ export const AddProductsDialog = ({
   onClose: () => void;
 }) => {
   const { findElement, items, addProducts } = useTracker();
+  // Which list they go to: the one shown, another, or a new one they name
+  const { target, setTarget, reset: resetTarget } = useListTarget();
   const [method, setMethod] = useState<AddMethod>(initialMethod);
   const [pasteText, setPasteText] = useState("");
   const [csv, setCsv] = useState<{ name: string; text: string } | null>(null);
@@ -265,7 +269,7 @@ export const AddProductsDialog = ({
 
   // Products already in the catalog, or repeated in what's being added
   const duplicates = useMemo(() => {
-    const seen = new Set(items.map(itemKey));
+    const seen = keysInTarget(target);
     const dupes = new Set<string>();
     parsed.entries.forEach((e) => {
       const key = itemKey(toProduct(e));
@@ -273,7 +277,7 @@ export const AddProductsDialog = ({
       seen.add(key);
     });
     return dupes;
-  }, [parsed, items]);
+  }, [parsed, items, target]); // eslint-disable-line react-hooks/exhaustive-deps
   const repeated = parsed.entries.filter((e) => duplicates.has(itemKey(toProduct(e)))).length;
   const ready = parsed.entries.length - repeated;
 
@@ -282,10 +286,11 @@ export const AddProductsDialog = ({
     setPasteText("");
     setCsv(null);
     setSource("paste");
+    resetTarget();
   };
 
   const add = () => {
-    addProducts(parsed.entries.map(toProduct), method === "csv" ? "csv" : source);
+    addProducts(parsed.entries.map(toProduct), method === "csv" ? "csv" : source, target);
     close();
   };
 
@@ -336,6 +341,7 @@ export const AddProductsDialog = ({
 
             {method !== "generate" && (
               <>
+                <ListPicker value={target} onChange={setTarget} />
                 {parsed.errors.length > 0 && <SkippedLines errors={parsed.errors} />}
                 <Preview entries={parsed.entries} duplicates={duplicates} />
               </>
@@ -350,7 +356,7 @@ export const AddProductsDialog = ({
                   ? "Nothing to add yet"
                   : [
                       `${ready.toLocaleString("en-US")} ${ready === 1 ? "import" : "imports"} ready`,
-                      repeated ? `${repeated.toLocaleString("en-US")} already in your imports` : "",
+                      repeated ? `${repeated.toLocaleString("en-US")} already in this list` : "",
                       parsed.errors.length ? `${parsed.errors.length.toLocaleString("en-US")} skipped` : "",
                     ]
                       .filter(Boolean)
@@ -363,7 +369,7 @@ export const AddProductsDialog = ({
               <button
                 type="button"
                 className={ui.button({ variant: "primary" })}
-                disabled={method === "generate" || ready === 0}
+                disabled={method === "generate" || ready === 0 || !targetReady(target)}
                 onClick={add}
               >
                 Add {ready > 0 ? `${ready.toLocaleString("en-US")} ` : ""}

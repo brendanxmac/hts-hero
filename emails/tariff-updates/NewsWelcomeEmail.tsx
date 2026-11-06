@@ -11,8 +11,8 @@ import { REVERSE_TRIAL } from "../../components/pricing-calculator/lib/pricing"
 // Then: forward it to a colleague, make it fit (the manage link), and, quietly, Tariff Alerts.
 
 export interface NewsWelcomeEmailProps {
-  frequency: "instant" | "weekly"
-  // The Monday the next digest goes out ("2026-11-09"); weekly only
+  frequency: "instant" | "weekly" | "both"
+  // The Monday the next digest goes out ("2026-11-09"); weekly and both only
   firstDigestOn: string | null
   recent: UpdateSummary[]
   manageUrl: string
@@ -28,6 +28,8 @@ export const newsWelcomeSubject = ({ frequency, already }: NewsWelcomeEmailProps
       : "You're already getting US tariff updates"
     : frequency === "weekly"
       ? "Welcome to the Weekly Tariff Digest"
+      : frequency === "both"
+      ? "Welcome to US tariff updates and the Weekly Tariff Digest"
       : "Welcome to US tariff updates from HTS Hero"
 
 const CAMPAIGN = "digest-welcome"
@@ -41,8 +43,13 @@ const WHAT = [
 
 export default function NewsWelcomeEmail({ frequency, firstDigestOn, recent, manageUrl, already = false, footer }: NewsWelcomeEmailProps) {
   const weekly = frequency === "weekly"
-  const when = weekly && firstDigestOn ? `Monday, ${formatDay(firstDigestOn).replace(/, \d{4}$/, "")}` : "Monday"
-  const next = weekly ? `Your ${already ? "next" : "first"} tariff digest lands ${when}.` : "Each new action lands the moment it moves."
+  const both = frequency === "both"
+  const when = (weekly || both) && firstDigestOn ? `Monday, ${formatDay(firstDigestOn).replace(/, \d{4}$/, "")}` : "Monday"
+  const next = both
+    ? `Each new action lands the moment it moves, and your first digest ${when}.`
+    : weekly
+      ? `Your ${already ? "next" : "first"} tariff digest lands ${when}.`
+      : "Each new action lands the moment it moves."
   return (
     <EmailLayout preview={`${already ? "You're already on the list." : "You're in."} ${next}`} footer={footer}>
       <DarkHero
@@ -60,7 +67,13 @@ export default function NewsWelcomeEmail({ frequency, firstDigestOn, recent, man
           : "Good call. From now on, no US tariff change gets past you: what changed, for which goods and countries, and from when, without the hours of reading."} */}
       </DarkHero>
 
-      <P>{weekly ? "Every Monday, you'll get an email with every new US tariff action from the week before:" : "Each one comes to your inbox as it happens, with:"}</P>
+      <P>
+        {both
+          ? "Each new US tariff action comes to your inbox as it happens, and every Monday you'll get the week's recap, with:"
+          : weekly
+            ? "Every Monday, you'll get an email with every new US tariff action from the week before:"
+            : "Each one comes to your inbox as it happens, with:"}
+      </P>
       <Checklist items={WHAT} />
 
       {recent.length > 0 && (
@@ -90,7 +103,7 @@ export default function NewsWelcomeEmail({ frequency, firstDigestOn, recent, man
         .
       </P>
       <P small>
-        <strong>Want it to fit you?</strong> Pick the laws and countries you follow, or switch between weekly and as-it-happens:{" "}
+        <strong>Want it to fit you?</strong> Pick the laws and countries you follow, or switch between weekly, as it happens, or both:{" "}
         <Link href={manageUrl} style={{ color: C.cobalt, fontWeight: 600 }}>
           choose what you get
         </Link>

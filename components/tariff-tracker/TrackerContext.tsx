@@ -32,13 +32,16 @@ export interface Tracker {
   setEntryDate: (date: string, source?: string) => void;
   // The current HTS line for 8 or 10 digits, if there is one
   findElement: (digits: string) => HtsElement | undefined;
-  // The catalog: its products, matched to the current HTS
+  // The list shown: its products, matched to the current HTS
   items: CatalogItem[];
+  // Every list's imports, each code and country once (what the plan counts; whether there are any yet)
+  allItems: CatalogItem[];
   entries: CatalogEntry<HtsElement>[];
   // Products whose code isn't in the current HTS (dropped by a revision); kept, not shown
   missing: CatalogItem[];
   // Adds products (with any adjustments they bring), skipping ones already in the catalog
-  addProducts: (products: NewProduct[], source: AddSource) => { added: number; duplicates: number };
+  // Into the list shown, or `target` (a list by id, or a new one by name), which is then shown
+  addProducts: (products: NewProduct[], source: AddSource, target?: store.ListTarget) => { added: number; duplicates: number; listName: string };
   removeProducts: (keys: string[]) => void;
   clearCatalog: () => void;
   // Each product's rates as of entryDate, with its adjustments
@@ -88,7 +91,12 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   const [entryDate, setEntryDateState] = useState(todayIso);
   // The saved catalog, shared with the calculator's "Add to catalog" (and other tabs), and saved
   // to the account when signed in
+  // The list shown (Duty Guard shows one list at a time), and every list's imports, each once: the
+  // plan covers imports across all of them
   const { items, adjustments } = store.useCatalog();
+  const all = store.useAllImports();
+  // One list: every import is in the one shown, so its rates do for both
+  const single = store.useImportLists().lists.length <= 1;
   const { user, isLoading: userLoading } = useUser();
   useCatalogSync(userLoading ? undefined : (user?.id ?? null));
   const { access } = useTrackerAccess();
@@ -125,11 +133,11 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
     trackEvent(MixpanelEvent.DUTY_GUARD_ADJUSTMENTS_RESET);
   };
 
-  const addProducts = (incoming: NewProduct[], source: AddSource) => {
+  const addProducts = (incoming: NewProduct[], source: AddSource, target?: store.ListTarget) => {
     // The example list is marked, so it never counts as the user's imports (realItems)
-    const { added, duplicates, withAdjustments } = store.addToCatalog(source === "example" ? incoming.map((p) => ({ ...p, example: true as const })) : incoming);
-    trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates, source, with_adjustments: withAdjustments });
-    return { added, duplicates };
+    const { added, duplicates, withAdjustments, listName } = store.addToCatalog(source === "example" ? incoming.map((p) => ({ ...p, example: true as const })) : incoming, target);
+    trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates, source, with_adjustments: withAdjustments, new_list: Boolean(target?.newListName) });
+    return { added, duplicates, listName };
   };
 
   const removeProducts = (keys: string[]) => {
@@ -175,55 +183,64 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
 
   // Big catalogs stay responsive while values are typed; the rates catch up
   const deferredAdjustments = useDeferredValue(adjustments);
+  const deferredAllAdjustments = useDeferredValue(all.adjustments);
 
   // Items matched to the current HTS. Countries come from the same list the parser uses.
-  const matched = useMemo(() => {
+  const matchItems = (list: CatalogItem[]) => {
     const entries: CatalogEntry<HtsElement>[] = [];
     const missing: CatalogItem[] = [];
     if (!byDigits.size) return { entries, missing };
-    items.forEach((item, index) => {
+    list.forEach((item, index) => {
       const element = byDigits.get(item.code);
       const country = findCountry(item.country);
       if (!element || !country) missing.push(item);
       else entries.push({ line: index + 1, text: `${element.htsno},${country.code}`, element, country });
     });
     return { entries, missing };
-  }, [items, byDigits]);
+  };
+  const matched = useMemo(() => matchItems(items), [items, byDigits]); // eslint-disable-line react-hooks/exhaustive-deps
+  const matchedAll = useMemo(() => (single ? matched : matchItems(all.items)), [single, all.items, matched, byDigits]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Each product's rates, worked out again only when its own inputs change: adjusting one
   // product in a catalog of thousands recalculates just that one. Adjustments for products that
   // didn't change keep their identity, so comparing references is enough.
   const productCache = useRef(new Map<string, { inputs: unknown[]; product: TrackedProduct }>());
-  const products = useMemo(() => {
-    const cache = productCache.current;
+  const allProductCache = useRef(new Map<string, { inputs: unknown[]; product: TrackedProduct }>());
+  const ratesFor = (cacheRef: typeof productCache, entries: CatalogEntry<HtsElement>[], adj: Record<string, Adjustments>) => {
+    const cache = cacheRef.current;
     const next = new Map<string, { inputs: unknown[]; product: TrackedProduct }>();
-    const out = matched.entries.map((entry) => {
+    const out = entries.map((entry) => {
       const key = productKey(entry.element.htsno, entry.country);
-      const inputs = [entry.element, entry.country, htsElements, entryDate, deferredAdjustments[key]];
+      const inputs = [entry.element, entry.country, htsElements, entryDate, adj[key]];
       const hit = cache.get(key);
-      const product =
-        hit && hit.inputs.every((v, i) => v === inputs[i])
-          ? hit.product
-          : trackProduct(entry, htsElements, entryDate, deferredAdjustments[key]);
+      const product = hit && hit.inputs.every((v, i) => v === inputs[i]) ? hit.product : trackProduct(entry, htsElements, entryDate, adj[key]);
       next.set(key, { inputs, product });
       return product;
     });
-    productCache.current = next;
+    cacheRef.current = next;
     return out;
-  }, [matched, htsElements, entryDate, deferredAdjustments]);
+  };
+  const products = useMemo(() => ratesFor(productCache, matched.entries, deferredAdjustments), [matched, htsElements, entryDate, deferredAdjustments]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Every list's imports (one list: the same ones), for the plan's coverage
+  const allProducts = useMemo(
+    () => (single ? products : ratesFor(allProductCache, matchedAll.entries, deferredAllAdjustments)),
+    [single, matchedAll, products, htsElements, entryDate, deferredAllAdjustments] // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   // The imports tracked (alerts and impact checks, PRICING.md): until the user chooses, the
   // highest-duty ones up to the plan's limit; once they've chosen (tracked or untracked any), exactly
   // their picks, up to the limit, so untracking one frees a slot (libs/tariff-tracker/snapshot.ts
   // coveredKeys is the same rule, for alerts)
-  const pickedKeys = useMemo(() => new Set(items.filter((i) => i.covered === true).map(itemKey)), [items]);
-  const chosen = useMemo(() => items.some((i) => i.covered !== undefined), [items]);
+  // Across every list: an import counts once however many lists it's in (PRICING.md)
+  const allItems = single ? items : all.items;
+  const pickedKeys = useMemo(() => new Set(allItems.filter((i) => i.covered === true).map(itemKey)), [allItems]);
+  const chosen = useMemo(() => allItems.some((i) => i.covered !== undefined), [allItems]);
   const trackedKeys = useMemo(() => {
     const limit = access.pairLimit;
     // More picks than the plan covers (a trial that ended): the highest-duty ones
-    if (chosen) return new Set(byDuty(items.filter((i) => i.covered === true).map(itemKey), products).slice(0, limit));
-    return new Set([...products].sort((a, b) => b.result.totalDuty - a.result.totalDuty).slice(0, limit).map((p) => p.key));
-  }, [items, products, access.pairLimit, chosen]);
+    if (chosen) return new Set(byDuty(allItems.filter((i) => i.covered === true).map(itemKey), allProducts).slice(0, limit));
+    return new Set([...allProducts].sort((a, b) => b.result.totalDuty - a.result.totalDuty).slice(0, limit).map((p) => p.key));
+  }, [allItems, allProducts, access.pairLimit, chosen]);
   // False when it would go past the plan's limit (the caller shows the plans)
   const setCovered = (key: string, covered: boolean) => {
     const on = trackedKeys.has(key);
@@ -240,10 +257,10 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   // Spare room on the plan, filled with the highest-duty imports the user hasn't turned off. Done on
   // request (trackMore), for imports added while there's room, and when the plan grows (an upgrade);
   // never after the user turns one off, so that still frees a slot
-  const turnedOff = useMemo(() => new Set(items.filter((i) => i.covered === false).map(itemKey)), [items]);
+  const turnedOff = useMemo(() => new Set(allItems.filter((i) => i.covered === false).map(itemKey)), [allItems]);
   const candidates = useMemo(
-    () => [...products].filter((p) => !trackedKeys.has(p.key) && !turnedOff.has(p.key)).sort((a, b) => b.result.totalDuty - a.result.totalDuty),
-    [products, trackedKeys, turnedOff]
+    () => [...allProducts].filter((p) => !trackedKeys.has(p.key) && !turnedOff.has(p.key)).sort((a, b) => b.result.totalDuty - a.result.totalDuty),
+    [allProducts, trackedKeys, turnedOff]
   );
   const room = Math.max(0, access.pairLimit - trackedKeys.size);
   const moreToTrack = Math.min(room, candidates.length);
@@ -264,13 +281,13 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
   const seenKeys = useRef<Set<string> | null>(null);
   useEffect(() => {
     if (loading) return;
-    const keys = new Set(items.map(itemKey));
+    const keys = new Set(allItems.map(itemKey));
     const before = seenKeys.current;
     seenKeys.current = keys;
     if (!before || !chosen) return;
-    const added = items.map(itemKey).filter((k) => !before.has(k) && !turnedOff.has(k) && !trackedKeys.has(k));
+    const added = allItems.map(itemKey).filter((k) => !before.has(k) && !turnedOff.has(k) && !trackedKeys.has(k));
     fill(added.slice(0, Math.max(0, access.pairLimit - trackedKeys.size)), false);
-  }, [items, loading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [allItems, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A bigger plan (an upgrade) fills its new room straight away
   const lastLimit = useRef(access.pairLimit);
@@ -288,6 +305,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
         setEntryDate,
         findElement: (digits) => byDigits.get(digits),
         items,
+        allItems,
         entries: matched.entries,
         missing: matched.missing,
         addProducts,
@@ -297,7 +315,7 @@ export const TrackerProvider = ({ children }: { children: ReactNode }) => {
         trackedKeys,
         pickedKeys,
         setCovered,
-        untrackedCount: Math.max(0, items.length - trackedKeys.size),
+        untrackedCount: items.filter((i) => !trackedKeys.has(itemKey(i))).length,
         moreToTrack,
         trackMore,
         trackedProducts,

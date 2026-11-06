@@ -22,9 +22,9 @@ export const AuthorityChip = ({ authority }: { authority: Authority }) => (
   </span>
 )
 
-export const Countries = ({ codes, max = 6 }: { codes: string[]; max?: number }) =>
+export const Countries = ({ codes, max = 6, className = "text-xs text-base-content/70" }: { codes: string[]; max?: number; className?: string }) =>
   codes.length ? (
-    <span className="text-xs text-base-content/70">
+    <span className={className}>
       {codes
         .slice(0, max)
         .map((c) => {

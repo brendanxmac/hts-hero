@@ -138,18 +138,50 @@ export const captionsFor = <T extends TemplateId>(template: T, props: TemplatePr
     }
     case "News": {
       const p = props as TemplatePropsMap["News"]
-      const where = p.countries.length ? p.countries.map((c) => c.name).join(", ") : "All countries"
+      const shown = p.countries.slice(0, 8).map((c) => c.name)
+      const where = p.countries.length
+        ? `${shown.join(", ")}${p.countries.length > shown.length ? ` +${p.countries.length - shown.length} more` : ""}`
+        : "All countries"
+      const rate = p.rateAfter ? `${p.rateBefore ? `${p.rateBefore} → ` : ""}${p.rateAfter}${p.rateNote ? ` ${p.rateNote}` : ""}` : ""
+      const inEffect = p.stage >= 4 || (!!p.effectiveOn && p.effectiveOn <= p.asOf)
       const lines = [
-        ...(p.rateAfter ? [`Rate: ${p.rateBefore ? `${p.rateBefore} → ` : ""}${p.rateAfter}${p.rateNote ? ` ${p.rateNote}` : ""}`] : []),
-        `Who: ${where}`,
-        ...(p.products ? [`What: ${p.products}`] : []),
-        ...(p.effectiveOn ? [`When: ${date(p.effectiveOn)}`] : []),
-        ...(p.imports ? [`${usd(p.imports.value)} of US imports in ${p.imports.year} under the HTS codes named`] : []),
+        ...(rate ? [`Rate: ${rate}`] : []),
+        `Countries: ${where}`,
+        ...(p.products ? [`Products: ${p.products}`] : []),
+        ...(p.htsCount ? [`HTS codes: ${p.htsCount} named in the action`] : []),
+        ...(p.effectiveOn ? [`${inEffect ? "In effect since" : "Takes effect"}: ${date(p.effectiveOn)}`] : []),
+        ...(p.imports ? [`At stake: ${usd(p.imports.value)} of US imports in ${p.imports.year} under the codes named`] : []),
+        `Authority: ${p.authority} (${p.kindLabel.toLowerCase()})`,
       ]
-      const link = `htshero.com/tariff-updates/${p.slug}`
+      const link = `https://htshero.com/tariff-updates/${p.slug}`
+      const hook = p.headline.includes(p.authority) ? p.headline : `${p.authority}: ${p.headline}`
+      // X: the hook, the facts that fit, the link (X counts any link as 23 characters)
+      const facts = [
+        rate,
+        p.countries.length === 1 ? `${p.countries[0].flag} ${p.countries[0].name}` : p.countries.length ? `${p.countries.length} countries` : "",
+        p.htsCount ? `${p.htsCount} HTS codes` : "",
+        p.effectiveOn ? `${inEffect ? "in effect" : "effective"} ${date(p.effectiveOn)}` : "",
+      ].filter(Boolean)
+      const tail = `Is your HTS code affected? ${link}`
+      const xLength = (t: string) => t.replace(link, "x".repeat(23)).length
+      let xText = `${hook}\n\n${facts.join(" · ")}\n\n${tail}`
+      while (facts.length && xLength(xText) > 280) {
+        facts.pop()
+        xText = facts.length ? `${hook}\n\n${facts.join(" · ")}\n\n${tail}` : `${hook}\n\n${tail}`
+      }
       return {
-        linkedin: [`${p.authority}: ${p.headline}`, "", ...lines.map((l) => `→ ${l}`), "", `Follow every tariff action: ${link}`, "", TAGS].join("\n"),
-        x: x(`${p.authority}: ${p.headline}`, `${p.rateAfter ? `${p.rateBefore ? `${p.rateBefore} → ` : ""}${p.rateAfter}. ` : ""}${link}`).replace(/\n\nhtshero\.com$/, ""),
+        linkedin: [
+          hook,
+          ...(p.dek ? ["", p.dek] : []),
+          "",
+          ...lines.map((l) => `→ ${l}`),
+          "",
+          "See every HTS code it covers, the official notices and where it stands, then check your own codes in seconds:",
+          link,
+          "",
+          TAGS,
+        ].join("\n"),
+        x: xText,
       }
     }
     case "OddRate": {

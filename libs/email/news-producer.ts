@@ -53,11 +53,12 @@ const eventsOf = (sources: { stage: Stage | null; published_at: string }[]): Upd
 export const matchesPreferences = (u: Pick<UpdateRowForEmail, "authority" | "countries">, s: Pick<Subscriber, "news_authorities" | "news_countries">) =>
   matchesNews(u, { authorities: s.news_authorities, countries: s.news_countries })
 
+// "both" gets the instant alerts and the weekly digest
 const activeSubscribers = async (db: Db, frequency: "instant" | "weekly") => {
   const { data, error } = await db
     .from("email_subscribers")
     .select(SUBSCRIBER_COLUMNS)
-    .eq("news_frequency", frequency)
+    .in("news_frequency", [frequency, "both"])
     .not("confirmed_at", "is", null)
     .is("unsubscribed_at", null)
   if (error) throw new Error(`Loading subscribers: ${error.message}`)

@@ -100,7 +100,7 @@ export const TEMPLATES = {
             const change = rateChange(i.beforePct, i.afterPct)
             return {
               label: `${i.code} · ${i.country}`,
-              detail: i.description || undefined,
+              detail: [i.description, i.lists?.length ? `In ${i.lists.join(", ")}` : ""].filter(Boolean).join(" · ") || undefined,
               value: i.level === "likely" || !change ? (adcvd ? "May be covered" : "May apply") : change.value,
               tone: i.level === "likely" || !change ? ("heads-up" as const) : change.tone,
             }

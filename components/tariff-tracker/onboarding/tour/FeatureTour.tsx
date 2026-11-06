@@ -85,7 +85,7 @@ const VideoDialog = ({ step, onClose }: { step: TourStep | null; onClose: () => 
 
 export const FeatureTour = () => {
   const { open, start, from } = useFeatureTour();
-  const { items } = useTracker();
+  const { allItems: items } = useTracker();
   const nav = useTrackerNav();
   const hasImports = realItems(items).length > 0;
   // How to add imports only while there are none (or when it's where the tour was opened). The

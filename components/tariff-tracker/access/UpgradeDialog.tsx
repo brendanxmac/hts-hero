@@ -17,7 +17,7 @@ import { auditsIncluded } from "@/components/tariff-audit/pricing/AuditPricing";
 import { AUDIT_GUARANTEE, AUDIT_GUARANTEE_DETAIL } from "@/components/tariff-audit/lib/copy";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { ALERT_PLANS, AUDIT_PLANS, TrackerAccess, TrackerOffer, TrackerPlan, trackerPlanFor } from "@/libs/tariff-tracker/plan";
-import { useCatalog } from "../catalogStore";
+import { useAllImports } from "../catalogStore";
 import { openBillingPortal, useTrackerSubscription } from "../plan/billing";
 import { useUpgradeStats } from "./upgradeStats";
 import { PremiumFeature } from "./features";
@@ -56,7 +56,8 @@ const checkout = async (plan: TrackerPlan, billing: Billing) => {
 };
 
 export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolean; feature: PremiumFeature; access: TrackerAccess; onClose: () => void }) => {
-  const { items } = useCatalog();
+  // Every list: the plan counts each import once
+  const { items } = useAllImports();
   const changing = access.kind === "paid";
   const subscription = useTrackerSubscription(open && changing && !access.preview);
   const [billing, setBilling] = useState<Billing>("annual");

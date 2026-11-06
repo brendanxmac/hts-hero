@@ -15,7 +15,7 @@ import { useToFinish } from "./toFinish";
 export const FinishSetupBanner = () => {
   const { user } = useUser();
   const { loading } = useTrackerAccess();
-  const { items } = useTracker();
+  const { allItems: items } = useTracker();
   const { open } = useImportTakeover();
   const waiting = useToFinish(user?.id);
   const count = waiting.length;

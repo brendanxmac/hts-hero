@@ -58,7 +58,13 @@ export function ManageSubscription({
   }
 
   const banner = justConfirmed
-    ? { title: "You're subscribed", body: saved.frequency === "instant" ? "You'll get each new US tariff action as it happens." : "Your first weekly digest arrives Monday." }
+    ? { title: "You're subscribed", body:
+          saved.frequency === "both"
+            ? "You'll get each new US tariff action as it happens, and the weekly digest every Monday."
+            : saved.frequency === "instant"
+              ? "You'll get each new US tariff action as it happens."
+              : "Your first weekly digest arrives Monday.",
+      }
     : unsubscribed && saved.frequency === "off"
       ? { title: "You're unsubscribed", body: "You won't get any more email from HTS Hero. Changed your mind? Pick how often below." }
       : null

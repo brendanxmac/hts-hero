@@ -9,6 +9,7 @@ import * as ui from "@/components/ui/styles";
 import { Adjustments, DEFAULT_UNITS, DEFAULT_VALUE } from "./adjustments";
 import { itemKey, NewProduct } from "./catalog";
 import { addToCatalog, useCatalog } from "./catalogStore";
+import { chooseList } from "./lists/chooseList";
 import { productUrl } from "./sections";
 import type { AddSource } from "./TrackerContext";
 
@@ -71,8 +72,11 @@ export const AddToCatalogButton = ({
       type="button"
       className={ui.button({ size: "sm" })}
       title="Save this product to your imports in Duty Guard"
-      onClick={() => {
-        const { added, withAdjustments } = addToCatalog([product]);
+      onClick={async () => {
+        // With several lists, which one (chooseList asks)
+        const target = await chooseList();
+        if (!target) return;
+        const { added, withAdjustments } = addToCatalog([product], target);
         trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, {
           added,
           duplicates: 1 - added,

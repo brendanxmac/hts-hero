@@ -150,6 +150,11 @@ export enum MixpanelEvent {
   DUTY_GUARD_PRODUCTS_ADDED = "Duty Guard Products Added",
   TARIFF_AUDIT_REQUESTED = "Tariff Audit Requested",
   DUTY_GUARD_PRODUCTS_REMOVED = "Duty Guard Products Removed",
+  // Import lists (one per client, for brokers): made, renamed, deleted, or switched to
+  DUTY_GUARD_LIST_CREATED = "Duty Guard List Created",
+  DUTY_GUARD_LIST_RENAMED = "Duty Guard List Renamed",
+  DUTY_GUARD_LIST_DELETED = "Duty Guard List Deleted",
+  DUTY_GUARD_LIST_SWITCHED = "Duty Guard List Switched",
   DUTY_GUARD_CSV_TEMPLATE_DOWNLOADED = "Duty Guard CSV Template Downloaded",
   DUTY_GUARD_DATE_SET = "Duty Guard Date Set",
   DUTY_GUARD_PRODUCT_ADJUSTED = "Duty Guard Product Adjusted",
@@ -236,10 +241,15 @@ export enum MixpanelEvent {
   EXPLORER_NAVIGATED_TO_LEVEL = "Explorer Navigated to Level",
   // Subscribed to tariff news on /tariff-updates (source: the page it was on)
   TARIFF_UPDATES_SUBSCRIBED = "Tariff Updates Subscribed",
+  // A "Get tariff updates" button anywhere on the site, opening /tariff-digest (source: where it was)
+  TARIFF_DIGEST_CTA_CLICKED = "Tariff Digest CTA Clicked",
   // After subscribing: "Create my free account" for Duty Guard
   TARIFF_UPDATES_TRACKER_UPSELL_CLICKED = "Tariff Updates Tracker Upsell Clicked",
   // A code checked in the /tariffs pages' "Is your code on a list?" box (program: the page's slug, or "all")
   TARIFF_PROGRAM_CODE_CHECKED = "Tariff Program Code Checked",
+  // "Check if you or your clients are affected" on a tariff update's page, signed in (result:
+  // affected, not_affected, no_imports or error; signed-out clicks are SIGNUP_CTA_CLICKED)
+  TARIFF_UPDATE_AFFECTED_CHECKED = "Tariff Update Affected Checked",
 }
 
 // Browser-side tracking functions

@@ -37,6 +37,11 @@ copy says **product** since 2026-10-29: "imports" confused buyers). Copy transla
 who think in SKUs: "most catalogs have far fewer products than SKUs: 40 SKUs of the same screw from
 China is 1 product". Every place a count is sold (cards, FAQs, footnotes) defines it once.
 
+**Import lists (2026-11-06):** a Duty Guard account can keep several named lists of imports (one per
+client, for brokers and forwarders). Each list keeps its own copy of an import and its settings, but
+the plan counts each HTS code + country **once across all lists**: the same code from China in two
+clients' lists is 1 import. Alerts and impact checks cover every list; Duty Guard shows one list at a time.
+
 ### What each paid offer includes
 
 **Tariff Alerts** ("Get alerted when new tariffs affect your imports, and instantly see how
