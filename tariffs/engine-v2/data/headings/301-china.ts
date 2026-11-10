@@ -114,7 +114,7 @@ const allHeadings: Tariff[] = [
     program: "301-china",
     name: "Section 301 China Exclusion: USTR Product Exclusions",
     description:
-      "Effective with respect to entries on or after June 15, 2024 and through November 9, 2026, articles the product of China, as provided for in U.S. note 20(vvv) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
+      "Effective with respect to entries on or after June 15, 2024 and through January 9, 2027, articles the product of China, as provided for in U.S. note 20(vvv) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
       countries: ["CN"],
       // TODO(list): "9903.88.69" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -131,14 +131,12 @@ const allHeadings: Tariff[] = [
       },
     ],
     rate: { kind: "free" },
-    effective: { from: "2024-06-15", to: "2026-11-10" },
+    effective: { from: "2024-06-15", to: "2027-01-10" },
     source: {
-      revision: "2026HTSRev20",
-      citation:
-        "USTR notice of product exclusion extensions, 90 FR 55232 (FR Doc. 2025-21671)",
-      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-01/html/2025-21671.htm",
-      publishedOn: "2025-12-01",
-      note: 'The 178 exclusions extended for entries on or after 12:01 a.m. EST Nov 30, 2025 and before 11:59 p.m. EDT Nov 9, 2026; the heading reads "through November 9, 2026" from that date (before it, "through November 29, 2025", 2025HTSRev30). Described-product exclusions need confirmation (Oct 2026 correction: they applied to every good under the number)',
+      citation: "USTR notice of product exclusion extensions, FR Doc. 2026-22925, Annex A",
+      url: "https://www.federalregister.gov/d/2026-22925",
+      publishedOn: "2026-11-10",
+      note: 'The 178 exclusions extended again for entries on or after 12:01 a.m. ET Nov 10, 2026 and before 11:59 p.m. ET Jan 9, 2027; from Nov 10, 2026 the heading reads "through January 9, 2027" (before it, "through November 9, 2026", 90 FR 55232; before Nov 30, 2025, "through November 29, 2025", 2025HTSRev30). Entered from the notice before USITC posted the revision: check against the next revision\'s change record. Described-product exclusions need confirmation (Oct 2026 correction: they applied to every good under the number)',
     },
   },
   {
@@ -146,7 +144,7 @@ const allHeadings: Tariff[] = [
     program: "301-china",
     name: "Section 301 China Exclusion: Solar Manufacturing Equipment",
     description:
-      "Effective with respect to entries on or after January 1, 2024, and through November 9, 2026, articles the product of China, as provided in U.S. note 20(www) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
+      "Effective with respect to entries on or after January 1, 2024, and through January 9, 2027, articles the product of China, as provided in U.S. note 20(www) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
       countries: ["CN"],
       // TODO(list): "9903.88.70" is the migrated legacy list for this heading. Replace it with a list named after its U.S. note subdivision.
@@ -155,14 +153,12 @@ const allHeadings: Tariff[] = [
     // Every 20(www) exclusion is a product "described in" a number (solar wafer equipment)
     requires: [confirm("9903.88.70")],
     rate: { kind: "free" },
-    effective: { from: "2024-01-01", to: "2026-11-10" },
+    effective: { from: "2024-01-01", to: "2027-01-10" },
     source: {
-      revision: "2026HTSRev20",
-      citation:
-        "USTR notice of product exclusion extensions, 90 FR 55232 (FR Doc. 2025-21671)",
-      url: "https://www.govinfo.gov/content/pkg/FR-2025-12-01/html/2025-21671.htm",
-      publishedOn: "2025-12-01",
-      note: 'Extended with 9903.88.69 for entries before 11:59 p.m. EDT Nov 9, 2026; the heading reads "through November 9, 2026" from Nov 30, 2025 (before it, "through November 29, 2025", 2025HTSRev30). Needs confirmation (Oct 2026 correction: it applied to every good under the number)',
+      citation: "USTR notice of product exclusion extensions, FR Doc. 2026-22925, Annex B",
+      url: "https://www.federalregister.gov/d/2026-22925",
+      publishedOn: "2026-11-10",
+      note: 'Extended again with 9903.88.69 for entries before 11:59 p.m. ET Jan 9, 2027; from Nov 10, 2026 the heading reads "through January 9, 2027" (before it, "through November 9, 2026", 90 FR 55232; before Nov 30, 2025, "through November 29, 2025", 2025HTSRev30). Entered from the notice before USITC posted the revision: check against the next revision\'s change record. Needs confirmation (Oct 2026 correction: it applied to every good under the number)',
     },
   },
   {
@@ -408,24 +404,38 @@ const allHeadings: Tariff[] = [
   },
 ]
 
-// Before USTR extended the 178 Section 301 product exclusions (90 FR 55232, Dec 1, 2025: from
-// 12:01 a.m. EST Nov 30, 2025 to before 11:59 p.m. EDT Nov 9, 2026), 9903.88.69 and .70 ran
-// "through November 29, 2025" (2025HTSRev30 text). The exclusions applied without a break, so
-// this is text only. Backfilled from 2025HTSRev31's change record
+// USTR has extended the 178 Section 301 product exclusions under 9903.88.69 and .70 twice since
+// the 2025HTSRev30 text; the exclusions applied without a break each time, so both are text only:
+// - 90 FR 55232 (Dec 1, 2025): from 12:01 a.m. EST Nov 30, 2025, "through November 29, 2025" became
+//   "through November 9, 2026". Backfilled from 2025HTSRev31's change record
+// - FR Doc. 2026-22925 (Nov 10, 2026): from 12:01 a.m. ET Nov 10, 2026, "through November 9, 2026"
+//   became "through January 9, 2027" (Annexes A and B). Entered from the notice
 const EXTENSION_FROM = "2025-11-30"
+const SECOND_EXTENSION_FROM = "2026-11-10"
 const EXTENDED = ["9903.88.69", "9903.88.70"]
 
 export const headings: Tariff[] = allHeadings.flatMap((t) =>
   EXTENDED.includes(t.code)
-    ? splitTariffAt(t, EXTENSION_FROM, (r) => ({
-        description: replaceOnce(r.description, "November 9, 2026", "November 29, 2025", r.code),
+    ? splitTariffAt(t, SECOND_EXTENSION_FROM, (r) => ({
+        description: replaceOnce(r.description, "January 9, 2027", "November 9, 2026", r.code),
         source: {
-          revision: "2025HTSRev30",
+          revision: "2026HTSRev20",
           citation: "USTR notice of product exclusion extensions, 90 FR 55232 (FR Doc. 2025-21671)",
           url: "https://www.govinfo.gov/content/pkg/FR-2025-12-01/html/2025-21671.htm",
           publishedOn: "2025-12-01",
-          note: "The 2025HTSRev30 text (\"through November 29, 2025\"), before USTR extended the exclusions from 12:01 a.m. EST Nov 30, 2025. Backfilled from 2025HTSRev31's change record",
+          note: "The text from 12:01 a.m. EST Nov 30, 2025 (\"through November 9, 2026\"), before USTR extended the exclusions again from Nov 10, 2026 (FR Doc. 2026-22925)",
         },
-      }))
+      })).flatMap((p) =>
+        splitTariffAt(p, EXTENSION_FROM, (r) => ({
+          description: replaceOnce(r.description, "November 9, 2026", "November 29, 2025", r.code),
+          source: {
+            revision: "2025HTSRev30",
+            citation: "USTR notice of product exclusion extensions, 90 FR 55232 (FR Doc. 2025-21671)",
+            url: "https://www.govinfo.gov/content/pkg/FR-2025-12-01/html/2025-21671.htm",
+            publishedOn: "2025-12-01",
+            note: "The 2025HTSRev30 text (\"through November 29, 2025\"), before USTR extended the exclusions from 12:01 a.m. EST Nov 30, 2025. Backfilled from 2025HTSRev31's change record",
+          },
+        })),
+      )
     : [t],
 )
