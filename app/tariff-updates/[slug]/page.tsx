@@ -6,6 +6,7 @@ import config from "@/config"
 import { renderSchemaJsonLd } from "@/libs/seo"
 import { SOURCES } from "@/libs/tariff-sources/types"
 import { getPublishedUpdate, getPublishedUpdates, resolveHtsLinks, type PublicScope } from "@/libs/tariff-updates/public"
+import { childrenOfHeadings, MAX_SHOWN, type HeadingCodes } from "@/libs/tariff-updates/headingCodes"
 import { THEME } from "@/components/ui/theme"
 import { mono, trackerDisplay, trackerSans } from "@/components/ui/font"
 import * as mk from "@/components/ui/marketing/styles"
@@ -21,6 +22,10 @@ import { authorityLabel, formatDay, kindLabel, STAGE_LABELS } from "@/components
 // When the update's scope was read from its PDFs (or set in review), the page shows that: every
 // code covered and carved out (added and removed, for a coverage change), its Chapter 99 headings
 // and the documents the codes came from. Otherwise, the codes its sources' text named.
+// A notice often names only Chapter 99 headings and leaves the codes to the HTS U.S. notes, so each
+// heading the duty engine knows is shown with the codes under it on the effective date
+// (headingCodes.ts): the parents and their children. Only when it names no product codes itself,
+// the same rule the affected check and alerts match on.
 // Laid out to be read a section at a time, every box the page's full width on one background: a
 // header with the facts in a strip, then the codes first (by heading, with "See if you or your
 // clients are affected": AffectedCheck), the calculator's change, the documents behind it, the
@@ -122,8 +127,73 @@ const SectionHead = ({ id, title, note, action }: { id: string; title: React.Rea
   </div>
 )
 
+const countriesText = (countries: string[] | "all") => (countries === "all" ? "every country" : null)
+
+// Each Chapter 99 heading the engine knows, with the HTS codes under it: whole numbers, and
+// those covered only for a product described under the number
+const HeadingChildren = ({ headings, links }: { headings: HeadingCodes[]; links: Record<string, string | null> }) => (
+  <div className="flex flex-col gap-3">
+    <span className={tt.eyebrow()}>HTS codes under {headings.length === 1 ? "this heading" : "these headings"}</span>
+    <ul className="flex flex-col gap-4">
+      {headings.map((h) => {
+        const described = new Set(h.describedCodes)
+        const whole = h.codes.filter((c) => !described.has(c))
+        const groups = [
+          { label: h.allDescribed ? "Described products only" : "Whole numbers", codes: h.allDescribed ? h.codes : whole },
+          ...(!h.allDescribed && h.describedCodes.length ? [{ label: "Described products only", codes: h.describedCodes }] : []),
+          ...(h.excludedCodes.length ? [{ label: h.allProducts ? "Except" : "Carved out", codes: h.excludedCodes }] : []),
+        ].filter((g) => g.codes.length)
+        const total = h.codes.length
+        return (
+          <li key={h.heading} className="flex flex-col gap-4 rounded-lg border border-base-300 p-4">
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <HtsCode code={h.heading} href={links[h.heading]} />
+                <span className="text-sm font-semibold text-base-content">{h.name}</span>
+              </div>
+              <p className="text-sm text-base-content/70">
+                {h.allProducts ? "Every product" : `${total} HTS ${total === 1 ? "code" : "codes"}`}
+                {", from "}
+                {countriesText(h.countries) ?? <Countries codes={h.countries as string[]} max={8} className="" />}
+                {h.allProducts && h.excludedCodes.length ? `, except ${h.excludedCodes.length} codes` : ""}, as of {formatDay(h.asOf)}.
+                {h.describedCodes.length > 0 &&
+                  (h.allDescribed
+                    ? " Each covers only the product described under the number in the U.S. note, not every good classified there."
+                    : ` ${h.describedCodes.length} of them cover only the product described under the number in the U.S. note, not every good classified there.`)}
+              </p>
+            </div>
+            {groups.map((g) =>
+              g.codes.length > MAX_SHOWN ? (
+                <p key={g.label} className="text-sm text-base-content/70">
+                  {g.label}: {g.codes.length} codes, too many to list here.
+                </p>
+              ) : (
+                <div key={g.label} className="flex flex-col gap-2">
+                  {groups.length > 1 && (
+                    <span className={tt.eyebrow()}>
+                      {g.label} ({g.codes.length})
+                    </span>
+                  )}
+                  <GroupedCodes codes={g.codes} links={links} />
+                </div>
+              )
+            )}
+          </li>
+        )
+      })}
+    </ul>
+    <p className="text-xs text-base-content/60">
+      From the U.S. notes to Chapter 99 of the HTS, as entered in HTS Hero&apos;s duty calculator. Headings the calculator doesn&apos;t cover yet aren&apos;t expanded.
+    </p>
+  </div>
+)
+
+// Every code a heading block shows, for links
+const headingLinkCodes = (headings: HeadingCodes[]) =>
+  headings.flatMap((h) => (h.codes.length > MAX_SHOWN ? [] : h.codes).concat(h.excludedCodes.length > MAX_SHOWN ? [] : h.excludedCodes))
+
 // What the update covers, from its scope
-const Coverage = ({ scope, kind, links, slug }: { scope: PublicScope; kind: string; links: Record<string, string | null>; slug: string }) => {
+const Coverage = ({ scope, kind, links, slug, headingChildren }: { scope: PublicScope; kind: string; links: Record<string, string | null>; slug: string; headingChildren: HeadingCodes[] }) => {
   const change = kind === "scope_change"
   const groups = [
     { label: change ? "Added to the duty" : "Covered", codes: scope.codes.filter((c) => c.trim().toUpperCase() !== "ALL"), tone: "primary" as const },
@@ -139,6 +209,7 @@ const Coverage = ({ scope, kind, links, slug }: { scope: PublicScope; kind: stri
           <>
             {everything ? "Every product of the countries named, except the codes carved out below. " : ""}
             HTS codes as listed in the official documents. A heading or subheading covers every code under it.
+            {headingChildren.length > 0 ? " Codes under a Chapter 99 heading are listed in its U.S. note in the HTS." : ""}
           </>
         }
         action={<AffectedCheck slug={slug} />}
@@ -149,6 +220,7 @@ const Coverage = ({ scope, kind, links, slug }: { scope: PublicScope; kind: stri
           <CodeList codes={scope.headings} links={links} />
         </div>
       )}
+      {headingChildren.length > 0 && <HeadingChildren headings={headingChildren} links={links} />}
       {groups.map((g) => (
         <div key={g.label} className="flex flex-col gap-2">
           <span className={tt.eyebrow(g.tone)}>
@@ -198,9 +270,17 @@ export default async function TariffUpdatePage(props: { params: Promise<{ slug: 
   const found = await getPublishedUpdate(params.slug)
   if (!found) notFound()
   const { update, sources, scope, revisionEntry } = found
-  const htsLinks = await resolveHtsLinks(
-    scope ? [...scope.headings, ...scope.codes, ...scope.excludedCodes, ...scope.conditional.flatMap((c) => c.codes)] : update.hts_codes
+  // The codes under each Chapter 99 heading it names, on the day it takes effect, when it names no
+  // product codes of its own (the same codes the affected check and alerts match on: match.ts)
+  const children = childrenOfHeadings(
+    scope ? scope.codes : update.hts_codes,
+    scope ? scope.headings : update.hts_codes,
+    update.effective_on ?? new Date().toISOString().slice(0, 10)
   )
+  const htsLinks = await resolveHtsLinks([
+    ...(scope ? [...scope.headings, ...scope.codes, ...scope.excludedCodes, ...scope.conditional.flatMap((c) => c.codes)] : update.hts_codes),
+    ...headingLinkCodes(children),
+  ])
   const related = (await getPublishedUpdates()).filter((u) => u.authority === update.authority && u.slug !== update.slug).slice(0, 4)
   const url = `${SITE}/tariff-updates/${update.slug}`
   const named = !scope && update.hts_codes.length > 0
@@ -290,7 +370,7 @@ export default async function TariffUpdatePage(props: { params: Promise<{ slug: 
       </header>
 
       <div className={`${mk.container} flex flex-col gap-6 pb-20 pt-6`}>
-        {scope && <Coverage scope={scope} kind={update.kind} links={htsLinks} slug={update.slug} />}
+        {scope && <Coverage scope={scope} kind={update.kind} links={htsLinks} slug={update.slug} headingChildren={children} />}
 
         {named && (
           <section aria-labelledby="codes" className={`${tt.panel} ${tt.panelPad} flex scroll-mt-6 flex-col gap-5`}>
@@ -301,6 +381,7 @@ export default async function TariffUpdatePage(props: { params: Promise<{ slug: 
               action={<AffectedCheck slug={update.slug} />}
             />
             <GroupedCodes codes={update.hts_codes} links={htsLinks} />
+            {children.length > 0 && <HeadingChildren headings={children} links={htsLinks} />}
           </section>
         )}
 

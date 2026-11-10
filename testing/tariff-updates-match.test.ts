@@ -96,3 +96,34 @@ describe("Tariff updates: matching imports", () => {
     expect(found.size).toBe(0)
   })
 })
+
+// An update that names only Chapter 99 headings ("all exclusions under heading 9903.88.69") names
+// the codes under them, from the duty engine's data on the day it takes effect
+describe("Tariff updates: headings-only updates name the codes under them", () => {
+  const extension = { kind: "exclusion" as const, authority: "section_301" as const, effective_on: "2026-11-10" }
+
+  it("an import on the heading's list is likely; another import of the country isn't matched", () => {
+    const scoped = { ...extension, scope_codes: [] as string[], scope_headings: ["9903.88.69", "9903.88.70"], scope_countries: ["CN"] }
+    expect(level(scoped, "8483509040", "CN")).toBe("likely")
+    expect(level(scoped, "8486100000", "CN")).toBe("likely")
+    expect(level(scoped, "6109100012", "CN")).toBe(null)
+    expect(level(scoped, "8483509040", "VN")).toBe(null)
+  })
+
+  it("works from the codes the sources named too, when no scope was read", () => {
+    const named = { ...extension, hts_codes: ["9903.88.69"], countries: ["CN"] }
+    expect(level(named, "8607211000", "CN")).toBe("likely")
+    expect(level(named, "6109100012", "CN")).toBe(null)
+  })
+
+  it("an update that names product codes isn't widened by the headings it cites", () => {
+    const listed = { ...extension, hts_codes: ["9903.88.03", "8413.91.90.85"], countries: ["CN"] }
+    expect(level(listed, "8413919085", "CN")).toBe("likely")
+    // 9903.88.03 (List 3) covers thousands of codes; the update covers only the one it names
+    expect(level(listed, "8483509040", "CN")).toBe(null)
+  })
+
+  it("headings the engine doesn't know leave the update as it was", () => {
+    expect(level({ ...extension, hts_codes: ["9903.91.12"], countries: ["CN"] }, "8426110000", "CN")).toBe("possible")
+  })
+})

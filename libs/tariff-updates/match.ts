@@ -1,12 +1,15 @@
 import { EuropeanUnionCountries } from "../../constants/countries"
 import type { Authority, Kind } from "./types"
+import { childrenOfHeadings } from "./headingCodes"
 
 // Which of a user's imports a tariff update may affect, from what the update names: HTS codes
 // (any length, or whole chapters) and countries. Plain code, run in Duty Guard for its badges and
 // on the server for alerts. Three levels:
 //   confirmed  the duty engine shows the update's Chapter 99 heading applying to the import (server
 //              only: libs/tariff-updates/impacts.ts), with the duty before and after
-//   likely     the update names the import's code or a heading above it, and its country
+//   likely     the update names the import's code or a heading above it, and its country. An update
+//              that names only Chapter 99 headings names the codes under them in the duty
+//              engine's data, on the day it takes effect (headingCodes.ts)
 //   possible   the update names the import's country but no products (shown, never emailed)
 // An update for all countries that names no products matches nothing: too broad to say.
 
@@ -42,6 +45,9 @@ export interface MatchableUpdate {
   scope_headings?: string[] | null
   authority: Authority
   kind: Kind
+  // The day it takes effect: the day the codes under the Chapter 99 headings it names are read on
+  // (today when not set)
+  effective_on?: string | null
 }
 
 export interface MatchableImport {
@@ -115,13 +121,21 @@ const countryCodes = (raw: string[]) =>
 // What an update covers: its scope when one was read or set, else what its sources named
 export const scopeOf = (
   u: Pick<MatchableUpdate, "hts_codes" | "countries" | "scope_codes" | "scope_excluded_codes" | "scope_countries" | "scope_excluded_countries" | "scope_headings"> &
-    Pick<Partial<MatchableUpdate>, "scope_conditional_exclusions">
+    Pick<Partial<MatchableUpdate>, "scope_conditional_exclusions" | "effective_on">
 ): UpdateScope => {
   const scoped = !!u.scope_codes
   const headings = new Set<string>()
   prefixes(u.scope_headings ?? [], headings)
-  const codes = prefixes(scoped ? u.scope_codes! : u.hts_codes, headings)
-  const excludedCodes = prefixes(u.scope_excluded_codes ?? [])
+  const named = scoped ? u.scope_codes! : u.hts_codes
+  let codes = prefixes(named, headings)
+  let excludedCodes = prefixes(u.scope_excluded_codes ?? [])
+  // Only Chapter 99 headings named ("all exclusions under heading 9903.88.69"): the codes their
+  // U.S. notes list, as the engine has them
+  if (!codes.length && !excludedCodes.length) {
+    const children = childrenOfHeadings(named, Array.from(headings), u.effective_on ?? new Date().toISOString().slice(0, 10))
+    codes = prefixes(children.flatMap((h) => h.codes))
+    excludedCodes = prefixes(children.flatMap((h) => h.excludedCodes))
+  }
   const countries = countryCodes(scoped && u.scope_countries?.length ? u.scope_countries : u.countries)
   return {
     // "ALL", or exceptions with nothing named as covered: everything but the exceptions (the

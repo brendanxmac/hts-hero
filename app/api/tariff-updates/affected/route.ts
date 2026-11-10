@@ -11,7 +11,7 @@ import { matchCatalog, type MatchableUpdate } from "@/libs/tariff-updates/match"
 export const dynamic = "force-dynamic"
 
 const UPDATE_COLUMNS =
-  "id, slug, kind, authority, hts_codes, countries, scope_codes, scope_excluded_codes, scope_conditional_exclusions, scope_countries, scope_excluded_countries, scope_headings"
+  "id, slug, kind, authority, effective_on, hts_codes, countries, scope_codes, scope_excluded_codes, scope_conditional_exclusions, scope_countries, scope_excluded_countries, scope_headings"
 
 export interface AffectedCheck {
   // The user's imports (code and country), examples left out

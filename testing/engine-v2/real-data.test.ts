@@ -1766,7 +1766,8 @@ describe("engine-v2 real data: 2026 Rev 4 (before Proclamation 11021)", () => {
 
 // ============================================================
 // Correction (Oct 2026): Section 301 exclusions (9903.88.69/.70) for described products need a
-// confirmation; whole-number exclusions don't. Extended through Nov 9, 2026 (90 FR 55232).
+// confirmation; whole-number exclusions don't. Extended through Nov 9, 2026 (90 FR 55232), then
+// through Jan 9, 2027 (FR Doc. 2026-22925).
 // ============================================================
 describe("engine-v2 real data: Section 301 China exclusions (corrections)", () => {
   const calc = (htsCode: string, answers: Record<string, unknown> = {}, asOf = "2026-08-01") =>
@@ -1805,9 +1806,26 @@ describe("engine-v2 real data: Section 301 China exclusions (corrections)", () =
     expect(applying(calc("8486.10.00.00", { "confirm:9903.88.70": true }))).toContain("9903.88.70")
   })
 
-  it("the exclusions end with Nov 9, 2026", () => {
-    expect(applying(calc("8483.50.90.40", {}, "2026-11-09"))).toContain("9903.88.69")
-    expect(applying(calc("8483.50.90.40", {}, "2026-11-10"))).not.toContain("9903.88.69")
+  // The law changed: USTR extended the exclusions again, for entries from Nov 10, 2026 to before
+  // 11:59 p.m. ET Jan 9, 2027 (FR Doc. 2026-22925). This case used to end them with Nov 9, 2026.
+  it("the exclusions run without a break through Jan 9, 2027, then end", () => {
+    for (const asOf of ["2026-11-09", "2026-11-10", "2027-01-09"]) {
+      expect(applying(calc("8483.50.90.40", {}, asOf))).toContain("9903.88.69")
+      expect(applying(calc("8486.10.00.00", { "confirm:9903.88.70": true }, asOf))).toContain("9903.88.70")
+    }
+    expect(applying(calc("8483.50.90.40", {}, "2027-01-10"))).not.toContain("9903.88.69")
+    expect(applying(calc("8483.50.90.40", {}, "2027-01-10"))).toContain("9903.88.01")
+    expect(applying(calc("8486.10.00.00", { "confirm:9903.88.70": true }, "2027-01-10"))).not.toContain("9903.88.70")
+  })
+
+  it("the heading text follows each extension", () => {
+    const textOn = (code: string, asOf: string) =>
+      AllRules.tariffs.find((t) => t.code === code && (!t.effective.from || t.effective.from <= asOf) && (!t.effective.to || asOf < t.effective.to))?.description
+    for (const code of ["9903.88.69", "9903.88.70"]) {
+      expect(textOn(code, "2025-11-29")?.includes("through November 29, 2025")).toBe(true)
+      expect(textOn(code, "2026-11-09")?.includes("through November 9, 2026")).toBe(true)
+      expect(textOn(code, "2026-11-10")?.includes("through January 9, 2027")).toBe(true)
+    }
   })
 })
 
