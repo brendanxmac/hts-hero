@@ -6,15 +6,17 @@ import config from "@/config"
 import { renderSchemaJsonLd } from "@/libs/seo"
 import { SOURCES } from "@/libs/tariff-sources/types"
 import { getPublishedUpdate, getPublishedUpdates, resolveHtsLinks, type PublicScope } from "@/libs/tariff-updates/public"
-import { childrenOfHeadings, MAX_SHOWN, type HeadingCodes } from "@/libs/tariff-updates/headingCodes"
+import { headingLinkCodes, type HeadingCodes } from "@/libs/tariff-updates/headingCodes"
+import { namedByUpdate } from "@/libs/tariff-updates/match"
 import { THEME } from "@/components/ui/theme"
-import { mono, trackerDisplay, trackerSans } from "@/components/ui/font"
+import { trackerDisplay, trackerSans } from "@/components/ui/font"
 import * as mk from "@/components/ui/marketing/styles"
 import * as ui from "@/components/ui/styles"
 import * as tt from "@/components/ui/styles/tracker"
 import { AuthorityChip, Countries } from "@/components/tariff-updates/UpdatesList"
 import { DigestButton } from "@/components/tariff-digest/DigestButton"
 import { AffectedCheck } from "@/components/tariff-updates/AffectedCheck"
+import { CodeList, GroupedCodes, HeadingCodesList } from "@/components/tariff-updates/HeadingCodesList"
 import { authorityLabel, formatDay, kindLabel, STAGE_LABELS } from "@/components/tariff-updates/labels"
 
 // One tariff update: what changed in plain English, the official documents that moved it along,
@@ -57,53 +59,6 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   }
 }
 
-const HtsCode = ({ code, href }: { code: string; href: string | null }) => {
-  const className = `${mono.className} rounded-full bg-tt-soft px-2.5 py-1 text-xs text-base-content`
-  return href ? (
-    <Link href={href} className={`${className} hover:text-primary`}>
-      {code}
-    </Link>
-  ) : (
-    <span className={className}>{code}</span>
-  )
-}
-
-// A list of codes, every one shown
-const CodeList = ({ codes, links }: { codes: string[]; links: Record<string, string | null> }) => (
-  <div className="flex flex-wrap gap-1.5">
-    {codes.map((code) => (
-      <HtsCode key={code} code={code} href={links[code]} />
-    ))}
-  </div>
-)
-
-// A long list of codes, every one shown, in rows by heading (its first four digits), so it can be
-// scanned: "7304 (12)" then its codes. A short one stays a single list.
-const GROUP_FROM = 12
-const GroupedCodes = ({ codes, links }: { codes: string[]; links: Record<string, string | null> }) => {
-  if (codes.length < GROUP_FROM) return <CodeList codes={codes} links={links} />
-  const groups = new Map<string, string[]>()
-  for (const code of codes) {
-    const digits = code.replace(/\D/g, "")
-    const key = digits.length >= 4 ? digits.slice(0, 4) : digits || code
-    groups.set(key, [...(groups.get(key) ?? []), code])
-  }
-  if (groups.size < 2) return <CodeList codes={codes} links={links} />
-  return (
-    <ul className="flex flex-col divide-y divide-base-300 rounded-lg border border-base-300">
-      {Array.from(groups.entries()).map(([heading, group]) => (
-        <li key={heading} className="grid gap-x-5 gap-y-2 px-4 py-3 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:items-baseline">
-          <span className="flex items-baseline gap-1.5">
-            <span className={`${mono.className} text-sm font-semibold text-base-content`}>{heading}</span>
-            <span className="text-xs text-base-content/50">({group.length})</span>
-          </span>
-          <CodeList codes={group} links={links} />
-        </li>
-      ))}
-    </ul>
-  )
-}
-
 // "https://www.whitehouse.gov/wp-content/uploads/2026/09/ANNEX-I-AUTO.pdf" → "ANNEX-I-AUTO.pdf", "whitehouse.gov"
 const documentLabel = (url: string) => {
   try {
@@ -126,71 +81,6 @@ const SectionHead = ({ id, title, note, action }: { id: string; title: React.Rea
     {action && <div className="flex shrink-0 flex-col items-start gap-1.5 lg:items-end">{action}</div>}
   </div>
 )
-
-const countriesText = (countries: string[] | "all") => (countries === "all" ? "every country" : null)
-
-// Each Chapter 99 heading the engine knows, with the HTS codes under it: whole numbers, and
-// those covered only for a product described under the number
-const HeadingChildren = ({ headings, links }: { headings: HeadingCodes[]; links: Record<string, string | null> }) => (
-  <div className="flex flex-col gap-3">
-    <span className={tt.eyebrow()}>HTS codes under {headings.length === 1 ? "this heading" : "these headings"}</span>
-    <ul className="flex flex-col gap-4">
-      {headings.map((h) => {
-        const described = new Set(h.describedCodes)
-        const whole = h.codes.filter((c) => !described.has(c))
-        const groups = [
-          { label: h.allDescribed ? "Described products only" : "Whole numbers", codes: h.allDescribed ? h.codes : whole },
-          ...(!h.allDescribed && h.describedCodes.length ? [{ label: "Described products only", codes: h.describedCodes }] : []),
-          ...(h.excludedCodes.length ? [{ label: h.allProducts ? "Except" : "Carved out", codes: h.excludedCodes }] : []),
-        ].filter((g) => g.codes.length)
-        const total = h.codes.length
-        return (
-          <li key={h.heading} className="flex flex-col gap-4 rounded-lg border border-base-300 p-4">
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <HtsCode code={h.heading} href={links[h.heading]} />
-                <span className="text-sm font-semibold text-base-content">{h.name}</span>
-              </div>
-              <p className="text-sm text-base-content/70">
-                {h.allProducts ? "Every product" : `${total} HTS ${total === 1 ? "code" : "codes"}`}
-                {", from "}
-                {countriesText(h.countries) ?? <Countries codes={h.countries as string[]} max={8} className="" />}
-                {h.allProducts && h.excludedCodes.length ? `, except ${h.excludedCodes.length} codes` : ""}, as of {formatDay(h.asOf)}.
-                {h.describedCodes.length > 0 &&
-                  (h.allDescribed
-                    ? " Each covers only the product described under the number in the U.S. note, not every good classified there."
-                    : ` ${h.describedCodes.length} of them cover only the product described under the number in the U.S. note, not every good classified there.`)}
-              </p>
-            </div>
-            {groups.map((g) =>
-              g.codes.length > MAX_SHOWN ? (
-                <p key={g.label} className="text-sm text-base-content/70">
-                  {g.label}: {g.codes.length} codes, too many to list here.
-                </p>
-              ) : (
-                <div key={g.label} className="flex flex-col gap-2">
-                  {groups.length > 1 && (
-                    <span className={tt.eyebrow()}>
-                      {g.label} ({g.codes.length})
-                    </span>
-                  )}
-                  <GroupedCodes codes={g.codes} links={links} />
-                </div>
-              )
-            )}
-          </li>
-        )
-      })}
-    </ul>
-    <p className="text-xs text-base-content/60">
-      From the U.S. notes to Chapter 99 of the HTS, as entered in HTS Hero&apos;s duty calculator. Headings the calculator doesn&apos;t cover yet aren&apos;t expanded.
-    </p>
-  </div>
-)
-
-// Every code a heading block shows, for links
-const headingLinkCodes = (headings: HeadingCodes[]) =>
-  headings.flatMap((h) => (h.codes.length > MAX_SHOWN ? [] : h.codes).concat(h.excludedCodes.length > MAX_SHOWN ? [] : h.excludedCodes))
 
 // What the update covers, from its scope
 const Coverage = ({ scope, kind, links, slug, headingChildren }: { scope: PublicScope; kind: string; links: Record<string, string | null>; slug: string; headingChildren: HeadingCodes[] }) => {
@@ -220,7 +110,7 @@ const Coverage = ({ scope, kind, links, slug, headingChildren }: { scope: Public
           <CodeList codes={scope.headings} links={links} />
         </div>
       )}
-      {headingChildren.length > 0 && <HeadingChildren headings={headingChildren} links={links} />}
+      {headingChildren.length > 0 && <HeadingCodesList headings={headingChildren} links={links} />}
       {groups.map((g) => (
         <div key={g.label} className="flex flex-col gap-2">
           <span className={tt.eyebrow(g.tone)}>
@@ -271,12 +161,8 @@ export default async function TariffUpdatePage(props: { params: Promise<{ slug: 
   if (!found) notFound()
   const { update, sources, scope, revisionEntry } = found
   // The codes under each Chapter 99 heading it names, on the day it takes effect, when it names no
-  // product codes of its own (the same codes the affected check and alerts match on: match.ts)
-  const children = childrenOfHeadings(
-    scope ? scope.codes : update.hts_codes,
-    scope ? scope.headings : update.hts_codes,
-    update.effective_on ?? new Date().toISOString().slice(0, 10)
-  )
+  // product codes of its own: the codes the affected check and alerts match on (match.ts)
+  const { children } = namedByUpdate({ ...update, scope_codes: scope?.codes ?? null, scope_excluded_codes: scope?.excludedCodes ?? null, scope_countries: null, scope_excluded_countries: null, scope_headings: scope?.headings ?? null })
   const htsLinks = await resolveHtsLinks([
     ...(scope ? [...scope.headings, ...scope.codes, ...scope.excludedCodes, ...scope.conditional.flatMap((c) => c.codes)] : update.hts_codes),
     ...headingLinkCodes(children),
@@ -381,7 +267,7 @@ export default async function TariffUpdatePage(props: { params: Promise<{ slug: 
               action={<AffectedCheck slug={update.slug} />}
             />
             <GroupedCodes codes={update.hts_codes} links={htsLinks} />
-            {children.length > 0 && <HeadingChildren headings={children} links={htsLinks} />}
+            {children.length > 0 && <HeadingCodesList headings={children} links={htsLinks} />}
           </section>
         )}
 

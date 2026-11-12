@@ -1,6 +1,6 @@
 import { EuropeanUnionCountries } from "../../constants/countries"
 import type { Authority, Kind } from "./types"
-import { childrenOfHeadings } from "./headingCodes"
+import { childrenOfHeadings, type HeadingCodes } from "./headingCodes"
 
 // Which of a user's imports a tariff update may affect, from what the update names: HTS codes
 // (any length, or whole chapters) and countries. Plain code, run in Duty Guard for its badges and
@@ -118,24 +118,31 @@ const countryCodes = (raw: string[]) =>
     )
   )
 
-// What an update covers: its scope when one was read or set, else what its sources named
-export const scopeOf = (
-  u: Pick<MatchableUpdate, "hts_codes" | "countries" | "scope_codes" | "scope_excluded_codes" | "scope_countries" | "scope_excluded_countries" | "scope_headings"> &
-    Pick<Partial<MatchableUpdate>, "scope_conditional_exclusions" | "effective_on">
-): UpdateScope => {
+type ScopeFields = Pick<MatchableUpdate, "hts_codes" | "countries" | "scope_codes" | "scope_excluded_codes" | "scope_countries" | "scope_excluded_countries" | "scope_headings"> &
+  Pick<Partial<MatchableUpdate>, "scope_conditional_exclusions" | "effective_on">
+
+// The codes and Chapter 99 headings an update names, and (when it names only headings: "all
+// exclusions under heading 9903.88.69") the codes under those headings in the duty engine's data,
+// on the day it takes effect. The update page, review and Duty Guard show these children; matching
+// uses them as the codes it names.
+export const namedByUpdate = (u: ScopeFields) => {
   const scoped = !!u.scope_codes
   const headings = new Set<string>()
   prefixes(u.scope_headings ?? [], headings)
   const named = scoped ? u.scope_codes! : u.hts_codes
-  let codes = prefixes(named, headings)
-  let excludedCodes = prefixes(u.scope_excluded_codes ?? [])
-  // Only Chapter 99 headings named ("all exclusions under heading 9903.88.69"): the codes their
-  // U.S. notes list, as the engine has them
-  if (!codes.length && !excludedCodes.length) {
-    const children = childrenOfHeadings(named, Array.from(headings), u.effective_on ?? new Date().toISOString().slice(0, 10))
-    codes = prefixes(children.flatMap((h) => h.codes))
-    excludedCodes = prefixes(children.flatMap((h) => h.excludedCodes))
-  }
+  const codes = prefixes(named, headings)
+  const excludedCodes = prefixes(u.scope_excluded_codes ?? [])
+  const children: HeadingCodes[] =
+    !codes.length && !excludedCodes.length ? childrenOfHeadings(named, Array.from(headings), u.effective_on ?? new Date().toISOString().slice(0, 10)) : []
+  return { scoped, named, headings: Array.from(headings), codes, excludedCodes, children }
+}
+
+// What an update covers: its scope when one was read or set, else what its sources named
+export const scopeOf = (u: ScopeFields): UpdateScope => {
+  const named = namedByUpdate(u)
+  const { scoped, headings, children } = named
+  const codes = children.length ? prefixes(children.flatMap((h) => h.codes)) : named.codes
+  const excludedCodes = children.length ? prefixes(children.flatMap((h) => h.excludedCodes)) : named.excludedCodes
   const countries = countryCodes(scoped && u.scope_countries?.length ? u.scope_countries : u.countries)
   return {
     // "ALL", or exceptions with nothing named as covered: everything but the exceptions (the
@@ -145,7 +152,7 @@ export const scopeOf = (
     excludedCodes,
     conditional: (u.scope_conditional_exclusions ?? []).map((c) => ({ condition: c.condition, codes: prefixes(c.codes) })).filter((c) => c.codes.length),
     excludedCountries: countryCodes(u.scope_excluded_countries ?? []),
-    headings: Array.from(headings),
+    headings,
     countries: countries.includes("ALL") ? "all" : countries,
   }
 }

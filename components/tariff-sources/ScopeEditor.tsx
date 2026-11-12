@@ -1,16 +1,20 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import { formatTime } from "../hts-revision-diff/shared"
 import { Callout, Field, SectionLabel, Spinner, btn } from "../hts-revision-diff/ui"
 import { adminCall, type UpdateRow } from "./types"
+import { namedByUpdate } from "@/libs/tariff-updates/match"
+import { HeadingCodesList } from "@/components/tariff-updates/HeadingCodesList"
 
 // An update's scope in review: what it covers (codes, countries, exclusions, Chapter 99
 // headings), where that came from (the PDF reader or a hand edit) and what the reader wasn't sure
 // of. "Read from PDFs" runs the reader again; "Save scope" keeps a hand-edited one for good. Both
-// work out the users' matches again.
+// work out the users' matches again. An update that names only Chapter 99 headings is matched on
+// the codes under them in the duty engine's data (match.ts): shown below the fields, from the
+// saved scope, with the headings the engine can't expand.
 
 const toText = (list: string[] | null) => (list ?? []).join("\n")
 const toList = (text: string) => text.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean)
@@ -39,6 +43,10 @@ export default function ScopeEditor({ update }: { update: UpdateRow }) {
     headings: toText(update.scope_headings),
   })
   const [form, setForm] = useState(initial)
+  // From the saved scope, as matching reads it
+  const named = useMemo(() => namedByUpdate(update), [update])
+  const expanded = new Set(named.children.map((h) => h.heading))
+  const notExpanded = named.headings.filter((h) => !expanded.has(h))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setForm(initial()), [update])
   const set = (key: keyof ReturnType<typeof initial>) => (e: React.ChangeEvent<HTMLTextAreaElement>) => setForm((f) => ({ ...f, [key]: e.target.value }))
@@ -114,6 +122,18 @@ export default function ScopeEditor({ update }: { update: UpdateRow }) {
           <textarea className={`${area} min-h-12`} value={form.headings} onChange={set("headings")} />
         </Field>
       </div>
+      {named.children.length > 0 && <HeadingCodesList headings={named.children} compact />}
+      {named.headings.length > 0 && named.codes.length > 0 && (
+        <p className="text-xs text-base-content/60">
+          It names product codes, so its Chapter 99 headings aren&apos;t expanded: it&apos;s matched on the codes above.
+        </p>
+      )}
+      {notExpanded.length > 0 && named.codes.length === 0 && (
+        <Callout tone="warning">
+          Not in the duty calculator yet, so the codes under {notExpanded.length === 1 ? "it aren't" : "them aren't"} known: {notExpanded.join(", ")}. Add the codes above, or the heading to the
+          engine, for this update to match imports.
+        </Callout>
+      )}
       <button type="button" className={`${btn.xsSecondary} self-start`} disabled={!!busy} onClick={() => run("save")} title="Keep this scope for good and work out the matches again">
         {busy === "save" && <Spinner />}
         Save scope

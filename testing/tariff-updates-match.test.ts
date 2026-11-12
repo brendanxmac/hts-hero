@@ -1,5 +1,5 @@
 import { describe, it, expect } from "./test-runner"
-import { matchCatalog, matchImport, scopeOf, type MatchableUpdate } from "../libs/tariff-updates/match"
+import { matchCatalog, matchImport, namedByUpdate, scopeOf, type MatchableUpdate } from "../libs/tariff-updates/match"
 
 // Which of a user's imports a tariff update may affect (libs/tariff-updates/match.ts): the codes,
 // countries and exclusions an update names, against imports keyed by 10-digit code and country
@@ -125,5 +125,22 @@ describe("Tariff updates: headings-only updates name the codes under them", () =
 
   it("headings the engine doesn't know leave the update as it was", () => {
     expect(level({ ...extension, hts_codes: ["9903.91.12"], countries: ["CN"] }, "8426110000", "CN")).toBe("possible")
+  })
+})
+
+// What the update page, review and Duty Guard show under the headings: the same codes matching uses
+describe("Tariff updates: the codes shown under headings", () => {
+  it("lists each known heading's codes, with the described-product ones marked", () => {
+    const { children } = namedByUpdate(update({ hts_codes: ["9903.88.69", "9903.88.70", "9903.91.12"], countries: ["CN"], effective_on: "2026-11-10" }))
+    expect(children.map((h) => h.heading).join(",")).toBe("9903.88.69,9903.88.70")
+    const exclusions = children[0]
+    expect(exclusions.codes.includes("8483.50.90.40")).toBe(true)
+    expect(exclusions.describedCodes.includes("8483.50.90.40")).toBe(false)
+    expect(exclusions.describedCodes.length > 0).toBe(true)
+    expect(children[1].allDescribed).toBe(true)
+  })
+
+  it("shows none when the update names product codes", () => {
+    expect(namedByUpdate(update({ hts_codes: ["9903.88.69", "8413.91.90.85"], countries: ["CN"] })).children.length).toBe(0)
   })
 })

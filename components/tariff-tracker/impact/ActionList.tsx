@@ -11,6 +11,7 @@ import { matchesNews } from "@/libs/tariff-updates/newsMatch";
 import { Countries } from "@/constants/countries";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { AUTHORITIES } from "@/libs/tariff-updates/types";
+import { namedByUpdate } from "@/libs/tariff-updates/match";
 import { NEWS_DOTS, newsToneOf } from "../news/tone";
 import type { ImportMatch } from "../news/useImportMatches";
 import type { TrackerUpdate } from "../overview/useTariffUpdates";
@@ -180,6 +181,19 @@ export const ActionList = ({
     else if (!chose && mine) setFilter("mine");
   }, [mine, chose, toReview.size]);
 
+  // The codes under the Chapter 99 headings of actions that name only headings (match.ts), so a
+  // search for a code finds them too: worked out once a search is typed
+  const searching = query.trim().length > 0;
+  const headingCodes = useMemo(() => {
+    const out = new Map<string, string>();
+    if (!searching) return out;
+    for (const u of updates) {
+      const codes = namedByUpdate(u).children.flatMap((h) => h.codes);
+      if (codes.length) out.set(u.slug, `${codes.join(" ")} ${codes.map((c) => c.replace(/\D/g, "")).join(" ")}`);
+    }
+    return out;
+  }, [updates, searching]);
+
   const months = useMemo(() => {
     const words = query.toLowerCase().split(/\s+/).filter(Boolean);
     const groups: { month: string; updates: TrackerUpdate[] }[] = [];
@@ -192,7 +206,7 @@ export const ActionList = ({
       if (filter === "upcoming" && !upcoming(u)) continue;
       if ((filter === "all" || filter === "upcoming") && topics && !matchesNews(u, topics)) continue;
       const countries = u.countries.map((c) => COUNTRY_NAMES.get(c) ?? c).join(" ");
-      const text = `${u.title} ${u.summary} ${u.products ?? ""} ${u.hts_codes.join(" ")} ${countries} ${AUTHORITIES[u.authority] ?? ""}`.toLowerCase();
+      const text = `${u.title} ${u.summary} ${u.products ?? ""} ${u.hts_codes.join(" ")} ${headingCodes.get(u.slug) ?? ""} ${countries} ${AUTHORITIES[u.authority] ?? ""}`.toLowerCase();
       if (!words.every((w) => text.includes(w))) continue;
       const month = soonest ? `Takes effect in ${monthOf(u.effective_on!)}` : monthOf(u.last_activity_at);
       if (groups[groups.length - 1]?.month !== month) groups.push({ month, updates: [] });
@@ -200,7 +214,7 @@ export const ActionList = ({
     }
     return groups;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updates, filter, query, matches, today, toReview, topics]);
+  }, [updates, filter, query, matches, today, toReview, topics, headingCodes]);
 
   // Keep the open action in view (opened from a link, or the list filtered around it)
   const listRef = useRef<HTMLDivElement>(null);
