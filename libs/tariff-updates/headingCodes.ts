@@ -102,6 +102,10 @@ export const headingCodes = (headings: string[], date: IsoDate): HeadingCodes[] 
     ]
   })
 
+// Every code a heading block shows (HeadingCodesList), for links
+export const headingLinkCodes = (headings: HeadingCodes[]) =>
+  headings.flatMap((h) => (h.codes.length > MAX_SHOWN ? [] : h.codes).concat(h.excludedCodes.length > MAX_SHOWN ? [] : h.excludedCodes))
+
 // Whether an update's own codes name a product (not just Chapter 98/99 numbers or "ALL")
 const namesProducts = (codes: string[]) =>
   codes.some((code) => {

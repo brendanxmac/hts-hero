@@ -4,14 +4,16 @@ import { ReactNode, useMemo, useState } from "react";
 import * as ui from "@/components/ui/styles";
 import * as tt from "@/components/ui/styles/tracker";
 import { Countries } from "@/constants/countries";
-import { scopeOf } from "@/libs/tariff-updates/match";
+import { namedByUpdate, scopeOf } from "@/libs/tariff-updates/match";
+import { HeadingCodesList } from "@/components/tariff-updates/HeadingCodesList";
 import type { TrackerUpdate } from "../overview/useTariffUpdates";
 import { formatPrefix } from "./format";
 
 // What a tariff action covers, as its scope reads (libs/tariff-updates/match.ts): the countries,
 // the HTS codes (a long list folds to its first few), the Chapter 99 numbers it adds, and what it
 // leaves out, for everyone or only for a use or a claim. It's what Your Imports are checked
-// against, so each import's "why" points back here.
+// against, so each import's "why" points back here. An action that names only Chapter 99 headings
+// is matched on the codes under them: shown by heading (HeadingCodesList), not as one list.
 
 const MOST = 12;
 
@@ -39,6 +41,7 @@ const Chips = ({ items, mono = false }: { items: string[]; mono?: boolean }) => 
 
 export const ActionScope = ({ update }: { update: TrackerUpdate }) => {
   const scope = useMemo(() => scopeOf(update), [update]);
+  const children = useMemo(() => namedByUpdate(update).children, [update]);
   const countries =
     scope.countries === "all"
       ? null
@@ -55,6 +58,8 @@ export const ActionScope = ({ update }: { update: TrackerUpdate }) => {
       label: "HTS codes",
       value: scope.allProducts ? (
         <span className={tt.body}>Every product from these countries{scope.excludedCodes.length ? ", except those below" : ""}</span>
+      ) : children.length ? (
+        <span className={tt.body}>The codes under its Chapter 99 {children.length === 1 ? "heading" : "headings"}, below</span>
       ) : scope.codes.length ? (
         <Chips items={scope.codes.map(formatPrefix)} mono />
       ) : (
@@ -62,7 +67,7 @@ export const ActionScope = ({ update }: { update: TrackerUpdate }) => {
       ),
     },
     ...(scope.headings.length ? [{ label: "Chapter 99", value: <Chips items={scope.headings} mono /> }] : []),
-    ...(scope.excludedCodes.length ? [{ label: "Except codes", value: <Chips items={scope.excludedCodes.map(formatPrefix)} mono /> }] : []),
+    ...(scope.excludedCodes.length && !children.length ? [{ label: "Except codes", value: <Chips items={scope.excludedCodes.map(formatPrefix)} mono /> }] : []),
     // Exempt only for a use or a claim: such imports are still matched
     ...scope.conditional.map((c) => ({
       label: "May be exempt",
@@ -90,6 +95,7 @@ export const ActionScope = ({ update }: { update: TrackerUpdate }) => {
           </div>
         ))}
       </dl>
+      {children.length > 0 && <HeadingCodesList headings={children} compact />}
     </section>
   );
 };
