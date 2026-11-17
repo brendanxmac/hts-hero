@@ -39,7 +39,7 @@ export const ImportFactsCard = ({ name, facts }: { name: string; facts: ImportFa
       {ytd && (
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-base-300 pt-4 text-sm">
           <span className="text-base-content/60">
-            {span} {ytd.year}
+            {span}
           </span>
           <span className="flex items-center gap-2 tabular-nums">
             <span className="font-semibold text-base-content">{formatImports(ytd.imports)}</span>

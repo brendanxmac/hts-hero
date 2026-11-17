@@ -101,6 +101,10 @@ export default async function TariffUpdatesPage() {
                   RSS
                 </a>
               </p>
+              <Link href="/tariff-updates/2026" className="inline-flex items-center gap-1 self-start text-sm font-semibold text-primary underline-offset-4 hover:underline">
+                See every 2026 change on one page
+                <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+              </Link>
             </div>
             <section aria-labelledby="subscribe" className={`${tt.panel} flex flex-col gap-3 p-6`}>
               <h2 id="subscribe" className={`${tt.title} m-0`}>

@@ -12,7 +12,7 @@ export const china301Lists: CodeList[] = [
   // 20(vvv)(iii)–(iv): exclusions that cover only a product "described in" a statistical number,
   // not the whole number. 9903.88.69 asks to confirm the goods are that product for these codes
   // (the whole-number exclusions in 20(vvv)(i)–(ii) need no answer). Every number any revision
-  // from 2026HTSRev3 to Rev20 lists this way; 9903.88.69's own list says which apply when.
+  // from 2026HTSRev3 to Rev21 lists this way; 9903.88.69's own list says which apply when.
   {
     id: "china301ExclusionDescribedProducts20vvv",
     kind: "hts",
@@ -96,6 +96,7 @@ export const china301Lists: CodeList[] = [
           "8473.30.11.80",
           "8473.30.51.00",
           "8479.90.94.96",
+          "8479.90.95.91",
           "8479.90.95.96",
           "8481.90.90.20",
           "8481.90.90.40",
@@ -164,8 +165,8 @@ export const china301Lists: CodeList[] = [
         ],
         effective: {},
         source: {
-          revision: "2026HTSRev20",
-          note: "Read from U.S. note 20(vvv) in 2026HTSRev3 through 2026HTSRev20: items written “(described in statistical reporting number …)”, less numbers 20(vvv)(i)–(ii) exclude whole",
+          revision: "2026HTSRev21",
+          note: "Read from U.S. note 20(vvv) in 2026HTSRev3 through 2026HTSRev21 (Rev21 added 8479.90.95.91 to (i)(20), effective July 1, 2026): items written “(described in statistical reporting number …)”, less numbers 20(vvv)(i)–(ii) exclude whole",
         },
       },
     ],
@@ -696,6 +697,35 @@ export const china301Lists: CodeList[] = [
         codes: ["4015.12.10"],
         effective: { from: "2026-01-01" },
         source: FOUR_YEAR_REVIEW,
+      },
+    ],
+  },
+  // 31(k): the provisions of 9903.91.12 (intermodal chassis, subassemblies and parts) and
+  // 9903.91.13 (the other goods under them). In the HTS since 2025HTSRev27; by the heading text
+  // in force only Nov 9, 2025 (before the verified range, left to the backfill), then from
+  // Jan 10, 2027 (2026HTSRev23)
+  {
+    id: "china31k",
+    kind: "hts",
+    description: "Section 301 China, U.S. note 31(k): intermodal chassis provisions (8716.39.0090, 8716.90.30, 8716.90.50)",
+    versions: [
+      {
+        codes: ["8716.39.00.90", "8716.90.30", "8716.90.50"],
+        effective: { from: "2027-01-10" },
+        source: { revision: "2026HTSRev23", note: "U.S. note 31(k)(i)–(ii); headings 9903.91.12 and 9903.91.13 apply \"on or after January 10, 2027\"" },
+      },
+    ],
+  },
+  // 31(l): ship-to-shore gantry cranes, 9903.91.14–.16 (same history as 31(k))
+  {
+    id: "china31l",
+    kind: "hts",
+    description: "Section 301 China, U.S. note 31(l): ship-to-shore gantry cranes (8426.19.00)",
+    versions: [
+      {
+        codes: ["8426.19.00"],
+        effective: { from: "2027-01-10" },
+        source: { revision: "2026HTSRev23", note: "U.S. note 31(l); headings 9903.91.14–9903.91.16 apply \"on or after January 10, 2027\"" },
       },
     ],
   },

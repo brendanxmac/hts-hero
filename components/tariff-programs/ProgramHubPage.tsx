@@ -169,6 +169,15 @@ export function ProgramHubPage({
               <h1 className={`${tt.display} m-0 text-3xl font-semibold leading-tight tracking-tight text-base-content lg:text-4xl`}>{hub.title}</h1>
               <p className="m-0 text-base leading-relaxed text-base-content/80">{hubLead(page)}</p>
               <p className={`${ui.bodySm} m-0`}>{hub.law}</p>
+              {hub.slug === "section-301-china" && (
+                <p className={`${ui.bodySm} m-0`}>
+                  Excluded products are listed on the{" "}
+                  <Link href="/tariffs/section-301-exclusions" className="font-semibold text-primary hover:underline">
+                    Section 301 exclusions page
+                  </Link>
+                  , with the expiry date and extension history.
+                </p>
+              )}
               <div className="mt-2 flex flex-wrap items-center gap-3">
                 <Link href="/duty-calculator" className={ui.button({ variant: "primary" })}>
                   Check a product&apos;s total duty

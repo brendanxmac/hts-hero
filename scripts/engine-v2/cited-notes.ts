@@ -8,7 +8,7 @@
 // Needs the revision checker's Supabase service key (.env.local). Run it after adding a verified
 // revision; /apply-revision does.
 import { createClient } from "@supabase/supabase-js";
-import { mkdirSync, readdirSync, rmSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "fs";
 import { join } from "path";
 import { AllRules } from "../../tariffs/engine-v2/data";
 import {
@@ -40,6 +40,19 @@ export interface CitedVersion {
 const OUT = join(process.cwd(), "public/data/notes");
 const BUCKET = "hts-revision-diff-parsing";
 
+// Revisions whose note text was checked unchanged from the revision before against USITC's own
+// PDFs, but whose parse misses or garbles some subdivisions. There, a cited subdivision the parse
+// lacks keeps the previous text (elsewhere, missing means deleted, and the text stops), and the
+// listed subdivisions (with everything under them) ignore the parse.
+// - 2026HTSRev23: a plain-text comparison of the Rev 22 and Rev 23 Chapter 99 PDFs shows no note
+//   changed. The parse drops some subdivisions (e.g. 20(vvv)) and runs 16(c)(viii)–(xi) into
+//   16(c)(vii) (tariffs/revision-diffs/2026HTSRev23/PLAN.md)
+const NOTES_CHECKED_UNCHANGED: Record<string, string[]> = {
+  "2026HTSRev23": ["sub-III/us-notes/16(c)"],
+};
+const badParse = (revision: string, key: string) =>
+  (NOTES_CHECKED_UNCHANGED[revision] ?? []).some((k) => key === k || key.startsWith(`${k}(`));
+
 const citedTexts = () => [
   ...AllRules.tariffs.map((t) => t.description),
   ...AllRules.inputs.flatMap((i) => [i.help ?? "", ...(i.citations ?? [])]),
@@ -64,6 +77,7 @@ const subtree = (nodes: ParsedNode[], key: string): CitedNode[] | null => {
 };
 
 const main = async () => {
+  if (existsSync(".env.local")) process.loadEnvFile(".env.local");
   const db = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -90,8 +104,18 @@ const main = async () => {
       (a) => a.id === row?.active_attempt_id,
     )?.notes_path;
     if (!path) {
+      // Verified without the checker (2026HTSRev21–22 were checked against USITC's PDFs by hand):
+      // carry each subdivision's latest text over this revision instead of leaving a gap
+      let carried = 0;
+      versions.forEach((list) => {
+        const last = list[list.length - 1];
+        if (last && last.to === revision.from) {
+          last.to = revision.to;
+          carried++;
+        }
+      });
       console.warn(
-        `! ${revision.name}: no parsed notes in the revision checker; skipped`,
+        `! ${revision.name}: no parsed notes in the revision checker; carried the previous text over it (${carried} subdivisions)`,
       );
       continue;
     }
@@ -102,8 +126,18 @@ const main = async () => {
       throw new Error(`${revision.name}: ${dlError?.message}`);
     const nodes = (JSON.parse(await data.text()) as { nodes: ParsedNode[] })
       .nodes;
+    const carriedOver: string[] = [];
     for (const citation of Array.from(citations.values())) {
-      const tree = subtree(nodes, citation.key);
+      const tree = badParse(revision.name, citation.key) ? null : subtree(nodes, citation.key);
+      const list = versions.get(citation.key) ?? [];
+      const last = list[list.length - 1];
+      // Missing (or badly parsed) in a revision checked unchanged, and in force just before: carry
+      // that text over, and say so
+      if (!tree && revision.name in NOTES_CHECKED_UNCHANGED && last && last.to === revision.from) {
+        last.to = revision.to;
+        carriedOver.push(citation.key);
+        continue;
+      }
       if (!tree) {
         missing.set(citation.key, [
           ...(missing.get(citation.key) ?? []),
@@ -111,8 +145,6 @@ const main = async () => {
         ]);
         continue;
       }
-      const list = versions.get(citation.key) ?? [];
-      const last = list[list.length - 1];
       // Extend the previous version when the text is the same and the revisions are back to back
       if (
         last &&
@@ -126,6 +158,10 @@ const main = async () => {
       versions.set(citation.key, list);
     }
     console.log(`  ${revision.name}: read`);
+    if (carriedOver.length)
+      console.warn(
+        `! ${revision.name}: carried the previous text over ${carriedOver.length} cited subdivisions missing or badly parsed here:\n    ${carriedOver.join("\n    ")}`,
+      );
   }
 
   // One file per note, with every cited subdivision of it

@@ -105,6 +105,14 @@ export default async function DutyCalculatorPage() {
         })),
       })}
 
+      {renderSchemaJsonLd({
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { name: "HTS Hero", item: `https://${config.domainName}` },
+          { name: "US Tariff Calculator", item: `https://${config.domainName}/duty-calculator` },
+        ].map((crumb, i) => ({ "@type": "ListItem", position: i + 1, ...crumb })),
+      })}
+
       {/* The headline and the calculator in one band, in the calculator's look. The headline is
           server-rendered, immediately visible to crawlers. */}
       <BreadcrumbsProvider>
@@ -117,7 +125,7 @@ export default async function DutyCalculatorPage() {
         >
           <div id="calculator" className="scroll-mt-16">
             <TariffFinderPage fullScreen>
-              <Hero revisionTitle={content.revisionTitle} />
+              <Hero revisionTitle={content.revisionTitle} latest={latestNews[0]} />
             </TariffFinderPage>
           </div>
         </Suspense>
