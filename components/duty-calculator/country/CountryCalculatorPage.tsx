@@ -151,7 +151,13 @@ export function CountryCalculatorPage({
 
       <section className={band(!faqMuted)}>
         <div className={mk.container}>
-          <SectionIntro eyebrow="Other countries" title="Tariff calculators by country" />
+          <SectionIntro eyebrow="Other countries" title="Tariff calculators by country">
+            Importing from somewhere else? Use the{" "}
+            <Link href="/duty-calculator" className={mk.link}>
+              US tariff calculator
+            </Link>{" "}
+            with any country of origin.
+          </SectionIntro>
           <div className="mt-10">
             <CountryLinks current={country.slug} />
           </div>

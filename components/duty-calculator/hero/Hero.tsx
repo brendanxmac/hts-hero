@@ -3,6 +3,7 @@ import { ArrowRightIcon, CheckIcon } from "@heroicons/react/20/solid";
 import * as tt from "@/components/ui/styles/tracker";
 import * as mk from "@/components/ui/marketing/styles";
 import { CHANGELOG_PATH } from "../changelog/constants";
+import type { PublicUpdate } from "@/libs/tariff-updates/public";
 
 // The top of /duty-calculator, in Duty Guard's look (DESIGN_SYSTEM.md §15): the headline
 // centered under a bar saying the rates are current (with the data changelog), and what the
@@ -12,7 +13,10 @@ import { CHANGELOG_PATH } from "../changelog/constants";
 
 const COVERS = ["Section 122, 201, 232, 301, & 338 tariffs", "USMCA & other trade programs", "MPF & HMF fees", "Antidumping & countervailing duties", "No sign-up required"];
 
-export const Hero = ({ revisionTitle }: { revisionTitle: string }) => (
+const day = (iso: string) =>
+  new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+
+export const Hero = ({ revisionTitle, latest }: { revisionTitle: string; latest?: PublicUpdate }) => (
   <header className="relative isolate -mt-2 overflow-hidden">
     {/* Across the top: the rates are current, with the data changelog */}
     <p className="m-0 flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 border-b border-primary/15 bg-primary/10 px-4 py-2 text-center text-sm text-base-content/80">
@@ -23,6 +27,15 @@ export const Hero = ({ revisionTitle }: { revisionTitle: string }) => (
         <ArrowRightIcon className="h-3 w-3" aria-hidden />
       </Link>
     </p>
+    {/* The newest US tariff action, dated, so the page always states what changed last */}
+    {latest && (
+      <p className="m-0 border-b border-base-300 px-4 py-2 text-center text-sm text-base-content/70">
+        <span className="font-semibold text-base-content">Latest change ({day(latest.last_activity_at)}):</span>{" "}
+        <Link href={`/tariff-updates/${latest.slug}`} className="text-primary hover:underline">
+          {latest.title}
+        </Link>
+      </p>
+    )}
     {/* The glow is for dark mode only: on a light page it reads as a smudge */}
     <div className="absolute left-1/2 top-0 -z-10 hidden h-72 w-[56rem] max-w-full -translate-x-1/2 rounded-full bg-primary/15 blur-[100px] follow-dark:block" aria-hidden />
     <div className={`${mk.container} flex flex-col items-center gap-5 pb-10 pt-12 text-center`}>

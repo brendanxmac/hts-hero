@@ -33,7 +33,8 @@ export const SourceLinks = ({ sources, prefix = "Source: " }: { sources: Officia
     <span className="block text-xs leading-snug text-base-content/60">
       {prefix}
       {sources.map((source, i) => (
-        <span key={source.url ?? source.label}>
+        // Two annexes of one Federal Register document share a URL
+        <span key={`${i}-${source.url ?? source.label}`}>
           {i > 0 && "; "}
           {source.url ? (
             <a href={source.url} target="_blank" rel="noopener noreferrer" className="underline decoration-base-content/20 underline-offset-2 hover:text-primary">

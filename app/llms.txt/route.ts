@@ -57,6 +57,8 @@ ${guides.join("\n")}
 
 - [US tariff programs](${SITE}/tariffs): every Section 232, 301, 338, 122, 201 and IEEPA tariff program, with what each has in force today
 ${programs}
+- [Section 301 China exclusions](${SITE}/tariffs/section-301-exclusions): every excluded HTS code, the expiry date and the extension history
+- [Every US tariff change in 2026](${SITE}/tariff-updates/2026): a dated log of this year's US tariff actions, newest first
 - Chapter 99 heading pages (e.g. [9903.88.15](${SITE}/hts/9903.88.15)): what each heading is, its program, rate, status and dates, the codes it covers and its legal text
 
 ## Tariff calculators by country

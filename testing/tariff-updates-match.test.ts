@@ -124,14 +124,14 @@ describe("Tariff updates: headings-only updates name the codes under them", () =
   })
 
   it("headings the engine doesn't know leave the update as it was", () => {
-    expect(level({ ...extension, hts_codes: ["9903.91.12"], countries: ["CN"] }, "8426110000", "CN")).toBe("possible")
+    expect(level({ ...extension, hts_codes: ["9903.17.01"], countries: ["CN"] }, "8426110000", "CN")).toBe("possible")
   })
 })
 
 // What the update page, review and Duty Guard show under the headings: the same codes matching uses
 describe("Tariff updates: the codes shown under headings", () => {
   it("lists each known heading's codes, with the described-product ones marked", () => {
-    const { children } = namedByUpdate(update({ hts_codes: ["9903.88.69", "9903.88.70", "9903.91.12"], countries: ["CN"], effective_on: "2026-11-10" }))
+    const { children } = namedByUpdate(update({ hts_codes: ["9903.88.69", "9903.88.70", "9903.17.01"], countries: ["CN"], effective_on: "2026-11-10" }))
     expect(children.map((h) => h.heading).join(",")).toBe("9903.88.69,9903.88.70")
     const exclusions = children[0]
     expect(exclusions.codes.includes("8483.50.90.40")).toBe(true)

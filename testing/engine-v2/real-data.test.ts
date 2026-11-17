@@ -1303,6 +1303,15 @@ describe("engine-v2 real data: 2026 Rev 18", () => {
     expect(applying(calc("8413.91.90.39", "CN", "2026-07-15")).includes("9903.88.69")).toBe(false)
   })
 
+  // 2026 Rev 21: 20(vvv)(i)(20), metal shredder parts, adds 8479.90.9591 effective July 1, 2026
+  it("recognizes the metal shredder parts exclusion under 8479.90.95.91 from July 1, 2026 (Rev 21)", () => {
+    const exclusion = yes("9903.88.69")
+    expect(applying(calc("8479.90.95.91", "CN", "2026-07-15", exclusion)).includes("9903.88.69")).toBe(true)
+    expect(applying(calc("8479.90.95.91", "CN", "2026-10-15", exclusion)).includes("9903.88.69")).toBe(true)
+    expect(applying(calc("8479.90.95.91", "CN", "2026-06-15", exclusion)).includes("9903.88.69")).toBe(false)
+    expect(applying(calc("8479.90.95.91", "CN", "2026-07-15")).includes("9903.88.69")).toBe(false)
+  })
+
   it("files lean beef trimmings under the additional quota (9903.54.02) when confirmed, at $0", () => {
     const beef = calc("0201.30.50.91", "AU", "2026-10-01", yes("9903.54.02"))
     expect(applying(beef).includes("9903.54.02")).toBe(true)
@@ -1450,6 +1459,62 @@ describe("engine-v2 real data: 2026 Rev 20 (Section 232 – Pharmaceuticals chan
         if (applied.length !== 1) throw new Error(`${country} ${mask}: ${applied.join(", ") || "none"}`)
       }
     }
+  })
+})
+
+// ============================================================
+// 2026 Rev 23: Section 301 note 31(k)–(l), intermodal chassis and ship-to-shore cranes, from
+// January 10, 2027 (9903.91.12–.16); 9903.88.69/.70 exclusions through January 9, 2027
+// ============================================================
+describe("engine-v2 real data: 2026 Rev 23 (chassis and ship-to-shore cranes)", () => {
+  const BEFORE = "2027-01-09"
+  const AFTER = "2027-01-10"
+  const CHASSIS = "8716.39.00.90"
+  const CRANE = "8426.19.00.00"
+  const calc = (htsCode: string, country: string, asOf: string, answers: Record<string, unknown> = {}) =>
+    calculate(AllRules, {
+      htsCode, country, asOf, customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: "Free", special: "", other: "35%" }, answers,
+    })
+  const yes = (...codes: string[]) => Object.fromEntries(codes.map((c) => [`confirm:${c}`, true]))
+  const line = (result: CalculationResult, code: string) => result.lines.find((l) => l.code === code && l.status === "applies")
+  const maritime = (result: CalculationResult) => applying(result).filter((c) => /^9903\.91\.1[2-6]$/.test(c))
+
+  it("charges 100% on confirmed Chinese intermodal chassis from January 10, 2027 only", () => {
+    expect(maritime(calc(CHASSIS, "CN", BEFORE, yes("9903.91.12")))).toEqual([])
+    const after = calc(CHASSIS, "CN", AFTER, yes("9903.91.12"))
+    expect(maritime(after)).toEqual(["9903.91.12"])
+    expect(line(after, "9903.91.12")?.amount).toBe(10_000)
+    expect(maritime(calc("8716.90.50.00", "CN", AFTER, yes("9903.91.12")))).toEqual(["9903.91.12"])
+  })
+
+  it("files the other goods under the chassis numbers as 9903.91.13 at $0, for China only", () => {
+    const other = calc(CHASSIS, "CN", AFTER)
+    expect(maritime(other)).toEqual(["9903.91.13"])
+    expect(line(other, "9903.91.13")?.amount).toBe(0)
+    expect(maritime(calc(CHASSIS, "DE", AFTER, yes("9903.91.12")))).toEqual([])
+  })
+
+  it("charges 100% on confirmed ship-to-shore cranes from any country, stacked on 9903.92.10 for China", () => {
+    expect(maritime(calc(CRANE, "CN", BEFORE, yes("9903.91.14")))).toEqual([])
+    const china = calc(CRANE, "CN", AFTER, yes("9903.91.14", "9903.92.10"))
+    expect(applying(china).includes("9903.91.14")).toBe(true)
+    expect(applying(china).includes("9903.92.10")).toBe(true)
+    expect(line(china, "9903.91.14")?.amount).toBe(10_000)
+    expect(maritime(calc(CRANE, "DE", AFTER, yes("9903.91.14")))).toEqual(["9903.91.14"])
+    expect(maritime(calc(CRANE, "DE", AFTER))).toEqual([])
+  })
+
+  it("lets the 9903.91.15 attestation and 9903.91.16 contracts displace 9903.91.14", () => {
+    expect(maritime(calc(CRANE, "DE", AFTER, yes("9903.91.15")))).toEqual(["9903.91.15"])
+    expect(maritime(calc(CRANE, "CN", AFTER, yes("9903.91.14", "9903.91.15")))).toEqual(["9903.91.14"])
+    expect(maritime(calc(CRANE, "DE", AFTER, yes("9903.91.14", "9903.91.16")))).toEqual(["9903.91.16"])
+    expect(maritime(calc(CRANE, "DE", "2027-04-18", yes("9903.91.14", "9903.91.16")))).toEqual(["9903.91.14"])
+  })
+
+  it("keeps the 9903.88.69 exclusions through January 9, 2027", () => {
+    expect(applying(calc("8479.90.95.91", "CN", BEFORE, yes("9903.88.69"))).includes("9903.88.69")).toBe(true)
+    expect(applying(calc("8479.90.95.91", "CN", AFTER, yes("9903.88.69"))).includes("9903.88.69")).toBe(false)
   })
 })
 

@@ -94,6 +94,9 @@ const Menu = ({ open, button, align, className, children }: { open: boolean; but
   const place = usePlace(open, button, align);
   if (!place) return null;
   const { theme, ...at } = place;
+  // A modal <dialog> sits in the browser's top layer, over any z-index, and makes the rest of the
+  // page inert, so a menu inside one goes in the dialog itself, not under it in document.body
+  const layer = button.current?.closest("dialog") ?? document.body;
   return createPortal(
     <div className={theme}>
       <Transition as={Fragment} show={open} leave="transition ease-in duration-75" leaveFrom="opacity-100" leaveTo="opacity-0">
@@ -107,7 +110,7 @@ const Menu = ({ open, button, align, className, children }: { open: boolean; but
         </Listbox.Options>
       </Transition>
     </div>,
-    document.body
+    layer
   );
 };
 

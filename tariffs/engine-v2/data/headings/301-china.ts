@@ -133,10 +133,11 @@ const allHeadings: Tariff[] = [
     rate: { kind: "free" },
     effective: { from: "2024-06-15", to: "2027-01-10" },
     source: {
+      revision: "2026HTSRev23",
       citation: "USTR notice of product exclusion extensions, FR Doc. 2026-22925, Annex A",
       url: "https://www.federalregister.gov/d/2026-22925",
       publishedOn: "2026-11-10",
-      note: 'The 178 exclusions extended again for entries on or after 12:01 a.m. ET Nov 10, 2026 and before 11:59 p.m. ET Jan 9, 2027; from Nov 10, 2026 the heading reads "through January 9, 2027" (before it, "through November 9, 2026", 90 FR 55232; before Nov 30, 2025, "through November 29, 2025", 2025HTSRev30). Entered from the notice before USITC posted the revision: check against the next revision\'s change record. Described-product exclusions need confirmation (Oct 2026 correction: they applied to every good under the number)',
+      note: 'The 178 exclusions extended again for entries on or after 12:01 a.m. ET Nov 10, 2026 and before 11:59 p.m. ET Jan 9, 2027; from Nov 10, 2026 the heading reads "through January 9, 2027" (before it, "through November 9, 2026", 90 FR 55232; before Nov 30, 2025, "through November 29, 2025", 2025HTSRev30). Entered from the notice, then checked against 2026HTSRev23 (change record: Modified, November 10, 2026, Notice): the heading text matches word for word. Described-product exclusions need confirmation (Oct 2026 correction: they applied to every good under the number)',
     },
   },
   {
@@ -155,10 +156,11 @@ const allHeadings: Tariff[] = [
     rate: { kind: "free" },
     effective: { from: "2024-01-01", to: "2027-01-10" },
     source: {
+      revision: "2026HTSRev23",
       citation: "USTR notice of product exclusion extensions, FR Doc. 2026-22925, Annex B",
       url: "https://www.federalregister.gov/d/2026-22925",
       publishedOn: "2026-11-10",
-      note: 'Extended again with 9903.88.69 for entries before 11:59 p.m. ET Jan 9, 2027; from Nov 10, 2026 the heading reads "through January 9, 2027" (before it, "through November 9, 2026", 90 FR 55232; before Nov 30, 2025, "through November 29, 2025", 2025HTSRev30). Entered from the notice before USITC posted the revision: check against the next revision\'s change record. Needs confirmation (Oct 2026 correction: it applied to every good under the number)',
+      note: 'Extended again with 9903.88.69 for entries before 11:59 p.m. ET Jan 9, 2027; from Nov 10, 2026 the heading reads "through January 9, 2027" (before it, "through November 9, 2026", 90 FR 55232; before Nov 30, 2025, "through November 29, 2025", 2025HTSRev30). Entered from the notice, then checked against 2026HTSRev23 (change record: Modified, November 10, 2026, Notice): the heading text matches word for word. Needs confirmation (Oct 2026 correction: it applied to every good under the number)',
     },
   },
   {
@@ -401,6 +403,97 @@ const allHeadings: Tariff[] = [
     },
     effective: {},
     source: { revision: "2026HTSRev5" },
+  },
+  // U.S. note 31(k)–(l): intermodal chassis and ship-to-shore cranes (2026HTSRev23)
+  {
+    code: "9903.91.12",
+    program: "301-china",
+    name: "Section 301 China: Intermodal Chassis",
+    description:
+      "Effective with respect to entries, on or after January 10, 2027, of intermodal chassis, subassemblies thereof, and parts thereof (provided for in statistical reporting number 8716.39.0090, or in subheadings 8716.90.30 or 8716.90.50), articles the product of China, as provided for in subdivision (k)(i) of U.S. note 31 to this subchapter, except as provided in heading 9903.91.13",
+    scope: { countries: ["CN"], codes: [{ list: "china31k" }] },
+    exceptions: ["9903.91.13"],
+    requires: [confirm("9903.91.12")],
+    rate: { kind: "adValorem", pct: 100 },
+    rateByColumn: {
+      special: { kind: "free" },
+      column2: { kind: "free" },
+    },
+    effective: { from: "2027-01-10" },
+    source: {
+      revision: "2026HTSRev23",
+      citation: "USTR notice (HTS change record: Modified, November 9, 2026, Notice)",
+      note: "Confirm the goods are intermodal chassis, subassemblies or parts as described in U.S. note 31(k)(i). In the HTS since 2025HTSRev27; by the heading text in force only for entries on Nov 9, 2025 (left to the backfill), then suspended ('on or after November 10, 2026', 2025HTSRev28–2026HTSRev22), and moved to Jan 10, 2027 by 2026HTSRev23",
+    },
+  },
+  {
+    code: "9903.91.13",
+    program: "301-china",
+    name: "Section 301 China Exemption: Not Intermodal Chassis",
+    description:
+      "Effective with respect to entries, on or after January 10, 2027, of articles the product of China, as provided for in subdivision (k)(ii) of U.S. note 31 to this subchapter (provided for in statistical reporting number 8716.39.0090, or subheadings 8716.90.30 or 8716.90.50), except as provided in heading 9903.91.12",
+    scope: { countries: ["CN"], codes: [{ list: "china31k" }] },
+    requires: [{ kind: "answer", input: "confirm:9903.91.12", equals: false, assume: true }],
+    rate: { kind: "free" },
+    effective: { from: "2027-01-10" },
+    source: {
+      revision: "2026HTSRev23",
+      citation: "USTR notice (HTS change record: Modified, November 9, 2026, Notice)",
+      note: "Filed for the other goods under these numbers (31(k)(ii)): applies unless the goods are confirmed as chassis under 9903.91.12. The text also excepts 9903.91.12; only .12 lists the exception, to avoid a cycle. In the HTS since 2025HTSRev27; by the heading text in force only for entries on Nov 9, 2025 (left to the backfill), then suspended ('on or after November 10, 2026', 2025HTSRev28–2026HTSRev22), and moved to Jan 10, 2027 by 2026HTSRev23",
+    },
+  },
+  {
+    code: "9903.91.14",
+    program: "301-china",
+    name: "Section 301 China: Ship-to-Shore Cranes (Chinese Origin, Parts or Owner)",
+    description:
+      "Effective with respect to entries, on or after January 10, 2027, of ship-to-shore gantry cranes, configured as a high- or low-profile steel superstructure and designed to unload intermodal containers from vessels with coupling devices for containers, including spreaders or twist-locks (provided for in subheading 8426.19.00), as provided for in subdivision (l) of U.S. note 31 to this subchapter, except as provided in headings 9903.91.09, 9903.91.15 or 9903.91.16",
+    scope: { countries: "all", codes: [{ list: "china31l" }] },
+    exceptions: ["9903.91.15", "9903.91.16"],
+    requires: [confirm("9903.91.14")],
+    rate: { kind: "adValorem", pct: 100 },
+    rateByColumn: {
+      special: { kind: "free" },
+      column2: { kind: "free" },
+    },
+    effective: { from: "2027-01-10" },
+    source: {
+      revision: "2026HTSRev23",
+      citation: "USTR notice (HTS change record: Modified, November 9, 2026, Notice)",
+      note: "Any country (31(l)(i)–(iii)): a crane of China, one with a Chinese boom, trolley, spreader, cabin, legs, cable reel, power supply, bogie set and wheels, or control IT equipment (31(l)(ii)), or one made by a company 25% or more owned or controlled by a Chinese person or entity (31(l)(iii), (v)). Confirmed by the user. Stacks with 9903.92.10 for products of China (31(l)(i)). The exception for 9903.91.09 ('as long as it is operative', filed as 9903.92.09) ended May 14, 2026, so it isn't listed. In the HTS since 2025HTSRev27; by the heading text in force only for entries on Nov 9, 2025 (left to the backfill), then suspended ('on or after November 10, 2026', 2025HTSRev28–2026HTSRev22), and moved to Jan 10, 2027 by 2026HTSRev23",
+    },
+  },
+  {
+    code: "9903.91.15",
+    program: "301-china",
+    name: "Section 301 China Exemption: Ship-to-Shore Cranes Without Chinese Links",
+    description:
+      "Notwithstanding heading 9903.91.14, effective with respect to entries, on or after January 10, 2027, of ship-to-shore gantry cranes, configured as a high- or low-profile steel superstructure and designed to unload intermodal containers from vessels with coupling devices for containers, including spreaders or twist-locks (provided for in subheading 8426.19.00), attested by the importer that the ship-to-shore gantry cranes: (1) are not products of China; (2) are not manufactured, assembled, or made using components, assemblies or subassemblies that are products of China, as specified in subdivision (l)(ii) of note 31 to this subchapter; and (3) are not manufactured by a company or other entity that is owned or controlled by a Chinese person or legal entity, as specified by subdivision (l)(v) of note 31 to this subchapter",
+    scope: { countries: "all", excludeCountries: ["CN"], codes: [{ list: "china31l" }] },
+    requires: [confirm("9903.91.15")],
+    rate: { kind: "free" },
+    effective: { from: "2027-01-10" },
+    source: {
+      revision: "2026HTSRev23",
+      citation: "USTR notice (HTS change record: Modified, November 9, 2026, Notice)",
+      note: "The importer attests to U.S. note 31(l)(iv); a product of China can't claim it. In the HTS since 2025HTSRev27; by the heading text in force only for entries on Nov 9, 2025 (left to the backfill), then suspended ('on or after November 10, 2026', 2025HTSRev28–2026HTSRev22), and moved to Jan 10, 2027 by 2026HTSRev23",
+    },
+  },
+  {
+    code: "9903.91.16",
+    program: "301-china",
+    name: "Section 301 China Exemption: Ship-to-Shore Cranes Under Contracts Before Apr 17, 2025",
+    description:
+      "Notwithstanding heading 9903.91.14, effective with respect to entries, on or after January 10, 2027, of ship-to-shore gantry cranes, configured as a high- or low-profile steel superstructure and designed to unload intermodal containers from vessels with coupling devices for containers, including spreaders or twist-locks (provided for in subheading 8426.19.00), that: (1) are products of China; (2) that are manufactured, assembled or made using components, assemblies or subassemblies that are products of China; or (3) that are manufactured by a company or other entity that is owned or controlled by a Chinese person or legal entity, as specified by subdivision (l) of U.S. note 31 to this subchapter, that are attested by the importer as fulfilling in whole or in part an executed contract for sale dated prior to April 17, 2025 for goods that are entered for consumption, or withdrawn from warehouse for consumption, in the United States prior to April 18, 2027",
+    scope: { countries: "all", codes: [{ list: "china31l" }] },
+    requires: [confirm("9903.91.16")],
+    rate: { kind: "free" },
+    effective: { from: "2027-01-10", to: "2027-04-18" },
+    source: {
+      revision: "2026HTSRev23",
+      citation: "USTR notice (HTS change record: Modified, November 9, 2026, Notice)",
+      note: "Ends with entries before April 18, 2027 (heading text). In the HTS since 2025HTSRev27; by the heading text in force only for entries on Nov 9, 2025 (left to the backfill), then suspended ('on or after November 10, 2026', 2025HTSRev28–2026HTSRev22), and moved to Jan 10, 2027 by 2026HTSRev23",
+    },
   },
 ]
 

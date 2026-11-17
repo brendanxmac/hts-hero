@@ -8,7 +8,9 @@ const FROM = "2026-08-22"
 // 2026HTSRev19: lists (b)(1) and (b)(3) change from September 15, 2026
 const REV19 = "2026-09-15"
 // Proclamation of October 23, 2026 (Further Modifying the Scope of Products of Canada ... Motor
-// Vehicles), Annex II: list (b)(3) changes from October 30, 2026. Not in an HTS revision yet.
+// Vehicles), Annex II: list (b)(3) changes from October 30, 2026. 2026HTSRev22 put it in the note
+// (change record: "U.S. note 51(b)(3) … Modified, October 30, 2026, PP 11076"); its 591 codes
+// match this version exactly.
 const OCT30 = "2026-10-30"
 const SOURCE = { revision: "2026HTSRev17", citation: "Proclamations 11046, 11047, 11048, 11056" }
 
@@ -1294,10 +1296,11 @@ export const canada338Lists: CodeList[] = [
       remove: B3_OCT30_REMOVED,
       add: B3_OCT30_ADDED,
       source: {
-        citation: "Proclamation of October 23, 2026, Annex II",
+        revision: "2026HTSRev22",
+        citation: "Proclamation 11076 (October 23, 2026), Annex II",
         url: "https://www.whitehouse.gov/wp-content/uploads/2026/10/2026ModifyingAuto338.prc_.AnnexII-2.pdf",
         publishedOn: "2026-10-23",
-        note: "U.S. note 51(b)(3): 22 subheadings deleted, 100 inserted, for goods entered on or after 12:01 a.m. ET, October 30, 2026",
+        note: "U.S. note 51(b)(3): 22 subheadings deleted, 100 inserted, for goods entered on or after 12:01 a.m. ET, October 30, 2026. Checked against 2026HTSRev22's note 51(b)(3): same 591 codes",
       },
     }),
   },

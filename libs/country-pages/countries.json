@@ -148,5 +148,155 @@
     "slug": "turkey",
     "code": "TR",
     "name": "Turkey"
+  },
+  {
+    "slug": "sweden",
+    "code": "SE",
+    "name": "Sweden"
+  },
+  {
+    "slug": "cambodia",
+    "code": "KH",
+    "name": "Cambodia"
+  },
+  {
+    "slug": "poland",
+    "code": "PL",
+    "name": "Poland"
+  },
+  {
+    "slug": "costa-rica",
+    "code": "CR",
+    "name": "Costa Rica"
+  },
+  {
+    "slug": "denmark",
+    "code": "DK",
+    "name": "Denmark"
+  },
+  {
+    "slug": "hungary",
+    "code": "HU",
+    "name": "Hungary"
+  },
+  {
+    "slug": "peru",
+    "code": "PE",
+    "name": "Peru"
+  },
+  {
+    "slug": "saudi-arabia",
+    "code": "SA",
+    "name": "Saudi Arabia"
+  },
+  {
+    "slug": "bangladesh",
+    "code": "BD",
+    "name": "Bangladesh"
+  },
+  {
+    "slug": "ecuador",
+    "code": "EC",
+    "name": "Ecuador"
+  },
+  {
+    "slug": "argentina",
+    "code": "AR",
+    "name": "Argentina"
+  },
+  {
+    "slug": "czech-republic",
+    "code": "CZ",
+    "name": "the Czech Republic"
+  },
+  {
+    "slug": "finland",
+    "code": "FI",
+    "name": "Finland"
+  },
+  {
+    "slug": "united-arab-emirates",
+    "code": "AE",
+    "name": "the United Arab Emirates"
+  },
+  {
+    "slug": "dominican-republic",
+    "code": "DO",
+    "name": "the Dominican Republic"
+  },
+  {
+    "slug": "norway",
+    "code": "NO",
+    "name": "Norway"
+  },
+  {
+    "slug": "slovakia",
+    "code": "SK",
+    "name": "Slovakia"
+  },
+  {
+    "slug": "portugal",
+    "code": "PT",
+    "name": "Portugal"
+  },
+  {
+    "slug": "new-zealand",
+    "code": "NZ",
+    "name": "New Zealand"
+  },
+  {
+    "slug": "honduras",
+    "code": "HN",
+    "name": "Honduras"
+  },
+  {
+    "slug": "pakistan",
+    "code": "PK",
+    "name": "Pakistan"
+  },
+  {
+    "slug": "guatemala",
+    "code": "GT",
+    "name": "Guatemala"
+  },
+  {
+    "slug": "nicaragua",
+    "code": "NI",
+    "name": "Nicaragua"
+  },
+  {
+    "slug": "romania",
+    "code": "RO",
+    "name": "Romania"
+  },
+  {
+    "slug": "slovenia",
+    "code": "SI",
+    "name": "Slovenia"
+  },
+  {
+    "slug": "sri-lanka",
+    "code": "LK",
+    "name": "Sri Lanka"
+  },
+  {
+    "slug": "jordan",
+    "code": "JO",
+    "name": "Jordan"
+  },
+  {
+    "slug": "egypt",
+    "code": "EG",
+    "name": "Egypt"
+  },
+  {
+    "slug": "el-salvador",
+    "code": "SV",
+    "name": "El Salvador"
+  },
+  {
+    "slug": "greece",
+    "code": "GR",
+    "name": "Greece"
   }
 ]
