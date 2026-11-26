@@ -3,7 +3,7 @@ import { display, sans } from "../../../social/fonts"
 import { ALERT_TIERS, AUDIT_TIERS, formatPrice } from "../../../components/pricing-calculator/lib/pricing"
 import { SALE, saleAnnual } from "../../../libs/black-friday"
 
-// The Black Friday 2026 visual (libs/black-friday.ts): "40% off a full year of Duty Guard" with
+// The Black Friday 2026 visual (libs/black-friday.ts): "40% off Tariff Audits, Savings & Alerts" with
 // both offers' from-prices struck through. Two layouts from one design:
 //   banner: the email's animated hero (a GIF, emails/marketing/black-friday)
 //   square: a 1080×1080 post for LinkedIn / X
@@ -27,7 +27,7 @@ const COLORS = {
 
 const OFFERS = [
   { name: "Essentials", what: "Tariff alerts", deal: saleAnnual(ALERT_TIERS[0].price) },
-  { name: "Pro", what: "Audits + savings", deal: saleAnnual(AUDIT_TIERS[0].price) },
+  { name: "Pro", what: "Audits, savings & alerts", deal: saleAnnual(AUDIT_TIERS[0].price) },
 ]
 
 // Confetti that falls on a loop: each piece's start, speed and shape are fixed, so the loop is seamless
@@ -129,8 +129,8 @@ export const BlackFridayHero = ({ layout }: { layout: HeroLayout }) => {
               {SALE.percentOff}% OFF
             </div>
           </div>
-          <div style={{ fontFamily: display, fontWeight: 600, fontSize: (square ? 56 : 19) * u, lineHeight: 1.15, whiteSpace: "nowrap", marginTop: (square ? 18 : 8) * u }}>
-            A full year of Duty Guard
+          <div style={{ fontFamily: display, fontWeight: 600, fontSize: (square ? 60 : 18) * u, lineHeight: 1.15, whiteSpace: "nowrap", marginTop: (square ? 18 : 8) * u }}>
+            Tariff Audits, Savings & Alerts
           </div>
           <div
             style={{
@@ -145,7 +145,7 @@ export const BlackFridayHero = ({ layout }: { layout: HeroLayout }) => {
           >
             {/* The clock dot pulses */}
             <span style={{ width: (square ? 14 : 7) * u, height: (square ? 14 : 7) * u, borderRadius: 999, backgroundColor: COLORS.red, opacity: 0.6 + 0.4 * Math.abs(wave) }} />
-            Every annual plan · Ends {SALE.endsLabel}
+            A full year, every annual plan · Ends {SALE.endsLabel}
           </div>
         </div>
 
@@ -182,7 +182,7 @@ export const BlackFridayHero = ({ layout }: { layout: HeroLayout }) => {
       </AbsoluteFill>
       {square && (
         <div style={{ position: "absolute", bottom: 56 * u, left: 0, right: 0, textAlign: "center", fontFamily: display, fontWeight: 600, fontSize: 30 * u, color: COLORS.muted }}>
-          htshero.com · Duty Guard
+          htshero.com/black-friday
         </div>
       )}
     </AbsoluteFill>

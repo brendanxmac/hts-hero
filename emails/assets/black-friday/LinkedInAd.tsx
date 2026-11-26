@@ -7,7 +7,7 @@ import { SALE, saleAnnual } from "../../../libs/black-friday"
 //   portrait  1080×1350, the feed's biggest image (best on mobile)
 //   square    1080×1080
 //   landscape 1200×627, LinkedIn's single-image ad size
-// One video: the pieces arrive in turn (settled by frame 75), then hold. The stills are frame
+// One video: the pieces arrive in turn (settled by frame 85), then hold. The stills are frame
 // 120, so every shape reads whole without the motion.
 // Render: `npm run email:render-black-friday`
 
@@ -29,8 +29,8 @@ const C = {
 }
 
 const OFFERS = [
-  { name: "Essentials", what: "Tariff alerts on your imports", deal: saleAnnual(ALERT_TIERS[0].price), accent: C.cobalt },
-  { name: "Pro", what: "Alerts + audits + savings", deal: saleAnnual(AUDIT_TIERS[0].price), accent: C.amber },
+  { name: "Essentials", what: "Tariff Alerts on your imports", deal: saleAnnual(ALERT_TIERS[0].price), accent: C.cobalt },
+  { name: "Pro", what: "Audits, Savings & Alerts", deal: saleAnnual(AUDIT_TIERS[0].price), accent: C.amber },
 ]
 
 const Mark = ({ size }: { size: number }) => (
@@ -60,7 +60,7 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
   const sweepAt = (start: number) => interpolate(frame, [start, start + 24], [-0.3, 1.3], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
   const sweep = frame < durationInFrames - 40 ? sweepAt(18) : sweepAt(durationInFrames - 36)
   // The alert's rate counts up from the old rate to the new one
-  const rate = Math.round(interpolate(frame, [40, 62], [25, 45], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }))
+  const rate = Math.round(interpolate(frame, [48, 68], [25, 45], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }))
   const pulse = 0.55 + 0.45 * Math.abs(Math.sin((frame / fps) * Math.PI))
 
   const pill = (
@@ -105,23 +105,27 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
         {SALE.percentOff}% OFF
       </div>
       <div style={{ fontFamily: display, fontWeight: 600, fontSize: (wide ? 36 : tall ? 54 : 48) * u, lineHeight: 1.12, marginTop: (wide ? 8 : 14) * u, letterSpacing: "-0.02em" }}>
-        A full year of Duty Guard
+        Tariff Audits, Savings & Alerts
       </div>
-      <div style={{ fontSize: (wide ? 20 : tall ? 29 : 26) * u, color: C.muted, marginTop: (wide ? 10 : 14) * u, lineHeight: 1.35, maxWidth: (wide ? 560 : 880) * u }}>
-        Know the moment a tariff change hits your imports, and find duty you may be overpaying.
-      </div>
+      {/* The square has no room for it: its three cards say the same */}
+      {format !== "square" && (
+        <div style={{ fontSize: (wide ? 20 : 29) * u, color: C.muted, marginTop: (wide ? 10 : 12) * u, lineHeight: 1.35, maxWidth: (wide ? 560 : 900) * u }}>
+          Find duty you may be overpaying, spot lower rates you may qualify for, and know the moment tariffs change.
+        </div>
+      )}
     </div>
   )
 
   // What Duty Guard finds: a tariff change on one of your imports, and (portrait) a lower rate it may qualify for
-  const notice = (n: { delay: number; tone: string; toneBg: string; icon: "bell" | "tag"; label: string; product: string; detail: string; from: string; to: string; change: string }) => (
+  const compact = !tall
+  const notice = (n: { delay: number; kind: string; tone: string; toneBg: string; icon: "bell" | "tag" | "shield"; label: string; product: string; detail: string; from: string; to: string; change: string }) => (
     <div
       style={{
         ...rise(n.delay, 60),
         backgroundColor: C.card,
         border: `${1.5 * u}px solid ${C.line}`,
-        borderRadius: (wide ? 18 : 22) * u,
-        padding: `${(wide ? 16 : 22) * u}px ${(wide ? 20 : 28) * u}px`,
+        borderRadius: (wide ? 16 : compact ? 18 : 22) * u,
+        padding: `${(wide ? 10 : compact ? 13 : 20) * u}px ${(wide ? 16 : compact ? 22 : 28) * u}px`,
         boxShadow: `0 ${24 * u}px ${60 * u}px rgba(0,0,0,0.45)`,
         display: "flex",
         alignItems: "center",
@@ -130,8 +134,8 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
     >
       <div
         style={{
-          width: (wide ? 44 : 62) * u,
-          height: (wide ? 44 : 62) * u,
+          width: (wide ? 38 : compact ? 50 : 62) * u,
+          height: (wide ? 38 : compact ? 50 : 62) * u,
           borderRadius: (wide ? 12 : 16) * u,
           backgroundColor: n.toneBg,
           display: "flex",
@@ -140,11 +144,16 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
           flex: "none",
         }}
       >
-        <svg width={(wide ? 22 : 30) * u} height={(wide ? 22 : 30) * u} viewBox="0 0 24 24" fill="none" stroke={n.tone} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width={(wide ? 20 : compact ? 25 : 30) * u} height={(wide ? 20 : compact ? 25 : 30) * u} viewBox="0 0 24 24" fill="none" stroke={n.tone} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           {n.icon === "bell" ? (
             <>
               <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </>
+          ) : n.icon === "shield" ? (
+            <>
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+              <path d="m9 12 2 2 4-4" />
             </>
           ) : (
             <>
@@ -155,27 +164,44 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
         </svg>
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: (wide ? 13 : 19) * u, fontWeight: 700, letterSpacing: "0.12em", color: n.tone, whiteSpace: "nowrap" }}>{n.label}</div>
-        <div style={{ fontSize: (wide ? 18 : 25) * u, fontWeight: 600, marginTop: 4 * u, whiteSpace: "nowrap" }}>
-          {n.product} <span style={{ color: C.muted, fontWeight: 500 }}>· {wide ? n.detail.split(" · ").pop() : n.detail}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 * u, fontSize: (wide ? 12 : compact ? 16 : 19) * u, fontWeight: 700, letterSpacing: "0.12em", whiteSpace: "nowrap" }}>
+          <span style={{ color: C.text }}>{n.kind}</span>
+          <span style={{ color: n.tone }}>{n.label}</span>
+        </div>
+        <div style={{ fontSize: (wide ? 16 : compact ? 21 : 25) * u, fontWeight: 600, marginTop: (compact ? 2 : 4) * u, whiteSpace: "nowrap" }}>
+          {n.product} <span style={{ color: C.muted, fontWeight: 500 }}>· {compact ? n.detail.split(" · ").pop() : n.detail}</span>
         </div>
       </div>
       <div style={{ textAlign: "right", flex: "none" }}>
-        <div style={{ fontFamily: display, fontWeight: 700, fontSize: (wide ? 24 : 34) * u, whiteSpace: "nowrap" }}>
+        <div style={{ fontFamily: display, fontWeight: 700, fontSize: (wide ? 20 : compact ? 27 : 34) * u, whiteSpace: "nowrap" }}>
           <span style={{ color: C.muted, fontWeight: 600 }}>{n.from}</span>
           <span style={{ color: C.muted, margin: `0 ${8 * u}px` }}>→</span>
           {n.to}
         </div>
-        <div style={{ fontSize: (wide ? 14 : 20) * u, fontWeight: 700, color: n.tone }}>{n.change}</div>
+        <div style={{ fontSize: (wide ? 12 : compact ? 16 : 20) * u, fontWeight: 700, color: n.tone, whiteSpace: "nowrap" }}>{n.change}</div>
       </div>
     </div>
   )
+  const audit = notice({
+    delay: 26,
+    kind: "AUDIT",
+    tone: C.cobalt,
+    toneBg: "rgba(142,162,255,0.14)",
+    icon: "shield",
+    label: "POSSIBLE OVERPAYMENT",
+    product: "Office chairs",
+    detail: "9401.71.0011 · Entry #4471",
+    from: "45%",
+    to: "25%",
+    change: "Refund may apply",
+  })
   const alert = notice({
-    delay: 28,
+    delay: 38,
+    kind: "ALERT",
     tone: C.red,
     toneBg: "rgba(255,125,110,0.14)",
     icon: "bell",
-    label: "TARIFF CHANGE ON YOUR IMPORT",
+    label: compact ? "TARIFF CHANGE" : "TARIFF CHANGE ON YOUR IMPORT",
     product: "Steel brackets",
     detail: "7326.90.8688 · China",
     from: "25%",
@@ -183,11 +209,12 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
     change: `+${rate - 25}%`,
   })
   const saving = notice({
-    delay: 36,
+    delay: 32,
+    kind: "SAVINGS",
     tone: C.green,
     toneBg: "rgba(52,201,139,0.14)",
     icon: "tag",
-    label: "YOU MAY QUALIFY FOR A LOWER RATE",
+    label: compact ? "MAY QUALIFY" : "YOU MAY QUALIFY FOR A LOWER RATE",
     product: "LED lamps",
     detail: "9405.42.8440 · Mexico",
     from: "3.9%",
@@ -201,7 +228,7 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
         <div
           key={o.name}
           style={{
-            ...rise(44 + i * 6, 50),
+            ...rise(50 + i * 6, 50),
             flex: 1,
             backgroundColor: C.cardHi,
             border: `${1.5 * u}px solid ${C.line}`,
@@ -226,7 +253,7 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
   )
 
   const brand = (
-    <div style={{ display: "flex", alignItems: "center", gap: 14 * u, ...rise(58, 30) }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 14 * u, ...rise(62, 30) }}>
       <Mark size={(wide ? 44 : 54) * u} />
       <div>
         <div style={{ fontFamily: display, fontWeight: 700, fontSize: (wide ? 22 : 28) * u }}>HTS Hero</div>
@@ -237,7 +264,7 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
   const button = (
     <div
       style={{
-        ...rise(58, 30),
+        ...rise(62, 30),
         backgroundColor: C.amber,
         color: C.ground,
         fontFamily: display,
@@ -253,6 +280,13 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
       Claim 40% Off →
     </div>
   )
+  const cards = (
+    <div style={{ display: "flex", flexDirection: "column", gap: (wide ? 8 : compact ? 12 : 16) * u }}>
+      {audit}
+      {saving}
+      {alert}
+    </div>
+  )
   const cta = (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20 * u }}>
       {brand}
@@ -261,7 +295,7 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
   )
 
   const fine = (
-    <div style={{ fontSize: (wide ? 13 : 18) * u, color: C.muted, textAlign: wide ? "center" : undefined, opacity: enter(64) * 0.85 }}>
+    <div style={{ fontSize: (wide ? 13 : 18) * u, color: C.muted, textAlign: wide ? "center" : undefined, opacity: enter(68) * 0.85 }}>
       First year of any annual plan, then the regular annual price. No code needed.
     </div>
   )
@@ -291,7 +325,7 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
             {brand}
           </div>
           <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 14 * u }}>
-            {alert}
+            {cards}
             {prices}
             {button}
             {fine}
@@ -301,10 +335,7 @@ export const LinkedInAd = ({ format }: { format: AdFormat }) => {
         <AbsoluteFill style={{ flexDirection: "column", justifyContent: "space-between", padding: `${(tall ? 76 : 60) * u}px ${70 * u}px ${(tall ? 64 : 52) * u}px` }}>
           {pill}
           {headline}
-          <div style={{ display: "flex", flexDirection: "column", gap: 18 * u }}>
-            {alert}
-            {tall && saving}
-          </div>
+          {cards}
           {prices}
           <div style={{ display: "flex", flexDirection: "column", gap: 18 * u }}>
             {cta}
