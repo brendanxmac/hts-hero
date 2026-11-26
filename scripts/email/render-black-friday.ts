@@ -4,6 +4,7 @@
 //   social/out/black-friday-square.mp4  a 1080×1080 post for LinkedIn / X
 //   social/out/linkedin/bf-{portrait,square,landscape}.png  the LinkedIn ad's stills (LinkedInAd.tsx)
 //   social/out/linkedin/bf-portrait.mp4  the LinkedIn ad as a 6s video
+//   social/out/linkedin/bf-simple-{portrait,square}.png + bf-simple-portrait.mp4  the simplest post (SimpleAd.tsx)
 // Then upload the email images with `npm run email:upload-logo` (dev, then production).
 // `npm run email:render-black-friday`
 import { execFileSync } from "child_process"
@@ -33,6 +34,10 @@ const main = async () => {
   for (const shape of ["portrait", "square", "landscape"]) {
     run(["still", ENTRY, `linkedin-${shape}`, resolve(`social/out/linkedin/bf-${shape}.png`), "--frame=120"])
   }
+  for (const shape of ["portrait", "square"]) {
+    run(["still", ENTRY, `simple-${shape}`, resolve(`social/out/linkedin/bf-simple-${shape}.png`), "--frame=90"])
+  }
+  run(["render", ENTRY, "simple-portrait", resolve("social/out/linkedin/bf-simple-portrait.mp4"), "--codec=h264", "--crf=18"])
   run(["render", ENTRY, "linkedin-portrait", resolve("social/out/linkedin/bf-portrait.mp4"), "--codec=h264", "--crf=18"])
   console.log(`\n${gif} (${kb(gif)})\n${png} (${kb(png)})\n${mp4} (${kb(mp4)})`)
 }
