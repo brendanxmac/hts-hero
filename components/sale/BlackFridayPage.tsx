@@ -274,7 +274,7 @@ export const BlackFridayPage = ({ serverLive }: { serverLive: boolean }) => {
       <section id="plans" ref={plansRef} className={`${mk.band} scroll-mt-6`} aria-labelledby="plans-title">
         <div className="mx-auto w-full max-w-[84rem] px-6 lg:px-8">
           <SectionIntro eyebrow="" title={`${SALE.percentOff}% off All Annual Plans`} id="plans-title" center>
-            Pricing scales to fit the # of products you import. <br /> A product is 1 HTS code from 1 country of origin
+            Pricing scales to fit the # of products you manage or import. <br /> A product is 1 HTS code from 1 country of origin
           </SectionIntro>
 
           {canceled && (

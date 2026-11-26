@@ -44,7 +44,7 @@ export const SaleBanner = ({ fallback = null, serverLive = false, inApp = false 
         <div className="flex flex-col items-center gap-1.5 text-center sm:flex-row sm:gap-4 sm:text-left">
           <span className="shrink-0 rounded-full bg-warning px-3 py-1 text-xs font-black uppercase tracking-widest text-warning-content">{SALE.name}</span>
           <p className="m-0 text-base sm:text-lg">
-            <span className="font-bold">{SALE.percentOff}% off Duty Guard.</span>{" "}
+            <span className="font-bold">{SALE.percentOff}% off Tariff Alerts, Audits, & Savings.</span>{" "}
             <span className="text-white/75">Every annual plan, Essentials and Pro.</span>{" "}
             {/* Cached pages can be days old: the count is the browser's */}
             <span className="font-semibold text-warning" suppressHydrationWarning>{endsIn()}</span>

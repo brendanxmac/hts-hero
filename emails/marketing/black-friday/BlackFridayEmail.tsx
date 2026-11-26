@@ -16,7 +16,7 @@ import { SALE, saleAnnual } from "../../../libs/black-friday"
 // The animated hero: emails/assets/black-friday (npm run email:render-black-friday, then
 // npm run email:upload-logo for each Supabase project).
 
-export const subject = "40% off Duty Guard (ends Dec 3)"
+export const subject = "40% off Tariff Alerts, Audits, & Savings (ends Dec 3)"
 export const preview = "Our Black Friday sale: every annual plan, Essentials and Pro. Applied automatically at checkout."
 
 const COPY = {
