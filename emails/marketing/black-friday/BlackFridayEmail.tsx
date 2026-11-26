@@ -21,7 +21,7 @@ export const preview = "Our Black Friday sale: every annual plan, Essentials and
 
 const COPY = {
   eyebrow: `${SALE.name} · Ends ${SALE.endsLabel}`,
-  title: `${SALE.percentOff}% Off Duty Guard`,
+  title: `${SALE.percentOff}% Off Tariff Audits, Savings, & Alerts`,
   intro:
     "Tariffs keep changing, and any change can land on the products you import. Duty Guard watches every one of them for you: it alerts you the moment a new tariff hits one, shows the rate before and after, and on Pro audits your entries and finds savings you may qualify for.",
   offer: `Through Thursday, December 3, every annual plan is ${SALE.percentOff}% off for the first year. Essentials and Pro, any size. There's no code to enter: the discount is applied automatically at checkout.`,
@@ -45,7 +45,7 @@ export default function BlackFridayEmail({ footer, preview: previewLine = previe
       {/* Animated (a GIF); its first frame carries the whole offer, for Outlook, which shows only that */}
       <Img
         src={blackFridayHeroUrl()}
-        alt={`${SALE.name}: ${SALE.percentOff}% off Duty Guard. Essentials from ${formatPrice(OFFERS[0].deal.sale)}/mo, Pro from ${formatPrice(OFFERS[1].deal.sale)}/mo. Ends ${SALE.endsLabel}.`}
+        alt={`${SALE.name}: ${SALE.percentOff}% Off Tariff Audits, Savings, & Alerts. Essentials from ${formatPrice(OFFERS[0].deal.sale)}/mo, Pro from ${formatPrice(OFFERS[1].deal.sale)}/mo. Ends ${SALE.endsLabel}.`}
         width="496"
         style={{ display: "block", width: "100%", maxWidth: 496, height: "auto", margin: "4px 0 24px", border: 0, borderRadius: 18, backgroundColor: "#0B0D14", fontFamily: FONT_SANS, fontSize: 13, lineHeight: "20px", color: C.surface }}
       />
