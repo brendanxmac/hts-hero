@@ -243,10 +243,10 @@ export const BlackFridayPage = ({ serverLive }: { serverLive: boolean }) => {
           <span className="rounded-full bg-warning px-4 py-1.5 text-sm font-black uppercase tracking-[0.2em] text-warning-content">{SALE.name} Sale</span>
           <h1 className="m-0 text-5xl font-bold leading-[1.02] tracking-tight [font-family:var(--font-tracker-display)] sm:text-7xl">
             <span className="text-warning">{SALE.percentOff}% Off</span>
-            <br />A Full Year of Duty Guard
+            <br />Tariff Alerts, Audits, & Savings
           </h1>
           <p className="m-0 max-w-2xl text-lg leading-relaxed text-white/75 sm:text-xl">
-            Tariff alerts, entry audits, and savings detection on every product you import. Every annual plan, Essentials and Pro, any size.
+            Get tariff alerts, entry audits, and savings detection on all your imports. <br /> Every annual plan, Essentials and Pro, any size.
           </p>
           <Countdown />
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-base">
@@ -273,8 +273,8 @@ export const BlackFridayPage = ({ serverLive }: { serverLive: boolean }) => {
       {/* The plans */}
       <section id="plans" ref={plansRef} className={`${mk.band} scroll-mt-6`} aria-labelledby="plans-title">
         <div className="mx-auto w-full max-w-[84rem] px-6 lg:px-8">
-          <SectionIntro eyebrow="" title={`Pick Your Plan, ${SALE.percentOff}% Off Year One`} id="plans-title" center>
-            Priced by products: one HTS code from one country of origin. Billed yearly; renews at the regular annual price.
+          <SectionIntro eyebrow="" title={`${SALE.percentOff}% off All Annual Plans`} id="plans-title" center>
+            Pricing scales to fit the # of products you import. <br /> A product is 1 HTS code from 1 country of origin
           </SectionIntro>
 
           {canceled && (
