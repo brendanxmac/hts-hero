@@ -1,6 +1,7 @@
 import { sectionUrl, TRACKER_PATH } from "@/components/tariff-tracker/sections"
 import {
   signupHref,
+  type SignupReason,
   TRACKER_START,
 } from "@/components/tariff-tracker/access/signup"
 
@@ -48,11 +49,12 @@ export const isEntryPoint = (v: unknown): v is EntryPoint =>
 
 // Every sign-up button: sign up, then the onboarding, remembering where it started (?from=). `next`
 // is where to land after it, for a button that already knows (the import it just saved); `reason`
-// is what they reached for, when the sign-up page should say so
-export const entryHref = (entry: EntryPoint, next?: string, reason?: "adcvd") =>
+// is what they reached for, when the sign-up page should say so, and `code` the HTS code it was for
+export const entryHref = (entry: EntryPoint, next?: string, reason?: SignupReason, code?: string) =>
   signupHref(
     `${ONBOARDING_PATH}?from=${entry}${next ? `&next=${encodeURIComponent(next)}` : ""}`,
     reason,
+    code,
   )
 
 // A `next` that's safe to send someone to: a path on this site

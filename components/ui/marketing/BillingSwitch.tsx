@@ -1,9 +1,11 @@
 "use client";
 
 import { ANNUAL_DISCOUNT, Billing } from "@/components/pricing-calculator/lib/pricing";
+import { SALE } from "@/libs/black-friday";
+import { useSaleLive } from "@/components/sale/useSale";
 
 // Monthly or annual, for marketing pages. The annual side always carries its saving, so it can't be
-// missed.
+// missed; while a sale is on (libs/black-friday.ts), the sale's discount.
 export const BillingSwitch = ({
   billing,
   onChange,
@@ -12,7 +14,9 @@ export const BillingSwitch = ({
   billing: Billing;
   onChange: (billing: Billing) => void;
   size?: "sm" | "md";
-}) => (
+}) => {
+  const sale = useSaleLive();
+  return (
   <div
     className={`inline-flex items-center rounded-full bg-white shadow-xs ring-1 ring-slate-200 skin:bg-base-100 skin:ring-base-300 ${size === "sm" ? "p-1" : "p-1.5"}`}
     role="radiogroup"
@@ -35,11 +39,12 @@ export const BillingSwitch = ({
             <span
               className={`rounded-full px-2.5 py-1 text-xs font-bold transition-colors ${active ? "bg-emerald-400 text-slate-950 skin:bg-success skin:text-success-content" : "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200 skin:bg-success/10 skin:text-success skin:ring-success/30"}`}
             >
-              Save {ANNUAL_DISCOUNT * 100}%
+              {sale ? `${SALE.percentOff}% Off` : `Save ${ANNUAL_DISCOUNT * 100}%`}
             </span>
           )}
         </button>
       );
     })}
   </div>
-);
+  );
+};

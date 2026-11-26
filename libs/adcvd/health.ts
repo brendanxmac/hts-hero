@@ -12,13 +12,16 @@ const REMIND_HOURS = 24
 const NOTIFY = "brendan@htshero.com"
 
 export const checkAdcvdHealth = async (db: Db, now = new Date()) => {
-  const { data } = await db.from("adcvd_settings").select("last_cron_at, stale_alerted_at").eq("id", true).maybeSingle()
+  const { data } = await db.from("adcvd_settings").select("last_cron_at, stale_alerted_at, last_cron").eq("id", true).maybeSingle()
   // Never run yet (not deployed, or the table is new): nothing to say
   if (!data?.last_cron_at) return { stale: false }
   const hours = (now.getTime() - new Date(data.last_cron_at).getTime()) / 3_600_000
   if (hours < STALE_HOURS) return { stale: false }
   const alertedHoursAgo = data.stale_alerted_at ? (now.getTime() - new Date(data.stale_alerted_at).getTime()) / 3_600_000 : Infinity
   if (alertedHoursAgo < REMIND_HOURS) return { stale: true, emailed: false }
+  // Runs cut short since (app/api/cron/adcvd): the last one, and how far it got
+  const stopped = (data.last_cron as { stopped_early?: { at: string; progress: string[] } } | null)?.stopped_early
+  const cutShort = stopped && Date.parse(stopped.at) > Date.parse(data.last_cron_at) ? [{ label: "Last run cut short", value: `${new Date(stopped.at).toUTCString()}: ${stopped.progress.join(" · ") || "before its first step"}` }] : []
   await sendTransactional(db, {
     recipient: NOTIFY,
     template: "internal_notice",
@@ -27,6 +30,7 @@ export const checkAdcvdHealth = async (db: Db, now = new Date()) => {
       title: `The AD/CVD cron hasn't run for ${Math.round(hours)} hours`,
       rows: [
         { label: "Last run", value: new Date(data.last_cron_at).toUTCString() },
+        ...cutShort,
         { label: "Route", value: "/api/cron/adcvd (vercel.json, every hour)" },
         { label: "Check", value: "Vercel's cron logs, and /adcvd for the last run's result" },
       ],

@@ -32,7 +32,20 @@ type Method = "google" | "email_password" | "email_code";
 
 const started = (method: Method, redirectTo: string) => trackEvent(MixpanelEvent.SIGN_UP_STARTED, { method, redirect: redirectTo });
 
-const pill = "inline-flex h-12 w-full items-center justify-center gap-3 rounded-full text-base font-semibold transition-colors disabled:cursor-not-allowed";
+// The line under the heading: what they reached for (?for=), so the form isn't a surprise. The
+// Watch box sends the HTS code it saved (?code=), shown only when it looks like one
+const HTS_CODE = /^\d{4}(\.\d{2}){0,3}$/;
+const subtitle = (reason: string | null, code: string | null) => {
+  if (reason === "adcvd") return "100% free, no credit card required. You come right back to the AD/CVD check for this import.";
+  if (reason === "watch") {
+    const saved = code && HTS_CODE.test(code) ? code : "Your code";
+    return `${saved} is saved. Create your free account to track it, and you'll land right on it. No credit card required.`;
+  }
+  if (reason === "black_friday") return "Create your free account to claim Black Friday's 40% off. You'll go straight to checkout with your plan.";
+  return "100% free. No credit card required.";
+};
+
+const pill ="inline-flex h-12 w-full items-center justify-center gap-3 rounded-full text-base font-semibold transition-colors disabled:cursor-not-allowed";
 const field = `${ui.input} h-12 rounded-full px-5`;
 
 function SignUpContent() {
@@ -167,7 +180,7 @@ function SignUpContent() {
 
         <h1 className={`${tt.display} mt-8 text-center text-3xl font-semibold tracking-tight text-base-content`}>Create your account</h1>
         <p className="mt-2 text-center text-lg font-medium text-base-content/70">
-          {searchParams.get("for") === "adcvd" ? "100% free, no credit card required. You come right back to the AD/CVD check for this import." : "100% free. No credit card required."}
+          {subtitle(searchParams.get("for"), searchParams.get("code"))}
         </p>
 
         <div className="mt-8 flex w-full flex-col gap-4">

@@ -153,7 +153,7 @@ export const noticeText = async (rawTextUrl: string | null | undefined) => {
   if (!rawTextUrl) return null
   const copy = govInfoUrl(rawTextUrl)
   if (copy) {
-    const raw = await frFetch(copy).catch((e: unknown) => {
+    const raw = await frFetch(copy).catch((e: unknown): null => {
       if (e instanceof FederalRegisterOutOfTime) throw e
       return null
     })

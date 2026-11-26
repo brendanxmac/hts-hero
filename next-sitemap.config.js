@@ -151,6 +151,8 @@ module.exports = {
     "/sign-out",
     "/reset-password",
     "/settings*",
+    // The media kit (admin only for now)
+    "/media-kit",
     // Feeds and machine-readable files aren't pages
     "/blog/feed.xml",
     "/tariff-updates/feed.xml",

@@ -299,3 +299,41 @@ Expect Sign Up CTA Clicked counts to rise from 2026-11-06. That's new coverage, 
 - The Tracker's trial dialog can open behind the import takeover or tour.
 - `Onboarding Shown` can fire while the feature tour covers the takeover on a first visit.
 - `Let's Talk` clicks send the user's email and name as event properties.
+
+## Changed on 2026-11-26: Black Friday sale
+
+- **Sale Popup Shown**: the sale's popup opened by itself (once a day per browser, never to a paying
+  account). Properties: `sale` (black-friday-2026), `page` (the path), `signed_in`, `plan_kind`
+  (anonymous, free, trial).
+- **Sale Popup Dismissed**: closed without its button (X, Escape, "Maybe later", the backdrop).
+- **Sale CTA Clicked**: the popup's or the sale banner's "Claim 40% Off". `placement` is `popup` or
+  `banner`, plus the popup's properties, and `destination`: `sale_page` (/black-friday?from=popup|banner)
+  or, inside Duty Guard, `plans_dialog` (the plans open in place).
+- **Duty Guard Checkout Started** has `sale` (the sale's id when the annual checkout gets the coupon,
+  else null) and `surface`: `upgrade_dialog` or `black_friday_page` (with `resumed`: after sign-in).
+
+### The Black Friday page (/black-friday)
+
+Anyone can see the deal; only picking a plan asks for an account. All events carry `sale`.
+
+| Event | When | Properties |
+|---|---|---|
+| Black Friday Page Viewed | The page opened | `source` (popup, banner, `email:black-friday-2026` from utm, a referring site, or direct), `signed_in`, `plan_kind`, `resumed` (back from sign-in with a plan), `live` |
+| Black Friday Plans Viewed | The plan cards scrolled into view, once | `source`, `signed_in` |
+| Black Friday CTA Clicked | "Choose Your Plan" (hero) or the closing "Claim 40% Off" | `section`, `source`, `signed_in` |
+| Black Friday Offer Switched | Essentials / Pro toggle | `offer` (alerts, audits) |
+| Black Friday Plan Chosen | A plan card's "Claim 40% Off" | `plan`, `offer`, `products`, `price_usd` (sale per month), `year_usd`, `usual_year_usd`, `source`, `signed_in`, `plan_kind`, `next`: `checkout`, `sign_in` (a browser that's had an account here), `sign_up`, or `already_paid` |
+| Sign Up Started | On /signup (`redirect` contains /black-friday?plan=) | as before; /signup says "claim 40% off" (`for=black_friday`) |
+| Sign Up | Server, a new account | as before |
+| Black Friday Checkout Resumed | Back on the page signed in with the plan picked: checkout opens by itself | plan properties, `plan_kind` |
+| Duty Guard Checkout Started | Sent on to Stripe | `surface` = black_friday_page, `resumed` |
+| Black Friday Checkout Failed | Checkout couldn't open | plan properties, `error`, `resumed` |
+| Black Friday Checkout Canceled | Back from Stripe without paying (?canceled=) | plan properties |
+| Checkout Abandoned | Server, the Stripe session expired | as before |
+| Purchase Completed | Server | now also `discount_usd` and `sale` (set when the coupon took money off during the sale) |
+| Black Friday FAQ Opened | A question opened | `question` |
+
+Funnel: Black Friday Page Viewed → Black Friday Plan Chosen → Duty Guard Checkout Started
+(`surface` = black_friday_page) → Purchase Completed (`sale` set). Break the first step down by
+`source` to compare the popup, banner and email; Plan Chosen by `next` shows how many had to sign in.
+

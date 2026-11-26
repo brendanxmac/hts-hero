@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { getHtsElementsServer } from "../hts-server"
+import { mapLimit } from "../tariff-sources/text"
 import { mergeCodes, type MergeNotes, type MergedCodes } from "./codes"
 import { LIVE_STATUSES, type CaseRow } from "./types"
 
@@ -69,48 +70,98 @@ export const checkCase = (c: CaseRow, notes: MergeNotes | null, today = new Date
   return { problems }
 }
 
-export const checkCases = async (db: Db, caseNumbers: string[]) => {
-  if (!caseNumbers.length) return { checked: 0, withProblems: 0 }
-  const hts = await currentHts().catch(() => new Set<string>())
-  let withProblems = 0
-  for (let i = 0; i < caseNumbers.length; i += 200) {
-    const { data, error } = await db.from("adcvd_cases").select("*").in("case_number", caseNumbers.slice(i, i + 200))
-    if (error) throw new Error(`Loading cases: ${error.message}`)
-    for (const c of (data ?? []) as CaseRow[]) {
-      const { count: reviews } = await db
-        .from("adcvd_events")
-        .select("id", { count: "exact", head: true })
-        .eq("case_number", c.case_number)
-        .in("event", ["review_init", "review_prelim", "review_final", "review_other", "sunset_init", "sunset_result", "continuation", "new_shipper"])
-      const status = reconciledStatus(c, (reviews ?? 0) > 0)
-      // An investigation Commerce hasn't published a scope for yet: the codes its ITC petition
-      // notice names, as "may also enter" (possible) matches until the scope arrives
-      if (!c.fr_main?.length && !c.fr_also?.length && status === "investigation") {
-        const { data: itc } = await db.from("adcvd_events").select("hts_codes").eq("case_number", c.case_number).eq("agency", "itc")
-        const petitionCodes = Array.from(new Set((itc ?? []).flatMap((e) => e.hts_codes as string[])))
-        if (petitionCodes.length) {
-          await db.from("adcvd_cases").update({ fr_also: petitionCodes }).eq("case_number", c.case_number)
-          c.fr_also = petitionCodes
-        }
-      }
-      // Every source's codes, merged into what imports match on (codes.ts). Without the source
-      // columns (the 2026-10-23 migration not applied yet), the codes stay as they are.
-      if (c.fr_main === undefined) throw new Error("adcvd_cases has no fr_main column: run the 2026-10-23 section of supabase/migrations/adcvd.sql")
-      const { itaAdded, renumbered, split, unmapped, ...merged } = mergeCodes(c, hts)
-      const result: Pick<CaseRow, "problems"> & MergedCodes & { status?: CaseRow["status"] } = {
-        ...merged,
-        ...checkCase({ ...c, ...merged, status }, { itaAdded, renumbered, split, unmapped }),
-      }
-      if (status !== c.status) result.status = status
-      // Siblings ordered together should list the same codes
-      if (c.siblings.length && c.fr_main?.length) {
-        const { data: sibs } = await db.from("adcvd_cases").select("case_number, fr_main, scope_doc").in("case_number", c.siblings)
-        const differ = (sibs ?? []).filter((s) => s.fr_main.length && s.scope_doc === c.scope_doc && s.fr_main.join() !== c.fr_main!.join())
-        if (differ.length) result.problems.push(`Lists different codes from ${differ.map((s) => s.case_number).join(", ")} for the same scope notice.`)
-      }
-      if (result.problems.length) withProblems++
-      await db.from("adcvd_cases").update(result).eq("case_number", c.case_number)
+// Rows matching a filter on a list of case numbers, in slices (long lists don't fit in a URL) and
+// pages (PostgREST returns at most 1,000 rows a request)
+const PAGE = 1000
+const byCases = async <T>(caseNumbers: string[], query: (slice: string[], from: number, to: number) => PromiseLike<{ data: unknown[] | null; error: { message: string } | null }>) => {
+  const rows: T[] = []
+  for (let i = 0; i < caseNumbers.length; i += 150) {
+    const slice = caseNumbers.slice(i, i + 150)
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await query(slice, from, from + PAGE - 1)
+      if (error) throw new Error(error.message)
+      rows.push(...((data ?? []) as T[]))
+      if ((data ?? []).length < PAGE) break
     }
   }
-  return { checked: caseNumbers.length, withProblems }
+  return rows
+}
+
+const REVIEW_EVENTS = ["review_init", "review_prelim", "review_final", "review_other", "sunset_init", "sunset_result", "continuation", "new_shipper"]
+// Case rows saved at once
+const SAVE_LIMIT = 8
+
+// Checks the cases given, in batches of reads (a handful of requests however many cases) and a
+// few saves at a time. Stops at the deadline with `remaining` (each case is checked whole or not
+// at all, so the next run can just check again).
+export const checkCases = async (db: Db, caseNumbers: string[], { deadline = Infinity }: { deadline?: number } = {}) => {
+  if (!caseNumbers.length) return { checked: 0, withProblems: 0, remaining: false }
+  const hts = await currentHts().catch(() => new Set<string>())
+  const cases = await byCases<CaseRow>(caseNumbers, (slice, from, to) => db.from("adcvd_cases").select("*").in("case_number", slice).order("case_number").range(from, to)).catch((e) => {
+    throw new Error(`Loading cases: ${e.message}`)
+  })
+  const numbers = cases.map((c) => c.case_number)
+  // Cases with an annual review, sunset review or the like (a sign of an order)
+  const reviewed = new Set(
+    (
+      await byCases<{ case_number: string }>(numbers, (slice, from, to) =>
+        db.from("adcvd_events").select("case_number").in("case_number", slice).in("event", REVIEW_EVENTS).order("id").range(from, to)
+      )
+    ).map((r) => r.case_number)
+  )
+  // An investigation Commerce hasn't published a scope for yet: the codes its ITC petition
+  // notice names, as "may also enter" (possible) matches until the scope arrives
+  const statusOf = new Map(cases.map((c) => [c.case_number, reconciledStatus(c, reviewed.has(c.case_number))]))
+  const waiting = cases.filter((c) => !c.fr_main?.length && !c.fr_also?.length && statusOf.get(c.case_number) === "investigation").map((c) => c.case_number)
+  const petitionCodes = new Map<string, Set<string>>()
+  for (const e of await byCases<{ case_number: string; hts_codes: string[] }>(waiting, (slice, from, to) =>
+    db.from("adcvd_events").select("case_number, hts_codes").in("case_number", slice).eq("agency", "itc").order("id").range(from, to)
+  )) {
+    const set = petitionCodes.get(e.case_number) ?? new Set<string>()
+    for (const code of e.hts_codes ?? []) set.add(code)
+    petitionCodes.set(e.case_number, set)
+  }
+  // Siblings ordered together should list the same codes
+  const siblingNumbers = Array.from(new Set(cases.filter((c) => c.siblings.length && c.fr_main?.length).flatMap((c) => c.siblings)))
+  const siblings = new Map(
+    (
+      await byCases<Pick<CaseRow, "case_number" | "fr_main" | "scope_doc">>(siblingNumbers, (slice, from, to) =>
+        db.from("adcvd_cases").select("case_number, fr_main, scope_doc").in("case_number", slice).order("case_number").range(from, to)
+      )
+    ).map((s) => [s.case_number, s])
+  )
+
+  let checked = 0
+  let withProblems = 0
+  let remaining = false
+  await mapLimit(cases, SAVE_LIMIT, async (c) => {
+    if (Date.now() > deadline) {
+      remaining = true
+      return
+    }
+    const status = statusOf.get(c.case_number)!
+    const fromPetition = petitionCodes.get(c.case_number)
+    const petition = fromPetition?.size ? { fr_also: Array.from(fromPetition) } : {}
+    Object.assign(c, petition)
+    // Every source's codes, merged into what imports match on (codes.ts). Without the source
+    // columns (the 2026-10-23 migration not applied yet), the codes stay as they are.
+    if (c.fr_main === undefined) throw new Error("adcvd_cases has no fr_main column: run the 2026-10-23 section of supabase/migrations/adcvd.sql")
+    const { itaAdded, renumbered, split, unmapped, ...merged } = mergeCodes(c, hts)
+    const result: Pick<CaseRow, "problems"> & MergedCodes & { status?: CaseRow["status"]; fr_also?: string[] } = {
+      ...petition,
+      ...merged,
+      ...checkCase({ ...c, ...merged, status }, { itaAdded, renumbered, split, unmapped }),
+    }
+    if (status !== c.status) result.status = status
+    if (c.siblings.length && c.fr_main?.length) {
+      const differ = c.siblings
+        .map((n) => siblings.get(n))
+        .filter((s): s is NonNullable<typeof s> => !!s && !!s.fr_main?.length && s.scope_doc === c.scope_doc && s.fr_main.join() !== c.fr_main!.join())
+      if (differ.length) result.problems.push(`Lists different codes from ${differ.map((s) => s.case_number).join(", ")} for the same scope notice.`)
+    }
+    if (result.problems.length) withProblems++
+    await db.from("adcvd_cases").update(result).eq("case_number", c.case_number)
+    checked++
+  })
+  return { checked, withProblems, remaining }
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { SALE } from "@/libs/black-friday";
+import { useSaleLive } from "@/components/sale/useSale";
 import { ReactNode, useEffect, useState } from "react";
 import { Dialog } from "@/components/ui/Dialog";
 import { ArrowDownTrayIcon, BellAlertIcon, BoltIcon, ChartBarIcon, ClockIcon, NewspaperIcon, XMarkIcon } from "@heroicons/react/20/solid";
@@ -19,6 +21,7 @@ import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { ALERT_PLANS, AUDIT_PLANS, TrackerAccess, TrackerOffer, TrackerPlan, trackerPlanFor } from "@/libs/tariff-tracker/plan";
 import { useAllImports } from "../catalogStore";
 import { openBillingPortal, useTrackerSubscription } from "../plan/billing";
+import { startCheckout } from "../plan/checkout";
 import { useUpgradeStats } from "./upgradeStats";
 import { PremiumFeature } from "./features";
 
@@ -44,16 +47,6 @@ const startOffer = (feature: PremiumFeature, access: TrackerAccess): TrackerOffe
   return feature === "plan" && current === "alerts" ? "alerts" : "audits";
 };
 
-const checkout = async (plan: TrackerPlan, billing: Billing) => {
-  const res = await fetch("/api/stripe/create-checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ itemId: plan.plan, billing, cancelUrl: window.location.href }),
-  });
-  const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
-  if (!res.ok || !body.url) throw new Error(body.error ?? "Checkout isn't available right now.");
-  window.location.href = body.url;
-};
 
 export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolean; feature: PremiumFeature; access: TrackerAccess; onClose: () => void }) => {
   // Every list: the plan counts each import once
@@ -64,6 +57,9 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
   const [offer, setOffer] = useState<TrackerOffer>(() => startOffer(feature, access));
   const [busy, setBusy] = useState<string | null>(null);
   const stats = useUpgradeStats();
+  // A sale (libs/black-friday.ts): the checkout takes it off an annual plan's first year; a plan
+  // change goes through the billing portal, which has no coupon
+  const onSale = useSaleLive() && !changing;
 
   useEffect(() => {
     if (open) setOffer(startOffer(feature, access));
@@ -112,13 +108,15 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
       catalog: items.length,
       change: changing,
       plan_kind: access.kind,
+      sale: onSale && billing === "annual" ? SALE.id : null,
+      surface: "upgrade_dialog",
     });
     if (changing) {
       if (!(await openBillingPortal(plan.plan, billing))) setBusy(null);
       return;
     }
     try {
-      await checkout(plan, billing);
+      await startCheckout(plan, billing);
     } catch (e) {
       toast.error((e as Error).message);
       setBusy(null);
@@ -167,8 +165,15 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
 
             <div className="flex flex-wrap items-center justify-center gap-3">
               <SegmentedControl<TrackerOffer> label="Offer" options={OFFERS} value={offer} onChange={setOffer} />
-              <DarkBillingSwitch billing={billing} onChange={setBilling} />
+              <DarkBillingSwitch billing={billing} onChange={setBilling} noSale={changing} />
             </div>
+
+            {onSale && (
+              <p className="m-0 rounded-2xl bg-warning/15 px-4 py-3 text-center text-sm font-semibold text-base-content ring-1 ring-warning/40">
+                {SALE.name}: {SALE.percentOff}% off your first year on every annual plan, until {SALE.endsLabel}.
+                {billing === "monthly" && " Switch to Annual to get it."}
+              </p>
+            )}
 
             {/* How the change finishes in Stripe's billing portal */}
             {changing && (
@@ -197,6 +202,7 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
                   onChoose={choose}
                   cta={cta}
                   busy={busy !== null}
+                  noSale={changing}
                 />
               ) : (
                 <PlanCards
@@ -210,6 +216,7 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
                   onChoose={choose}
                   cta={cta}
                   busy={busy !== null}
+                  noSale={changing}
                 />
               )}
             </div>

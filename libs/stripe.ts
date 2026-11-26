@@ -11,6 +11,8 @@ interface CreateCheckoutParams {
   successUrl: string;
   cancelUrl: string;
   promotionCode?: string | null;
+  // A coupon our server applies (a sale's), instead of a promotion code
+  couponId?: string | null;
   clientReferenceId?: string;
   user?: {
     customerId?: string;
@@ -34,6 +36,7 @@ export const createCheckout = async ({
   cancelUrl,
   priceId,
   promotionCode,
+  couponId,
 }: CreateCheckoutParams): Promise<string> => {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -75,13 +78,15 @@ export const createCheckout = async ({
           quantity: 1,
         },
       ],
-      discounts: promotionCode
-        ? [
-            {
-              promotion_code: promotionCode,
-            },
-          ]
-        : [],
+      discounts: couponId
+        ? [{ coupon: couponId }]
+        : promotionCode
+          ? [
+              {
+                promotion_code: promotionCode,
+              },
+            ]
+          : [],
       success_url: successUrl,
       cancel_url: cancelUrl,
       ...extraParams,

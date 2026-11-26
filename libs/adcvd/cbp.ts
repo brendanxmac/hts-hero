@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { countryOfCase } from "./countries"
+import { runTimeLeft } from "./fr"
 import { fillHistory } from "./history"
 import { CBP_MESSAGES_URL, type CaseRow, type EventRow } from "./types"
 
@@ -38,7 +39,10 @@ const isoDate = (us: string) => {
 const typeLabel = (type: string | null) => (type ?? "").replace(/^[A-Z]+-/, "").toLowerCase() || "instructions"
 
 export const readCbpMessages = async (db: Db) => {
-  const response = await fetch(FEED, { headers: { Accept: "application/json" }, cache: "no-store", signal: AbortSignal.timeout(30_000) })
+  // Never past the run's deadline (fr.ts)
+  const left = runTimeLeft()
+  if (left < 2_000) return { messages: 0, added: 0, newCases: 0, thirdCountries: 0, skipped: "out of time" }
+  const response = await fetch(FEED, { headers: { Accept: "application/json" }, cache: "no-store", signal: AbortSignal.timeout(Math.min(30_000, left)) })
   if (!response.ok) throw new Error(`CBP's AD/CVD messages answered ${response.status}`)
   const messages = (((await response.json()) as { resultData?: CbpMessage[] }).resultData ?? []).filter((m) => /^[AC]-?\d{3}-?\d{3}$/.test(m.caseNumber))
   if (!messages.length) return { messages: 0, added: 0, newCases: 0, thirdCountries: 0 }

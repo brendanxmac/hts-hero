@@ -13,6 +13,14 @@ pricing changes.
 
 _Last updated 2026-10-31: the offers below are what the product sells. Older history is in git._
 
+> **Black Friday sale, 2026-11-26 → 2026-12-03 11:59pm ET (decided 2026-11-26):** 40% off the first
+> year of every **annual** Duty Guard plan, Essentials and Pro, every size; it renews at the normal
+> annual price. A real time-limited discount, so the plan cards strike through the normal annual price
+> (which is really charged). The checkout adds the Stripe coupon `NEXT_PUBLIC_BLACK_FRIDAY_COUPON_ID`
+> (40%, duration once); without it set, nothing shows the sale. Not for plan changes (the billing
+> portal has no coupon) or paying accounts. The popup, banner and email lead to `/black-friday`, open to
+> everyone; only choosing a plan asks for sign-in, then checkout opens. Config and copy: `libs/black-friday.ts`, `components/sale/`.
+
 ## The value ladder
 
 **The ladder: Free → Tariff Alerts → Duty Audits.** Managed sits beside it for done-for-you

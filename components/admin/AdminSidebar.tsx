@@ -12,6 +12,7 @@ import {
   FlagIcon,
   InboxStackIcon,
   NewspaperIcon,
+  PresentationChartBarIcon,
   ScaleIcon,
   SparklesIcon,
   Squares2X2Icon,
@@ -45,6 +46,7 @@ const TOOLS: Tool[] = [
   { href: "/adcvd", label: "AD/CVD Cases", Icon: ScaleIcon, area: "adcvd" },
   { href: "/audit-reports", label: "Audit Reports", Icon: FlagIcon, area: "reports" },
   { href: "/content-studio", label: "Content Studio", Icon: SparklesIcon, area: "studio" },
+  { href: "/media-kit", label: "Media Kit", Icon: PresentationChartBarIcon, external: true },
   { href: "/coverage-checker", label: "Coverage Checker", Icon: Squares2X2Icon, local: true },
   { href: "/revision-checker", label: "Revision Checker", Icon: CodeBracketSquareIcon, local: true, external: true },
 ]

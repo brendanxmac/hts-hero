@@ -98,8 +98,10 @@ interface Group {
   events: EventRow[]
 }
 
-// Joins the month's significant events (and their proceeding's earlier or later ones) into updates
-export const updateMonth = async (db: Db, month: string) => {
+// Joins the month's significant events (and their proceeding's earlier or later ones) into updates.
+// Stops at the deadline with `remaining`; each update is found by its slug, so the next run just
+// writes them again.
+export const updateMonth = async (db: Db, month: string, { deadline = Infinity }: { deadline?: number } = {}) => {
   const { start, end } = monthRange(month)
   const { data, error } = await db
     .from("adcvd_events")
@@ -110,7 +112,7 @@ export const updateMonth = async (db: Db, month: string) => {
   if (error) throw new Error(`Loading events: ${error.message}`)
   const events = (data ?? []) as EventRow[]
   await removeOrphans(db)
-  if (!events.length) return { updates: 0 }
+  if (!events.length) return { updates: 0, remaining: false }
 
   const caseNumbers = Array.from(new Set(events.map((e) => e.case_number).filter((n): n is string => !!n)))
   const { data: caseRows } = await db.from("adcvd_cases").select("*").in("case_number", caseNumbers)
@@ -132,6 +134,7 @@ export const updateMonth = async (db: Db, month: string) => {
 
   let written = 0
   for (const group of Array.from(groups.values())) {
+    if (Date.now() > deadline) return { updates: written, remaining: true }
     const prefix = `adcvd-${group.proceeding}-${slugify(group.product)}`
     const dates = group.events.map((e) => e.published_on).sort()
     // An existing update for this proceeding: its notices are within PROCEEDING_DAYS of these
@@ -166,7 +169,7 @@ export const updateMonth = async (db: Db, month: string) => {
     await refreshUpdate(db, updateId!)
     written++
   }
-  return { updates: written }
+  return { updates: written, remaining: false }
 }
 
 // AD/CVD updates no event points at any more (a notice read again and found not significant, or

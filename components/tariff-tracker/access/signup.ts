@@ -1,9 +1,10 @@
 // The sign-up page (/signup, its own route so sign-ups are tracked apart from sign-ins), coming
 // back to `redirect` (a path on this site) once the account exists. `reason` is what they reached
-// for, when the page should say so
+// for, when the page should say so, and `code` the HTS code it was for (the Watch box names it)
 export const SIGNUP_PATH = "/signup";
-export const signupHref = (redirect: string, reason?: "adcvd") =>
-  `${SIGNUP_PATH}?redirect=${encodeURIComponent(redirect)}${reason ? `&for=${reason}` : ""}`;
+export type SignupReason = "adcvd" | "watch" | "black_friday";
+export const signupHref = (redirect: string, reason?: SignupReason, code?: string) =>
+  `${SIGNUP_PATH}?redirect=${encodeURIComponent(redirect)}${reason ? `&for=${reason}` : ""}${code ? `&code=${encodeURIComponent(code)}` : ""}`;
 
 // Where a new account from a "Try it free" button starts: Duty Guard, on adding its imports
 // (ImportTakeover's ?setup=add), so the first thing they do is the thing the trial is for

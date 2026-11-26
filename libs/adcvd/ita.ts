@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { checkCases } from "./checks"
 import { checkScopeCodes } from "./claude"
-import { FederalRegisterOutOfTime } from "./fr"
+import { FederalRegisterOutOfTime, runTimeLeft } from "./fr"
 import { htsCodes, scopeOf } from "./parse"
 import type { CaseRow } from "./types"
 import type { Budget } from "./usage"
@@ -58,8 +58,14 @@ export const parseItaPage = (html: string): ItaPage => {
 export const fetchItaPage = async (caseNumber: string): Promise<ItaPage> => {
   const gap = last + MIN_GAP_MS - Date.now()
   if (gap > 0) await wait(gap)
+  // Never past the run's deadline (fr.ts): the case is read by the next run
+  const left = runTimeLeft()
+  if (left < 2_000) throw new FederalRegisterOutOfTime(`Out of time for ITA's page on ${caseNumber}`)
   last = Date.now()
-  const response = await fetch(itaUrl(caseNumber), { headers: { "User-Agent": USER_AGENT }, cache: "no-store", signal: AbortSignal.timeout(30_000) })
+  const response = await fetch(itaUrl(caseNumber), { headers: { "User-Agent": USER_AGENT }, cache: "no-store", signal: AbortSignal.timeout(Math.min(30_000, left)) }).catch((e: unknown) => {
+    if (e instanceof Error && e.name === "TimeoutError" && left < 30_000) throw new FederalRegisterOutOfTime(`Out of time for ITA's page on ${caseNumber}`)
+    throw e
+  })
   if (!response.ok) throw new Error(`ITA answered ${response.status} for ${caseNumber}`)
   return parseItaPage(await response.text())
 }
@@ -121,6 +127,6 @@ export const refreshItaPages = async (
     }
   }
   // Merged into the codes imports match on, with the case's other checks
-  if (read.length) await checkCases(db, read)
+  if (read.length) await checkCases(db, read, { deadline })
   return { read: read.length, sorted, errors, remaining: cases.length === limit }
 }

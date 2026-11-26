@@ -46,6 +46,8 @@ export const logoUrl = () => `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1
 // The Duty Guard launch hero (emails/assets/duty-guard-hero.html, rendered by `npm run
 // email:render-hero`, uploaded with the logo). 1120×784, shown at half size.
 export const dutyGuardHeroUrl = () => `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/duty-guard-hero.png`
+// The Black Friday 2026 email's animated hero (npm run email:render-black-friday, then email:upload-logo)
+export const blackFridayHeroUrl = () => `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/black-friday.gif`
 
 // "2026-10-14" → "Oct 14, 2026"
 export const formatDay = (iso: string) =>

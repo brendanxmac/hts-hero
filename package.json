@@ -6,6 +6,7 @@
     "node": "22.x"
   },
   "scripts": {
+    "media-kit:snapshot": "npx tsx scripts/media-kit/snapshot.ts",
     "email": "npm run -s email:marketing-manifest && node --env-file=.env.local node_modules/.bin/email dev",
     "email:marketing-manifest": "node libs/email/marketing-manifest.mjs",
     "email:duty-guard-launch": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/duty-guard-launch.ts",
@@ -14,6 +15,7 @@
     "chat:test": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/chat/test-alerts.tsx",
     "email:upload-logo": "npx tsx scripts/email/upload-logo.ts",
     "email:render-hero": "npx tsx scripts/email/render-hero.ts",
+    "email:render-black-friday": "npx tsx scripts/email/render-black-friday.ts",
     "email:auth": "TSX_TSCONFIG_PATH=tsconfig.scripts.json npx tsx scripts/email/export-auth.tsx",
     "predev": "npm run -s email:marketing-manifest",
     "dev": "next dev",
