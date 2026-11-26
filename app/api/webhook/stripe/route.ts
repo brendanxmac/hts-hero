@@ -1,3 +1,4 @@
+import { isSaleLive, SALE } from "@/libs/black-friday";
 import { findCheckoutSession, StripePaymentMode } from "@/libs/stripe";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
@@ -156,6 +157,9 @@ export async function POST(req: NextRequest) {
           mode: stripeObject.mode,
           amount_usd: (stripeObject.amount_total ?? 0) / 100,
           currency: stripeObject.currency,
+          // A sale's coupon (libs/black-friday.ts): what it took off, and which sale
+          discount_usd: (stripeObject.total_details?.amount_discount ?? 0) / 100,
+          sale: (stripeObject.total_details?.amount_discount ?? 0) > 0 && isSaleLive() ? SALE.id : null,
         });
 
         try {

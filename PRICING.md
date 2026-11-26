@@ -18,7 +18,8 @@ _Last updated 2026-10-31: the offers below are what the product sells. Older his
 > annual price. A real time-limited discount, so the plan cards strike through the normal annual price
 > (which is really charged). The checkout adds the Stripe coupon `NEXT_PUBLIC_BLACK_FRIDAY_COUPON_ID`
 > (40%, duration once); without it set, nothing shows the sale. Not for plan changes (the billing
-> portal has no coupon) or paying accounts. Config and copy: `libs/black-friday.ts`, `components/sale/`.
+> portal has no coupon) or paying accounts. The popup, banner and email lead to `/black-friday`, open to
+> everyone; only choosing a plan asks for sign-in, then checkout opens. Config and copy: `libs/black-friday.ts`, `components/sale/`.
 
 ## The value ladder
 

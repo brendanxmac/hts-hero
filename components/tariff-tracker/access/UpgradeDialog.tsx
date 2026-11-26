@@ -21,6 +21,7 @@ import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { ALERT_PLANS, AUDIT_PLANS, TrackerAccess, TrackerOffer, TrackerPlan, trackerPlanFor } from "@/libs/tariff-tracker/plan";
 import { useAllImports } from "../catalogStore";
 import { openBillingPortal, useTrackerSubscription } from "../plan/billing";
+import { startCheckout } from "../plan/checkout";
 import { useUpgradeStats } from "./upgradeStats";
 import { PremiumFeature } from "./features";
 
@@ -46,16 +47,6 @@ const startOffer = (feature: PremiumFeature, access: TrackerAccess): TrackerOffe
   return feature === "plan" && current === "alerts" ? "alerts" : "audits";
 };
 
-const checkout = async (plan: TrackerPlan, billing: Billing) => {
-  const res = await fetch("/api/stripe/create-checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ itemId: plan.plan, billing, cancelUrl: window.location.href }),
-  });
-  const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
-  if (!res.ok || !body.url) throw new Error(body.error ?? "Checkout isn't available right now.");
-  window.location.href = body.url;
-};
 
 export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolean; feature: PremiumFeature; access: TrackerAccess; onClose: () => void }) => {
   // Every list: the plan counts each import once
@@ -118,13 +109,14 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
       change: changing,
       plan_kind: access.kind,
       sale: onSale && billing === "annual" ? SALE.id : null,
+      surface: "upgrade_dialog",
     });
     if (changing) {
       if (!(await openBillingPortal(plan.plan, billing))) setBusy(null);
       return;
     }
     try {
-      await checkout(plan, billing);
+      await startCheckout(plan, billing);
     } catch (e) {
       toast.error((e as Error).message);
       setBusy(null);

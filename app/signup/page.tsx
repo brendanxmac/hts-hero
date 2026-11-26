@@ -41,6 +41,7 @@ const subtitle = (reason: string | null, code: string | null) => {
     const saved = code && HTS_CODE.test(code) ? code : "Your code";
     return `${saved} is saved. Create your free account to track it, and you'll land right on it. No credit card required.`;
   }
+  if (reason === "black_friday") return "Create your free account to claim Black Friday's 40% off. You'll go straight to checkout with your plan.";
   return "100% free. No credit card required.";
 };
 

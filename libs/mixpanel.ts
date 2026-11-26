@@ -267,6 +267,20 @@ export enum MixpanelEvent {
   SALE_POPUP_SHOWN = "Sale Popup Shown",
   SALE_POPUP_DISMISSED = "Sale Popup Dismissed",
   SALE_CTA_CLICKED = "Sale CTA Clicked",
+  // The Black Friday page (/black-friday), step by step (MIXPANEL_TRACKING.md, 2026-11-26):
+  // viewed (source, signed_in, plan_kind, resumed), the plans scrolled into view, Essentials/Pro
+  // switched, a button that jumps to the plans, a plan picked (next: checkout, sign_in, sign_up or
+  // already_paid), sent on to Stripe, back from sign-in into checkout (resumed), checkout that
+  // couldn't open, back from Stripe without paying, an FAQ opened
+  BLACK_FRIDAY_PAGE_VIEWED = "Black Friday Page Viewed",
+  BLACK_FRIDAY_PLANS_VIEWED = "Black Friday Plans Viewed",
+  BLACK_FRIDAY_OFFER_SWITCHED = "Black Friday Offer Switched",
+  BLACK_FRIDAY_CTA_CLICKED = "Black Friday CTA Clicked",
+  BLACK_FRIDAY_PLAN_CHOSEN = "Black Friday Plan Chosen",
+  BLACK_FRIDAY_CHECKOUT_RESUMED = "Black Friday Checkout Resumed",
+  BLACK_FRIDAY_CHECKOUT_FAILED = "Black Friday Checkout Failed",
+  BLACK_FRIDAY_CHECKOUT_CANCELED = "Black Friday Checkout Canceled",
+  BLACK_FRIDAY_FAQ_OPENED = "Black Friday FAQ Opened",
 }
 
 // Browser-side tracking functions

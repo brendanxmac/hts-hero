@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { useOptionalTrackerAccess } from "@/components/tariff-tracker/access/accessContext";
-import { entryHref } from "@/libs/signup-onboarding";
 import { isSaleLive } from "@/libs/black-friday";
-import { TRACKER_PATH } from "@/components/tariff-tracker/sections";
 
 // Whether the sale is on, checked in the browser: the HTS pages are cached for days, so the
 // server's answer can be stale. `initial` is the server's, so the first render matches its HTML;
@@ -26,27 +24,28 @@ const fetchPlanKind = () =>
     .then((a: { kind?: string } | null) => a?.kind ?? null)
     .catch((): null => null));
 
-// The plans, after the sale's button: in Duty Guard they open in place; elsewhere, signed in, Duty
-// Guard opens on them; signed out, sign-up and the onboarding first
-export const SALE_PLANS_PATH = `${TRACKER_PATH}?upgrade=plan`;
+// The sale's page, where the popup, the banner and the email lead: anyone can see the deal there,
+// and only picking a plan asks them to sign in (components/sale/BlackFridayPage.tsx)
+export const SALE_PAGE = "/black-friday";
 
 // Who sees the sale: everyone but a paying account. `kind` is null while it's still being found
 // out (shown meanwhile: a paying account sees at most a moment of it)
 export const useSaleAudience = (initialLive = false) => {
   const live = useSaleLive(initialLive);
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
   const tracker = useOptionalTrackerAccess();
   const [fetched, setFetched] = useState<string | null>(null);
 
   useEffect(() => {
-    if (tracker || !live) return;
+    // Not until the session is read: a signed-in visitor isn't "anonymous" for a moment
+    if (tracker || !live || isLoading) return;
     if (!user) return setFetched("anonymous");
     let on = true;
     fetchPlanKind().then((kind) => on && setFetched(kind));
     return () => {
       on = false;
     };
-  }, [tracker, live, user]);
+  }, [tracker, live, user, isLoading]);
 
   const kind = tracker ? (tracker.loading ? null : tracker.access.kind) : fetched;
   const signedIn = tracker ? tracker.signedIn : !!user;
@@ -57,8 +56,9 @@ export const useSaleAudience = (initialLive = false) => {
     show: live && kind !== "paid",
     // Settled: safe to open the popup (never to a paying account)
     ready: live && kind !== null && kind !== "paid",
-    href: signedIn ? SALE_PLANS_PATH : entryHref("black_friday", SALE_PLANS_PATH),
-    // In Duty Guard, the plans open in place
+    // `from`: which button, for the page's source (popup or banner)
+    pageHref: (from: string) => `${SALE_PAGE}?from=${from}`,
+    // In Duty Guard (signed in already), the plans open in place, with the sale's prices
     openPlans: tracker ? () => tracker.openUpgrade("plan", "user") : null,
   };
 };

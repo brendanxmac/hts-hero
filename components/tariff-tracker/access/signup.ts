@@ -2,7 +2,7 @@
 // back to `redirect` (a path on this site) once the account exists. `reason` is what they reached
 // for, when the page should say so, and `code` the HTS code it was for (the Watch box names it)
 export const SIGNUP_PATH = "/signup";
-export type SignupReason = "adcvd" | "watch";
+export type SignupReason = "adcvd" | "watch" | "black_friday";
 export const signupHref = (redirect: string, reason?: SignupReason, code?: string) =>
   `${SIGNUP_PATH}?redirect=${encodeURIComponent(redirect)}${reason ? `&for=${reason}` : ""}${code ? `&code=${encodeURIComponent(code)}` : ""}`;
 

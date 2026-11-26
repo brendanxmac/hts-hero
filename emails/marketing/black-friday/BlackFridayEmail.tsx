@@ -16,12 +16,12 @@ import { SALE, saleAnnual } from "../../../libs/black-friday"
 // The animated hero: emails/assets/black-friday (npm run email:render-black-friday, then
 // npm run email:upload-logo for each Supabase project).
 
-export const subject = "40% off a full year of Duty Guard (ends Dec 3)"
+export const subject = "40% off Duty Guard (ends Dec 3)"
 export const preview = "Our Black Friday sale: every annual plan, Essentials and Pro. Applied automatically at checkout."
 
 const COPY = {
   eyebrow: `${SALE.name} · Ends ${SALE.endsLabel}`,
-  title: `${SALE.percentOff}% Off a Full Year of Duty Guard`,
+  title: `${SALE.percentOff}% Off Duty Guard`,
   intro:
     "Tariffs keep changing, and any change can land on the products you import. Duty Guard watches every one of them for you: it alerts you the moment a new tariff hits one, shows the rate before and after, and on Pro audits your entries and finds savings you may qualify for.",
   offer: `Through Thursday, December 3, every annual plan is ${SALE.percentOff}% off for the first year. Essentials and Pro, any size. There's no code to enter: the discount is applied automatically at checkout.`,
@@ -45,7 +45,7 @@ export default function BlackFridayEmail({ footer, preview: previewLine = previe
       {/* Animated (a GIF); its first frame carries the whole offer, for Outlook, which shows only that */}
       <Img
         src={blackFridayHeroUrl()}
-        alt={`${SALE.name}: ${SALE.percentOff}% off a full year of Duty Guard. Essentials from ${formatPrice(OFFERS[0].deal.sale)}/mo, Pro from ${formatPrice(OFFERS[1].deal.sale)}/mo. Ends ${SALE.endsLabel}.`}
+        alt={`${SALE.name}: ${SALE.percentOff}% off Duty Guard. Essentials from ${formatPrice(OFFERS[0].deal.sale)}/mo, Pro from ${formatPrice(OFFERS[1].deal.sale)}/mo. Ends ${SALE.endsLabel}.`}
         width="496"
         style={{ display: "block", width: "100%", maxWidth: 496, height: "auto", margin: "4px 0 24px", border: 0, borderRadius: 18, backgroundColor: "#0B0D14", fontFamily: FONT_SANS, fontSize: 13, lineHeight: "20px", color: C.surface }}
       />
@@ -77,8 +77,8 @@ export default function BlackFridayEmail({ footer, preview: previewLine = previe
         ))}
       </Section>
 
-      {/* Signed in, Duty Guard opens on the plans with the sale's prices; signed out, sign-in first, then the same */}
-      <Cta href={siteLink("/duty-guard?upgrade=plan", CAMPAIGN)} variant="money">
+      {/* The sale's page: the plans, no sign-in until one is picked */}
+      <Cta href={siteLink("/black-friday", CAMPAIGN)} variant="money">
         {COPY.button}
       </Cta>
       <P muted small>

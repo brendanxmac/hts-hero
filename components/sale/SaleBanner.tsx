@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { ArrowRightIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { SALE, saleDaysLeft } from "@/libs/black-friday";
-import { useSaleAudience } from "./useSale";
+import { SALE_PAGE, useSaleAudience } from "./useSale";
 
 export const endsIn = () => {
   const days = saleDaysLeft();
@@ -22,11 +22,13 @@ export const SaleBanner = ({ fallback = null, serverLive = false, inApp = false 
   const pathname = usePathname();
   const [closedOn, setClosedOn] = useState<string | null>(null);
 
+  // Not on the sale's own page, where it leads
+  if (pathname === SALE_PAGE) return null;
   if (!sale.show) return <>{fallback}</>;
   if (closedOn === pathname) return null;
 
   const click = () =>
-    trackEvent(MixpanelEvent.SALE_CTA_CLICKED, { sale: SALE.id, placement: "banner", page: pathname, signed_in: sale.signedIn, plan_kind: sale.kind });
+    trackEvent(MixpanelEvent.SALE_CTA_CLICKED, { sale: SALE.id, placement: "banner", page: pathname, signed_in: sale.signedIn, plan_kind: sale.kind, destination: sale.openPlans ? "plans_dialog" : "sale_page" });
   const button = "inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-warning px-6 text-sm font-bold text-warning-content shadow-lg shadow-black/20 transition-transform hover:scale-[1.03]";
   const label = (
     <>
@@ -42,7 +44,7 @@ export const SaleBanner = ({ fallback = null, serverLive = false, inApp = false 
         <div className="flex flex-col items-center gap-1.5 text-center sm:flex-row sm:gap-4 sm:text-left">
           <span className="shrink-0 rounded-full bg-warning px-3 py-1 text-xs font-black uppercase tracking-widest text-warning-content">{SALE.name}</span>
           <p className="m-0 text-base sm:text-lg">
-            <span className="font-bold">{SALE.percentOff}% off a full year of Duty Guard.</span>{" "}
+            <span className="font-bold">{SALE.percentOff}% off Duty Guard.</span>{" "}
             <span className="text-white/75">Every annual plan, Essentials and Pro.</span>{" "}
             {/* Cached pages can be days old: the count is the browser's */}
             <span className="font-semibold text-warning" suppressHydrationWarning>{endsIn()}</span>
@@ -60,7 +62,7 @@ export const SaleBanner = ({ fallback = null, serverLive = false, inApp = false 
             {label}
           </button>
         ) : (
-          <Link href={sale.href} onClick={click} className={button}>
+          <Link href={sale.pageHref("banner")} onClick={click} className={button}>
             {label}
           </Link>
         )}

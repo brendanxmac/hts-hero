@@ -11,7 +11,7 @@ import * as tt from "@/components/ui/styles/tracker";
 import { ALERT_TIERS, AUDIT_TIERS, formatPrice } from "@/components/pricing-calculator/lib/pricing";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
 import { SALE, saleAnnual } from "@/libs/black-friday";
-import { useSaleAudience } from "./useSale";
+import { SALE_PAGE, useSaleAudience } from "./useSale";
 import { endsIn } from "./SaleBanner";
 
 // Once a day per browser, while the sale is on
@@ -55,7 +55,8 @@ export const SalePopup = ({ serverLive = false }: { serverLive?: boolean }) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!sale.ready || seen()) return;
+    // Not on the sale's own page, where it leads
+    if (!sale.ready || seen() || pathname === SALE_PAGE) return;
     let tries = 0;
     let timer: ReturnType<typeof setTimeout>;
     const attempt = () => {
@@ -78,7 +79,7 @@ export const SalePopup = ({ serverLive = false }: { serverLive?: boolean }) => {
     setOpen(false);
   };
   const claim = () => {
-    trackEvent(MixpanelEvent.SALE_CTA_CLICKED, { sale: SALE.id, placement: "popup", page: pathname, signed_in: sale.signedIn, plan_kind: sale.kind });
+    trackEvent(MixpanelEvent.SALE_CTA_CLICKED, { sale: SALE.id, placement: "popup", page: pathname, signed_in: sale.signedIn, plan_kind: sale.kind, destination: sale.openPlans ? "plans_dialog" : "sale_page" });
     setOpen(false);
     sale.openPlans?.();
   };
@@ -106,7 +107,7 @@ export const SalePopup = ({ serverLive = false }: { serverLive?: boolean }) => {
             <Dialog.Title className={`${tt.display} m-0 text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl`}>
               <span className="text-warning">{SALE.percentOff}% Off</span>
               <br />
-              A Full Year of Duty Guard
+              Duty Guard
             </Dialog.Title>
             <p className="m-0 max-w-xl text-lg leading-relaxed text-white/75">
               Every annual plan, Essentials and Pro, any size. One week only.
@@ -143,7 +144,7 @@ export const SalePopup = ({ serverLive = false }: { serverLive?: boolean }) => {
                   {label}
                 </button>
               ) : (
-                <Link href={sale.href} className={button} onClick={claim}>
+                <Link href={sale.pageHref("popup")} className={button} onClick={claim}>
                   {label}
                 </Link>
               )}

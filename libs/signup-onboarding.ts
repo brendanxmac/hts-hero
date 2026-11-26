@@ -41,8 +41,6 @@ export const ENTRY_POINTS = [
   "digest_welcome",
   // /tariff-updates: the alerts banner, and "See if you or your clients are affected" on an update
   "update_page",
-  // The Black Friday popup and banner (libs/black-friday.ts), straight to the plans after
-  "black_friday",
 ] as const
 export type HomeSection = (typeof HOME_SECTIONS)[number]
 export type EntryPoint = (typeof ENTRY_POINTS)[number]
@@ -84,7 +82,6 @@ export const ENTRY_SIGNED_IN_HREF: Record<EntryPoint, string> = {
   country_hub: TRACKER_START,
   digest_welcome: sectionUrl("changes"),
   update_page: sectionUrl("changes"),
-  black_friday: `${TRACKER_PATH}?upgrade=plan`,
 }
 
 export const TRACKER_WELCOME_PARAM = "welcome"
