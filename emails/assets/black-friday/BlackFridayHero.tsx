@@ -1,10 +1,9 @@
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion"
 import { display, sans } from "../../../social/fonts"
-import { ALERT_TIERS, AUDIT_TIERS, formatPrice } from "../../../components/pricing-calculator/lib/pricing"
-import { SALE, saleAnnual } from "../../../libs/black-friday"
+import { SALE } from "../../../libs/black-friday"
 
-// The Black Friday 2026 visual (libs/black-friday.ts): "40% off Tariff Audits, Savings & Alerts" with
-// both offers' from-prices struck through. Two layouts from one design:
+// The Black Friday 2026 visual (libs/black-friday.ts): "40% off Tariff Audits, Savings, & Alerts", with
+// the three features and what each does (no prices). Two layouts from one design:
 //   banner: the email's animated hero (a GIF, emails/marketing/black-friday)
 //   square: a 1080×1080 post for LinkedIn / X
 // The first frame carries the whole message (Outlook shows only that one), and the motion is
@@ -25,10 +24,33 @@ const COLORS = {
   red: "#FF7D6E",
 }
 
-const OFFERS = [
-  { name: "Essentials", what: "Tariff alerts", deal: saleAnnual(ALERT_TIERS[0].price) },
-  { name: "Pro", what: "Audits, savings & alerts", deal: saleAnnual(AUDIT_TIERS[0].price) },
-]
+// The three things on sale, each with what it does for an importer
+const FEATURES = [
+  { name: "Audits", what: "Find duty you may be overpaying", tone: COLORS.cobalt, icon: "shield" },
+  { name: "Savings", what: "Spot lower rates you may qualify for", tone: COLORS.green, icon: "tag" },
+  { name: "Alerts", what: "Know the moment a tariff changes", tone: COLORS.red, icon: "bell" },
+] as const
+
+const Icon = ({ kind, color, size }: { kind: "shield" | "tag" | "bell"; color: string; size: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    {kind === "shield" ? (
+      <>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+        <path d="m9 12 2 2 4-4" />
+      </>
+    ) : kind === "tag" ? (
+      <>
+        <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" />
+        <circle cx="7.5" cy="7.5" r="1.5" />
+      </>
+    ) : (
+      <>
+        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+      </>
+    )}
+  </svg>
+)
 
 // Confetti that falls on a loop: each piece's start, speed and shape are fixed, so the loop is seamless
 const CONFETTI = Array.from({ length: 26 }, (_, i) => {
@@ -87,7 +109,7 @@ export const BlackFridayHero = ({ layout }: { layout: HeroLayout }) => {
           flexDirection: square ? "column" : "row",
           alignItems: "center",
           justifyContent: "center",
-          gap: (square ? 56 : 22) * u,
+          gap: (square ? 40 : 22) * u,
           padding: `${(square ? 80 : 24) * u}px ${(square ? 70 : 30) * u}px`,
         }}
       >
@@ -130,7 +152,7 @@ export const BlackFridayHero = ({ layout }: { layout: HeroLayout }) => {
             </div>
           </div>
           <div style={{ fontFamily: display, fontWeight: 600, fontSize: (square ? 60 : 18) * u, lineHeight: 1.15, whiteSpace: "nowrap", marginTop: (square ? 18 : 8) * u }}>
-            Tariff Audits, Savings & Alerts
+            Tariff Audits, Savings, & Alerts
           </div>
           <div
             style={{
@@ -145,43 +167,52 @@ export const BlackFridayHero = ({ layout }: { layout: HeroLayout }) => {
           >
             {/* The clock dot pulses */}
             <span style={{ width: (square ? 14 : 7) * u, height: (square ? 14 : 7) * u, borderRadius: 999, backgroundColor: COLORS.red, opacity: 0.6 + 0.4 * Math.abs(wave) }} />
-            A full year, every annual plan · Ends {SALE.endsLabel}
+            Your first year · Ends {SALE.endsLabel}
           </div>
         </div>
 
-        {/* The two offers, as swinging price tags */}
-        <div style={{ display: "flex", flexDirection: square ? "row" : "column", gap: (square ? 32 : 12) * u, flex: square ? "none" : 1 }}>
-          {OFFERS.map((o, i) => (
+        {/* The three features, as swinging tags */}
+        <div style={{ display: "flex", flexDirection: "column", gap: (square ? 16 : 10) * u, flex: square ? "none" : 1, alignSelf: square ? "stretch" : undefined }}>
+          {FEATURES.map((f, i) => (
             <div
-              key={o.name}
+              key={f.name}
               style={{
+                display: "flex",
+                alignItems: "center",
+                gap: (square ? 24 : 11) * u,
                 backgroundColor: COLORS.card,
                 border: `${Math.max(1, 1.5 * u)}px solid ${COLORS.line}`,
-                borderRadius: (square ? 28 : 14) * u,
-                padding: `${(square ? 26 : 11) * u}px ${(square ? 28 : 14) * u}px`,
+                borderRadius: (square ? 26 : 13) * u,
+                padding: `${(square ? 18 : 10) * u}px ${(square ? 28 : 13) * u}px`,
                 minWidth: 0,
-                transform: square ? `rotate(${(i === 0 ? 1 : -1) * 1.6 * wave}deg)` : undefined,
+                transform: square ? `rotate(${(i % 2 === 0 ? 1 : -1) * 0.8 * wave}deg)` : undefined,
                 transformOrigin: "top center",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 * u }}>
-                <span style={{ fontFamily: display, fontWeight: 600, fontSize: (square ? 40 : 17) * u }}>{o.name}</span>
-                <span style={{ fontSize: (square ? 24 : 11) * u, color: COLORS.muted, fontWeight: 600 }}>{o.what}</span>
+              <div
+                style={{
+                  width: (square ? 68 : 32) * u,
+                  height: (square ? 68 : 32) * u,
+                  borderRadius: (square ? 18 : 9) * u,
+                  backgroundColor: COLORS.ground,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flex: "none",
+                }}
+              >
+                <Icon kind={f.icon} color={f.tone} size={(square ? 36 : 17) * u} />
               </div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: (square ? 14 : 7) * u, marginTop: (square ? 12 : 4) * u }}>
-                <span style={{ fontSize: (square ? 26 : 11) * u, color: COLORS.muted }}>from</span>
-                <span style={{ fontSize: (square ? 40 : 17) * u, color: COLORS.muted, textDecoration: "line-through", textDecorationColor: COLORS.red, textDecorationThickness: 2 * u }}>
-                  {formatPrice(o.deal.usual)}
-                </span>
-                <span style={{ fontFamily: display, fontWeight: 700, fontSize: (square ? 64 : 28) * u, color: COLORS.text }}>{formatPrice(o.deal.sale)}</span>
-                <span style={{ fontSize: (square ? 26 : 11) * u, color: COLORS.muted }}>/mo</span>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontFamily: display, fontWeight: 600, fontSize: (square ? 40 : 16) * u, lineHeight: 1.15 }}>{f.name}</div>
+                <div style={{ fontSize: (square ? 27 : 11.5) * u, color: COLORS.muted, fontWeight: 600, whiteSpace: "nowrap", marginTop: (square ? 2 : 1) * u }}>{f.what}</div>
               </div>
             </div>
           ))}
         </div>
       </AbsoluteFill>
       {square && (
-        <div style={{ position: "absolute", bottom: 56 * u, left: 0, right: 0, textAlign: "center", fontFamily: display, fontWeight: 600, fontSize: 30 * u, color: COLORS.muted }}>
+        <div style={{ position: "absolute", bottom: 40 * u, left: 0, right: 0, textAlign: "center", fontFamily: display, fontWeight: 600, fontSize: 30 * u, color: COLORS.muted }}>
           htshero.com/black-friday
         </div>
       )}
