@@ -7,6 +7,8 @@ import { ANNUAL_DISCOUNT, Billing, formatPrice, monthlyRate, perImportPrice } fr
 import * as mk from "./styles";
 import { useUser } from "@/contexts/UserContext";
 import { MixpanelEvent, trackEvent } from "@/libs/mixpanel";
+import { SALE, saleAnnual } from "@/libs/black-friday";
+import { useSaleLive } from "@/components/sale/useSale";
 
 // The page a pricing click came from ("tariff-alerts", "pricing-calculator", "home"), and the
 // sign-up's entry point the link carries (?from=, inside the sign-up's ?redirect=)
@@ -34,7 +36,11 @@ export type SalesPlan = { name: string; maxPairs: number; price: number; emails:
 const perProduct = (amount: number) => (amount < 1 ? `${Math.round(amount * 100)}¢` : `$${amount.toFixed(2)}`);
 
 // Monthly or annual, in theme colors so it sits on the page or in a dark card
-export const DarkBillingSwitch = ({ billing, onChange }: { billing: Billing; onChange: (b: Billing) => void }) => (
+// While a sale is on (libs/black-friday.ts) the annual side carries its discount instead, unless
+// `noSale` (a paying account changing plan: the billing portal has no coupon)
+export const DarkBillingSwitch = ({ billing, onChange, noSale }: { billing: Billing; onChange: (b: Billing) => void; noSale?: boolean }) => {
+  const sale = useSaleLive() && !noSale;
+  return (
   <div className="inline-flex items-center gap-1 rounded-full bg-base-content/10 p-1" role="radiogroup" aria-label="Billing period">
     {(["monthly", "annual"] as const).map((b) => {
       const on = billing === b;
@@ -50,14 +56,15 @@ export const DarkBillingSwitch = ({ billing, onChange }: { billing: Billing; onC
           {b === "monthly" ? "Monthly" : "Annual"}
           {b === "annual" && (
             <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${on ? "bg-primary-content/20 text-primary-content" : "bg-base-content/10 text-base-content/70"}`}>
-              Save {ANNUAL_DISCOUNT * 100}%
+              {sale ? `${SALE.percentOff}% Off` : `Save ${ANNUAL_DISCOUNT * 100}%`}
             </span>
           )}
         </button>
       );
     })}
   </div>
-);
+  );
+};
 
 // The products slider scales to the plans: each plan gets an equal stretch of the track, from the
 // plan below it up to its own size, in round steps that fit that stretch (1s at the small end, 25s at
@@ -133,6 +140,7 @@ export const PlanCard = ({
   onChoose,
   cta,
   busy,
+  noSale,
 }: {
   product: string;
   plan: SalesPlan;
@@ -152,10 +160,15 @@ export const PlanCard = ({
   onChoose?: () => void;
   cta?: string;
   busy?: boolean;
+  // A paying account changing plan: the billing portal has no sale coupon, so no sale price
+  noSale?: boolean;
 }) => {
   const pathname = usePathname();
   const { user } = useUser();
-  const price = monthlyRate(plan.price, billing);
+  // A sale (libs/black-friday.ts) takes its discount off the annual price, for the first year
+  const onSale = useSaleLive() && billing === "annual" && !noSale;
+  const deal = saleAnnual(plan.price);
+  const price = onSale ? deal.sale : monthlyRate(plan.price, billing);
   // The plan picked on a sales page, then the sign-up (the same click as a Sign Up CTA, for the funnel)
   const trackChoice = () => {
     const page = pageOf(pathname);
@@ -196,7 +209,14 @@ export const PlanCard = ({
         )}
       </h3>
 
-      <p className="mt-6 flex items-baseline gap-2">
+      {/* The sale's price beside the annual price it takes 40% off: one really charged (PRICING.md) */}
+      {onSale && (
+        <p className="mt-4 inline-flex w-fit items-center whitespace-nowrap rounded-full bg-warning px-3 py-1 text-[11px] font-black uppercase tracking-wider text-warning-content">
+          {SALE.name}: {SALE.percentOff}% Off
+        </p>
+      )}
+      <p className={`${onSale ? "mt-3" : "mt-6"} flex flex-wrap items-baseline gap-x-2`}>
+        {onSale && <span className="text-xl font-semibold text-base-content/45 line-through">{formatPrice(deal.usual)}</span>}
         <span className="text-5xl font-bold tracking-tight text-base-content [font-family:var(--font-tracker-display)]">{formatPrice(price)}</span>
         <span className="text-sm font-medium text-base-content/60">/ mo</span>
       </p>
@@ -211,7 +231,15 @@ export const PlanCard = ({
         </p>
       )}
       {/* On annual, what's charged once a year, quietly */}
-      {billing === "annual" && <p className="mt-0.5 text-xs text-base-content/50">{formatPrice(price * 12)} billed yearly</p>}
+      {billing === "annual" &&
+        (onSale ? (
+          <p className="mt-0.5 text-xs text-base-content/60">
+            <span className="line-through">{formatPrice(deal.usualYear)}</span> <span className="font-semibold text-base-content">{formatPrice(deal.saleYear)}</span> for your first
+            year, then {formatPrice(deal.usualYear)}/year. Ends {SALE.endsLabel}.
+          </p>
+        ) : (
+          <p className="mt-0.5 text-xs text-base-content/50">{formatPrice(price * 12)} billed yearly</p>
+        ))}
 
       <ul className="mt-6 flex flex-col gap-3 border-t border-base-content/15 pt-6">
         {features.map((text) => (
@@ -276,6 +304,7 @@ export const PlanCards = ({
   onChoose,
   cta,
   busy,
+  noSale,
 }: {
   product: string;
   plans: readonly SalesPlan[];
@@ -296,10 +325,11 @@ export const PlanCards = ({
   onChoose?: (plan: SalesPlan) => void;
   cta?: (plan: SalesPlan) => string;
   busy?: boolean;
+  noSale?: boolean;
 }) => (
   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
     {plans.map((p) => (
-      <PlanCard key={p.maxPairs} product={product} plan={p} billing={billing} features={features(p, billing)} href={href} guarantee={guarantee} note={note?.(p, billing)} lead={lead(p)} best={p.maxPairs === best} products={products} trialDays={trialDays} onChoose={onChoose && (() => onChoose(p))} cta={cta?.(p)} busy={busy} />
+      <PlanCard key={p.maxPairs} product={product} plan={p} billing={billing} features={features(p, billing)} href={href} guarantee={guarantee} note={note?.(p, billing)} lead={lead(p)} best={p.maxPairs === best} products={products} trialDays={trialDays} onChoose={onChoose && (() => onChoose(p))} cta={cta?.(p)} busy={busy} noSale={noSale} />
     ))}
   </div>
 );

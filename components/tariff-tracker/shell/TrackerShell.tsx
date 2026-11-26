@@ -24,6 +24,8 @@ import { useHomeWaitsForImports } from "./useNoImportsYet";
 import { ListSwitcher } from "../lists/ListSwitcher";
 import { ListsDialogHost } from "../lists/ListsDialog";
 import { switchList } from "../lists/actions";
+import { SaleBanner } from "@/components/sale/SaleBanner";
+import { SalePopup } from "@/components/sale/SalePopup";
 
 // Duty Guard as an app (DESIGN_SYSTEM.md §15): a floating sidebar, dark in both modes,
 // beside the open section. Each tab's dot and count say what's waiting there (free checks left,
@@ -289,6 +291,8 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
       <div className="relative flex min-h-0 min-w-0 flex-1">
         <main className="relative min-h-0 min-w-0 flex-1 overflow-y-auto">
           <div className="px-4 pt-4 empty:hidden sm:px-6 lg:px-2 lg:pt-0">
+            {/* A sale (libs/black-friday.ts), above everything else, while it's on */}
+            <SaleBanner inApp />
             <FinishSetupBanner />
             <PlanBanner />
             <TrialDialog />
@@ -300,6 +304,7 @@ export const TrackerShell = ({ children }: { children: ReactNode }) => {
         <div id={FLOW_SLOT_ID} className="absolute inset-0 z-30 empty:hidden" />
       </div>
       <ListsDialogHost />
+      <SalePopup />
     </div>
   );
 };

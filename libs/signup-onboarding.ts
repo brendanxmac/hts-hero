@@ -1,6 +1,7 @@
 import { sectionUrl, TRACKER_PATH } from "@/components/tariff-tracker/sections"
 import {
   signupHref,
+  type SignupReason,
   TRACKER_START,
 } from "@/components/tariff-tracker/access/signup"
 
@@ -40,6 +41,8 @@ export const ENTRY_POINTS = [
   "digest_welcome",
   // /tariff-updates: the alerts banner, and "See if you or your clients are affected" on an update
   "update_page",
+  // The Black Friday popup and banner (libs/black-friday.ts), straight to the plans after
+  "black_friday",
 ] as const
 export type HomeSection = (typeof HOME_SECTIONS)[number]
 export type EntryPoint = (typeof ENTRY_POINTS)[number]
@@ -48,11 +51,12 @@ export const isEntryPoint = (v: unknown): v is EntryPoint =>
 
 // Every sign-up button: sign up, then the onboarding, remembering where it started (?from=). `next`
 // is where to land after it, for a button that already knows (the import it just saved); `reason`
-// is what they reached for, when the sign-up page should say so
-export const entryHref = (entry: EntryPoint, next?: string, reason?: "adcvd") =>
+// is what they reached for, when the sign-up page should say so, and `code` the HTS code it was for
+export const entryHref = (entry: EntryPoint, next?: string, reason?: SignupReason, code?: string) =>
   signupHref(
     `${ONBOARDING_PATH}?from=${entry}${next ? `&next=${encodeURIComponent(next)}` : ""}`,
     reason,
+    code,
   )
 
 // A `next` that's safe to send someone to: a path on this site
@@ -80,6 +84,7 @@ export const ENTRY_SIGNED_IN_HREF: Record<EntryPoint, string> = {
   country_hub: TRACKER_START,
   digest_welcome: sectionUrl("changes"),
   update_page: sectionUrl("changes"),
+  black_friday: `${TRACKER_PATH}?upgrade=plan`,
 }
 
 export const TRACKER_WELCOME_PARAM = "welcome"

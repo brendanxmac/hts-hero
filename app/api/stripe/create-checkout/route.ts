@@ -7,6 +7,7 @@ import { fetchUser, UserProfile } from "../../../../libs/supabase/user";
 import { Billing } from "@/components/pricing-calculator/lib/pricing";
 import { isSellablePlan, isTrackerPlan } from "@/libs/tariff-tracker/plan";
 import { trackerPriceId } from "@/libs/tariff-tracker/prices";
+import { isSaleLive, SALE_COUPON_ID } from "@/libs/black-friday";
 
 interface CreateCheckoutDto {
   itemId: PricingPlan;
@@ -95,9 +96,13 @@ export async function POST(req: NextRequest) {
     console.log("priceId", priceId);
     console.log("mode", mode);
 
+    // Black Friday (libs/black-friday.ts): 40% off the first year of an annual Duty Guard plan
+    const couponId = isTrackerPlan(itemId) && billing === "annual" && isSaleLive() ? SALE_COUPON_ID : null;
+
     const stripeSessionURL = await createCheckout({
       priceId,
       mode,
+      couponId,
       // promotionCode removed for now,
       successUrl,
       cancelUrl: cancelUrl || `${process.env.BASE_URL}/classify`,

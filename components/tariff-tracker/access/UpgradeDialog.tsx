@@ -1,5 +1,7 @@
 "use client";
 
+import { SALE } from "@/libs/black-friday";
+import { useSaleLive } from "@/components/sale/useSale";
 import { ReactNode, useEffect, useState } from "react";
 import { Dialog } from "@/components/ui/Dialog";
 import { ArrowDownTrayIcon, BellAlertIcon, BoltIcon, ChartBarIcon, ClockIcon, NewspaperIcon, XMarkIcon } from "@heroicons/react/20/solid";
@@ -64,6 +66,9 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
   const [offer, setOffer] = useState<TrackerOffer>(() => startOffer(feature, access));
   const [busy, setBusy] = useState<string | null>(null);
   const stats = useUpgradeStats();
+  // A sale (libs/black-friday.ts): the checkout takes it off an annual plan's first year; a plan
+  // change goes through the billing portal, which has no coupon
+  const onSale = useSaleLive() && !changing;
 
   useEffect(() => {
     if (open) setOffer(startOffer(feature, access));
@@ -112,6 +117,7 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
       catalog: items.length,
       change: changing,
       plan_kind: access.kind,
+      sale: onSale && billing === "annual" ? SALE.id : null,
     });
     if (changing) {
       if (!(await openBillingPortal(plan.plan, billing))) setBusy(null);
@@ -167,8 +173,15 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
 
             <div className="flex flex-wrap items-center justify-center gap-3">
               <SegmentedControl<TrackerOffer> label="Offer" options={OFFERS} value={offer} onChange={setOffer} />
-              <DarkBillingSwitch billing={billing} onChange={setBilling} />
+              <DarkBillingSwitch billing={billing} onChange={setBilling} noSale={changing} />
             </div>
+
+            {onSale && (
+              <p className="m-0 rounded-2xl bg-warning/15 px-4 py-3 text-center text-sm font-semibold text-base-content ring-1 ring-warning/40">
+                {SALE.name}: {SALE.percentOff}% off your first year on every annual plan, until {SALE.endsLabel}.
+                {billing === "monthly" && " Switch to Annual to get it."}
+              </p>
+            )}
 
             {/* How the change finishes in Stripe's billing portal */}
             {changing && (
@@ -197,6 +210,7 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
                   onChoose={choose}
                   cta={cta}
                   busy={busy !== null}
+                  noSale={changing}
                 />
               ) : (
                 <PlanCards
@@ -210,6 +224,7 @@ export const UpgradeDialog = ({ open, feature, access, onClose }: { open: boolea
                   onChoose={choose}
                   cta={cta}
                   busy={busy !== null}
+                  noSale={changing}
                 />
               )}
             </div>

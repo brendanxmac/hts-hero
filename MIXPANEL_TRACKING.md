@@ -299,3 +299,16 @@ Expect Sign Up CTA Clicked counts to rise from 2026-11-06. That's new coverage, 
 - The Tracker's trial dialog can open behind the import takeover or tour.
 - `Onboarding Shown` can fire while the feature tour covers the takeover on a first visit.
 - `Let's Talk` clicks send the user's email and name as event properties.
+
+## Changed on 2026-11-26: Black Friday sale
+
+- **Sale Popup Shown**: the sale's popup opened by itself (once a day per browser, never to a paying
+  account). Properties: `sale` (black-friday-2026), `page` (the path), `signed_in`, `plan_kind`
+  (anonymous, free, trial).
+- **Sale Popup Dismissed**: closed without its button (X, Escape, "Maybe later", the backdrop).
+- **Sale CTA Clicked**: the popup's or the sale banner's "Claim 40% Off". `placement` is `popup` or
+  `banner`, plus the popup's properties. Signed out it goes to sign-up with entry `black_friday`,
+  then Duty Guard's plans (`?upgrade=plan`); in Duty Guard the plans open in place.
+- **Duty Guard Checkout Started** has `sale`: the sale's id when the annual checkout gets the coupon, else null.
+- Sale funnel: Sale Popup Shown → Sale CTA Clicked → Duty Guard Checkout Started (`sale` set) → Purchase Completed.
+

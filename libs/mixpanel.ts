@@ -262,6 +262,11 @@ export enum MixpanelEvent {
   // "Check if you or your clients are affected" on a tariff update's page, signed in (result:
   // affected, not_affected, no_imports or error; signed-out clicks are SIGNUP_CTA_CLICKED)
   TARIFF_UPDATE_AFFECTED_CHECKED = "Tariff Update Affected Checked",
+  // A sale's popup opened by itself (sale, page, signed_in, plan_kind), closed without its button,
+  // and its button or the sale banner's clicked (placement: popup or banner)
+  SALE_POPUP_SHOWN = "Sale Popup Shown",
+  SALE_POPUP_DISMISSED = "Sale Popup Dismissed",
+  SALE_CTA_CLICKED = "Sale CTA Clicked",
 }
 
 // Browser-side tracking functions
