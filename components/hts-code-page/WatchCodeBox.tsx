@@ -34,8 +34,8 @@ export function WatchCodeBox({ htsno, country = "CN" }: { htsno: string; country
     trackEvent(MixpanelEvent.DUTY_GUARD_PRODUCTS_ADDED, { added, duplicates: 1 - added, source: "hts-watch", hts_code: htsno });
     trackEvent(MixpanelEvent.HTS_CODE_WATCH_SUBMITTED, { hts_code: htsno, country_code: country, signed_in: !!user });
     const landing = withArrival(productUrl(itemKey(product)), "watch");
-    if (!user) trackEvent(MixpanelEvent.SIGNUP_CTA_CLICKED, { page: "hts", entry: "hts_page", section: "watch", label: "Track This Code", signed_in: false });
-    window.location.href = user ? landing : entryHref("hts_page", landing);
+    if (!user) trackEvent(MixpanelEvent.SIGNUP_CTA_CLICKED, { page: "hts", entry: "hts_page", section: "watch", label: "Track This Code, Free", signed_in: false });
+    window.location.href = user ? landing : entryHref("hts_page", landing, "watch", htsno);
   };
 
   return (
@@ -50,9 +50,15 @@ export function WatchCodeBox({ htsno, country = "CN" }: { htsno: string; country
       </div>
 
       <button type="button" onClick={watch} className={`${ui.button({ variant: "primary" })} w-full`} disabled={saving}>
-        {saving ? "Opening Duty Guard…" : "Track This Code"}
+        {saving ? (user ? "Opening Duty Guard…" : "Saving your code…") : "Track This Code, Free"}
         <ArrowRightIcon className="h-4 w-4" aria-hidden />
       </button>
+      {/* Signed out, the button opens the sign-up form: say so before they click */}
+      {!user && (
+        <p className="m-0 -mt-1 text-center text-xs text-base-content/60">
+          Takes a free account. We save the code and bring you right back to it.
+        </p>
+      )}
     </section>
   );
 }
