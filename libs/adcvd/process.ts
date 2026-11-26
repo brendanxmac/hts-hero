@@ -10,6 +10,7 @@ import { FederalRegisterOutOfTime, withFederalRegister } from "./fr"
 import { refreshItaPages } from "./ita"
 import { budgetTracker, spentFor } from "./usage"
 import type { MonthRow } from "./types"
+import type { Progress } from "./run"
 
 // One month of Commerce and ITC notices, start to finish, in steps that each pick up where the
 // last run stopped (a run has a deadline; /adcvd calls again until the month is done):
@@ -108,13 +109,15 @@ const monthCounts = async (db: Db, month: string) => {
 
 // Runs a month's steps from where it stopped until done or the deadline. `collect: false` for the
 // cron, whose own collector already gathers new notices.
-export const runMonth = (db: Db, month: string, options: { deadline: number; collect?: boolean; restart?: boolean; quiet?: boolean }) =>
+type MonthOptions = { deadline: number; collect?: boolean; restart?: boolean; quiet?: boolean; progress?: Progress }
+
+export const runMonth = (db: Db, month: string, options: MonthOptions) =>
   withFederalRegister(db, options.deadline, () => runMonthSteps(db, month, options))
 
 const runMonthSteps = async (
   db: Db,
   month: string,
-  { deadline, collect = true, restart = false, quiet = false }: { deadline: number; collect?: boolean; restart?: boolean; quiet?: boolean }
+  { deadline, collect = true, restart = false, quiet = false, progress }: MonthOptions
 ): Promise<MonthResult> => {
   if (!isMonth(month)) throw new Error(`Not a month: ${month}`)
   const log: string[] = []
@@ -148,6 +151,7 @@ const runMonthSteps = async (
     for (const step of STEPS.slice(STEPS.indexOf(startAt))) {
       await saveMonth(db, month, { step })
       if (Date.now() > deadline) return finish("running", step, true)
+      progress?.mark(`${month} ${step}`)
       if (step === "collect") {
         const results = await collectSources(db, { since: start, until: end, agencies: AGENCY_SLUGS, backfill: true, trigger: "backfill", sources: ["federal_register"] })
         for (const r of results) {
@@ -185,12 +189,14 @@ const runMonthSteps = async (
         if (budget.reached) return finish("paused", step, false)
       }
       if (step === "check") {
-        const r = await checkCases(db, await monthCases(db, month))
+        const r = await checkCases(db, await monthCases(db, month), { deadline })
         log.push(`Checked ${r.checked} cases, ${r.withProblems} with notes`)
+        if (r.remaining) return finish("running", step, true)
       }
       if (step === "updates") {
-        const r = await updateMonth(db, month)
+        const r = await updateMonth(db, month, { deadline })
         log.push(`Wrote ${r.updates} updates`)
+        if (r.remaining) return finish("running", step, true)
       }
     }
     return finish("done", null, false)
@@ -214,7 +220,7 @@ export const resetMonth = async (db: Db, month: string) => {
   await saveMonth(db, month, { status: "pending", step: null, error: null, finished_at: null, new_cases: 0 })
 }
 
-// The cron's share: new notices this month, a few minutes at most. In the first days of a month it
+// The cron's share: new notices this month, about four minutes at most (app/api/cron/adcvd). In the first days of a month it
 // also catches up the month before, once: collects the whole month again (anything the collector's
 // 3-day window missed while crons were down) and reads every notice again (any that errored).
 // Re-reading keeps the summaries and checked codes already written, so it costs no AI.
@@ -224,9 +230,10 @@ const RETRY_PER_RUN = 3
 // ITA case pages read per run: every live case within a day, then each about monthly
 const ITA_PER_RUN = 60
 
-export const runNew = (db: Db, { deadline }: { deadline: number }) => withFederalRegister(db, deadline, () => runNewSteps(db, deadline))
+export const runNew = (db: Db, { deadline, progress }: { deadline: number; progress?: Progress }) =>
+  withFederalRegister(db, deadline, () => runNewSteps(db, deadline, progress))
 
-const runNewSteps = async (db: Db, deadline: number) => {
+const runNewSteps = async (db: Db, deadline: number, progress?: Progress) => {
   const started = new Date()
   const thisMonth = started.toISOString().slice(0, 7)
   const results: MonthResult[] = []
@@ -240,23 +247,27 @@ const runNewSteps = async (db: Db, deadline: number) => {
     if (!caughtUp) {
       // Started once; later runs continue where it stopped
       if (row?.status !== "running") await resetMonth(db, lastMonth)
-      results.push(await runMonth(db, lastMonth, { deadline: deadline - 90_000, collect: true }))
+      results.push(await runMonth(db, lastMonth, { deadline: deadline - 90_000, collect: true, progress }))
     }
   }
-  results.push(await runMonth(db, thisMonth, { deadline: deadline - 60_000, collect: false, restart: true, quiet: true }))
+  results.push(await runMonth(db, thisMonth, { deadline: deadline - 60_000, collect: false, restart: true, quiet: true, progress }))
   // CBP's latest AD/CVD messages (one request)
+  progress?.mark("CBP messages")
   extras.cbp = await readCbpMessages(db).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }))
   // A few cases still without codes, not tried in RETRY_DAYS, whatever month they're from
   if (Date.now() < deadline - 20_000) {
+    progress?.mark("scope retry")
     const scope = await scopeCases(db, { deadline: deadline - 10_000, budget: await budgetTracker(db, thisMonth), limit: RETRY_PER_RUN }).catch((e) => ({ error: String(e) }))
     extras.scopeRetry = "found" in scope ? scope.found : scope
   }
   // ITA's case pages: a few per run, never read or read over a month ago (one request a second)
   if (Date.now() < deadline - 45_000) {
+    progress?.mark("ITA pages")
     const ita = await refreshItaPages(db, { deadline: deadline - 15_000, budget: await budgetTracker(db, thisMonth), limit: ITA_PER_RUN }).catch((e) => ({ error: String(e) }))
     extras.ita = "read" in ita ? { read: ita.read, sorted: ita.sorted, errors: ita.errors.slice(0, 5) } : ita
   }
   // Recorded for /adcvd's health line and the "cron stopped" email
+  progress?.mark("saving")
   await db
     .from("adcvd_settings")
     .update({
